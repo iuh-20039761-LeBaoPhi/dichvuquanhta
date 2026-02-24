@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giới Thiệu - MediCare</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body style="font-family: &quot;Quicksand&quot;, sans-serif">
+    <!-- Navigation -->
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3"
+    >
+      <div class="container">
+        <a
+          class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
+          href="index.html"
+          style="color: #007bff"
+        >
+          <i class="fas fa-heart"></i>
+          <span>MediCare</span>
+        </a>
+
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          id="menuToggle"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+          <ul class="navbar-nav align-items-center gap-3">
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="../index.html"
+                >Trang Chủ</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link fw-bold px-3 active"
+                style="color: #007bff; font-size: larger"
+                href="about.html"
+                >Giới Thiệu</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="services.html">Dịch Vụ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="contact.html">Liên Hệ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="../../index.html"
+                >GlobalCare</a
+              >
+            </li>
+            <li class="nav-item ms-lg-3">
+              <a
+                href="contact.html"
+                class="btn text-white rounded-pill px-4 py-2 shadow-sm"
+                style="background-color: #007bff"
+                onmouseover="
+                  this.style.backgroundColor = '#d84374';
+                  this.style.transform = 'scale(1.05)';
+                "
+                onmouseout="
+                  this.style.backgroundColor = '#007bff';
+                  this.style.transform = 'scale(1)';
+                "
+                >Đặt Lịch Tư Vấn</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- About Hero Banner -->
+    <section
+      class="py-5"
+      style="
+        background: linear-gradient(
+          135deg,
+          #e3f2fd 0%,
+          #ffffff 50%,
+          #e8f5e9 100%
+        );
+      "
+    >
+      <div class="container py-lg-5 text-center">
+        <h1 class="display-3 fw-bold mb-3">
+          Về
+          <span
+            style="
+              color: #007bff;
+              font-family: &quot;Quicksand&quot;, sans-serif;
+            "
+            >MediCare</span
+          >
+        </h1>
+        <p class="lead text-muted mb-4">
+          Giải pháp chăm sóc bệnh nhân chuyên nghiệp — Chia sẻ gánh nặng cùng
+          gia đình
+        </p>
+        <div
+          style="
+            width: 60px;
+            height: 3px;
+            background-color: #007bff;
+            margin: 0 auto;
+          "
+        ></div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-5">
+      <div class="container py-lg-5">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <h2 class="fw-bold display-5 mb-4">
+              Câu Chuyện Của <span style="color: #007bff">MediCare</span>
+            </h2>
+            <p class="lead text-muted mb-3">
+              MediCare được thành lập vào năm 2009 với mục đích cung cấp dịch vụ
+              điều dưỡng và chăm sóc bệnh nhân tại viện chất lượng cao, chuyên
+              nghiệp và tận tâm. Chúng tôi hiểu rằng khi người thân đau ốm, gia
+              đình thường gặp áp lực lớn trong việc cân bằng giữa công việc và
+              việc túc trực tại bệnh viện.
+            </p>
+            <p class="text-muted">
+              Với hơn 15 năm kinh nghiệm, MediCare đã hỗ trợ hơn 10,000 ca chăm
+              sóc, giúp bệnh nhân hồi phục nhanh chóng và người thân an tâm công
+              tác. Đội ngũ điều dưỡng và nhân viên chăm sóc của chúng tôi được
+              đào tạo bài bản, luôn sẵn sàng túc trực 24/7 bên giường bệnh.
+            </p>
+          </div>
+          <div class="col-lg-6 text-center">
+            <img
+              src="../assets/2.png"
+              alt="Đội ngũ MediCare"
+              class="img-fluid rounded-4 shadow-lg"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission & Vision -->
+    <section class="py-5" style="background-color: #f7f7f7">
+      <div class="container py-5">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 text-center">
+              <div class="mb-4 fs-1 text-primary">
+                <i class="fas fa-hand-holding-medical"></i>
+              </div>
+              <h3 class="h4 fw-bold mb-3">Sứ Mệnh</h3>
+              <p class="text-muted mb-0">
+                Mang đến dịch vụ chăm sóc y tế tận tâm nhất, giúp bệnh nhân sớm
+                phục hồi thể trạng và tinh thần trong suốt quá trình điều trị
+                tại viện.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 text-center">
+              <div class="mb-4 fs-1 text-primary">
+                <i class="fas fa-bullseye"></i>
+              </div>
+              <h3 class="h4 fw-bold mb-3">Tầm Nhìn</h3>
+              <p class="text-muted mb-0">
+                Trở thành đơn vị cung ứng nhân sự chăm sóc bệnh nhân hàng đầu
+                Việt Nam, là người đồng hành số 1 của mọi gia đình tại bệnh
+                viện.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 text-center">
+              <div class="mb-4 fs-1 text-primary">
+                <i class="fas fa-award"></i>
+              </div>
+              <h3 class="h4 fw-bold mb-3">Giá Trị Cốt Lõi</h3>
+              <p class="text-muted mb-0">
+                Chúng tôi cam kết: Trách Nhiệm - Chuyên Nghiệp - Kịp Thời - An
+                Toàn và Luôn Đặt Sức Khỏe Bệnh Nhân Lên Hàng Đầu.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container py-5">
+        <h2 class="text-center fw-bold display-5 mb-5">
+          Tại Sao Chọn MediCare?
+        </h2>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4">
+            <div
+              class="p-4 rounded-3 h-100"
+              style="background-color: #f7f7f7; border-left: 5px solid #007bff"
+            >
+              <div
+                class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold mb-3"
+                style="
+                  width: 45px;
+                  height: 45px;
+                  background-color: #007bff;
+                  font-size: 1.5rem;
+                "
+              >
+                1
+              </div>
+              <h3 class="h5 fw-bold mb-3">Nhân Sự Thạo Nghề</h3>
+              <p class="text-muted mb-0">
+                Đội ngũ điều dưỡng viên giàu kinh nghiệm, nắm vững các kỹ thuật
+                vệ sinh và hỗ trợ y tế tại viện.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div
+              class="p-4 rounded-3 h-100"
+              style="background-color: #f7f7f7; border-left: 5px solid #007bff"
+            >
+              <div
+                class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold mb-3"
+                style="
+                  width: 45px;
+                  height: 45px;
+                  background-color: #007bff;
+                  font-size: 1.5rem;
+                "
+              >
+                2
+              </div>
+              <h3 class="h5 fw-bold mb-3">Túc Trực 24/24</h3>
+              <p class="text-muted mb-0">
+                Sẵn sàng phục vụ xuyên suốt ngày đêm, đảm bảo bệnh nhân không
+                bao giờ phải ở một mình.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div
+              class="p-4 rounded-3 h-100"
+              style="background-color: #f7f7f7; border-left: 5px solid #007bff"
+            >
+              <div
+                class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold mb-3"
+                style="
+                  width: 45px;
+                  height: 45px;
+                  background-color: #007bff;
+                  font-size: 1.5rem;
+                "
+              >
+                3
+              </div>
+              <h3 class="h5 fw-bold mb-3">Báo Cáo Tình Hình</h3>
+              <p class="text-muted mb-0">
+                Gia đình luôn được cập nhật tình trạng sức khỏe, ăn uống của
+                người bệnh qua ứng dụng liên tục.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div
+              class="p-4 rounded-3 h-100"
+              style="background-color: #f7f7f7; border-left: 5px solid #007bff"
+            >
+              <div
+                class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold mb-3"
+                style="
+                  width: 45px;
+                  height: 45px;
+                  background-color: #007bff;
+                  font-size: 1.5rem;
+                "
+              >
+                4
+              </div>
+              <h3 class="h5 fw-bold mb-3">Dinh Dưỡng Hợp Lý</h3>
+              <p class="text-muted mb-0">
+                Hỗ trợ bệnh nhân ăn uống theo chỉ định của bác sĩ, đảm bảo hồi
+                phục thể lực tốt nhất.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div
+              class="p-4 rounded-3 h-100"
+              style="background-color: #f7f7f7; border-left: 5px solid #007bff"
+            >
+              <div
+                class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold mb-3"
+                style="
+                  width: 45px;
+                  height: 45px;
+                  background-color: #007bff;
+                  font-size: 1.5rem;
+                "
+              >
+                5
+              </div>
+              <h3 class="h5 fw-bold mb-3">Hỗ Trợ Thủ Tục</h3>
+              <p class="text-muted mb-0">
+                Giúp gia đình thực hiện các thủ tục nhập viện, xuất viện và nhận
+                kết quả xét nghiệm nhanh chóng.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div
+              class="p-4 rounded-3 h-100"
+              style="background-color: #f7f7f7; border-left: 5px solid #007bff"
+            >
+              <div
+                class="d-inline-flex align-items-center justify-content-center rounded-circle text-white fw-bold mb-3"
+                style="
+                  width: 45px;
+                  height: 45px;
+                  background-color: #007bff;
+                  font-size: 1.5rem;
+                "
+              >
+                6
+              </div>
+              <h3 class="h5 fw-bold mb-3">Kết Nối Bác Sĩ</h3>
+              <p class="text-muted mb-0">
+                Là cầu nối thông tin kịp thời giữa bác sĩ điều trị và người thân
+                bệnh nhân.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5" style="background-color: #f7f7f7">
+      <div class="container py-5">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <h2 class="text-center text-lg-start fw-bold display-5 mb-5">
+              Hành Trình Phát Triển
+            </h2>
+            <div>
+              <div class="d-flex gap-4 align-items-start mb-4">
+                <div
+                  class="fw-bold text-primary"
+                  style="min-width: 120px; font-size: 1.5rem"
+                >
+                  2009
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Thành Lập</h3>
+                  <p class="text-muted mb-0">
+                    Khởi đầu với dịch vụ hỗ trợ bệnh nhân tại các bệnh viện lớn
+                    ở TP.HCM.
+                  </p>
+                </div>
+              </div>
+              <div class="d-flex gap-4 align-items-start mb-4">
+                <div
+                  class="fw-bold text-primary"
+                  style="min-width: 120px; font-size: 1.5rem"
+                >
+                  2013
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Mở Rộng</h3>
+                  <p class="text-muted mb-0">
+                    Cung cấp gói chăm sóc trọn gói 24/7, đạt mốc 5,000 khách
+                    hàng tin dùng.
+                  </p>
+                </div>
+              </div>
+              <div class="d-flex gap-4 align-items-start mb-4">
+                <div
+                  class="fw-bold text-primary"
+                  style="min-width: 120px; font-size: 1.5rem"
+                >
+                  2017
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Công Nghệ</h3>
+                  <p class="text-muted mb-0">
+                    Ra mắt hệ thống giám sát và báo cáo sức khỏe bệnh nhân trực
+                    tuyến cho gia đình.
+                  </p>
+                </div>
+              </div>
+              <div class="d-flex gap-4 align-items-start mb-4">
+                <div
+                  class="fw-bold text-primary"
+                  style="min-width: 120px; font-size: 1.5rem"
+                >
+                  2020
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Chăm Sóc Hậu Viện</h3>
+                  <p class="text-muted mb-0">
+                    Phát triển thêm dịch vụ phục hồi chức năng và chăm sóc sau
+                    xuất viện tại nhà.
+                  </p>
+                </div>
+              </div>
+              <div class="d-flex gap-4 align-items-start">
+                <div
+                  class="fw-bold text-primary"
+                  style="min-width: 120px; font-size: 1.5rem"
+                >
+                  2024
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Phát Triển</h3>
+                  <p class="text-muted mb-0">
+                    Hơn 10,000 gia đình được phục vụ, đội ngũ hơn 200 điều dưỡng
+                    chuyên nghiệp.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 text-center">
+            <img
+              src="../assets/4.png"
+              alt="Hành trình phát triển"
+              class="img-fluid rounded-4 shadow-lg"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3">
+      <div class="container">
+        <div class="row g-4 mb-4">
+          <div class="col-lg-4">
+            <h3 class="h4 fw-bold mb-3" style="color: #007bff">MediCare</h3>
+            <p class="opacity-75">
+              Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng
+              đầu tại Việt Nam.
+            </p>
+          </div>
+          <div class="col-lg-2">
+            <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a
+                  href="about.html"
+                  class="text-white text-decoration-none opacity-75"
+                  >Giới Thiệu</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="services.html"
+                  class="text-white text-decoration-none opacity-75"
+                  >Dịch Vụ</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="contact.html"
+                  class="text-white text-decoration-none opacity-75"
+                  >Liên Hệ</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../vesinhcare/demo/"
+                  >Lau Dọn Vệ Sinh</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../csmvb/"
+                  >Chăm Sóc Mẹ & Bé</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../web-cham-soc-vuon-nha/"
+                  >Chăm Sóc Vườn & Rẫy</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../giat-ui-nhanh/"
+                  >Giặt Ủi Cao Cấp</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../tho-nha/"
+                  >Thợ Nhà & Sửa Chữa</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../csng/"
+                  >Chăm Sóc Người Già</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../csbn/"
+                  >Chăm Sóc Bệnh Nhân</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../web-shipper-main/"
+                  >Giao Hàng Nhanh</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
+            <p class="mb-1 opacity-75 small">
+              <i class="fas fa-phone me-2"></i> 0775472347
+            </p>
+            <p class="mb-1 opacity-75 small">
+              <i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com
+            </p>
+          </div>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+            <div class="d-flex gap-3">
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+                ><i class="fab fa-youtube"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+        <hr class="opacity-25" />
+        <p class="text-center small opacity-50">
+          &copy; 2026 MediCare. Đồng hành cùng sức khỏe Việt.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="JS/style.js"></script>
+  </body>
+</html>

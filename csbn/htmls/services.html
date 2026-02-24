@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dịch Vụ - MamaCore</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body style="font-family: &quot;Quicksand&quot;, sans-serif">
+    <!-- Navigation -->
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3"
+    >
+      <div class="container">
+        <a
+          class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
+          href="index.html"
+          style="color: #007bff"
+        >
+          <i class="fas fa-heart"></i>
+          <span>MamaCore</span>
+        </a>
+
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          id="menuToggle"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+          <ul class="navbar-nav align-items-center gap-3">
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="../index.html"
+                >Trang Chủ</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="about.html">Giới Thiệu</a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link fw-bold px-3 active"
+                style="color: #007bff; font-size: larger"
+                href="services.html"
+                >Dịch Vụ</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="contact.html">Liên Hệ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="../../index.html"
+                >GlobalCare</a
+              >
+            </li>
+            <li class="nav-item ms-lg-3">
+              <a
+                href="contact.html"
+                class="btn text-white rounded-pill px-4 py-2 shadow-sm"
+                style="background-color: #007bff"
+                onmouseover="
+                  this.style.backgroundColor = '#d84374';
+                  this.style.transform = 'scale(1.05)';
+                "
+                onmouseout="
+                  this.style.backgroundColor = '#007bff';
+                  this.style.transform = 'scale(1)';
+                "
+                >Đặt Lịch Tư Vấn</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Services Hero Banner -->
+    <section class="py-5" style="background-color: #f3faff">
+      <div class="container py-5 text-center">
+        <h2 class="fw-bold display-5 mb-3">Sẵn Sàng Đặt Lịch?</h2>
+        <p class="lead text-muted mb-4">
+          Hãy liên hệ với chúng tôi để đặt lịch khám và tư vấn miễn phí
+        </p>
+        <button
+          class="btn text-white rounded-pill px-5 py-3 shadow-sm"
+          style="
+            background-color: #007bff;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+          "
+          onclick="window.location.href = 'contact.php'"
+          onmouseover="
+            this.style.backgroundColor = '#0056b3';
+            this.style.transform = 'scale(1.05)';
+          "
+          onmouseout="
+            this.style.backgroundColor = '#007bff';
+            this.style.transform = 'scale(1)';
+          "
+        >
+          Đặt Lịch Ngay
+        </button>
+      </div>
+    </section>
+    <!-- Services Detail -->
+    <section class="py-5">
+      <div class="container py-lg-5">
+        <!-- Service 1 -->
+        <div class="row align-items-center mb-5 g-5">
+          <div class="col-lg-6">
+            <img
+              src="../assets/2.png"
+              alt="Hỗ Trợ Sinh Hoạt Hàng Ngày"
+              class="img-fluid rounded-4 shadow-lg"
+            />
+          </div>
+          <div class="col-lg-6">
+            <h2 class="fw-bold display-6 mb-3" style="color: #007bff">
+              Hỗ Trợ Sinh Hoạt Hàng Ngày
+            </h2>
+            <p style="color: #666; line-height: 1.8; margin-bottom: 20px">
+              Giúp cụ ông/cụ bà ăn uống, vệ sinh
+            </p>
+            <h4 class="fw-bold mb-3">Bao Gồm:</h4>
+            <ul class="list-unstyled mb-4">
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Hỗ trợ ăn uống
+              </li>
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Vệ sinh cá nhân
+              </li>
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Hỗ trợ đi lại
+              </li>
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Tư vấn sức khỏe
+              </li>
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Hỗ trợ chăm sóc y tế cơ bản
+              </li>
+            </ul>
+            <p class="fw-bold mb-3" style="color: #007bff; font-size: 1.1rem">
+              Giá: 300.000 - 500.000 VNĐ/lần
+            </p>
+            <button
+              class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm"
+              style="
+                background-color: #007bff;
+                border: none;
+                cursor: pointer;
+                transition: 0.3s;
+              "
+              data-service="Hỗ Trợ Sinh Hoạt Hàng Ngày"
+              data-price="300.000 - 500.000 VNĐ"
+              onmouseover="
+                this.style.backgroundColor = '#d84374';
+                this.style.transform = 'scale(1.05)';
+              "
+              onmouseout="
+                this.style.backgroundColor = '#007bff';
+                this.style.transform = 'scale(1)';
+              "
+            >
+              <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
+            </button>
+          </div>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="row align-items-center mb-5 g-5 flex-lg-row-reverse">
+          <div class="col-lg-6">
+            <img
+              src="../assets/3.png"
+              alt="Nấu Ăn Dinh Dưỡng Cho Bệnh Nhân"
+              class="img-fluid rounded-4 shadow-lg"
+            />
+          </div>
+          <div class="col-lg-6">
+            <h2 class="fw-bold display-6 mb-3" style="color: #007bff">
+              Nấu Ăn Dinh Dưỡng Cho Bệnh Nhân
+            </h2>
+            <p style="color: #666; line-height: 1.8; margin-bottom: 20px">
+              Chế độ ăn phù hợp bệnh lý
+            </p>
+            <h4 class="fw-bold mb-3">Bao Gồm:</h4>
+            <ul class="list-unstyled mb-4">
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Lên thực đơn và chế biến món ăn dễ tiêu hóa
+              </li>
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Hướng dẫn tập luyện phục hồi
+              </li>
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                phù hợp với người tiểu đường, cao huyết áp.
+              </li>
+            </ul>
+            <p class="fw-bold mb-3" style="color: #007bff; font-size: 1.1rem">
+              Giá: 500.000 - 800.000 VNĐ/liệu trình
+            </p>
+            <button
+              class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm"
+              style="
+                background-color: #007bff;
+                border: none;
+                cursor: pointer;
+                transition: 0.3s;
+              "
+              data-service="Nấu Ăn Dinh Dưỡng Cho Bệnh Nhân"
+              data-price="500.000 - 800.000 VNĐ"
+              onmouseover="
+                this.style.backgroundColor = '#d84374';
+                this.style.transform = 'scale(1.05)';
+              "
+              onmouseout="
+                this.style.backgroundColor = '#007bff';
+                this.style.transform = 'scale(1)';
+              "
+            >
+              <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
+            </button>
+          </div>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="row align-items-center mb-5 g-5">
+          <div class="col-lg-6">
+            <img
+              src="../assets/4.png"
+              alt="Trực Đêm Tại Bệnh Viện"
+              class="img-fluid rounded-4 shadow-lg"
+            />
+          </div>
+          <div class="col-lg-6">
+            <h2 class="fw-bold display-6 mb-3" style="color: #007bff">
+              Trực Đêm Tại Bệnh Viện
+            </h2>
+            <p style="color: #666; line-height: 1.8; margin-bottom: 20px">
+              Chăm sóc bệnh nhân xuyên đêm
+            </p>
+            <h4 class="fw-bold mb-3">Bao Gồm:</h4>
+            <ul class="list-unstyled mb-4">
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Theo dõi dịch truyền
+              </li>
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                hỗ trợ vệ sinh tại giường
+              </li>
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                báo gọi bác sĩ khi có tình huống khẩn cấp.
+              </li>
+            </ul>
+            <p class="fw-bold mb-3" style="color: #007bff; font-size: 1.1rem">
+              Giá: 200.000 - 400.000 VNĐ/lần
+            </p>
+            <button
+              class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm"
+              style="
+                background-color: #007bff;
+                border: none;
+                cursor: pointer;
+                transition: 0.3s;
+              "
+              data-service="Trực Đêm Tại Bệnh Viện"
+              data-price="200.000 - 400.000 VNĐ"
+              onmouseover="
+                this.style.backgroundColor = '#d84374';
+                this.style.transform = 'scale(1.05)';
+              "
+              onmouseout="
+                this.style.backgroundColor = '#007bff';
+                this.style.transform = 'scale(1)';
+              "
+            >
+              <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
+            </button>
+          </div>
+        </div>
+
+        <!-- Service 4 -->
+        <div class="row align-items-center mb-5 g-5 flex-lg-row-reverse">
+          <div class="col-lg-6">
+            <img
+              src="../assets/5.png"
+              alt="Gói Chăm Sóc Toàn Diện 24/7"
+              class="img-fluid rounded-4 shadow-lg"
+            />
+          </div>
+          <div class="col-lg-6">
+            <h2 class="fw-bold display-6 mb-3" style="color: #007bff">
+              Gói Chăm Sóc Toàn Diện 24/7
+            </h2>
+            <p style="color: #666; line-height: 1.8; margin-bottom: 20px">
+              Phục vụ bệnh nhân cả ngày lẫn đêm
+            </p>
+            <h4 class="fw-bold mb-3">Bao Gồm:</h4>
+            <ul class="list-unstyled mb-4">
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Bao gồm tất cả các hoạt động chăm sóc cơ bản và chuyên sâu tại
+                giường bệnh.
+              </li>
+              <li style="padding: 8px 0; color: #555">
+                <i
+                  class="fas fa-check"
+                  style="color: #007bff; margin-right: 10px"
+                ></i>
+                Hướng dẫn phát triển tâm lý
+              </li>
+            </ul>
+            <p class="fw-bold mb-3" style="color: #007bff; font-size: 1.1rem">
+              Giá: 250.000 - 400.000 VNĐ/buổi
+            </p>
+            <button
+              class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm"
+              style="
+                background-color: #007bff;
+                border: none;
+                cursor: pointer;
+                transition: 0.3s;
+              "
+              data-service="Gói Chăm Sóc Toàn Diện 24/7"
+              data-price="250.000 - 400.000 VNĐ"
+              onmouseover="
+                this.style.backgroundColor = '#d84374';
+                this.style.transform = 'scale(1.05)';
+              "
+              onmouseout="
+                this.style.backgroundColor = '#007bff';
+                this.style.transform = 'scale(1)';
+              "
+            >
+              <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section class="py-5" style="background-color: #f3faff">
+      <div class="container py-5 text-center">
+        <h2 class="fw-bold display-5 mb-3">Sẵn Sàng Đặt Lịch?</h2>
+        <p class="lead text-muted mb-4">
+          Hãy liên hệ với chúng tôi để đặt lịch khám và tư vấn miễn phí
+        </p>
+        <button
+          class="btn text-white rounded-pill px-5 py-3 shadow-sm"
+          style="
+            background-color: #007bff;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+          "
+          onclick="window.location.href = 'contact.html'"
+          onmouseover="
+            this.style.backgroundColor = '#0056b3';
+            this.style.transform = 'scale(1.05)';
+          "
+          onmouseout="
+            this.style.backgroundColor = '#007bff';
+            this.style.transform = 'scale(1)';
+          "
+        >
+          Đặt Lịch Ngay
+        </button>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3">
+      <div class="container">
+        <div class="row g-4 mb-4">
+          <div class="col-lg-4">
+            <h3 class="h4 fw-bold mb-3" style="color: #007bff">MediCare</h3>
+            <p class="opacity-75">
+              Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng
+              đầu tại Việt Nam.
+            </p>
+          </div>
+          <div class="col-lg-2">
+            <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a
+                  href="about.html"
+                  class="text-white text-decoration-none opacity-75"
+                  >Giới Thiệu</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="services.html"
+                  class="text-white text-decoration-none opacity-75"
+                  >Dịch Vụ</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="contact.html"
+                  class="text-white text-decoration-none opacity-75"
+                  >Liên Hệ</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../vesinhcare/demo/"
+                  >Lau Dọn Vệ Sinh</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../csmvb/"
+                  >Chăm Sóc Mẹ & Bé</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../web-cham-soc-vuon-nha/"
+                  >Chăm Sóc Vườn & Rẫy</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../giat-ui-nhanh/"
+                  >Giặt Ủi Cao Cấp</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../tho-nha/"
+                  >Thợ Nhà & Sửa Chữa</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../csng/"
+                  >Chăm Sóc Người Già</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../csbn/"
+                  >Chăm Sóc Bệnh Nhân</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../web-shipper-main/"
+                  >Giao Hàng Nhanh</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
+            <p class="mb-1 opacity-75 small">
+              <i class="fas fa-phone me-2"></i> 0775472347
+            </p>
+            <p class="mb-1 opacity-75 small">
+              <i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com
+            </p>
+          </div>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+            <div class="d-flex gap-3">
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+                ><i class="fab fa-youtube"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+        <hr class="opacity-25" />
+        <p class="text-center small opacity-50">
+          &copy; 2026 MediCare. Đồng hành cùng sức khỏe Việt.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Booking Modal -->
+    <div
+      id="bookingModal"
+      style="
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+      "
+    >
+      <div
+        style="
+          position: relative;
+          margin: 10% auto;
+          width: 90%;
+          max-width: 500px;
+        "
+      >
+        <div
+          class="bg-white rounded-4 p-4 shadow-lg"
+          style="border: 1px solid #ddd; position: relative"
+        >
+          <span
+            class="close"
+            style="
+              position: absolute;
+              top: 20px;
+              right: 25px;
+              font-size: 32px;
+              font-weight: bold;
+              cursor: pointer;
+              transition: all 0.3s;
+              width: 35px;
+              height: 35px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: 50%;
+              line-height: 1;
+              color: #aaa;
+            "
+            onclick="closeBookingModal()"
+            onmouseover="
+              this.style.border = '1px solid #d84374';
+              this.style.color = '#ee008f';
+            "
+            onmouseout="
+              this.style.border = 'none';
+              this.style.color = '#aaa';
+            "
+            >&times;</span
+          >
+
+          <h2 class="mb-4" style="color: #007bff">
+            <i class="fas fa-calendar-plus"></i> Đặt Lịch Dịch Vụ
+          </h2>
+
+          <form id="bookingForm">
+            <div style="margin-bottom: 15px">
+              <label
+                style="
+                  display: block;
+                  margin-bottom: 5px;
+                  font-weight: 600;
+                  color: #333;
+                "
+                >Dịch vụ:</label
+              >
+              <input
+                type="text"
+                id="serviceName"
+                readonly
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  font-family: &quot;Quicksand&quot;, sans-serif;
+                  background-color: #f9f9f9;
+                "
+              />
+            </div>
+
+            <div style="margin-bottom: 15px">
+              <label
+                style="
+                  display: block;
+                  margin-bottom: 5px;
+                  font-weight: 600;
+                  color: #333;
+                "
+                >Giá dịch vụ:</label
+              >
+              <input
+                type="text"
+                id="servicePrice"
+                readonly
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  font-family: &quot;Quicksand&quot;, sans-serif;
+                  background-color: #f9f9f9;
+                "
+              />
+            </div>
+
+            <div style="margin-bottom: 15px">
+              <label
+                style="
+                  display: block;
+                  margin-bottom: 5px;
+                  font-weight: 600;
+                  color: #333;
+                "
+                >Họ và tên: <span style="color: #007bff">*</span></label
+              >
+              <input
+                type="text"
+                id="customerName"
+                required
+                placeholder="Nguyễn Văn A"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  font-family: &quot;Quicksand&quot;, sans-serif;
+                  transition: 0.3s;
+                "
+                onfocus="
+                  this.style.borderColor = '#F06292';
+                  this.style.boxShadow = '0 0 10px rgba(240, 98, 146, 0.2)';
+                "
+                onblur="
+                  this.style.borderColor = '#ddd';
+                  this.style.boxShadow = 'none';
+                "
+              />
+            </div>
+
+            <div style="margin-bottom: 15px">
+              <label
+                style="
+                  display: block;
+                  margin-bottom: 5px;
+                  font-weight: 600;
+                  color: #333;
+                "
+                >Số điện thoại: <span style="color: #007bff">*</span></label
+              >
+              <input
+                type="tel"
+                id="customerPhone"
+                required
+                placeholder="0912345678"
+                pattern="[0-9]{10,11}"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  font-family: &quot;Quicksand&quot;, sans-serif;
+                  transition: 0.3s;
+                "
+                onfocus="
+                  this.style.borderColor = '#F06292';
+                  this.style.boxShadow = '0 0 10px rgba(240, 98, 146, 0.2)';
+                "
+                onblur="
+                  this.style.borderColor = '#ddd';
+                  this.style.boxShadow = 'none';
+                "
+              />
+            </div>
+
+            <div style="margin-bottom: 15px">
+              <label
+                style="
+                  display: block;
+                  margin-bottom: 5px;
+                  font-weight: 600;
+                  color: #333;
+                "
+                >Email:</label
+              >
+              <input
+                type="email"
+                id="customerEmail"
+                placeholder="email@example.com"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  font-family: &quot;Quicksand&quot;, sans-serif;
+                  transition: 0.3s;
+                "
+                onfocus="
+                  this.style.borderColor = '#F06292';
+                  this.style.boxShadow = '0 0 10px rgba(240, 98, 146, 0.2)';
+                "
+                onblur="
+                  this.style.borderColor = '#ddd';
+                  this.style.boxShadow = 'none';
+                "
+              />
+            </div>
+
+            <div style="margin-bottom: 15px">
+              <label
+                style="
+                  display: block;
+                  margin-bottom: 5px;
+                  font-weight: 600;
+                  color: #333;
+                "
+                >Ghi chú:</label
+              >
+              <textarea
+                id="customerNote"
+                rows="3"
+                placeholder="Thời gian mong muốn, yêu cầu đặc biệt..."
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  font-family: &quot;Quicksand&quot;, sans-serif;
+                  transition: 0.3s;
+                "
+                onfocus="
+                  this.style.borderColor = '#F06292';
+                  this.style.boxShadow = '0 0 10px rgba(240, 98, 146, 0.2)';
+                "
+                onblur="
+                  this.style.borderColor = '#ddd';
+                  this.style.boxShadow = 'none';
+                "
+              ></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px">
+              <button
+                class="close"
+                type="button"
+                style="
+                  flex: 1;
+                  padding: 10px;
+                  border: none;
+                  border-radius: 50px;
+                  font-weight: 700;
+                  cursor: pointer;
+                  background-color: #ddd;
+                  color: #333;
+                  transition: 0.3s;
+                "
+                onclick="closeBookingModal()"
+                onmouseover="this.style.backgroundColor = '#bbb'"
+                onmouseout="this.style.backgroundColor = '#ddd'"
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                style="
+                  flex: 1;
+                  padding: 10px;
+                  border: none;
+                  border-radius: 50px;
+                  font-weight: 700;
+                  cursor: pointer;
+                  background-color: #007bff;
+                  color: white;
+                  transition: 0.3s;
+                "
+                onmouseover="this.style.backgroundColor = '#d84374'"
+                onmouseout="this.style.backgroundColor = '#F06292'"
+              >
+                <i class="fas fa-check"></i> Xác Nhận Đặt Lịch
+              </button>
+            </div>
+          </form>
+
+          <div
+            id="successMessage"
+            style="display: none; text-align: center; padding: 20px"
+          >
+            <i
+              class="fas fa-check-circle"
+              style="color: #28a745; font-size: 3rem"
+            ></i>
+            <h3 style="margin-top: 15px; font-weight: 700; color: #333">
+              Đặt lịch thành công!
+            </h3>
+            <p style="color: #666">Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Booking Script -->
+    <script>
+      $(document).ready(function () {
+        const modal = $("#bookingModal");
+        const form = $("#bookingForm");
+        const successMessage = $("#successMessage");
+
+        const SCRIPT_URL =
+          "https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec";
+
+        // Mở Modal
+        $(document).on("click", ".btn-book", function (e) {
+          e.preventDefault();
+          const serviceName = $(this).attr("data-service");
+          const servicePrice = $(this).attr("data-price");
+
+          $("#serviceName").val(serviceName);
+          $("#servicePrice").val(servicePrice);
+
+          form.show();
+          successMessage.hide();
+          modal.fadeIn(300);
+        });
+
+        // Đóng Modal
+        $(".close, #cancelBtn").on("click", function () {
+          modal.fadeOut(300);
+          form[0].reset();
+        });
+
+        // Xử lý gửi dữ liệu
+        form.on("submit", function (e) {
+          e.preventDefault();
+
+          const bookingData = {
+            name: $("#customerName").val().trim(),
+            phone: $("#customerPhone").val().trim(),
+            email: $("#customerEmail").val().trim(),
+            service: $("#serviceName").val(),
+            price: $("#servicePrice").val(),
+            note: $("#customerNote").val().trim(),
+          };
+
+          if (!bookingData.name || !bookingData.phone) {
+            alert("Vui lòng điền đầy đủ thông tin bắt buộc!");
+            return;
+          }
+
+          const submitBtn = form.find('button[type="submit"]');
+          const originalText = submitBtn.html();
+          submitBtn
+            .prop("disabled", true)
+            .html('<i class="fas fa-spinner fa-spin"></i> Đang xử lý...');
+
+          $.ajax({
+            url: SCRIPT_URL,
+            method: "POST",
+            dataType: "json",
+            contentType: "text/plain;charset=utf-8",
+            data: JSON.stringify(bookingData),
+            success: function (response) {
+              form.hide();
+              successMessage.fadeIn(300);
+
+              setTimeout(function () {
+                modal.fadeOut(300);
+                form[0].reset();
+                successMessage.hide();
+                form.show();
+              }, 3000);
+            },
+            error: function (xhr, status, error) {
+              alert("Yêu cầu đã được gửi!");
+              modal.fadeOut(300);
+            },
+            complete: function () {
+              submitBtn.prop("disabled", false).html(originalText);
+            },
+          });
+        });
+
+        $("#customerPhone").on("input", function () {
+          this.value = this.value.replace(/[^0-9]/g, "");
+        });
+      });
+    </script>
+  </body>
+</html>
