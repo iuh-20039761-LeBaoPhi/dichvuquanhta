@@ -1,0 +1,143 @@
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+
+        <!-- General Settings -->
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fas fa-sliders-h"></i> Cài Đặt Chung
+            </div>
+            <form id="generalSettingsForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tên công ty / cửa hàng</label>
+                        <input type="text" class="form-control" id="companyName" placeholder="Nhập tên công ty">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email liên hệ</label>
+                        <input type="email" class="form-control" id="contactEmail" placeholder="Nhập email">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="contactPhone" placeholder="Nhập số điện thoại">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Địa chỉ</label>
+                        <input type="text" class="form-control" id="companyAddress" placeholder="Nhập địa chỉ">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Mô tả công ty</label>
+                        <textarea class="form-control" id="companyDescription" rows="3" placeholder="Nhập mô tả"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-gradient">
+                            <i class="fas fa-save"></i> Lưu Cài Đặt
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Service Settings -->
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fas fa-wrench"></i> Cài Đặt Dịch Vụ
+            </div>
+            <form id="serviceSettingsForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Phí dịch vụ (%)</label>
+                        <input type="number" class="form-control" id="serviceFeePct" placeholder="0" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Thời gian xử lý mặc định (ngày)</label>
+                        <input type="number" class="form-control" id="processingDays" placeholder="1" min="1" step="1">
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="enableAutoConfirm">
+                            <label class="form-check-label" for="enableAutoConfirm">
+                                Tự động xác nhận đơn hàng sau 24 giờ
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-gradient">
+                            <i class="fas fa-save"></i> Lưu Cài Đặt
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fas fa-shield-alt"></i> Bảo Mật
+            </div>
+            <form id="securityForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Mật khẩu hiện tại</label>
+                        <input type="password" class="form-control" id="currentPassword" placeholder="Nhập mật khẩu hiện tại">
+                    </div>
+                    <div class="col-md-6"></div>
+                    <div class="col-md-6">
+                        <label class="form-label">Mật khẩu mới</label>
+                        <input type="password" class="form-control" id="newPassword" placeholder="Nhập mật khẩu mới">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Xác nhận mật khẩu</label>
+                        <input type="password" class="form-control" id="confirmPassword" placeholder="Xác nhận mật khẩu">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-gradient">
+                            <i class="fas fa-lock"></i> Đổi Mật Khẩu
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fas fa-bell"></i> Thông Báo
+            </div>
+            <form id="notificationForm">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="emailNotif" checked>
+                            <label class="form-check-label" for="emailNotif">Nhận thông báo qua email</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="smsNotif">
+                            <label class="form-check-label" for="smsNotif">Nhận thông báo qua SMS</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="newOrderNotif" checked>
+                            <label class="form-check-label" for="newOrderNotif">Thông báo đơn hàng mới</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-gradient">
+                            <i class="fas fa-bell"></i> Lưu Cài Đặt
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="settings-section" style="border-color: #fecaca;">
+            <div class="settings-section-title" style="color: #dc2626; border-color: #fecaca;">
+                <i class="fas fa-exclamation-triangle"></i> Vùng Nguy Hiểm
+            </div>
+            <p class="text-muted small mb-3">Các hành động dưới đây không thể hoàn tác. Hãy cân nhắc kỹ trước khi thực hiện.</p>
+            <button class="btn btn-outline-danger" id="clearDataBtn">
+                <i class="fas fa-trash me-2"></i>Xóa Tất Cả Dữ Liệu
+            </button>
+        </div>
+
+    </div>
+</div>

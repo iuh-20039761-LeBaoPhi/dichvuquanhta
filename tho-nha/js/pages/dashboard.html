@@ -1,88 +1,124 @@
+<!-- Stat Cards Row 1 -->
 <div class="row g-3 mb-4">
     <div class="col-lg-3 col-md-6">
         <div class="stat-card">
             <div class="stat-icon">
                 <i class="fas fa-shopping-cart"></i>
             </div>
-            <div class="stat-value" id="dashTotalOrders">0</div>
-            <div class="stat-label">Tổng đơn hàng</div>
+            <div class="stat-body">
+                <div class="stat-value" id="dashTotalOrders">0</div>
+                <div class="stat-label">Tổng đơn hàng</div>
+            </div>
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
         <div class="stat-card">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="stat-icon stat-icon--orange">
                 <i class="fas fa-hourglass-half"></i>
             </div>
-            <div class="stat-value" id="dashPendingOrders">0</div>
-            <div class="stat-label">Chờ xác nhận</div>
+            <div class="stat-body">
+                <div class="stat-value" id="dashPendingOrders">0</div>
+                <div class="stat-label">Chờ xác nhận</div>
+            </div>
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
         <div class="stat-card">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <div class="stat-icon stat-icon--blue">
+                <i class="fas fa-tools"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value" id="dashDoingOrders">0</div>
+                <div class="stat-label">Đang thực hiện</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon--success">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <div class="stat-value" id="dashCompleteOrders">0</div>
-            <div class="stat-label">Hoàn thành</div>
+            <div class="stat-body">
+                <div class="stat-value" id="dashCompleteOrders">0</div>
+                <div class="stat-label">Hoàn thành</div>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Stat Cards Row 2 -->
 <div class="row g-3 mb-4">
     <div class="col-lg-4 col-md-6">
         <div class="stat-card">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <div class="stat-icon stat-icon--danger">
                 <i class="fas fa-exclamation-circle"></i>
             </div>
-            <div class="stat-value" id="dashCancelRequests">0</div>
-            <div class="stat-label">Yêu cầu hủy đơn</div>
+            <div class="stat-body">
+                <div class="stat-value" id="dashCancelRequests">0</div>
+                <div class="stat-label">Yêu cầu hủy đơn</div>
+            </div>
         </div>
     </div>
     <div class="col-lg-4 col-md-6">
         <div class="stat-card">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+            <div class="stat-icon stat-icon--teal">
                 <i class="fas fa-users"></i>
             </div>
-            <div class="stat-value" id="dashTotalCustomers">0</div>
-            <div class="stat-label">Tổng khách hàng</div>
+            <div class="stat-body">
+                <div class="stat-value" id="dashTotalCustomers">0</div>
+                <div class="stat-label">Tổng khách hàng</div>
+            </div>
         </div>
     </div>
     <div class="col-lg-4 col-md-6">
         <div class="stat-card">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #fad0c4 0%, #ffecd2 100%);">
+            <div class="stat-icon stat-icon--purple">
                 <i class="fas fa-wrench"></i>
             </div>
-            <div class="stat-value" id="dashTotalServices">0</div>
-            <div class="stat-label">Tổng dịch vụ</div>
+            <div class="stat-body">
+                <div class="stat-value" id="dashTotalServices">0</div>
+                <div class="stat-label">Tổng dịch vụ</div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="row">
+<!-- Recent Orders + Status Stats -->
+<div class="row g-3">
     <div class="col-lg-8">
         <div class="table-container">
-            <h5 class="mb-3"><i class="fas fa-chart-bar"></i> Đơn hàng gần đây</h5>
+            <div class="table-container-header">
+                <h5 class="section-title"><i class="fas fa-clock"></i> Đơn hàng gần đây</h5>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr>
                             <th>Mã đơn</th>
                             <th>Khách hàng</th>
+                            <th>Dịch vụ</th>
                             <th>Trạng thái</th>
                             <th>Ngày đặt</th>
                         </tr>
                     </thead>
                     <tbody id="recentOrdersTable">
-                        <tr><td colspan="4" class="text-center">Đang tải...</td></tr>
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <div class="spinner-border spinner-border-sm text-success me-2"></div>
+                                Đang tải...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="table-container">
-            <h5 class="mb-3"><i class="fas fa-info-circle"></i> Thống kê trạng thái</h5>
-            <div id="statusStatsChart"></div>
+        <div class="table-container h-100">
+            <div class="table-container-header">
+                <h5 class="section-title"><i class="fas fa-chart-pie"></i> Thống kê trạng thái</h5>
+            </div>
+            <div class="p-4" id="statusStatsChart"></div>
         </div>
     </div>
 </div>

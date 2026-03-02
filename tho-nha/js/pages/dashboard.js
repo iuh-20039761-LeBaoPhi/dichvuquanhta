@@ -1,38 +1,23 @@
 // Dashboard Page Script
 
-function getStatusBadge(status) {
-    const statusMap = {
-        'new': '<span class="badge bg-primary">Chờ xác nhận</span>',
-        'confirmed': '<span class="badge bg-info">Đã xác nhận</span>',
-        'done': '<span class="badge bg-success">Hoàn thành</span>',
-        'cancel': '<span class="badge bg-danger">Đã hủy</span>'
-    };
-    return statusMap[status] || '<span class="badge bg-secondary">Không xác định</span>';
-}
-
 function initDashboard() {
-    // Chỉ initialize một lần
     if (window.dashboardInitialized) return;
     window.dashboardInitialized = true;
-    
-    loadAllOrders().then(orders => {
-        updateDashboardStats(orders);
-    });
 
+    loadAllOrders().then(orders => updateDashboardStats(orders));
     loadAllCancelRequests();
     loadAllServices();
 }
 
 function updateDashboardStats(orders) {
-    const totalOrders = document.getElementById('dashTotalOrders');
-    const pendingOrders = document.getElementById('dashPendingOrders');
-    const completeOrders = document.getElementById('dashCompleteOrders');
-    
-    if (totalOrders) totalOrders.textContent = orders.length;
-    if (pendingOrders) pendingOrders.textContent = orders.filter(o => o.status === 'new').length;;
-    if (completeOrders) completeOrders.textContent = orders.filter(o => o.status === 'done').length;
-    
-    displayRecentOrders(orders.slice(0, 5));
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    set('dashTotalOrders',   orders.length);
+    set('dashPendingOrders', orders.filter(o => o.status === 'new').length);
+    set('dashDoingOrders',   orders.filter(o => o.status === 'doing' || o.status === 'confirmed').length);
+    set('dashCompleteOrders',orders.filter(o => o.status === 'done').length);
+
+    displayRecentOrders(orders.slice(0, 6));
     displayStatusStatsChart(orders);
     loadDashboardStats();
 }
@@ -40,16 +25,17 @@ function updateDashboardStats(orders) {
 function displayRecentOrders(orders) {
     const tbody = document.getElementById('recentOrdersTable');
     if (!tbody) return;
-    
-    if (orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center">Không có đơn hàng nào</td></tr>';
+
+    if (!orders.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Không có đơn hàng nào</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = orders.map(order => `
         <tr>
-            <td><strong class="text-primary">${order.order_code}</strong></td>
+            <td><strong style="color:var(--admin-primary)">${order.order_code}</strong></td>
             <td>${order.customer_name}</td>
+            <td><span class="text-muted">${(order.service_names || '').split(',')[0] || '—'}</span></td>
             <td>${getStatusBadge(order.status)}</td>
             <td>${formatDate(order.created_at)}</td>
         </tr>
@@ -59,55 +45,55 @@ function displayRecentOrders(orders) {
 function displayStatusStatsChart(orders) {
     const container = document.getElementById('statusStatsChart');
     if (!container) return;
-    
+
     const stats = {
-        new: orders.filter(o => o.status === 'new').length,
+        new:       orders.filter(o => o.status === 'new').length,
         confirmed: orders.filter(o => o.status === 'confirmed').length,
-        done: orders.filter(o => o.status === 'done').length,
-        cancel: orders.filter(o => o.status === 'cancel').length
+        doing:     orders.filter(o => o.status === 'doing').length,
+        done:      orders.filter(o => o.status === 'done').length,
+        cancel:    orders.filter(o => o.status === 'cancel').length
     };
-    
-    container.innerHTML = `
-        <div class="list-group">
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div><span class="badge bg-primary rounded-pill">Chờ xác nhận</span></div>
-                <span class="fw-bold">${stats.new} đơn</span>
+    const total = orders.length || 1;
+
+    const rows = [
+        { label: 'Chờ xác nhận',   cls: 'status-new',       val: stats.new },
+        { label: 'Đã xác nhận',    cls: 'status-confirmed',  val: stats.confirmed },
+        { label: 'Đang thực hiện', cls: 'status-doing',      val: stats.doing },
+        { label: 'Hoàn thành',     cls: 'status-done',       val: stats.done },
+        { label: 'Đã hủy',         cls: 'status-cancel',     val: stats.cancel }
+    ];
+
+    container.innerHTML = rows.map(r => `
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="status-badge ${r.cls}">${r.label}</span>
+                <span class="fw-bold text-muted">${r.val}</span>
             </div>
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div><span class="badge bg-info rounded-pill">Xác nhận</span></div>
-                <span class="fw-bold">${stats.confirmed} đơn</span>
-            </div>
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div><span class="badge bg-success rounded-pill">Hoàn thành</span></div>
-                <span class="fw-bold">${stats.done} đơn</span>
-            </div>
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div><span class="badge bg-danger rounded-pill">Hủy</span></div>
-                <span class="fw-bold">${stats.cancel} đơn</span>
+            <div class="progress" style="height:6px; border-radius:4px;">
+                <div class="progress-bar" role="progressbar"
+                     style="width:${Math.round(r.val/total*100)}%; background:var(--admin-gradient);"
+                     aria-valuenow="${r.val}" aria-valuemin="0" aria-valuemax="${total}"></div>
             </div>
         </div>
-    `;
+    `).join('');
 }
 
 function loadDashboardStats() {
-    // Load cancel requests count
     if (cancelRequests.length > 0) {
         const pending = cancelRequests.filter(r => r.cancel_status === 'pending').length;
         const el = document.getElementById('dashCancelRequests');
         if (el) el.textContent = pending;
     }
 
-    // Load services count
     if (allCategories.length > 0) {
-        const totalServices = allCategories.reduce((sum, cat) => sum + cat.services.length, 0);
+        const total = allCategories.reduce((sum, cat) => sum + cat.services.length, 0);
         const el = document.getElementById('dashTotalServices');
-        if (el) el.textContent = totalServices;
+        if (el) el.textContent = total;
     }
 
-    // Load total customers
     if (allOrders.length > 0) {
-        const uniqueCustomers = new Set(allOrders.map(o => o.phone)).size;
+        const unique = new Set(allOrders.map(o => o.phone)).size;
         const el = document.getElementById('dashTotalCustomers');
-        if (el) el.textContent = uniqueCustomers;
+        if (el) el.textContent = unique;
     }
 }

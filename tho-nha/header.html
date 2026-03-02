@@ -9,16 +9,17 @@
     </a>
 
     <button
-      class="navbar-toggler"
+      class="navbar-toggler border-0"
       type="button"
       data-bs-toggle="collapse"
       data-bs-target="#navbarNav"
+      aria-label="Toggle navigation"
     >
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
         <li class="nav-item">
           <a class="nav-link active" href="#home">Trang Chủ</a>
         </li>
@@ -32,7 +33,9 @@
           <a class="nav-link" href="#contact">Liên Hệ</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../index.html">GlobalCare</a>
+          <a class="nav-link" href="../index.html">
+            <i class="fas fa-globe me-1"></i>GlobalCare
+          </a>
         </li>
         <li class="nav-item">
           <a
@@ -41,7 +44,17 @@
             data-bs-toggle="modal"
             data-bs-target="#viewOrderModal"
           >
-            <i class="fas fa-search"></i> Tra Cứu Đơn
+            <i class="fas fa-search me-1"></i> Tra Cứu Đơn
+          </a>
+        </li>
+        <li class="nav-item ms-lg-2">
+          <a
+            class="nav-link nav-btn"
+            href="#"
+            data-bs-toggle="modal"
+            data-bs-target="#bookingModal"
+          >
+            <i class="fas fa-calendar-check me-1"></i> Đặt Lịch
           </a>
         </li>
       </ul>

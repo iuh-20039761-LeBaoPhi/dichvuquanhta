@@ -8,7 +8,11 @@ fetch('api/admin/check_login.php')
             localStorage.clear();
             window.location.href = 'login.html';
         } else {
-            document.querySelector('.top-bar .text-muted').textContent = res.username;
+            const el = document.getElementById('adminUsername');
+            const av = document.getElementById('userAvatar');
+            if (el) el.textContent = res.username;
+            if (av) av.textContent = res.username.charAt(0).toUpperCase();
+            localStorage.setItem('admin_username', res.username);
         }
     });
 
@@ -47,11 +51,6 @@ function setupNavigation() {
         loadPage('services');
     });
 
-    document.getElementById('settingsLink').addEventListener('click', (e) => {
-        e.preventDefault();
-        loadPage('settings');
-    });
-
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
         e.preventDefault();
         if (confirm('Bạn có chắc muốn đăng xuất?')) {
@@ -73,8 +72,6 @@ function loadPage(page) {
     window.ordersInitialized = false;
     window.cancelRequestsInitialized = false;
     window.servicesInitialized = false;
-    window.settingsInitialized = false;
-    
     // Update active menu
     document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
     document.getElementById(page + 'Link').classList.add('active');
@@ -96,10 +93,6 @@ function loadPage(page) {
         case 'services':
             document.getElementById('pageTitle').textContent = 'Quản Lý Dịch Vụ';
             loadServicesPage();
-            break;
-        case 'settings':
-            document.getElementById('pageTitle').textContent = 'Cài Đặt';
-            loadSettingsPage();
             break;
     }
 }
@@ -150,17 +143,6 @@ function loadServicesPage() {
     });
 }
 
-function loadSettingsPage() {
-    Promise.all([
-        fetch('js/pages/settings.html').then(res => res.text()),
-        fetch('js/pages/settings.js').then(res => res.text())
-    ]).then(([html, script]) => {
-        document.getElementById('pageContent').innerHTML = html;
-        eval(script);
-        if (typeof initSettings === 'function') initSettings();
-    });
-}
-
 // ==================== SHARED UTILITIES ====================
 
 // Format currency
@@ -180,17 +162,17 @@ function formatDateTime(dateString) {
 
 // Status map
 const statusMap = {
-    'new': { text: 'Mới', class: 'bg-primary' },
-    'confirmed': { text: 'Đã xác nhận', class: 'bg-info' },
-    'doing': { text: 'Đang thực hiện', class: 'bg-warning' },
-    'done': { text: 'Hoàn thành', class: 'bg-success' },
-    'cancel': { text: 'Đã hủy', class: 'bg-danger' }
+    'new':       { text: 'Chờ xác nhận',    cls: 'status-new' },
+    'confirmed': { text: 'Đã xác nhận',     cls: 'status-confirmed' },
+    'doing':     { text: 'Đang thực hiện',  cls: 'status-doing' },
+    'done':      { text: 'Hoàn thành',      cls: 'status-done' },
+    'cancel':    { text: 'Đã hủy',          cls: 'status-cancel' }
 };
 
-// Get status text and class
+// Get status badge HTML
 function getStatusBadge(status) {
-    const s = statusMap[status] || { text: status, class: 'bg-secondary' };
-    return `<span class="status-badge ${s.class}">${s.text}</span>`;
+    const s = statusMap[status] || { text: status, cls: 'status-pending' };
+    return `<span class="status-badge ${s.cls}">${s.text}</span>`;
 }
 
 // Load orders
@@ -233,5 +215,12 @@ function loadAllServices() {
 // Update cancel badge
 function updateCancelBadge() {
     const pending = cancelRequests.filter(r => r.cancel_status === 'pending').length;
-    document.getElementById('cancelBadge').textContent = pending;
+    const badge = document.getElementById('cancelBadge');
+    if (!badge) return;
+    badge.textContent = pending;
+    if (pending > 0) {
+        badge.classList.remove('hide');
+    } else {
+        badge.classList.add('hide');
+    }
 }
