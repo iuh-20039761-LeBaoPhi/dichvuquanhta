@@ -34,7 +34,7 @@ class UserController {
         echo json_encode(["message" => "User deleted"]);
     }
     public function login() {
-    session_start(); // 🔴 BẮT BUỘC
+    session_start(); 
 
     $input = json_decode(file_get_contents("php://input"), true);
 
@@ -64,13 +64,7 @@ class UserController {
     $_SESSION['user'] = $result;
 
     http_response_code(200);
-    echo json_encode([
-        "message" => "Login thành công",
-        "user" => [
-            "id"   => $result['id'],
-            "name" => $result['user_name']
-        ]
-    ]);
+    echo json_encode([ "data" =>  $_SESSION['user']]);
     exit;
 }
 

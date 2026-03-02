@@ -45,11 +45,24 @@ body {
   margin: 0 10px;
   transition: color 0.3s;
 }
-
 .nav-link:hover {
   color: #06b6d4 !important;
 }
-
+.nav-link:focus {
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.navbar-brand:hover .logo-text,
+.navbar-brand:focus .logo-text,
+.navbar.scrolled .nav-link:hover,
+.navbar.scrolled .navbar-brand:hover .logo-text {
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .logo-icon {
   width: 40px;
   height: 40px;

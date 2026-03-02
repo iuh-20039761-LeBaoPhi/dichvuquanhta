@@ -1,8 +1,5 @@
-// const scriptURL =
-//   "https://script.google.com/macros/s/AKfycbzewmYTm5s_NZYUbaW1epB2aD0m3Eg_hiHYI3rLkr_G8pG0nCVy7SbwMwmSDrrkLusxAQ/exec";
-const createOrderAPI = "http://localhost/Giat-Ui-Nhanh/public/orders";
+const orderAPI = "http://localhost/Giat-Ui-Nhanh/public/orders";
 const loginAPI = "http://localhost/Giat-Ui-Nhanh/public/logins";
-const updateOrderAPI = "http://localhost/Giat-Ui-Nhanh/public/orders";
 const serviceAPI = "http://localhost/Giat-Ui-Nhanh/public/services";
 const statisticAPI = "http://localhost/Giat-Ui-Nhanh/public/statistics";
 const searchOrderAPI = "http://localhost/Giat-Ui-Nhanh/public/search_orders";
@@ -24,7 +21,7 @@ function chooseComboAPI() {
     const data = Object.fromEntries(formData.entries());
     const modal = bootstrap.Modal.getInstance(modalEl);
 
-    fetch(createOrderAPI, {
+    fetch(orderAPI, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +54,7 @@ function bookAServiceAPI() {
     const formData = new FormData(this);
     const data = Object.fromEntries(formData.entries());
 
-    fetch(createOrderAPI, {
+    fetch(orderAPI, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -96,22 +93,29 @@ function loginAPIHandler() {
       },
       body: JSON.stringify(data),
     })
-      .then((res) => res.json())
-      .then(() => {
-        //Success Login
-        loginForm.reset();
-
-        setTimeout(() => {
-          window.location.href = "?ctrl=page&act=dashboard";
+      .then((res) => {
+        return res.json().then((result) => {
+          if (!res.ok) {
+            throw result;
+          }
+          return result;
         });
       })
+      .then((result) => {
+        // ✅ login đúng
+        loginForm.reset();
+        window.location.href = "?ctrl=page&act=dashboard";
+      })
       .catch((err) => {
-        //Error Login
+        console.log(err); // debug
+
         alertBox.className = "alert alert-danger alert-dismissible fade show";
+
         alertBox.innerHTML = `
-          ${err.error || "Đăng nhập thất bại"}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
+      ${err.error}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
         alertBox.classList.remove("d-none");
       });
   });
@@ -135,7 +139,7 @@ function updateOrdersAPI() {
 
     const modal = bootstrap.Modal.getInstance(modalEl);
 
-    fetch(`${updateOrderAPI}/${id}`, {
+    fetch(`${orderAPI}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -192,7 +196,7 @@ function cancelOrdersAPI() {
         transaction_status: transactionStatus,
       };
 
-      fetch(`${updateOrderAPI}/${orderId}`, {
+      fetch(`${orderAPI}/${orderId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -554,7 +558,7 @@ function customerCancelOrdersAPI() {
         transaction_status: transactionStatus,
       };
 
-      fetch(`${updateOrderAPI}/${orderId}`, {
+      fetch(`${orderAPI}/${orderId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

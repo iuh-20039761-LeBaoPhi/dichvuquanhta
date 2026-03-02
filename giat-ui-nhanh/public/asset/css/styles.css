@@ -921,6 +921,33 @@ footer {
   box-shadow: 0 15px 40px rgba(59, 130, 246, 0.5);
 }
 
+.back-to-home {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1000;
+}
+.back-to-home.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.back-to-home:hover {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.5);
+}
 /* Icons using Unicode */
 .icon {
   font-size: 24px;
