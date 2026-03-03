@@ -63,13 +63,110 @@ $min_price  = !empty($prices) ? min($prices) : 0;
 $max_price  = !empty($prices) ? max($prices) : 0;
 $price_range = number_format($min_price) . 'đ – ' . number_format($max_price) . 'đ';
 ?>
+<?php
+// SEO variables
+$svc_name  = htmlspecialchars($category['name']);
+$svc_lower = strtolower($svc_name);
+$seo_title = $svc_name . ' Chuyên Nghiệp TP.HCM | Thợ Nhà';
+$seo_desc  = 'Dịch vụ ' . $svc_lower . ' uy tín tại TP.HCM – Thợ Nhà. Bảo hành 6-12 tháng, có mặt trong 30 phút. Linh kiện chính hãng, giá minh bạch. Hotline 24/7: 0775 472 347.';
+$seo_keys  = $svc_lower . ', thợ ' . $svc_lower . ', ' . $svc_lower . ' tphcm, thợ nhà, sửa chữa nhà, dịch vụ sửa nhà tphcm';
+$seo_url   = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.php?id=' . $category_id;
+$seo_img   = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/' . $main_image;
+
+// Schema.org Service data
+$schema_items = array_map(function($s, $i) {
+    return [
+        '@type'         => 'Offer',
+        'position'      => $i + 1,
+        'name'          => $s['name'],
+        'description'   => $s['description'] ?? '',
+        'price'         => (int)$s['price'],
+        'priceCurrency' => 'VND',
+        'availability'  => 'https://schema.org/InStock',
+    ];
+}, $services, array_keys($services));
+
+$schema = [
+    '@context'    => 'https://schema.org',
+    '@type'       => 'Service',
+    'name'        => $category['name'],
+    'description' => $seo_desc,
+    'url'         => $seo_url,
+    'image'       => $seo_img,
+    'provider'    => [
+        '@type'     => 'HomeAndConstructionBusiness',
+        '@id'       => 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/',
+        'name'      => 'Thợ Nhà',
+        'telephone' => '+84775472347',
+        'address'   => [
+            '@type'           => 'PostalAddress',
+            'addressLocality' => 'Thành phố Hồ Chí Minh',
+            'addressCountry'  => 'VN',
+        ],
+    ],
+    'areaServed'       => ['@type' => 'City', 'name' => 'Thành phố Hồ Chí Minh'],
+    'hasOfferCatalog'  => [
+        '@type'           => 'OfferCatalog',
+        'name'            => 'Bảng Giá ' . $category['name'],
+        'itemListElement' => $schema_items,
+    ],
+    'aggregateRating'  => [
+        '@type'       => 'AggregateRating',
+        'ratingValue' => '4.9',
+        'reviewCount' => '1000',
+        'bestRating'  => '5',
+    ],
+];
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="<?= htmlspecialchars($category['name']) ?> chuyên nghiệp - Thợ Nhà">
-    <title><?= htmlspecialchars($category['name']) ?> - Thợ Nhà</title>
+
+    <!-- ===== Primary SEO Meta Tags ===== -->
+    <title><?= $seo_title ?></title>
+    <meta name="title"       content="<?= $seo_title ?>">
+    <meta name="description" content="<?= $seo_desc ?>">
+    <meta name="keywords"    content="<?= $seo_keys ?>">
+    <meta name="author"      content="Thợ Nhà">
+    <meta name="robots"      content="index, follow">
+    <meta name="language"    content="Vietnamese">
+    <meta name="geo.region"    content="VN-SG">
+    <meta name="geo.placename" content="Thành phố Hồ Chí Minh">
+    <link rel="canonical"    href="<?= $seo_url ?>">
+    <link rel="icon"          type="image/png" href="image/logo.png">
+    <link rel="apple-touch-icon" href="image/logo.png">
+
+    <!-- ===== Open Graph / Facebook ===== -->
+    <meta property="og:type"        content="website">
+    <meta property="og:url"         content="<?= $seo_url ?>">
+    <meta property="og:title"       content="<?= $seo_title ?>">
+    <meta property="og:description" content="<?= $seo_desc ?>">
+    <meta property="og:image"       content="<?= $seo_img ?>">
+    <meta property="og:image:width"  content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt"    content="<?= $svc_name ?> - Thợ Nhà TP.HCM">
+    <meta property="og:locale"      content="vi_VN">
+    <meta property="og:site_name"   content="Thợ Nhà – GlobalCare">
+
+    <!-- ===== Twitter Card ===== -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:url"         content="<?= $seo_url ?>">
+    <meta name="twitter:title"       content="<?= $seo_title ?>">
+    <meta name="twitter:description" content="<?= $seo_desc ?>">
+    <meta name="twitter:image"       content="<?= $seo_img ?>">
+
+    <!-- ===== Schema.org JSON-LD ===== -->
+    <script type="application/ld+json">
+    <?= json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
+    </script>
+
+    <!-- ===== Preconnect for performance ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
