@@ -16,7 +16,7 @@ body {
 /* Navbar */
 .navbar {
   transition: all 0.3s ease;
-  padding: 0.8rem 0px;
+  /* padding: 0.8rem 0px; */
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
 }
@@ -24,7 +24,7 @@ body {
 .navbar.scrolled {
   background: white;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  padding: 0.8rem 0;
+  /* padding: 0.8rem 0; */
 }
 
 .navbar-brand {
