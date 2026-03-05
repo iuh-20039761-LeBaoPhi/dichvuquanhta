@@ -18,7 +18,7 @@
     border-radius: 20px;
     font-size: 0.82rem;
     font-weight: 500;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #0ea5e9, #06b6d4);
     color: #fff;
     border: none;
     transition: opacity 0.2s, transform 0.15s;
@@ -39,11 +39,11 @@
 }
 
 :root {
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --gradient-dark: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    --gradient-orange: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    --gradient-orange: linear-gradient(135deg, #f97316 0%, #fbbf24 100%);
 }
 
 body {
@@ -146,8 +146,8 @@ body {
 
 .search-box .form-control:focus,
 .search-box .form-select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.25);
 }
 
 /* Buttons */
@@ -159,12 +159,12 @@ body {
     border-radius: 10px;
     font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);
 }
 
 .btn-gradient:hover {
     transform: translateY(-3px);
-    box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 7px 20px rgba(14, 165, 233, 0.4);
     color: white;
 }
 
@@ -362,7 +362,7 @@ body {
 
 .car-gallery-thumb:hover,
 .car-gallery-thumb.active {
-    border-color: #667eea;
+    border-color: #0ea5e9;
     transform: scale(1.05);
 }
 
@@ -370,7 +370,7 @@ body {
     background: #f8f9fa;
     padding: 20px;
     border-radius: 10px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #0ea5e9;
 }
 
 /* Animations */
@@ -406,8 +406,8 @@ body {
 
 /* Loading Spinner */
 .spinner-border-gradient {
-    border-right-color: #667eea;
-    border-top-color: #764ba2;
+    border-right-color: #0ea5e9;
+    border-top-color: #06b6d4;
 }
 
 /* Pagination */
@@ -415,7 +415,7 @@ body {
     border-radius: 10px;
     margin: 0 5px;
     border: none;
-    color: #667eea;
+    color: #0ea5e9;
 }
 
 .pagination .page-link:hover {

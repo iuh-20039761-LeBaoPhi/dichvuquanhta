@@ -82,24 +82,34 @@ const STATIC_DATA = {
 
     services: [
         {
-            id: 1, name: 'Giao Xe Tận Nơi', icon: 'map-marker-alt',
-            description: 'Dịch vụ giao xe tận địa chỉ của bạn trong nội thành, tiết kiệm thời gian, thuận tiện tối đa.',
+            id: 1, name: 'Giao xe tận nơi', icon: 'map-marker-alt', unit: 'chuyến',
+            description: 'Giao xe đến tận địa chỉ của bạn trong nội thành, tiết kiệm thời gian và thuận tiện tối đa.',
             price: 100000
         },
         {
-            id: 2, name: 'Bảo Hiểm Mở Rộng', icon: 'shield-alt',
-            description: 'Gói bảo hiểm mở rộng bảo vệ toàn diện cho chuyến đi, yên tâm lái xe mà không lo rủi ro.',
+            id: 2, name: 'Bảo hiểm mở rộng', icon: 'shield-alt', unit: 'ngày',
+            description: 'Gói bảo hiểm toàn diện bảo vệ xe và người lái trong suốt chuyến đi, an tâm không lo rủi ro.',
             price: 150000
         },
         {
-            id: 3, name: 'Xe Có Tài Xế', icon: 'user-tie',
-            description: 'Thuê xe kèm tài xế chuyên nghiệp, am hiểu đường xá TP.HCM, phong thái lịch sự và nhiệt tình.',
-            price: 800000
+            id: 3, name: 'Xe có tài xế', icon: 'user-tie', unit: 'ngày',
+            description: 'Tài xế chuyên nghiệp, am hiểu đường xá TP.HCM, phong thái lịch sự và nhiệt tình phục vụ.',
+            price: 300000
         },
         {
-            id: 4, name: 'Thuê Xe Theo Tháng', icon: 'calendar-check',
-            description: 'Gói thuê xe dài hạn theo tháng với mức giá ưu đãi đặc biệt, phù hợp cho doanh nghiệp và cá nhân.',
-            price: 12000000
+            id: 4, name: 'GPS định vị', icon: 'map-marker-alt', unit: 'chuyến',
+            description: 'Thiết bị GPS dẫn đường chính xác, bản đồ cập nhật mới nhất, không lo lạc đường.',
+            price: 50000
+        },
+        {
+            id: 5, name: 'Ghế trẻ em', icon: 'baby', unit: 'chuyến',
+            description: 'Ghế ngồi an toàn cho bé dưới 10 tuổi, đạt tiêu chuẩn an toàn quốc tế.',
+            price: 100000
+        },
+        {
+            id: 6, name: 'WiFi di động', icon: 'wifi', unit: 'chuyến',
+            description: 'Bộ phát WiFi di động tốc độ cao, kết nối internet ổn định suốt chuyến đi.',
+            price: 80000
         }
     ],
 

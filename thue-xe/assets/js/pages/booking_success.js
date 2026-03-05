@@ -61,6 +61,23 @@ async function loadFullBookingDetails(bookingId) {
 }
 
 function displayFullBookingInfo(booking) {
+    // Read addon info from sessionStorage (saved by car_detail.js before redirect)
+    let addonData = {};
+    try { addonData = JSON.parse(sessionStorage.getItem('lastBookingAddons') || '{}'); } catch(e) {}
+
+    const services = addonData.services || (booking.addon_services ? JSON.parse(booking.addon_services) : []);
+    const addonTotal = addonData.addonTotal ?? (booking.addon_total || 0);
+    const totalPrice = addonData.totalPrice ?? (booking.total_price || 0);
+
+    const addonBlock = services.length ? `
+        <div class="col-12">
+            <small class="text-muted">Dịch vụ đi kèm:</small><br>
+            <div class="d-flex flex-wrap gap-2 mt-1">
+                ${services.map(s => `<span class="badge rounded-pill" style="background:var(--gradient-primary);font-size:.85rem;">${s}</span>`).join('')}
+            </div>
+            ${addonTotal ? `<small class="text-muted">Phí dịch vụ: +${Utils.formatPrice(addonTotal)}đ</small>` : ''}
+        </div>` : '';
+
     const html = `
         <div class="card bg-light border-0 mb-3">
             <div class="card-body">
@@ -86,14 +103,20 @@ function displayFullBookingInfo(booking) {
                         <small class="text-muted">Số ngày:</small><br>
                         <strong>${booking.total_days} ngày</strong>
                     </div>
-                    <div class="col-md-6">
-                        <small class="text-muted">Tổng tiền:</small><br>
-                        <strong class="text-primary">${Utils.formatPrice(booking.total_price)}đ</strong>
+                    ${addonBlock}
+                    <div class="col-12">
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Tổng tiền:</span>
+                            <strong class="text-primary fs-5">${Utils.formatPrice(totalPrice)}đ</strong>
+                        </div>
+                        <small class="text-muted">* Giá có thể thay đổi tuỳ thực tế</small>
                     </div>
                 </div>
             </div>
         </div>
     `;
-    
+
     document.getElementById('bookingInfo').innerHTML = html;
+    sessionStorage.removeItem('lastBookingAddons');
 }
