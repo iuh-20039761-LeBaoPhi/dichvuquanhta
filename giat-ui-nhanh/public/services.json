@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "service_name": "Dịch Vụ Giặt Sấy Nhanh",
+    "summary": "Dịch vụ Giặt sấy nhanh giúp các bạn học sinh, sinh viên, những người đi làm... không có thời gian giặt rũ quần áo có thể tiết kiệm được thời gian và công sức của mình, để tập trung hơn vào công việc, học hành.",
+    "service_price": 70000,
+    "price_unit": "kg",
+    "created_at": "2026-01-27 20:21:07",
+    "updated_at": "2026-01-27 20:21:07"
+  },
+  {
+    "id": 2,
+    "service_name": "Dịch Vụ Giặt Hấp Quần áo ",
+    "summary": "Dịch vụ Giặt hấp quần áo ( giặt khô ) là quá tình giặt quần áo mà không cần dùng nước hay dung môi để làm sạch vết bẩn, hóa chất sử dụng cũng là loại hóa chất giặt khô khácvới giặt thông thường, giúp giữ quần áo bền và đẹp hơn.",
+    "service_price": 100000,
+    "price_unit": "kg",
+    "created_at": "2026-01-27 20:21:07",
+    "updated_at": "2026-01-27 20:21:07"
+  },
+  {
+    "id": 3,
+    "service_name": "Dịch Vụ Giặt Sấy Chăn Mền",
+    "summary": "Dịch vụ Giặt sấy chăn mền đảm bảo sự sạch sẽ cho chăn mền của quý khách ( khách sạn, nhà hàng, spa, trường học nội trú... ) sau khi giặt sấy, chúng tôi chuyên giặt sấy chăn mền, ga gối với đủ loại kích thước, khối lượng.",
+    "service_price": 100000,
+    "price_unit": "item",
+    "created_at": "2026-01-27 20:24:22",
+    "updated_at": "2026-01-27 20:24:22"
+  },
+  {
+    "id": 4,
+    "service_name": "Dịch Vụ Giặt Hấp Áo Vest, Váy Cưới",
+    "summary": "Dịch vụ Giặt hấp áo vest, váy cưới giúp làm sạch nhẹ nhàng trang phục cao cấp, giữ form dáng và chất liệu. Phù hợp áo vest, váy cưới, đầm dạ hội của quý khách.",
+    "service_price": 100000,
+    "price_unit": "item",
+    "created_at": "2026-01-27 20:24:22",
+    "updated_at": "2026-01-27 20:24:22"
+  },
+  {
+    "id": 5,
+    "service_name": "Dịch vụ Vệ Sinh Thảm",
+    "summary": "Dịch vụ vệ sinh thảm trải sàn giúp thảm trải sàn của quý khách được trở nên sạch sẽ, tăng độ bền, thẩm mỹ cho không gian của phòng khách gia đình, văn phòng công ty, khách sạn, showroom, cửa hàng thời trang, trung tâm hội nghị...",
+    "service_price": 100000,
+    "price_unit": "item",
+    "created_at": "2026-01-27 20:24:22",
+    "updated_at": "2026-01-27 20:24:22"
+  },
+  {
+    "id": 6,
+    "service_name": "Dịch Vụ Vệ Sinh Giày",
+    "summary": "Dịch vụ vệ sinh giày với quy trình kiểm soát chất lượng gắt gao, giúp giày của bạn được vệ sinh sạch sẽ và trở nên sạch đẹp như mới Làm sạch sâu, khử mùi và phục hồi form giày.",
+    "service_price": 100000,
+    "price_unit": "pair",
+    "created_at": "2026-01-27 20:24:22",
+    "updated_at": "2026-01-27 20:24:22"
+  },
+  {
+    "id": 7,
+    "service_name": "Gói Gia Đình",
+    "summary": "Phù hợp cho cá nhân và gia đình nhỏ với khối lượng đồ giặt từ (3-5) kg\nGiặt sấy khô\nGấp gọn cơ bản\nGiao nhận trong 24h\nNước giặt thông thường\nTúi đựng miễn phí",
+    "service_price": 150000,
+    "price_unit": "combo",
+    "created_at": "2026-02-01 13:37:58",
+    "updated_at": "2026-02-01 13:37:58"
+  },
+  {
+    "id": 8,
+    "service_name": "Gói Cửa Hàng, SPA",
+    "summary": "Phù hợp cho cửa hàng và SPA với khối lượng đồ giặt từ (5-7) kg\nGiặt sấy cao cấp\nLà ủi phẳng phiu\nGiao nhận trong 24h\nNước giặt cao cấp, thơm lâu\nĐóng gói sang trọng\nTẩy vết bẩn nhẹ miễn phí",
+    "service_price": 250000,
+    "price_unit": "combo",
+    "created_at": "2026-02-01 13:37:58",
+    "updated_at": "2026-02-01 13:37:58"
+  },
+  {
+    "id": 9,
+    "service_name": "Gói Khách Sạn",
+    "summary": "Phù hợp cho khách sạn với khối lượng đồ giặt từ (7-10) kg\nGiặt khô chuyên nghiệp\nLà ủi hoàn hảo\nGiao nhận trong 24h\nHóa chất nhập khẩu\nĐóng gói siêu sang\nTẩy mọi vết bẩn\nBảo hành chất lượng",
+    "service_price": 350000,
+    "price_unit": "combo",
+    "created_at": "2026-02-01 13:37:58",
+    "updated_at": "2026-02-01 13:37:58"
+  }
+]

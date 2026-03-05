@@ -19,11 +19,11 @@ window.addEventListener("scroll", function () {
     scrollToTopBtn.classList.remove("visible");
   }
 
-  if (window.pageYOffset > 300) {
-    backToHomeBtn.classList.add("visible");
-  } else {
-    backToHomeBtn.classList.remove("visible");
-  }
+  // if (window.pageYOffset > 300) {
+  //   backToHomeBtn.classList.add("visible");
+  // } else {
+  //   backToHomeBtn.classList.remove("visible");
+  // }
 });
 
 // Mobile menu toggle
@@ -50,11 +50,11 @@ scrollToTopBtn.addEventListener("click", function () {
   });
 });
 
-const backToHomeBtn = document.getElementById("backToHome");
+// const backToHomeBtn = document.getElementById("backToHome");
 
-backToHomeBtn.addEventListener("click", function () {
-  window.location.href = "../index.html";
-});
+// backToHomeBtn.addEventListener("click", function () {
+//   window.location.href = "../index.html";
+// });
 // Smooth Scroll for Links
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   anchor.addEventListener("click", function (e) {

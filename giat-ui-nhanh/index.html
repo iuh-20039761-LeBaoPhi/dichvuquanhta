@@ -7,7 +7,7 @@
     <link
       rel="shortcut icon"
       type="image/x-icon"
-      href="public/asset/image/Laundry logo vector _ Premium Vector.png"
+      href="public/asset/image/Gemini_Generated_Image_5e570m5e570m5e57-removebg-preview.png"
     />
     <link rel="stylesheet" href="public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="public/asset/css/styles.css" />
@@ -16,10 +16,10 @@
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
       <div class="nav-container">
-        <a href="#home" class="logo">
+        <a href="../index.html" class="logo">
           <img
             style="width: 80px; height: 60px"
-            src="public/asset/image/Frame 1.png"
+            src="public/asset/image/Gemini_Generated_Image_5e570m5e570m5e57-removebg-preview.png"
             alt=""
           />
           <span>Giặt Ủi Nhanh</span>
@@ -520,135 +520,89 @@
         </div>
 
         <div class="services-grid" id="servicesGrid">
-          <div class="service-card">
-            <div class="service-icon">
-              <!-- <span class="icon" style="color: white">👕</span> -->
-              <img
-                src="public/asset/image/giat1.png"
-                class="icon-white"
-                alt=""
-              />
-            </div>
-            <h3>Dịch vụ giặt sấy nhanh</h3>
-            <p>
-              Giặt sạch mọi loại vải từ cotton đến lụa cao cấp. Quy trình hiện
-              đại, tiết kiệm nước, an toàn cho quần áo và thân thiện môi trường.
-            </p>
-            <p><b>Giá tiền:</b> 80.000/kg</p>
-            <a class="btn btn-primary choose-service" href="#contact"
-              >Đặt dịch vụ
-            </a>
-          </div>
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const servicesGrid = document.getElementById("servicesGrid");
 
-          <div class="service-card">
-            <div
-              class="service-icon"
-              style="background: linear-gradient(135deg, #8b5cf6, #ec4899)"
-            >
-              <img
-                src="public/asset/image/Frame 2.png"
-                class="icon-white"
-                alt=""
-              />
-            </div>
-            <h3>Dịch vụ giặt ủi lấy liền</h3>
-            <p>
-              Ủi phẳng, thơm lâu, hoàn thành nhanh trong ngày. Đặc biệt phù hợp
-              áo sơ mi, vest, trang phục công sở cần gấp.
-            </p>
-            <p><b>Giá tiền:</b> 80.000/kg</p>
-            <a class="btn btn-primary choose-service" href="#contact"
-              >Đặt dịch vụ
-            </a>
-          </div>
+              fetch("public/services.json")
+                .then(function (response) {
+                  if (!response.ok) {
+                    throw new Error("Không thể load file JSON");
+                  }
+                  return response.json();
+                })
+                .then(function (data) {
+                  // Lọc các service có chữ "Dịch vụ"
+                  const filteredServices = data.filter(function (service) {
+                    return service.service_name
+                      .toLowerCase()
+                      .includes("dịch vụ");
+                  });
 
-          <div class="service-card">
-            <div
-              class="service-icon"
-              style="background: linear-gradient(135deg, #f97316, #dc2626)"
-            >
-              <img
-                src="public/asset/image/say1.png"
-                class="icon-white"
-                alt=""
-              />
-            </div>
-            <h3>Dịch vụ giặt hấp giao tân nơi</h3>
-            <p>
-              Nhận giặt chăn mền, ga gối, rèm cửa, thảm… bằng máy công nghiệp
-              chuyên dụng. Giao nhận tận nơi, tiện lợi và nhanh chóng.
-            </p>
-            <p><b>Giá tiền:</b> 80.000/kg</p>
-            <a class="btn btn-primary choose-service" href="#contact"
-              >Đặt dịch vụ
-            </a>
-          </div>
+                  // Mảng icon đúng chuẩn JS
+                  const icons = [
+                    { img: "public/asset/image/giat1.png", style: "" },
+                    {
+                      img: "public/asset/image/Frame 2.png",
+                      style:
+                        "background: linear-gradient(135deg, #8b5cf6, #ec4899)",
+                    },
+                    {
+                      img: "public/asset/image/say1.png",
+                      style:
+                        "background: linear-gradient(135deg, #f97316, #dc2626)",
+                    },
+                    {
+                      img: "public/asset/image/giat1.png",
+                      style:
+                        "background: linear-gradient(135deg, #10b981, #14b8a6)",
+                    },
+                    {
+                      img: "public/asset/image/Frame 2.png",
+                      style:
+                        "background: linear-gradient(135deg, #6366f1, #8b5cf6)",
+                    },
+                    {
+                      img: "public/asset/image/say1.png",
+                      style:
+                        "background: linear-gradient(135deg, #fbbf24, #f97316)",
+                    },
+                  ];
 
-          <div class="service-card">
-            <div
-              class="service-icon"
-              style="background: linear-gradient(135deg, #10b981, #14b8a6)"
-            >
-              <img
-                src="public/asset/image/giat1.png"
-                class="icon-white"
-                alt=""
-              />
-            </div>
-            <h3>Dịch vụ giặt hấp áo vest, váy cưới</h3>
-            <p>
-              Làm sạch nhẹ nhàng trang phục cao cấp, giữ form dáng và chất liệu.
-              Phù hợp áo vest, váy cưới, đầm dạ hội.
-            </p>
-            <p><b>Giá tiền:</b> 80.000/kg</p>
-            <a class="btn btn-primary choose-service" href="#contact"
-              >Đặt dịch vụ
-            </a>
-          </div>
+                  let html = "";
 
-          <div class="service-card">
-            <div
-              class="service-icon"
-              style="background: linear-gradient(135deg, #6366f1, #8b5cf6)"
-            >
-              <img
-                src="public/asset/image/Frame 2.png"
-                class="icon-white"
-                alt=""
-              />
-            </div>
-            <h3>Dịch vụ giặt khăn khách sạn, nhà hàng, Spa</h3>
-            <p>
-              Xử lý hiệu quả vết bẩn cứng đầu, khử mùi và diệt khuẩn. Công nghệ
-              giặt hiện đại, đảm bảo vệ sinh và an toàn.
-            </p>
-            <p><b>Giá tiền:</b> 80.000/kg</p>
-            <a class="btn btn-primary choose-service" href="#contact"
-              >Đặt dịch vụ
-            </a>
-          </div>
+                  filteredServices.forEach(function (service, index) {
+                    // Lặp icon theo index
+                    const icon = icons[index % icons.length];
 
+                    html += `
           <div class="service-card">
-            <div
-              class="service-icon"
-              style="background: linear-gradient(135deg, #fbbf24, #f97316)"
-            >
+            <div class="service-icon" style="${icon.style}">
               <img
-                src="public/asset/image/say1.png"
+                src="${icon.img}"
                 class="icon-white"
                 alt=""
               />
             </div>
-            <h3>Dịch Vụ Vệ Sinh Giày Giặt Giày Cao Cấp</h3>
-            <p>
-              Làm sạch sâu, khử mùi và phục hồi form giày. Miễn phí nhận & giao
-              trong bán kính 5km, đóng gói cẩn thận.
-            </p>
-            <p><b>Giá tiền:</b> 80.000/kg</p>
-            <a class="btn btn-primary choose-service" href="#contact"
-              >Đặt dịch vụ
+            <h3>${service.service_name}</h3>
+            <p>${service.summary}</p>
+            <p><b>Giá tiền:</b> ${service.service_price.toLocaleString()}đ</p>
+            <a class="btn btn-info choose-service" href="#contact">
+              Đặt dịch vụ
             </a>
           </div>
+        `;
+                  });
+
+                  servicesGrid.innerHTML = html;
+                })
+                .catch(function (error) {
+                  console.error("Lỗi:", error);
+                  servicesGrid.innerHTML =
+                    "<p>Không thể tải dữ liệu dịch vụ.</p>";
+                });
+            });
+          </script>
         </div>
       </div>
     </section>
@@ -866,221 +820,123 @@
             </div>
           </div>
         </div>
-        <div class="pricing-grid">
+        <div class="pricing-grid" id="pricingGrid">
           <div class="pricing-card">
+            <script>
+              document.addEventListener("DOMContentLoaded", function () {
+                const pricingGrid = document.getElementById("pricingGrid");
+
+                fetch("public/services.json")
+                  .then(function (response) {
+                    if (!response.ok) {
+                      throw new Error("Không thể load JSON");
+                    }
+                    return response.json();
+                  })
+                  .then(function (data) {
+                    // Lọc service có chữ "gói"
+                    const packageServices = data.filter(function (service) {
+                      return service.service_name.toLowerCase().includes("gói");
+                    });
+
+                    let html = "";
+                    const styleGradients = [
+                      {
+                        style:
+                          "background: linear-gradient(135deg, #f97316, #dc2626)",
+                      },
+                      {
+                        style:
+                          "background: linear-gradient(135deg, #3b82f6, #8b5cf6)",
+                      },
+                      {
+                        style:
+                          "background: linear-gradient(135deg, #10b981, #14b8a6)",
+                      },
+                    ];
+
+                    packageServices.forEach(function (service, index) {
+                      const styleGradient =
+                        styleGradients[index % styleGradients.length];
+                      // Tự động gắn badge cho gói thứ 2
+                      const popularBadge =
+                        index === 0
+                          ? `<div class="popular-badge">PHỔ BIẾN NHẤT</div>`
+                          : "";
+
+                      // Tách summary thành từng dòng feature
+                      const features = service.summary.split("\n");
+
+                      let featureHTML = "";
+                      features.forEach(function (item, i) {
+                        if (i !== 0) {
+                          // bỏ dòng đầu vì là description
+                          featureHTML += `
+              <li>
+                <span class="check-icon" style="color: white">✓</span>
+                <span>${item}</span>
+              </li>
+            `;
+                        }
+                      });
+
+                      html += `
+          <div class="pricing-card">
+            ${popularBadge}
             <div class="pricing-header">
               <div
                 class="pricing-icon"
-                style="background: linear-gradient(135deg, #3b82f6, #06b6d4)"
+                style="${styleGradient.style}"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
+                <svg xmlns="http://www.w3.org/2000/svg"
                   width="30"
                   height="30"
                   fill="currentColor"
                   class="bi bi-star-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"
-                  />
+                  viewBox="0 0 16 16">
+                  <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
                 </svg>
               </div>
-              <h3>Gói Cơ Bản</h3>
+              <h3>${service.service_name}</h3>
             </div>
+
             <div class="pricing-price">
-              <div
-                class="price-amount"
+              <div class="price-amount"
                 style="
                   background: linear-gradient(to right, #f97316, #dc2626);
                   -webkit-background-clip: text;
                   -webkit-text-fill-color: transparent;
                   background-clip: text;
-                "
-              >
-                50.000đ / kg
+                ">
+                ${service.service_price.toLocaleString()}đ / Gói
               </div>
-              <input type="hidden" class="price-combo" data-price="50000" />
-              <!-- <div class="price-unit">/ kg</div> -->
+              <input type="hidden" class="price-combo" data-price="${service.service_price}" />
             </div>
-            <p class="description">Phù hợp cho cá nhân và gia đình nhỏ</p>
+
+            <p class="description">${features[0]}</p>
+
             <ul class="pricing-features">
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Giặt sấy khô</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Gấp gọn cơ bản</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Giao nhận trong 48h</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Nước giặt thông thường</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Túi đựng miễn phí</span>
-              </li>
+              ${featureHTML}
             </ul>
-            <a
-              class="btn btn-primary choose-service"
+
+            <a class="btn btn-primary choose-service"
               data-bs-toggle="modal"
-              data-bs-target="#myModal"
-              >Chọn gói này</a
-            >
+              data-bs-target="#myModal">
+              Chọn gói này
+            </a>
           </div>
-          <div class="pricing-card">
-            <div class="popular-badge">PHỔ BIẾN NHẤT</div>
-            <div class="pricing-header">
-              <div
-                class="pricing-icon"
-                style="background: linear-gradient(135deg, #16a34a, #14b8a6)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="30"
-                  height="30"
-                  fill="currentColor"
-                  class="bi bi-star-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"
-                  />
-                </svg>
-              </div>
-              <h3>Gói Tiêu Chuẩn</h3>
-            </div>
-            <div class="pricing-price">
-              <div
-                class="price-amount"
-                style="
-                  background: linear-gradient(to right, #f97316, #dc2626);
-                  -webkit-background-clip: text;
-                  -webkit-text-fill-color: transparent;
-                  background-clip: text;
-                "
-              >
-                70.000đ / kg
-              </div>
-              <input type="hidden" class="price-combo" data-price="70000" />
-              <!-- <div class="price-unit">/ kg</div> -->
-            </div>
-            <p class="description">Lựa chọn phổ biến nhất</p>
-            <ul class="pricing-features">
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Giặt sấy cao cấp</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Là ủi phẳng phiu</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Giao nhận trong 24h</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Nước giặt cao cấp, thơm lâu</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Đóng gói sang trọng</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Tẩy vết bẩn nhẹ miễn phí</span>
-              </li>
-            </ul>
-            <a
-              class="btn btn-primary choose-service"
-              data-bs-toggle="modal"
-              data-bs-target="#myModal"
-              >Chọn gói này</a
-            >
-          </div>
-          <div class="pricing-card">
-            <div class="pricing-header">
-              <div
-                class="pricing-icon"
-                style="background: linear-gradient(135deg, #f97316, #dc2626)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="30"
-                  height="30"
-                  fill="currentColor"
-                  class="bi bi-star-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"
-                  />
-                </svg>
-              </div>
-              <h3>Gói Cao Cấp</h3>
-            </div>
-            <div class="pricing-price">
-              <div
-                class="price-amount"
-                style="
-                  background: linear-gradient(to right, #f97316, #dc2626);
-                  -webkit-background-clip: text;
-                  -webkit-text-fill-color: transparent;
-                  background-clip: text;
-                "
-              >
-                100.000đ / kg
-              </div>
-              <input type="hidden" class="price-combo" data-price="100000" />
-              <!-- <div class="price-unit">/ kg</div> -->
-            </div>
-            <p class="description">Dịch vụ VIP cho đồ cao cấp</p>
-            <ul class="pricing-features">
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Giặt khô chuyên nghiệp</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Là ủi hoàn hảo</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Giao nhận trong 12h</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Hóa chất nhập khẩu</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Đóng gói siêu sang</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Tẩy mọi vết bẩn</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Bảo hành chất lượng</span>
-              </li>
-              <li>
-                <span class="check-icon" style="color: white">✓</span>
-                <span>Hỗ trợ 24/7</span>
-              </li>
-            </ul>
-            <a
-              class="btn btn-primary choose-service"
-              data-bs-toggle="modal"
-              data-bs-target="#myModal"
-              >Chọn gói này</a
-            >
+        `;
+                    });
+
+                    pricingGrid.innerHTML = html;
+                  })
+                  .catch(function (error) {
+                    console.error(error);
+                    pricingGrid.innerHTML =
+                      "<p>Không thể tải dữ liệu gói dịch vụ.</p>";
+                  });
+              });
+            </script>
           </div>
         </div>
         <!-- The Modal -->
@@ -1125,15 +981,45 @@
                     <div class="form-group">
                       <select id="service" name="service">
                         <option value="">Chọn gói dịch vụ</option>
-                        <option value="Gói Cơ Bản" data-price="50000">
-                          Gói Cơ Bản
-                        </option>
-                        <option value="Gói Tiêu Chuẩn" data-price="70000">
-                          Gói Tiêu Chuẩn
-                        </option>
-                        <option value="Gói Cao Cấp" data-price="100000">
-                          Gói Cao Cấp
-                        </option>
+                        <script>
+                          document.addEventListener(
+                            "DOMContentLoaded",
+                            function () {
+                              const serviceSelect =
+                                document.getElementById("service");
+
+                              fetch("public/services.json")
+                                .then((res) => {
+                                  if (!res.ok) {
+                                    throw new Error("Không thể load file JSON");
+                                  }
+                                  return res.json();
+                                })
+                                .then((data) => {
+                                  const services = data.filter((s) =>
+                                    s.service_name
+                                      .toLowerCase()
+                                      .includes("gói"),
+                                  );
+
+                                  services.forEach((service) => {
+                                    const option =
+                                      document.createElement("option");
+
+                                    option.value = service.id;
+                                    option.textContent = service.service_name;
+
+                                    option.dataset.price =
+                                      service.service_price;
+                                    option.dataset.unit = service.price_unit;
+
+                                    serviceSelect.appendChild(option);
+                                  });
+                                })
+                                .catch((err) => console.log(err));
+                            },
+                          );
+                        </script>
                       </select>
                     </div>
                     <div class="form-group">
@@ -1304,45 +1190,156 @@
                 <input type="text" id="address" name="address" />
               </div>
 
-              <div class="form-group">
-                <label for="service">Dịch vụ quan tâm</label>
-                <select id="service" class="service-contact" name="service">
-                  <option value="">Chọn dịch vụ</option>
-                  <option value="Dịch vụ giặt sấy nhanh" data-price="70000">
-                    Dịch vụ giặt sấy nhanh
-                  </option>
-                  <option value="Dịch vụ giặt ủi lấy liền" data-price="70000">
-                    Dịch vụ giặt ủi lấy liền
-                  </option>
-                  <option
-                    value="Dịch vụ giặt hấp giao tân nơi"
-                    data-price="70000"
-                  >
-                    Dịch vụ giặt hấp giao tân nơi
-                  </option>
-                  <option
-                    value="Dịch vụ giặt hấp áo vest, váy cưới"
-                    data-price="70000"
-                  >
-                    Dịch vụ giặt hấp áo vest, váy cưới
-                  </option>
-                  <option
-                    value="Dịch vụ giặt khăn khách sạn, nhà hàng, Spa"
-                    data-price="70000"
-                  >
-                    Dịch vụ giặt khăn khách sạn, nhà hàng, Spa
-                  </option>
-                  <option
-                    value="Dịch Vụ Vệ Sinh Giày Giặt Giày Cao Cấp"
-                    data-price="70000"
-                  >
-                    Dịch Vụ Vệ Sinh Giày Giặt Giày Cao Cấp
-                  </option>
-                </select>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="service">Dịch vụ quan tâm</label>
+                    <select id="service" class="service-contact" name="service">
+                      <option value="">Chọn dịch vụ</option>
+                      <script>
+                        document.addEventListener(
+                          "DOMContentLoaded",
+                          function () {
+                            const serviceSelect =
+                              document.querySelector(".service-contact");
+                            const kgBox = document.getElementById("kgBox");
+                            const qtyBox = document.getElementById("qtyBox");
+                            const pairBox = document.getElementById("pairBox");
+
+                            const kgInput = document.getElementById("kg");
+                            const qtyInput = document.getElementById("qty");
+                            const pairInput = document.getElementById("pair");
+
+                            const priceInput =
+                              document.getElementById("price-contact");
+
+                            let services = [];
+
+                            /* LOAD SERVICES.JSON */
+
+                            fetch("public/services.json")
+                              .then(function (response) {
+                                if (!response.ok) {
+                                  throw new Error("Không thể load file JSON");
+                                }
+                                return response.json();
+                              })
+                              .then(function (data) {
+                                // Lọc các service có chữ "Dịch vụ"
+                                const services = data.filter(
+                                  function (service) {
+                                    return service.service_name
+                                      .toLowerCase()
+                                      .includes("dịch vụ");
+                                  },
+                                );
+
+                                services.forEach((service) => {
+                                  const option =
+                                    document.createElement("option");
+
+                                  option.value = service.id;
+                                  option.textContent = service.service_name;
+
+                                  option.dataset.price = service.service_price;
+                                  option.dataset.unit = service.price_unit;
+
+                                  serviceSelect.appendChild(option);
+                                });
+                              })
+                              .catch((err) => console.log(err));
+                            /* KHI CHỌN DỊCH VỤ */
+
+                            serviceSelect.addEventListener(
+                              "change",
+                              function () {
+                                const option = this.options[this.selectedIndex];
+
+                                const unit = option.dataset.unit;
+
+                                // reset
+                                kgInput.value = 1;
+                                qtyInput.value = 1;
+                                pairInput.value = 1;
+
+                                if (unit === "kg") {
+                                  kgBox.style.display = "block";
+                                  qtyBox.style.display = "none";
+                                  pairBox.style.display = "none";
+                                } else if (unit === "item") {
+                                  kgBox.style.display = "none";
+                                  qtyBox.style.display = "block";
+                                  pairBox.style.display = "none";
+                                } else if (unit === "pair") {
+                                  kgBox.style.display = "none";
+                                  qtyBox.style.display = "none";
+                                  pairBox.style.display = "block";
+                                }
+
+                                calculatePrice();
+                              },
+                            );
+
+                            /* TÍNH TIỀN */
+
+                            function calculatePrice() {
+                              const option =
+                                serviceSelect.options[
+                                  serviceSelect.selectedIndex
+                                ];
+
+                              if (!option.dataset.price) return;
+
+                              const price = Number(option.dataset.price);
+                              const unit = option.dataset.unit;
+
+                              let total = 0;
+
+                              if (unit === "kg") {
+                                total = price * Number(kgInput.value);
+                              } else if (unit === "item") {
+                                total = price * Number(qtyInput.value);
+                              } else if (unit === "pair") {
+                                total = price * Number(pairInput.value);
+                              }
+
+                              priceInput.value = total.toLocaleString("vi-VN");
+                            }
+
+                            /* TĂNG KG / SỐ LƯỢNG */
+
+                            kgInput.addEventListener("input", calculatePrice);
+                            qtyInput.addEventListener("input", calculatePrice);
+                            pairInput.addEventListener("input", calculatePrice);
+                          },
+                        );
+                      </script>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <div id="kgBox">
+                      <label>Khối lượng (kg)</label>
+                      <input type="number" id="kg" min="1" />
+                    </div>
+
+                    <div id="qtyBox" style="display: none">
+                      <label>Số lượng</label>
+                      <input type="number" id="qty" min="1" />
+                    </div>
+
+                    <div id="pairBox" style="display: none">
+                      <label>Đôi</label>
+                      <input type="number" id="pair" min="1" />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="form-group">
-                <label for="price">Giá dịch vụ</label>
+                <label for="price">Tổng tiền</label>
                 <input type="text" id="price-contact" name="price" readonly />
               </div>
 
@@ -1447,6 +1444,7 @@
               <li><a href="#process">Quy trình</a></li>
               <li><a href="#pricing">Bảng giá</a></li>
               <li><a href="#contact">Liên hệ</a></li>
+              <li><a href="terms.html">Điều khoản sử dụng</a></li>
             </ul>
           </div>
 
@@ -1480,7 +1478,6 @@
             </ul>
           </div>
         </div>
-
         <div class="footer-bottom">
           <p>
             © 2026 Giặt Ủi Nhanh. All rights reserved. Made with ❤️ in Vietnam
@@ -1511,7 +1508,7 @@
         />
       </svg>
     </button>
-    <button
+    <!-- <button
       class="back-to-home"
       id="backToHome"
       aria-label="Back to home"
@@ -1533,7 +1530,7 @@
           d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293z"
         />
       </svg>
-    </button>
+    </button> -->
     <!-- Toast -->
     <div class="toast-container position-fixed top-0 end-0 p-3">
       <div

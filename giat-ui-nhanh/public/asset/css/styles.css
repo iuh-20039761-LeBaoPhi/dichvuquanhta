@@ -322,6 +322,17 @@ body {
   box-shadow: 0 20px 40px rgba(251, 191, 36, 0.4);
 }
 
+.btn-info {
+  background: linear-gradient(to right, #2f80ed, #56ccf2);
+  color: white;
+}
+
+.btn-info:hover {
+  transform: scale(1.05);
+  color: white;
+  box-shadow: 0 20px 40px rgba(36, 204, 251, 0.4);
+}
+
 .btn-secondary {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -921,7 +932,7 @@ footer {
   box-shadow: 0 15px 40px rgba(59, 130, 246, 0.5);
 }
 
-.back-to-home {
+/* .back-to-home {
   position: fixed;
   bottom: 100px;
   right: 30px;
@@ -947,7 +958,7 @@ footer {
 .back-to-home:hover {
   transform: translateY(-5px) scale(1.1);
   box-shadow: 0 15px 40px rgba(59, 130, 246, 0.5);
-}
+} */
 /* Icons using Unicode */
 .icon {
   font-size: 24px;
