@@ -60,20 +60,31 @@ function displayServices(categories) {
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th style="width: 60px;">ID</th>
+                            <th style="width: 50px;">ID</th>
                             <th>Tên dịch vụ</th>
-                            <th style="width: 150px;">Giá</th>
-                            <th>Mô tả</th>
-                            <th style="width: 100px;">Thao tác</th>
+                            <th style="width: 130px;">Giá tổng</th>
+                            <th style="width: 120px;">Tiền công</th>
+                            <th style="width: 140px;">Vật liệu</th>
+                            <th>Hãng</th>
+                            <th style="width: 90px;">Bảo hành</th>
+                            <th style="width: 90px;">Thời gian</th>
+                            <th style="width: 90px;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${cat.services && cat.services.length > 0 ? cat.services.map(s => `
                             <tr>
                                 <td>${s.id}</td>
-                                <td><strong>${s.name}</strong></td>
+                                <td>
+                                    <strong>${s.name}</strong>
+                                    ${s.description ? `<br><small class="text-muted">${s.description}</small>` : ''}
+                                </td>
                                 <td><span class="text-success fw-bold">${formatCurrency(s.price)}</span></td>
-                                <td>${s.description || '-'}</td>
+                                <td>${s.labor_cost ? formatCurrency(s.labor_cost) : '-'}</td>
+                                <td>${s.material_cost ? formatCurrency(s.material_cost) : '-'}</td>
+                                <td>${s.brand || '-'}</td>
+                                <td>${s.warranty || '-'}</td>
+                                <td>${s.duration || '-'}</td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-primary" onclick="editService(${s.id})" title="Sửa">
                                         <i class="fas fa-edit"></i>
@@ -83,7 +94,7 @@ function displayServices(categories) {
                                     </button>
                                 </td>
                             </tr>
-                        `).join('') : '<tr><td colspan="5" class="text-center">Chưa có dịch vụ nào</td></tr>'}
+                        `).join('') : '<tr><td colspan="9" class="text-center">Chưa có dịch vụ nào</td></tr>'}
                     </tbody>
                 </table>
             </div>
@@ -321,14 +332,24 @@ window.editService = function(id) {
     const catSelect = document.getElementById('serviceCategoryId');
     const nameInput = document.getElementById('serviceName');
     const priceInput = document.getElementById('servicePrice');
+    const laborInput = document.getElementById('serviceLaborCost');
+    const materialInput = document.getElementById('serviceMaterialCost');
+    const brandInput = document.getElementById('serviceBrand');
+    const warrantyInput = document.getElementById('serviceWarranty');
+    const durationInput = document.getElementById('serviceDuration');
     const descInput = document.getElementById('serviceDescription');
-    
+
     if (title && idInput && catSelect && nameInput && priceInput && descInput) {
         title.textContent = 'Sửa Dịch Vụ';
         idInput.value = service.id;
         catSelect.value = categoryId;
         nameInput.value = service.name;
         priceInput.value = service.price;
+        if (laborInput) laborInput.value = service.labor_cost || '';
+        if (materialInput) materialInput.value = service.material_cost || '';
+        if (brandInput) brandInput.value = service.brand || '';
+        if (warrantyInput) warrantyInput.value = service.warranty || '';
+        if (durationInput) durationInput.value = service.duration || '';
         descInput.value = service.description || '';
         if (serviceModal) serviceModal.show();
     } else {
@@ -341,33 +362,43 @@ function saveServiceHandler() {
     const category_id = document.getElementById('serviceCategoryId').value;
     const name = document.getElementById('serviceName').value.trim();
     const price = document.getElementById('servicePrice').value;
+    const labor_cost = document.getElementById('serviceLaborCost')?.value || '';
+    const material_cost = document.getElementById('serviceMaterialCost')?.value || '';
+    const brand = document.getElementById('serviceBrand')?.value.trim() || '';
+    const warranty = document.getElementById('serviceWarranty')?.value.trim() || '';
+    const duration = document.getElementById('serviceDuration')?.value.trim() || '';
     const description = document.getElementById('serviceDescription').value.trim();
-    
+
     // Validate
     if (!category_id) {
         alert('Vui lòng chọn danh mục');
         return;
     }
-    
+
     if (!name) {
         alert('Vui lòng nhập tên dịch vụ');
         return;
     }
-    
+
     if (!price || parseFloat(price) <= 0) {
         alert('Vui lòng nhập giá hợp lệ');
         return;
     }
-    
+
     const action = id ? 'update_service' : 'add_service';
     const data = {
         action: action,
         category_id: parseInt(category_id),
         name: name,
         price: parseFloat(price),
+        labor_cost: labor_cost || null,
+        material_cost: material_cost || null,
+        brand: brand || null,
+        warranty: warranty || null,
+        duration: duration || null,
         description: description
     };
-    
+
     if (id) {
         data.id = parseInt(id);
     }

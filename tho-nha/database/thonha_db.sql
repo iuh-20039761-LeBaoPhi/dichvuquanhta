@@ -138,6 +138,12 @@ CREATE TABLE `services` (
   `category_id` int(11) NOT NULL,
   `name` varchar(150) NOT NULL,
   `price` varchar(50) DEFAULT NULL,
+  `labor_cost` varchar(50) DEFAULT NULL,
+  `material_cost` varchar(50) DEFAULT NULL,
+  `brand` varchar(150) DEFAULT NULL,
+  `warranty` varchar(100) DEFAULT NULL,
+  `duration` varchar(100) DEFAULT NULL,
+  `brand_prices` text DEFAULT NULL COMMENT 'JSON: [{name,materialCost,price}]',
   `description` text DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -146,26 +152,26 @@ CREATE TABLE `services` (
 -- Dumping data for table `services`
 --
 
-INSERT INTO `services` (`id`, `category_id`, `name`, `price`, `description`, `is_active`) VALUES
-(1, 1, 'Vệ sinh máy lạnh', '300000', 'Vệ sinh toàn bộ dàn lạnh và dàn nóng, làm sạch bụi bẩn, giúp máy lạnh hoạt động hiệu quả và tiết kiệm điện.', 1),
-(2, 1, 'Nạp gas máy lạnh', '450000', 'Nạp gas đúng loại và đúng áp suất, xử lý thiếu gas giúp máy lạnh làm mát nhanh và ổn định.', 1),
-(3, 1, 'Thay block máy lạnh', '1200000', 'Thay block (máy nén) mới cho máy lạnh khi block cũ bị hư, kém lạnh hoặc không hoạt động.', 1),
-(4, 1, 'Di dời máy lạnh', '500000', 'Tháo lắp, di chuyển máy lạnh sang vị trí mới an toàn, đảm bảo kỹ thuật và thẩm mỹ.', 1),
-(5, 2, 'Sửa máy giặt không vắt', '280000', 'Khắc phục tình trạng máy giặt không vắt, vắt yếu do lỗi motor, dây curoa hoặc bo mạch.', 1),
-(6, 2, 'Thay motor máy giặt', '900000', 'Thay motor máy giặt chính hãng, giúp máy giặt hoạt động mạnh mẽ và ổn định trở lại.', 1),
-(7, 2, 'Vệ sinh máy giặt', '350000', 'Vệ sinh lồng giặt, loại bỏ cặn bẩn, vi khuẩn và mùi hôi, bảo vệ sức khỏe gia đình.', 1),
-(8, 3, 'Thông tắc bồn cầu', '200000', 'Xử lý nhanh tình trạng bồn cầu bị nghẹt, thoát nước kém bằng thiết bị chuyên dụng.', 1),
-(9, 3, 'Sửa bồn cầu rò nước', '250000', 'Sửa chữa bồn cầu bị rò rỉ nước, chảy nước liên tục gây lãng phí và mất vệ sinh.', 1),
-(10, 3, 'Chống thấm nhà vệ sinh', '1500000', 'Chống thấm triệt để nhà vệ sinh, ngăn thấm nước, ẩm mốc và hư hỏng kết cấu.', 1),
-(11, 4, 'Sửa chập điện', '180000', 'Sửa chữa sự cố chập điện, mất điện cục bộ, đảm bảo an toàn cho hệ thống điện gia đình.', 1),
-(12, 4, 'Sửa rò rỉ nước', '200000', 'Xử lý rò rỉ nước âm tường, đường ống nước bị bể, xì nước nhanh chóng và hiệu quả.', 1),
-(13, 4, 'Thay đường ống nước', '400000', 'Thay mới đường ống nước cũ, hư hỏng, đảm bảo nguồn nước sạch và ổn định.', 1),
-(14, 5, 'Sửa tủ lạnh', '300000', 'Sửa chữa các lỗi thường gặp ở tủ lạnh như không lạnh, kêu to, chảy nước.', 1),
-(15, 5, 'Sửa tivi', '250000', 'Sửa tivi bị mất hình, mất tiếng, không lên nguồn với đội ngũ kỹ thuật chuyên nghiệp.', 1),
-(16, 5, 'Sửa bếp từ', '350000', 'Sửa chữa bếp từ không nóng, báo lỗi, không nhận nồi, đảm bảo an toàn khi sử dụng.', 1),
-(17, 6, 'Sơn nhà', '5000000', 'Sơn mới hoặc sơn lại nhà ở, căn hộ với vật liệu chất lượng cao, bền đẹp theo thời gian.', 1),
-(18, 6, 'Trần thạch cao', '7000000', 'Thi công trần thạch cao thẩm mỹ, cách âm, cách nhiệt, phù hợp nhà ở và văn phòng.', 1),
-(19, 6, 'Lát nền gạch', '6000000', 'Lát nền gạch chuyên nghiệp, thẳng đẹp, bền chắc cho nhà ở và công trình.', 1);
+INSERT INTO `services` (`id`, `category_id`, `name`, `price`, `labor_cost`, `material_cost`, `brand`, `warranty`, `duration`, `description`, `is_active`) VALUES
+(1,  1, 'Vệ sinh máy lạnh',      '300000',   '200000', '100000',  NULL,                    '3 tháng',  '1–2 giờ',   'Vệ sinh toàn bộ dàn lạnh và dàn nóng, làm sạch bụi bẩn, giúp máy lạnh hoạt động hiệu quả và tiết kiệm điện.', 1),
+(2,  1, 'Nạp gas máy lạnh',      '450000',   '150000', '300000',  'R32 / R410A',           '3 tháng',  '1–2 giờ',   'Nạp gas đúng loại và đúng áp suất, xử lý thiếu gas giúp máy lạnh làm mát nhanh và ổn định.', 1),
+(3,  1, 'Thay block máy lạnh',   '1200000',  '300000', '900000',  'Daikin / Toshiba / LG', '12 tháng', '2–3 giờ',   'Thay block (máy nén) mới cho máy lạnh khi block cũ bị hư, kém lạnh hoặc không hoạt động.', 1),
+(4,  1, 'Di dời máy lạnh',       '500000',   '500000', NULL,      NULL,                    '3 tháng',  '2–4 giờ',   'Tháo lắp, di chuyển máy lạnh sang vị trí mới an toàn, đảm bảo kỹ thuật và thẩm mỹ.', 1),
+(5,  2, 'Sửa máy giặt không vắt','280000',   '200000', '80000',   NULL,                    '3 tháng',  '1–2 giờ',   'Khắc phục tình trạng máy giặt không vắt, vắt yếu do lỗi motor, dây curoa hoặc bo mạch.', 1),
+(6,  2, 'Thay motor máy giặt',   '900000',   '200000', '700000',  'Samsung / LG / Electrolux', '6 tháng', '1–2 giờ', 'Thay motor máy giặt chính hãng, giúp máy giặt hoạt động mạnh mẽ và ổn định trở lại.', 1),
+(7,  2, 'Vệ sinh máy giặt',      '350000',   '250000', '100000',  NULL,                    '1 tháng',  '1–2 giờ',   'Vệ sinh lồng giặt, loại bỏ cặn bẩn, vi khuẩn và mùi hôi, bảo vệ sức khỏe gia đình.', 1),
+(8,  3, 'Thông tắc bồn cầu',     '200000',   '200000', NULL,      NULL,                    '1 tháng',  '30–60 phút','Xử lý nhanh tình trạng bồn cầu bị nghẹt, thoát nước kém bằng thiết bị chuyên dụng.', 1),
+(9,  3, 'Sửa bồn cầu rò nước',   '250000',   '150000', '100000',  NULL,                    '3 tháng',  '1–2 giờ',   'Sửa chữa bồn cầu bị rò rỉ nước, chảy nước liên tục gây lãng phí và mất vệ sinh.', 1),
+(10, 3, 'Chống thấm nhà vệ sinh','1500000',  '500000', '1000000', 'Sika / Kova',           '12 tháng', '1–2 ngày',  'Chống thấm triệt để nhà vệ sinh, ngăn thấm nước, ẩm mốc và hư hỏng kết cấu.', 1),
+(11, 4, 'Sửa chập điện',         '180000',   '180000', NULL,      NULL,                    '3 tháng',  '1–2 giờ',   'Sửa chữa sự cố chập điện, mất điện cục bộ, đảm bảo an toàn cho hệ thống điện gia đình.', 1),
+(12, 4, 'Sửa rò rỉ nước',        '200000',   '200000', NULL,      NULL,                    '3 tháng',  '1–2 giờ',   'Xử lý rò rỉ nước âm tường, đường ống nước bị bể, xì nước nhanh chóng và hiệu quả.', 1),
+(13, 4, 'Thay đường ống nước',   '400000',   '200000', '200000',  'Tiền Phong / Bình Minh','12 tháng', '2–4 giờ',   'Thay mới đường ống nước cũ, hư hỏng, đảm bảo nguồn nước sạch và ổn định.', 1),
+(14, 5, 'Sửa tủ lạnh',           '300000',   '200000', '100000',  NULL,                    '3 tháng',  '1–2 giờ',   'Sửa chữa các lỗi thường gặp ở tủ lạnh như không lạnh, kêu to, chảy nước.', 1),
+(15, 5, 'Sửa tivi',              '250000',   '200000', '50000',   NULL,                    '3 tháng',  '1–2 giờ',   'Sửa tivi bị mất hình, mất tiếng, không lên nguồn với đội ngũ kỹ thuật chuyên nghiệp.', 1),
+(16, 5, 'Sửa bếp từ',            '350000',   '250000', '100000',  NULL,                    '3 tháng',  '1–2 giờ',   'Sửa chữa bếp từ không nóng, báo lỗi, không nhận nồi, đảm bảo an toàn khi sử dụng.', 1),
+(17, 6, 'Sơn nhà',               '5000000',  '2000000','3000000', 'Dulux / Jotun / Kova',  '12 tháng', '2–5 ngày',  'Sơn mới hoặc sơn lại nhà ở, căn hộ với vật liệu chất lượng cao, bền đẹp theo thời gian.', 1),
+(18, 6, 'Trần thạch cao',         '7000000',  '3000000','4000000', 'Gyproc / USG',          '12 tháng', '3–5 ngày',  'Thi công trần thạch cao thẩm mỹ, cách âm, cách nhiệt, phù hợp nhà ở và văn phòng.', 1),
+(19, 6, 'Lát nền gạch',          '6000000',  '2500000','3500000', 'Đồng Tâm / Viglacera', '12 tháng', '3–5 ngày',  'Lát nền gạch chuyên nghiệp, thẳng đẹp, bền chắc cho nhà ở và công trình.', 1);
 
 -- --------------------------------------------------------
 
@@ -296,3 +302,46 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- ============================================================
+-- MIGRATION: Thêm cột mới vào bảng services (chạy nếu DB đã tồn tại)
+-- ============================================================
+ALTER TABLE `services`
+  ADD COLUMN IF NOT EXISTS `labor_cost`    varchar(50)  DEFAULT NULL AFTER `price`,
+  ADD COLUMN IF NOT EXISTS `material_cost` varchar(50)  DEFAULT NULL AFTER `labor_cost`,
+  ADD COLUMN IF NOT EXISTS `brand`         varchar(150) DEFAULT NULL AFTER `material_cost`,
+  ADD COLUMN IF NOT EXISTS `warranty`      varchar(100) DEFAULT NULL AFTER `brand`,
+  ADD COLUMN IF NOT EXISTS `duration`      varchar(100) DEFAULT NULL AFTER `warranty`,
+  ADD COLUMN IF NOT EXISTS `brand_prices`  text         DEFAULT NULL AFTER `duration`;
+
+UPDATE `services` SET labor_cost='200000', material_cost='100000',  brand=NULL,                    warranty='3 tháng',  duration='1–2 giờ'   WHERE id=1;
+UPDATE `services` SET labor_cost='150000', material_cost='300000',  brand='R32 / R410A',           warranty='3 tháng',  duration='1–2 giờ'   WHERE id=2;
+UPDATE `services` SET labor_cost='300000', material_cost='900000',  brand='Daikin / Toshiba / LG', warranty='12 tháng', duration='2–3 giờ'   WHERE id=3;
+UPDATE `services` SET labor_cost='500000', material_cost=NULL,      brand=NULL,                    warranty='3 tháng',  duration='2–4 giờ'   WHERE id=4;
+UPDATE `services` SET labor_cost='200000', material_cost='80000',   brand=NULL,                    warranty='3 tháng',  duration='1–2 giờ'   WHERE id=5;
+UPDATE `services` SET labor_cost='200000', material_cost='700000',  brand='Samsung / LG / Electrolux', warranty='6 tháng', duration='1–2 giờ' WHERE id=6;
+UPDATE `services` SET labor_cost='250000', material_cost='100000',  brand=NULL,                    warranty='1 tháng',  duration='1–2 giờ'   WHERE id=7;
+UPDATE `services` SET labor_cost='200000', material_cost=NULL,      brand=NULL,                    warranty='1 tháng',  duration='30–60 phút' WHERE id=8;
+UPDATE `services` SET labor_cost='150000', material_cost='100000',  brand=NULL,                    warranty='3 tháng',  duration='1–2 giờ'   WHERE id=9;
+UPDATE `services` SET labor_cost='500000', material_cost='1000000', brand='Sika / Kova',           warranty='12 tháng', duration='1–2 ngày'  WHERE id=10;
+UPDATE `services` SET labor_cost='180000', material_cost=NULL,      brand=NULL,                    warranty='3 tháng',  duration='1–2 giờ'   WHERE id=11;
+UPDATE `services` SET labor_cost='200000', material_cost=NULL,      brand=NULL,                    warranty='3 tháng',  duration='1–2 giờ'   WHERE id=12;
+UPDATE `services` SET labor_cost='200000', material_cost='200000',  brand='Tiền Phong / Bình Minh',warranty='12 tháng', duration='2–4 giờ'   WHERE id=13;
+UPDATE `services` SET labor_cost='200000', material_cost='100000',  brand=NULL,                    warranty='3 tháng',  duration='1–2 giờ'   WHERE id=14;
+UPDATE `services` SET labor_cost='200000', material_cost='50000',   brand=NULL,                    warranty='3 tháng',  duration='1–2 giờ'   WHERE id=15;
+UPDATE `services` SET labor_cost='250000', material_cost='100000',  brand=NULL,                    warranty='3 tháng',  duration='1–2 giờ'   WHERE id=16;
+UPDATE `services` SET labor_cost='2000000',material_cost='3000000', brand='Dulux / Jotun / Kova',  warranty='12 tháng', duration='2–5 ngày'  WHERE id=17;
+UPDATE `services` SET labor_cost='3000000',material_cost='4000000', brand='Gyproc / USG',          warranty='12 tháng', duration='3–5 ngày'  WHERE id=18;
+UPDATE `services` SET labor_cost='2500000',material_cost='3500000', brand='Đồng Tâm / Viglacera', warranty='12 tháng', duration='3–5 ngày'  WHERE id=19;
+
+-- MIGRATION: Thêm brand_prices (JSON) cho các dịch vụ có nhiều hãng
+ALTER TABLE `services` ADD COLUMN IF NOT EXISTS `brand_prices` text DEFAULT NULL AFTER `duration`;
+
+UPDATE `services` SET brand_prices='[{"name":"R32","materialCost":280000,"price":430000},{"name":"R410A","materialCost":320000,"price":470000}]' WHERE id=2;
+UPDATE `services` SET brand_prices='[{"name":"Daikin","materialCost":1000000,"price":1300000},{"name":"Toshiba","materialCost":900000,"price":1200000},{"name":"LG","materialCost":850000,"price":1150000}]' WHERE id=3;
+UPDATE `services` SET brand_prices='[{"name":"Samsung","materialCost":700000,"price":900000},{"name":"LG","materialCost":650000,"price":850000},{"name":"Electrolux","materialCost":800000,"price":1000000}]' WHERE id=6;
+UPDATE `services` SET brand_prices='[{"name":"Sika","materialCost":1000000,"price":1500000},{"name":"Kova","materialCost":800000,"price":1300000}]' WHERE id=10;
+UPDATE `services` SET brand_prices='[{"name":"Ti\u1ec1n Phong","materialCost":200000,"price":400000},{"name":"B\u00ecnh Minh","materialCost":180000,"price":380000}]' WHERE id=13;
+UPDATE `services` SET brand_prices='[{"name":"Dulux","materialCost":3000000,"price":5000000},{"name":"Jotun","materialCost":3500000,"price":5500000},{"name":"Kova","materialCost":2500000,"price":4500000}]' WHERE id=17;
+UPDATE `services` SET brand_prices='[{"name":"Gyproc","materialCost":4000000,"price":7000000},{"name":"USG","materialCost":4500000,"price":7500000}]' WHERE id=18;
+UPDATE `services` SET brand_prices='[{"name":"\u0110\u1ed3ng T\u00e2m","materialCost":3500000,"price":6000000},{"name":"Viglacera","materialCost":4000000,"price":6500000}]' WHERE id=19;

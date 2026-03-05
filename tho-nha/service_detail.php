@@ -236,32 +236,99 @@ $schema = [
                         </h2>
 
                         <?php if (!empty($services)): ?>
-                            <?php foreach ($services as $service): ?>
+                            <?php foreach ($services as $service):
+                                $brandPrices = !empty($service['brand_prices'])
+                                    ? json_decode($service['brand_prices'], true)
+                                    : null;
+                                $hasBrands   = !empty($brandPrices) && count($brandPrices) > 1;
+
+                                // Dùng hãng đầu làm giá mặc định nếu có
+                                $initPrice    = $hasBrands ? $brandPrices[0]['price']        : $service['price'];
+                                $initMaterial = $hasBrands ? $brandPrices[0]['materialCost'] : $service['material_cost'];
+                            ?>
                                 <div class="service-item-card">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-8">
-                                            <h3 class="service-item-name">
-                                                <i class="fas fa-check-circle me-2" style="color: var(--primary);"></i>
-                                                <?= htmlspecialchars($service['name']) ?>
-                                            </h3>
-                                            <?php if (!empty($service['description'])): ?>
-                                                <p class="service-item-description">
-                                                    <?= htmlspecialchars($service['description']) ?>
-                                                </p>
+
+                                    <!-- Tên + badges nhanh -->
+                                    <div class="sic-title-row">
+                                        <h3 class="service-item-name">
+                                            <i class="fas fa-check-circle me-2" style="color:var(--primary);"></i>
+                                            <?= htmlspecialchars($service['name']) ?>
+                                        </h3>
+                                        <div class="sic-badges">
+                                            <?php if (!empty($service['duration'])): ?>
+                                                <span class="sic-badge sic-badge--time">
+                                                    <i class="fas fa-clock"></i> <?= htmlspecialchars($service['duration']) ?>
+                                                </span>
+                                            <?php endif; ?>
+                                            <?php if (!empty($service['warranty'])): ?>
+                                                <span class="sic-badge sic-badge--warranty">
+                                                    <i class="fas fa-shield-alt"></i> BH <?= htmlspecialchars($service['warranty']) ?>
+                                                </span>
                                             <?php endif; ?>
                                         </div>
-                                        <div class="col-md-4 text-md-end mt-2 mt-md-0">
-                                            <div class="service-item-price">
-                                                <?= number_format($service['price']) ?>đ
+                                    </div>
+
+                                    <!-- Mô tả -->
+                                    <?php if (!empty($service['description'])): ?>
+                                        <p class="service-item-description">
+                                            <?= htmlspecialchars($service['description']) ?>
+                                        </p>
+                                    <?php endif; ?>
+
+                                    <!-- Brand selector (chỉ hiện khi có nhiều hãng) -->
+                                    <?php if ($hasBrands): ?>
+                                        <div class="brand-selector">
+                                            <div class="brand-selector-label">
+                                                <i class="fas fa-tag me-1"></i>Chọn hãng:
                                             </div>
-                                            <button
-                                                class="btn btn-gradient btn-sm booking-btn"
-                                                data-service-name="<?= htmlspecialchars($service['name']) ?>"
-                                                data-service-price="<?= $service['price'] ?>"
-                                            >
-                                                <i class="fas fa-calendar-check me-1"></i> Đặt lịch
-                                            </button>
+                                            <div class="brand-options">
+                                                <?php foreach ($brandPrices as $i => $bp): ?>
+                                                    <button class="brand-option<?= $i === 0 ? ' active' : '' ?>"
+                                                        data-brand="<?= htmlspecialchars($bp['name']) ?>"
+                                                        data-price="<?= (int)$bp['price'] ?>"
+                                                        data-material-cost="<?= (int)$bp['materialCost'] ?>"
+                                                        data-labor-cost="<?= (int)($service['labor_cost'] ?? 0) ?>">
+                                                        <?= htmlspecialchars($bp['name']) ?>
+                                                    </button>
+                                                <?php endforeach; ?>
+                                            </div>
                                         </div>
+                                    <?php endif; ?>
+
+                                    <!-- Footer: giá + đặt lịch -->
+                                    <div class="sic-footer">
+                                        <div class="sic-price-block">
+                                            <div class="sic-price-label">Giá dịch vụ</div>
+                                            <div class="sic-total-price"><?= number_format($initPrice) ?>đ</div>
+
+                                            <?php if (!empty($service['labor_cost']) || !empty($initMaterial)): ?>
+                                                <div class="sic-price-breakdown">
+                                                    <?php if (!empty($service['labor_cost'])): ?>
+                                                        <span class="sic-breakdown-item sic-bd-labor">
+                                                            <i class="fas fa-hammer"></i>
+                                                            Công: <?= number_format($service['labor_cost']) ?>đ
+                                                        </span>
+                                                    <?php endif; ?>
+                                                    <?php if (!empty($service['labor_cost']) && !empty($initMaterial)): ?>
+                                                        <span class="sic-breakdown-sep">+</span>
+                                                    <?php endif; ?>
+                                                    <?php if (!empty($initMaterial)): ?>
+                                                        <span class="sic-breakdown-item sic-bd-material">
+                                                            <i class="fas fa-box"></i>
+                                                            Vật liệu: <?= number_format($initMaterial) ?>đ
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <button
+                                            class="btn btn-gradient btn-sm booking-btn"
+                                            data-service-name="<?= htmlspecialchars($service['name']) ?>"
+                                            data-service-price="<?= (int)$initPrice ?>"
+                                        >
+                                            <i class="fas fa-calendar-check me-1"></i> Đặt lịch
+                                        </button>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -557,20 +624,54 @@ $schema = [
         });
     </script>
 
-    <!-- Booking Logic -->
+    <!-- Booking + Brand selector Logic -->
     <script>
+        const fmt = n => parseInt(n).toLocaleString('vi-VN');
+
+        // ===== Brand selection: cập nhật giá khi chọn hãng =====
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.brand-option');
+            if (!btn) return;
+            const card = btn.closest('.service-item-card');
+
+            card.querySelectorAll('.brand-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const price     = parseInt(btn.dataset.price);
+            const matCost   = parseInt(btn.dataset.materialCost) || 0;
+            const laborCost = parseInt(btn.dataset.laborCost)    || 0;
+
+            // Cập nhật giá tổng
+            card.querySelector('.sic-total-price').textContent = fmt(price) + 'đ';
+
+            // Cập nhật vật liệu trong breakdown
+            const matEl = card.querySelector('.sic-bd-material');
+            if (matEl && matCost) {
+                matEl.innerHTML = `<i class="fas fa-box"></i> Vật liệu: ${fmt(matCost)}đ`;
+            }
+
+            // Cập nhật booking button
+            card.querySelector('.booking-btn').dataset.servicePrice = price;
+        });
+
         // Mở modal và điền thông tin dịch vụ
-        document.querySelectorAll('.booking-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const serviceName  = this.getAttribute('data-service-name');
-                const servicePrice = this.getAttribute('data-service-price');
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.booking-btn');
+            if (!btn) return;
 
-                document.getElementById('selectedService').value = serviceName;
-                document.getElementById('servicePrice').value =
-                    new Intl.NumberFormat('vi-VN').format(servicePrice) + 'đ';
+            const serviceName  = btn.getAttribute('data-service-name');
+            const servicePrice = btn.getAttribute('data-service-price');
+            const card         = btn.closest('.service-item-card');
+            const activeBrand  = card ? card.querySelector('.brand-option.active') : null;
+            const displayName  = activeBrand
+                ? `${serviceName} (${activeBrand.dataset.brand})`
+                : serviceName;
 
-                new bootstrap.Modal(document.getElementById('bookingModal')).show();
-            });
+            document.getElementById('selectedService').value = displayName;
+            document.getElementById('servicePrice').value =
+                new Intl.NumberFormat('vi-VN').format(servicePrice) + 'đ';
+
+            new bootstrap.Modal(document.getElementById('bookingModal')).show();
         });
 
         // Scroll đến bảng giá

@@ -297,68 +297,100 @@
         const SERVICES_DATA = [
             {
                 id: 1, name: 'Sửa Máy Lạnh', icon: 'fa-wind', image: 'image/2.jpg',
-                desc: 'Sửa chữa, vệ sinh, bảo dưỡng máy lạnh các loại. Thay linh kiện chính hãng, nạp gas R410A, R32.',
+                desc: 'Sửa chữa, vệ sinh, bảo dưỡng máy lạnh các loại. Thay linh kiện chính hãng, nạp gas R32/R410A.',
                 items: [
-                    { name: 'Vệ sinh máy lạnh (1-2 HP)',  price: 150000, desc: 'Vệ sinh bộ lọc, dàn lạnh, khay thoát nước' },
-                    { name: 'Nạp gas R410A',               price: 250000, desc: 'Nạp gas loại R410A chính hãng, kiểm tra áp suất' },
-                    { name: 'Nạp gas R32',                 price: 280000, desc: 'Nạp gas R32 tiết kiệm năng lượng thế hệ mới' },
-                    { name: 'Sửa chữa máy lạnh',           price: 350000, desc: 'Kiểm tra, chẩn đoán và sửa chữa các hư hỏng' },
-                    { name: 'Thay bo mạch máy lạnh',       price: 500000, desc: 'Thay board mạch điều khiển chính hãng' },
+                    { name: 'Vệ sinh máy lạnh',    price: 300000, laborCost: 200000, materialCost: 100000, warranty: '3 tháng',  duration: '1–2 giờ',   desc: 'Vệ sinh toàn bộ dàn lạnh và dàn nóng, làm sạch bụi bẩn, giúp máy lạnh hoạt động hiệu quả và tiết kiệm điện.' },
+                    { name: 'Nạp gas máy lạnh',    price: 430000, laborCost: 150000, materialCost: 280000, warranty: '3 tháng',  duration: '1–2 giờ',   desc: 'Nạp gas đúng loại và đúng áp suất, xử lý thiếu gas giúp máy lạnh làm mát nhanh và ổn định.',
+                      brandPrices: [
+                        { name: 'R32',   materialCost: 280000, price: 430000 },
+                        { name: 'R410A', materialCost: 320000, price: 470000 },
+                      ]
+                    },
+                    { name: 'Thay block máy lạnh', price:1200000, laborCost: 300000, materialCost: 900000, warranty: '12 tháng', duration: '2–3 giờ',   desc: 'Thay block (máy nén) mới cho máy lạnh khi block cũ bị hư, kém lạnh hoặc không hoạt động.',
+                      brandPrices: [
+                        { name: 'Daikin',  materialCost: 1000000, price: 1300000 },
+                        { name: 'Toshiba', materialCost:  900000, price: 1200000 },
+                        { name: 'LG',      materialCost:  850000, price: 1150000 },
+                      ]
+                    },
+                    { name: 'Di dời máy lạnh',     price: 500000, laborCost: 500000, materialCost: null,   warranty: '3 tháng',  duration: '2–4 giờ',   desc: 'Tháo lắp, di chuyển máy lạnh sang vị trí mới an toàn, đảm bảo kỹ thuật và thẩm mỹ.' },
                 ]
             },
             {
                 id: 2, name: 'Sửa Máy Giặt', icon: 'fa-tshirt', image: 'image/4.jpg',
                 desc: 'Sửa máy giặt cửa trên, cửa ngang, máy giặt sấy. Thay motor, board mạch, cảm biến chính hãng.',
                 items: [
-                    { name: 'Vệ sinh máy giặt',                  price: 200000, desc: 'Vệ sinh lồng giặt, bơm thoát nước, ống dẫn' },
-                    { name: 'Sửa máy giặt không vắt',            price: 250000, desc: 'Kiểm tra và sửa bộ phận vắt, cân bằng lồng' },
-                    { name: 'Sửa máy giặt không lên nguồn',      price: 300000, desc: 'Kiểm tra nguồn điện, board mạch điều khiển' },
-                    { name: 'Thay motor máy giặt',               price: 450000, desc: 'Thay motor chính hãng, bảo hành 6 tháng' },
-                    { name: 'Thay board mạch',                   price: 500000, desc: 'Thay board điều khiển máy giặt chính hãng' },
+                    { name: 'Sửa máy giặt không vắt', price: 280000, laborCost: 200000, materialCost:  80000, warranty: '3 tháng', duration: '1–2 giờ', desc: 'Khắc phục tình trạng máy giặt không vắt, vắt yếu do lỗi motor, dây curoa hoặc bo mạch.' },
+                    { name: 'Thay motor máy giặt',    price: 900000, laborCost: 200000, materialCost: 700000, warranty: '6 tháng', duration: '1–2 giờ', desc: 'Thay motor máy giặt chính hãng, giúp máy giặt hoạt động mạnh mẽ và ổn định trở lại.',
+                      brandPrices: [
+                        { name: 'Samsung',    materialCost: 700000, price:  900000 },
+                        { name: 'LG',         materialCost: 650000, price:  850000 },
+                        { name: 'Electrolux', materialCost: 800000, price: 1000000 },
+                      ]
+                    },
+                    { name: 'Vệ sinh máy giặt',       price: 350000, laborCost: 250000, materialCost: 100000, warranty: '1 tháng', duration: '1–2 giờ', desc: 'Vệ sinh lồng giặt, loại bỏ cặn bẩn, vi khuẩn và mùi hôi, bảo vệ sức khỏe gia đình.' },
                 ]
             },
             {
-                id: 3, name: 'Sửa Nhà Vệ Sinh', icon: 'fa-droplet', image: 'image/3.jpg',
-                desc: 'Thông tắc bồn cầu, sửa rò nước, thay thiết bị vệ sinh. Chống thấm nhà vệ sinh hiệu quả.',
+                id: 3, name: 'Nhà Vệ Sinh', icon: 'fa-droplet', image: 'image/3.jpg',
+                desc: 'Thông tắc bồn cầu, sửa rò nước, chống thấm nhà vệ sinh hiệu quả.',
                 items: [
-                    { name: 'Thông tắc bồn cầu',          price: 150000, desc: 'Thông tắc bằng máy chuyên dụng, đảm bảo thông hoàn toàn' },
-                    { name: 'Sửa rò rỉ nước',             price: 200000, desc: 'Tìm và xử lý điểm rò rỉ, thay gioăng cổ bồn' },
-                    { name: 'Thay vòi nước',              price: 150000, desc: 'Thay vòi rửa tay, vòi xịt vệ sinh các loại' },
-                    { name: 'Chống thấm nhà vệ sinh',     price: 800000, desc: 'Chống thấm sàn và tường bằng vật liệu chuyên dụng' },
-                    { name: 'Thay bồn cầu mới',           price: 600000, desc: 'Tháo bồn cũ, lắp bồn mới, bao gồm công lắp đặt' },
+                    { name: 'Thông tắc bồn cầu',     price: 200000, laborCost: 200000, materialCost:    null, warranty: '1 tháng',  duration: '30–60 phút', desc: 'Xử lý nhanh tình trạng bồn cầu bị nghẹt, thoát nước kém bằng thiết bị chuyên dụng.' },
+                    { name: 'Sửa bồn cầu rò nước',   price: 250000, laborCost: 150000, materialCost:  100000, warranty: '3 tháng',  duration: '1–2 giờ',    desc: 'Sửa chữa bồn cầu bị rò rỉ nước, chảy nước liên tục gây lãng phí và mất vệ sinh.' },
+                    { name: 'Chống thấm nhà vệ sinh', price:1500000, laborCost: 500000, materialCost: 1000000, warranty: '12 tháng', duration: '1–2 ngày',   desc: 'Chống thấm triệt để nhà vệ sinh, ngăn thấm nước, ẩm mốc và hư hỏng kết cấu.',
+                      brandPrices: [
+                        { name: 'Sika', materialCost: 1000000, price: 1500000 },
+                        { name: 'Kova', materialCost:  800000, price: 1300000 },
+                      ]
+                    },
                 ]
             },
             {
-                id: 4, name: 'Sửa Điện - Nước', icon: 'fa-bolt', image: 'image/6.jpg',
-                desc: 'Sửa chữa hệ thống điện nước trong nhà. Xử lý nhanh các sự cố chập điện, rò rỉ nước.',
+                id: 4, name: 'Điện Nước', icon: 'fa-bolt', image: 'image/6.jpg',
+                desc: 'Sửa chữa hệ thống điện nước trong nhà. Xử lý nhanh sự cố chập điện, rò rỉ nước, thay ống.',
                 items: [
-                    { name: 'Sửa chập điện, mất điện',          price: 200000, desc: 'Kiểm tra, xác định và xử lý điểm chập điện' },
-                    { name: 'Thay ổ cắm, công tắc',             price: 100000, desc: 'Thay ổ cắm, công tắc đèn các loại' },
-                    { name: 'Lắp đặt đèn, thiết bị điện',       price: 150000, desc: 'Lắp đèn LED, quạt trần, thiết bị điện' },
-                    { name: 'Sửa rò rỉ đường ống nước',         price: 250000, desc: 'Tìm điểm rò rỉ, thay ống, đầu nối' },
-                    { name: 'Lắp đặt đường ống nước',           price: 400000, desc: 'Lắp đặt đường ống nước mới, bao gồm phụ kiện' },
+                    { name: 'Sửa chập điện',      price: 180000, laborCost: 180000, materialCost:   null, warranty: '3 tháng',  duration: '1–2 giờ', desc: 'Sửa chữa sự cố chập điện, mất điện cục bộ, đảm bảo an toàn cho hệ thống điện gia đình.' },
+                    { name: 'Sửa rò rỉ nước',     price: 200000, laborCost: 200000, materialCost:   null, warranty: '3 tháng',  duration: '1–2 giờ', desc: 'Xử lý rò rỉ nước âm tường, đường ống nước bị bể, xì nước nhanh chóng và hiệu quả.' },
+                    { name: 'Thay đường ống nước', price: 400000, laborCost: 200000, materialCost: 200000, warranty: '12 tháng', duration: '2–4 giờ', desc: 'Thay mới đường ống nước cũ, hư hỏng, đảm bảo nguồn nước sạch và ổn định.',
+                      brandPrices: [
+                        { name: 'Tiền Phong', materialCost: 200000, price: 400000 },
+                        { name: 'Bình Minh',  materialCost: 180000, price: 380000 },
+                      ]
+                    },
                 ]
             },
             {
-                id: 5, name: 'Sửa Đồ Gia Dụng', icon: 'fa-plug', image: 'image/5.jpg',
-                desc: 'Sửa chữa các thiết bị gia dụng: tủ lạnh, tivi, bếp từ, lò vi sóng. Bảo hành chính hãng.',
+                id: 5, name: 'Đồ Gia Dụng', icon: 'fa-plug', image: 'image/5.jpg',
+                desc: 'Sửa chữa các thiết bị gia dụng: tủ lạnh, tivi, bếp từ. Bảo hành chính hãng.',
                 items: [
-                    { name: 'Sửa tủ lạnh',              price: 300000, desc: 'Sửa máy nén, board mạch, quạt, rò gas' },
-                    { name: 'Sửa tivi các hãng',        price: 350000, desc: 'Sửa màn hình, board main, nguồn tivi' },
-                    { name: 'Sửa bếp từ / bếp gas',    price: 250000, desc: 'Sửa bếp từ không lên, bếp gas không bắt lửa' },
-                    { name: 'Sửa lò vi sóng',           price: 200000, desc: 'Sửa lò vi sóng không nóng, không quay' },
-                    { name: 'Sửa máy hút mùi',          price: 300000, desc: 'Sửa quạt hút, thay bộ lọc, sửa motor' },
+                    { name: 'Sửa tủ lạnh', price: 300000, laborCost: 200000, materialCost: 100000, warranty: '3 tháng', duration: '1–2 giờ', desc: 'Sửa chữa các lỗi thường gặp ở tủ lạnh như không lạnh, kêu to, chảy nước.' },
+                    { name: 'Sửa tivi',    price: 250000, laborCost: 200000, materialCost:  50000, warranty: '3 tháng', duration: '1–2 giờ', desc: 'Sửa tivi bị mất hình, mất tiếng, không lên nguồn với đội ngũ kỹ thuật chuyên nghiệp.' },
+                    { name: 'Sửa bếp từ', price: 350000, laborCost: 250000, materialCost: 100000, warranty: '3 tháng', duration: '1–2 giờ', desc: 'Sửa chữa bếp từ không nóng, báo lỗi, không nhận nồi, đảm bảo an toàn khi sử dụng.' },
                 ]
             },
             {
                 id: 6, name: 'Cải Tạo Nhà', icon: 'fa-hammer', image: 'image/7.jpg',
-                desc: 'Thi công cải tạo nhà cửa: sơn nhà, trần thạch cao, lát nền, ốp tường. Tư vấn miễn phí.',
+                desc: 'Thi công cải tạo nhà cửa: sơn nhà, trần thạch cao, lát nền. Tư vấn miễn phí.',
                 items: [
-                    { name: 'Sơn nhà (giá/m²)',          price:   50000, desc: 'Sơn 2 lớp nền + 1 lớp hoàn thiện, đủ màu sắc' },
-                    { name: 'Làm trần thạch cao',        price:  200000, desc: 'Thi công trần thạch cao phẳng, giật cấp' },
-                    { name: 'Lát nền gạch (giá/m²)',     price:  150000, desc: 'Lát gạch ceramic, porcelain các kích thước' },
-                    { name: 'Ốp tường gạch (giá/m²)',    price:  200000, desc: 'Ốp tường phòng tắm, bếp, phòng khách' },
-                    { name: 'Cải tạo phòng bếp',         price: 5000000, desc: 'Cải tạo hoàn thiện phòng bếp, tủ bếp, ốp bếp' },
+                    { name: 'Sơn nhà',        price: 5000000, laborCost: 2000000, materialCost: 3000000, warranty: '12 tháng', duration: '2–5 ngày', desc: 'Sơn mới hoặc sơn lại nhà ở, căn hộ với vật liệu chất lượng cao, bền đẹp theo thời gian.',
+                      brandPrices: [
+                        { name: 'Dulux', materialCost: 3000000, price: 5000000 },
+                        { name: 'Jotun', materialCost: 3500000, price: 5500000 },
+                        { name: 'Kova',  materialCost: 2500000, price: 4500000 },
+                      ]
+                    },
+                    { name: 'Trần thạch cao', price: 7000000, laborCost: 3000000, materialCost: 4000000, warranty: '12 tháng', duration: '3–5 ngày', desc: 'Thi công trần thạch cao thẩm mỹ, cách âm, cách nhiệt, phù hợp nhà ở và văn phòng.',
+                      brandPrices: [
+                        { name: 'Gyproc', materialCost: 4000000, price: 7000000 },
+                        { name: 'USG',    materialCost: 4500000, price: 7500000 },
+                      ]
+                    },
+                    { name: 'Lát nền gạch',   price: 6000000, laborCost: 2500000, materialCost: 3500000, warranty: '12 tháng', duration: '3–5 ngày', desc: 'Lát nền gạch chuyên nghiệp, thẳng đẹp, bền chắc cho nhà ở và công trình.',
+                      brandPrices: [
+                        { name: 'Đồng Tâm',  materialCost: 3500000, price: 6000000 },
+                        { name: 'Viglacera', materialCost: 4000000, price: 6500000 },
+                      ]
+                    },
                 ]
             }
         ];
@@ -444,29 +476,103 @@
             minPrice.toLocaleString('vi-VN') + 'đ – ' + maxPrice.toLocaleString('vi-VN') + 'đ';
 
         // Render price list
+        const fmt = n => n ? n.toLocaleString('vi-VN') : null;
+
+        function buildBreakdown(laborCost, materialCost) {
+            if (!laborCost && !materialCost) return '';
+            const laborPart = laborCost
+                ? `<span class="sic-breakdown-item sic-bd-labor"><i class="fas fa-hammer"></i> Công: ${fmt(laborCost)}đ</span>` : '';
+            const sep = (laborCost && materialCost) ? `<span class="sic-breakdown-sep">+</span>` : '';
+            const matPart = materialCost
+                ? `<span class="sic-breakdown-item sic-bd-material"><i class="fas fa-box"></i> Vật liệu: ${fmt(materialCost)}đ</span>` : '';
+            return `<div class="sic-price-breakdown">${laborPart}${sep}${matPart}</div>`;
+        }
+
         const priceListEl = document.getElementById('servicePriceList');
         svc.items.forEach(item => {
+            // Dùng brandPrices[0] làm mặc định nếu có
+            const initPrice    = item.brandPrices ? item.brandPrices[0].price       : item.price;
+            const initMaterial = item.brandPrices ? item.brandPrices[0].materialCost : item.materialCost;
+
+            const timeBadge = item.duration
+                ? `<span class="sic-badge sic-badge--time"><i class="fas fa-clock"></i> ${item.duration}</span>` : '';
+            const warrantyBadge = item.warranty
+                ? `<span class="sic-badge sic-badge--warranty"><i class="fas fa-shield-alt"></i> BH ${item.warranty}</span>` : '';
+
+            // Brand selector buttons
+            let brandSelector = '';
+            if (item.brandPrices && item.brandPrices.length > 1) {
+                const btns = item.brandPrices.map((b, i) =>
+                    `<button class="brand-option${i === 0 ? ' active' : ''}"
+                        data-brand="${b.name}"
+                        data-price="${b.price}"
+                        data-material-cost="${b.materialCost}"
+                        data-labor-cost="${item.laborCost || 0}">
+                        ${b.name}
+                    </button>`
+                ).join('');
+                brandSelector = `
+                    <div class="brand-selector">
+                        <div class="brand-selector-label"><i class="fas fa-tag me-1"></i>Chọn hãng:</div>
+                        <div class="brand-options">${btns}</div>
+                    </div>`;
+            }
+
             priceListEl.insertAdjacentHTML('beforeend', `
                 <div class="service-item-card">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h3 class="service-item-name">
-                                <i class="fas fa-check-circle me-2" style="color:var(--primary);"></i>
-                                ${item.name}
-                            </h3>
-                            <p class="service-item-description">${item.desc}</p>
+                    <div class="sic-title-row">
+                        <h3 class="service-item-name">
+                            <i class="fas fa-check-circle me-2" style="color:var(--primary);"></i>
+                            ${item.name}
+                        </h3>
+                        <div class="sic-badges">${timeBadge}${warrantyBadge}</div>
+                    </div>
+                    <p class="service-item-description">${item.desc}</p>
+                    ${brandSelector}
+                    <div class="sic-footer">
+                        <div class="sic-price-block">
+                            <div class="sic-price-label">Giá dịch vụ</div>
+                            <div class="sic-total-price">${fmt(initPrice)}đ</div>
+                            ${buildBreakdown(item.laborCost, initMaterial)}
                         </div>
-                        <div class="col-md-4 text-md-end mt-2 mt-md-0">
-                            <div class="service-item-price">${item.price.toLocaleString('vi-VN')}đ</div>
-                            <button class="btn btn-gradient btn-sm booking-btn"
-                                data-service-name="${item.name}"
-                                data-service-price="${item.price}">
-                                <i class="fas fa-calendar-check me-1"></i> Đặt lịch
-                            </button>
-                        </div>
+                        <button class="btn btn-gradient btn-sm booking-btn"
+                            data-service-name="${item.name}"
+                            data-service-price="${initPrice}">
+                            <i class="fas fa-calendar-check me-1"></i> Đặt lịch
+                        </button>
                     </div>
                 </div>
             `);
+        });
+
+        // ===== Brand selection: cập nhật giá khi chọn hãng =====
+        priceListEl.addEventListener('click', function (e) {
+            const btn = e.target.closest('.brand-option');
+            if (!btn) return;
+            const card = btn.closest('.service-item-card');
+
+            // Toggle active
+            card.querySelectorAll('.brand-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const price      = parseInt(btn.dataset.price);
+            const matCost    = parseInt(btn.dataset.materialCost) || 0;
+            const laborCost  = parseInt(btn.dataset.laborCost)    || 0;
+
+            // Cập nhật giá tổng
+            card.querySelector('.sic-total-price').textContent = fmt(price) + 'đ';
+
+            // Cập nhật breakdown
+            const breakdownEl = card.querySelector('.sic-price-breakdown');
+            const newBreakdown = buildBreakdown(laborCost || null, matCost || null);
+            if (breakdownEl) {
+                breakdownEl.outerHTML = newBreakdown || '';
+            } else if (newBreakdown) {
+                card.querySelector('.sic-price-block').insertAdjacentHTML('beforeend', newBreakdown);
+            }
+
+            // Cập nhật booking button
+            card.querySelector('.booking-btn').dataset.servicePrice = price;
         });
 
         // Render gallery
@@ -535,7 +641,12 @@
         document.addEventListener('click', function (e) {
             const btn = e.target.closest('.booking-btn');
             if (!btn) return;
-            document.getElementById('selectedService').value = btn.getAttribute('data-service-name');
+            const card        = btn.closest('.service-item-card');
+            const activeBrand = card ? card.querySelector('.brand-option.active') : null;
+            const baseName    = btn.getAttribute('data-service-name');
+            const displayName = activeBrand ? `${baseName} (${activeBrand.dataset.brand})` : baseName;
+
+            document.getElementById('selectedService').value = displayName;
             document.getElementById('servicePrice').value    =
                 new Intl.NumberFormat('vi-VN').format(btn.getAttribute('data-service-price')) + 'đ';
             new bootstrap.Modal(document.getElementById('bookingModal')).show();

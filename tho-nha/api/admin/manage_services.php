@@ -37,6 +37,11 @@ try {
                     s.id AS service_id,
                     s.name AS service_name,
                     s.price,
+                    s.labor_cost,
+                    s.material_cost,
+                    s.brand,
+                    s.warranty,
+                    s.duration,
                     s.description AS service_description,
                     s.is_active AS service_active
                 FROM service_categories sc
@@ -64,11 +69,16 @@ try {
 
                 if ($row['service_id']) {
                     $categories[$catId]['services'][] = [
-                        'id' => $row['service_id'],
-                        'name' => $row['service_name'],
-                        'price' => $row['price'],
-                        'description' => $row['service_description'],
-                        'is_active' => $row['service_active']
+                        'id'            => $row['service_id'],
+                        'name'          => $row['service_name'],
+                        'price'         => $row['price'],
+                        'labor_cost'    => $row['labor_cost'],
+                        'material_cost' => $row['material_cost'],
+                        'brand'         => $row['brand'],
+                        'warranty'      => $row['warranty'],
+                        'duration'      => $row['duration'],
+                        'description'   => $row['service_description'],
+                        'is_active'     => $row['service_active']
                     ];
                 }
             }
@@ -135,31 +145,41 @@ try {
 
         /* ==================== SERVICE ==================== */
         case 'add_service':
-            $category_id = intval($data['category_id'] ?? 0);
-            $name = trim($data['name'] ?? '');
-            $price = floatval($data['price'] ?? 0);
-            $description = trim($data['description'] ?? '');
+            $category_id    = intval($data['category_id'] ?? 0);
+            $name           = trim($data['name'] ?? '');
+            $price          = floatval($data['price'] ?? 0);
+            $labor_cost     = trim($data['labor_cost'] ?? '') ?: null;
+            $material_cost  = trim($data['material_cost'] ?? '') ?: null;
+            $brand          = trim($data['brand'] ?? '') ?: null;
+            $warranty       = trim($data['warranty'] ?? '') ?: null;
+            $duration       = trim($data['duration'] ?? '') ?: null;
+            $description    = trim($data['description'] ?? '');
 
             if (!$category_id || $name === '' || !$price) {
                 throw new Exception('Thiếu thông tin');
             }
 
             $stmt = $conn->prepare(
-                "INSERT INTO services (category_id, name, price, description)
-                 VALUES (?, ?, ?, ?)"
+                "INSERT INTO services (category_id, name, price, labor_cost, material_cost, brand, warranty, duration, description)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
-            $stmt->bind_param("isds", $category_id, $name, $price, $description);
+            $stmt->bind_param("isdssssss", $category_id, $name, $price, $labor_cost, $material_cost, $brand, $warranty, $duration, $description);
             $stmt->execute();
 
             echo json_encode(['status'=>'success','message'=>'Thêm dịch vụ thành công']);
             break;
 
         case 'update_service':
-            $id = intval($data['id'] ?? 0);
-            $category_id = intval($data['category_id'] ?? 0);
-            $name = trim($data['name'] ?? '');
-            $price = floatval($data['price'] ?? 0);
-            $description = trim($data['description'] ?? '');
+            $id             = intval($data['id'] ?? 0);
+            $category_id    = intval($data['category_id'] ?? 0);
+            $name           = trim($data['name'] ?? '');
+            $price          = floatval($data['price'] ?? 0);
+            $labor_cost     = trim($data['labor_cost'] ?? '') ?: null;
+            $material_cost  = trim($data['material_cost'] ?? '') ?: null;
+            $brand          = trim($data['brand'] ?? '') ?: null;
+            $warranty       = trim($data['warranty'] ?? '') ?: null;
+            $duration       = trim($data['duration'] ?? '') ?: null;
+            $description    = trim($data['description'] ?? '');
 
             if (!$id || !$category_id || $name === '' || !$price) {
                 throw new Exception('Thông tin không hợp lệ');
@@ -167,10 +187,10 @@ try {
 
             $stmt = $conn->prepare(
                 "UPDATE services
-                 SET category_id=?, name=?, price=?, description=?
+                 SET category_id=?, name=?, price=?, labor_cost=?, material_cost=?, brand=?, warranty=?, duration=?, description=?
                  WHERE id=?"
             );
-            $stmt->bind_param("isdsi", $category_id, $name, $price, $description, $id);
+            $stmt->bind_param("isdssssssi", $category_id, $name, $price, $labor_cost, $material_cost, $brand, $warranty, $duration, $description, $id);
             $stmt->execute();
 
             echo json_encode(['status'=>'success','message'=>'Cập nhật dịch vụ thành công']);
