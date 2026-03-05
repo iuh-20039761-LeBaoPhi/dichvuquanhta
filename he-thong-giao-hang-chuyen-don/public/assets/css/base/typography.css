@@ -1,0 +1,10 @@
+/* ===== TYPOGRAPHY ===== */
+/* Quản lý font chữ và kiểu chữ toàn trang */
+
+body {
+  font-family: "Poppins", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Bạn có thể thêm các quy định về h1-h6, p, a tại đây sau này */
