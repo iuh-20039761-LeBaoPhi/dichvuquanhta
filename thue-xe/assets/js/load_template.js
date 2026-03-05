@@ -13,8 +13,8 @@ function injectBaseSEO() {
     const seo = window.PAGE_SEO || {};
     const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe';
 
-    const title = seo.title || 'CarRental – Thuê Xe Uy Tín TP.HCM | Giao Xe Tận Nơi';
-    const desc  = seo.desc  || 'CarRental – dịch vụ cho thuê xe tự lái và có tài xế uy tín tại TP.HCM. Hơn 100 dòng xe từ 450.000đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ. Hotline: 0123 456 789.';
+    const title = seo.title || 'Thuê Xe – Thuê Xe Uy Tín TP.HCM | Giao Xe Tận Nơi';
+    const desc  = seo.desc  || 'Thuê Xe – dịch vụ cho thuê xe tự lái và có tài xế uy tín tại TP.HCM. Hơn 100 dòng xe từ 450.000đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ. Hotline: 0123 456 789.';
     const keys  = seo.keys  || 'thuê xe tphcm, thuê xe tự lái, cho thuê xe có tài xế, thuê xe giá rẻ, car rental hcm';
     const url   = seo.url   || SITE_BASE + '/';
     const img   = seo.img   || SITE_BASE + '/assets/images/cars/camry.jpg';
@@ -33,7 +33,7 @@ function injectBaseSEO() {
     setMeta('meta[name="description"]',       'content', desc);
     setMeta('meta[name="keywords"]',           'content', keys);
     setMeta('meta[name="robots"]',             'content', 'index, follow');
-    setMeta('meta[name="author"]',             'content', 'CarRental TP.HCM');
+    setMeta('meta[name="author"]',             'content', 'Thuê Xe TP.HCM');
     setMeta('meta[name="geo.region"]',         'content', 'VN-SG');
     setMeta('meta[name="geo.placename"]',      'content', 'Thành phố Hồ Chí Minh');
 
@@ -43,7 +43,7 @@ function injectBaseSEO() {
     setMeta('meta[property="og:description"]', 'content', desc);
     setMeta('meta[property="og:image"]',       'content', img);
     setMeta('meta[property="og:locale"]',      'content', 'vi_VN');
-    setMeta('meta[property="og:site_name"]',   'content', 'CarRental');
+    setMeta('meta[property="og:site_name"]',   'content', 'Thuê Xe');
 
     setMeta('meta[name="twitter:card"]',        'content', 'summary_large_image');
     setMeta('meta[name="twitter:title"]',       'content', title);

@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title id="pageTitle">Chi Tiết Xe – CarRental TP.HCM</title>
-  <meta name="description" id="metaDesc" content="Xem thông tin chi tiết xe cho thuê tại CarRental TP.HCM. Đặt xe trực tuyến. Hotline: 0123 456 789." />
+  <title id="pageTitle">Chi Tiết Xe – Thuê Xe TP.HCM</title>
+  <meta name="description" id="metaDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe TP.HCM. Đặt xe trực tuyến. Hotline: 0123 456 789." />
   <meta name="keywords" id="metaKeys" content="thuê xe tphcm, car rental hcm, chi tiết xe cho thuê" />
   <meta name="robots" content="index, follow" />
-  <meta name="author" content="CarRental TP.HCM" />
+  <meta name="author" content="Thuê Xe TP.HCM" />
   <meta name="geo.region" content="VN-SG" />
   <meta name="geo.placename" content="Thành phố Hồ Chí Minh" />
   <meta name="theme-color" content="#667eea" />
@@ -17,16 +17,16 @@
   <!-- Open Graph -->
   <meta property="og:type" content="product" />
   <meta property="og:url" id="ogUrl" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/car_detail.html" />
-  <meta property="og:title" id="ogTitle" content="Chi Tiết Xe – CarRental TP.HCM" />
-  <meta property="og:description" id="ogDesc" content="Xem thông tin chi tiết xe cho thuê tại CarRental TP.HCM. Đặt xe trực tuyến." />
+  <meta property="og:title" id="ogTitle" content="Chi Tiết Xe – Thuê Xe TP.HCM" />
+  <meta property="og:description" id="ogDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe TP.HCM. Đặt xe trực tuyến." />
   <meta property="og:image" id="ogImage" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/camry.jpg" />
   <meta property="og:locale" content="vi_VN" />
-  <meta property="og:site_name" content="CarRental" />
+  <meta property="og:site_name" content="Thuê Xe" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" id="twTitle" content="Chi Tiết Xe – CarRental TP.HCM" />
-  <meta name="twitter:description" id="twDesc" content="Xem thông tin chi tiết xe cho thuê tại CarRental TP.HCM." />
+  <meta name="twitter:title" id="twTitle" content="Chi Tiết Xe – Thuê Xe TP.HCM" />
+  <meta name="twitter:description" id="twDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe TP.HCM." />
   <meta name="twitter:image" id="twImage" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/camry.jpg" />
 
   <!-- Schema.org BreadcrumbList -->
@@ -64,9 +64,12 @@
 <header class="header-gradient sticky-top">
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">
-        <i class="fas fa-car me-2"></i>CarRental
-      </a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="../index.html">
+          <img src="assets/images/logo.png" alt="Logo" style="height:56px;object-fit:contain;mix-blend-mode:multiply;">
+        </a>
+        <a class="navbar-brand fw-bold mb-0 text-white" href="index.html" style="font-size:1.3rem;letter-spacing:1px;">Thuê Xe</a>
+      </div>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -77,11 +80,6 @@
           <li class="nav-item"><a class="nav-link" href="index.html#services">Dịch vụ</a></li>
           <li class="nav-item"><a class="nav-link" href="index.html#about">Giới thiệu</a></li>
           <li class="nav-item"><a class="nav-link" href="index.html#contact">Liên hệ</a></li>
-          <li class="nav-item">
-            <a class="nav-link" href="../index.html">
-              <i class="fas fa-globe me-1"></i>GlobalCare
-            </a>
-          </li>
         </ul>
       </div>
     </div>
@@ -136,7 +134,7 @@
   <div class="container">
     <div class="row g-4">
       <div class="col-lg-4 col-md-6">
-        <h5 class="fw-bold mb-3"><i class="fas fa-car me-2"></i>CarRental</h5>
+        <h5 class="fw-bold mb-3"><i class="fas fa-car me-2"></i>Thuê Xe</h5>
         <p style="color:rgba(255,255,255,.7)">Dịch vụ cho thuê xe uy tín, chuyên nghiệp hàng đầu TP.HCM.</p>
       </div>
       <div class="col-lg-4 col-md-6">
@@ -157,7 +155,7 @@
     </div>
     <hr style="border-color:rgba(255,255,255,.1);margin-top:32px" />
     <p class="text-center mb-0" style="color:rgba(255,255,255,.5);font-size:.875rem">
-      &copy; 2026 CarRental. Bản quyền thuộc về công ty.
+      &copy; 2026 Thuê Xe. Bản quyền thuộc về công ty.
     </p>
   </div>
 </footer>
@@ -227,7 +225,7 @@ function updateSEO(car) {
     const carUrl = `${SITE_BASE}/car_detail.html?id=${car.id}`;
     const carImg = `${SITE_BASE}/assets/images/cars/${car.main_image}`;
     const title = `${car.name} – Thuê Xe TP.HCM | ${fmt(car.price_per_day)}đ/ngày`;
-    const desc = `Thuê ${car.name} tại CarRental TP.HCM. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá ${fmt(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
+    const desc = `Thuê ${car.name} tại Thuê Xe TP.HCM. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá ${fmt(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
     const keys = `thuê ${car.name.toLowerCase()}, thuê ${car.brand.toLowerCase()} tphcm, car rental hcm`;
 
     document.title = title;
@@ -270,7 +268,7 @@ function updateSEO(car) {
             "price": car.price_per_day,
             "priceSpecification": { "@type": "UnitPriceSpecification", "unitText": "Ngày" },
             "availability": "https://schema.org/InStock",
-            "seller": { "@type": "Organization", "name": "CarRental" }
+            "seller": { "@type": "Organization", "name": "Thuê Xe" }
         }
     };
     document.getElementById('carSchema').textContent = JSON.stringify(schema, null, 2);

@@ -5,6 +5,15 @@
 let currentCar = null;
 let currentImages = [];
 
+const ADDON_PRICES = {
+    'Giao xe tận nơi':   { price: 100000, unit: 'chuyến' },
+    'Bảo hiểm mở rộng':  { price: 150000, unit: 'ngày' },
+    'Xe có tài xế':       { price: 300000, unit: 'ngày' },
+    'GPS định vị':        { price:  50000, unit: 'chuyến' },
+    'Ghế trẻ em':         { price: 100000, unit: 'chuyến' },
+    'WiFi di động':       { price:  80000, unit: 'chuyến' },
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
     const carId = Utils.getUrlParam('id');
     
@@ -34,7 +43,7 @@ async function loadCarDetail(carId) {
         const carUrl = `${SITE_BASE}/car_detail.html?id=${car.id}`;
         const carImg = `${SITE_BASE}/assets/images/cars/${car.main_image}`;
         const carTitle = `${car.name} – Thuê Xe TP.HCM | ${new Intl.NumberFormat('vi-VN').format(car.price_per_day)}đ/ngày`;
-        const carDesc = `Thuê ${car.name} tại CarRental TP.HCM. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá chỉ từ ${new Intl.NumberFormat('vi-VN').format(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
+        const carDesc = `Thuê ${car.name} tại Thuê Xe TP.HCM. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá chỉ từ ${new Intl.NumberFormat('vi-VN').format(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
         document.title = carTitle;
         const setMeta = (sel, attr, val) => { const el = document.querySelector(sel); if (el) el.setAttribute(attr, val); };
         setMeta('meta[name="description"]', 'content', carDesc);
@@ -293,6 +302,14 @@ function setupBookingModal(car) {
         document.body.insertAdjacentHTML('beforeend', modal);
     }
     
+    // Setup addon price recalculation on checkbox change or date change
+    document.querySelectorAll('input[name="addon_services"]').forEach(cb => {
+        cb.addEventListener('change', () => recalcAddonSummary(car.price_per_day));
+    });
+    document.getElementById('bookingModal').addEventListener('show.bs.modal', () => {
+        recalcAddonSummary(car.price_per_day);
+    });
+
     // Setup form submission
     document.getElementById('bookingFormFull').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -320,15 +337,25 @@ function createBookingModal() {
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Số điện thoại *</label>
-                                    <input type="tel" class="form-control" name="customer_phone" required>
+                                    <input type="tel" class="form-control" name="customer_phone" required
+                                           pattern="^0[3-9][0-9]{8}$"
+                                           title="Số điện thoại VN hợp lệ gồm 10 chữ số"
+                                           placeholder="0901234567">
+                                    <div class="invalid-feedback">Số điện thoại phải gồm 10 chữ số, bắt đầu bằng 03x / 05x / 07x / 08x / 09x</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Email *</label>
-                                    <input type="email" class="form-control" name="customer_email" required>
+                                    <input type="email" class="form-control" name="customer_email" required
+                                           placeholder="example@email.com">
+                                    <div class="invalid-feedback">Email không hợp lệ</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">CMND/CCCD</label>
-                                    <input type="text" class="form-control" name="id_number">
+                                    <input type="text" class="form-control" name="id_number"
+                                           pattern="^[0-9]{9}$|^[0-9]{12}$"
+                                           title="CMND gồm 9 số hoặc CCCD gồm 12 số"
+                                           placeholder="9 hoặc 12 chữ số" maxlength="12">
+                                    <div class="invalid-feedback">CMND gồm 9 số hoặc CCCD gồm 12 số</div>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label">Địa chỉ *</label>
@@ -342,8 +369,87 @@ function createBookingModal() {
                                     <label class="form-label">Ghi chú</label>
                                     <textarea class="form-control" name="notes" rows="2"></textarea>
                                 </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Dịch vụ đi kèm <span class="text-muted fw-normal">(không bắt buộc)</span></label>
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <div class="form-check border rounded p-2 h-100">
+                                                <input class="form-check-input" type="checkbox" name="addon_services" value="Giao xe tận nơi" id="svcDelivery">
+                                                <label class="form-check-label w-100" for="svcDelivery">
+                                                    <i class="fas fa-map-marker-alt text-primary me-1"></i> Giao xe tận nơi
+                                                    <span class="float-end text-primary fw-semibold">+100.000đ/chuyến</span>
+                                                    <small class="d-block text-muted">Giao xe đến tận địa chỉ của bạn</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check border rounded p-2 h-100">
+                                                <input class="form-check-input" type="checkbox" name="addon_services" value="Bảo hiểm mở rộng" id="svcInsurance">
+                                                <label class="form-check-label w-100" for="svcInsurance">
+                                                    <i class="fas fa-shield-alt text-primary me-1"></i> Bảo hiểm mở rộng
+                                                    <span class="float-end text-primary fw-semibold">+150.000đ/ngày</span>
+                                                    <small class="d-block text-muted">Bảo hiểm toàn diện, an tâm hơn</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check border rounded p-2 h-100">
+                                                <input class="form-check-input" type="checkbox" name="addon_services" value="Xe có tài xế" id="svcDriver">
+                                                <label class="form-check-label w-100" for="svcDriver">
+                                                    <i class="fas fa-user-tie text-primary me-1"></i> Xe có tài xế
+                                                    <span class="float-end text-primary fw-semibold">+300.000đ/ngày</span>
+                                                    <small class="d-block text-muted">Tài xế chuyên nghiệp, am hiểu đường</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check border rounded p-2 h-100">
+                                                <input class="form-check-input" type="checkbox" name="addon_services" value="GPS định vị" id="svcGPS">
+                                                <label class="form-check-label w-100" for="svcGPS">
+                                                    <i class="fas fa-map-marker-alt text-primary me-1"></i> GPS định vị
+                                                    <span class="float-end text-primary fw-semibold">+50.000đ/chuyến</span>
+                                                    <small class="d-block text-muted">Thiết bị dẫn đường chính xác</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check border rounded p-2 h-100">
+                                                <input class="form-check-input" type="checkbox" name="addon_services" value="Ghế trẻ em" id="svcBabySeat">
+                                                <label class="form-check-label w-100" for="svcBabySeat">
+                                                    <i class="fas fa-baby text-primary me-1"></i> Ghế trẻ em
+                                                    <span class="float-end text-primary fw-semibold">+100.000đ/chuyến</span>
+                                                    <small class="d-block text-muted">Ghế an toàn cho bé dưới 10 tuổi</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check border rounded p-2 h-100">
+                                                <input class="form-check-input" type="checkbox" name="addon_services" value="WiFi di động" id="svcWifi">
+                                                <label class="form-check-label w-100" for="svcWifi">
+                                                    <i class="fas fa-wifi text-primary me-1"></i> WiFi di động
+                                                    <span class="float-end text-primary fw-semibold">+80.000đ/chuyến</span>
+                                                    <small class="d-block text-muted">Kết nối internet ổn định suốt chuyến đi</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            
+
+                            <div id="addonSummary" class="mt-3 p-3 bg-light rounded" style="display:none;">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="text-muted">Tiền xe:</span>
+                                    <span id="summaryCarPrice">0đ</span>
+                                </div>
+                                <div id="summaryAddonList"></div>
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between fw-bold">
+                                    <span>Tổng cộng:</span>
+                                    <span class="text-primary" id="summaryTotal">0đ</span>
+                                </div>
+                                <small class="text-muted">* Giá có thể thay đổi tuỳ thực tế</small>
+                            </div>
+
                             <div class="mt-3">
                                 <button type="submit" class="btn btn-gradient w-100">
                                     <i class="fas fa-check me-2"></i>Xác nhận đặt xe
@@ -369,7 +475,38 @@ async function submitBooking(car) {
         showBookingAlert('Vui lòng chọn ngày nhận và trả xe!', 'danger');
         return;
     }
+    if(returnDate <= pickupDate) {
+        showBookingAlert('Ngày trả xe phải sau ngày nhận xe!', 'danger');
+        return;
+    }
+
+    // Validate form fields
+    const phone = formData.get('customer_phone');
+    const email = formData.get('customer_email');
+    const idNumber = formData.get('id_number');
+    if(!/^0[3-9][0-9]{8}$/.test(phone)) {
+        showBookingAlert('Số điện thoại không hợp lệ! Vui lòng nhập 10 chữ số bắt đầu bằng 03x / 05x / 07x / 08x / 09x.', 'danger');
+        return;
+    }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showBookingAlert('Email không hợp lệ!', 'danger');
+        return;
+    }
+    if(idNumber && !/^[0-9]{9}$|^[0-9]{12}$/.test(idNumber)) {
+        showBookingAlert('CMND/CCCD không hợp lệ! Phải gồm 9 hoặc 12 chữ số.', 'danger');
+        return;
+    }
     
+    // Collect selected addon services and calculate addon total
+    const addonServices = [...document.querySelectorAll('input[name="addon_services"]:checked')]
+        .map(cb => cb.value);
+    const days = Utils.calculateDays(pickupDate, returnDate) || 0;
+    const addonTotal = addonServices.reduce((sum, name) => {
+        const info = ADDON_PRICES[name];
+        if (!info) return sum;
+        return sum + (info.unit === 'ngày' ? info.price * days : info.price);
+    }, 0);
+
     // Prepare data
     const bookingData = {
         car_id: car.id,
@@ -382,7 +519,10 @@ async function submitBooking(car) {
         return_date: returnDate,
         pickup_location: formData.get('pickup_location'),
         notes: formData.get('notes'),
-        price_per_day: car.price_per_day
+        price_per_day: car.price_per_day,
+        addon_services: addonServices,
+        addon_total: addonTotal,
+        total_price: days * car.price_per_day + addonTotal
     };
     
     // Show loading
@@ -395,14 +535,25 @@ async function submitBooking(car) {
         const result = await API.bookings.create(bookingData);
 
         if(result.success) {
-            // Redirect to success page
+            // Save addon info for success page
+            sessionStorage.setItem('lastBookingAddons', JSON.stringify({
+                services: addonServices,
+                addonTotal: addonTotal,
+                totalPrice: bookingData.total_price,
+                days: days
+            }));
             window.location.href = `index.php?page=booking_success&id=${result.booking_id}`;
         } else if(result.demo) {
             // Static / no-server fallback: show demo success
+            const addonLines = addonServices.length
+                ? `<br><br><strong>Dịch vụ đi kèm:</strong> ${addonServices.join(', ')}`
+                : '';
+            const totalLine = `<br><strong>Tổng tiền ước tính: ${Utils.formatPrice(bookingData.total_price)}đ</strong>`;
             showBookingAlert(`
                 <i class="fas fa-check-circle me-2"></i>
                 <strong>Đặt xe thành công! (Demo)</strong><br>
-                Cảm ơn bạn đã quan tâm đến <strong>${car.name}</strong>.<br>
+                Cảm ơn bạn đã quan tâm đến <strong>${car.name}</strong>.
+                ${addonLines}${totalLine}<br>
                 Để hoàn tất đặt xe, vui lòng gọi hotline <strong>0123 456 789</strong> – hỗ trợ 24/7.
             `, 'success');
             submitBtn.disabled = false;
@@ -417,6 +568,37 @@ async function submitBooking(car) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
     }
+}
+
+function recalcAddonSummary(pricePerDay) {
+    const pickup = document.getElementById('pickupDate').value;
+    const ret    = document.getElementById('returnDate').value;
+    const days   = (pickup && ret && ret > pickup) ? Utils.calculateDays(pickup, ret) : 0;
+
+    const checked = [...document.querySelectorAll('input[name="addon_services"]:checked')];
+    const summaryEl = document.getElementById('addonSummary');
+
+    if (!days && !checked.length) { summaryEl.style.display = 'none'; return; }
+
+    const carTotal = days * pricePerDay;
+    let addonTotal = 0;
+    let addonLines = '';
+
+    checked.forEach(cb => {
+        const info = ADDON_PRICES[cb.value];
+        if (!info) return;
+        const cost = info.unit === 'ngày' ? info.price * days : info.price;
+        addonTotal += cost;
+        addonLines += `<div class="d-flex justify-content-between mb-1">
+            <span class="text-muted">${cb.value}:</span>
+            <span>+${Utils.formatPrice(cost)}đ</span>
+        </div>`;
+    });
+
+    document.getElementById('summaryCarPrice').textContent = Utils.formatPrice(carTotal) + 'đ';
+    document.getElementById('summaryAddonList').innerHTML = addonLines;
+    document.getElementById('summaryTotal').textContent = Utils.formatPrice(carTotal + addonTotal) + 'đ';
+    summaryEl.style.display = 'block';
 }
 
 function showBookingAlert(message, type) {

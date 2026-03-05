@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FastGo - Dịch vụ chuyển văn phòng chuyên nghiệp</title>
+    <meta
+      name="description"
+      content="Dịch vụ chuyển văn phòng FastGo giúp doanh nghiệp di dời bàn ghế, hồ sơ, thiết bị IT nhanh chóng, an toàn và đúng tiến độ."
+    />
+    <meta
+      name="keywords"
+      content="chuyển văn phòng, dịch vụ chuyển văn phòng, di dời văn phòng, vận chuyển thiết bị văn phòng, FastGo"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0A2A66",
+              secondary: { light: "#0F3B99", dark: "#0D3580" },
+              accent: "#FF7A00",
+              bgLight: "#F5F7FB",
+            },
+            borderRadius: { twelve: "12px" },
+            spacing: { section: "80px" },
+          },
+        },
+        corePlugins: { preflight: false },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #f5f7fb;
+      }
+      main.office-page {
+        padding: 0;
+        max-width: none;
+        margin: 0;
+      }
+      main.office-page > section {
+        margin-bottom: 0;
+      }
+      .hero-gradient {
+        background: linear-gradient(135deg, #0d3580 0%, #0f3b99 100%);
+      }
+      .card-shadow {
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.07);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="office-page">
+      <section class="hero-gradient text-white overflow-hidden">
+        <div
+          class="max-w-[1200px] mx-auto px-6 py-20 grid lg:grid-cols-2 gap-12 items-center"
+        >
+          <div>
+            <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-6">
+              Dịch vụ chuyển văn phòng<br />
+              <span class="text-accent"><u>Chuyên nghiệp và An toàn</u></span>
+            </h1>
+            <p class="text-lg text-blue-100 mb-8 max-w-xl">
+              Di dời trọn gói thiết bị văn phòng, máy tính và hồ sơ quan trọng.
+              Cam kết đúng tiến độ, bảo mật dữ liệu và hạn chế tối đa gián đoạn
+              vận hành.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <a
+                href="#"
+                onclick="openBookingModal('moving_office'); return false;"
+                class="bg-accent hover:bg-orange-600 text-white px-8 py-4 rounded-twelve font-semibold text-lg transition-transform hover:scale-105 inline-block text-center no-underline"
+              >
+                Đặt dịch vụ
+              </a>
+              <a
+                href="#bao-gia"
+                class="border border-white/25 bg-white/5 hover:bg-white/10 text-blue-100 hover:text-white px-8 py-4 rounded-twelve font-semibold text-lg transition-all inline-block text-center no-underline"
+              >
+                Nhận báo giá
+              </a>
+            </div>
+          </div>
+          <div class="relative min-w-0">
+            <img
+              alt="Dịch vụ chuyển văn phòng FastGo cho doanh nghiệp tại TP.HCM"
+              class="block w-full max-w-full h-auto rounded-twelve shadow-2xl"
+              src="assets/images/hero-van-phong.png"
+            />
+            <p class="mt-3 text-center text-sm text-blue-100/80">
+              Ảnh: FastGo di dời văn phòng nhanh, an toàn và đúng kế hoạch.
+            </p>
+            <div
+              class="absolute -bottom-6 -left-6 bg-white p-4 rounded-twelve card-shadow hidden lg:block"
+            >
+              <p class="text-slate-900 font-bold leading-none">5000+</p>
+              <p class="text-slate-500 text-xs mt-1">Doanh nghiệp tin dùng</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-section bg-white">
+        <div class="max-w-[860px] mx-auto px-6 text-center">
+          <h2 class="text-3xl font-bold text-primary mb-6">
+            Giải pháp di dời toàn diện cho doanh nghiệp
+          </h2>
+          <p class="text-slate-600 text-lg leading-relaxed">
+            FastGo triển khai dịch vụ theo quy trình kỹ thuật: khảo sát thực
+            địa, phân loại tài sản, đóng gói chuyên dụng, vận chuyển và lắp đặt
+            theo sơ đồ. Mọi hạng mục đều có checklist bàn giao rõ ràng.
+          </p>
+        </div>
+      </section>
+
+      <section class="py-section bg-bgLight">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-primary">
+              Lợi ích khi chọn FastGo
+            </h2>
+            <div class="w-20 h-1.5 bg-accent mx-auto mt-4 rounded-full"></div>
+          </div>
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-8 rounded-twelve card-shadow text-center">
+              <div
+                class="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="font-bold text-lg mb-3">Bảo vệ thiết bị IT</h3>
+              <p class="text-slate-500 text-sm">
+                Đóng gói chống sốc cho PC, server, máy in và thiết bị mạng.
+              </p>
+            </div>
+            <div class="bg-white p-8 rounded-twelve card-shadow text-center">
+              <div
+                class="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="font-bold text-lg mb-3">Di dời đúng tiến độ</h3>
+              <p class="text-slate-500 text-sm">
+                Lên lịch theo khung giờ phù hợp để không ảnh hưởng vận hành.
+              </p>
+            </div>
+            <div class="bg-white p-8 rounded-twelve card-shadow text-center">
+              <div
+                class="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="font-bold text-lg mb-3">Đóng gói chuyên nghiệp</h3>
+              <p class="text-slate-500 text-sm">
+                Vật tư tiêu chuẩn và nhãn phân loại rõ ràng theo khu vực.
+              </p>
+            </div>
+            <div class="bg-white p-8 rounded-twelve card-shadow text-center">
+              <div
+                class="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="font-bold text-lg mb-3">Đội ngũ giàu kinh nghiệm</h3>
+              <p class="text-slate-500 text-sm">
+                Nhân sự am hiểu tháo lắp nội thất và hạ tầng văn phòng.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-section bg-white">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <h2 class="text-3xl font-bold text-primary text-center mb-14">
+            Quy trình 4 bước
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-accent text-white rounded-full flex items-center justify-center mx-auto mb-5 font-bold text-xl"
+              >
+                1
+              </div>
+              <h4 class="font-bold mb-2">Khảo sát</h4>
+              <p class="text-slate-500 text-sm">
+                Đánh giá khối lượng và hiện trạng văn phòng.
+              </p>
+            </div>
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-accent text-white rounded-full flex items-center justify-center mx-auto mb-5 font-bold text-xl"
+              >
+                2
+              </div>
+              <h4 class="font-bold mb-2">Lập kế hoạch</h4>
+              <p class="text-slate-500 text-sm">
+                Xác định lộ trình, nhân sự và phương tiện phù hợp.
+              </p>
+            </div>
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-accent text-white rounded-full flex items-center justify-center mx-auto mb-5 font-bold text-xl"
+              >
+                3
+              </div>
+              <h4 class="font-bold mb-2">Đóng gói và vận chuyển</h4>
+              <p class="text-slate-500 text-sm">
+                Thực hiện theo checklist và mã hóa từng khu vực.
+              </p>
+            </div>
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-accent text-white rounded-full flex items-center justify-center mx-auto mb-5 font-bold text-xl"
+              >
+                4
+              </div>
+              <h4 class="font-bold mb-2">Lắp đặt và bàn giao</h4>
+              <p class="text-slate-500 text-sm">
+                Sắp xếp tại điểm mới và nghiệm thu theo biên bản.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-section bg-bgLight">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <h2 class="text-2xl font-bold text-primary mb-8">
+            Hạng mục tiêu biểu
+          </h2>
+          <div class="grid md:grid-cols-3 gap-6">
+            <div
+              class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
+            >
+              <div
+                class="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center text-accent"
+              >
+                <svg
+                  class="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h5 class="font-bold text-primary mb-2">Nội thất văn phòng</h5>
+                <p class="text-sm text-slate-500">
+                  Bàn ghế, tủ hồ sơ, quầy lễ tân, vách ngăn.
+                </p>
+              </div>
+            </div>
+            <div
+              class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
+            >
+              <div
+                class="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center text-accent"
+              >
+                <svg
+                  class="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h5 class="font-bold text-primary mb-2">Thiết bị công nghệ</h5>
+                <p class="text-sm text-slate-500">
+                  Máy tính, máy in, server, switch mạng, thiết bị hội họp.
+                </p>
+              </div>
+            </div>
+            <div
+              class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
+            >
+              <div
+                class="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center text-accent"
+              >
+                <svg
+                  class="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h5 class="font-bold text-primary mb-2">Hồ sơ tài liệu</h5>
+                <p class="text-sm text-slate-500">
+                  Đóng thùng, niêm phong, dán nhãn theo phòng ban.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="bao-gia" class="py-section bg-white">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-primary">Báo Giá Tham Khảo</h2>
+            <p class="text-slate-600 mt-4">
+              Dành cho dịch vụ Chuyển Văn Phòng (ưu tiên nhanh, chính xác, đúng kế hoạch).
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-50 border border-slate-200 rounded-twelve p-6">
+              <p class="text-sm font-semibold uppercase tracking-wide text-accent mb-2">
+                Đơn giá ước tính
+              </p>
+              <p class="text-3xl font-bold text-primary mb-3">300.000đ - 500.000đ</p>
+              <p class="text-slate-600">/ vị trí ngồi</p>
+              <p class="text-slate-600 mt-4">
+                Báo giá thực tế dựa trên số lượng vị trí làm việc, khối lượng tài sản
+                và yêu cầu triển khai.
+              </p>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 rounded-twelve p-6">
+              <p class="text-sm font-semibold uppercase tracking-wide text-accent mb-2">
+                Đặc điểm triển khai
+              </p>
+              <ul class="list-disc pl-5 text-slate-700 space-y-2">
+                <li><strong>Hạng mục IT:</strong> tháo lắp máy tính, server, hệ thống mạng.</li>
+                <li><strong>Timeline:</strong> có thể làm đêm/cuối tuần để không ảnh hưởng giờ hành chính.</li>
+                <li><strong>Báo giá:</strong> dựa trên inventory chi tiết và sơ đồ bố trí văn phòng mới.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-6 bg-blue-50 border-l-4 border-primary rounded-r-twelve p-5">
+            <p class="font-semibold text-primary mb-2">Lưu ý chung</p>
+            <ul class="list-disc pl-5 text-slate-700 space-y-2">
+              <li>
+                <strong>Khảo sát thực tế:</strong> luôn là bước miễn phí; nên yêu cầu khảo sát tại chỗ
+                để tránh phát sinh chi phí không hợp lý.
+              </li>
+              <li>
+                <strong>Bảo hiểm hàng hóa:</strong> kiểm tra rõ điều khoản bồi thường trong hợp đồng,
+                đặc biệt với tài sản giá trị cao.
+              </li>
+              <li>
+                <strong>Phụ phí:</strong> đường cấm tải, khoảng cách bốc dỡ xa, hoặc điều kiện tòa nhà
+                có thể ảnh hưởng giá cuối cùng.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-16 bg-primary text-center">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <h2 class="text-3xl font-bold text-white mb-6">
+            Sẵn sàng di dời văn phòng?
+          </h2>
+          <a
+            href="#"
+            onclick="openBookingModal('moving_office'); return false;"
+            class="bg-accent hover:bg-orange-600 text-white px-12 py-5 rounded-twelve text-xl font-bold shadow-xl transition-all transform hover:scale-110 inline-block text-center no-underline"
+          >
+            ĐẶT DỊCH VỤ NGAY
+          </a>
+        </div>
+      </section>
+    </main>
+    <div id="site-footer"></div>
+
+    <script src="assets/js/shared-layout.js"></script>
+    <script src="assets/js/shared-modals.js" defer></script>
+    <script src="assets/js/main.js" defer></script>
+  </body>
+</html>
+
+

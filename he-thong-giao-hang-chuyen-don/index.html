@@ -1,0 +1,1345 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dịch vụ Shipper | FastGo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="FastGo cung cấp dịch vụ shipper giao hàng nhanh nội thành, giao COD, chuyển nhà, chuyển văn phòng và chuyển kho bãi tại TP.HCM."
+    />
+    <meta
+      name="keywords"
+      content="dịch vụ shipper, giao hàng nhanh, giao hàng nội thành, giao COD, chuyển nhà, chuyển văn phòng, chuyển kho bãi, FastGo"
+    />
+    <link rel="stylesheet" href="public/assets/css/styles.css?v=20260304-5" />
+    <!-- Thêm SwiperJS CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <style>
+      /* Styles for new moving cards */
+      .moving-service-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+        margin-top: 24px;
+      }
+      .moving-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+          0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .moving-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      }
+      .moving-card-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .moving-card-icon {
+        font-size: 2.5rem;
+      }
+      .moving-card-head h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0a2a66;
+      }
+      .moving-card-slogan {
+        font-style: italic;
+        color: #4b5563;
+        margin-bottom: 16px;
+        border-left: 3px solid #ff7a00;
+        padding-left: 12px;
+      }
+      .moving-card-details {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 20px;
+        flex-grow: 1;
+      }
+      .moving-card-details li {
+        font-size: 0.9rem;
+        color: #374151;
+        margin-bottom: 8px;
+        padding-left: 20px;
+        position: relative;
+      }
+      .moving-card-details li::before {
+        content: "✓";
+        color: #28a745;
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+      }
+      .moving-card-details li strong {
+        color: #111827;
+      }
+    </style>
+    <style>
+      /* --- TRACKING STYLES --- */
+      .tracking-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+        margin-top: 30px;
+        text-align: left;
+        border: 1px solid #eee;
+        animation: slideUp 0.4s ease;
+      }
+      .t-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed #eee;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .t-code {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0a2a66;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .t-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .t-status.completed {
+        background: #d4edda;
+        color: #155724;
+      }
+      .t-status.shipping {
+        background: #cce5ff;
+        color: #004085;
+      }
+      .t-status.pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .t-status.cancelled {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .t-route {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        position: relative;
+      }
+      .t-route-item {
+        flex: 1;
+        position: relative;
+        z-index: 1;
+      }
+      .t-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #888;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+        display: block;
+      }
+      .t-addr {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+        line-height: 1.4;
+      }
+      .t-icon {
+        font-size: 20px;
+        margin-bottom: 5px;
+        display: block;
+      }
+
+      /* Timeline Dọc */
+      .timeline {
+        position: relative;
+        padding-left: 30px;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 9px;
+        top: 5px;
+        bottom: 0;
+        width: 2px;
+        background: #e9ecef;
+      }
+      .tl-item {
+        position: relative;
+        padding-bottom: 25px;
+      }
+      .tl-item:last-child {
+        padding-bottom: 0;
+      }
+      .tl-dot {
+        position: absolute;
+        left: -26px;
+        top: 4px;
+        width: 12px;
+        height: 12px;
+        background: #fff;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        z-index: 1;
+      }
+      .tl-item.active .tl-dot {
+        border-color: #28a745;
+        background: #28a745;
+        box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+      }
+      .tl-time {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 2px;
+      }
+      .tl-content {
+        font-size: 15px;
+        font-weight: 500;
+        color: #555;
+      }
+      .tl-item.active .tl-content {
+        color: #0a2a66;
+        font-weight: 700;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="site-header"></div>
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="hero-section">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <h1 class="animate-top">Giao hàng nhanh – An toàn – Đúng giờ</h1>
+          <p class="animate-bottom">
+            Dịch vụ giao hàng nội thành & liên tỉnh, hỗ trợ 24/7. Nhận hàng ngay
+            sau 15 phút!
+          </p>
+          <div class="hero-btns animate-bottom">
+            <a href="#quick-quote" class="btn-primary">Tính giá ngay</a>
+            <a
+              href="#"
+              class="btn-secondary"
+              onclick="
+                openBookingModal();
+                return false;
+              "
+              >Đặt hàng ngay</a
+            >
+            <a
+              href="public/huong-dan-dat-hang.html"
+              class="btn-secondary btn-blink"
+              target="_blank"
+              >📖 Hướng dẫn</a
+            >
+          </div>
+
+          <!-- APP DOWNLOAD BUTTONS -->
+          <div class="app-btns animate-bottom">
+            <a href="#" class="btn-store">
+              <span class="store-icon">
+                <svg viewBox="0 0 384 512">
+                  <path
+                    d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 79.9c14.2 40.8 32.2 77.7 57.6 77.7 24.4 0 32.4-16.7 61.1-16.7 28.5 0 33.8 16.7 61.1 16.7 25.2 0 46.8-34.9 61.1-76.5 8.7-24.3 14.9-50.6 14.9-50.6s-35.6-11.4-35.4-55.3zM263 103.5c16.1-21.3 26.9-50.6 23.9-81.6-23.1 1.4-51.3 15.2-67.7 36.9-14.5 19-26.8 49.7-23.2 79.3 25.8 2.1 52.2-12.5 67-34.6z"
+                  />
+                </svg>
+              </span>
+              <div class="store-text">
+                <span class="store-subtitle">Download on the</span>
+                <span class="store-title">App Store</span>
+              </div>
+            </a>
+            <a href="#" class="btn-store">
+              <span class="store-icon">
+                <svg viewBox="0 0 512 512">
+                  <path
+                    d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-37.5 37.5 37.5 37.5 58.9-34.1c13.7-7.5 13.7-20.5 0-28zM104.6 499l220.7-221.3-58.7-58.9L47 512z"
+                  />
+                </svg>
+              </span>
+              <div class="store-text">
+                <span class="store-subtitle">GET IT ON</span>
+                <span class="store-title">Google Play</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="hero-image animate-right">
+          <img
+            src="public/assets/images/hero.png"
+            alt="Đội ngũ shipper FastGo giao hàng nhanh tại TP.HCM"
+          />
+          <p
+            style="
+              margin-top: 8px;
+              text-align: center;
+              font-size: 13px;
+              color: #64748b;
+            "
+          >
+            Ảnh: Dịch vụ shipper giao hàng nhanh FastGo tại TP.HCM.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRACKING SECTION -->
+    <section id="home-tracking">
+      <div class="container">
+        <h2 class="section-title">Tra cứu hành trình đơn hàng</h2>
+        <p class="section-desc">
+          Nhập mã vận đơn để theo dõi tình trạng đơn hàng của bạn
+        </p>
+
+        <form class="tracking-form" onsubmit="trackOrder(event, 'standard')">
+          <input
+            type="text"
+            id="standard-code"
+            placeholder="Nhập mã đơn hàng..."
+            required
+          />
+          <button type="submit" class="btn-primary">Tra cứu</button>
+        </form>
+        <div
+          id="loading-spinner-standard"
+          class="spinner"
+          style="display: none"
+        ></div>
+        <div id="result-standard"></div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section id="process" class="process-section">
+      <div class="container">
+        <h2 class="section-title">Quy trình giao hàng đơn giản</h2>
+        <p class="section-subtitle">
+          Chỉ với 3 bước, hàng hóa của bạn sẽ được giao đến nơi an toàn
+        </p>
+        <div class="process-container">
+          <div class="process-item animate-up">
+            <img
+              src="public/assets/images/order.png"
+              alt="Bước đặt đơn giao hàng trực tuyến trên website FastGo"
+              class="process-img"
+            />
+            <h3>Đặt đơn trực tuyến</h3>
+            <p>
+              Nhập thông tin người gửi, người nhận và loại dịch vụ ngay trên
+              website.
+            </p>
+          </div>
+          <div class="process-arrow">➔</div>
+          <div class="process-item animate-up" style="animation-delay: 0.2s">
+            <img
+              src="public/assets/images/hero-shipper.png"
+              alt="Shipper FastGo đến lấy hàng tận nơi sau khi xác nhận đơn"
+              class="process-img"
+            />
+            <h3>Lấy hàng trong 15p</h3>
+            <p>
+              Shipper gần nhất sẽ đến nhận hàng chỉ sau vài phút xác nhận đơn.
+            </p>
+          </div>
+          <div class="process-arrow">➔</div>
+          <div class="process-item animate-up" style="animation-delay: 0.4s">
+            <img
+              src="public/assets/images/package.png"
+              alt="Đơn hàng được FastGo giao tận tay người nhận an toàn"
+              class="process-img"
+            />
+            <h3>Giao tận tay</h3>
+            <p>
+              Hàng hóa được vận chuyển siêu tốc và giao tận tay người nhận an
+              toàn.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services">
+      <h2 class="section-title">Các Dịch Vụ Của FastGo</h2>
+      <p class="section-desc">
+        Tất cả dịch vụ được trình bày đồng đều theo dạng thẻ để bạn dễ so sánh
+        và chọn nhanh.
+      </p>
+
+      <div class="moving-service-grid">
+        <article class="moving-card">
+          <div class="moving-card-head">
+            <div class="moving-card-icon">🐢</div>
+            <h3>Giao hàng Chậm</h3>
+          </div>
+          <p class="moving-card-slogan">"Tối ưu chi phí cho đơn không gấp."</p>
+          <ul class="moving-card-details">
+            <li><strong>Phạm vi:</strong> Nội thành, ngoại thành, liên tỉnh.</li>
+            <li><strong>Ưu tiên:</strong> Chi phí tiết kiệm, gom tuyến.</li>
+            <li><strong>Phù hợp:</strong> Đơn số lượng nhiều, ít áp lực thời gian.</li>
+          </ul>
+          <a
+            href="#quick-quote"
+            class="service-action-btn service-action-primary"
+          >
+            Tính cước nhanh →
+          </a>
+        </article>
+
+        <article class="moving-card">
+          <div class="moving-card-head">
+            <div class="moving-card-icon">📦</div>
+            <h3>Giao hàng Tiêu chuẩn</h3>
+          </div>
+          <p class="moving-card-slogan">"Cân bằng tốt giữa tốc độ và chi phí."</p>
+          <ul class="moving-card-details">
+            <li><strong>Phạm vi:</strong> Nội thành, ngoại thành, liên tỉnh.</li>
+            <li><strong>Ưu tiên:</strong> Thời gian giao ổn định theo lịch trình.</li>
+            <li><strong>Phù hợp:</strong> Shop online và cá nhân gửi hàng hằng ngày.</li>
+          </ul>
+          <a
+            href="#quick-quote"
+            class="service-action-btn service-action-primary"
+          >
+            Tính cước nhanh →
+          </a>
+        </article>
+
+        <article class="moving-card">
+          <div class="moving-card-head">
+            <div class="moving-card-icon">⚡</div>
+            <h3>Giao hàng Nhanh</h3>
+          </div>
+          <p class="moving-card-slogan">"Rút ngắn thời gian giao trong ngày."</p>
+          <ul class="moving-card-details">
+            <li><strong>Phạm vi:</strong> Nội thành, ngoại thành, liên tỉnh.</li>
+            <li><strong>Ưu tiên:</strong> Đơn cần giao sớm, xử lý linh hoạt.</li>
+            <li><strong>Phù hợp:</strong> Hàng cần đến tay khách trong ngày.</li>
+          </ul>
+          <a
+            href="#quick-quote"
+            class="service-action-btn service-action-primary"
+          >
+            Tính cước nhanh →
+          </a>
+        </article>
+
+        <article class="moving-card">
+          <div class="moving-card-head">
+            <div class="moving-card-icon">🚀</div>
+            <h3>Giao hàng Hỏa tốc</h3>
+          </div>
+          <p class="moving-card-slogan">"Ưu tiên cao nhất cho đơn gấp."</p>
+          <ul class="moving-card-details">
+            <li><strong>Phạm vi:</strong> Nội thành và các tuyến ưu tiên.</li>
+            <li><strong>Ưu tiên:</strong> Điều phối gấp, rút ngắn thời gian chờ.</li>
+            <li><strong>Phù hợp:</strong> Tài liệu gấp, hàng cần giao ngay.</li>
+          </ul>
+          <a
+            href="#quick-quote"
+            class="service-action-btn service-action-primary"
+          >
+            Tính cước nhanh →
+          </a>
+        </article>
+
+        <article class="moving-card">
+          <div class="moving-card-head">
+            <div class="moving-card-icon">🌍</div>
+            <h3>Giao hàng Quốc tế</h3>
+          </div>
+          <p class="moving-card-slogan">"Kết nối vận chuyển từ Việt Nam ra thế giới."</p>
+          <ul class="moving-card-details">
+            <li><strong>Gói cước:</strong> Tiêu chuẩn quốc tế và Chuyển phát nhanh quốc tế.</li>
+            <li><strong>Phạm vi:</strong> Châu Á, Châu Âu, Châu Mỹ và nhiều khu vực khác.</li>
+            <li><strong>Phù hợp:</strong> Shop xuất khẩu, gửi quà/tài liệu quốc tế.</li>
+          </ul>
+          <a
+            href="#quick-quote"
+            class="service-action-btn service-action-primary"
+          >
+            Tính cước quốc tế →
+          </a>
+        </article>
+
+        <article class="moving-card">
+          <div class="moving-card-head">
+            <div class="moving-card-icon">🏠</div>
+            <h3>Chuyển Nhà Trọn Gói</h3>
+          </div>
+          <p class="moving-card-slogan">"Nâng niu đồ đạc như chính chủ nhân."</p>
+          <ul class="moving-card-details">
+            <li><strong>Hỗ trợ:</strong> Tháo lắp, bọc lót, sắp xếp theo yêu cầu.</li>
+            <li><strong>Phạm vi:</strong> Căn hộ, nhà phố, phòng trọ.</li>
+            <li><strong>Phù hợp:</strong> Hộ gia đình và cá nhân chuyển nơi ở.</li>
+          </ul>
+          <a
+            href="./public/chuyen-nha.html"
+            class="service-action-btn service-action-primary"
+            >Xem chi tiết →</a
+          >
+        </article>
+
+        <article class="moving-card">
+          <div class="moving-card-head">
+            <div class="moving-card-icon">🏢</div>
+            <h3>Chuyển Văn Phòng</h3>
+          </div>
+          <p class="moving-card-slogan">"Nhanh chóng - chính xác - không gián đoạn."</p>
+          <ul class="moving-card-details">
+            <li><strong>Hỗ trợ:</strong> Di dời bàn ghế, hồ sơ, thiết bị IT.</li>
+            <li><strong>Lịch linh hoạt:</strong> Có thể triển khai ngoài giờ làm việc.</li>
+            <li><strong>Phù hợp:</strong> Doanh nghiệp cần chuyển địa điểm vận hành.</li>
+          </ul>
+          <a
+            href="./public/chuyen-van-phong.html"
+            class="service-action-btn service-action-primary"
+            >Xem chi tiết →</a
+          >
+        </article>
+
+        <article class="moving-card">
+          <div class="moving-card-head">
+            <div class="moving-card-icon">🏭</div>
+            <h3>Chuyển Kho Bãi</h3>
+          </div>
+          <p class="moving-card-slogan">"Giải pháp vận tải hạng nặng quy mô lớn."</p>
+          <ul class="moving-card-details">
+            <li>
+              <strong>Thiết bị:</strong> Xe cẩu, xe nâng, xe tải trọng tải lớn
+              (5-15 tấn).
+            </li>
+            <li>
+              <strong>Hỗ trợ:</strong> Di dời dây chuyền máy móc, kệ kho,
+              nguyên vật liệu.
+            </li>
+            <li>
+              <strong>Pháp lý:</strong> Có hóa đơn VAT và hợp đồng bảo hiểm vận
+              chuyển.
+            </li>
+          </ul>
+          <a
+            href="./public/chuyen-kho-bai.html"
+            class="service-action-btn service-action-primary"
+            >Xem chi tiết →</a
+          >
+        </article>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+      <h2 class="section-title">Vì sao chọn FastGo?</h2>
+      <div class="feature-list">
+        <div class="feature-item">
+          <span class="feature-icon">🚀</span>
+          <h3>Nhanh & đúng giờ</h3>
+          <p>Thời gian giao hàng được tối ưu, đảm bảo đúng hẹn.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📦</span>
+          <h3>Theo dõi đơn hàng</h3>
+          <p>Khách hàng dễ dàng theo dõi trạng thái đơn hàng.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">👨‍✈️</span>
+          <h3>Shipper chuyên nghiệp</h3>
+          <p>Đội ngũ shipper được đào tạo bài bản.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">☎️</span>
+          <h3>Hỗ trợ 24/7</h3>
+          <p>Sẵn sàng hỗ trợ khách hàng mọi lúc, mọi nơi.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK QUOTE -->
+    <section id="quick-quote">
+      <h2 class="section-title">Tự tính cước phí vận chuyển</h2>
+      <p class="section-desc">
+        Chọn loại vận chuyển và nhập thông tin để hệ thống tính cước tự động.
+      </p>
+      <form id="quick-quote-form">
+        <div
+          class="quote-mode-switch"
+          role="tablist"
+          aria-label="Chế độ tính cước"
+        >
+          <button
+            type="button"
+            class="quote-mode-btn active"
+            data-quote-mode="domestic"
+            aria-selected="true"
+          >
+            Vận chuyển trong nước
+          </button>
+          <button
+            type="button"
+            class="quote-mode-btn"
+            data-quote-mode="international"
+            aria-selected="false"
+          >
+            Vận chuyển quốc tế
+          </button>
+        </div>
+        <input type="hidden" id="quote-mode" value="domestic" />
+
+        <div class="quote-panel" data-mode-panel="domestic">
+          <h3 class="quote-group-title">Thông tin hành trình</h3>
+          <div class="quote-grid quote-grid-2">
+            <div class="quote-box">
+              <h4>Điểm gửi</h4>
+              <div class="quote-grid quote-grid-2">
+                <div>
+                  <label for="domestic-from-city">Tỉnh/Thành phố gửi</label>
+                  <select id="domestic-from-city" required>
+                    <option value="">Chọn tỉnh/thành phố</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="domestic-from-district">Quận/Huyện gửi</label>
+                  <select id="domestic-from-district" required>
+                    <option value="">Chọn quận/huyện</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="quote-box">
+              <h4>Điểm nhận</h4>
+              <div class="quote-grid quote-grid-2">
+                <div>
+                  <label for="domestic-to-city">Tỉnh/Thành phố nhận</label>
+                  <select id="domestic-to-city" required>
+                    <option value="">Chọn tỉnh/thành phố</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="domestic-to-district">Quận/Huyện nhận</label>
+                  <select id="domestic-to-district" required>
+                    <option value="">Chọn quận/huyện</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="quote-group-title">Thông tin hàng hóa</h3>
+          <div class="quote-grid quote-grid-2">
+            <div>
+              <label for="domestic-item-type">Loại hàng</label>
+              <select id="domestic-item-type" required>
+                <option value="">Chọn loại hàng</option>
+                <option value="thuong">Hàng thông thường</option>
+                <option value="gia-tri-cao">Hàng giá trị cao</option>
+                <option value="de-vo">Hàng dễ vỡ</option>
+                <option value="chat-long">Hàng chất lỏng/Hóa phẩm</option>
+                <option value="pin-lithium">
+                  Hàng điện tử có pin (Lithium)
+                </option>
+                <option value="dong-lanh">Hàng đông lạnh/Thực phẩm tươi</option>
+                <option value="cong-kenh">Hàng cồng kềnh/Quá khổ</option>
+              </select>
+            </div>
+            <div>
+              <label for="domestic-item-name">Tên hàng</label>
+              <select id="domestic-item-name" required disabled>
+                <option value="">Chọn loại hàng trước</option>
+              </select>
+            </div>
+            <div id="domestic-weight-group">
+              <label for="domestic-weight">Khối lượng (kg)</label>
+              <input
+                type="number"
+                id="domestic-weight"
+                min="0.1"
+                step="0.1"
+                placeholder="0.5"
+              />
+            </div>
+            <div>
+              <label for="domestic-quantity">Số lượng (kiện)</label>
+              <input
+                type="number"
+                id="domestic-quantity"
+                min="1"
+                step="1"
+                value="1"
+              />
+            </div>
+            <div id="domestic-length-group">
+              <label for="domestic-length">Chiều dài (cm)</label>
+              <input
+                type="number"
+                id="domestic-length"
+                min="1"
+                step="1"
+                placeholder="30"
+              />
+            </div>
+            <div id="domestic-width-group">
+              <label for="domestic-width">Chiều rộng (cm)</label>
+              <input
+                type="number"
+                id="domestic-width"
+                min="1"
+                step="1"
+                placeholder="20"
+              />
+            </div>
+            <div id="domestic-height-group">
+              <label for="domestic-height">Chiều cao (cm)</label>
+              <input
+                type="number"
+                id="domestic-height"
+                min="1"
+                step="1"
+                placeholder="15"
+              />
+            </div>
+            <div>
+              <label for="domestic-cod">Phí COD (giá trị thu hộ, VNĐ)</label>
+              <input
+                type="number"
+                id="domestic-cod"
+                min="0"
+                step="1000"
+                value="0"
+              />
+            </div>
+            <div>
+              <label for="domestic-insurance"
+                >Giá trị hàng hóa (Khai giá VNĐ)</label
+              >
+              <input
+                type="number"
+                id="domestic-insurance"
+                min="0"
+                step="1000"
+                value="0"
+              />
+            </div>
+            <div style="grid-column: 1 / -1">
+              <p style="margin: 4px 0 0; font-size: 12px; color: #6b7280">
+                Lưu ý: Một tên hàng có thể thuộc nhiều loại. Khai sai loại hàng
+                có thể bị từ chối bồi thường khi phát sinh sự cố.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-panel is-hidden" data-mode-panel="international">
+          <h3 class="quote-group-title">Thông tin gửi hàng</h3>
+          <div class="quote-grid quote-grid-2">
+            <div>
+              <label for="intl-origin-country">Quốc gia gửi</label>
+              <input
+                type="text"
+                id="intl-origin-country"
+                value="Việt Nam"
+                readonly
+              />
+            </div>
+            <div>
+              <label for="intl-origin-city">Tỉnh/Thành phố gửi</label>
+              <select id="intl-origin-city">
+                <option value="">Chọn tỉnh/thành phố</option>
+              </select>
+            </div>
+            <div>
+              <label for="intl-origin-district">Quận/Huyện gửi</label>
+              <select id="intl-origin-district">
+                <option value="">Chọn quận/huyện</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 class="quote-group-title">Thông tin điểm đến quốc tế</h3>
+          <div class="quote-grid quote-grid-2">
+            <div>
+              <label for="intl-country">Quốc gia đến</label>
+              <select id="intl-country">
+                <option value="">Chọn quốc gia</option>
+              </select>
+            </div>
+            <div>
+              <label for="intl-province">Tỉnh/Thành phố đến</label>
+              <select id="intl-province">
+                <option value="">Chọn tỉnh/thành phố đến</option>
+              </select>
+            </div>
+            <div>
+              <label for="intl-item-type">Loại hàng</label>
+              <select id="intl-item-type">
+                <option value="">Chọn loại hàng</option>
+                <option value="thuong">Hàng thông thường</option>
+                <option value="gia-tri-cao">Hàng giá trị cao</option>
+                <option value="de-vo">Hàng dễ vỡ</option>
+                <option value="chat-long">Hàng chất lỏng/Hóa phẩm</option>
+                <option value="pin-lithium">
+                  Hàng điện tử có pin (Lithium)
+                </option>
+                <option value="dong-lanh">Hàng đông lạnh/Thực phẩm tươi</option>
+                <option value="cong-kenh">Hàng cồng kềnh/Quá khổ</option>
+              </select>
+            </div>
+            <div>
+              <label for="intl-item-name">Tên hàng</label>
+              <select id="intl-item-name" disabled>
+                <option value="">Chọn loại hàng trước</option>
+              </select>
+            </div>
+            <div id="intl-weight-group">
+              <label for="intl-weight">Khối lượng (kg)</label>
+              <input
+                type="number"
+                id="intl-weight"
+                min="0.1"
+                step="0.1"
+                placeholder="1.0"
+              />
+            </div>
+            <div>
+              <label for="intl-quantity">Số lượng (kiện)</label>
+              <input
+                type="number"
+                id="intl-quantity"
+                min="1"
+                step="1"
+                value="1"
+              />
+            </div>
+            <div id="intl-length-group">
+              <label for="intl-length">Chiều dài (cm)</label>
+              <input
+                type="number"
+                id="intl-length"
+                min="1"
+                step="1"
+                placeholder="40"
+              />
+            </div>
+            <div id="intl-width-group">
+              <label for="intl-width">Chiều rộng (cm)</label>
+              <input
+                type="number"
+                id="intl-width"
+                min="1"
+                step="1"
+                placeholder="30"
+              />
+            </div>
+            <div id="intl-height-group">
+              <label for="intl-height">Chiều cao (cm)</label>
+              <input
+                type="number"
+                id="intl-height"
+                min="1"
+                step="1"
+                placeholder="20"
+              />
+            </div>
+            <div>
+              <label for="intl-insurance"
+                >Giá trị hàng hóa (Khai giá VNĐ)</label
+              >
+              <input
+                type="number"
+                id="intl-insurance"
+                min="0"
+                step="100000"
+                placeholder="0"
+              />
+            </div>
+            <div style="grid-column: 1 / -1">
+              <p style="margin: 4px 0 0; font-size: 12px; color: #6b7280">
+                Lưu ý: Hàng chất lỏng, pin lithium, đông lạnh có thể bị hạn chế
+                tùy tuyến vận chuyển (đặc biệt tuyến hàng không).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Tra cứu ngay</button>
+      </form>
+      <div id="quote-result" class="quote-result"></div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <h2 class="section-title">Sẵn sàng vận chuyển?</h2>
+      <p class="section-desc">
+        Liên hệ với chúng tôi: <strong>0775472347</strong> |
+        <strong>dichvuquanhta.vn@gmail.com</strong>
+      </p>
+      <div class="hero-btns centered-btns">
+        <a
+          id="contact-primary-btn"
+          href="#"
+          class="btn-primary"
+          onclick="
+            openBookingModal();
+            return false;
+          "
+          >Đặt Đơn Hàng Ngay</a
+        >
+        <a
+          id="contact-secondary-btn"
+          href="public/register.php"
+          class="btn-secondary"
+          >Đăng ký tài khoản mới</a
+        >
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS (Static) -->
+    <section id="testimonials">
+      <h2 class="section-title">Khách hàng nói gì về FastGo?</h2>
+      <p class="section-desc">
+        Sự hài lòng của khách hàng là động lực phát triển của chúng tôi.
+      </p>
+      <div class="swiper testimonial-slider">
+        <div class="swiper-wrapper" id="testimonials-wrapper">
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <p class="feedback">
+                "Giao hàng siêu nhanh, shipper thân thiện. Mình gửi hàng từ Q1
+                sang Thủ Đức mà chưa đầy 1 tiếng đã nhận được."
+              </p>
+              <div class="customer-info">
+                <strong>Nguyễn Thu Hà</strong>
+                <span>- Shop Online</span>
+              </div>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <p class="feedback">
+                "Hệ thống tracking rất tiện lợi, mình có thể theo dõi đơn hàng
+                từng phút. Rất yên tâm khi sử dụng dịch vụ."
+              </p>
+              <div class="customer-info">
+                <strong>Trần Minh Tuấn</strong>
+                <span>- Văn phòng phẩm</span>
+              </div>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <div class="stars">⭐⭐⭐⭐</div>
+              <p class="feedback">
+                "Giá cước hợp lý, có thu hộ COD nhanh chóng. Sẽ ủng hộ FastGo
+                dài dài."
+              </p>
+              <div class="customer-info">
+                <strong>Lê Bảo Ngọc</strong>
+                <span>- Cửa hàng thời trang</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </section>
+
+    <!-- FAQ (Static) -->
+    <section id="faq">
+      <h2 class="section-title">FAQs / Hỗ trợ</h2>
+      <div class="faq-list" id="faq-list">
+        <div class="faq-item">
+          <h3 class="faq-question">FastGo giao hàng trong bao lâu?</h3>
+          <p class="faq-answer">
+            Thời gian giao hàng nội thành: 30–60 phút, liên tỉnh: 1–3 ngày.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-question">Có thể hủy hoặc thay đổi đơn không?</h3>
+          <p class="faq-answer">
+            Vui lòng liên hệ hotline trước khi đơn được shipper nhận.
+          </p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-question">FastGo có thu hộ COD không?</h3>
+          <p class="faq-answer">
+            Có, chúng tôi hỗ trợ dịch vụ thu hộ tiền mặt minh bạch.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- INQUIRY FORM -->
+    <section id="inquiry">
+      <div class="container inquiry-container">
+        <h2 class="section-title">Gửi thắc mắc cho chúng tôi</h2>
+        <p class="section-desc">Bạn cần hỗ trợ thêm? Hãy để lại lời nhắn.</p>
+
+        <form id="inquiry-form">
+          <div class="form-group">
+            <input
+              type="text"
+              name="name"
+              placeholder="Họ và tên của bạn"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email liên hệ"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Số điện thoại"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <select name="subject">
+              <option value="Tuvan">Tư vấn dịch vụ</option>
+              <option value="KhieuNai">Khiếu nại đơn hàng</option>
+              <option value="HopTac">Liên hệ hợp tác</option>
+              <option value="Khac">Khác</option>
+            </select>
+          </div>
+          <textarea
+            name="message"
+            placeholder="Nội dung thắc mắc..."
+            required
+          ></textarea>
+          <button type="submit" class="btn-primary">Gửi tin nhắn</button>
+          <div id="inquiry-message"></div>
+        </form>
+      </div>
+    </section>
+    <div id="site-footer"></div>
+
+    <!-- Thêm SwiperJS JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
+      defer
+    ></script>
+    <script src="public/assets/js/pricing-data.js" defer></script>
+    <script src="public/assets/js/service-catalog.js"></script>
+    <script src="public/assets/js/shared-layout.js"></script>
+    <script src="public/assets/js/shared-modals.js" defer></script>
+    <script src="public/assets/js/main.js" defer></script>
+
+    <!-- Shared Modals are loaded from public/assets/partials/shared-modals.html -->
+
+    <!-- Static Configuration -->
+    <script>
+      window.isLoggedIn = false;
+      window.apiBasePath = "public/";
+      window.pricingConfig = {
+        weight_free: 2,
+        weight_price: 5000,
+        cod_min: 5000,
+      };
+
+      (function bootstrapLandingData() {
+        function escapeHtml(text) {
+          if (text === null || text === undefined) return "";
+          return String(text)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
+
+        function toPublicUrl(path) {
+          if (!path) return path;
+          if (/^(?:[a-z]+:)?\/\//i.test(path)) return path;
+          if (path.startsWith("/")) return path;
+          const base = window.apiBasePath || "public/";
+          return `${base}${path.replace(/^\.?\//, "")}`;
+        }
+
+        function getDashboardPath(role) {
+          if (role === "admin") return "admin_stats.php";
+          if (role === "shipper") return "shipper_dashboard.php";
+          return "dashboard.php";
+        }
+
+        function normalizeDeliveryServices(services) {
+          if (!Array.isArray(services)) return [];
+
+          const deliveryTypeOrder = (
+            window.serviceCatalog &&
+            Array.isArray(window.serviceCatalog.defaultDeliveryTypeOrder) &&
+            window.serviceCatalog.defaultDeliveryTypeOrder.length
+              ? window.serviceCatalog.defaultDeliveryTypeOrder
+              : ["slow", "standard", "fast", "express"]
+          ).map((item) => String(item).toLowerCase());
+          const deliveryFallbackMap = {
+            slow: { name: "Giao chậm", base_price: 20000 },
+            standard: { name: "Giao tiêu chuẩn", base_price: 30000 },
+            fast: { name: "Giao nhanh", base_price: 40000 },
+            express: { name: "Giao hỏa tốc", base_price: 50000 },
+          };
+          const seen = new Set();
+          const normalized = [];
+
+          services.forEach((service) => {
+            if (!service || !service.type_key) return;
+            const typeKey = String(service.type_key).trim().toLowerCase();
+            if (!deliveryTypeOrder.includes(typeKey)) return;
+            if (seen.has(typeKey)) return;
+            seen.add(typeKey);
+            normalized.push({
+              id: service.id,
+              name: service.name,
+              type_key: typeKey,
+              base_price: parseFloat(service.base_price || 0),
+            });
+          });
+
+          return deliveryTypeOrder
+            .map((key) => {
+              const found = normalized.find((s) => s.type_key === key);
+              if (found) return found;
+              const fallback = deliveryFallbackMap[key];
+              if (!fallback) return null;
+              return {
+                id: `fallback-${key}`,
+                name: fallback.name,
+                type_key: key,
+                base_price: fallback.base_price,
+              };
+            })
+            .filter(Boolean);
+        }
+
+        function renderQuickQuoteServices(services) {
+          const serviceSelect = document.getElementById("service-type");
+          if (!serviceSelect) return;
+          const deliveryServices = normalizeDeliveryServices(services);
+          const quickQuoteServices = deliveryServices;
+          if (!quickQuoteServices.length) return;
+
+          const currentValue = serviceSelect.value;
+          const options = quickQuoteServices
+            .map((service) => {
+              const priceNum = parseFloat(service.base_price || 0);
+              const priceText =
+                priceNum > 0 ? `${priceNum.toLocaleString()}đ` : "Liên hệ";
+              return `<option value="${escapeHtml(service.type_key)}">${escapeHtml(service.name)} (${priceText})</option>`;
+            })
+            .join("");
+          serviceSelect.innerHTML = `<option value="">-- Chọn loại dịch vụ --</option>${options}`;
+          if (
+            currentValue &&
+            quickQuoteServices.some((s) => s.type_key === currentValue)
+          ) {
+            serviceSelect.value = currentValue;
+          }
+        }
+
+        function renderTestimonials(testimonials) {
+          const wrapper = document.getElementById("testimonials-wrapper");
+          if (!wrapper) return;
+          if (!testimonials.length) {
+            wrapper.innerHTML =
+              '<div class="swiper-slide"><div class="testimonial-item"><p class="feedback">Chưa có đánh giá nào.</p></div></div>';
+            return;
+          }
+          wrapper.innerHTML = testimonials
+            .map((item) => {
+              const rating = Math.max(
+                1,
+                Math.min(5, parseInt(item.rating, 10) || 5),
+              );
+              const stars = "⭐".repeat(rating);
+              const role = item.customer_role
+                ? `- ${escapeHtml(item.customer_role)}`
+                : "- Khách hàng";
+              return `
+                <div class="swiper-slide">
+                  <div class="testimonial-item">
+                    <div class="stars">${stars}</div>
+                    <p class="feedback">"${escapeHtml(item.content)}"</p>
+                    <div class="customer-info">
+                      <strong>${escapeHtml(item.customer_name || "Khách hàng")}</strong>
+                      <span>${role}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            })
+            .join("");
+        }
+
+        function renderFaqs(faqs) {
+          const faqList = document.getElementById("faq-list");
+          if (!faqList) return;
+          if (!faqs.length) {
+            faqList.innerHTML = "<p>Chưa có câu hỏi thường gặp nào.</p>";
+            return;
+          }
+          faqList.innerHTML = faqs
+            .map(
+              (faq) => `
+                <div class="faq-item">
+                  <h3 class="faq-question">${escapeHtml(faq.question)}</h3>
+                  <p class="faq-answer">${escapeHtml(faq.answer).replace(/\n/g, "<br>")}</p>
+                </div>
+              `,
+            )
+            .join("");
+        }
+
+        function renderAuthUi(isLoggedIn, role) {
+          const navLoginItem = document.getElementById("nav-login-item");
+          const navRegisterItem = document.getElementById("nav-register-item");
+          const contactPrimary = document.getElementById("contact-primary-btn");
+          const contactSecondary = document.getElementById(
+            "contact-secondary-btn",
+          );
+          const dashboardUrl = toPublicUrl(getDashboardPath(role));
+          const logoutUrl = toPublicUrl("logout.php");
+          const loginUrl = toPublicUrl("login.php");
+          const registerUrl = toPublicUrl("register.php");
+
+          if (isLoggedIn) {
+            if (navLoginItem) {
+              navLoginItem.innerHTML = `<a href="${dashboardUrl}">Trang quản lý</a>`;
+            }
+            if (navRegisterItem) {
+              navRegisterItem.innerHTML = `
+                <a href="${logoutUrl}" class="btn-primary" style="padding: 8px 20px; background: #ff7a00; border: none; color: white;">Đăng xuất</a>
+              `;
+            }
+
+            if (contactSecondary) {
+              contactSecondary.href = dashboardUrl;
+              contactSecondary.textContent = "Vào trang quản lý";
+            }
+
+            if (contactPrimary) {
+              if (role === "admin" || role === "shipper") {
+                contactPrimary.removeAttribute("onclick");
+                contactPrimary.href = dashboardUrl;
+                contactPrimary.textContent = "Vào trang quản lý";
+              } else {
+                contactPrimary.setAttribute(
+                  "onclick",
+                  "openBookingModal(); return false;",
+                );
+                contactPrimary.href = "#";
+                contactPrimary.textContent = "Đặt Đơn Hàng Ngay";
+              }
+            }
+          } else {
+            if (navLoginItem) {
+              navLoginItem.innerHTML = `<a href="${loginUrl}">Đăng nhập</a>`;
+            }
+            if (navRegisterItem) {
+              navRegisterItem.innerHTML = `
+                <a href="${registerUrl}" class="btn-primary" style="padding: 8px 20px; background: #ff7a00; border: none; color: white;">Đăng ký</a>
+              `;
+            }
+
+            if (contactPrimary) {
+              contactPrimary.setAttribute(
+                "onclick",
+                "openBookingModal(); return false;",
+              );
+              contactPrimary.href = "#";
+              contactPrimary.textContent = "Đặt Đơn Hàng Ngay";
+            }
+            if (contactSecondary) {
+              contactSecondary.href = registerUrl;
+              contactSecondary.textContent = "Đăng ký tài khoản mới";
+            }
+          }
+        }
+
+        try {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", toPublicUrl("landing_data_ajax.php"), false);
+          xhr.send(null);
+
+          if (xhr.status < 200 || xhr.status >= 300 || !xhr.responseText)
+            return;
+          const response = JSON.parse(xhr.responseText);
+          if (!response || response.status !== "success" || !response.data)
+            return;
+
+          const data = response.data;
+          // Use hardcoded data from pricing-data.js if available, otherwise fallback to AJAX data.
+          const servicesToRender = window.servicesData || data.services;
+
+          if (Array.isArray(servicesToRender) && servicesToRender.length) {
+            const deliveryServices =
+              normalizeDeliveryServices(servicesToRender);
+            if (deliveryServices.length) {
+              window.servicesData = deliveryServices; // Ensure global variable is set correctly
+              renderQuickQuoteServices(deliveryServices);
+            }
+          }
+
+          if (data.pricing_config && typeof data.pricing_config === "object") {
+            // Still use pricing config from server
+            window.pricingConfig = data.pricing_config;
+          }
+          if (Array.isArray(data.testimonials)) {
+            renderTestimonials(data.testimonials);
+          }
+          if (Array.isArray(data.faqs)) {
+            renderFaqs(data.faqs);
+          }
+
+          window.isLoggedIn = !!data.is_logged_in;
+          renderAuthUi(window.isLoggedIn, data.role || "guest");
+        } catch (err) {
+          console.error("Cannot bootstrap landing page", err);
+        }
+      })();
+    </script>
+  </body>
+</html>
+
+

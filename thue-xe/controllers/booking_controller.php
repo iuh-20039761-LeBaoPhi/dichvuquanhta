@@ -17,33 +17,38 @@ class BookingController {
             $pickup = new DateTime($data['pickup_date']);
             $return = new DateTime($data['return_date']);
             $total_days = $pickup->diff($return)->days;
-            $total_price = $total_days * $data['price_per_day'];
 
             if($total_days <= 0) {
                 echo json_encode(['success' => false, 'message' => 'Ngày không hợp lệ']);
                 return;
             }
 
+            $addon_services = json_encode($data['addon_services'] ?? []);
+            $addon_total    = (float)($data['addon_total'] ?? 0);
+            $total_price    = $total_days * $data['price_per_day'] + $addon_total;
+
             $sql = "INSERT INTO bookings (car_id, customer_name, customer_email, customer_phone,
                     customer_address, id_number, pickup_date, return_date, pickup_location,
-                    notes, total_days, total_price, status)
+                    notes, total_days, total_price, addon_services, addon_total, status)
                     VALUES (:car_id, :name, :email, :phone, :address, :id_number, :pickup, :return,
-                    :location, :notes, :days, :price, 'pending')";
+                    :location, :notes, :days, :price, :addon_services, :addon_total, 'pending')";
 
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([
-                ':car_id' => $data['car_id'],
-                ':name' => $data['customer_name'],
-                ':email' => $data['customer_email'],
-                ':phone' => $data['customer_phone'],
-                ':address' => $data['customer_address'],
-                ':id_number' => $data['id_number'] ?? '',
-                ':pickup' => $data['pickup_date'],
-                ':return' => $data['return_date'],
-                ':location' => $data['pickup_location'] ?? '',
-                ':notes' => $data['notes'] ?? '',
-                ':days' => $total_days,
-                ':price' => $total_price
+                ':car_id'         => $data['car_id'],
+                ':name'           => $data['customer_name'],
+                ':email'          => $data['customer_email'],
+                ':phone'          => $data['customer_phone'],
+                ':address'        => $data['customer_address'],
+                ':id_number'      => $data['id_number'] ?? '',
+                ':pickup'         => $data['pickup_date'],
+                ':return'         => $data['return_date'],
+                ':location'       => $data['pickup_location'] ?? '',
+                ':notes'          => $data['notes'] ?? '',
+                ':days'           => $total_days,
+                ':price'          => $total_price,
+                ':addon_services' => $addon_services,
+                ':addon_total'    => $addon_total,
             ]);
 
             echo json_encode(['success' => true, 'booking_id' => $this->conn->lastInsertId()]);
