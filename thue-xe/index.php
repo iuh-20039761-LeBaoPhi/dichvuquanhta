@@ -4,7 +4,7 @@ define('BASE_PATH', __DIR__);
 define('BASE_URL', 'http://localhost/carrental_test');
 
 $page = $_GET['page'] ?? 'home';
-$validPages = ['home', 'search', 'car-detail', 'about', 'services', 'guide', 'contact', 'booking_success', 'track_order'];
+$validPages = ['home', 'search', 'car-detail', 'about', 'services', 'guide', 'contact', 'booking_success', 'track_order', 'terms'];
 
 if (!in_array($page, $validPages)) $page = 'home';
 
