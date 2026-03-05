@@ -67,6 +67,8 @@ CREATE TABLE IF NOT EXISTS bookings (
     notes            TEXT,
     total_days       INT NOT NULL DEFAULT 1,
     total_price      DECIMAL(12,0) NOT NULL,
+    addon_services   TEXT DEFAULT NULL COMMENT 'JSON array of addon service names',
+    addon_total      DECIMAL(12,0) NOT NULL DEFAULT 0,
     status           ENUM('pending','confirmed','completed','cancelled') NOT NULL DEFAULT 'pending',
     created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE RESTRICT
@@ -105,10 +107,12 @@ INSERT INTO admins (username, password, full_name, email) VALUES
 
 -- Dịch vụ mẫu
 INSERT INTO services (name, description, price, icon, status) VALUES
-('Giao xe tận nơi', 'Giao xe đến địa chỉ khách hàng trong bán kính 20km', 200000, 'truck', 1),
-('Bảo hiểm toàn diện', 'Bảo hiểm tai nạn và vật chất toàn diện trong suốt thời gian thuê', 150000, 'shield-alt', 1),
-('Tài xế riêng', 'Cung cấp tài xế chuyên nghiệp, lịch sự và am hiểu đường đi', 500000, 'user-tie', 1),
-('GPS định vị', 'Thiết bị GPS định vị chính xác, bản đồ cập nhật', 50000, 'map-marker-alt', 1);
+('Giao xe tận nơi',   'Giao xe đến tận địa chỉ của bạn trong nội thành, tiết kiệm thời gian và thuận tiện tối đa.',         100000, 'map-marker-alt', 1),
+('Bảo hiểm mở rộng',  'Gói bảo hiểm toàn diện bảo vệ xe và người lái trong suốt chuyến đi, an tâm không lo rủi ro.',        150000, 'shield-alt',     1),
+('Xe có tài xế',      'Tài xế chuyên nghiệp, am hiểu đường xá TP.HCM, phong thái lịch sự và nhiệt tình phục vụ.',           300000, 'user-tie',       1),
+('GPS định vị',       'Thiết bị GPS dẫn đường chính xác, bản đồ cập nhật mới nhất, không lo lạc đường.',                     50000, 'map-marker-alt', 1),
+('Ghế trẻ em',        'Ghế ngồi an toàn cho bé dưới 10 tuổi, đạt tiêu chuẩn an toàn quốc tế.',                              100000, 'baby',           1),
+('WiFi di động',      'Bộ phát WiFi di động tốc độ cao, kết nối internet ổn định suốt chuyến đi.',                            80000, 'wifi',           1);
 
 -- Xe mẫu
 INSERT INTO cars (name, brand, model, year, seats, transmission, fuel_type, price_per_day, main_image, description, features, status) VALUES

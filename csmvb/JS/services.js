@@ -1,0 +1,132 @@
+const SERVICES = [
+
+  // 1️⃣ Chăm sóc mẹ sau sinh
+  {
+    id: 1,
+    name: "Chăm sóc mẹ sau sinh tại nhà",
+    image: "assets/1.png",
+    description: "Theo dõi và hỗ trợ mẹ phục hồi sau sinh một cách khoa học và an toàn.",
+    includes: [
+      "Theo dõi tình trạng sức khỏe mẹ",
+      "Hỗ trợ vệ sinh cá nhân",
+      "Hướng dẫn cho bé bú đúng cách",
+      "Massage thư giãn nhẹ",
+      "Hỗ trợ ăn uống, nghỉ ngơi",
+      "Tư vấn chăm sóc vết mổ/vết khâu"
+    ],
+    pricing: [
+      { label: "Theo giờ (120.000đ/giờ - tối thiểu 2 giờ)", value: 120000 },
+      { label: "Theo ca 4 giờ (450.000đ)", value: 450000 },
+      { label: "Ca 8 giờ - ngày/đêm (850.000đ)", value: 850000 },
+      { label: "Theo ngày 24h (1.400.000đ)", value: 1400000 },
+      { label: "Theo tháng 26 ngày (20.000.000đ)", value: 20000000 }
+    ]
+  },
+
+  // 2️⃣ Chăm sóc trẻ sơ sinh
+  {
+    id: 2,
+    name: "Chăm sóc trẻ sơ sinh (0–6 tháng)",
+    image: "assets/2.png",
+    description: "Chăm sóc bé sơ sinh toàn diện, đảm bảo an toàn và phát triển khỏe mạnh.",
+    includes: [
+      "Tắm bé, vệ sinh rốn",
+      "Pha sữa, cho bé bú",
+      "Thay tã, giặt đồ bé",
+      "Theo dõi nhiệt độ",
+      "Ru ngủ, theo dõi giấc ngủ",
+      "Ghi chép tình trạng bé mỗi ngày"
+    ],
+    pricing: [
+      { label: "Theo giờ (130.000đ/giờ)", value: 130000 },
+      { label: "Ca sáng 7h–11h (480.000đ)", value: 480000 },
+      { label: "Ca chiều 13h–17h (480.000đ)", value: 480000 },
+      { label: "Ca đêm 19h–7h (950.000đ)", value: 950000 },
+      { label: "Theo ngày 24h (1.500.000đ)", value: 1500000 },
+      { label: "Theo tháng 24/24 (28.000.000đ)", value: 28000000 }
+    ]
+  },
+
+  // 3️⃣ Trọn gói mẹ và bé
+  {
+    id: 3,
+    name: "Chăm sóc mẹ và bé trọn gói",
+    image: "assets/3.png",
+    description: "Dịch vụ trọn gói giúp mẹ và bé được chăm sóc toàn diện sau sinh.",
+    includes: [
+      "Chăm sóc mẹ sau sinh",
+      "Chăm sóc bé sơ sinh",
+      "Nấu ăn dinh dưỡng cho mẹ",
+      "Giặt đồ mẹ và bé",
+      "Dọn dẹp phòng mẹ và bé"
+    ],
+    pricing: [
+      { label: "Theo giờ (150.000đ/giờ)", value: 150000 },
+      { label: "Ca 8 giờ (1.000.000đ)", value: 1000000 },
+      { label: "Theo ngày 24h (1.800.000đ)", value: 1800000 },
+      { label: "15 ngày liên tục (25.000.000đ)", value: 25000000 },
+      { label: "30 ngày liên tục (48.000.000đ)", value: 48000000 }
+    ]
+  },
+
+  // 4️⃣ Chăm sóc bé ban đêm
+  {
+    id: 4,
+    name: "Chăm sóc bé ban đêm",
+    image: "assets/4.png",
+    description: "Hỗ trợ gia đình chăm sóc bé suốt đêm để mẹ được nghỉ ngơi.",
+    includes: [
+      "Thức cùng bé ban đêm",
+      "Pha sữa, thay tã",
+      "Theo dõi tình trạng sức khỏe",
+      "Ghi lại thời gian ăn – ngủ"
+    ],
+    pricing: [
+      { label: "19h–23h (450.000đ)", value: 450000 },
+      { label: "23h–5h (650.000đ)", value: 650000 },
+      { label: "19h–7h (1.000.000đ)", value: 1000000 },
+      { label: "30 đêm/tháng (27.000.000đ)", value: 27000000 }
+    ]
+  },
+
+  // 5️⃣ Nấu ăn dinh dưỡng
+  {
+    id: 5,
+    name: "Nấu ăn dinh dưỡng cho mẹ sau sinh",
+    image: "assets/5.png",
+    description: "Chuẩn bị bữa ăn dinh dưỡng khoa học, hỗ trợ mẹ phục hồi nhanh chóng.",
+    includes: [
+      "Lên thực đơn",
+      "Đi chợ (khách thanh toán tiền chợ)",
+      "Nấu 2–3 bữa/ngày",
+      "Dọn dẹp bếp sau khi nấu"
+    ],
+    pricing: [
+      { label: "Theo giờ (100.000đ/giờ)", value: 100000 },
+      { label: "Nấu 1 bữa (250.000đ)", value: 250000 },
+      { label: "Nấu 2 bữa/ngày (450.000đ)", value: 450000 },
+      { label: "Theo tháng 26 ngày (10.000.000đ)", value: 10000000 }
+    ]
+  },
+
+  // 6️⃣ Hỗ trợ việc nhà
+  {
+    id: 6,
+    name: "Hỗ trợ việc nhà khi có mẹ và bé",
+    image: "assets/6.png",
+    description: "Giúp gia đình giữ không gian sạch sẽ, gọn gàng khi có mẹ và bé.",
+    includes: [
+      "Giặt đồ mẹ và bé",
+      "Dọn phòng ngủ",
+      "Rửa bình sữa",
+      "Vệ sinh khu vực sinh hoạt"
+    ],
+    pricing: [
+      { label: "Theo giờ (90.000đ/giờ)", value: 90000 },
+      { label: "4 giờ (340.000đ)", value: 340000 },
+      { label: "8 giờ (650.000đ)", value: 650000 },
+      { label: "Theo tháng 26 ngày (8.000.000đ)", value: 8000000 }
+    ]
+  }
+
+];

@@ -45,6 +45,7 @@ function displayServices(services) {
                             <p class="text-muted mb-3">${service.description}</p>
                             <h5 class="text-primary fw-bold mb-0">
                                 ${Utils.formatPrice(service.price)}đ
+                                ${service.unit ? `<small class="text-muted fw-normal">/${service.unit}</small>` : ''}
                             </h5>
                         </div>
                     </div>

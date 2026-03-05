@@ -1,0 +1,228 @@
+/* ===== UI KIT (Tables, Badges, Alerts, Timeline) ===== */
+
+/* TABLES */
+.pricing-table-wrapper {
+  overflow-x: auto;
+  margin-top: 40px;
+}
+
+.pricing-table {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.pricing-table th,
+.pricing-table td {
+  padding: 16px;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.pricing-table thead {
+  background-color: #0a2a66;
+  color: #ffffff;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.history-table th {
+  background-color: #f8f9fa;
+  color: #0a2a66;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
+  padding: 16px;
+  text-align: left;
+}
+
+.history-table td {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+/* BADGES */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+.status-shipping {
+  background: #cce5ff;
+  color: #004085;
+}
+.status-completed {
+  background: #d4edda;
+  color: #155724;
+}
+.status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* ALERTS & MESSAGES */
+.success-message {
+  text-align: center;
+  padding: 30px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+}
+
+.msg-box {
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.msg-box.success {
+  background: #d4edda;
+  color: #155724;
+}
+.msg-box.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+.error-box {
+  background: #fee;
+  color: #d9534f;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* TIMELINE (Vertical) */
+.tracking-timeline {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  position: relative;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 24px;
+  position: relative;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 19px;
+  top: 40px;
+  bottom: 0;
+  width: 2px;
+  background-color: #e0e0e0;
+  z-index: 0;
+}
+
+.timeline-item:last-child::before {
+  display: none;
+}
+
+.timeline-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #f0f4ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  z-index: 1;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-content {
+  flex: 1;
+  background: #f9f9f9;
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+/* Modern Timeline */
+.modern-timeline {
+  position: relative;
+  padding: 10px 0;
+  margin-left: 10px;
+}
+
+.modern-timeline .timeline-item {
+  position: relative;
+  padding-left: 45px;
+  padding-bottom: 30px;
+  display: block; /* Reset flex if inherited */
+}
+
+.modern-timeline .timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 5px;
+  bottom: 0;
+  width: 2px;
+  background-color: #eee;
+  z-index: 0;
+}
+
+.modern-timeline .timeline-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #bbb;
+  border: 4px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.modern-timeline .timeline-item.latest .timeline-marker {
+  background-color: #0a2a66;
+  box-shadow: 0 0 0 4px rgba(10, 42, 102, 0.15);
+}
+
+/* Process Icon (Home) */
+.process-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #0a2a66;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 10px rgba(10, 42, 102, 0.3);
+}
+
+/* FAQ Accordion */
+.faq-item {
+  background-color: #f7f7f7;
+  padding: 15px 20px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}

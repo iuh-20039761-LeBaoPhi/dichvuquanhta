@@ -1,0 +1,33 @@
+/* ===== AUTH PAGES (Login/Register) ===== */
+body.auth-page,
+body.auth-page-body {
+  background-color: #f5f7fb;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body.auth-page-body {
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.auth-link a {
+  color: #ff7a00;
+  text-decoration: none;
+  font-weight: 600;
+}
