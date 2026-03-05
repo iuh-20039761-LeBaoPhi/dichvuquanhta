@@ -1,0 +1,151 @@
+<script src="assets/js/load_template.js"></script>
+<script>
+window.PAGE_SEO = {
+    title: 'Liên Hệ CarRental – Hotline 0123 456 789 | Thuê Xe TP.HCM',
+    desc:  'Liên hệ CarRental để đặt xe hoặc được tư vấn. Hotline: 0123 456 789 (24/7). Email: contact@carrental.com. Địa chỉ: 123 Đường ABC, Quận 1, TP.HCM.',
+    keys:  'liên hệ carrental, hotline thuê xe tphcm, đặt xe hcm, tư vấn thuê xe',
+    url:   'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/index.php?page=contact'
+};
+loadHeader();
+</script>
+
+<section class="hero-section" style="padding: 80px 0;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-12 text-center hero-content">
+                <h1>Liên Hệ Với Chúng Tôi</h1>
+                <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Contact Info Cards -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px; background: var(--gradient-primary);">
+                                <i class="fas fa-map-marker-alt fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Địa Chỉ</h5>
+                        <p class="text-muted">123 Đường ABC, Quận 1,<br>TP. Hồ Chí Minh</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px; background: var(--gradient-secondary);">
+                                <i class="fas fa-phone fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Điện Thoại</h5>
+                        <p class="text-muted">
+                            Hotline: <strong>0123 456 789</strong><br>
+                            Zalo: <strong>0123 456 789</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px; background: var(--gradient-success);">
+                                <i class="fas fa-envelope fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Email</h5>
+                        <p class="text-muted">
+                            <strong>contact@carrental.com</strong><br>
+                            <strong>support@carrental.com</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bold mb-4 text-center">Gửi Tin Nhắn Cho Chúng Tôi</h3>
+                        
+                        <div id="contactAlert"></div>
+                        
+                        <form id="contactForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control" name="phone" required>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <label class="form-label">Chủ đề</label>
+                                    <input type="text" class="form-control" name="subject">
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <label class="form-label">Nội dung <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" name="message" rows="5" required></textarea>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-gradient w-100">
+                                        <i class="fas fa-paper-plane me-2"></i>Gửi tin nhắn
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold">Vị Trí Của Chúng Tôi</h3>
+        </div>
+        <div class="ratio ratio-21x9">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4975089901456!2d106.69746781533417!3d10.775527992322215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4b3330bcc9%3A0xb8b6b30f63d92412!2zUXXhuq1uIDEsIFRow6BuaCBwaOG7kSBI4buTIENow60gTWluaCwgVmlldG5hbQ!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy">
+            </iframe>
+        </div>
+    </div>
+</section>
+
+<script>loadFooter();</script>
+<script src="assets/js/pages/contact.js"></script>

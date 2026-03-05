@@ -1,0 +1,17 @@
+<?php
+session_start();
+define('BASE_PATH', __DIR__);
+define('BASE_URL', 'http://localhost/carrental_test');
+
+$page = $_GET['page'] ?? 'home';
+$validPages = ['home', 'search', 'car-detail', 'about', 'services', 'guide', 'contact', 'booking_success', 'track_order'];
+
+if (!in_array($page, $validPages)) $page = 'home';
+
+$viewFile = BASE_PATH . '/views/pages/' . str_replace('-', '_', $page) . '.html';
+if (file_exists($viewFile)) {
+    readfile($viewFile);
+} else {
+    echo '<h1>404 - Page Not Found</h1>';
+}
+?>
