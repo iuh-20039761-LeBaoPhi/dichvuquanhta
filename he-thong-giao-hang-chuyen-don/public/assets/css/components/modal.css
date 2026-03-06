@@ -138,6 +138,7 @@
   padding: 0;
   accent-color: #0a2a66;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .booking-order-form .checkbox-inline {

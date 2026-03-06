@@ -2,11 +2,18 @@
 #header {
   background-color: #0a2a66; /* Xanh dương đậm */
   padding: 16px 40px;
+  position: relative;
+  z-index: 2000;
 }
 
 .logo h1 {
   color: #ffffff;
   font-size: 24px;
+}
+
+.logo-link {
+  color: #ffffff;
+  text-decoration: none;
 }
 
 /* ===== RESPONSIVE HEADER ===== */

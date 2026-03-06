@@ -1,0 +1,39 @@
+body {
+  background-color: #f5f7fb;
+}
+
+/* Keep Tailwind page layout unaffected by shared global styles.css */
+main.moving-page {
+  padding: 0;
+  max-width: none;
+  margin: 0;
+}
+
+main.moving-page > section {
+  margin-bottom: 0;
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, #0a2a66 0%, #0f3b99 100%);
+}
+
+.soft-shadow {
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+}
+
+.process-line::after {
+  content: "";
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+@media (max-width: 768px) {
+  .process-line::after {
+    display: none;
+  }
+}

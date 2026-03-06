@@ -25,6 +25,9 @@
               bgLight: "#F5F7FB",
             },
             borderRadius: { twelve: "12px" },
+            fontFamily: {
+              sans: ["Poppins", "Inter", "sans-serif"],
+            },
             spacing: { section: "80px" },
           },
         },
@@ -72,16 +75,47 @@
             <div class="flex flex-wrap gap-4">
               <a
                 href="#"
-                onclick="openBookingModal('moving_office'); return false;"
+                onclick="
+                  openBookingModal('moving_office');
+                  return false;
+                "
                 class="bg-accent hover:bg-orange-600 text-white px-8 py-4 rounded-twelve font-semibold text-lg transition-transform hover:scale-105 inline-block text-center no-underline"
               >
-                Đặt dịch vụ
+                Đặt dịch vụ ngay
               </a>
               <a
                 href="#bao-gia"
                 class="border border-white/25 bg-white/5 hover:bg-white/10 text-blue-100 hover:text-white px-8 py-4 rounded-twelve font-semibold text-lg transition-all inline-block text-center no-underline"
               >
-                Nhận báo giá
+                Xem hạng mục
+              </a>
+            </div>
+            <div class="app-btns">
+              <a href="#" class="btn-store">
+                <span class="store-icon">
+                  <svg viewBox="0 0 384 512">
+                    <path
+                      d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 79.9c14.2 40.8 32.2 77.7 57.6 77.7 24.4 0 32.4-16.7 61.1-16.7 28.5 0 33.8 16.7 61.1 16.7 25.2 0 46.8-34.9 61.1-76.5 8.7-24.3 14.9-50.6 14.9-50.6s-35.6-11.4-35.4-55.3zM263 103.5c16.1-21.3 26.9-50.6 23.9-81.6-23.1 1.4-51.3 15.2-67.7 36.9-14.5 19-26.8 49.7-23.2 79.3 25.8 2.1 52.2-12.5 67-34.6z"
+                    />
+                  </svg>
+                </span>
+                <div class="store-text">
+                  <span class="store-subtitle">Download on the</span>
+                  <span class="store-title">App Store</span>
+                </div>
+              </a>
+              <a href="#" class="btn-store">
+                <span class="store-icon">
+                  <svg viewBox="0 0 512 512">
+                    <path
+                      d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-37.5 37.5 37.5 37.5 58.9-34.1c13.7-7.5 13.7-20.5 0-28zM104.6 499l220.7-221.3-58.7-58.9L47 512z"
+                    />
+                  </svg>
+                </span>
+                <div class="store-text">
+                  <span class="store-subtitle">GET IT ON</span>
+                  <span class="store-title">Google Play</span>
+                </div>
               </a>
             </div>
           </div>
@@ -114,6 +148,30 @@
             địa, phân loại tài sản, đóng gói chuyên dụng, vận chuyển và lắp đặt
             theo sơ đồ. Mọi hạng mục đều có checklist bàn giao rõ ràng.
           </p>
+        </div>
+      </section>
+      <section class="py-10 bg-bgLight">
+        <div class="max-w-[900px] mx-auto px-6">
+          <div
+            class="bg-white border border-slate-200 rounded-twelve p-6 card-shadow"
+          >
+            <h3 class="text-xl font-bold text-primary mb-4">
+              Thông tin dịch vụ
+            </h3>
+            <ul class="list-disc pl-5 text-slate-700 space-y-2">
+              <li>
+                <strong>Hỗ trợ:</strong> Di dời bàn ghế, hồ sơ, thiết bị IT.
+              </li>
+              <li>
+                <strong>Lịch linh hoạt:</strong> Có thể triển khai ngoài giờ làm
+                việc.
+              </li>
+              <li>
+                <strong>Phù hợp:</strong> Doanh nghiệp cần chuyển địa điểm vận
+                hành.
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -278,10 +336,14 @@
 
       <section class="py-section bg-bgLight">
         <div class="max-w-[1200px] mx-auto px-6">
-          <h2 class="text-2xl font-bold text-primary mb-8">
-            Hạng mục tiêu biểu
+          <h2 class="text-2xl font-bold text-primary mb-3">
+            Hạng mục dịch vụ chính
           </h2>
-          <div class="grid md:grid-cols-3 gap-6">
+          <p class="text-slate-600 mb-8">
+            Danh mục triển khai đầy đủ cho văn phòng vừa và lớn, có thể tùy
+            chỉnh theo hiện trạng thực tế.
+          </p>
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div
               class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
             >
@@ -309,6 +371,7 @@
                 </p>
               </div>
             </div>
+
             <div
               class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
             >
@@ -332,10 +395,11 @@
               <div>
                 <h5 class="font-bold text-primary mb-2">Thiết bị công nghệ</h5>
                 <p class="text-sm text-slate-500">
-                  Máy tính, máy in, server, switch mạng, thiết bị hội họp.
+                  Máy tính, máy in, máy chủ, thiết bị mạng, thiết bị hội họp.
                 </p>
               </div>
             </div>
+
             <div
               class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
             >
@@ -363,6 +427,154 @@
                 </p>
               </div>
             </div>
+
+            <div
+              class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
+            >
+              <div
+                class="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center text-accent"
+              >
+                <svg
+                  class="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h5 class="font-bold text-primary mb-2">Điều phối ngoài giờ</h5>
+                <p class="text-sm text-slate-500">
+                  Triển khai theo ca đêm/cuối tuần để giảm gián đoạn vận hành.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
+            >
+              <div
+                class="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center text-accent"
+              >
+                <svg
+                  class="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M4 12h16M4 7h16M4 17h10m6-7v10"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h5 class="font-bold text-primary mb-2">
+                  Tháo lắp nội thất và máy lạnh
+                </h5>
+                <p class="text-sm text-slate-500">
+                  Hỗ trợ tháo lắp bàn ghế, tủ hồ sơ, máy lạnh theo độ khó thực
+                  tế.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
+            >
+              <div
+                class="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center text-accent"
+              >
+                <svg
+                  class="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h5 class="font-bold text-primary mb-2">
+                  Kiểm kê tài sản và bàn giao
+                </h5>
+                <p class="text-sm text-slate-500">
+                  Đối soát danh mục tài sản trước/sau di dời, bàn giao theo biên
+                  bản.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
+            >
+              <div
+                class="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center text-accent"
+              >
+                <svg
+                  class="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7M9 11h6m-6 4h6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h5 class="font-bold text-primary mb-2">Lưu kho tạm thời</h5>
+                <p class="text-sm text-slate-500">
+                  Nhận lưu kho ngắn hạn khi văn phòng mới chưa hoàn thiện.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-6 rounded-twelve card-shadow flex items-center gap-4"
+            >
+              <div
+                class="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center text-accent"
+              >
+                <svg
+                  class="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M8 7l4 4-4 4m5-8h3m-3 8h3M3 5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h5 class="font-bold text-primary mb-2">
+                  Đi dây và bố trí lại hạ tầng
+                </h5>
+                <p class="text-sm text-slate-500">
+                  Hỗ trợ đi dây mạng, dây điện gọn gàng để vận hành nhanh.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -370,50 +582,166 @@
       <section id="bao-gia" class="py-section bg-white">
         <div class="max-w-[1200px] mx-auto px-6">
           <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-primary">Báo Giá Tham Khảo</h2>
+            <h2 class="text-3xl font-bold text-primary">
+              Bảng Giá Dịch Vụ Chuyển Văn Phòng (Tham khảo)
+            </h2>
             <p class="text-slate-600 mt-4">
-              Dành cho dịch vụ Chuyển Văn Phòng (ưu tiên nhanh, chính xác, đúng kế hoạch).
+              Mức giá được đề xuất theo thực tế triển khai, giúp doanh nghiệp dễ
+              dự trù chi phí.
             </p>
           </div>
 
-          <div class="grid md:grid-cols-2 gap-6">
-            <div class="bg-slate-50 border border-slate-200 rounded-twelve p-6">
-              <p class="text-sm font-semibold uppercase tracking-wide text-accent mb-2">
-                Đơn giá ước tính
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <article
+              class="bg-slate-50 border border-slate-200 rounded-twelve p-6"
+            >
+              <img
+                src="assets/images/hero-van-phong.png"
+                alt="Xe tải chuyển văn phòng nội thành"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-accent mb-2"
+              >
+                Xe tải nội thành
               </p>
-              <p class="text-3xl font-bold text-primary mb-3">300.000đ - 500.000đ</p>
-              <p class="text-slate-600">/ vị trí ngồi</p>
-              <p class="text-slate-600 mt-4">
-                Báo giá thực tế dựa trên số lượng vị trí làm việc, khối lượng tài sản
-                và yêu cầu triển khai.
+              <p class="text-lg font-bold text-primary">250.000đ - 400.000đ</p>
+              <p class="text-slate-600 mt-1">Xe 500kg (3.5km - 10km đầu)</p>
+              <p class="text-slate-600 mt-1">Xe 1.4 tấn: 400.000đ - 600.000đ</p>
+            </article>
+            <article
+              class="bg-slate-50 border border-slate-200 rounded-twelve p-6"
+            >
+              <img
+                src="assets/images/staff-deliver.png"
+                alt="Nhân công bốc xếp đồ đạc văn phòng"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-accent mb-2"
+              >
+                Nhân công bốc xếp
               </p>
-            </div>
-            <div class="bg-slate-50 border border-slate-200 rounded-twelve p-6">
-              <p class="text-sm font-semibold uppercase tracking-wide text-accent mb-2">
-                Đặc điểm triển khai
+              <p class="text-lg font-bold text-primary">
+                300.000đ - 450.000đ/người
               </p>
-              <ul class="list-disc pl-5 text-slate-700 space-y-2">
-                <li><strong>Hạng mục IT:</strong> tháo lắp máy tính, server, hệ thống mạng.</li>
-                <li><strong>Timeline:</strong> có thể làm đêm/cuối tuần để không ảnh hưởng giờ hành chính.</li>
-                <li><strong>Báo giá:</strong> dựa trên inventory chi tiết và sơ đồ bố trí văn phòng mới.</li>
-              </ul>
-            </div>
+              <p class="text-slate-600 mt-1">Tính cho 2 đầu bốc xếp</p>
+            </article>
+            <article
+              class="bg-slate-50 border border-slate-200 rounded-twelve p-6"
+            >
+              <img
+                src="assets/images/items-deliver.png"
+                alt="Tháo lắp và xử lý hạng mục nội thất văn phòng"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-accent mb-2"
+              >
+                Tháo lắp hạng mục
+              </p>
+              <p class="text-lg font-bold text-primary">
+                Máy lạnh: tháo 100.000đ, lắp 200.000đ
+              </p>
+              <p class="text-slate-600 mt-1">
+                Bàn ghế, tủ: tính theo số lượng và độ khó
+              </p>
+            </article>
+            <article
+              class="bg-slate-50 border border-slate-200 rounded-twelve p-6"
+            >
+              <img
+                src="assets/images/lien-tinh.png"
+                alt="Vận chuyển văn phòng liên tỉnh"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-accent mb-2"
+              >
+                Vận chuyển liên tỉnh
+              </p>
+              <p class="text-lg font-bold text-primary">
+                400.000đ - 600.000đ/khối
+              </p>
+              <p class="text-slate-600 mt-1">
+                Hoặc 10 - 25 triệu/chuyến xe 1 - 5 tấn
+              </p>
+            </article>
+            <article
+              class="bg-slate-50 border border-slate-200 rounded-twelve p-6"
+            >
+              <img
+                src="assets/images/staff-01.png"
+                alt="Khảo sát hiện trạng văn phòng trước khi chuyển"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-accent mb-2"
+              >
+                Khảo sát
+              </p>
+              <p class="text-lg font-bold text-primary">Miễn phí tận nơi</p>
+              <p class="text-slate-600 mt-1">Hoàn thành trong vòng 24 giờ</p>
+            </article>
+            <article
+              class="bg-slate-50 border border-slate-200 rounded-twelve p-6"
+            >
+              <img
+                src="assets/images/hop-dong.png"
+                alt="Cam kết hợp đồng và bàn giao minh bạch"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-accent mb-2"
+              >
+                Cam kết hợp đồng
+              </p>
+              <p class="text-lg font-bold text-primary">Bồi thường rõ ràng</p>
+              <p class="text-slate-600 mt-1">
+                Theo giá trị tài sản và điều khoản đã ký
+              </p>
+            </article>
           </div>
 
-          <div class="mt-6 bg-blue-50 border-l-4 border-primary rounded-r-twelve p-5">
+          <div
+            class="mt-6 bg-blue-50 border-l-4 border-primary rounded-r-twelve p-5"
+          >
+            <p class="font-semibold text-primary mb-2">
+              Các yếu tố ảnh hưởng chi phí
+            </p>
+            <ul class="list-disc pl-5 text-slate-700 space-y-2 mb-5">
+              <li>
+                <strong>Số lượng đồ đạc:</strong> càng nhiều hạng mục cồng kềnh,
+                chi phí càng tăng.
+              </li>
+              <li>
+                <strong>Khoảng cách vận chuyển:</strong> quãng đường giữa văn
+                phòng cũ và mới quyết định đơn giá xe.
+              </li>
+              <li>
+                <strong>Địa hình tòa nhà:</strong> tầng cao không thang máy, hẻm
+                nhỏ hoặc hầm khó vào thường phát sinh thêm công.
+              </li>
+              <li>
+                <strong>Vật tư đóng gói:</strong> số lượng thùng carton, màng
+                PE, mút xốp sử dụng theo thực tế.
+              </li>
+            </ul>
             <p class="font-semibold text-primary mb-2">Lưu ý chung</p>
             <ul class="list-disc pl-5 text-slate-700 space-y-2">
               <li>
-                <strong>Khảo sát thực tế:</strong> luôn là bước miễn phí; nên yêu cầu khảo sát tại chỗ
-                để tránh phát sinh chi phí không hợp lý.
+                <strong>Khảo sát thực tế:</strong> luôn là bước miễn phí; nên
+                yêu cầu khảo sát tại chỗ để tránh phát sinh chi phí không hợp
+                lý.
               </li>
               <li>
-                <strong>Bảo hiểm hàng hóa:</strong> kiểm tra rõ điều khoản bồi thường trong hợp đồng,
-                đặc biệt với tài sản giá trị cao.
+                <strong>Hạng mục kỹ thuật công nghệ thông tin:</strong> với
+                thiết bị máy chủ, hệ thống mạng hoặc thiết bị giá trị cao, nên
+                lập danh mục tài sản chi tiết trước khi thi công.
               </li>
               <li>
-                <strong>Phụ phí:</strong> đường cấm tải, khoảng cách bốc dỡ xa, hoặc điều kiện tòa nhà
-                có thể ảnh hưởng giá cuối cùng.
+                <strong>Phụ phí:</strong> đường cấm tải, khoảng cách bốc dỡ xa,
+                hoặc điều kiện tòa nhà có thể ảnh hưởng giá cuối cùng.
               </li>
             </ul>
           </div>
@@ -427,7 +755,10 @@
           </h2>
           <a
             href="#"
-            onclick="openBookingModal('moving_office'); return false;"
+            onclick="
+              openBookingModal('moving_office');
+              return false;
+            "
             class="bg-accent hover:bg-orange-600 text-white px-12 py-5 rounded-twelve text-xl font-bold shadow-xl transition-all transform hover:scale-110 inline-block text-center no-underline"
           >
             ĐẶT DỊCH VỤ NGAY
@@ -442,5 +773,3 @@
     <script src="assets/js/main.js" defer></script>
   </body>
 </html>
-
-

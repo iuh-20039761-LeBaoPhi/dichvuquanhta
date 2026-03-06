@@ -17,7 +17,12 @@ FastGo là dự án web logistics dùng PHP + MySQL, gồm landing page, đặt 
   - Sau đăng nhập có `redirect` quay lại trang trước (hỗ trợ mở lại modal đặt đơn).
 - Form giao hàng:
   - Hỗ trợ nội địa và quốc tế (`intl_economy`, `intl_express`).
+  - Tên gói quốc tế hiển thị: `Tiêu chuẩn quốc tế` và `Chuyển phát nhanh quốc tế`.
   - Đơn quốc tế bắt buộc chọn quốc gia nhận; COD tự ẩn và đưa về `0`.
+- Form chuyển dọn:
+  - Luồng thống nhất là `khảo sát trước - chốt đơn sau`.
+  - Nút/confirm/thông báo thành công được đổi sang ngữ cảnh `Gửi yêu cầu khảo sát`.
+  - Backend lưu thông tin khảo sát ban đầu vào `note` và đánh dấu `request_stage = survey_pending`.
 - Phí vận chuyển dự kiến:
   - Cập nhật liên tục khi thay đổi thông số (dịch vụ, địa chỉ, cân nặng, kích thước, COD, quốc gia/tỉnh nhận quốc tế...).
 - Đồng bộ danh sách địa điểm:
@@ -69,8 +74,9 @@ FastGo là dự án web logistics dùng PHP + MySQL, gồm landing page, đặt 
 ### Chuyển dọn (`create-order-form-moving`)
 
 1. Chọn loại chuyển dọn (nhà/văn phòng/kho bãi).
-2. Nhập thông tin khảo sát chi tiết.
-3. Bấm `Gửi yêu cầu`, hệ thống lưu yêu cầu và nhân viên liên hệ báo giá.
+2. Nhập thông tin khảo sát ban đầu (điểm đi/đến, số tầng, thang máy, khung giờ...).
+3. Bấm `Gửi yêu cầu`, hệ thống ghi nhận `yêu cầu khảo sát` (chưa phải đơn chính thức).
+4. Nhân viên liên hệ khảo sát thực tế, chốt phương án và xác nhận đơn chính thức sau khảo sát.
 
 ## Logic tính cước
 
@@ -126,7 +132,7 @@ Web shipper/
 - `public/tracking_ajax.php`: tra cứu vận đơn.
 - `public/inquiry_ajax.php`: gửi liên hệ.
 - `public/landing_data_ajax.php`: dữ liệu động cho landing.
-- `public/order.php`: tạo đơn hàng/chuyển dọn.
+- `public/order.php`: tạo đơn giao hàng và ghi nhận yêu cầu khảo sát chuyển dọn.
 
 ## Ghi chú
 

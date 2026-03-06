@@ -18,225 +18,6 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     />
-    <style>
-      /* Styles for new moving cards */
-      .moving-service-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 24px;
-        margin-top: 24px;
-      }
-      .moving-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-          0 2px 4px -2px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s, box-shadow 0.2s;
-      }
-      .moving-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-          0 4px 6px -4px rgba(0, 0, 0, 0.1);
-      }
-      .moving-card-head {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
-      }
-      .moving-card-icon {
-        font-size: 2.5rem;
-      }
-      .moving-card-head h3 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #0a2a66;
-      }
-      .moving-card-slogan {
-        font-style: italic;
-        color: #4b5563;
-        margin-bottom: 16px;
-        border-left: 3px solid #ff7a00;
-        padding-left: 12px;
-      }
-      .moving-card-details {
-        list-style: none;
-        padding-left: 0;
-        margin-bottom: 20px;
-        flex-grow: 1;
-      }
-      .moving-card-details li {
-        font-size: 0.9rem;
-        color: #374151;
-        margin-bottom: 8px;
-        padding-left: 20px;
-        position: relative;
-      }
-      .moving-card-details li::before {
-        content: "✓";
-        color: #28a745;
-        position: absolute;
-        left: 0;
-        font-weight: bold;
-      }
-      .moving-card-details li strong {
-        color: #111827;
-      }
-    </style>
-    <style>
-      /* --- TRACKING STYLES --- */
-      .tracking-card {
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        padding: 30px;
-        margin-top: 30px;
-        text-align: left;
-        border: 1px solid #eee;
-        animation: slideUp 0.4s ease;
-      }
-      .t-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 15px;
-        border-bottom: 1px dashed #eee;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-      .t-code {
-        font-size: 18px;
-        font-weight: 700;
-        color: #0a2a66;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .t-status {
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 600;
-      }
-      .t-status.completed {
-        background: #d4edda;
-        color: #155724;
-      }
-      .t-status.shipping {
-        background: #cce5ff;
-        color: #004085;
-      }
-      .t-status.pending {
-        background: #fff3cd;
-        color: #856404;
-      }
-      .t-status.cancelled {
-        background: #f8d7da;
-        color: #721c24;
-      }
-
-      .t-route {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 30px;
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-        position: relative;
-      }
-      .t-route-item {
-        flex: 1;
-        position: relative;
-        z-index: 1;
-      }
-      .t-label {
-        font-size: 11px;
-        text-transform: uppercase;
-        color: #888;
-        letter-spacing: 0.5px;
-        margin-bottom: 5px;
-        display: block;
-      }
-      .t-addr {
-        font-size: 15px;
-        font-weight: 600;
-        color: #333;
-        line-height: 1.4;
-      }
-      .t-icon {
-        font-size: 20px;
-        margin-bottom: 5px;
-        display: block;
-      }
-
-      /* Timeline Dọc */
-      .timeline {
-        position: relative;
-        padding-left: 30px;
-      }
-      .timeline::before {
-        content: "";
-        position: absolute;
-        left: 9px;
-        top: 5px;
-        bottom: 0;
-        width: 2px;
-        background: #e9ecef;
-      }
-      .tl-item {
-        position: relative;
-        padding-bottom: 25px;
-      }
-      .tl-item:last-child {
-        padding-bottom: 0;
-      }
-      .tl-dot {
-        position: absolute;
-        left: -26px;
-        top: 4px;
-        width: 12px;
-        height: 12px;
-        background: #fff;
-        border: 2px solid #ccc;
-        border-radius: 50%;
-        z-index: 1;
-      }
-      .tl-item.active .tl-dot {
-        border-color: #28a745;
-        background: #28a745;
-        box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
-      }
-      .tl-time {
-        font-size: 12px;
-        color: #999;
-        margin-bottom: 2px;
-      }
-      .tl-content {
-        font-size: 15px;
-        font-weight: 500;
-        color: #555;
-      }
-      .tl-item.active .tl-content {
-        color: #0a2a66;
-        font-weight: 700;
-      }
-
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-    </style>
   </head>
 
   <body>
@@ -305,14 +86,7 @@
             src="public/assets/images/hero.png"
             alt="Đội ngũ shipper FastGo giao hàng nhanh tại TP.HCM"
           />
-          <p
-            style="
-              margin-top: 8px;
-              text-align: center;
-              font-size: 13px;
-              color: #64748b;
-            "
-          >
+          <p class="hero-image-caption">
             Ảnh: Dịch vụ shipper giao hàng nhanh FastGo tại TP.HCM.
           </p>
         </div>
@@ -336,11 +110,7 @@
           />
           <button type="submit" class="btn-primary">Tra cứu</button>
         </form>
-        <div
-          id="loading-spinner-standard"
-          class="spinner"
-          style="display: none"
-        ></div>
+        <div id="loading-spinner-standard" class="spinner"></div>
         <div id="result-standard"></div>
       </div>
     </section>
@@ -356,38 +126,39 @@
           <div class="process-item animate-up">
             <img
               src="public/assets/images/order.png"
-              alt="Bước đặt đơn giao hàng trực tuyến trên website FastGo"
+              alt="Bước 1: Khách hàng đặt đơn trực tuyến trên website FastGo"
               class="process-img"
             />
             <h3>Đặt đơn trực tuyến</h3>
             <p>
-              Nhập thông tin người gửi, người nhận và loại dịch vụ ngay trên
-              website.
+              Nhập thông tin người gửi, người nhận và chi tiết hàng hóa. Hệ
+              thống sẽ tự động tính cước phí cho bạn. website.
             </p>
           </div>
           <div class="process-arrow">➔</div>
-          <div class="process-item animate-up" style="animation-delay: 0.2s">
+          <div class="process-item animate-up process-delay-2">
             <img
               src="public/assets/images/hero-shipper.png"
-              alt="Shipper FastGo đến lấy hàng tận nơi sau khi xác nhận đơn"
+              alt="Bước 2: FastGo xác nhận và điều phối shipper đến lấy hàng"
               class="process-img"
             />
-            <h3>Lấy hàng trong 15p</h3>
+            <h3>Xác nhận & Lấy hàng</h3>
             <p>
-              Shipper gần nhất sẽ đến nhận hàng chỉ sau vài phút xác nhận đơn.
+              Sau khi bạn đặt, FastGo sẽ nhanh chóng xử lý và điều phối shipper
+              đến lấy hàng tận nơi.
             </p>
           </div>
           <div class="process-arrow">➔</div>
-          <div class="process-item animate-up" style="animation-delay: 0.4s">
+          <div class="process-item animate-up process-delay-4">
             <img
               src="public/assets/images/package.png"
-              alt="Đơn hàng được FastGo giao tận tay người nhận an toàn"
+              alt="Bước 3: Đơn hàng được giao an toàn và có thể theo dõi trực tuyến"
               class="process-img"
             />
-            <h3>Giao tận tay</h3>
+            <h3>Giao nhanh & Hoàn tất</h3>
             <p>
-              Hàng hóa được vận chuyển siêu tốc và giao tận tay người nhận an
-              toàn.
+              Hàng hóa được giao an toàn tới người nhận. Bạn có thể theo dõi
+              toàn bộ quá trình trên website.
             </p>
           </div>
         </div>
@@ -396,171 +167,230 @@
 
     <!-- SERVICES -->
     <section id="services">
-      <h2 class="section-title">Các Dịch Vụ Của FastGo</h2>
-      <p class="section-desc">
-        Tất cả dịch vụ được trình bày đồng đều theo dạng thẻ để bạn dễ so sánh
-        và chọn nhanh.
-      </p>
+      <div class="container">
+        <h2 class="section-title">Các Dịch Vụ Của FastGo</h2>
+        <p class="section-desc">
+          Tất cả dịch vụ được trình bày đồng đều theo dạng thẻ để bạn dễ so sánh
+          và chọn nhanh.
+        </p>
 
-      <div class="moving-service-grid">
-        <article class="moving-card">
-          <div class="moving-card-head">
-            <div class="moving-card-icon">🐢</div>
-            <h3>Giao hàng Chậm</h3>
-          </div>
-          <p class="moving-card-slogan">"Tối ưu chi phí cho đơn không gấp."</p>
-          <ul class="moving-card-details">
-            <li><strong>Phạm vi:</strong> Nội thành, ngoại thành, liên tỉnh.</li>
-            <li><strong>Ưu tiên:</strong> Chi phí tiết kiệm, gom tuyến.</li>
-            <li><strong>Phù hợp:</strong> Đơn số lượng nhiều, ít áp lực thời gian.</li>
-          </ul>
-          <a
-            href="#quick-quote"
-            class="service-action-btn service-action-primary"
-          >
-            Tính cước nhanh →
-          </a>
-        </article>
+       <div class="moving-service-grid">
+          <article class="moving-card">
+            <div class="moving-card-head">
+              <div class="moving-card-icon">🐢</div>
+              <h3>Giao hàng Chậm</h3>
+            </div>
+            <p class="moving-card-slogan">
+              "Tối ưu chi phí cho đơn không gấp."
+            </p>
+            <ul class="moving-card-details">
+              <li>
+                <strong>Phạm vi:</strong> Nội thành, ngoại thành, liên tỉnh.
+              </li>
+              <li><strong>Ưu tiên:</strong> Chi phí tiết kiệm, gom tuyến.</li>
+              <li>
+                <strong>Phù hợp:</strong> Đơn số lượng nhiều, ít áp lực thời
+                gian.
+              </li>
+            </ul>
+            <a
+              href="#quick-quote"
+              class="service-action-btn service-action-primary"
+            >
+              Tính cước nhanh →
+            </a>
+          </article>
+       <article class="moving-card">
+            <div class="moving-card-head">
+              <div class="moving-card-icon">📦</div>
+              <h3>Giao hàng Tiêu chuẩn</h3>
+            </div>
+            <p class="moving-card-slogan">
+              "Cân bằng tốt giữa tốc độ và chi phí."
+            </p>
+            <ul class="moving-card-details">
+              <li>
+                <strong>Phạm vi:</strong> Nội thành, ngoại thành, liên tỉnh.
+              </li>
+              <li>
+                <strong>Ưu tiên:</strong> Thời gian giao ổn định theo lịch
+                trình.
+              </li>
+              <li>
+                <strong>Phù hợp:</strong> Shop online và cá nhân gửi hàng hằng
+                ngày.
+              </li>
+            </ul>
+            <a
+              href="#quick-quote"
+              class="service-action-btn service-action-primary"
+            >
+              Tính cước nhanh →
+            </a>
+          </article>
 
-        <article class="moving-card">
-          <div class="moving-card-head">
-            <div class="moving-card-icon">📦</div>
-            <h3>Giao hàng Tiêu chuẩn</h3>
-          </div>
-          <p class="moving-card-slogan">"Cân bằng tốt giữa tốc độ và chi phí."</p>
-          <ul class="moving-card-details">
-            <li><strong>Phạm vi:</strong> Nội thành, ngoại thành, liên tỉnh.</li>
-            <li><strong>Ưu tiên:</strong> Thời gian giao ổn định theo lịch trình.</li>
-            <li><strong>Phù hợp:</strong> Shop online và cá nhân gửi hàng hằng ngày.</li>
-          </ul>
-          <a
-            href="#quick-quote"
-            class="service-action-btn service-action-primary"
-          >
-            Tính cước nhanh →
-          </a>
-        </article>
-
-        <article class="moving-card">
-          <div class="moving-card-head">
-            <div class="moving-card-icon">⚡</div>
-            <h3>Giao hàng Nhanh</h3>
-          </div>
-          <p class="moving-card-slogan">"Rút ngắn thời gian giao trong ngày."</p>
-          <ul class="moving-card-details">
-            <li><strong>Phạm vi:</strong> Nội thành, ngoại thành, liên tỉnh.</li>
-            <li><strong>Ưu tiên:</strong> Đơn cần giao sớm, xử lý linh hoạt.</li>
-            <li><strong>Phù hợp:</strong> Hàng cần đến tay khách trong ngày.</li>
-          </ul>
-          <a
-            href="#quick-quote"
-            class="service-action-btn service-action-primary"
-          >
-            Tính cước nhanh →
-          </a>
-        </article>
-
-        <article class="moving-card">
-          <div class="moving-card-head">
-            <div class="moving-card-icon">🚀</div>
-            <h3>Giao hàng Hỏa tốc</h3>
-          </div>
-          <p class="moving-card-slogan">"Ưu tiên cao nhất cho đơn gấp."</p>
-          <ul class="moving-card-details">
-            <li><strong>Phạm vi:</strong> Nội thành và các tuyến ưu tiên.</li>
-            <li><strong>Ưu tiên:</strong> Điều phối gấp, rút ngắn thời gian chờ.</li>
-            <li><strong>Phù hợp:</strong> Tài liệu gấp, hàng cần giao ngay.</li>
-          </ul>
-          <a
-            href="#quick-quote"
-            class="service-action-btn service-action-primary"
-          >
-            Tính cước nhanh →
-          </a>
-        </article>
-
-        <article class="moving-card">
-          <div class="moving-card-head">
-            <div class="moving-card-icon">🌍</div>
-            <h3>Giao hàng Quốc tế</h3>
-          </div>
-          <p class="moving-card-slogan">"Kết nối vận chuyển từ Việt Nam ra thế giới."</p>
-          <ul class="moving-card-details">
-            <li><strong>Gói cước:</strong> Tiêu chuẩn quốc tế và Chuyển phát nhanh quốc tế.</li>
-            <li><strong>Phạm vi:</strong> Châu Á, Châu Âu, Châu Mỹ và nhiều khu vực khác.</li>
-            <li><strong>Phù hợp:</strong> Shop xuất khẩu, gửi quà/tài liệu quốc tế.</li>
-          </ul>
-          <a
-            href="#quick-quote"
-            class="service-action-btn service-action-primary"
-          >
-            Tính cước quốc tế →
-          </a>
-        </article>
+         <article class="moving-card">
+            <div class="moving-card-head">
+              <div class="moving-card-icon">⚡</div>
+              <h3>Giao hàng Nhanh</h3>
+            </div>
+            <p class="moving-card-slogan">
+              "Rút ngắn thời gian giao trong ngày."
+            </p>
+            <ul class="moving-card-details">
+              <li>
+                <strong>Phạm vi:</strong> Nội thành, ngoại thành, liên tỉnh.
+              </li>
+              <li>
+                <strong>Ưu tiên:</strong> Đơn cần giao sớm, xử lý linh hoạt.
+              </li>
+              <li>
+                <strong>Phù hợp:</strong> Hàng cần đến tay khách trong ngày.
+              </li>
+            </ul>
+            <a
+              href="#quick-quote"
+              class="service-action-btn service-action-primary"
+            >
+              Tính cước nhanh →
+            </a>
+          </article>
 
         <article class="moving-card">
-          <div class="moving-card-head">
-            <div class="moving-card-icon">🏠</div>
-            <h3>Chuyển Nhà Trọn Gói</h3>
-          </div>
-          <p class="moving-card-slogan">"Nâng niu đồ đạc như chính chủ nhân."</p>
-          <ul class="moving-card-details">
-            <li><strong>Hỗ trợ:</strong> Tháo lắp, bọc lót, sắp xếp theo yêu cầu.</li>
-            <li><strong>Phạm vi:</strong> Căn hộ, nhà phố, phòng trọ.</li>
-            <li><strong>Phù hợp:</strong> Hộ gia đình và cá nhân chuyển nơi ở.</li>
-          </ul>
-          <a
-            href="./public/chuyen-nha.html"
-            class="service-action-btn service-action-primary"
-            >Xem chi tiết →</a
-          >
-        </article>
+            <div class="moving-card-head">
+              <div class="moving-card-icon">🚀</div>
+              <h3>Giao hàng Hỏa tốc</h3>
+            </div>
+            <p class="moving-card-slogan">"Ưu tiên cao nhất cho đơn gấp."</p>
+            <ul class="moving-card-details">
+              <li><strong>Phạm vi:</strong> Nội thành và các tuyến ưu tiên.</li>
+              <li>
+                <strong>Ưu tiên:</strong> Điều phối gấp, rút ngắn thời gian chờ.
+              </li>
+              <li>
+                <strong>Phù hợp:</strong> Tài liệu gấp, hàng cần giao ngay.
+              </li>
+            </ul>
+            <a
+              href="#quick-quote"
+              class="service-action-btn service-action-primary"
+            >
+              Tính cước nhanh →
+            </a>
+          </article>
 
-        <article class="moving-card">
-          <div class="moving-card-head">
-            <div class="moving-card-icon">🏢</div>
-            <h3>Chuyển Văn Phòng</h3>
-          </div>
-          <p class="moving-card-slogan">"Nhanh chóng - chính xác - không gián đoạn."</p>
-          <ul class="moving-card-details">
-            <li><strong>Hỗ trợ:</strong> Di dời bàn ghế, hồ sơ, thiết bị IT.</li>
-            <li><strong>Lịch linh hoạt:</strong> Có thể triển khai ngoài giờ làm việc.</li>
-            <li><strong>Phù hợp:</strong> Doanh nghiệp cần chuyển địa điểm vận hành.</li>
-          </ul>
-          <a
-            href="./public/chuyen-van-phong.html"
-            class="service-action-btn service-action-primary"
-            >Xem chi tiết →</a
-          >
-        </article>
+         <article class="moving-card">
+            <div class="moving-card-head">
+              <div class="moving-card-icon">🌍</div>
+              <h3>Giao hàng Quốc tế</h3>
+            </div>
+            <p class="moving-card-slogan">
+              "Kết nối vận chuyển từ Việt Nam ra thế giới."
+            </p>
+            <ul class="moving-card-details">
+              <li>
+                <strong>Gói cước:</strong> Tiêu chuẩn quốc tế và Chuyển phát
+                nhanh quốc tế.
+              </li>
+              <li>
+                <strong>Phạm vi:</strong> Châu Á, Châu Âu, Châu Mỹ và nhiều khu
+                vực khác.
+              </li>
+              <li>
+                <strong>Phù hợp:</strong> Shop xuất khẩu, gửi quà/tài liệu quốc
+                tế.
+              </li>
+            </ul>
+            <a
+              href="#quick-quote"
+              class="service-action-btn service-action-primary"
+            >
+              Tính cước quốc tế →
+            </a>
+          </article>
 
-        <article class="moving-card">
-          <div class="moving-card-head">
-            <div class="moving-card-icon">🏭</div>
-            <h3>Chuyển Kho Bãi</h3>
-          </div>
-          <p class="moving-card-slogan">"Giải pháp vận tải hạng nặng quy mô lớn."</p>
-          <ul class="moving-card-details">
-            <li>
-              <strong>Thiết bị:</strong> Xe cẩu, xe nâng, xe tải trọng tải lớn
-              (5-15 tấn).
-            </li>
-            <li>
-              <strong>Hỗ trợ:</strong> Di dời dây chuyền máy móc, kệ kho,
-              nguyên vật liệu.
-            </li>
-            <li>
-              <strong>Pháp lý:</strong> Có hóa đơn VAT và hợp đồng bảo hiểm vận
-              chuyển.
-            </li>
-          </ul>
-          <a
-            href="./public/chuyen-kho-bai.html"
-            class="service-action-btn service-action-primary"
-            >Xem chi tiết →</a
-          >
-        </article>
-      </div>
+         <article class="moving-card">
+            <div class="moving-card-head">
+              <div class="moving-card-icon">🏠</div>
+              <h3>Chuyển Nhà Trọn Gói</h3>
+            </div>
+            <p class="moving-card-slogan">
+              "Nâng niu đồ đạc như chính chủ nhân."
+            </p>
+            <ul class="moving-card-details">
+              <li>
+                <strong>Hỗ trợ:</strong> Tháo lắp, bọc lót, sắp xếp theo yêu
+                cầu.
+              </li>
+              <li><strong>Phạm vi:</strong> Căn hộ, nhà phố, phòng trọ.</li>
+              <li>
+                <strong>Phù hợp:</strong> Hộ gia đình và cá nhân chuyển nơi ở.
+              </li>
+            </ul>
+            <a
+              href="./public/chuyen-nha.html"
+              class="service-action-btn service-action-primary"
+              >Xem chi tiết →</a
+            >
+          </article>
+
+         <article class="moving-card">
+            <div class="moving-card-head">
+              <div class="moving-card-icon">🏢</div>
+              <h3>Chuyển Văn Phòng</h3>
+            </div>
+            <p class="moving-card-slogan">
+              "Nhanh chóng - chính xác - không gián đoạn."
+            </p>
+            <ul class="moving-card-details">
+              <li>
+                <strong>Hỗ trợ:</strong> Di dời bàn ghế, hồ sơ, thiết bị IT.
+              </li>
+              <li>
+                <strong>Lịch linh hoạt:</strong> Có thể triển khai ngoài giờ làm
+                việc.
+              </li>
+              <li>
+                <strong>Phù hợp:</strong> Doanh nghiệp cần chuyển địa điểm vận
+                hành.
+              </li>
+            </ul>
+            <a
+              href="./public/chuyen-van-phong.html"
+              class="service-action-btn service-action-primary"
+              >Xem chi tiết →</a
+            >
+          </article>
+
+         <article class="moving-card">
+            <div class="moving-card-head">
+              <div class="moving-card-icon">🏭</div>
+              <h3>Chuyển Kho Bãi</h3>
+            </div>
+            <p class="moving-card-slogan">
+              "Giải pháp vận tải hạng nặng quy mô lớn."
+            </p>
+            <ul class="moving-card-details">
+              <li>
+                <strong>Thiết bị:</strong> Xe cẩu, xe nâng, xe tải trọng tải lớn
+                (5-15 tấn).
+              </li>
+              <li>
+                <strong>Hỗ trợ:</strong> Di dời dây chuyền máy móc, kệ kho,
+                nguyên vật liệu.
+              </li>
+              <li>
+                <strong>Pháp lý:</strong> Có hóa đơn VAT và hợp đồng bảo hiểm
+                vận chuyển.
+              </li>
+            </ul>
+            <a
+              href="./public/chuyen-kho-bai.html"
+              class="service-action-btn service-action-primary"
+              >Xem chi tiết →</a
+            >
+          </article>
+        </div>
     </section>
 
     <!-- FEATURES -->
@@ -755,8 +585,8 @@
                 value="0"
               />
             </div>
-            <div style="grid-column: 1 / -1">
-              <p style="margin: 4px 0 0; font-size: 12px; color: #6b7280">
+            <div class="quote-span-2">
+              <p class="quote-note">
                 Lưu ý: Một tên hàng có thể thuộc nhiều loại. Khai sai loại hàng
                 có thể bị từ chối bồi thường khi phát sinh sự cố.
               </p>
@@ -887,8 +717,8 @@
                 placeholder="0"
               />
             </div>
-            <div style="grid-column: 1 / -1">
-              <p style="margin: 4px 0 0; font-size: 12px; color: #6b7280">
+            <div class="quote-span-2">
+              <p class="quote-note">
                 Lưu ý: Hàng chất lỏng, pin lithium, đông lạnh có thể bị hạn chế
                 tùy tuyến vận chuyển (đặc biệt tuyến hàng không).
               </p>
@@ -1249,7 +1079,7 @@
             }
             if (navRegisterItem) {
               navRegisterItem.innerHTML = `
-                <a href="${logoutUrl}" class="btn-primary" style="padding: 8px 20px; background: #ff7a00; border: none; color: white;">Đăng xuất</a>
+                <a href="${logoutUrl}" class="btn-primary nav-auth-cta">Đăng xuất</a>
               `;
             }
 
@@ -1278,7 +1108,7 @@
             }
             if (navRegisterItem) {
               navRegisterItem.innerHTML = `
-                <a href="${registerUrl}" class="btn-primary" style="padding: 8px 20px; background: #ff7a00; border: none; color: white;">Đăng ký</a>
+                <a href="${registerUrl}" class="btn-primary nav-auth-cta">Đăng ký</a>
               `;
             }
 
@@ -1341,5 +1171,3 @@
     </script>
   </body>
 </html>
-
-

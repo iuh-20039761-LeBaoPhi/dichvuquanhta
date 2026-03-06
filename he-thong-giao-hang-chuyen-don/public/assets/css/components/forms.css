@@ -156,6 +156,12 @@ textarea:focus {
   grid-column: span 2;
 }
 
+.quote-note {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
 .quote-result {
   margin-top: 16px;
 }

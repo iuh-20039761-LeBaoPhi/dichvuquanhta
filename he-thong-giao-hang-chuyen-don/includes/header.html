@@ -2,7 +2,7 @@
   <nav class="navbar">
     <div class="logo">
       <h1>
-        <a data-layout-link="brand" href="../index.html" style="color: white; text-decoration: none"
+        <a data-layout-link="brand" href="../index.html" class="logo-link"
           >FastGo</a
         >
       </h1>
@@ -16,14 +16,47 @@
 
     <ul class="nav-menu" id="nav-menu">
       <li><a data-layout-link="home" href="#hero">Trang chủ</a></li>
-      <li><a data-layout-link="services" href="#services">Dịch vụ</a></li>
-      <li><a data-layout-link="pricing" href="#pricing">Bảng giá</a></li>
-      <li><a data-layout-link="tracking" href="#home-tracking">Tra cứu đơn</a></li>
-      <li>
-        <a data-layout-link="booking" href="#contact">Đặt hàng</a>
+      <li class="dropdown">
+        <a
+          href="#"
+          class="services-menu-trigger"
+          aria-haspopup="true"
+          aria-expanded="false"
+          >Dịch vụ</a
+        >
+        <ul class="dropdown-menu">
+          <li>
+            <a data-layout-link="delivery-services" href="index.html"
+              >Giao hàng</a
+            >
+          </li>
+          <li>
+            <a data-layout-link="moving-house" href="public/chuyen-nha.html"
+              >Chuyển nhà</a
+            >
+          </li>
+          <li>
+            <a
+              data-layout-link="moving-office"
+              href="public/chuyen-van-phong.html"
+              >Chuyển văn phòng</a
+            >
+          </li>
+          <li>
+            <a
+              data-layout-link="moving-warehouse"
+              href="public/chuyen-kho-bai.html"
+              >Chuyển kho bãi</a
+            >
+          </li>
+        </ul>
       </li>
+      <li><a data-layout-link="pricing" href="#quick-quote">Bảng giá</a></li>
       <li>
-        <a data-layout-link="guide" href="public/huong-dan-dat-hang.html" target="_blank"
+        <a
+          data-layout-link="guide"
+          href="public/huong-dan-dat-hang.html"
+          target="_blank"
           >Hướng dẫn</a
         >
       </li>
@@ -34,17 +67,10 @@
         <a
           data-layout-link="register"
           href="public/register.php"
-          class="btn-primary"
-          style="
-            padding: 8px 20px;
-            background: #ff7a00;
-            border: none;
-            color: white;
-          "
+          class="btn-primary nav-auth-cta"
           >Đăng ký</a
         >
       </li>
     </ul>
   </nav>
 </header>
-

@@ -2,8 +2,19 @@
   if (window.__fastGoSharedLayoutLoaded) return;
   window.__fastGoSharedLayoutLoaded = true;
 
-  const inPublicDir = window.location.pathname.toLowerCase().includes("/public/");
+  const currentPath = window.location.pathname.toLowerCase();
+  const inPublicDir = currentPath.includes("/public/");
+  const currentPage = currentPath.split("/").pop() || "index.html";
   const includesBase = inPublicDir ? "../includes/" : "includes/";
+  const servicePageKeyByFile = {
+    "chuyen-nha.html": "moving-house",
+    "chuyen-kho-bai.html": "moving-warehouse",
+    "chuyen-van-phong.html": "moving-office",
+  };
+
+  function isServiceLandingPage(fileName) {
+    return Object.prototype.hasOwnProperty.call(servicePageKeyByFile, fileName);
+  }
 
   function loadPartial(url) {
     try {
@@ -32,13 +43,20 @@
   }
 
   function buildLinkMap() {
+    const pricingLink = isServiceLandingPage(currentPage)
+      ? "#bao-gia"
+      : inPublicDir
+        ? "../index.html#quick-quote"
+        : "#quick-quote";
+
     if (inPublicDir) {
       return {
         brand: "../../index.html",
         home: "../index.html#hero",
         about: "../index.html#hero",
         services: "../index.html#services",
-        pricing: "../index.html#pricing",
+        "delivery-services": "../index.html",
+        pricing: pricingLink,
         tracking: "../index.html#home-tracking",
         contact: "../index.html#contact",
         booking: "../index.html#contact",
@@ -59,7 +77,8 @@
       home: "#hero",
       about: "#hero",
       services: "#services",
-      pricing: "#pricing",
+      "delivery-services": "../index.html",
+      pricing: pricingLink,
       tracking: "#home-tracking",
       contact: "#contact",
       booking: "#contact",
@@ -94,12 +113,57 @@
     }
   }
 
+  function resolveActiveLinkKey() {
+    if (servicePageKeyByFile[currentPage]) {
+      return servicePageKeyByFile[currentPage];
+    }
+
+    if (currentPage === "huong-dan-dat-hang.html") return "guide";
+
+    const onRootIndexPage =
+      !inPublicDir && (currentPage === "index.html" || currentPage === "");
+    if (!onRootIndexPage) return "";
+
+    const hash = window.location.hash.toLowerCase();
+    if (hash === "#services") return "services";
+    if (hash === "#quick-quote") return "pricing";
+    if (hash === "#home-tracking") return "tracking";
+    if (hash === "#contact") return "booking";
+    return "home";
+  }
+
+  function applyActiveNav(root) {
+    if (!root) return;
+
+    root.querySelectorAll("#nav-menu li.active").forEach((item) => {
+      item.classList.remove("active");
+    });
+
+    const activeKey = resolveActiveLinkKey();
+    if (!activeKey) return;
+
+    const activeLink = root.querySelector(`[data-layout-link="${activeKey}"]`);
+    if (!activeLink) return;
+
+    const activeItem = activeLink.closest("li");
+    if (activeItem) {
+      activeItem.classList.add("active");
+    }
+
+    const dropdownParent = activeLink.closest(".dropdown");
+    if (dropdownParent) {
+      dropdownParent.classList.add("active");
+    }
+  }
+
   const headerHost = injectPartial("site-header", "header.html");
   const footerHost = injectPartial("site-footer", "footer.html");
   const linkMap = buildLinkMap();
 
   if (headerHost) applyLinks(headerHost, linkMap);
+  if (headerHost) applyActiveNav(headerHost);
   if (footerHost) applyLinks(footerHost, linkMap);
+  window.addEventListener("hashchange", function () {
+    if (headerHost) applyActiveNav(headerHost);
+  });
 })(window, document);
-
-
