@@ -1,0 +1,133 @@
+* {
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+body.login-page {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Wrapper */
+.login-wrapper {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+/* Card */
+.login-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+/* Header */
+.login-header {
+    background: #f4f6f9;
+    text-align: center;
+    padding: 25px 20px;
+}
+
+.login-header h1 {
+    margin: 0;
+    font-size: 22px;
+    color: #27ae60;
+    font-weight: 700;
+}
+
+.login-header p {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #666;
+}
+
+/* Form */
+.login-form {
+    padding: 30px 28px;
+}
+
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+/* Error */
+.error-msg {
+    background: #ffecec;
+    color: #e74c3c;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Inputs */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #444;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #27ae60;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(39,174,96,0.15);
+}
+
+/* Button */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.login-btn:hover {
+    background: #219150;
+}
+
+/* Footer */
+.login-footer {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 13px;
+}
+
+.login-footer a {
+    color: #27ae60;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}

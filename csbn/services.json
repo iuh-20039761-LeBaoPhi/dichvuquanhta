@@ -1,0 +1,191 @@
+[
+  {
+    "id": 201,
+    "name": "Chăm sóc người bệnh tại nhà (cơ bản)",
+    "image": "assets/1.png",
+    "description": "Hỗ trợ sinh hoạt và theo dõi sức khỏe hằng ngày cho người bệnh tại nhà.",
+    "includes": [
+      "Theo dõi tình trạng sức khỏe hằng ngày",
+      "Nhắc uống thuốc đúng giờ",
+      "Hỗ trợ ăn uống",
+      "Hỗ trợ vệ sinh cá nhân",
+      "Ghi chép tình trạng sức khỏe",
+      "Báo gia đình khi có dấu hiệu bất thường"
+    ],
+    "pricing": [
+      {
+        "label": "Theo giờ (130.000đ/giờ - tối thiểu 2 giờ)",
+        "value": 130000
+      },
+      {
+        "label": "Theo ca 4 giờ (480.000đ)",
+        "value": 480000
+      },
+      {
+        "label": "Ca 8 giờ (900.000đ)",
+        "value": 900000
+      },
+      {
+        "label": "Theo ngày 24h (1.600.000đ)",
+        "value": 1600000
+      },
+      {
+        "label": "Theo tháng 26 ngày, 8h/ngày (22.000.000đ)",
+        "value": 22000000
+      }
+    ]
+  },
+  {
+    "id": 202,
+    "name": "Chăm sóc người bệnh sau phẫu thuật",
+    "image": "assets/2.png",
+    "description": "Hỗ trợ phục hồi và theo dõi sức khỏe cho người bệnh sau phẫu thuật tại nhà.",
+    "includes": [
+      "Theo dõi vết mổ theo hướng dẫn bác sĩ",
+      "Hỗ trợ thay băng (không thực hiện kỹ thuật y tế phức tạp)",
+      "Hỗ trợ vận động nhẹ, tập phục hồi",
+      "Hỗ trợ ăn uống theo chế độ",
+      "Theo dõi huyết áp, nhiệt độ",
+      "Nhắc thuốc đúng giờ"
+    ],
+    "pricing": [
+      {
+        "label": "Theo giờ (150.000đ/giờ)",
+        "value": 150000
+      },
+      {
+        "label": "Ca 8 giờ (1.100.000đ)",
+        "value": 1100000
+      },
+      {
+        "label": "Theo ngày 24h (1.900.000đ)",
+        "value": 1900000
+      },
+      {
+        "label": "Theo tháng ở lại 24/24 (32.000.000đ)",
+        "value": 32000000
+      }
+    ]
+  },
+  {
+    "id": 203,
+    "name": "Chăm sóc người bệnh nặng / nằm một chỗ",
+    "image": "assets/3.png",
+    "description": "Chăm sóc toàn diện cho người bệnh mất khả năng tự phục vụ.",
+    "includes": [
+      "Hỗ trợ ăn uống, đút ăn",
+      "Thay tã, vệ sinh tại giường",
+      "Lật trở chống loét",
+      "Tắm rửa tại giường",
+      "Theo dõi tình trạng liên tục",
+      "Hỗ trợ di chuyển bằng xe lăn"
+    ],
+    "pricing": [
+      {
+        "label": "Ca 8 giờ (1.300.000đ)",
+        "value": 1300000
+      },
+      {
+        "label": "Theo ngày 24h (2.300.000đ)",
+        "value": 2300000
+      },
+      {
+        "label": "Theo tháng 24/24 (36.000.000đ)",
+        "value": 36000000
+      }
+    ]
+  },
+  {
+    "id": 204,
+    "name": "Chăm sóc người bệnh ban đêm",
+    "image": "assets/4.png",
+    "description": "Hỗ trợ trực và theo dõi người bệnh trong khung giờ ban đêm.",
+    "includes": [
+      "Trực đêm tại nhà",
+      "Hỗ trợ đi vệ sinh",
+      "Theo dõi tình trạng sức khỏe",
+      "Hỗ trợ khi mất ngủ",
+      "Nhắc thuốc ban đêm"
+    ],
+    "pricing": [
+      {
+        "label": "19h–23h (500.000đ)",
+        "value": 500000
+      },
+      {
+        "label": "23h–5h (750.000đ)",
+        "value": 750000
+      },
+      {
+        "label": "19h–7h (1.200.000đ)",
+        "value": 1200000
+      },
+      {
+        "label": "30 đêm/tháng (30.000.000đ)",
+        "value": 30000000
+      }
+    ]
+  },
+  {
+    "id": 205,
+    "name": "Nấu ăn dinh dưỡng cho người bệnh",
+    "image": "assets/5.png",
+    "description": "Chuẩn bị bữa ăn khoa học phù hợp với tình trạng bệnh lý.",
+    "includes": [
+      "Lên thực đơn phù hợp bệnh lý",
+      "Đi chợ (gia đình thanh toán tiền chợ)",
+      "Nấu 2–3 bữa/ngày",
+      "Dọn dẹp bếp",
+      "Tư vấn chế độ ăn uống"
+    ],
+    "pricing": [
+      {
+        "label": "Theo giờ (110.000đ/giờ)",
+        "value": 110000
+      },
+      {
+        "label": "Nấu 1 bữa (300.000đ)",
+        "value": 300000
+      },
+      {
+        "label": "Nấu 2 bữa/ngày (550.000đ)",
+        "value": 550000
+      },
+      {
+        "label": "Theo tháng 26 ngày (12.000.000đ)",
+        "value": 12000000
+      }
+    ]
+  },
+  {
+    "id": 206,
+    "name": "Hỗ trợ việc nhà khi có người bệnh",
+    "image": "assets/6.png",
+    "description": "Giúp gia đình duy trì không gian sạch sẽ, hỗ trợ chăm sóc người bệnh tốt hơn.",
+    "includes": [
+      "Giặt đồ",
+      "Dọn phòng bệnh",
+      "Lau dọn khu vực sinh hoạt",
+      "Rửa chén",
+      "Vệ sinh nhà cửa"
+    ],
+    "pricing": [
+      {
+        "label": "Theo giờ (95.000đ/giờ)",
+        "value": 95000
+      },
+      {
+        "label": "4 giờ (360.000đ)",
+        "value": 360000
+      },
+      {
+        "label": "8 giờ (700.000đ)",
+        "value": 700000
+      },
+      {
+        "label": "Theo tháng 26 ngày, 4h/ngày (9.000.000đ)",
+        "value": 9000000
+      }
+    ]
+  }
+]

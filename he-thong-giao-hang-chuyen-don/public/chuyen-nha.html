@@ -1,0 +1,868 @@
+<!doctype html>
+
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>FastGo - Dịch vụ chuyển nhà chuyên nghiệp</title>
+    <meta
+      name="description"
+      content="Dịch vụ chuyển nhà trọn gói FastGo tại TP.HCM: khảo sát nhanh, đóng gói cẩn thận, vận chuyển an toàn và hỗ trợ 24/7."
+    />
+    <meta
+      name="keywords"
+      content="chuyển nhà trọn gói, dịch vụ chuyển nhà, chuyển nhà TP.HCM, vận chuyển đồ đạc, FastGo chuyển nhà"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="public/assets/images/favicon.ico"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/pages/moving-house.css" />
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Configuration -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0A2A66",
+              secondary: {
+                light: "#0F3B99",
+                dark: "#0D3580",
+              },
+              accent: "#FF7A00",
+              bgLight: "#F5F7FB",
+            },
+            borderRadius: {
+              twelve: "12px",
+            },
+            fontFamily: {
+              sans: ["Poppins", "Inter", "sans-serif"],
+            },
+            spacing: {
+              section: "80px",
+            },
+          },
+        },
+        corePlugins: {
+          preflight: false,
+        },
+      };
+    </script>
+  </head>
+  <body>
+    <div id="site-header"></div>
+    <main class="moving-page">
+      <!-- BEGIN: HeroSection -->
+      <section class="hero-gradient text-white py-20 lg:py-32 overflow-hidden">
+        <div
+          class="max-w-[1200px] mx-auto px-6 grid md:grid-cols-2 gap-12 items-center"
+        >
+          <div data-purpose="hero-content">
+            <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-6">
+              Dịch vụ chuyển nhà <br />chuyên nghiệp
+            </h1>
+            <p class="text-lg text-blue-100 mb-8 max-w-lg">
+              Giải pháp vận chuyển an toàn, nhanh chóng và tiết kiệm. Chúng tôi
+              thay bạn nâng niu từng món đồ trong tổ ấm mới.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <a
+                href="#"
+                onclick="
+                  openBookingModal('moving_house');
+                  return false;
+                "
+                class="bg-accent hover:bg-orange-600 text-white px-8 py-4 rounded-twelve font-bold text-lg transition-transform hover:scale-105 inline-block text-center no-underline"
+              >
+                Đặt dịch vụ ngay
+              </a>
+              <a
+                href="#bao-gia"
+                class="border border-white/20 bg-white/5 hover:bg-white/15 text-blue-100 hover:text-white px-8 py-4 rounded-twelve font-semibold text-lg transition-all inline-block text-center no-underline"
+              >
+                Xem hạng mục
+              </a>
+            </div>
+            <div class="app-btns">
+              <a href="#" class="btn-store">
+                <span class="store-icon">
+                  <svg viewBox="0 0 384 512">
+                    <path
+                      d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 79.9c14.2 40.8 32.2 77.7 57.6 77.7 24.4 0 32.4-16.7 61.1-16.7 28.5 0 33.8 16.7 61.1 16.7 25.2 0 46.8-34.9 61.1-76.5 8.7-24.3 14.9-50.6 14.9-50.6s-35.6-11.4-35.4-55.3zM263 103.5c16.1-21.3 26.9-50.6 23.9-81.6-23.1 1.4-51.3 15.2-67.7 36.9-14.5 19-26.8 49.7-23.2 79.3 25.8 2.1 52.2-12.5 67-34.6z"
+                    />
+                  </svg>
+                </span>
+                <div class="store-text">
+                  <span class="store-subtitle">Download on the</span>
+                  <span class="store-title">App Store</span>
+                </div>
+              </a>
+              <a href="#" class="btn-store">
+                <span class="store-icon">
+                  <svg viewBox="0 0 512 512">
+                    <path
+                      d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-37.5 37.5 37.5 37.5 58.9-34.1c13.7-7.5 13.7-20.5 0-28zM104.6 499l220.7-221.3-58.7-58.9L47 512z"
+                    />
+                  </svg>
+                </span>
+                <div class="store-text">
+                  <span class="store-subtitle">GET IT ON</span>
+                  <span class="store-title">Google Play</span>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="relative min-w-0" data-purpose="hero-image">
+            <!-- Main Truck Illustration Placeholder -->
+            <img
+              alt="Xe tải dịch vụ chuyển nhà trọn gói FastGo tại TP.HCM"
+              class="block w-full max-w-full h-auto rounded-twelve shadow-2xl"
+              src="assets/images/hero-chuyen-nha.png"
+            />
+            <p class="mt-3 text-center text-sm text-blue-100/80">
+              Ảnh: Đội xe chuyển nhà trọn gói FastGo sẵn sàng phục vụ 24/7.
+            </p>
+            <div
+              class="absolute -bottom-6 -left-6 bg-white p-4 rounded-twelve soft-shadow hidden lg:block"
+            >
+              <div class="flex items-center gap-3">
+                <div class="bg-green-100 p-2 rounded-full">
+                  <svg
+                    class="w-6 h-6 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewbox="0 0 24 24"
+                  >
+                    <path
+                      d="M5 13l4 4L19 7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-slate-900 font-bold leading-none">10,000+</p>
+                  <p class="text-slate-500 text-xs mt-1">Khách hàng tin dùng</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- END: HeroSection -->
+      <!-- BEGIN: DescriptionSection -->
+      <section class="py-section bg-white">
+        <div class="max-w-[800px] mx-auto px-6 text-center">
+          <h2 class="text-3xl font-bold text-primary mb-6">
+            Giải pháp trọn gói cho tổ ấm của bạn
+          </h2>
+          <p class="text-slate-600 leading-relaxed text-lg">
+            FastGo tự hào cung cấp dịch vụ chuyển nhà toàn diện từ khâu tháo dỡ,
+            đóng gói chuyên nghiệp bằng vật liệu chống sốc, đến khâu vận chuyển
+            và lắp đặt tại địa điểm mới. Đội ngũ nhân viên giàu kinh nghiệm cam
+            kết bảo vệ tài sản của bạn tuyệt đối, đảm bảo tiến độ nhanh nhất để
+            bạn sớm ổn định cuộc sống mới.
+          </p>
+        </div>
+      </section>
+      <!-- END: DescriptionSection -->
+      <section class="py-10 bg-bgLight">
+        <div class="max-w-[900px] mx-auto px-6">
+          <div
+            class="bg-white border border-slate-200 rounded-twelve p-6 soft-shadow"
+          >
+            <h3 class="text-xl font-bold text-primary mb-4">
+              Thông tin dịch vụ
+            </h3>
+            <ul class="list-disc pl-5 text-slate-700 space-y-2">
+              <li>
+                <strong>Hỗ trợ:</strong> Tháo lắp, bọc lót, sắp xếp theo yêu
+                cầu.
+              </li>
+              <li><strong>Phạm vi:</strong> Căn hộ, nhà phố, phòng trọ.</li>
+              <li>
+                <strong>Phù hợp:</strong> Hộ gia đình và cá nhân chuyển nơi ở.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- BEGIN: BenefitsSection -->
+      <section class="py-section bg-bgLight">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-primary">
+              Tại sao nên chọn FastGo?
+            </h2>
+            <div class="w-20 h-1.5 bg-accent mx-auto mt-4 rounded-full"></div>
+          </div>
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1 -->
+            <div
+              class="bg-white p-8 rounded-twelve soft-shadow text-center hover:-translate-y-2 transition-transform"
+            >
+              <div
+                class="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewbox="0 0 24 24"
+                >
+                  <path
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="font-bold text-lg mb-3">Đóng gói chuyên nghiệp</h3>
+              <p class="text-slate-500 text-sm">
+                Sử dụng màng PE, xốp nổ và thùng carton 5 lớp tiêu chuẩn.
+              </p>
+            </div>
+            <!-- Card 2 -->
+            <div
+              class="bg-white p-8 rounded-twelve soft-shadow text-center hover:-translate-y-2 transition-transform"
+            >
+              <div
+                class="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewbox="0 0 24 24"
+                >
+                  <path
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="font-bold text-lg mb-3">Vận chuyển an toàn</h3>
+              <p class="text-slate-500 text-sm">
+                Hệ thống xe tải đời mới, trang bị định vị GPS theo dõi 24/7.
+              </p>
+            </div>
+            <!-- Card 3 -->
+            <div
+              class="bg-white p-8 rounded-twelve soft-shadow text-center hover:-translate-y-2 transition-transform"
+            >
+              <div
+                class="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewbox="0 0 24 24"
+                >
+                  <path
+                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="font-bold text-lg mb-3">Xe tải đa kích thước</h3>
+              <p class="text-slate-500 text-sm">
+                Từ 500kg đến 10 tấn, phù hợp với mọi nhu cầu chuyển dọn.
+              </p>
+            </div>
+            <!-- Card 4 -->
+            <div
+              class="bg-white p-8 rounded-twelve soft-shadow text-center hover:-translate-y-2 transition-transform"
+            >
+              <div
+                class="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg
+                  class="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewbox="0 0 24 24"
+                >
+                  <path
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="font-bold text-lg mb-3">Tiết kiệm thời gian</h3>
+              <p class="text-slate-500 text-sm">
+                Quy trình tối ưu hóa giúp hoàn thành việc chuyển dọn trong ngày.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- END: BenefitsSection -->
+      <!-- BEGIN: ProcessSection -->
+      <section class="py-section bg-white">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <h2 class="text-3xl font-bold text-primary text-center mb-16">
+            Quy trình làm việc
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+            <!-- Step 1 -->
+            <div class="text-center z-10 relative">
+              <div
+                class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-white shadow-lg"
+              >
+                <span class="text-xl font-bold">01</span>
+              </div>
+              <h4 class="font-bold mb-2">Tiếp nhận yêu cầu</h4>
+              <p class="text-slate-500 text-sm">
+                Ghi nhận thông tin qua hotline hoặc website.
+              </p>
+            </div>
+            <!-- Step 2 -->
+            <div class="text-center z-10 relative">
+              <div
+                class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-white shadow-lg"
+              >
+                <span class="text-xl font-bold">02</span>
+              </div>
+              <h4 class="font-bold mb-2">Khảo sát &amp; Báo giá</h4>
+              <p class="text-slate-500 text-sm">
+                Nhân viên đến tận nơi khảo sát khối lượng đồ đạc.
+              </p>
+            </div>
+            <!-- Step 3 -->
+            <div class="text-center z-10 relative">
+              <div
+                class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-white shadow-lg"
+              >
+                <span class="text-xl font-bold">03</span>
+              </div>
+              <h4 class="font-bold mb-2">Đóng gói và Vận chuyển</h4>
+              <p class="text-slate-500 text-sm">
+                Thực hiện tháo dỡ, đóng gói và bốc xếp an toàn.
+              </p>
+            </div>
+            <!-- Step 4 -->
+            <div class="text-center z-10 relative">
+              <div
+                class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-white shadow-lg"
+              >
+                <span class="text-xl font-bold">04</span>
+              </div>
+              <h4 class="font-bold mb-2">Bàn giao và Kiểm tra</h4>
+              <p class="text-slate-500 text-sm">
+                Lắp đặt tại chỗ mới và khách hàng nghiệm thu.
+              </p>
+            </div>
+            <!-- Decorative Line (Desktop Only) -->
+            <div
+              class="hidden md:block absolute top-8 left-0 w-full h-0.5 bg-slate-100 -z-0"
+            ></div>
+          </div>
+        </div>
+      </section>
+      <!-- END: ProcessSection -->
+      <!-- BEGIN: PricingReferenceSection -->
+      <section id="bao-gia" class="py-section bg-white">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-primary">Báo Giá Tham Khảo</h2>
+            <p class="text-slate-600 mt-4">
+              <span
+                class="inline-flex bg-primary/10 text-primary font-bold text-sm uppercase tracking-widest px-4 py-1.5 rounded-full"
+                >Dịch vụ chuyên nghiệp</span
+              >
+            </p>
+
+            <h2
+              class="text-3xl md:text-4xl font-bold text-primary leading-tight mt-4"
+            >
+              Các hạng mục dịch vụ - chuyển nhà trọn gói
+            </h2>
+            <p class="text-slate-600 mt-4 max-w-2xl mx-auto">
+              Chúng tôi cung cấp giải pháp vận chuyển toàn diện, giúp quý khách
+              tiết kiệm thời gian và công sức tối đa khi chuyển nơi ở mới.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Service Card 1 -->
+            <article
+              class="group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 soft-shadow hover:-translate-y-1 transition-all duration-300"
+            >
+              <div class="relative h-56 w-full overflow-hidden">
+                <img
+                  alt="Xe tải vận chuyển đồ đạc cho dịch vụ chuyển nhà trọn gói"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  src="assets/images/hero-chuyen-nha.png"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                ></div>
+                <div
+                  class="absolute bottom-4 left-4 w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewbox="0 0 24 24"
+                  >
+                    <path
+                      d="M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-slate-900 text-xl font-bold mb-2">
+                  Xe tải vận chuyển
+                </h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  Hệ thống xe tải đa dạng từ 500kg đến 2 tấn, phù hợp với mọi
+                  ngõ ngách và khối lượng đồ đạc.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                  <p
+                    class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+                  >
+                    Giá tham khảo
+                  </p>
+                  <p class="text-accent font-bold text-lg mt-1">
+                    300.000 – 800.000
+                    <span class="text-sm font-medium text-slate-500"
+                      >/ chuyến</span
+                    >
+                  </p>
+                  <p class="text-slate-500 text-xs mt-1">Xe từ 500kg – 2 tấn</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Service Card 2 -->
+            <article
+              class="group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 soft-shadow hover:-translate-y-1 transition-all duration-300"
+            >
+              <div class="relative h-56 w-full overflow-hidden">
+                <img
+                  alt="Nhân công bốc xếp đồ đạc chuyên nghiệp"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  src="assets/images/staff-deliver.png"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                ></div>
+                <div
+                  class="absolute bottom-4 left-4 w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewbox="0 0 24 24"
+                  >
+                    <path
+                      d="M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-slate-900 text-xl font-bold mb-2">
+                  Nhân công bốc xếp
+                </h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  Đội ngũ nhân viên khỏe mạnh, được đào tạo bài bản kỹ thuật bốc
+                  xếp, đảm bảo an toàn tuyệt đối cho tài sản.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                  <p
+                    class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+                  >
+                    Giá tham khảo
+                  </p>
+                  <p class="text-accent font-bold text-lg mt-1">
+                    200.000 – 400.000
+                    <span class="text-sm font-medium text-slate-500"
+                      >/ người</span
+                    >
+                  </p>
+                  <p class="text-slate-500 text-xs mt-1">Tùy khối lượng đồ</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Service Card 3 -->
+            <article
+              class="group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 soft-shadow hover:-translate-y-1 transition-all duration-300"
+            >
+              <div class="relative h-56 w-full overflow-hidden">
+                <img
+                  alt="Thùng carton và vật liệu đóng gói chống sốc"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  src="assets/images/items-deliver.png"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                ></div>
+                <div
+                  class="absolute bottom-4 left-4 w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewbox="0 0 24 24"
+                  >
+                    <path
+                      d="M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-slate-900 text-xl font-bold mb-2">
+                  Đóng gói đồ đạc
+                </h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  Sử dụng vật liệu đóng gói tiêu chuẩn: thùng carton 5 lớp, màng
+                  PE, xốp nổ chống sốc chuyên dụng.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                  <p
+                    class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+                  >
+                    Giá tham khảo
+                  </p>
+                  <p class="text-accent font-bold text-lg mt-1">
+                    100.000 – 300.000
+                    <span class="text-sm font-medium text-slate-500"
+                      >/ gói</span
+                    >
+                  </p>
+                  <p class="text-slate-500 text-xs mt-1">
+                    Thùng carton, màng PE
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Service Card 4 -->
+            <article
+              class="group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 soft-shadow hover:-translate-y-1 transition-all duration-300"
+            >
+              <div class="relative h-56 w-full overflow-hidden">
+                <img
+                  alt="Kỹ thuật viên tháo lắp nội thất tại nhà"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  src="assets/images/feature-relocation-staff.png"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                ></div>
+                <div
+                  class="absolute bottom-4 left-4 w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewbox="0 0 24 24"
+                  >
+                    <path
+                      d="M4 12h16M4 7h16M4 17h10m6-7v10"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-slate-900 text-xl font-bold mb-2">
+                  Tháo lắp nội thất
+                </h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  Xử lý chuyên nghiệp các loại tủ quần áo, giường ngủ, bàn làm
+                  việc bằng gỗ tự nhiên và gỗ công nghiệp.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                  <p
+                    class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+                  >
+                    Giá tham khảo
+                  </p>
+                  <p class="text-accent font-bold text-lg mt-1">
+                    150.000 – 350.000
+                    <span class="text-sm font-medium text-slate-500"
+                      >/ món</span
+                    >
+                  </p>
+                  <p class="text-slate-500 text-xs mt-1">Giường, tủ, bàn ghế</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Service Card 5 -->
+            <article
+              class="group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 soft-shadow hover:-translate-y-1 transition-all duration-300"
+            >
+              <div class="relative h-56 w-full overflow-hidden">
+                <img
+                  alt="Thợ kỹ thuật tháo lắp máy lạnh và thiết bị gia dụng"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  src="assets/images/home-tech.png"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                ></div>
+                <div
+                  class="absolute bottom-4 left-4 w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewbox="0 0 24 24"
+                  >
+                    <path
+                      d="M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8zm0 0h6m-6 0H6m12 10.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm-7 0a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-slate-900 text-xl font-bold mb-2">
+                  Tháo lắp máy lạnh
+                </h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  Đội thợ điện lạnh chuyên nghiệp tháo lắp máy lạnh, bình nóng
+                  lạnh, máy giặt, tivi treo tường an toàn.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                  <p
+                    class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+                  >
+                    Giá tham khảo
+                  </p>
+                  <p class="text-accent font-bold text-lg mt-1">
+                    150.000 – 350.000
+                    <span class="text-sm font-medium text-slate-500">/ bộ</span>
+                  </p>
+                  <p class="text-slate-500 text-xs mt-1">Tùy độ khó</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- Service Card 6 -->
+            <article
+              class="group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 soft-shadow hover:-translate-y-1 transition-all duration-300"
+            >
+              <div class="relative h-56 w-full overflow-hidden">
+                <img
+                  alt="Sắp xếp đồ đạc gọn gàng tại nhà mới sau khi chuyển dọn"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  src="assets/images/new-home-setup.png"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                ></div>
+                <div
+                  class="absolute bottom-4 left-4 w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewbox="0 0 24 24"
+                  >
+                    <path
+                      d="M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-slate-900 text-xl font-bold mb-2">
+                  Sắp xếp tại nhà mới
+                </h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  Hỗ trợ lắp đặt và sắp xếp đồ đạc vào đúng vị trí theo yêu cầu
+                  của gia chủ tại nơi ở mới.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                  <p
+                    class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+                  >
+                    Giá tham khảo
+                  </p>
+                  <p class="text-accent font-bold text-lg mt-1">
+                    Miễn phí / hỗ trợ
+                  </p>
+                  <p class="text-slate-500 text-xs mt-1">
+                    Khi sử dụng dịch vụ trọn gói
+                  </p>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div
+            class="mt-8 bg-amber-50 border-l-4 border-accent rounded-r-twelve p-5"
+          >
+            <p class="text-slate-700">
+              <strong>Lưu ý giá:</strong> Giá trên từng thẻ chỉ mang tính tham
+              khảo. Chi phí thực tế phụ thuộc vào khối lượng đồ đạc, khoảng cách
+              vận chuyển, số tầng và điều kiện địa hình.
+            </p>
+          </div>
+
+          <div class="mt-10 grid md:grid-cols-2 gap-6">
+            <div
+              class="bg-orange-50 border-l-4 border-accent rounded-r-twelve p-5"
+            >
+              <p class="text-slate-700">
+                <strong>Ưu tiên:</strong> Đội ngũ chuyên nghiệp giúp bảo vệ các
+                món đồ dễ vỡ như gương kính, tivi và đồ gỗ giá trị cao.
+              </p>
+            </div>
+
+            <div
+              class="bg-blue-50 border-l-4 border-primary rounded-r-twelve p-5"
+            >
+              <p class="font-semibold text-primary mb-2">Lưu ý chung</p>
+              <ul class="list-disc pl-5 text-slate-700 space-y-2">
+                <li>
+                  <strong>Khảo sát thực tế:</strong> luôn là bước miễn phí; nên
+                  khảo sát tại chỗ để hạn chế phát sinh chi phí bất hợp lý.
+                </li>
+                <li>
+                  <strong>Bảo hiểm hàng hóa:</strong> kiểm tra rõ điều khoản bồi
+                  thường 100% giá trị trong hợp đồng khi có hư hỏng.
+                </li>
+                <li>
+                  <strong>Phụ phí:</strong> đường cấm tải, hẻm sâu, hoặc quãng
+                  đi bộ/thang máy xa có thể làm thay đổi giá cuối cùng.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- END: PricingReferenceSection -->
+      <!-- BEGIN: PricingHighlight -->
+      <section class="py-section bg-bgLight">
+        <div class="max-w-[1000px] mx-auto px-6">
+          <div
+            class="bg-white rounded-twelve soft-shadow overflow-hidden flex flex-col md:flex-row border-l-8 border-accent"
+          >
+            <div class="p-8 md:p-12 flex-1">
+              <span
+                class="text-accent font-bold tracking-widest uppercase text-sm"
+                >Tư vấn miễn phí</span
+              >
+              <h2 class="text-3xl font-bold text-primary mt-2 mb-4">
+                Bạn cần báo giá chính xác?
+              </h2>
+              <p class="text-slate-600 mb-6">
+                Liên hệ với chuyên gia của chúng tôi để nhận phương án vận
+                chuyển tối ưu nhất cho gia đình bạn.
+              </p>
+              <div class="flex items-center gap-4">
+                <div class="flex -space-x-2">
+                  <img
+                    alt="Nhân viên tư vấn dịch vụ chuyển nhà FastGo"
+                    class="w-10 h-10 rounded-full border-2 border-white"
+                    src="assets/images/staff-01.png"
+                  />
+                  <img
+                    alt="Nhân viên hỗ trợ khách hàng chuyển nhà FastGo"
+                    class="w-10 h-10 rounded-full border-2 border-white"
+                    src="assets/images/staff-02.png"
+                  />
+                  <img
+                    alt="Nhân sự điều phối vận chuyển nhà FastGo"
+                    class="w-10 h-10 rounded-full border-2 border-white"
+                    src="assets/images/staff-03.png"
+                  />
+                </div>
+                <p class="text-sm font-medium text-slate-500">
+                  Đội ngũ hỗ trợ 24/7
+                </p>
+              </div>
+            </div>
+            <div
+              class="bg-primary/5 p-8 md:p-12 flex items-center justify-center"
+            >
+              <button
+                class="bg-accent hover:bg-orange-600 text-white px-10 py-4 rounded-twelve font-bold text-lg shadow-lg transition-all hover:-translate-y-1"
+              >
+                Nhận tư vấn ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- END: PricingHighlight -->
+      <!-- BEGIN: BottomCTA -->
+      <section
+        class="py-section bg-primary text-white text-center relative overflow-hidden"
+      >
+        <!-- Decorative circle -->
+        <div
+          class="absolute -top-24 -left-24 w-64 h-64 bg-white/5 rounded-full"
+        ></div>
+        <div
+          class="absolute -bottom-24 -right-24 w-64 h-64 bg-white/5 rounded-full"
+        ></div>
+        <div class="max-w-[1200px] mx-auto px-6 relative z-10">
+          <h2 class="text-3xl md:text-4xl font-bold mb-6">
+            Sẵn sàng để bắt đầu hành trình mới?
+          </h2>
+          <p class="text-blue-100 mb-10 text-lg max-w-2xl mx-auto">
+            Đừng để việc chuyển nhà trở thành gánh nặng. Hãy để FastGo đồng hành
+            cùng bạn một cách trọn vẹn nhất.
+          </p>
+          <button
+            onclick="openBookingModal('moving_house')"
+            class="bg-accent hover:bg-orange-600 text-white px-12 py-5 rounded-twelve text-xl font-bold shadow-xl transition-all transform hover:scale-110 inline-block text-center no-underline"
+          >
+            ĐẶT DỊCH VỤ NGAY
+          </button>
+        </div>
+      </section>
+      <!-- END: BottomCTA -->
+    </main>
+    <div id="site-footer"></div>
+
+    <script src="assets/js/shared-layout.js"></script>
+    <script src="assets/js/shared-modals.js" defer></script>
+    <script src="assets/js/main.js" defer></script>
+  </body>
+</html>

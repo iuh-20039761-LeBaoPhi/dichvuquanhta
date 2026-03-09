@@ -1,0 +1,136 @@
+{
+  "services": [
+    {
+      "id": 1,
+      "name": "Sửa xe máy lưu động",
+      "summary": "Sửa chữa mọi hư hỏng của xe tại chỗ, tiết kiệm thời gian và chi phí kéo xe.",
+      "sub_services": [
+        {
+          "id": 101,
+          "name": "Sửa xe chết máy",
+          "price": 50000
+        },
+        {
+          "id": 102,
+          "name": "Sửa hệ thống điện xe",
+          "price": 80000
+        },
+        {
+          "id": 103,
+          "name": "Sửa xe không đề được",
+          "price": 60000
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Vá lốp - Thay lốp",
+      "summary": "Dịch vụ vá lốp và thay lốp tại chỗ với đầy đủ thiết bị chuyên dụng.",
+      "sub_services": [
+        {
+          "id": 201,
+          "name": "Vá lốp xe máy",
+          "price": 30000
+        },
+        {
+          "id": 202,
+          "name": "Vá lốp ô tô",
+          "price": 80000
+        },
+        {
+          "id": 203,
+          "name": "Thay lốp xe",
+          "price": 150000
+        },
+        {
+          "id": 204,
+          "name": "Bơm hơi lốp xe",
+          "price": 10000
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Dịch vụ ắc quy",
+      "summary": "Kiểm tra, sửa chữa và thay thế ắc quy mọi loại xe.",
+      "sub_services": [
+        {
+          "id": 301,
+          "name": "Câu bình ắc quy",
+          "price": 80000
+        },
+        {
+          "id": 302,
+          "name": "Thay ắc quy mới",
+          "price": 400000
+        },
+        {
+          "id": 303,
+          "name": "Sạc ắc quy",
+          "price": 100000
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Tiếp nhiên liệu khẩn cấp",
+      "summary": "Giao xăng, dầu tận nơi khi xe bạn hết nhiên liệu giữa đường.",
+      "sub_services": [
+        {
+          "id": 401,
+          "name": "Tiếp xăng tận nơi",
+          "price": 100000
+        },
+        {
+          "id": 402,
+          "name": "Tiếp dầu cho ô tô",
+          "price": 70000
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Bảo dưỡng xe tại nhà",
+      "summary": "Dịch vụ bảo dưỡng định kỳ ngay tại nhà, văn phòng của bạn.",
+      "sub_services": [
+        {
+          "id": 501,
+          "name": "Thay nhớt xe",
+          "price": 100000
+        },
+        {
+          "id": 502,
+          "name": "Kiểm tra tổng thể xe",
+          "price": 150000
+        },
+        {
+          "id": 503,
+          "name": "Vệ sinh động cơ",
+          "price": 120000
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Thay thế phụ tùng",
+      "summary": "Cung cấp và thay thế phụ tùng chính hãng, giá cạnh tranh.",
+      "sub_services": [
+        {
+          "id": 602,
+          "name": "Thay bugi",
+          "price": 70000
+        },
+        {
+          "id": 603,
+          "name": "Thay lọc gió",
+          "price": 90000
+        },
+        {
+          "id": 604,
+          "name": "Thay má phanh",
+          "price": 120000
+        }
+      ]
+    }
+  ]
+}

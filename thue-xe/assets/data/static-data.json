@@ -1,0 +1,127 @@
+{
+    "cars": [
+        {
+            "id": 1, "name": "Toyota Camry 2023", "brand": "Toyota", "model": "Camry", "year": 2023,
+            "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
+            "price_per_day": 1200000, "main_image": "camry.jpg", "status": "available",
+            "description": "Toyota Camry 2023 - Sedan hạng sang với thiết kế sang trọng, nội thất tiện nghi và tiết kiệm nhiên liệu.",
+            "features": "Điều hòa tự động,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Ghế da cao cấp"
+        },
+        {
+            "id": 2, "name": "Honda CR-V 2022", "brand": "Honda", "model": "CR-V", "year": 2022,
+            "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
+            "price_per_day": 1500000, "main_image": "crv.jpg", "status": "available",
+            "description": "Honda CR-V 7 chỗ rộng rãi, phù hợp gia đình. Vận hành mạnh mẽ, an toàn tuyệt đối.",
+            "features": "Điều hòa hai vùng,Camera 360,Cảm biến va chạm,Apple CarPlay,Android Auto,Cốp điện"
+        },
+        {
+            "id": 3, "name": "Hyundai Tucson 2023", "brand": "Hyundai", "model": "Tucson", "year": 2023,
+            "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
+            "price_per_day": 1100000, "main_image": "default.jpg", "status": "available",
+            "description": "Hyundai Tucson 2023 với thiết kế trẻ trung, hiện đại. Tiêu thụ nhiên liệu thấp.",
+            "features": "Điều hòa tự động,Camera lùi,Hỗ trợ phanh khẩn cấp,Màn hình 10.25 inch,Sạc không dây"
+        },
+        {
+            "id": 4, "name": "Ford Ranger 2022", "brand": "Ford", "model": "Ranger", "year": 2022,
+            "seats": 5, "transmission": "Số sàn", "fuel_type": "Dầu",
+            "price_per_day": 900000, "main_image": "ranger.jpg", "status": "available",
+            "description": "Ford Ranger bán tải mạnh mẽ, thích hợp cho cả đường thành phố và địa hình.",
+            "features": "Điều hòa,Camera lùi,Lốp địa hình,Cầu ngang,Kéo tải 3.5 tấn"
+        },
+        {
+            "id": 5, "name": "Mitsubishi Xpander 2023", "brand": "Mitsubishi", "model": "Xpander", "year": 2023,
+            "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
+            "price_per_day": 850000, "main_image": "mitsubishi_xpander.jpg", "status": "available",
+            "description": "MPV 7 chỗ rộng rãi, phù hợp cho gia đình và nhóm bạn du lịch.",
+            "features": "Điều hòa,Camera lùi,Màn hình cảm ứng,Kết nối Bluetooth,Ghế lái chỉnh điện"
+        },
+        {
+            "id": 6, "name": "VinFast VF8 2023", "brand": "VinFast", "model": "VF8", "year": 2023,
+            "seats": 5, "transmission": "Tự động", "fuel_type": "Điện",
+            "price_per_day": 1800000, "main_image": "vf8.jpg", "status": "available",
+            "description": "SUV điện thương hiệu Việt Nam. Phạm vi 420km/sạc, tăng tốc 0-100km/h trong 5.9 giây.",
+            "features": "Điều hòa,Camera 360,ADAS,Màn hình 15.6 inch,Sạc nhanh AC/DC,Hỗ trợ phanh tự động"
+        },
+        {
+            "id": 7, "name": "Honda City 2023", "brand": "Honda", "model": "City", "year": 2023,
+            "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
+            "price_per_day": 750000, "main_image": "city.jpg", "status": "available",
+            "description": "Honda City 2023 - Sedan hạng B thế hệ mới với ngoại thất thể thao, nội thất hiện đại và tiết kiệm nhiên liệu vượt trội.",
+            "features": "Điều hòa tự động,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng 8 inch,Kết nối Bluetooth,Honda Sensing"
+        },
+        {
+            "id": 8, "name": "Mazda CX-5 2023", "brand": "Mazda", "model": "CX-5", "year": 2023,
+            "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
+            "price_per_day": 1150000, "main_image": "cx5.jpg", "status": "available",
+            "description": "Mazda CX-5 2023 - SUV hạng C với thiết kế Kodo sang trọng, cabin cách âm tốt và hệ thống an toàn hiện đại.",
+            "features": "Điều hòa hai vùng,Camera 360,Cảm biến va chạm,Màn hình 10.25 inch,Ghế da,i-Activsense"
+        },
+        {
+            "id": 9, "name": "Mazda 3 2023", "brand": "Mazda", "model": "Mazda3", "year": 2023,
+            "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
+            "price_per_day": 850000, "main_image": "mazda3.jpg", "status": "available",
+            "description": "Mazda 3 2023 - Sedan hạng C với thiết kế thời thượng, động cơ Skyactiv tiết kiệm và vận hành mượt mà.",
+            "features": "Điều hòa tự động,Camera lùi,Cảm biến đỗ xe,Màn hình 8.8 inch,Sạc không dây,Ghế da"
+        },
+        {
+            "id": 10, "name": "Toyota Vios 2023", "brand": "Toyota", "model": "Vios", "year": 2023,
+            "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
+            "price_per_day": 700000, "main_image": "toyota_vios.jpg", "status": "available",
+            "description": "Toyota Vios 2023 - Sedan hạng B phổ biến, bền bỉ và tiết kiệm nhiên liệu, phù hợp di chuyển đô thị.",
+            "features": "Điều hòa,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Túi khí đôi"
+        },
+        {
+            "id": 11, "name": "VinFast VF5 2023", "brand": "VinFast", "model": "VF5", "year": 2023,
+            "seats": 5, "transmission": "Tự động", "fuel_type": "Điện",
+            "price_per_day": 900000, "main_image": "vf5.jpg", "status": "available",
+            "description": "VinFast VF5 - SUV điện mini thương hiệu Việt, phạm vi 326km/sạc, phù hợp di chuyển nội đô kinh tế.",
+            "features": "Điều hòa,Camera lùi,Màn hình 10 inch,Sạc nhanh AC/DC,Kết nối điện thoại,Túi khí đôi"
+        },
+        {
+            "id": 12, "name": "Suzuki XL7 2023", "brand": "Suzuki", "model": "XL7", "year": 2023,
+            "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
+            "price_per_day": 820000, "main_image": "xl7.jpg", "status": "available",
+            "description": "Suzuki XL7 2023 - SUV 7 chỗ gọn gàng, tiết kiệm nhiên liệu, thiết kế hiện đại phù hợp gia đình.",
+            "features": "Điều hòa,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Hàng ghế thứ 3"
+        }
+    ],
+
+    "services": [
+        {
+            "id": 1, "name": "Giao xe tận nơi", "icon": "map-marker-alt", "unit": "chuyến",
+            "description": "Giao xe đến tận địa chỉ của bạn trong nội thành, tiết kiệm thời gian và thuận tiện tối đa.",
+            "price": 100000
+        },
+        {
+            "id": 2, "name": "Bảo hiểm mở rộng", "icon": "shield-alt", "unit": "ngày",
+            "description": "Gói bảo hiểm toàn diện bảo vệ xe và người lái trong suốt chuyến đi, an tâm không lo rủi ro.",
+            "price": 150000
+        },
+        {
+            "id": 3, "name": "Xe có tài xế", "icon": "user-tie", "unit": "ngày",
+            "description": "Tài xế chuyên nghiệp, am hiểu đường xá TP.HCM, phong thái lịch sự và nhiệt tình phục vụ.",
+            "price": 300000
+        },
+        {
+            "id": 4, "name": "GPS định vị", "icon": "map-marker-alt", "unit": "chuyến",
+            "description": "Thiết bị GPS dẫn đường chính xác, bản đồ cập nhật mới nhất, không lo lạc đường.",
+            "price": 50000
+        },
+        {
+            "id": 5, "name": "Ghế trẻ em", "icon": "baby", "unit": "chuyến",
+            "description": "Ghế ngồi an toàn cho bé dưới 10 tuổi, đạt tiêu chuẩn an toàn quốc tế.",
+            "price": 100000
+        },
+        {
+            "id": 6, "name": "WiFi di động", "icon": "wifi", "unit": "chuyến",
+            "description": "Bộ phát WiFi di động tốc độ cao, kết nối internet ổn định suốt chuyến đi.",
+            "price": 80000
+        }
+    ],
+
+    "filterOptions": {
+        "brands": ["Toyota", "Honda", "Hyundai", "Ford", "Mitsubishi", "VinFast", "Mazda", "Suzuki"],
+        "seats": [5, 7],
+        "prices": { "min": 700000, "max": 1800000 }
+    }
+}

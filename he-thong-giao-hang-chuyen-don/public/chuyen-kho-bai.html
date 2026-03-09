@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FastGo - Dịch Vụ Chuyển Kho Bãi Chuyên Nghiệp</title>
+    <meta
+      name="description"
+      content="FastGo cung cấp dịch vụ chuyển kho bãi chuyên nghiệp: vận chuyển hàng nặng, hàng pallet, tối ưu lộ trình và đảm bảo an toàn hàng hóa."
+    />
+    <meta
+      name="keywords"
+      content="chuyển kho bãi, dịch vụ chuyển kho, vận chuyển hàng nặng, vận chuyển pallet, chuyển kho TP.HCM, FastGo"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="public/assets/images/favicon.ico"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#ec5b13",
+              "background-light": "#f8f6f6",
+              "background-dark": "#221610",
+              "brand-blue": "#0A2A66",
+              "brand-blue-dark": "#0D3580",
+              "brand-blue-deep": "#0F3B99",
+              "brand-accent": "#FF7A00",
+            },
+            fontFamily: {
+              sans: ["Poppins", "Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+        corePlugins: { preflight: false },
+      };
+    </script>
+
+    <style>
+      body {
+        background-color: #f8f6f6;
+      }
+      main.warehouse-page {
+        padding: 0;
+        max-width: none;
+        margin: 0;
+      }
+      main.warehouse-page > section {
+        margin-bottom: 0;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100"
+  >
+    <div id="site-header"></div>
+
+    <main class="warehouse-page">
+      <section
+        class="relative bg-gradient-to-r from-brand-blue-dark to-brand-blue-deep py-20 overflow-hidden"
+      >
+        <div
+          class="max-w-[1200px] mx-auto px-4 grid md:grid-cols-2 gap-12 items-center relative z-10"
+        >
+          <div class="text-white space-y-6">
+            <span
+              class="bg-primary/20 text-orange-100 px-4 py-1 rounded-full text-sm font-semibold uppercase tracking-wider border border-primary/30"
+              >Dịch vụ vận chuyển</span
+            >
+            <h1
+              class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+            >
+              Dịch vụ chuyển <br /><span class="text-brand-accent"
+                >kho bãi chuyên nghiệp</span
+              >
+            </h1>
+            <p class="text-lg text-slate-200 leading-relaxed max-w-lg">
+              Giải pháp vận chuyển kho xưởng trọn gói, xử lý hàng hóa quy mô lớn
+              với quy trình khoa học, đảm bảo an toàn tuyệt đối và tiến độ nhanh
+              chóng.
+            </p>
+            <div class="flex flex-wrap gap-4 pt-4">
+              <a
+                href="#"
+                onclick="
+                  openBookingModal('moving_warehouse');
+                  return false;
+                "
+                class="bg-brand-accent hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg transition-all transform hover:-translate-y-1 inline-block text-center no-underline"
+              >
+                Đặt dịch vụ ngay
+              </a>
+              <a
+                href="#bao-gia"
+                class="bg-white/10 hover:bg-white/20 border border-white/30 text-white px-8 py-4 rounded-xl font-bold text-lg backdrop-blur-sm transition-all inline-block text-center no-underline"
+              >
+                Xem hạng mục
+              </a>
+            </div>
+            <div class="app-btns">
+              <a href="#" class="btn-store">
+                <span class="store-icon">
+                  <svg viewBox="0 0 384 512">
+                    <path
+                      d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 79.9c14.2 40.8 32.2 77.7 57.6 77.7 24.4 0 32.4-16.7 61.1-16.7 28.5 0 33.8 16.7 61.1 16.7 25.2 0 46.8-34.9 61.1-76.5 8.7-24.3 14.9-50.6 14.9-50.6s-35.6-11.4-35.4-55.3zM263 103.5c16.1-21.3 26.9-50.6 23.9-81.6-23.1 1.4-51.3 15.2-67.7 36.9-14.5 19-26.8 49.7-23.2 79.3 25.8 2.1 52.2-12.5 67-34.6z"
+                    />
+                  </svg>
+                </span>
+                <div class="store-text">
+                  <span class="store-subtitle">Download on the</span>
+                  <span class="store-title">App Store</span>
+                </div>
+              </a>
+              <a href="#" class="btn-store">
+                <span class="store-icon">
+                  <svg viewBox="0 0 512 512">
+                    <path
+                      d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-37.5 37.5 37.5 37.5 58.9-34.1c13.7-7.5 13.7-20.5 0-28zM104.6 499l220.7-221.3-58.7-58.9L47 512z"
+                    />
+                  </svg>
+                </span>
+                <div class="store-text">
+                  <span class="store-subtitle">GET IT ON</span>
+                  <span class="store-title">Google Play</span>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="relative min-w-0">
+            <div
+              class="absolute -inset-4 bg-brand-accent/20 blur-3xl rounded-full"
+            ></div>
+            <img
+              alt="Dịch vụ chuyển kho bãi FastGo với xe tải vận chuyển chuyên dụng"
+              class="relative rounded-2xl shadow-2xl border-4 border-white/10 w-full object-cover aspect-[4/3]"
+              src="assets/images/hero-kho-bai.png"
+            />
+            <p class="mt-3 text-center text-sm text-blue-100/80">
+              Ảnh: Giải pháp chuyển kho bãi và vận chuyển hàng hóa số lượng lớn
+              của FastGo.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-20">
+        <div class="max-w-[1200px] mx-auto px-4">
+          <div
+            class="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700"
+          >
+            <div class="max-w-3xl mx-auto text-center space-y-6">
+              <h2 class="text-3xl font-bold text-brand-blue dark:text-white">
+                Giải pháp vận tải kho vận toàn diện
+              </h2>
+              <div
+                class="w-20 h-1.5 bg-brand-accent mx-auto rounded-full"
+              ></div>
+              <p
+                class="text-slate-600 dark:text-slate-300 text-lg leading-relaxed"
+              >
+                Tại FastGo, chúng tôi thấu hiểu những thách thức khi di dời kho
+                bãi: từ khối lượng hàng hóa khổng lồ, các trang thiết bị máy móc
+                cồng kềnh đến việc quản lý tồn kho trong suốt quá trình vận
+                chuyển. Với đội ngũ chuyên gia và hệ thống vận tải hiện đại,
+                chúng tôi cam kết mang đến dịch vụ tối ưu nhất, giúp doanh
+                nghiệp ổn định hoạt động trong thời gian ngắn nhất.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="py-10 bg-white dark:bg-slate-900">
+        <div class="max-w-[1000px] mx-auto px-4">
+          <div
+            class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
+          >
+            <h3 class="text-xl font-bold text-brand-blue dark:text-white mb-4">
+              Thông tin dịch vụ
+            </h3>
+            <ul
+              class="list-disc pl-5 text-slate-700 dark:text-slate-300 space-y-2"
+            >
+              <li>
+                <strong>Thiết bị:</strong> Xe cẩu, xe nâng, xe tải trọng tải lớn
+                (5-15 tấn).
+              </li>
+              <li>
+                <strong>Hỗ trợ:</strong> Di dời dây chuyền máy móc, kệ kho,
+                nguyên vật liệu.
+              </li>
+              <li>
+                <strong>Pháp lý:</strong> Có hóa đơn VAT và hợp đồng bảo hiểm
+                vận chuyển.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-20 bg-slate-50 dark:bg-slate-900/50">
+        <div class="max-w-[1200px] mx-auto px-4">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-brand-blue dark:text-white mb-4">
+              Lợi ích vượt trội
+            </h2>
+            <p class="text-slate-600 dark:text-slate-400">
+              Tại sao hàng ngàn doanh nghiệp tin tưởng FastGo cho dự án kho bãi?
+            </p>
+          </div>
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div
+              class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:border-brand-accent transition-all group"
+            >
+              <div
+                class="w-14 h-14 bg-brand-blue/10 dark:bg-brand-blue/30 rounded-lg flex items-center justify-center mb-6 group-hover:bg-brand-accent transition-colors"
+              >
+                <span
+                  class="material-icons-outlined text-brand-blue dark:text-brand-accent group-hover:text-white text-3xl"
+                  >inventory_2</span
+                >
+              </div>
+              <h3
+                class="text-xl font-bold text-brand-blue dark:text-white mb-3 leading-tight"
+              >
+                Vận chuyển số lượng lớn
+              </h3>
+              <p
+                class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed"
+              >
+                Năng lực xử lý hàng ngàn tấn hàng hóa và pallet mỗi ngày với đội
+                xe tải đa tải trọng.
+              </p>
+            </div>
+            <div
+              class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:border-brand-accent transition-all group"
+            >
+              <div
+                class="w-14 h-14 bg-brand-blue/10 dark:bg-brand-blue/30 rounded-lg flex items-center justify-center mb-6 group-hover:bg-brand-accent transition-colors"
+              >
+                <span
+                  class="material-icons-outlined text-brand-blue dark:text-brand-accent group-hover:text-white text-3xl"
+                  >savings</span
+                >
+              </div>
+              <h3
+                class="text-xl font-bold text-brand-blue dark:text-white mb-3 leading-tight"
+              >
+                Tối ưu chi phí vận chuyển
+              </h3>
+              <p
+                class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed"
+              >
+                Phương án vận tải ghép chuyến và quy hoạch lộ trình thông minh
+                giúp tiết kiệm đến 30% chi phí.
+              </p>
+            </div>
+            <div
+              class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:border-brand-accent transition-all group"
+            >
+              <div
+                class="w-14 h-14 bg-brand-blue/10 dark:bg-brand-blue/30 rounded-lg flex items-center justify-center mb-6 group-hover:bg-brand-accent transition-colors"
+              >
+                <span
+                  class="material-icons-outlined text-brand-blue dark:text-brand-accent group-hover:text-white text-3xl"
+                  >precision_manufacturing</span
+                >
+              </div>
+              <h3
+                class="text-xl font-bold text-brand-blue dark:text-white mb-3 leading-tight"
+              >
+                Thiết bị chuyên dụng
+              </h3>
+              <p
+                class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed"
+              >
+                Sử dụng xe nâng, xe cẩu và các thiết bị nâng hạ hiện đại, bảo
+                đảm an toàn cho mọi kiện hàng.
+              </p>
+            </div>
+            <div
+              class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:border-brand-accent transition-all group"
+            >
+              <div
+                class="w-14 h-14 bg-brand-blue/10 dark:bg-brand-blue/30 rounded-lg flex items-center justify-center mb-6 group-hover:bg-brand-accent transition-colors"
+              >
+                <span
+                  class="material-icons-outlined text-brand-blue dark:text-brand-accent group-hover:text-white text-3xl"
+                  >event_note</span
+                >
+              </div>
+              <h3
+                class="text-xl font-bold text-brand-blue dark:text-white mb-3 leading-tight"
+              >
+                Lập kế hoạch khoa học
+              </h3>
+              <p
+                class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed"
+              >
+                Hệ thống quản lý vận tải giúp kiểm soát tiến độ thời gian thực,
+                báo cáo chi tiết từng công đoạn.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-20 overflow-hidden">
+        <div class="max-w-[1200px] mx-auto px-4">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-brand-blue dark:text-white mb-4">
+              Quy trình triển khai
+            </h2>
+            <p class="text-slate-600 dark:text-slate-400">
+              Quy trình 4 bước chuẩn hóa để đảm bảo sự chính xác tuyệt đối
+            </p>
+          </div>
+          <div class="relative">
+            <div
+              class="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 dark:bg-slate-700 -translate-y-1/2 z-0"
+            ></div>
+            <div class="grid lg:grid-cols-4 gap-8 relative z-10">
+              <div class="text-center group">
+                <div
+                  class="w-16 h-16 bg-white dark:bg-slate-800 border-4 border-solid border-brand-accent rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"
+                >
+                  <span
+                    class="text-2xl font-bold text-brand-blue dark:text-white"
+                    >01</span
+                  >
+                </div>
+                <h4 class="font-bold text-brand-blue dark:text-white mb-2">
+                  Tiếp nhận thông tin
+                </h4>
+                <p class="text-sm text-slate-500 dark:text-slate-400 px-4">
+                  Khảo sát thực tế kho hàng, phân loại các nhóm hàng hóa cần di
+                  chuyển.
+                </p>
+              </div>
+              <div class="text-center group">
+                <div
+                  class="w-16 h-16 bg-white dark:bg-slate-800 border-4 border-solid border-brand-accent rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"
+                >
+                  <span
+                    class="text-2xl font-bold text-brand-blue dark:text-white"
+                    >02</span
+                  >
+                </div>
+                <h4 class="font-bold text-brand-blue dark:text-white mb-2">
+                  Lập kế hoạch
+                </h4>
+                <p class="text-sm text-slate-500 dark:text-slate-400 px-4">
+                  Xây dựng phương án vận chuyển tối ưu, bốc xếp và sơ đồ kho
+                  mới.
+                </p>
+              </div>
+              <div class="text-center group">
+                <div
+                  class="w-16 h-16 bg-white dark:bg-slate-800 border-4 border-solid border-brand-accent rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"
+                >
+                  <span
+                    class="text-2xl font-bold text-brand-blue dark:text-white"
+                    >03</span
+                  >
+                </div>
+                <h4 class="font-bold text-brand-blue dark:text-white mb-2">
+                  Vận chuyển
+                </h4>
+                <p class="text-sm text-slate-500 dark:text-slate-400 px-4">
+                  Bốc xếp hàng hóa bằng thiết bị chuyên dùng và vận chuyển đến
+                  kho mới.
+                </p>
+              </div>
+              <div class="text-center group">
+                <div
+                  class="w-16 h-16 bg-white dark:bg-slate-800 border-4 border-solid border-brand-accent rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"
+                >
+                  <span
+                    class="text-2xl font-bold text-brand-blue dark:text-white"
+                    >04</span
+                  >
+                </div>
+                <h4 class="font-bold text-brand-blue dark:text-white mb-2">
+                  Bàn giao
+                </h4>
+                <p class="text-sm text-slate-500 dark:text-slate-400 px-4">
+                  Kiểm kê số lượng, kiểm tra tình trạng hàng hóa và bàn giao dự
+                  án.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-20 bg-brand-blue/5 dark:bg-slate-800/20">
+        <div class="max-w-[1200px] mx-auto px-4">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-brand-blue dark:text-white mb-3">
+              Hạng mục dịch vụ chính
+            </h2>
+            <p class="text-slate-600 dark:text-slate-300">
+              Các nhóm dịch vụ chuyển kho bãi được triển khai theo quy trình
+              thực tế tại xưởng, kho tổng và trung tâm phân phối.
+            </p>
+          </div>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <article
+              class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700"
+            >
+              <h3
+                class="text-lg font-bold text-brand-blue dark:text-white mb-2"
+              >
+                Xe tải và xe thùng kín
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Điều phối xe 1 tấn đến 10 tấn cho từng lô hàng, đáp ứng vận
+                chuyển nội thành và liên tỉnh.
+              </p>
+            </article>
+            <article
+              class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700"
+            >
+              <h3
+                class="text-lg font-bold text-brand-blue dark:text-white mb-2"
+              >
+                Luân chuyển hàng pallet
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Bốc xếp và cố định hàng theo kiện/pallet, hạn chế rung lắc trong
+                toàn bộ hành trình.
+              </p>
+            </article>
+            <article
+              class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700"
+            >
+              <h3
+                class="text-lg font-bold text-brand-blue dark:text-white mb-2"
+              >
+                Thuê xe nâng - xe cẩu
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Hỗ trợ nâng hạ máy móc, kệ kho và kiện hàng nặng theo tải trọng
+                phù hợp tại từng địa điểm.
+              </p>
+            </article>
+            <article
+              class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700"
+            >
+              <h3
+                class="text-lg font-bold text-brand-blue dark:text-white mb-2"
+              >
+                Nhân công bốc xếp chuyên trách
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Đội ngũ xử lý hàng nặng, hàng cồng kềnh, phối hợp theo sơ đồ
+                xuất - nhập hàng tại kho.
+              </p>
+            </article>
+            <article
+              class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700"
+            >
+              <h3
+                class="text-lg font-bold text-brand-blue dark:text-white mb-2"
+              >
+                Đóng gói và gia cố kiện hàng
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Dùng màng PE, dây đai, thùng carton và vật tư chống sốc cho hàng
+                dễ vỡ, hàng giá trị cao.
+              </p>
+            </article>
+            <article
+              class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700"
+            >
+              <h3
+                class="text-lg font-bold text-brand-blue dark:text-white mb-2"
+              >
+                Di dời kho trọn gói
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Từ kiểm đếm, phân tuyến, vận chuyển đến sắp xếp lại hàng hóa tại
+                kho mới theo danh mục bàn giao.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="bao-gia" class="py-20 bg-white dark:bg-slate-900">
+        <div class="max-w-[1200px] mx-auto px-4">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-brand-blue dark:text-white mb-4">
+              Bảng giá dịch vụ chuyển kho bãi (tham khảo)
+            </h2>
+            <p class="text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Mức giá dưới đây giúp doanh nghiệp ước tính nhanh chi phí trước
+              khi khảo sát thực tế tại kho.
+            </p>
+          </div>
+
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <article
+              class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
+            >
+              <img
+                src="assets/images/hero-kho-bai.png"
+                alt="Xe tải vận chuyển kho bãi nội thành"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-brand-accent mb-2"
+              >
+                Xe tải nội thành
+              </p>
+              <p class="text-lg font-bold text-brand-blue dark:text-white">
+                400.000đ - 800.000đ
+              </p>
+              <p class="text-slate-600 dark:text-slate-300 mt-1">
+                Xe 1 - 2.5 tấn cho 10km đầu
+              </p>
+              <p class="text-slate-600 dark:text-slate-300 mt-1">
+                Tăng theo tải trọng và quãng đường
+              </p>
+            </article>
+
+            <article
+              class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
+            >
+              <img
+                src="assets/images/feature-pallet.png"
+                alt="Vận chuyển hàng pallet và hàng rời"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-brand-accent mb-2"
+              >
+                Hàng pallet theo lô
+              </p>
+              <p class="text-lg font-bold text-brand-blue dark:text-white">
+                400.000đ - 650.000đ/khối
+              </p>
+              <p class="text-slate-600 dark:text-slate-300 mt-1">
+                Hoặc tính theo chuyến xe riêng
+              </p>
+            </article>
+
+            <article
+              class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
+            >
+              <img
+                src="assets/images/feature-heavy-cargo.png"
+                alt="Thuê xe nâng xe cẩu phục vụ chuyển kho bãi"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-brand-accent mb-2"
+              >
+                Xe nâng - xe cẩu
+              </p>
+              <p class="text-lg font-bold text-brand-blue dark:text-white">
+                1.500.000đ - 5.000.000đ/ca
+              </p>
+              <p class="text-slate-600 dark:text-slate-300 mt-1">
+                Áp dụng theo tải trọng 2.5 - 15 tấn
+              </p>
+            </article>
+
+            <article
+              class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
+            >
+              <img
+                src="assets/images/staff-deliver.png"
+                alt="Nhân công bốc xếp hàng hóa kho bãi"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-brand-accent mb-2"
+              >
+                Nhân công bốc xếp
+              </p>
+              <p class="text-lg font-bold text-brand-blue dark:text-white">
+                350.000đ - 550.000đ/người
+              </p>
+              <p class="text-slate-600 dark:text-slate-300 mt-1">
+                Tính cho 2 đầu bốc dỡ
+              </p>
+            </article>
+
+            <article
+              class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
+            >
+              <img
+                src="assets/images/items-deliver.png"
+                alt="Đóng gói kiện hàng trước khi di dời kho"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-brand-accent mb-2"
+              >
+                Đóng gói và gia cố
+              </p>
+              <p class="text-lg font-bold text-brand-blue dark:text-white">
+                200.000đ - 500.000đ/lô
+              </p>
+              <p class="text-slate-600 dark:text-slate-300 mt-1">
+                Theo vật tư thực tế và quy cách kiện hàng
+              </p>
+            </article>
+
+            <article
+              class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
+            >
+              <img
+                src="assets/images/feature-relocation.png"
+                alt="Di dời kho bãi trọn gói có kiểm đếm"
+                class="w-full h-36 object-cover rounded-lg mb-4"
+              />
+              <p
+                class="text-sm font-semibold uppercase tracking-wide text-brand-accent mb-2"
+              >
+                Di dời kho trọn gói
+              </p>
+              <p class="text-lg font-bold text-brand-blue dark:text-white">
+                Báo giá theo dự án
+              </p>
+              <p class="text-slate-600 dark:text-slate-300 mt-1">
+                Bao gồm kiểm đếm, vận chuyển, bàn giao
+              </p>
+            </article>
+          </div>
+
+          <div
+            class="mt-6 bg-blue-50 dark:bg-slate-800 border-l-4 border-brand-blue rounded-r-xl p-5"
+          >
+            <p class="font-semibold text-brand-blue dark:text-white mb-2">
+              Các yếu tố ảnh hưởng chi phí
+            </p>
+            <ul
+              class="list-disc pl-5 text-slate-700 dark:text-slate-300 space-y-2 mb-5"
+            >
+              <li>
+                <strong>Khối lượng hàng hóa:</strong> số pallet, hàng rời và mức
+                độ cồng kềnh quyết định nhân sự và phương tiện.
+              </li>
+              <li>
+                <strong>Khoảng cách vận chuyển:</strong> quãng đường và thời
+                gian cấm tải ảnh hưởng trực tiếp đến giá xe.
+              </li>
+              <li>
+                <strong>Điều kiện bốc dỡ:</strong> hẻm nhỏ, kho không có dock
+                nâng hoặc cần bốc tay sẽ phát sinh chi phí.
+              </li>
+            </ul>
+            <p class="font-semibold text-brand-blue dark:text-white mb-2">
+              Lưu ý chung
+            </p>
+            <ul
+              class="list-disc pl-5 text-slate-700 dark:text-slate-300 space-y-2"
+            >
+              <li>
+                <strong>Khảo sát thực tế:</strong> luôn là bước miễn phí; nên
+                khảo sát tại chỗ để có con số chính xác, tránh phát sinh bất hợp
+                lý.
+              </li>
+              <li>
+                <strong>Bảo hiểm hàng hóa:</strong> cần xác nhận rõ phạm vi bồi
+                thường trong hợp đồng trước khi triển khai.
+              </li>
+              <li>
+                <strong>Phụ phí:</strong> đường cấm tải, bốc dỡ xa hoặc làm đêm
+                có thể ảnh hưởng tổng chi phí cuối cùng.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-20">
+        <div class="max-w-[1200px] mx-auto px-4">
+          <div
+            class="bg-gradient-to-r from-brand-accent to-orange-500 rounded-3xl p-10 md:p-16 text-center text-white relative overflow-hidden shadow-2xl"
+          >
+            <div
+              class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"
+            ></div>
+            <div
+              class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-black/10 rounded-full blur-3xl"
+            ></div>
+            <div class="relative z-10 max-w-2xl mx-auto space-y-8">
+              <h2 class="text-3xl md:text-4xl font-bold">
+                Bạn đang cần tư vấn di dời kho bãi ngay hôm nay?
+              </h2>
+              <p class="text-lg text-white/90">
+                Liên hệ với đội ngũ kỹ thuật của chúng tôi để nhận khảo sát thực
+                tế và báo giá chi tiết trong vòng 24h.
+              </p>
+              <div
+                class="flex flex-col sm:flex-row items-center justify-center gap-4"
+              >
+                <a
+                  href="#"
+                  onclick="
+                    openBookingModal('moving_warehouse');
+                    return false;
+                  "
+                  class="w-full sm:w-auto bg-brand-blue hover:bg-slate-900 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-xl transition-all inline-block text-center no-underline"
+                >
+                  Yêu cầu tư vấn miễn phí
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div id="site-footer"></div>
+
+    <script src="assets/js/shared-layout.js"></script>
+    <script src="assets/js/shared-modals.js" defer></script>
+    <script src="assets/js/main.js" defer></script>
+  </body>
+</html>

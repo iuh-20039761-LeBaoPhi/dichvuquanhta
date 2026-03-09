@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">Chi Tiết Xe – Thuê Xe TP.HCM</title>
+  <meta name="description" id="metaDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe TP.HCM. Đặt xe trực tuyến. Hotline: 0123 456 789." />
+  <meta name="keywords" id="metaKeys" content="thuê xe tphcm, car rental hcm, chi tiết xe cho thuê" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Thuê Xe TP.HCM" />
+  <meta name="geo.region" content="VN-SG" />
+  <meta name="geo.placename" content="Thành phố Hồ Chí Minh" />
+  <meta name="theme-color" content="#667eea" />
+  <link rel="canonical" id="metaCanonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/car_detail.html" />
+  <link rel="icon" type="image/png" href="assets/images/cars/default.jpg" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="product" />
+  <meta property="og:url" id="ogUrl" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/car_detail.html" />
+  <meta property="og:title" id="ogTitle" content="Chi Tiết Xe – Thuê Xe TP.HCM" />
+  <meta property="og:description" id="ogDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe TP.HCM. Đặt xe trực tuyến." />
+  <meta property="og:image" id="ogImage" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/camry.jpg" />
+  <meta property="og:locale" content="vi_VN" />
+  <meta property="og:site_name" content="Thuê Xe" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" id="twTitle" content="Chi Tiết Xe – Thuê Xe TP.HCM" />
+  <meta name="twitter:description" id="twDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe TP.HCM." />
+  <meta name="twitter:image" id="twImage" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/camry.jpg" />
+
+  <!-- Schema.org BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Trang chủ","item":"https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/"},
+      {"@type":"ListItem","position":2,"name":"Chi tiết xe","item":"https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/car_detail.html"}
+    ]
+  }
+  </script>
+
+  <!-- Schema.org Product (updated dynamically by JS) -->
+  <script type="application/ld+json" id="carSchema">{}</script>
+
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header-gradient sticky-top">
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <div class="d-flex align-items-center gap-2">
+        <a href="../index.html">
+          <img src="assets/images/logo.png" alt="Logo" style="height:56px;object-fit:contain;mix-blend-mode:multiply;">
+        </a>
+        <a class="navbar-brand fw-bold mb-0 text-white" href="index.html" style="font-size:1.3rem;letter-spacing:1px;">Thuê Xe</a>
+      </div>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#cars">Xe nổi bật</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#services">Dịch vụ</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#about">Giới thiệu</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#contact">Liên hệ</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Back bar -->
+<div class="back-bar">
+  <div class="container d-flex align-items-center gap-2 py-2">
+    <button class="btn btn-back" onclick="history.back()">
+      <i class="fas fa-arrow-left me-1"></i>Trở lại
+    </button>
+    <span class="back-sep"><i class="fas fa-chevron-right"></i></span>
+    <span class="back-current" id="backLabel">Chi tiết xe</span>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<section class="py-5">
+  <div class="container">
+    <div id="carNotFound" class="text-center py-5" style="display:none;">
+      <i class="fas fa-car-crash fa-4x text-muted mb-3"></i>
+      <h4>Không tìm thấy xe</h4>
+      <p class="text-muted">Xe bạn tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+      <a href="index.html" class="btn btn-gradient mt-2">
+        <i class="fas fa-arrow-left me-2"></i>Về trang chủ
+      </a>
+    </div>
+
+    <div id="carContent" class="row">
+      <!-- Loading spinner -->
+      <div class="col-12 text-center py-5">
+        <div class="spinner-border text-primary"></div>
+        <p class="mt-3 text-muted">Đang tải thông tin xe...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Related Cars -->
+<section class="py-5 bg-light" id="relatedSection" style="display:none;">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h3 class="fw-bold">Xe Khác Bạn Có Thể Thích</h3>
+    </div>
+    <div class="row g-4" id="relatedCars"></div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;padding:48px 0 24px;">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <img src="assets/images/logo.png" alt="Thuê Xe Logo" style="height:48px;object-fit:contain;mix-blend-mode:multiply;background:white;border-radius:8px;padding:4px;">
+          <span style="font-size:1.3rem;font-weight:700;">Thuê Xe</span>
+        </div>
+        <p style="color:rgba(255,255,255,.7);margin-bottom:20px">Dịch vụ cho thuê xe uy tín, chuyên nghiệp hàng đầu TP.HCM. Giao xe tận nơi, bảo hiểm đầy đủ.</p>
+        <div class="d-flex gap-2">
+          <a href="#" style="background:rgba(255,255,255,.1);color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;text-decoration:none;"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" style="background:rgba(255,255,255,.1);color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;text-decoration:none;"><i class="fab fa-instagram"></i></a>
+          <a href="#" style="background:rgba(255,255,255,.1);color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;text-decoration:none;"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <h6 class="fw-bold mb-3" style="color:rgba(255,255,255,.9)">Dịch Vụ</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="../vesinhcare/demo/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Lau Dọn Vệ Sinh</a></li>
+          <li class="mb-2"><a href="../csmvb/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Chăm Sóc Mẹ &amp; Bé</a></li>
+          <li class="mb-2"><a href="../web-cham-soc-vuon-nha/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Chăm Sóc Vườn &amp; Rẫy</a></li>
+          <li class="mb-2"><a href="../giat-ui-nhanh/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Giặt Ủi Cao Cấp</a></li>
+          <li class="mb-2"><a href="../tho-nha/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Thợ Nhà &amp; Sửa Chữa</a></li>
+          <li class="mb-2"><a href="../csng/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Chăm Sóc Người Già</a></li>
+          <li class="mb-2"><a href="../csbn/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Chăm Sóc Bệnh Nhân</a></li>
+          <li class="mb-2"><a href="../he-thong-giao-hang-chuyen-don/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Giao Hàng Nhanh</a></li>
+          <li class="mb-2"><a href="index.html" style="color:rgba(255,255,255,.9);text-decoration:none;font-weight:600;">Thuê Xe Tự Lái</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <h6 class="fw-bold mb-3" style="color:rgba(255,255,255,.9)">Liên Kết</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="index.html" style="color:rgba(255,255,255,.7);text-decoration:none;">Trang chủ</a></li>
+          <li class="mb-2"><a href="index.html#cars" style="color:rgba(255,255,255,.7);text-decoration:none;">Xe nổi bật</a></li>
+          <li class="mb-2"><a href="index.html#services" style="color:rgba(255,255,255,.7);text-decoration:none;">Dịch vụ</a></li>
+          <li class="mb-2"><a href="index.html#about" style="color:rgba(255,255,255,.7);text-decoration:none;">Giới thiệu</a></li>
+          <li class="mb-2"><a href="index.html#contact" style="color:rgba(255,255,255,.7);text-decoration:none;">Liên hệ</a></li>
+          <li class="mb-2"><a href="#" style="color:rgba(255,255,255,.7);text-decoration:none;">Chính sách bảo mật</a></li>
+          <li class="mb-2"><a href="terms.html" style="color:rgba(255,255,255,.9);text-decoration:none;font-weight:600;">Điều khoản sử dụng</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <h6 class="fw-bold mb-3" style="color:rgba(255,255,255,.9)">Liên Hệ</h6>
+        <div class="mb-3"><i class="fas fa-phone-alt me-2" style="color:#667eea"></i><strong>0123 456 789</strong><br><small style="color:rgba(255,255,255,.6);margin-left:22px">Hotline 24/7</small></div>
+        <div class="mb-3"><i class="fas fa-envelope me-2" style="color:#667eea"></i><strong>contact@carrental.com</strong><br><small style="color:rgba(255,255,255,.6);margin-left:22px">Email hỗ trợ</small></div>
+        <div><i class="fas fa-map-marker-alt me-2" style="color:#667eea"></i><strong>123 Đường ABC, Quận 1</strong><br><small style="color:rgba(255,255,255,.6);margin-left:22px">TP. Hồ Chí Minh</small></div>
+      </div>
+    </div>
+    <hr style="border-color:rgba(255,255,255,.1);margin-top:32px" />
+    <p class="text-center mb-0" style="color:rgba(255,255,255,.5);font-size:.875rem">
+      &copy; 2026 Thuê Xe. Bản quyền thuộc về công ty. Thiết kế với ❤️ tại Việt Nam.
+    </p>
+  </div>
+</footer>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Thông Tin Đặt Xe</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="bookingAlert"></div>
+        <form id="bookingFormFull">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Họ và tên *</label>
+              <input type="text" class="form-control" name="customer_name" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Số điện thoại *</label>
+              <input type="tel" class="form-control" name="customer_phone" required
+                     pattern="^0[3-9][0-9]{8}$" placeholder="0901234567">
+              <div class="invalid-feedback">Số điện thoại phải gồm 10 chữ số, bắt đầu bằng 03x / 05x / 07x / 08x / 09x</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email *</label>
+              <input type="email" class="form-control" name="customer_email" required placeholder="example@email.com">
+              <div class="invalid-feedback">Email không hợp lệ</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">CMND/CCCD</label>
+              <input type="text" class="form-control" name="id_number"
+                     pattern="^[0-9]{9}$|^[0-9]{12}$" placeholder="9 hoặc 12 chữ số" maxlength="12">
+              <div class="invalid-feedback">CMND gồm 9 số hoặc CCCD gồm 12 số</div>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Địa chỉ *</label>
+              <textarea class="form-control" name="customer_address" rows="2" required></textarea>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Địa điểm nhận xe</label>
+              <input type="text" class="form-control" name="pickup_location" placeholder="Để trống nếu nhận tại văn phòng" />
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Ghi chú</label>
+              <textarea class="form-control" name="notes" rows="2"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Dịch vụ đi kèm <span class="text-muted fw-normal">(không bắt buộc)</span></label>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <div class="form-check border rounded p-2 h-100">
+                    <input class="form-check-input" type="checkbox" name="addon_services" value="Giao xe tận nơi" id="svcDelivery">
+                    <label class="form-check-label w-100" for="svcDelivery">
+                      <i class="fas fa-map-marker-alt text-primary me-1"></i> Giao xe tận nơi
+                      <span class="float-end text-primary fw-semibold">+100.000đ/chuyến</span>
+                      <small class="d-block text-muted">Giao xe đến tận địa chỉ của bạn</small>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check border rounded p-2 h-100">
+                    <input class="form-check-input" type="checkbox" name="addon_services" value="Bảo hiểm mở rộng" id="svcInsurance">
+                    <label class="form-check-label w-100" for="svcInsurance">
+                      <i class="fas fa-shield-alt text-primary me-1"></i> Bảo hiểm mở rộng
+                      <span class="float-end text-primary fw-semibold">+150.000đ/ngày</span>
+                      <small class="d-block text-muted">Bảo hiểm toàn diện, an tâm hơn</small>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check border rounded p-2 h-100">
+                    <input class="form-check-input" type="checkbox" name="addon_services" value="Xe có tài xế" id="svcDriver">
+                    <label class="form-check-label w-100" for="svcDriver">
+                      <i class="fas fa-user-tie text-primary me-1"></i> Xe có tài xế
+                      <span class="float-end text-primary fw-semibold">+300.000đ/ngày</span>
+                      <small class="d-block text-muted">Tài xế chuyên nghiệp, am hiểu đường</small>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check border rounded p-2 h-100">
+                    <input class="form-check-input" type="checkbox" name="addon_services" value="GPS định vị" id="svcGPS">
+                    <label class="form-check-label w-100" for="svcGPS">
+                      <i class="fas fa-map-marker-alt text-primary me-1"></i> GPS định vị
+                      <span class="float-end text-primary fw-semibold">+50.000đ/chuyến</span>
+                      <small class="d-block text-muted">Thiết bị dẫn đường chính xác</small>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check border rounded p-2 h-100">
+                    <input class="form-check-input" type="checkbox" name="addon_services" value="Ghế trẻ em" id="svcBabySeat">
+                    <label class="form-check-label w-100" for="svcBabySeat">
+                      <i class="fas fa-baby text-primary me-1"></i> Ghế trẻ em
+                      <span class="float-end text-primary fw-semibold">+100.000đ/chuyến</span>
+                      <small class="d-block text-muted">Ghế an toàn cho bé dưới 10 tuổi</small>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check border rounded p-2 h-100">
+                    <input class="form-check-input" type="checkbox" name="addon_services" value="WiFi di động" id="svcWifi">
+                    <label class="form-check-label w-100" for="svcWifi">
+                      <i class="fas fa-wifi text-primary me-1"></i> WiFi di động
+                      <span class="float-end text-primary fw-semibold">+80.000đ/chuyến</span>
+                      <small class="d-block text-muted">Kết nối internet ổn định suốt chuyến đi</small>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="addonSummary" class="mt-3 p-3 bg-light rounded" style="display:none;">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-muted">Tiền xe:</span>
+              <span id="summaryCarPrice">0đ</span>
+            </div>
+            <div id="summaryAddonList"></div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between fw-bold">
+              <span>Tổng cộng:</span>
+              <span class="text-primary" id="summaryTotal">0đ</span>
+            </div>
+            <small class="text-muted">* Giá có thể thay đổi tuỳ thực tế</small>
+          </div>
+
+          <div class="mt-3">
+            <button type="submit" class="btn btn-gradient w-100">
+              <i class="fas fa-check me-2"></i>Xác nhận đặt xe
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/static-data.js"></script>
+<script>
+STATIC_DATA_PROMISE.then(STATIC_DATA => {
+const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe';
+const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
+const today = () => new Date().toISOString().split('T')[0];
+
+const ADDON_PRICES = {
+    'Giao xe tận nơi':  { price: 100000, unit: 'chuyến' },
+    'Bảo hiểm mở rộng': { price: 150000, unit: 'ngày' },
+    'Xe có tài xế':      { price: 300000, unit: 'ngày' },
+    'GPS định vị':       { price:  50000, unit: 'chuyến' },
+    'Ghế trẻ em':        { price: 100000, unit: 'chuyến' },
+    'WiFi di động':      { price:  80000, unit: 'chuyến' },
+};
+
+function recalcAddonSummary(pricePerDay) {
+    const pickup = document.getElementById('pickupDate');
+    const ret    = document.getElementById('returnDate');
+    const days   = (pickup.value && ret.value && ret.value > pickup.value)
+        ? Math.max(1, Math.round((new Date(ret.value) - new Date(pickup.value)) / 86400000))
+        : 0;
+    const checked = [...document.querySelectorAll('input[name="addon_services"]:checked')];
+    const summaryEl = document.getElementById('addonSummary');
+    if (!days && !checked.length) { summaryEl.style.display = 'none'; return; }
+    const carTotal = days * pricePerDay;
+    let addonTotal = 0, addonLines = '';
+    checked.forEach(cb => {
+        const info = ADDON_PRICES[cb.value];
+        if (!info) return;
+        const cost = info.unit === 'ngày' ? info.price * days : info.price;
+        addonTotal += cost;
+        addonLines += `<div class="d-flex justify-content-between mb-1">
+            <span class="text-muted">${cb.value}:</span>
+            <span>+${fmt(cost)}đ</span>
+        </div>`;
+    });
+    document.getElementById('summaryCarPrice').textContent = fmt(carTotal) + 'đ';
+    document.getElementById('summaryAddonList').innerHTML = addonLines;
+    document.getElementById('summaryTotal').textContent = fmt(carTotal + addonTotal) + 'đ';
+    summaryEl.style.display = 'block';
+}
+
+// ===== Helpers =====
+function updateSEO(car) {
+    const carUrl = `${SITE_BASE}/car_detail.html?id=${car.id}`;
+    const carImg = `${SITE_BASE}/assets/images/cars/${car.main_image}`;
+    const title = `${car.name} – Thuê Xe TP.HCM | ${fmt(car.price_per_day)}đ/ngày`;
+    const desc = `Thuê ${car.name} tại Thuê Xe TP.HCM. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá ${fmt(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
+    const keys = `thuê ${car.name.toLowerCase()}, thuê ${car.brand.toLowerCase()} tphcm, car rental hcm`;
+
+    document.title = title;
+    document.getElementById('pageTitle').textContent = title;
+    document.getElementById('metaDesc').setAttribute('content', desc);
+    document.getElementById('metaKeys').setAttribute('content', keys);
+    document.getElementById('metaCanonical').href = carUrl;
+    document.getElementById('ogUrl').setAttribute('content', carUrl);
+    document.getElementById('ogTitle').setAttribute('content', title);
+    document.getElementById('ogDesc').setAttribute('content', desc);
+    document.getElementById('ogImage').setAttribute('content', carImg);
+    document.getElementById('twTitle').setAttribute('content', title);
+    document.getElementById('twDesc').setAttribute('content', desc);
+    document.getElementById('twImage').setAttribute('content', carImg);
+    document.getElementById('backLabel').textContent = car.name;
+
+    // Update BreadcrumbList with car name
+    const breadcrumbs = document.querySelectorAll('script[type="application/ld+json"]');
+    breadcrumbs.forEach(s => {
+        try {
+            const d = JSON.parse(s.textContent);
+            if (d['@type'] === 'BreadcrumbList') {
+                d.itemListElement[1].name = car.name;
+                d.itemListElement[1].item = carUrl;
+                s.textContent = JSON.stringify(d);
+            }
+        } catch {}
+    });
+
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": car.name,
+        "description": car.description,
+        "image": carImg,
+        "brand": { "@type": "Brand", "name": car.brand },
+        "offers": {
+            "@type": "Offer",
+            "priceCurrency": "VND",
+            "price": car.price_per_day,
+            "priceSpecification": { "@type": "UnitPriceSpecification", "unitText": "Ngày" },
+            "availability": "https://schema.org/InStock",
+            "seller": { "@type": "Organization", "name": "Thuê Xe" }
+        }
+    };
+    document.getElementById('carSchema').textContent = JSON.stringify(schema, null, 2);
+}
+
+function renderCar(car) {
+    const features = car.features ? car.features.split(',') : [];
+    document.getElementById('carContent').innerHTML = `
+        <div class="col-lg-8">
+            <!-- Gallery -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-0">
+                    <div class="position-relative">
+                        <img src="assets/images/cars/${car.main_image}"
+                             class="w-100"
+                             style="height:400px;object-fit:cover;border-radius:8px 8px 0 0;"
+                             alt="${car.name}"
+                             onerror="this.src='assets/images/cars/default.jpg'">
+                        <span class="badge badge-status badge-available" style="position:absolute;top:20px;right:20px;">
+                            Có sẵn
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h1 class="fw-bold mb-2 fs-3">${car.name}</h1>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-primary me-2">${car.brand}</span>
+                        <span class="badge bg-secondary me-2">${car.model}</span>
+                        <span class="badge bg-info">${car.year}</span>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3 col-6">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-2 flex-shrink-0">
+                                    <i class="fas fa-users text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Số chỗ</small>
+                                    <strong>${car.seats} chỗ</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-secondary bg-opacity-10 p-3 me-2 flex-shrink-0">
+                                    <i class="fas fa-cog text-secondary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Hộp số</small>
+                                    <strong>${car.transmission}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-2 flex-shrink-0">
+                                    <i class="fas fa-gas-pump text-success"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Nhiên liệu</small>
+                                    <strong>${car.fuel_type}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-2 flex-shrink-0">
+                                    <i class="fas fa-dollar-sign text-warning"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Giá thuê</small>
+                                    <strong class="text-primary">${fmt(car.price_per_day)}đ</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <h5 class="fw-bold mb-2">Mô Tả</h5>
+                    <p class="text-muted">${car.description}</p>
+
+                    ${features.length > 0 ? `
+                    <hr />
+                    <h5 class="fw-bold mb-3">Tính Năng</h5>
+                    <div class="row g-2">
+                        ${features.map(f => `
+                            <div class="col-md-6">
+                                <i class="fas fa-check-circle text-success me-2"></i><span>${f.trim()}</span>
+                            </div>
+                        `).join('')}
+                    </div>` : ''}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Booking sidebar -->
+            <div class="card border-0 shadow-sm sticky-top" style="top:90px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Đặt Xe Ngay</h5>
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <h6 class="fw-bold mb-1">${car.name}</h6>
+                        <p class="mb-0 text-primary fw-bold">${fmt(car.price_per_day)}đ <small class="text-muted">/ ngày</small></p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ngày nhận xe *</label>
+                        <input type="date" class="form-control" id="pickupDate" min="${today()}" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ngày trả xe *</label>
+                        <input type="date" class="form-control" id="returnDate" min="${today()}" />
+                    </div>
+
+                    <div id="priceCalc" class="mb-3 p-3 bg-light rounded" style="display:none;">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Số ngày:</span><strong id="totalDays">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Tổng tiền:</span><strong class="text-primary" id="totalPrice">0đ</strong>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-gradient w-100" data-bs-toggle="modal" data-bs-target="#bookingModal">
+                        <i class="fas fa-calendar-check me-2"></i>Đặt xe ngay
+                    </button>
+
+                    <hr />
+                    <div class="text-center">
+                        <p class="mb-1"><i class="fas fa-phone text-primary me-2"></i><strong>0123 456 789</strong></p>
+                        <small class="text-muted">Hỗ trợ 24/7</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Date calculation
+    const pickup = document.getElementById('pickupDate');
+    const ret = document.getElementById('returnDate');
+    const calcPrice = () => {
+        if (pickup.value && ret.value) {
+            const d = Math.max(1, Math.round((new Date(ret.value) - new Date(pickup.value)) / 86400000));
+            document.getElementById('totalDays').textContent = d + ' ngày';
+            document.getElementById('totalPrice').textContent = fmt(d * car.price_per_day) + 'đ';
+            document.getElementById('priceCalc').style.display = 'block';
+            ret.min = pickup.value;
+        }
+    };
+    pickup.addEventListener('change', () => { calcPrice(); recalcAddonSummary(car.price_per_day); });
+    ret.addEventListener('change', () => { calcPrice(); recalcAddonSummary(car.price_per_day); });
+
+    // Addon services listeners
+    document.querySelectorAll('input[name="addon_services"]').forEach(cb => {
+        cb.addEventListener('change', () => recalcAddonSummary(car.price_per_day));
+    });
+    document.getElementById('bookingModal').addEventListener('show.bs.modal', () => {
+        recalcAddonSummary(car.price_per_day);
+    });
+
+    // Booking form submit
+    document.getElementById('bookingFormFull').addEventListener('submit', async e => {
+        e.preventDefault();
+        if (!pickup.value || !ret.value) {
+            showAlert('Vui lòng chọn ngày nhận và trả xe!', 'danger');
+            return;
+        }
+        const btn = e.target.querySelector('button[type="submit"]');
+        const orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+
+        await new Promise(r => setTimeout(r, 600));
+
+        const days = Math.max(1, Math.round((new Date(ret.value) - new Date(pickup.value)) / 86400000));
+        const addonServices = [...document.querySelectorAll('input[name="addon_services"]:checked')].map(cb => cb.value);
+        const addonTotal = addonServices.reduce((sum, name) => {
+            const info = ADDON_PRICES[name];
+            if (!info) return sum;
+            return sum + (info.unit === 'ngày' ? info.price * days : info.price);
+        }, 0);
+        const totalPrice = days * car.price_per_day + addonTotal;
+        const addonLines = addonServices.length
+            ? `<br><strong>Dịch vụ đi kèm:</strong> ${addonServices.join(', ')}`
+            : '';
+
+        showAlert(`
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Đặt xe thành công! (Demo)</strong><br>
+            Cảm ơn bạn đã quan tâm đến <strong>${car.name}</strong>.
+            ${addonLines}
+            <br><strong>Tổng tiền ước tính: ${fmt(totalPrice)}đ</strong><br>
+            Để hoàn tất, vui lòng gọi hotline <strong>0123 456 789</strong> – hỗ trợ 24/7.
+        `, 'success');
+
+        btn.disabled = false;
+        btn.innerHTML = orig;
+    });
+}
+
+function showAlert(msg, type) {
+    const el = document.getElementById('bookingAlert');
+    el.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show">
+        ${msg}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>`;
+}
+
+function renderRelated(cars, currentId) {
+    const related = cars.filter(c => c.id !== currentId).slice(0, 3);
+    if (!related.length) return;
+    document.getElementById('relatedSection').style.display = '';
+    document.getElementById('relatedCars').innerHTML = related.map(car => `
+        <div class="col-lg-4 col-md-6">
+            <div class="card car-card h-100">
+                <div class="position-relative">
+                    <img src="assets/images/cars/${car.main_image}"
+                         class="card-img-top car-card-img"
+                         alt="${car.name}"
+                         onerror="this.src='assets/images/cars/default.jpg'">
+                    <span class="badge badge-status badge-available">Có sẵn</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="fw-bold mb-1">${car.name}</h5>
+                    <p class="text-muted small mb-2">${car.brand} · ${car.seats} chỗ · ${car.transmission}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="car-price">${fmt(car.price_per_day)}đ/ngày</span>
+                        <a href="car_detail.html?id=${car.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ===== INIT =====
+(function init() {
+    const params = new URLSearchParams(window.location.search);
+    const carId = parseInt(params.get('id'));
+
+    if (!carId) {
+        document.getElementById('carContent').style.display = 'none';
+        document.getElementById('carNotFound').style.display = '';
+        return;
+    }
+
+    const car = STATIC_DATA.cars.find(c => c.id === carId);
+    if (!car) {
+        document.getElementById('carContent').style.display = 'none';
+        document.getElementById('carNotFound').style.display = '';
+        return;
+    }
+
+    updateSEO(car);
+    renderCar(car);
+    renderRelated(STATIC_DATA.cars, carId);
+})();
+}); // end STATIC_DATA_PROMISE.then
+</script>
+</body>
+</html>

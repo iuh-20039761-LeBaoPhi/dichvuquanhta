@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài Liệu MamaCore - Hướng Dẫn Đầy Đủ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        * {
+            font-family: 'Quicksand', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="bg-light py-5 border-bottom border-4" style="border-bottom-color: #F06292 !important;">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">Tài Liệu <span style="color: #F06292; font-family: 'Pacifico', cursive; font-size: 3rem;">MamaCore</span></h1>
+            <p class="lead">Hệ Thống Quản Lý Dịch Vụ Chăm Sóc Mẹ và Bé</p>
+            <p class="text-muted" style="font-size: 0.9rem;">Hướng dẫn đầy đủ cài đặt, cấu hình và sử dụng</p>
+        </div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+        <div class="container">
+            <div class="d-flex flex-wrap justify-content-center w-100">
+                <a href="#overview" class="nav-link" style="color: #F06292; font-weight: 600; margin: 0 15px; text-decoration: none;"><i class="fas fa-home"></i> Tổng Quan</a>
+                <a href="#features" class="nav-link" style="color: #F06292; font-weight: 600; margin: 0 15px; text-decoration: none;"><i class="fas fa-star"></i> Tính Năng</a>
+                <a href="#services" class="nav-link" style="color: #F06292; font-weight: 600; margin: 0 15px; text-decoration: none;"><i class="fas fa-stethoscope"></i> Dịch Vụ</a>
+                <a href="#database" class="nav-link" style="color: #F06292; font-weight: 600; margin: 0 15px; text-decoration: none;"><i class="fas fa-database"></i> Database</a>
+                <a href="#logic" class="nav-link" style="color: #F06292; font-weight: 600; margin: 0 15px; text-decoration: none;"><i class="fas fa-code"></i> Logic PHP</a>
+                <a href="#installation" class="nav-link" style="color: #F06292; font-weight: 600; margin: 0 15px; text-decoration: none;"><i class="fas fa-download"></i> Cài Đặt</a>
+                <a href="#usage" class="nav-link" style="color: #F06292; font-weight: 600; margin: 0 15px; text-decoration: none;"><i class="fas fa-book"></i> Hướng Dẫn</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <!-- TỔNG QUAN -->
+        <div id="overview" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #F06292; border-bottom-color: #F06292 !important; display: inline-block;"><i class="fas fa-home"></i> Tổng Quan Hệ Thống</h2>
+            
+            <p>MamaCore là một website dịch vụ chăm sóc sức khỏe mẹ và bé chuyên nghiệp, cung cấp các dịch vụ khám thai, chăm sóc sau sinh, khám sơ sinh, tư vấn nuôi dạy con, và nhận đặt lịch tư vấn trực tuyến 24/7.</p>
+            
+            <div class="alert alert-info border-start border-4 py-3 my-4" role="alert">
+                <strong><i class="fas fa-info-circle"></i> Thông Tin:</strong>
+                <p class="mb-0">Hệ thống được xây dựng với PHP,HTML,CSS, MySQL, Bootstrap 5 , Script,XAMPP cung cấp giao diện thân thiện và chức năng quản lý thông tin đặt lịch.</p>
+            </div>
+            
+            <h3 class="mt-4 mb-3">Đặc Điểm Chính</h3>
+            <ul>
+                <li><strong>Giao diện hiện đại:</strong> Sử dụng Bootstrap và CSS để tạo giao diện đẹp mắt</li>
+                <li><strong>Quản lý đặt lịch:</strong> Hệ thống đặt lịch khám, dịch vụ online</li>
+                <li><strong>Bảng điều khiển admin:</strong> Thống kê, quản lý đầy đủ các thông tin khách hàng đặt dịch vụ,yêu cầu liên hệ dịch vụ quan tâm</li>
+                <li><strong>Xác thực an toàn:</strong> Sử dụng password hashing với PHP password_verify()</li>
+                <li><strong>Cơ sở dữ liệu bảo mật:</strong> Sử dụng PDO với prepared statements để phòng chống SQL Injection</li>
+                <li><strong>Responsive Design:</strong> Tương thích với mọi thiết bị (desktop, tablet, mobile)</li>
+            </ul>
+            
+            <h3 class="mt-4 mb-3">Yêu Cầu Hệ Thống</h3>
+
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;">Yêu Cầu Máy Chủ</h5>
+                    <ul class="mb-0">
+                        <li>Phần mềm máy chủ: <strong>XAMPP</strong> (khuyến nghị)</li>
+                        <li>PHP 7.4 trở lên (đã tích hợp sẵn trong XAMPP)</li>
+                        <li>MySQL 5.7 trở lên / MySQL 8.0 (XAMPP)</li>
+                        <li>Apache Web Server (có sẵn trong XAMPP)</li>
+                        <li>Hỗ trợ <code>.htaccess</code></li>
+                    </ul>
+                     <div class="row g-2 mt-3">
+                        <div class="col">
+                            <div class="ratio ratio-4x3">
+                                <img src="img/xampp.png" class="img-fluid rounded" alt="">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="ratio ratio-4x3">
+                                <img src="img/mysql.png" class="img-fluid rounded" alt="">
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- TÍNH NĂNG -->
+        <div id="features" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #F06292; border-bottom-color: #F06292 !important; display: inline-block;"><i class="fas fa-star"></i> Các Tính Năng Chính</h2>
+            
+            <h3 class="mt-4 mb-3">1. Trang Chủ (Khách hàng): http://localhost/CSMVB/</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;"><i class="fas fa-home"></i> Giới thiệu tổng quát</h5>
+                    <p>Trang chủ hiển thị thông tin về công ty, giới thiệu về công ty, các dịch vụ chính, đặt dịch vụ, liên hệ tư vấn thêm về MamaCore. Khách hàng có thể dễ dàng điều hướng đến các phần khác của website.</p>
+
+                    <div class="row g-2 mt-3">
+                        <div class="col">
+                            <div class="ratio ratio-4x3">
+                                <img src="img/trangchu.png" class="img-fluid rounded" alt="">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="ratio ratio-4x3">
+                                <img src="img/gioithiu.png" class="img-fluid rounded" alt="">
+                            </div>
+                        </div> 
+                        <div class="col">
+                            <div class="ratio ratio-4x3">
+                                <img src="img/dichvu.png" class="img-fluid rounded" alt="">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="ratio ratio-4x3">
+                                <img src="img/lienhe.png" class="img-fluid rounded" alt="">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="ratio ratio-4x3">
+                                <img src="img/datlich.png" class="img-fluid rounded" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3">2. Thông tin Các Dịch Vụ</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;"><i class="fas fa-stethoscope"></i> Các Dịch Vụ Hiện có</h5>
+                    <div id="serviceCarousel" class="carousel slide mt-3" data-bs-ride="carousel">
+    
+                        <!-- Indicators -->
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#serviceCarousel" data-bs-slide-to="0" class="active"></button>
+                            <button type="button" data-bs-target="#serviceCarousel" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#serviceCarousel" data-bs-slide-to="2"></button>
+                            <button type="button" data-bs-target="#serviceCarousel" data-bs-slide-to="3"></button>
+                            <button type="button" data-bs-target="#serviceCarousel" data-bs-slide-to="4"></button>
+                            <button type="button" data-bs-target="#serviceCarousel" data-bs-slide-to="5"></button>
+                        </div>
+
+                        <!-- Slides -->
+                        <div class="carousel-inner rounded overflow-hidden">
+
+                            <div class="carousel-item active">
+                                <img src="img/khamthai.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption w-25 mx-auto d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Khám Thai Định Kỳ</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="img/cssausinh.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption w-25 mx-auto d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Chăm Sóc Sau Sinh</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="img/khamsosinh.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption w-25 mx-auto d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Khám Sơ Sinh & Tiêm Chủng</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="img/tuvannuoidaycon.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption w-25 mx-auto d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Tư Vấn Nuôi Dạy Con</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="img/khamtongquat.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption w-25 mx-auto d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Khám Tổng Quát Định Kỳ</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="img/tuvantructuyen.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption w-25 mx-auto d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Tư Vấn Trực Tuyến 24/7</h5>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Controls -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-black"></span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button" data-bs-target="#serviceCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-black"></span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3">3. Hệ Thống Đặt Lịch (Khách hàng)</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;"><i class="fas fa-calendar-check"></i> Đặt lịch khám</h5>
+                    <div class="row g-3 mt-2">
+
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column justify-content-center text-center">
+
+                                    <div class="d-block w-75 mx-auto mb-3">
+                                        <img src="img/DLKB1.png" class="img-fluid rounded" alt="">
+                                    </div>
+
+                                    <h6 class="card-title"><b>Bước 1</b></h6>
+                                    <p class="card-text mb-0">Chọn dịch vụ muốn đặt</p>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column justify-content-center text-center">
+
+                                    <div class="d-block w-75 mx-auto mb-3">
+                                        <img src="img/DLKB2.png" class="img-fluid rounded" alt="">
+                                    </div>
+
+                                    <h6 class="card-title"><b>Bước 2</b></h6>
+                                    <p class="card-text mb-0">
+                                        Nhập thông tin cá nhân (họ tên, SĐT, email, ghi chú)
+                                    </p>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column justify-content-center text-center">
+
+                                    <div class="d-block w-75 mx-auto mb-3">
+                                        <img src="img/DLKB3.png" class="img-fluid rounded" alt="">
+                                    </div>
+
+                                    <h6 class="card-title"><b>Bước 3</b></h6>
+                                    <p class="card-text mb-0">
+                                        Hệ thống tự động lưu vào database và Google Sheet
+                                    </p>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column justify-content-center text-center">
+
+                                    <div class="d-block w-75 mx-auto mb-3">
+                                        <img src="img/DLKB4.png" class="img-fluid rounded" alt="">
+                                    </div>
+
+                                    <h6 class="card-title"><b>Bước 4</b></h6>
+                                    <p class="card-text mb-0">
+                                        Nhân viên liên hệ khách hàng xác nhận đặt lịch qua Email / SMS
+                                    </p>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3">4. Bảng Điều Khiển Admin : http://localhost/CSMVB/admin/</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;"><i class="fas fa-lock"></i> Đăng Nhập Quản Trị</h5>
+                    <ul class="mb-0">
+                        <li>Chuyên dùng cho quản trị viên</li>
+                        <li>Tài khoản đặc biệt với role 'admin'</li>
+                        <li>Mật khẩu được mã hóa bằng password_hash()</li>
+                    </ul>
+                    <div class="row g-2 mt-3">
+                        <div class="col-5 mx-auto">
+                            <div class="d-block w-100 mx-auto mb-3">
+                                <img src="img/dangnhap.png" class="img-fluid rounded" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;"><i class="fas fa-chart-bar"></i> Quản Lý Đặt Lịch</h5>
+                    
+                    <div id="bookingAdminCarousel" class="carousel slide mt-3" data-bs-ride="carousel">
+
+                        <!-- Indicators -->
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#bookingAdminCarousel" data-bs-slide-to="0" class="active"></button>
+                            <button type="button" data-bs-target="#bookingAdminCarousel" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#bookingAdminCarousel" data-bs-slide-to="2"></button>
+                            <button type="button" data-bs-target="#bookingAdminCarousel" data-bs-slide-to="3"></button>
+                            <button type="button" data-bs-target="#bookingAdminCarousel" data-bs-slide-to="4"></button>
+                            <button type="button" data-bs-target="#bookingAdminCarousel" data-bs-slide-to="5"></button>
+                            <button type="button" data-bs-target="#bookingAdminCarousel" data-bs-slide-to="6"></button>
+                        </div>
+
+                        <!-- Slides -->
+                        <div class="carousel-inner rounded">
+
+                            <div class="carousel-item active text-center">
+                                <img src="img/admin1.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Xem danh sách tất cả các đặt lịch</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item text-center">
+                                <img src="img/admin2.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Tìm kiếm theo tên, email, số điện thoại</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item text-center">
+                                <img src="img/admin3.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Lọc theo trạng thái đặt lịch</h5>
+                                    <p class="mb-0">Chờ xác nhận · Đã xác nhận · Hoàn thành · Huỷ</p>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item text-center">
+                                <img src="img/admin4.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Cập nhật trạng thái đặt lịch</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item text-center">
+                                <img src="img/admin5.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Xem chi tiết từng đặt lịch</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item text-center">
+                                <img src="img/admin6.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Xóa đặt lịch khi cần thiết</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item text-center">
+                                <img src="img/admin7.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Thống kê số lượng đặt lịch theo trạng thái</h5>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Controls -->
+                        <button class="carousel-control-prev" type="button"
+                                data-bs-target="#bookingAdminCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-black"></span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button"
+                                data-bs-target="#bookingAdminCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-black"></span>
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3">5. Liên Hệ & Hỗ Trợ</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;"><i class="fas fa-envelope"></i> Trang Liên Hệ</h5>
+                    <div id="LienheCarousel" class="carousel slide mt-3" data-bs-ride="carousel">
+
+                        <!-- Indicators -->
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#LienheCarousel" data-bs-slide-to="0" class="active"></button>
+                            <button type="button" data-bs-target="#LienheCarousel" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#LienheCarousel" data-bs-slide-to="2"></button>
+                            <button type="button" data-bs-target="#LienheCarousel" data-bs-slide-to="3"></button>
+                        </div>
+
+                        <!-- Slides -->
+                        <div class="carousel-inner rounded">
+
+                            <div class="carousel-item active text-center">
+                                <img src="img/lienhe1.png" class="d-block w-40 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Biểu mẫu liên hệ với dịch vụ quan tâm</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item text-center">
+                                <img src="img/lienhe2.png" class="d-block w-40 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Thông tin chi nhánh (Hà Nội, TP.HCM), giờ làm việc</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item text-center">
+                                <img src="img/lienhe3.png" class="d-block w-100 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>Bản đồ Google Maps</h5>
+                                </div>
+                            </div>
+
+                            <div class="carousel-item text-center">
+                                <img src="img/lienhe4.png" class="d-block w-75 mx-auto" alt="">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5>FAQ (Câu hỏi thường gặp)</h5>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Controls -->
+                        <button class="carousel-control-prev" type="button"
+                                data-bs-target="#LienheCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-black"></span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button"
+                                data-bs-target="#LienheCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-black"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3">6. Bảo Mật & Xác Thực</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;"><i class="fas fa-shield-alt"></i> Biện Pháp Bảo Mật</h5>
+                    <ul class="mb-0">
+                        <li>Session management cho đăng nhập</li>
+                        <li>Password hashing với PHP's built-in functions</li>
+                        <li>Sanitize input để chống XSS</li>
+                        <li>Prepared statements PDO chống SQL Injection</li>
+                        <li>Role-based access control (Admin/Customer)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DỊCH VỤ -->
+        <div id="services" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #F06292; border-bottom-color: #F06292 !important; display: inline-block;"><i class="fas fa-stethoscope"></i> Danh Sách Dịch Vụ & Giá Cả</h2>
+            
+            <p>MamaCore cung cấp 6 dịch vụ chính với giá cả chi tiết như sau:</p>
+            
+            <div class="card border-0 my-4 shadow-sm">
+                <div class="card-body">
+                    <div style="color: #F06292; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-heartbeat"></i> Khám Thai Định Kỳ</div>
+                    <p>Khám sức khỏe toàn diện cho mẹ bầu từ giai đoạn đầu đến cuối thai kỳ, giúp phát hiện sớm các vấn đề bất thường.</p>
+                    <div style="color: #F06292; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 300.000 - 500.000 VNĐ/lần</div>
+                    <div>
+                        <strong>Bao gồm:</strong>
+                        <ul>
+                            <li>Siêu âm thai định kỳ</li>
+                            <li>Xét nghiệm máu và nước tiểu</li>
+                            <li>Đo huyết áp và cân nặng</li>
+                            <li>Tư vấn dinh dưỡng</li>
+                            <li>Hướng dẫn vận động an toàn</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 my-4 shadow-sm">
+                <div class="card-body">
+                    <div style="color: #F06292; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-hands"></i> Chăm Sóc Sau Sinh</div>
+                    <p>Hỗ trợ toàn diện cho mẹ sau khi sinh, giúp phục hồi sức khỏe, tâm lý và hỗ trợ nuôi con bằng sữa mẹ.</p>
+                    <div style="color: #F06292; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 500.000 - 800.000 VNĐ/liệu trình</div>
+                    <div>
+                        <strong>Bao gồm:</strong>
+                        <ul>
+                            <li>Kiểm tra vết mổ/chỉ</li>
+                            <li>Hướng dẫn tập luyện phục hồi</li>
+                            <li>Tư vấn nuôi con bằng sữa mẹ</li>
+                            <li>Giúp xử lý tình trạng trầm cảm sau sinh</li>
+                            <li>Tư vấn dinh dưỡng để tăng sữa</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 my-4 shadow-sm">
+                <div class="card-body">
+                    <div style="color: #F06292; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-baby"></i> Khám Sơ Sinh & Tiêm Chủng</div>
+                    <p>Kiểm tra sức khỏe chi tiết cho bé sơ sinh, phát hiện sớm bất thường, hướng dẫn chăm sóc bé.</p>
+                    <div style="color: #F06292; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 200.000 - 400.000 VNĐ/lần</div>
+                    <div>
+                        <strong>Bao gồm:</strong>
+                        <ul>
+                            <li>Khám tổng quát cho bé sơ sinh</li>
+                            <li>Sàng lọc sơ sinh (Guthrie test)</li>
+                            <li>Tiêm chủng đầy đủ theo lịch</li>
+                            <li>Hướng dẫn chăm sóc bé hàng ngày</li>
+                            <li>Xử lý các tình trạng thường gặp</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 my-4 shadow-sm">
+                <div class="card-body">
+                    <div style="color: #F06292; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-graduation-cap"></i> Tư Vấn Nuôi Dạy Con</div>
+                    <p>Hướng dẫn cha mẹ cách nuôi dạy con khỏe mạnh, phát triển toàn diện và hạnh phúc.</p>
+                    <div style="color: #F06292; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 250.000 - 400.000 VNĐ/buổi</div>
+                    <div>
+                        <strong>Bao gồm:</strong>
+                        <ul>
+                            <li>Tư vấn dinh dưỡng theo độ tuổi</li>
+                            <li>Hướng dẫn phát triển tâm lý</li>
+                            <li>Xử lý các vấn đề hành vi</li>
+                            <li>Tư vấn giáo dục sớm</li>
+                            <li>Hỗ trợ điều hành áp lực làm cha mẹ</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 my-4 shadow-sm">
+                <div class="card-body">
+                    <div style="color: #F06292; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Khám Tổng Quát Định Kỳ</div>
+                    <p>Khám sức khỏe toàn diện cho trẻ em từ sơ sinh đến 18 tuổi, phát hiện sớm các vấn đề sức khỏe.</p>
+                    <div style="color: #F06292; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 350.000 - 600.000 VNĐ/lần</div>
+                    <div>
+                        <strong>Bao gồm:</strong>
+                        <ul>
+                            <li>Kiểm tra toàn thân chi tiết</li>
+                            <li>Đánh giá sự phát triển</li>
+                            <li>Xét nghiệm y tế định kỳ</li>
+                            <li>Tư vấn sức khỏe tổng quát</li>
+                            <li>Hướng dẫn phòng bệnh</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 my-4 shadow-sm">
+                <div class="card-body">
+                    <div style="color: #F06292; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-video"></i> Tư Vấn Trực Tuyến 24/7</div>
+                    <p>Dịch vụ tư vấn sức khỏe qua video call, chat hoặc điện thoại với bác sĩ bất kỳ lúc nào.</p>
+                    <div style="color: #F06292; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 150.000 - 250.000 VNĐ/buổi</div>
+                    <div>
+                        <strong>Bao gồm:</strong>
+                        <ul>
+                            <li>Tư vấn trực tuyến 24/7</li>
+                            <li>Ghi chú y tế điện tử</li>
+                            <li>Kê đơn thuốc trực tuyến</li>
+                            <li>Theo dõi sức khỏe</li>
+                            <li>Hỗ trợ ứng phó khẩn cấp</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DATABASE -->
+        <div id="database" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #F06292; border-bottom-color: #F06292 !important; display: inline-block;"><i class="fas fa-database"></i> Cấu Trúc Database</h2>
+            
+            <p>Hệ thống sử dụng MySQL để lưu trữ dữ liệu. Có 2 bảng chính:</p>
+            
+            <h3 class="mt-4 mb-3">1. Bảng Users (Người dùng)</h3>
+            <div class="card border-0 mb-4" style="border: 2px solid #ddd;">
+                <div class="card-header" style="background-color: #2fb3a5; color: white; font-weight: 700;">
+                    <i class="fas fa-users"></i> Bảng: users
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <tbody>
+                                <tr>
+                                    <td><strong style="color: #F06292;">id</strong></td>
+                                    <td><code>INT(11)</code></td>
+                                    <td>ID tự tăng, khóa chính</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">username</strong></td>
+                                    <td><code>VARCHAR(50)</code></td>
+                                    <td>Tên đăng nhập, duy nhất</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">password</strong></td>
+                                    <td><code>VARCHAR(255)</code></td>
+                                    <td>Mật khẩu đã mã hóa (hash)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">full_name</strong></td>
+                                    <td><code>VARCHAR(100)</code></td>
+                                    <td>Họ và tên</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">email</strong></td>
+                                    <td><code>VARCHAR(100)</code></td>
+                                    <td>Email của người dùng</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">phone</strong></td>
+                                    <td><code>VARCHAR(20)</code></td>
+                                    <td>Số điện thoại liên lạc</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">address</strong></td>
+                                    <td><code>TEXT</code></td>
+                                    <td>Địa chỉ của người dùng</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">role</strong></td>
+                                    <td><code>VARCHAR(20)</code></td>
+                                    <td>Vai trò: admin, customer</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">status</strong></td>
+                                    <td><code>VARCHAR(20)</code></td>
+                                    <td>Trạng thái: active, inactive</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">created_at</strong></td>
+                                    <td><code>TIMESTAMP</code></td>
+                                    <td>Thời gian tạo tài khoản</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3">2. Bảng Bookings (Đặt lịch)</h3>
+            <div class="card border-0 mb-4" style="border: 2px solid #ddd;">
+                <div class="card-header" style="background-color: #2fb3a5; color: white; font-weight: 700;">
+                    <i class="fas fa-calendar-alt"></i> Bảng: bookings
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <tbody>
+                                <tr>
+                                    <td><strong style="color: #F06292;">id</strong></td>
+                                    <td><code>INT(11)</code></td>
+                                    <td>ID tự tăng, khóa chính</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">service_name</strong></td>
+                                    <td><code>VARCHAR(100)</code></td>
+                                    <td>Tên dịch vụ được đặt</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">service_price</strong></td>
+                                    <td><code>VARCHAR(50)</code></td>
+                                    <td>Giá dịch vụ tại thời điểm đặt</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">customer_name</strong></td>
+                                    <td><code>VARCHAR(100)</code></td>
+                                    <td>Tên khách hàng</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">phone</strong></td>
+                                    <td><code>VARCHAR(20)</code></td>
+                                    <td>Số điện thoại khách hàng</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">email</strong></td>
+                                    <td><code>VARCHAR(100)</code></td>
+                                    <td>Email khách hàng</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">note</strong></td>
+                                    <td><code>TEXT</code></td>
+                                    <td>Ghi chú hoặc yêu cầu đặc biệt</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">status</strong></td>
+                                    <td><code>VARCHAR(20)</code></td>
+                                    <td>pending, confirmed, completed, cancelled</td>
+                                </tr>
+                                <tr>
+                                    <td><strong style="color: #F06292;">created_at</strong></td>
+                                    <td><code>TIMESTAMP</code></td>
+                                    <td>Thời gian tạo đặt lịch</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <!-- LOGIC PHP -->
+        <div id="logic" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #F06292; border-bottom-color: #F06292 !important; display: inline-block;"><i class="fas fa-code"></i> Logic PHP & Backend</h2>
+            
+            <h3 class="mt-4 mb-3">1. Hệ Thống Xác Thực (auth_unified.php)</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;">Các Hàm Chính</h5>
+                    <ul class="mb-0">
+                        <li><strong>isLoggedIn():</strong> Kiểm tra người dùng đã đăng nhập hay chưa</li>
+                        <pre class="mb-0"><code>
+                            function isLoggedIn() {
+                                return isset($_SESSION['user_id']) && isset($_SESSION['role']);
+                            }
+                        </code></pre>
+                        <li><strong>isAdmin():</strong> Kiểm tra người dùng có phải admin hay không</li>
+                        <pre class="mb-0"><code>
+                            function isAdmin() {
+                                return isLoggedIn() && $_SESSION['role'] === 'admin';
+                            }
+                        </code></pre>
+                        <li><strong>requireAdmin():</strong> Yêu cầu quyền admin để truy cập trang</li>
+                        <pre class="mb-0"><code>
+                            function requireAdmin($redirectTo = '/CSMVB/admin/login.php') {
+                                if (!isAdmin()) {
+                                    header('Location: ' . $redirectTo);
+                                    exit();
+                                }
+                            }
+                        </code></pre>
+                        <li><strong>getCurrentUser():</strong> Lấy thông tin người dùng hiện tại từ session/database</li>
+                        <pre class="mb-0"><code>
+                            function getCurrentUser() {
+                                if (!isLoggedIn()) {
+                                    return null;
+                                }
+
+                                // Try to get from session first
+                                if (isset($_SESSION['user_data_complete'])) {
+                                    return $_SESSION['user_data_complete'];
+                                }
+
+                                // Fetch complete user data from database
+                                try {
+                                    require_once __DIR__ . '/database.php';
+                                    $db = new Database();
+                                    $conn = $db->getConnection();
+
+                                    $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+                                    $stmt->execute([$_SESSION['user_id']]);
+                                    $user = $stmt->fetch();
+
+                                    if ($user) {
+                                        // Cache complete user data in session
+                                        $_SESSION['user_data_complete'] = $user;
+                                        return $user;
+                                    }
+                                } catch (Exception $e) {
+                                    // Fallback to session data
+                                }
+
+                                return [
+                                    'id' => $_SESSION['user_id'],
+                                    'username' => $_SESSION['username'] ?? '',
+                                    'full_name' => $_SESSION['full_name'] ?? '',
+                                    'email' => $_SESSION['email'] ?? '',
+                                    'role' => $_SESSION['role'],
+                                    'phone' => '',
+                                    'address' => '',
+                                    'created_at' => '',
+                                    'password' => ''
+                                ];
+                            }
+                        </code></pre>
+                        <li><strong>logout():</strong> Xử lý đăng xuất và hủy session</li>
+                        <pre class="mb-0"><code>
+                            function logout() {
+                                session_destroy();
+                                header('Location: /CSMVB/admin/login.php');
+                                exit();
+                            }
+                        </code></pre>
+                    </ul>
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3">2. Xử Lý Đăng Nhập Admin (login.php)</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;">Quy Trình Đăng Nhập</h5>
+                    <ol class="list-group list-group-numbered">
+
+                        <li class="list-group-item d-flex align-items-start gap-3">
+                            <i class="bi bi-input-cursor-text fs-3 text-primary"></i>
+                            <div>
+                                <strong>Nhận dữ liệu từ form</strong><br>
+                                Lấy <code>username</code> và <code>password</code> từ <code>$_POST</code>
+                                <pre class="mb-0"><code> 
+                                    $username = sanitizeInput($_POST['username'] ?? '');
+                                    $password = $_POST['password'] ?? '';
+                                </code></pre>
+                            </div>
+                        </li>
+
+                        <li class="list-group-item d-flex align-items-start gap-3">
+                            <i class="bi bi-database fs-3 text-success"></i>
+                            <div>
+                                <strong>Lấy user từ database</strong><br>
+                                Truy vấn database theo <code>username</code>
+                                <pre><code>
+                                    $db = new Database();
+                                    $conn = $db->getConnection();
+                                    // Lấy dữ liệu data
+                                    $stmt = $conn->prepare("SELECT id, username, password, full_name, role FROM users 
+                                                        WHERE username = ? AND role = 'admin' AND status = 'active'");
+                                    $stmt->execute([$username]);
+                                    $user = $stmt->fetch();
+                                </code></pre>
+                            </div>
+                        </li>
+
+                        <li class="list-group-item d-flex align-items-start gap-3">
+                            <i class="bi bi-shield-lock fs-3 text-warning"></i>
+                            <div>
+                                <strong>Kiểm tra mật khẩu và chuyển hướng</strong><br>
+                                So sánh bằng <code>password_verify()</code><br>
+                                -> <strong>Lưu session</strong>
+                                Gán thông tin user vào <code>$_SESSION</code><br>
+                                -><strong>Chuyển trang</strong>
+                                <code>header("Location: index.php")</code>
+                                <pre><code>
+                                    if ($user && password_verify($password, $user['password'])) {
+                                        $_SESSION['user_id'] = $user['id'];
+                                        $_SESSION['username'] = $user['username'];
+                                        $_SESSION['full_name'] = $user['full_name'];
+                                        $_SESSION['role'] = $user['role'];
+
+                                        header('Location: index.php');
+                                        exit();
+                                    }
+                                </code></pre>
+                            </div>
+                        </li>
+
+                        <li class="list-group-item d-flex align-items-start gap-3">
+                            <i class="bi bi-exclamation-triangle fs-3 text-danger"></i>
+                            <div>
+                                <strong>Xử lý lỗi</strong><br>
+                                Hiển thị thông báo khi đăng nhập thất bại
+                                <pre><code>
+                                    else {
+                                        $error = 'Tên đăng nhập hoặc mật khẩu không đúng';
+                                    }
+                                </code></pre>
+                            </div>
+                        </li>
+
+                    </ol>
+
+                </div>
+            </div>
+
+            <h3 class="mt-4 mb-3">3. Hệ Thống Đặt Lịch (services.php & contact.php)</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;">Xử Lý Đặt Lịch</h5>
+                    <!-- <ol>
+                        <li>Nhận dữ liệu từ form AJAX</li>
+                        <li>Validate dữ liệu nhập vào</li>
+                        <li>Sử dụng prepared statement để chèn dữ liệu</li>
+                        <li>Trả về JSON response</li>
+                        <li>Xử lý lỗi và trả lỗi về client</li>
+                    </ol> -->
+                    <ol class="mb-0">
+                        <li>
+                            <strong>Nhận dữ liệu từ form (AJAX)</strong><br>
+                            Hệ thống nhận thông tin dịch vụ, họ tên, số điện thoại, email, ghi chú… được gửi lên bằng <code>AJAX POST</code>.
+                        </li>
+
+                        <li>
+                            <strong>Kiểm tra & làm sạch dữ liệu</strong><br>
+                            Dữ liệu đầu vào được validate (không rỗng, đúng định dạng) và xử lý an toàn trước khi lưu.
+                        </li>
+
+                        <li>
+                            <strong>Lưu dữ liệu vào cơ sở dữ liệu</strong><br>
+                            Sử dụng <code>Prepared Statement</code> để chèn thông tin đặt lịch vào database, tránh SQL Injection.
+                            <pre><code>
+                                if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
+                                    try {
+                                        $stmt = $conn->prepare("
+                                            INSERT INTO bookings (
+                                                service_name,service_price,customer_name,phone,email,note,created_at
+                                            ) VALUES (?, ?, ?, ?, ?, ?, NOW())
+                                        ");
+
+                                        $stmt->execute([
+                                            $_POST['service_name'],
+                                            $_POST['service_price'],
+                                            $_POST['customer_name'],
+                                            $_POST['customer_phone'],
+                                            $_POST['customer_email'],
+                                            $_POST['customer_note']
+                                        ]);
+
+                                        echo json_encode(['status' => 'success']);
+                                    } catch (PDOException $e) {
+                                        echo json_encode(['status' => 'error', 'msg' => $e->getMessage()]);
+                                    }
+                                    exit;
+                                }
+                            </code></pre>
+                        </li>
+
+                        <li>
+                            <strong>Trả kết quả về client</strong><br>
+                            Sau khi xử lý, server trả về <code>JSON response</code> thông báo thành công hoặc thất bại.
+                        </li>
+
+                        <li>
+                            <strong>Xử lý kết quả phía giao diện</strong><br>
+                            JavaScript nhận JSON và hiển thị thông báo, reset form hoặc hiển thị lỗi tương ứng cho người dùng.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3">4. Quản Lý Đặt Lịch Admin(admin/index.php)</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;">Chức Năng Quản Lý</h5>
+                    <ul class="mb-0">
+                        <li><strong>Lấy danh sách:</strong> SELECT * FROM bookings với filter và sort</li>
+                        <li><strong>Tìm kiếm:</strong> WHERE customer_name LIKE ? OR email LIKE ? OR phone LIKE ?</li>
+                        <li><strong>Lọc theo trạng thái:</strong> WHERE status = ?</li>
+                        <pre><code>
+                            try {
+                                $search = $_GET['search'] ?? '';
+                                $status_filter = $_GET['status'] ?? '';
+                                
+                                $query = "SELECT * FROM bookings WHERE 1=1";
+                                $params = [];
+                                
+                                if ($search) {
+                                    $query .= " AND (customer_name LIKE ? OR email LIKE ? OR phone LIKE ?)";
+                                    $searchTerm = "%$search%";
+                                    $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm]);
+                                }
+                                
+                                if ($status_filter) {
+                                    $query .= " AND status = ?";
+                                    $params[] = $status_filter;
+                                }
+                                
+                                $query .= " ORDER BY created_at DESC";
+                                
+                                $stmt = $conn->prepare($query);
+                                $stmt->execute($params);
+                                $bookings = $stmt->fetchAll();
+                            } catch (Exception $e) {
+                                $error_message = "Lỗi: " . $e->getMessage();
+                                $bookings = [];
+                            }
+                        </code></pre>
+                        <li><strong>Cập nhật trạng thái:</strong> UPDATE bookings SET status = ? WHERE id = ?</li>
+                        <li><strong>Xóa đặt lịch:</strong> DELETE FROM bookings WHERE id = ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            
+            <h3 class="mt-4 mb-3">6. Kết Nối Database (database.php)</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;">PDO Connection</h5>
+                    <ul class="mb-0">
+                        <li>Sử dụng PDO (PHP Data Objects) cho bảo mật</li>
+                        <li>Prepared statements để chống SQL Injection</li>
+                        <li>Error mode: PDO::ERRMODE_EXCEPTION</li>
+                        <li>Charset: utf8 để hỗ trợ tiếng Việt</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card bg-light border-0">
+                <div class="card-body">
+                    <pre class="mb-0"><code>               
+// Set timezone for Vietnam
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+class Database {
+    private $host = 'localhost';
+    private $db_name = 'csmvb';
+    private $username = 'root';
+    private $password = '';
+    private $conn = null;
+
+    public function connect() {
+        try {
+            $this->conn = new PDO(
+                "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=utf8",
+                $this->username,
+                $this->password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false
+                ]
+            );
+        } catch(PDOException $e) {
+            die("Connection failed: " . $e->getMessage());
+        }
+
+        return $this->conn;
+    }
+
+    public function getConnection() {
+        if ($this->conn === null) {
+            $this->connect();
+        }
+        return $this->conn;
+    }
+}
+                    </code></pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CÁCH CÀI ĐẶT -->
+        <div id="installation" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #F06292; border-bottom-color: #F06292 !important; display: inline-block;"><i class="fas fa-download"></i> Hướng Dẫn Cài Đặt</h2>
+            
+            <div class="alert alert-warning border-start border-4 py-3 my-4" role="alert">
+                <strong><i class="fas fa-exclamation-triangle"></i> Lưu Ý:</strong>
+                <p class="mb-0">Hãy đảm bảo rằng bạn có Apache/Nginx với PHP 7.4+ và MySQL 5.7+</p>
+            </div>
+            
+            <h3 class="mt-4 mb-3">Bước 1: Chuẩn Bị Môi Trường (XAMPP)</h3>
+
+            <div class="card border-start border-4 my-3" style="border-left-color:#F06292!important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color:#F06292;">Cài đặt XAMPP</h5>
+                    <p>Tải và cài đặt <strong>XAMPP</strong> để chạy website PHP trên máy tính:</p>
+                    <ul class="mb-0">
+                        <li>Apache (Web Server)</li>
+                        <li>MySQL (Database)</li>
+                        <li>PHP (Đã tích hợp sẵn)</li>
+                    </ul>
+                    <p class="mt-2 mb-0">
+                        👉 Sau khi cài xong, mở <strong>XAMPP Control Panel</strong> và bật
+                        <code>Apache</code>, <code>MySQL</code>.
+                    </p>
+                </div>
+            </div>
+
+            <h3 class="mt-4 mb-3">Bước 2: Đưa Source Code Vào XAMPP</h3>
+
+            <div class="card border-start border-4 my-3" style="border-left-color:#F06292!important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color:#F06292;">Copy Source Code</h5>
+                    <ol class="mb-0">
+                        <li>Giải nén file source code đã tải</li>
+                        <li>Copy toàn bộ thư mục project</li>
+                        <li>Dán vào thư mục: <code>C:\xampp\htdocs\</code></li>
+                        <li>Đổi tên thư mục thành: <strong>CSMVB</strong></li>
+                    </ol>
+                </div>
+            </div>
+
+            <h3 class="mt-4 mb-3">Bước 3: Tạo Database Trên phpMyAdmin</h3>
+
+            <div class="card border-start border-4 my-3" style="border-left-color:#F06292!important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color:#F06292;">Tạo Database</h5>
+                    <p class="mb-0">
+                        Mở trình duyệt và truy cập:
+                        <code>http://localhost/phpmyadmin</code><br>
+                        Sau đó tạo database và bảng bằng các lệnh SQL bên dưới.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card bg-light border-0">
+                <div class="card-body">
+            <pre class="mb-0"><code>
+REATE DATABASE csmvb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE csmvb;
+CREATE TABLE `bookings` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `service_name` varchar(255) NOT NULL COMMENT 'Tên dịch vụ',
+  `service_price` varchar(100) DEFAULT NULL COMMENT 'Giá dịch vụ',
+  `customer_name` varchar(255) NOT NULL COMMENT 'Tên khách hàng',
+  `phone` varchar(20) NOT NULL COMMENT 'Số điện thoại',
+  `email` varchar(255) DEFAULT NULL COMMENT 'Email khách hàng',
+  `note` text DEFAULT NULL COMMENT 'Ghi chú của khách',
+  `status` enum('pending','contacted','confirmed','completed','cancelled') NOT NULL DEFAULT 'pending',
+  `created_at` datetime NOT NULL COMMENT 'Thời gian tạo',
+  `updated_at` datetime DEFAULT NULL COMMENT 'Thời gian cập nhật'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `role` enum('customer','admin','staff') DEFAULT 'customer',
+  `status` enum('active','inactive','banned') DEFAULT 'active',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `full_name`, `phone`, `address`, `role`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'admin', 'admin@gmail.com', '$2y$10$695xaocsDclOi0Nk/3flx.R5Ue2K9kUPICApnHkw/zfteFkNIuLyK', 'admin', NULL, NULL, 'admin', 'active', '2026-01-21 06:49:47', '2026-01-21 07:09:38');
+
+ALTER TABLE `bookings`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`);
+
+ALTER TABLE `bookings`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+COMMIT;
+
+            </code></pre>
+                </div>
+            </div>
+
+            <div class="alert alert-info border-start border-4 py-3 my-4">
+                <strong>💡 Lưu ý:</strong>
+                <p class="mb-0">
+                    Password admin phải được mã hóa bằng
+                    <code>password_hash()</code> trước khi insert vào database.
+                </p>
+            </div>
+
+            ---
+
+            <h3 class="mt-4 mb-3">Bước 4: Cấu Hình Kết Nối Database</h3>
+
+            <div class="card border-start border-4 my-3" style="border-left-color:#F06292!important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color:#F06292;">Chỉnh file database.php</h5>
+                    <p>Mở file <code>config/database.php</code> và chỉnh như sau(nếu đúng thì giữ nguyên):</p>
+                </div>
+            </div>
+
+            <div class="card bg-light border-0">
+                <div class="card-body">
+                    <pre class="mb-0"><code>
+$host = 'localhost';
+$db_name = 'csmvb';
+$username = 'root';
+$password = '';
+                    </code></pre>
+                </div>
+            </div>
+
+            <h3 class="mt-4 mb-3">Bước 5: Chạy Website</h3>
+
+            <div class="card border-start border-4 my-3" style="border-left-color:#F06292!important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color:#F06292;">Truy cập Website</h5>
+                    <ol class="mb-0">
+                        <li>Mở trình duyệt (Chrome)</li>
+                        <li>Gõ địa chỉ: <code>http://localhost/CSMVB/</code></li>
+                        <li>Website hiển thị là cài đặt thành công</li>
+                    </ol>
+                </div>
+            </div>
+
+            <h3 class="mt-4 mb-3">Bước 6: Đăng Nhập Trang Quản Trị</h3>
+
+            <div class="card border-start border-4 my-3" style="border-left-color:#F06292!important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color:#F06292;">Admin Dashboard</h5>
+                    <ol class="mb-0">
+                        <li>Truy cập: <code>http://localhost/CSMVB/admin/</code></li>
+                        <li>Username: <code>admin</code></li>
+                        <li>Password: 123456</li>
+                        <li>Đăng nhập để quản lý hệ thống</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="alert alert-warning border-start border-4 py-3 my-4">
+                <strong>🔐 Bảo mật:</strong>
+                <p class="mb-0">
+                    Sau khi đăng nhập thành công, hãy đổi mật khẩu admin ngay.
+                </p>
+            </div>
+        </div>
+        <!-- HƯỚNG DẪN SỬ DỤNG -->
+        <div id="usage" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #F06292; border-bottom-color: #F06292 !important; display: inline-block;"><i class="fas fa-book"></i> Hướng Dẫn Sử Dụng</h2>
+            
+            <h3 class="mt-4 mb-3">🧑‍💼 Hướng Dẫn Cho Khách Hàng</h3>
+            
+            <h4 class="mt-3 mb-3">1. Xem Trang Chủ</h4>
+            <div class="bg-light p-4 rounded my-3">
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">1</div>
+                    <div>
+                        <h5 style="color: #333;">Truy Cập Website</h5>
+                        <p>Mở trình duyệt và truy cập trang chủ MamaCore tại: <code>http://localhost/CSMVB/index.php</code></p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">2</div>
+                    <div>
+                        <h5 style="color: #333;">Xem Thông Tin</h5>
+                        <p>Xem các thông tin giới thiệu, tại sao chọn MamaCore, dịch vụ chính, và thống kê trên trang chủ</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">3</div>
+                    <div>
+                        <h5 style="color: #333;">Điều Hướng</h5>
+                        <p>Sử dụng menu thanh điều hướng để đi đến các trang khác</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="mt-3 mb-3">2. Xem Danh Sách Dịch Vụ</h4>
+            <div class="bg-light p-4 rounded my-3">
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">1</div>
+                    <div>
+                        <h5 style="color: #333;">Truy Cập Trang Dịch Vụ</h5>
+                        <p>Nhấn "Dịch Vụ" trong menu thanh điều hướng hoặc "Xem Tất Cả Dịch Vụ" trên trang chủ</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">2</div>
+                    <div>
+                        <h5 style="color: #333;">Xem Chi Tiết</h5>
+                        <p>Xem mô tả chi tiết, thành phần bao gồm và giá cả của từng dịch vụ</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">3</div>
+                    <div>
+                        <h5 style="color: #333;">Chọn Dịch Vụ</h5>
+                        <p>Nhấn "Đặt Lịch Ngay" để đặt dịch vụ mà bạn quan tâm</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="mt-3 mb-3">3. Đặt Lịch Khám</h4>
+            <div class="bg-light p-4 rounded my-3">
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">1</div>
+                    <div>
+                        <h5 style="color: #333;">Mở Modal Đặt Lịch</h5>
+                        <p>Nhấn "Đặt Lịch Ngay" từ trang dịch vụ hoặc trang liên hệ</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">2</div>
+                    <div>
+                        <h5 style="color: #333;">Điền Thông Tin</h5>
+                        <ul class="mb-0">
+                            <li>Dịch vụ: Được tự động điền từ dịch vụ bạn chọn</li>
+                            <li>Giá dịch vụ: Được tự động điền</li>
+                            <li>Họ và tên: Nhập tên của bạn (*bắt buộc)</li>
+                            <li>Số điện thoại: Nhập SĐT liên lạc (*bắt buộc)</li>
+                            <li>Email: Nhập email (tùy chọn)</li>
+                            <li>Ghi chú: Thêm yêu cầu đặc biệt nếu có</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">3</div>
+                    <div>
+                        <h5 style="color: #333;">Gửi Đặt Lịch</h5>
+                        <p>Nhấn "Đặt Lịch" để gửi yêu cầu. Một thông báo sẽ hiển thị xác nhận đặt lịch thành công.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">4</div>
+                    <div>
+                        <h5 style="color: #333;">Xác Nhận</h5>
+                        <p>Chúng tôi sẽ liên hệ với bạn qua SĐT hoặc email trong 24 giờ để xác nhận và sắp xếp lịch khám.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="mt-3 mb-3">4. Liên Hệ Trực Tiếp</h4>
+            <div class="bg-light p-4 rounded my-3">
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">1</div>
+                    <div>
+                        <h5 style="color: #333;">Truy Cập Trang Liên Hệ</h5>
+                        <p>Nhấn "Liên Hệ" trong menu để đi đến trang liên hệ</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">2</div>
+                    <div>
+                        <h5 style="color: #333;">Xem Thông Tin Liên Hệ</h5>
+                        <p>Xem địa chỉ, số điện thoại, email, giờ làm việc và vị trí chi nhánh trên bản đồ</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">3</div>
+                    <div>
+                        <h5 style="color: #333;">Gửi Tin Nhắn</h5>
+                        <p>Điền biểu mẫu liên hệ với dịch vụ quan tâm, thông tin cá nhân và nội dung tin nhắn</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">4</div>
+                    <div>
+                        <h5 style="color: #333;">Nhận Phản Hồi</h5>
+                        <p>Chúng tôi sẽ phản hồi lại trong thời gian sớm nhất</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3">👨‍💼 Hướng Dẫn Cho Quản Trị Viên</h3>
+            
+            <h4 class="mt-3 mb-3">1. Đăng Nhập Admin</h4>
+            <div class="bg-light p-4 rounded my-3">
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">1</div>
+                    <div>
+                        <h5 style="color: #333;">Mở Trang Đăng Nhập</h5>
+                        <p>Truy cập: <code>http://localhost/CSMVB/admin/login.php</code></p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">2</div>
+                    <div>
+                        <h5 style="color: #333;">Nhập Thông Tin</h5>
+                        <ul class="mb-0">
+                            <li>Username: admin</li>
+                            <li>Password: 123456 (hoặc password đã thiết lập)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">3</div>
+                    <div>
+                        <h5 style="color: #333;">Đăng Nhập</h5>
+                        <p>Nhấn nút "Đăng nhập" để vào dashboard</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="mt-3 mb-3">2. Quản Lý Đặt Lịch</h4>
+            <div class="bg-light p-4 rounded my-3">
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">1</div>
+                    <div>
+                        <h5 style="color: #333;">Xem Danh Sách</h5>
+                        <p>Dashboard sẽ hiển thị danh sách tất cả các đặt lịch với thông tin chi tiết</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">2</div>
+                    <div>
+                        <h5 style="color: #333;">Tìm Kiếm</h5>
+                        <p>Nhập tên khách hàng, email hoặc số điện thoại trong ô tìm kiếm để lọc đặt lịch</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">3</div>
+                    <div>
+                        <h5 style="color: #333;">Lọc Theo Trạng Thái</h5>
+                        <ul class="mb-0">
+                            <li>Chờ xác nhận (pending)</li>
+                            <li>Đã xác nhận (confirmed)</li>
+                            <li>Hoàn thành (completed)</li>
+                            <li>Huỷ (cancelled)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">4</div>
+                    <div>
+                        <h5 style="color: #333;">Cập Nhật Trạng Thái</h5>
+                        <p>Chọn trạng thái mới từ dropdown ở cột "Trạng thái". Hệ thống sẽ cập nhật tự động.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">5</div>
+                    <div>
+                        <h5 style="color: #333;">Xem Chi Tiết</h5>
+                        <p>Nhấn biểu tượng mắt <i class="fas fa-eye"></i> để xem chi tiết đầy đủ của đặt lịch</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">6</div>
+                    <div>
+                        <h5 style="color: #333;">Xóa Đặt Lịch</h5>
+                        <p>Nhấn biểu tượng thùng rác <i class="fas fa-trash"></i> để xóa đặt lịch. Xác nhận khi được hỏi.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="mt-3 mb-3">3. Xem Thống Kê</h4>
+            <div class="card border-start border-4 my-3" style="border-left-color: #F06292 !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #F06292;">Các Thống Kê Hiển Thị</h5>
+                    <ul class="mb-0">
+                        <li><strong>Tổng đặt lịch:</strong> Số lượng tất cả các đặt lịch</li>
+                        <li><strong>Chờ xác nhận:</strong> Số lượng đặt lịch chưa được xác nhận</li>
+                        <li><strong>Đã xác nhận:</strong> Số lượng đặt lịch đã được xác nhận</li>
+                        <li><strong>Hoàn thành:</strong> Số lượng đặt lịch đã hoàn thành</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h4 class="mt-3 mb-3">4. Đăng Xuất</h4>
+            <div class="bg-light p-4 rounded my-3">
+                <div class="d-flex gap-3 mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">1</div>
+                    <div>
+                        <h5 style="color: #333;">Nhấn Đăng Xuất</h5>
+                        <p>Nhấn nút "Đăng xuất" ở góc trên bên phải của trang</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #F06292; color: white; font-weight: 700; flex-shrink: 0;">2</div>
+                    <div>
+                        <h5 style="color: #333;">Xác Nhận</h5>
+                        <p>Bạn sẽ được chuyển về trang đăng nhập</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to Top Button -->
+    <div class="position-fixed bottom-3 end-3" id="backToTop" onclick="scrollToTop()" style="cursor: pointer; background-color: #F06292; color: white; width: 50px; height: 50px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 999; transition: 0.3s;">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <script>
+        // Back to Top Button
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.style.display = 'flex';
+            } else {
+                backToTopBtn.style.display = 'none';
+            }
+        });
+        
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Smooth scroll for nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // Active nav link
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('[id]');
+            const scrollPosition = window.pageYOffset;
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 200;
+                const sectionHeight = section.offsetHeight;
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.style.color = '#F06292';
+                        link.style.fontWeight = '600';
+                    });
+                    const activeLink = document.querySelector('.nav-link[href="#' + section.id + '"]');
+                    if (activeLink) {
+                        activeLink.style.color = '#2fb3a5';
+                        activeLink.style.fontWeight = '700';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

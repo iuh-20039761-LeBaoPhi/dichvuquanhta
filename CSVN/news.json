@@ -1,0 +1,18 @@
+{
+  "news": [
+    {
+      "id": 1,
+      "title": "Tại sao Lưỡi Hổ lại là vua của các loại cây dễ trồng?",
+      "image": "cayluoiho.jpg",
+      "date": "2024-05-01",
+      "content": "Lưỡi Hổ nổi tiếng với sức sống bền bỉ đến mức kinh ngạc. Đây là loại cây cực kỳ dễ chăm sóc, có thể sống tốt trong nhiều điều kiện ánh sáng khác nhau."
+    },
+    {
+      "id": 2,
+      "title": "Tin tức thú vị: \"Máy xịt khoáng\" tự nhiên cho bàn làm việc",
+      "image": "senda.jpg",
+      "date": "2024-06-10",
+      "content": "Nhất Mạt Hương (tên tiếng Anh là Plectranthus hadiensis var. tomentosus) không chỉ là một loại sen đá thông thường. Điểm đặc biệt nhất khiến nó trở thành \"ngôi sao\" chính là mùi hương. Mùi hương gây nghiện: Chỉ cần chạm nhẹ vào lá hoặc một cơn gió thoảng qua, cây sẽ tỏa ra mùi hương bạc hà pha lẫn chanh rất dễ chịu. Mùi này giúp giảm stress cực tốt và đặc biệt là đuổi muỗi rất hiệu quả. Vẻ ngoài đáng yêu: Lá cây xanh mướt, dày dặn và có một lớp lông mao trắng mịn như nhung bao phủ. Nhìn xa trông như những bông hoa xanh nhỏ xíu. Dễ tính đến mức lười cũng trồng được: Ánh sáng: Thích ánh sáng tán xạ (cạnh cửa sổ). Tưới nước: Một tuần chỉ cần tưới 1-2 lần. Cây sẽ báo động bằng cách lá hơi mềm đi khi khát, giúp bạn biết chính xác khi nào cần chăm sóc."
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+/* ===== RESET CƠ BẢN ===== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #333;
+    background-color: #f6f7fb;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== KHUNG NỘI DUNG ===== */
+body > * {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+body {
+    padding: 40px 20px;
+}
+
+/* ===== TIÊU ĐỀ ===== */
+h1 {
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #1e293b;
+}
+
+h2 {
+    font-size: 24px;
+    margin-top: 40px;
+    margin-bottom: 16px;
+    padding-left: 10px;
+    border-left: 5px solid #2563eb;
+    color: #1e40af;
+}
+
+h3 {
+    font-size: 20px;
+    margin-top: 30px;
+    margin-bottom: 12px;
+    color: #1f2937;
+}
+
+h4 {
+    font-size: 18px;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    color: #374151;
+}
+
+/* ===== ĐOẠN VĂN ===== */
+p {
+    margin-bottom: 12px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 30px 0;
+}
+
+/* ===== LIST ===== */
+ul, ol {
+    padding-left: 30px;
+    margin-bottom: 16px;
+}
+
+li {
+    margin-bottom: 6px;
+}
+
+/* ===== BẢNG ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+table th {
+    background-color: #2563eb;
+    color: #fff;
+    text-align: left;
+    padding: 10px;
+    font-weight: 600;
+}
+
+table td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px;
+}
+
+table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== CODE INLINE ===== */
+code {
+    background-color: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #0f172a;
+}
+
+/* ===== HÌNH ẢNH ===== */
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 16px auto 24px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ===== NOTE / CHÚ THÍCH ===== */
+i {
+    color: #6b7280;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    body {
+        padding: 20px 12px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    h2 {
+        font-size: 21px;
+    }
+
+    h3 {
+        font-size: 18px;
+    }
+}

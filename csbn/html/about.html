@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Dịch vụ chăm sóc bệnh nhân tại nhà an toàn và chuyên nghiệp: theo dõi y tế, hỗ trợ sinh hoạt, chăm sóc sau phẫu thuật và phục hồi sức khỏe toàn diện.">
+    <meta name="keywords" content="chăm sóc bệnh nhân, chăm sóc bệnh nhân tại nhà, điều dưỡng tại nhà, chăm sóc sau phẫu thuật, chăm sóc người bệnh dài ngày">
+    <title>Giới Thiệu - Chăm Sóc Bệnh Nhân</title>
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="../assets/logobn.png"
+    />
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body style="font-family: &quot;Quicksand&quot;, sans-serif">
+    <!-- Navigation -->
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3"
+    >
+      <div class="container">
+        <a
+          class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
+          href="index.html"
+          style="color: #007bff"
+        >
+          <img
+            style="width: 80px; height: 60px"
+            src="../assets/logobn.png"
+            alt="cham-soc-me-va-be"
+          />
+          <span>Chăm Sóc Bệnh Nhân</span>
+        </a>
+
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          id="menuToggle"
+          data-bs-toggle="collapse"
+          data-bs-target="#navMenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+          <ul class="navbar-nav align-items-center gap-3">
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="../index.html"
+                >Trang Chủ</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link fw-bold px-3 active"
+                style="color: #007bff; font-size: larger"
+                href="about.html"
+                >Giới Thiệu</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="../services.html">Dịch Vụ</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold px-3" href="terms.html"
+                  >Điều Khoản</a
+                >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="contact.html">Liên Hệ</a>
+            </li>
+            <li class="nav-item">
+                <a href="../../index.html" class="logo">
+                  <img
+                    style="width: 80px; height: 60px"
+                    src="../assets/logo.png"
+                    alt=""
+                  />
+                </a>
+              </li>
+            <li class="nav-item ms-lg-3">
+              <a
+                href="contact.html"
+                class="btn text-white rounded-pill px-4 py-2 shadow-sm"
+                style="background-color: #007bff"
+                onmouseover="
+                  this.style.backgroundColor = '#d84374';
+                  this.style.transform = 'scale(1.05)';
+                "
+                onmouseout="
+                  this.style.backgroundColor = '#007bff';
+                  this.style.transform = 'scale(1)';
+                "
+                >Đặt Lịch Tư Vấn</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- About Hero Banner -->
+    <section
+      class="py-5"
+      style="
+        background: linear-gradient(
+          135deg,
+          #e3f2fd 0%,
+          #ffffff 50%,
+          #e8f5e9 100%
+        );
+      "
+    >
+      <div class="container py-lg-5 text-center">
+        <h1 class="display-3 fw-bold mb-3">
+          Về
+          <span
+            style="
+              color: #007bff;
+              font-family: &quot;Quicksand&quot;, sans-serif;
+            "
+            >Chăm Sóc Bệnh Nhân</span
+          >
+        </h1>
+        <p class="lead text-muted mb-4">
+          Giải pháp chăm sóc bệnh nhân chuyên nghiệp — Chia sẻ gánh nặng cùng
+          gia đình
+        </p>
+        <div
+          style="
+            width: 60px;
+            height: 3px;
+            background-color: #007bff;
+            margin: 0 auto;
+          "
+        ></div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-5">
+      <div class="container py-lg-5">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <h2 class="fw-bold display-5 mb-4">
+              Câu Chuyện Của <span style="color: #007bff">Chăm Sóc Bệnh Nhân</span>
+            </h2>
+
+            <p class="lead text-muted mb-3">
+              Chăm Sóc Bệnh Nhân được hình thành với mong muốn mang đến dịch vụ 
+              hỗ trợ chăm sóc tận tâm cho người bệnh ngay tại nhà hoặc tại bệnh viện. 
+              Chúng tôi thấu hiểu rằng khi người thân đau ốm, gia đình thường chịu 
+              nhiều áp lực về thời gian, công việc và tinh thần.
+            </p>
+
+            <p class="text-muted">
+              Với nhiều năm kinh nghiệm trong lĩnh vực chăm sóc hỗ trợ, chúng tôi đã 
+              đồng hành cùng hàng nghìn gia đình, giúp người bệnh được chăm sóc chu đáo 
+              hơn mỗi ngày và giúp người thân an tâm hơn trong cuộc sống. 
+              Đội ngũ nhân sự của chúng tôi được tuyển chọn kỹ lưỡng, đào tạo kỹ năng 
+              chăm sóc và tác phong làm việc chuyên nghiệp, luôn sẵn sàng hỗ trợ linh hoạt 
+              theo nhu cầu của từng gia đình.
+            </p>
+          </div>
+
+          <div class="col-lg-6 text-center">
+            <img
+              src="../assets/2.png"
+              alt="Đội ngũ hỗ trợ chăm sóc"
+              class="img-fluid rounded-4 shadow-lg"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission & Vision -->
+    <section class="py-5" style="background-color: #f7f7f7">
+      <div class="container py-5">
+        <div class="row g-4">
+
+          <div class="col-md-4">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 text-center">
+              <div class="mb-4 fs-1 text-primary">
+                <i class="fas fa-hand-holding-heart"></i>
+              </div>
+              <h3 class="h4 fw-bold mb-3">Sứ Mệnh</h3>
+              <p class="text-muted mb-0">
+                Mang đến dịch vụ hỗ trợ chăm sóc tận tâm và chu đáo, giúp người bệnh
+                được quan tâm đầy đủ hơn mỗi ngày và giúp gia đình an tâm trong
+                mọi hoàn cảnh.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 text-center">
+              <div class="mb-4 fs-1 text-primary">
+                <i class="fas fa-bullseye"></i>
+              </div>
+              <h3 class="h4 fw-bold mb-3">Tầm Nhìn</h3>
+              <p class="text-muted mb-0">
+                Trở thành đơn vị cung cấp dịch vụ chăm sóc tại nhà và tại viện
+                uy tín, được nhiều gia đình tin tưởng lựa chọn trên toàn quốc.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 text-center">
+              <div class="mb-4 fs-1 text-primary">
+                <i class="fas fa-award"></i>
+              </div>
+              <h3 class="h4 fw-bold mb-3">Giá Trị Cốt Lõi</h3>
+              <p class="text-muted mb-0">
+                Chúng tôi cam kết: Tận Tâm - Trách Nhiệm - Trung Thực - Linh Hoạt 
+                và luôn đặt sự an toàn, tôn trọng và tin tưởng của gia đình lên hàng đầu.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container py-5">
+        <h2 class="text-center fw-bold display-5 mb-5">
+          Vì Sao Gia Đình Tin Tưởng Chúng Tôi?
+        </h2>
+        <div class="row g-4">
+
+          <div class="col-md-6 col-lg-4">
+            <div class="p-4 rounded-3 h-100"
+              style="background-color:#f7f7f7;border-left:5px solid #007bff">
+              <div class="d-inline-flex align-items-center justify-content-center 
+                rounded-circle text-white fw-bold mb-3"
+                style="width:45px;height:45px;background-color:#007bff;font-size:1.5rem;">
+                1
+              </div>
+              <h3 class="h5 fw-bold mb-3">Nhân Sự Tận Tâm</h3>
+              <p class="text-muted mb-0">
+                Đội ngũ được tuyển chọn kỹ lưỡng, có kinh nghiệm chăm sóc và 
+                thái độ làm việc trách nhiệm, chu đáo.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <div class="p-4 rounded-3 h-100"
+              style="background-color:#f7f7f7;border-left:5px solid #007bff">
+              <div class="d-inline-flex align-items-center justify-content-center 
+                rounded-circle text-white fw-bold mb-3"
+                style="width:45px;height:45px;background-color:#007bff;font-size:1.5rem;">
+                2
+              </div>
+              <h3 class="h5 fw-bold mb-3">Linh Hoạt 24/7</h3>
+              <p class="text-muted mb-0">
+                Cung cấp dịch vụ theo giờ, theo ca hoặc 24/24 tùy nhu cầu của từng gia đình.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <div class="p-4 rounded-3 h-100"
+              style="background-color:#f7f7f7;border-left:5px solid #007bff">
+              <div class="d-inline-flex align-items-center justify-content-center 
+                rounded-circle text-white fw-bold mb-3"
+                style="width:45px;height:45px;background-color:#007bff;font-size:1.5rem;">
+                3
+              </div>
+              <h3 class="h5 fw-bold mb-3">Cập Nhật Thường Xuyên</h3>
+              <p class="text-muted mb-0">
+                Gia đình luôn được thông tin kịp thời về tình trạng sinh hoạt và sức khỏe của người thân.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <div class="p-4 rounded-3 h-100"
+              style="background-color:#f7f7f7;border-left:5px solid #007bff">
+              <div class="d-inline-flex align-items-center justify-content-center 
+                rounded-circle text-white fw-bold mb-3"
+                style="width:45px;height:45px;background-color:#007bff;font-size:1.5rem;">
+                4
+              </div>
+              <h3 class="h5 fw-bold mb-3">Hỗ Trợ Sinh Hoạt</h3>
+              <p class="text-muted mb-0">
+                Hỗ trợ ăn uống, vệ sinh, đi lại và sinh hoạt hằng ngày theo nhu cầu thực tế.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <div class="p-4 rounded-3 h-100"
+              style="background-color:#f7f7f7;border-left:5px solid #007bff">
+              <div class="d-inline-flex align-items-center justify-content-center 
+                rounded-circle text-white fw-bold mb-3"
+                style="width:45px;height:45px;background-color:#007bff;font-size:1.5rem;">
+                5
+              </div>
+              <h3 class="h5 fw-bold mb-3">Hỗ Trợ Thủ Tục Cơ Bản</h3>
+              <p class="text-muted mb-0">
+                Hỗ trợ gia đình trong các công việc hành chính đơn giản tại viện khi cần thiết.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <div class="p-4 rounded-3 h-100"
+              style="background-color:#f7f7f7;border-left:5px solid #007bff">
+              <div class="d-inline-flex align-items-center justify-content-center 
+                rounded-circle text-white fw-bold mb-3"
+                style="width:45px;height:45px;background-color:#007bff;font-size:1.5rem;">
+                6
+              </div>
+              <h3 class="h5 fw-bold mb-3">Uy Tín & Trách Nhiệm</h3>
+              <p class="text-muted mb-0">
+                Cam kết trung thực, bảo vệ tài sản gia đình và đảm bảo sự an tâm trong suốt quá trình chăm sóc.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5" style="background-color:#f7f7f7">
+      <div class="container py-5">
+        <div class="row align-items-center g-5">
+
+          <div class="col-lg-6">
+            <h2 class="text-center text-lg-start fw-bold display-5 mb-5">
+              Hành Trình Phát Triển
+            </h2>
+
+            <div>
+
+              <div class="d-flex gap-4 align-items-start mb-4">
+                <div class="fw-bold text-primary" style="min-width:120px;font-size:1.5rem">
+                  2009
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Khởi Đầu</h3>
+                  <p class="text-muted mb-0">
+                    Bắt đầu cung cấp dịch vụ hỗ trợ chăm sóc tại nhà cho các gia đình tại TP.HCM.
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex gap-4 align-items-start mb-4">
+                <div class="fw-bold text-primary" style="min-width:120px;font-size:1.5rem">
+                  2013
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Mở Rộng Dịch Vụ</h3>
+                  <p class="text-muted mb-0">
+                    Phát triển các gói chăm sóc linh hoạt theo giờ, theo ngày và 24/24.
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex gap-4 align-items-start mb-4">
+                <div class="fw-bold text-primary" style="min-width:120px;font-size:1.5rem">
+                  2017
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Chuẩn Hóa Quy Trình</h3>
+                  <p class="text-muted mb-0">
+                    Xây dựng quy trình tuyển chọn và đào tạo kỹ năng chăm sóc bài bản.
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex gap-4 align-items-start mb-4">
+                <div class="fw-bold text-primary" style="min-width:120px;font-size:1.5rem">
+                  2020
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Đa Dạng Hóa Dịch Vụ</h3>
+                  <p class="text-muted mb-0">
+                    Phát triển thêm các dịch vụ chăm sóc người cao tuổi và chăm sóc tại nhà.
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex gap-4 align-items-start">
+                <div class="fw-bold text-primary" style="min-width:120px;font-size:1.5rem">
+                  2024
+                </div>
+                <div>
+                  <h3 class="h5 fw-bold mb-2">Phát Triển Bền Vững</h3>
+                  <p class="text-muted mb-0">
+                    Hơn 10,000 gia đình tin tưởng lựa chọn, đội ngũ hơn 200 nhân sự hỗ trợ chăm sóc.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-lg-6 text-center">
+            <img src="../assets/4.png"
+              alt="Hành trình phát triển"
+              class="img-fluid rounded-4 shadow-lg" />
+          </div>
+
+        </div>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3">
+      <div class="container">
+        <div class="row g-4 mb-4">
+          <div class="col-lg-4">
+            <h3 class="h4 fw-bold mb-3" style="color: #007bff">Chăm Sóc Bệnh Nhân</h3>
+            <p class="opacity-75">
+              Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng
+              đầu tại Việt Nam.
+            </p>
+          </div>
+          <div class="col-lg-2">
+            <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a
+                  href="about.html"
+                  class="text-white text-decoration-none opacity-75"
+                  >Giới Thiệu</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="services.html"
+                  class="text-white text-decoration-none opacity-75"
+                  >Dịch Vụ</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="contact.html"
+                  class="text-white text-decoration-none opacity-75"
+                  >Liên Hệ</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../vesinhcare/demo/"
+                  >Lau Dọn Vệ Sinh</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../csmvb/"
+                  >Chăm Sóc Mẹ & Bé</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../web-cham-soc-vuon-nha/"
+                  >Chăm Sóc Vườn & Rẫy</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../giat-ui-nhanh/"
+                  >Giặt Ủi Cao Cấp</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../tho-nha/"
+                  >Thợ Nhà & Sửa Chữa</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../csng/"
+                  >Chăm Sóc Người Già</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../csbn/"
+                  >Chăm Sóc Bệnh Nhân</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  class="text-white text-decoration-none opacity-75"
+                  target="_blank"
+                  href="../../he-thong-giao-hang-chuyen-don/"
+                  >Giao Hàng Nhanh</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
+            <p class="mb-1 opacity-75 small">
+              <i class="fas fa-phone me-2"></i> 0775472347
+            </p>
+            <p class="mb-1 opacity-75 small">
+              <i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com
+            </p>
+          </div>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+            <div class="d-flex gap-3">
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+                ><i class="fab fa-youtube"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+        <hr class="opacity-25" />
+        <p class="text-center small opacity-50">
+          &copy; 2026 Chăm Sóc Bệnh Nhân. Đồng hành cùng sức khỏe Việt.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="JS/style.js"></script>
+  </body>
+</html>
+

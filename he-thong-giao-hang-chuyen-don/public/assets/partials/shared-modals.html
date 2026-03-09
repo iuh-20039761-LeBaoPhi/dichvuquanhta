@@ -1,0 +1,546 @@
+<!-- DELIVERY BOOKING MODAL -->
+<div id="booking-modal-delivery" class="modal booking-modal">
+  <div class="modal-content booking-modal-content">
+    <span class="modal-close-btn" onclick="closeBookingModal('delivery')"
+      >&times;</span
+    >
+    <h2 class="booking-modal-title">📦 Đặt đơn giao hàng</h2>
+    <p class="booking-modal-subtitle">
+      Dành cho giao chậm, tiêu chuẩn, giao nhanh và hỏa tốc.
+    </p>
+
+    <form
+      id="create-order-form"
+      class="booking-order-form"
+      data-form-type="delivery"
+    >
+      <div class="form-section">
+        <h3>1. Chọn gói giao hàng</h3>
+        <div class="form-grid">
+          <div class="grid-span-full">
+            <select name="service_type" id="order-service-type" required>
+              <option value="">-- Vui lòng chọn gói --</option>
+              <option value="slow">Giao chậm</option>
+              <option value="standard">Giao tiêu chuẩn</option>
+              <option value="fast">Giao nhanh</option>
+              <option value="express">Giao hỏa tốc</option>
+              <option value="intl_economy">Tiêu chuẩn quốc tế</option>
+              <option value="intl_express">Chuyển phát nhanh quốc tế</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>2. Thông tin người gửi</h3>
+        <div class="form-grid">
+          <div>
+            <label>Họ và tên *</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Nhập họ và tên"
+              required
+            />
+          </div>
+          <div>
+            <label>Số điện thoại *</label>
+            <input
+              type="tel"
+              name="phone"
+              placeholder="0987654321"
+              pattern="0[0-9]{9,10}"
+              required
+            />
+          </div>
+          <div class="grid-span-full">
+            <label>Địa chỉ lấy hàng *</label>
+            <input
+              type="text"
+              id="pickup-addr"
+              name="pickup"
+              placeholder="Số nhà, tên đường, phường, quận..."
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>3. Thông tin người nhận</h3>
+        <div class="form-grid">
+          <div>
+            <label>Tên người nhận *</label>
+            <input
+              type="text"
+              name="receiver_name"
+              placeholder="Nhập tên người nhận"
+              required
+            />
+          </div>
+          <div>
+            <label>Số điện thoại *</label>
+            <input
+              type="tel"
+              name="receiver_phone"
+              placeholder="0987654321"
+              pattern="0[0-9]{9,10}"
+              required
+            />
+          </div>
+          <div class="grid-span-full">
+            <label>Địa chỉ giao hàng *</label>
+            <input
+              type="text"
+              id="delivery-addr"
+              name="delivery"
+              placeholder="Số nhà, tên đường, phường, quận..."
+              required
+            />
+          </div>
+          <div id="delivery-intl-country-group" class="is-hidden">
+            <label>Quốc gia nhận *</label>
+            <select id="delivery-intl-country" name="intl_country">
+              <option value="">Chọn quốc gia nhận</option>
+            </select>
+          </div>
+          <div id="delivery-intl-province-group" class="is-hidden">
+            <label>Tỉnh/Thành phố nhận (quốc tế)</label>
+            <select id="delivery-intl-province" name="intl_province" disabled>
+              <option value="">Chọn tỉnh/thành phố nhận</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>4. Thông tin hàng hóa</h3>
+        <div class="form-grid">
+          <div>
+            <label>Loại hàng hóa *</label>
+            <select name="package_type" required>
+              <option value="">-- Chọn loại hàng --</option>
+              <option value="document">Tài liệu/Giấy tờ</option>
+              <option value="food">Thực phẩm</option>
+              <option value="clothes">Quần áo</option>
+              <option value="electronic">Đồ điện tử</option>
+              <option value="other">Khác</option>
+            </select>
+          </div>
+          <div>
+            <label>Khối lượng (kg) *</label>
+            <input
+              type="number"
+              id="weight"
+              name="weight"
+              value="1"
+              min="0"
+              step="0.5"
+              required
+            />
+          </div>
+          <div id="cod-field-group">
+            <label>Tiền thu hộ (COD)</label>
+            <input
+              type="number"
+              id="cod_amount"
+              name="cod_amount"
+              value="0"
+              min="0"
+            />
+          </div>
+          <div class="grid-span-full">
+            <label>Ghi chú cho tài xế</label>
+            <textarea
+              name="note"
+              placeholder="VD: Hàng dễ vỡ, gọi trước khi giao..."
+            ></textarea>
+          </div>
+
+          <!-- Hidden Dimensions -->
+          <div class="grid-span-full">
+            <a
+              href="#"
+              id="toggle-delivery-dimensions"
+              class="dimensions-toggle-link"
+              >+ Nhập kích thước (Nếu hàng cồng kềnh)</a
+            >
+            <div
+              id="modal-dimensions-group"
+              class="form-grid dimensions-grid is-hidden"
+            >
+              <div>
+                <label>Dài (cm)</label>
+                <input
+                  type="number"
+                  name="length"
+                  min="1"
+                  step="1"
+                  placeholder="30"
+                />
+              </div>
+              <div>
+                <label>Rộng (cm)</label>
+                <input
+                  type="number"
+                  name="width"
+                  min="1"
+                  step="1"
+                  placeholder="20"
+                />
+              </div>
+              <div>
+                <label>Cao (cm)</label>
+                <input
+                  type="number"
+                  name="height"
+                  min="1"
+                  step="1"
+                  placeholder="15"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>5. Thanh toán & Hóa đơn</h3>
+        <div class="form-grid">
+          <div>
+            <label>Phương thức thanh toán</label>
+            <select id="payment_method_delivery" name="payment_method">
+              <option value="cod">Thanh toán khi lấy hàng</option>
+              <option value="bank_transfer">Chuyển khoản ngân hàng</option>
+            </select>
+          </div>
+          <div class="checkbox-stack checkbox-center">
+            <label class="checkbox-inline">
+              <input
+                type="checkbox"
+                name="is_corporate"
+                id="is_corporate_checkbox_delivery"
+              />
+              Yêu cầu hóa đơn công ty
+            </label>
+          </div>
+          <div
+            id="corporate-fields-delivery"
+            class="grid-span-full corporate-fields is-hidden"
+          >
+            <div class="form-grid">
+              <div class="grid-span-full">
+                <label>Tên công ty *</label>
+                <input
+                  type="text"
+                  name="company_name"
+                  placeholder="Nhập tên công ty"
+                />
+              </div>
+              <div>
+                <label>Email công ty *</label>
+                <input
+                  type="email"
+                  name="company_email"
+                  placeholder="Email nhận hóa đơn"
+                />
+              </div>
+              <div>
+                <label>Mã số thuế *</label>
+                <input
+                  type="text"
+                  name="company_tax_code"
+                  placeholder="Nhập mã số thuế"
+                />
+              </div>
+              <div class="grid-span-full">
+                <label>Địa chỉ công ty *</label>
+                <textarea
+                  name="company_address"
+                  placeholder="Nhập địa chỉ công ty"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="price-preview" class="price-preview is-hidden">
+        Phí vận chuyển dự kiến: <strong id="shipping-fee-display">0</strong>đ
+        <input
+          type="hidden"
+          name="shipping_fee"
+          id="shipping-fee-input"
+          value="0"
+        />
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          onclick="closeBookingModal('delivery')"
+          class="btn-secondary"
+        >
+          Hủy
+        </button>
+        <button type="submit" class="btn-primary">Đặt lịch</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MOVING BOOKING MODAL -->
+<div id="booking-modal-moving" class="modal booking-modal">
+  <div class="modal-content booking-modal-content">
+    <span class="modal-close-btn" onclick="closeBookingModal('moving')"
+      >&times;</span
+    >
+    <h2 class="booking-modal-title">🚚 Đặt dịch vụ chuyển dọn</h2>
+    <p class="booking-modal-subtitle">
+      Dành cho chuyển nhà, chuyển văn phòng và chuyển kho bãi.
+    </p>
+
+    <form
+      id="create-order-form-moving"
+      class="booking-order-form"
+      data-form-type="moving"
+    >
+      <div class="form-section">
+        <h3>1. Chọn dịch vụ chuyển dọn</h3>
+        <div class="form-grid">
+          <div class="grid-span-full">
+            <select name="service_type" id="order-service-type-moving" required>
+              <option value="moving_house">🚛 Chuyển nhà trọn gói</option>
+              <option value="moving_office">🏢 Chuyển văn phòng</option>
+              <option value="moving_warehouse">🏭 Chuyển kho bãi</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>2. Thông tin liên hệ</h3>
+        <div class="form-grid">
+          <div>
+            <label>Họ và tên *</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Nhập họ và tên"
+              required
+            />
+          </div>
+          <div>
+            <label>Số điện thoại *</label>
+            <input
+              type="tel"
+              name="phone"
+              placeholder="0987654321"
+              pattern="0[0-9]{9,10}"
+              required
+            />
+          </div>
+          <div class="grid-span-full">
+            <label>Điểm đi (Địa chỉ lấy hàng) *</label>
+            <input
+              type="text"
+              id="pickup-addr-moving"
+              name="pickup"
+              placeholder="Nhập địa chỉ chi tiết (gõ tay)"
+              required
+            />
+          </div>
+          <div class="grid-span-full">
+            <label>Điểm đến (Địa chỉ giao hàng) *</label>
+            <input
+              type="text"
+              id="delivery-addr-moving"
+              name="delivery"
+              placeholder="Nhập địa chỉ chi tiết (gõ tay)"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>3. Thông tin khảo sát ban đầu</h3>
+        <div class="form-grid">
+          <div>
+            <label>Số tầng (Đi ➔ Đến)</label>
+            <input
+              type="text"
+              name="moving_floors"
+              placeholder="VD: Tầng 3 ➔ Tầng 1"
+            />
+          </div>
+          <div class="checkbox-stack checkbox-center">
+            <label class="checkbox-inline"
+              ><input type="checkbox" name="moving_elevator" /> Có thang
+              máy</label
+            >
+          </div>
+          <div>
+            <label>Ngày chuyển dự kiến</label>
+            <input type="date" name="moving_date" />
+          </div>
+          <div>
+            <label>Khung giờ ưu tiên</label>
+            <select name="moving_time_slot">
+              <option value="">Chọn khung giờ</option>
+              <option value="morning">Sáng (08:00 - 12:00)</option>
+              <option value="afternoon">Chiều (13:00 - 17:00)</option>
+              <option value="evening">Tối (17:00 - 21:00)</option>
+              <option value="flexible">Linh hoạt theo khảo sát</option>
+            </select>
+          </div>
+        </div>
+
+        <div
+          class="moving-detail detail-panel"
+          data-moving-service="moving_house"
+        >
+          <div class="form-grid">
+            <div class="grid-span-full">
+              <label class="checkbox-inline"
+                ><input type="checkbox" name="house_truck_access" /> Hẻm xe tải
+                vào được?</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="moving-detail detail-panel is-hidden"
+          data-moving-service="moving_office"
+        >
+          <div class="form-grid">
+            <div class="grid-span-full">
+              <label class="checkbox-inline"
+                ><input type="checkbox" name="office_it_move" /> Có di dời hệ
+                thống Server/IT không?</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="moving-detail detail-panel is-hidden"
+          data-moving-service="moving_warehouse"
+        >
+          <div class="form-grid">
+            <div>
+              <label>Tổng khối lượng/Thể tích sơ bộ (nếu có)</label>
+              <input
+                type="text"
+                name="warehouse_volume"
+                placeholder="VD: 5 tấn hoặc 20m³"
+              />
+            </div>
+            <div class="grid-span-full">
+              <label>Mô tả sơ bộ hàng hóa và yêu cầu đặc biệt</label>
+              <textarea
+                name="warehouse_overview"
+                placeholder="VD: Hàng pallet + có máy nặng, cần xe nâng/cẩu..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>4. Thanh toán & Hóa đơn</h3>
+        <div class="form-grid">
+          <div>
+            <label>Phương thức thanh toán</label>
+            <select id="payment_method_moving" name="payment_method">
+              <option value="cod">Thanh toán khi khảo sát/lấy hàng</option>
+              <option value="bank_transfer">Chuyển khoản ngân hàng</option>
+            </select>
+          </div>
+          <div class="checkbox-stack checkbox-center">
+            <label class="checkbox-inline">
+              <input
+                type="checkbox"
+                name="is_corporate"
+                id="is_corporate_checkbox_moving"
+              />
+              Yêu cầu hóa đơn công ty
+            </label>
+          </div>
+          <div
+            id="corporate-fields-moving"
+            class="grid-span-full corporate-fields is-hidden"
+          >
+            <div class="form-grid">
+              <div class="grid-span-full">
+                <label>Tên công ty *</label>
+                <input
+                  type="text"
+                  name="company_name"
+                  placeholder="Nhập tên công ty"
+                />
+              </div>
+              <div>
+                <label>Email công ty *</label>
+                <input
+                  type="email"
+                  name="company_email"
+                  placeholder="Email nhận hóa đơn"
+                />
+              </div>
+              <div>
+                <label>Mã số thuế *</label>
+                <input
+                  type="text"
+                  name="company_tax_code"
+                  placeholder="Nhập mã số thuế"
+                />
+              </div>
+              <div class="grid-span-full">
+                <label>Địa chỉ công ty *</label>
+                <textarea
+                  name="company_address"
+                  placeholder="Nhập địa chỉ công ty"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-span-full">
+            <label>Ghi chú thêm (tùy chọn)</label>
+            <textarea
+              name="note"
+              placeholder="VD: Mô tả loại nhà/kho, vật dụng đặc biệt, yêu cầu khác..."
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" name="package_type" value="other" />
+      <input type="hidden" name="weight" value="0" />
+      <input type="hidden" name="cod_amount" value="0" />
+      <input
+        type="hidden"
+        name="shipping_fee"
+        id="shipping-fee-input-moving"
+        value="0"
+      />
+
+      <div class="moving-price-note">
+        Phí dịch vụ: <strong>Liên hệ báo giá theo khảo sát thực tế</strong>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          onclick="closeBookingModal('moving')"
+          class="btn-secondary"
+        >
+          Hủy
+        </button>
+        <button type="submit" class="btn-primary">Gửi yêu cầu</button>
+      </div>
+    </form>
+  </div>
+</div>

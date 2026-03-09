@@ -1,0 +1,96 @@
+<header class="main-header">
+
+<div class="header-container">
+
+<a href="../index.html" class="logo">
+<img src="assets/images/logo.jpg" alt="logo">
+<span>Chăm Sóc Vườn</span>
+</a>
+
+<nav class="main-nav">
+
+<a href="indexs.html">Trang chủ</a>
+<a href="services.html">Dịch vụ</a>
+<a href="news.html">Tin tức</a>
+<a href="contact.html">Liên hệ</a>
+<a href="terms.html">Điều khoản</a>
+
+</nav>
+
+</div>
+
+</header>
+
+<style>
+
+/* HEADER FIXED */
+
+.main-header{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+background:#165c2f;
+padding:18px 80px;
+z-index:9999;
+box-shadow:0 3px 10px rgba(0,0,0,0.2);
+}
+
+.header-container{
+max-width:1400px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:12px;
+color:white;
+font-size:26px;
+font-weight:700;
+text-decoration:none;
+}
+
+.logo img{
+width:50px;
+height:50px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.main-nav{
+display:flex;
+gap:40px;
+}
+
+.main-nav a{
+text-decoration:none;
+color:white;
+font-size:18px;
+font-weight:600;
+position:relative;
+padding-bottom:6px;
+}
+
+.main-nav a:hover{
+color:#ffd54f;
+}
+
+.main-nav a.active{
+color:#ffd54f;
+}
+
+.main-nav a.active::after{
+content:"";
+position:absolute;
+left:0;
+bottom:0;
+width:100%;
+height:3px;
+background:#ffd54f;
+}
+
+</style>

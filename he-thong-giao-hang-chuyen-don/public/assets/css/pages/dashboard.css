@@ -1,0 +1,71 @@
+/* ===== DASHBOARD PAGES (Customer/Shipper) ===== */
+
+/* Price Preview Box */
+#price-preview {
+  margin-top: 20px;
+  padding: 15px;
+  background: #e8f4f8;
+  border-left: 4px solid #0a2a66;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* Order Detail Info Rows */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 10px;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.info-val {
+  font-weight: 600;
+  color: #333;
+  text-align: right;
+}
+
+/* Rating Stars */
+.rating-stars {
+  font-size: 24px;
+  color: #ddd;
+  cursor: pointer;
+}
+
+.rating-stars span:hover,
+.rating-stars span.active {
+  color: #ffcc00;
+}
+
+/* Notification List Item (Page) */
+.notification-page-item {
+  display: block;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.2s;
+}
+
+.notification-page-item:hover {
+  background-color: #f8f9fa;
+}
+
+.notification-page-item .message {
+  font-weight: 500;
+}
+
+.notification-page-item .time {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
+}

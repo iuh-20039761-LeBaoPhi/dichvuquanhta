@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Chi tiết dịch vụ</title>
+<link rel="icon " href="assets\images\logo.jpg" type="image/x-icon">
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:#f4f6f9;
+}
+
+/* container */
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:30px 20px;
+}
+
+/* breadcrumb */
+
+.breadcrumb{
+margin-bottom:20px;
+font-size:14px;
+color:#777;
+}
+
+.breadcrumb a{
+text-decoration:none;
+color:#27ae60;
+}
+
+/* banner */
+
+.page-banner{
+height:300px;
+background-size:cover;
+background-position:center;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.page-banner::before{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(
+rgba(0,0,0,0.55),
+rgba(0,0,0,0.35)
+);
+}
+
+.banner-overlay{
+position:relative;
+z-index:2;
+color:white;
+text-align:center;
+}
+
+.banner-overlay h1{
+font-size:40px;
+font-weight:700;
+}
+
+/* service detail */
+
+.service-wrapper{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:40px;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 4px 15px rgba(0,0,0,0.05);
+}
+
+.service-image img{
+width:100%;
+border-radius:10px;
+}
+
+.service-info h1{
+font-size:28px;
+margin-bottom:10px;
+}
+
+.service-description{
+color:#555;
+line-height:1.6;
+margin-bottom:15px;
+}
+
+.service-price{
+font-size:22px;
+color:#27ae60;
+margin-bottom:10px;
+}
+
+.service-area{
+color:#777;
+margin-bottom:20px;
+}
+
+.area-box input{
+padding:10px;
+width:160px;
+border:1px solid #ddd;
+border-radius:6px;
+margin-top:5px;
+}
+
+.total-price{
+font-size:20px;
+color:#e74c3c;
+margin-top:10px;
+}
+
+/* button */
+
+.btn-order{
+margin-top:20px;
+padding:12px 25px;
+background:#27ae60;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-size:16px;
+}
+
+.btn-order:hover{
+background:#219150;
+}
+
+/* related */
+
+.related-section{
+margin-top:60px;
+}
+
+.related-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+}
+
+.related-card{
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+transition:.3s;
+}
+
+.related-card:hover{
+transform:translateY(-6px);
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+.related-card img{
+width:100%;
+height:220px;
+object-fit:cover;
+}
+
+.related-card h4{
+margin:10px;
+}
+
+.related-card p{
+margin:0 10px;
+color:#27ae60;
+font-weight:bold;
+}
+
+.related-card a{
+display:block;
+margin:10px;
+color:#3498db;
+text-decoration:none;
+}
+
+/* modal */
+
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,0.5);
+align-items:center;
+justify-content:center;
+}
+
+.modal-box{
+background:white;
+padding:25px;
+width:420px;
+border-radius:10px;
+}
+
+.modal-box input,
+.modal-box textarea{
+width:100%;
+padding:10px;
+margin:6px 0;
+border:1px solid #ddd;
+border-radius:5px;
+}
+
+.price-box{
+background:#fafafa;
+padding:10px;
+border-radius:6px;
+margin-top:10px;
+}
+
+.total-final{
+font-weight:bold;
+font-size:18px;
+color:#e74c3c;
+}
+
+.success-box{
+display:none;
+background:#eafaf1;
+padding:12px;
+border-radius:6px;
+color:#27ae60;
+text-align:center;
+margin-bottom:10px;
+}
+
+.modal-buttons{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.btn-confirm{
+background:#27ae60;
+color:white;
+border:none;
+padding:10px;
+border-radius:5px;
+cursor:pointer;
+}
+
+.btn-cancel{
+background:#ccc;
+border:none;
+padding:10px;
+border-radius:5px;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<!-- banner -->
+
+<section class="page-banner" id="pageBanner">
+
+<div class="banner-overlay">
+<h1 id="bannerTitle"></h1>
+</div>
+
+</section>
+
+<div class="container">
+
+<div class="breadcrumb">
+<a href="index.html">Trang chủ</a> /
+<a href="services.html">Dịch vụ</a> /
+<span id="breadcrumbName"></span>
+</div>
+
+
+<div class="service-wrapper">
+
+<div class="service-image">
+<img id="serviceImage">
+</div>
+
+<div class="service-info">
+
+<h1 id="serviceName"></h1>
+
+<p class="service-description" id="serviceDescription"></p>
+
+<p class="service-price" id="servicePrice"></p>
+
+<p class="service-area" id="serviceArea"></p>
+
+<div class="area-box">
+
+<label>Nhập diện tích (m²)</label><br>
+<input type="number" id="areaInput" placeholder="VD: 50">
+
+<p class="total-price" id="totalPrice"></p>
+
+</div>
+
+<button class="btn-order" id="orderBtn">
+Đặt dịch vụ
+</button>
+
+</div>
+
+</div>
+
+
+<div class="related-section">
+
+<h2>Dịch vụ liên quan</h2>
+
+<div class="related-grid" id="relatedList"></div>
+
+</div>
+
+</div>
+
+<div id="footer"></div>
+
+<!-- modal -->
+
+<div class="modal" id="orderModal">
+
+<div class="modal-box">
+
+<h3>Xác nhận đặt dịch vụ</h3>
+
+<div class="success-box" id="successBox">
+Đặt lịch thành công 🌿
+</div>
+
+<form id="orderForm">
+
+<input type="text" id="customerName" placeholder="Họ và tên" required>
+
+<input type="tel" id="customerPhone" placeholder="Số điện thoại" required>
+
+<input type="email" id="customerEmail" placeholder="Email" required>
+
+<input type="date" id="date" required>
+
+<input type="text" id="address" placeholder="Địa chỉ" required>
+
+<textarea id="note" placeholder="Ghi chú"></textarea>
+
+<div class="price-box">
+
+<p id="serviceTotal"></p>
+<p id="commission"></p>
+<p class="total-final" id="finalPrice"></p>
+
+</div>
+
+<div class="modal-buttons">
+
+<button class="btn-confirm" type="submit">
+Xác nhận đặt lịch
+</button>
+
+<button type="button" class="btn-cancel" onclick="closeModal()">
+Hủy
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =============================
+LOAD HEADER + FOOTER
+============================= */
+
+function loadComponent(id,file){
+fetch(file)
+.then(res=>res.text())
+.then(data=>{
+document.getElementById(id).innerHTML=data
+})
+}
+
+loadComponent("header","header.html")
+loadComponent("footer","footer.html")
+
+
+/* =============================
+LOAD SERVICE DATA
+============================= */
+
+let services=[]
+let serviceData=null
+
+const params=new URLSearchParams(window.location.search)
+const serviceId=parseInt(params.get("id"))
+
+fetch("services.json")
+.then(res=>res.json())
+.then(data=>{
+
+services=data.services
+
+serviceData=services.find(s=>s.id===serviceId)
+
+if(!serviceData){
+alert("Dịch vụ không tồn tại")
+window.location="services.html"
+return
+}
+
+renderService()
+renderRelated()
+
+})
+
+
+/* =============================
+HIỂN THỊ DỊCH VỤ
+============================= */
+
+function renderService(){
+
+serviceName.textContent=serviceData.name
+breadcrumbName.textContent=serviceData.name
+
+serviceDescription.textContent=serviceData.description
+
+serviceImage.src="assets/images/"+serviceData.image
+
+servicePrice.textContent=
+serviceData.price_m2_min.toLocaleString('vi-VN')+" VNĐ / m²"
+
+serviceArea.textContent=
+"Khu vực phục vụ: "+serviceData.service_area
+
+bannerTitle.textContent=serviceData.name
+
+pageBanner.style.backgroundImage=
+"url('assets/images/"+serviceData.image+"')"
+
+}
+
+
+/* =============================
+TÍNH TIỀN THEO DIỆN TÍCH
+============================= */
+
+areaInput.addEventListener("input",function(){
+
+let area=parseFloat(this.value)
+
+if(!area || area<=0){
+totalPrice.textContent=""
+return
+}
+
+let total=area*serviceData.price_m2_min
+let commissionValue=total*0.1
+let final=total+commissionValue
+
+totalPrice.textContent=
+"Tổng dự kiến: "+total.toLocaleString('vi-VN')+" VNĐ"
+
+serviceTotal.textContent=
+"Tổng tiền dịch vụ: "+total.toLocaleString('vi-VN')+" VNĐ"
+
+commission.textContent=
+"Hoa hồng nền tảng (10%): "+commissionValue.toLocaleString('vi-VN')+" VNĐ"
+
+finalPrice.textContent=
+"Tổng thanh toán: "+final.toLocaleString('vi-VN')+" VNĐ"
+
+})
+
+
+/* =============================
+MỞ MODAL
+============================= */
+
+orderBtn.onclick=()=>{
+
+let area=parseFloat(areaInput.value)
+
+if(!area || area<=0){
+alert("Vui lòng nhập diện tích trước khi đặt dịch vụ")
+return
+}
+
+orderModal.style.display="flex"
+
+}
+
+
+/* =============================
+ĐÓNG MODAL
+============================= */
+
+function closeModal(){
+orderModal.style.display="none"
+}
+
+/* click ra ngoài đóng */
+
+window.onclick=function(e){
+if(e.target==orderModal){
+closeModal()
+}
+}
+
+
+/* =============================
+LƯU ĐƠN HÀNG
+============================= */
+
+orderForm.addEventListener("submit",function(e){
+
+e.preventDefault()
+
+let area = areaInput.value.trim()
+let name = customerName.value.trim()
+let phone = customerPhone.value.trim()
+let email = customerEmail.value.trim()
+let dateValue = date.value
+let addressValue = address.value.trim()
+
+if(!area || !name || !phone || !email || !dateValue || !addressValue){
+
+alert("Vui lòng điền đầy đủ thông tin trước khi đặt dịch vụ!")
+return
+}
+
+/* kiểm tra diện tích */
+
+if(area<=0){
+alert("Diện tích không hợp lệ!")
+return
+}
+
+/* kiểm tra số điện thoại */
+
+let phoneRegex=/^[0-9]{9,11}$/
+
+if(!phoneRegex.test(phone)){
+alert("Số điện thoại không hợp lệ!")
+return
+}
+
+/* kiểm tra email */
+
+let emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+if(!emailRegex.test(email)){
+alert("Email không hợp lệ!")
+return
+}
+
+
+/* tính tiền */
+
+let total=area*serviceData.price_m2_min
+let commissionValue=total*0.1
+let final=total+commissionValue
+
+
+/* tạo đơn */
+
+let order={
+
+service_id:serviceData.id,
+service_name:serviceData.name,
+
+customer_name:name,
+phone:phone,
+email:email,
+
+area:area,
+service_price:total,
+commission:commissionValue,
+final_price:final,
+
+date:dateValue,
+address:addressValue,
+note:note.value,
+
+created_at:new Date().toISOString()
+
+}
+
+
+/* lưu localStorage */
+
+let orders=JSON.parse(localStorage.getItem("orders"))||[]
+
+orders.push(order)
+
+localStorage.setItem("orders",JSON.stringify(orders))
+
+
+/* hiển thị thành công */
+
+successBox.style.display="block"
+
+orderForm.reset()
+
+setTimeout(()=>{
+
+closeModal()
+successBox.style.display="none"
+
+},2000)
+
+})
+
+
+/* =============================
+DỊCH VỤ LIÊN QUAN
+============================= */
+
+function renderRelated(){
+
+if(!serviceData.related_services) return
+
+serviceData.related_services.forEach(id=>{
+
+let s=services.find(x=>x.id===id)
+
+if(!s) return
+
+let card=document.createElement("div")
+
+card.className="related-card"
+
+card.innerHTML=`
+
+<img src="assets/images/${s.image}">
+
+<h4>${s.name}</h4>
+
+<p>${s.price_m2_min.toLocaleString('vi-VN')} VNĐ / m²</p>
+
+<a href="service_detail.html?id=${s.id}">
+Xem chi tiết
+</a>
+
+`
+
+relatedList.appendChild(card)
+
+})
+
+}
+
+</script>
+
+</body>
+</html>

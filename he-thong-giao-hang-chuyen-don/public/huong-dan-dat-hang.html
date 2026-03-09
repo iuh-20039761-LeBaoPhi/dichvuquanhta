@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hướng dẫn sử dụng hệ thống | FastGo</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="public/assets/images/favicon.ico"
+    />
+    <link rel="stylesheet" href="assets/css/guide.css" />
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <header>
+      <div class="container">
+        <div class="logo">
+          <a href="../../index.html">FastGo</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- INTRO -->
+      <div style="margin-top: 40px; text-align: center">
+        <h1 style="color: var(--primary)">Tài liệu Hướng dẫn Sử dụng FastGo</h1>
+        <p style="color: #666; max-width: 600px; margin: 10px auto">
+          Hướng dẫn chi tiết quy trình vận hành cho Khách hàng, Tài xế và Quản
+          trị viên.
+        </p>
+
+        <!-- Table of Contents -->
+        <div
+          class="toc-links"
+          style="
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            display: inline-block;
+          "
+        >
+          <strong>Mục lục nhanh:</strong><br />
+          <a href="#customer-guide">1. Dành cho Khách hàng</a>
+          <a href="#shipper-guide">2. Dành cho Tài xế (Shipper)</a>
+          <a href="#admin-guide">3. Dành cho Admin</a>
+        </div>
+      </div>
+
+      <!-- ========================================= -->
+      <!-- PHẦN 1: KHÁCH HÀNG (CUSTOMER)             -->
+      <!-- ========================================= -->
+      <section id="customer-guide">
+        <span class="role-badge badge-customer">Khách hàng</span>
+        <h2 class="section-title">I. Hướng dẫn cho Khách hàng</h2>
+        <p>
+          Bạn có thể mở form đặt đơn ngay từ trang chủ. Khi bấm xác nhận
+          <strong>Đặt lịch</strong>, hệ thống sẽ yêu cầu đăng nhập/đăng ký nếu
+          bạn chưa có phiên đăng nhập.
+        </p>
+
+        <div class="timeline" style="margin-top: 30px">
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>Bước 1: Tạo tài khoản / Đăng nhập</h3>
+              <p>
+                Từ trang chủ, bạn có thể mở form đặt đơn trước. Nếu chưa đăng
+                nhập, hãy chọn <strong>Đăng ký</strong> hoặc
+                <strong>Đăng nhập</strong> tại thông báo xác thực.
+              </p>
+              <div class="screenshot-placeholder">
+                <img
+                  src="assets/images/step1-click-register.png"
+                  alt="Hướng dẫn click Đăng ký FastGo"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>Bước 2: Điền thông tin tài khoản</h3>
+              <ul class="field-list">
+                <li>
+                  <strong>Vai trò:</strong> Chọn
+                  <strong>"Khách hàng (Gửi hàng)"</strong> trong danh sách tùy
+                  chọn.
+                </li>
+                <li>
+                  <strong>Tên đăng nhập:</strong> 3-20 ký tự, viết liền không
+                  dấu.
+                </li>
+                <li>
+                  <strong>Mật khẩu:</strong> Tối thiểu 8 ký tự, gồm chữ hoa,
+                  thường, số và ký tự đặc biệt.
+                </li>
+                <li>
+                  <strong>Thông tin:</strong> SĐT và Email phải chưa từng được
+                  đăng ký trước đó.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>Bước 3: Hoàn tất & quay lại đặt đơn</h3>
+              <p>
+                Sau khi đăng nhập thành công, hệ thống quay về trang trước đó và
+                có thể mở lại form đặt đơn để bạn tiếp tục thao tác.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <h3
+          style="
+            margin: 30px 0 20px 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+          "
+        >
+          Quy trình Đặt hàng & Theo dõi
+        </h3>
+
+        <div class="step-grid">
+          <!-- Bước 1 -->
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Mở form & xác thực</h3>
+            <p>
+              Bạn có thể mở form đặt hàng ngay cả khi chưa đăng nhập. Chỉ khi
+              bấm <strong>Đặt lịch</strong>, hệ thống mới yêu cầu đăng nhập để
+              xác nhận đơn.
+            </p>
+          </div>
+
+          <!-- Bước 2 -->
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Địa chỉ chi tiết</h3>
+            <p>
+              Nhập đầy đủ điểm lấy và điểm giao. Với đơn quốc tế, chọn thêm
+              <strong>quốc gia nhận</strong> và
+              <strong>tỉnh/thành phố nhận</strong>.
+            </p>
+            <div class="alert-box">
+              ⚠️ <strong>Lưu ý:</strong> Ghi đầy đủ số nhà, đường, phường, quận
+              để nhân viên có thể liên hệ và báo giá chính xác.
+            </div>
+            <div class="screenshot-placeholder">
+              <img
+                src="assets/images/step2-address-input.png"
+                alt="Nhập địa chỉ"
+              />
+            </div>
+          </div>
+
+          <!-- Bước 3 -->
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Thông tin gói hàng</h3>
+            <p>
+              Chọn gói dịch vụ, loại hàng, khối lượng/kích thước, COD (nội địa)
+              và hình thức thanh toán.
+            </p>
+            <div
+              class="alert-box"
+              style="
+                background-color: #e2e3ff;
+                color: #0a2a66;
+                border-left-color: #0a2a66;
+              "
+            >
+              ⚡ <strong>Phí dự kiến cập nhật liên tục:</strong> Khi thay đổi
+              địa chỉ, dịch vụ, cân nặng, kích thước, COD hoặc quốc gia nhận, hệ
+              thống sẽ tự động tính lại ngay.
+            </div>
+            <div
+              class="alert-box"
+              style="
+                background-color: #e2e3ff;
+                color: #0a2a66;
+                border-left-color: #0a2a66;
+              "
+            >
+              📝 <strong>Hóa đơn đỏ:</strong> Tích chọn "Yêu cầu xuất hóa đơn"
+              nếu bạn là khách hàng doanh nghiệp.
+            </div>
+          </div>
+
+          <!-- Bước 4 (Mới) -->
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <h3>Theo dõi & Đánh giá</h3>
+            <p>
+              Sau khi đặt, bạn có thể theo dõi hành trình đơn hàng trong
+              Dashboard. Khi đơn hoàn tất, đừng quên
+              <strong>Đánh giá 5 sao</strong> cho shipper nhé!
+            </p>
+          </div>
+        </div>
+
+        <h3
+          style="
+            margin: 40px 0 20px 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+          "
+        >
+          🚚 Quy trình Đặt dịch vụ Chuyển dọn (Nhà/Văn phòng/Kho bãi)
+        </h3>
+        <p style="text-align: center; max-width: 700px; margin: 0 auto 20px">
+          Đối với các dịch vụ quy mô lớn như chuyển nhà, chuyển văn phòng và
+          chuyển kho bãi, quy trình sẽ là
+          <strong>"Gửi yêu cầu báo giá"</strong> để nhân viên khảo sát và liên
+          hệ lại.
+        </p>
+
+        <div class="step-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Chọn loại dịch vụ</h3>
+            <p>Chọn "Chuyển nhà", "Chuyển văn phòng" hoặc "Chuyển kho bãi".</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Cung cấp thông tin chi tiết</h3>
+            <p>
+              Cung cấp các thông tin quan trọng như: Số tầng, có thang máy
+              không, ngày giờ dự kiến, các vật dụng đặc biệt (piano, két
+              sắt...).
+            </p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Chờ xác nhận</h3>
+            <p>
+              Nhân viên FastGo sẽ gọi lại cho bạn để tư vấn, khảo sát (nếu cần)
+              và gửi báo giá chính thức theo thông tin thực tế.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================= -->
+      <!-- PHẦN 2: TÀI XẾ (SHIPPER)                  -->
+      <!-- ========================================= -->
+      <section id="shipper-guide">
+        <span class="role-badge badge-shipper">Tài xế (Shipper)</span>
+        <h2 class="section-title">II. Hướng dẫn cho Tài xế</h2>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>1. Đăng ký & Chờ duyệt</h3>
+              <p>
+                Quy trình đăng ký tương tự như Khách hàng. Tại bước điền thông
+                tin, bạn hãy chọn vai trò là
+                <strong>"Tài xế (Nhận đơn)"</strong>.
+              </p>
+              <p style="margin-top: 5px">
+                <em
+                  >Lưu ý: Tài khoản Shipper cần được Admin phê duyệt trước khi
+                  có thể đăng nhập nhận đơn.</em
+                >
+              </p>
+              <div class="screenshot-placeholder">
+                <img
+                  src="assets/images/shipper-register.png"
+                  alt="Ảnh màn hình: Chọn vai trò Tài xế khi đăng ký"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>2. Nhận đơn hàng (Dashboard)</h3>
+              <p>
+                Truy cập <strong>Dashboard Shipper</strong>. Tại đây bạn sẽ thấy
+                danh sách các đơn hàng được Admin phân công.
+              </p>
+              <ul class="field-list">
+                <li><strong>Chờ lấy hàng:</strong> Đơn mới cần đi lấy.</li>
+                <li>
+                  <strong>Đang giao:</strong> Đơn bạn đang giữ và đi giao.
+                </li>
+                <li><strong>Hoàn tất:</strong> Lịch sử đơn đã giao xong.</li>
+              </ul>
+              <div class="screenshot-placeholder">
+                <img
+                  src="assets/images/shipper-dashboard.png"
+                  alt="Ảnh màn hình: Giao diện Dashboard Shipper với danh sách đơn"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>3. Quy trình Giao hàng & Cập nhật trạng thái</h3>
+              <p>
+                Bấm vào nút <strong>"Xem chi tiết"</strong> của một đơn hàng để
+                thực hiện quy trình:
+              </p>
+              <ol style="margin-left: 20px; margin-top: 10px">
+                <li>
+                  Bấm <strong>"Đã lấy hàng"</strong> khi nhận hàng từ người gửi.
+                </li>
+                <li>
+                  Bấm <strong>"Đang giao hàng"</strong> khi bắt đầu di chuyển
+                  đến người nhận.
+                </li>
+                <li>
+                  Nếu giao thất bại, chọn <strong>"Hủy đơn"</strong> và nhập lý
+                  do.
+                </li>
+              </ol>
+              <div class="screenshot-placeholder">
+                <img
+                  src="assets/images/shipper-process.png"
+                  alt="Ảnh màn hình: Trang chi tiết đơn hàng của Shipper với các nút trạng thái"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>4. Xác thực giao hàng (POD)</h3>
+              <p>Đây là bước bắt buộc. Khi giao thành công, bạn phải:</p>
+              <ul class="field-list">
+                <li>
+                  Chụp ảnh gói hàng tại địa điểm giao (hoặc ảnh người nhận cầm
+                  hàng).
+                </li>
+                <li>
+                  Tải ảnh lên hệ thống tại mục
+                  <strong>"Bằng chứng giao hàng"</strong>.
+                </li>
+                <li>Bấm <strong>"Hoàn tất đơn hàng"</strong>.</li>
+              </ul>
+              <div class="screenshot-placeholder">
+                <img
+                  src="assets/images/shipper-pod.png"
+                  alt="Ảnh màn hình: Form upload ảnh POD (Proof of Delivery)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="back-to-top"><a href="#">⬆ Về đầu trang</a></div>
+      </section>
+
+      <!-- ========================================= -->
+      <!-- PHẦN 3: QUẢN TRỊ VIÊN (ADMIN)             -->
+      <!-- ========================================= -->
+      <section id="admin-guide">
+        <span class="role-badge badge-admin">Quản trị viên (Admin)</span>
+        <h2 class="section-title">III. Hướng dẫn cho Admin</h2>
+
+        <div class="step-grid">
+          <div class="step-card">
+            <h3>1. Tổng quan (Dashboard)</h3>
+            <p>
+              Xem thống kê doanh thu, số lượng đơn hàng trong ngày/tuần và biểu
+              đồ hiệu suất.
+            </p>
+            <div class="screenshot-placeholder">
+              <img
+                src="assets/images/admin-dashboard.png"
+                alt="Ảnh màn hình: Admin Dashboard với biểu đồ thống kê"
+              />
+            </div>
+          </div>
+
+          <div class="step-card">
+            <h3>2. Quản lý Đơn hàng</h3>
+            <p>Xem tất cả đơn hàng. Admin có quyền:</p>
+            <ul>
+              <li>
+                <strong>Phân công:</strong> Chọn Shipper cho đơn hàng mới.
+              </li>
+              <li>
+                <strong>Can thiệp:</strong> Hủy đơn hoặc cập nhật trạng thái
+                thay cho Shipper nếu có sự cố.
+              </li>
+              <li><strong>In ấn:</strong> In phiếu gửi hàng.</li>
+            </ul>
+            <div class="screenshot-placeholder">
+              <img
+                src="assets/images/admin-orders.png"
+                alt="Ảnh màn hình: Danh sách quản lý đơn hàng của Admin"
+              />
+            </div>
+          </div>
+
+          <div class="step-card">
+            <h3>3. Quản lý Người dùng</h3>
+            <p>
+              Duyệt tài khoản Shipper mới, khóa tài khoản vi phạm hoặc reset mật
+              khẩu cho người dùng.
+            </p>
+            <div class="screenshot-placeholder">
+              <img
+                src="assets/images/admin-users.png"
+                alt="Ảnh màn hình: Trang quản lý Users"
+              />
+            </div>
+          </div>
+
+          <div class="step-card">
+            <h3>4. Cấu hình Hệ thống</h3>
+            <p>
+              Cài đặt thông tin ngân hàng (để tạo mã QR), quản lý bảng giá dịch
+              vụ và các nội dung trang chủ (FAQ, Testimonials).
+            </p>
+            <div class="screenshot-placeholder">
+              <img
+                src="assets/images/admin-settings.png"
+                alt="Ảnh màn hình: Trang cài đặt hệ thống"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="back-to-top"><a href="#">⬆ Về đầu trang</a></div>
+      </section>
+
+      <!-- PHẦN 3: TRA CỨU & BẢNG GIÁ -->
+      <section id="tracking-pricing">
+        <h2 class="section-title">IV. Tra cứu & Bảng giá</h2>
+
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+          "
+        >
+          <!-- Tra cứu -->
+          <div>
+            <h3>🔍 Tra cứu hành trình</h3>
+            <p>
+              Nhập mã đơn hàng (VD: <strong>FAST-XXXXXX</strong>) vào ô tìm kiếm
+              để xem vị trí đơn hàng.
+            </p>
+            <div class="screenshot-placeholder">
+              <img
+                src="assets/images/tracking-guide.png"
+                alt="Tra cứu vận đơn"
+              />
+            </div>
+          </div>
+
+          <!-- Bảng giá -->
+          <div>
+            <h3>💰 Cách xem giá chính xác</h3>
+            <ul class="field-list">
+              <li>
+                Dùng mục <strong>Tự tính cước phí vận chuyển</strong> tại trang
+                chủ để xem giá theo tuyến nội địa hoặc quốc tế.
+              </li>
+              <li>
+                Danh sách <strong>tỉnh/thành, quận/huyện, quốc gia</strong> đã
+                được đồng bộ một nguồn dữ liệu để tránh trùng/lệch tên.
+              </li>
+              <li>
+                Giá cuối cùng phụ thuộc gói dịch vụ, loại hàng, khối lượng tính
+                cước, kích thước, COD và khai giá bảo hiểm.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 4: FAQ -->
+      <section id="faq">
+        <h2 class="section-title">V. Hỏi đáp (FAQ)</h2>
+        <div style="display: grid; gap: 20px">
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
+            <h3
+              style="
+                color: var(--primary);
+                font-size: 18px;
+                margin-bottom: 10px;
+              "
+            >
+              Shipper đến lấy hàng trong bao lâu?
+            </h3>
+            <p>Thường từ 15 - 45 phút đối với đơn nội thành.</p>
+          </div>
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
+            <h3
+              style="
+                color: var(--primary);
+                font-size: 18px;
+                margin-bottom: 10px;
+              "
+            >
+              Tôi có thể hủy đơn không?
+            </h3>
+            <p>Có, bạn có thể hủy khi đơn ở trạng thái "Chờ xử lý".</p>
+          </div>
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
+            <h3
+              style="
+                color: var(--primary);
+                font-size: 18px;
+                margin-bottom: 10px;
+              "
+            >
+              Làm sao để xuất hóa đơn đỏ (VAT)?
+            </h3>
+            <p>
+              Tại bước tạo đơn, hãy tích chọn ô
+              <strong>"Yêu cầu xuất hóa đơn công ty"</strong> và điền mã số
+              thuế.
+            </p>
+          </div>
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
+            <h3
+              style="
+                color: var(--primary);
+                font-size: 18px;
+                margin-bottom: 10px;
+              "
+            >
+              Tôi có thể lưu địa chỉ giao hàng không?
+            </h3>
+            <p>
+              Có. Hệ thống tự động lưu các địa chỉ bạn đã dùng vào
+              <strong>Sổ địa chỉ</strong> để chọn nhanh cho lần sau.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer
+      style="
+        background: var(--primary);
+        color: white;
+        text-align: center;
+        padding: 30px 20px;
+        margin-top: 40px;
+      "
+    >
+      <div class="container">
+        <h3>FastGo Shipper Service</h3>
+        <p style="opacity: 0.8; font-size: 14px; margin: 10px 0">
+          Dịch vụ giao hàng nhanh chóng - An toàn - Tiện lợi
+        </p>
+        <p style="font-size: 13px">&copy; 2026 FastGo. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>

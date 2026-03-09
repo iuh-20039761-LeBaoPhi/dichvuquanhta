@@ -1,0 +1,1378 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hướng Dẫn Sử Dụng Website Giặt Ủi</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+
+    <style>
+      /* Custom Styles */
+      :root {
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+          sans-serif;
+        scroll-behavior: smooth;
+      }
+
+      /* Navigation */
+      .navbar {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background: var(--gradient-primary) !important;
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.2rem;
+      }
+
+      /* Header */
+      .guide-header {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 80px 0;
+      }
+
+      /* Quick Links */
+      .quick-link-card {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: all 0.3s ease;
+      }
+
+      .quick-link-card:hover .card {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+      }
+
+      .quick-link-card i {
+        font-size: 2rem;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: sticky;
+        top: 80px;
+      }
+
+      .sidebar .list-group-item {
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar .list-group-item:hover {
+        background-color: #f8f9fa;
+        border-left-color: var(--primary-color);
+        padding-left: 1.5rem;
+      }
+
+      .sidebar .list-group-item.active {
+        border-left-color: var(--primary-color);
+        background-color: #e7f3ff;
+        color: var(--primary-color);
+      }
+
+      /* Step by Step Guide */
+      .step-by-step {
+        position: relative;
+      }
+
+      .step-item {
+        display: flex;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+
+      .step-item:not(:last-child)::before {
+        content: "";
+        position: absolute;
+        left: 24px;
+        top: 50px;
+        width: 2px;
+        height: calc(100% - 30px);
+        background: linear-gradient(
+          to bottom,
+          var(--primary-color) 0%,
+          #6c757d 100%
+        );
+      }
+
+      .step-number {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.25rem;
+        margin-right: 1.5rem;
+        box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+        z-index: 1;
+      }
+
+      .step-content h5 {
+        color: #212529;
+        margin-bottom: 0.5rem;
+      }
+
+      .step-content p,
+      .step-content ul {
+        color: #6c757d;
+      }
+
+      /* Timeline */
+      .timeline {
+        position: relative;
+        padding-left: 50px;
+      }
+
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+      }
+
+      .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+      }
+
+      .timeline-badge {
+        position: absolute;
+        left: -38px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+
+      .timeline-content {
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 3px solid #0d6efd;
+      }
+
+      .timeline-content h6 {
+        margin-bottom: 0.5rem;
+        color: #212529;
+      }
+
+      /* Accordion */
+      .accordion-button:not(.collapsed) {
+        background-color: #e7f3ff;
+        color: var(--primary-color);
+      }
+
+      .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0, 0, 0, 0.125);
+      }
+
+      .accordion-body {
+        background: #f8f9fa;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background: var(--gradient-primary);
+        border: none;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-color) 0%,
+          var(--primary-color) 100%
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-outline-primary {
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+      }
+
+      .btn-outline-primary:hover {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+      }
+
+      /* Back to Top Button */
+      .btn-floating {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .btn-floating.show {
+        display: flex;
+      }
+
+      .btn-floating:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Cards */
+      .card {
+        transition: all 0.3s ease;
+      }
+
+      /* Section Spacing */
+      section {
+        scroll-margin-top: 80px;
+      }
+
+      /* Responsive */
+      @media (max-width: 991px) {
+        .sidebar {
+          position: static !important;
+          margin-bottom: 2rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .guide-header {
+          padding: 40px 0;
+        }
+
+        .step-item {
+          flex-direction: column;
+        }
+
+        .step-number {
+          margin-bottom: 1rem;
+        }
+
+        .step-item:not(:last-child)::before {
+          display: none;
+        }
+
+        .timeline {
+          padding-left: 0;
+        }
+
+        .timeline::before {
+          display: none;
+        }
+
+        .timeline-badge {
+          position: static;
+          margin-bottom: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container">
+        <a class="navbar-brand" href="#home">
+          <i class="fas fa-book me-2"></i>
+          Hướng Dẫn Sử Dụng Website Giặt Ủi
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#getting-started">Tổng quan</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#features">Tính năng</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#database">Database</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#setting">Cài đặt</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="guide-header">
+      <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">
+          Hướng Dẫn Cài Đặt, Cấu Hình Và Sử Dụng
+        </h1>
+        <p class="lead text-muted mb-4">
+          Tài liệu chi tiết giúp bạn sử dụng website đặt dịch vụ giặt ủi trực
+          tuyến
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+          <div class="sidebar">
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">Mục Lục</h6>
+              </div>
+              <div class="list-group list-group-flush">
+                <a
+                  href="#getting-started"
+                  class="list-group-item list-group-item-action"
+                  >Tổng Quan Hệ Thống</a
+                >
+                <a
+                  href="#features"
+                  class="list-group-item list-group-item-action"
+                  >Các Tính Năng Chính</a
+                >
+                <a
+                  href="#database"
+                  class="list-group-item list-group-item-action"
+                  >Cấu Trúc Database</a
+                >
+                <a
+                  href="#setting"
+                  class="list-group-item list-group-item-action"
+                  >Hướng Dẫn Cài Đặt</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="col-lg-9">
+          <section id="getting-started" class="mb-5">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                  <i class="fas fa-home text-primary me-3 fa-2x"></i>
+                  <h2 class="mb-0">Tổng Quan Hệ Thống</h2>
+                </div>
+                <p class="lead">
+                  Giặt Ủi Nhanh là một website dịch vụ giặt ủi chuyên nghiệp,
+                  cung cấp các dich vụ như: giặt sấy nhanh; giặt ủi lấy liền;
+                  giặt hấp giao tân nơi; giặt hấp áo vest, váy cưới; giặt khăn
+                  khách sạn, nhà hàng, Spa; vệ sinh giày, giặt giày cao cấp và
+                  nhận đặt lịch tư vấn trực tuyến 24/7.
+                </p>
+
+                <div class="alert alert-info" role="alert">
+                  <i class="fas fa-info-circle me-2"></i>
+                  <strong>Lưu ý:</strong> Hệ thống được xây dựng với
+                  PHP,HTML,CSS, JS, MySQL, Bootstrap 5, XAMPP cung cấp giao diện
+                  thân thiện và chức năng quản lý thông tin đặt lịch.
+                </div>
+
+                <h4 class="mt-4 mb-3">Yêu Cầu Hệ Thống</h4>
+                <ul class="list-unstyled">
+                  <li class="mb-2">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    Phần mềm máy chủ: <b>XAMPP</b> (khuyến nghị)
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    PHP 7.4 trở lên (đã tích hợp sẵn trong XAMPP)
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    MySQL 5.7 trở lên / MySQL 8.0 (XAMPP)
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    Apache Web Server (có sẵn trong XAMPP)
+                  </li>
+                </ul>
+                <img
+                  src="img/Screenshot 2026-02-02 172032.png"
+                  class="img-fluid rounded"
+                  alt=""
+                />
+              </div>
+            </div>
+          </section>
+
+          <section id="features" class="mb-5">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                  <i class="fas fa-star text-primary me-3 fa-2x"></i>
+                  <h2 class="mb-0">Các Tính Năng Chính</h2>
+                </div>
+
+                <div id="register" class="mb-5">
+                  <h4 class="mb-3">1. Trang Khách hàng</h4>
+                  <div class="step-by-step">
+                    <div class="step-item">
+                      <div class="step-number">1</div>
+                      <div class="step-content">
+                        <h5>
+                          Trang Chủ (Khách hàng):
+                          <a href="http://localhost/Giat-Ui-Nhanh/"
+                            >http://localhost/Giat-Ui-Nhanh/</a
+                          >
+                        </h5>
+                        <p>
+                          Trang chủ hiển thị thông tin về công ty, giới thiệu về
+                          công ty, các dịch vụ chính, đặt dịch vụ về Giặt Ủi
+                          Nhanh. Khách hàng có thể dễ dàng điều hướng đến các
+                          phần khác của website.
+                        </p>
+                        <!-- Carousel -->
+                        <div
+                          id="demo"
+                          class="carousel slide carousel-dark slide"
+                          data-bs-ride="carousel"
+                        >
+                          <!-- Indicators/dots -->
+                          <div class="carousel-indicators">
+                            <button
+                              type="button"
+                              data-bs-target="#demo"
+                              data-bs-slide-to="0"
+                              class="active"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#demo"
+                              data-bs-slide-to="1"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#demo"
+                              data-bs-slide-to="2"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#demo"
+                              data-bs-slide-to="3"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#demo"
+                              data-bs-slide-to="4"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#demo"
+                              data-bs-slide-to="5"
+                            ></button>
+                          </div>
+
+                          <!-- The slideshow/carousel -->
+                          <div class="carousel-inner">
+                            <div class="carousel-item active">
+                              <img
+                                src="img/trangchu1.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/trangchu2.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/trangchu3.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/trangchu4.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/trangchu5.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/trangchu6.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                            </div>
+                          </div>
+
+                          <!-- Left and right controls/icons -->
+                          <button
+                            class="carousel-control-prev"
+                            type="button"
+                            data-bs-target="#demo"
+                            data-bs-slide="prev"
+                          >
+                            <span class="carousel-control-prev-icon"></span>
+                          </button>
+                          <button
+                            class="carousel-control-next"
+                            type="button"
+                            data-bs-target="#demo"
+                            data-bs-slide="next"
+                          >
+                            <span class="carousel-control-next-icon"></span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="step-item">
+                      <div class="step-number">2</div>
+                      <div class="step-content">
+                        <h5>Thông tin Các Dịch Vụ</h5>
+                        <!-- Carousel -->
+                        <div
+                          id="bookingService"
+                          class="carousel slide carousel-dark slide"
+                          data-bs-ride="carousel"
+                        >
+                          <!-- Indicators/dots -->
+                          <div class="carousel-indicators">
+                            <button
+                              type="button"
+                              data-bs-target="#bookingService"
+                              data-bs-slide-to="0"
+                              class="active"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#bookingService"
+                              data-bs-slide-to="1"
+                            ></button>
+                          </div>
+
+                          <!-- The slideshow/carousel -->
+                          <div class="carousel-inner">
+                            <div class="carousel-item active">
+                              <img
+                                src="img/dichvu1.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/dichvu2.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                            </div>
+                          </div>
+
+                          <!-- Left and right controls/icons -->
+                          <button
+                            class="carousel-control-prev"
+                            type="button"
+                            data-bs-target="#bookingService"
+                            data-bs-slide="prev"
+                          >
+                            <span class="carousel-control-prev-icon"></span>
+                          </button>
+                          <button
+                            class="carousel-control-next"
+                            type="button"
+                            data-bs-target="#bookingService"
+                            data-bs-slide="next"
+                          >
+                            <span class="carousel-control-next-icon"></span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="step-item">
+                      <div class="step-number">3</div>
+                      <div class="step-content">
+                        <h5>Hệ Thống Đặt Lịch (Khách hàng)</h5>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <h5 style="padding-bottom: 10px">
+                              <b>Bước 1:</b> Chọn dịch vụ muốn đặt
+                            </h5>
+                            <img
+                              src="img/trangchu3.png"
+                              class="img-fluid rounded"
+                            />
+                          </div>
+                          <div class="col-md-12">
+                            <h5 style="padding-bottom: 10px">
+                              <b>Bước 2:</b> Nhập các thông tin (họ tên, SĐT,
+                              địa chỉ, chọn loại dịch vụ, ghi chú)
+                            </h5>
+                            <img
+                              src="img/datdichvu.png"
+                              class="img-fluid rounded"
+                            />
+                          </div>
+                          <div class="col-md-12">
+                            <h5 style="padding-bottom: 10px">
+                              <b>Bước 3:</b> Hệ thống lưu thông tin vào database
+                            </h5>
+                            <img
+                              src="img/datdichvu2.png"
+                              class="img-fluid rounded"
+                            />
+                          </div>
+                          <div class="col-md-12">
+                            <h5 style="padding-bottom: 10px">
+                              <b>Bước 4:</b> Nhân viên liên hệ khách hàng xác
+                              nhận đặt lịch qua SMS
+                            </h5>
+                            <img
+                              src="img/datdichvu3.png"
+                              class="img-fluid rounded"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-5">
+                  <h4 class="mb-3">2. Trang admin</h4>
+                  <div class="step-by-step">
+                    <div class="step-item">
+                      <div class="step-number">1</div>
+                      <div class="step-content">
+                        <h5>
+                          Trang đăng nhập quản trị:
+                          <a
+                            href="http://localhost/Giat-Ui-Nhanh/?ctrl=page&act=dashboard"
+                            >http://localhost/Giat-Ui-Nhanh/?ctrl=page&act=dashboard</a
+                          >
+                        </h5>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <ol class="ps-3">
+                              <li class="mb-2">
+                                Chuyên dùng cho quản trị viên
+                              </li>
+                              <li class="mb-2">
+                                Tài khoản đặc biệt với role 'admin'
+                              </li>
+                              <li class="mb-2">
+                                Mật khẩu được mã hóa bằng sha01
+                              </li>
+                              <li class="mb-2">Email: admin@gmail.com</li>
+                              <li class="mb-2">Mật khẩu: admin123@</li>
+                            </ol>
+                          </div>
+                          <div class="col-md-12">
+                            <img
+                              src="img/dangnhapadmin.png"
+                              class="img-fluid rounded"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="step-item">
+                      <div class="step-number">2</div>
+                      <div class="step-content">
+                        <h5>Quản Lý Đặt Lịch</h5>
+                        <!-- Carousel -->
+                        <div
+                          id="manageService"
+                          class="carousel slide carousel-dark slide"
+                          data-bs-ride="carousel"
+                        >
+                          <!-- Indicators/dots -->
+                          <div class="carousel-indicators">
+                            <button
+                              type="button"
+                              data-bs-target="#manageService"
+                              data-bs-slide-to="0"
+                              class="active"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#manageService"
+                              data-bs-slide-to="1"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#manageService"
+                              data-bs-slide-to="2"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#manageService"
+                              data-bs-slide-to="3"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#manageService"
+                              data-bs-slide-to="4"
+                            ></button>
+                          </div>
+
+                          <!-- The slideshow/carousel -->
+                          <div class="carousel-inner">
+                            <div class="carousel-item active">
+                              <img
+                                src="img/serviceAdmin1.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                              <div
+                                class="carousel-caption d-none d-md-block bg-dark bg-opacity-50"
+                              >
+                                <h5 class="text-light">
+                                  Danh sách tất cả các đơn đặt
+                                </h5>
+                              </div>
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/serviceAdmin2.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                              <div
+                                class="carousel-caption d-none d-md-block bg-dark bg-opacity-50"
+                              >
+                                <h5 class="text-light">
+                                  Tìm kiếm theo tên, email, số điện thoại, trạng
+                                  thái,...
+                                </h5>
+                              </div>
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/serviceAdmin3.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                              <div
+                                class="carousel-caption d-none d-md-block bg-dark bg-opacity-50"
+                              >
+                                <h5 class="text-light">
+                                  Lọc đơn hàng theo từng cột
+                                </h5>
+                              </div>
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/serviceAdmin4.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                              <div
+                                class="carousel-caption d-none d-md-block bg-dark bg-opacity-50"
+                              >
+                                <h5 class="text-light">
+                                  Chi tiết từng đơn đặt
+                                </h5>
+                              </div>
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/serviceAdmin5.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                              <div
+                                class="carousel-caption d-none d-md-block bg-dark bg-opacity-50"
+                              >
+                                <h5 class="text-light">
+                                  Cập nhật trạng thái đơn đặt
+                                </h5>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Left and right controls/icons -->
+                          <button
+                            class="carousel-control-prev"
+                            type="button"
+                            data-bs-target="#manageService"
+                            data-bs-slide="prev"
+                          >
+                            <span class="carousel-control-prev-icon"></span>
+                          </button>
+                          <button
+                            class="carousel-control-next"
+                            type="button"
+                            data-bs-target="#manageService"
+                            data-bs-slide="next"
+                          >
+                            <span class="carousel-control-next-icon"></span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="step-item">
+                      <div class="step-number">3</div>
+                      <div class="step-content">
+                        <h5>Quản Lý Dịch Vụ</h5>
+                        <!-- Carousel -->
+                        <div
+                          id="listService"
+                          class="carousel slide carousel-dark slide"
+                          data-bs-ride="carousel"
+                        >
+                          <!-- Indicators/dots -->
+                          <div class="carousel-indicators">
+                            <button
+                              type="button"
+                              data-bs-target="#listService"
+                              data-bs-slide-to="0"
+                              class="active"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#listService"
+                              data-bs-slide-to="1"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#listService"
+                              data-bs-slide-to="2"
+                            ></button>
+                            <button
+                              type="button"
+                              data-bs-target="#listService"
+                              data-bs-slide-to="3"
+                            ></button>
+                          </div>
+
+                          <!-- The slideshow/carousel -->
+                          <div class="carousel-inner">
+                            <div class="carousel-item active">
+                              <img
+                                src="img/serviceAdmin6.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                              <div
+                                class="carousel-caption d-none d-md-block bg-dark bg-opacity-50"
+                              >
+                                <h5 class="text-light">
+                                  Danh sách các loại dịch vụ
+                                </h5>
+                              </div>
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/serviceAdmin7.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                              <div
+                                class="carousel-caption d-none d-md-block bg-dark bg-opacity-50"
+                              >
+                                <h5 class="text-light">Thêm dịch vụ</h5>
+                              </div>
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/serviceAdmin8.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                              <div
+                                class="carousel-caption d-none d-md-block bg-dark bg-opacity-50"
+                              >
+                                <h5 class="text-light">Chi tiết dịch vụ</h5>
+                              </div>
+                            </div>
+                            <div class="carousel-item">
+                              <img
+                                src="img/serviceAdmin9.png"
+                                class="d-block"
+                                style="width: 100%"
+                              />
+                              <div
+                                class="carousel-caption d-none d-md-block bg-dark bg-opacity-50"
+                              >
+                                <h5 class="text-light">Cập nhật dịch vụ</h5>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Left and right controls/icons -->
+                          <button
+                            class="carousel-control-prev"
+                            type="button"
+                            data-bs-target="#listService"
+                            data-bs-slide="prev"
+                          >
+                            <span class="carousel-control-prev-icon"></span>
+                          </button>
+                          <button
+                            class="carousel-control-next"
+                            type="button"
+                            data-bs-target="#listService"
+                            data-bs-slide="next"
+                          >
+                            <span class="carousel-control-next-icon"></span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="database" class="mb-5">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                  <i class="fas fa-database text-primary me-3 fa-2x"></i>
+                  <h2 class="mb-0">Cấu Trúc Database</h2>
+                </div>
+
+                <div id="place-order" class="mb-5">
+                  <h4 class="mb-3">1. Bảng User</h4>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead class="table-light">
+                        <tr>
+                          <th colspan="3" class="bg-primary text-light">
+                            <i class="fas fa-users"></i> Bảng users
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-bold">id</td>
+                          <td>int(11)</td>
+                          <td>ID tự tăng, khóa chính</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">user_name</td>
+                          <td>varchar(150)</td>
+                          <td>Tên người dùng</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">user_tel</td>
+                          <td>int(11)</td>
+                          <td>Số điện thoại người dùng</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">user_email</td>
+                          <td>varchar(250)</td>
+                          <td>Email đăng nhập</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">role</td>
+                          <td>enum('admin')</td>
+                          <td>Vai trò</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">user_password</td>
+                          <td>varchar(250)</td>
+                          <td>Mật khẩu</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">user_password</td>
+                          <td>varchar(250)</td>
+                          <td>Mật khẩu</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">created_at</td>
+                          <td>timestamp</td>
+                          <td>Thời gian tạo</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">updated_at</td>
+                          <td>timestamp</td>
+                          <td>Thời gian cập nhật</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <h4 class="mb-3">2. Bảng Service</h4>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead class="table-light">
+                        <tr>
+                          <th colspan="3" class="bg-primary text-light">
+                            <i class="fas fa-bookmark"></i> Bảng services
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-bold">id</td>
+                          <td>int(11)</td>
+                          <td>ID tự tăng, khóa chính</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">service_name</td>
+                          <td>varchar(150)</td>
+                          <td>Tên dịch vụ</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">summary</td>
+                          <td>text</td>
+                          <td>Mô tả ngắn về dịch vụ</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">service_price</td>
+                          <td>double</td>
+                          <td>Giá dịch vụ</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">created_at</td>
+                          <td>timestamp</td>
+                          <td>Thời gian tạo</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">updated_at</td>
+                          <td>timestamp</td>
+                          <td>Thời gian cập nhật</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <h4 class="mb-3">3. Bảng Order</h4>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead class="table-light">
+                        <tr>
+                          <th colspan="3" class="bg-primary text-light">
+                            <i class="fas fa-calendar-alt"></i> Bảng orders
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="fw-bold">id</td>
+                          <td>int(11)</td>
+                          <td>ID tự tăng, khóa chính</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">customer_name</td>
+                          <td>varchar(50)</td>
+                          <td>Tên khách hàng</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">customer_tel</td>
+                          <td>int(11)</td>
+                          <td>Số điện thoại khách hàng</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">customer_address</td>
+                          <td>varchar(150)</td>
+                          <td>Địa chỉ khách hàng</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">service_id</td>
+                          <td>int(11)</td>
+                          <td>ID dịch vụ (khóa ngoại)</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">total_price</td>
+                          <td>double</td>
+                          <td>Tổng tiền đơn hàng</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">note</td>
+                          <td>text</td>
+                          <td>Ghi chú của khách hàng</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">order_status</td>
+                          <td>
+                            enum('Pending','Processing','Completed','Cancel')
+                          </td>
+                          <td>Trạng thái đơn hàng</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">transaction_status</td>
+                          <td>enum('UnPaid','Paid')</td>
+                          <td>Trạng thái thanh toán</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">created_at</td>
+                          <td>timestamp</td>
+                          <td>Thời gian tạo</td>
+                        </tr>
+                        <tr>
+                          <td class="fw-bold">updated_at</td>
+                          <td>timestamp</td>
+                          <td>Thời gian cập nhật</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="setting" class="mb-5">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                  <i class="fas fa-wrench text-primary me-3 fa-2x"></i>
+                  <h2 class="mb-0">Hướng Dẫn Cài Đặt</h2>
+                </div>
+
+                <div id="track-order">
+                  <h5 class="mb-3">Trạng Thái Đơn Hàng</h5>
+                  <div class="timeline">
+                    <div class="timeline-item">
+                      <div class="timeline-badge bg-info">1</div>
+                      <div class="timeline-content">
+                        <h4>Chuẩn Bị Môi Trường (XAMPP)</h4>
+                        <p class="text-muted small">
+                          Tải và cài đặt <b>XAMPP</b> để chạy website PHP trên
+                          máy tính.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="timeline-item">
+                      <div class="timeline-badge bg-primary">2</div>
+                      <div class="timeline-content">
+                        <h4>Đưa Source Code Vào XAMPP</h4>
+                        <ol class="ps-3">
+                          <li class="mb-2">Copy source code đã tải xuống</li>
+                          <li class="mb-2">
+                            Dán vào thư mục:
+                            <b class="text-primary">C:\xampp\htdocs\</b>
+                          </li>
+                          <li class="mb-2">Giải nén file source code</li>
+                        </ol>
+                      </div>
+                    </div>
+                    <div class="timeline-item">
+                      <div class="timeline-badge bg-warning">3</div>
+                      <div class="timeline-content">
+                        <h4>Tạo Database Trên phpMyAdmin</h4>
+                        <ol class="ps-3">
+                          <li class="mb-2">
+                            Mở trình duyệt và truy cập vào url:
+                            <a href="http://localhost/phpmyadmin"
+                              >http://localhost/phpmyadmin</a
+                            >
+                          </li>
+                          <li class="mb-2">Sau đó tạo database.</li>
+                          <li class="mb-2">Nhấp vào database đã tạo</li>
+                          <li class="mb-2">
+                            Nhấp vào nút <b class="text-primary">Nhập</b> ở
+                            thanh menu
+                          </li>
+                          <li class="mb-2">
+                            Nhấp vào <b class="text-primary">Chọn tệp</b>
+                          </li>
+                          <li class="mb-2">
+                            Chọn vào file SQL trong source code đã giải nén.
+                          </li>
+                          <li class="mb-2">
+                            Nhấp vào nút <b class="text-primary">Nhập</b>.
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+                    <div class="timeline-item">
+                      <div class="timeline-badge bg-info">4</div>
+                      <div class="timeline-content">
+                        <h4>Cấu Hình Kết Nối Database</h4>
+                        <p class="text-muted small">
+                          Mở file
+                          <b class="text-primary">app/core/Database.php</b> và
+                          chỉnh như sau(nếu đúng thì giữ nguyên):
+                        </p>
+                        <p class="text-muted small">
+                          <b class="text-primary"
+                            >private $host = "localhost";<br />
+                            private $db = "giat-ui-nhanh";<br />
+                            private $user = "root";<br />
+                            private $pass = "";</b
+                          >
+                        </p>
+                      </div>
+                    </div>
+                    <div class="timeline-item">
+                      <div class="timeline-badge bg-success">5</div>
+                      <div class="timeline-content">
+                        <h4>Chạy Website</h4>
+                        <br />
+                        <h5 class="text-primary">Truy cập vào Website</h5>
+                        <ol class="ps-3">
+                          <li class="mb-2">
+                            Mở trình duyệt và truy cập vào url:
+                            <a href="http://localhost/Giat-Ui-Nhanh/"
+                              >http://localhost/Giat-Ui-Nhanh/</a
+                            >
+                          </li>
+                          <li class="mb-2">
+                            Website hiển thị là cài đặt thành công
+                          </li>
+                        </ol>
+                        <h5 class="text-primary">Admin Dashboard</h5>
+                        <ol class="ps-3">
+                          <li class="mb-2">
+                            Truy cập vào url:
+                            <a
+                              href="http://localhost/Giat-Ui-Nhanh/?ctrl=page&act=dashboard"
+                              >http://localhost/Giat-Ui-Nhanh/?ctrl=page&act=dashboard</a
+                            >
+                          </li>
+                          <li class="mb-2">Email: admin@gmail.com</li>
+                          <li class="mb-2">Mật khẩu: admin123@</li>
+                          <li class="mb-2">
+                            Sau khi đăng nhập thành công, hãy đổi mật khẩu admin
+                            để đảm bảo an toàn về bảo mật
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+      <div class="container text-center">
+        <p class="mb-2">© 2026 Website Giặt Ủi - Hướng Dẫn Sử Dụng</p>
+        <p class="text-muted small mb-0">
+          Phiên bản tài liệu: 1.0 | Cập nhật lần cuối: 02/02/2026
+        </p>
+      </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="btn btn-primary btn-floating">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth" });
+            // Close mobile menu if open
+            const navbarCollapse = document.querySelector(".navbar-collapse");
+            if (navbarCollapse.classList.contains("show")) {
+              bootstrap.Collapse.getInstance(navbarCollapse).hide();
+            }
+          }
+        });
+      });
+
+      // Back to top button
+      const backToTopButton = document.getElementById("backToTop");
+
+      window.addEventListener("scroll", function () {
+        if (window.pageYOffset > 300) {
+          backToTopButton.classList.add("show");
+        } else {
+          backToTopButton.classList.remove("show");
+        }
+      });
+
+      backToTopButton.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      // Active sidebar link on scroll
+      const sections = document.querySelectorAll("section[id]");
+      const sidebarLinks = document.querySelectorAll(
+        ".sidebar .list-group-item",
+      );
+
+      window.addEventListener("scroll", function () {
+        let current = "";
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          if (window.pageYOffset >= sectionTop - 100) {
+            current = section.getAttribute("id");
+          }
+        });
+
+        sidebarLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === "#" + current) {
+            link.classList.add("active");
+          }
+        });
+      });
+
+      // Print functionality
+      function printPage() {
+        window.print();
+      }
+    </script>
+  </body>
+</html>

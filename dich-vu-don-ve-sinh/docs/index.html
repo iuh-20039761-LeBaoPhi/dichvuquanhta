@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tài liệu hệ thống – Website Dịch vụ vệ sinh</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>📘 TÀI LIỆU HỆ THỐNG WEBSITE DỊCH VỤ VỆ SINH</h1>
+
+<hr>
+
+<h2>1. Giới thiệu</h2>
+<p>
+Website được xây dựng nhằm hỗ trợ khách hàng đặt lịch dịch vụ vệ sinh
+và giúp quản trị viên quản lý đơn hàng một cách thuận tiện.
+</p>
+
+<hr>
+
+<h2>2. Tính năng hệ thống</h2>
+
+<h3>2.1 Chức năng dành cho khách hàng</h3>
+<ul>
+    <li>Xem danh sách dịch vụ vệ sinh</li>
+    <li>Đặt lịch vệ sinh trực tuyến</li>
+    <li>Nhập thông tin khách hàng và ghi chú</li>
+</ul>
+
+<img src="img/Screenshot 2026-02-04 135526.png" alt="Trang đặt dịch vụ" width="700">
+
+<h3>2.2 Chức năng dành cho quản trị viên</h3>
+<ul>
+    <li>Đăng nhập trang quản trị</li>
+    <li>Xem danh sách đơn hàng</li>
+    <li>Duyệt hoặc hủy đơn hàng</li>
+</ul>
+
+<img src="img/ad.png" alt="Trang quản trị" width="700">
+
+<hr>
+
+<h2>3. Database (MySQL)</h2>
+
+<p>
+Hệ thống sử dụng cơ sở dữ liệu MySQL với tên <b>cleaning_service</b>.
+Cơ sở dữ liệu gồm 4 bảng chính, phục vụ cho việc quản lý người dùng,
+đơn hàng và hóa đơn.
+</p>
+
+<hr>
+
+<h3>3.1 Bảng <code>admins</code></h3>
+
+<p>Lưu thông tin tài khoản quản trị viên.</p>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Tên cột</th>
+        <th>Kiểu dữ liệu</th>
+        <th>Mô tả</th>
+    </tr>
+    <tr>
+        <td>id</td>
+        <td>INT (PK)</td>
+        <td>Khóa chính, tự tăng</td>
+    </tr>
+    <tr>
+        <td>username</td>
+        <td>VARCHAR(50)</td>
+        <td>Tên đăng nhập quản trị viên</td>
+    </tr>
+    <tr>
+        <td>password</td>
+        <td>VARCHAR(255)</td>
+        <td>Mật khẩu đã được mã hóa (bcrypt)</td>
+    </tr>
+</table>
+
+<p><i>Bảng này dùng cho chức năng đăng nhập admin.</i></p>
+
+<hr>
+
+<h3>3.2 Bảng <code>customers</code></h3>
+
+<p>Lưu thông tin khách hàng đã đăng ký tài khoản.</p>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Tên cột</th>
+        <th>Kiểu dữ liệu</th>
+        <th>Mô tả</th>
+    </tr>
+    <tr>
+        <td>id</td>
+        <td>INT (PK)</td>
+        <td>Khóa chính, tự tăng</td>
+    </tr>
+    <tr>
+        <td>full_name</td>
+        <td>VARCHAR(100)</td>
+        <td>Họ tên khách hàng</td>
+    </tr>
+    <tr>
+        <td>phone</td>
+        <td>VARCHAR(20)</td>
+        <td>Số điện thoại (unique)</td>
+    </tr>
+    <tr>
+        <td>email</td>
+        <td>VARCHAR(100)</td>
+        <td>Email khách hàng (unique)</td>
+    </tr>
+    <tr>
+        <td>password</td>
+        <td>VARCHAR(255)</td>
+        <td>Mật khẩu đã mã hóa</td>
+    </tr>
+    <tr>
+        <td>created_at</td>
+        <td>TIMESTAMP</td>
+        <td>Thời gian tạo tài khoản</td>
+    </tr>
+</table>
+
+<hr>
+
+<h3>3.3 Bảng <code>bookings</code></h3>
+
+<p>
+Bảng trung tâm của hệ thống, lưu thông tin các đơn đặt dịch vụ vệ sinh
+của khách hàng.
+</p>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Tên cột</th>
+        <th>Kiểu dữ liệu</th>
+        <th>Mô tả</th>
+    </tr>
+    <tr>
+        <td>id</td>
+        <td>INT (PK)</td>
+        <td>Khóa chính, tự tăng</td>
+    </tr>
+    <tr>
+        <td>service_type</td>
+        <td>VARCHAR(100)</td>
+        <td>Loại dịch vụ vệ sinh</td>
+    </tr>
+    <tr>
+        <td>customer_name</td>
+        <td>VARCHAR(100)</td>
+        <td>Tên khách hàng đặt dịch vụ</td>
+    </tr>
+    <tr>
+        <td>phone</td>
+        <td>VARCHAR(20)</td>
+        <td>Số điện thoại liên hệ</td>
+    </tr>
+    <tr>
+        <td>address</td>
+        <td>TEXT</td>
+        <td>Địa chỉ thực hiện dịch vụ</td>
+    </tr>
+    <tr>
+        <td>district</td>
+        <td>VARCHAR(100)</td>
+        <td>Quận / Huyện</td>
+    </tr>
+    <tr>
+        <td>city</td>
+        <td>VARCHAR(100)</td>
+        <td>Tỉnh / Thành phố</td>
+    </tr>
+    <tr>
+        <td>booking_date</td>
+        <td>DATE</td>
+        <td>Ngày khách hàng đặt dịch vụ</td>
+    </tr>
+    <tr>
+        <td>note</td>
+        <td>TEXT</td>
+        <td>Ghi chú của khách hàng</td>
+    </tr>
+    <tr>
+        <td>created_at</td>
+        <td>TIMESTAMP</td>
+        <td>Thời gian tạo đơn</td>
+    </tr>
+    <tr>
+        <td>status</td>
+        <td>ENUM</td>
+        <td>Trạng thái đơn hàng (pending / approved / cancelled)</td>
+    </tr>
+    <tr>
+        <td>customer_id</td>
+        <td>INT (FK)</td>
+        <td>Liên kết đến bảng customers (nếu có tài khoản)</td>
+    </tr>
+    <tr>
+        <td>invoice_status</td>
+        <td>ENUM</td>
+        <td>Trạng thái hóa đơn (none / requested / issued)</td>
+    </tr>
+    <tr>
+        <td>invoice_code</td>
+        <td>VARCHAR(50)</td>
+        <td>Mã hóa đơn (nếu đã xuất)</td>
+    </tr>
+</table>
+
+<p>
+Bảng <b>bookings</b> có thể hoạt động cho cả:
+<ul>
+    <li>Khách vãng lai (customer_id = NULL)</li>
+    <li>Khách có tài khoản</li>
+</ul>
+</p>
+
+<hr>
+
+<h3>3.4 Bảng <code>invoices</code></h3>
+
+<p>Lưu thông tin hóa đơn điện tử cho các đơn hàng.</p>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Tên cột</th>
+        <th>Kiểu dữ liệu</th>
+        <th>Mô tả</th>
+    </tr>
+    <tr>
+        <td>id</td>
+        <td>INT (PK)</td>
+        <td>Khóa chính, tự tăng</td>
+    </tr>
+    <tr>
+        <td>booking_id</td>
+        <td>INT</td>
+        <td>Liên kết tới đơn hàng</td>
+    </tr>
+    <tr>
+        <td>invoice_code</td>
+        <td>VARCHAR(50)</td>
+        <td>Mã hóa đơn</td>
+    </tr>
+    <tr>
+        <td>provider</td>
+        <td>ENUM</td>
+        <td>Nhà cung cấp hóa đơn (VNPT / FPT)</td>
+    </tr>
+    <tr>
+        <td>amount</td>
+        <td>DECIMAL</td>
+        <td>Số tiền thanh toán</td>
+    </tr>
+    <tr>
+        <td>tax_code</td>
+        <td>VARCHAR(20)</td>
+        <td>Mã số thuế khách hàng</td>
+    </tr>
+    <tr>
+        <td>status</td>
+        <td>ENUM</td>
+        <td>Trạng thái hóa đơn (pending / issued / failed)</td>
+    </tr>
+    <tr>
+        <td>created_at</td>
+        <td>DATETIME</td>
+        <td>Thời gian tạo hóa đơn</td>
+    </tr>
+</table>
+
+<hr>
+
+<h3>3.5 Mối quan hệ giữa các bảng</h3>
+
+<ul>
+    <li>Một <b>customer</b> có thể tạo nhiều <b>booking</b></li>
+    <li>Mỗi <b>booking</b> có thể phát sinh một <b>invoice</b></li>
+    <li><b>admins</b> độc lập, dùng cho quản trị hệ thống</li>
+</ul>
+
+<p>
+Thiết kế database đảm bảo:
+<ul>
+    <li>Phân tách rõ ràng người dùng và đơn hàng</li>
+    <li>Dễ mở rộng thêm thanh toán, báo cáo</li>
+    <li>Phù hợp cho website dịch vụ thực tế</li>
+</ul>
+</p>
+
+
+<hr>
+
+<h2>4. Logic PHP (Luồng xử lý Backend)</h2>
+
+<p>
+Hệ thống backend được xây dựng bằng PHP thuần, sử dụng MySQL để lưu trữ dữ liệu.
+Các luồng xử lý chính bao gồm: đặt dịch vụ, quản lý đơn hàng, quản lý khách hàng
+và xuất hóa đơn.
+</p>
+
+<hr>
+
+<h3>4.1 Luồng xử lý đặt dịch vụ (Khách hàng)</h3>
+
+<p>
+Luồng này áp dụng cho cả khách hàng vãng lai và khách hàng đã đăng nhập.
+</p>
+
+<ol>
+    <li>Khách hàng truy cập trang đặt dịch vụ</li>
+    <li>Nhập các thông tin:
+        <ul>
+            <li>Loại dịch vụ</li>
+            <li>Tên khách hàng</li>
+            <li>Số điện thoại</li>
+            <li>Địa chỉ (địa chỉ, quận/huyện, tỉnh/thành)</li>
+            <li>Ngày đặt dịch vụ</li>
+            <li>Ghi chú (nếu có)</li>
+        </ul>
+    </li>
+    <li>Dữ liệu được gửi lên server bằng phương thức <b>POST</b></li>
+    <li>PHP kiểm tra dữ liệu đầu vào (rỗng, định dạng)</li>
+    <li>Tiến hành lưu dữ liệu vào bảng <code>bookings</code></li>
+</ol>
+
+<p>
+Khi lưu đơn hàng:
+<ul>
+    <li>Nếu khách hàng đã đăng nhập → lưu <code>customer_id</code></li>
+    <li>Nếu là khách vãng lai → <code>customer_id = NULL</code></li>
+    <li>Trạng thái mặc định của đơn là <b>pending</b></li>
+</ul>
+</p>
+
+<p><b>Bảng sử dụng:</b> bookings</p>
+
+<hr>
+
+<h3>4.2 Luồng xử lý đăng ký & đăng nhập khách hàng</h3>
+
+<h4>Đăng ký tài khoản</h4>
+<ol>
+    <li>Khách hàng nhập thông tin: họ tên, số điện thoại, email, mật khẩu</li>
+    <li>PHP kiểm tra trùng số điện thoại hoặc email</li>
+    <li>Mật khẩu được mã hóa bằng <b>password_hash (bcrypt)</b></li>
+    <li>Lưu thông tin vào bảng <code>customers</code></li>
+</ol>
+
+<h4>Đăng nhập</h4>
+<ol>
+    <li>Khách hàng nhập email/số điện thoại và mật khẩu</li>
+    <li>PHP truy vấn bảng <code>customers</code></li>
+    <li>Sử dụng <b>password_verify</b> để kiểm tra mật khẩu</li>
+    <li>Nếu hợp lệ, tạo session đăng nhập</li>
+</ol>
+
+<p><b>Bảng sử dụng:</b> customers</p>
+
+<hr>
+
+<h3>4.3 Luồng quản lý đơn hàng (Admin)</h3>
+
+<p>
+Luồng này chỉ dành cho quản trị viên đã đăng nhập.
+</p>
+
+<ol>
+    <li>Admin đăng nhập hệ thống quản trị</li>
+    <li>PHP kiểm tra session đăng nhập admin</li>
+    <li>Truy vấn danh sách đơn hàng từ bảng <code>bookings</code></li>
+    <li>Hiển thị thông tin đơn hàng:
+        <ul>
+            <li>Thông tin khách hàng</li>
+            <li>Dịch vụ</li>
+            <li>Ngày đặt</li>
+            <li>Trạng thái</li>
+        </ul>
+    </li>
+    <li>Admin thực hiện:
+        <ul>
+            <li>Duyệt đơn (approved)</li>
+            <li>Hủy đơn (cancelled)</li>
+        </ul>
+    </li>
+</ol>
+
+<p>
+Khi admin cập nhật trạng thái:
+<ul>
+    <li>PHP nhận dữ liệu qua POST</li>
+    <li>Cập nhật cột <code>status</code> trong bảng <code>bookings</code></li>
+</ul>
+</p>
+
+<p><b>Bảng sử dụng:</b> admins, bookings</p>
+
+<hr>
+
+<h3>4.4 Luồng xử lý hóa đơn điện tử</h3>
+
+<p>
+Sau khi đơn hàng được duyệt, hệ thống hỗ trợ xuất hóa đơn điện tử.
+</p>
+
+<ol>
+    <li>Admin hoặc hệ thống gửi yêu cầu xuất hóa đơn</li>
+    <li>PHP tạo bản ghi mới trong bảng <code>invoices</code></li>
+    <li>Cập nhật:
+        <ul>
+            <li><code>invoice_status</code> trong bảng <code>bookings</code></li>
+            <li><code>invoice_code</code> nếu hóa đơn được phát hành</li>
+        </ul>
+    </li>
+    <li>Trạng thái hóa đơn:
+        <ul>
+            <li>pending: đang xử lý</li>
+            <li>issued: đã phát hành</li>
+            <li>failed: phát hành thất bại</li>
+        </ul>
+    </li>
+</ol>
+
+<p><b>Bảng sử dụng:</b> bookings, invoices</p>
+
+<hr>
+
+<h3>4.5 Bảo mật và kiểm soát dữ liệu</h3>
+
+<ul>
+    <li>Sử dụng <b>session</b> để kiểm soát đăng nhập</li>
+    <li>Mật khẩu được mã hóa bằng bcrypt</li>
+    <li>Dữ liệu đầu vào được kiểm tra trước khi lưu</li>
+    <li>Truy vấn database sử dụng prepared statement</li>
+</ul>
+
+<p>
+Luồng xử lý backend được thiết kế đơn giản, rõ ràng, phù hợp cho
+website dịch vụ quy mô nhỏ và dễ dàng mở rộng trong tương lai.
+</p>
+
+<hr>
+
+<h2>5. Hướng dẫn cài đặt và chạy dự án</h2>
+
+<h3>5.1 Yêu cầu môi trường</h3>
+<ul>
+    <li>XAMPP / Laragon</li>
+    <li>PHP 7.4+</li>
+    <li>MySQL</li>
+</ul>
+
+<h3>5.2 Các bước cài đặt</h3>
+<ol>
+    <li>Clone source code từ repository</li>
+    <li>Import file <b>cleaning_service.sql</b> vào MySQL</li>
+    <li>Cấu hình kết nối database trong file PHP</li>
+    <li>Chạy dự án tại <code>http://localhost:8080/</code></li>
+</ol>
+
+<hr>
+
+<h2>6. Hướng dẫn đặt hàng cho khách hàng</h2>
+<ol>
+    <li>Truy cập trang chủ</li>
+    <li>Chọn dịch vụ vệ sinh</li>
+    <li>Nhấn đặt lịch</li>
+    <li>Nhập thông tin cá nhân</li>
+    <li>Nhấn nút gửi yêu cầu</li>
+</ol>
+
+<img src="img/dv.png" alt="Trang chủ" width="700">
+
+<hr>
+
+<p><i>Tài liệu được 작성 trong quá trình thực tập.</i></p>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<script src="assets/js/static-data.js"></script>
+<script src="assets/js/load_template.js"></script>
+<script>
+window.PAGE_SEO = {
+    title: 'Tìm Xe Thuê – CarRental TP.HCM | Lọc Theo Hãng, Số Chỗ, Giá',
+    desc:  'Tìm kiếm xe cho thuê tại TP.HCM theo hãng, số chỗ, khoảng giá. Hơn 100 dòng xe Toyota, Honda, Mazda, VinFast. Đặt xe ngay hôm nay!',
+    keys:  'tìm xe thuê, tìm kiếm xe cho thuê hcm, toyota cho thuê, honda cho thuê, mazda cho thuê',
+    url:   'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/index.php?page=search'
+};
+loadHeader();
+</script>
+
+<section class="py-4" style="background:#f1f5f9; min-height:70vh;">
+    <div class="container">
+        <h1 class="fs-5 fw-bold mb-3">Tìm Xe Cho Thuê Tại TP.HCM</h1>
+        <!-- Filter bar -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body py-3">
+                <form id="searchFilterForm">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label small fw-medium mb-1">Hãng xe</label>
+                            <select class="form-select form-select-sm" id="filterBrand">
+                                <option value="">Tất cả hãng</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label small fw-medium mb-1">Số chỗ</label>
+                            <select class="form-select form-select-sm" id="filterSeats">
+                                <option value="">Tất cả</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label small fw-medium mb-1">Khoảng giá</label>
+                            <select class="form-select form-select-sm" id="filterPrice">
+                                <option value="">Tất cả mức giá</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <button type="submit" class="btn btn-gradient btn-sm w-100" style="margin-top:22px;">
+                                <i class="fas fa-search me-1"></i>Lọc kết quả
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="row g-4" id="searchResults"></div>
+    </div>
+</section>
+
+<script>loadFooter();</script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/pages/search.js"></script>
+

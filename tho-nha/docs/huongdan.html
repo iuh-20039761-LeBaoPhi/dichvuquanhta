@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài Liệu Thợ Nhà - Hướng Dẫn Đầy Đủ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        * {
+            font-family: 'Quicksand', sans-serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #11998e;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0e857a;
+        }
+        
+        .code-block {
+            background-color: #2d2d2d;
+            color: #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .code-block pre {
+            margin: 0;
+        }
+        
+        .nav-link:hover {
+            background-color: #e0f2f1;
+            border-radius: 5px;
+        }
+
+        /* --- STYLES CHO HÌNH ẢNH TỰ FIT --- */
+        
+        /* 1. Khung hình ảnh cơ bản (Standard Box) */
+        .screenshot-box {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa; /* Màu nền khi chưa có ảnh */
+            transition: transform 0.3s ease;
+        }
+        
+        .screenshot-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        /* Ảnh bên trong khung cơ bản sẽ full width */
+        .screenshot-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* 2. Khung hình ảnh cho Carousel (Fixed Height) */
+        /* Giúp slider không bị nhảy kích thước khi chuyển ảnh */
+        .carousel-screenshot-box {
+            width: 100%;
+            height: 450px; /* Chiều cao cố định */
+            background-color: #343a40; /* Nền tối để làm nổi bật ảnh */
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Ảnh bên trong carousel sẽ tự co giãn để vừa khung (contain) */
+        .carousel-screenshot-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* Quan trọng: Giữ nguyên tỉ lệ ảnh */
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Hiệu ứng caption cho carousel */
+        .carousel-caption {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 10px 20px;
+            bottom: 20px;
+        }
+
+        /* Fallback text khi ảnh chưa được thêm */
+        img[alt]:after {  
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f0f0;
+            font-family: 'Helvetica';
+            font-weight: 300;
+            line-height: 2;  
+            text-align: center;
+            content: "⚠️ Chưa có ảnh: " attr(alt);
+            color: #888;
+            padding: 50px;
+            border: 2px dashed #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="bg-light py-5 border-bottom border-4" style="border-bottom-color: #11998e !important;">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">Tài Liệu <span style="color: #11998e; font-family: 'Pacifico', cursive; font-size: 3rem;">Thợ Nhà</span></h1>
+            <p class="lead">Hệ Thống Quản Lý Dịch Vụ Sửa Chữa Nhà Cửa</p>
+            <p class="text-muted" style="font-size: 0.9rem;">Hướng dẫn đầy đủ cài đặt, cấu hình và sử dụng</p>
+        </div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+        <div class="container">
+            <button class="navbar-toggler mx-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <div class="navbar-nav flex-wrap justify-content-center">
+                    <a href="#overview" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-home"></i> Tổng Quan</a>
+                    <a href="#features" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-star"></i> Tính Năng</a>
+                    <a href="#services" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-wrench"></i> Dịch Vụ</a>
+                    <a href="#database" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-database"></i> Database</a>
+                    <a href="#logic" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-code"></i> Logic PHP</a>
+                    <a href="#installation" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-download"></i> Cài Đặt</a>
+                    <a href="#usage" class="nav-link" style="color: #11998e; font-weight: 600; margin: 0 10px;"><i class="fas fa-book"></i> Hướng Dẫn</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <!-- TỔNG QUAN -->
+        <div id="overview" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-home"></i> Tổng Quan Hệ Thống</h2>
+            
+            <p><strong>Thợ Nhà</strong> là nền tảng kết nối dịch vụ sửa chữa, bảo trì và cải tạo nhà cửa chuyên nghiệp. Hệ thống cung cấp giải pháp toàn diện cho việc đặt lịch thợ sửa điện nước, máy lạnh, máy giặt, và cải tạo nhà cửa.</p>
+            
+            <div class="alert alert-info border-start border-4 py-3 my-4" style="background-color: #e0f2f1; border-color: #11998e !important; color: #00695c;" role="alert">
+                <strong><i class="fas fa-info-circle"></i> Thông Tin Kỹ Thuật:</strong>
+                <p class="mb-0">Hệ thống được xây dựng trên nền tảng PHP thuần, HTML5, CSS3, MySQL, Bootstrap 5. Sử dụng XAMPP làm môi trường server cục bộ.</p>
+            </div>
+            
+            <h3 class="mt-4 mb-3" style="color: #004d40;">Yêu Cầu Hệ Thống</h3>
+
+            <div class="card border-start border-4 my-3" style="border-left-color: #11998e !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #11998e;">Môi Trường Server</h5>
+                    <ul class="mb-0">
+                        <li><strong>Web Server:</strong> Apache (khuyến nghị dùng XAMPP hoặc Laragon)</li>
+                        <li><strong>Ngôn ngữ:</strong> PHP 7.4 trở lên</li>
+                        <li><strong>Cơ sở dữ liệu:</strong> MySQL 5.7 hoặc MariaDB 10.x</li>
+                    </ul>
+                     <div class="row g-4 mt-2">
+                        <div class="col-md-6">
+                            <div class="screenshot-box">
+                                <img src="img/xampp.png" alt="img/xampp.png (Ảnh XAMPP Control Panel)">
+                            </div>
+                            <p class="text-center text-muted small mt-2">Giao diện XAMPP</p>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="screenshot-box">
+                                <img src="img/phpmyadmin.png" alt="img/phpmyadmin.png (Ảnh phpMyAdmin)">
+                            </div>
+                            <p class="text-center text-muted small mt-2">Quản lý Database</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TÍNH NĂNG -->
+        <div id="features" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-star"></i> Các Tính Năng Chính</h2>
+            
+            <h3 class="mt-4 mb-3" style="color: #004d40;">1. Trang Khách Hàng (Frontend)</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #11998e !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #11998e;"><i class="fas fa-laptop-house"></i> Giao diện người dùng</h5>
+                    <p>Slide bên dưới hiển thị các trang chính của website:</p>
+
+                    <!-- Carousel cho Frontend -->
+                    <div id="frontendCarousel" class="carousel slide mt-3" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#frontendCarousel" data-bs-slide-to="0" class="active"></button>
+                            <button type="button" data-bs-target="#frontendCarousel" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#frontendCarousel" data-bs-slide-to="2"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="carousel-screenshot-box">
+                                    <img src="img/trangchu.png" alt="img/trangchu.png (Ảnh toàn bộ trang chủ)">
+                                </div>
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>Trang Chủ</h5>
+                                    <p>Giao diện chính khi khách hàng truy cập</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="carousel-screenshot-box">
+                                    <img src="img/dichvu.png" alt="img/dichvu.png (Ảnh phần danh sách dịch vụ)">
+                                </div>
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>Danh Sách Dịch Vụ</h5>
+                                    <p>Hiển thị các gói sửa chữa kèm giá</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="carousel-screenshot-box">
+                                    <img src="img/lienhe.png" alt="img/lienhe.png (Ảnh trang liên hệ/footer)">
+                                </div>
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>Liên Hệ</h5>
+                                    <p>Thông tin địa chỉ và form hỗ trợ</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#frontendCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-white rounded-circle p-2 text-dark"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#frontendCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-white rounded-circle p-2 text-dark"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3" style="color: #004d40;">2. Quy Trình Đặt Lịch</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #11998e !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #11998e;"><i class="fas fa-sync-alt"></i> Các bước thực hiện</h5>
+                    
+                    <div class="row text-center mt-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 bg-light shadow-sm">
+                                <div class="card-body">
+                                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 40px; height: 40px;">1</div>
+                                    <h6>Chọn Dịch Vụ</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 bg-light shadow-sm">
+                                <div class="card-body">
+                                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 40px; height: 40px;">2</div>
+                                    <h6>Đặt Lịch</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 bg-light shadow-sm">
+                                <div class="card-body">
+                                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 40px; height: 40px;">3</div>
+                                    <h6>Hệ Thống Xử Lý</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 bg-light shadow-sm">
+                                <div class="card-body">
+                                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 40px; height: 40px;">4</div>
+                                    <h6>Xác Nhận</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="screenshot-box">
+                                <img src="img/popup_datlich.png" alt="img/popup_datlich.png (Ảnh form điền thông tin)">
+                            </div>
+                            <p class="text-center text-muted small mt-2">Form đặt lịch nhanh (Popup)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mt-4 mb-3" style="color: #004d40;">3. Trang Quản Trị (Admin)</h3>
+            <div class="card border-start border-4 my-3" style="border-left-color: #11998e !important;">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #11998e;"><i class="fas fa-user-shield"></i> Dashboard Quản Lý</h5>
+                    <p>Khu vực dành riêng cho quản trị viên:</p>
+                    
+                    <!-- Carousel cho Admin -->
+                    <div id="adminCarousel" class="carousel slide mt-3" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#adminCarousel" data-bs-slide-to="0" class="active"></button>
+                            <button type="button" data-bs-target="#adminCarousel" data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#adminCarousel" data-bs-slide-to="2"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="carousel-screenshot-box">
+                                    <img src="img/admin_login.png" alt="img/admin_login.png (Ảnh trang đăng nhập admin)">
+                                </div>
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>Đăng Nhập Admin</h5>
+                                    <p>Bảo mật 2 lớp với mật khẩu mã hóa</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="carousel-screenshot-box">
+                                    <img src="img/admin_dashboard.png" alt="img/admin_dashboard.png (Ảnh trang dashboard thống kê)">
+                                </div>
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>Dashboard Thống Kê</h5>
+                                    <p>Tổng quan doanh thu và đơn hàng</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="carousel-screenshot-box">
+                                    <img src="img/admin_orders.png" alt="img/admin_orders.png (Ảnh trang quản lý đơn hàng)">
+                                </div>
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>Quản Lý Đơn Hàng</h5>
+                                    <p>Xem, sửa, xóa và cập nhật trạng thái đơn</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#adminCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-white rounded-circle p-2 text-dark"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#adminCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-white rounded-circle p-2 text-dark"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DỊCH VỤ -->
+        <div id="services" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-wrench"></i> Danh Sách Dịch Vụ</h2>
+            
+            <p>Thợ Nhà cung cấp các gói dịch vụ sửa chữa với bảng giá tham khảo:</p>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div style="color: #11998e; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-wind"></i> Sửa Máy Lạnh</div>
+                            <p>Vệ sinh, bơm ga, sửa chữa máy lạnh không lạnh, chảy nước.</p>
+                            <div style="color: #004d40; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 150.000 - 500.000 VNĐ</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div style="color: #11998e; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-bolt"></i> Sửa Điện Nước</div>
+                            <p>Xử lý chập điện, rò rỉ nước, thay vòi nước, lắp đặt thiết bị điện.</p>
+                            <div style="color: #004d40; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: Khảo sát báo giá</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div style="color: #11998e; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-tint"></i> Sửa Máy Giặt</div>
+                            <p>Sửa máy giặt không vắt, không cấp nước, báo lỗi bo mạch.</p>
+                            <div style="color: #004d40; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: 200.000 - 600.000 VNĐ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div style="color: #11998e; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;"><i class="fas fa-hammer"></i> Cải Tạo Nhà</div>
+                            <p>Sơn nước, lát gạch, chống thấm, sửa chữa trần thạch cao.</p>
+                            <div style="color: #004d40; font-weight: 700; font-size: 1.1rem; margin: 15px 0;">Giá: Theo m2 / Hạng mục</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DATABASE -->
+        <div id="database" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-database"></i> Cấu Trúc Database</h2>
+            
+            <p>Database: <code>thonha_db</code></p>
+            
+            <!-- 1. Bảng Admins -->
+            <div class="card border-0 mb-4 shadow-sm">
+                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
+                    <h5 class="mb-0 text-dark"><i class="fas fa-user-shield text-primary"></i> 1. Bảng `admins` (Quản trị viên)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Cột</th>
+                                    <th>Kiểu dữ liệu</th>
+                                    <th>Mô tả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Khóa chính, tự tăng</td>
+                                </tr>
+                                <tr>
+                                    <td><code>username</code></td>
+                                    <td>varchar(50)</td>
+                                    <td>Tên đăng nhập (duy nhất)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>password</code></td>
+                                    <td>varchar(255)</td>
+                                    <td>Mật khẩu đã mã hóa (bcrypt)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Bảng Service Categories -->
+            <div class="card border-0 mb-4 shadow-sm">
+                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
+                    <h5 class="mb-0 text-dark"><i class="fas fa-list text-primary"></i> 2. Bảng `service_categories` (Danh mục dịch vụ)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Cột</th>
+                                    <th>Kiểu dữ liệu</th>
+                                    <th>Mô tả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Khóa chính, tự tăng</td>
+                                </tr>
+                                <tr>
+                                    <td><code>name</code></td>
+                                    <td>varchar(100)</td>
+                                    <td>Tên danh mục (VD: Sửa máy lạnh)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>description</code></td>
+                                    <td>text</td>
+                                    <td>Mô tả danh mục</td>
+                                </tr>
+                                <tr>
+                                    <td><code>is_active</code></td>
+                                    <td>tinyint(1)</td>
+                                    <td>Trạng thái (1: Hiện, 0: Ẩn)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Bảng Services -->
+            <div class="card border-0 mb-4 shadow-sm">
+                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
+                    <h5 class="mb-0 text-dark"><i class="fas fa-wrench text-primary"></i> 3. Bảng `services` (Chi tiết dịch vụ)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Cột</th>
+                                    <th>Kiểu dữ liệu</th>
+                                    <th>Mô tả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Khóa chính</td>
+                                </tr>
+                                <tr>
+                                    <td><code>category_id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Khóa ngoại liên kết với bảng `service_categories`</td>
+                                </tr>
+                                <tr>
+                                    <td><code>name</code></td>
+                                    <td>varchar(150)</td>
+                                    <td>Tên dịch vụ cụ thể (VD: Vệ sinh máy lạnh)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>price</code></td>
+                                    <td>varchar(50)</td>
+                                    <td>Giá dịch vụ</td>
+                                </tr>
+                                <tr>
+                                    <td><code>description</code></td>
+                                    <td>text</td>
+                                    <td>Mô tả chi tiết</td>
+                                </tr>
+                                <tr>
+                                    <td><code>is_active</code></td>
+                                    <td>tinyint(1)</td>
+                                    <td>Trạng thái</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Bảng Bookings -->
+            <div class="card border-0 mb-4 shadow-sm">
+                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
+                    <h5 class="mb-0 text-dark"><i class="fas fa-file-invoice text-primary"></i> 4. Bảng `bookings` (Đơn đặt hàng)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Cột</th>
+                                    <th>Kiểu dữ liệu</th>
+                                    <th>Mô tả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Khóa chính</td>
+                                </tr>
+                                <tr>
+                                    <td><code>order_code</code></td>
+                                    <td>varchar(30)</td>
+                                    <td>Mã đơn hàng (VD: TN123456)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>customer_name</code></td>
+                                    <td>varchar(100)</td>
+                                    <td>Tên khách hàng</td>
+                                </tr>
+                                <tr>
+                                    <td><code>phone</code></td>
+                                    <td>varchar(20)</td>
+                                    <td>Số điện thoại</td>
+                                </tr>
+                                <tr>
+                                    <td><code>address</code></td>
+                                    <td>text</td>
+                                    <td>Địa chỉ thi công</td>
+                                </tr>
+                                <tr>
+                                    <td><code>note</code></td>
+                                    <td>text</td>
+                                    <td>Ghi chú thêm</td>
+                                </tr>
+                                <tr>
+                                    <td><code>status</code></td>
+                                    <td>enum</td>
+                                    <td>'new' (Mới), 'confirmed' (Đã xác nhận), 'doing' (Đang làm), 'done' (Hoàn thành), 'cancel' (Hủy)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>created_at</code></td>
+                                    <td>timestamp</td>
+                                    <td>Thời gian tạo đơn</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Bảng Booking Services -->
+            <div class="card border-0 mb-4 shadow-sm">
+                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
+                    <h5 class="mb-0 text-dark"><i class="fas fa-link text-primary"></i> 5. Bảng `booking_services` (Chi tiết dịch vụ trong đơn)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Cột</th>
+                                    <th>Kiểu dữ liệu</th>
+                                    <th>Mô tả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Khóa chính</td>
+                                </tr>
+                                <tr>
+                                    <td><code>booking_id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Liên kết với bảng `bookings`</td>
+                                </tr>
+                                <tr>
+                                    <td><code>service_id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Liên kết với bảng `services`</td>
+                                </tr>
+                                <tr>
+                                    <td><code>price</code></td>
+                                    <td>varchar(50)</td>
+                                    <td>Giá dịch vụ tại thời điểm đặt</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Bảng Cancel Requests -->
+            <div class="card border-0 mb-4 shadow-sm">
+                <div class="card-header bg-white border-start border-4" style="border-left-color: #11998e !important;">
+                    <h5 class="mb-0 text-dark"><i class="fas fa-ban text-danger"></i> 6. Bảng `cancel_requests` (Yêu cầu hủy đơn)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Cột</th>
+                                    <th>Kiểu dữ liệu</th>
+                                    <th>Mô tả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Khóa chính</td>
+                                </tr>
+                                <tr>
+                                    <td><code>booking_id</code></td>
+                                    <td>int(11)</td>
+                                    <td>Liên kết với bảng `bookings`</td>
+                                </tr>
+                                <tr>
+                                    <td><code>cancel_reason</code></td>
+                                    <td>text</td>
+                                    <td>Lý do hủy đơn</td>
+                                </tr>
+                                <tr>
+                                    <td><code>cancel_status</code></td>
+                                    <td>enum</td>
+                                    <td>'pending' (Chờ duyệt), 'approved' (Đã duyệt), 'rejected' (Từ chối)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>cancel_requested_at</code></td>
+                                    <td>timestamp</td>
+                                    <td>Thời gian gửi yêu cầu</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOGIC PHP -->
+        <div id="logic" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-code"></i> Logic PHP Backend</h2>
+            
+            <h3 class="mt-4 mb-3" style="color: #004d40;">Kết Nối Database (db.php)</h3>
+            <div class="card bg-dark text-white border-0">
+                <div class="card-body p-0">
+                    <pre class="m-0 p-3"><code class="language-php">&lt;?php
+// File: api/db.php
+$conn = new mysqli("localhost", "root", "", "thonha_db");
+
+if ($conn->connect_error) {
+    die("Kết nối thất bại: " . $conn->connect_error);
+}
+
+// Quan trọng: Set charset UTF-8
+$conn->set_charset("utf8mb4");
+?&gt;</code></pre>
+                </div>
+            </div>
+
+            <h3 class="mt-4 mb-3" style="color: #004d40;">API Đặt Lịch (book.php)</h3>
+            <div class="card bg-dark text-white border-0">
+                <div class="card-body p-0">
+                    <pre class="m-0 p-3"><code class="language-php">&lt;?php
+// File: api/book.php
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Include file kết nối database
+require_once 'db.php';
+
+// Nếu db.php không có biến $conn, tạo kết nối mới
+if (!isset($conn)) {
+    $conn = new mysqli("localhost", "root", "", "thonha");
+    
+    if ($conn->connect_error) {
+        http_response_code(500);
+        echo json_encode([
+            "status" => "error",
+            "message" => "Lỗi kết nối database: " . $conn->connect_error
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
+// Set charset UTF-8
+$conn->set_charset("utf8mb4");
+
+// Chỉ chấp nhận POST request
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode([
+        "status" => "error",
+        "message" => "Chỉ chấp nhận POST request"
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// Lấy dữ liệu JSON từ request body
+$json = file_get_contents('php://input');
+$data = json_decode($json, true);
+
+// Validate dữ liệu
+if (!$data) {
+    http_response_code(400);
+    echo json_encode([
+        "status" => "error",
+        "message" => "Dữ liệu không hợp lệ"
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+$name = trim($data['name'] ?? '');
+$phone = trim($data['phone'] ?? '');
+$service_id = trim($data['service_id'] ?? '');
+$address = trim($data['address'] ?? '');
+$note = trim($data['note'] ?? '');
+
+// Validate các trường bắt buộc
+if (empty($name) || empty($phone) || empty($service_id) || empty($address)) {
+    http_response_code(400);
+    echo json_encode([
+        "status" => "error",
+        "message" => "Vui lòng điền đầy đủ thông tin bắt buộc"
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// Validate số điện thoại
+if (!preg_match('/^(0|\+84)[0-9]{9}$/', $phone)) {
+    http_response_code(400);
+    echo json_encode([
+        "status" => "error",
+        "message" => "Số điện thoại không hợp lệ"
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// Tạo mã đơn hàng
+$order_code = "TN" . rand(100000, 999999);
+
+// Kiểm tra trùng mã (rất hiếm nhưng cần check)
+$check_sql = "SELECT id FROM bookings WHERE order_code = ?";
+$check_stmt = $conn->prepare($check_sql);
+$check_stmt->bind_param("s", $order_code);
+$check_stmt->execute();
+if ($check_stmt->get_result()->num_rows > 0) {
+    // Nếu trùng, tạo lại
+    $order_code = "TN" . rand(100000, 999999);
+}
+$check_stmt->close();
+
+// Lấy thông tin service để lấy service_id và price
+$service_sql = "SELECT id, price FROM services WHERE name = ? AND is_active = 1 LIMIT 1";
+$service_stmt = $conn->prepare($service_sql);
+$service_stmt->bind_param("s", $service_id);
+$service_stmt->execute();
+$service_result = $service_stmt->get_result();
+
+if ($service_result->num_rows === 0) {
+    http_response_code(400);
+    echo json_encode([
+        "status" => "error",
+        "message" => "Dịch vụ không tồn tại hoặc đã ngừng hoạt động"
+    ], JSON_UNESCAPED_UNICODE);
+    $service_stmt->close();
+    exit;
+}
+
+$service_row = $service_result->fetch_assoc();
+$service_id_real = $service_row['id'];
+$service_price = $service_row['price'];
+$service_stmt->close();
+
+// Bắt đầu transaction
+$conn->begin_transaction();
+
+try {
+    // 1. Insert vào bảng bookings
+    $booking_sql = "INSERT INTO bookings (order_code, customer_name, phone, address, note, status, created_at) 
+                    VALUES (?, ?, ?, ?, ?, 'new', NOW())";
+    $booking_stmt = $conn->prepare($booking_sql);
+    $booking_stmt->bind_param("sssss", $order_code, $name, $phone, $address, $note);
+    
+    if (!$booking_stmt->execute()) {
+        throw new Exception("Lỗi khi tạo đơn hàng: " . $booking_stmt->error);
+    }
+    
+    $booking_id = $conn->insert_id;
+    $booking_stmt->close();
+    
+    // 2. Insert vào bảng booking_services
+    $booking_service_sql = "INSERT INTO booking_services (booking_id, service_id, price) VALUES (?, ?, ?)";
+    $booking_service_stmt = $conn->prepare($booking_service_sql);
+    $booking_service_stmt->bind_param("iis", $booking_id, $service_id_real, $service_price);
+    
+    if (!$booking_service_stmt->execute()) {
+        throw new Exception("Lỗi khi thêm dịch vụ: " . $booking_service_stmt->error);
+    }
+    
+    $booking_service_stmt->close();
+    
+    // Commit transaction
+    $conn->commit();
+    
+    // Trả về kết quả thành công
+    echo json_encode([
+        "status" => "success",
+        "message" => "Đặt lịch thành công",
+        "order_code" => $order_code,
+        "booking_id" => $booking_id
+    ], JSON_UNESCAPED_UNICODE);
+    
+} catch (Exception $e) {
+    // Rollback nếu có lỗi
+    $conn->rollback();
+    
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "message" => $e->getMessage()
+    ], JSON_UNESCAPED_UNICODE);
+}
+
+$conn->close();
+?&gt;</code></pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CÁCH CÀI ĐẶT -->
+        <div id="installation" class="py-5 border-bottom">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-download"></i> Hướng Dẫn Cài Đặt</h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card border-start border-4 mb-3" style="border-left-color: #11998e !important;">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">Bước 1: Cài đặt XAMPP</h5>
+                            <p>Tải và cài đặt XAMPP. Khởi động module <strong>Apache</strong> và <strong>MySQL</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-start border-4 mb-3" style="border-left-color: #11998e !important;">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">Bước 2: Copy Source Code</h5>
+                            <p>Copy thư mục dự án vào <code>C:\xampp\htdocs\thonha</code></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-start border-4 mb-3" style="border-left-color: #11998e !important;">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">Bước 3: Import Database</h5>
+                            <p>Truy cập <code>http://localhost/phpmyadmin</code>, tạo DB tên <code>thonha</code> và import file <code>thonha.sql</code>.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-start border-4 mb-3" style="border-left-color: #11998e !important;">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">Bước 4: Chạy Website</h5>
+                            <p>Mở trình duyệt truy cập: <code>http://localhost/thonha</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- HƯỚNG DẪN SỬ DỤNG -->
+        <div id="usage" class="py-5">
+            <h2 class="mb-4 pb-3 border-bottom border-3" style="color: #11998e; border-bottom-color: #11998e !important; display: inline-block;"><i class="fas fa-book"></i> Hướng Dẫn Sử Dụng</h2>
+            
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <h4 class="mb-3 text-secondary">Dành cho Khách Hàng</h4>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1 text-success">1. Tìm dịch vụ</h5>
+                            </div>
+                            <p class="mb-1">Truy cập trang chủ, xem danh sách các dịch vụ sửa chữa có sẵn.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1 text-success">2. Đặt lịch</h5>
+                            </div>
+                            <p class="mb-1">Nhấn nút "Đặt lịch ngay", điền tên và số điện thoại vào form.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1 text-success">3. Chờ xác nhận</h5>
+                            </div>
+                            <p class="mb-1">Nhân viên sẽ gọi lại sau 5-10 phút để xác nhận địa chỉ và thời gian.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <h4 class="mb-3 text-secondary">Dành cho Admin</h4>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1 text-success">1. Đăng nhập</h5>
+                            </div>
+                            <p class="mb-1">Truy cập <code>/admin/login.php</code>. Tài khoản mặc định: <code>admin / 123456</code></p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1 text-success">2. Xử lý đơn</h5>
+                            </div>
+                            <p class="mb-1">Vào mục "Quản lý đơn hàng", bấm "Xác nhận" khi đã liên hệ khách.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1 text-success">3. Thêm dịch vụ</h5>
+                            </div>
+                            <p class="mb-1">Vào mục "Quản lý dịch vụ" để thêm mới hoặc cập nhật giá cả.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to Top Button -->
+    <button onclick="scrollToTop()" id="backToTop" class="btn btn-primary rounded-circle shadow" style="display: none; position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background-color: #11998e; border: none; z-index: 999;">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <script>
+        // Back to Top Button Logic
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.style.display = 'block';
+            } else {
+                backToTopBtn.style.display = 'none';
+            }
+        });
+        
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Active Navigation Link
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('[id]');
+            const scrollY = window.pageYOffset;
+            
+            sections.forEach(current => {
+                const sectionHeight = current.offsetHeight;
+                const sectionTop = current.offsetTop - 100;
+                const sectionId = current.getAttribute('id');
+                const navLink = document.querySelector(`.nav-link[href*="${sectionId}"]`);
+                
+                if (navLink) {
+                    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                        navLink.style.color = '#004d40';
+                        navLink.style.fontWeight = 'bold';
+                        navLink.style.backgroundColor = '#e0f2f1';
+                        navLink.style.borderRadius = '5px';
+                    } else {
+                        navLink.style.color = '#11998e';
+                        navLink.style.fontWeight = '600';
+                        navLink.style.backgroundColor = 'transparent';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

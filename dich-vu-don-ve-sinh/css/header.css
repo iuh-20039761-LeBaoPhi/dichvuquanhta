@@ -1,0 +1,68 @@
+/* ===== SITE HEADER ===== */
+
+.site-header {
+    background: var(--primary);
+    color: white;
+    padding: 14px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.site-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Logo */
+.site-logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+}
+
+/* Nav */
+.site-nav {
+    display: flex;
+    gap: 18px;
+}
+
+.site-nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+    text-decoration: underline;
+}
+
+/* User */
+.site-user-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.site-user {
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* Button */
+.site-btn {
+    background: white;
+    color: var(--primary);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.site-btn:hover {
+    background: #f1f1f1;
+}
