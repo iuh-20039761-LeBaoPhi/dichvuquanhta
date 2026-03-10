@@ -487,6 +487,11 @@
     const pickupVal = pickupInput.value;
     const deliveryVal = deliveryInput.value;
     const serviceType = serviceSelect.value;
+    if (!String(serviceType || "").trim()) {
+      pricePreview.style.display = "none";
+      feeInput.value = 0;
+      return;
+    }
     const weightInput = document.getElementById("weight");
     const codInput = document.getElementById("cod_amount");
     const weight = weightInput ? weightInput.value || 0 : 0;

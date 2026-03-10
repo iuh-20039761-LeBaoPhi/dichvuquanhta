@@ -51,7 +51,7 @@
 
     if (inPublicDir) {
       return {
-        brand: "../../index.html",
+        brand: "../index.html",
         home: "../index.html#hero",
         about: "../index.html#hero",
         services: "../index.html#services",
@@ -73,11 +73,11 @@
     }
 
     return {
-      brand: "../index.html",
+      brand: "index.html",
       home: "#hero",
       about: "#hero",
       services: "#services",
-      "delivery-services": "../index.html",
+      "delivery-services": "index.html",
       pricing: pricingLink,
       tracking: "#home-tracking",
       contact: "#contact",
@@ -163,6 +163,7 @@
   if (headerHost) applyLinks(headerHost, linkMap);
   if (headerHost) applyActiveNav(headerHost);
   if (footerHost) applyLinks(footerHost, linkMap);
+
   window.addEventListener("hashchange", function () {
     if (headerHost) applyActiveNav(headerHost);
   });

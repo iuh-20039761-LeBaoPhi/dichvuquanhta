@@ -1,17 +1,13 @@
 <!doctype html>
 <html lang="vi">
   <head>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hướng dẫn sử dụng hệ thống | FastGo</title>
+    <title>Hướng dẫn sử dụng hệ thống | Giao hàng và Vận chuyển</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
       rel="stylesheet"
-    />
-    <link
-      rel="icon"
-      type="image/x-icon"
-      href="public/assets/images/favicon.ico"
     />
     <link rel="stylesheet" href="assets/css/guide.css" />
   </head>
@@ -20,8 +16,22 @@
     <!-- HEADER -->
     <header>
       <div class="container">
-        <div class="logo">
-          <a href="../../index.html">FastGo</a>
+        <div class="logo" style="display: flex; align-items: center">
+          <a
+            href="../index.html"
+            style="display: flex; align-items: center; margin-right: 10px"
+          >
+            <img
+              src="assets/images/favicon.ico"
+              alt="Logo"
+              style="width: 40px; height: 40px"
+            />
+          </a>
+          <a href="index.html" style="text-decoration: none">
+            <span style="font-size: 1.5em; font-weight: bold; color: inherit"
+              >Giao hàng và Vận chuyển</span
+            >
+          </a>
         </div>
       </div>
     </header>
@@ -29,7 +39,9 @@
     <div class="container">
       <!-- INTRO -->
       <div style="margin-top: 40px; text-align: center">
-        <h1 style="color: var(--primary)">Tài liệu Hướng dẫn Sử dụng FastGo</h1>
+        <h1 style="color: var(--primary)">
+          Tài liệu Hướng dẫn Sử dụng Giao hàng và Vận chuyển
+        </h1>
         <p style="color: #666; max-width: 600px; margin: 10px auto">
           Hướng dẫn chi tiết quy trình vận hành cho Khách hàng, Tài xế và Quản
           trị viên.
@@ -78,7 +90,7 @@
               <div class="screenshot-placeholder">
                 <img
                   src="assets/images/step1-click-register.png"
-                  alt="Hướng dẫn click Đăng ký FastGo"
+                  alt="Hướng dẫn click Đăng ký Giao hàng và Vận chuyển"
                 />
               </div>
             </div>
@@ -245,8 +257,9 @@
             <div class="step-number">3</div>
             <h3>Chờ xác nhận</h3>
             <p>
-              Nhân viên FastGo sẽ gọi lại cho bạn để tư vấn, khảo sát (nếu cần)
-              và gửi báo giá chính thức theo thông tin thực tế.
+              Nhân viên Giao hàng và Vận chuyển sẽ gọi lại cho bạn để tư vấn,
+              khảo sát (nếu cần) và gửi báo giá chính thức theo thông tin thực
+              tế.
             </p>
           </div>
         </div>
@@ -455,7 +468,7 @@
           <div>
             <h3>🔍 Tra cứu hành trình</h3>
             <p>
-              Nhập mã đơn hàng (VD: <strong>FAST-XXXXXX</strong>) vào ô tìm kiếm
+              Nhập mã đơn hàng (VD: <strong>GH-XXXXXX</strong>) vào ô tìm kiếm
               để xem vị trí đơn hàng.
             </p>
             <div class="screenshot-placeholder">
@@ -483,6 +496,21 @@
                 cước, kích thước, COD và khai giá bảo hiểm.
               </li>
             </ul>
+
+            <h3 style="margin-top: 28px">⏱️ Thời gian giao hàng dự kiến</h3>
+            <p style="margin-bottom: 10px">Thời gian ETA hiển thị là <strong>thời gian tham chiếu</strong>. Thực tế có thể kéo dài hơn tùy:</p>
+            <ul class="field-list">
+              <li>📦 <strong>Số lượng kiện:</strong> ≥ 2 kiện → cộng thêm tối đa +24 giờ.</li>
+              <li>🏺 <strong>Hàng dễ vỡ / giá trị cao:</strong> +2–8 giờ xử lý cẩn thận.</li>
+              <li>🔋 <strong>Hàng có pin Lithium:</strong> +8–12 giờ kiểm định an toàn.</li>
+              <li>❄️ <strong>Hàng đông lạnh / cồng kềnh:</strong> +12 giờ chờ phương tiện chuyên dụng.</li>
+              <li>⚖️ <strong>Khối lượng &gt; 10kg:</strong> +4–10 giờ; &gt; 30kg: +tới 48 giờ.</li>
+              <li>🛡️ <strong>Khai giá bảo hiểm ≥ 20 triệu:</strong> +4 giờ kiểm định.</li>
+              <li>🗺️ <strong>Liên tỉnh:</strong> Phụ thuộc lịch xe/tàu, có thể trễ trong dịp lễ/Tết.</li>
+            </ul>
+            <div class="alert-box" style="background-color: #fff3cd; color: #856404; border-left-color: #ffc107; margin-top: 12px">
+              ⚠️ Xem chi tiết tại <a href="dieu-khoan-su-dung.html" style="color: #856404; font-weight: 600">Điều khoản sử dụng – Điều 7</a>.
+            </div>
           </div>
         </div>
       </section>
@@ -490,7 +518,42 @@
       <!-- PHẦN 4: FAQ -->
       <section id="faq">
         <h2 class="section-title">V. Hỏi đáp (FAQ)</h2>
-        <div style="display: grid; gap: 20px">
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
+            <h3
+              style="
+                color: var(--primary);
+                font-size: 18px;
+                margin-bottom: 10px;
+              "
+            >
+              Thời gian giao hàng có thể bị trễ không?
+            </h3>
+            <p>
+              Có. Thời gian ETA là <strong>dự kiến</strong>, không phải cam kết tuyệt đối.
+              Thời gian thực tế có thể kéo dài hơn nếu đơn có nhiều kiện, hàng đặc thù
+              (dễ vỡ, pin Lithium, đông lạnh...), khối lượng lớn, hoặc khai giá bảo hiểm
+              cao. Xem chi tiết tại
+              <a href="dieu-khoan-su-dung.html" style="color: var(--primary); font-weight: 600">Điều khoản – Điều 7</a>.
+            </p>
+          </div>
+
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
+            <h3
+              style="
+                color: var(--primary);
+                font-size: 18px;
+                margin-bottom: 10px;
+              "
+            >
+              Hàng cồng kềnh/đông lạnh có giao được không?
+            </h3>
+            <p>
+              Được. Chọn đúng <strong>Loại hàng hóa</strong> khi đặt đơn để hệ thống
+              đề xuất phương tiện phù hợp (xe tải lạnh, xe tải lớn...). Lưu ý thời gian
+              giao sẽ kéo dài hơn so với hàng thông thường.
+            </p>
+          </div>
+
           <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
             <h3
               style="
@@ -501,7 +564,7 @@
             >
               Shipper đến lấy hàng trong bao lâu?
             </h3>
-            <p>Thường từ 15 - 45 phút đối với đơn nội thành.</p>
+            <p>Thường từ 15 - 45 phút đối với đơn nội thành (gói Hỏa tốc). Gói Tiêu chuẩn hoặc Chậm có thể mất 1–3 giờ tùy lịch.</p>
           </div>
           <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
             <h3
@@ -513,7 +576,7 @@
             >
               Tôi có thể hủy đơn không?
             </h3>
-            <p>Có, bạn có thể hủy khi đơn ở trạng thái "Chờ xử lý".</p>
+            <p>Có, bạn có thể hủy khi đơn ở trạng thái "Chờ xử lý" (trước khi Shipper xác nhận lấy hàng). Xem chi tiết tại <a href="dieu-khoan-su-dung.html" style="color: var(--primary); font-weight: 600">Điều khoản – Điều 5</a>.</p>
           </div>
           <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
             <h3
@@ -560,11 +623,13 @@
       "
     >
       <div class="container">
-        <h3>FastGo Shipper Service</h3>
+        <h3>Giao hàng và Vận chuyển Shipper Service</h3>
         <p style="opacity: 0.8; font-size: 14px; margin: 10px 0">
           Dịch vụ giao hàng nhanh chóng - An toàn - Tiện lợi
         </p>
-        <p style="font-size: 13px">&copy; 2026 FastGo. All rights reserved.</p>
+        <p style="font-size: 13px">
+          &copy; 2026 Giao hàng và Vận chuyển. All rights reserved.
+        </p>
       </div>
     </footer>
   </body>

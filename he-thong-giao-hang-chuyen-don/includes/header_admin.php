@@ -26,7 +26,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <nav class="navbar">
         <div class="logo">
             <h1>
-                <a href="../../index.html" class="header-logo-link">
+                <a href="admin_stats.php" class="header-logo-link">
                     FastGo <span class="header-accent">Admin</span>
                 </a>
             </h1>

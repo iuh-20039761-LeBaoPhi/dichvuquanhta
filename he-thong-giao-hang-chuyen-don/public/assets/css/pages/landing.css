@@ -162,10 +162,7 @@
   flex-direction: column;
   height: 100%;
   box-shadow: 0 8px 22px rgba(10, 42, 102, 0.06);
-  transition:
-    transform 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .service-showcase-card:hover {
@@ -329,9 +326,7 @@
   border-radius: 10px;
   border: 1px solid #e7edf7;
   background: #f7f9fd;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .service-link-list a:hover {
@@ -352,9 +347,7 @@
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition:
-    filter 0.2s ease,
-    transform 0.2s ease;
+  transition: filter 0.2s ease, transform 0.2s ease;
 }
 
 .service-showcase-card > .service-action-btn {
@@ -750,6 +743,16 @@ main section h2.section-title {
   color: #111827;
 }
 
+#services .service-card-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+}
+
+#services .service-card-actions .service-action-btn {
+  margin-top: 0;
+}
+
 /* Tracking result card on landing page */
 #result-standard .tracking-card {
   background: #fff;
@@ -916,6 +919,7 @@ main section h2.section-title {
     transform: translateY(0);
   }
 }
+
 /* RESPONSIVE OVERRIDES */
 @media (max-width: 768px) {
   .hero-container {

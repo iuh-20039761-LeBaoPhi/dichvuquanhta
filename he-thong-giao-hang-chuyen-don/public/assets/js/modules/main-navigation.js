@@ -57,11 +57,14 @@
     link.addEventListener("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
+
       const parent = this.closest(".dropdown");
       const dropdownMenu = this.nextElementSibling;
       if (!parent || !dropdownMenu) return;
+
       const isOpen = parent.classList.contains("open");
       closeAllDropdowns();
+
       if (!isOpen) {
         parent.classList.add("open");
         this.setAttribute("aria-expanded", "true");
@@ -124,7 +127,6 @@
       document.querySelectorAll(".has-submenu").forEach((item) => {
         item.classList.remove("open");
       });
-
       closeAllDropdowns();
     }
   });
