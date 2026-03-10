@@ -279,42 +279,34 @@
                       style="font-weight: 600; color: #333"
                       >Dịch vụ quan tâm:</label
                     >
-                    <select
-                      id="serviceName"
-                      name="service"
-                      style="
-                        width: 100%;
-                        padding: 12px;
-                        border: 1px solid #ddd;
-                        border-radius: 8px;
-                        font-family: &quot;Quicksand&quot;, sans-serif;
-                        font-size: 0.95rem;
-                        transition: 0.3s;
-                      "
-                      onchange="this.style.borderColor = '#ddd'"
-                      onfocus="
-                        this.style.borderColor = '#007bff';
-                        this.style.boxShadow =
-                          '0 0 10px rgba(0, 123, 255, 0.2)';
-                      "
-                    >
-                      <option value="General">Chọn dịch vụ</option>
-                      <option value="Khám Thai">
+                    <div class="d-flex flex-wrap gap-2">
+
+                      <input type="checkbox" class="btn-check" id="service1" value="Tập Phục Hồi Chức Năng Tay" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service1">
                         Tập Phục Hồi Chức Năng Tay
-                      </option>
-                      <option value="Chăm Sóc Sau Sinh">
+                      </label>
+
+                      <input type="checkbox" class="btn-check" id="service2" value="Gói Chăm Sóc Toàn Diện 24/7" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service2">
                         Gói Chăm Sóc Toàn Diện 24/7
-                      </option>
-                      <option value="Khám Sơ Sinh">
+                      </label>
+
+                      <input type="checkbox" class="btn-check" id="service3" value="Hỗ Trợ Sinh Hoạt Hàng Ngày" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service3">
                         Hỗ Trợ Sinh Hoạt Hàng Ngày
-                      </option>
-                      <option value="Tư Vấn Nuôi Dạy Con">
+                      </label>
+
+                      <input type="checkbox" class="btn-check" id="service4" value="Vật Lý Trị Liệu Giảm Đau Cột Sống" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service4">
                         Vật Lý Trị Liệu Giảm Đau Cột Sống
-                      </option>
-                      <option value="Tư Vấn Trực Tuyến">
+                      </label>
+
+                      <input type="checkbox" class="btn-check" id="service5" value="Tư Vấn Trực Tuyến" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service5">
                         Tư Vấn Trực Tuyến
-                      </option>
-                    </select>
+                      </label>
+
+                    </div>
                     <input type="hidden" id="servicePrice" value="Liên hệ" />
                   </div>
 
@@ -736,7 +728,12 @@
             name: $("#customerName").val().trim(),
             phone: $("#customerPhone").val().trim(),
             email: $("#customerEmail").val().trim(),
-            service: $("#serviceName").val(),
+            service: $(".btn-check:checked")
+              .map(function () {
+                return this.value;
+              })
+              .get()
+              .join(", "),
             price: $("#servicePrice").val() || "N/A",
             note: $("#customerNote").val().trim(),
           };
