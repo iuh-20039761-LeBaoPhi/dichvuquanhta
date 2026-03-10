@@ -279,42 +279,34 @@
                       style="font-weight: 600; color: #333"
                       >Dịch vụ quan tâm:</label
                     >
-                    <select
-                      id="serviceName"
-                      name="service"
-                      style="
-                        width: 100%;
-                        padding: 12px;
-                        border: 1px solid #ddd;
-                        border-radius: 8px;
-                        font-family: &quot;Quicksand&quot;, sans-serif;
-                        font-size: 0.95rem;
-                        transition: 0.3s;
-                      "
-                      onchange="this.style.borderColor = '#ddd'"
-                      onfocus="
-                        this.style.borderColor = '#007bff';
-                        this.style.boxShadow =
-                          '0 0 10px rgba(0, 123, 255, 0.2)';
-                      "
-                    >
-                      <option value="General">Chọn dịch vụ</option>
-                      <option value="Khám Thai">
-                        Tập Phục Hồi Chức Năng Tay
-                      </option>
-                      <option value="Chăm Sóc Sau Sinh">
-                        Gói Chăm Sóc Toàn Diện 24/7
-                      </option>
-                      <option value="Khám Sơ Sinh">
-                        Hỗ Trợ Sinh Hoạt Hàng Ngày
-                      </option>
-                      <option value="Tư Vấn Nuôi Dạy Con">
-                        Vật Lý Trị Liệu Giảm Đau Cột Sống
-                      </option>
-                      <option value="Tư Vấn Trực Tuyến">
-                        Tư Vấn Trực Tuyến
-                      </option>
-                    </select>
+                    <div class="d-flex flex-wrap gap-2">
+
+                      <input type="checkbox" class="btn-check" id="service1" value="Chăm sóc người bệnh tại nhà (cơ bản)" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service1">
+                        Chăm sóc người bệnh tại nhà (cơ bản)
+                      </label>
+
+                      <input type="checkbox" class="btn-check" id="service2" value="Chăm sóc người bệnh sau phẫu thuật" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service2">
+                        Chăm sóc người bệnh sau phẫu thuật
+                      </label>
+
+                      <input type="checkbox" class="btn-check" id="service3" value="Chăm sóc người bệnh nặng / nằm một chỗ" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service3">
+                        Chăm sóc người bệnh nặng / nằm một chỗ
+                      </label>
+
+                      <input type="checkbox" class="btn-check" id="service4" value="Chăm sóc người bệnh ban đêm" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service4">
+                        Chăm sóc người bệnh ban đêm
+                      </label>
+
+                      <input type="checkbox" class="btn-check" id="service5" value="Nấu ăn dinh dưỡng cho người bệnh" autocomplete="off">
+                      <label class="btn btn-outline-success" for="service5">
+                        Nấu ăn dinh dưỡng cho người bệnh
+                      </label>
+
+                    </div>
                     <input type="hidden" id="servicePrice" value="Liên hệ" />
                   </div>
 
@@ -735,7 +727,12 @@
             name: $("#customerName").val().trim(),
             phone: $("#customerPhone").val().trim(),
             email: $("#customerEmail").val().trim(),
-            service: $("#serviceName").val(),
+            service: $(".btn-check:checked")
+              .map(function () {
+                return this.value;
+              })
+              .get()
+              .join(", "),
             price: $("#servicePrice").val() || "N/A",
             note: $("#customerNote").val().trim(),
           };
