@@ -271,6 +271,61 @@
     return { cityMap, cities };
   }
 
+  function initAddressAutocomplete() {
+    const datalistId = "booking-address-suggestions";
+    let datalist = document.getElementById(datalistId);
+    if (!datalist) {
+      datalist = document.createElement("datalist");
+      datalist.id = datalistId;
+      document.body.appendChild(datalist);
+    }
+
+    const { cityMap, cities } = getRouteLocationSource();
+    const suggestions = new Set([
+      "Số nhà ..., Quận 1, TP Hồ Chí Minh",
+      "Số nhà ..., Quận Cầu Giấy, Hà Nội",
+      "Số nhà ..., Quận Hải Châu, Đà Nẵng",
+    ]);
+
+    const sortedCities = toUniqueSortedLocations(cities);
+    let districtOptionCount = 0;
+    const maxDistrictOptions = 320;
+
+    sortedCities.forEach((city) => {
+      suggestions.add(city);
+      const districts = toUniqueSortedLocations(cityMap[city] || []);
+      districts.forEach((district) => {
+        if (districtOptionCount >= maxDistrictOptions) return;
+        suggestions.add(`${district}, ${city}`);
+        suggestions.add(`Số nhà ..., ${district}, ${city}`);
+        districtOptionCount += 1;
+      });
+    });
+
+    const optionList = Array.from(suggestions)
+      .filter(Boolean)
+      .slice(0, 700);
+    datalist.innerHTML = "";
+    optionList.forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      datalist.appendChild(option);
+    });
+
+    [
+      "pickup-addr",
+      "delivery-addr",
+      "pickup-addr-moving",
+      "delivery-addr-moving",
+    ]
+      .map((id) => document.getElementById(id))
+      .filter(Boolean)
+      .forEach((input) => {
+        input.setAttribute("list", datalistId);
+        input.setAttribute("autocomplete", "street-address");
+      });
+  }
+
   function bindCityDistrictFields(
     citySelect,
     districtSelect,
@@ -478,6 +533,45 @@
     });
   }
 
+  function toggleMovingPanelInputs(panel, isActive) {
+    if (!panel) return;
+    const controls = panel.querySelectorAll("input, select, textarea");
+    controls.forEach((control) => {
+      if (!control.dataset.wasRequired) {
+        control.dataset.wasRequired = control.required ? "true" : "false";
+      }
+      control.required = isActive && control.dataset.wasRequired === "true";
+      control.disabled = !isActive;
+    });
+  }
+
+  function syncMovingOtherServiceFields() {
+    const toggles = document.querySelectorAll(
+      ".moving-other-service-checkbox[data-target]",
+    );
+    toggles.forEach((toggle) => {
+      const targetId = String(toggle.dataset.target || "").trim();
+      const targetInput = targetId ? document.getElementById(targetId) : null;
+      if (!targetInput) return;
+
+      const enabled = !toggle.disabled && toggle.checked;
+      targetInput.disabled = !enabled;
+      if (!enabled) targetInput.value = "";
+    });
+  }
+
+  function initMovingOtherServiceFields() {
+    const toggles = document.querySelectorAll(
+      ".moving-other-service-checkbox[data-target]",
+    );
+    toggles.forEach((toggle) => {
+      if (toggle.dataset.bound === "true") return;
+      toggle.dataset.bound = "true";
+      toggle.addEventListener("change", syncMovingOtherServiceFields);
+    });
+    syncMovingOtherServiceFields();
+  }
+
   function initMovingServiceDetails() {
     const serviceSelect = document.getElementById("order-service-type-moving");
     if (!serviceSelect) return;
@@ -489,12 +583,27 @@
       const selected = String(serviceSelect.value || "").trim().toLowerCase();
       details.forEach((block) => {
         const key = String(block.dataset.movingService || "").toLowerCase();
-        block.style.display = key === selected ? "block" : "none";
+        const isActive = key === selected;
+        block.style.display = isActive ? "block" : "none";
+        toggleMovingPanelInputs(block, isActive);
       });
+      syncMovingOtherServiceFields();
     };
 
     serviceSelect.addEventListener("change", applyState);
     applyState();
+  }
+
+  function initBookingTriggerButtons() {
+    const triggers = document.querySelectorAll("[data-open-booking]");
+    triggers.forEach((trigger) => {
+      if (trigger.dataset.bookingBound === "true") return;
+      trigger.dataset.bookingBound = "true";
+      trigger.addEventListener("click", function (event) {
+        event.preventDefault();
+        window.openBookingModal(trigger.dataset.openBooking || "");
+      });
+    });
   }
 
   function ensureCoreBindings() {
@@ -519,7 +628,10 @@
       "corporate-fields-moving",
     );
     initDeliveryDimensionsToggle();
+    initMovingOtherServiceFields();
     initMovingServiceDetails();
+    initBookingTriggerButtons();
+    initAddressAutocomplete();
     initDeliveryItemFields();
     initDeliveryRouteFields();
     initInternationalDestinationFields();

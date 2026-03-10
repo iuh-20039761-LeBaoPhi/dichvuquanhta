@@ -39,7 +39,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
 <header id="header">
     <nav class="navbar container">
         <div class="logo">
-            <a href="../../index.html" style="text-decoration: none;">
+            <a href="shipper_dashboard.php" style="text-decoration: none;">
                 <h1>FastGo</h1>
             </a>
         </div>
@@ -90,4 +90,3 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
         <button class="hamburger-menu" id="hamburger-btn"><span></span><span></span><span></span></button>
     </nav>
 </header>
-

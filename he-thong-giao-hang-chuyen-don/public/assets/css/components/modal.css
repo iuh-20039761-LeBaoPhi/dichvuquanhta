@@ -161,6 +161,16 @@
   align-items: center;
 }
 
+.booking-order-form .moving-services-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+}
+
+.booking-order-form .moving-services-list .checkbox-inline {
+  align-items: flex-start;
+}
+
 .booking-order-form .detail-panel {
   margin-top: 12px;
 }
@@ -280,7 +290,8 @@
   }
 
   .booking-order-form .form-grid,
-  .booking-order-form .dimensions-grid {
+  .booking-order-form .dimensions-grid,
+  .booking-order-form .moving-services-list {
     grid-template-columns: 1fr;
   }
 

@@ -18,7 +18,7 @@ if (isset($_SESSION['user_id'])) {
 <header id="header">
     <nav class="navbar">
         <div class="logo">
-            <h1><a href="../../index.html" style="color: white; text-decoration: none;">FastGo</a></h1>
+            <h1><a href="index.php" style="color: white; text-decoration: none;">FastGo</a></h1>
         </div>
 
         <button class="hamburger-menu" id="hamburger-btn">
