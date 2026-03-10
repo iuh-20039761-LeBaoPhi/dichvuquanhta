@@ -541,7 +541,7 @@ function getLocation() {
 $(document).ready(async function () {
 
     const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec";
+        "https://script.google.com/macros/s/AKfycbzAYI7UOZOtkwHjrA7eSx9jyCXOY7b06Vo-SAI4xoHvy_ocKZBYxbDOuHODO9ytfncZSw/exec";
 
     const container = $("#servicesContainer");
 
@@ -953,100 +953,75 @@ $(document).ready(async function () {
        SUBMIT FORM
     =============================== */
 
-    $("#bookingForm").on("submit", async function (e) {
+    /* ===============================
+       SUBMIT FORM
+    =============================== */
 
-        e.preventDefault();
+    $("#bookingForm").submit(function(e) {
 
-        const btn = this.querySelector("button[type='submit']");
+        e.preventDefault(); // ngăn reload
 
-        btn.disabled = true;
-        btn.innerHTML = "Đang xử lý...";
+        // 1. Lấy thông tin Gói dịch vụ và Công việc đã chọn
+        const selectedPackage = $(".package-check:checked").data("label") || "Không chọn gói";
+        
+        const selectedJobs = $(".job-check:checked").map(function() {
+            return $(this).val();
+        }).get();
 
-
-        const selectedJobs = [];
-
-        document.querySelectorAll(".job-check:checked").forEach(el => {
-
-            selectedJobs.push(el.value);
-
-        });
-
-
-        const selectedPackage =
-            $(".package-check:checked").data("label");
-
+        // Lấy nút submit để tạo hiệu ứng loading
+        const submitBtn = $(this).find('button[type="submit"]');
+        const originalBtnText = submitBtn.html();
 
         const bookingData = {
-
             name: $("#customerName").val().trim(),
             phone: $("#customerPhone").val().trim(),
             email: $("#customerEmail").val().trim(),
-
+            address: $("#customerAddress").val().trim(),
             service: $("#serviceName").val(),
             package: selectedPackage,
-
-            jobs: selectedJobs.join(" | "),
-
+            jobs: selectedJobs.join(", "), // Nối các công việc bằng dấu phẩy
             startDate: $("#startDate").val(),
             endDate: $("#endDate").val(),
-
             startTime: $("#startTime").val(),
             endTime: $("#endTime").val(),
-
             extraRequest: $("#extraRequest").val(),
-
             price: $("#totalPrice").val(),
-
             note: $("#customerNote").val().trim()
-
         };
 
+        // Đổi trạng thái nút thành đang gửi
+        submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Đang xử lý...').prop('disabled', true);
 
-        try {
+        // 2. Gọi fetch tới SCRIPT_URL
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            // Dùng text/plain để tránh lỗi CORS chặn từ Google Apps Script
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify(bookingData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.result === "success") {
+                // Ẩn form và hiện thông báo thành công
+                $("#bookingForm").slideUp();
+                $("#successMessage").fadeIn();
 
-            const response = await fetch(SCRIPT_URL, {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "text/plain;charset=utf-8"
-                },
-
-                body: JSON.stringify(bookingData)
-
-            });
-
-            if (!response.ok) throw new Error("Server lỗi");
-
-
-            $("#bookingForm").hide();
-            $("#successMessage").show();
-
-
-            setTimeout(() => {
-
-                $("#bookingModal").hide();
-
-                $("#bookingForm")[0].reset();
-
-                $("#successMessage").hide();
-
-                $("#bookingForm").show();
-
-            }, 2000);
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert("Có lỗi xảy ra");
-
-            btn.disabled = false;
-            btn.innerHTML = "Xác Nhận Đặt Lịch";
-
-        }
-
+                // Tự động đóng modal sau 3 giây và reset lại form
+                setTimeout(() => {
+                    closeBookingModal();
+                    $("#bookingForm").show();
+                    $("#successMessage").hide();
+                    submitBtn.html(originalBtnText).prop('disabled', false);
+                }, 3000);
+            }
+        })
+        .catch(err => {
+            console.error("Lỗi khi gửi dữ liệu:", err);
+            alert("Đã xảy ra lỗi khi gửi dữ liệu! Vui lòng thử lại sau.");
+            submitBtn.html(originalBtnText).prop('disabled', false);
+        });
     });
 
 });
