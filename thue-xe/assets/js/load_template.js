@@ -83,16 +83,25 @@ function loadFooter() {
 }
 
 function highlightActiveNav() {
-    const page = new URLSearchParams(window.location.search).get('page') || 'home';
+    let page = new URLSearchParams(window.location.search).get('page');
+    if (!page) {
+        const m = window.location.pathname.match(/\/views\/pages\/([^/.]+)\.html/);
+        page = m ? m[1] : 'home';
+    }
     document.getElementById(`nav-${page}`)?.classList.add('active');
 }
 
 function injectBackBar() {
-    const page = new URLSearchParams(window.location.search).get('page') || 'home';
-    if (page === 'home') return;
+    let page = new URLSearchParams(window.location.search).get('page');
+    if (!page) {
+        const m = window.location.pathname.match(/\/views\/pages\/([^/.]+)\.html/);
+        page = m ? m[1] : 'home';
+    }
+    if (page === 'home' || !page) return;
 
     const PAGE_LABELS = {
         search:          'Tìm xe',
+        car_detail:      'Chi tiết xe',
         'car-detail':    'Chi tiết xe',
         about:           'Giới thiệu',
         services:        'Dịch vụ',
@@ -100,16 +109,17 @@ function injectBackBar() {
         contact:         'Liên hệ',
         booking_success: 'Đặt xe thành công',
         track_order:     'Theo dõi đơn',
+        terms:           'Điều khoản',
     };
 
-    // Trang cha (back về đâu khi không có history)
     const PARENT = {
-        'car-detail':    'index.php?page=search',
-        booking_success: 'index.php?page=home',
+        car_detail:      'views/pages/search.html',
+        'car-detail':    'views/pages/search.html',
+        booking_success: 'index.html',
     };
 
     const label  = PAGE_LABELS[page] || page;
-    const parent = PARENT[page] || 'index.php?page=home';
+    const parent = PARENT[page] || 'index.html';
 
     const bar = document.createElement('div');
     bar.className = 'back-bar';
@@ -122,7 +132,6 @@ function injectBackBar() {
             <span class="back-current">${label}</span>
         </div>`;
 
-    // Chèn ngay sau <header>
     const header = document.querySelector('header');
     if (header) header.insertAdjacentElement('afterend', bar);
     else document.body.insertAdjacentElement('afterbegin', bar);

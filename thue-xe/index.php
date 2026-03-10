@@ -8,7 +8,15 @@ $validPages = ['home', 'search', 'car-detail', 'about', 'services', 'guide', 'co
 
 if (!in_array($page, $validPages)) $page = 'home';
 
-$viewFile = BASE_PATH . '/views/pages/' . str_replace('-', '_', $page) . '.html';
+// Một số trang dùng file HTML đầy đủ ở root (dùng chung với web tĩnh GitHub Pages)
+$rootPages = ['terms'];
+
+if (in_array($page, $rootPages)) {
+    $viewFile = BASE_PATH . '/' . $page . '.html';
+} else {
+    $viewFile = BASE_PATH . '/views/pages/' . str_replace('-', '_', $page) . '.html';
+}
+
 if (file_exists($viewFile)) {
     readfile($viewFile);
 } else {

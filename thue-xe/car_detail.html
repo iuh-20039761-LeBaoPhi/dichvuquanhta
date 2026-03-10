@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title id="pageTitle">Chi Tiết Xe – Thuê Xe TP.HCM</title>
-  <meta name="description" id="metaDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe TP.HCM. Đặt xe trực tuyến. Hotline: 0123 456 789." />
-  <meta name="keywords" id="metaKeys" content="thuê xe tphcm, car rental hcm, chi tiết xe cho thuê" />
+  <title id="pageTitle">Chi Tiết Xe – Thuê Xe Toàn Quốc</title>
+  <meta name="description" id="metaDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe trên toàn quốc. Đặt xe trực tuyến. Hotline: 0123 456 789." />
+  <meta name="keywords" id="metaKeys" content="thuê xe toàn quốc, car rental nationwide, chi tiết xe cho thuê" />
   <meta name="robots" content="index, follow" />
-  <meta name="author" content="Thuê Xe TP.HCM" />
+  <meta name="author" content="Thuê Xe Toàn Quốc" />
   <meta name="geo.region" content="VN-SG" />
-  <meta name="geo.placename" content="Thành phố Hồ Chí Minh" />
+  <meta name="geo.placename" content="Việt Nam" />
   <meta name="theme-color" content="#667eea" />
   <link rel="canonical" id="metaCanonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/car_detail.html" />
   <link rel="icon" type="image/png" href="assets/images/cars/default.jpg" />
@@ -17,16 +17,16 @@
   <!-- Open Graph -->
   <meta property="og:type" content="product" />
   <meta property="og:url" id="ogUrl" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/car_detail.html" />
-  <meta property="og:title" id="ogTitle" content="Chi Tiết Xe – Thuê Xe TP.HCM" />
-  <meta property="og:description" id="ogDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe TP.HCM. Đặt xe trực tuyến." />
+  <meta property="og:title" id="ogTitle" content="Chi Tiết Xe – Thuê Xe Toàn Quốc" />
+  <meta property="og:description" id="ogDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe trên toàn quốc. Đặt xe trực tuyến." />
   <meta property="og:image" id="ogImage" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/camry.jpg" />
   <meta property="og:locale" content="vi_VN" />
   <meta property="og:site_name" content="Thuê Xe" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" id="twTitle" content="Chi Tiết Xe – Thuê Xe TP.HCM" />
-  <meta name="twitter:description" id="twDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe TP.HCM." />
+  <meta name="twitter:title" id="twTitle" content="Chi Tiết Xe – Thuê Xe Toàn Quốc" />
+  <meta name="twitter:description" id="twDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe trên toàn quốc." />
   <meta name="twitter:image" id="twImage" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/camry.jpg" />
 
   <!-- Schema.org BreadcrumbList -->
@@ -57,34 +57,73 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <!-- Custom CSS -->
   <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    .map-input-wrapper { position: relative; }
+    .map-input-wrapper .map-pin-btn {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--color-primary, #0ea5e9);
+      font-size: 1.2rem; cursor: pointer; padding: 2px 4px; z-index: 2;
+    }
+    .map-input-wrapper .map-pin-btn:hover { color: #0369a1; }
+    .map-input-wrapper input { padding-right: 36px; }
+    .pac-container { z-index: 99999 !important; }
+    .map-preview {
+      width: 100%; height: 220px; border-radius: 10px; border: 1px solid #dee2e6;
+      margin-top: 8px; display: none;
+    }
+    .map-preview.show { display: block; }
+    .map-selected-badge {
+      display: none; align-items: center; gap: 6px;
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;
+      padding: 6px 10px; margin-top: 6px; font-size: 0.82rem; color: #15803d;
+    }
+    .map-selected-badge.show { display: flex; }
+    .map-selected-badge a { color: #0ea5e9; font-size: 0.8rem; margin-left: auto; }
+  </style>
 </head>
 <body>
 
 <!-- ===== HEADER ===== -->
-<header class="header-gradient sticky-top">
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-      <div class="d-flex align-items-center gap-2">
-        <a href="../index.html">
-          <img src="assets/images/logo.png" alt="Logo" style="height:56px;object-fit:contain;mix-blend-mode:multiply;">
-        </a>
-        <a class="navbar-brand fw-bold mb-0 text-white" href="index.html" style="font-size:1.3rem;letter-spacing:1px;">Thuê Xe</a>
-      </div>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.html#cars">Xe nổi bật</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.html#services">Dịch vụ</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.html#about">Giới thiệu</a></li>
-          <li class="nav-item"><a class="nav-link" href="index.html#contact">Liên hệ</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</header>
+    <header class="header-gradient sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <div class="d-flex align-items-center gap-2">
+                    <a href="../index.html">
+                        <img src="assets/images/logo.png" alt="Logo" style="height:56px;object-fit:contain;mix-blend-mode:multiply;">
+                    </a>
+                    <a class="navbar-brand fw-bold mb-0 text-white" href="index.html" style="font-size:1.3rem;letter-spacing:1px;">Thuê Xe</a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-home" href="index.html">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-about" href="views/pages/about.html">Giới thiệu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-services" href="views/pages/services.html">Dịch vụ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-guide" href="views/pages/guide.html">Hướng dẫn</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-contact" href="views/pages/contact.html">Liên hệ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-track_order" href="views/pages/track_order.html">
+                                <i class="fas fa-search-location me-1"></i>Theo dõi đơn
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
 <!-- Back bar -->
 <div class="back-bar">
@@ -130,60 +169,75 @@
 </section>
 
 <!-- ===== FOOTER ===== -->
-<footer style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;padding:48px 0 24px;">
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-lg-3 col-md-6">
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <img src="assets/images/logo.png" alt="Thuê Xe Logo" style="height:48px;object-fit:contain;mix-blend-mode:multiply;background:white;border-radius:8px;padding:4px;">
-          <span style="font-size:1.3rem;font-weight:700;">Thuê Xe</span>
+    <footer class="footer-gradient text-white pt-5 pb-3">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <img src="assets/images/logo.png" alt="Thuê Xe Logo" style="height:48px;object-fit:contain;mix-blend-mode:multiply;background:white;border-radius:8px;padding:4px;">
+                        <span style="font-size:1.3rem;font-weight:700;">Thuê Xe Toàn Quốc</span>
+                    </div>
+                    <p style="color:rgba(255,255,255,.7);margin-bottom:20px">Dịch vụ cho thuê xe uy tín, chuyên nghiệp hàng đầu Việt Nam. Giao xe tận nơi, bảo hiểm đầy đủ.</p>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="text-white me-2"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold mb-3">Dịch Vụ</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="../vesinhcare/demo/" target="_blank" class="text-white text-decoration-none opacity-75">Lau Dọn Vệ Sinh</a></li>
+                        <li class="mb-2"><a href="../csmvb/" target="_blank" class="text-white text-decoration-none opacity-75">Chăm Sóc Mẹ &amp; Bé</a></li>
+                        <li class="mb-2"><a href="../web-cham-soc-vuon-nha/" target="_blank" class="text-white text-decoration-none opacity-75">Chăm Sóc Vườn &amp; Rẫy</a></li>
+                        <li class="mb-2"><a href="../giat-ui-nhanh/" target="_blank" class="text-white text-decoration-none opacity-75">Giặt Ủi Cao Cấp</a></li>
+                        <li class="mb-2"><a href="../tho-nha/" target="_blank" class="text-white text-decoration-none opacity-75">Thợ Nhà &amp; Sửa Chữa</a></li>
+                        <li class="mb-2"><a href="../csng/" target="_blank" class="text-white text-decoration-none opacity-75">Chăm Sóc Người Già</a></li>
+                        <li class="mb-2"><a href="../csbn/" target="_blank" class="text-white text-decoration-none opacity-75">Chăm Sóc Bệnh Nhân</a></li>
+                        <li class="mb-2"><a href="../he-thong-giao-hang-chuyen-don/" target="_blank" class="text-white text-decoration-none opacity-75">Giao Hàng Nhanh</a></li>
+                        <li class="mb-2"><a href="index.html" class="text-white text-decoration-none fw-semibold">Thuê Xe Toàn Quốc</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold mb-3">Liên Kết</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html" class="text-white text-decoration-none opacity-75">Trang chủ</a></li>
+                        <li class="mb-2"><a href="views/pages/about.html" class="text-white text-decoration-none opacity-75">Giới thiệu</a></li>
+                        <li class="mb-2"><a href="views/pages/services.html" class="text-white text-decoration-none opacity-75">Dịch vụ</a></li>
+                        <li class="mb-2"><a href="views/pages/contact.html" class="text-white text-decoration-none opacity-75">Liên hệ</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none opacity-75">Chính sách bảo mật</a></li>
+                        <li class="mb-2"><a href="terms.html" class="text-white text-decoration-none fw-semibold">Điều khoản sử dụng</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold mb-3">Liên Hệ</h5>
+                    <div class="mb-3">
+                        <i class="fas fa-phone-alt me-2" style="color:#667eea"></i>
+                        <strong>0775 472 347</strong><br>
+                        <small class="opacity-50 ms-4">Hotline 24/7</small>
+                    </div>
+                    <div class="mb-3">
+                        <i class="fas fa-envelope me-2" style="color:#667eea"></i>
+                        <strong>dichvuquanhta.vn@gmail.com</strong><br>
+                        <small class="opacity-50 ms-4">Email hỗ trợ</small>
+                    </div>
+                    <div>
+                        <i class="fas fa-map-marker-alt me-2" style="color:#667eea"></i>
+                        <strong>Phục vụ toàn quốc</strong>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" style="border-color:rgba(255,255,255,.1)">
+
+            <div class="text-center">
+                <p class="mb-0 opacity-50" style="font-size:.875rem">&copy; 2026 Thuê Xe. Bản quyền thuộc về công ty. Thiết kế với ❤️ tại Việt Nam.</p>
+            </div>
         </div>
-        <p style="color:rgba(255,255,255,.7);margin-bottom:20px">Dịch vụ cho thuê xe uy tín, chuyên nghiệp hàng đầu TP.HCM. Giao xe tận nơi, bảo hiểm đầy đủ.</p>
-        <div class="d-flex gap-2">
-          <a href="#" style="background:rgba(255,255,255,.1);color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;text-decoration:none;"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" style="background:rgba(255,255,255,.1);color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;text-decoration:none;"><i class="fab fa-instagram"></i></a>
-          <a href="#" style="background:rgba(255,255,255,.1);color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;text-decoration:none;"><i class="fab fa-youtube"></i></a>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <h6 class="fw-bold mb-3" style="color:rgba(255,255,255,.9)">Dịch Vụ</h6>
-        <ul class="list-unstyled">
-          <li class="mb-2"><a href="../vesinhcare/demo/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Lau Dọn Vệ Sinh</a></li>
-          <li class="mb-2"><a href="../csmvb/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Chăm Sóc Mẹ &amp; Bé</a></li>
-          <li class="mb-2"><a href="../web-cham-soc-vuon-nha/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Chăm Sóc Vườn &amp; Rẫy</a></li>
-          <li class="mb-2"><a href="../giat-ui-nhanh/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Giặt Ủi Cao Cấp</a></li>
-          <li class="mb-2"><a href="../tho-nha/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Thợ Nhà &amp; Sửa Chữa</a></li>
-          <li class="mb-2"><a href="../csng/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Chăm Sóc Người Già</a></li>
-          <li class="mb-2"><a href="../csbn/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Chăm Sóc Bệnh Nhân</a></li>
-          <li class="mb-2"><a href="../he-thong-giao-hang-chuyen-don/" target="_blank" style="color:rgba(255,255,255,.7);text-decoration:none;">Giao Hàng Nhanh</a></li>
-          <li class="mb-2"><a href="index.html" style="color:rgba(255,255,255,.9);text-decoration:none;font-weight:600;">Thuê Xe Tự Lái</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <h6 class="fw-bold mb-3" style="color:rgba(255,255,255,.9)">Liên Kết</h6>
-        <ul class="list-unstyled">
-          <li class="mb-2"><a href="index.html" style="color:rgba(255,255,255,.7);text-decoration:none;">Trang chủ</a></li>
-          <li class="mb-2"><a href="index.html#cars" style="color:rgba(255,255,255,.7);text-decoration:none;">Xe nổi bật</a></li>
-          <li class="mb-2"><a href="index.html#services" style="color:rgba(255,255,255,.7);text-decoration:none;">Dịch vụ</a></li>
-          <li class="mb-2"><a href="index.html#about" style="color:rgba(255,255,255,.7);text-decoration:none;">Giới thiệu</a></li>
-          <li class="mb-2"><a href="index.html#contact" style="color:rgba(255,255,255,.7);text-decoration:none;">Liên hệ</a></li>
-          <li class="mb-2"><a href="#" style="color:rgba(255,255,255,.7);text-decoration:none;">Chính sách bảo mật</a></li>
-          <li class="mb-2"><a href="terms.html" style="color:rgba(255,255,255,.9);text-decoration:none;font-weight:600;">Điều khoản sử dụng</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <h6 class="fw-bold mb-3" style="color:rgba(255,255,255,.9)">Liên Hệ</h6>
-        <div class="mb-3"><i class="fas fa-phone-alt me-2" style="color:#667eea"></i><strong>0123 456 789</strong><br><small style="color:rgba(255,255,255,.6);margin-left:22px">Hotline 24/7</small></div>
-        <div class="mb-3"><i class="fas fa-envelope me-2" style="color:#667eea"></i><strong>contact@carrental.com</strong><br><small style="color:rgba(255,255,255,.6);margin-left:22px">Email hỗ trợ</small></div>
-        <div><i class="fas fa-map-marker-alt me-2" style="color:#667eea"></i><strong>123 Đường ABC, Quận 1</strong><br><small style="color:rgba(255,255,255,.6);margin-left:22px">TP. Hồ Chí Minh</small></div>
-      </div>
-    </div>
-    <hr style="border-color:rgba(255,255,255,.1);margin-top:32px" />
-    <p class="text-center mb-0" style="color:rgba(255,255,255,.5);font-size:.875rem">
-      &copy; 2026 Thuê Xe. Bản quyền thuộc về công ty. Thiết kế với ❤️ tại Việt Nam.
-    </p>
-  </div>
-</footer>
+    </footer>
 
 <!-- Booking Modal -->
 <div class="modal fade" id="bookingModal" tabindex="-1">
@@ -220,11 +274,35 @@
             </div>
             <div class="col-md-12">
               <label class="form-label">Địa chỉ *</label>
-              <textarea class="form-control" name="customer_address" rows="2" required></textarea>
+              <textarea class="form-control" id="customerAddress" name="customer_address" rows="2" required placeholder="Số nhà, đường, phường, quận..."></textarea>
+              <div class="d-flex gap-2 mt-2 flex-wrap">
+                <button type="button" class="btn-map-picker" id="mapBtnAddr" onclick="CarMapPicker.toggle('addr')">
+                  <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="CarMapPicker.gps('addr')">
+                  <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
+                </button>
+              </div>
+              <div id="mapBoxAddr" class="map-picker-box" style="display:none; margin-top:10px;">
+                <div id="mapElAddr" class="map-el"></div>
+                <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền</p>
+              </div>
             </div>
             <div class="col-md-12">
               <label class="form-label">Địa điểm nhận xe</label>
-              <input type="text" class="form-control" name="pickup_location" placeholder="Để trống nếu nhận tại văn phòng" />
+              <input type="text" class="form-control" id="pickupLocation" name="pickup_location" placeholder="Để trống nếu nhận tại văn phòng">
+              <div class="d-flex gap-2 mt-2 flex-wrap">
+                <button type="button" class="btn-map-picker" id="mapBtnPickup" onclick="CarMapPicker.toggle('pickup')">
+                  <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="CarMapPicker.gps('pickup')">
+                  <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
+                </button>
+              </div>
+              <div id="mapBoxPickup" class="map-picker-box" style="display:none; margin-top:10px;">
+                <div id="mapElPickup" class="map-el"></div>
+                <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn địa điểm nhận xe</p>
+              </div>
             </div>
             <div class="col-md-12">
               <label class="form-label">Ghi chú</label>
@@ -371,9 +449,9 @@ function recalcAddonSummary(pricePerDay) {
 function updateSEO(car) {
     const carUrl = `${SITE_BASE}/car_detail.html?id=${car.id}`;
     const carImg = `${SITE_BASE}/assets/images/cars/${car.main_image}`;
-    const title = `${car.name} – Thuê Xe TP.HCM | ${fmt(car.price_per_day)}đ/ngày`;
-    const desc = `Thuê ${car.name} tại Thuê Xe TP.HCM. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá ${fmt(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
-    const keys = `thuê ${car.name.toLowerCase()}, thuê ${car.brand.toLowerCase()} tphcm, car rental hcm`;
+    const title = `${car.name} – Thuê Xe Toàn Quốc | ${fmt(car.price_per_day)}đ/ngày`;
+    const desc = `Thuê ${car.name} tại Thuê Xe trên toàn quốc. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá ${fmt(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
+    const keys = `thuê ${car.name.toLowerCase()}, thuê ${car.brand.toLowerCase()} toàn quốc, car rental nationwide`;
 
     document.title = title;
     document.getElementById('pageTitle').textContent = title;
@@ -680,5 +758,9 @@ function renderRelated(cars, currentId) {
 })();
 }); // end STATIC_DATA_PROMISE.then
 </script>
+
+<!-- Google Maps Places API -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/map-picker.js"></script>
 </body>
 </html>

@@ -1898,3 +1898,25 @@ body {
     .service-item-card     { padding: 16px 18px; }
     .detail-section-title  { font-size: 1.1rem; }
 }
+
+
+/* ===== Map Picker ===== */
+#mapPickerBox {
+    border-radius: 10px;
+    overflow: hidden;
+}
+#mapPickerEl {
+    height: 280px;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    z-index: 1;
+}
+#toggleMapBtn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+.leaflet-popup-content {
+    font-size: 0.82rem;
+    max-width: 220px;
+}

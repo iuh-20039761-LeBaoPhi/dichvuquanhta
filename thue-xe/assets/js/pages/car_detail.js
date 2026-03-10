@@ -359,11 +359,35 @@ function createBookingModal() {
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label">Địa chỉ *</label>
-                                    <textarea class="form-control" name="customer_address" rows="2" required></textarea>
+                                    <textarea class="form-control" id="customerAddress" name="customer_address" rows="2" required placeholder="Số nhà, đường, phường, quận..."></textarea>
+                                    <div class="d-flex gap-2 mt-2 flex-wrap">
+                                        <button type="button" class="btn-map-picker" id="mapBtnAddr" onclick="CarMapPicker.toggle('addr')">
+                                            <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="CarMapPicker.gps('addr')">
+                                            <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
+                                        </button>
+                                    </div>
+                                    <div id="mapBoxAddr" class="map-picker-box" style="display:none; margin-top:10px;">
+                                        <div id="mapElAddr" class="map-el"></div>
+                                        <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền</p>
+                                    </div>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label">Địa điểm nhận xe</label>
-                                    <input type="text" class="form-control" name="pickup_location" placeholder="Để trống nếu nhận tại văn phòng">
+                                    <input type="text" class="form-control" id="pickupLocation" name="pickup_location" placeholder="Để trống nếu nhận tại văn phòng">
+                                    <div class="d-flex gap-2 mt-2 flex-wrap">
+                                        <button type="button" class="btn-map-picker" id="mapBtnPickup" onclick="CarMapPicker.toggle('pickup')">
+                                            <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="CarMapPicker.gps('pickup')">
+                                            <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
+                                        </button>
+                                    </div>
+                                    <div id="mapBoxPickup" class="map-picker-box" style="display:none; margin-top:10px;">
+                                        <div id="mapElPickup" class="map-el"></div>
+                                        <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn địa điểm nhận xe</p>
+                                    </div>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label">Ghi chú</label>
