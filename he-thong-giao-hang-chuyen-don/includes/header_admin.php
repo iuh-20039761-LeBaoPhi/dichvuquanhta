@@ -62,15 +62,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
             <!-- Submenu: Nội dung -->
             <li
-                class="has-submenu <?php echo in_array($current_page, ['testimonials_manage.php', 'faq_manage.php', 'contact_manage.php']) ? 'active' : ''; ?>">
+                class="has-submenu <?php echo in_array($current_page, ['contact_manage.php']) ? 'active' : ''; ?>">
                 <a href="#" class="submenu-toggle">📝 Nội dung <span class="arrow">▼</span></a>
                 <ul class="submenu">
-                    <li class="<?php echo ($current_page === 'testimonials_manage.php') ? 'active' : ''; ?>">
-                        <a href="testimonials_manage.php">Đánh giá</a>
-                    </li>
-                    <li class="<?php echo ($current_page === 'faq_manage.php') ? 'active' : ''; ?>">
-                        <a href="faq_manage.php">FAQ</a>
-                    </li>
                     <li class="<?php echo ($current_page === 'contact_manage.php') ? 'active' : ''; ?>">
                         <a href="contact_manage.php">Liên hệ</a>
                     </li>
