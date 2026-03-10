@@ -13,13 +13,34 @@
       "Ghi chép tình trạng sức khỏe mỗi ngày"
     ],
     "pricing": [
-      { "label": "Theo giờ (120.000đ/giờ - tối thiểu 2 giờ)", "value": 120000 },
-      { "label": "Theo ca 4 giờ (450.000đ)", "value": 450000 },
-      { "label": "Ca 8 giờ (850.000đ)", "value": 850000 },
-      { "label": "Theo ngày 24h (1.500.000đ)", "value": 1500000 },
-      { "label": "Theo tháng 26 ngày (21.000.000đ)", "value": 21000000 }
+      {
+        "label": "Theo giờ (120.000đ/giờ)",
+        "value": 120000,
+        "hours": 1
+      },
+      {
+        "label": "Theo ca 4 giờ (450.000đ)",
+        "value": 450000,
+        "hours": 4
+      },
+      {
+        "label": "Ca 8 giờ (850.000đ)",
+        "value": 850000,
+        "hours": 8
+      },
+      {
+        "label": "Theo ngày 24h (1.500.000đ)",
+        "value": 1500000,
+        "hours": 24
+      },
+      {
+        "label": "Theo tháng 26 ngày",
+        "value": 21000000,
+        "hours": 624
+      }
     ]
   },
+
   {
     "id": 2,
     "name": "Chăm sóc người già sau bệnh / sau phẫu thuật",
@@ -34,12 +55,29 @@
       "Theo dõi bất thường và báo gia đình"
     ],
     "pricing": [
-      { "label": "Theo giờ (140.000đ/giờ)", "value": 140000 },
-      { "label": "Ca 8 giờ (1.000.000đ)", "value": 1000000 },
-      { "label": "Theo ngày 24h (1.800.000đ)", "value": 1800000 },
-      { "label": "Theo tháng 24/24 (30.000.000đ)", "value": 30000000 }
+      {
+        "label": "Theo giờ (140.000đ/giờ)",
+        "value": 140000,
+        "hours": 1
+      },
+      {
+        "label": "Ca 8 giờ (1.000.000đ)",
+        "value": 1000000,
+        "hours": 8
+      },
+      {
+        "label": "Theo ngày 24h (1.800.000đ)",
+        "value": 1800000,
+        "hours": 24
+      },
+      {
+        "label": "Theo tháng 24/24",
+        "value": 30000000,
+        "hours": 720
+      }
     ]
   },
+
   {
     "id": 3,
     "name": "Chăm sóc người già mất khả năng tự chăm sóc",
@@ -54,11 +92,24 @@
       "Hỗ trợ di chuyển bằng xe lăn"
     ],
     "pricing": [
-      { "label": "Ca 8 giờ (1.200.000đ)", "value": 1200000 },
-      { "label": "Theo ngày 24h (2.200.000đ)", "value": 2200000 },
-      { "label": "Theo tháng 24/24 (35.000.000đ)", "value": 35000000 }
+      {
+        "label": "Ca 8 giờ (1.200.000đ)",
+        "value": 1200000,
+        "hours": 8
+      },
+      {
+        "label": "Theo ngày 24h (2.200.000đ)",
+        "value": 2200000,
+        "hours": 24
+      },
+      {
+        "label": "Theo tháng 24/24",
+        "value": 35000000,
+        "hours": 720
+      }
     ]
   },
+
   {
     "id": 4,
     "name": "Chăm sóc người già ban đêm",
@@ -72,12 +123,29 @@
       "Nhắc uống thuốc ban đêm"
     ],
     "pricing": [
-      { "label": "19h–23h (500.000đ)", "value": 500000 },
-      { "label": "23h–5h (700.000đ)", "value": 700000 },
-      { "label": "19h–7h (1.100.000đ)", "value": 1100000 },
-      { "label": "30 đêm/tháng (29.000.000đ)", "value": 29000000 }
+      {
+        "label": "19h–23h",
+        "value": 500000,
+        "hours": 4
+      },
+      {
+        "label": "23h–5h",
+        "value": 700000,
+        "hours": 6
+      },
+      {
+        "label": "19h–7h",
+        "value": 1100000,
+        "hours": 12
+      },
+      {
+        "label": "30 đêm/tháng",
+        "value": 29000000,
+        "hours": 360
+      }
     ]
   },
+
   {
     "id": 5,
     "name": "Nấu ăn dinh dưỡng cho người cao tuổi",
@@ -91,12 +159,29 @@
       "Tư vấn chế độ ăn phù hợp"
     ],
     "pricing": [
-      { "label": "Theo giờ (100.000đ/giờ)", "value": 100000 },
-      { "label": "Nấu 1 bữa (280.000đ)", "value": 280000 },
-      { "label": "Nấu 2 bữa/ngày (500.000đ)", "value": 500000 },
-      { "label": "Theo tháng 26 ngày (11.000.000đ)", "value": 11000000 }
+      {
+        "label": "Theo giờ (100.000đ/giờ)",
+        "value": 100000,
+        "hours": 1
+      },
+      {
+        "label": "Nấu 1 bữa",
+        "value": 280000,
+        "hours": 2
+      },
+      {
+        "label": "Nấu 2 bữa/ngày",
+        "value": 500000,
+        "hours": 4
+      },
+      {
+        "label": "Theo tháng 26 ngày",
+        "value": 11000000,
+        "hours": 104
+      }
     ]
   },
+
   {
     "id": 6,
     "name": "Hỗ trợ việc nhà cho gia đình có người già",
@@ -110,10 +195,26 @@
       "Vệ sinh khu vực sinh hoạt"
     ],
     "pricing": [
-      { "label": "Theo giờ (90.000đ/giờ)", "value": 90000 },
-      { "label": "4 giờ (350.000đ)", "value": 350000 },
-      { "label": "8 giờ (680.000đ)", "value": 680000 },
-      { "label": "Theo tháng 26 ngày, 4h/ngày (8.500.000đ)", "value": 8500000 }
+      {
+        "label": "Theo giờ (90.000đ/giờ)",
+        "value": 90000,
+        "hours": 1
+      },
+      {
+        "label": "4 giờ",
+        "value": 350000,
+        "hours": 4
+      },
+      {
+        "label": "8 giờ",
+        "value": 680000,
+        "hours": 8
+      },
+      {
+        "label": "Theo tháng 26 ngày (4h/ngày)",
+        "value": 8500000,
+        "hours": 104
+      }
     ]
   }
 ]

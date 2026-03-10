@@ -35,12 +35,12 @@
       <div class="container">
         <a
           class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
-          href="index.html"
+          href="../index.html"
           style="color: #f06292"
         >
           <img
             style="width: 80px; height: 60px"
-            src="assets/logomvb.png"
+            src="assets/logo.png"
             alt="cham-soc-me-va-be"
           />
           <span>Chăm Sóc Mẹ và Bé</span>
@@ -359,6 +359,10 @@
                       </label>
 
                       <div id="servicePackages"></div>
+                    <div style="margin-bottom:15px;">
+                    <label style="font-weight:600">Chọn công việc</label>
+                    <div id="serviceJobs"></div>
+                    </div>
                     </div>
                     <div style="margin-bottom:15px;">
                     <label style="font-weight:600">Giờ bắt đầu</label>
@@ -397,7 +401,31 @@
                         style="width:100%;padding:10px;border:1px solid #ddd;border-radius:5px;">
                       </textarea>
                     </div>
+                    <div id="priceDetail" style="background:#f8f9fa;padding:10px;border-radius:8px;margin-bottom:10px;font-size:14px">
 
+                    <div style="display:flex;justify-content:space-between">
+                    <span>Tiền dịch vụ</span>
+                    <span id="basePrice">0 đ</span>
+                    </div>
+
+                    <div id="nightRow" style="display:none;justify-content:space-between;color:#dc3545">
+                    <span>Phụ thu ca đêm (+20%)</span>
+                    <span id="nightFee">0 đ</span>
+                    </div>
+
+                    <div id="holidayRow" style="display:none;justify-content:space-between;color:#dc3545">
+                    <span>Phụ thu ngày lễ (+30%)</span>
+                    <span id="holidayFee">0 đ</span>
+                    </div>
+
+                    <div id="travelRow" style="display:flex;justify-content:space-between">
+                    <span>Phí di chuyển</span>
+                    <span id="travelFee">50.000 đ</span>
+                    </div>
+
+                    <hr>
+
+                    </div>
                     <div style="margin-bottom:15px;">
                       <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">
                         Tổng tiền:
@@ -452,311 +480,514 @@
 <script>
 $(document).ready(async function () {
 
-  const SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec";
+    const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec";
 
-  const container = $("#servicesContainer");
-  let SERVICES = [];
+    const container = $("#servicesContainer");
 
-  /* =========================
-     LOAD JSON
-  ========================== */
-  try {
-    const response = await fetch("services.json");
-    SERVICES = await response.json();
-  } catch (error) {
-    console.error("Lỗi load services.json", error);
-    return;
-  }
+    let SERVICES = [];
+    let CURRENT_SERVICE = null;
 
-  /* =========================
-     RENDER SERVICES
-  ========================== */
-  SERVICES.forEach((service, index) => {
 
-    const reverse = index % 2 ? "flex-lg-row-reverse" : "";
-
-    const includesHTML = service.includes
-      .map(i => `
-        <li style="padding:8px 0;color:#555">
-          <i class="fas fa-check" style="color:#f06292;margin-right:10px"></i>
-          ${i}
-        </li>
-      `)
-      .join("");
-
-    const html = `
-      <div class="row align-items-center mb-5 g-5 ${reverse}">
-
-        <div class="col-lg-6">
-          <img src="${service.image}" class="img-fluid rounded-4 shadow-lg">
-        </div>
-
-        <div class="col-lg-6">
-
-          <h2 class="fw-bold display-6 mb-3" style="color:#f06292">
-            ${service.name}
-          </h2>
-
-          <p style="color:#666;line-height:1.8;margin-bottom:20px">
-            ${service.description}
-          </p>
-
-          <h4 class="fw-bold mb-3">Bao gồm</h4>
-
-          <ul class="list-unstyled mb-4">
-            ${includesHTML}
-          </ul>
-
-          <button
-            class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm"
-            style="background:#f06292;border:none"
-            data-id="${service.id}">
-
-            <i class="fas fa-calendar-check"></i>
-            Đặt Lịch Ngay
-
-          </button>
-
-        </div>
-      </div>
-    `;
-
-    container.append(html);
-  });
-
-  /* =========================
-     MỞ MODAL
-  ========================== */
-  $(document).on("click", ".btn-book", function () {
-
-    const id = $(this).data("id");
-    const service = SERVICES.find(s => s.id == id);
-
-    $("#serviceName").val(service.name);
-
-    const packages = $("#servicePackages");
-    packages.empty();
-
-    service.pricing.forEach(p => {
-
-      packages.append(`
-        <div style="margin-bottom:8px">
-
-          <label style="cursor:pointer">
-
-            <input
-              type="checkbox"
-              class="package-check"
-              value="${p.value}"
-              data-label="${p.label}">
-
-            ${p.label}
-
-          </label>
-
-        </div>
-      `);
-
-    });
-
-    $("#totalPrice").val("0 đ");
-    $("#bookingModal").fadeIn(300);
-  });
-
-  /* =========================
-     TÍNH SỐ NGÀY
-  ========================== */
-  function getDays() {
-
-    const start = $("#startDate").val();
-    const end   = $("#endDate").val();
-
-    if (!start || !end) return 1;
-
-    const s = new Date(start);
-    const e = new Date(end);
-
-    const diff = e - s;
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
-
-    return days > 0 ? days : 1;
-  }
-
-  /* =========================
-     TÍNH SỐ GIỜ
-  ========================== */
-  function getHours() {
-
-    const start = $("#startTime").val();
-    const end   = $("#endTime").val();
-
-    if (!start || !end) return 0;
-
-    const s = start.split(":");
-    const e = end.split(":");
-
-    const startMin = parseInt(s[0]) * 60 + parseInt(s[1]);
-    const endMin   = parseInt(e[0]) * 60 + parseInt(e[1]);
-
-    const diff = endMin - startMin;
-
-    return diff > 0 ? diff / 60 : 0;
-  }
-
-  /* =========================
-     TÍNH GIÁ
-  ========================== */
-  function updateTotalPrice() {
-
-    let total = 0;
-
-    const days  = getDays();
-    const hours = getHours();
-
-    $(".package-check:checked").each(function () {
-
-      let price = Number($(this).val());
-      let label = $(this).data("label").toLowerCase();
-
-      /* GÓI THEO GIỜ */
-      if (label.includes("giờ")) {
-
-        let baseHours = 1;
-        const match = label.match(/(\d+)\s*giờ/);
-
-        if (match) {
-          baseHours = parseInt(match[1]);
-        }
-
-        const pricePerHour = price / baseHours;
-        total += pricePerHour * hours * days;
-      }
-
-      /* GÓI THEO NGÀY */
-      else if (label.includes("ngày")) {
-        total += price * days;
-      }
-
-      /* GÓI THEO THÁNG */
-      else if (label.includes("tháng")) {
-        total += price;
-      }
-
-      /* GÓI CA */
-      else {
-        total += price * days;
-      }
-
-    });
-
-    $("#totalPrice").val(
-      Math.round(total).toLocaleString("vi-VN") + " đ"
-    );
-  }
-
-  /* =========================
-     EVENTS
-  ========================== */
-  $(document).on("change", ".package-check", updateTotalPrice);
-
-  $("#startDate").on("change", updateTotalPrice);
-  $("#endDate").on("change", updateTotalPrice);
-
-  $("#startTime").on("change", updateTotalPrice);
-  $("#endTime").on("change", updateTotalPrice);
-
-  /* =========================
-     ĐÓNG MODAL
-  ========================== */
-  window.closeBookingModal = function () {
-
-    $("#bookingModal").fadeOut(300);
-    $("#bookingForm")[0].reset();
-
-  };
-
-  /* =========================
-     SUBMIT FORM
-  ========================== */
-  $("#bookingForm").on("submit", async function (e) {
-
-    e.preventDefault();
-
-    const btn = this.querySelector("button[type='submit']");
-    btn.disabled = true;
-    btn.innerHTML = "Đang xử lý...";
-
-    const selectedPackages = [];
-
-    document
-      .querySelectorAll(".package-check:checked")
-      .forEach(el => {
-        selectedPackages.push(el.dataset.label);
-      });
-
-    const bookingData = {
-
-      name: $("#customerName").val().trim(),
-      phone: $("#customerPhone").val().trim(),
-      email: $("#customerEmail").val().trim(),
-
-      service: $("#serviceName").val(),
-
-      packages: selectedPackages.join(" | "),
-
-      startDate: $("#startDate").val(),
-      endDate: $("#endDate").val(),
-
-      startTime: $("#startTime").val(),
-      endTime: $("#endTime").val(),
-
-      extraRequest: $("#extraRequest").val(),
-
-      price: $("#totalPrice").val(),
-
-      note: $("#customerNote").val().trim()
-
-    };
+    /* ===============================
+       LOAD JSON
+    =============================== */
 
     try {
 
-      const response = await fetch(SCRIPT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify(bookingData)
-      });
+        const response = await fetch("services.json");
 
-      if (!response.ok) throw new Error("Server lỗi");
-
-      $("#bookingForm").hide();
-      $("#successMessage").show();
-
-      setTimeout(() => {
-
-        $("#bookingModal").hide();
-
-        $("#bookingForm")[0].reset();
-        $("#successMessage").hide();
-
-        $("#bookingForm").show();
-
-      }, 2000);
+        SERVICES = await response.json();
 
     } catch (error) {
 
-      console.error(error);
-
-      alert("Có lỗi xảy ra");
-
-      btn.disabled = false;
-      btn.innerHTML = "Xác Nhận Đặt Lịch";
+        console.error("Lỗi load services.json", error);
+        return;
 
     }
 
-  });
+
+    /* ===============================
+       RENDER SERVICES
+    =============================== */
+
+    SERVICES.forEach((service, index) => {
+
+        const reverse = index % 2 ? "flex-lg-row-reverse" : "";
+
+        const includesHTML = service.includes
+            .map(i => `
+                <li style="padding:8px 0;color:#555">
+                    <i class="fas fa-check" style="color:#f06292;margin-right:10px"></i>
+                    ${i}
+                </li>
+            `)
+            .join("");
+
+        const html = `
+
+        <div class="row align-items-center mb-5 g-5 ${reverse}">
+
+            <div class="col-lg-6">
+                <img src="${service.image}" class="img-fluid rounded-4 shadow-lg">
+            </div>
+
+            <div class="col-lg-6">
+
+                <h2 class="fw-bold display-6 mb-3" style="color:#f06292">
+                    ${service.name}
+                </h2>
+
+                <p style="color:#666;line-height:1.8;margin-bottom:20px">
+                    ${service.description}
+                </p>
+
+                <h4 class="fw-bold mb-3">Bao gồm</h4>
+
+                <ul class="list-unstyled mb-4">
+                    ${includesHTML}
+                </ul>
+
+                <button
+                    class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm"
+                    style="background:#f06292;border:none"
+                    data-id="${service.id}">
+
+                    <i class="fas fa-calendar-check"></i>
+                    Đặt Lịch Ngay
+
+                </button>
+
+            </div>
+        </div>
+
+        `;
+
+        container.append(html);
+
+    });
+
+
+    /* ===============================
+       RENDER MODAL DATA
+    =============================== */
+
+    function renderService(service) {
+
+        CURRENT_SERVICE = service;
+
+        $("#serviceName").val(service.name);
+
+
+        /* render packages */
+
+        const packages = $("#servicePackages");
+
+        packages.empty();
+
+        service.pricing.forEach(p => {
+
+            packages.append(`
+                <div style="margin-bottom:8px">
+
+                    <label style="cursor:pointer">
+
+                        <input
+                            type="radio"
+                            name="package"
+                            class="package-check"
+                            value="${p.value}"
+                            data-hours="${p.hours}"
+                            data-label="${p.label}">
+
+                        ${p.label}
+
+                    </label>
+
+                </div>
+            `);
+
+        });
+
+
+        /* render jobs */
+
+        const jobs = $("#serviceJobs");
+
+        jobs.empty();
+
+        service.includes.forEach(job => {
+
+            jobs.append(`
+                <div style="margin-bottom:6px">
+
+                    <label style="cursor:pointer">
+
+                        <input
+                            type="checkbox"
+                            class="job-check"
+                            value="${job}">
+
+                        ${job}
+
+                    </label>
+
+                </div>
+            `);
+
+        });
+
+        updateTotalPrice();
+
+    }
+
+
+    /* ===============================
+       OPEN MODAL
+    =============================== */
+
+    $(document).on("click", ".btn-book", function () {
+
+        const id = $(this).data("id");
+
+        const service = SERVICES.find(s => s.id == id);
+
+        renderService(service);
+
+        $("#bookingModal").fadeIn(300);
+
+    });
+
+
+    /* ===============================
+       CALCULATE DAYS
+    =============================== */
+
+    function getDays() {
+
+        const start = $("#startDate").val();
+        const end = $("#endDate").val();
+
+        if (!start || !end) return 1;
+
+        const s = new Date(start);
+        const e = new Date(end);
+
+        const diff = e - s;
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+
+        return days > 0 ? days : 1;
+
+    }
+
+
+    /* ===============================
+       CALCULATE HOURS
+    =============================== */
+
+    function getHours() {
+
+        const start = $("#startTime").val();
+        const end = $("#endTime").val();
+
+        if (!start || !end) return 0;
+
+        const s = start.split(":");
+        const e = end.split(":");
+
+        const startMin = parseInt(s[0]) * 60 + parseInt(s[1]);
+        const endMin = parseInt(e[0]) * 60 + parseInt(e[1]);
+
+        const diff = endMin - startMin;
+
+        return diff > 0 ? diff / 60 : 0;
+
+    }
+
+
+    /* ===============================
+       HOLIDAY CHECK
+    =============================== */
+
+    const HOLIDAYS = [
+        "01-01",
+        "30-04",
+        "01-05",
+        "02-09"
+    ];
+
+    function isHoliday(date) {
+
+        if (!date) return false;
+
+        const d = new Date(date);
+
+        const key =
+            String(d.getDate()).padStart(2, "0") +
+            "-" +
+            String(d.getMonth() + 1).padStart(2, "0");
+
+        return HOLIDAYS.includes(key);
+
+    }
+
+
+    /* ===============================
+       NIGHT SHIFT CHECK
+    =============================== */
+
+    function isNightShift() {
+
+        const start = $("#startTime").val();
+        const end = $("#endTime").val();
+
+        if (!start || !end) return false;
+
+        const startHour = parseInt(start.split(":")[0]);
+        const endHour = parseInt(end.split(":")[0]);
+
+        if (startHour >= 18) return true;
+        if (endHour <= 6) return true;
+        if (startHour < 6) return true;
+
+        return false;
+
+    }
+
+
+    function formatMoney(value) {
+
+        return Math.round(value).toLocaleString("vi-VN") + " đ";
+
+    }
+
+
+    /* ===============================
+       CALCULATE PRICE
+    =============================== */
+
+    function updateTotalPrice() {
+
+        if (!CURRENT_SERVICE) return;
+
+        const days = getDays();
+        const hours = getHours();
+
+        const selectedPackage = $(".package-check:checked");
+        const selectedJobs = $(".job-check:checked").length;
+
+        if (selectedPackage.length === 0 || selectedJobs === 0) {
+
+            $("#totalPrice").val("0 đ");
+            return;
+
+        }
+
+        const price = Number(selectedPackage.val());
+        const baseHours = Number(selectedPackage.data("hours"));
+        const totalJobs = CURRENT_SERVICE.includes.length;
+
+
+        /* giá 1 giờ */
+
+        const pricePerHour = price / baseHours;
+
+        /* giá 1 công việc */
+
+        const jobPrice = pricePerHour / totalJobs;
+
+
+        /* tiền dịch vụ */
+
+        let baseTotal = jobPrice * selectedJobs * hours * days;
+
+        $("#basePrice").text(formatMoney(baseTotal));
+
+
+        /* phụ thu */
+
+        let nightFee = 0;
+        let holidayFee = 0;
+        let travelFee = 50000;
+
+
+        /* ca đêm */
+
+        if (isNightShift()) {
+
+            nightFee = baseTotal * 0.2;
+
+            $("#nightRow").css("display", "flex");
+
+            $("#nightFee").text(formatMoney(nightFee));
+
+        } else {
+
+            $("#nightRow").hide();
+
+        }
+
+
+        /* ngày lễ */
+
+        if (isHoliday($("#startDate").val())) {
+
+            holidayFee = baseTotal * 0.3;
+
+            $("#holidayRow").css("display", "flex");
+
+            $("#holidayFee").text(formatMoney(holidayFee));
+
+        } else {
+
+            $("#holidayRow").hide();
+
+        }
+
+
+        /* hiển thị phí di chuyển */
+
+        $("#travelFee").text(formatMoney(travelFee));
+
+
+        /* tổng tiền */
+
+        let total = baseTotal + nightFee + holidayFee + travelFee;
+
+        $("#totalPrice").val(formatMoney(total));
+
+    }
+
+
+    /* ===============================
+       EVENTS
+    =============================== */
+
+    $(document).on("change", ".package-check", updateTotalPrice);
+    $(document).on("change", ".job-check", updateTotalPrice);
+
+    $("#startDate").on("change", updateTotalPrice);
+    $("#endDate").on("change", updateTotalPrice);
+    $("#startTime").on("change", updateTotalPrice);
+    $("#endTime").on("change", updateTotalPrice);
+
+
+    /* ===============================
+       CLOSE MODAL
+    =============================== */
+
+    window.closeBookingModal = function () {
+
+        $("#bookingModal").fadeOut(300);
+
+        $("#bookingForm")[0].reset();
+
+        $("#servicePackages").empty();
+        $("#serviceJobs").empty();
+
+    };
+
+
+    /* ===============================
+       SUBMIT FORM
+    =============================== */
+
+    $("#bookingForm").on("submit", async function (e) {
+
+        e.preventDefault();
+
+        const btn = this.querySelector("button[type='submit']");
+
+        btn.disabled = true;
+        btn.innerHTML = "Đang xử lý...";
+
+
+        const selectedJobs = [];
+
+        document.querySelectorAll(".job-check:checked").forEach(el => {
+
+            selectedJobs.push(el.value);
+
+        });
+
+
+        const selectedPackage =
+            $(".package-check:checked").data("label");
+
+
+        const bookingData = {
+
+            name: $("#customerName").val().trim(),
+            phone: $("#customerPhone").val().trim(),
+            email: $("#customerEmail").val().trim(),
+
+            service: $("#serviceName").val(),
+            package: selectedPackage,
+
+            jobs: selectedJobs.join(" | "),
+
+            startDate: $("#startDate").val(),
+            endDate: $("#endDate").val(),
+
+            startTime: $("#startTime").val(),
+            endTime: $("#endTime").val(),
+
+            extraRequest: $("#extraRequest").val(),
+
+            price: $("#totalPrice").val(),
+
+            note: $("#customerNote").val().trim()
+
+        };
+
+
+        try {
+
+            const response = await fetch(SCRIPT_URL, {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+
+                body: JSON.stringify(bookingData)
+
+            });
+
+            if (!response.ok) throw new Error("Server lỗi");
+
+
+            $("#bookingForm").hide();
+            $("#successMessage").show();
+
+
+            setTimeout(() => {
+
+                $("#bookingModal").hide();
+
+                $("#bookingForm")[0].reset();
+
+                $("#successMessage").hide();
+
+                $("#bookingForm").show();
+
+            }, 2000);
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Có lỗi xảy ra");
+
+            btn.disabled = false;
+            btn.innerHTML = "Xác Nhận Đặt Lịch";
+
+        }
+
+    });
 
 });
 </script>

@@ -14,27 +14,28 @@
     ],
     "pricing": [
       {
-        "label": "Theo giờ (130.000đ/giờ - tối thiểu 2 giờ)",
-        "value": 130000
+        "label": "Theo giờ (130.000đ/giờ)",
+        "value": 130000,
+        "hours": 1
       },
       {
         "label": "Theo ca 4 giờ (480.000đ)",
-        "value": 480000
+        "value": 480000,
+        "hours": 4
       },
       {
         "label": "Ca 8 giờ (900.000đ)",
-        "value": 900000
+        "value": 900000,
+        "hours": 8
       },
       {
         "label": "Theo ngày 24h (1.600.000đ)",
-        "value": 1600000
-      },
-      {
-        "label": "Theo tháng 26 ngày, 8h/ngày (22.000.000đ)",
-        "value": 22000000
+        "value": 1600000,
+        "hours": 24
       }
     ]
   },
+
   {
     "id": 202,
     "name": "Chăm sóc người bệnh sau phẫu thuật",
@@ -51,22 +52,22 @@
     "pricing": [
       {
         "label": "Theo giờ (150.000đ/giờ)",
-        "value": 150000
+        "value": 150000,
+        "hours": 1
       },
       {
         "label": "Ca 8 giờ (1.100.000đ)",
-        "value": 1100000
+        "value": 1100000,
+        "hours": 8
       },
       {
         "label": "Theo ngày 24h (1.900.000đ)",
-        "value": 1900000
-      },
-      {
-        "label": "Theo tháng ở lại 24/24 (32.000.000đ)",
-        "value": 32000000
+        "value": 1900000,
+        "hours": 24
       }
     ]
   },
+
   {
     "id": 203,
     "name": "Chăm sóc người bệnh nặng / nằm một chỗ",
@@ -83,18 +84,17 @@
     "pricing": [
       {
         "label": "Ca 8 giờ (1.300.000đ)",
-        "value": 1300000
+        "value": 1300000,
+        "hours": 8
       },
       {
         "label": "Theo ngày 24h (2.300.000đ)",
-        "value": 2300000
-      },
-      {
-        "label": "Theo tháng 24/24 (36.000.000đ)",
-        "value": 36000000
+        "value": 2300000,
+        "hours": 24
       }
     ]
   },
+
   {
     "id": 204,
     "name": "Chăm sóc người bệnh ban đêm",
@@ -109,23 +109,23 @@
     ],
     "pricing": [
       {
-        "label": "19h–23h (500.000đ)",
-        "value": 500000
+        "label": "Ca tối 4 giờ (500.000đ)",
+        "value": 500000,
+        "hours": 4
       },
       {
-        "label": "23h–5h (750.000đ)",
-        "value": 750000
+        "label": "Ca đêm 8 giờ (750.000đ)",
+        "value": 750000,
+        "hours": 8
       },
       {
-        "label": "19h–7h (1.200.000đ)",
-        "value": 1200000
-      },
-      {
-        "label": "30 đêm/tháng (30.000.000đ)",
-        "value": 30000000
+        "label": "Ca đêm dài 12 giờ (1.200.000đ)",
+        "value": 1200000,
+        "hours": 12
       }
     ]
   },
+
   {
     "id": 205,
     "name": "Nấu ăn dinh dưỡng cho người bệnh",
@@ -141,22 +141,22 @@
     "pricing": [
       {
         "label": "Theo giờ (110.000đ/giờ)",
-        "value": 110000
+        "value": 110000,
+        "hours": 1
       },
       {
-        "label": "Nấu 1 bữa (300.000đ)",
-        "value": 300000
+        "label": "Ca 4 giờ (360.000đ)",
+        "value": 360000,
+        "hours": 4
       },
       {
-        "label": "Nấu 2 bữa/ngày (550.000đ)",
-        "value": 550000
-      },
-      {
-        "label": "Theo tháng 26 ngày (12.000.000đ)",
-        "value": 12000000
+        "label": "Ca 8 giờ (700.000đ)",
+        "value": 700000,
+        "hours": 8
       }
     ]
   },
+
   {
     "id": 206,
     "name": "Hỗ trợ việc nhà khi có người bệnh",
@@ -172,19 +172,18 @@
     "pricing": [
       {
         "label": "Theo giờ (95.000đ/giờ)",
-        "value": 95000
+        "value": 95000,
+        "hours": 1
       },
       {
-        "label": "4 giờ (360.000đ)",
-        "value": 360000
+        "label": "Ca 4 giờ (360.000đ)",
+        "value": 360000,
+        "hours": 4
       },
       {
-        "label": "8 giờ (700.000đ)",
-        "value": 700000
-      },
-      {
-        "label": "Theo tháng 26 ngày, 4h/ngày (9.000.000đ)",
-        "value": 9000000
+        "label": "Ca 8 giờ (700.000đ)",
+        "value": 700000,
+        "hours": 8
       }
     ]
   }
