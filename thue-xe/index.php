@@ -8,8 +8,9 @@ $validPages = ['home', 'search', 'car-detail', 'about', 'services', 'guide', 'co
 
 if (!in_array($page, $validPages)) $page = 'home';
 
-// Một số trang dùng file HTML đầy đủ ở root (dùng chung với web tĩnh GitHub Pages)
-$rootPages = ['terms'];
+// Các trang dùng file HTML đầy đủ ở root (dùng chung với web tĩnh GitHub Pages)
+// 'home' trỏ về index.html để tránh trùng lặp nội dung với views/pages/home.html
+$rootPages = ['terms', 'home'];
 
 if (in_array($page, $rootPages)) {
     $viewFile = BASE_PATH . '/' . $page . '.html';

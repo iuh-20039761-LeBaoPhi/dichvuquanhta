@@ -108,7 +108,7 @@ $adminName  = $_SESSION['admin_name'] ?? 'Admin';
                          style="width:72px;height:72px;background:linear-gradient(135deg,#6366f1,#8b5cf6);">
                         <i class="fas fa-car fa-2x text-white"></i>
                     </div>
-                    <h3 class="fw-bold mb-1">CarRental Admin</h3>
+                    <h3 class="fw-bold mb-1">Thuê Xe Admin</h3>
                     <p class="text-muted small">Đăng nhập để quản lý hệ thống</p>
                 </div>
 
@@ -152,7 +152,7 @@ $adminName  = $_SESSION['admin_name'] ?? 'Admin';
 <!-- ========== ADMIN PANEL ========== -->
 <div class="sidebar">
     <a href="index.php" class="sidebar-brand">
-        <i class="fas fa-car me-2"></i>CarRental Admin
+        <i class="fas fa-car me-2"></i>Thuê Xe Admin
     </a>
     <nav class="sidebar-nav">
         <ul class="nav flex-column">
@@ -183,7 +183,7 @@ $adminName  = $_SESSION['admin_name'] ?? 'Admin';
 <div class="main-content">
     <div class="top-bar">
         <h6 class="mb-0 fw-bold" id="pageTitle">Dashboard</h6>
-        <a href="../index.php?page=home" target="_blank" class="btn btn-sm btn-outline-primary">
+        <a href="../index.html?page=home" target="_blank" class="btn btn-sm btn-outline-primary">
             <i class="fas fa-external-link-alt me-1"></i>Xem trang web
         </a>
     </div>

@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS services (
     name        VARCHAR(255) NOT NULL,
     description TEXT,
     price       DECIMAL(12,0) NOT NULL DEFAULT 0,
+    unit        VARCHAR(20)  NOT NULL DEFAULT 'chuyến' COMMENT 'ngày | chuyến',
     icon        VARCHAR(100) DEFAULT 'star',
     status      TINYINT(1) NOT NULL DEFAULT 1,
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -103,16 +104,16 @@ CREATE TABLE IF NOT EXISTS admins (
 
 -- Tài khoản admin mặc định: admin / admin123
 INSERT INTO admins (username, password, full_name, email) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Quản trị viên', 'admin@carrental.com');
+('admin', '$2y$10$lEmVivDyXWB.Oe.XyB9uK.fg57b63A.CbDA5Lqh1aBZhABqIxnhO6', 'Quản trị viên', 'admin@carrental.com');
 
 -- Dịch vụ mẫu
-INSERT INTO services (name, description, price, icon, status) VALUES
-('Giao xe tận nơi',   'Giao xe đến tận địa chỉ của bạn trong nội thành, tiết kiệm thời gian và thuận tiện tối đa.',         100000, 'map-marker-alt', 1),
-('Bảo hiểm mở rộng',  'Gói bảo hiểm toàn diện bảo vệ xe và người lái trong suốt chuyến đi, an tâm không lo rủi ro.',        150000, 'shield-alt',     1),
-('Xe có tài xế',      'Tài xế chuyên nghiệp, am hiểu đường xá TP.HCM, phong thái lịch sự và nhiệt tình phục vụ.',           300000, 'user-tie',       1),
-('GPS định vị',       'Thiết bị GPS dẫn đường chính xác, bản đồ cập nhật mới nhất, không lo lạc đường.',                     50000, 'map-marker-alt', 1),
-('Ghế trẻ em',        'Ghế ngồi an toàn cho bé dưới 10 tuổi, đạt tiêu chuẩn an toàn quốc tế.',                              100000, 'baby',           1),
-('WiFi di động',      'Bộ phát WiFi di động tốc độ cao, kết nối internet ổn định suốt chuyến đi.',                            80000, 'wifi',           1);
+INSERT INTO services (name, description, price, unit, icon, status) VALUES
+('Giao xe tận nơi',   'Giao xe đến tận địa chỉ của bạn trong nội thành, tiết kiệm thời gian và thuận tiện tối đa.',         100000, 'chuyến', 'map-marker-alt', 1),
+('Bảo hiểm mở rộng',  'Gói bảo hiểm toàn diện bảo vệ xe và người lái trong suốt chuyến đi, an tâm không lo rủi ro.',        150000, 'ngày',   'shield-alt',     1),
+('Xe có tài xế',      'Tài xế chuyên nghiệp, am hiểu đường xá TP.HCM, phong thái lịch sự và nhiệt tình phục vụ.',           300000, 'ngày',   'user-tie',       1),
+('GPS định vị',       'Thiết bị GPS dẫn đường chính xác, bản đồ cập nhật mới nhất, không lo lạc đường.',                     50000,  'chuyến', 'map-marker-alt', 1),
+('Ghế trẻ em',        'Ghế ngồi an toàn cho bé dưới 10 tuổi, đạt tiêu chuẩn an toàn quốc tế.',                              100000, 'chuyến', 'baby',           1),
+('WiFi di động',      'Bộ phát WiFi di động tốc độ cao, kết nối internet ổn định suốt chuyến đi.',                            80000,  'chuyến', 'wifi',           1);
 
 -- Xe mẫu
 INSERT INTO cars (name, brand, model, year, seats, transmission, fuel_type, price_per_day, main_image, description, features, status) VALUES
@@ -219,3 +220,17 @@ INSERT INTO bookings (car_id, customer_name, customer_email, customer_phone, cus
  '30 Lê Duẩn, Quận 1, TP.HCM', '079195009012',
  '2026-02-01', '2026-02-05', '30 Lê Duẩn, Quận 1, TP.HCM',
  'Đưa gia đình 7 người đi Vũng Tàu', 4, 3400000, 'completed', '2026-01-29 10:00:00');
+
+-- =====================================================
+-- BẢNG LIÊN HỆ (contacts)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS contacts (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    name       VARCHAR(255) NOT NULL,
+    phone      VARCHAR(20)  NOT NULL,
+    email      VARCHAR(255) DEFAULT '',
+    subject    VARCHAR(255) DEFAULT '',
+    message    TEXT NOT NULL,
+    is_read    TINYINT(1) NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

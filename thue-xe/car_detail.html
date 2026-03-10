@@ -310,67 +310,8 @@
             </div>
             <div class="col-12">
               <label class="form-label fw-semibold">Dịch vụ đi kèm <span class="text-muted fw-normal">(không bắt buộc)</span></label>
-              <div class="row g-2">
-                <div class="col-md-6">
-                  <div class="form-check border rounded p-2 h-100">
-                    <input class="form-check-input" type="checkbox" name="addon_services" value="Giao xe tận nơi" id="svcDelivery">
-                    <label class="form-check-label w-100" for="svcDelivery">
-                      <i class="fas fa-map-marker-alt text-primary me-1"></i> Giao xe tận nơi
-                      <span class="float-end text-primary fw-semibold">+100.000đ/chuyến</span>
-                      <small class="d-block text-muted">Giao xe đến tận địa chỉ của bạn</small>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-check border rounded p-2 h-100">
-                    <input class="form-check-input" type="checkbox" name="addon_services" value="Bảo hiểm mở rộng" id="svcInsurance">
-                    <label class="form-check-label w-100" for="svcInsurance">
-                      <i class="fas fa-shield-alt text-primary me-1"></i> Bảo hiểm mở rộng
-                      <span class="float-end text-primary fw-semibold">+150.000đ/ngày</span>
-                      <small class="d-block text-muted">Bảo hiểm toàn diện, an tâm hơn</small>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-check border rounded p-2 h-100">
-                    <input class="form-check-input" type="checkbox" name="addon_services" value="Xe có tài xế" id="svcDriver">
-                    <label class="form-check-label w-100" for="svcDriver">
-                      <i class="fas fa-user-tie text-primary me-1"></i> Xe có tài xế
-                      <span class="float-end text-primary fw-semibold">+300.000đ/ngày</span>
-                      <small class="d-block text-muted">Tài xế chuyên nghiệp, am hiểu đường</small>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-check border rounded p-2 h-100">
-                    <input class="form-check-input" type="checkbox" name="addon_services" value="GPS định vị" id="svcGPS">
-                    <label class="form-check-label w-100" for="svcGPS">
-                      <i class="fas fa-map-marker-alt text-primary me-1"></i> GPS định vị
-                      <span class="float-end text-primary fw-semibold">+50.000đ/chuyến</span>
-                      <small class="d-block text-muted">Thiết bị dẫn đường chính xác</small>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-check border rounded p-2 h-100">
-                    <input class="form-check-input" type="checkbox" name="addon_services" value="Ghế trẻ em" id="svcBabySeat">
-                    <label class="form-check-label w-100" for="svcBabySeat">
-                      <i class="fas fa-baby text-primary me-1"></i> Ghế trẻ em
-                      <span class="float-end text-primary fw-semibold">+100.000đ/chuyến</span>
-                      <small class="d-block text-muted">Ghế an toàn cho bé dưới 10 tuổi</small>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-check border rounded p-2 h-100">
-                    <input class="form-check-input" type="checkbox" name="addon_services" value="WiFi di động" id="svcWifi">
-                    <label class="form-check-label w-100" for="svcWifi">
-                      <i class="fas fa-wifi text-primary me-1"></i> WiFi di động
-                      <span class="float-end text-primary fw-semibold">+80.000đ/chuyến</span>
-                      <small class="d-block text-muted">Kết nối internet ổn định suốt chuyến đi</small>
-                    </label>
-                  </div>
-                </div>
+              <div class="row g-2" id="addonServiceList">
+                <div class="col-12 text-muted small py-2">Đang tải dịch vụ...</div>
               </div>
             </div>
           </div>
@@ -409,14 +350,36 @@ const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe';
 const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
 const today = () => new Date().toISOString().split('T')[0];
 
-const ADDON_PRICES = {
-    'Giao xe tận nơi':  { price: 100000, unit: 'chuyến' },
-    'Bảo hiểm mở rộng': { price: 150000, unit: 'ngày' },
-    'Xe có tài xế':      { price: 300000, unit: 'ngày' },
-    'GPS định vị':       { price:  50000, unit: 'chuyến' },
-    'Ghế trẻ em':        { price: 100000, unit: 'chuyến' },
-    'WiFi di động':      { price:  80000, unit: 'chuyến' },
-};
+// Build ADDON_PRICES from static-data.json services
+const ADDON_PRICES = {};
+(STATIC_DATA.services || []).forEach(svc => {
+    ADDON_PRICES[svc.name] = { price: Number(svc.price), unit: svc.unit || 'chuyến' };
+});
+
+// Render addon checkboxes from static-data
+function renderAddonServices() {
+    const UNIT_LABELS = { 'ngày': '/ngày', 'chuyến': '/chuyến' };
+    const services = STATIC_DATA.services || [];
+    const container = document.getElementById('addonServiceList');
+    if (!container) return;
+    if (!services.length) {
+        container.innerHTML = '<div class="col-12 text-muted small">Không có dịch vụ đi kèm</div>';
+        return;
+    }
+    container.innerHTML = services.map(svc => `
+        <div class="col-md-6">
+            <div class="form-check border rounded p-2 h-100">
+                <input class="form-check-input" type="checkbox" name="addon_services"
+                       value="${svc.name}" id="svc_${svc.id}">
+                <label class="form-check-label w-100" for="svc_${svc.id}">
+                    <i class="fas fa-${svc.icon} text-primary me-1"></i> ${svc.name}
+                    <span class="float-end text-primary fw-semibold">+${fmt(svc.price)}đ${UNIT_LABELS[svc.unit] || ''}</span>
+                    <small class="d-block text-muted">${svc.description || ''}</small>
+                </label>
+            </div>
+        </div>
+    `).join('');
+}
 
 function recalcAddonSummary(pricePerDay) {
     const pickup = document.getElementById('pickupDate');
@@ -577,6 +540,47 @@ function renderCar(car) {
                     </div>
 
                     <hr />
+                    <h5 class="fw-bold mb-3">Thông Tin Chi Tiết</h5>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6 col-md-4">
+                            <div class="p-3 bg-light rounded h-100">
+                                <small class="text-muted d-block mb-1"><i class="fas fa-id-card me-1 text-primary"></i>Biển số</small>
+                                <span class="fw-bold">${car.license_plate || '—'}</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-3 bg-light rounded h-100">
+                                <small class="text-muted d-block mb-1"><i class="fas fa-calendar-alt me-1 text-primary"></i>Năm sản xuất</small>
+                                <span class="fw-bold">${car.manufacture_year || car.year || '—'}</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-3 bg-light rounded h-100">
+                                <small class="text-muted d-block mb-1"><i class="fas fa-tachometer-alt me-1 text-primary"></i>Quãng đường đã chạy</small>
+                                <span class="fw-bold">${car.mileage != null ? Number(car.mileage).toLocaleString('vi-VN') + ' km' : '—'}</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-3 bg-light rounded h-100">
+                                <small class="text-muted d-block mb-1"><i class="fas fa-palette me-1 text-primary"></i>Màu xe</small>
+                                <span class="fw-bold">${car.color || '—'}</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-3 bg-light rounded h-100">
+                                <small class="text-muted d-block mb-1"><i class="fas fa-industry me-1 text-primary"></i>Hãng xe</small>
+                                <span class="fw-bold">${car.brand || '—'}</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="p-3 bg-light rounded h-100">
+                                <small class="text-muted d-block mb-1"><i class="fas fa-car me-1 text-primary"></i>Loại xe</small>
+                                <span class="fw-bold">${car.car_type || '—'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
                     <h5 class="fw-bold mb-2">Mô Tả</h5>
                     <p class="text-muted">${car.description}</p>
 
@@ -628,7 +632,7 @@ function renderCar(car) {
 
                     <hr />
                     <div class="text-center">
-                        <p class="mb-1"><i class="fas fa-phone text-primary me-2"></i><strong>0123 456 789</strong></p>
+                        <p class="mb-1"><i class="fas fa-phone text-primary me-2"></i><strong>0775 472 347</strong></p>
                         <small class="text-muted">Hỗ trợ 24/7</small>
                     </div>
                 </div>
@@ -752,6 +756,7 @@ function renderRelated(cars, currentId) {
         return;
     }
 
+    renderAddonServices();
     updateSEO(car);
     renderCar(car);
     renderRelated(STATIC_DATA.cars, carId);
