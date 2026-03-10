@@ -5,14 +5,9 @@
 let currentCar = null;
 let currentImages = [];
 
-const ADDON_PRICES = {
-    'Giao xe tận nơi':   { price: 100000, unit: 'chuyến' },
-    'Bảo hiểm mở rộng':  { price: 150000, unit: 'ngày' },
-    'Xe có tài xế':       { price: 300000, unit: 'ngày' },
-    'GPS định vị':        { price:  50000, unit: 'chuyến' },
-    'Ghế trẻ em':         { price: 100000, unit: 'chuyến' },
-    'WiFi di động':       { price:  80000, unit: 'chuyến' },
-};
+// Sẽ được nạp từ API.services.getAll() khi khởi động
+let ADDON_SERVICES = [];
+let ADDON_PRICES   = {}; // { 'Tên dịch vụ': { price, unit } }
 
 document.addEventListener('DOMContentLoaded', async () => {
     const carId = Utils.getUrlParam('id');
@@ -29,10 +24,35 @@ async function loadCarDetail(carId) {
     // Show loading
     Utils.showLoading(document.getElementById('carDetail'));
     Utils.showLoading(document.getElementById('bookingForm'));
-    
-    // Call API
-    const result = await API.cars.getById(carId);
-    
+
+    // Tải song song: thông tin xe + danh sách dịch vụ addon
+    const [result, svcResult] = await Promise.all([
+        API.cars.getById(carId),
+        API.services.getAll()
+    ]);
+
+    // Xây dựng ADDON_PRICES từ dữ liệu API
+    if (svcResult.success && svcResult.data && svcResult.data.length) {
+        ADDON_SERVICES = svcResult.data;
+        ADDON_PRICES = {};
+        svcResult.data.forEach(svc => {
+            ADDON_PRICES[svc.name] = { price: Number(svc.price), unit: svc.unit || 'chuyến' };
+        });
+    } else {
+        // Fallback cứng khi cả static-data không có unit
+        ADDON_SERVICES = [
+            { id:1, name:'Giao xe tận nơi',  icon:'map-marker-alt', price:100000, unit:'chuyến', description:'Giao xe đến tận địa chỉ của bạn' },
+            { id:2, name:'Bảo hiểm mở rộng', icon:'shield-alt',    price:150000, unit:'ngày',    description:'Bảo hiểm toàn diện an tâm hơn' },
+            { id:3, name:'Xe có tài xế',      icon:'user-tie',      price:300000, unit:'ngày',    description:'Tài xế chuyên nghiệp, lịch sự' },
+            { id:4, name:'GPS định vị',       icon:'map-marker-alt',price: 50000, unit:'chuyến', description:'Dẫn đường chính xác, không lo lạc' },
+            { id:5, name:'Ghế trẻ em',        icon:'baby',          price:100000, unit:'chuyến', description:'An toàn cho bé dưới 10 tuổi' },
+            { id:6, name:'WiFi di động',      icon:'wifi',          price: 80000, unit:'chuyến', description:'Kết nối internet ổn định' },
+        ];
+        ADDON_SERVICES.forEach(svc => {
+            ADDON_PRICES[svc.name] = { price: svc.price, unit: svc.unit };
+        });
+    }
+
     if(result.success && result.data) {
         currentCar = result.data.car;
         currentImages = result.data.images || [];
@@ -178,7 +198,49 @@ function displayCarDetail(data) {
                 </div>
                 
                 <hr>
-                
+
+                <h5 class="fw-bold mb-3">Thông Tin Chi Tiết</h5>
+                <div class="row g-2 mb-3">
+                    <div class="col-6 col-md-4">
+                        <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted d-block mb-1"><i class="fas fa-id-card me-1 text-primary"></i>Biển số</small>
+                            <span class="fw-bold">${car.license_plate || '—'}</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted d-block mb-1"><i class="fas fa-calendar-alt me-1 text-primary"></i>Năm sản xuất</small>
+                            <span class="fw-bold">${car.manufacture_year || car.year || '—'}</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted d-block mb-1"><i class="fas fa-tachometer-alt me-1 text-primary"></i>Quãng đường đã chạy</small>
+                            <span class="fw-bold">${car.mileage != null ? Number(car.mileage).toLocaleString('vi-VN') + ' km' : '—'}</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted d-block mb-1"><i class="fas fa-palette me-1 text-primary"></i>Màu xe</small>
+                            <span class="fw-bold">${car.color || '—'}</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted d-block mb-1"><i class="fas fa-industry me-1 text-primary"></i>Hãng xe</small>
+                            <span class="fw-bold">${car.brand || '—'}</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted d-block mb-1"><i class="fas fa-car me-1 text-primary"></i>Loại xe</small>
+                            <span class="fw-bold">${car.car_type || '—'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
                 <h5 class="fw-bold mb-3">Mô Tả</h5>
                 <p class="text-muted">${car.description || 'Không có mô tả'}</p>
                 
@@ -317,6 +379,24 @@ function setupBookingModal(car) {
     });
 }
 
+function renderAddonCheckboxes() {
+    if (!ADDON_SERVICES.length) return '<p class="text-muted small py-2">Không có dịch vụ đi kèm</p>';
+    const UNIT_LABELS = { 'ngày': '/ngày', 'chuyến': '/chuyến' };
+    return ADDON_SERVICES.map(svc => `
+        <div class="col-md-6">
+            <div class="form-check border rounded p-2 h-100">
+                <input class="form-check-input" type="checkbox" name="addon_services"
+                       value="${svc.name}" id="svc_${svc.id}">
+                <label class="form-check-label w-100" for="svc_${svc.id}">
+                    <i class="fas fa-${svc.icon} text-primary me-1"></i> ${svc.name}
+                    <span class="float-end text-primary fw-semibold">+${Utils.formatPrice(svc.price)}đ${UNIT_LABELS[svc.unit] || ''}</span>
+                    <small class="d-block text-muted">${svc.description || ''}</small>
+                </label>
+            </div>
+        </div>
+    `).join('');
+}
+
 function createBookingModal() {
     return `
         <div class="modal fade" id="bookingModal" tabindex="-1">
@@ -395,67 +475,8 @@ function createBookingModal() {
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label fw-semibold">Dịch vụ đi kèm <span class="text-muted fw-normal">(không bắt buộc)</span></label>
-                                    <div class="row g-2">
-                                        <div class="col-md-6">
-                                            <div class="form-check border rounded p-2 h-100">
-                                                <input class="form-check-input" type="checkbox" name="addon_services" value="Giao xe tận nơi" id="svcDelivery">
-                                                <label class="form-check-label w-100" for="svcDelivery">
-                                                    <i class="fas fa-map-marker-alt text-primary me-1"></i> Giao xe tận nơi
-                                                    <span class="float-end text-primary fw-semibold">+100.000đ/chuyến</span>
-                                                    <small class="d-block text-muted">Giao xe đến tận địa chỉ của bạn</small>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-check border rounded p-2 h-100">
-                                                <input class="form-check-input" type="checkbox" name="addon_services" value="Bảo hiểm mở rộng" id="svcInsurance">
-                                                <label class="form-check-label w-100" for="svcInsurance">
-                                                    <i class="fas fa-shield-alt text-primary me-1"></i> Bảo hiểm mở rộng
-                                                    <span class="float-end text-primary fw-semibold">+150.000đ/ngày</span>
-                                                    <small class="d-block text-muted">Bảo hiểm toàn diện, an tâm hơn</small>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-check border rounded p-2 h-100">
-                                                <input class="form-check-input" type="checkbox" name="addon_services" value="Xe có tài xế" id="svcDriver">
-                                                <label class="form-check-label w-100" for="svcDriver">
-                                                    <i class="fas fa-user-tie text-primary me-1"></i> Xe có tài xế
-                                                    <span class="float-end text-primary fw-semibold">+300.000đ/ngày</span>
-                                                    <small class="d-block text-muted">Tài xế chuyên nghiệp, am hiểu đường</small>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-check border rounded p-2 h-100">
-                                                <input class="form-check-input" type="checkbox" name="addon_services" value="GPS định vị" id="svcGPS">
-                                                <label class="form-check-label w-100" for="svcGPS">
-                                                    <i class="fas fa-map-marker-alt text-primary me-1"></i> GPS định vị
-                                                    <span class="float-end text-primary fw-semibold">+50.000đ/chuyến</span>
-                                                    <small class="d-block text-muted">Thiết bị dẫn đường chính xác</small>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-check border rounded p-2 h-100">
-                                                <input class="form-check-input" type="checkbox" name="addon_services" value="Ghế trẻ em" id="svcBabySeat">
-                                                <label class="form-check-label w-100" for="svcBabySeat">
-                                                    <i class="fas fa-baby text-primary me-1"></i> Ghế trẻ em
-                                                    <span class="float-end text-primary fw-semibold">+100.000đ/chuyến</span>
-                                                    <small class="d-block text-muted">Ghế an toàn cho bé dưới 10 tuổi</small>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-check border rounded p-2 h-100">
-                                                <input class="form-check-input" type="checkbox" name="addon_services" value="WiFi di động" id="svcWifi">
-                                                <label class="form-check-label w-100" for="svcWifi">
-                                                    <i class="fas fa-wifi text-primary me-1"></i> WiFi di động
-                                                    <span class="float-end text-primary fw-semibold">+80.000đ/chuyến</span>
-                                                    <small class="d-block text-muted">Kết nối internet ổn định suốt chuyến đi</small>
-                                                </label>
-                                            </div>
-                                        </div>
+                                    <div class="row g-2" id="addonServiceList">
+                                        ${renderAddonCheckboxes()}
                                     </div>
                                 </div>
                             </div>
@@ -559,14 +580,14 @@ async function submitBooking(car) {
         const result = await API.bookings.create(bookingData);
 
         if(result.success) {
-            // Save addon info for success page
-            sessionStorage.setItem('lastBookingAddons', JSON.stringify({
-                services: addonServices,
-                addonTotal: addonTotal,
-                totalPrice: bookingData.total_price,
-                days: days
-            }));
-            window.location.href = `index.php?page=booking_success&id=${result.booking_id}`;
+            // Chuyển thông tin addon qua URL params thay vì sessionStorage
+            // (giữ dữ liệu khi user refresh trang booking_success)
+            const sp = new URLSearchParams({ page: 'booking_success', id: result.booking_id });
+            sp.set('days',        days);
+            sp.set('addon_total', addonTotal);
+            sp.set('total',       bookingData.total_price);
+            if (addonServices.length) sp.set('addons', addonServices.join('|'));
+            window.location.href = 'index.php?' + sp.toString();
         } else if(result.demo) {
             // Static / no-server fallback: show demo success
             const addonLines = addonServices.length

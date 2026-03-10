@@ -2,6 +2,7 @@
     "cars": [
         {
             "id": 1, "name": "Toyota Camry 2023", "brand": "Toyota", "model": "Camry", "year": 2023,
+            "license_plate": "51G-123.45", "manufacture_year": 2023, "mileage": 12500, "color": "Trắng ngọc trai", "car_type": "Sedan",
             "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 1200000, "main_image": "camry.jpg", "status": "available",
             "description": "Toyota Camry 2023 - Sedan hạng sang với thiết kế sang trọng, nội thất tiện nghi và tiết kiệm nhiên liệu.",
@@ -9,6 +10,7 @@
         },
         {
             "id": 2, "name": "Honda CR-V 2022", "brand": "Honda", "model": "CR-V", "year": 2022,
+            "license_plate": "51F-456.78", "manufacture_year": 2022, "mileage": 28000, "color": "Xanh dương đậm", "car_type": "SUV",
             "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 1500000, "main_image": "crv.jpg", "status": "available",
             "description": "Honda CR-V 7 chỗ rộng rãi, phù hợp gia đình. Vận hành mạnh mẽ, an toàn tuyệt đối.",
@@ -16,6 +18,7 @@
         },
         {
             "id": 3, "name": "Hyundai Tucson 2023", "brand": "Hyundai", "model": "Tucson", "year": 2023,
+            "license_plate": "51H-789.01", "manufacture_year": 2023, "mileage": 9800, "color": "Bạc ánh kim", "car_type": "SUV",
             "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 1100000, "main_image": "default.jpg", "status": "available",
             "description": "Hyundai Tucson 2023 với thiết kế trẻ trung, hiện đại. Tiêu thụ nhiên liệu thấp.",
@@ -23,6 +26,7 @@
         },
         {
             "id": 4, "name": "Ford Ranger 2022", "brand": "Ford", "model": "Ranger", "year": 2022,
+            "license_plate": "51K-234.56", "manufacture_year": 2022, "mileage": 45000, "color": "Đen bóng", "car_type": "Bán tải",
             "seats": 5, "transmission": "Số sàn", "fuel_type": "Dầu",
             "price_per_day": 900000, "main_image": "ranger.jpg", "status": "available",
             "description": "Ford Ranger bán tải mạnh mẽ, thích hợp cho cả đường thành phố và địa hình.",
@@ -30,6 +34,7 @@
         },
         {
             "id": 5, "name": "Mitsubishi Xpander 2023", "brand": "Mitsubishi", "model": "Xpander", "year": 2023,
+            "license_plate": "51L-567.89", "manufacture_year": 2023, "mileage": 18300, "color": "Trắng tinh", "car_type": "MPV",
             "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 850000, "main_image": "mitsubishi_xpander.jpg", "status": "available",
             "description": "MPV 7 chỗ rộng rãi, phù hợp cho gia đình và nhóm bạn du lịch.",
@@ -37,6 +42,7 @@
         },
         {
             "id": 6, "name": "VinFast VF8 2023", "brand": "VinFast", "model": "VF8", "year": 2023,
+            "license_plate": "51M-890.12", "manufacture_year": 2023, "mileage": 6200, "color": "Xanh Sage", "car_type": "SUV điện",
             "seats": 5, "transmission": "Tự động", "fuel_type": "Điện",
             "price_per_day": 1800000, "main_image": "vf8.jpg", "status": "available",
             "description": "SUV điện thương hiệu Việt Nam. Phạm vi 420km/sạc, tăng tốc 0-100km/h trong 5.9 giây.",
@@ -44,6 +50,7 @@
         },
         {
             "id": 7, "name": "Honda City 2023", "brand": "Honda", "model": "City", "year": 2023,
+            "license_plate": "51N-111.22", "manufacture_year": 2023, "mileage": 21700, "color": "Đỏ rubine", "car_type": "Sedan",
             "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 750000, "main_image": "city.jpg", "status": "available",
             "description": "Honda City 2023 - Sedan hạng B thế hệ mới với ngoại thất thể thao, nội thất hiện đại và tiết kiệm nhiên liệu vượt trội.",
@@ -51,6 +58,7 @@
         },
         {
             "id": 8, "name": "Mazda CX-5 2023", "brand": "Mazda", "model": "CX-5", "year": 2023,
+            "license_plate": "51P-333.44", "manufacture_year": 2023, "mileage": 14600, "color": "Đỏ Soul Crystal", "car_type": "SUV",
             "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 1150000, "main_image": "cx5.jpg", "status": "available",
             "description": "Mazda CX-5 2023 - SUV hạng C với thiết kế Kodo sang trọng, cabin cách âm tốt và hệ thống an toàn hiện đại.",
@@ -58,6 +66,7 @@
         },
         {
             "id": 9, "name": "Mazda 3 2023", "brand": "Mazda", "model": "Mazda3", "year": 2023,
+            "license_plate": "51Q-555.66", "manufacture_year": 2023, "mileage": 19200, "color": "Xám Polymetal", "car_type": "Sedan",
             "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 850000, "main_image": "mazda3.jpg", "status": "available",
             "description": "Mazda 3 2023 - Sedan hạng C với thiết kế thời thượng, động cơ Skyactiv tiết kiệm và vận hành mượt mà.",
@@ -65,6 +74,7 @@
         },
         {
             "id": 10, "name": "Toyota Vios 2023", "brand": "Toyota", "model": "Vios", "year": 2023,
+            "license_plate": "51R-777.88", "manufacture_year": 2023, "mileage": 32100, "color": "Xám Celestite", "car_type": "Sedan",
             "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 700000, "main_image": "toyota_vios.jpg", "status": "available",
             "description": "Toyota Vios 2023 - Sedan hạng B phổ biến, bền bỉ và tiết kiệm nhiên liệu, phù hợp di chuyển đô thị.",
@@ -72,6 +82,7 @@
         },
         {
             "id": 11, "name": "VinFast VF5 2023", "brand": "VinFast", "model": "VF5", "year": 2023,
+            "license_plate": "51S-999.00", "manufacture_year": 2023, "mileage": 8400, "color": "Trắng Frost", "car_type": "SUV điện",
             "seats": 5, "transmission": "Tự động", "fuel_type": "Điện",
             "price_per_day": 900000, "main_image": "vf5.jpg", "status": "available",
             "description": "VinFast VF5 - SUV điện mini thương hiệu Việt, phạm vi 326km/sạc, phù hợp di chuyển nội đô kinh tế.",
@@ -79,6 +90,7 @@
         },
         {
             "id": 12, "name": "Suzuki XL7 2023", "brand": "Suzuki", "model": "XL7", "year": 2023,
+            "license_plate": "51T-246.80", "manufacture_year": 2023, "mileage": 23500, "color": "Nâu Mineral Brown", "car_type": "SUV",
             "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 820000, "main_image": "xl7.jpg", "status": "available",
             "description": "Suzuki XL7 2023 - SUV 7 chỗ gọn gàng, tiết kiệm nhiên liệu, thiết kế hiện đại phù hợp gia đình.",
