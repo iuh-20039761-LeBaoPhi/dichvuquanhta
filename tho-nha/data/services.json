@@ -111,28 +111,100 @@
     ]
   },
   {
-    "id": 5, "name": "Đồ Gia Dụng", "icon": "fa-plug", "image": "image/5.jpg",
-    "desc": "Sửa chữa các thiết bị gia dụng: tủ lạnh, tivi, bếp từ. Bảo hành chính hãng.",
+    "id": 5, "name": "Sửa Tủ Lạnh", "icon": "fa-snowflake", "image": "image/5.jpg",
+    "desc": "Sửa chữa tủ lạnh các hãng. Xử lý không lạnh, rò gas, thay linh kiện, vệ sinh dàn lạnh chuyên sâu.",
     "items": [
       {
-        "name": "Sửa tủ lạnh", "price": 300000, "laborCost": 200000, "materialCost": 100000,
+        "name": "Sửa tủ lạnh không lạnh", "price": 300000, "laborCost": 200000, "materialCost": 100000,
         "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Sửa chữa các lỗi thường gặp ở tủ lạnh như không lạnh, kêu to, chảy nước."
+        "desc": "Chẩn đoán và khắc phục tủ lạnh không lạnh do lỗi board mạch, quạt dàn lạnh hoặc cảm biến nhiệt."
       },
       {
-        "name": "Sửa tivi", "price": 250000, "laborCost": 200000, "materialCost": 50000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Sửa tivi bị mất hình, mất tiếng, không lên nguồn với đội ngũ kỹ thuật chuyên nghiệp."
+        "name": "Vệ sinh tủ lạnh", "price": 200000, "laborCost": 150000, "materialCost": 50000,
+        "warranty": "1 tháng", "duration": "30–60 phút",
+        "desc": "Vệ sinh dàn lạnh, khay nước, ngăn chứa, loại bỏ vi khuẩn và mùi hôi, đảm bảo vệ sinh thực phẩm."
       },
       {
-        "name": "Sửa bếp từ", "price": 350000, "laborCost": 250000, "materialCost": 100000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Sửa chữa bếp từ không nóng, báo lỗi, không nhận nồi, đảm bảo an toàn khi sử dụng."
+        "name": "Thay ron cửa tủ lạnh", "price": 350000, "laborCost": 150000, "materialCost": 200000,
+        "warranty": "6 tháng", "duration": "1–2 giờ",
+        "desc": "Thay ron cao su cửa tủ lạnh bị hở, giúp giữ nhiệt tốt, tiết kiệm điện và bảo quản thực phẩm lâu hơn.",
+        "brandPrices": [
+          { "name": "Samsung",    "materialCost": 200000, "price": 350000 },
+          { "name": "LG",         "materialCost": 180000, "price": 330000 },
+          { "name": "Electrolux", "materialCost": 220000, "price": 370000 }
+        ]
+      },
+      {
+        "name": "Nạp gas tủ lạnh", "price": 450000, "laborCost": 200000, "materialCost": 250000,
+        "warranty": "6 tháng", "duration": "1–2 giờ",
+        "desc": "Nạp lại gas tủ lạnh bị thiếu hoặc rò rỉ, đảm bảo tủ lạnh làm lạnh đúng nhiệt độ và ổn định."
       }
     ]
   },
   {
-    "id": 6, "name": "Cải Tạo Nhà", "icon": "fa-hammer", "image": "image/7.jpg",
+    "id": 6, "name": "Sửa Tivi", "icon": "fa-tv", "image": "image/5.jpg",
+    "desc": "Sửa chữa tivi LED, LCD, OLED các hãng. Khắc phục mất hình, mất tiếng, không nguồn, hỏng màn hình.",
+    "items": [
+      {
+        "name": "Sửa tivi không lên nguồn", "price": 280000, "laborCost": 200000, "materialCost": 80000,
+        "warranty": "3 tháng", "duration": "1–2 giờ",
+        "desc": "Kiểm tra và sửa chữa nguồn điện, bo mạch tivi khi tivi không lên nguồn hoặc tự tắt bật."
+      },
+      {
+        "name": "Sửa tivi mất hình", "price": 300000, "laborCost": 250000, "materialCost": 50000,
+        "warranty": "3 tháng", "duration": "1–2 giờ",
+        "desc": "Xử lý tivi không có hình, màn hình đen, sọc dọc/ngang do lỗi mạch cao áp hoặc dây tín hiệu."
+      },
+      {
+        "name": "Sửa tivi mất tiếng", "price": 250000, "laborCost": 200000, "materialCost": 50000,
+        "warranty": "3 tháng", "duration": "1–2 giờ",
+        "desc": "Khắc phục tivi không có âm thanh, âm thanh bị rè, nhiễu do lỗi bo âm thanh hoặc loa."
+      },
+      {
+        "name": "Thay màn hình tivi", "price": 1500000, "laborCost": 300000, "materialCost": 1200000,
+        "warranty": "6 tháng", "duration": "2–4 giờ",
+        "desc": "Thay thế màn hình tivi bị vỡ, bể, đốm sáng bằng màn hình chính hãng tương thích.",
+        "brandPrices": [
+          { "name": "Samsung", "materialCost": 1200000, "price": 1500000 },
+          { "name": "LG",      "materialCost": 1100000, "price": 1400000 },
+          { "name": "Sony",    "materialCost": 1300000, "price": 1600000 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 7, "name": "Sửa Bếp Từ", "icon": "fa-fire", "image": "image/5.jpg",
+    "desc": "Sửa chữa bếp từ, bếp điện từ, bếp gas các hãng. Xử lý không nóng, báo lỗi, không nhận nồi.",
+    "items": [
+      {
+        "name": "Sửa bếp từ không nóng", "price": 350000, "laborCost": 250000, "materialCost": 100000,
+        "warranty": "3 tháng", "duration": "1–2 giờ",
+        "desc": "Chẩn đoán và sửa chữa bếp từ không tạo nhiệt do lỗi IGBT, cảm biến nhiệt hoặc bo mạch điều khiển."
+      },
+      {
+        "name": "Sửa bếp từ báo lỗi", "price": 280000, "laborCost": 200000, "materialCost": 80000,
+        "warranty": "3 tháng", "duration": "1–2 giờ",
+        "desc": "Xử lý các mã lỗi E0–E8 trên bếp từ, reset và sửa chữa linh kiện liên quan để bếp hoạt động bình thường."
+      },
+      {
+        "name": "Thay mặt kính bếp từ", "price": 800000, "laborCost": 200000, "materialCost": 600000,
+        "warranty": "6 tháng", "duration": "2–3 giờ",
+        "desc": "Thay thế mặt kính bếp từ bị nứt, vỡ bằng kính ceramic chịu nhiệt chính hãng, đảm bảo an toàn.",
+        "brandPrices": [
+          { "name": "Bosch",   "materialCost": 700000, "price":  900000 },
+          { "name": "Teka",    "materialCost": 600000, "price":  800000 },
+          { "name": "Sunhouse","materialCost": 450000, "price":  650000 }
+        ]
+      },
+      {
+        "name": "Sửa bếp gas", "price": 200000, "laborCost": 150000, "materialCost": 50000,
+        "warranty": "3 tháng", "duration": "30–60 phút",
+        "desc": "Sửa bếp gas không bật lửa, lửa yếu, rò gas, thay van gas và làm sạch đầu đốt đảm bảo an toàn."
+      }
+    ]
+  },
+  {
+    "id": 8, "name": "Cải Tạo Nhà", "icon": "fa-hammer", "image": "image/7.jpg",
     "desc": "Thi công cải tạo nhà cửa: sơn nhà, trần thạch cao, lát nền. Tư vấn miễn phí.",
     "items": [
       {

@@ -40,7 +40,9 @@ $category_icons = [
     'Sửa máy giặt' => 'fa-tshirt',
     'Nhà vệ sinh'  => 'fa-droplet',
     'Điện nước'    => 'fa-bolt',
-    'Đồ gia dụng'  => 'fa-plug',
+    'Sửa tủ lạnh'  => 'fa-snowflake',
+    'Sửa tivi'     => 'fa-tv',
+    'Sửa bếp từ'   => 'fa-fire',
     'Cải tạo nhà'  => 'fa-hammer'
 ];
 
@@ -50,7 +52,9 @@ $category_images = [
     'Sửa máy giặt' => 'image/4.jpg',
     'Nhà vệ sinh'  => 'image/3.jpg',
     'Điện nước'    => 'image/6.jpg',
-    'Đồ gia dụng'  => 'image/5.jpg',
+    'Sửa tủ lạnh'  => 'image/5.jpg',
+    'Sửa tivi'     => 'image/5.jpg',
+    'Sửa bếp từ'   => 'image/5.jpg',
     'Cải tạo nhà'  => 'image/7.jpg'
 ];
 
