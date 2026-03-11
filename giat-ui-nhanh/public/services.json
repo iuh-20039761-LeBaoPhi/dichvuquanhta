@@ -8,17 +8,17 @@
       {
         "id": 1,
         "name": "Giặt sấy quần áo thường",
-        "price": 70000
+        "price": 30000
       },
       {
         "id": 2,
         "name": "Giặt sấy quần áo cao cấp",
-        "price": 90000
+        "price": 40000
       },
       {
         "id": 3,
         "name": "Giặt sấy + nước xả cao cấp",
-        "price": 100000
+        "price": 600000
       }
     ],
     "created_at": "2026-01-27 20:21:07",
@@ -33,17 +33,17 @@
       {
         "id": 1,
         "name": "Giặt hấp áo sơ mi",
-        "price": 100000
+        "price": 40000
       },
       {
         "id": 2,
         "name": "Giặt hấp áo khoác",
-        "price": 120000
+        "price": 40000
       },
       {
         "id": 3,
         "name": "Giặt hấp quần tây",
-        "price": 110000
+        "price": 40000
       }
     ],
     "created_at": "2026-01-27 20:21:07",
@@ -53,7 +53,7 @@
     "id": 3,
     "service_name": "Dịch Vụ Giặt Sấy Chăn Mền",
     "summary": "Dịch vụ Giặt sấy chăn mền đảm bảo sự sạch sẽ cho chăn mền của quý khách ( khách sạn, nhà hàng, spa, trường học nội trú... ) sau khi giặt sấy, chúng tôi chuyên giặt sấy chăn mền, ga gối với đủ loại kích thước, khối lượng.",
-    "price_unit": "item",
+    "price_unit": "kg",
     "sub_services": [
       {
         "id": 1,
@@ -78,7 +78,7 @@
     "id": 4,
     "service_name": "Dịch Vụ Giặt Hấp Áo Vest, Váy Cưới",
     "summary": "Dịch vụ Giặt hấp áo vest, váy cưới giúp làm sạch nhẹ nhàng trang phục cao cấp, giữ form dáng và chất liệu. Phù hợp áo vest, váy cưới, đầm dạ hội của quý khách.",
-    "price_unit": "item",
+    "price_unit": "kg",
     "sub_services": [
       {
         "id": 1,
@@ -103,7 +103,7 @@
     "id": 5,
     "service_name": "Dịch vụ Vệ Sinh Thảm",
     "summary": "Dịch vụ vệ sinh thảm trải sàn giúp thảm trải sàn của quý khách được trở nên sạch sẽ, tăng độ bền, thẩm mỹ cho không gian của phòng khách gia đình, văn phòng công ty, khách sạn, showroom, cửa hàng thời trang, trung tâm hội nghị...",
-    "price_unit": "item",
+    "price_unit": "kg",
     "sub_services": [
       {
         "id": 1,
@@ -133,12 +133,12 @@
       {
         "id": 1,
         "name": "Vệ sinh giày thể thao",
-        "price": 100000
+        "price": 80000
       },
       {
         "id": 2,
         "name": "Vệ sinh giày sneaker",
-        "price": 120000
+        "price": 100000
       },
       {
         "id": 3,
@@ -152,7 +152,7 @@
   {
     "id": 7,
     "service_name": "Gói Gia Đình",
-    "summary": "Phù hợp cho cá nhân và gia đình nhỏ với khối lượng đồ giặt từ (3-5) kg\nGiặt sấy khô\nGấp gọn cơ bản\nGiao nhận trong 24h\nNước giặt thông thường\nTúi đựng miễn phí",
+    "summary": "Phù hợp cho gia đình nhỏ với khối lượng đồ giặt từ (3-5) kg\nGiặt sấy khô\nGấp gọn cơ bản\nGiao nhận trong ngày\nNước giặt thông thường\nTúi đựng miễn phí",
     "price_unit": "combo",
     "sub_services": [{ "id": 1, "name": "Combo 3-5 kg", "price": 150000 }],
     "created_at": "2026-02-01 13:37:58",
@@ -161,18 +161,18 @@
   {
     "id": 8,
     "service_name": "Gói Cửa Hàng, SPA",
-    "summary": "Phù hợp cho cửa hàng và SPA với khối lượng đồ giặt từ (5-7) kg\nGiặt sấy cao cấp\nLà ủi phẳng phiu\nGiao nhận trong 24h\nNước giặt cao cấp, thơm lâu\nĐóng gói sang trọng\nTẩy vết bẩn nhẹ miễn phí",
+    "summary": "Phù hợp cho cửa hàng và SPA với khối lượng đồ giặt từ (10-20) kg\nGiặt sấy cao cấp\nLà ủi phẳng phiu\nGiao nhận trong ngày\nNước giặt cao cấp, thơm lâu\nĐóng gói sang trọng\nTẩy vết bẩn nhẹ miễn phí",
     "price_unit": "combo",
-    "sub_services": [{ "id": 1, "name": "Combo 5-7 kg", "price": 250000 }],
+    "sub_services": [{ "id": 1, "name": "Combo 10-20 kg", "price": 350000 }],
     "created_at": "2026-02-01 13:37:58",
     "updated_at": "2026-02-01 13:37:58"
   },
   {
     "id": 9,
     "service_name": "Gói Khách Sạn",
-    "summary": "Phù hợp cho khách sạn với khối lượng đồ giặt từ (7-10) kg\nGiặt khô chuyên nghiệp\nLà ủi hoàn hảo\nGiao nhận trong 24h\nHóa chất nhập khẩu\nĐóng gói siêu sang\nTẩy mọi vết bẩn\nBảo hành chất lượng",
+    "summary": "Phù hợp cho khách sạn với khối lượng đồ giặt từ (30-50) kg\nGiặt khô chuyên nghiệp\nLà ủi hoàn hảo\nGiao nhận trong ngày\nHóa chất nhập khẩu\nĐóng gói siêu sang\nTẩy mọi vết bẩn\nBảo hành chất lượng",
     "price_unit": "combo",
-    "sub_services": [{ "id": 1, "name": "Combo 7-10 kg", "price": 350000 }],
+    "sub_services": [{ "id": 1, "name": "Combo 30-50 kg", "price": 750000 }],
     "created_at": "2026-02-01 13:37:58",
     "updated_at": "2026-02-01 13:37:58"
   }

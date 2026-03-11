@@ -183,7 +183,9 @@
                   );
                 "
               >
-                <h3 class="h5 card-title" style="color: #ec4899;">Chăm Sóc Mẹ & Bé</h3>
+                <h3 class="h5 card-title" style="color: #ec4899">
+                  Chăm Sóc Mẹ & Bé
+                </h3>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Đội ngũ điều dưỡng giàu kinh nghiệm, tận tâm chăm sóc sức khỏe
                   cho mẹ và bé sau sinh.
@@ -249,7 +251,7 @@
                 class="card-body"
                 style="background: linear-gradient(to bottom, #eff6ff, white)"
               >
-                <h3 class="h5 card-title">Giặt Ủi Cao Cấp</h3>
+                <h3 class="h5 card-title text-primary">Giặt Ủi Cao Cấp</h3>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Công nghệ giặt là tiên tiến, xử lý vết bẩn hiệu quả, giao nhận
                   tận nơi nhanh chóng.
@@ -290,7 +292,9 @@
                   );
                 "
               >
-                <h3 class="h5 card-title" style="color: #11998e">Thợ Nhà & Sửa Chữa</h3>
+                <h3 class="h5 card-title" style="color: #11998e">
+                  Thợ Nhà & Sửa Chữa
+                </h3>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Sửa chữa điện nước, lắp đặt thiết bị, bảo trì nội thất với đội
                   ngũ kỹ thuật viên lành nghề.
@@ -334,7 +338,9 @@
                   );
                 "
               >
-                <h3 class="h5 card-title " style="color: #2e7d32;">Chăm Sóc Người Già</h3>
+                <h3 class="h5 card-title" style="color: #2e7d32">
+                  Chăm Sóc Người Già
+                </h3>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Chăm sóc, trò chuyện và hỗ trợ sinh hoạt hàng ngày cho người
                   cao tuổi với sự tận tâm và kính trọng.
@@ -483,7 +489,7 @@
                 class="card-body"
                 style="background: linear-gradient(to right, #3a6073, #16222a)"
               >
-                <h3 class="h5 card-title">Sửa Xe Lưu Động</h3>
+                <h3 class="h5 card-title text-warning">Sửa Xe Lưu Động</h3>
                 <p class="text-light small mb-4 flex-grow-1">
                   Sửa chữa, vá lốp - thay lốp xe tại chỗ đảm bảo tiết kiệm thời
                   gian và chi phí kéo xe.
@@ -679,7 +685,7 @@
                 <i data-lucide="map-pin"></i>
               </div>
               <div>
-                <div class="small text-light opacity-75">Trụ Sở Chính</div>
+                <div class="small text-light opacity-75">Địa chỉ</div>
                 <div class="h5 fw-bold mb-0">
                   123 Đường ABC, Quận 1, TP. Hồ Chí Minh
                 </div>
@@ -722,16 +728,44 @@
                     />
                   </div>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                   <label class="form-label small fw-bold text-muted"
                     >Dịch Vụ Quan Tâm</label
                   >
-                  <select class="form-select">
+                  <!-- input that triggers dropdown -->
+                  <input
+                    type="text"
+                    id="serviceInput"
+                    class="form-control"
+                    placeholder="Chọn dịch vụ..."
+                    readonly
+                  />
+                  <!-- hidden multi‑select positioned under input -->
+                  <select
+                    class="form-select"
+                    id="serviceSelect"
+                    multiple
+                    style="
+                      position: absolute;
+                      top: 100%;
+                      left: 0;
+                      width: 100%;
+                      display: none;
+                      z-index: 1000;
+                      max-height: 200px;
+                      overflow: auto;
+                    "
+                  >
                     <option>Lau dọn vệ sinh</option>
-                    <option>Chăm sóc mẹ và bé</option>
-                    <option>Chăm sóc vườn nhà</option>
+                    <option>Chăm sóc mẹ & bé</option>
+                    <option>Chăm Sóc Vườn & Rẫy</option>
                     <option>Giặt ủi cao cấp</option>
-                    <option>Thợ sửa chữa</option>
+                    <option>Thợ Nhà & Sửa Chữa</option>
+                    <option>Chăm Sóc Người Già</option>
+                    <option>Chăm Sóc Bệnh Nhân</option>
+                    <option>Giao Hàng và Vận Chuyển</option>
+                    <option>Thuê Xe</option>
+                    <option>Sửa xe lưu động</option>
                   </select>
                 </div>
                 <div class="mb-4">
@@ -849,7 +883,9 @@
               <li><a href="csng/">Chăm Sóc Người Già</a></li>
               <li><a href="csbn/">Chăm Sóc Bệnh Nhân</a></li>
               <li>
-                <a href="he-thong-giao-hang-chuyen-don/">Giao Hàng và Vận Chuyển</a>
+                <a href="he-thong-giao-hang-chuyen-don/"
+                  >Giao Hàng và Vận Chuyển</a
+                >
               </li>
               <li>
                 <a href="thue-xe/">Thuê Xe</a>
@@ -874,7 +910,8 @@
 
         <div class="border-top pt-3 text-muted small">
           <p class="mb-0" style="text-align: center">
-            © 2026 Dịch Vụ Quanh Ta. Đã đăng ký Bản quyền.
+            © 2026 Dịch Vụ Quanh Ta. Đã đăng ký Bản quyền. Sản xuất tại ❤️ Việt
+            Nam
           </p>
           <!-- <div class="d-flex align-items-center gap-1">
             <i data-lucide="globe" style="width: 14px"></i> Tiếng Việt

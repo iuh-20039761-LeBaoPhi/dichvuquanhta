@@ -29,9 +29,7 @@
           <li><a href="#about" class="nav-link">Giới thiệu</a></li>
           <li><a href="#services" class="nav-link">Dịch vụ</a></li>
           <li><a href="#process" class="nav-link">Quy trình</a></li>
-          <li><a href="#pricing" class="nav-link">Bảng giá</a></li>
           <li><a href="#contact" class="nav-link">Đặt dịch vụ</a></li>
-          <!-- <li><a href="../index.html" class="nav-link">DVQT</a></li> -->
           <li>
             <a
               class="nav-link"
@@ -124,7 +122,7 @@
 
             <p>
               Dịch vụ giặt ủi cao cấp - Nhận giặt tận nơi - Giao trả trong ngày.
-              Chất lượng 5 sao, giá cả hợp lý!
+              Chất lượng uy tín, giá cả hợp lý!
             </p>
 
             <div class="quick-info">
@@ -179,8 +177,8 @@
               <a href="#contact" class="btn btn-primary">
                 <span>Đặt dịch vụ ngay</span>
               </a>
-              <a href="#pricing" class="btn btn-secondary">
-                <span>Xem bảng giá</span>
+              <a href="#services" class="btn btn-secondary">
+                <span>Xem dịch vụ</span>
               </a>
             </div>
           </div>
@@ -579,6 +577,7 @@
 
                   filteredServices.forEach(function (service, index) {
                     const icon = icons[index % icons.length];
+                    const unit = service.price_unit === "kg" ? "Kg" : "Đôi";
 
                     html += `
             <div class="service-card">
@@ -592,7 +591,7 @@
 
               <p>
                 <b>Giá từ:</b> 
-                ${service.min_price.toLocaleString("vi-VN")} VNĐ
+                ${service.min_price.toLocaleString("vi-VN")} VNĐ / ${unit}
               </p>
 
               <a class="btn btn-info choose-service" href="#contact">
@@ -763,7 +762,7 @@
             class="section-badge"
             style="background: #dcfce7; color: #16a34a"
           >
-            <span>BẢNG GIÁ DỊCH VỤ</span>
+            <span>GÓI DỊCH VỤ</span>
           </div>
           <h2>
             Giá Cả
@@ -780,9 +779,8 @@
           </h2>
           <p>Chọn gói phù hợp với nhu cầu của bạn.</p>
         </div>
-        <div style="margin: 60px 0">
-          <div class="pricing-detail-flex">
-            <!-- Left: Image -->
+        <!-- <div style="margin: 60px 0">
+       
             <div class="pricing-detail-image">
               <div
                 style="
@@ -797,11 +795,11 @@
                 />
               </div>
             </div>
-            <!-- Right: Pricing Table -->
+      
             <div class="pricing-detail-table">
               <h3>BẢNG GIÁ DỊCH VỤ</h3>
               <div class="pricing-item">
-                <!-- Pricing Item 1 -->
+         
                 <div class="pricing-item-detail">
                   <p>
                     <b>Giặt</b> Tối đa 3-10 kg (Quần áo thông thường, vớ, chăn
@@ -809,7 +807,7 @@
                     <b>40.000đ</b>/đôi.
                   </p>
                 </div>
-                <!-- Pricing Item 2 -->
+               
                 <div class="pricing-item-detail">
                   <p>
                     <b>Giặt Sấy</b> Tối đa 3-10 kg (Quần áo thông thường, vớ,
@@ -817,7 +815,7 @@
                     máy.
                   </p>
                 </div>
-                <!-- Pricing Item 3 -->
+           
                 <div class="pricing-item-detail">
                   <p>
                     <b>Dịch vụ tính thêm</b> sấy thêm <b>10.000đ</b> vắt thêm
@@ -826,8 +824,7 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+        </div> -->
         <div class="pricing-grid" id="pricingGrid"></div>
 
         <script>
@@ -1116,7 +1113,7 @@
               </div>
               <div>
                 <h4>Địa chỉ</h4>
-                <p>123 Đường Nguyễn Văn Linh, Quận 7, TP.HCM</p>
+                <p>123 Đường ABC, Quận 1, TP. Hồ Chí Minh</p>
               </div>
             </div>
 
@@ -1447,7 +1444,7 @@
             <h3>Giặt Ủi Nhanh</h3>
             <p>
               Dịch vụ giặt ủi chuyên nghiệp hàng đầu Việt Nam. Cam kết chất
-              lượng 5 sao, giá cả hợp lý, giao nhận tận nơi.
+              lượng uy tín, giá cả hợp lý, giao nhận tận nơi.
             </p>
             <div class="social-links">
               <a href="#" class="social-icon">
@@ -1516,7 +1513,7 @@
               <li><a href="#about">Giới thiệu</a></li>
               <li><a href="#services">Dịch vụ</a></li>
               <li><a href="#process">Quy trình</a></li>
-              <li><a href="#pricing">Bảng giá</a></li>
+              <!-- <li><a href="#pricing">Bảng giá</a></li> -->
               <li><a href="#contact">Liên hệ</a></li>
               <li><a href="terms.html">Điều khoản sử dụng</a></li>
             </ul>
@@ -1526,35 +1523,35 @@
             <h4>Dịch Vụ</h4>
             <ul class="footer-links">
               <li>
-                <a target="_blank" href="../vesinhcare/demo/"
-                  >Lau Dọn Vệ Sinh</a
-                >
+                <a href="../vesinhcare/demo/">Lau Dọn Vệ Sinh</a>
               </li>
-              <li><a target="_blank" href="../csmvb/">Chăm Sóc Mẹ & Bé</a></li>
+              <li><a href="../csmvb/">Chăm Sóc Mẹ & Bé</a></li>
               <li>
-                <a target="_blank" href="../web-cham-soc-vuon-nha/"
-                  >Chăm Sóc Vườn & Rẫy</a
-                >
+                <a href="../web-cham-soc-vuon-nha/">Chăm Sóc Vườn & Rẫy</a>
               </li>
               <li>
-                <a target="_blank" href="../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a>
+                <a href="../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a>
               </li>
               <li>
-                <a target="_blank" href="../tho-nha/">Thợ Nhà & Sửa Chữa</a>
+                <a href="../tho-nha/">Thợ Nhà & Sửa Chữa</a>
               </li>
-              <li><a target="_blank" href="../csng/">Chăm Sóc Người Già</a></li>
-              <li><a target="_blank" href="../csbn/">Chăm Sóc Bệnh Nhân</a></li>
+              <li><a href="../csng/">Chăm Sóc Người Già</a></li>
+              <li><a href="../csbn/">Chăm Sóc Bệnh Nhân</a></li>
               <li>
-                <a target="_blank" href="../he-thong-giao-hang-chuyen-don/"
-                  >Giao Hàng Nhanh</a
-                >
+                <a href="../he-thong-giao-hang-chuyen-don/">Giao Hàng Nhanh</a>
+              </li>
+              <li>
+                <a href="../thue-xe/">Thuê Xe</a>
+              </li>
+              <li>
+                <a href="../sua-xe-luu-dong/">Sửa xe lưu động</a>
               </li>
             </ul>
           </div>
         </div>
         <div class="footer-bottom">
           <p>
-            © 2026 Giặt Ủi Nhanh. All rights reserved. Made with ❤️ in Vietnam
+            © 2026 Giặt Ủi Nhanh. Đã đăng ký Bản quyền. Sản xuất tại ❤️ Việt Nam
           </p>
         </div>
       </div>
