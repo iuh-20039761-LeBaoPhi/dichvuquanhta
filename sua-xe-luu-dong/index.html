@@ -139,6 +139,15 @@
 
                   data.services.forEach((service, index) => {
                     const icon = icons[index % icons.length];
+                    // determine minimum price among sub-services (if any)
+                    let minPriceText = "";
+                    if (service.sub_services && service.sub_services.length) {
+                      const prices = service.sub_services.map(
+                        (s) => Number(s.price) || 0,
+                      );
+                      const minPrice = Math.min(...prices);
+                      minPriceText = `<b>Giá từ:</b> ${minPrice.toLocaleString("vi-VN")} VND`;
+                    }
 
                     html += `
                     <div class="col-lg-3 col-md-6">
@@ -148,6 +157,10 @@
                         </div>
                         <h5>${service.name}</h5>
                         <p>${service.summary}</p>
+                        ${minPriceText ? `<p class="service-price">${minPriceText}</p>` : ""}
+                        <a href="#booking" class="btn btn-primary-custom mt-3">
+                          Đặt dịch vụ
+                        </a>
                       </div>
                     </div>
                   `;
@@ -354,6 +367,14 @@
                               "change",
                               function () {
                                 const serviceId = this.value;
+                                if (!serviceId) {
+                                  subServiceSelect.innerHTML =
+                                    '<option value="">Chọn loại dịch vụ</option>';
+
+                                  priceInput.value = "";
+                                  totalInput.value = "";
+                                  return;
+                                }
 
                                 subServiceSelect.innerHTML =
                                   '<option value="">Chọn dịch vụ</option>';
@@ -430,13 +451,61 @@
                       ><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ
                       <span class="text-danger">*</span></label
                     >
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Nhập địa chỉ của bạn"
-                      required
-                    />
+                    <div class="input-group">
+                      <input
+                        id="addressInput"
+                        type="text"
+                        class="form-control"
+                        placeholder="Nhập địa chỉ của bạn"
+                        required
+                      />
+                      <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        id="locateBtn"
+                      >
+                        <i class="fas fa-location-arrow"></i> Vị trí của tôi
+                      </button>
+                    </div>
                   </div>
+                  <script>
+                    // button to get user's location and reverse geocode using OSM Nominatim (no key required)
+                    document.addEventListener("DOMContentLoaded", function () {
+                      const locateBtn = document.getElementById("locateBtn");
+                      const addressInput =
+                        document.getElementById("addressInput");
+                      if (locateBtn) {
+                        locateBtn.addEventListener("click", function () {
+                          if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                              function (position) {
+                                const lat = position.coords.latitude;
+                                const lng = position.coords.longitude;
+                                // use Nominatim reverse geocoding
+                                fetch(
+                                  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+                                )
+                                  .then((res) => res.json())
+                                  .then((data) => {
+                                    if (data && data.display_name) {
+                                      addressInput.value = data.display_name;
+                                    } else {
+                                      alert("Không thể xác định địa chỉ");
+                                    }
+                                  })
+                                  .catch((e) => console.error(e));
+                              },
+                              function (err) {
+                                alert("Không thể lấy vị trí: " + err.message);
+                              },
+                            );
+                          } else {
+                            alert("Trình duyệt không hỗ trợ định vị");
+                          }
+                        });
+                      }
+                    });
+                  </script>
                   <div class="col-md-12">
                     <div class="row">
                       <div class="col-md-6">
