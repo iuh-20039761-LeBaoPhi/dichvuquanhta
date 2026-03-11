@@ -368,7 +368,9 @@ body {
 .modal-header .btn-close {
     filter: brightness(0) invert(1);
 }
-
+header.sticky-top {
+    z-index: 1230;
+}
 /* Car Detail Page */
 .car-detail-img {
     border-radius: 15px;
