@@ -1197,10 +1197,58 @@
               </div>
 
               <div class="form-group">
-                <label for="address">Địa chỉ</label>
-                <input type="text" id="address" name="address" />
+                <label for="addressInput">Địa chỉ</label>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    id="addressInput"
+                    name="address"
+                    placeholder="Nhập địa chỉ của bạn"
+                  />
+                </div>
               </div>
-
+              <div class="form-group">
+                <button class="btn btn-info" type="button" id="locateBtn">
+                  <i class="fas fa-location-arrow"></i> Vị trí hiện tại
+                </button>
+              </div>
+              <script>
+                // button to get user's location and reverse geocode using OSM Nominatim (no key required)
+                document.addEventListener("DOMContentLoaded", function () {
+                  const locateBtn = document.getElementById("locateBtn");
+                  const addressInput = document.getElementById("addressInput");
+                  if (locateBtn) {
+                    locateBtn.addEventListener("click", function () {
+                      if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                          function (position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            // use Nominatim reverse geocoding
+                            fetch(
+                              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+                            )
+                              .then((res) => res.json())
+                              .then((data) => {
+                                if (data && data.display_name) {
+                                  addressInput.value = data.display_name;
+                                } else {
+                                  alert("Không thể xác định địa chỉ");
+                                }
+                              })
+                              .catch((e) => console.error(e));
+                          },
+                          function (err) {
+                            alert("Không thể lấy vị trí: " + err.message);
+                          },
+                        );
+                      } else {
+                        alert("Trình duyệt không hỗ trợ định vị");
+                      }
+                    });
+                  }
+                });
+              </script>
               <div class="row">
                 <div class="col-sm-6">
                   <div class="form-group">
@@ -1217,7 +1265,7 @@
 
                 <div class="col-sm-6">
                   <div class="form-group">
-                    <label>Dịch vụ con</label>
+                    <label>Dịch vụ cụ thể</label>
                     <select id="subService">
                       <option value="">Chọn loại dịch vụ</option>
                     </select>
@@ -1237,11 +1285,6 @@
                     <div id="kgBox">
                       <label>Trọng lượng (kg)</label>
                       <input type="number" id="kg" min="1" />
-                    </div>
-
-                    <div id="qtyBox" style="display: none">
-                      <label>Số lượng</label>
-                      <input type="number" id="qty" min="1" />
                     </div>
 
                     <div id="pairBox" style="display: none">
@@ -1286,11 +1329,9 @@
                     document.getElementById("subService");
 
                   const kgBox = document.getElementById("kgBox");
-                  const qtyBox = document.getElementById("qtyBox");
                   const pairBox = document.getElementById("pairBox");
 
                   const kgInput = document.getElementById("kg");
-                  const qtyInput = document.getElementById("qty");
                   const pairInput = document.getElementById("pair");
 
                   const priceInput = document.getElementById("priceContact");
@@ -1332,12 +1373,10 @@
 
                       // reset số lượng
                       kgInput.value = "";
-                      qtyInput.value = "";
                       pairInput.value = "";
 
                       // ẩn các box
                       kgBox.style.display = "block";
-                      qtyBox.style.display = "none";
                       pairBox.style.display = "none";
 
                       // reset giá
@@ -1368,15 +1407,12 @@
 
                     // reset
                     kgInput.value = 1;
-                    qtyInput.value = 1;
                     pairInput.value = 1;
 
                     kgBox.style.display = "none";
-                    qtyBox.style.display = "none";
                     pairBox.style.display = "none";
 
                     if (unit === "kg") kgBox.style.display = "block";
-                    if (unit === "item") qtyBox.style.display = "block";
                     if (unit === "pair") pairBox.style.display = "block";
 
                     calculate();
@@ -1413,8 +1449,6 @@
 
                     if (kgBox.style.display === "block")
                       quantity = Number(kgInput.value);
-                    if (qtyBox.style.display === "block")
-                      quantity = Number(qtyInput.value);
                     if (pairBox.style.display === "block")
                       quantity = Number(pairInput.value);
 
@@ -1426,7 +1460,6 @@
                   /* CHANGE QUANTITY */
 
                   kgInput.addEventListener("input", calculate);
-                  qtyInput.addEventListener("input", calculate);
                   pairInput.addEventListener("input", calculate);
                 });
               </script>
