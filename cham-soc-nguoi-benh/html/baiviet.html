@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dịch vụ chăm sóc bệnh nhân tại nhà an toàn và chuyên nghiệp: theo dõi y tế, hỗ trợ sinh hoạt, chăm sóc sau phẫu thuật và phục hồi sức khỏe toàn diện.">
+    <meta name="keywords" content="chăm sóc bệnh nhân, chăm sóc bệnh nhân tại nhà, điều dưỡng tại nhà, chăm sóc sau phẫu thuật, chăm sóc người bệnh dài ngày">
+    <title>Chăm Sóc Bệnh Nhân</title>
+      <link
+        rel="shortcut icon"
+        type="image/x-icon"
+        href="../assets/logobn.png"
+    />
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="font-family: 'Quicksand', sans-serif;">
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+    <div class="container">
+        <a
+          class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
+          href="../../index.html"
+          style="color: #007bff"
+        >
+          <img
+            style="width: 80px; height: 60px"
+            src="../assets/logo.png"
+            alt="cham-soc-me-va-be"
+          />
+          <span>Chăm Sóc Bệnh Nhân</span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+            <ul class="navbar-nav align-items-center gap-3">
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="../index.html">Trang Chủ</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="about.html">Giới Thiệu</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="../services.html">Dịch Vụ</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="terms.html">Điều Khoản</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3 active" style="color:#007bff;" href="baiviet.html">Bài Viết</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="contact.html">Liên Hệ</a></li>
+                
+                <li class="nav-item ms-lg-3">
+                    <a
+                    href="html/contact.html"
+                    class="btn text-white rounded-pill px-4 py-2 shadow-sm"
+                    style="background-color: #007bff"
+                    onmouseover="
+                        this.style.backgroundColor = '#d84374';
+                        this.style.transform = 'scale(1.05)';
+                    "
+                    onmouseout="
+                        this.style.backgroundColor = '#F06292';
+                        this.style.transform = 'scale(1)';
+                    "
+                    >Đặt Lịch Tư Vấn</a
+                    >
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div>
+  <!-- HERO -->
+  <section class="py-5" style="background:linear-gradient(135deg,#e3f2fd 0%,#fff 55%,#e8eaf6 100%);">
+    <div class="container py-3">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+          <span class="badge rounded-pill px-4 py-2 fs-6 mb-3 text-white" style="background-color:#1565c0;">
+            <i class="fas fa-hospital-user me-1"></i> Chăm Sóc Người Bệnh
+          </span>
+          <h1 class="display-5 fw-bold mb-3">Chăm Sóc Người Bệnh Tại Nhà – Những Điều Gia Đình Cần Biết Để Làm Đúng</h1>
+          <p class="lead text-muted">Chăm sóc người bệnh tại nhà không chỉ cần tình thương — còn cần kiến thức đúng và kỹ năng thực tế. Bài viết này giúp gia đình tự tin hơn trong hành trình đồng hành cùng người thân vượt qua bệnh tật.</p>
+          <div class="d-flex justify-content-center flex-wrap gap-4 text-muted small mt-4">
+            <span><i class="fas fa-calendar-alt me-1" style="color:#1565c0;"></i> Cập nhật 2025</span>
+            <span><i class="fas fa-clock me-1" style="color:#1565c0;"></i> Đọc 7 phút</span>
+            <span><i class="fas fa-user-md me-1" style="color:#1565c0;"></i> Biên soạn bởi điều dưỡng chuyên nghiệp</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NỘI DUNG -->
+  <main class="py-5">
+    <div class="container">
+      <div class="row g-5">
+
+        <!-- BÀI VIẾT CHÍNH -->
+        <div class="col-lg-8">
+
+          <img src="../assets/2.png" alt="Chăm sóc người bệnh tại nhà" class="img-fluid rounded-4 shadow-sm mb-5 w-100" style="max-height:420px;object-fit:cover;">
+
+          <!-- MỞ ĐẦU -->
+          <div class="p-4 rounded-4 mb-5 border-start border-4 bg-light" style="border-color:#1565c0!important;">
+            <p class="mb-0 fs-5">Sau xuất viện, người bệnh bước vào giai đoạn phục hồi quan trọng nhất — nhưng cũng là lúc gia đình bối rối nhất: <strong>"Vết mổ chăm sóc thế nào? Người bệnh nên ăn gì? Khi nào thì cần gọi bác sĩ?"</strong> Những câu hỏi đó sẽ được giải đáp đầy đủ trong bài viết này.</p>
+          </div>
+
+          <!-- PHẦN 1 -->
+          <h2 class="fw-bold h3 mb-4" style="color:#1565c0;"><i class="fas fa-clipboard-list me-2"></i>1. Theo Dõi Sức Khỏe Hằng Ngày – Đừng Để Bỏ Sót Dấu Hiệu Bất Thường</h2>
+          <p>Giai đoạn hồi phục tại nhà sau điều trị đòi hỏi sự theo dõi sát sao, liên tục. Nhiều biến chứng nếu phát hiện sớm có thể xử lý dễ dàng, nhưng nếu bỏ qua sẽ trở nên nguy hiểm.</p>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 border-start border-4 bg-light" style="border-color:#1565c0!important;">
+                <strong><i class="fas fa-heartbeat me-2 text-danger"></i>Sinh hiệu cơ bản</strong>
+                <p class="small text-muted mb-0 mt-1">Đo huyết áp, nhiệt độ, nhịp tim 2 lần/ngày và ghi chép đều đặn để phát hiện xu hướng bất thường.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 border-start border-4 bg-light" style="border-color:#42a5f5!important;">
+                <strong><i class="fas fa-pills me-2 text-primary"></i>Nhắc uống thuốc đúng giờ</strong>
+                <p class="small text-muted mb-0 mt-1">Lập bảng thuốc rõ ràng — tên thuốc, liều lượng, thời điểm uống. Không bỏ liều, không tự ý dừng thuốc.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 border-start border-4 bg-light" style="border-color:#66bb6a!important;">
+                <strong><i class="fas fa-smile me-2 text-success"></i>Tinh thần người bệnh</strong>
+                <p class="small text-muted mb-0 mt-1">Nói chuyện, hỏi thăm hằng ngày. Tâm lý tích cực có vai trò rất lớn trong quá trình phục hồi.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 border-start border-4 bg-light" style="border-color:#ef5350!important;">
+                <strong><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Dấu hiệu cần gặp bác sĩ ngay</strong>
+                <p class="small text-muted mb-0 mt-1">Sốt cao đột ngột, vết mổ chảy mủ, đau tăng bất thường, khó thở — báo y tế ngay không chần chừ.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHẦN 2 -->
+          <h2 class="fw-bold h3 mb-4 mt-5" style="color:#1565c0;"><i class="fas fa-band-aid me-2"></i>2. Chăm Sóc Vết Mổ Sau Phẫu Thuật – Đúng Kỹ Thuật, Tránh Nhiễm Trùng</h2>
+          <p>Vết mổ là "cửa ngõ" dễ bị nhiễm trùng nhất sau phẫu thuật. Chăm sóc không đúng cách có thể khiến thời gian hồi phục kéo dài gấp đôi hoặc gây biến chứng nặng.</p>
+
+          <div class="alert border-start border-4 border-warning bg-warning bg-opacity-10 rounded-3 mb-4" role="alert">
+            <strong><i class="fas fa-info-circle me-2 text-warning"></i>Lưu ý:</strong> Người chăm sóc tại nhà chỉ thực hiện vệ sinh vết mổ theo hướng dẫn của bác sĩ, <strong>không tự ý thực hiện các kỹ thuật y tế phức tạp</strong>. Mọi thay đổi bất thường cần báo ngay cơ sở y tế.
+          </div>
+
+          <ul class="list-group list-group-flush rounded-3 overflow-hidden shadow-sm mb-4">
+            <li class="list-group-item py-3 d-flex gap-3">
+              <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
+              <span>Rửa tay sạch trước và sau khi chăm sóc vết mổ — <strong>bước không thể bỏ qua</strong> để phòng ngừa nhiễm khuẩn chéo.</span>
+            </li>
+            <li class="list-group-item py-3 d-flex gap-3">
+              <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
+              <span>Vệ sinh vết mổ bằng dung dịch theo chỉ định bác sĩ. <strong>Không tự ý dùng cồn, iod hoặc oxy già</strong> nếu không được dặn.</span>
+            </li>
+            <li class="list-group-item py-3 d-flex gap-3">
+              <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
+              <span>Thay băng đúng lịch — không để băng ướt, bẩn quá lâu. Băng ẩm là môi trường lý tưởng cho vi khuẩn phát triển.</span>
+            </li>
+            <li class="list-group-item py-3 d-flex gap-3">
+              <i class="fas fa-times-circle text-danger fs-5 mt-1"></i>
+              <span>Nhận biết dấu hiệu nhiễm trùng: <strong>đỏ, sưng, nóng, chảy dịch bất thường, mùi hôi</strong> — gặp bác sĩ ngay.</span>
+            </li>
+          </ul>
+
+          <!-- PHẦN 3 -->
+          <h2 class="fw-bold h3 mb-4 mt-5" style="color:#1565c0;"><i class="fas fa-walking me-2"></i>3. Hỗ Trợ Vận Động & Phục Hồi Chức Năng</h2>
+          <p>Vận động sớm sau phẫu thuật (khi được phép) giúp phòng ngừa huyết khối, cứng khớp và viêm phổi do nằm lâu. Tuy nhiên cần thực hiện đúng theo hướng dẫn của bác sĩ và vật lý trị liệu.</p>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4 text-center">
+              <div class="p-4 rounded-4 h-100" style="background:#e3f2fd;">
+                <div class="fs-1 mb-2">🛏️</div>
+                <strong>Vận động tại giường</strong>
+                <p class="small text-muted mt-2 mb-0">Co duỗi chân, xoay cổ tay, tập thở sâu — những bài tập đơn giản nhưng cực kỳ hiệu quả ngay từ ngày đầu.</p>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <div class="p-4 rounded-4 h-100" style="background:#e8eaf6;">
+                <div class="fs-1 mb-2">🚶</div>
+                <strong>Tập đi lại có hỗ trợ</strong>
+                <p class="small text-muted mt-2 mb-0">Người chăm sóc đi bên cạnh, hỗ trợ khi cần — không vội vã, ưu tiên an toàn tuyệt đối.</p>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <div class="p-4 rounded-4 h-100" style="background:#f3e5f5;">
+                <div class="fs-1 mb-2">🦽</div>
+                <strong>Hỗ trợ xe lăn</strong>
+                <p class="small text-muted mt-2 mb-0">Với người chưa thể tự đi, di chuyển bằng xe lăn để tránh nằm yên quá lâu — nguy cơ loét tỳ đè rất cao.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHẦN 4 -->
+          <h2 class="fw-bold h3 mb-4 mt-5" style="color:#1565c0;"><i class="fas fa-hands-helping me-2"></i>4. Chăm Sóc Người Bệnh Nặng / Nằm Một Chỗ</h2>
+          <p>Người bệnh mất khả năng tự phục vụ cần được chăm sóc toàn diện hơn, với kỹ thuật đúng để tránh biến chứng nguy hiểm.</p>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light d-flex gap-3">
+                <i class="fas fa-sync-alt fs-4 mt-1" style="color:#1565c0;"></i>
+                <div>
+                  <strong>Lật trở chống loét</strong>
+                  <p class="small text-muted mb-0 mt-1">Lật trở mỗi 2 tiếng — đây là nguyên tắc vàng để phòng loét tỳ đè (bed sore), biến chứng nguy hiểm nhất khi nằm lâu.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light d-flex gap-3">
+                <i class="fas fa-bath fs-4 mt-1" style="color:#1565c0;"></i>
+                <div>
+                  <strong>Tắm rửa tại giường</strong>
+                  <p class="small text-muted mb-0 mt-1">Dùng khăn ấm lau toàn thân mỗi ngày. Giữ da khô thoáng, thay quần áo sạch — phòng ngừa nhiễm trùng da.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light d-flex gap-3">
+                <i class="fas fa-baby fs-4 mt-1" style="color:#1565c0;"></i>
+                <div>
+                  <strong>Thay tã & vệ sinh tại giường</strong>
+                  <p class="small text-muted mb-0 mt-1">Thực hiện nhẹ nhàng, tôn trọng phẩm giá người bệnh. Vệ sinh sạch sẽ sau mỗi lần — tránh hăm và nhiễm trùng đường tiết niệu.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light d-flex gap-3">
+                <i class="fas fa-utensils fs-4 mt-1" style="color:#1565c0;"></i>
+                <div>
+                  <strong>Hỗ trợ ăn uống</strong>
+                  <p class="small text-muted mb-0 mt-1">Đút ăn từ từ, đặc biệt với người khó nuốt. Kiểm tra nhiệt độ thức ăn và theo dõi dấu hiệu sặc.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHẦN 5 -->
+          <h2 class="fw-bold h3 mb-4 mt-5" style="color:#1565c0;"><i class="fas fa-utensils me-2"></i>5. Dinh Dưỡng Cho Người Bệnh – Ăn Đúng Để Hồi Phục Nhanh</h2>
+          <p>Dinh dưỡng đóng vai trò sống còn trong quá trình hồi phục. Người bệnh cần chế độ ăn phù hợp với từng loại bệnh lý — không phải cứ "ăn nhiều" là tốt.</p>
+
+          <div class="p-4 rounded-4 mb-4" style="background:#e3f2fd;">
+            <h5 class="fw-bold mb-3" style="color:#1565c0;"><i class="fas fa-lightbulb me-2 text-warning"></i>Nguyên tắc dinh dưỡng cơ bản</h5>
+            <div class="row g-3">
+              <div class="col-6 col-md-3 text-center">
+                <div class="p-3 rounded-3 bg-white">
+                  <div class="fs-2">🥩</div>
+                  <small class="fw-bold d-block mt-1">Đạm đủ</small>
+                  <small class="text-muted">Giúp liền vết thương nhanh</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 text-center">
+                <div class="p-3 rounded-3 bg-white">
+                  <div class="fs-2">🥦</div>
+                  <small class="fw-bold d-block mt-1">Vitamin & khoáng</small>
+                  <small class="text-muted">Tăng sức đề kháng</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 text-center">
+                <div class="p-3 rounded-3 bg-white">
+                  <div class="fs-2">💧</div>
+                  <small class="fw-bold d-block mt-1">Đủ nước</small>
+                  <small class="text-muted">Hỗ trợ thải độc, lưu thông máu</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 text-center">
+                <div class="p-3 rounded-3 bg-white">
+                  <div class="fs-2">🥣</div>
+                  <small class="fw-bold d-block mt-1">Dễ tiêu hóa</small>
+                  <small class="text-muted">Cháo, súp, thức ăn mềm</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p>Dịch vụ nấu ăn dinh dưỡng cho người bệnh của chúng tôi xây dựng thực đơn phù hợp từng bệnh lý (tiểu đường, tim mạch, hậu phẫu…), nấu 2–3 bữa/ngày và dọn dẹp bếp sau khi nấu.</p>
+
+          <!-- PHẦN 6 -->
+          <h2 class="fw-bold h3 mb-4 mt-5" style="color:#1565c0;"><i class="fas fa-moon me-2"></i>6. Trực Đêm – Đồng Hành Khi Người Bệnh Cần Nhất</h2>
+          <p>Ban đêm là thời điểm người bệnh dễ gặp khó khăn nhất: đau, khó ngủ, cần đi vệ sinh, hoặc các triệu chứng đột ngột xấu đi. Có người trực đêm chuyên nghiệp giúp xử lý kịp thời và báo gia đình ngay khi cần.</p>
+
+          <ul class="list-group list-group-flush rounded-3 overflow-hidden shadow-sm mb-4">
+            <li class="list-group-item py-3"><i class="fas fa-moon text-primary me-2"></i>Thức trực toàn đêm, luôn sẵn sàng hỗ trợ khi người bệnh cần.</li>
+            <li class="list-group-item py-3"><i class="fas fa-toilet text-primary me-2"></i>Hỗ trợ đi vệ sinh ban đêm an toàn — tránh té ngã trong bóng tối.</li>
+            <li class="list-group-item py-3"><i class="fas fa-pills text-primary me-2"></i>Nhắc và đảm bảo người bệnh uống thuốc đêm đúng giờ.</li>
+            <li class="list-group-item py-3"><i class="fas fa-heart text-primary me-2"></i>Trò chuyện, động viên khi người bệnh mất ngủ hoặc lo lắng, bất an.</li>
+            <li class="list-group-item py-3"><i class="fas fa-bell text-primary me-2"></i>Báo ngay cho gia đình hoặc cấp cứu khi phát hiện dấu hiệu nguy hiểm.</li>
+          </ul>
+
+          <!-- KẾT -->
+          <div class="p-4 rounded-4 text-white mt-5" style="background:linear-gradient(135deg,#1565c0,#42a5f5);">
+            <h4 class="fw-bold mb-3"><i class="fas fa-star me-2"></i>Dịch Vụ Chăm Sóc Người Bệnh Tại Nhà</h4>
+            <p class="mb-3">Chúng tôi cung cấp người chăm sóc được đào tạo bài bản, có kinh nghiệm thực tế với người bệnh. Dịch vụ linh hoạt từ ca sáng, ca đêm đến 24h — phù hợp mọi nhu cầu gia đình.</p>
+            <div class="row g-3 mb-4">
+              <div class="col-sm-4 text-center">
+                <div class="fw-bold fs-5">Ca sáng (6h–18h)</div>
+                <div class="opacity-75">700.000 đ / ca</div>
+              </div>
+              <div class="col-sm-4 text-center">
+                <div class="fw-bold fs-5">Ca đêm (18h–6h)</div>
+                <div class="opacity-75">750.000 đ / ca</div>
+              </div>
+              <div class="col-sm-4 text-center">
+                <div class="fw-bold fs-5">Cả ngày 24h</div>
+                <div class="opacity-75">1.400.000 đ / ngày</div>
+              </div>
+            </div>
+            <a href="html/contact.html" class="btn btn-light fw-bold rounded-pill px-5 py-2" style="color:#1565c0;">
+              <i class="fas fa-phone me-2"></i>Đặt Lịch Tư Vấn Ngay
+            </a>
+          </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="col-lg-4">
+          <div class="sticky-top" style="top:90px;">
+
+            <!-- MỤC LỤC -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+              <div class="card-body p-4">
+                <h5 class="fw-bold mb-3" style="color:#1565c0;"><i class="fas fa-list me-2"></i>Nội Dung Bài Viết</h5>
+                <ol class="ps-3 mb-0" style="line-height:2.2;">
+                  <li><a href="#" class="text-decoration-none text-muted">Theo dõi sức khỏe hằng ngày</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Chăm sóc vết mổ sau phẫu thuật</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Hỗ trợ vận động & phục hồi</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Chăm sóc người bệnh nặng</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Dinh dưỡng cho người bệnh</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Trực đêm cho người bệnh</a></li>
+                </ol>
+              </div>
+            </div>
+
+            <!-- DỊCH VỤ -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+              <div class="card-body p-4">
+                <h5 class="fw-bold mb-3" style="color:#1565c0;"><i class="fas fa-star me-2"></i>Dịch Vụ Của Chúng Tôi</h5>
+                <ul class="list-unstyled mb-0" style="line-height:2.2;">
+                  <li><i class="fas fa-check text-success me-2"></i>Chăm sóc người bệnh cơ bản</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Chăm sóc sau phẫu thuật</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Chăm sóc người bệnh nặng</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Chăm sóc ban đêm</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Nấu ăn dinh dưỡng cho bệnh nhân</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Hỗ trợ việc nhà khi có người bệnh</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- LIÊN HỆ -->
+            <div class="card border-0 shadow-sm rounded-4 text-center" style="background:linear-gradient(135deg,#e3f2fd,#e8eaf6);">
+              <div class="card-body p-4">
+                <div class="fs-1 mb-2">📞</div>
+                <h5 class="fw-bold mb-2">Tư Vấn Miễn Phí</h5>
+                <p class="text-muted small mb-3">Gọi ngay để được tư vấn và đặt lịch điều dưỡng tận nhà — hỗ trợ 24/7.</p>
+                <a href="tel:0775472347" class="btn text-white fw-bold rounded-pill w-100 py-2 mb-2" style="background-color:#1565c0;">
+                  <i class="fas fa-phone me-2"></i>0775 472 347
+                </a>
+                <a href="html/contact.html" class="btn btn-outline-secondary rounded-pill w-100 py-2">
+                  <i class="fas fa-calendar-alt me-2"></i>Đặt Lịch Online
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+      <footer class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+          <div class="row g-4 mb-4">
+            <div class="col-lg-4">
+              <h3 class="h4 fw-bold mb-3" style="color: #007bff">Chăm Sóc Bệnh Nhân</h3>
+              <p class="opacity-75">
+                Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng
+                đầu tại Việt Nam.
+              </p>
+            </div>
+            <div class="col-lg-2">
+              <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <a
+                    href="html/about.html"
+                    class="text-white text-decoration-none opacity-75"
+                    >Giới Thiệu</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    href="html/services.html"
+                    class="text-white text-decoration-none opacity-75"
+                    >Dịch Vụ</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    href="html/contact.html"
+                    class="text-white text-decoration-none opacity-75"
+                    >Liên Hệ</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../vesinhcare/demo/"
+                    >Lau Dọn Vệ Sinh</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../cham-soc-me-va-be/"
+                    >Chăm Sóc Mẹ & Bé</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../web-cham-soc-vuon-nha/"
+                    >Chăm Sóc Vườn & Rẫy</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../giat-ui-nhanh/"
+                    >Giặt Ủi Cao Cấp</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../tho-nha/"
+                    >Thợ Nhà & Sửa Chữa</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../cham-soc-nguoi-gia/"
+                    >Chăm Sóc Người Già</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../cham-soc-nguoi-benh/"
+                    >Chăm Sóc Bệnh Nhân</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../he-thong-giao-hang-chuyen-don/"
+                    >Giao Hàng Nhanh</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="col-lg-3">
+              <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
+              <p class="mb-1 opacity-75 small">
+                <i class="fas fa-phone me-2"></i> 0775472347
+              </p>
+              <p class="mb-1 opacity-75 small">
+                <i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com
+              </p>
+            </div>
+            <div class="col-lg-3">
+              <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+              <div class="d-flex gap-3">
+                <a
+                  href="#"
+                  class="btn btn-outline-light rounded-circle shadow-sm"
+                  ><i class="fab fa-facebook-f"></i
+                ></a>
+                <a
+                  href="#"
+                  class="btn btn-outline-light rounded-circle shadow-sm"
+                  ><i class="fab fa-instagram"></i
+                ></a>
+                <a
+                  href="#"
+                  class="btn btn-outline-light rounded-circle shadow-sm"
+                  ><i class="fab fa-youtube"></i
+                ></a>
+                <a
+                  href="#"
+                  class="btn btn-outline-light rounded-circle shadow-sm"
+                  ><i class="fab fa-tiktok"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+          <hr class="opacity-25" />
+          <p class="text-center small opacity-50">
+            &copy; 2026 Chăm Sóc Bệnh Nhân. Đồng hành cùng sức khỏe Việt.
+          </p>
+        </div>
+      </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

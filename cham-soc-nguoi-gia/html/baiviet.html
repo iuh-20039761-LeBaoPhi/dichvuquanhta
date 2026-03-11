@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dịch vụ chăm sóc người già tại nhà chuyên nghiệp: điều dưỡng tận tâm, theo dõi sức khỏe định kỳ, hỗ trợ sinh hoạt và phục hồi chức năng cho người cao tuổi.">
+    <meta name="keywords" content="chăm sóc người già, chăm sóc người cao tuổi tại nhà, điều dưỡng tại nhà, chăm sóc sức khỏe người già, phục hồi chức năng người cao tuổi">
+    <title>Mẹo Giúp Người Già Sống Khỏe Và Vui Vẻ Mỗi Ngày</title>
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="../assets/logong.png"
+    />
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="font-family: 'Quicksand', sans-serif;">
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+    <div class="container">
+        <a
+          class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
+          href="../../index.html"
+          style="color: #2e7d32"
+        >
+          <img
+            style="width: 80px; height: 60px"
+            src="../assets/logo.png"
+            alt="cham-soc-nguoi-gia"
+          />
+          <span>Chăm Sóc Người Cao Tuổi</span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+            <ul class="navbar-nav align-items-center gap-3">
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="../index.html">Trang Chủ</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="about.html">Giới Thiệu</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="../services.html">Dịch Vụ</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="terms.html">Điều Khoản</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3 active" style="color:#2e7d32;" href="baiviet.html">Bài Viết</a></li>
+                <li class="nav-item"><a class="nav-link fw-bold px-3" href="contact.html">Liên Hệ</a></li>
+                
+                <li class="nav-item ms-lg-3">
+                    <a
+                    href="html/contact.html"
+                    class="btn text-white rounded-pill px-4 py-2 shadow-sm"
+                    style="background-color: #2e7d32"
+                    onmouseover="
+                        this.style.backgroundColor = '#d84374';
+                        this.style.transform = 'scale(1.05)';
+                    "
+                    onmouseout="
+                        this.style.backgroundColor = '#2e7d32';
+                        this.style.transform = 'scale(1)';
+                    "
+                    >Đặt Lịch Tư Vấn</a
+                    >
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+  <!-- HERO -->
+  <section class="py-5" style="background:linear-gradient(135deg,#f1f8e9 0%,#fff 55%,#e8f5e9 100%);">
+    <div class="container py-3">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+          <span class="badge rounded-pill px-4 py-2 fs-6 mb-3 text-white bg-success">
+            <i class="fas fa-leaf me-1"></i> Chăm Sóc Người Cao Tuổi
+          </span>
+          <h1 class="display-5 fw-bold mb-3">Mẹo Giúp Người Già Sống Khỏe Và Vui Vẻ Mỗi Ngày</h1>
+          <p class="lead text-muted">Tuổi già không có nghĩa là bệnh tật và cô đơn. Với cách chăm sóc đúng, ông bà hoàn toàn có thể sống khỏe mạnh, minh mẫn và hạnh phúc trong từng ngày.</p>
+          <div class="d-flex justify-content-center flex-wrap gap-4 text-muted small mt-4">
+            <span><i class="fas fa-calendar-alt me-1 text-success"></i> Cập nhật 2025</span>
+            <span><i class="fas fa-clock me-1 text-success"></i> Đọc 7 phút</span>
+            <span><i class="fas fa-user-nurse me-1 text-success"></i> Biên soạn bởi chuyên gia chăm sóc người cao tuổi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NỘI DUNG -->
+  <main class="py-5">
+    <div class="container">
+      <div class="row g-5">
+
+        <!-- BÀI VIẾT CHÍNH -->
+        <div class="col-lg-8">
+
+          <img src="../assets/1.png" alt="Chăm sóc người già tại nhà" class="img-fluid rounded-4 shadow-sm mb-5 w-100" style="max-height:420px;object-fit:cover;">
+
+          <!-- MỞ ĐẦU -->
+          <div class="p-4 rounded-4 mb-5 border-start border-4 border-success bg-light">
+            <p class="mb-0 fs-5">Nhiều gia đình bận rộn với công việc nhưng vẫn luôn trăn trở: <strong>"Làm sao để ông bà ở nhà được an toàn, vui vẻ và không cô đơn?"</strong> Bài viết này chia sẻ những mẹo thực tế và hiệu quả nhất để chăm sóc người cao tuổi tại nhà — từ thể chất đến tinh thần.</p>
+          </div>
+
+          <!-- PHẦN 1 -->
+          <h2 class="fw-bold h3 mb-4 text-success"><i class="fas fa-heartbeat me-2"></i>1. Theo Dõi Sức Khỏe Hằng Ngày – Nền Tảng Của Mọi Thứ</h2>
+          <p>Người cao tuổi thường có nhiều bệnh nền tiềm ẩn. Việc theo dõi sức khỏe đều đặn giúp phát hiện sớm bất thường và xử lý kịp thời, tránh những biến chứng nguy hiểm.</p>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 border-start border-4 border-success bg-light">
+                <strong><i class="fas fa-heartbeat me-2 text-danger"></i>Huyết áp & nhịp tim</strong>
+                <p class="small text-muted mb-0 mt-1">Đo huyết áp mỗi sáng trước khi ăn. Ghi chép để theo dõi xu hướng thay đổi.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 border-start border-4 border-warning bg-light">
+                <strong><i class="fas fa-pills me-2 text-warning"></i>Nhắc uống thuốc đúng giờ</strong>
+                <p class="small text-muted mb-0 mt-1">Lập danh sách thuốc rõ ràng — sáng/trưa/tối. Không bỏ liều, không tự ý điều chỉnh.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 border-start border-4 border-info bg-light">
+                <strong><i class="fas fa-calendar-check me-2 text-info"></i>Nhắc lịch tái khám</strong>
+                <p class="small text-muted mb-0 mt-1">Ghi rõ lịch tái khám định kỳ, chuẩn bị hồ sơ bệnh án và đưa đón ông bà đúng hẹn.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 border-start border-4 border-danger bg-light">
+                <strong><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Nhận biết dấu hiệu nguy hiểm</strong>
+                <p class="small text-muted mb-0 mt-1">Đột ngột đau ngực, khó thở, té ngã, nói đớ — cần gọi cấp cứu ngay lập tức.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHẦN 2 -->
+          <h2 class="fw-bold h3 mb-4 mt-5 text-success"><i class="fas fa-walking me-2"></i>2. Vận Động Nhẹ Mỗi Ngày – Liều Thuốc Bổ Không Tốn Tiền</h2>
+          <p>Nghiên cứu y khoa chứng minh: người cao tuổi vận động thường xuyên sống lâu hơn, ít bệnh hơn và minh mẫn hơn đáng kể so với người ít vận động.</p>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4 text-center">
+              <div class="p-4 rounded-4 h-100" style="background:#f1f8e9;">
+                <div class="fs-1 mb-2">🚶</div>
+                <strong>Đi bộ 20–30 phút</strong>
+                <p class="small text-muted mt-2 mb-0">Mỗi sáng sau bữa ăn, đi bộ nhẹ trong nhà hoặc quanh sân — cải thiện tuần hoàn máu rõ rệt.</p>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <div class="p-4 rounded-4 h-100" style="background:#e8f5e9;">
+                <div class="fs-1 mb-2">🧘</div>
+                <strong>Bài tập dưỡng sinh</strong>
+                <p class="small text-muted mt-2 mb-0">Thái cực quyền, yoga nhẹ hoặc các bài thở sâu giúp cải thiện thăng bằng, giảm ngã.</p>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <div class="p-4 rounded-4 h-100" style="background:#f9fbe7;">
+                <div class="fs-1 mb-2">💪</div>
+                <strong>Tập phục hồi chức năng</strong>
+                <p class="small text-muted mt-2 mb-0">Với người sau bệnh hoặc phẫu thuật, người hỗ trợ sẽ hướng dẫn bài tập phục hồi phù hợp.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert border-start border-4 border-warning bg-warning bg-opacity-10 rounded-3" role="alert">
+            <strong><i class="fas fa-exclamation-circle me-2 text-warning"></i>Lưu ý quan trọng:</strong> Không ép người già tập quá sức. Dừng ngay nếu có dấu hiệu chóng mặt, đau ngực hoặc khó thở. Người hỗ trợ cần luôn ở bên trong quá trình tập.
+          </div>
+
+          <!-- PHẦN 3 -->
+          <h2 class="fw-bold h3 mb-4 mt-5 text-success"><i class="fas fa-utensils me-2"></i>3. Dinh Dưỡng Cho Người Cao Tuổi – Ăn Ít Nhưng Phải Đủ Chất</h2>
+          <p>Người già thường ăn ít hơn nhưng nhu cầu dinh dưỡng không thấp hơn người trẻ. Chế độ ăn phù hợp giúp duy trì sức đề kháng, xương khớp và trí nhớ.</p>
+
+          <ul class="list-group list-group-flush rounded-3 overflow-hidden shadow-sm mb-4">
+            <li class="list-group-item py-3 d-flex gap-3">
+              <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
+              <span><strong>Đạm đầy đủ:</strong> Thịt nạc, cá, trứng, đậu phụ — giúp duy trì cơ bắp, tránh suy mòn cơ theo tuổi.</span>
+            </li>
+            <li class="list-group-item py-3 d-flex gap-3">
+              <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
+              <span><strong>Canxi & Vitamin D:</strong> Sữa ít béo, cá hồi, rau bina — quan trọng cho xương, ngăn ngừa loãng xương.</span>
+            </li>
+            <li class="list-group-item py-3 d-flex gap-3">
+              <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
+              <span><strong>Chất xơ dồi dào:</strong> Rau củ, hoa quả, ngũ cốc nguyên hạt — hỗ trợ tiêu hóa, phòng táo bón mãn tính.</span>
+            </li>
+            <li class="list-group-item py-3 d-flex gap-3">
+              <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
+              <span><strong>Uống đủ nước:</strong> Người già ít cảm thấy khát — nhắc uống 6–8 ly nước/ngày để tránh mất nước âm thầm.</span>
+            </li>
+            <li class="list-group-item py-3 d-flex gap-3">
+              <i class="fas fa-times-circle text-danger fs-5 mt-1"></i>
+              <span><strong>Hạn chế muối, đường, chất béo bão hòa</strong> — đặc biệt với người có huyết áp cao, tiểu đường, tim mạch.</span>
+            </li>
+          </ul>
+
+          <!-- PHẦN 4 -->
+          <h2 class="fw-bold h3 mb-4 mt-5 text-success"><i class="fas fa-hands-helping me-2"></i>4. Hỗ Trợ Vệ Sinh Cá Nhân – Giữ Phẩm Giá Và Sự Thoải Mái</h2>
+          <p>Việc hỗ trợ vệ sinh cho người cao tuổi đòi hỏi sự khéo léo, tế nhị và tôn trọng. Người chăm sóc chuyên nghiệp được đào tạo để thực hiện điều này một cách nhẹ nhàng, bảo toàn phẩm giá của ông bà.</p>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light">
+                <i class="fas fa-shower text-success me-2 fs-5"></i>
+                <strong>Tắm rửa an toàn</strong>
+                <p class="small text-muted mb-0 mt-1">Dùng ghế tắm, thảm chống trượt. Không để người già tắm một mình — nguy cơ té ngã rất cao.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light">
+                <i class="fas fa-tooth text-success me-2 fs-5"></i>
+                <strong>Vệ sinh răng miệng</strong>
+                <p class="small text-muted mb-0 mt-1">Vệ sinh răng miệng 2 lần/ngày — người đeo răng giả cần ngâm rửa đúng cách mỗi đêm.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light">
+                <i class="fas fa-bed text-success me-2 fs-5"></i>
+                <strong>Phòng ngừa loét tỳ đè</strong>
+                <p class="small text-muted mb-0 mt-1">Với người nằm một chỗ: lật trở mỗi 2 tiếng, dùng đệm khí, giữ da khô và sạch.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-light">
+                <i class="fas fa-wheelchair text-success me-2 fs-5"></i>
+                <strong>Hỗ trợ di chuyển</strong>
+                <p class="small text-muted mb-0 mt-1">Dùng xe lăn, gậy chống hoặc người hỗ trợ đi bên khi cần. Không vội vã gây ngã.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHẦN 5 -->
+          <h2 class="fw-bold h3 mb-4 mt-5 text-success"><i class="fas fa-heart me-2"></i>5. Chăm Sóc Tinh Thần – Điều Người Già Cần Nhất</h2>
+          <p>Cô đơn là một trong những "bệnh" phổ biến nhất và nguy hiểm nhất ở người cao tuổi. Nghiên cứu cho thấy cô đơn kéo dài tác động tiêu cực đến sức khỏe tim mạch và trí não tương đương với hút 15 điếu thuốc mỗi ngày.</p>
+
+          <div class="p-4 rounded-4 mb-4" style="background:#f1f8e9;">
+            <h5 class="fw-bold mb-3 text-success"><i class="fas fa-comments me-2"></i>Những điều nhỏ tạo nên sự khác biệt lớn</h5>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div class="d-flex gap-2 align-items-start">
+                  <i class="fas fa-comment-dots text-success mt-1"></i>
+                  <span class="small">Dành 15–30 phút mỗi ngày trò chuyện, lắng nghe ông bà chia sẻ về ngày xưa, kỷ niệm.</span>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="d-flex gap-2 align-items-start">
+                  <i class="fas fa-chess text-success mt-1"></i>
+                  <span class="small">Chơi cờ, ô chữ, xem phim ưa thích cùng nhau — kích thích não bộ và tạo niềm vui.</span>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="d-flex gap-2 align-items-start">
+                  <i class="fas fa-seedling text-success mt-1"></i>
+                  <span class="small">Khuyến khích trồng cây, chăm hoa — mang lại mục đích và niềm vui mỗi sáng thức dậy.</span>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="d-flex gap-2 align-items-start">
+                  <i class="fas fa-video text-success mt-1"></i>
+                  <span class="small">Video call với con cháu xa thường xuyên — dù chỉ 5 phút cũng xua tan nỗi cô đơn rất nhiều.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHẦN 6 -->
+          <h2 class="fw-bold h3 mb-4 mt-5 text-success"><i class="fas fa-moon me-2"></i>6. Chăm Sóc Ban Đêm – An Toàn Cho Người Già Khi Gia Đình Nghỉ Ngơi</h2>
+          <p>Ban đêm là khoảng thời gian tiềm ẩn nhiều rủi ro nhất: người già dễ mất ngủ, đi vệ sinh ban đêm dễ té ngã, hoặc các cơn đau đột ngột. Có người trực đêm chuyên nghiệp mang lại sự an tâm tuyệt đối cho cả gia đình.</p>
+          <ul class="list-group list-group-flush rounded-3 overflow-hidden shadow-sm mb-4">
+            <li class="list-group-item py-3"><i class="fas fa-moon text-primary me-2"></i>Thức trực, đảm bảo an toàn khi ông bà thức giấc ban đêm.</li>
+            <li class="list-group-item py-3"><i class="fas fa-toilet text-primary me-2"></i>Hỗ trợ đi vệ sinh — nguồn gốc của rất nhiều ca té ngã nguy hiểm ở người cao tuổi.</li>
+            <li class="list-group-item py-3"><i class="fas fa-pills text-primary me-2"></i>Nhắc uống thuốc đêm theo đúng giờ quy định của bác sĩ.</li>
+            <li class="list-group-item py-3"><i class="fas fa-bell text-primary me-2"></i>Báo ngay gia đình khi phát hiện bất thường về sức khỏe.</li>
+          </ul>
+
+          <!-- KẾT -->
+          <div class="p-4 rounded-4 text-white mt-5" style="background:linear-gradient(135deg,#2e7d32,#66bb6a);">
+            <h4 class="fw-bold mb-3"><i class="fas fa-star me-2"></i>Dịch Vụ Chăm Sóc Người Cao Tuổi Tại Nhà</h4>
+            <p class="mb-3">Đội ngũ của chúng tôi được đào tạo bài bản, tận tâm như người thân trong gia đình. Chúng tôi hiểu rằng mỗi ông bà có nhu cầu riêng — vì vậy luôn lắng nghe và tùy chỉnh dịch vụ phù hợp nhất.</p>
+            <div class="row g-3 mb-4">
+              <div class="col-sm-4 text-center">
+                <div class="fw-bold fs-5">Ca sáng (6h–18h)</div>
+                <div class="opacity-75">700.000 đ / ca</div>
+              </div>
+              <div class="col-sm-4 text-center">
+                <div class="fw-bold fs-5">Ca đêm (18h–6h)</div>
+                <div class="opacity-75">750.000 đ / ca</div>
+              </div>
+              <div class="col-sm-4 text-center">
+                <div class="fw-bold fs-5">Cả ngày 24h</div>
+                <div class="opacity-75">1.400.000 đ / ngày</div>
+              </div>
+            </div>
+            <a href="html/contact.html" class="btn btn-light fw-bold rounded-pill px-5 py-2" style="color:#2e7d32;">
+              <i class="fas fa-phone me-2"></i>Đặt Lịch Tư Vấn Ngay
+            </a>
+          </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="col-lg-4">
+          <div class="sticky-top" style="top:90px;">
+
+            <!-- MỤC LỤC -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+              <div class="card-body p-4">
+                <h5 class="fw-bold mb-3 text-success"><i class="fas fa-list me-2"></i>Nội Dung Bài Viết</h5>
+                <ol class="ps-3 mb-0" style="line-height:2.2;">
+                  <li><a href="#" class="text-decoration-none text-muted">Theo dõi sức khỏe hằng ngày</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Vận động nhẹ mỗi ngày</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Dinh dưỡng cho người cao tuổi</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Hỗ trợ vệ sinh cá nhân</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Chăm sóc tinh thần</a></li>
+                  <li><a href="#" class="text-decoration-none text-muted">Chăm sóc ban đêm</a></li>
+                </ol>
+              </div>
+            </div>
+
+            <!-- DỊCH VỤ -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+              <div class="card-body p-4">
+                <h5 class="fw-bold mb-3 text-success"><i class="fas fa-star me-2"></i>Dịch Vụ Của Chúng Tôi</h5>
+                <ul class="list-unstyled mb-0" style="line-height:2.2;">
+                  <li><i class="fas fa-check text-success me-2"></i>Chăm sóc người già cơ bản</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Chăm sóc sau bệnh / phẫu thuật</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Chăm sóc người già nằm liệt</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Chăm sóc ban đêm</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Nấu ăn dinh dưỡng</li>
+                  <li><i class="fas fa-check text-success me-2"></i>Hỗ trợ việc nhà</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- LIÊN HỆ -->
+            <div class="card border-0 shadow-sm rounded-4 text-center" style="background:linear-gradient(135deg,#f1f8e9,#e8f5e9);">
+              <div class="card-body p-4">
+                <div class="fs-1 mb-2">📞</div>
+                <h5 class="fw-bold mb-2">Tư Vấn Miễn Phí</h5>
+                <p class="text-muted small mb-3">Gọi ngay hoặc nhắn tin để được tư vấn và đặt lịch chăm sóc ông bà tại nhà.</p>
+                <a href="tel:0775472347" class="btn text-white fw-bold rounded-pill w-100 py-2 mb-2 bg-success">
+                  <i class="fas fa-phone me-2"></i>0775 472 347
+                </a>
+                <a href="html/contact.html" class="btn btn-outline-secondary rounded-pill w-100 py-2">
+                  <i class="fas fa-calendar-alt me-2"></i>Đặt Lịch Online
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+      <footer class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+          <div class="row g-4 mb-4">
+            <div class="col-lg-4">
+              <h3 class="h4 fw-bold mb-3" style="color: #2e7d32">
+                Chăm Sóc Người Cao Tuổi
+              </h3>
+              <p class="opacity-75">
+                Chăm sóc toàn diện cho người cao tuổi, mang lại niềm vui tuổi xế
+                chiều.
+              </p>
+            </div>
+            <div class="col-lg-2">
+              <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <a
+                    href="html/about.html"
+                    class="text-white text-decoration-none opacity-75"
+                    >Giới Thiệu</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    href="html/services.html"
+                    class="text-white text-decoration-none opacity-75"
+                    >Dịch Vụ</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    href="html/contact.html"
+                    class="text-white text-decoration-none opacity-75"
+                    >Liên Hệ</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../vesinhcare/demo/"
+                    >Lau Dọn Vệ Sinh</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../cham-soc-me-va-be/"
+                    >Chăm Sóc Mẹ & Bé</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../web-cham-soc-vuon-nha/"
+                    >Chăm Sóc Vườn & Rẫy</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../giat-ui-nhanh/"
+                    >Giặt Ủi Cao Cấp</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../tho-nha/"
+                    >Thợ Nhà & Sửa Chữa</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../cham-soc-nguoi-gia/"
+                    >Chăm Sóc Người Già</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../cham-soc-nguoi-benh/"
+                    >Chăm Sóc Bệnh Nhân</a
+                  >
+                </li>
+                <li class="mb-2">
+                  <a
+                    class="text-white text-decoration-none opacity-75"
+                    target="_blank"
+                    href="../he-thong-giao-hang-chuyen-don/"
+                    >Giao Hàng Nhanh</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="col-lg-3">
+              <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
+              <p class="mb-1 opacity-75 small">
+                <i class="fas fa-phone me-2"></i> 0775472347
+              </p>
+              <p class="mb-1 opacity-75 small">
+                <i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com
+              </p>
+            </div>
+            <div class="col-lg-3">
+              <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+              <div class="d-flex gap-3">
+                <a
+                  href="#"
+                  class="btn btn-outline-light rounded-circle shadow-sm"
+                  ><i class="fab fa-facebook-f"></i
+                ></a>
+                <a
+                  href="#"
+                  class="btn btn-outline-light rounded-circle shadow-sm"
+                  ><i class="fab fa-instagram"></i
+                ></a>
+                <a
+                  href="#"
+                  class="btn btn-outline-light rounded-circle shadow-sm"
+                  ><i class="fab fa-youtube"></i
+                ></a>
+                <a
+                  href="#"
+                  class="btn btn-outline-light rounded-circle shadow-sm"
+                  ><i class="fab fa-tiktok"></i
+                ></a>
+
+              </div>
+            </div>
+          </div>
+          <hr class="opacity-25" />
+          <p class="text-center small opacity-50">
+            &copy; 2026 Chăm Sóc Người Cao Tuổi. Đồng hành cùng sức khỏe Việt.
+          </p>
+        </div>
+      </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
