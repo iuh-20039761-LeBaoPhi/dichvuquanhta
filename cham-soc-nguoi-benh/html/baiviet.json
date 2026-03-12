@@ -1,0 +1,902 @@
+[
+  {
+    "id": 1,
+    "slug": "nguyen-tac-vang-cham-soc-nguoi-gia-tai-nha",
+    "title": "5 Nguyên Tắc Vàng Khi Chăm Sóc Người Già Tại Nhà",
+    "category": "Chăm sóc người cao tuổi",
+    "tags": ["chăm sóc người già", "dịch vụ nuôi bệnh", "sức khỏe người cao tuổi", "osin chăm người già"],
+    "excerpt": "Chăm sóc người cao tuổi đòi hỏi sự kiên nhẫn và kiến thức y tế cơ bản. Khám phá các nguyên tắc giúp người già sống vui, khỏe mỗi ngày.",
+    "thumbnail": "care/1.jpg",
+    "published_at": "2026-03-01",
+    "read_time": 4,
+    "content": {
+      "intro": "Khi bước sang tuổi xế chiều, sức khỏe và tâm lý người già thay đổi rất nhiều. Việc chăm sóc đúng cách tại nhà giúp kéo dài tuổi thọ và cải thiện chất lượng sống.",
+      "sections": [
+        {
+          "heading": "Đảm Bảo Chế Độ Dinh Dưỡng Phù Hợp",
+          "body": "Ưu tiên thực phẩm dễ tiêu, giàu chất xơ và ít muối. Chia nhỏ bữa ăn và đảm bảo cung cấp đủ nước, canxi để phòng loãng xương."
+        },
+        {
+          "heading": "Vệ Sinh Thân Thể Và Môi Trường Sống",
+          "body": "Phòng ngủ cần thoáng mát, đủ ánh sáng và tránh trơn trượt. Vệ sinh cá nhân hàng ngày giúp phòng tránh các bệnh ngoài da và viêm nhiễm."
+        },
+        {
+          "heading": "Hỗ Trợ Tâm Lý Và Động Viên Tinh Thần",
+          "body": "Người già thường cảm thấy cô đơn. Sự lắng nghe, trò chuyện của người chăm sóc là liều thuốc quý giá nhất giúp họ vượt qua mặc cảm bệnh tật."
+        }
+      ],
+      "conclusion": "Nếu gia đình quá bận rộn, thuê osin chăm sóc người già chuyên nghiệp là giải pháp tối ưu để đảm bảo cụ luôn được kề cận 24/7.",
+      "cta": "Liên hệ ngay để tìm người chăm sóc người già tận tâm nhất!"
+    }
+  },
+  {
+    "id": 2,
+    "slug": "cham-soc-benh-nhan-sau-tai-bien",
+    "title": "Kỹ Thuật Chăm Sóc Bệnh Nhân Sau Tai Biến Mạch Máu Não",
+    "category": "Phục hồi chức năng",
+    "tags": ["chăm sóc sau tai biến", "phục hồi chức năng", "liệt nửa người", "osin nuôi bệnh"],
+    "excerpt": "Giai đoạn sau tai biến là thời điểm vàng để phục hồi. Tìm hiểu cách chăm sóc và tập luyện giúp bệnh nhân sớm lấy lại khả năng vận động.",
+    "thumbnail": "care/2.jpg",
+    "published_at": "2026-03-02",
+    "read_time": 5,
+    "content": {
+      "intro": "Tai biến mạch máu não thường để lại di chứng nặng nề. Quá trình phục hồi tại nhà cần sự hỗ trợ kiên trì và đúng phương pháp y khoa.",
+      "sections": [
+        {
+          "heading": "Phòng Ngừa Loét Tì Đè",
+          "body": "Với bệnh nhân nằm lâu, cần thay đổi tư thế 2 giờ một lần. Sử dụng đệm hơi và vệ sinh da sạch sẽ ở các vùng xương cùng, gót chân, lưng."
+        },
+        {
+          "heading": "Chế Độ Tập Luyện Phục Hồi",
+          "body": "Thực hiện các bài tập co duỗi tay chân nhẹ nhàng theo chỉ dẫn của bác sĩ. Khuyến khích bệnh nhân tự làm các việc nhỏ để khôi phục phản xạ."
+        },
+        {
+          "heading": "Lưu Ý Về Đường Ăn Uống",
+          "body": "Bệnh nhân sau tai biến dễ bị sặc. Nên cho ăn thức ăn mềm, lỏng, tư thế ngồi cao và theo dõi sát sao trong khi nuốt."
+        }
+      ],
+      "conclusion": "Chăm sóc người tai biến cực kỳ vất vả. Một người nuôi bệnh có kinh nghiệm sẽ giúp giảm bớt áp lực và tăng khả năng hồi phục cho người thân của bạn.",
+      "cta": "Tìm ngay người giúp việc có kinh nghiệm chăm sóc bệnh nhân tai biến!"
+    }
+  },
+  {
+    "id": 3,
+    "slug": "thuc-don-cho-nguoi-benh-tieu-duong",
+    "title": "Thực Đơn Dinh Dưỡng Khoa Học Cho Người Bệnh Tiểu Đường",
+    "category": "Dinh dưỡng người bệnh",
+    "tags": ["dinh dưỡng tiểu đường", "thực đơn người bệnh", "kiểm soát đường huyết", "nấu ăn cho người bệnh"],
+    "excerpt": "Chế độ ăn quyết định 70% hiệu quả điều trị tiểu đường. Khám phá danh sách thực phẩm nên ăn và nên tránh để ổn định đường huyết.",
+    "thumbnail": "care/3.jpg",
+    "published_at": "2026-03-03",
+    "read_time": 4,
+    "content": {
+      "intro": "Kiểm soát đường huyết thông qua ăn uống là bài toán khó với nhiều gia đình. Một thực đơn chuẩn giúp ngăn ngừa biến chứng nguy hiểm.",
+      "sections": [
+        {
+          "heading": "Nhóm Thực Phẩm Chỉ Số GI Thấp",
+          "body": "Nên ưu tiên gạo lứt, ngũ cốc nguyên hạt, rau xanh và các loại đậu. Những thực phẩm này giúp đường huyết tăng chậm sau khi ăn."
+        },
+        {
+          "heading": "Cách Chế Biến Món Ăn An Toàn",
+          "body": "Hạn chế chiên xào nhiều dầu mỡ. Ưu tiên hấp, luộc. Tuyệt đối không sử dụng đường tinh luyện, thay thế bằng đường ăn kiêng nếu cần."
+        },
+        {
+          "heading": "Tầm Quan Trọng Của Việc Đúng Giờ",
+          "body": "Người bệnh tiểu đường cần ăn đúng bữa để tránh hạ đường huyết đột ngột do tác dụng của thuốc điều trị."
+        }
+      ],
+      "conclusion": "Dịch vụ osin chăm bệnh của chúng tôi bao gồm việc đi chợ và nấu ăn theo chỉ định của bác sĩ, giúp bệnh nhân an tâm ăn uống.",
+      "cta": "Đăng ký dịch vụ chăm sóc người bệnh tiểu đường ngay hôm nay!"
+    }
+  },
+  {
+    "id": 4,
+    "slug": "ve-sinh-cho-benh-nhan-tai-cho",
+    "title": "Hướng Dẫn Vệ Sinh Cá Nhân Cho Bệnh Nhân Nằm Tại Chỗ",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["vệ sinh bệnh nhân", "chăm sóc tại giường", "thay bỉm người già", "dịch vụ chăm sóc tại nhà"],
+    "excerpt": "Vệ sinh cho người bệnh nằm một chỗ cần đúng kỹ thuật để vừa sạch sẽ, vừa không làm đau hay ảnh hưởng đến vết thương của họ.",
+    "thumbnail": "care/4.jpg",
+    "published_at": "2026-03-04",
+    "read_time": 3,
+    "content": {
+      "intro": "Sạch sẽ giúp người bệnh cảm thấy thoải mái và ngăn ngừa các bệnh nhiễm trùng, lở loét do nằm lâu.",
+      "sections": [
+        {
+          "heading": "Cách Lau Người Tại Giường",
+          "body": "Dùng nước ấm, lau từng phần cơ thể và che phủ các phần còn lại để tránh cảm lạnh. Lau từ mặt xuống chân và chú ý các nếp gấp da."
+        },
+        {
+          "heading": "Thay Đồ Và Thay Tã (Bỉm)",
+          "body": "Nghiêng người bệnh nhẹ nhàng để thay tã. Sử dụng phấn rôm hoặc kem chống hăm sau khi vệ sinh vùng kín để bảo vệ da."
+        },
+        {
+          "heading": "Chăm Sóc Răng Miệng",
+          "body": "Nếu bệnh nhân tỉnh táo, hỗ trợ họ đánh răng. Nếu hôn mê, dùng gạc thấm nước muối sinh lý để vệ sinh khoang miệng hàng ngày."
+        }
+      ],
+      "conclusion": "Đội ngũ người nuôi bệnh của chúng tôi được đào tạo bài bản kỹ năng vệ sinh chuyên nghiệp, nhẹ nhàng và sạch sẽ.",
+      "cta": "Liên hệ đặt lịch người chăm sóc bệnh nhân tại nhà!"
+    }
+  },
+  {
+    "id": 5,
+    "slug": "theo-doi-huyet-ap-tai-nha",
+    "title": "Cách Theo Dõi Và Kiểm Soát Huyệt Áp Tại Nhà Hiệu Quả",
+    "category": "Sức khỏe tổng quát",
+    "tags": ["đo huyết áp", "cao huyết áp", "sức khỏe tim mạch", "theo dõi bệnh nhân"],
+    "excerpt": "Huyết áp cao là 'kẻ giết người thầm lặng'. Biết cách đo và theo dõi đúng giúp phòng tránh đột quỵ và các bệnh tim mạch.",
+    "thumbnail": "care/5.jpg",
+    "published_at": "2026-03-05",
+    "read_time": 3,
+    "content": {
+      "intro": "Việc tự đo huyết áp tại nhà giúp bác sĩ có dữ liệu chính xác hơn về tình trạng bệnh nhân thay vì chỉ đo tại phòng khám.",
+      "sections": [
+        {
+          "heading": "Thời Điểm Đo Huyết Áp Chuẩn",
+          "body": "Nên đo vào buổi sáng sau khi ngủ dậy và trước khi uống thuốc. Đảm bảo người bệnh nghỉ ngơi ít nhất 5 phút trước khi đo."
+        },
+        {
+          "heading": "Tư Thế Đo Đúng Cách",
+          "body": "Ngồi tựa lưng vào ghế, bàn chân đặt phẳng trên sàn, cánh tay đặt ngang tim. Không nói chuyện hay cử động khi máy đang đo."
+        },
+        {
+          "heading": "Ghi Chép Nhật Ký Sức Khỏe",
+          "body": "Luôn ghi lại chỉ số cùng ngày giờ đo. Nếu thấy chỉ số bất thường kéo dài, cần báo ngay cho nhân viên y tế hoặc đưa đi khám."
+        }
+      ],
+      "conclusion": "Osin chăm bệnh của chúng tôi hỗ trợ đo huyết áp và ghi chép nhật ký sức khỏe hàng ngày cho người bệnh một cách cẩn thận.",
+      "cta": "Tìm người chăm sóc có khả năng theo dõi y tế cơ bản tại đây!"
+    }
+  },
+  {
+    "id": 6,
+    "slug": "tam-ly-nguoi-benh-man-tinh",
+    "title": "Thấu Hiểu Tâm Lý Người Bệnh Mãn Tính Để Chăm Sóc Tốt Hơn",
+    "category": "Tâm lý y học",
+    "tags": ["tâm lý người bệnh", "chăm sóc tinh thần", "trầm cảm người già", "người nuôi bệnh tận tâm"],
+    "excerpt": "Người mắc bệnh mãn tính thường dễ cáu gắt, mặc cảm. Hiểu được tâm lý giúp người chăm sóc kết nối và hỗ trợ họ tốt hơn.",
+    "thumbnail": "care/6.jpg",
+    "published_at": "2026-03-06",
+    "read_time": 4,
+    "content": {
+      "intro": "Bệnh tật kéo dài không chỉ bào mòn thể chất mà còn gây áp lực tâm lý cực lớn, khiến người bệnh dễ rơi vào trầm cảm hoặc bi quan.",
+      "sections": [
+        {
+          "heading": "Vượt Qua Mặc Cảm 'Người Thừa'",
+          "body": "Người bệnh thường sợ làm phiền con cháu. Hãy luôn khẳng định giá trị của họ và khuyến khích họ tham gia vào các quyết định nhỏ trong nhà."
+        },
+        {
+          "heading": "Sự Kiên Nhẫn Của Người Chăm Sóc",
+          "body": "Đôi khi người bệnh cáu gắt vô lý. Hãy hiểu đó là do sự đau đớn từ bệnh tật. Sự nhẫn nại và nụ cười của người chăm sóc là liều thuốc an thần tốt nhất."
+        },
+        {
+          "heading": "Tạo Không Gian Giao Lưu",
+          "body": "Khuyến khích họ nghe đài, xem tivi hoặc trò chuyện cùng bạn bè để tránh cảm giác bị cô lập với thế giới bên ngoài."
+        }
+      ],
+      "conclusion": "Một người giúp việc chăm bệnh có tâm không chỉ lo bữa ăn giấc ngủ mà còn là người bạn tâm giao của người bệnh.",
+      "cta": "Hãy chọn người chăm sóc biết lắng nghe và chia sẻ với người thân của bạn!"
+    }
+  },
+  {
+    "id": 7,
+    "slug": "nguy-co-te-nga-o-nguoi-gia",
+    "title": "Phòng Ngừa Nguy Cơ Té Ngã Ở Người Già Tại Nhà",
+    "category": "An toàn cho người bệnh",
+    "tags": ["phòng ngừa té ngã", "an toàn cho người già", "người già ngã", "chăm sóc tại nhà"],
+    "excerpt": "Té ngã ở người già có thể dẫn đến gãy xương hông và nằm liệt giường. Hãy biến ngôi nhà thành môi trường an toàn tuyệt đối.",
+    "thumbnail": "care/7.jpg",
+    "published_at": "2026-03-07",
+    "read_time": 4,
+    "content": {
+      "intro": "Xương người già rất giòn và khó phục hồi. Một cú ngã nhẹ cũng có thể gây ra những hậu quả nghiêm trọng về sức khỏe.",
+      "sections": [
+        {
+          "heading": "Cải Thiện Ánh Sáng Và Lối Đi",
+          "body": "Đảm bảo đèn hành lang và nhà vệ sinh luôn đủ sáng. Loại bỏ các vật cản trên sàn nhà như thảm trơn, dây điện hay đồ chơi trẻ em."
+        },
+        {
+          "heading": "Lắp Đặt Thanh Vịn Tiện Ích",
+          "body": "Nên lắp thanh vịn trong nhà tắm, cạnh bồn cầu và dọc theo cầu thang để người già có điểm tựa khi di chuyển."
+        },
+        {
+          "heading": "Sử Dụng Giày Dép Chống Trơn",
+          "body": "Nhắc nhở người già luôn mang dép có độ bám tốt kể cả khi ở trong nhà. Tránh đi tất trơn trên sàn gỗ hoặc gạch men."
+        }
+      ],
+      "conclusion": "Có người osin luôn túc trực bên cạnh giúp giảm thiểu tối đa nguy cơ té ngã khi người già đi vệ sinh hoặc di chuyển ban đêm.",
+      "cta": "Thuê người chăm sóc hỗ trợ đi lại cho người già ngay!"
+    }
+  },
+  {
+    "id": 8,
+    "slug": "cham-soc-nguoi-benh-ung-thu-giai-doan-cuoi",
+    "title": "Chăm Sóc Giảm Nhẹ Cho Người Bệnh Ung Thư Giai Đoạn Cuối",
+    "category": "Chăm sóc đặc biệt",
+    "tags": ["chăm sóc giảm nhẹ", "bệnh nhân ung thư", "chăm sóc cuối đời", "dịch vụ nuôi bệnh chuyên nghiệp"],
+    "excerpt": "Mục tiêu chính là giảm đau đớn và mang lại sự an yên nhất cho bệnh nhân trong những ngày tháng cuối cùng.",
+    "thumbnail": "care/8.jpg",
+    "published_at": "2026-03-08",
+    "read_time": 5,
+    "content": {
+      "intro": "Chăm sóc giảm nhẹ không chỉ là hỗ trợ y tế mà còn là sự đồng hành về mặt tinh thần, giúp người bệnh ra đi thanh thản và nhẹ nhàng.",
+      "sections": [
+        {
+          "heading": "Kiểm Soát Cơn Đau",
+          "body": "Đảm bảo bệnh nhân uống thuốc giảm đau đúng liều, đúng giờ theo toa bác sĩ. Sử dụng các liệu pháp hỗ trợ như massage nhẹ hoặc nghe nhạc thư giãn."
+        },
+        {
+          "heading": "Dinh Dưỡng Dễ Chấp Nhận",
+          "body": "Không nên ép bệnh nhân ăn quá nhiều. Hãy nấu những món họ thích, chia thành nhiều muỗng nhỏ và ưu tiên dạng lỏng, dễ nuốt."
+        },
+        {
+          "heading": "Sự Hiền Diện Và Lắng Nghe",
+          "body": "Đôi khi người bệnh chỉ cần có người ngồi bên cạnh nắm tay. Hãy tạo điều kiện để họ thực hiện những nguyện vọng cuối cùng nếu có thể."
+        }
+      ],
+      "conclusion": "Người chăm bệnh chuyên nghiệp sẽ biết cách xử lý các tình huống khó khăn về cảm xúc và y tế trong giai đoạn nhạy cảm này.",
+      "cta": "Cần người chăm sóc bệnh nhân ung thư tận tâm? Hãy gọi chúng tôi."
+    }
+  },
+  {
+    "id": 9,
+    "slug": "cach-thay-bang-vet-thuong-tai-nha",
+    "title": "Hướng Dẫn Thay Băng Vết Thương Tại Nhà An Toàn, Sạch Sẽ",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["thay băng vết thương", "vệ sinh vết thương", "nhiễm trùng vết thương", "chăm sóc sau phẫu thuật"],
+    "excerpt": "Thay băng đúng cách giúp vết thương nhanh lành và tránh nguy cơ nhiễm trùng máu nguy hiểm.",
+    "thumbnail": "care/9.jpg",
+    "published_at": "2026-03-09",
+    "read_time": 3,
+    "content": {
+      "intro": "Với các bệnh nhân sau phẫu thuật, việc giữ vết thương khô ráo và sạch sẽ là ưu tiên hàng đầu trong quá trình hồi phục.",
+      "sections": [
+        {
+          "heading": "Chuẩn Bị Dụng Cụ Y Tế",
+          "body": "Cần có găng tay y tế, bông gạc vô trùng, nước muối sinh lý (NaCl 0.9%) và dung dịch sát khuẩn theo chỉ định của bác sĩ."
+        },
+        {
+          "heading": "Quy Trình Sát Khuẩn",
+          "body": "Rửa tay sạch sẽ. Lau nhẹ nhàng quanh vết thương từ trong ra ngoài. Không dùng bông gòn có xơ dính vào vết thương hở."
+        },
+        {
+          "heading": "Nhận Biết Dấu Hiệu Nhiễm Trùng",
+          "body": "Nếu vết thương sưng đỏ, nóng, chảy mủ hoặc bệnh nhân bị sốt, cần đưa đến cơ sở y tế ngay lập tức."
+        }
+      ],
+      "conclusion": "Osin chăm bệnh của chúng tôi được đào tạo kỹ thuật thay băng cơ bản, giúp vết thương người bệnh luôn được đảm bảo vệ sinh.",
+      "cta": "Tìm người chăm sóc có kỹ năng y khoa cơ bản tại đây!"
+    }
+  },
+  {
+    "id": 10,
+    "slug": "giu-ve-sinh-cho-nguoi-gia-sa-sut-tri-tue",
+    "title": "Thách Thức Khi Chăm Sóc Người Già Sa Sút Trí Tuệ (Alzheimer)",
+    "category": "Chăm sóc người cao tuổi",
+    "tags": ["Alzheimer", "sa sút trí tuệ", "mất trí nhớ người già", "người giúp việc chăm người bệnh"],
+    "excerpt": "Chăm sóc người mất trí nhớ cần sự kiên nhẫn gấp bội và những mẹo nhỏ để giúp họ duy trì nề nếp sinh hoạt.",
+    "thumbnail": "care/10.jpg",
+    "published_at": "2026-03-10",
+    "read_time": 5,
+    "content": {
+      "intro": "Sa sút trí tuệ khiến người già thay đổi tính cách và quên đi những kỹ năng cơ bản nhất. Người chăm sóc cần trở thành 'bộ nhớ' thay cho họ.",
+      "sections": [
+        {
+          "heading": "Thiết Lập Lịch Trình Cố Định",
+          "body": "Ăn, ngủ và đi vệ sinh vào khung giờ cố định giúp giảm bớt sự hoang mang cho người bệnh. Dán nhãn các đồ vật trong nhà để họ dễ nhận biết."
+        },
+        {
+          "heading": "Giao Tiếp Đơn Giản",
+          "body": "Sử dụng câu ngắn, nói chậm và rõ ràng. Tránh tranh cãi khi họ nhớ sai, thay vào đó hãy nhẹ nhàng đánh lạc hướng sang chủ đề khác vui vẻ hơn."
+        },
+        {
+          "heading": "Đảm Bảo An Toàn Tuyệt Đối",
+          "body": "Khóa cửa cẩn thận để tránh người bệnh tự ý đi lạc. Cất kỹ các vật dụng nguy hiểm như dao, kéo hay thuốc uống."
+        }
+      ],
+      "conclusion": "Dịch vụ chăm sóc người bệnh Alzheimer của chúng tôi cung cấp những nhân viên giàu kinh nghiệm và sự thấu cảm sâu sắc.",
+      "cta": "Cần hỗ trợ chăm sóc người già mất trí nhớ? Liên hệ tư vấn ngay!"
+    }
+  },
+  {
+    "id": 11,
+    "slug": "cham-soc-benh-nhan-suy-than",
+    "title": "Chế Độ Sinh Hoạt Cho Bệnh Nhân Suy Thận Chạy Thận Nhân Tạo",
+    "category": "Dinh dưỡng người bệnh",
+    "tags": ["suy thận", "chạy thận", "dinh dưỡng suy thận", "chăm sóc bệnh nhân tại nhà"],
+    "excerpt": "Bệnh nhân suy thận cần một chế độ ăn uống và nghỉ ngơi khắt khe để duy trì sức khỏe giữa các chu kỳ lọc máu.",
+    "thumbnail": "care/11.jpg",
+    "published_at": "2026-03-11",
+    "read_time": 4,
+    "content": {
+      "intro": "Suy thận khiến khả năng đào thải độc tố kém, vì vậy việc kiểm soát những gì đưa vào cơ thể là sống còn.",
+      "sections": [
+        {
+          "heading": "Kiểm Soát Lượng Nước Vào",
+          "body": "Bệnh nhân cần uống nước theo đúng lượng bác sĩ cho phép để tránh phù nề và quá tải cho tim. Cẩn thận với cả lượng nước trong canh, súp."
+        },
+        {
+          "heading": "Hạn Chế Kali Và Phốt Pho",
+          "body": "Tránh các loại quả như chuối, cam, nho khô và các thực phẩm đóng hộp. Ăn nhạt hoàn toàn là điều bắt buộc để bảo vệ huyết áp."
+        },
+        {
+          "heading": "Theo Dõi Cân Nặng Hàng Ngày",
+          "body": "Tăng cân quá nhanh giữa hai kỳ chạy thận là dấu hiệu tích nước nguy hiểm. Người chăm sóc cần cân và ghi chép số liệu mỗi sáng."
+        }
+      ],
+      "conclusion": "Osin chuyên chăm bệnh suy thận sẽ giúp gia đình kiểm soát chặt chẽ thực đơn và lịch trình điều trị của bệnh nhân.",
+      "cta": "Tìm osin hiểu biết về bệnh suy thận tại đây!"
+    }
+  },
+  {
+    "id": 12,
+    "slug": "giup-nguoi-benh-vuot-qua-con-dau",
+    "title": "Mẹo Giúp Người Bệnh Giảm Đau Mà Không Cần Dùng Thuốc",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["giảm đau tự nhiên", "chăm sóc sức khỏe", "massage người bệnh", "liệu pháp tinh thần"],
+    "excerpt": "Bên cạnh thuốc tây, các biện pháp vật lý và tâm lý có tác dụng hỗ trợ giảm đau cực kỳ hiệu quả cho bệnh nhân mãn tính.",
+    "thumbnail": "care/12.jpg",
+    "published_at": "2026-03-12",
+    "read_time": 3,
+    "content": {
+      "intro": "Lạm dụng thuốc giảm đau có thể gây hại cho gan, thận. Hãy thử áp dụng các phương pháp tự nhiên để làm dịu cơn đau cho người bệnh.",
+      "sections": [
+        {
+          "heading": "Liệu Pháp Nhiệt (Chườm Nóng/Lạnh)",
+          "body": "Chườm nóng giúp giãn cơ, giảm đau mỏi xương khớp. Chườm lạnh hiệu quả với các vết thương sưng tấy hoặc bầm tím mới."
+        },
+        {
+          "heading": "Massage Và Xoa Bóp Nhẹ Nhàng",
+          "body": "Xoa bóp giúp tăng cường lưu thông máu, giải tỏa căng thẳng thần kinh và làm lỏng các cơ đang bị co thắt."
+        },
+        {
+          "heading": "Kỹ Thuật Hít Thở Và Thư Giãn",
+          "body": "Hướng dẫn người bệnh hít sâu, thở chậm giúp cơ thể sản sinh endorphin - chất giảm đau tự nhiên của não bộ."
+        }
+      ],
+      "conclusion": "Người nuôi bệnh của chúng tôi được đào tạo các bài xoa bóp cơ bản để giúp người bệnh dễ chịu hơn mỗi ngày.",
+      "cta": "Đặt dịch vụ chăm sóc người bệnh bao gồm massage thư giãn!"
+    }
+  },
+  {
+    "id": 13,
+    "slug": "sap-xep-thuoc-cho-nguoi-benh",
+    "title": "Cách Sắp Xếp Và Cho Người Bệnh Uống Thuốc An Toàn",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["uống thuốc đúng giờ", "quản lý thuốc", "an toàn dược phẩm", "người chăm sóc bệnh nhân"],
+    "excerpt": "Nhầm lẫn thuốc hoặc quên liều là sai lầm phổ biến nhưng cực kỳ nguy hiểm. Hãy học cách quản lý tủ thuốc gia đình thông minh.",
+    "thumbnail": "care/13.jpg",
+    "published_at": "2026-03-13",
+    "read_time": 3,
+    "content": {
+      "intro": "Với người già mắc nhiều bệnh, số lượng thuốc uống mỗi ngày có thể lên tới hàng chục viên. Việc quản lý đòi hỏi sự tỉ mỉ tuyệt đối.",
+      "sections": [
+        {
+          "heading": "Sử Dụng Hộp Chia Thuốc Theo Ngày",
+          "body": "Chia sẵn thuốc vào các ngăn: Sáng - Trưa - Chiều - Tối cho cả tuần. Điều này giúp tránh việc uống trùng liều hoặc bỏ sót thuốc."
+        },
+        {
+          "heading": "Kiểm Tra Hạn Sử Dụng Và Nhãn Thuốc",
+          "body": "Giữ nguyên bao bì hoặc vỉ thuốc để tránh nhầm lẫn. Định kỳ kiểm tra và loại bỏ các loại thuốc đã hết hạn hoặc biến màu."
+        },
+        {
+          "heading": "Lưu Ý Về Cách Uống",
+          "body": "Uống với nhiều nước lọc, tư thế ngồi thẳng. Theo dõi các phản ứng phụ như dị ứng, buồn nôn sau khi uống để báo bác sĩ kịp thời."
+        }
+      ],
+      "conclusion": "Osin chuyên nghiệp luôn tuân thủ nghiêm ngặt lịch uống thuốc, đảm bảo tiến trình điều trị không bị gián đoạn.",
+      "cta": "Tìm người chăm sóc cẩn thận, tỉ mỉ cho người thân của bạn!"
+    }
+  },
+  {
+    "id": 14,
+    "slug": "phong-ngua-viem-phoi-cho-nguoi-nam-lau",
+    "title": "Phòng Ngừa Viêm Phổi Cho Người Bệnh Nằm Lâu Một Chỗ",
+    "category": "An toàn cho người bệnh",
+    "tags": ["viêm phổi nằm lâu", "vỗ rung phổi", "chăm sóc hô hấp", "nuôi bệnh tại nhà"],
+    "excerpt": "Viêm phổi là biến chứng thường gặp và dễ dẫn đến tử vong ở người già nằm liệt. Hãy chủ động phòng ngừa ngay từ hôm nay.",
+    "thumbnail": "care/14.jpg",
+    "published_at": "2026-03-14",
+    "read_time": 4,
+    "content": {
+      "intro": "Khi nằm lâu, đờm dãi dễ ứ đọng trong phổi tạo điều kiện cho vi khuẩn phát triển gây viêm nhiễm.",
+      "sections": [
+        {
+          "heading": "Kỹ Thuật Vỗ Rung Long Đờm",
+          "body": "Khum bàn tay vỗ nhẹ lên lưng người bệnh theo hướng từ dưới lên trên. Việc này giúp đờm bong ra và dễ dàng khạc ra ngoài."
+        },
+        {
+          "heading": "Vệ Sinh Răng Miệng Sạch Sẽ",
+          "body": "Vi khuẩn từ khoang miệng có thể theo nước bọt rơi xuống phổi. Cần đánh răng hoặc lau miệng cho bệnh nhân ít nhất 2 lần/ngày."
+        },
+        {
+          "heading": "Giữ Ấm Và Thông Thoáng",
+          "body": "Giữ ấm cổ và ngực cho người bệnh, đặc biệt là ban đêm. Đảm bảo phòng ngủ thông thoáng, không bị ẩm mốc."
+        }
+      ],
+      "conclusion": "Nhân viên nuôi bệnh của chúng tôi biết cách thực hiện các thao tác vỗ rung và theo dõi nhịp thở để bảo vệ phổi cho người bệnh.",
+      "cta": "Đặt dịch vụ chăm sóc bệnh nhân liệt tại chỗ chuyên nghiệp!"
+    }
+  },
+  {
+    "id": 15,
+    "slug": "bai-tap-cho-nguoi-benh-xuong-khop",
+    "title": "Các Bài Tập Vận Động Nhẹ Cho Người Bệnh Xương Khớp",
+    "category": "Phục hồi chức năng",
+    "tags": ["đau xương khớp", "bài tập người già", "thoái hóa khớp", "người chăm sóc hỗ trợ tập vật lý"],
+    "excerpt": "Càng đau càng lười vận động sẽ khiến khớp bị cứng. Tập luyện đúng cách giúp bôi trơn khớp và giảm đau hiệu quả.",
+    "thumbnail": "care/15.jpg",
+    "published_at": "2026-03-15",
+    "read_time": 4,
+    "content": {
+      "intro": "Vận động hợp lý là chìa khóa để duy trì sự linh hoạt cho hệ xương khớp ở người cao tuổi.",
+      "sections": [
+        {
+          "heading": "Bài Tập Quay Khớp Nhẹ Nhàng",
+          "body": "Thực hiện xoay cổ tay, cổ chân, khớp gối theo vòng tròn. Động tác cần chậm rãi, không cố quá sức để tránh tổn thương thêm."
+        },
+        {
+          "heading": "Đi Bộ Ngắn Trong Nhà",
+          "body": "Khuyến khích người bệnh đi lại nhẹ nhàng với sự hỗ trợ của gậy hoặc người chăm sóc. Chia nhỏ thời gian đi bộ, mỗi lần chỉ 5-10 phút."
+        },
+        {
+          "heading": "Tập Co Duỗi Với Đệm",
+          "body": "Nằm trên giường và thực hiện động tác đạp xe trên không hoặc co duỗi chân để giảm áp lực lên các khớp chịu lực."
+        }
+      ],
+      "conclusion": "Sự đồng hành của một người giúp việc biết cách hỗ trợ tập luyện sẽ giúp người bệnh xương khớp cải thiện vận động rõ rệt.",
+      "cta": "Cần tìm người hỗ trợ tập vật lý trị liệu tại nhà? Hãy gọi ngay!"
+    }
+  },
+  {
+    "id": 16,
+    "slug": "luu-y-khi-cham-soc-nguoi-benh-tim-mach",
+    "title": "Những Lưu Ý Quan Trọng Khi Chăm Sóc Bệnh Nhân Tim Mạch",
+    "category": "Sức khỏe tổng quát",
+    "tags": ["bệnh tim mạch", "chăm sóc tim mạch", "suy tim", "osin chăm bệnh"],
+    "excerpt": "Tránh xúc động mạnh và vận động quá sức là hai nguyên tắc cốt lõi để bảo vệ trái tim của người bệnh.",
+    "thumbnail": "care/16.jpg",
+    "published_at": "2026-03-16",
+    "read_time": 4,
+    "content": {
+      "intro": "Bệnh tim mạch đòi hỏi sự theo dõi sát sao về cả thói quen sinh hoạt lẫn trạng thái cảm xúc hàng ngày.",
+      "sections": [
+        {
+          "heading": "Kiểm soát muối và chất béo",
+          "body": "Ăn nhạt tuyệt đối giúp giảm gánh nặng cho tim. Loại bỏ mỡ động vật, thay bằng dầu thực vật và ưu tiên các loại cá giàu Omega-3."
+        },
+        {
+          "heading": "Tránh các cú sốc tâm lý",
+          "body": "Tạo không gian yên tĩnh, vui vẻ. Tránh báo những tin buồn hoặc gây ra những tình huống tranh cãi gay gắt khiến nhịp tim tăng vọt."
+        },
+        {
+          "heading": "Dấu hiệu cần cấp cứu ngay",
+          "body": "Người chăm sóc cần cảnh giác với các biểu hiện: đau thắt ngực, khó thở khi nằm, tím tái môi hoặc ngất xỉu đột ngột."
+        }
+      ],
+      "conclusion": "Người giúp việc chăm bệnh của chúng tôi luôn được hướng dẫn cách sơ cứu cơ bản và nhận biết dấu hiệu nguy cấp về tim mạch.",
+      "cta": "An tâm hơn với dịch vụ chăm sóc bệnh nhân tim mạch tại nhà!"
+    }
+  },
+  {
+    "id": 17,
+    "slug": "loi-ich-cua-viec-tam-nang-cho-nguoi-gia",
+    "title": "Lợi Ích Của Việc Tắm Nắng Đối Với Sức Khỏe Người Già",
+    "category": "Chăm sóc người cao tuổi",
+    "tags": ["tắm nắng", "Vitamin D", "sức khỏe người già", "người chăm sóc người già"],
+    "excerpt": "Chỉ 15-20 phút tắm nắng mỗi ngày có thể giúp người già chắc khỏe xương và cải thiện tinh thần rõ rệt.",
+    "thumbnail": "care/17.jpg",
+    "published_at": "2026-03-17",
+    "read_time": 3,
+    "content": {
+      "intro": "Ánh nắng mặt trời là nguồn cung cấp Vitamin D tự nhiên tốt nhất, giúp hấp thụ Canxi hiệu quả cho hệ xương khớp.",
+      "sections": [
+        {
+          "heading": "Thời Điểm Tắm Nắng Lý Tưởng",
+          "body": "Nên tắm nắng vào sáng sớm (trước 9h) khi tia cực tím còn yếu. Tránh nắng gắt buổi trưa vì dễ gây cháy nắng và ung thư da."
+        },
+        {
+          "heading": "Cách Tắm Nắng An Toàn",
+          "body": "Để ánh nắng tiếp xúc trực tiếp lên da tay, chân. Không nên tắm nắng qua cửa kính vì kính sẽ cản trở việc hấp thụ Vitamin D."
+        },
+        {
+          "heading": "Tác Dụng Lên Giấc Ngủ",
+          "body": "Ánh nắng giúp điều chỉnh nhịp sinh học, giúp người già dễ đi vào giấc ngủ và ngủ sâu hơn vào ban đêm."
+        }
+      ],
+      "conclusion": "Osin của chúng tôi sẽ hỗ trợ đưa các cụ ra ngoài dạo chơi và tắm nắng hàng ngày để tăng cường sức đề kháng.",
+      "cta": "Giúp người thân khỏe mạnh hơn với dịch vụ chăm sóc tận tâm!"
+    }
+  },
+  {
+    "id": 18,
+    "slug": "cham-soc-nguoi-benh-parkinson",
+    "title": "Cách Hỗ Trợ Sinh Hoạt Cho Người Bệnh Parkinson Tại Nhà",
+    "category": "Sức khỏe tổng quát",
+    "tags": ["Parkinson", "run tay chân", "người chăm sóc bệnh nhân thần kinh", "nuôi bệnh chuyên nghiệp"],
+    "excerpt": "Run rẩy và cứng cơ khiến những việc đơn giản như mặc áo, ăn cơm trở nên khó khăn. Hãy học cách giúp họ tự tin hơn.",
+    "thumbnail": "care/18.jpg",
+    "published_at": "2026-03-18",
+    "read_time": 4,
+    "content": {
+      "intro": "Bệnh nhân Parkinson thường gặp khó khăn trong kiểm soát vận động. Sự hỗ trợ đúng mức sẽ giúp họ duy trì được sự tự lập lâu nhất có thể.",
+      "sections": [
+        {
+          "heading": "Sử Dụng Đồ Dùng Hỗ Trợ",
+          "body": "Dùng thìa to, bát có đế chống trượt để họ dễ ăn uống khi tay bị run. Thay cúc áo bằng miếng dán xé để họ tự mặc đồ dễ dàng."
+        },
+        {
+          "heading": "Khuyến Khích Di Chuyển An Toàn",
+          "body": "Nhắc người bệnh nhấc chân cao khi bước để tránh vấp ngã. Tập các bài tập thăng bằng nhẹ nhàng cùng người chăm sóc."
+        },
+        {
+          "heading": "Kiên Nhẫn Trong Giao Tiếp",
+          "body": "Người bệnh Parkinson có thể nói chậm hoặc khó phát âm. Hãy kiên nhẫn đợi họ diễn đạt hết ý, không nên ngắt lời hay thúc giục."
+        }
+      ],
+      "conclusion": "Dịch vụ osin chăm bệnh của chúng tôi có kinh nghiệm xử lý các tình huống khó khăn của người bệnh Parkinson.",
+      "cta": "Tìm người chăm bệnh Parkinson có kinh nghiệm ngay!"
+    }
+  },
+  {
+    "id": 19,
+    "slug": "giac-ngu-cua-nguoi-benh",
+    "title": "Làm Thế Nào Để Người Bệnh Có Giấc Ngủ Ngon?",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["giấc ngủ người bệnh", "mất ngủ", "chăm sóc sức khỏe", "người nuôi bệnh trực đêm"],
+    "excerpt": "Giấc ngủ là thời gian để cơ thể tự chữa lành. Một đêm mất ngủ có thể khiến tình trạng bệnh trở nên tồi tệ hơn.",
+    "thumbnail": "care/19.jpg",
+    "published_at": "2026-03-19",
+    "read_time": 3,
+    "content": {
+      "intro": "Lo lắng và đau đớn thường khiến người bệnh khó ngủ. Tạo môi trường ngủ lý tưởng là nhiệm vụ quan trọng của người chăm sóc.",
+      "sections": [
+        {
+          "heading": "Không Gian Yên Tĩnh Và Thoải Mái",
+          "body": "Tắt bớt đèn, giữ phòng đủ tối và nhiệt độ mát mẻ. Sử dụng gối kê hỗ trợ để giảm áp lực lên các vùng cơ thể bị đau."
+        },
+        {
+          "heading": "Thói Quen Trước Khi Ngủ",
+          "body": "Hạn chế cho người bệnh uống nhiều nước hoặc trà, cafe vào buổi tối. Một buổi ngâm chân nước ấm hoặc massage nhẹ sẽ giúp họ dễ ngủ hơn."
+        },
+        {
+          "heading": "Xử Lý Khi Người Bệnh Tỉnh Giấc Ban Đêm",
+          "body": "Người chăm sóc cần túc trực để hỗ trợ họ đi vệ sinh hoặc đổi tư thế, tránh để họ tự dậy gây nguy hiểm."
+        }
+      ],
+      "conclusion": "Dịch vụ nuôi bệnh trực đêm giúp gia đình yên tâm nghỉ ngơi trong khi người bệnh luôn được chăm sóc giấc ngủ chu đáo.",
+      "cta": "Đặt lịch dịch vụ nuôi bệnh trực đêm ngay!"
+    }
+  },
+  {
+    "id": 20,
+    "slug": "nguoi-cham-soc-cung-can-duoc-cham-soc",
+    "title": "Chống Kiệt Sức Cho Người Chăm Sóc Bệnh Nhân",
+    "category": "Tâm lý y học",
+    "tags": ["kiệt sức người chăm sóc", "stress", "dịch vụ giúp việc chăm bệnh", "giải pháp chăm sóc"],
+    "excerpt": "Chăm sóc người bệnh dài ngày là một công việc cực kỳ áp lực. Đừng quên chăm sóc chính mình trước khi quá muộn.",
+    "thumbnail": "care/20.jpg",
+    "published_at": "2026-03-20",
+    "read_time": 4,
+    "content": {
+      "intro": "Nhiều người rơi vào trạng thái stress trầm trọng khi một mình gánh vác việc chăm sóc người thân đau ốm trong thời gian dài.",
+      "sections": [
+        {
+          "heading": "Nhận Biết Dấu Hiệu Kiệt Sức",
+          "body": "Thường xuyên mệt mỏi, dễ nổi nóng, mất ngủ hoặc cảm thấy tuyệt vọng. Đây là lúc bạn cần sự giúp đỡ từ bên ngoài."
+        },
+        {
+          "heading": "Dành Thời Gian Riêng Cho Bản Thân",
+          "body": "Mỗi ngày hãy dành ít nhất 30 phút để làm điều mình thích. Đừng cảm thấy tội lỗi khi muốn nghỉ ngơi một chút."
+        },
+        {
+          "heading": "Chia Sẻ Gánh Nặng",
+          "body": "Đừng ngại thuê dịch vụ chuyên nghiệp để thay thế bạn trong vài ngày hoặc vài tuần. Sự thay thế này giúp bạn tái tạo năng lượng."
+        }
+      ],
+      "conclusion": "Sử dụng dịch vụ osin chăm bệnh không chỉ tốt cho người bệnh mà còn là cách bạn bảo vệ sức khỏe của chính mình.",
+      "cta": "Hãy để chúng tôi chia sẻ gánh nặng chăm sóc cùng bạn!"
+    }
+  },
+  {
+    "id": 21,
+    "slug": "ve-sinh-cho-nguoi-benh-sau-phau-thuat",
+    "title": "Chăm Sóc Vệ Sinh Sau Phẫu Thuật: Những Điều Cấm Kỵ",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["sau phẫu thuật", "vệ sinh vết mổ", "chăm sóc hậu phẫu", "osin chăm bệnh"],
+    "excerpt": "Sai lầm trong vệ sinh sau mổ có thể dẫn đến nhiễm trùng vết thương và kéo dài thời gian nằm viện.",
+    "thumbnail": "care/21.jpg",
+    "published_at": "2026-03-21",
+    "read_time": 3,
+    "content": {
+      "intro": "Vết mổ cần môi trường vô trùng để mau lành. Người chăm sóc cần đặc biệt lưu ý các quy tắc vệ sinh khắt khe.",
+      "sections": [
+        {
+          "heading": "Tuyệt Đối Giữ Vết Mổ Khô Ráo",
+          "body": "Không được để nước dính vào băng gạc khi lau người. Nếu lỡ làm ướt, phải báo y tá hoặc tự thay băng ngay lập tức theo đúng quy trình sát khuẩn."
+        },
+        {
+          "heading": "Hạn Chế Sờ Tay Vào Vết Thương",
+          "body": "Bàn tay chứa rất nhiều vi khuẩn. Nhắc nhở người bệnh không được gãi hay chạm vào vùng quanh vết mổ dù có cảm giác ngứa do lên da non."
+        },
+        {
+          "heading": "Theo Dõi Ống Dẫn Lưu",
+          "body": "Nếu có ống dẫn lưu, cần giữ ống thông thoáng, không bị vặn xoắn và ghi lại lượng dịch đổ ra hàng ngày để báo bác sĩ."
+        }
+      ],
+      "conclusion": "Osin nuôi bệnh chuyên nghiệp sẽ giúp bạn quản lý các thiết bị y tế cơ bản và vệ sinh vết mổ an toàn.",
+      "cta": "Tìm người chăm sóc hậu phẫu chuyên nghiệp tại đây!"
+    }
+  },
+  {
+    "id": 22,
+    "slug": "dinh-duong-cho-nguoi-gia-bi-loãng-xuong",
+    "title": "Thực Phẩm Vàng Cho Người Già Bị Loãng Xương",
+    "category": "Dinh dưỡng người bệnh",
+    "tags": ["loãng xương", "Canxi", "sức khỏe xương khớp", "thực đơn người già"],
+    "excerpt": "Dinh dưỡng đúng cách giúp ngăn ngừa nguy cơ gãy xương tự nhiên ở người cao tuổi.",
+    "thumbnail": "care/22.jpg",
+    "published_at": "2026-03-22",
+    "read_time": 4,
+    "content": {
+      "intro": "Hệ xương của người già suy yếu theo thời gian. Việc bổ sung dinh dưỡng là cách bền vững nhất để củng cố khung xương.",
+      "sections": [
+        {
+          "heading": "Sữa Và Các Sản Phẩm Từ Sữa",
+          "body": "Sữa tươi, sữa chua, phô mai là nguồn Canxi dồi dào và dễ hấp thụ nhất. Nên chọn loại ít đường hoặc không đường cho người già."
+        },
+        {
+          "heading": "Các Loại Rau Màu Xanh Đậm",
+          "body": "Súp lơ xanh, rau cải chíp, rau ngót chứa nhiều Vitamin K và Canxi, hỗ trợ quá trình hình thành tế bào xương mới."
+        },
+        {
+          "heading": "Hải Sản Và Các Loại Hạt",
+          "body": "Tôm, cua, cá nhỏ ăn cả xương cùng các loại hạt như mè, hạnh nhân cung cấp khoáng chất thiết yếu cho xương chắc khỏe."
+        }
+      ],
+      "conclusion": "Người giúp việc của chúng tôi biết cách lựa chọn thực phẩm giàu Canxi để xây dựng thực đơn tốt nhất cho người già.",
+      "cta": "Đặt dịch vụ nấu ăn dinh dưỡng cho người già ngay!"
+    }
+  },
+  {
+    "id": 23,
+    "slug": "phong-benh-mua-lanh-cho-nguoi-gia",
+    "title": "Bảo Vệ Sức Khỏe Người Già Khi Thời Tiết Chuyển Lạnh",
+    "category": "Chăm sóc người cao tuổi",
+    "tags": ["sức khỏe mùa đông", "phòng bệnh hô hấp", "giữ ấm người già", "nuôi bệnh tại nhà"],
+    "excerpt": "Thời tiết lạnh đột ngột là nguyên nhân hàng đầu gây đột quỵ và viêm phổi ở người cao tuổi.",
+    "thumbnail": "care/23.jpg",
+    "published_at": "2026-03-23",
+    "read_time": 3,
+    "content": {
+      "intro": "Khả năng điều tiết thân nhiệt của người già kém, vì vậy việc giữ ấm cần được thực hiện chủ động và cẩn thận.",
+      "sections": [
+        {
+          "heading": "Giữ Ấm Các Vùng Xung Yếu",
+          "body": "Đảm bảo cổ, ngực, bàn tay và bàn chân luôn được giữ ấm bằng khăn len, tất và áo khoác đủ dày ngay cả khi ở trong nhà."
+        },
+        {
+          "heading": "Uống Nước Ấm Và Ăn Đồ Nóng",
+          "body": "Tránh hoàn toàn nước lạnh. Cho người già uống trà gừng ấm hoặc nước mật ong vào buổi sáng để tăng nhiệt lượng cho cơ thể."
+        },
+        {
+          "heading": "Hạn Chế Ra Ngoài Sớm",
+          "body": "Khuyên các cụ không nên đi tập thể dục quá sớm khi sương muối còn dày. Nên tập vận động nhẹ trong phòng kín gió."
+        }
+      ],
+      "conclusion": "Có osin chăm sóc, người già sẽ luôn được nhắc nhở mặc ấm và uống nước nóng kịp thời trong mùa lạnh.",
+      "cta": "Tìm người chăm sóc người già tận tâm cho mùa đông này!"
+    }
+  },
+  {
+    "id": 24,
+    "slug": "cach-su-dung-xe-lan-an-toan",
+    "title": "Hướng Dẫn Sử Dụng Xe Lăn An Toàn Cho Người Bệnh",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["xe lăn", "an toàn di chuyển", "hỗ trợ người bệnh", "osin chăm người liệt"],
+    "excerpt": "Sử dụng xe lăn không đúng cách có thể gây lật xe hoặc làm chấn thương người bệnh khi lên xuống.",
+    "thumbnail": "care/24.jpg",
+    "published_at": "2026-03-24",
+    "read_time": 3,
+    "content": {
+      "intro": "Xe lăn là đôi chân của người bệnh, nhưng nó cũng tiềm ẩn nguy cơ nếu người chăm sóc không nắm vững kỹ thuật điều khiển.",
+      "sections": [
+        {
+          "heading": "Kiểm Tra Khóa Bánh Xe",
+          "body": "Luôn luôn khóa bánh xe trước khi hỗ trợ người bệnh ngồi xuống hoặc đứng dậy khỏi xe lăn để tránh xe bị trượt đi."
+        },
+        {
+          "heading": "Kỹ Thuật Đẩy Xe Qua Bậc Thềm",
+          "body": "Khi lên bậc, người chăm sóc cần dùng chân đạp thanh hỗ trợ để nhấc bánh trước lên. Khi xuống, nên đi lùi để đảm bảo an toàn cho người bệnh."
+        },
+        {
+          "heading": "Tư Thế Ngồi Chuẩn",
+          "body": "Đảm bảo người bệnh ngồi sát vào lưng ghế, chân đặt đúng trên giá đỡ. Có thể dùng thêm đệm lót để tránh đau mông khi ngồi lâu."
+        }
+      ],
+      "conclusion": "Người chăm bệnh của chúng tôi được đào tạo sử dụng các công cụ hỗ trợ y tế, giúp người bệnh di chuyển an toàn nhất.",
+      "cta": "Đặt dịch vụ chăm sóc người bệnh cần hỗ trợ di chuyển!"
+    }
+  },
+  {
+    "id": 25,
+    "slug": "cham-soc-nguoi-benh-khi-bi-sot",
+    "title": "Cách Xử Lý Và Chăm Sóc Người Bệnh Khi Bị Sốt Cao",
+    "category": "Sức khỏe tổng quát",
+    "tags": ["chăm sóc người sốt", "hạ sốt", "sốt cao ở người già", "người nuôi bệnh"],
+    "excerpt": "Sốt cao ở người già rất nguy hiểm vì dễ gây mất nước và co giật. Hãy bình tĩnh xử lý theo các bước sau.",
+    "thumbnail": "care/25.jpg",
+    "published_at": "2026-03-25",
+    "read_time": 3,
+    "content": {
+      "intro": "Sốt thường là biểu hiện của một tình trạng nhiễm trùng. Mục tiêu hàng đầu là hạ thân nhiệt và bù nước kịp thời.",
+      "sections": [
+        {
+          "heading": "Liệu Pháp Chườm Ấm",
+          "body": "Dùng khăn thấm nước ấm (không dùng nước lạnh) lau vùng trán, nách, bẹn của người bệnh liên tục để thoát nhiệt nhanh hơn."
+        },
+        {
+          "heading": "Bù Nước Và Điện Giải",
+          "body": "Khuyến khích uống nhiều nước lọc, oresol hoặc nước trái cây. Nếu người bệnh mệt không uống được nhiều, hãy chia nhỏ từng muỗng cho uống liên tục."
+        },
+        {
+          "heading": "Mặc Đồ Thông Thoáng",
+          "body": "Nên mặc quần áo mỏng, thấm hút mồ hôi tốt. Không nên đắp chăn quá dày dù người bệnh có cảm giác rét run."
+        }
+      ],
+      "conclusion": "Nhân viên của chúng tôi sẽ theo dõi nhiệt độ thường xuyên và báo ngay cho gia đình khi có dấu hiệu sốt bất thường.",
+      "cta": "An tâm với người chăm sóc biết cách xử lý tình huống khẩn cấp!"
+    }
+  },
+  {
+    "id": 26,
+    "slug": "cham-soc-nguoi-benh-bi-ho",
+    "title": "Mẹo Giảm Ho Hiệu Quả Cho Người Già Tại Nhà",
+    "category": "Sức khỏe tổng quát",
+    "tags": ["giảm ho", "viêm họng người già", "bài thuốc dân gian", "chăm sóc hô hấp"],
+    "excerpt": "Cơn ho kéo dài khiến người già mất ngủ và mệt mỏi. Áp dụng những cách đơn giản để làm dịu cổ họng ngay lập tức.",
+    "thumbnail": "care/26.jpg",
+    "published_at": "2026-03-26",
+    "read_time": 3,
+    "content": {
+      "intro": "Ho ở người già thường do thay đổi thời tiết hoặc các bệnh phổi mãn tính. Việc giữ ẩm cổ họng là điều cốt yếu.",
+      "sections": [
+        {
+          "heading": "Súc Miệng Nước Muối",
+          "body": "Nhắc người bệnh súc miệng nước muối sinh lý ấm mỗi sáng và tối để sát khuẩn vùng họng, giảm tình trạng viêm nhiễm."
+        },
+        {
+          "heading": "Sử Dụng Gừng Và Mật Ong",
+          "body": "Một ly nước gừng ấm pha mật ong giúp làm ấm cổ họng và giảm các cơn ho khan, ho có đờm rất hiệu quả."
+        },
+        {
+          "heading": "Kê Cao Gối Khi Nằm",
+          "body": "Việc nằm đầu thấp dễ khiến dịch nhầy chảy xuống họng gây ho. Hãy kê thêm gối để người bệnh cảm thấy dễ thở hơn."
+        }
+      ],
+      "conclusion": "Osin chăm bệnh sẽ chuẩn bị các loại thức uống ấm nóng giúp người bệnh giảm ho và dễ chịu hơn.",
+      "cta": "Tìm người chăm sóc chu đáo, biết cách chăm sóc hô hấp!"
+    }
+  },
+  {
+    "id": 27,
+    "slug": "vai-tro-cua-nguoi-giup-viec-trong-phuc-hoi-benh",
+    "title": "Tại Sao Người Nuôi Bệnh Chuyên Nghiệp Giúp Bệnh Nhân Mau Hồi Phục?",
+    "category": "Dịch vụ chăm sóc",
+    "tags": ["lợi ích thuê osin", "nuôi bệnh chuyên nghiệp", "phục hồi sức khỏe", "dịch vụ chăm sóc tại nhà"],
+    "excerpt": "Khoa học chứng minh, bệnh nhân được chăm sóc đúng cách tại nhà có tốc độ hồi phục nhanh hơn 30% so với bình thường.",
+    "thumbnail": "care/27.jpg",
+    "published_at": "2026-03-27",
+    "read_time": 4,
+    "content": {
+      "intro": "Người giúp việc chăm bệnh không chỉ thay thế người thân làm việc nhà mà còn là một mắt xích quan trọng trong quá trình điều trị y tế.",
+      "sections": [
+        {
+          "heading": "Tuân Thủ Tuyệt Đối Y Lệnh",
+          "body": "Từ việc uống thuốc, chế độ ăn đến lịch tập luyện, người chuyên nghiệp sẽ thực hiện chính xác, giúp quá trình điều trị đạt hiệu quả cao nhất."
+        },
+        {
+          "heading": "Phát Hiện Sớm Các Bất Thường",
+          "body": "Bằng kinh nghiệm quan sát, họ có thể nhận ra những thay đổi nhỏ về sắc mặt, nhịp thở hay thói quen của người bệnh để cảnh báo kịp thời."
+        },
+        {
+          "heading": "Ổn Định Tâm Lý Bệnh Nhân",
+          "body": "Sự có mặt thường trực và sự chăm sóc ân cần giúp người bệnh cảm thấy an toàn, b bớt lo lắng, từ đó hệ miễn dịch hoạt động tốt hơn."
+        }
+      ],
+      "conclusion": "Đầu tư vào một người nuôi bệnh giỏi là đầu tư cho sức khỏe và tương lai của người thân bạn.",
+      "cta": "Liên hệ để được tư vấn dịch vụ nuôi bệnh phù hợp nhất!"
+    }
+  },
+  {
+    "id": 28,
+    "slug": "cham-soc-nguoi-benh-bi-tao-bon",
+    "title": "Cách Khắc Phục Tình Trạng Táo Bón Ở Bệnh Nhân Nằm Lâu",
+    "category": "Dinh dưỡng người bệnh",
+    "tags": ["táo bón", "hệ tiêu hóa", "chất xơ", "chăm sóc người già nằm liệt"],
+    "excerpt": "Ít vận động khiến nhu động ruột yếu đi gây táo bón kinh niên. Hãy thay đổi thực đơn và thói quen để cải thiện tình hình.",
+    "thumbnail": "care/28.jpg",
+    "published_at": "2026-03-28",
+    "read_time": 3,
+    "content": {
+      "intro": "Táo bón không chỉ gây khó chịu mà còn khiến người già có nguy cơ bị trĩ hoặc nhiễm độc ngược.",
+      "sections": [
+        {
+          "heading": "Tăng Cường Chất Xơ Hòa Tan",
+          "body": "Bổ sung khoai lang, đu đủ chín, thanh long và các loại rau mồng tơi vào bữa ăn hàng ngày để nhuận tràng tự nhiên."
+        },
+        {
+          "heading": "Massage Vùng Bụng",
+          "body": "Người chăm sóc có thể xoa bụng nhẹ nhàng theo chiều kim đồng hồ khoảng 15 phút mỗi ngày để kích thích nhu động ruột."
+        },
+        {
+          "heading": "Tập Thói Quen Đi Vệ Sinh",
+          "body": "Khuyến khích đi vệ sinh vào một khung giờ cố định trong ngày, tốt nhất là sau bữa ăn sáng."
+        }
+      ],
+      "conclusion": "Người giúp việc của chúng tôi hiểu rõ tầm quan trọng của hệ tiêu hóa và sẽ hỗ trợ người bệnh cải thiện tình trạng táo bón.",
+      "cta": "Tìm osin có kiến thức về dinh dưỡng tiêu hóa tại đây!"
+    }
+  },
+  {
+    "id": 29,
+    "slug": "chuan-bi-phong-cho-nguoi-benh-xuat-vien",
+    "title": "Cần Chuẩn Bị Gì Khi Đón Người Thân Xuất Viện Về Nhà?",
+    "category": "An toàn cho người bệnh",
+    "tags": ["xuất viện", "chuẩn bị phòng bệnh", "an toàn tại nhà", "chăm sóc người bệnh mới mổ"],
+    "excerpt": "Việc chuẩn bị phòng ốc chu đáo giúp người bệnh cảm thấy thoải mái và an toàn ngay khi vừa về tới nhà.",
+    "thumbnail": "care/29.jpg",
+    "published_at": "2026-03-29",
+    "read_time": 4,
+    "content": {
+      "intro": "Môi trường bệnh viện và nhà ở rất khác nhau. Bạn cần điều chỉnh không gian để phù hợp với tình trạng sức khỏe mới của người thân.",
+      "sections": [
+        {
+          "heading": "Vệ Sinh Và Khử Khuẩn Phòng Ngủ",
+          "body": "Phòng cần được lau dọn sạch sẽ, thay chăn ga mới và đảm bảo không có bụi bẩn, ẩm mốc để tránh nhiễm trùng."
+        },
+        {
+          "heading": "Sắp Xếp Dụng Cụ Tiện Lợi",
+          "body": "Đặt chuông gọi, nước uống, thuốc và điện thoại ở vị trí người bệnh dễ dàng với tới mà không cần cử động mạnh."
+        },
+        {
+          "heading": "Lắp Đặt Các Thiết Bị Hỗ Trợ",
+          "body": "Nếu cần, hãy thuê giường y tế, máy tạo oxy hoặc bô vệ sinh tại giường trước khi bệnh nhân về nhà."
+        }
+      ],
+      "conclusion": "Osin hỗ trợ việc nhà của chúng tôi sẽ giúp bạn dọn dẹp và sắp xếp phòng bệnh chuẩn mực nhất.",
+      "cta": "Liên hệ đặt người giúp việc hỗ trợ đón người bệnh về nhà!"
+    }
+  },
+  {
+    "id": 30,
+    "slug": "tam-quan-trong-cua-viec-kham-suc-khoe-dinh-ky",
+    "title": "Tại Sao Người Già Cần Khám Sức Khỏe Định Kỳ Dù Không Đau Ốm?",
+    "category": "Sức khỏe tổng quát",
+    "tags": ["khám định kỳ", "tầm soát bệnh", "sức khỏe người già", "phòng bệnh hơn chữa bệnh"],
+    "excerpt": "Phát hiện sớm các mầm mống bệnh giúp tăng tỉ lệ điều trị thành công lên đến 90%. Đừng đợi đau mới đi khám.",
+    "thumbnail": "care/30.jpg",
+    "published_at": "2026-03-30",
+    "read_time": 3,
+    "content": {
+      "intro": "Lão hóa khiến các cơ quan suy yếu âm thầm. Khám định kỳ là cách 'bảo dưỡng' cơ thể tốt nhất cho người cao tuổi.",
+      "sections": [
+        {
+          "heading": "Tầm Soát Ung Thư Và Bệnh Mãn Tính",
+          "body": "Xét nghiệm máu, siêu âm và X-quang định kỳ giúp phát hiện sớm tiểu đường, mỡ máu và các dấu hiệu ung thư giai đoạn đầu."
+        },
+        {
+          "heading": "Điều Chỉnh Phác Đồ Thuốc",
+          "body": "Qua mỗi lần khám, bác sĩ sẽ điều chỉnh liều lượng thuốc phù hợp với tình trạng hiện tại, tránh gây quá tải cho gan và thận."
+        },
+        {
+          "heading": "Kiểm Tra Thính Lực Và Thị Lực",
+          "body": "Việc duy trì thính giác và thị giác tốt giúp người già giao tiếp dễ dàng và hạn chế tối đa nguy cơ té ngã."
+        }
+      ],
+      "conclusion": "Người chăm sóc của chúng tôi sẽ hỗ trợ nhắc lịch và đưa các cụ đi khám sức khỏe đúng hẹn theo yêu cầu của gia đình.",
+      "cta": "Hãy chăm sóc sức khỏe người thân chủ động cùng dịch vụ của chúng tôi!"
+    }
+  }
+]

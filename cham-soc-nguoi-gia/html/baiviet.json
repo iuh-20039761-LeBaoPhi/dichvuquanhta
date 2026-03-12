@@ -1,0 +1,782 @@
+[
+  {
+    "id": 1,
+    "slug": "bi-quyet-cham-soc-nguoi-gia-kho-di-lai",
+    "title": "Bí Quyết Chăm Sóc Người Già Khó Đi Lại Tại Nhà An Toàn",
+    "category": "Cẩm nang chăm sóc",
+    "tags": ["chăm sóc người già", "người già khó đi lại", "hỗ trợ di chuyển", "osin chăm người già"],
+    "excerpt": "Người già khó đi lại cần sự hỗ trợ đặc biệt để tránh té ngã và lở loét. Khám phá cách chăm sóc giúp các cụ vận động an toàn.",
+    "thumbnail": "blog/gia-1.jpg",
+    "published_at": "2026-03-01",
+    "read_time": 5,
+    "content": {
+      "intro": "Vấn đề di chuyển là trở ngại lớn nhất đối với người cao tuổi, gây ảnh hưởng đến cả sức khỏe lẫn tinh thần.",
+      "sections": [
+        {
+          "heading": "Hỗ trợ vận động nhẹ nhàng hàng ngày",
+          "body": "Khuyến khích các cụ thực hiện các bài tập co duỗi tại chỗ hoặc đi lại chậm rãi với sự trợ giúp của người chăm sóc để tránh cứng khớp."
+        },
+        {
+          "heading": "Sử dụng thiết bị hỗ trợ an toàn",
+          "body": "Trang bị gậy, khung tập đi hoặc xe lăn phù hợp. Người chăm sóc cần kiểm tra độ chắc chắn của thiết bị trước khi để người già sử dụng."
+        }
+      ],
+      "conclusion": "Có một người osin túc trực giúp người già tự tin hơn khi di chuyển và giảm thiểu rủi ro té ngã.",
+      "cta": "Liên hệ ngay để tìm người chăm sóc người già có kinh nghiệm!"
+    }
+  },
+  {
+    "id": 2,
+    "slug": "tam-ly-nguoi-cao-tuoi-khong-the-tu-cham-soc",
+    "title": "Thấu Hiểu Tâm Lý Người Cao Tuổi Không Còn Khả Năng Tự Chăm Sóc",
+    "category": "Tâm lý người già",
+    "tags": ["tâm lý người già", "sa sút trí tuệ", "chăm sóc tinh thần", "người nuôi bệnh"],
+    "excerpt": "Sự phụ thuộc vào người khác khiến người già dễ mặc cảm. Hãy học cách lắng nghe và chia sẻ để họ cảm thấy được tôn trọng.",
+    "thumbnail": "blog/gia-2.jpg",
+    "published_at": "2026-03-02",
+    "read_time": 4,
+    "content": {
+      "intro": "Khi không còn khả năng tự vệ sinh hay ăn uống, người già thường rơi vào trạng thái tự ti, hay cáu gắt.",
+      "sections": [
+        {
+          "heading": "Tôn trọng quyền riêng tư của người già",
+          "body": "Dù cần hỗ trợ, hãy luôn hỏi ý kiến và thực hiện các thao tác vệ sinh một cách tế nhị nhất để các cụ không cảm thấy bị xúc phạm."
+        },
+        {
+          "heading": "Kiên nhẫn lắng nghe những câu chuyện cũ",
+          "body": "Việc trò chuyện về ký ức giúp người già duy trì trí nhớ và cảm thấy mình vẫn còn giá trị trong gia đình."
+        }
+      ],
+      "conclusion": "Một người giúp việc tận tâm không chỉ làm việc nhà mà còn là người bạn tâm giao của người cao tuổi.",
+      "cta": "Tìm người chăm sóc biết lắng nghe và thấu hiểu người già."
+    }
+  },
+  {
+    "id": 3,
+    "slug": "nguyen-tac-dinh-duong-cho-nguoi-gia-nam-liet",
+    "title": "Nguyên Tắc Dinh Dưỡng Vàng Cho Người Già Nằm Liệt Tại Chỗ",
+    "category": "Dinh dưỡng",
+    "tags": ["dinh dưỡng người già", "người già nằm liệt", "chế độ ăn người cao tuổi", "osin nấu ăn"],
+    "excerpt": "Người nằm lâu một chỗ rất dễ bị táo bón và suy dinh dưỡng. Chế độ ăn cần được thiết kế khoa học, dễ tiêu hóa.",
+    "thumbnail": "blog/gia-3.jpg",
+    "published_at": "2026-03-03",
+    "read_time": 5,
+    "content": {
+      "intro": "Dinh dưỡng đóng vai trò sống còn trong việc duy trì sức đề kháng cho người bệnh nằm lâu.",
+      "sections": [
+        {
+          "heading": "Ưu tiên thức ăn mềm và giàu chất xơ",
+          "body": "Nên chế biến dạng cháo, súp hoặc thức ăn hầm nhừ. Tăng cường rau xanh xay nhuyễn để hỗ trợ hệ tiêu hóa, tránh táo bón."
+        },
+        {
+          "heading": "Chia nhỏ bữa ăn trong ngày",
+          "body": "Không nên ép người già ăn quá nhiều một lúc. Chia làm 5-6 bữa nhỏ giúp cơ thể hấp thụ tốt hơn và tránh tình trạng đầy hơi."
+        }
+      ],
+      "conclusion": "Dịch vụ osin của chúng tôi hỗ trợ nấu ăn theo thực đơn y tế, đảm bảo sức khỏe tốt nhất cho các cụ.",
+      "cta": "Đăng ký dịch vụ chăm sóc người già trọn gói ngay!"
+    }
+  },
+  {
+    "id": 4,
+    "slug": "cach-phong-ngua-loet-ti-de-o-nguoi-gia",
+    "title": "Cách Phòng Ngừa Loét Tì Đè Hiệu Quả Cho Người Già Nằm Lâu",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["loét tì đè", "vệ sinh người già", "chăm sóc người liệt", "kỹ năng osin"],
+    "excerpt": "Vết loét có thể gây nhiễm trùng nguy hiểm. Hãy học cách thay đổi tư thế và vệ sinh da đúng cách cho người cao tuổi.",
+    "thumbnail": "blog/gia-4.jpg",
+    "published_at": "2026-03-04",
+    "read_time": 4,
+    "content": {
+      "intro": "Loét tì đè thường xuất hiện ở vùng xương cùng, gót chân khi người già nằm một tư thế quá lâu.",
+      "sections": [
+        {
+          "heading": "Thay đổi tư thế mỗi 2 giờ",
+          "body": "Người chăm sóc cần lật trở người bệnh liên tục, sử dụng thêm đệm nước hoặc đệm hơi để giảm áp lực lên da."
+        },
+        {
+          "heading": "Giữ da luôn khô thoáng",
+          "body": "Vệ sinh sạch sẽ sau mỗi lần người bệnh đi vệ sinh, sử dụng phấn rôm hoặc kem chống hăm ở các vùng nếp gấp da."
+        }
+      ],
+      "conclusion": "Nhân viên chăm sóc chuyên nghiệp sẽ biết kỹ thuật xoay trở giúp phòng ngừa loét tối đa.",
+      "cta": "Cần tìm người chăm sóc người nằm liệt chuyên nghiệp?"
+    }
+  },
+  {
+    "id": 5,
+    "slug": "loi-ich-thue-osin-cham-soc-nguoi-gia",
+    "title": "5 Lợi Ích Khi Thuê Osin Chăm Sóc Người Già Chuyên Nghiệp",
+    "category": "Dịch vụ",
+    "tags": ["thuê osin chăm người già", "dịch vụ giúp việc", "chăm sóc sức khỏe tại nhà"],
+    "excerpt": "Việc thuê người giúp việc chuyên trách giúp gia đình yên tâm làm việc và người già được chăm sóc bài bản hơn.",
+    "thumbnail": "blog/gia-5.jpg",
+    "published_at": "2026-03-05",
+    "read_time": 4,
+    "content": {
+      "intro": "Áp lực công việc khiến nhiều gia đình không có thời gian chăm sóc cha mẹ già yếu. Thuê dịch vụ chuyên nghiệp là giải pháp tối ưu.",
+      "sections": [
+        {
+          "heading": "Theo dõi sức khỏe 24/7",
+          "body": "Người chăm sóc luôn bên cạnh để nhắc thuốc, đo huyết áp và xử lý kịp thời các tình huống khẩn cấp."
+        },
+        {
+          "heading": "Giảm bớt gánh nặng tâm lý cho con cái",
+          "body": "Bạn có thể tập trung vào sự nghiệp mà vẫn đảm bảo cha mẹ luôn được sạch sẽ, ăn uống đầy đủ và vui vẻ."
+        }
+      ],
+      "conclusion": "Chúng tôi cung cấp đội ngũ nhân viên đã qua đào tạo, tận tâm và có lý lịch rõ ràng.",
+      "cta": "Tư vấn tìm người giúp việc phù hợp nhất tại đây!"
+    }
+  },
+  {
+    "id": 6,
+    "slug": "ve-sinh-ca-nhan-cho-nguoi-gia-dung-cach",
+    "title": "Hướng Dẫn Vệ Sinh Cá Nhân Cho Người Cao Tuổi Tại Giường",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["vệ sinh tại giường", "tắm cho người già", "chăm sóc tại nhà"],
+    "excerpt": "Tắm rửa, gội đầu cho người già không thể đi lại cần sự khéo léo để không làm họ bị lạnh hay đau mỏi.",
+    "thumbnail": "blog/gia-6.jpg",
+    "published_at": "2026-03-06",
+    "read_time": 4,
+    "content": {
+      "intro": "Giữ gìn vệ sinh giúp người già thoải mái, tự tin và ngăn ngừa các bệnh ngoài da.",
+      "sections": [
+        {
+          "heading": "Kỹ thuật lau người nước ấm",
+          "body": "Sử dụng khăn mềm thấm nước ấm, lau từng phần cơ thể và che phủ các phần còn lại để giữ nhiệt."
+        },
+        {
+          "heading": "Chăm sóc răng miệng và tóc",
+          "body": "Dùng dụng cụ gội đầu tại giường và bàn chải mềm để vệ sinh hàng ngày, giúp các cụ luôn thơm tho, sạch sẽ."
+        }
+      ],
+      "conclusion": "Osin của chúng tôi thành thạo các kỹ năng vệ sinh nhẹ nhàng, chu đáo.",
+      "cta": "Liên hệ ngay để người già được chăm sóc tốt nhất!"
+    }
+  },
+  {
+    "id": 7,
+    "slug": "phong-ngua-te-nga-trong-nha-tam",
+    "title": "Cách Thiết Kế Nhà Tắm An Toàn Cho Người Già Khó Đi Lại",
+    "category": "An toàn",
+    "tags": ["phòng ngừa té ngã", "an toàn nhà tắm", "người già yếu chân"],
+    "excerpt": "Nhà tắm là nơi dễ xảy ra tai nạn nhất đối với người già. Một vài thay đổi nhỏ sẽ bảo vệ sức khỏe của cha mẹ bạn.",
+    "thumbnail": "blog/gia-7.jpg",
+    "published_at": "2026-03-07",
+    "read_time": 3,
+    "content": {
+      "intro": "Té ngã ở tuổi già có thể dẫn đến gãy xương hông và nằm liệt giường vĩnh viễn.",
+      "sections": [
+        {
+          "heading": "Lắp đặt thanh vịn và thảm chống trượt",
+          "body": "Các thanh vịn dọc tường và thảm cao su có độ bám cao giúp người già có điểm tựa vững chắc."
+        },
+        {
+          "heading": "Sử dụng ghế tắm chuyên dụng",
+          "body": "Đối với người già đứng không vững, hãy để họ ngồi trên ghế khi tắm để đảm bảo an toàn tuyệt đối."
+        }
+      ],
+      "conclusion": "Luôn có người đồng hành khi người già vào nhà tắm là cách phòng ngừa tốt nhất.",
+      "cta": "Tìm người giúp việc túc trực bên cạnh người già 24/24."
+    }
+  },
+  {
+    "id": 8,
+    "slug": "bai-tap-van-dong-tai-cho-cho-nguoi-gia",
+    "title": "5 Bài Tập Vận Động Tại Chỗ Cho Người Già Không Đi Lại Được",
+    "category": "Sức khỏe",
+    "tags": ["bài tập người già", "vật lý trị liệu tại nhà", "vận động tại giường"],
+    "excerpt": "Vận động nhẹ nhàng giúp máu lưu thông và ngăn ngừa teo cơ cho người cao tuổi phải nằm lâu một chỗ.",
+    "thumbnail": "blog/gia-8.jpg",
+    "published_at": "2026-03-08",
+    "read_time": 5,
+    "content": {
+      "intro": "Dù không thể đi lại, việc cử động tay chân thường xuyên vẫn vô cùng quan trọng.",
+      "sections": [
+        {
+          "heading": "Bài tập xoay cổ tay cổ chân",
+          "body": "Thực hiện xoay nhẹ nhàng 10-15 lần mỗi ngày giúp giảm cứng khớp và tăng cường linh hoạt."
+        },
+        {
+          "heading": "Bài tập nâng chân nhẹ",
+          "body": "Người chăm sóc hỗ trợ nâng chân người già lên cao và hạ xuống từ từ để rèn luyện cơ đùi."
+        }
+      ],
+      "conclusion": "Đội ngũ nhân viên của chúng tôi biết cách hỗ trợ các bài tập vật lý trị liệu cơ bản.",
+      "cta": "Thuê người chăm sóc có kiến thức y khoa cơ bản ngay!"
+    }
+  },
+  {
+    "id": 9,
+    "slug": "cach-cho-nguoi-gia-uong-thuoc-dung-gio",
+    "title": "Mẹo Quản Lý Và Cho Người Già Uống Thuốc Đúng Giờ",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["uống thuốc đúng giờ", "quản lý thuốc", "chăm sóc người già"],
+    "excerpt": "Người già thường hay quên hoặc nhầm lẫn các loại thuốc. Việc quản lý thuốc đòi hỏi sự tỉ mỉ và cẩn thận.",
+    "thumbnail": "blog/gia-9.jpg",
+    "published_at": "2026-03-09",
+    "read_time": 3,
+    "content": {
+      "intro": "Sử dụng thuốc đúng liều lượng và thời gian là yếu tố quyết định hiệu quả điều trị bệnh ở người cao tuổi.",
+      "sections": [
+        {
+          "heading": "Sử dụng hộp chia thuốc theo ngày",
+          "body": "Chia sẵn thuốc vào các ngăn sáng - trưa - tối giúp người chăm sóc không bị nhầm lẫn và dễ dàng theo dõi."
+        },
+        {
+          "heading": "Ghi chép nhật ký uống thuốc",
+          "body": "Lập bảng biểu ghi lại thời gian uống và các phản ứng phụ nếu có để báo cáo cho bác sĩ khi cần thiết."
+        }
+      ],
+      "conclusion": "Osin chuyên nghiệp luôn đảm bảo lịch trình thuốc men của các cụ chính xác tuyệt đối.",
+      "cta": "Tìm người chăm sóc cẩn thận, chu đáo cho cha mẹ."
+    }
+  },
+  {
+    "id": 10,
+    "slug": "tri-chung-mat-ngu-o-nguoi-cao-tuoi",
+    "title": "Cách Khắc Phục Chứng Mất Ngủ Ở Người Cao Tuổi Tại Nhà",
+    "category": "Sức khỏe",
+    "tags": ["mất ngủ người già", "giấc ngủ người già", "osin chăm sóc đêm"],
+    "excerpt": "Mất ngủ khiến người già mệt mỏi và dễ mắc các bệnh về tâm thần. Tìm hiểu cách giúp các cụ ngủ ngon hơn.",
+    "thumbnail": "blog/gia-10.jpg",
+    "published_at": "2026-03-10",
+    "read_time": 4,
+    "content": {
+      "intro": "Giấc ngủ ngon giúp cơ thể người già phục hồi năng lượng và cải thiện tâm trạng.",
+      "sections": [
+        {
+          "heading": "Tạo môi trường ngủ yên tĩnh",
+          "body": "Phòng ngủ cần thoáng mát, ánh sáng dịu nhẹ và hạn chế tiếng ồn tối đa vào ban đêm."
+        },
+        {
+          "heading": "Ngâm chân nước ấm trước khi ngủ",
+          "body": "Thói quen ngâm chân với thảo dược hoặc nước muối ấm giúp lưu thông khí huyết, giúp các cụ dễ đi vào giấc ngủ hơn."
+        }
+      ],
+      "conclusion": "Dịch vụ của chúng tôi cung cấp osin trực đêm để hỗ trợ các cụ ngay khi thức giấc.",
+      "cta": "Đặt dịch vụ chăm sóc người già trực đêm ngay hôm nay!"
+    }
+  },
+  {
+    "id": 11,
+    "slug": "cham-soc-nguoi-gia-bi-alzheimer",
+    "title": "Kinh Nghiệm Chăm Sóc Người Già Bị Mất Trí Nhớ (Alzheimer)",
+    "category": "Cẩm nang chăm sóc",
+    "tags": ["Alzheimer", "mất trí nhớ", "sa sút trí tuệ", "osin chuyên nghiệp"],
+    "excerpt": "Người bị Alzheimer cần sự kiên nhẫn và môi trường sống an toàn để tránh đi lạc hoặc hoảng sợ.",
+    "thumbnail": "blog/gia-11.jpg",
+    "published_at": "2026-03-11",
+    "read_time": 5,
+    "content": {
+      "intro": "Chăm sóc người mất trí nhớ là một thử thách lớn về cả thể chất lẫn tinh thần cho gia đình.",
+      "sections": [
+        {
+          "heading": "Thiết lập lịch trình cố định",
+          "body": "Ăn uống, vệ sinh vào khung giờ cố định giúp người bệnh cảm thấy an tâm và bớt hoang mang."
+        },
+        {
+          "heading": "Giao tiếp bằng câu ngắn, đơn giản",
+          "body": "Hãy nói chậm, rõ ràng và sử dụng cử chỉ để người bệnh dễ dàng thấu hiểu và thực hiện theo."
+        }
+      ],
+      "conclusion": "Osin giàu kinh nghiệm sẽ biết cách xử lý các tình huống tâm lý phức tạp của người bệnh Alzheimer.",
+      "cta": "Tìm nhân viên chăm sóc người mất trí nhớ tận tâm."
+    }
+  },
+  {
+    "id": 12,
+    "slug": "so-cuu-dot-quy-tai-nha",
+    "title": "Dấu Hiệu Nhận Biết Và Sơ Cứu Đột Quỵ Ở Người Già",
+    "category": "An toàn",
+    "tags": ["đột quỵ", "sơ cứu người già", "tai biến mạch máu não"],
+    "excerpt": "Thời gian vàng trong đột quỵ là rất ngắn. Biết cách nhận biết sớm dấu hiệu giúp cứu sống người thân của bạn.",
+    "thumbnail": "blog/gia-12.jpg",
+    "published_at": "2026-03-12",
+    "read_time": 4,
+    "content": {
+      "intro": "Đột quỵ là nguyên nhân gây tử vong và tàn phế hàng đầu ở người cao tuổi.",
+      "sections": [
+        {
+          "heading": "Quy tắc FAST nhận biết sớm",
+          "body": "Kiểm tra mặt (méo miệng), tay (yếu liệt), giọng nói (ngọng) và thời gian (gọi cấp cứu ngay)."
+        },
+        {
+          "heading": "Những việc không được làm khi sơ cứu",
+          "body": "Tuyệt đối không tự ý cho uống thuốc, chích lể hay di chuyển mạnh người bệnh khi chưa có nhân viên y tế."
+        }
+      ],
+      "conclusion": "Nhân viên chăm sóc của chúng tôi được đào tạo kỹ năng sơ cứu cơ bản để bảo vệ an toàn cho các cụ.",
+      "cta": "An tâm hơn với người chăm sóc có kiến thức y tế."
+    }
+  },
+  {
+    "id": 13,
+    "slug": "cai-thien-suc-khoe-tim-mach-nguoi-gia",
+    "title": "Cách Cải Thiện Sức Khỏe Tim Mạch Cho Người Cao Tuổi",
+    "category": "Sức khỏe",
+    "tags": ["tim mạch người già", "huyết áp cao", "sống khỏe"],
+    "excerpt": "Kiểm soát huyết áp và chế độ ăn nhạt giúp bảo vệ trái tim của người già khỏi các biến chứng nguy hiểm.",
+    "thumbnail": "blog/gia-13.jpg",
+    "published_at": "2026-03-13",
+    "read_time": 4,
+    "content": {
+      "intro": "Bệnh tim mạch thường diễn biến thầm lặng ở tuổi già.",
+      "sections": [
+        {
+          "heading": "Theo dõi huyết áp hàng ngày",
+          "body": "Người chăm sóc nên đo huyết áp ít nhất 2 lần/ngày vào sáng và tối để theo dõi sự ổn định của tim mạch."
+        },
+        {
+          "heading": "Hạn chế muối và chất béo bão hòa",
+          "body": "Chế độ ăn nhạt giúp giảm áp lực lên thành mạch, ngăn ngừa đột quỵ và suy tim."
+        }
+      ],
+      "conclusion": "Osin chăm sóc sức khỏe sẽ hỗ trợ gia đình quản lý các chỉ số sinh tồn của người già mỗi ngày.",
+      "cta": "Liên hệ đặt dịch vụ chăm sóc người bệnh tim mạch."
+    }
+  },
+  {
+    "id": 14,
+    "slug": "cham-soc-nguoi-gia-hau-phau",
+    "title": "Chăm Sóc Người Già Sau Phẫu Thuật Tại Nhà Như Thế Nào?",
+    "category": "Cẩm nang chăm sóc",
+    "tags": ["chăm sóc hậu phẫu", "người già sau mổ", "phục hồi sức khỏe"],
+    "excerpt": "Sau phẫu thuật, người già rất yếu và dễ bị nhiễm trùng. Cần một quy trình chăm sóc đặc biệt để phục hồi nhanh chóng.",
+    "thumbnail": "blog/gia-14.jpg",
+    "published_at": "2026-03-14",
+    "read_time": 5,
+    "content": {
+      "intro": "Giai đoạn hậu phẫu quyết định sự thành công của ca mổ và tốc độ lành vết thương.",
+      "sections": [
+        {
+          "heading": "Vệ sinh vết mổ an toàn",
+          "body": "Phải tuân thủ tuyệt đối quy trình thay băng của bác sĩ, giữ vết thương khô ráo và sạch sẽ."
+        },
+        {
+          "heading": "Dinh dưỡng giúp nhanh lành vết thương",
+          "body": "Bổ sung thực phẩm giàu đạm, vitamin C và kẽm giúp tái tạo tế bào và tăng cường miễn dịch."
+        }
+      ],
+      "conclusion": "Chúng tôi cung cấp nhân viên chăm sóc hậu phẫu có tay nghề cao.",
+      "cta": "Tìm người chăm sóc sau mổ cho người thân ngay!"
+    }
+  },
+  {
+    "id": 15,
+    "slug": "giai-phap-cho-nguoi-gia-bi-loang-xuong",
+    "title": "Giải Pháp Chăm Sóc Người Già Bị Loãng Xương Nặng",
+    "category": "Sức khỏe",
+    "tags": ["loãng xương", "bổ sung canxi", "người già yếu"],
+    "excerpt": "Loãng xương khiến người già dễ bị gãy xương dù chỉ va chạm nhẹ. Hãy tìm hiểu cách bảo vệ hệ xương khớp cho các cụ.",
+    "thumbnail": "blog/gia-15.jpg",
+    "published_at": "2026-03-15",
+    "read_time": 4,
+    "content": {
+      "intro": "Xương khớp suy yếu là quy luật của tuổi già, nhưng chúng ta có thể làm chậm quá trình này.",
+      "sections": [
+        {
+          "heading": "Bổ sung Canxi và Vitamin D",
+          "body": "Thông qua chế độ ăn uống và tắm nắng sáng sớm để tăng cường hấp thụ canxi cho xương."
+        },
+        {
+          "heading": "Tránh các động tác vặn người mạnh",
+          "body": "Người chăm sóc cần hỗ trợ các cụ khi đứng lên ngồi xuống để tránh áp lực đột ngột lên cột sống."
+        }
+      ],
+      "conclusion": "Có người giúp việc hỗ trợ đi lại sẽ giúp người loãng xương an toàn hơn trong sinh hoạt.",
+      "cta": "Tìm người giúp việc hỗ trợ người già đi lại khó khăn."
+    }
+  },
+  {
+    "id": 16,
+    "slug": "giu-ve-sinh-cho-nguoi-gia-nam-liet",
+    "title": "Cách Thay Bỉm Và Vệ Sinh Cho Người Già Nằm Liệt Không Đau",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["thay bỉm người già", "vệ sinh người liệt", "kỹ năng chăm sóc"],
+    "excerpt": "Kỹ thuật thay tã bỉm đúng cách giúp người già sạch sẽ, không bị hăm loét và luôn cảm thấy thoải mái.",
+    "thumbnail": "blog/gia-16.jpg",
+    "published_at": "2026-03-16",
+    "read_time": 4,
+    "content": {
+      "intro": "Vệ sinh cho người nằm liệt đòi hỏi sự khéo léo và kiên nhẫn của người chăm sóc.",
+      "sections": [
+        {
+          "heading": "Kỹ thuật nghiêng người nhẹ nhàng",
+          "body": "Luôn nghiêng người bệnh từng bên một để luồn tã bỉm, tránh nhấc bổng người gây đau cột sống."
+        },
+        {
+          "heading": "Lau rửa bằng nước ấm sau mỗi lần vệ sinh",
+          "body": "Phải lau sạch và để da thật khô trước khi mặc tã mới để ngăn ngừa vi khuẩn phát triển."
+        }
+      ],
+      "conclusion": "Osin chuyên nghiệp của chúng tôi thành thạo kỹ năng chăm sóc người liệt giường.",
+      "cta": "Thuê nhân viên chăm sóc người liệt tại nhà trọn gói."
+    }
+  },
+  {
+    "id": 17,
+    "slug": "tam-quan-trong-cua-nuoc-voi-nguoi-gia",
+    "title": "Tại Sao Người Cao Tuổi Cần Uống Đủ Nước Hàng Ngày?",
+    "category": "Dinh dưỡng",
+    "tags": ["uống nước", "sức khỏe người già", "hydrat hóa"],
+    "excerpt": "Người già thường ít cảm giác khát, dẫn đến tình trạng mất nước âm thầm cực kỳ nguy hiểm.",
+    "thumbnail": "blog/gia-17.jpg",
+    "published_at": "2026-03-17",
+    "read_time": 3,
+    "content": {
+      "intro": "Mất nước ở người già có thể gây táo bón, sỏi thận và lú lẫn.",
+      "sections": [
+        {
+          "heading": "Nhắc nhở uống nước định kỳ",
+          "body": "Người chăm sóc nên chia nhỏ lượng nước và nhắc các cụ uống sau mỗi 1-2 tiếng, không đợi đến khi khát mới uống."
+        },
+        {
+          "heading": "Bổ sung nước qua thức ăn",
+          "body": "Tăng cường các loại súp, canh hoặc nước ép trái cây để đảm bảo đủ lượng chất lỏng cần thiết."
+        }
+      ],
+      "conclusion": "Sự tỉ mỉ của người osin giúp đảm bảo các cụ luôn đủ nước và khỏe mạnh.",
+      "cta": "Tìm người chăm sóc chu đáo cho cha mẹ bạn."
+    }
+  },
+  {
+    "id": 18,
+    "slug": "khong-gian-song-ly-tuong-cho-nguoi-gia",
+    "title": "Thiết Kế Không Gian Sống An Toàn Cho Người Cao Tuổi",
+    "category": "An toàn",
+    "tags": ["không gian sống", "phòng ngủ người già", "an toàn tại nhà"],
+    "excerpt": "Phòng của người già cần đủ ánh sáng, thoáng khí và không có vật cản để giảm thiểu rủi ro tai nạn.",
+    "thumbnail": "blog/gia-18.jpg",
+    "published_at": "2026-03-18",
+    "read_time": 4,
+    "content": {
+      "intro": "Một môi trường sống tốt giúp người già cảm thấy thư thái và an toàn hơn.",
+      "sections": [
+        {
+          "heading": "Lắp đặt đèn cảm ứng ban đêm",
+          "body": "Giúp người già dễ dàng định hướng khi thức dậy đi vệ sinh vào ban đêm mà không bị vấp ngã."
+        },
+        {
+          "heading": "Loại bỏ các loại thảm trơn",
+          "body": "Thảm trải sàn là thủ phạm gây trượt ngã thường xuyên nhất ở người già chân yếu."
+        }
+      ],
+      "conclusion": "Người giúp việc sẽ hỗ trợ sắp xếp phòng ốc luôn gọn gàng và an toàn.",
+      "cta": "Tư vấn dịch vụ chăm sóc người già tại nhà."
+    }
+  },
+  {
+    "id": 19,
+    "slug": "cham-soc-nguoi-gia-benh-tieu-duong",
+    "title": "Lưu Ý Đặc Biệt Khi Chăm Sóc Người Già Bị Tiểu Đường",
+    "category": "Cẩm nang chăm sóc",
+    "tags": ["tiểu đường", "chăm sóc người bệnh", "osin chăm người bệnh"],
+    "excerpt": "Bệnh tiểu đường ở người già cần sự kiểm soát chặt chẽ về đường huyết và chế độ vận động.",
+    "thumbnail": "blog/gia-19.jpg",
+    "published_at": "2026-03-19",
+    "read_time": 5,
+    "content": {
+      "intro": "Biến chứng tiểu đường ở tuổi già có thể gây loét bàn chân và suy giảm thị lực.",
+      "sections": [
+        {
+          "heading": "Kiểm tra bàn chân hàng ngày",
+          "body": "Người chăm sóc cần quan sát kỹ để phát hiện sớm các vết trầy xước, vì người tiểu đường rất khó lành vết thương."
+        },
+        {
+          "heading": "Thực hiện chế độ ăn chỉ số đường thấp",
+          "body": "Hạn chế tinh bột trắng, đường và tăng cường ngũ cốc nguyên hạt theo chỉ dẫn y tế."
+        }
+      ],
+      "conclusion": "Osin nuôi bệnh của chúng tôi hiểu rõ về chế độ ăn kiêng cho người tiểu đường.",
+      "cta": "Tìm osin chăm sóc bệnh nhân tiểu đường chuyên nghiệp."
+    }
+  },
+  {
+    "id": 20,
+    "slug": "thu-gian-tinh-than-cho-nguoi-gia",
+    "title": "Các Hoạt Động Giải Trí Giúp Người Già Vui Khỏe Mỗi Ngày",
+    "category": "Sức khỏe",
+    "tags": ["giải trí người già", "sống vui sống khỏe", "tâm lý"],
+    "excerpt": "Sức khỏe tinh thần tốt giúp đẩy lùi bệnh tật. Hãy khuyến khích các cụ tham gia các hoạt động giải trí nhẹ nhàng.",
+    "thumbnail": "blog/gia-20.jpg",
+    "published_at": "2026-03-20",
+    "read_time": 3,
+    "content": {
+      "intro": "Niềm vui tuổi già đến từ sự quan tâm và những hoạt động bổ ích.",
+      "sections": [
+        {
+          "heading": "Nghe nhạc và đọc sách cùng người già",
+          "body": "Đây là cách tuyệt vời để kích thích não bộ và mang lại cảm giác thư giãn cho các cụ."
+        },
+        {
+          "heading": "Chăm sóc cây cảnh hoặc nuôi thú cưng nhỏ",
+          "body": "Những công việc nhẹ nhàng này giúp người già cảm thấy mình vẫn còn có ích và yêu đời hơn."
+        }
+      ],
+      "conclusion": "Người giúp việc kiêm bạn đồng hành sẽ giúp các cụ luôn vui vẻ, lạc quan.",
+      "cta": "Liên hệ ngay để tìm người bạn đồng hành cho cha mẹ."
+    }
+  },
+  {
+    "id": 21,
+    "slug": "kham-suc-khoe-dinh-ky-nguoi-gia",
+    "title": "Tầm Quan Trọng Của Khám Sức Khỏe Định Kỳ Cho Người Cao Tuổi",
+    "category": "Sức khỏe",
+    "tags": ["khám sức khỏe", "phòng bệnh", "người già"],
+    "excerpt": "Khám định kỳ giúp phát hiện sớm các mầm mống bệnh và điều chỉnh phác đồ điều trị kịp thời.",
+    "thumbnail": "blog/gia-21.jpg",
+    "published_at": "2026-03-21",
+    "read_time": 4,
+    "content": {
+      "intro": "Phòng bệnh hơn chữa bệnh luôn là nguyên tắc vàng cho sức khỏe người già.",
+      "sections": [
+        {
+          "heading": "Tầm soát các bệnh ung thư và tim mạch",
+          "body": "Giúp can thiệp sớm, tăng khả năng chữa khỏi và kéo dài tuổi thọ cho các cụ."
+        },
+        {
+          "heading": "Xét nghiệm các chỉ số máu thường xuyên",
+          "body": "Kiểm soát lượng đường, mỡ máu và chức năng gan thận để điều chỉnh lối sống phù hợp."
+        }
+      ],
+      "conclusion": "Nhân viên của chúng tôi hỗ trợ đưa các cụ đi khám và theo dõi lịch khám định kỳ.",
+      "cta": "Sử dụng dịch vụ chăm sóc sức khỏe toàn diện ngay."
+    }
+  },
+  {
+    "id": 22,
+    "slug": "cham-soc-nguoi-gia-parkinson",
+    "title": "Cách Chăm Sóc Và Hỗ Trợ Người Già Bị Bệnh Parkinson",
+    "category": "Cẩm nang chăm sóc",
+    "tags": ["Parkinson", "run tay chân", "hỗ trợ sinh hoạt"],
+    "excerpt": "Run rẩy và cứng cơ khiến sinh hoạt của người bệnh Parkinson trở nên khó khăn. Hãy tìm hiểu cách hỗ trợ họ hiệu quả.",
+    "thumbnail": "blog/gia-22.jpg",
+    "published_at": "2026-03-22",
+    "read_time": 5,
+    "content": {
+      "intro": "Parkinson cần sự kiên nhẫn cực lớn từ người chăm sóc trong việc ăn uống và di chuyển.",
+      "sections": [
+        {
+          "heading": "Sử dụng dụng cụ ăn uống chuyên dụng",
+          "body": "Thìa bát có đế chống trượt hoặc cán cầm to giúp người bị run tay dễ dàng tự ăn uống hơn."
+        },
+        {
+          "heading": "Khuyến khích đi bộ chậm với người hỗ trợ",
+          "body": "Duy trì vận động giúp giảm tình trạng cứng khớp và cải thiện khả năng thăng bằng."
+        }
+      ],
+      "conclusion": "Osin giàu kinh nghiệm giúp người bệnh Parkinson tự tin hơn trong cuộc sống.",
+      "cta": "Tìm osin chăm sóc người bệnh Parkinson chuyên nghiệp."
+    }
+  },
+  {
+    "id": 23,
+    "slug": "giu-am-cho-nguoi-gia-mua-lanh",
+    "title": "Bí Quyết Giữ Ấm Và Phòng Bệnh Hô Hấp Cho Người Già Mùa Lạnh",
+    "category": "An toàn",
+    "tags": ["giữ ấm", "mùa đông", "viêm phổi người già"],
+    "excerpt": "Thời tiết lạnh là kẻ thù của người già chân yếu, phổi yếu. Hãy bảo vệ cha mẹ bạn bằng những cách đơn giản.",
+    "thumbnail": "blog/gia-23.jpg",
+    "published_at": "2026-03-23",
+    "read_time": 3,
+    "content": {
+      "intro": "Viêm phổi và đột quỵ thường tăng cao vào những thời điểm giao mùa lạnh.",
+      "sections": [
+        {
+          "heading": "Mặc nhiều lớp áo mỏng và dùng khăn quàng cổ",
+          "body": "Giúp giữ nhiệt tốt hơn và dễ dàng điều chỉnh khi nhiệt độ thay đổi."
+        },
+        {
+          "heading": "Dùng nước ấm để vệ sinh và tắm rửa",
+          "body": "Tuyệt đối không để người già tiếp xúc với nước lạnh đột ngột gây sốc nhiệt."
+        }
+      ],
+      "conclusion": "Osin sẽ luôn nhắc nhở và chuẩn bị nước ấm, quần áo ấm cho các cụ mỗi ngày.",
+      "cta": "Liên hệ tìm người chăm sóc tận tâm cho mùa đông này."
+    }
+  },
+  {
+    "id": 24,
+    "slug": "xu-ly-tinh-trang-nguoi-gia-bi-nghet-tho",
+    "title": "Cách Xử Lý Khi Người Già Bị Nghẹn Hoặc Sặc Thức Ăn",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["sơ cứu nghẹn", "sặc thức ăn", "an toàn ăn uống"],
+    "excerpt": "Nghẹn thức ăn rất hay xảy ra ở người già có cơ hàm yếu. Biết kỹ thuật sơ cứu có thể cứu người trong tích tắc.",
+    "thumbnail": "blog/gia-24.jpg",
+    "published_at": "2026-03-24",
+    "read_time": 4,
+    "content": {
+      "intro": "Sặc thức ăn là tai nạn cực kỳ nguy hiểm có thể dẫn đến ngừng thở ở người cao tuổi.",
+      "sections": [
+        {
+          "heading": "Kỹ thuật vỗ lưng và ép bụng (Heimlich)",
+          "body": "Người chăm sóc cần nắm vững kỹ thuật này để đẩy dị vật ra khỏi đường thở kịp thời."
+        },
+        {
+          "heading": "Phòng ngừa bằng cách thái nhỏ thức ăn",
+          "body": "Nên hầm nhừ, băm nhỏ và nhắc người già nhai thật kỹ, không nói chuyện khi đang ăn."
+        }
+      ],
+      "conclusion": "Nhân viên của chúng tôi được huấn luyện kỹ năng xử lý tai nạn ăn uống cơ bản.",
+      "cta": "Tìm người chăm sóc có chứng chỉ sơ cứu y tế."
+    }
+  },
+  {
+    "id": 25,
+    "slug": "cham-soc-nguoi-gia-suy-than",
+    "title": "Chế Độ Sinh Hoạt Và Dinh Dưỡng Cho Người Già Suy Thận",
+    "category": "Cẩm nang chăm sóc",
+    "tags": ["suy thận", "chạy thận", "osin nuôi bệnh"],
+    "excerpt": "Bệnh suy thận yêu cầu một chế độ ăn uống khắt khe về lượng đạm, muối và nước đưa vào cơ thể.",
+    "thumbnail": "blog/gia-25.jpg",
+    "published_at": "2026-03-25",
+    "read_time": 5,
+    "content": {
+      "intro": "Suy thận bào mòn sức khỏe người già rất nhanh nếu không được chăm sóc đúng cách.",
+      "sections": [
+        {
+          "heading": "Kiểm soát lượng nước uống hàng ngày",
+          "body": "Bệnh nhân suy thận thường phải hạn chế nước để tránh phù nề và gánh nặng cho tim."
+        },
+        {
+          "heading": "Thực đơn hạn chế Kali và Phốt pho",
+          "body": "Tránh các loại trái cây như chuối, cam và các loại hạt để bảo vệ chức năng thận còn lại."
+        }
+      ],
+      "conclusion": "Dịch vụ của chúng tôi cung cấp người giúp việc am hiểu kiến thức về bệnh thận.",
+      "cta": "Đặt người chăm sóc bệnh nhân suy thận chuyên nghiệp."
+    }
+  },
+  {
+    "id": 26,
+    "slug": "nguoi-gia-bi-tram-cam",
+    "title": "Dấu Hiệu Và Cách Giúp Người Già Vượt Qua Trầm Cảm",
+    "category": "Tâm lý người già",
+    "tags": ["trầm cảm", "tâm thần người già", "chia sẻ"],
+    "excerpt": "Sự cô đơn và bệnh tật kéo dài dễ khiến người già rơi vào trầm cảm. Hãy dành thời gian để thấu hiểu họ.",
+    "thumbnail": "blog/gia-26.jpg",
+    "published_at": "2026-03-26",
+    "read_time": 4,
+    "content": {
+      "intro": "Trầm cảm ở tuổi già thường bị nhầm lẫn với sự lão hóa tự nhiên.",
+      "sections": [
+        {
+          "heading": "Khuyến khích giao lưu kết bạn",
+          "body": "Đưa các cụ ra công viên hoặc tham gia các câu lạc bộ người cao tuổi để bớt cảm giác bị cô lập."
+        },
+        {
+          "heading": "Sự quan tâm chân thành từ gia đình",
+          "body": "Những bữa cơm chung và những lời hỏi han là liều thuốc tinh thần giá trị nhất đối với người già."
+        }
+      ],
+      "conclusion": "Người giúp việc tận tâm sẽ là cầu nối giúp các cụ tìm lại niềm vui trong cuộc sống.",
+      "cta": "Tìm người chăm sóc hiền lành, biết chia sẻ với người già."
+    }
+  },
+  {
+    "id": 27,
+    "slug": "ky-thang-su-dung-giuong-y-te",
+    "title": "Cách Sử Dụng Giường Y Tế Đa Năng Tại Nhà Cho Người Liệt",
+    "category": "Kỹ năng chăm sóc",
+    "tags": ["giường y tế", "chăm sóc tại nhà", "thiết bị y tế"],
+    "excerpt": "Giường y tế hỗ trợ nâng hạ giúp việc ăn uống và vệ sinh người liệt trở nên dễ dàng hơn bao giờ hết.",
+    "thumbnail": "blog/gia-27.jpg",
+    "published_at": "2026-03-27",
+    "read_time": 3,
+    "content": {
+      "intro": "Giường y tế là trợ thủ đắc lực giúp giảm bớt công sức cho người chăm sóc.",
+      "sections": [
+        {
+          "heading": "Nâng đầu khi ăn để tránh sặc",
+          "body": "Điều chỉnh góc nâng phù hợp giúp người già dễ nuốt và tiêu hóa thức ăn tốt hơn."
+        },
+        {
+          "heading": "Sử dụng thanh chắn để tránh ngã",
+          "body": "Luôn chốt thanh chắn giường khi người bệnh nằm một mình để đảm bảo an toàn tuyệt đối."
+        }
+      ],
+      "conclusion": "Nhân viên của chúng tôi thành thạo việc vận hành các thiết bị hỗ trợ người bệnh.",
+      "cta": "Thuê người chăm sóc có kinh nghiệm sử dụng giường y tế."
+    }
+  },
+  {
+    "id": 28,
+    "slug": "nuoi-benh-tai-benh-vien",
+    "title": "Dịch Vụ Nuôi Bệnh Tại Bệnh Viện: Khi Nào Bạn Cần?",
+    "category": "Dịch vụ",
+    "tags": ["nuôi bệnh bệnh viện", "chăm sóc người già", "osin nuôi bệnh"],
+    "excerpt": "Trong những ngày cha mẹ nằm viện, một người nuôi bệnh chuyên nghiệp sẽ thay bạn chăm lo từng bữa ăn giấc ngủ cho các cụ.",
+    "thumbnail": "blog/gia-28.jpg",
+    "published_at": "2026-03-28",
+    "read_time": 4,
+    "content": {
+      "intro": "Bệnh viện quá tải khiến người nhà vô cùng vất vả khi phải túc trực chăm sóc.",
+      "sections": [
+        {
+          "heading": "Hỗ trợ vệ sinh và thay đồ trong viện",
+          "body": "Người nuôi bệnh sẽ giúp các cụ đi vệ sinh, tắm rửa và thay quần áo ngay tại giường bệnh một cách khéo léo."
+        },
+        {
+          "heading": "Theo dõi sát sao diễn biến bệnh",
+          "body": "Kịp thời báo tin cho bác sĩ và gia đình khi có bất kỳ thay đổi bất thường nào về sức khỏe của người già."
+        }
+      ],
+      "conclusion": "Dịch vụ nuôi bệnh tại viện của chúng tôi giúp bạn giảm bớt gánh nặng mà vẫn yên tâm.",
+      "cta": "Liên hệ đặt dịch vụ nuôi bệnh tại bệnh viện 24/7."
+    }
+  },
+  {
+    "id": 29,
+    "slug": "loi-ich-cua-massage-cho-nguoi-gia",
+    "title": "Tác Dụng Tuyệt Vời Của Massage Đối Với Sức Khỏe Người Cao Tuổi",
+    "category": "Sức khỏe",
+    "tags": ["massage người già", "xoa bóp", "giảm đau nhức"],
+    "excerpt": "Xoa bóp nhẹ nhàng giúp giảm đau nhức xương khớp và mang lại sự thư thái cho người già không thể đi lại.",
+    "thumbnail": "blog/gia-29.jpg",
+    "published_at": "2026-03-29",
+    "read_time": 3,
+    "content": {
+      "intro": "Massage là liệu pháp vật lý giúp lưu thông khí huyết và giảm căng thẳng cơ bắp.",
+      "sections": [
+        {
+          "heading": "Massage tay chân giảm tê bì",
+          "body": "Đặc biệt hiệu quả với người già bị tiểu đường hoặc nằm lâu một chỗ dẫn đến máu kém lưu thông."
+        },
+        {
+          "heading": "Massage vùng vai gáy giúp ngủ ngon",
+          "body": "Xua tan mệt mỏi, giúp tinh thần sảng khoái và dễ dàng đi vào giấc ngủ sâu hơn."
+        }
+      ],
+      "conclusion": "Osin chăm sóc của chúng tôi có kỹ năng xoa bóp cơ bản giúp các cụ dễ chịu mỗi ngày.",
+      "cta": "Tìm người chăm sóc biết kỹ thuật xoa bóp cho người già."
+    }
+  },
+  {
+    "id": 30,
+    "slug": "nguoi-giup-viec-tan-tam-la-gia-tai",
+    "title": "Tìm Người Giúp Việc Chăm Người Già Tận Tâm Ở Đâu?",
+    "category": "Dịch vụ",
+    "tags": ["tìm người giúp việc", "osin chăm người già", "uy tín"],
+    "excerpt": "Một người chăm sóc tốt không chỉ giỏi việc mà còn phải có cái tâm yêu thương người cao tuổi.",
+    "thumbnail": "blog/gia-30.jpg",
+    "published_at": "2026-03-30",
+    "read_time": 4,
+    "content": {
+      "intro": "Niềm tin của gia đình là nền tảng cốt lõi của dịch vụ chúng tôi.",
+      "sections": [
+        {
+          "heading": "Quy trình tuyển chọn khắt khe",
+          "body": "Mọi nhân viên đều được kiểm tra lý lịch, sức khỏe và kỹ năng thực tế trước khi nhận việc."
+        },
+        {
+          "heading": "Cam kết đồng hành cùng gia đình",
+          "body": "Chúng tôi luôn lắng nghe phản hồi và hỗ trợ thay đổi người nếu gia đình chưa cảm thấy phù hợp."
+        }
+      ],
+      "conclusion": "Hãy để chúng tôi giúp bạn mang lại tuổi già hạnh phúc nhất cho cha mẹ.",
+      "cta": "Gọi ngay hotline để nhận tư vấn miễn phí về dịch vụ chăm sóc người già!"
+    }
+  }
+]
