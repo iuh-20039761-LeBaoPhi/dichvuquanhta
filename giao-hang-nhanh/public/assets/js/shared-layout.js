@@ -54,9 +54,11 @@
     const pricingLink = `${rootPath}index.html#quick-quote`;
 
     return {
-      // Các đường dẫn chính trong project Giao Hàng Nhanh
-      brand: `${rootPath}index.html`,
-      brandLogo: `${rootPath}public/assets/images/favicon.png`,
+      // Các đường dẫn chính trỏ về trang chủ GlobalCare
+      brand: `${externalServicePrefix}index.html`,
+      brandLogo: `${externalServicePrefix}public/assets/images/favicon.png`,
+      
+      // Các đường dẫn nội bộ trong project Giao Hàng Nhanh
       home: `${rootPath}index.html#hero`,
       about: `${rootPath}index.html#hero`,
       services: `${rootPath}index.html#services`,
