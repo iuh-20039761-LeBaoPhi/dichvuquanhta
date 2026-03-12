@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hướng dẫn đóng gói hàng dễ vỡ an toàn tuyệt đối | Giao Hàng Nhanh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <style>
+      /* CSS cho trang chi tiết bài viết */
+      .article-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .article-title {
+        font-size: 2.5em;
+        color: #0a2a66;
+        margin-bottom: 15px;
+        line-height: 1.3;
+      }
+      .article-meta {
+        font-size: 0.9em;
+        color: #888;
+      }
+      .article-meta span {
+        margin: 0 10px;
+      }
+      .article-featured-img {
+        width: 100%;
+        max-height: 450px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        background-color: #f0f0f0;
+      }
+      .article-content {
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.8;
+        font-size: 1.1em;
+        color: #333;
+      }
+      .article-content h3 {
+        font-size: 1.5em;
+        color: #0a2a66;
+        margin-top: 40px;
+        margin-bottom: 20px;
+      }
+      .article-content p {
+        margin-bottom: 20px;
+      }
+      .article-content ul {
+        list-style: disc;
+        padding-left: 25px;
+        margin-bottom: 20px;
+      }
+      .article-content blockquote {
+        border-left: 4px solid #ff7a00;
+        padding-left: 20px;
+        margin: 30px 0;
+        font-style: italic;
+        color: #555;
+      }
+      .back-to-news {
+        display: inline-block;
+        margin-top: 40px;
+        color: #ff7a00;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .back-to-news:hover {
+        text-decoration: underline;
+      }
+
+      /* CSS cho phần Bài viết liên quan */
+      .related-section { margin-top: 60px; padding-top: 40px; border-top: 1px solid #eee; }
+      .related-title { font-size: 1.5em; color: #0a2a66; margin-bottom: 25px; text-align: center; }
+      .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+      .related-card { background: #fff; border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: transform 0.2s; }
+      .related-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+      .related-img { width: 100%; height: 160px; object-fit: cover; }
+      .related-body { padding: 15px; }
+      .related-card-title { font-size: 1.1em; margin-bottom: 10px; line-height: 1.4; }
+      .related-card-title a { color: #333; text-decoration: none; font-weight: bold; }
+      .related-card-title a:hover { color: #ff7a00; }
+      .related-date { font-size: 0.85em; color: #888; }
+    </style>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="container" style="padding-top: 120px; padding-bottom: 60px;">
+      <article>
+        <header class="article-header" id="article-header-host">
+          <!-- Header bài viết sẽ được JS chèn vào đây -->
+        </header>
+
+        <img src="" alt="" class="article-featured-img" id="article-image-host" style="display: none;" />
+
+        <div class="article-content" id="article-content-host">
+          <!-- Nội dung bài viết sẽ được JS chèn vào đây -->
+          <a href="tin-tuc.html" class="back-to-news">← Quay lại trang tin tức</a>
+        </div>
+      </article>
+    </main>
+
+    <div id="site-footer"></div>
+    <script src="assets/js/shared-layout.js"></script>
+    <script src="assets/js/data/news-data.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleId = parseInt(urlParams.get('id'), 10);
+
+        if (!articleId || !window.newsData) {
+          document.getElementById('article-content-host').innerHTML = '<h2>Bài viết không tồn tại.</h2><a href="tin-tuc.html" class="back-to-news">← Quay lại trang tin tức</a>';
+          return;
+        }
+
+        const article = window.newsData.find(p => p.id === articleId);
+
+        if (article) {
+          document.title = `${article.title} | Giao Hàng Nhanh`;
+          
+          const headerHost = document.getElementById('article-header-host');
+          headerHost.innerHTML = `
+            <h1 class="article-title">${article.title}</h1>
+            <div class="article-meta">
+              <span>Ngày đăng: ${article.date}</span> |
+              <span>Tác giả: ${article.author}</span> |
+              <span>Chuyên mục: ${article.category}</span>
+            </div>
+          `;
+
+          const imageHost = document.getElementById('article-image-host');
+          imageHost.src = article.image;
+          imageHost.alt = article.title;
+          imageHost.style.display = 'block';
+
+          const contentHost = document.getElementById('article-content-host');
+          contentHost.innerHTML = article.content + '<a href="tin-tuc.html" class="back-to-news">← Quay lại trang tin tức</a>';
+
+          // --- LOGIC BÀI VIẾT LIÊN QUAN (JS THUẦN) ---
+          // 1. Lọc các bài cùng chuyên mục, trừ bài hiện tại
+          let related = window.newsData.filter(item => item.id !== article.id && item.category === article.category);
+          
+          // 2. Nếu ít hơn 3 bài, lấy thêm các bài khác ngẫu nhiên để lấp đầy
+          if (related.length < 3) {
+             const others = window.newsData.filter(item => item.id !== article.id && item.category !== article.category);
+             // Gộp vào danh sách
+             related = related.concat(others); 
+          }
+          
+          // 3. Chỉ lấy 3 bài đầu tiên
+          const relatedSlice = related.slice(0, 3);
+
+          // 4. Render ra HTML nếu có bài liên quan
+          if (relatedSlice.length > 0) {
+             const relatedHtml = relatedSlice.map(item => `
+                <div class="related-card">
+                    <a href="bai-viet-chi-tiet.html?id=${item.id}">
+                        <img src="${item.image}" alt="${item.title}" class="related-img" />
+                    </a>
+                    <div class="related-body">
+                        <div class="related-date">${item.date}</div>
+                        <h4 class="related-card-title">
+                            <a href="bai-viet-chi-tiet.html?id=${item.id}">${item.title}</a>
+                        </h4>
+                    </div>
+                </div>
+             `).join('');
+
+             const relatedSection = document.createElement('div');
+             relatedSection.className = 'related-section';
+             relatedSection.innerHTML = `<h3 class="related-title">Bài viết liên quan</h3><div class="related-grid">${relatedHtml}</div>`;
+             
+             // Chèn vào cuối thẻ <article>
+             document.querySelector('article').appendChild(relatedSection);
+          }
+        } else {
+          document.getElementById('article-content-host').innerHTML = '<h2>Bài viết không tồn tại.</h2><a href="tin-tuc.html" class="back-to-news">← Quay lại trang tin tức</a>';
+        }
+      });
+    </script>
+  </body>
+</html>

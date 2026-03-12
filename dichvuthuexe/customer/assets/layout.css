@@ -1,0 +1,71 @@
+/* ===== LAYOUT ===== */
+.customer-layout {
+    display: flex;
+    min-height: 80vh;
+    max-width: 1200px;
+    margin: auto;
+    gap: 24px;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 240px;
+    background: #1e3c72;
+    color: white;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.sidebar-user {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.sidebar-menu a {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: rgba(255,255,255,0.15);
+}
+
+.sidebar-menu .logout {
+    background: rgba(255,255,255,0.08);
+    margin-top: 20px;
+}
+
+/* ===== CONTENT ===== */
+.customer-content {
+    flex: 1;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+    .customer-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .sidebar-menu {
+        width: 100%;
+    }
+
+    .sidebar-menu a {
+        text-align: center;
+    }
+}

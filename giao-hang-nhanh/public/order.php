@@ -70,34 +70,32 @@ function save_upload_group(string $field, string $target_dir): array
 }
 
 // 2. Nhận dữ liệu từ form
-$name = $_POST['name'] ?? '';
-$phone = $_POST['phone'] ?? '';
+$name = trim($_POST['name'] ?? '');
+$phone = trim($_POST['phone'] ?? '');
 $receiver_name = $_POST['receiver_name'] ?? '';
 $receiver_phone = $_POST['receiver_phone'] ?? '';
 $pickup = $_POST['pickup'] ?? '';
 $delivery = $_POST['delivery'] ?? '';
-$package_type = $_POST['package_type'] ?? '';
-$item_name = trim($_POST['item_name'] ?? '');
-$goods_description = trim($_POST['goods_description'] ?? '');
-$goods_items = $_POST['goods_items'] ?? [];
 $goods_item_types = $_POST['goods_item_type'] ?? [];
 $goods_item_names = $_POST['goods_item_name'] ?? [];
 $goods_item_weights = $_POST['goods_item_weight'] ?? [];
 $goods_item_quantities = $_POST['goods_item_quantity'] ?? [];
-$goods_item_lengths = $_POST['goods_item_length'] ?? [];
-$goods_item_widths = $_POST['goods_item_width'] ?? [];
-$goods_item_heights = $_POST['goods_item_height'] ?? [];
 $goods_item_declareds = $_POST['goods_item_declared'] ?? [];
-$service_type = $_POST['service_type'] ?? ''; // Nhận loại dịch vụ đã chọn từ gói đề xuất
+$service_type = $_POST['service_type'] ?? '';
+$route_type = $_POST['route_type'] ?? 'domestic';
+$pickup_city = $_POST['pickup_city'] ?? '';
+$delivery_city = $_POST['delivery_city'] ?? '';
+$intl_country = $_POST['intl_country'] ?? '';
 $weight = $_POST['weight'] ?? 0;
 $cod_amount = parse_money_value($_POST['cod_amount'] ?? 0);
+$insurance_value = parse_money_value($_POST['insurance_value'] ?? 0);
 $receiver_id_type = trim($_POST['receiver_id_type'] ?? '');
 $receiver_id_number = trim($_POST['receiver_id_number'] ?? '');
 $intl_postal_code = trim($_POST['intl_postal_code'] ?? '');
 $intl_hs_code = trim($_POST['intl_hs_code'] ?? '');
 $intl_purpose = trim($_POST['intl_purpose'] ?? '');
 $fee_payer = trim($_POST['fee_payer'] ?? 'sender');
-$shipping_fee = $_POST['shipping_fee'] ?? 0; // Nhận phí ship
+$shipping_fee = $_POST['shipping_fee'] ?? 0;
 $pickup_time = $_POST['pickup_time'] ?? '';
 $delivery_time = $_POST['delivery_time'] ?? '';
 $payment_method = $_POST['payment_method'] ?? 'cod';
@@ -111,86 +109,6 @@ $is_international = strpos($service_type, 'intl_') === 0;
 
 if ($is_international) {
     $cod_amount = 0;
-}
-
-if (is_array($goods_item_declareds)) {
-    $goods_item_declareds = array_map(function ($value) {
-        return parse_money_value($value);
-    }, $goods_item_declareds);
-}
-
-if ($goods_description === '' && is_array($goods_items)) {
-    $goods_list = array_values(array_filter(array_map(function ($item) {
-        return trim((string) $item);
-    }, $goods_items), function ($item) {
-        return $item !== '';
-    }));
-    if (!empty($goods_list)) {
-        $goods_description = implode(' | ', $goods_list);
-    }
-}
-
-if ($item_name === '' && is_array($goods_item_names)) {
-    $name_list = array_values(array_filter(array_map(function ($item) {
-        return trim((string) $item);
-    }, $goods_item_names), function ($item) {
-        return $item !== '';
-    }));
-    if (!empty($name_list)) {
-        $item_name = implode(' | ', $name_list);
-    }
-}
-
-if ($goods_description === '' && is_array($goods_item_names)) {
-    $line_count = max(
-        count((array) $goods_item_names),
-        count((array) $goods_item_types),
-        count((array) $goods_item_quantities),
-        count((array) $goods_item_weights),
-        count((array) $goods_item_lengths),
-        count((array) $goods_item_widths),
-        count((array) $goods_item_heights),
-        count((array) $goods_item_declareds)
-    );
-    $goods_lines = [];
-    for ($i = 0; $i < $line_count; $i++) {
-        $row_name = trim((string) ($goods_item_names[$i] ?? ''));
-        $row_type = trim((string) ($goods_item_types[$i] ?? ''));
-        $row_qty = trim((string) ($goods_item_quantities[$i] ?? ''));
-        $row_weight = trim((string) ($goods_item_weights[$i] ?? ''));
-        $row_l = trim((string) ($goods_item_lengths[$i] ?? ''));
-        $row_w = trim((string) ($goods_item_widths[$i] ?? ''));
-        $row_h = trim((string) ($goods_item_heights[$i] ?? ''));
-        $row_declared = trim((string) ($goods_item_declareds[$i] ?? ''));
-
-        $has_data = ($row_name !== '' || $row_type !== '' || $row_qty !== '' || $row_weight !== '' || $row_l !== '' || $row_w !== '' || $row_h !== '' || $row_declared !== '');
-        if (!$has_data) {
-            continue;
-        }
-
-        $line_parts = [];
-        if ($row_name !== '') {
-            $line_parts[] = $row_name;
-        } elseif ($row_type !== '') {
-            $line_parts[] = '[' . $row_type . ']';
-        }
-        if ($row_qty !== '') {
-            $line_parts[] = 'SL: ' . $row_qty;
-        }
-        if ($row_weight !== '') {
-            $line_parts[] = 'Kg: ' . $row_weight;
-        }
-        if ($row_l !== '' && $row_w !== '' && $row_h !== '') {
-            $line_parts[] = 'KT: ' . $row_l . 'x' . $row_w . 'x' . $row_h . 'cm';
-        }
-        if ($row_declared !== '' && is_numeric($row_declared) && (float) $row_declared > 0) {
-            $line_parts[] = 'Khai giá: ' . number_format((float) $row_declared, 0, '.', ',') . 'đ';
-        }
-        $goods_lines[] = implode(', ', $line_parts);
-    }
-    if (!empty($goods_lines)) {
-        $goods_description = implode(' | ', $goods_lines);
-    }
 }
 
 // Thêm: Nhận dữ liệu hóa đơn công ty
@@ -210,8 +128,17 @@ if (empty($phone))
     $errors[] = "Chưa nhập số điện thoại";
 if (empty(trim((string) $service_type)))
     $errors[] = "Chưa chọn gói dịch vụ";
-if (empty($item_name))
-    $errors[] = "Chưa chọn tên hàng";
+
+$has_items = false;
+if (is_array($goods_item_names)) {
+    foreach ($goods_item_names as $itemName) {
+        if (!empty(trim($itemName))) {
+            $has_items = true;
+            break;
+        }
+    }
+}
+if (!$has_items) $errors[] = "Vui lòng thêm ít nhất một hàng hóa vào đơn hàng.";
 if (empty($receiver_name))
     $errors[] = "Chưa nhập tên người nhận";
 if (empty($receiver_phone))
@@ -231,7 +158,6 @@ elseif (!$is_international && !preg_match('/(quận|huyện|tp|thành phố|phư
     $errors[] = "Địa chỉ giao hàng thiếu Quận/Huyện (VD: Quận 1)";
 
 if ($is_international) {
-    $intl_country = trim($_POST['intl_country'] ?? '');
     if (empty($intl_country))
         $errors[] = "Vui lòng chọn quốc gia nhận cho đơn quốc tế";
     if ($receiver_id_type === '' || $receiver_id_number === '')
@@ -256,33 +182,14 @@ if (!empty($cod_amount) && (!is_numeric($cod_amount) || $cod_amount < 0))
 if (!in_array($fee_payer, ['sender', 'receiver'], true))
     $errors[] = "Người trả cước không hợp lệ";
 
-// Kiểm tra thời gian lấy hàng (nếu có nhập thì không được là quá khứ quá xa - tuỳ logic)
-// Ở đây chỉ kiểm tra định dạng cơ bản để tránh SQL injection lạ, dù bind_param đã lo rồi.
-// Ví dụ đơn giản: nếu nhập thì phải có độ dài hợp lý
-if (!empty($pickup_time) && strlen($pickup_time) > 50)
-    $errors[] = "Thời gian lấy hàng không hợp lệ";
-if (!empty($delivery_time) && strlen($delivery_time) > 50)
-    $errors[] = "Thời gian giao hàng không hợp lệ";
-
-// Kiểm tra package_type hợp lệ
-$valid_types = ['document', 'food', 'clothes', 'electronic', 'other'];
-if (!in_array($package_type, $valid_types))
-    $errors[] = "Loại hàng không hợp lệ";
-
 // Nếu là chuyển khoản, tiền thu hộ phải bằng 0
 if ($payment_method === 'bank_transfer' || $is_international) {
     $cod_amount = 0;
 }
 
 $note_extras = [];
-if (!empty($item_name)) {
-    $note_extras[] = "Tên hàng: " . preg_replace('/\s+/', ' ', $item_name);
-}
-if (!empty($goods_description)) {
-    $note_extras[] = "Hàng hóa: " . preg_replace('/\s+/', ' ', $goods_description);
-}
 if (true) { // Always include fee payer info for regular delivery
-    $fee_payer_label = ($fee_payer === 'receiver') ? 'Người nhận' : 'Người gửi';
+    $fee_payer_label = ($fee_payer === 'receiver') ? 'Người nhận' : 'Người gửi'; // Giữ nguyên logic này
     $note_extras[] = "Người trả cước: " . $fee_payer_label;
 }
 if ($is_international) {
@@ -307,9 +214,6 @@ if ($is_international) {
         ];
         $note_extras[] = "Mục đích gửi: " . ($purpose_map[$intl_purpose] ?? $intl_purpose);
     }
-}
-if (!empty($delivery_time)) {
-    $note_extras[] = "Lịch giao dự kiến: " . preg_replace('/\s+/', ' ', trim($delivery_time));
 }
 if (!empty($note_extras)) {
     $note = trim((string) $note);
@@ -365,22 +269,60 @@ if (!empty($attachment_notes)) {
     $note = $note === '' ? $attachments_text : ($note . "\n" . $attachments_text);
 }
 
-// 3. Chèn vào database
-// Sử dụng prepared statements để chống SQL Injection
-$stmt = $conn->prepare("INSERT INTO `orders`
-(order_code, name, phone, receiver_name, receiver_phone, pickup_address, delivery_address, package_type, service_type, weight, cod_amount, shipping_fee, pickup_time, note, user_id, payment_method, payment_status, is_corporate, company_name, company_email, company_tax_code, company_address, company_bank_info)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+// 3. Chèn vào database (Sử dụng Transaction)
+$conn->begin_transaction();
 
-if (!$stmt) {
-    error_log("Order Prepare Failed: " . $conn->error);
-    echo json_encode(['status' => 'error', 'message' => 'Lỗi hệ thống: ' . $conn->error]);
-    exit;
-}
+try {
+    // 3.1. Chèn vào bảng `orders`
+    $stmt = $conn->prepare("INSERT INTO `orders`
+    (order_code, user_id, route_type, name, phone, pickup_address, pickup_city, receiver_name, receiver_phone, receiver_id_number, delivery_address, delivery_city, intl_country, service_type, pickup_time, weight, shipping_fee, cod_amount, insurance_value, fee_payer, payment_method, payment_status, status, note, is_corporate, company_name, company_email, company_tax_code, company_address, company_bank_info, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
 
-$payment_status = 'unpaid'; // Trạng thái ban đầu
-$stmt->bind_param("sssssssssdddssississsss", $order_code, $name, $phone, $receiver_name, $receiver_phone, $pickup, $delivery, $package_type, $service_type, $weight, $cod_amount, $shipping_fee, $pickup_time, $note, $user_id, $payment_method, $payment_status, $is_corporate, $company_name, $company_email, $company_tax_code, $company_address, $company_bank_info);
+    if (!$stmt) {
+        throw new Exception("Order Prepare Failed: " . $conn->error);
+    }
 
-if ($stmt->execute()) {
+    $status = 'pending';
+    $payment_status = 'unpaid';
+
+    $stmt->bind_param(
+        "sisssssssssssssddddsssssissssss",
+        $order_code, $user_id, $route_type, $name, $phone,
+        $pickup, $pickup_city, $receiver_name, $receiver_phone, $receiver_id_number,
+        $delivery, $delivery_city, $intl_country, $service_type, $pickup_time,
+        $weight, $shipping_fee, $cod_amount, $insurance_value, $fee_payer,
+        $payment_method, $payment_status, $status, $note,
+        $is_corporate, $company_name, $company_email, $company_tax_code, $company_address, $company_bank_info
+    );
+
+    if (!$stmt->execute()) {
+        throw new Exception("Order Execute Failed: " . $stmt->error);
+    }
+
+    $order_id = $conn->insert_id;
+    $stmt->close();
+
+    // 3.2. Chèn vào bảng `order_items`
+    $stmt_item = $conn->prepare("INSERT INTO order_items (order_id, item_name, quantity, unit_weight, declared_value, item_type) VALUES (?, ?, ?, ?, ?, ?)");
+
+    if ($stmt_item && is_array($goods_item_names)) {
+        for ($i = 0; $i < count($goods_item_names); $i++) {
+            $itm_name = trim($goods_item_names[$i]);
+            if (empty($itm_name)) continue;
+
+            $itm_qty = intval($goods_item_quantities[$i] ?? 1);
+            $itm_weight = floatval($goods_item_weights[$i] ?? 0);
+            $itm_val = parse_money_value($goods_item_declareds[$i] ?? 0);
+            $itm_type = trim($goods_item_types[$i] ?? 'goods');
+
+            $stmt_item->bind_param("isidds", $order_id, $itm_name, $itm_qty, $itm_weight, $itm_val, $itm_type);
+            if (!$stmt_item->execute()) {
+                throw new Exception("Item Insert Failed: " . $stmt_item->error);
+            }
+        }
+        $stmt_item->close();
+    }
+
     // --- TÍNH NĂNG MỚI: Cập nhật thông tin công ty vào bảng users để ghi nhớ ---
     if ($is_corporate && $user_id) {
         $stmt_user = $conn->prepare("UPDATE users SET company_name = ?, tax_code = ?, company_address = ? WHERE id = ?");
@@ -411,13 +353,15 @@ if ($stmt->execute()) {
             'template' => $bank_settings['qr_template'] ?? 'compact'
         ]
     ]);
-} else {
-    error_log("Order Execute Failed: " . $stmt->error);
-    echo json_encode(['status' => 'error', 'message' => 'Có lỗi xảy ra khi lưu đơn hàng.']);
+
+    $conn->commit();
+
+} catch (Exception $e) {
+    $conn->rollback();
+    error_log($e->getMessage());
+    echo json_encode(['status' => 'error', 'message' => 'Có lỗi xảy ra khi lưu đơn hàng: ' . $e->getMessage()]);
+    exit;
 }
 
-// 4. Đóng kết nối
-
-$stmt->close();
 $conn->close();
 ?>

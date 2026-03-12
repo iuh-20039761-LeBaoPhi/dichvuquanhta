@@ -50,28 +50,49 @@
     <link rel="stylesheet" href="css/style.css">
     <!-- Leaflet Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <style>
+        .page-hero {
+            padding: 112px 0 44px;
+        }
+        .page-hero .breadcrumb {
+            margin-bottom: 16px;
+            padding: 0;
+            background: transparent;
+        }
+        .page-hero .breadcrumb-item a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .page-hero .breadcrumb-item a:hover { text-decoration: underline; }
+        .page-hero .breadcrumb-item.active { color: #fff; }
+        .page-hero .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255,255,255,0.55);
+        }
+        @media (max-width: 768px) {
+            .page-hero { padding: 94px 0 36px; }
+        }
+        @media (max-width: 576px) {
+            .page-hero { padding: 86px 0 30px; }
+        }
+    </style>
 </head>
 <body>
 
     <!-- Header -->
     <div id="header-container"></div>
 
-    <!-- Breadcrumb -->
-    <div class="breadcrumb-wrap">
+    <!-- Page Hero -->
+    <section class="page-hero">
         <div class="container">
-            <nav aria-label="breadcrumb">
+            <nav aria-label="breadcrumb" class="mb-2">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="index.html"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
                     <li class="breadcrumb-item"><a href="index.html#services">Dịch vụ</a></li>
                     <li class="breadcrumb-item active" id="breadcrumbTitle">Chi tiết dịch vụ</li>
                 </ol>
             </nav>
-        </div>
-    </div>
-
-    <!-- Page Hero -->
-    <section class="page-hero">
-        <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-8">
                     <span class="section-label" style="background:rgba(255,255,255,0.2); color:white;">

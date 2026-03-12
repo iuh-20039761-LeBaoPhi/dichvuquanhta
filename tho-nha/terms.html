@@ -26,6 +26,19 @@
             padding: 120px 0 60px;
             color: white;
         }
+        .terms-hero .breadcrumb {
+            margin-bottom: 14px;
+            background: transparent;
+            padding: 0;
+        }
+        .terms-hero .breadcrumb-item a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+        }
+        .terms-hero .breadcrumb-item.active { color: #fff; }
+        .terms-hero .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255,255,255,0.6);
+        }
         .terms-hero h1 {
             font-size: 2.4rem;
             font-weight: 800;
@@ -286,6 +299,12 @@
     <!-- Hero -->
     <section class="terms-hero">
         <div class="container">
+            <nav aria-label="breadcrumb" class="mb-2">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Điều khoản sử dụng</li>
+                </ol>
+            </nav>
             <div class="row align-items-center">
                 <div class="col-lg-9">
                     <span class="section-label mb-3 d-inline-block"
@@ -303,18 +322,6 @@
             </div>
         </div>
     </section>
-
-    <!-- Breadcrumb -->
-    <div class="breadcrumb-wrap">
-        <div class="container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
-                    <li class="breadcrumb-item active">Điều khoản sử dụng</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
 
     <!-- Content -->
     <section class="terms-body">

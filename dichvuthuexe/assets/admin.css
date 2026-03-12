@@ -1,0 +1,54 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+th {
+    background: #111;
+    color: #fff;
+}
+
+a {
+    text-decoration: none;
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.main-content {
+    margin-left: 240px;
+    padding: 30px;
+}
+
+.login-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-box {
+    background: #fff;
+    padding: 30px;
+    width: 300px;
+    border-radius: 10px;
+}
+.stats {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 200px;
+    text-align: center;
+    font-size: 18px;
+}

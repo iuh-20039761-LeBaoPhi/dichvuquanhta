@@ -75,6 +75,13 @@
       typeof core.isInternationalServiceType === "function" &&
       core.isInternationalServiceType(serviceTypeInp?.value || "");
 
+    const isMovingService =
+      serviceTypeInp?.value &&
+      (serviceTypeInp.value.includes("moving_") ||
+        serviceTypeInp.value.includes("chuyen_"));
+
+    syncOrderFields(form);
+
     const nameInp = form.querySelector("[name=name]");
     const phoneInp = form.querySelector("[name=phone]");
     const receiverNameInp = form.querySelector("[name=receiver_name]");
@@ -112,7 +119,7 @@
       serviceSuggestion.classList.remove("is-error");
     }
 
-    if ((!serviceTypeInp || !serviceTypeInp.value.trim())) {
+    if (!serviceTypeInp || !serviceTypeInp.value.trim()) {
       if (serviceSuggestion) {
         serviceSuggestion.textContent =
           "Vui lòng điền đủ thông tin và chọn một gói dịch vụ trước khi xác nhận đơn.";
@@ -257,23 +264,28 @@
     return text;
   }
 
-    return lines.join("\n");
-  }
-
+  function syncOrderFields(form) {
     const pickupTimeField = form.querySelector("[name=pickup_time]");
     if (pickupTimeField) {
       const surveyDate = getFieldValue(form, "moving_survey_date");
       const surveySlot = getSelectText(form, "moving_survey_time_slot");
-      const normalizedSlot = surveySlot || getFieldValue(form, "moving_survey_time_slot");
-      pickupTimeField.value = [surveyDate, normalizedSlot].filter(Boolean).join(" - ");
+      const normalizedSlot =
+        surveySlot || getFieldValue(form, "moving_survey_time_slot");
+      pickupTimeField.value = [surveyDate, normalizedSlot]
+        .filter(Boolean)
+        .join(" - ");
     }
 
     const senderName = form.querySelector("[name=name]");
     const senderPhone = form.querySelector("[name=phone]");
     const receiverName = form.querySelector("[name=receiver_name]");
     const receiverPhone = form.querySelector("[name=receiver_phone]");
-    if (receiverName && senderName) receiverName.value = senderName.value.trim();
-    if (receiverPhone && senderPhone) receiverPhone.value = senderPhone.value.trim();
+    if (receiverName && senderName && !receiverName.value.trim()) {
+      receiverName.value = senderName.value.trim();
+    }
+    if (receiverPhone && senderPhone && !receiverPhone.value.trim()) {
+      receiverPhone.value = senderPhone.value.trim();
+    }
   }
 
   function buildPaymentContent(data) {
@@ -296,12 +308,19 @@
 
   function renderSubmitResult(form, msgDiv, data, config) {
     const pickup = core.escapeHtml(form.querySelector("[name=pickup]").value);
-    const delivery = core.escapeHtml(form.querySelector("[name=delivery]").value);
+    const delivery = core.escapeHtml(
+      form.querySelector("[name=delivery]").value,
+    );
+    const serviceType = form.querySelector("[name=service_type]")?.value || "";
+    const isMovingService = serviceType.includes("moving_");
+
     const shippingInput = config.shippingFeeInputId
       ? document.getElementById(config.shippingFeeInputId)
       : form.querySelector("[name=shipping_fee]");
     const shipFee = parseFloat(shippingInput?.value || "0");
-    const codValue = parseFloat(form.querySelector("[name=cod_amount]")?.value || "0");
+    const codValue = parseFloat(
+      form.querySelector("[name=cod_amount]")?.value || "0",
+    );
 
     const shippingLine = isMovingService
       ? '<p style="margin-bottom:5px;">💵 <strong>Phí dịch vụ:</strong> Báo giá theo khảo sát</p>'
@@ -344,13 +363,31 @@
       submitBtnInit.dataset.defaultText = submitBtnInit.innerText.trim();
     }
 
+    function initCurrencyInputs() {
+      const currencyInputs = form.querySelectorAll(
+        ".input-currency, [name='cod_amount'], [name='insurance_value']",
+      );
+      currencyInputs.forEach((input) => {
+        input.addEventListener("input", (e) => {
+          let value = e.target.value.replace(/\D/g, "");
+          if (value) {
+            value = parseInt(value, 10).toLocaleString("vi-VN");
+          }
+          e.target.value = value;
+        });
+      });
+    }
+    initCurrencyInputs();
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
       const submitBtn = form.querySelector("button[type='submit']");
       if (!submitBtn) return;
       const defaultSubmitText =
-        submitBtn.dataset.defaultText || submitBtn.innerText.trim() || "Đặt lịch";
+        submitBtn.dataset.defaultText ||
+        submitBtn.innerText.trim() ||
+        "Đặt lịch";
       submitBtn.dataset.defaultText = defaultSubmitText;
       setButtonState(submitBtn, "Đang xử lý...", true);
 

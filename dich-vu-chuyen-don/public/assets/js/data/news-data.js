@@ -8,7 +8,7 @@
       title: "5 Kinh nghiệm chuyển nhà trọn gói tiết kiệm chi phí",
       date: "12/03/2026",
       author: "Admin",
-      image: "../assets/images/hero.png", // Dùng tạm ảnh hero làm thumb
+      image: "assets/images/hero.png", // Dùng tạm ảnh hero làm thumb
       summary:
         "Chuyển nhà là một công việc vất vả. Bài viết này sẽ chia sẻ 5 mẹo giúp bạn tiết kiệm tối đa chi phí và thời gian khi thuê dịch vụ chuyển nhà.",
       content: `
@@ -19,7 +19,7 @@
         <p>Chi phí vận chuyển phụ thuộc vào khối lượng đồ đạc. Hãy mạnh dạn thanh lý hoặc cho tặng những món đồ bạn không còn dùng đến.</p>
         <h2>3. Tự đóng gói các vật dụng nhỏ</h2>
         <p>Nếu có thời gian, bạn có thể tự đóng gói quần áo, sách vở. Dịch vụ trọn gói sẽ lo các phần nặng nhọc như tủ, giường, máy giặt.</p>
-        <img src="../assets/images/package.png" alt="Đóng gói đồ đạc" />
+        <img src="assets/images/package.png" alt="Đóng gói đồ đạc" />
         <h2>4. So sánh báo giá</h2>
         <p>Hãy tham khảo giá từ 2-3 đơn vị uy tín. Tuy nhiên, đừng chỉ nhìn vào giá rẻ nhất, hãy xem xét quy trình và cam kết bồi thường.</p>
         <h2>5. Chọn thời điểm chuyển nhà</h2>
@@ -31,7 +31,7 @@
       title: "Quy trình chuyển văn phòng chuyên nghiệp cần biết",
       date: "10/03/2026",
       author: "Nguyễn Văn A",
-      image: "../assets/images/order.png",
+      image: "assets/images/order.png",
       summary:
         "Để đảm bảo hoạt động kinh doanh không bị gián đoạn, việc chuyển văn phòng cần tuân thủ quy trình nghiêm ngặt từ khảo sát đến bàn giao.",
       content: `
@@ -49,7 +49,7 @@
       title: "Tại sao nên thuê dịch vụ chuyển kho bãi thay vì tự làm?",
       date: "05/03/2026",
       author: "Admin",
-      image: "../assets/images/hero-shipper.png",
+      image: "assets/images/hero-shipper.png",
       summary:
         "Di dời kho bãi đòi hỏi máy móc chuyên dụng như xe nâng, xe cẩu. Tự thực hiện có thể gây rủi ro lớn về an toàn và hư hại hàng hóa.",
       content: `
