@@ -1,0 +1,60 @@
+.container {
+    max-width: 600px;
+    margin: 120px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+textarea {
+    resize: none;
+}
+
+button {
+    margin-top: 25px;
+    width: 100%;
+    padding: 15px;
+    background: #ff9800;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+}
+@media (max-width: 600px) {
+    .container {
+        margin: 80px 15px;
+        padding: 20px;
+    }
+}
