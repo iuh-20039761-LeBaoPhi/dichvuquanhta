@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Kiến Thức Thuê Xe | Thuê Xe TP.HCM</title>
+    <meta name="description" content="Khám phá 30 bài viết hướng dẫn thuê xe tự lái, kinh nghiệm du lịch, an toàn lái xe từ chuyên gia Thuê Xe TP.HCM. Cập nhật mới nhất.">
+    <meta name="keywords" content="blog thuê xe, kinh nghiệm thuê xe, hướng dẫn lái xe, du lịch bằng xe thuê, thuê xe tự lái tphcm">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/blog.html">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Blog Kiến Thức Thuê Xe | Thuê Xe TP.HCM">
+    <meta property="og:description" content="30 bài viết chuyên sâu về kinh nghiệm thuê xe, du lịch, an toàn lái xe từ chuyên gia Thuê Xe.">
+    <meta property="og:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/camry.jpg">
+    <meta property="og:locale" content="vi_VN">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        /* ===== BLOG PAGE STYLES ===== */
+        :root {
+            --blog-primary: #0ea5e9;
+            --blog-secondary: #06b6d4;
+            --blog-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            --blog-light: #f0f9ff;
+            --blog-border: #e0f2fe;
+            --blog-text: #0f172a;
+            --blog-muted: #475569;
+            --blog-light-text: #94a3b8;
+            --blog-shadow: 0 2px 10px rgba(14,165,233,0.10);
+            --blog-shadow-hover: 0 10px 30px rgba(14,165,233,0.18);
+            --blog-radius: 14px;
+            --blog-transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        body { font-family: 'Poppins', sans-serif; }
+
+        /* Hero */
+        .blog-hero {
+            background: var(--blog-gradient);
+            padding: 100px 0 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .blog-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='5'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .blog-hero h1 { color: #fff; font-weight: 700; font-size: 2.4rem; position: relative; }
+        .blog-hero p { color: rgba(255,255,255,.85); font-size: 1.05rem; position: relative; }
+        .blog-hero .breadcrumb { background: none; justify-content: center; margin-bottom: 8px; }
+        .blog-hero .breadcrumb-item a { color: rgba(255,255,255,.8); text-decoration: none; }
+        .blog-hero .breadcrumb-item.active { color: #fff; }
+        .blog-hero .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,.5); }
+
+        /* Hero search */
+        .hero-search-wrap {
+            max-width: 520px;
+            margin: 20px auto 0;
+            display: flex;
+            background: #fff;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+            position: relative;
+        }
+        .hero-search-wrap input {
+            flex: 1;
+            border: none;
+            padding: 14px 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            color: var(--blog-text);
+        }
+        .hero-search-wrap button {
+            background: var(--blog-gradient);
+            border: none;
+            color: #fff;
+            padding: 0 24px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+        .hero-search-wrap button:hover { opacity: 0.88; }
+
+        /* Layout */
+        .blog-layout { padding: 50px 0 80px; background: var(--blog-light); }
+
+        /* Sidebar */
+        .blog-sidebar {
+            background: #fff;
+            border-radius: var(--blog-radius);
+            box-shadow: var(--blog-shadow);
+            overflow: hidden;
+            position: sticky;
+            top: 80px;
+        }
+        .sidebar-hdr {
+            background: var(--blog-gradient);
+            padding: 16px 18px;
+            color: #fff;
+        }
+        .sidebar-hdr h3 { font-size: 0.92rem; font-weight: 700; margin: 0; display: flex; align-items: center; justify-content: space-between; }
+        .sel-badge {
+            background: rgba(255,255,255,.22);
+            border-radius: 12px;
+            padding: 2px 9px;
+            font-size: 0.72rem;
+        }
+
+        /* Sidebar search */
+        .sb-search {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--blog-border);
+        }
+        .sb-search-inner { position: relative; }
+        .sb-search-inner i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--blog-light-text); font-size: 0.78rem; }
+        .sb-search-inner input {
+            width: 100%;
+            border: 1.5px solid var(--blog-border);
+            border-radius: 8px;
+            padding: 7px 10px 7px 30px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.82rem;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .sb-search-inner input:focus { border-color: var(--blog-primary); }
+
+        /* Category pills */
+        .sb-cats { padding: 10px 14px; border-bottom: 1px solid var(--blog-border); }
+        .sb-cats h5 { font-size: 0.72rem; font-weight: 700; color: var(--blog-light-text); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+        .cat-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 2px 2px;
+            border: 1.5px solid var(--blog-border);
+            background: #fff;
+            color: var(--blog-muted);
+            transition: all .2s;
+        }
+        .cat-pill:hover, .cat-pill.active {
+            background: var(--blog-gradient);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        /* Checklist */
+        .sb-checklist {
+            padding: 10px 14px;
+            max-height: 460px;
+            overflow-y: auto;
+        }
+        .sb-checklist::-webkit-scrollbar { width: 3px; }
+        .sb-checklist::-webkit-scrollbar-thumb { background: var(--blog-primary); border-radius: 2px; }
+        .sb-checklist h5 { font-size: 0.72rem; font-weight: 700; color: var(--blog-light-text); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+        .chk-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 7px 0;
+            border-bottom: 1px solid #f8fafc;
+            cursor: pointer;
+        }
+        .chk-item:last-child { border-bottom: none; }
+        .chk-item input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            min-width: 15px;
+            accent-color: var(--blog-primary);
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        .chk-item label {
+            font-size: 0.8rem;
+            color: var(--blog-text);
+            cursor: pointer;
+            line-height: 1.4;
+            transition: color .2s;
+        }
+        .chk-item:hover label, .chk-item.chk-active label { color: var(--blog-primary); }
+        .chk-item.chk-active label { font-weight: 600; }
+
+        /* Actions */
+        .sb-actions {
+            padding: 12px 14px;
+            border-top: 1px solid var(--blog-border);
+            display: flex;
+            gap: 8px;
+        }
+        .btn-chk-all, .btn-unchk-all {
+            flex: 1;
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all .2s;
+        }
+        .btn-chk-all { background: var(--blog-gradient); color: #fff; }
+        .btn-unchk-all { background: var(--blog-light); color: var(--blog-muted); }
+        .btn-chk-all:hover { opacity: .9; }
+        .btn-unchk-all:hover { background: var(--blog-border); }
+
+        /* Toolbar */
+        .blog-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .blog-count { color: var(--blog-muted); font-size: 0.875rem; }
+        .blog-count strong { color: var(--blog-primary); }
+        .sort-wrap select {
+            border: 1.5px solid var(--blog-border);
+            border-radius: 8px;
+            padding: 6px 30px 6px 12px;
+            font-size: 0.82rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            cursor: pointer;
+            color: var(--blog-text);
+            background: #fff;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230ea5e9' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        /* Article Cards */
+        .art-card {
+            background: #fff;
+            border-radius: var(--blog-radius);
+            box-shadow: var(--blog-shadow);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: var(--blog-transition);
+        }
+        .art-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--blog-shadow-hover);
+        }
+        .art-thumb {
+            position: relative;
+            height: 195px;
+            overflow: hidden;
+        }
+        .art-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s ease;
+        }
+        .art-card:hover .art-thumb img { transform: scale(1.06); }
+        .art-cat-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--blog-gradient);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .art-highlighted-mark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            color: var(--blog-primary);
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,.12);
+        }
+        .art-body {
+            padding: 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .art-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .art-meta span {
+            font-size: 0.74rem;
+            color: var(--blog-light-text);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .art-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--blog-text);
+            line-height: 1.4;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .art-desc {
+            font-size: 0.82rem;
+            color: var(--blog-muted);
+            line-height: 1.65;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+        .art-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+        .art-tag {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            background: var(--blog-light);
+            color: var(--blog-primary);
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .btn-read {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--blog-primary);
+            font-weight: 600;
+            font-size: 0.82rem;
+            text-decoration: none;
+            margin-top: auto;
+            transition: gap .2s;
+        }
+        .btn-read:hover { gap: 10px; color: #0284c7; }
+
+        /* Highlighted card */
+        .art-card.art-highlighted { border: 2px solid var(--blog-primary); }
+
+        /* No results */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--blog-light-text);
+            display: none;
+        }
+        .no-results i { font-size: 3rem; margin-bottom: 14px; color: #bae6fd; }
+
+        /* Pagination */
+        .blog-pager {
+            margin-top: 36px;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .pg-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1.5px solid var(--blog-border);
+            background: #fff;
+            color: var(--blog-text);
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pg-btn.pg-active, .pg-btn:hover {
+            background: var(--blog-gradient);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        @media (max-width: 991px) { .blog-sidebar { position: static; margin-bottom: 28px; } }
+        @media (max-width: 576px) { .blog-hero h1 { font-size: 1.7rem; } }
+    </style>
+</head>
+<body>
+
+<!-- Blog Hero -->
+<section class="blog-hero">
+    <div class="container" style="position:relative;">
+        <nav aria-label="breadcrumb" class="mb-2">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html"><i class="fas fa-home me-1"></i>Trang Chủ</a></li>
+                <li class="breadcrumb-item active">Blog</li>
+            </ol>
+        </nav>
+        <h1><i class="fas fa-newspaper me-2"></i>Blog Kiến Thức Thuê Xe</h1>
+        <p class="mt-1">30 bài viết kinh nghiệm, an toàn & du lịch từ chuyên gia thuê xe</p>
+        <div class="hero-search-wrap">
+            <input type="text" id="heroSearch" placeholder="Tìm bài viết... (VD: thuê xe Đà Lạt, bảo hiểm)">
+            <button onclick="doHeroSearch()"><i class="fas fa-search me-1"></i>Tìm</button>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Layout -->
+<section class="blog-layout">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- SIDEBAR -->
+            <div class="col-lg-3">
+                <div class="blog-sidebar">
+                    <div class="sidebar-hdr">
+                        <h3>
+                            <span><i class="fas fa-list-ul me-2"></i>Danh Sách Bài Viết</span>
+                            <span class="sel-badge" id="selCount">0 đã chọn</span>
+                        </h3>
+                    </div>
+
+                    <div class="sb-search">
+                        <div class="sb-search-inner">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="sbSearch" placeholder="Tìm trong danh sách..." oninput="renderChecklist()">
+                        </div>
+                    </div>
+
+                    <div class="sb-cats">
+                        <h5>Chủ Đề</h5>
+                        <div id="catPills">
+                            <span class="cat-pill active" onclick="setCat('all',this)">Tất cả</span>
+                            <span class="cat-pill" onclick="setCat('kinh-nghiem',this)">Kinh Nghiệm</span>
+                            <span class="cat-pill" onclick="setCat('kien-thuc',this)">Kiến Thức</span>
+                            <span class="cat-pill" onclick="setCat('gia-ca',this)">Giá Cả</span>
+                            <span class="cat-pill" onclick="setCat('an-toan',this)">An Toàn</span>
+                            <span class="cat-pill" onclick="setCat('meo-hay',this)">Mẹo Hay</span>
+                            <span class="cat-pill" onclick="setCat('du-lich',this)">Du Lịch</span>
+                        </div>
+                    </div>
+
+                    <div class="sb-checklist">
+                        <h5>Tích Chọn Bài Viết</h5>
+                        <div id="chkList"></div>
+                    </div>
+
+                    <div class="sb-actions">
+                        <button class="btn-chk-all" onclick="checkAll()"><i class="fas fa-check-double me-1"></i>Chọn Tất Cả</button>
+                        <button class="btn-unchk-all" onclick="uncheckAll()"><i class="fas fa-times me-1"></i>Bỏ Chọn</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ARTICLES -->
+            <div class="col-lg-9">
+                <div class="blog-toolbar">
+                    <div class="blog-count">
+                        Hiển thị <strong id="showCount">0</strong> / <strong>30</strong> bài viết
+                        <span id="selInfo" style="display:none;">&nbsp;|&nbsp;<strong style="color:var(--blog-primary)" id="selInfoTxt"></strong></span>
+                    </div>
+                    <div class="sort-wrap">
+                        <select id="sortSel" onchange="doSort(this.value)">
+                            <option value="default">Mặc định</option>
+                            <option value="newest">Mới nhất</option>
+                            <option value="oldest">Cũ nhất</option>
+                            <option value="az">A → Z</option>
+                            <option value="za">Z → A</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3" id="artGrid"></div>
+                <div class="no-results" id="noRes">
+                    <i class="fas fa-car-crash"></i>
+                    <h5>Không tìm thấy bài viết</h5>
+                    <p>Thử từ khóa khác hoặc bỏ bộ lọc.</p>
+                    <button onclick="resetAll()" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-family:Poppins,sans-serif;cursor:pointer;">Xem tất cả</button>
+                </div>
+                <div class="blog-pager" id="pager"></div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/blog-data.js"></script>
+<script src="assets/js/load_template.js"></script>
+<script>
+// Load header/footer
+window.PAGE_SEO = {
+    title: 'Blog Kiến Thức Thuê Xe | Thuê Xe TP.HCM',
+    desc: '30 bài viết kinh nghiệm thuê xe, an toàn lái xe và du lịch từ chuyên gia Thuê Xe TP.HCM.',
+    keys: 'blog thuê xe, kinh nghiệm thuê xe, hướng dẫn lái xe, du lịch bằng xe thuê',
+    url: 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/blog.html',
+    navPage: 'blog'
+};
+loadHeader();
+loadFooter();
+
+// ===== STATE =====
+const S = {
+    cat: 'all',
+    checked: new Set(),
+    search: '',
+    sort: 'default',
+    page: 1,
+    perPage: 9
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (!window.BLOG_DATA) {
+        document.getElementById('artGrid').innerHTML = '<div class="col-12 text-center py-5 text-muted">Đang tải dữ liệu bài viết...</div>';
+        return;
+    }
+    renderChecklist();
+    renderArticles();
+});
+
+// Checklist
+function renderChecklist() {
+    const q = document.getElementById('sbSearch').value.toLowerCase();
+    const items = window.BLOG_DATA.filter(a =>
+        (S.cat === 'all' || a.category === S.cat) &&
+        (!q || a.title.toLowerCase().includes(q))
+    );
+    document.getElementById('chkList').innerHTML = items.map(a => `
+        <div class="chk-item ${S.checked.has(a.id) ? 'chk-active' : ''}" id="ci${a.id}">
+            <input type="checkbox" id="cb${a.id}" ${S.checked.has(a.id) ? 'checked' : ''}
+                onchange="toggleChk(${a.id},this.checked)">
+            <label for="cb${a.id}">${a.id}. ${a.title}</label>
+        </div>`).join('');
+    updateSelCount();
+}
+
+function toggleChk(id, on) {
+    on ? S.checked.add(id) : S.checked.delete(id);
+    document.getElementById('ci'+id)?.classList.toggle('chk-active', on);
+    updateSelCount();
+    S.page = 1;
+    renderArticles();
+}
+
+function checkAll() {
+    getVisibleIds().forEach(id => S.checked.add(id));
+    renderChecklist();
+    renderArticles();
+}
+function uncheckAll() {
+    S.checked.clear();
+    renderChecklist();
+    renderArticles();
+}
+
+function getVisibleIds() {
+    const q = document.getElementById('sbSearch').value.toLowerCase();
+    return window.BLOG_DATA
+        .filter(a => (S.cat === 'all' || a.category === S.cat) && (!q || a.title.toLowerCase().includes(q)))
+        .map(a => a.id);
+}
+
+function updateSelCount() {
+    const n = S.checked.size;
+    document.getElementById('selCount').textContent = n + ' đã chọn';
+    const info = document.getElementById('selInfo');
+    if (n > 0) { info.style.display = 'inline'; document.getElementById('selInfoTxt').textContent = n + ' bài được lọc'; }
+    else info.style.display = 'none';
+}
+
+// Category
+function setCat(cat, el) {
+    S.cat = cat;
+    S.page = 1;
+    document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderChecklist();
+    renderArticles();
+}
+
+// Hero search
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('heroSearch').addEventListener('keydown', e => { if (e.key==='Enter') doHeroSearch(); });
+});
+function doHeroSearch() {
+    const v = document.getElementById('heroSearch').value.trim();
+    S.search = v.toLowerCase();
+    S.page = 1;
+    document.getElementById('sbSearch').value = v;
+    renderChecklist();
+    renderArticles();
+}
+
+// Sort
+function doSort(v) { S.sort = v; S.page = 1; renderArticles(); }
+function getSorted(arr) {
+    const c = [...arr];
+    if (S.sort === 'newest') return c.sort((a,b) => new Date(b.date)-new Date(a.date));
+    if (S.sort === 'oldest') return c.sort((a,b) => new Date(a.date)-new Date(b.date));
+    if (S.sort === 'az') return c.sort((a,b) => a.title.localeCompare(b.title,'vi'));
+    if (S.sort === 'za') return c.sort((a,b) => b.title.localeCompare(a.title,'vi'));
+    return c;
+}
+
+// Reset
+function resetAll() {
+    S.cat='all'; S.checked.clear(); S.search=''; S.sort='default'; S.page=1;
+    document.getElementById('heroSearch').value='';
+    document.getElementById('sbSearch').value='';
+    document.getElementById('sortSel').value='default';
+    document.querySelectorAll('.cat-pill').forEach((b,i) => b.classList.toggle('active',i===0));
+    renderChecklist();
+    renderArticles();
+}
+
+// Render articles
+function renderArticles() {
+    if (!window.BLOG_DATA) return;
+    let list = window.BLOG_DATA.filter(a => {
+        const catOk = S.cat==='all' || a.category===S.cat;
+        const srcOk = !S.search || a.title.toLowerCase().includes(S.search) || a.description.toLowerCase().includes(S.search) || (a.tags||[]).some(t=>t.toLowerCase().includes(S.search));
+        const chkOk = S.checked.size===0 || S.checked.has(a.id);
+        return catOk && srcOk && chkOk;
+    });
+    list = getSorted(list);
+    const total = list.length;
+    const pages = Math.ceil(total/S.perPage) || 1;
+    if (S.page > pages) S.page = pages;
+    const paged = list.slice((S.page-1)*S.perPage, S.page*S.perPage);
+
+    document.getElementById('showCount').textContent = total;
+    const grid = document.getElementById('artGrid');
+    const noRes = document.getElementById('noRes');
+
+    if (!paged.length) {
+        grid.innerHTML = '';
+        noRes.style.display = 'block';
+        document.getElementById('pager').innerHTML = '';
+        return;
+    }
+    noRes.style.display = 'none';
+
+    grid.innerHTML = paged.map(a => {
+        const hi = S.checked.has(a.id);
+        const dt = new Date(a.date).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});
+        return `<div class="col-md-6 col-xl-4">
+            <div class="art-card ${hi?'art-highlighted':''}">
+                <div class="art-thumb">
+                    <img src="${a.image}" alt="${a.title}" loading="lazy" onerror="this.src='assets/images/cars/default.jpg'">
+                    <span class="art-cat-badge">${a.categoryLabel}</span>
+                    ${hi?'<span class="art-highlighted-mark"><i class="fas fa-check"></i></span>':''}
+                </div>
+                <div class="art-body">
+                    <div class="art-meta">
+                        <span><i class="fas fa-calendar-alt"></i>${dt}</span>
+                        <span><i class="fas fa-clock"></i>${a.readTime}</span>
+                    </div>
+                    <h3 class="art-title">${a.title}</h3>
+                    <p class="art-desc">${a.description}</p>
+                    <div class="art-tags">${(a.tags||[]).slice(0,3).map(t=>`<span class="art-tag">${t}</span>`).join('')}</div>
+                    <a href="blog-detail.html?slug=${a.slug}" class="btn-read">Đọc bài viết <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+
+    renderPager(pages);
+}
+
+function renderPager(pages) {
+    const el = document.getElementById('pager');
+    if (pages<=1) { el.innerHTML=''; return; }
+    let h = '';
+    if (S.page>1) h+=`<button class="pg-btn" onclick="goPage(${S.page-1})"><i class="fas fa-chevron-left"></i></button>`;
+    for (let i=1;i<=pages;i++) h+=`<button class="pg-btn ${i===S.page?'pg-active':''}" onclick="goPage(${i})">${i}</button>`;
+    if (S.page<pages) h+=`<button class="pg-btn" onclick="goPage(${S.page+1})"><i class="fas fa-chevron-right"></i></button>`;
+    el.innerHTML = h;
+}
+function goPage(p) {
+    S.page = p;
+    renderArticles();
+    window.scrollTo({top: document.querySelector('.blog-layout').offsetTop-70, behavior:'smooth'});
+}
+</script>
+</body>
+</html>

@@ -83,11 +83,15 @@ function loadFooter() {
 }
 
 function highlightActiveNav() {
-    let page = new URLSearchParams(window.location.search).get('page');
+    let page = window.PAGE_SEO?.navPage;
+    if (!page) page = new URLSearchParams(window.location.search).get('page');
     if (!page) {
-        const m = window.location.pathname.match(/\/views\/pages\/([^/.]+)\.html/);
+        let m = window.location.pathname.match(/\/views\/pages\/([^/.]+)\.html/);
+        if (!m) m = window.location.pathname.match(/\/([^/.]+)\.html$/);
         page = m ? m[1] : 'home';
     }
+    // blog-detail should highlight blog nav
+    if (page === 'blog-detail') page = 'blog';
     document.getElementById(`nav-${page}`)?.classList.add('active');
 }
 
@@ -110,6 +114,8 @@ function injectBackBar() {
         booking_success: 'Đặt xe thành công',
         track_order:     'Theo dõi đơn',
         terms:           'Điều khoản',
+        blog:            'Blog',
+        'blog-detail':   'Bài viết',
     };
 
     const PARENT = {
