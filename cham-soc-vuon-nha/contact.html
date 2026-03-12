@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Liên hệ | Garden Service</title>
+<link rel="icon " href="assets\images\logo.jpg" type="image/x-icon">
+<style>
+
+:root{
+--green:#1f6f43;
+--green-dark:#14532d;
+--bg:#f4f7f4;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:var(--bg);
+color:#333;
+margin-top:90px;
+}
+
+/* BANNER */
+
+.banner{
+height:400px;
+background:url("assets/images/tuoicay.jpg") center/cover no-repeat;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+color:white;
+}
+
+.banner::before{
+content:"";
+position:absolute;
+inset:0;
+background:rgba(0,0,0,0.55);
+}
+
+.banner-content{
+position:relative;
+}
+
+.banner h1{
+font-size:46px;
+margin-bottom:10px;
+}
+
+.banner p{
+font-size:20px;
+}
+
+/* CONTAINER */
+
+.container{
+width:85%;
+margin:90px auto;
+}
+
+/* CONTACT GRID */
+
+.contact-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:60px;
+}
+
+/* FORM */
+
+.form-box{
+background:white;
+padding:40px;
+border-radius:20px;
+box-shadow:0 12px 30px rgba(0,0,0,0.08);
+}
+
+.form-box h3{
+font-size:26px;
+margin-bottom:25px;
+color:var(--green);
+}
+
+.form-box input,
+.form-box textarea{
+width:100%;
+padding:14px;
+margin-bottom:18px;
+border-radius:10px;
+border:1px solid #ddd;
+font-size:16px;
+}
+
+.form-box button{
+width:100%;
+padding:14px;
+background:var(--green);
+color:white;
+border:none;
+border-radius:10px;
+font-size:17px;
+font-weight:600;
+cursor:pointer;
+}
+
+.form-box button:hover{
+background:var(--green-dark);
+}
+
+/* OFFICE */
+
+.office-box{
+background:white;
+padding:40px;
+border-radius:20px;
+box-shadow:0 12px 30px rgba(0,0,0,0.08);
+}
+
+.office-image{
+width:100%;
+height:230px;
+border-radius:18px;
+overflow:hidden;
+margin-bottom:20px;
+}
+
+.office-image img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.office-box h3{
+font-size:24px;
+margin-bottom:18px;
+color:var(--green);
+}
+
+.office-box p{
+margin-bottom:10px;
+font-size:16px;
+}
+
+/* MAP */
+
+.map-section{
+margin-top:100px;
+}
+
+.map-title{
+text-align:center;
+font-size:30px;
+color:var(--green);
+margin-bottom:25px;
+}
+
+.office-map{
+border-radius:20px;
+overflow:hidden;
+box-shadow:0 15px 35px rgba(0,0,0,0.1);
+}
+
+/* SUPPORT */
+
+.support{
+text-align:center;
+margin-top:110px;
+}
+
+.support h2{
+font-size:30px;
+margin-bottom:40px;
+color:var(--green);
+}
+
+.support-grid{
+display:flex;
+justify-content:center;
+gap:50px;
+flex-wrap:wrap;
+}
+
+.support-card{
+background:white;
+width:260px;
+padding:35px 20px;
+border-radius:20px;
+box-shadow:0 12px 30px rgba(0,0,0,0.07);
+transition:0.3s;
+}
+
+.support-card:hover{
+transform:translateY(-6px);
+}
+
+.support-icon{
+font-size:40px;
+margin-bottom:10px;
+}
+
+.support-card h4{
+font-size:20px;
+margin-bottom:8px;
+color:var(--green);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.contact-grid{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div id="header"></div>
+
+
+<section class="banner">
+
+<div class="banner-content">
+<h1>Liên hệ với Chăm Sóc Vườn Nhà</h1>
+<p>Chăm sóc mảng xanh – Nâng tầm không gian sống</p>
+</div>
+
+</section>
+
+
+<div class="container">
+
+<div class="contact-grid">
+
+<div class="form-box">
+
+<h3>Gửi yêu cầu tư vấn</h3>
+
+<form>
+
+<input type="text" placeholder="Họ và tên" required>
+<input type="email" placeholder="Email" required>
+<input type="text" placeholder="Số điện thoại" required>
+<input type="text" placeholder="Tiêu đề">
+<textarea rows="5" placeholder="Nội dung yêu cầu"></textarea>
+
+<button type="submit">Gửi thông tin</button>
+
+</form>
+
+</div>
+
+
+<div class="office-box">
+
+<div class="office-image">
+<img src="assets/images/vanphong.jpg">
+</div>
+
+<h3>Văn phòng Chăm Sóc Vườn Nhà</h3>
+
+<p><strong>📍 Trụ sở:</strong> Tòa Nhà SBI, Lô 6B, Đường Số 3
+Công Viên Phần Mềm Quang Trung
+Phường Tân Chánh Hiệp, Quận 12
+TP. Hồ Chí Minh, Việt Nam</p>
+<p><strong>📞 Điện thoại:</strong> 0775 472 347</p>
+<p><strong>📧 Email:</strong> dichvuquanhta.vn@gmail.com</p>
+<p><strong>⏰ Thời gian:</strong> 7:00 - 19:00</p>
+
+</div>
+
+</div>
+
+
+<div class="map-section">
+
+<h2 class="map-title">Bản đồ đến văn phòng</h2>
+
+<div class="office-map">
+
+<iframe 
+src="https://www.google.com/maps?q=Ho+Chi+Minh+City&output=embed"
+width="100%" 
+height="380"
+style="border:0;"
+loading="lazy">
+</iframe>
+
+</div>
+
+</div>
+
+
+<div class="support">
+
+<h2>Tổng đài hỗ trợ</h2>
+
+<div class="support-grid">
+
+<div class="support-card">
+<div class="support-icon">📧</div>
+<h4>Email</h4>
+<p>dichvuquanhta.vn@gmail.com</p>
+</div>
+
+<div class="support-card">
+<div class="support-icon">📞</div>
+<h4>Hotline</h4>
+<p>0775 472 347</p>
+</div>
+
+<div class="support-card">
+<div class="support-icon">🌐</div>
+<h4>Website</h4>
+<p>gardenservice.vn</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- FOOTER -->
+<div id="footer"></div>
+
+
+<script>
+
+/* LOAD HEADER */
+
+fetch("header.html")
+.then(res=>res.text())
+.then(data=>{
+
+document.getElementById("header").innerHTML=data;
+
+const current=location.pathname.split("/").pop();
+
+document.querySelectorAll(".main-nav a").forEach(link=>{
+if(link.getAttribute("href")===current){
+link.classList.add("active");
+}
+});
+
+});
+
+
+/* LOAD FOOTER */
+
+fetch("footer.html")
+.then(res=>res.text())
+.then(data=>{
+document.getElementById("footer").innerHTML=data;
+});
+
+</script>
+
+</body>
+</html>

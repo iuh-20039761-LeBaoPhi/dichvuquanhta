@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tin tức làm vườn | Chăm Sóc Vườn Nhà</title>
+
+<meta name="description" content="Tin tức làm vườn, kinh nghiệm chăm sóc cây, kỹ thuật trồng cây và cải tạo khu vườn.">
+
+<link rel="icon" href="assets/images/logo.jpg">
+
+<style>
+
+/* RESET */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',Arial,sans-serif;
+}
+
+body{
+background:#f6f8f7;
+color:#333;
+margin-top:90px;
+}
+
+/* HERO */
+
+.hero{
+height:360px;
+background:url("assets/images/vesinhvacaitao.jpg") center/cover no-repeat;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+color:white;
+position:relative;
+}
+
+.hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:rgba(0,0,0,0.55);
+}
+
+.hero-content{
+position:relative;
+}
+
+.hero h1{
+font-size:48px;
+margin-bottom:10px;
+font-weight:700;
+}
+
+.hero p{
+font-size:18px;
+opacity:0.9;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:1250px;
+margin:auto;
+padding:0 20px;
+}
+
+/* BREADCRUMB */
+
+.breadcrumb{
+margin:30px 0;
+font-size:14px;
+}
+
+.breadcrumb a{
+text-decoration:none;
+color:#1f6f43;
+}
+
+/* BLOG LAYOUT */
+
+.blog-container{
+display:grid;
+grid-template-columns:3fr 1fr;
+gap:40px;
+}
+
+/* POSTS GRID */
+
+.posts{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(330px,1fr));
+gap:30px;
+}
+
+/* CARD */
+
+.post{
+background:white;
+border-radius:16px;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+transition:0.3s;
+}
+
+.post:hover{
+transform:translateY(-6px);
+box-shadow:0 18px 40px rgba(0,0,0,0.12);
+}
+
+/* IMAGE */
+
+.post img{
+width:100%;
+height:220px;
+object-fit:cover;
+}
+
+/* CONTENT */
+
+.post-content{
+padding:22px;
+}
+
+.post-content h2{
+font-size:21px;
+margin-bottom:8px;
+line-height:1.4;
+}
+
+.post-content h2 a{
+text-decoration:none;
+color:#1f6f43;
+}
+
+.post-content h2 a:hover{
+text-decoration:underline;
+}
+
+/* DATE */
+
+.date{
+font-size:13px;
+color:#888;
+margin-bottom:10px;
+}
+
+/* DESCRIPTION */
+
+.desc{
+font-size:15px;
+color:#555;
+line-height:1.6;
+
+display:-webkit-box;
+-webkit-line-clamp:2;
+-webkit-box-orient:vertical;
+overflow:hidden;
+}
+
+/* BUTTON */
+
+.readmore{
+
+display:inline-block;
+
+margin-top:18px;
+
+padding:10px 20px;
+
+font-weight:600;
+
+border-radius:30px;
+
+border:2px solid #1f6f43;
+
+color:#1f6f43;
+
+text-decoration:none;
+
+transition:0.3s;
+
+}
+
+.readmore:hover{
+background:#1f6f43;
+color:white;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+background:white;
+padding:25px;
+border-radius:16px;
+box-shadow:0 8px 20px rgba(0,0,0,0.05);
+height:fit-content;
+}
+
+.sidebar h3{
+margin-bottom:16px;
+color:#1f6f43;
+border-bottom:2px solid #eee;
+padding-bottom:6px;
+}
+
+.sidebar ul{
+list-style:none;
+}
+
+.sidebar li{
+margin-bottom:12px;
+}
+
+.sidebar a{
+text-decoration:none;
+color:#444;
+font-size:15px;
+}
+
+.sidebar a:hover{
+color:#1f6f43;
+}
+
+/* PAGINATION */
+
+.pagination{
+margin-top:50px;
+text-align:center;
+}
+
+.pagination button{
+
+width:40px;
+height:40px;
+
+margin:5px;
+
+border:none;
+
+background:#e5e7eb;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-weight:600;
+
+}
+
+.pagination button:hover{
+background:#1f6f43;
+color:white;
+}
+
+.pagination .active{
+background:#1f6f43;
+color:white;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.blog-container{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div id="header"></div>
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="hero-content">
+<h1>Tin Tức Làm Vườn</h1>
+<p>Kiến thức chăm sóc cây và cải tạo khu vườn</p>
+</div>
+
+</section>
+
+<div class="container">
+
+<div class="breadcrumb">
+<a href="index.html">Trang chủ</a> > Tin tức
+</div>
+
+<section class="blog-container">
+
+<div>
+
+<div class="posts" id="posts"></div>
+
+<div class="pagination" id="pagination"></div>
+
+</div>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+<h3>Tin mới</h3>
+
+<ul id="latest"></ul>
+
+</aside>
+
+</section>
+
+</div>
+
+<!-- FOOTER -->
+
+<div id="footer"></div>
+
+<script>
+
+/* LOAD HEADER */
+
+fetch("header.html")
+.then(res=>res.text())
+.then(data=>{
+
+document.getElementById("header").innerHTML=data
+
+const current=location.pathname.split("/").pop()
+
+document.querySelectorAll(".main-nav a").forEach(link=>{
+if(link.getAttribute("href")===current){
+link.classList.add("active")
+}
+})
+
+})
+
+/* LOAD FOOTER */
+
+fetch("footer.html")
+.then(res=>res.text())
+.then(data=>{
+document.getElementById("footer").innerHTML=data
+})
+
+/* BLOG DATA */
+
+let postsPerPage=6
+let currentPage=1
+let news=[]
+
+fetch("news.json")
+.then(res=>res.json())
+.then(data=>{
+news=data.news
+render()
+})
+
+function render(){
+
+const start=(currentPage-1)*postsPerPage
+const end=start+postsPerPage
+
+const pagePosts=news.slice(start,end)
+
+const container=document.getElementById("posts")
+
+container.innerHTML=""
+
+pagePosts.forEach(post=>{
+
+const text=post.content.replace(/<[^>]*>/g,"").substring(0,150)
+
+container.innerHTML+=`
+
+<article class="post">
+
+<img src="assets/images/${post.image}" alt="${post.title}">
+
+<div class="post-content">
+
+<h2>
+<a href="news_detail.html?slug=${post.slug}">
+${post.title}
+</a>
+</h2>
+
+<div class="date">
+${new Date(post.date).toLocaleDateString('vi-VN')}
+</div>
+
+<p class="desc">${text}</p>
+
+<a class="readmore" href="news_detail.html?slug=${post.slug}">
+Đọc thêm →
+</a>
+
+</div>
+
+</article>
+
+`
+
+})
+
+renderPagination()
+renderLatest()
+
+}
+
+/* PAGINATION */
+
+function renderPagination(){
+
+const totalPages=Math.ceil(news.length/postsPerPage)
+
+const p=document.getElementById("pagination")
+
+p.innerHTML=""
+
+for(let i=1;i<=totalPages;i++){
+
+p.innerHTML+=`
+<button class="${i===currentPage?'active':''}" onclick="go(${i})">${i}</button>
+`
+
+}
+
+}
+
+function go(page){
+
+currentPage=page
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+})
+
+render()
+
+}
+
+/* SIDEBAR */
+
+function renderLatest(){
+
+const latest=news.slice(0,5)
+
+const ul=document.getElementById("latest")
+
+ul.innerHTML=""
+
+latest.forEach(post=>{
+
+ul.innerHTML+=`
+
+<li>
+<a href="news_detail.html?slug=${post.slug}">
+${post.title}
+</a>
+</li>
+
+`
+
+})
+
+}
+
+</script>
+
+</body>
+</html>

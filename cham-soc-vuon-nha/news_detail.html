@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Chi tiết tin tức | Chăm Sóc Vườn Nhà</title>
+<meta name="description" content="Kiến thức chăm sóc cây và kinh nghiệm làm vườn.">
+
+<link rel="icon" href="assets/images/logo.jpg">
+
+<style>
+
+/* RESET */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',Arial,sans-serif;
+}
+
+body{
+background:#f5f7f6;
+color:#333;
+padding-top:90px;
+}
+
+/* HERO */
+
+.hero{
+height:320px;
+background:url("assets/images/vesinhvacaitao.jpg") center/cover no-repeat;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+color:white;
+position:relative;
+}
+
+.hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:rgba(0,0,0,0.55);
+}
+
+.hero-content{
+position:relative;
+}
+
+.hero h1{
+font-size:42px;
+margin-bottom:10px;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:1250px;
+margin:auto;
+padding:0 20px;
+}
+
+/* BREADCRUMB */
+
+.breadcrumb{
+margin:30px 0;
+font-size:14px;
+}
+
+.breadcrumb a{
+text-decoration:none;
+color:#1f6f43;
+}
+
+/* LAYOUT */
+
+.layout{
+display:grid;
+grid-template-columns:3fr 1fr;
+gap:40px;
+}
+
+/* ARTICLE */
+
+.article{
+background:white;
+padding:40px;
+border-radius:14px;
+box-shadow:0 8px 25px rgba(0,0,0,0.08);
+}
+
+.article h2{
+font-size:34px;
+margin-bottom:10px;
+color:#1f6f43;
+}
+
+.date{
+color:#888;
+margin-bottom:20px;
+font-size:14px;
+}
+
+.article img{
+width:100%;
+border-radius:10px;
+margin:20px 0;
+}
+
+/* CONTENT */
+
+.content{
+font-size:17px;
+line-height:1.8;
+color:#444;
+}
+
+.content br{
+line-height:1.2;
+}
+
+/* BACK BUTTON */
+
+.back-btn{
+display:inline-block;
+margin-bottom:25px;
+padding:10px 18px;
+background:#1f6f43;
+color:white;
+border-radius:30px;
+text-decoration:none;
+font-weight:600;
+transition:0.3s;
+}
+
+.back-btn:hover{
+background:#14532d;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+background:white;
+padding:25px;
+border-radius:14px;
+height:fit-content;
+box-shadow:0 6px 18px rgba(0,0,0,0.06);
+}
+
+.sidebar h3{
+margin-bottom:20px;
+color:#1f6f43;
+}
+
+.sidebar ul{
+list-style:none;
+}
+
+.sidebar li{
+margin-bottom:12px;
+}
+
+.sidebar a{
+text-decoration:none;
+color:#333;
+}
+
+.sidebar a:hover{
+color:#1f6f43;
+}
+
+/* RELATED */
+
+.related-section{
+margin-top:60px;
+}
+
+.related-section h3{
+margin-bottom:25px;
+font-size:24px;
+}
+
+.related-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+}
+
+.related-card{
+background:white;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
+transition:0.3s;
+}
+
+.related-card:hover{
+transform:translateY(-5px);
+box-shadow:0 14px 30px rgba(0,0,0,0.12);
+}
+
+.related-card img{
+width:100%;
+height:160px;
+object-fit:cover;
+}
+
+.related-card h4{
+padding:15px;
+font-size:16px;
+}
+
+.related-card a{
+text-decoration:none;
+color:#1f6f43;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.layout{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<div id="header"></div>
+
+<!-- HERO -->
+
+<section class="hero">
+<div class="hero-content">
+<h1>Tin Tức Làm Vườn</h1>
+<p>Kiến thức và kinh nghiệm chăm sóc cây</p>
+</div>
+</section>
+
+<div class="container">
+
+<!-- BREADCRUMB -->
+
+<div class="breadcrumb">
+<a href="indexs.html">Trang chủ</a> >
+<a href="news.html">Tin tức</a> >
+Chi tiết bài viết
+</div>
+
+<div class="layout">
+
+<!-- ARTICLE -->
+
+<article class="article" id="article"></article>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+<h3>Tin mới</h3>
+
+<ul id="latest"></ul>
+
+</aside>
+
+</div>
+
+<!-- RELATED -->
+
+<section class="related-section">
+
+<h3>Bài viết liên quan</h3>
+
+<div class="related-grid" id="related"></div>
+
+</section>
+
+</div>
+
+<!-- FOOTER -->
+
+<div id="footer"></div>
+
+<script>
+
+/* LOAD HEADER */
+
+fetch("header.html")
+.then(res=>res.text())
+.then(data=>{
+
+document.getElementById("header").innerHTML=data
+
+const current=location.pathname.split("/").pop()
+
+document.querySelectorAll(".main-nav a").forEach(link=>{
+if(link.getAttribute("href")===current){
+link.classList.add("active")
+}
+})
+
+})
+
+/* LOAD FOOTER */
+
+fetch("footer.html")
+.then(res=>res.text())
+.then(data=>{
+document.getElementById("footer").innerHTML=data
+})
+
+/* GET SLUG */
+
+const params=new URLSearchParams(window.location.search)
+const slug=params.get("slug")
+
+fetch("news.json")
+.then(res=>res.json())
+.then(data=>{
+
+const news=data.news
+const post=news.find(n=>n.slug===slug)
+
+/* xử lý xuống dòng đẹp */
+
+const content = post.content
+.replace(/\n/g,"<br>")
+.replace(/([0-9]+\.\s)/g,"<br><strong>$1</strong>")
+
+document.getElementById("article").innerHTML=`
+
+<a class="back-btn" href="news.html">← Quay lại trang Tin tức</a>
+
+<h2>${post.title}</h2>
+
+<div class="date">
+${new Date(post.date).toLocaleDateString('vi-VN')}
+</div>
+
+<img src="assets/images/${post.image}">
+
+<div class="content">
+${content}
+</div>
+
+`
+
+/* LATEST */
+
+const latest=document.getElementById("latest")
+
+news.slice(0,5).forEach(n=>{
+latest.innerHTML+=`
+<li>
+<a href="news_detail.html?slug=${n.slug}">
+${n.title}
+</a>
+</li>
+`
+})
+
+/* RELATED */
+
+const related=document.getElementById("related")
+
+news.filter(n=>n.slug!==slug).slice(0,3).forEach(n=>{
+related.innerHTML+=`
+
+<div class="related-card">
+<a href="news_detail.html?slug=${n.slug}">
+<img src="assets/images/${n.image}">
+<h4>${n.title}</h4>
+</a>
+</div>
+
+`
+})
+
+})
+
+</script>
+
+</body>
+</html>
