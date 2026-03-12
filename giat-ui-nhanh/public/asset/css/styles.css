@@ -1124,7 +1124,11 @@ footer {
   .hero p {
     font-size: 1rem;
   }
-
+  .hero-wave {
+    left: 21px;
+    width: 90%;
+    bottom: -38px;
+  }
   .section-header h2 {
     font-size: 1.7rem;
   }
