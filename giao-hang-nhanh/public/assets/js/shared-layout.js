@@ -32,11 +32,38 @@
     const host = document.getElementById(hostId);
     if (!host) return null;
 
-    const html = loadPartial(`${includesBase}${fileName}`);
+    let html = loadPartial(`${includesBase}${fileName}`);
     if (!html) return null;
+
+    // FIX: Tự động điều chỉnh đường dẫn ảnh (src) nếu đang ở trong thư mục public/
+    // Chuyển "./public/assets/..." thành "assets/..."
+    if (inPublicDir) {
+      html = html.replace(/(src=['"])(?:\.\/)?public\//g, "$1");
+    }
 
     host.innerHTML = html;
     return host;
+  }
+
+  function buildServiceLinkMap(basePrefix) {
+    const services = {
+      "giao-hang-nhanh": "giao-hang-nhanh/",
+      "chuyen-don": "dich-vu-chuyen-don/",
+      "lau-don": "vesinhcare/demo/",
+      "me-be": "csmvb/",
+      "vuon-ray": "web-cham-soc-vuon-nha/",
+      "giat-ui": "giat-ui-nhanh/",
+      "tho-nha": "tho-nha/",
+      "nguoi-gia": "csng/",
+      "benh-nhan": "csbn/",
+      "thue-xe": "thue-xe/",
+      "sua-xe": "sua-xe-luu-dong/",
+    };
+    const serviceLinks = {};
+    for (const key in services) {
+      serviceLinks[`service-${key}`] = `${basePrefix}${services[key]}`;
+    }
+    return serviceLinks;
   }
 
   function buildLinkMap() {
@@ -46,14 +73,18 @@
         ? "../index.html#quick-quote"
         : "#quick-quote";
 
+    const serviceLinkPrefix = inPublicDir ? "../../" : "../";
+    const serviceLinks = buildServiceLinkMap(serviceLinkPrefix);
+
     if (inPublicDir) {
-      return {
+      const mainLinks = {
         brand: "../index.html",
         home: "../index.html#hero",
         about: "../index.html#hero",
         services: "../index.html#services",
         "delivery-services": "../index.html",
         pricing: pricingLink,
+        news: "tin-tuc.html",
         tracking: "../index.html#home-tracking",
         contact: "../index.html#contact",
         booking: "../index.html#contact",
@@ -64,14 +95,16 @@
         privacy: "chinh-sach-bao-mat.html",
         terms: "dieu-khoan-su-dung.html",
       };
+      return { ...mainLinks, ...serviceLinks };
     }
 
-    return {
+    const rootLinks = {
       brand: "index.html",
       home: "#hero",
       about: "#hero",
       services: "#services",
       "delivery-services": "index.html",
+      news: "public/tin-tuc.html",
       pricing: pricingLink,
       tracking: "#home-tracking",
       contact: "#contact",
@@ -83,6 +116,7 @@
       privacy: "public/chinh-sach-bao-mat.html",
       terms: "public/dieu-khoan-su-dung.html",
     };
+    return { ...rootLinks, ...serviceLinks };
   }
 
   function applyLinks(root, linkMap) {
@@ -147,6 +181,23 @@
     }
   }
 
+  function applyFavicon() {
+    const faviconPath = inPublicDir
+      ? "assets/images/favicon.ico"
+      : "public/assets/images/favicon.ico";
+
+    let faviconLink = document.querySelector("link[rel='icon']");
+    if (faviconLink) {
+      faviconLink.href = faviconPath;
+    } else {
+      faviconLink = document.createElement("link");
+      faviconLink.rel = "icon";
+      faviconLink.type = "image/x-icon";
+      faviconLink.href = faviconPath;
+      document.head.appendChild(faviconLink);
+    }
+  }
+
   const headerHost = injectPartial("site-header", "header.html");
   const footerHost = injectPartial("site-footer", "footer.html");
   const linkMap = buildLinkMap();
@@ -154,6 +205,7 @@
   if (headerHost) applyLinks(headerHost, linkMap);
   if (headerHost) applyActiveNav(headerHost);
   if (footerHost) applyLinks(footerHost, linkMap);
+  applyFavicon();
 
   window.addEventListener("hashchange", function () {
     if (headerHost) applyActiveNav(headerHost);
