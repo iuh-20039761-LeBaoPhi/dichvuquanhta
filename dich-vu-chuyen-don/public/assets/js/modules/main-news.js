@@ -85,13 +85,16 @@
 
       const ogImage = document.querySelector('meta[property="og:image"]');
       // Lưu ý: Đường dẫn ảnh cần tuyệt đối (có domain) để chia sẻ tốt nhất, ở đây dùng tương đối tạm thời
-      if (ogImage) ogImage.setAttribute("content", article.image);
+      if (ogImage) {
+        // Chuyển đổi đường dẫn gốc tương đối (/public/...) thành URL tuyệt đối (https://...)
+        ogImage.setAttribute("content", new URL(article.image, window.location.origin).href);
+      }
 
       // Cập nhật Canonical URL
       const canonicalLink = document.querySelector('link[rel="canonical"]');
       if (canonicalLink) {
-        // Giả sử domain, cần thay bằng domain thật
-        const absoluteUrl = new URL(`public/chi-tiet-tin-tuc.html?id=${article.id}`, window.location.origin).href;
+        // Tạo URL tuyệt đối dựa trên vị trí trang hiện tại để đảm bảo tính di động
+        const absoluteUrl = new URL(`chi-tiet-tin-tuc.html?id=${article.id}`, window.location.href).href;
         canonicalLink.setAttribute("href", absoluteUrl);
       }
 

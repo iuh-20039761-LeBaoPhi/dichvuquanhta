@@ -13,12 +13,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Giao Hàng Nhanh cung cấp dịch vụ shipper giao hàng nội thành, giao COD chuyên nghiệp tại TP.HCM."
+      content="Giao Hàng Nhanh cung cấp dịch vụ shipper nội thành & toàn quốc, giao COD uy tín tại TP.HCM. Tra cứu đơn hàng online, lấy hàng tận nơi 24/7. Đặt đơn ngay!"
     />
     <meta
       name="keywords"
       content="dịch vụ shipper, giao hàng nhanh, giao hàng nội thành, giao COD, Giao Hàng Nhanh"
     />
+    <!-- SEO & Social Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Giao Hàng Nhanh - Giải pháp giao hàng chuyên nghiệp" />
+    <meta property="og:description" content="Giao Hàng Nhanh cung cấp dịch vụ shipper nội thành & toàn quốc, giao COD uy tín tại TP.HCM. Tra cứu đơn hàng online, lấy hàng tận nơi 24/7. Đặt đơn ngay!" />
+    <meta property="og:image" content="public/assets/images/hero.png" />
+    <meta property="og:url" content="https://dichvuquanhta.vn/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://dichvuquanhta.vn/" />
+
     <link rel="stylesheet" href="public/assets/css/styles.css" />
     <!-- Thêm SwiperJS CSS -->
     <link
@@ -509,11 +518,10 @@
             <div>
               <label for="domestic-cod">Phí COD (giá trị thu hộ, VNĐ)</label>
               <input
-                type="number"
+                type="text"
                 id="domestic-cod"
-                min="0"
-                step="1000"
-                value="0"
+                class="input-currency"
+                placeholder="0"
               />
             </div>
             <div>
@@ -521,11 +529,10 @@
                 >Giá trị hàng hóa (Khai giá VNĐ)</label
               >
               <input
-                type="number"
+                type="text"
                 id="domestic-insurance"
-                min="0"
-                step="1000"
-                value="0"
+                class="input-currency"
+                placeholder="0"
               />
             </div>
             <div class="quote-span-2">
@@ -653,10 +660,9 @@
                 >Giá trị hàng hóa (Khai giá VNĐ)</label
               >
               <input
-                type="number"
+                type="text"
                 id="intl-insurance"
-                min="0"
-                step="100000"
+                class="input-currency"
                 placeholder="0"
               />
             </div>
@@ -1142,6 +1148,25 @@
 
         loadLandingData();
       })();
+    </script>
+
+    <!-- Cấu trúc dữ liệu (Schema Markup) cho Local Business -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Giao Hàng Nhanh",
+      "image": "public/assets/images/favicon.png",
+      "telephone": "0775472347",
+      "email": "dichvuquanhta.vn@gmail.com",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Hồ Chí Minh",
+        "addressCountry": "VN"
+      },
+      "url": "https://dichvuquanhta.vn/"
+    }
     </script>
   </body>
 </html>

@@ -144,6 +144,14 @@
       return raw;
     }
 
+    function getMoney(id) {
+      // Lấy giá trị chuỗi, loại bỏ dấu chấm và chuyển thành số
+      const rawVal = getValue(id).replace(/\./g, "");
+      const num = parseInt(rawVal, 10);
+      if (!Number.isFinite(num) || num < 0) return 0;
+      return num;
+    }
+
     function getInteger(id, fallback = 0) {
       const raw = parseInt(getValue(id), 10);
       if (!Number.isFinite(raw) || raw <= 0) return fallback;
@@ -591,6 +599,20 @@
     updateIntlProvinceOptions();
     loadAccurateDistrictData();
     setActiveMode(modeInput && modeInput.value ? modeInput.value : "domestic");
+    function initCurrencyInputs() {
+      const currencyInputs = document.querySelectorAll(".input-currency");
+      currencyInputs.forEach((input) => {
+        input.addEventListener("input", (e) => {
+          let value = e.target.value.replace(/\D/g, "");
+          if (value) {
+            value = parseInt(value, 10).toLocaleString("vi-VN");
+          }
+          e.target.value = value;
+        });
+      });
+    }
+
+    initCurrencyInputs();
 
     quickQuoteForm.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -610,8 +632,8 @@
           length: getNumber("domestic-length"),
           width: getNumber("domestic-width"),
           height: getNumber("domestic-height"),
-          codValue: getNumber("domestic-cod"),
-          insuranceValue: getNumber("domestic-insurance"),
+          codValue: getMoney("domestic-cod"),
+          insuranceValue: getMoney("domestic-insurance"),
         };
 
         if (!payload.fromCity || !payload.fromDistrict || !payload.toCity || !payload.toDistrict) {
@@ -695,7 +717,7 @@
         length: getNumber("intl-length"),
         width: getNumber("intl-width"),
         height: getNumber("intl-height"),
-        insuranceValue: getNumber("intl-insurance"),
+        insuranceValue: getMoney("intl-insurance"),
       };
 
       if (!intlPayload.originCity || !intlPayload.originDistrict) {
