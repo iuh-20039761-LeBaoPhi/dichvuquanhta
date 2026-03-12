@@ -6,8 +6,8 @@
   const inPublicDir = currentPath.includes("/public/");
   const currentPage = currentPath.split("/").pop() || "index.html";
   const includesBase = inPublicDir ? "../includes/" : "includes/";
-  const servicePageKeyByFile = {
-  };
+  const rootPath = inPublicDir ? "../" : "./";
+  const servicePageKeyByFile = {};
 
   function isServiceLandingPage(fileName) {
     return Object.prototype.hasOwnProperty.call(servicePageKeyByFile, fileName);
@@ -45,78 +45,66 @@
     return host;
   }
 
-  function buildServiceLinkMap(basePrefix) {
-    const services = {
-      "giao-hang-nhanh": "giao-hang-nhanh/",
-      "chuyen-don": "dich-vu-chuyen-don/",
-      "lau-don": "vesinhcare/demo/",
-      "me-be": "csmvb/",
-      "vuon-ray": "web-cham-soc-vuon-nha/",
-      "giat-ui": "giat-ui-nhanh/",
-      "tho-nha": "tho-nha/",
-      "nguoi-gia": "csng/",
-      "benh-nhan": "csbn/",
-      "thue-xe": "thue-xe/",
-      "sua-xe": "sua-xe-luu-dong/",
-    };
-    const serviceLinks = {};
-    for (const key in services) {
-      serviceLinks[`service-${key}`] = `${basePrefix}${services[key]}`;
-    }
-    return serviceLinks;
-  }
 
   function buildLinkMap() {
-    const pricingLink = isServiceLandingPage(currentPage)
-      ? "#bao-gia"
-      : inPublicDir
-        ? "../index.html#quick-quote"
-        : "#quick-quote";
+    const externalServicePrefix = inPublicDir ? "../../" : "../";
 
-    const serviceLinkPrefix = inPublicDir ? "../../" : "../";
-    const serviceLinks = buildServiceLinkMap(serviceLinkPrefix);
+    // Chỉ các trang dịch vụ chi tiết mới có mục #bao-gia.
+    // Các trang khác sẽ link về mục dịch vụ ở trang chủ.
+    const hasPricingSection = [
+      "chuyen-nha.html",
+      "chuyen-kho-bai.html",
+      "chuyen-van-phong.html",
+    ].includes(currentPage);
+    
+    // Giao Hàng Nhanh sử dụng #quick-quote cho mục tính giá trên index.html
+    const pricingLink = hasPricingSection ? "#bao-gia" : `${rootPath}index.html#quick-quote`;
 
-    if (inPublicDir) {
-      const mainLinks = {
-        brand: "../index.html",
-        home: "../index.html#hero",
-        about: "../index.html#hero",
-        services: "../index.html#services",
-        "delivery-services": "../index.html",
-        pricing: pricingLink,
-        news: "tin-tuc.html",
-        tracking: "../index.html#home-tracking",
-        contact: "../index.html#contact",
-        booking: "../index.html#contact",
-        guide: "huong-dan-dat-hang.html",
-        login: "login.php",
-        register: "register.php",
-        "shipping-policy": "chinh-sach-van-chuyen.html",
-        privacy: "chinh-sach-bao-mat.html",
-        terms: "dieu-khoan-su-dung.html",
-      };
-      return { ...mainLinks, ...serviceLinks };
-    }
-
-    const rootLinks = {
-      brand: "index.html",
-      home: "#hero",
-      about: "#hero",
-      services: "#services",
-      "delivery-services": "index.html",
-      news: "public/tin-tuc.html",
+    return {
+      // Các đường dẫn chính trong project
+      brand: `${rootPath}index.html`,
+      brandLogo: `${rootPath}public/assets/images/favicon.png`,
+      home: `${rootPath}index.html#hero`,
+      about: `${rootPath}index.html#hero`,
+      services: `${rootPath}index.html#services`,
       pricing: pricingLink,
-      tracking: "#home-tracking",
-      contact: "#contact",
-      booking: "#contact",
-      guide: "public/huong-dan-dat-hang.html",
-      login: "public/login.php",
-      register: "public/register.php",
-      "shipping-policy": "public/chinh-sach-van-chuyen.html",
-      privacy: "public/chinh-sach-bao-mat.html",
-      terms: "public/dieu-khoan-su-dung.html",
+      contact: `${rootPath}index.html#contact`,
+      booking: `${rootPath}index.html#contact`,
+      tracking: `${rootPath}index.html#home-tracking`,
+      guide: `${rootPath}public/huong-dan-dat-hang.html`,
+      login: `${rootPath}public/login.php`,
+      register: `${rootPath}public/register.php`,
+      "shipping-policy": `${rootPath}public/chinh-sach-van-chuyen.html`,
+      privacy: `${rootPath}public/chinh-sach-bao-mat.html`,
+      terms: `${rootPath}public/dieu-khoan-su-dung.html`,
+      news: `${rootPath}public/tin-tuc.html`,
+
+      // Các link đến dịch vụ khác (Project song song) - Theo naming convention mới (svc-)
+      "svc-giao-hang-nhanh": `${externalServicePrefix}giao-hang-nhanh/`,
+      "svc-dich-vu-chuyen-don": `${externalServicePrefix}dich-vu-chuyen-don/`,
+      "svc-lau-don-ve-sinh": `${externalServicePrefix}dich-vu-don-ve-sinh/demo/`,
+      "svc-cham-soc-me-be": `${externalServicePrefix}cham-soc-me-va-be/`,
+      "svc-cham-soc-vuon": `${externalServicePrefix}web-cham-soc-vuon-nha/`,
+      "svc-giat-ui": `${externalServicePrefix}giat-ui-nhanh/`,
+      "svc-tho-nha": `${externalServicePrefix}tho-nha/`,
+      "svc-cham-soc-nguoi-gia": `${externalServicePrefix}cham-soc-nguoi-gia/`,
+      "svc-cham-soc-nguoi-benh": `${externalServicePrefix}cham-soc-nguoi-benh/`,
+      "svc-thue-xe": `${externalServicePrefix}thue-xe/`,
+      "svc-sua-xe": `${externalServicePrefix}sua-xe-luu-dong/`,
+
+      // Tương thích ngược cho các link cũ (nếu cần)
+      "service-giao-hang-nhanh": `${externalServicePrefix}giao-hang-nhanh/`,
+      "service-chuyen-don": `${externalServicePrefix}dich-vu-chuyen-don/`,
+      "service-lau-don": `${externalServicePrefix}dich-vu-don-ve-sinh/demo/`,
+      "service-me-be": `${externalServicePrefix}cham-soc-me-va-be/`,
+      "service-vuon-ray": `${externalServicePrefix}web-cham-soc-vuon-nha/`,
+      "service-giat-ui": `${externalServicePrefix}giat-ui-nhanh/`,
+      "service-tho-nha": `${externalServicePrefix}tho-nha/`,
+      "service-nguoi-gia": `${externalServicePrefix}cham-soc-nguoi-gia/`,
+      "service-benh-nhan": `${externalServicePrefix}cham-soc-nguoi-benh/`,
+      "service-thue-xe": `${externalServicePrefix}thue-xe/`,
+      "service-sua-xe": `${externalServicePrefix}sua-xe-luu-dong/`,
     };
-    return { ...rootLinks, ...serviceLinks };
   }
 
   function applyLinks(root, linkMap) {
