@@ -10,6 +10,8 @@
     "chuyen-nha.html": "moving-house",
     "chuyen-kho-bai.html": "moving-warehouse",
     "chuyen-van-phong.html": "moving-office",
+    "tin-tuc.html": "news",
+    "chi-tiet-tin-tuc.html": "news",
   };
 
   function isServiceLandingPage(fileName) {
@@ -62,6 +64,7 @@
         "moving-house": "chuyen-nha.html",
         "moving-warehouse": "chuyen-kho-bai.html",
         "moving-office": "chuyen-van-phong.html",
+        "news": "tin-tuc.html",
       };
     }
 
@@ -77,6 +80,7 @@
       "moving-house": "public/chuyen-nha.html",
       "moving-warehouse": "public/chuyen-kho-bai.html",
       "moving-office": "public/chuyen-van-phong.html",
+      "news": "public/tin-tuc.html",
     };
   }
 

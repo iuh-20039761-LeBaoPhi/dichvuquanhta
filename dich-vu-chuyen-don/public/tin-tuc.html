@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico" />
+    <meta charset="UTF-8" />
+    <title>Tin tức & Sự kiện - Dịch vụ Chuyển Dọn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Cập nhật tin tức, mẹo vặt chuyển nhà, chuyển văn phòng và các ưu đãi mới nhất từ Dịch vụ Chuyển Dọn."
+    />
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://dichvuquanhta.vn/public/tin-tuc.html" />
+
+    <!-- Open Graph / Facebook & Zalo -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dichvuquanhta.vn/public/tin-tuc.html" />
+    <meta property="og:title" content="Tin tức & Kiến thức Chuyển Dọn | Dịch vụ Chuyển Dọn" />
+    <meta property="og:description" content="Cập nhật tin tức, mẹo vặt chuyển nhà, chuyển văn phòng và các ưu đãi mới nhất từ Dịch vụ Chuyển Dọn." />
+    <meta property="og:image" content="https://dichvuquanhta.vn/public/assets/images/hero.png" />
+    <meta property="og:site_name" content="Dịch vụ Chuyển Dọn" />
+
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <!-- Nếu bạn chưa import news.css vào styles.css thì bỏ comment dòng dưới -->
+    <!-- <link rel="stylesheet" href="assets/css/pages/news.css" /> -->
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1B4332",
+              secondary: { light: "#2D6A4F", dark: "#1B4332" },
+              accent: "#FFB703",
+              bgLight: "#F8F9FA",
+            },
+            fontFamily: { sans: ["Poppins", "Inter", "sans-serif"] },
+          },
+        },
+        corePlugins: { preflight: false },
+      };
+    </script>
+  </head>
+  <body>
+    <!-- Header Placeholder (được load bởi shared-layout.js) -->
+    <div id="site-header"></div>
+
+    <main>
+      <!-- Hero Section cho trang tin tức -->
+      <section class="bg-primary text-white py-16 text-center">
+        <div class="container mx-auto px-6">
+          <h1 class="text-4xl font-bold mb-4">Tin Tức & Kiến Thức</h1>
+          <p class="text-lg opacity-90 max-w-2xl mx-auto">
+            Chia sẻ kinh nghiệm chuyển nhà, văn phòng và các thông tin hữu ích giúp hành trình di chuyển của bạn dễ dàng hơn.
+          </p>
+        </div>
+      </section>
+
+      <!-- Danh sách bài viết -->
+      <section class="section-container" style="padding: 60px 0; background-color: #F8F9FA;">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <!-- JS sẽ render các thẻ bài viết vào đây -->
+          <div id="news-list-container" class="news-grid"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Placeholder (được load bởi shared-layout.js) -->
+    <div id="site-footer"></div>
+
+    <script src="assets/js/shared-layout.js"></script>
+    <script src="assets/js/main.js" defer></script>
+
+    <!-- Schema.org for Blog -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Tin tức & Kiến thức Chuyển Dọn",
+      "description": "Cập nhật tin tức, mẹo vặt chuyển nhà, chuyển văn phòng và các ưu đãi mới nhất từ Dịch vụ Chuyển Dọn.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Dịch vụ Chuyển Dọn"
+      }
+    }
+    </script>
+  </body>
+</html>

@@ -40,11 +40,14 @@ Vanchuyen/
         ├── js/
         │   ├── shared-layout.js        # Load header/footer động
         │   ├── shared-modals.js        # Modal đặt dịch vụ & tra cứu đơn
-        │   ├── main.js                 # Khởi tạo chung
-        │   └── modules/
+        │   ├── main.js                 # Khởi tạo chung, load modules
+        │   ├── data/
+        │   │   └── news-data.js        # Dữ liệu cho trang tin tức
+        │   └── modules/                # Các module chức năng
         │       ├── main-landing.js     # Logic trang chủ
         │       ├── main-navigation.js  # Navigation & scroll behavior
-        │       └── main-order.js       # Logic tính phí & đặt đơn hàng
+        │       ├── main-order.js       # Logic tính phí & đặt đơn hàng
+        │       └── main-news.js        # Logic trang tin tức
         ├── images/                     # Hình ảnh hero, dịch vụ, nhân sự
         └── partials/
             └── shared-modals.html      # Template HTML cho các modal
