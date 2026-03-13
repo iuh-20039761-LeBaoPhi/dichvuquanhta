@@ -51,12 +51,13 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
                 <a href="order_history.php">Lịch sử đơn</a>
             </li>
             <!-- Notification Bell (MỚI) -->
-            <li class="dropdown <?php echo ($current_page === 'notifications.php') ? 'active' : ''; ?>" id="notification-bell">
+            <li class="dropdown <?php echo ($current_page === 'notifications.php') ? 'active' : ''; ?>"
+                id="notification-bell">
                 <a href="#" style="font-size: 20px; color: white; padding: 0 10px; position: relative;">
                     🔔
                     <?php if ($unread_notifications_count > 0): ?>
-                        <span id="notification-count"
-                            style="position: absolute; top: -5px; right: 0; background: #d9534f; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; min-width: 18px; text-align: center;"><?php echo $unread_notifications_count; ?></span>
+                    <span id="notification-count"
+                        style="position: absolute; top: -5px; right: 0; background: #d9534f; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; min-width: 18px; text-align: center;"><?php echo $unread_notifications_count; ?></span>
                     <?php endif; ?>
                 </a>
                 <div class="dropdown-menu" id="notification-dropdown" style="min-width: 300px; right: 0; left: auto;">
@@ -72,7 +73,8 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
                     </div>
                 </div>
             </li>
-            <li class="dropdown <?php echo in_array($current_page, ['address_book.php', 'profile.php']) ? 'active' : ''; ?>">
+            <li
+                class="dropdown <?php echo in_array($current_page, ['address_book.php', 'profile.php']) ? 'active' : ''; ?>">
                 <a href="#"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Tài khoản'); ?> ▾</a>
                 <ul class="dropdown-menu">
                     <li><a href="address_book.php">Sổ địa chỉ</a></li>

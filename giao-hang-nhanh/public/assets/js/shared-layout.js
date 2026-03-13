@@ -68,7 +68,7 @@
       "shipping-policy": `${rootPath}public/chinh-sach-van-chuyen.html`,
       privacy: `${rootPath}public/chinh-sach-bao-mat.html`,
       terms: `${rootPath}public/dieu-khoan-su-dung.html`,
-      news: `${rootPath}public/tin-tuc.html`,
+      articles: `${rootPath}public/bai-viet.html`,
 
       // Các link đến dịch vụ khác (Project song song) - Theo naming convention mới (svc-)
       "svc-giao-hang-nhanh": `${externalServicePrefix}giao-hang-nhanh/`,
