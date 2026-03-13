@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Garden Service | Dịch vụ chăm sóc vườn chuyên nghiệp</title>
+
+<meta name="description" content="Dịch vụ chăm sóc vườn, thiết kế cảnh quan, cải tạo vườn chuyên nghiệp. Mang đến không gian xanh cho ngôi nhà của bạn.">
+
+<link rel="icon" href="assets/images/logo.jpg" type="image/x-icon">
+
+<style>
+
+/* ===== BIẾN ===== */
+
+:root{
+--green:#1f6f43;
+--green-dark:#14532d;
+--green-light:#eaf5ef;
+--bg:#f3f7f4;
+--text:#333;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:var(--bg);
+margin-top:90px;
+color:var(--text);
+line-height:1.6;
+}
+
+/* HERO */
+
+.hero{
+height:540px;
+background:url('assets/images/thietkesanvuon.jpg') center/cover no-repeat;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+position:relative;
+}
+
+.hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.55));
+}
+
+.hero-content{
+position:relative;
+color:white;
+max-width:850px;
+padding:20px;
+}
+
+.hero h1{
+font-size:52px;
+margin-bottom:20px;
+font-weight:700;
+}
+
+.hero p{
+font-size:20px;
+margin-bottom:30px;
+opacity:0.95;
+}
+
+.hero-btn{
+background:#ffd54f;
+color:#14532d;
+padding:15px 36px;
+border-radius:40px;
+text-decoration:none;
+font-weight:700;
+font-size:18px;
+transition:0.3s;
+box-shadow:0 6px 15px rgba(0,0,0,0.25);
+}
+
+.hero-btn:hover{
+background:#ffca28;
+transform:translateY(-2px);
+}
+
+/* SLOGAN */
+
+.slogan{
+background:white;
+padding:90px 80px;
+}
+
+.slogan-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:40px;
+max-width:1200px;
+margin:auto;
+}
+
+.slogan-card{
+background:var(--green-light);
+padding:40px;
+border-radius:20px;
+text-align:center;
+transition:0.3s;
+}
+
+.slogan-card:hover{
+transform:translateY(-6px);
+box-shadow:0 12px 25px rgba(0,0,0,0.08);
+}
+
+.slogan-card h3{
+color:var(--green);
+margin-bottom:12px;
+font-size:20px;
+}
+
+.slogan-card p{
+color:#555;
+}
+
+/* ABOUT */
+
+.about{
+padding:110px 80px;
+background:white;
+}
+
+.about-container{
+display:flex;
+align-items:center;
+gap:70px;
+max-width:1300px;
+margin:auto;
+}
+
+.about img{
+width:500px;
+border-radius:20px;
+box-shadow:0 20px 45px rgba(0,0,0,0.18);
+}
+
+.about-text h2{
+color:var(--green);
+font-size:36px;
+margin-bottom:20px;
+}
+
+.about-text p{
+font-size:17px;
+color:#555;
+line-height:1.8;
+margin-bottom:15px;
+}
+
+/* SERVICES */
+
+.services{
+padding:110px 80px;
+}
+
+.section-title{
+text-align:center;
+font-size:40px;
+color:var(--green);
+margin-bottom:70px;
+font-weight:700;
+}
+
+.services-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:35px;
+max-width:1200px;
+margin:auto;
+}
+
+.service-card{
+background:white;
+border-radius:22px;
+overflow:hidden;
+box-shadow:0 12px 35px rgba(0,0,0,0.08);
+transition:0.35s;
+}
+
+.service-card:hover{
+transform:translateY(-8px);
+box-shadow:0 18px 45px rgba(0,0,0,0.12);
+}
+
+.service-card img{
+width:100%;
+height:220px;
+object-fit:cover;
+transition:0.5s;
+}
+
+.service-card:hover img{
+transform:scale(1.05);
+}
+
+.service-content{
+padding:28px;
+}
+
+.service-content h3{
+color:var(--green);
+margin-bottom:10px;
+font-size:20px;
+}
+
+.service-content p{
+color:#666;
+}
+
+.service-btn{
+display:inline-block;
+margin-top:14px;
+color:var(--green);
+font-weight:600;
+text-decoration:none;
+transition:0.3s;
+}
+
+.service-btn:hover{
+color:var(--green-dark);
+}
+
+/* FOOTER SPACING */
+
+.footer-space{
+margin-top:100px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.about-container{
+flex-direction:column;
+text-align:center;
+}
+
+.about img{
+width:100%;
+max-width:450px;
+}
+
+.hero h1{
+font-size:36px;
+}
+
+.hero{
+height:450px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div id="header"></div>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="hero-content">
+
+<h1>Chăm sóc khu vườn của bạn bằng sự tận tâm</h1>
+
+<p>
+Mang đến không gian xanh, sạch và thư giãn với dịch vụ chăm sóc vườn
+chuyên nghiệp từ Chăm Sóc Vườn Nhà.
+</p>
+
+<a href="services.html" class="hero-btn">Xem dịch vụ</a>
+
+</div>
+
+</section>
+
+
+<!-- SLOGAN -->
+
+<section class="slogan">
+
+<div class="slogan-grid">
+
+<div class="slogan-card">
+<h3>🌿 Không gian xanh hoàn hảo</h3>
+<p>Giúp khu vườn luôn tươi tốt và tràn đầy sức sống.</p>
+</div>
+
+<div class="slogan-card">
+<h3>👨‍🌾 Đội ngũ chuyên nghiệp</h3>
+<p>Kỹ thuật viên nhiều kinh nghiệm chăm sóc cây trồng.</p>
+</div>
+
+<div class="slogan-card">
+<h3>⚡ Dịch vụ nhanh chóng</h3>
+<p>Đặt lịch dễ dàng – phục vụ tận nơi.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ABOUT -->
+
+<section class="about">
+
+<div class="about-container">
+
+<img src="assets/images/chamsocvuonnha.jpg" alt="Chăm sóc vườn">
+
+<div class="about-text">
+
+<h2>Về Chăm Sóc Vườn Nhà</h2>
+
+<p>
+Chăm Sóc Vườn Nhà cung cấp các dịch vụ chăm sóc vườn, thiết kế cảnh quan,
+cải tạo đất và bảo dưỡng cây xanh cho nhà ở, biệt thự và trang trại.
+</p>
+
+<p>
+Với đội ngũ kỹ thuật viên giàu kinh nghiệm, chúng tôi giúp khu vườn
+của bạn luôn xanh tươi, sạch đẹp và phát triển bền vững theo thời gian.
+</p>
+
+<p>
+Mục tiêu của chúng tôi là mang thiên nhiên đến gần hơn với cuộc sống,
+tạo nên không gian thư giãn và trong lành cho mọi gia đình.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- SERVICES -->
+
+<section class="services">
+
+<h2 class="section-title">Các Dịch Vụ Nổi Bật</h2>
+
+<div class="services-grid">
+
+<div class="service-card">
+<img src="assets/images/thietkevathicong.jpg" alt="Thiết kế vườn">
+<div class="service-content">
+<h3>Thiết kế và thi công</h3>
+<p>Tạo nên khu vườn đẹp và hài hòa với không gian sống.</p>
+<a href="services.html" class="service-btn">Xem thêm →</a>
+</div>
+</div>
+
+<div class="service-card">
+<img src="assets/images/chamsocnangcao.jpg" alt="Chăm sóc vườn">
+<div class="service-content">
+<h3>Chăm sóc nâng cao</h3>
+<p>Cắt tỉa, bón phân và chăm sóc cây trồng định kỳ.</p>
+<a href="services.html" class="service-btn">Xem thêm →</a>
+</div>
+</div>
+
+<div class="service-card">
+<img src="assets/images/vesinhvacaitao.jpg" alt="Cải tạo vườn">
+<div class="service-content">
+<h3>Vệ sinh và cải tạo vườn</h3>
+<p>Làm sạch, cải tạo và nâng cấp khu vườn của bạn.</p>
+<a href="services.html" class="service-btn">Xem thêm →</a>
+</div>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<div id="footer" class="footer-space"></div>
+
+
+<script>
+
+/* LOAD HEADER */
+
+fetch("header.html")
+.then(res=>res.text())
+.then(data=>{
+
+document.getElementById("header").innerHTML=data;
+
+const current=location.pathname.split("/").pop();
+
+document.querySelectorAll(".main-nav a").forEach(link=>{
+if(link.getAttribute("href")===current){
+link.classList.add("active");
+}
+});
+
+});
+
+
+/* LOAD FOOTER */
+
+fetch("footer.html")
+.then(res=>res.text())
+.then(data=>{
+document.getElementById("footer").innerHTML=data;
+});
+
+</script>
+
+</body>
+</html>

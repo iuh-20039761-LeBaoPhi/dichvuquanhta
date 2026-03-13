@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dịch vụ | Garden Service</title>
+
+<link rel="icon" href="assets/images/logo.jpg">
+
+<style>
+
+:root{
+--green:#1f6f43;
+--green-dark:#14532d;
+--green-light:#eaf5ef;
+--bg:#f6f8f7;
+--text:#333;
+--border:#e5e7eb;
+}
+
+/* RESET */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:var(--bg);
+color:var(--text);
+margin-top:90px;
+}
+
+/* HERO */
+
+.services-hero{
+height:420px;
+background:url("assets/images/cattianghethuat.jpg") center/cover no-repeat;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+color:white;
+}
+
+.services-hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:rgba(0,0,0,0.6);
+}
+
+.services-hero-content{
+position:relative;
+z-index:2;
+max-width:700px;
+}
+
+.services-hero h1{
+font-size:48px;
+margin-bottom:10px;
+}
+
+.services-hero p{
+font-size:18px;
+opacity:0.9;
+}
+
+/* LAYOUT */
+
+.services-layout{
+display:flex;
+gap:40px;
+padding:60px 80px;
+max-width:1400px;
+margin:auto;
+}
+
+/* SIDEBAR */
+
+.category-sidebar{
+width:260px;
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:0 6px 20px rgba(0,0,0,0.06);
+height:fit-content;
+}
+
+.category-sidebar h3{
+margin-bottom:20px;
+color:var(--green);
+}
+
+.category-sidebar ul{
+list-style:none;
+}
+
+.category-sidebar li{
+margin-bottom:8px;
+}
+
+.category-sidebar a{
+display:block;
+padding:12px 14px;
+border-radius:8px;
+text-decoration:none;
+color:#444;
+transition:0.2s;
+font-size:15px;
+}
+
+.category-sidebar a:hover{
+background:var(--green-light);
+}
+
+.category-sidebar a.active{
+background:var(--green);
+color:white;
+font-weight:600;
+}
+
+/* SERVICES GRID */
+
+.services-grid{
+flex:1;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:30px;
+}
+
+/* SERVICE CARD */
+
+.service-card{
+background:white;
+border-radius:14px;
+overflow:hidden;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+transition:0.3s;
+display:flex;
+flex-direction:column;
+}
+
+.service-card:hover{
+transform:translateY(-6px);
+box-shadow:0 12px 28px rgba(0,0,0,0.12);
+}
+
+.service-card img{
+width:100%;
+height:210px;
+object-fit:cover;
+}
+
+.service-card-content{
+padding:18px;
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+.service-card h3{
+font-size:18px;
+color:var(--green);
+margin-bottom:8px;
+}
+
+.service-card p{
+font-size:14px;
+color:#555;
+line-height:1.5;
+flex:1;
+}
+
+/* PRICE */
+
+.service-price{
+font-size:18px;
+font-weight:bold;
+color:#e63946;
+margin-top:10px;
+}
+
+/* BUTTON */
+
+.detail-btn{
+display:block;
+margin-top:14px;
+padding:11px;
+text-align:center;
+background:var(--green);
+color:white;
+text-decoration:none;
+border-radius:6px;
+font-weight:600;
+transition:0.2s;
+}
+
+.detail-btn:hover{
+background:var(--green-dark);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+
+.services-layout{
+flex-direction:column;
+padding:50px 30px;
+}
+
+.category-sidebar{
+width:100%;
+}
+
+.services-grid{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+@media(max-width:600px){
+
+.services-grid{
+grid-template-columns:1fr;
+}
+
+.services-hero h1{
+font-size:32px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<!-- HERO -->
+
+<section class="services-hero">
+
+<div class="services-hero-content">
+<h1>Dịch Vụ Chăm Sóc Vườn</h1>
+<p>Dịch vụ chuyên nghiệp giúp khu vườn và nông trại của bạn luôn xanh tốt</p>
+</div>
+
+</section>
+
+<div class="services-layout">
+
+<!-- SIDEBAR -->
+
+<aside class="category-sidebar">
+
+<h3>Danh mục dịch vụ</h3>
+
+<ul>
+
+<li><a href="#" data-category="all" class="active">Tất cả</a></li>
+<li><a href="#" data-category="coban">Chăm sóc cơ bản</a></li>
+<li><a href="#" data-category="nangcao">Chăm sóc nâng cao</a></li>
+<li><a href="#" data-category="thietke">Thiết kế và thi công</a></li>
+<li><a href="#" data-category="ray">Chăm sóc rẫy</a></li>
+<li><a href="#" data-category="vesinh">Vệ sinh vườn</a></li>
+
+</ul>
+
+</aside>
+
+<!-- SERVICES GRID -->
+
+<div class="services-grid" id="servicesContainer"></div>
+
+</div>
+
+<div id="footer"></div>
+
+<script>
+
+/* LOAD HEADER */
+
+fetch("header.html")
+.then(res=>res.text())
+.then(data=>{
+document.getElementById("header").innerHTML=data;
+
+const current=location.pathname.split("/").pop();
+
+document.querySelectorAll(".main-nav a").forEach(link=>{
+if(link.getAttribute("href")===current){
+link.classList.add("active");
+}
+});
+
+});
+
+/* LOAD FOOTER */
+
+fetch("footer.html")
+.then(res=>res.text())
+.then(data=>{
+document.getElementById("footer").innerHTML=data;
+});
+
+
+/* LOAD SERVICES */
+
+let allServices=[];
+const container=document.getElementById("servicesContainer");
+
+
+function renderServices(list){
+
+container.innerHTML="";
+
+list.forEach(service=>{
+
+/* FORMAT PRICE */
+
+let price="Liên hệ";
+
+if(service.price_m2_min){
+
+price=
+service.price_m2_min.toLocaleString('vi-VN') +
+" VNĐ / " +
+(service.area_unit || "m²");
+
+}
+
+/* CREATE CARD */
+
+const card=document.createElement("div");
+
+card.className="service-card";
+
+card.innerHTML=`
+
+<img src="assets/images/${service.image}" alt="${service.name}">
+
+<div class="service-card-content">
+
+<h3>${service.name}</h3>
+
+<p>${service.description.substring(0,120)}...</p>
+
+<p style="font-size:13px;color:#777;margin-top:6px;">
+Khu vực: ${service.service_area || "Đang cập nhật"}
+</p>
+
+<div class="service-price">${price}</div>
+
+<a href="service_detail.html?id=${service.id}" class="detail-btn">
+Xem chi tiết
+</a>
+
+</div>
+
+`;
+
+container.appendChild(card);
+
+});
+
+}
+
+
+/* FETCH JSON */
+
+fetch("services.json?v="+Date.now())
+.then(res=>res.json())
+.then(data=>{
+
+allServices=data.services;
+
+renderServices(allServices);
+
+});
+
+
+/* FILTER CATEGORY */
+
+document.querySelectorAll(".category-sidebar a").forEach(link=>{
+
+link.addEventListener("click",function(e){
+
+e.preventDefault();
+
+document.querySelectorAll(".category-sidebar a").forEach(a=>{
+a.classList.remove("active");
+});
+
+this.classList.add("active");
+
+const category=this.dataset.category;
+
+if(category==="all"){
+
+renderServices(allServices);
+
+}
+else{
+
+const filtered=allServices.filter(s=>s.category===category);
+
+renderServices(filtered);
+
+}
+
+});
+
+});
+
+</script>
+
+</body>
+</html>
