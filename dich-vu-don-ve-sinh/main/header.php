@@ -7,69 +7,85 @@ $customer = $_SESSION['customer'] ?? null;
 
 <style>
 /* HEADER */
+/* ===== HEADER ===== */
+
 .site-header{
-    background:#ffffff;
+    background:#fff;
     border-bottom:1px solid #eee;
-    padding:10px 0;
+    position:sticky;
+    top:0;
+    z-index:1000;
 }
 
-/* CONTAINER */
 .site-header-content{
-    width:1200px;
+    max-width:1200px;
     margin:auto;
     display:flex;
     align-items:center;
     justify-content:space-between;
+    padding:14px 20px;
 }
 
 /* LOGO */
-.site-logo img{
-    height:55px;
-    width:auto;
-}
-
-/* MENU */
-.site-nav a{
-    margin:0 12px;
-    text-decoration:none;
-    color:#333;
-    font-weight:500;
-}
-
-.site-nav a:hover{
-    color:#1fa463;
-}
-
-/* USER AREA */
-.site-user-area{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.site-btn{
-    background:#1fa463;
-    color:white;
-    padding:6px 14px;
-    border-radius:6px;
-    text-decoration:none;
-}
-
-.site-btn:hover{
-    background:#168a52;
-}
 
 .site-logo{
     display:flex;
     align-items:center;
+    gap:10px;
     text-decoration:none;
 }
 
+.site-logo img{
+    height:40px;
+}
+
 .logo-text{
-    font-size:20px;
-    font-weight:bold;
-    margin-left:10px;
-    color:#1fa463;
+    font-size:18px;
+    font-weight:700;
+    color:#1abc9c;
+    white-space:nowrap;
+}
+
+/* MENU */
+
+.site-nav{
+    display:flex;
+    align-items:center;
+    gap:22px;
+}
+
+.site-nav a{
+    text-decoration:none;
+    color:#333;
+    font-size:14px;
+    font-weight:500;
+    transition:0.2s;
+}
+
+.site-nav a:hover{
+    color:#1abc9c;
+}
+
+/* LOGIN BUTTON */
+
+.site-user-area{
+    display:flex;
+    align-items:center;
+}
+
+.site-btn{
+    background:#1abc9c;
+    color:#fff;
+    padding:9px 20px;
+    border-radius:6px;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:600;
+    transition:0.2s;
+}
+
+.site-btn:hover{
+    background:#16a085;
 }
 </style>
 
@@ -88,6 +104,9 @@ $customer = $_SESSION['customer'] ?? null;
       <a href="pricing.php">Bảng giá</a>
       <a href="faq.php">FAQ</a>
       <a href="contact.php">Liên hệ</a>
+      <a href="blog.php">Bài viết</a>
+      <a href="terms.php">Điều khoản dịch vụ</a>
+
     </nav>
 
     <!-- USER AREA -->
