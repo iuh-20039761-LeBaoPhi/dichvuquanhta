@@ -1,6 +1,6 @@
 <?php
 // File: api/db.php
-$conn = new mysqli("localhost", "root", "", "thonha_db");
+$conn = new mysqli("localhost", "root", "", "thonha");
 
 if ($conn->connect_error) {
     die("Kết nối thất bại: " . $conn->connect_error);

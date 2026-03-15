@@ -319,7 +319,7 @@ function displayBookingForm(car) {
                 <hr>
                 
                 <div class="text-center">
-                    <p class="mb-2"><i class="fas fa-phone text-primary me-2"></i><strong>0123 456 789</strong></p>
+                    <p class="mb-2"><i class="fas fa-phone text-primary me-2"></i><strong>0775 472 347</strong></p>
                     <p class="mb-0 small text-muted">Hỗ trợ 24/7</p>
                 </div>
             </div>
@@ -599,7 +599,7 @@ async function submitBooking(car) {
                 <strong>Đặt xe thành công! (Demo)</strong><br>
                 Cảm ơn bạn đã quan tâm đến <strong>${car.name}</strong>.
                 ${addonLines}${totalLine}<br>
-                Để hoàn tất đặt xe, vui lòng gọi hotline <strong>0123 456 789</strong> – hỗ trợ 24/7.
+                Để hoàn tất đặt xe, vui lòng gọi hotline <strong>0775 472 347</strong> – hỗ trợ 24/7.
             `, 'success');
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;

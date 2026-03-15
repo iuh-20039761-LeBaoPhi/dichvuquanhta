@@ -11,10 +11,13 @@ function loadHeader() {
 
 function injectBaseSEO() {
     const seo = window.PAGE_SEO || {};
-    const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe';
+    const SITE_BASE = (() => {
+        const p = window.location.pathname.replace(/\/(views\/pages\/[^/]+\.html|[^/]+\.html)(\?.*)?$/, '').replace(/\/$/, '');
+        return window.location.origin + p;
+    })();
 
     const title = seo.title || 'Thuê Xe – Thuê Xe Uy Tín TP.HCM | Giao Xe Tận Nơi';
-    const desc  = seo.desc  || 'Thuê Xe – dịch vụ cho thuê xe tự lái và có tài xế uy tín tại TP.HCM. Hơn 100 dòng xe từ 450.000đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ. Hotline: 0123 456 789.';
+    const desc  = seo.desc  || 'Thuê Xe – dịch vụ cho thuê xe tự lái và có tài xế uy tín tại TP.HCM. Hơn 100 dòng xe từ 450.000đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ. Hotline: 0775 472 347.';
     const keys  = seo.keys  || 'thuê xe tphcm, thuê xe tự lái, cho thuê xe có tài xế, thuê xe giá rẻ, car rental hcm';
     const url   = seo.url   || SITE_BASE + '/';
     const img   = seo.img   || SITE_BASE + '/assets/images/cars/camry.jpg';

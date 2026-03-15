@@ -1,7 +1,7 @@
 <?php
 session_start();
 define('BASE_PATH', __DIR__);
-define('BASE_URL', 'http://localhost/carrental_test');
+define('BASE_URL', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
 
 $page = $_GET['page'] ?? 'home';
 $validPages = ['home', 'search', 'car-detail', 'about', 'services', 'guide', 'contact', 'booking-success', 'track-order', 'terms'];

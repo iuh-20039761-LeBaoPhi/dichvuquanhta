@@ -1,8 +1,10 @@
 <?php
 require "db.php";
 
+header("Content-Type: application/json; charset=utf-8");
+
 $sql = "
-SELECT 
+SELECT
     c.id AS category_id,
     c.name AS category_name,
     s.id AS service_id,
@@ -14,10 +16,15 @@ WHERE c.is_active = 1 AND s.is_active = 1
 ORDER BY c.id, s.id
 ";
 
-$stmt = $pdo->query($sql);
+$stmt = $conn->query($sql);
+
+if (!$stmt) {
+    echo json_encode(["error" => "Query thất bại: " . $conn->error], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 $result = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+while ($row = $stmt->fetch_assoc()) {
     $cid = $row['category_id'];
 
     if (!isset($result[$cid])) {
