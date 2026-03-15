@@ -1,6 +1,6 @@
 /**
  * Map Picker - Leaflet + OpenStreetMap + Nominatim reverse geocoding
- * Dùng chung cho index.html và service_detail.html
+ * Dùng chung cho index.html và service-detail.html
  */
 const mapPicker = (() => {
     const HCM = [10.7769, 106.7009]; // Ho Chi Minh City center

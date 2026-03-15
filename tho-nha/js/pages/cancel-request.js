@@ -51,7 +51,7 @@ function setupCancelRequestsEvents() {
 window.approveCancelRequest = function(requestId) {
     if (!confirm('Xác nhận duyệt yêu cầu hủy đơn?')) return;
     
-    fetch('api/admin/process_cancel_request.php', {
+    fetch('api/admin/process-cancel-request.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: requestId, action: 'approve' })
@@ -73,7 +73,7 @@ window.approveCancelRequest = function(requestId) {
 window.rejectCancelRequest = function(requestId) {
     if (!confirm('Xác nhận từ chối yêu cầu hủy đơn?')) return;
     
-    fetch('api/admin/process_cancel_request.php', {
+    fetch('api/admin/process-cancel-request.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: requestId, action: 'reject' })

@@ -4,7 +4,7 @@
  * Xử lý logic liên quan đến quản trị viên
  */
 
-require_once __DIR__ . '/base_model.php';
+require_once __DIR__ . '/base-model.php';
 
 class Admin extends BaseModel {
     protected $table = 'admins';

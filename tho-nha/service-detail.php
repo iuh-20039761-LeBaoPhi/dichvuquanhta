@@ -74,7 +74,7 @@ $svc_lower = strtolower($svc_name);
 $seo_title = $svc_name . ' Chuyên Nghiệp TP.HCM | Thợ Nhà';
 $seo_desc  = 'Dịch vụ ' . $svc_lower . ' uy tín tại TP.HCM – Thợ Nhà. Bảo hành 6-12 tháng, có mặt trong 30 phút. Linh kiện chính hãng, giá minh bạch. Hotline 24/7: 0775 472 347.';
 $seo_keys  = $svc_lower . ', thợ ' . $svc_lower . ', ' . $svc_lower . ' tphcm, thợ nhà, sửa chữa nhà, dịch vụ sửa nhà tphcm';
-$seo_url   = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.php?id=' . $category_id;
+$seo_url   = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.php?id=' . $category_id;
 $seo_img   = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/' . $main_image;
 
 // Schema.org Service data
@@ -482,7 +482,7 @@ $schema = [
                             $r_image = $category_images[$related['name']] ?? 'image/1.jpg';
                         ?>
                             <div class="col-md-4">
-                                <div class="related-service" onclick="window.location.href='service_detail.php?id=<?= $related['id'] ?>'">
+                                <div class="related-service" onclick="window.location.href='service-detail.php?id=<?= $related['id'] ?>'">
                                     <img src="<?= $r_image ?>" alt="<?= htmlspecialchars($related['name']) ?>">
                                     <div class="related-service-content">
                                         <h5>
@@ -735,6 +735,6 @@ $schema = [
         });
     </script>
 
-    <script src="js/order_tracking.js"></script>
+    <script src="js/order-tracking.js"></script>
 </body>
 </html>

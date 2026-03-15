@@ -1,7 +1,7 @@
 // ==================== CORE FUNCTIONS ====================
 
 // Check login
-fetch('api/admin/check_login.php')
+fetch('api/admin/check-login.php')
     .then(res => res.json())
     .then(res => {
         if (res.status !== 'logged_in') {
@@ -123,8 +123,8 @@ function loadOrdersPage() {
 
 function loadCancelRequestsPage() {
     Promise.all([
-        fetch('js/pages/cancel_request.html').then(res => res.text()),
-        fetch('js/pages/cancel_request.js').then(res => res.text())
+        fetch('js/pages/cancel-request.html').then(res => res.text()),
+        fetch('js/pages/cancel-request.js').then(res => res.text())
     ]).then(([html, script]) => {
         document.getElementById('pageContent').innerHTML = html;
         eval(script);
@@ -177,7 +177,7 @@ function getStatusBadge(status) {
 
 // Load orders
 function loadAllOrders() {
-    return fetch('api/admin/get_all_orders.php')
+    return fetch('api/admin/get-all-orders.php')
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
@@ -189,7 +189,7 @@ function loadAllOrders() {
 
 // Load cancel requests
 function loadAllCancelRequests() {
-    return fetch('api/admin/get_cancel_requests.php')
+    return fetch('api/admin/get-cancel-requests.php')
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
@@ -202,7 +202,7 @@ function loadAllCancelRequests() {
 
 // Load services
 function loadAllServices() {
-    return fetch('api/admin/manage_services.php?action=get_all')
+    return fetch('api/admin/manage-services.php?action=get_all')
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {

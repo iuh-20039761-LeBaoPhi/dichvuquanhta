@@ -361,7 +361,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...';
 
     try {
-        const res = await fetch('../controllers/admin/auth_controller.php?action=login', {
+        const res = await fetch('../controllers/admin/auth-controller.php?action=login', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -431,8 +431,8 @@ function loadPage(page) {
 async function loadDashboard() {
     setContent('<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>');
     const [bStats, cStats] = await Promise.all([
-        ADMIN_API.get('bookig_admin_controller.php', {action:'stats'}),
-        ADMIN_API.get('car_addmin_controller.php',   {action:'stats'})
+        ADMIN_API.get('bookig-admin-controller.php', {action:'stats'}),
+        ADMIN_API.get('car-addmin-controller.php',   {action:'stats'})
     ]);
     const b = bStats.success ? bStats.data : {};
     const c = cStats.success ? cStats.data : {};
@@ -452,7 +452,7 @@ async function loadDashboard() {
         </div>
     `);
 
-    const r = await ADMIN_API.get('bookig_admin_controller.php', {action:'recent'});
+    const r = await ADMIN_API.get('bookig-admin-controller.php', {action:'recent'});
     const box = document.getElementById('recentBox');
     if (r.success && r.data.length) {
         box.innerHTML = `<div class="table-responsive"><table class="table mb-0">
@@ -509,7 +509,7 @@ async function loadCarsPage() {
 }
 
 async function refreshCars() {
-    const res = await ADMIN_API.get('car_addmin_controller.php', {action:'list'});
+    const res = await ADMIN_API.get('car-addmin-controller.php', {action:'list'});
     const box = document.getElementById('carsTable');
     if (!res.success || !res.data.length) {
         box.innerHTML = '<p class="text-center text-muted py-4">Chưa có xe nào</p>';
@@ -574,7 +574,7 @@ function showCarModal(car = null) {
 }
 
 async function editCar(id) {
-    const res = await ADMIN_API.get('car_addmin_controller.php', {action:'get', id});
+    const res = await ADMIN_API.get('car-addmin-controller.php', {action:'get', id});
     if (res.success) showCarModal(res.data);
 }
 
@@ -602,7 +602,7 @@ async function saveCar() {
     }
 
     if (id) data.id = id;
-    const res = await ADMIN_API.post('car_addmin_controller.php', id ? 'update' : 'create', data);
+    const res = await ADMIN_API.post('car-addmin-controller.php', id ? 'update' : 'create', data);
     if (res.success) {
         bootstrap.Modal.getInstance(document.getElementById('carModal')).hide();
         await refreshCars();
@@ -615,7 +615,7 @@ async function saveCar() {
 
 async function deleteCar(id, name) {
     if (!confirm(`Xóa xe "${name}"?`)) return;
-    const res = await ADMIN_API.post('car_addmin_controller.php', 'delete', {id});
+    const res = await ADMIN_API.post('car-addmin-controller.php', 'delete', {id});
     if (res.success) { await refreshCars(); toast('Đã xóa xe!'); }
     else toast(res.message || 'Không thể xóa!', 'danger');
 }
@@ -645,7 +645,7 @@ async function loadBookingsPage() {
 async function refreshBookings(status = '') {
     const params = {action:'list'};
     if (status) params.status = status;
-    const res = await ADMIN_API.get('bookig_admin_controller.php', params);
+    const res = await ADMIN_API.get('bookig-admin-controller.php', params);
     const box = document.getElementById('bookingsTable');
 
     if (!res.success || !res.data.length) {
@@ -694,7 +694,7 @@ async function refreshBookings(status = '') {
 async function updateStatus(id, status) {
     const labels = {confirmed:'xác nhận', completed:'hoàn thành', cancelled:'hủy'};
     if (!confirm(`Bạn có chắc muốn ${labels[status]} đơn này?`)) return;
-    const res = await ADMIN_API.post('bookig_admin_controller.php', 'updateStatus', {id, status});
+    const res = await ADMIN_API.post('bookig-admin-controller.php', 'updateStatus', {id, status});
     if (res.success) {
         const cur = document.getElementById('statusFilter')?.value || '';
         await refreshBookings(cur);
@@ -774,7 +774,7 @@ async function submitChangePwd() {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang lưu...';
 
     try {
-        const res  = await fetch('../controllers/admin/auth_controller.php?action=changePassword', {
+        const res  = await fetch('../controllers/admin/auth-controller.php?action=changePassword', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({current_password: currentPwd, new_password: newPwd, confirm_password: confirmPwd})
@@ -833,7 +833,7 @@ async function handleImageSelect(input) {
     formData.append('image', file);
 
     try {
-        const res  = await fetch('../controllers/admin/car_addmin_controller.php?action=upload', {
+        const res  = await fetch('../controllers/admin/car-addmin-controller.php?action=upload', {
             method: 'POST',
             body: formData
         });

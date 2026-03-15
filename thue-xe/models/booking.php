@@ -4,7 +4,7 @@
  * Xử lý logic liên quan đến đặt xe
  */
 
-require_once __DIR__ . '/base_model.php';
+require_once __DIR__ . '/base-model.php';
 
 class Booking extends BaseModel {
     protected $table = 'bookings';

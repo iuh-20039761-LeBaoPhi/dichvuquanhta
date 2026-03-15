@@ -60,7 +60,7 @@ async function loadCarDetail(carId) {
         // Update page SEO dynamically
         const car = result.data.car;
         const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe';
-        const carUrl = `${SITE_BASE}/car_detail.html?id=${car.id}`;
+        const carUrl = `${SITE_BASE}/car-detail.html?id=${car.id}`;
         const carImg = `${SITE_BASE}/assets/images/cars/${car.main_image}`;
         const carTitle = `${car.name} – Thuê Xe TP.HCM | ${new Intl.NumberFormat('vi-VN').format(car.price_per_day)}đ/ngày`;
         const carDesc = `Thuê ${car.name} tại Thuê Xe TP.HCM. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá chỉ từ ${new Intl.NumberFormat('vi-VN').format(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
@@ -582,7 +582,7 @@ async function submitBooking(car) {
         if(result.success) {
             // Chuyển thông tin addon qua URL params thay vì sessionStorage
             // (giữ dữ liệu khi user refresh trang booking_success)
-            const sp = new URLSearchParams({ page: 'booking_success', id: result.booking_id });
+            const sp = new URLSearchParams({ page: 'booking-success', id: result.booking_id });
             sp.set('days',        days);
             sp.set('addon_total', addonTotal);
             sp.set('total',       bookingData.total_price);

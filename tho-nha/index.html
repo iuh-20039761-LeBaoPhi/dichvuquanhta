@@ -78,14 +78,14 @@
             "@type": "OfferCatalog",
             "name": "Dịch Vụ Sửa Chữa Nhà",
             "itemListElement": [
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Máy Lạnh",      "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html?id=1" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Máy Giặt",      "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html?id=2" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Nhà Vệ Sinh",   "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html?id=3" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Điện - Nước",   "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html?id=4" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Tủ Lạnh",       "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html?id=5" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Tivi",           "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html?id=6" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Bếp Từ",         "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html?id=7" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Cải Tạo Nhà",        "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html?id=8" } }
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Máy Lạnh",      "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html?id=1" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Máy Giặt",      "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html?id=2" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Nhà Vệ Sinh",   "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html?id=3" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Điện - Nước",   "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html?id=4" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Tủ Lạnh",       "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html?id=5" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Tivi",           "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html?id=6" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sửa Bếp Từ",         "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html?id=7" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Cải Tạo Nhà",        "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html?id=8" } }
             ]
         }
     }
@@ -927,7 +927,7 @@
                     e.stopPropagation();
                     const serviceCard = this.closest('.service-card');
                     const serviceId = serviceCard.getAttribute('data-service-id');
-                    window.location.href = `service_detail.html?id=${serviceId}`;
+                    window.location.href = `service-detail.html?id=${serviceId}`;
                 });
             });
         });
@@ -945,6 +945,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/map-picker.js"></script>
     <script src="js/booking.js"></script>
-    <script src="js/order_tracking.js"></script>
+    <script src="js/order-tracking.js"></script>
 </body>
 </html>

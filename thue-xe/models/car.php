@@ -4,7 +4,7 @@
  * Xử lý logic liên quan đến xe
  */
 
-require_once __DIR__ . '/base_model.php';
+require_once __DIR__ . '/base-model.php';
 
 class Car extends BaseModel {
     protected $table = 'cars';

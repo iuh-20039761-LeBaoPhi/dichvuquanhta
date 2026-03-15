@@ -4,7 +4,7 @@
  * Xử lý logic liên quan đến dịch vụ
  */
 
-require_once __DIR__ . '/base_model.php';
+require_once __DIR__ . '/base-model.php';
 
 class Service extends BaseModel {
     protected $table = 'services';

@@ -104,24 +104,22 @@ function injectBackBar() {
     if (page === 'home' || !page) return;
 
     const PAGE_LABELS = {
-        search:          'Tìm xe',
-        car_detail:      'Chi tiết xe',
-        'car-detail':    'Chi tiết xe',
-        about:           'Giới thiệu',
-        services:        'Dịch vụ',
-        guide:           'Hướng dẫn',
-        contact:         'Liên hệ',
-        booking_success: 'Đặt xe thành công',
-        track_order:     'Theo dõi đơn',
-        terms:           'Điều khoản',
-        blog:            'Blog',
-        'blog-detail':   'Bài viết',
+        search:            'Tìm xe',
+        'car-detail':      'Chi tiết xe',
+        about:             'Giới thiệu',
+        services:          'Dịch vụ',
+        guide:             'Hướng dẫn',
+        contact:           'Liên hệ',
+        'booking-success': 'Đặt xe thành công',
+        'track-order':     'Theo dõi đơn',
+        terms:             'Điều khoản',
+        blog:              'Blog',
+        'blog-detail':     'Bài viết',
     };
 
     const PARENT = {
-        car_detail:      'views/pages/search.html',
-        'car-detail':    'views/pages/search.html',
-        booking_success: 'index.html',
+        'car-detail':      'views/pages/search.html',
+        'booking-success': 'index.html',
     };
 
     const label  = PAGE_LABELS[page] || page;
@@ -130,12 +128,17 @@ function injectBackBar() {
     const bar = document.createElement('div');
     bar.className = 'back-bar';
     bar.innerHTML = `
-        <div class="container d-flex align-items-center gap-2 py-2">
-            <button class="btn btn-back" onclick="goBack('${parent}')">
-                <i class="fas fa-arrow-left me-1"></i>Trở lại
-            </button>
-            <span class="back-sep"><i class="fas fa-chevron-right"></i></span>
-            <span class="back-current">${label}</span>
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="${parent}" onclick="goBack('${parent}'); return false;">
+                            <i class="fas fa-home me-1"></i>Trang Chủ
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">${label}</li>
+                </ol>
+            </nav>
         </div>`;
 
     const header = document.querySelector('header');

@@ -4,7 +4,7 @@ const API = {
     cars: {
         getFeatured: async () => {
             try {
-                const res = await fetch(`${API.baseURL}car_controller.php?action=getFeatured`);
+                const res = await fetch(`${API.baseURL}car-controller.php?action=getFeatured`);
                 if (!res.ok) throw new Error();
                 return await res.json();
             } catch {
@@ -14,7 +14,7 @@ const API = {
         },
         getAll: async () => {
             try {
-                const res = await fetch(`${API.baseURL}car_controller.php?action=getAll`);
+                const res = await fetch(`${API.baseURL}car-controller.php?action=getAll`);
                 if (!res.ok) throw new Error();
                 return await res.json();
             } catch {
@@ -24,7 +24,7 @@ const API = {
         },
         getById: async (id) => {
             try {
-                const res = await fetch(`${API.baseURL}car_controller.php?action=getById&id=${id}`);
+                const res = await fetch(`${API.baseURL}car-controller.php?action=getById&id=${id}`);
                 if (!res.ok) throw new Error();
                 return await res.json();
             } catch {
@@ -38,7 +38,7 @@ const API = {
         search: async (params) => {
             try {
                 const query = new URLSearchParams(params).toString();
-                const res = await fetch(`${API.baseURL}car_controller.php?action=search&${query}`);
+                const res = await fetch(`${API.baseURL}car-controller.php?action=search&${query}`);
                 if (!res.ok) throw new Error();
                 return await res.json();
             } catch {
@@ -59,7 +59,7 @@ const API = {
         },
         getFilterOptions: async () => {
             try {
-                const res = await fetch(`${API.baseURL}car_controller.php?action=getFilterOptions`);
+                const res = await fetch(`${API.baseURL}car-controller.php?action=getFilterOptions`);
                 if (!res.ok) throw new Error();
                 return await res.json();
             } catch {
@@ -72,7 +72,7 @@ const API = {
     services: {
         getAll: async () => {
             try {
-                const res = await fetch(`${API.baseURL}service_controller.php?action=getAll`);
+                const res = await fetch(`${API.baseURL}service-controller.php?action=getAll`);
                 if (!res.ok) throw new Error();
                 return await res.json();
             } catch {
@@ -85,7 +85,7 @@ const API = {
     bookings: {
         create: async (data) => {
             try {
-                const res = await fetch(`${API.baseURL}booking_controller.php?action=create`, {
+                const res = await fetch(`${API.baseURL}booking-controller.php?action=create`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -98,7 +98,7 @@ const API = {
         },
         getById: async (id) => {
             try {
-                const res = await fetch(`${API.baseURL}booking_controller.php?action=getById&id=${id}`);
+                const res = await fetch(`${API.baseURL}booking-controller.php?action=getById&id=${id}`);
                 if (!res.ok) throw new Error();
                 return await res.json();
             } catch {

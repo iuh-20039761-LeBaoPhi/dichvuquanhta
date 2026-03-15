@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         try {
-            const res = await fetch(`api/get_orders.php?phone=${encodeURIComponent(phone)}`);
+            const res = await fetch(`api/get-orders.php?phone=${encodeURIComponent(phone)}`);
             const data = await res.json();
 
             console.log('API:', data);
@@ -120,7 +120,7 @@ window.requestCancelOrder = async function(orderId, orderCode) {
     if (!confirm) return;
 
     try {
-        const res = await fetch('api/request_cancel_order.php', {
+        const res = await fetch('api/request-cancel-order.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

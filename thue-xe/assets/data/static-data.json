@@ -36,7 +36,7 @@
             "id": 5, "name": "Mitsubishi Xpander 2023", "brand": "Mitsubishi", "model": "Xpander", "year": 2023,
             "license_plate": "51L-567.89", "manufacture_year": 2023, "mileage": 18300, "color": "Trắng tinh", "car_type": "MPV",
             "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
-            "price_per_day": 850000, "main_image": "mitsubishi_xpander.jpg", "status": "available",
+            "price_per_day": 850000, "main_image": "mitsubishi-xpander.jpg", "status": "available",
             "description": "MPV 7 chỗ rộng rãi, phù hợp cho gia đình và nhóm bạn du lịch.",
             "features": "Điều hòa,Camera lùi,Màn hình cảm ứng,Kết nối Bluetooth,Ghế lái chỉnh điện"
         },
@@ -76,7 +76,7 @@
             "id": 10, "name": "Toyota Vios 2023", "brand": "Toyota", "model": "Vios", "year": 2023,
             "license_plate": "51R-777.88", "manufacture_year": 2023, "mileage": 32100, "color": "Xám Celestite", "car_type": "Sedan",
             "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
-            "price_per_day": 700000, "main_image": "toyota_vios.jpg", "status": "available",
+            "price_per_day": 700000, "main_image": "toyota-vios.jpg", "status": "available",
             "description": "Toyota Vios 2023 - Sedan hạng B phổ biến, bền bỉ và tiết kiệm nhiên liệu, phù hợp di chuyển đô thị.",
             "features": "Điều hòa,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Túi khí đôi"
         },

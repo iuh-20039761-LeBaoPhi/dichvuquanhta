@@ -452,7 +452,7 @@
                 <!-- Toolbar -->
                 <div class="blog-toolbar">
                     <div class="blog-count">
-                        Hiển thị <strong id="showCount">0</strong> / <strong>30</strong> bài viết
+                        Hiển thị <strong id="showCount">0</strong> / <strong id="totalCount">0</strong> bài viết
                         <span id="selectedInfo" style="display:none;"> &nbsp;|&nbsp; <span style="color:var(--primary);font-weight:600;" id="selectedInfoText"></span></span>
                     </div>
                     <div class="blog-sort">
@@ -490,7 +490,6 @@
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/blog-data.js"></script>
 <script>
 function patchNavForBlogPages() {
     const header = document.getElementById('header-container');
@@ -547,6 +546,8 @@ fetch('footer.html').then(r => r.text()).then(h => { document.getElementById('fo
 </script>
 
 <script>
+let BLOG_DATA = [];
+
 // ===== STATE =====
 let state = {
     articles: [],       // current filtered+sorted list
@@ -559,11 +560,44 @@ let state = {
 };
 
 // ===== INIT =====
-document.addEventListener('DOMContentLoaded', function() {
-    state.articles = [...window.BLOG_DATA];
-    renderChecklist();
-    renderArticles();
-});
+document.addEventListener('DOMContentLoaded', initBlogPage);
+
+async function initBlogPage() {
+    try {
+        const response = await fetch('data/blog-data.json', { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
+
+        BLOG_DATA = await response.json();
+        document.getElementById('totalCount').textContent = BLOG_DATA.length;
+
+        const params = new URLSearchParams(window.location.search);
+        const qParam = (params.get('q') || '').trim();
+        if (qParam) {
+            state.searchQuery = qParam.toLowerCase();
+            document.getElementById('heroSearch').value = qParam;
+            document.getElementById('sidebarSearch').value = qParam;
+        }
+
+        state.articles = [...BLOG_DATA];
+        renderChecklist();
+        renderArticles();
+    } catch (error) {
+        console.error('Không tải được dữ liệu bài viết:', error);
+
+        const noRes = document.getElementById('noResults');
+        noRes.style.display = 'block';
+
+        const title = noRes.querySelector('h5');
+        const description = noRes.querySelector('p');
+        if (title) title.textContent = 'Không tải được dữ liệu bài viết';
+        if (description) description.textContent = 'Vui lòng thử tải lại trang sau ít phút.';
+
+        document.getElementById('articleGrid').innerHTML = '';
+        document.getElementById('pagination').innerHTML = '';
+    }
+}
 
 // ===== SIDEBAR CHECKLIST =====
 function renderChecklist() {
@@ -571,7 +605,7 @@ function renderChecklist() {
     const query = document.getElementById('sidebarSearch').value.toLowerCase();
     const cat = state.currentCat;
 
-    let filtered = window.BLOG_DATA.filter(a => {
+    let filtered = BLOG_DATA.filter(a => {
         const catMatch = cat === 'all' || a.category === cat;
         const searchMatch = !query || a.title.toLowerCase().includes(query);
         return catMatch && searchMatch;
@@ -612,7 +646,7 @@ function uncheckAll() {
 function getVisibleIds() {
     const query = document.getElementById('sidebarSearch').value.toLowerCase();
     const cat = state.currentCat;
-    return window.BLOG_DATA
+    return BLOG_DATA
         .filter(a => (cat === 'all' || a.category === cat) && (!query || a.title.toLowerCase().includes(query)))
         .map(a => a.id);
 }
@@ -691,7 +725,7 @@ function getSorted(arr) {
 
 // ===== RENDER ARTICLES =====
 function renderArticles() {
-    let list = window.BLOG_DATA.filter(a => {
+    let list = BLOG_DATA.filter(a => {
         const catMatch = state.currentCat === 'all' || a.category === state.currentCat;
         const searchMatch = !state.searchQuery ||
             a.title.toLowerCase().includes(state.searchQuery) ||

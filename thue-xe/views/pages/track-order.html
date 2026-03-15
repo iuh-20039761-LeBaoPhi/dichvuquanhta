@@ -22,13 +22,13 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-<script src="assets/js/load_template.js"></script>
+<script src="assets/js/load-template.js"></script>
 <script>
 window.PAGE_SEO = {
     title: 'Theo Dõi Đơn Đặt Xe – CarRental Toàn Quốc',
     desc:  'Tra cứu trạng thái đơn đặt xe tại CarRental bằng số điện thoại. Xem thông tin chuyến xe, ngày nhận, ngày trả và tổng tiền.',
     keys:  'theo dõi đơn thuê xe, tra cứu đơn đặt xe, kiểm tra trạng thái đặt xe carrental',
-    url:   'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/track_order.html'
+    url:   'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/track-order.html'
 };
 loadHeader();
 </script>
@@ -111,7 +111,7 @@ async function trackOrder() {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang tìm...';
 
     try {
-        const res  = await fetch(`controllers/booking_controller.php?action=trackByPhone&phone=${encodeURIComponent(phone)}`);
+        const res  = await fetch(`controllers/booking-controller.php?action=trackByPhone&phone=${encodeURIComponent(phone)}`);
         const data = await res.json();
 
         if (!data.success) {

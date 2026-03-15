@@ -6,36 +6,29 @@
 
 /* ===== BACK BAR ===== */
 .back-bar {
-    background: #fff;
-    border-bottom: 1px solid #e2e8f0;
+    background: var(--gradient-primary);
     font-size: 0.875rem;
+    padding: 8px 0;
 }
-.btn-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 0.82rem;
-    font-weight: 500;
-    background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-    color: #fff;
-    border: none;
-    transition: opacity 0.2s, transform 0.15s;
-    white-space: nowrap;
+.back-bar .breadcrumb {
+    margin: 0;
+    background: none;
+    padding: 0;
 }
-.btn-back:hover {
-    opacity: 0.88;
-    transform: translateX(-2px);
+.back-bar .breadcrumb-item a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.back-bar .breadcrumb-item a:hover {
     color: #fff;
 }
-.back-sep {
-    color: #cbd5e1;
-    font-size: 0.7rem;
-}
-.back-current {
-    color: #64748b;
+.back-bar .breadcrumb-item.active {
+    color: #fff;
     font-weight: 500;
+}
+.back-bar .breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255, 255, 255, 0.6);
 }
 
 :root {

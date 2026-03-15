@@ -220,7 +220,7 @@ function saveCategoryHandler() {
         data.id = parseInt(id);
     }
     
-    fetch('api/admin/manage_services.php', {
+    fetch('api/admin/manage-services.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -247,7 +247,7 @@ function saveCategoryHandler() {
 window.deleteCategory = function(id) {
     if (!confirm('Xác nhận xóa danh mục này?\n\nLưu ý: Chỉ có thể xóa danh mục không có dịch vụ.')) return;
     
-    fetch('api/admin/manage_services.php', {
+    fetch('api/admin/manage-services.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -403,7 +403,7 @@ function saveServiceHandler() {
         data.id = parseInt(id);
     }
     
-    fetch('api/admin/manage_services.php', {
+    fetch('api/admin/manage-services.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -430,7 +430,7 @@ function saveServiceHandler() {
 window.deleteService = function(id) {
     if (!confirm('Xác nhận xóa dịch vụ này?')) return;
     
-    fetch('api/admin/manage_services.php', {
+    fetch('api/admin/manage-services.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

@@ -14,13 +14,13 @@
     <meta name="language"    content="Vietnamese">
     <meta name="geo.region"    content="VN-SG">
     <meta name="geo.placename" content="Thành phố Hồ Chí Minh">
-    <link rel="canonical" id="metaCanonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html">
+    <link rel="canonical" id="metaCanonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html">
     <link rel="icon"          type="image/png" href="image/logo.png">
     <link rel="apple-touch-icon" href="image/logo.png">
 
     <!-- ===== Open Graph / Facebook ===== -->
     <meta property="og:type"        content="website">
-    <meta property="og:url"         id="ogUrl"   content="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service_detail.html">
+    <meta property="og:url"         id="ogUrl"   content="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.html">
     <meta property="og:title"       id="ogTitle" content="Chi Tiết Dịch Vụ - Thợ Nhà">
     <meta property="og:description" id="ogDesc"  content="Dịch vụ sửa chữa nhà chuyên nghiệp tại TP.HCM. Bảo hành 6-12 tháng, hotline 24/7: 0775 472 347.">
     <meta property="og:image"       id="ogImage" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/image/1.jpg">
@@ -346,7 +346,7 @@
         const svc = SERVICES_DATA.find(s => s.id === serviceId) || SERVICES_DATA[0];
 
         // ===== SEO: Cập nhật meta tags theo từng dịch vụ =====
-        const pageUrl  = `${SITE_BASE}/service_detail.html?id=${serviceId}`;
+        const pageUrl  = `${SITE_BASE}/service-detail.html?id=${serviceId}`;
         const pageImg  = `${SITE_BASE}/${svc.image}`;
         const svcTitle = `${svc.name} Chuyên Nghiệp TP.HCM | Thợ Nhà`;
         const svcDesc  = `Dịch vụ ${svc.name.toLowerCase()} uy tín tại TP.HCM – ${svc.desc} Bảo hành 6-12 tháng, có mặt trong 30 phút. Hotline: 0775 472 347.`;
@@ -534,7 +534,7 @@
             relatedGrid.insertAdjacentHTML('beforeend', `
                 <div class="col-md-4">
                     <div class="related-service" style="cursor:pointer;"
-                         onclick="window.location.href='service_detail.html?id=${rel.id}'">
+                         onclick="window.location.href='service-detail.html?id=${rel.id}'">
                         <img src="${rel.image}" alt="${rel.name}">
                         <div class="related-service-content">
                             <h5>
@@ -649,6 +649,6 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/map-picker.js"></script>
-    <script src="js/order_tracking.js"></script>
+    <script src="js/order-tracking.js"></script>
 </body>
 </html>

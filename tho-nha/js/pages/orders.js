@@ -45,7 +45,7 @@ function formatDate(dateString) {
 // ✅ SỬA HÀM loadAllOrders - Thêm xử lý lỗi
 async function loadAllOrders() {
     try {
-        const response = await fetch('api/admin/get_all_orders.php');
+        const response = await fetch('api/admin/get-all-orders.php');
         
         // ✅ Kiểm tra response status
         if (!response.ok) {
@@ -194,7 +194,7 @@ function setupOrdersEvents() {
                 status: newStatus 
             };
             
-            fetch('api/admin/update_order_status.php', {
+            fetch('api/admin/update-order-status.php', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

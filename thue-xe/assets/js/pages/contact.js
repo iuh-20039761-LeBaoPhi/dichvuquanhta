@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let message = '';
 
         try {
-            const res  = await fetch('controllers/contact_controller.php?action=submit', {
+            const res  = await fetch('controllers/contact-controller.php?action=submit', {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body:    JSON.stringify(payload)

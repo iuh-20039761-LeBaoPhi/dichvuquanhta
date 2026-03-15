@@ -4,7 +4,7 @@ define('BASE_PATH', __DIR__);
 define('BASE_URL', 'http://localhost/carrental_test');
 
 $page = $_GET['page'] ?? 'home';
-$validPages = ['home', 'search', 'car-detail', 'about', 'services', 'guide', 'contact', 'booking_success', 'track_order', 'terms'];
+$validPages = ['home', 'search', 'car-detail', 'about', 'services', 'guide', 'contact', 'booking-success', 'track-order', 'terms'];
 
 if (!in_array($page, $validPages)) $page = 'home';
 
@@ -15,7 +15,7 @@ $rootPages = ['terms', 'home'];
 if (in_array($page, $rootPages)) {
     $viewFile = BASE_PATH . '/' . $page . '.html';
 } else {
-    $viewFile = BASE_PATH . '/views/pages/' . str_replace('-', '_', $page) . '.html';
+    $viewFile = BASE_PATH . '/views/pages/' . $page . '.html';
 }
 
 if (file_exists($viewFile)) {
