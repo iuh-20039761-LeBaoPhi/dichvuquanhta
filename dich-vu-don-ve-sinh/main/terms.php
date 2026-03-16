@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>Điều khoản dịch vụ | Vệ sinh Care</title>
 
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="header.css">
+<link rel="stylesheet" href="../demo/style.css">
+<link rel="stylesheet" href="../demo/header.css">
 
 <style>
 

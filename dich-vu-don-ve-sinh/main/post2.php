@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Cách vệ sinh sofa tại nhà</title>
+
+<link rel="stylesheet" href="../demo/style.css">
+<link rel="stylesheet" href="../demo/header.css">
+<link rel="stylesheet" href="../demo/post.css">
+
+</head>
+
+<body>
+
+<header class="site-header">
+<div class="container site-header-content">
+
+<a href="index.php" class="site-logo">
+<img src="../img/ChatGPT Image 14_12_57 7 thg 3, 2026.png" alt="logo">
+<span class="logo-text">DỊCH VỤ VỆ SINH</span>
+</a>
+
+<nav class="site-nav">
+<a href="index.php">Trang chủ</a>
+<a href="about.php">Giới thiệu</a>
+<a href="services.php">Dịch vụ</a>
+<a href="booking.php">Đặt lịch</a>
+<a href="pricing.php">Bảng giá</a>
+<a href="faq.php">FAQ</a>
+<a href="contact.php">Liên hệ</a>
+<a href="blog.php">Bài viết</a>
+<a href="terms.php">Điều khoản dịch vụ</a>
+</nav>
+
+<div class="site-user-area">
+<a href="login_customer.php" class="site-btn">Đăng nhập</a>
+</div>
+
+</div>
+</header>
+
+<section class="post-section">
+
+<div class="post-container">
+
+<h1 class="post-title">Cách vệ sinh sofa tại nhà đúng cách</h1>
+
+<div class="post-meta">
+Đăng ngày: 22/03/2026 • Vệ sinh Care
+</div>
+
+<img src="..\demo\img\ChatGPT Image 11_15_41 15 thg 3, 2026.png" class="post-image">
+
+<div class="post-content">
+
+<p>
+Sofa là nơi sử dụng thường xuyên trong gia đình nên rất dễ bám bụi,
+vết bẩn và vi khuẩn. Việc vệ sinh sofa định kỳ sẽ giúp không gian
+sống sạch sẽ và đảm bảo sức khỏe cho gia đình.
+</p>
+
+<h2>1. Hút bụi toàn bộ sofa</h2>
+
+<p>
+Trước khi vệ sinh, hãy sử dụng máy hút bụi để hút sạch bụi bẩn
+trên bề mặt và các khe của sofa. Điều này giúp việc làm sạch
+hiệu quả hơn.
+</p>
+
+<h2>2. Sử dụng dung dịch vệ sinh phù hợp</h2>
+
+<p>
+Đối với sofa vải, có thể dùng dung dịch vệ sinh chuyên dụng
+hoặc pha loãng xà phòng nhẹ với nước ấm để lau bề mặt.
+</p>
+
+<h2>3. Lau bằng khăn mềm</h2>
+
+<p>
+Dùng khăn mềm thấm dung dịch và lau nhẹ nhàng trên bề mặt sofa.
+Tránh chà mạnh vì có thể làm hỏng vải hoặc da.
+</p>
+
+<h2>4. Làm khô sofa</h2>
+
+<p>
+Sau khi lau sạch, hãy để sofa khô tự nhiên hoặc dùng quạt
+để giúp sofa khô nhanh hơn và tránh ẩm mốc.
+</p>
+
+<h2>5. Vệ sinh định kỳ</h2>
+
+<p>
+Nên vệ sinh sofa từ 2–3 tháng một lần để giữ sofa luôn sạch
+và kéo dài tuổi thọ của sản phẩm.
+</p>
+
+</div>
+
+<a href="blog.php" class="back-btn">← Quay lại bài viết</a>
+
+</div>
+
+</section>
+
+<footer class="footer">
+
+<div class="container footer-content">
+
+<div class="footer-col">
+<h3>VỆ SINH CARE</h3>
+<p>
+Dịch vụ vệ sinh chuyên nghiệp cho nhà ở, văn phòng và công trình sau xây dựng.
+</p>
+</div>
+
+<div class="footer-col">
+<h4>Liên kết nhanh</h4>
+<ul>
+<li><a target="_blank" href="../demo/">Lau Dọn Vệ Sinh</a></li>
+<li><a target="_blank" href="../../csmvb/">Chăm Sóc Mẹ & Bé</a></li>
+<li><a target="_blank" href="../../web-cham-soc-vuon-nha/">Chăm Sóc Vườn & Rẫy</a></li>
+<li><a target="_blank" href="../../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a></li>
+<li><a target="_blank" href="../../tho-nha/">Thợ Nhà & Sửa Chữa</a></li>
+<li><a target="_blank" href="../../csng/">Chăm Sóc Người Già</a></li>
+<li><a target="_blank" href="../../csbn/">Chăm Sóc Bệnh Nhân</a></li>
+<li><a target="_blank" href="../../he-thong-giao-hang-chuyen-don/">Giao Hàng Nhanh</a></li>
+</ul>
+</div>
+
+<div class="footer-col">
+<h4>Thông tin liên hệ</h4>
+<p>📍 273 Trần Thủ Độ, Tân Phú, TP.HCM</p>
+<p>📞 <a href="tel:0775472347">0775 472 347</a></p>
+<p>✉ <a href="mailto:dichvuquanhta.vn@gmail.com">dichvuquanhta.vn@gmail.com</a></p>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+<p>© 2026 Vệ sinh Care. All rights reserved.</p>
+</div>
+
+</footer>
+
+</body>
+</html>
