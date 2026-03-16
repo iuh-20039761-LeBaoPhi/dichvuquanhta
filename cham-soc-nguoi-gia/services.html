@@ -26,6 +26,7 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap"
       rel="stylesheet"
     />
+
   </head>
   <body style="font-family: &quot;Quicksand&quot;, sans-serif">
     <!-- Navigation -->
@@ -342,217 +343,53 @@
     <!-- ============================================================
          BOOKING MODAL  (Bootstrap modal)
     ============================================================ -->
-    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content rounded-4 shadow">
-
-          <!-- Header -->
-          <div class="modal-header border-0 pb-0">
-            <h5 class="modal-title fw-bold" id="bookingModalLabel" style="color:#2e7d32">
-              <i class="fas fa-calendar-plus me-2"></i>Đặt Lịch Dịch Vụ
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-
-          <!-- Body -->
-          <div class="modal-body pt-2">
-            <form id="bookingForm">
-
-              <!-- Tên dịch vụ -->
-              <div class="mb-3">
-                <label class="form-label fw-bold">Dịch vụ:</label>
-                <input type="text" id="serviceName" readonly class="form-control bg-light">
-              </div>
-
-              <!-- ===== CHỌN CA ===== -->
-              <div class="mb-3">
-                <label class="form-label fw-bold" style="color:#2e7d32">
-                  <i class="fas fa-clock me-1"></i>Chọn khung giờ (Ca)
-                </label>
-                <div id="servicePackages"></div>
-              </div>
-
-              <!-- Thông tin ca -->
-              <div id="shiftInfoBox" class="alert alert-info py-2 px-3 small d-none"></div>
-
-              <!-- ===== GIỜ BẮT ĐẦU / KẾT THÚC ===== -->
-              <div class="row g-2 mb-3">
-                <div class="col-6">
-                  <label class="form-label fw-bold">Giờ bắt đầu</label>
-                  <input type="time" id="startTime" class="form-control">
-                  <div id="startTimeHint" class="form-text text-muted small"></div>
-                </div>
-                <div class="col-6">
-                  <label class="form-label fw-bold">Giờ kết thúc</label>
-                  <input type="time" id="endTime" class="form-control">
-                  <div id="endTimeHint" class="form-text text-muted small"></div>
-                </div>
-              </div>
-
-              <!-- Lỗi giờ -->
-              <div id="timeError" class="alert alert-danger py-2 px-3 small d-none"></div>
-
-              <!-- ===== CHỌN CÔNG VIỆC ===== -->
-              <div class="mb-3">
-                <label class="form-label fw-bold" style="color:#2e7d32">
-                  <i class="fas fa-tasks me-1"></i>Chọn công việc cần làm
-                </label>
-                <div id="serviceJobs"></div>
-              </div>
-
-              <!-- ===== NGÀY BẮT ĐẦU ===== -->
-              <div class="mb-3">
-                <label class="form-label fw-bold">Ngày bắt đầu:</label>
-                <input type="date" id="startDate" class="form-control">
-              </div>
-
-              <!-- ===== LOẠI THỜI HẠN ===== -->
-              <div class="mb-3">
-                <label class="form-label fw-bold">Thuê theo:</label>
-                <select id="durationUnit" class="form-select">
-                  <option value="">-- Chọn loại thời hạn --</option>
-                  <option value="day">Theo ngày</option>
-                  <option value="week">Theo tuần</option>
-                  <option value="month">Theo tháng</option>
-                  <option value="year">Theo năm</option>
-                </select>
-              </div>
-
-              <!-- Ngày kết thúc (chỉ khi chọn "ngày") -->
-              <div id="endDateRow" class="mb-3 d-none">
-                <label class="form-label fw-bold">Đến ngày:</label>
-                <input type="date" id="endDate" class="form-control">
-              </div>
-
-              <!-- Số lượng tuần/tháng/năm -->
-              <div id="durationAmountRow" class="mb-3 d-none">
-                <label class="form-label fw-bold" id="durationAmountLabel">Số tuần:</label>
-                <input type="number" id="durationAmount" min="1" value="1" class="form-control">
-              </div>
-
-              <!-- Ngày kết thúc tự động -->
-              <div id="autoEndDateRow" class="alert alert-success py-2 px-3 small d-none">
-                <i class="fas fa-calendar-check me-1"></i>
-                <strong>Ngày kết thúc:</strong>
-                <span id="autoEndDateText" class="fw-bold ms-1"></span>
-                <span id="totalDaysText" class="text-muted ms-2"></span>
-              </div>
-
-              <!-- ===== YÊU CẦU KHÁC ===== -->
-              <div class="mb-3">
-                <label class="form-label fw-bold">Yêu cầu khác:</label>
-                <textarea id="extraRequest" rows="2" class="form-control"
-                  placeholder="Ví dụ: cần người có kinh nghiệm chăm bé sinh non..."></textarea>
-              </div>
-
-              <!-- ===== CHI TIẾT GIÁ ===== -->
-              <div class="card bg-light border-0 mb-3">
-                <div class="card-body py-2 px-3">
-                  <p class="fw-bold small mb-2" style="color:#2e7d32">
-                    <i class="fas fa-receipt me-1"></i>Chi tiết tính tiền
-                  </p>
-                  <div class="d-flex justify-content-between small mb-1">
-                    <span>Tiền dịch vụ</span>
-                    <span id="basePrice" class="fw-bold">0 đ</span>
-                  </div>
-                  <div id="calcDetailRow" class="d-none mb-1">
-                    <span id="calcDetailText" class="text-muted" style="font-size:11px"></span>
-                  </div>
-                  <div id="nightRow" class="d-none justify-content-between small mb-1 text-danger">
-                    <span>Phụ thu ca đêm (+20%)</span>
-                    <span id="nightFee" class="fw-bold">0 đ</span>
-                  </div>
-                  <div id="holidayRow" class="d-none justify-content-between small mb-1 text-danger">
-                    <span>Phụ thu ngày lễ (+30%)</span>
-                    <span id="holidayFee" class="fw-bold">0 đ</span>
-                  </div>
-                  <div class="d-flex justify-content-between small mb-1">
-                    <span>Phí di chuyển</span>
-                    <span id="travelFee">50.000 đ</span>
-                  </div>
-                  <hr class="my-2">
-                </div>
-              </div>
-
-              <!-- Tổng tiền -->
-              <div class="mb-3">
-                <label class="form-label fw-bold">Tổng tiền:</label>
-                <input type="text" id="totalPrice" readonly value="0 đ"
-                  class="form-control fw-bold text-center fs-5"
-                  style="border-color:#2e7d32;background:rgb(245, 255, 247);color:#2e7d32">
-              </div>
-
-              <!-- ===== THÔNG TIN KHÁCH HÀNG ===== -->
-              <p class="fw-bold small mb-2 mt-3" style="color:#2e7d32">
-                <i class="fas fa-user me-1"></i>Thông tin khách hàng
-              </p>
-
-              <div class="mb-3">
-                <label class="form-label fw-bold">Họ và tên: <span class="text-danger">*</span></label>
-                <input type="text" id="customerName" required placeholder="Nguyễn Văn A" class="form-control">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-bold">Số điện thoại: <span class="text-danger">*</span></label>
-                <input type="tel" id="customerPhone" required placeholder="0912345678" pattern="[0-9]{10,11}" class="form-control">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-bold">Email:</label>
-                <input type="email" id="customerEmail" placeholder="email@example.com" class="form-control">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-bold">Địa chỉ của bạn:</label>
-                <input type="text" id="customerAddress" placeholder="Bấm 'Lấy vị trí của tôi'" readonly class="form-control bg-light">
-                <div class="d-flex gap-2 mt-2">
-                  <button type="button" onclick="getLocation()" class="btn btn-success btn-sm flex-fill">
-                    <i class="fas fa-location-dot me-1"></i>Lấy vị trí
-                  </button>
-                  <a id="mapLink" target="_blank" class="btn btn-primary btn-sm flex-fill text-white text-decoration-none">
-                    <i class="fas fa-map me-1"></i>Mở Google Map
-                  </a>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-bold">Ghi chú:</label>
-                <textarea id="customerNote" rows="2" class="form-control"
-                  placeholder="Thời gian mong muốn, yêu cầu đặc biệt..."></textarea>
-              </div>
-
-              <!-- Buttons -->
-              <div class="d-flex gap-2 mt-3">
-                <button type="button" class="btn btn-secondary rounded-pill flex-fill fw-bold"
-                  data-bs-dismiss="modal">Hủy</button>
-                <button type="submit" class="btn text-white rounded-pill fw-bold"
-                  style="flex:2;background-color:#2e7d32;border:none"
-                  onmouseover="this.style.backgroundColor='#1b5e20'"
-                  onmouseout="this.style.backgroundColor='#2e7d32'">
-                  <i class="fas fa-check me-1"></i>Xác Nhận Đặt Lịch
-                </button>
-              </div>
-
-            </form>
-
-            <!-- Thành công -->
-            <div id="successMessage" class="text-center py-5 d-none">
-              <i class="fas fa-check-circle text-success" style="font-size:3.5rem"></i>
-              <h3 class="mt-3 fw-bold">Đặt lịch thành công!</h3>
-              <p class="text-muted">Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
-            </div>
-
-          </div><!-- /.modal-body -->
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /#bookingModal -->
-
+        <div id="modalContainer"></div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+    $(document).ready(function () {
+          // 1. Tải modal vào
+          $("#modalContainer").load("booking-modal.html", function() {
+              console.log("Modal đã được load thành công!");
+              
+              // 2. Sau khi load xong, mới bắt đầu lắng nghe sự kiện click
+              $(".btn-book").click(function() {
+                  var id = $(this).data("id");
+                  // Gọi hàm renderService (phải đảm bảo hàm này đã được định nghĩa)
+                  renderService(id); 
+                  
+                  // Hiển thị modal
+                  var myModal = new bootstrap.Modal(document.getElementById('bookingModal'));
+                  myModal.show();
+              });
+          });
+      });
+      // Thay vì dùng $('.modal').modal('hide') - cách này cũ
+      // Hãy dùng cách này trong file services.html của bạn:
 
+      $(document).on('hidden.bs.modal', '#bookingModal', function () {
+          // 1. Loại bỏ lớp làm mờ (nếu còn sót lại)
+          $('.modal-backdrop').remove();
+          
+          // 2. Loại bỏ class khóa cuộn trên body
+          $('body').removeClass('modal-open');
+          
+          // 3. Reset các thuộc tính CSS mà Bootstrap áp dụng lên body
+          $('body').css({
+              'overflow': '',
+              'padding-right': ''
+          });
+          
+          // 4. Reset form để lần sau mở lại là sạch sẽ
+          $('#bookingForm')[0].reset();
+          
+          // 5. Ẩn thông báo thành công và hiện lại form (nếu lần trước đã gửi thành công)
+          $('#successMessage').addClass('d-none');
+          $('#bookingForm').show();
+      });
+      
     /* ============================================================
        GET LOCATION
     ============================================================ */
@@ -660,6 +497,29 @@
       /* --------------------------------------------------
          OPEN MODAL
       -------------------------------------------------- */
+      // Sử dụng hàm này để load modal và xử lý click
+      
+        // Xử lý khi chọn dịch vụ mới trong dropdown của modal
+      $(document).on("change", "#serviceSelector", function() {
+          var selectedId = $(this).val();
+          var service = SERVICES.find(s => s.id == selectedId);
+          renderService(service);
+      });
+
+      // Khi click nút đặt lịch
+      $(document).on("click", ".btn-book", function() {
+          var id = $(this).data("id");
+          var service = SERVICES.find(s => s.id == id);
+          
+          // Cập nhật select trong modal
+          $("#serviceSelector").empty();
+          SERVICES.forEach(s => {
+              $("#serviceSelector").append(`<option value="${s.id}" ${s.id == id ? 'selected' : ''}>${s.name}</option>`);
+          });
+
+          renderService(service);
+          new bootstrap.Modal(document.getElementById("bookingModal")).show();
+      });
       $(document).on("click", ".btn-book", function() {
         var id = $(this).data("id");
         var service = SERVICES.find(function(s) { return s.id == id; });
