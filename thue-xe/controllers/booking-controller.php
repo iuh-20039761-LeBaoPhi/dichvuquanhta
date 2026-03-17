@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 0);
+error_reporting(0);
 header('Content-Type: application/json');
 require_once '../config/database.php';
 
@@ -16,14 +18,16 @@ class BookingController {
 
             $pickup = new DateTime($data['pickup_date']);
             $return = new DateTime($data['return_date']);
-            $total_days = $pickup->diff($return)->days;
+            $diff = $pickup->diff($return);
+            $total_days = $diff->invert ? -$diff->days : $diff->days;
 
-            if($total_days <= 0) {
-                echo json_encode(['success' => false, 'message' => 'Ngày không hợp lệ']);
+            if($total_days < 0) {
+                echo json_encode(['success' => false, 'message' => 'Ngày trả xe phải sau ngày nhận xe']);
                 return;
             }
+            if($total_days === 0) $total_days = 1;
 
-            $addon_services = json_encode($data['addon_services'] ?? []);
+            $addon_services = json_encode($data['addon_services'] ?? [], JSON_UNESCAPED_UNICODE);
             $addon_total    = (float)($data['addon_total'] ?? 0);
             $total_price    = $total_days * $data['price_per_day'] + $addon_total;
 

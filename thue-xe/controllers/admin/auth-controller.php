@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once dirname(__DIR__) . '/session.php';
 header('Content-Type: application/json');
 require_once '../../config/database.php';
 
@@ -63,13 +63,13 @@ if ($action === 'login') {
     try {
         $db = new Database();
         $conn = $db->getConnection();
-        $stmt = $conn->prepare("SELECT * FROM admins WHERE username = ? LIMIT 1");
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND role = 'admin' LIMIT 1");
         $stmt->execute([$username]);
         $admin = $stmt->fetch();
 
         if ($admin && password_verify($password, $admin['password'])) {
             $_SESSION['admin_id'] = $admin['id'];
-            $_SESSION['admin_name'] = $admin['full_name'] ?: $admin['username'];
+            $_SESSION['admin_name'] = $admin['full_name'];
             echo json_encode(['success' => true]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Tên đăng nhập hoặc mật khẩu không đúng!']);

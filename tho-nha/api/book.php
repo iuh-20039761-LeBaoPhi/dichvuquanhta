@@ -33,11 +33,14 @@ if (!$data) {
     exit;
 }
 
-$name         = trim($data['name'] ?? '');
-$phone        = trim($data['phone'] ?? '');
-$service_name = trim($data['service_id'] ?? ''); // field vẫn là service_id từ frontend
-$address      = trim($data['address'] ?? '');
-$note         = trim($data['note'] ?? '');
+$name            = trim($data['name'] ?? '');
+$phone           = trim($data['phone'] ?? '');
+$service_name    = trim($data['service_id'] ?? ''); // field vẫn là service_id từ frontend
+$address         = trim($data['address'] ?? '');
+$note            = trim($data['note'] ?? '');
+$selected_brand  = trim($data['selected_brand']  ?? '') ?: null;
+$estimated_price = isset($data['estimated_price']) && $data['estimated_price'] > 0
+    ? (int)$data['estimated_price'] : null;
 
 if (empty($name) || empty($phone) || empty($service_name) || empty($address)) {
     http_response_code(400);
@@ -61,11 +64,25 @@ if ($check_stmt->get_result()->num_rows > 0) {
 }
 $check_stmt->close();
 
-$stmt = $conn->prepare(
-    "INSERT INTO bookings (order_code, customer_name, phone, service_name, address, note, status, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, 'new', NOW())"
-);
-$stmt->bind_param("ssssss", $order_code, $name, $phone, $service_name, $address, $note);
+// Lưu selected_brand + estimated_price nếu cột tồn tại trong DB (migration an toàn)
+// Dùng INSERT với các cột tùy chọn — nếu cột chưa có, fallback về INSERT cơ bản
+$has_new_cols = false;
+$col_check = $conn->query("SHOW COLUMNS FROM `bookings` LIKE 'estimated_price'");
+if ($col_check && $col_check->num_rows > 0) $has_new_cols = true;
+
+if ($has_new_cols) {
+    $stmt = $conn->prepare(
+        "INSERT INTO bookings (order_code, customer_name, phone, service_name, address, note, status, selected_brand, estimated_price, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, NOW())"
+    );
+    $stmt->bind_param("sssssssi", $order_code, $name, $phone, $service_name, $address, $note, $selected_brand, $estimated_price);
+} else {
+    $stmt = $conn->prepare(
+        "INSERT INTO bookings (order_code, customer_name, phone, service_name, address, note, status, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, 'new', NOW())"
+    );
+    $stmt->bind_param("ssssss", $order_code, $name, $phone, $service_name, $address, $note);
+}
 
 if ($stmt->execute()) {
     echo json_encode([

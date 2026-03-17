@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký Nhà Cung Cấp - Thợ Nhà</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(150deg, #1a0533 0%, #2d1b69 50%, #11998e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-card {
+            background: white;
+            border-radius: 24px;
+            padding: 44px 40px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+        }
+        .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px; }
+        .brand img { width: 48px; height: 48px; border-radius: 12px; object-fit: contain; background: #f0faf5; padding: 4px; }
+        .brand-name {
+            font-size: 1.6rem; font-weight: 800;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .auth-subtitle { text-align: center; font-size: 0.88rem; color: #718096; margin-bottom: 28px; }
+        .role-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, #7c3aed22, #a855f722);
+            border: 1px solid #7c3aed44;
+            color: #7c3aed; font-size: 0.8rem; font-weight: 600;
+            padding: 4px 14px; border-radius: 50px; margin-bottom: 24px;
+        }
+        .section-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7c3aed; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #e9d5ff; }
+        .form-label { font-weight: 600; font-size: 0.88rem; color: #4a5568; margin-bottom: 7px; }
+        .input-group-text { background: #f5f0ff; border-right: none; color: #7c3aed; border-color: #e2e8f0; }
+        .input-icon .form-control,
+        .input-icon textarea.form-control { border-left: none; border-color: #e2e8f0; padding: 11px 14px; font-size: 0.95rem; }
+        .input-icon .form-control:focus,
+        .input-icon textarea.form-control:focus { border-color: #7c3aed; box-shadow: none; }
+        .input-icon:focus-within .input-group-text,
+        .input-icon:focus-within .toggle-pwd { border-color: #7c3aed; }
+        .toggle-pwd { border-left: none; border-color: #e2e8f0; background: white; color: #a0aec0; cursor: pointer; transition: color 0.2s; }
+        .toggle-pwd:hover { color: #7c3aed; box-shadow: none; }
+        .btn-submit {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white; border: none; padding: 13px; border-radius: 50px;
+            font-weight: 700; font-size: 1rem; transition: all 0.3s;
+            width: 100%; margin-top: 8px; cursor: pointer;
+        }
+        .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,58,237,0.45); color: white; }
+        .btn-submit:disabled { opacity: 0.8; }
+        .approval-notice {
+            background: linear-gradient(135deg, #f5f0ff, #fce7f3);
+            border-radius: 12px; padding: 14px 16px;
+            margin-bottom: 20px; font-size: 0.83rem; color: #5b21b6;
+            display: flex; gap: 10px; align-items: flex-start;
+        }
+        .approval-notice i { margin-top: 2px; flex-shrink: 0; }
+        #msg { font-size: 0.88rem; min-height: 22px; text-align: center; margin-top: 12px; }
+        .auth-links { text-align: center; margin-top: 22px; font-size: 0.85rem; }
+        .auth-links a { color: #7c3aed; text-decoration: none; font-weight: 500; }
+        .auth-links a:hover { text-decoration: underline; }
+        .divider { color: #cbd5e0; margin: 0 8px; }
+        .upload-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .upload-zone {
+            border: 2px dashed #c4b5fd; border-radius: 12px;
+            padding: 14px 8px; text-align: center; cursor: pointer;
+            transition: all 0.2s; background: #faf5ff; position: relative; overflow: hidden;
+        }
+        .upload-zone:hover { border-color: #7c3aed; background: #f5f0ff; }
+        .upload-zone.has-file { border-color: #7c3aed; border-style: solid; }
+        .upload-zone i { font-size: 1.6rem; color: #a78bfa; display: block; margin-bottom: 4px; }
+        .upload-zone span { font-size: 0.75rem; color: #6b7280; font-weight: 500; line-height: 1.3; display: block; }
+        .upload-zone img { width: 100%; height: 90px; object-fit: cover; border-radius: 8px; display: none; }
+        .upload-zone .remove-btn {
+            position: absolute; top: 4px; right: 4px;
+            background: #ef4444; color: white; border: none;
+            border-radius: 50%; width: 20px; height: 20px; font-size: 10px;
+            cursor: pointer; display: none; align-items: center; justify-content: center; padding: 0;
+        }
+        .upload-note { font-size: 0.75rem; color: #9ca3af; margin-top: 6px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="brand">
+            <img src="image/logo.png" alt="Thợ Nhà">
+            <span class="brand-name">Thợ Nhà</span>
+        </div>
+        <div style="text-align:center; margin-bottom:6px;">
+            <span class="role-badge"><i class="fas fa-briefcase"></i> Đăng ký nhà cung cấp</span>
+        </div>
+        <p class="auth-subtitle">Tham gia mạng lưới thợ - Nhận đơn hàng từ khắp nơi</p>
+
+        <div class="approval-notice">
+            <i class="fas fa-clock"></i>
+            <span>Sau khi đăng ký, tài khoản của bạn sẽ được <strong>admin xét duyệt</strong> trước khi có thể đăng nhập. Thường trong vòng 24 giờ.</span>
+        </div>
+
+        <div class="section-title">Thông tin cá nhân</div>
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                <div class="input-group input-icon">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <input type="text" id="full_name" class="form-control" placeholder="Nguyễn Văn A">
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Email <span class="text-danger">*</span></label>
+                <div class="input-group input-icon">
+                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                    <input type="email" id="email" class="form-control" placeholder="example@email.com">
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                <div class="input-group input-icon">
+                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                    <input type="tel" id="phone" class="form-control" placeholder="0912 345 678">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Thông tin dịch vụ</div>
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label">Tên cửa hàng / Đội thợ <span class="text-danger">*</span></label>
+                <div class="input-group input-icon">
+                    <span class="input-group-text"><i class="fas fa-store"></i></span>
+                    <input type="text" id="company_name" class="form-control" placeholder="Thợ Điện Nước Minh Tâm">
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Địa chỉ hoạt động</label>
+                <div class="input-group input-icon">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                    <input type="text" id="address" class="form-control" placeholder="Quận Bình Thạnh, TP.HCM">
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Giới thiệu về dịch vụ</label>
+                <div class="input-group input-icon" style="align-items:flex-start;">
+                    <span class="input-group-text" style="padding-top:12px;"><i class="fas fa-align-left"></i></span>
+                    <textarea id="description" class="form-control" rows="3" placeholder="Mô tả kinh nghiệm, chuyên môn và các dịch vụ bạn cung cấp..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Ảnh & Giấy tờ</div>
+        <div class="upload-grid">
+            <!-- Avatar -->
+            <div>
+                <label class="form-label" style="font-size:0.8rem;">Ảnh đại diện</label>
+                <div class="upload-zone" id="zone-avatar" onclick="triggerUpload('avatar')">
+                    <input type="file" id="avatar" name="avatar" accept="image/*" style="display:none" onchange="previewImg(this,'zone-avatar','prev-avatar')">
+                    <i class="fas fa-camera" id="icon-avatar"></i>
+                    <span id="label-avatar">Ảnh đại diện</span>
+                    <img id="prev-avatar" alt="preview">
+                    <button class="remove-btn" id="rm-avatar" onclick="removeImg(event,'avatar','zone-avatar','prev-avatar','icon-avatar','label-avatar','rm-avatar')">✕</button>
+                </div>
+            </div>
+            <!-- CCCD mặt trước -->
+            <div>
+                <label class="form-label" style="font-size:0.8rem;">CCCD mặt trước <span class="text-danger">*</span></label>
+                <div class="upload-zone" id="zone-cccd-front" onclick="triggerUpload('cccd_front')">
+                    <input type="file" id="cccd_front" name="cccd_front" accept="image/*" style="display:none" onchange="previewImg(this,'zone-cccd-front','prev-cccd-front')">
+                    <i class="fas fa-id-card" id="icon-cccd-front"></i>
+                    <span id="label-cccd-front">Mặt trước</span>
+                    <img id="prev-cccd-front" alt="preview">
+                    <button class="remove-btn" id="rm-cccd-front" onclick="removeImg(event,'cccd_front','zone-cccd-front','prev-cccd-front','icon-cccd-front','label-cccd-front','rm-cccd-front')">✕</button>
+                </div>
+            </div>
+            <!-- CCCD mặt sau -->
+            <div>
+                <label class="form-label" style="font-size:0.8rem;">CCCD mặt sau <span class="text-danger">*</span></label>
+                <div class="upload-zone" id="zone-cccd-back" onclick="triggerUpload('cccd_back')">
+                    <input type="file" id="cccd_back" name="cccd_back" accept="image/*" style="display:none" onchange="previewImg(this,'zone-cccd-back','prev-cccd-back')">
+                    <i class="fas fa-id-card" id="icon-cccd-back"></i>
+                    <span id="label-cccd-back">Mặt sau</span>
+                    <img id="prev-cccd-back" alt="preview">
+                    <button class="remove-btn" id="rm-cccd-back" onclick="removeImg(event,'cccd_back','zone-cccd-back','prev-cccd-back','icon-cccd-back','label-cccd-back','rm-cccd-back')">✕</button>
+                </div>
+            </div>
+        </div>
+        <p class="upload-note"><i class="fas fa-info-circle me-1"></i>Chấp nhận JPG, PNG. Tối đa 5MB mỗi ảnh. CCCD bắt buộc để xét duyệt.</p>
+
+        <div class="section-title">Mật khẩu</div>
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                <div class="input-group input-icon">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" id="password" class="form-control" placeholder="Ít nhất 6 ký tự" autocomplete="new-password">
+                    <button class="btn toggle-pwd border" type="button" id="togglePwd">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                <div class="input-group input-icon">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" id="confirm_password" class="form-control" placeholder="Nhập lại mật khẩu" autocomplete="new-password">
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-submit" id="registerBtn">
+            <i class="fas fa-paper-plane me-2"></i>Gửi đăng ký
+        </button>
+        <div id="msg"></div>
+
+        <div class="auth-links">
+            Đã có tài khoản? <a href="provider-login.html">Đăng nhập</a>
+            <span class="divider">|</span>
+            <a href="index.html" style="color:#718096;"><i class="fas fa-arrow-left me-1"></i>Trang chủ</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('togglePwd').addEventListener('click', function() {
+            const input = document.getElementById('password');
+            const icon  = document.getElementById('eyeIcon');
+            if (input.type === 'password') { input.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+            else { input.type = 'password'; icon.className = 'fas fa-eye'; }
+        });
+
+        function triggerUpload(id) { document.getElementById(id).click(); }
+
+        function previewImg(input, zoneId, previewId) {
+            const file = input.files[0];
+            if (!file) return;
+            const zone = document.getElementById(zoneId);
+            const prev = document.getElementById(previewId);
+            const reader = new FileReader();
+            reader.onload = e => {
+                prev.src = e.target.result;
+                prev.style.display = 'block';
+                zone.querySelector('i').style.display = 'none';
+                zone.querySelector('span').style.display = 'none';
+                zone.querySelector('.remove-btn').style.display = 'flex';
+                zone.classList.add('has-file');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImg(e, inputId, zoneId, previewId, iconId, labelId, rmId) {
+            e.stopPropagation();
+            document.getElementById(inputId).value = '';
+            document.getElementById(previewId).style.display = 'none';
+            document.getElementById(previewId).src = '';
+            document.getElementById(iconId).style.display = '';
+            document.getElementById(labelId).style.display = '';
+            document.getElementById(rmId).style.display = 'none';
+            document.getElementById(zoneId).classList.remove('has-file');
+        }
+
+        document.getElementById('registerBtn').addEventListener('click', register);
+
+        function register() {
+            const full_name        = document.getElementById('full_name').value.trim();
+            const email            = document.getElementById('email').value.trim();
+            const phone            = document.getElementById('phone').value.trim();
+            const password         = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
+            const company_name     = document.getElementById('company_name').value.trim();
+            const btn = document.getElementById('registerBtn');
+            const msg = document.getElementById('msg');
+
+            if (!full_name || !email || !phone || !password || !confirm_password || !company_name) {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng điền đầy đủ các trường bắt buộc (*)</span>';
+                return;
+            }
+            if (password.length < 6) {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu phải có ít nhất 6 ký tự</span>';
+                return;
+            }
+            if (password !== confirm_password) {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu xác nhận không khớp</span>';
+                return;
+            }
+            if (!document.getElementById('cccd_front').files[0] || !document.getElementById('cccd_back').files[0]) {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng tải lên ảnh CCCD mặt trước và mặt sau</span>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi đăng ký...';
+            msg.innerHTML = '';
+
+            const fd = new FormData();
+            fd.append('full_name',    full_name);
+            fd.append('email',        email);
+            fd.append('phone',        phone);
+            fd.append('password',     password);
+            fd.append('company_name', company_name);
+            fd.append('address',      document.getElementById('address').value.trim());
+            fd.append('description',  document.getElementById('description').value.trim());
+            const avatarFile    = document.getElementById('avatar').files[0];
+            const cccdFrontFile = document.getElementById('cccd_front').files[0];
+            const cccdBackFile  = document.getElementById('cccd_back').files[0];
+            if (avatarFile)    fd.append('avatar',     avatarFile);
+            if (cccdFrontFile) fd.append('cccd_front', cccdFrontFile);
+            if (cccdBackFile)  fd.append('cccd_back',  cccdBackFile);
+
+            fetch('api/provider/register.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>' + res.message + '</span>';
+                    btn.innerHTML = '<i class="fas fa-check me-2"></i>Đã gửi đăng ký';
+                } else {
+                    msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (res.message || 'Đăng ký thất bại') + '</span>';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đăng ký';
+                }
+            })
+            .catch(() => {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-wifi me-1"></i>Không kết nối được server</span>';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đăng ký';
+            });
+        }
+    </script>
+</body>
+</html>

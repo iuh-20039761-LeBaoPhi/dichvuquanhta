@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once dirname(__DIR__) . '/controllers/session.php';
 
 // Handle logout
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
@@ -116,13 +116,13 @@ $adminName  = $_SESSION['admin_name'] ?? 'Admin';
 
                 <form id="loginForm">
                     <div class="mb-3">
-                        <label class="form-label fw-medium">Tên đăng nhập</label>
+                        <label class="form-label fw-medium">Email</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0">
-                                <i class="fas fa-user text-muted"></i>
+                                <i class="fas fa-envelope text-muted"></i>
                             </span>
-                            <input type="text" class="form-control border-start-0 ps-0"
-                                   id="username" placeholder="admin" required autofocus>
+                            <input type="email" class="form-control border-start-0 ps-0"
+                                   id="username" placeholder="admin@carrental.com" required autofocus>
                         </div>
                     </div>
                     <div class="mb-4">

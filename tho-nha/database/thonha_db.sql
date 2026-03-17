@@ -1,75 +1,124 @@
 -- =====================================================
--- Thợ Nhà Database Schema (Minimal)
--- Chỉ lưu: đặt lịch, yêu cầu hủy, admin
--- Dữ liệu dịch vụ lấy từ data/services.json
+-- Thợ Nhà — Full Database Schema
+-- Import file này để tạo mới hoàn toàn
+-- Admin mặc định: admin@thonha.com / admin123
 -- =====================================================
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
 SET NAMES utf8mb4;
 
--- Database: `thonha`
+CREATE DATABASE IF NOT EXISTS `thonha`
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `thonha`;
 
 -- =====================================================
--- BẢNG ADMIN
+-- BẢNG NGƯỜI DÙNG (users)
+-- role:   admin | customer | provider
+-- status: active | blocked | pending | rejected
+--   provider: pending=chờ duyệt, active=đã duyệt
 -- =====================================================
-CREATE TABLE `admins` (
-  `id`       int(11)      NOT NULL AUTO_INCREMENT,
-  `username` varchar(50)  NOT NULL,
-  `password` varchar(255) NOT NULL,
+CREATE TABLE `users` (
+  `id`           INT(11)      NOT NULL AUTO_INCREMENT,
+  `full_name`    VARCHAR(100) NOT NULL,
+  `email`        VARCHAR(100) NOT NULL,
+  `phone`        VARCHAR(20)  NOT NULL DEFAULT '',
+  `password`     VARCHAR(255) NOT NULL,
+  `role`         ENUM('admin','customer','provider') NOT NULL DEFAULT 'customer',
+  `status`       ENUM('active','blocked','pending','rejected') NOT NULL DEFAULT 'active',
+  -- Chỉ dùng cho provider
+  `company_name` VARCHAR(255) DEFAULT NULL COMMENT 'Tên cửa hàng / đội thợ',
+  `address`      TEXT         DEFAULT NULL,
+  `description`  TEXT         DEFAULT NULL,
+  `created_at`   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Tài khoản admin mặc định (password: admin123)
-INSERT INTO `admins` (`id`, `username`, `password`) VALUES
-(1, 'admin', '$2y$10$6bCPfmuIzA8RXWyVsGHS9eBK8erfGyEt6OjQt7ClA4u7WtyHbfkeO');
-
--- =====================================================
--- BẢNG ĐẶT LỊCH
--- =====================================================
-CREATE TABLE `bookings` (
-  `id`            int(11)     NOT NULL AUTO_INCREMENT,
-  `order_code`    varchar(30) DEFAULT NULL,
-  `customer_name` varchar(100) DEFAULT NULL,
-  `phone`         varchar(20)  DEFAULT NULL,
-  `service_name`  varchar(255) NOT NULL DEFAULT '',
-  `address`       text         DEFAULT NULL,
-  `note`          text         DEFAULT NULL,
-  `status`        enum('new','confirmed','doing','done','cancel') DEFAULT 'new',
-  `created_at`    timestamp   NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `order_code` (`order_code`)
+  UNIQUE KEY `email` (`email`),
+  KEY `idx_role`   (`role`),
+  KEY `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `bookings` (`id`, `order_code`, `customer_name`, `phone`, `service_name`, `address`, `note`, `status`, `created_at`) VALUES
-(7,  'TN709918', 'Nông Quốc Thương', '0394371259', 'Thay motor máy giặt',   'Số 11 Phan Văn Trị', 'aa', 'cancel',    '2026-01-22 07:28:30'),
-(8,  'TN417873', 'Nông Quốc Thương', '0123456789', 'Sửa bồn cầu rò nước',   'Số 11 Phan Văn Trị', 'aaa','new',       '2026-01-22 07:31:23'),
-(9,  'TN672259', 'Nông Quốc Thương', '0394371259', 'Sửa bồn cầu rò nước',   'Số 11 Phan Văn Trị', '',  'new',       '2026-01-22 07:32:20'),
-(10, 'TN188042', 'Nông Quốc Thu',    '0987654321', 'Chống thấm nhà vệ sinh', 'Gò Vấp',             'no','confirmed', '2026-01-25 08:36:23'),
-(11, 'TN516460', 'thuong',           '0987654321', 'Sửa rò rỉ nước',        'Gò Vấp',             'ko','cancel',    '2026-01-27 04:27:33'),
-(12, 'TN735188', 'Nông Quốc Thương', '0394371259', 'Thay motor máy giặt',   'Lê đức thọ',         '99','cancel',    '2026-01-28 04:11:00'),
-(13, 'TN376090', 'Nông Quốc Thương', '0394371259', 'Vệ sinh máy giặt',      'aa',                 'a', 'cancel',    '2026-01-28 04:34:07');
+-- Admin mặc định (password: admin123)
+INSERT INTO `users` (`full_name`, `email`, `phone`, `password`, `role`, `status`) VALUES
+('Quản trị viên', 'admin@thonha.com', '', '$2y$10$6bCPfmuIzA8RXWyVsGHS9eBK8erfGyEt6OjQt7ClA4u7WtyHbfkeO', 'admin', 'active');
 
 -- =====================================================
--- BẢNG YÊU CẦU HỦY
+-- BẢNG ĐẶT LỊCH (bookings)
+-- user_id:     khách hàng đặt lịch (FK → users)
+-- provider_id: nhà cung cấp nhận đơn (FK → users)
+-- =====================================================
+CREATE TABLE `bookings` (
+  `id`            INT(11)      NOT NULL AUTO_INCREMENT,
+  `user_id`       INT(11)      DEFAULT NULL COMMENT 'FK → users (customer)',
+  `provider_id`   INT(11)      DEFAULT NULL COMMENT 'FK → users (provider)',
+  `order_code`    VARCHAR(30)  DEFAULT NULL,
+  `customer_name` VARCHAR(100) DEFAULT NULL,
+  `phone`         VARCHAR(20)  DEFAULT NULL,
+  `service_name`  VARCHAR(255) NOT NULL DEFAULT '',
+  `address`       TEXT         DEFAULT NULL,
+  `note`          TEXT         DEFAULT NULL,
+  `status`        ENUM('new','confirmed','doing','done','cancel') NOT NULL DEFAULT 'new',
+  `created_at`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `order_code`   (`order_code`),
+  KEY `idx_user_id`     (`user_id`),
+  KEY `idx_provider_id` (`provider_id`),
+  KEY `idx_status`      (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dữ liệu mẫu
+INSERT INTO `bookings` (`order_code`,`customer_name`,`phone`,`service_name`,`address`,`note`,`status`,`created_at`) VALUES
+('TN709918','Nguyễn Văn An',   '0901234567','Thay motor máy giặt',    'Số 11 Phan Văn Trị, Q. Bình Thạnh','',   'cancel',    '2026-01-22 07:28:30'),
+('TN417873','Trần Thị Bích',   '0912345678','Sửa bồn cầu rò nước',   '45 Lê Lợi, Quận Hải Châu, Đà Nẵng','',  'new',       '2026-01-22 07:31:23'),
+('TN672259','Lê Minh Khoa',    '0978901234','Sửa bồn cầu rò nước',   '88 Đinh Tiên Hoàng, Bình Thạnh','',      'new',       '2026-01-22 07:32:20'),
+('TN188042','Phạm Quỳnh Anh',  '0987654321','Chống thấm nhà vệ sinh', 'Gò Vấp, TP.HCM','',                    'confirmed', '2026-01-25 08:36:23'),
+('TN516460','Hoàng Đức Trung', '0945678901','Sửa rò rỉ nước',        '67 Hai Bà Trưng, Q.3, TP.HCM','',       'cancel',    '2026-01-27 04:27:33'),
+('TN735188','Vũ Thị Lan',      '0956789012','Thay motor máy giặt',    '15 Phan Bội Châu, TP. Huế','',           'cancel',    '2026-01-28 04:11:00'),
+('TN376090','Ngô Thị Mai',     '0989012345','Vệ sinh máy giặt',       '5 Lý Tự Trọng, Cần Thơ','',             'done',      '2026-01-28 04:34:07'),
+('TN821345','Bùi Văn Hùng',    '0901112233','Sơn tường nội thất',     '30 Lê Duẩn, Q.1, TP.HCM','',            'doing',     '2026-02-01 09:00:00');
+
+-- =====================================================
+-- BẢNG YÊU CẦU HỦY (cancel_requests)
 -- =====================================================
 CREATE TABLE `cancel_requests` (
-  `id`                   int(11)   NOT NULL AUTO_INCREMENT,
-  `booking_id`           int(11)   NOT NULL,
-  `cancel_reason`        text      NOT NULL,
-  `cancel_status`        enum('pending','approved','rejected') DEFAULT 'pending',
-  `cancel_requested_at`  timestamp NOT NULL DEFAULT current_timestamp(),
-  `cancel_processed_at`  timestamp NULL DEFAULT NULL,
+  `id`                  INT(11)  NOT NULL AUTO_INCREMENT,
+  `booking_id`          INT(11)  NOT NULL,
+  `cancel_reason`       TEXT     NOT NULL,
+  `cancel_status`       ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `cancel_requested_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `cancel_processed_at` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `booking_id` (`booking_id`),
-  CONSTRAINT `cancel_requests_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `cancel_requests_ibfk_1`
+    FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `cancel_requests` (`id`, `booking_id`, `cancel_reason`, `cancel_status`, `cancel_requested_at`, `cancel_processed_at`) VALUES
-(1, 9, 'aa', 'pending',  '2026-01-27 05:51:14', NULL),
-(2, 7, 'aa', 'approved', '2026-01-27 05:54:34', '2026-01-27 06:00:42'),
-(3, 11,'aa', 'approved', '2026-01-27 06:23:49', '2026-01-29 09:59:14');
+-- Dữ liệu mẫu yêu cầu hủy
+INSERT INTO `cancel_requests` (`booking_id`,`cancel_reason`,`cancel_status`,`cancel_requested_at`,`cancel_processed_at`) VALUES
+(3,'Tôi muốn đổi lịch sang tuần sau',    'pending',  '2026-01-27 05:51:14', NULL),
+(1,'Đặt nhầm dịch vụ',                   'approved', '2026-01-27 05:54:34', '2026-01-27 06:00:42'),
+(5,'Bận đột xuất không thể tiếp thợ',    'approved', '2026-01-27 06:23:49', '2026-01-29 09:59:14');
 
-COMMIT;
+-- =====================================================
+-- MIGRATION: Tính năng tính tiền nâng cao
+-- Chạy các lệnh ALTER TABLE này một lần trên DB hiện có.
+-- An toàn — dùng IF NOT EXISTS, không phá vỡ dữ liệu cũ.
+-- =====================================================
+
+-- Bảng services: thêm cột pricing_json để lưu phí di chuyển, khảo sát, khoảng giá theo hãng
+ALTER TABLE `services`
+  ADD COLUMN IF NOT EXISTS `pricing_json` TEXT DEFAULT NULL
+    COMMENT 'JSON: { travelFee, surveyFee, priceRange, brandPrices }';
+
+-- Bảng bookings: thêm hãng đã chọn và giá ước tính khi đặt lịch
+ALTER TABLE `bookings`
+  ADD COLUMN IF NOT EXISTS `selected_brand`  VARCHAR(100) DEFAULT NULL
+    COMMENT 'Hãng linh kiện/vật liệu đã chọn khi đặt lịch',
+  ADD COLUMN IF NOT EXISTS `estimated_price` INT(11)      DEFAULT NULL
+    COMMENT 'Giá ước tính tối thiểu (service + travel + survey) lúc đặt';
+
+-- =====================================================
+-- Nếu MySQL < 8.0 không hỗ trợ IF NOT EXISTS trong ALTER TABLE,
+-- dùng script dưới thay thế (kiểm tra trước bằng SHOW COLUMNS):
+-- =====================================================
+-- ALTER TABLE `services` ADD COLUMN `pricing_json` TEXT DEFAULT NULL COMMENT '...';
+-- ALTER TABLE `bookings` ADD COLUMN `selected_brand` VARCHAR(100) DEFAULT NULL COMMENT '...';
+-- ALTER TABLE `bookings` ADD COLUMN `estimated_price` INT(11) DEFAULT NULL COMMENT '...';

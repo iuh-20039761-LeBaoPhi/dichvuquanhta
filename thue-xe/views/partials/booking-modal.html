@@ -1,5 +1,5 @@
 <div class="modal fade" id="bookingModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Thông Tin Đặt Xe</h5>
@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body">
                 <div id="bookingAlert"></div>
-
+                <div id="bookingAuthBanner" class="mb-3"></div>
                 <form id="bookingFormFull">
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -32,7 +32,6 @@
                             <label class="form-label">CMND/CCCD</label>
                             <input type="text" class="form-control" name="id_number"
                                    pattern="^[0-9]{9}$|^[0-9]{12}$"
-                                   title="CMND gồm 9 số hoặc CCCD gồm 12 số"
                                    placeholder="9 hoặc 12 chữ số" maxlength="12">
                             <div class="invalid-feedback">CMND gồm 9 số hoặc CCCD gồm 12 số</div>
                         </div>

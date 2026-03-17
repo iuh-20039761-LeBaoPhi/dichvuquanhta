@@ -1,11 +1,90 @@
 function loadHeader() {
+    // Inject CSS vào head ngay lập tức nếu trang chưa có (tránh FOUC)
+    if (!document.querySelector('link[href*="bootstrap.min.css"]')) {
+        [
+            'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
+            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+            'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
+            'assets/css/style.css'
+        ].forEach(href => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = href;
+            document.head.appendChild(link);
+        });
+    }
+
     injectBaseSEO();
     fetch('views/layouts/header.html')
         .then(r => r.text())
         .then(html => {
-            document.body.insertAdjacentHTML('afterbegin', html);
+            // Chỉ extract phần <header> thay vì inject cả file HTML
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const headerEl = doc.querySelector('header');
+            if (headerEl) {
+                document.body.insertAdjacentElement('afterbegin', headerEl);
+            } else {
+                document.body.insertAdjacentHTML('afterbegin', html);
+            }
             highlightActiveNav();
             injectBackBar();
+            initAuthNav();
+        });
+}
+
+function initAuthNav() {
+    const loadingEl = document.getElementById('auth-loading');
+    const guestEl   = document.getElementById('auth-guest');
+    const userEl    = document.getElementById('auth-user');
+
+    fetch('controllers/check-session.php')
+        .then(r => r.json())
+        .then(data => {
+            if (loadingEl) loadingEl.style.display = 'none';
+
+            if (data.logged_in) {
+                if (userEl) userEl.style.display = '';
+
+                const nameEl   = document.getElementById('auth-name');
+                const avatarEl = document.getElementById('auth-avatar');
+                if (nameEl)   nameEl.textContent  = data.name;
+                if (avatarEl) avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
+
+                const dashMap = {
+                    customer: 'customer-dashboard.html',
+                    provider: 'provider-dashboard.html',
+                    admin:    'admin/index.php'
+                };
+                const logoutMap = {
+                    customer: 'controllers/customer/auth-controller.php?action=logout',
+                    provider: 'controllers/provider/auth-controller.php?action=logout',
+                    admin:    'admin/index.php?action=logout'
+                };
+                const loginMap = {
+                    customer: 'customer-login.html',
+                    provider: 'provider-login.html',
+                    admin:    'admin/index.php'
+                };
+
+                const dashLink = document.getElementById('auth-dashboard-link');
+                if (dashLink) dashLink.href = dashMap[data.role] || 'customer-dashboard.html';
+
+                const logoutLink = document.getElementById('auth-logout-link');
+                if (logoutLink) {
+                    logoutLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        fetch(logoutMap[data.role] || 'controllers/customer/auth-controller.php?action=logout')
+                            .then(() => { window.location.href = loginMap[data.role] || 'customer-login.html'; });
+                    });
+                }
+            } else {
+                if (guestEl) guestEl.style.display = '';
+            }
+        })
+        .catch(() => {
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (guestEl)   guestEl.style.display   = '';
         });
 }
 
@@ -72,16 +151,24 @@ function injectBaseSEO() {
 }
 
 function loadFooter() {
+    // Inject Bootstrap JS nếu chưa có
+    if (!window.bootstrap && !document.querySelector('script[src*="bootstrap.bundle"]')) {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
+        document.head.appendChild(s);
+    }
+
     fetch('views/layouts/footer.html')
         .then(r => r.text())
         .then(html => {
-            document.body.insertAdjacentHTML('beforeend', html);
-            // Bootstrap JS phải inject dynamic để thực thi được
-            if (!window.bootstrap) {
-                const s = document.createElement('script');
-                s.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
-                document.body.appendChild(s);
-            }
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const footerEl = doc.querySelector('footer');
+            const floatBtn = doc.querySelector('.float-call-btn');
+            const styleEl  = doc.querySelector('style');
+            if (footerEl) document.body.insertAdjacentElement('beforeend', footerEl);
+            if (floatBtn) document.body.insertAdjacentElement('beforeend', floatBtn);
+            if (styleEl)  document.head.appendChild(styleEl);
         });
 }
 

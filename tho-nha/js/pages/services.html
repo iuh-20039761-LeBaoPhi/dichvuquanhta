@@ -90,6 +90,53 @@
                         <label class="form-label">Mô tả</label>
                         <textarea class="form-control" id="serviceDescription" rows="3"></textarea>
                     </div>
+
+                    <hr>
+                    <p class="text-muted small mb-2"><i class="fas fa-info-circle me-1"></i>Phí di chuyển &amp; khảo sát (để trống nếu không áp dụng)</p>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Phí Di Chuyển</label>
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <label class="form-label small text-muted">Cố định (VNĐ)</label>
+                                <input type="number" class="form-control form-control-sm" id="serviceTravelFee" placeholder="VD: 30000" min="0">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label small text-muted">Tối thiểu</label>
+                                <input type="number" class="form-control form-control-sm" id="serviceTravelMin" placeholder="VD: 20000" min="0">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label small text-muted">Tối đa</label>
+                                <input type="number" class="form-control form-control-sm" id="serviceTravelMax" placeholder="VD: 50000" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Phí Khảo Sát</label>
+                        <div class="row g-2 align-items-start">
+                            <div class="col-5">
+                                <label class="form-label small text-muted">Số tiền (VNĐ)</label>
+                                <input type="number" class="form-control form-control-sm" id="serviceSurveyFee" placeholder="VD: 100000" min="0">
+                            </div>
+                            <div class="col-7">
+                                <label class="form-label small text-muted">Tùy chọn</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="serviceSurveyRequired">
+                                    <label class="form-check-label small" for="serviceSurveyRequired">Bắt buộc khảo sát trước</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="serviceSurveyWaive" checked>
+                                    <label class="form-check-label small" for="serviceSurveyWaive">Miễn phí nếu đặt lịch</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="serviceSurveyDeduct">
+                                    <label class="form-check-label small" for="serviceSurveyDeduct">Trừ vào tổng tiền cuối</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-gradient w-100">Lưu</button>
                 </form>
             </div>

@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once dirname(__DIR__) . '/session.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['admin_id'])) {

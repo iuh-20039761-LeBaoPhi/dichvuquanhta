@@ -367,115 +367,9 @@ function setupDateCalculation(pricePerDay) {
 
 async function loadBookingModal() {
     if (document.getElementById('bookingModal')) return;
-    try {
-        const res = await fetch('views/partials/booking-modal.html');
-        if (!res.ok) throw new Error();
-        const html = await res.text();
-        document.body.insertAdjacentHTML('beforeend', html);
-    } catch {
-        // Fallback: inject modal trực tiếp nếu fetch thất bại
-        document.body.insertAdjacentHTML('beforeend', buildBookingModalHTML());
-    }
-}
-
-function buildBookingModalHTML() {
-    return `
-        <div class="modal fade" id="bookingModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Thông Tin Đặt Xe</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="bookingAlert"></div>
-                        <form id="bookingFormFull">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Họ và tên *</label>
-                                    <input type="text" class="form-control" name="customer_name" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Số điện thoại *</label>
-                                    <input type="tel" class="form-control" name="customer_phone" required
-                                           pattern="^0[3-9][0-9]{8}$" placeholder="0901234567">
-                                    <div class="invalid-feedback">Số điện thoại phải gồm 10 chữ số, bắt đầu bằng 03x / 05x / 07x / 08x / 09x</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Email *</label>
-                                    <input type="email" class="form-control" name="customer_email" required placeholder="example@email.com">
-                                    <div class="invalid-feedback">Email không hợp lệ</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">CMND/CCCD</label>
-                                    <input type="text" class="form-control" name="id_number"
-                                           pattern="^[0-9]{9}$|^[0-9]{12}$" placeholder="9 hoặc 12 chữ số" maxlength="12">
-                                    <div class="invalid-feedback">CMND gồm 9 số hoặc CCCD gồm 12 số</div>
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label">Địa chỉ *</label>
-                                    <textarea class="form-control" id="customerAddress" name="customer_address" rows="2" required placeholder="Số nhà, đường, phường, quận..."></textarea>
-                                    <div class="d-flex gap-2 mt-2 flex-wrap">
-                                        <button type="button" class="btn-map-picker" id="mapBtnAddr" onclick="CarMapPicker.toggle('addr')">
-                                            <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="CarMapPicker.gps('addr')">
-                                            <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
-                                        </button>
-                                    </div>
-                                    <div id="mapBoxAddr" class="map-picker-box" style="display:none; margin-top:10px;">
-                                        <div id="mapElAddr" class="map-el"></div>
-                                        <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền</p>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label">Địa điểm nhận xe</label>
-                                    <input type="text" class="form-control" id="pickupLocation" name="pickup_location" placeholder="Để trống nếu nhận tại văn phòng">
-                                    <div class="d-flex gap-2 mt-2 flex-wrap">
-                                        <button type="button" class="btn-map-picker" id="mapBtnPickup" onclick="CarMapPicker.toggle('pickup')">
-                                            <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="CarMapPicker.gps('pickup')">
-                                            <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
-                                        </button>
-                                    </div>
-                                    <div id="mapBoxPickup" class="map-picker-box" style="display:none; margin-top:10px;">
-                                        <div id="mapElPickup" class="map-el"></div>
-                                        <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn địa điểm nhận xe</p>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label">Ghi chú</label>
-                                    <textarea class="form-control" name="notes" rows="2"></textarea>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-semibold">Dịch vụ đi kèm <span class="text-muted fw-normal">(không bắt buộc)</span></label>
-                                    <div class="row g-2" id="addonServiceList"></div>
-                                </div>
-                            </div>
-                            <div id="addonSummary" class="mt-3 p-3 bg-light rounded" style="display:none;">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <span class="text-muted">Tiền xe:</span>
-                                    <span id="summaryCarPrice">0đ</span>
-                                </div>
-                                <div id="summaryAddonList"></div>
-                                <hr class="my-2">
-                                <div class="d-flex justify-content-between fw-bold">
-                                    <span>Tổng cộng:</span>
-                                    <span class="text-primary" id="summaryTotal">0đ</span>
-                                </div>
-                                <small class="text-muted">* Giá có thể thay đổi tuỳ thực tế</small>
-                            </div>
-                            <div class="mt-3">
-                                <button type="submit" class="btn btn-gradient w-100">
-                                    <i class="fas fa-check me-2"></i>Xác nhận đặt xe
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>`;
+    const res = await fetch('views/partials/booking-modal.html');
+    const html = await res.text();
+    document.body.insertAdjacentHTML('beforeend', html);
 }
 
 async function setupBookingModal(car) {
@@ -490,6 +384,7 @@ async function setupBookingModal(car) {
     });
     document.getElementById('bookingModal').addEventListener('show.bs.modal', () => {
         recalcAddonSummary(car.price_per_day);
+        bookingAutoFillTX();
     });
 
     // Setup form submission
@@ -673,4 +568,59 @@ function getTodayDate() {
 
 // Export functions
 window.changeMainImage = changeMainImage;
+
+// --- Booking auto-fill from session ---
+var _txSession = null;
+
+function bookingAutoFillTX() {
+    _txSession = null; // reset mỗi lần mở modal
+    fetch('controllers/check-session.php')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            _txSession = data;
+            var banner = document.getElementById('bookingAuthBanner');
+            if (!banner) return;
+
+            if (data.logged_in && data.role === 'customer') {
+                // Auto-fill ngay
+                var form = document.getElementById('bookingFormFull');
+                if (form) {
+                    var nameEl  = form.querySelector('[name="customer_name"]');
+                    var phoneEl = form.querySelector('[name="customer_phone"]');
+                    var emailEl = form.querySelector('[name="customer_email"]');
+                    if (nameEl  && data.name)  nameEl.value  = data.name;
+                    if (phoneEl && data.phone) phoneEl.value = data.phone;
+                    if (emailEl && data.email) emailEl.value = data.email;
+                }
+                banner.innerHTML =
+                    '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;">' +
+                        '<span style="font-size:0.83rem;color:#1e40af;"><i class="fas fa-user-check me-2"></i>Đã đăng nhập: <strong>' + (data.name || '') + '</strong></span>' +
+                        '<button type="button" onclick="bookingAutoFillClick()" ' +
+                            'style="background:linear-gradient(135deg,#3B82F6,#1E40AF);color:white;border:none;padding:5px 14px;border-radius:50px;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;">' +
+                            '<i class="fas fa-magic me-1"></i>Tự điền thông tin' +
+                        '</button>' +
+                    '</div>';
+            } else {
+                banner.innerHTML =
+                    '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:0.83rem;color:#92400e;margin-bottom:4px;">' +
+                        '<i class="fas fa-info-circle me-2"></i>' +
+                        '<a href="customer-login.html" style="color:#d97706;font-weight:600;text-decoration:none;">Đăng nhập</a>' +
+                        ' để tự động điền tên, số điện thoại và email.' +
+                    '</div>';
+            }
+        })
+        .catch(function () { /* im lặng nếu lỗi */ });
+}
+
+window.bookingAutoFillClick = function () {
+    if (!_txSession || !_txSession.logged_in) return;
+    var form = document.getElementById('bookingFormFull');
+    if (!form) return;
+    var nameEl  = form.querySelector('[name="customer_name"]');
+    var phoneEl = form.querySelector('[name="customer_phone"]');
+    var emailEl = form.querySelector('[name="customer_email"]');
+    if (nameEl  && _txSession.name)  nameEl.value  = _txSession.name;
+    if (phoneEl && _txSession.phone) phoneEl.value = _txSession.phone;
+    if (emailEl && _txSession.email) emailEl.value = _txSession.email;
+};
 window.openBookingModal = openBookingModal;

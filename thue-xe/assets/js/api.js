@@ -9,7 +9,9 @@ const API = {
             try {
                 const res = await fetch(`${API.baseURL}car-controller.php?action=getFeatured`);
                 if (!res.ok) throw new Error();
-                return await res.json();
+                const result = await res.json();
+                if (!result.success) throw new Error();
+                return result;
             } catch {
                 const sd = await STATIC_DATA_PROMISE;
                 return { success: true, data: sd.cars.slice(0, 6) };
@@ -19,7 +21,9 @@ const API = {
             try {
                 const res = await fetch(`${API.baseURL}car-controller.php?action=getAll`);
                 if (!res.ok) throw new Error();
-                return await res.json();
+                const result = await res.json();
+                if (!result.success) throw new Error();
+                return result;
             } catch {
                 const sd = await STATIC_DATA_PROMISE;
                 return { success: true, data: sd.cars };
@@ -29,7 +33,9 @@ const API = {
             try {
                 const res = await fetch(`${API.baseURL}car-controller.php?action=getById&id=${id}`);
                 if (!res.ok) throw new Error();
-                return await res.json();
+                const result = await res.json();
+                if (!result.success) throw new Error();
+                return result;
             } catch {
                 const sd = await STATIC_DATA_PROMISE;
                 const car = sd.cars.find(c => c.id === parseInt(id));
@@ -43,7 +49,9 @@ const API = {
                 const query = new URLSearchParams(params).toString();
                 const res = await fetch(`${API.baseURL}car-controller.php?action=search&${query}`);
                 if (!res.ok) throw new Error();
-                return await res.json();
+                const result = await res.json();
+                if (!result.success) throw new Error();
+                return result;
             } catch {
                 const sd = await STATIC_DATA_PROMISE;
                 let cars = [...sd.cars];
@@ -64,7 +72,9 @@ const API = {
             try {
                 const res = await fetch(`${API.baseURL}car-controller.php?action=getFilterOptions`);
                 if (!res.ok) throw new Error();
-                return await res.json();
+                const result = await res.json();
+                if (!result.success) throw new Error();
+                return result;
             } catch {
                 const sd = await STATIC_DATA_PROMISE;
                 return { success: true, ...sd.filterOptions };
@@ -77,10 +87,12 @@ const API = {
             try {
                 const res = await fetch(`${API.baseURL}service-controller.php?action=getAll`);
                 if (!res.ok) throw new Error();
-                return await res.json();
+                const result = await res.json();
+                if (!result.success) throw new Error();
+                return result;
             } catch {
                 const sd = await STATIC_DATA_PROMISE;
-                return { success: true, data: sd.services };
+                return { success: true, data: sd.services || [] };
             }
         }
     },

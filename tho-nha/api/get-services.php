@@ -35,8 +35,8 @@ if (!isset($conn)) {
 // Set charset UTF-8
 $conn->set_charset("utf8mb4");
 
-// Query lấy dịch vụ theo category
-$sql = "SELECT id, name, price, labor_cost, material_cost, brand, warranty, duration, brand_prices, description FROM services
+// Query lấy dịch vụ theo category (bao gồm pricing_json cho phí di chuyển/khảo sát)
+$sql = "SELECT id, name, price, labor_cost, material_cost, brand, warranty, duration, brand_prices, description, pricing_json FROM services
         WHERE category_id = ? AND is_active = 1
         ORDER BY name ASC";
 
@@ -56,6 +56,7 @@ $result = $stmt->get_result();
 
 $services = [];
 while ($row = $result->fetch_assoc()) {
+    $pj = !empty($row['pricing_json']) ? json_decode($row['pricing_json'], true) : null;
     $services[] = [
         "id"            => (int)$row['id'],
         "name"          => $row['name'],
@@ -66,7 +67,12 @@ while ($row = $result->fetch_assoc()) {
         "warranty"      => $row['warranty'],
         "duration"      => $row['duration'],
         "brand_prices"  => $row['brand_prices'] ? json_decode($row['brand_prices'], true) : null,
-        "description"   => $row['description']
+        "description"   => $row['description'],
+        // Pricing fields mới: travelFee, surveyFee, priceRange (null nếu chưa có)
+        "pricing_json"  => $pj,
+        "travel_fee"    => $pj['travelFee']  ?? null,
+        "survey_fee"    => $pj['surveyFee']  ?? null,
+        "price_range"   => $pj['priceRange'] ?? null,
     ];
 }
 

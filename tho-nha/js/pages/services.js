@@ -62,17 +62,34 @@ function displayServices(categories) {
                         <tr>
                             <th style="width: 50px;">ID</th>
                             <th>Tên dịch vụ</th>
-                            <th style="width: 130px;">Giá tổng</th>
-                            <th style="width: 120px;">Tiền công</th>
-                            <th style="width: 140px;">Vật liệu</th>
+                            <th style="width: 120px;">Giá tổng</th>
+                            <th style="width: 110px;">Tiền công</th>
+                            <th style="width: 120px;">Vật liệu</th>
+                            <th style="width: 150px;">Phí di chuyển / Khảo sát</th>
                             <th>Hãng</th>
-                            <th style="width: 90px;">Bảo hành</th>
-                            <th style="width: 90px;">Thời gian</th>
+                            <th style="width: 85px;">Bảo hành</th>
+                            <th style="width: 85px;">Thời gian</th>
                             <th style="width: 90px;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${cat.services && cat.services.length > 0 ? cat.services.map(s => `
+                        ${cat.services && cat.services.length > 0 ? cat.services.map(s => {
+                            // Hiển thị phí di chuyển/khảo sát ngắn gọn
+                            const tfFixed = s.travel_fee_fixed;
+                            const tfMin   = s.travel_fee_min;
+                            const tfMax   = s.travel_fee_max;
+                            let travelLabel = '-';
+                            if (tfFixed || tfMin || tfMax) {
+                                const lo = tfMin ?? tfFixed ?? 0;
+                                const hi = tfMax ?? tfFixed ?? 0;
+                                travelLabel = lo === hi
+                                    ? formatCurrency(lo)
+                                    : formatCurrency(lo) + ' – ' + formatCurrency(hi);
+                            }
+                            const surveyLabel = s.survey_fee_amount
+                                ? formatCurrency(s.survey_fee_amount) + (s.survey_fee_required ? ' ⚠️' : '')
+                                : '-';
+                            return `
                             <tr>
                                 <td>${s.id}</td>
                                 <td>
@@ -82,6 +99,10 @@ function displayServices(categories) {
                                 <td><span class="text-success fw-bold">${formatCurrency(s.price)}</span></td>
                                 <td>${s.labor_cost ? formatCurrency(s.labor_cost) : '-'}</td>
                                 <td>${s.material_cost ? formatCurrency(s.material_cost) : '-'}</td>
+                                <td title="Di chuyển: ${travelLabel}&#10;Khảo sát: ${surveyLabel}">
+                                    <small class="text-muted d-block">🚗 ${travelLabel}</small>
+                                    <small class="text-muted d-block">📋 ${surveyLabel}</small>
+                                </td>
                                 <td>${s.brand || '-'}</td>
                                 <td>${s.warranty || '-'}</td>
                                 <td>${s.duration || '-'}</td>
@@ -93,8 +114,8 @@ function displayServices(categories) {
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
-                            </tr>
-                        `).join('') : '<tr><td colspan="9" class="text-center">Chưa có dịch vụ nào</td></tr>'}
+                            </tr>`;
+                        }).join('') : '<tr><td colspan="10" class="text-center">Chưa có dịch vụ nào</td></tr>'}
                     </tbody>
                 </table>
             </div>
@@ -278,11 +299,18 @@ function openAddServiceModal() {
     const title = document.getElementById('serviceModalTitle');
     const form = document.getElementById('serviceForm');
     const idInput = document.getElementById('serviceId');
-    
+
     if (title && form && idInput) {
         title.textContent = 'Thêm Dịch Vụ';
         form.reset();
         idInput.value = '';
+        // Reset pricing fields
+        ['serviceTravelFee','serviceTravelMin','serviceTravelMax','serviceSurveyFee'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        const waive = document.getElementById('serviceSurveyWaive');
+        if (waive) waive.checked = true; // default: miễn phí nếu đặt lịch
         if (serviceModal) serviceModal.show();
     }
 }
@@ -351,6 +379,25 @@ window.editService = function(id) {
         if (warrantyInput) warrantyInput.value = service.warranty || '';
         if (durationInput) durationInput.value = service.duration || '';
         descInput.value = service.description || '';
+
+        // Phí di chuyển
+        const tfFixed = document.getElementById('serviceTravelFee');
+        const tfMin   = document.getElementById('serviceTravelMin');
+        const tfMax   = document.getElementById('serviceTravelMax');
+        if (tfFixed) tfFixed.value = service.travel_fee_fixed ?? '';
+        if (tfMin)   tfMin.value   = service.travel_fee_min   ?? '';
+        if (tfMax)   tfMax.value   = service.travel_fee_max   ?? '';
+
+        // Phí khảo sát
+        const sfAmt     = document.getElementById('serviceSurveyFee');
+        const sfReq     = document.getElementById('serviceSurveyRequired');
+        const sfWaive   = document.getElementById('serviceSurveyWaive');
+        const sfDeduct  = document.getElementById('serviceSurveyDeduct');
+        if (sfAmt)    sfAmt.value      = service.survey_fee_amount   ?? '';
+        if (sfReq)    sfReq.checked    = !!service.survey_fee_required;
+        if (sfWaive)  sfWaive.checked  = service.survey_fee_waive !== false;
+        if (sfDeduct) sfDeduct.checked = !!service.survey_fee_deduct;
+
         if (serviceModal) serviceModal.show();
     } else {
         console.error('Missing form elements');
@@ -385,6 +432,16 @@ function saveServiceHandler() {
         return;
     }
 
+    // Phí di chuyển
+    const travel_fee_fixed = document.getElementById('serviceTravelFee')?.value || '';
+    const travel_fee_min   = document.getElementById('serviceTravelMin')?.value  || '';
+    const travel_fee_max   = document.getElementById('serviceTravelMax')?.value  || '';
+    // Phí khảo sát
+    const survey_fee_amount   = document.getElementById('serviceSurveyFee')?.value      || '';
+    const survey_fee_required = document.getElementById('serviceSurveyRequired')?.checked || false;
+    const survey_fee_waive    = document.getElementById('serviceSurveyWaive')?.checked   || false;
+    const survey_fee_deduct   = document.getElementById('serviceSurveyDeduct')?.checked  || false;
+
     const action = id ? 'update_service' : 'add_service';
     const data = {
         action: action,
@@ -396,7 +453,15 @@ function saveServiceHandler() {
         brand: brand || null,
         warranty: warranty || null,
         duration: duration || null,
-        description: description
+        description: description,
+        // Pricing fields mới
+        travel_fee_fixed:    travel_fee_fixed    !== '' ? parseInt(travel_fee_fixed)    : null,
+        travel_fee_min:      travel_fee_min      !== '' ? parseInt(travel_fee_min)      : null,
+        travel_fee_max:      travel_fee_max      !== '' ? parseInt(travel_fee_max)      : null,
+        survey_fee_amount:   survey_fee_amount   !== '' ? parseInt(survey_fee_amount)   : null,
+        survey_fee_required: survey_fee_required,
+        survey_fee_waive:    survey_fee_waive,
+        survey_fee_deduct:   survey_fee_deduct,
     };
 
     if (id) {

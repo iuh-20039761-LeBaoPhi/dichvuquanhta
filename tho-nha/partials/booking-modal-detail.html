@@ -2,14 +2,23 @@
 <div class="modal fade" id="bookingModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="position:relative;">
                 <h5 class="modal-title fw-bold">
                     <i class="fas fa-calendar-check me-2" style="color:var(--primary);"></i>
                     Đặt Lịch Dịch Vụ
                 </h5>
+                <div style="display:flex;align-items:center;gap:10px;margin-right:36px;">
+                    <button type="button" id="autofillBtn" onclick="bookingAutoFill()"
+                        style="background:linear-gradient(135deg,#11998e,#38ef7d);color:white;border:none;
+                               padding:5px 13px;border-radius:50px;font-size:0.78rem;font-weight:600;
+                               cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;">
+                        <i class="fas fa-magic"></i> Tự điền thông tin
+                    </button>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <div id="bookingAuthBanner" class="mb-3" style="display:none;"></div>
                 <form id="bookingForm">
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -27,6 +36,34 @@
                         <div class="col-12">
                             <label class="form-label">Giá dịch vụ (tham khảo)</label>
                             <input type="text" class="form-control" id="servicePrice" readonly>
+                        </div>
+                        <!-- Bảng ước tính chi phí — hiện khi có phí di chuyển/khảo sát -->
+                        <div class="col-12" id="pricingBreakdownWrap" style="display:none;">
+                            <div style="background:#f0fdfb;border:1px solid rgba(17,153,142,0.25);border-radius:8px;padding:12px 14px;font-size:0.875rem;">
+                                <div class="fw-semibold mb-2" style="color:var(--primary);">
+                                    <i class="fas fa-receipt me-1"></i>Ước tính chi phí
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="text-muted">Giá dịch vụ:</span>
+                                    <span id="bd-service" class="fw-semibold"></span>
+                                </div>
+                                <div id="bd-travel-row" class="d-flex justify-content-between mb-1" style="display:none!important;">
+                                    <span class="text-muted"><i class="fas fa-motorcycle me-1" style="font-size:0.75rem;"></i>Phí di chuyển:</span>
+                                    <span id="bd-travel"></span>
+                                </div>
+                                <div id="bd-survey-row" class="d-flex justify-content-between mb-1" style="display:none!important;">
+                                    <span class="text-muted"><i class="fas fa-clipboard-check me-1" style="font-size:0.75rem;"></i>Phí khảo sát:</span>
+                                    <span id="bd-survey"></span>
+                                </div>
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-semibold">Tổng tạm tính:</span>
+                                    <span id="bd-total" class="fw-bold" style="color:var(--primary);"></span>
+                                </div>
+                                <p class="text-muted mb-0 mt-1" style="font-size:0.77rem;">
+                                    <i class="fas fa-info-circle me-1"></i>Giá chính xác xác nhận sau khi thợ khảo sát thực tế
+                                </p>
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>

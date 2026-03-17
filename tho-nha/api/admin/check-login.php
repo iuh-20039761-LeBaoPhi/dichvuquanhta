@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once dirname(__DIR__) . '/session.php';
 
 if(isset($_SESSION['admin_id'])){
     echo json_encode([

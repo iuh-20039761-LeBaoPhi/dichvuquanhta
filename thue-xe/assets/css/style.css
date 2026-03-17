@@ -379,7 +379,7 @@ body {
     filter: brightness(0) invert(1);
 }
 header.sticky-top {
-    z-index: 1230;
+    z-index: 1030; /* Dưới Bootstrap modal (1055) để modal không bị che */
 }
 /* Car Detail Page */
 .car-detail-img {

@@ -18,7 +18,10 @@ if (!$category) {
     exit;
 }
 
-// Lấy danh sách dịch vụ trong category
+// Lấy danh sách dịch vụ trong category (bao gồm pricing_json nếu có)
+$services_query = "SELECT *, IF(COLUMN_JSON IS NULL, NULL, pricing_json) as pricing_json
+                   FROM services WHERE category_id = ? AND is_active = 1 ORDER BY id ASC";
+// Fallback cho MySQL cũ không có COLUMN_JSON
 $services_query = "SELECT * FROM services WHERE category_id = ? AND is_active = 1 ORDER BY id ASC";
 $stmt = $conn->prepare($services_query);
 $stmt->bind_param("i", $category_id);
@@ -61,11 +64,29 @@ $category_images = [
 $icon       = $category_icons[$category['name']]  ?? 'fa-tools';
 $main_image = $category_images[$category['name']] ?? 'image/1.jpg';
 
-// Tính giá thấp nhất và cao nhất
-$prices     = array_map(fn($s) => (int)$s['price'], $services);
-$min_price  = !empty($prices) ? min($prices) : 0;
-$max_price  = !empty($prices) ? max($prices) : 0;
+// Tính giá thấp nhất và cao nhất (bao gồm cả brandPrices)
+$all_prices = [];
+foreach ($services as $s) {
+    $bp = !empty($s['pricing_json']) ? (json_decode($s['pricing_json'], true)['brandPrices'] ?? null) : null;
+    if (!$bp && !empty($s['brand_prices'])) $bp = json_decode($s['brand_prices'], true);
+    if ($bp) {
+        foreach ($bp as $b) $all_prices[] = (int)$b['price'];
+    } else {
+        $all_prices[] = (int)$s['price'];
+    }
+}
+$min_price   = !empty($all_prices) ? min($all_prices) : 0;
+$max_price   = !empty($all_prices) ? max($all_prices) : 0;
 $price_range = number_format($min_price) . 'đ – ' . number_format($max_price) . 'đ';
+
+// Lấy phí di chuyển chung cho category (từ service đầu tiên, hoặc null)
+$category_travel_fee = null;
+foreach ($services as $s) {
+    if (!empty($s['pricing_json'])) {
+        $pj = json_decode($s['pricing_json'], true);
+        if (!empty($pj['travelFee'])) { $category_travel_fee = $pj['travelFee']; break; }
+    }
+}
 ?>
 <?php
 // SEO variables
@@ -240,15 +261,30 @@ $schema = [
                         </h2>
 
                         <?php if (!empty($services)): ?>
-                            <?php foreach ($services as $service):
-                                $brandPrices = !empty($service['brand_prices'])
-                                    ? json_decode($service['brand_prices'], true)
-                                    : null;
-                                $hasBrands   = !empty($brandPrices) && count($brandPrices) > 1;
+                            <?php foreach ($services as $svcIdx => $service):
+                                // Parse pricing_json (mới) hoặc brand_prices (cũ)
+                                $pricingJson  = !empty($service['pricing_json'])
+                                    ? json_decode($service['pricing_json'], true) : [];
+                                $brandPrices  = $pricingJson['brandPrices']
+                                    ?? (!empty($service['brand_prices']) ? json_decode($service['brand_prices'], true) : null);
+                                $hasBrands    = !empty($brandPrices) && count($brandPrices) > 1;
 
-                                // Dùng hãng đầu làm giá mặc định nếu có
+                                // Phí di chuyển/khảo sát từ pricing_json
+                                $travelFee    = $pricingJson['travelFee']  ?? $category_travel_fee;
+                                $surveyFee    = $pricingJson['surveyFee']  ?? null;
+                                $priceRange   = $pricingJson['priceRange'] ?? null;
+
+                                // Giá khởi tạo (hãng đầu hoặc giá mặc định)
                                 $initPrice    = $hasBrands ? $brandPrices[0]['price']        : $service['price'];
                                 $initMaterial = $hasBrands ? $brandPrices[0]['materialCost'] : $service['material_cost'];
+
+                                // Tính tổng ước tính
+                                $tfMin = $travelFee ? (int)($travelFee['min'] ?? $travelFee['fixedAmount'] ?? 0) : 0;
+                                $tfMax = $travelFee ? (int)($travelFee['max'] ?? $travelFee['fixedAmount'] ?? 0) : 0;
+                                $sfAmt = ($surveyFee && !empty($surveyFee['required'])) ? (int)($surveyFee['amount'] ?? 0) : 0;
+                                $hasFees = $tfMax > 0 || $sfAmt > 0;
+                                $estMin = (int)$initPrice + $tfMin + $sfAmt;
+                                $estMax = (int)$initPrice + $tfMax + $sfAmt;
                             ?>
                                 <div class="service-item-card">
 
@@ -279,6 +315,23 @@ $schema = [
                                         </p>
                                     <?php endif; ?>
 
+                                    <!-- Badge khảo sát bắt buộc -->
+                                    <?php if ($surveyFee && !empty($surveyFee['required'])): ?>
+                                        <div style="margin-bottom:8px;">
+                                            <span class="sic-badge" style="background:rgba(245,158,11,0.12);color:#b45309;border-color:rgba(245,158,11,0.3);font-size:0.75rem;padding:3px 8px;">
+                                                <i class="fas fa-clipboard-check me-1"></i>Cần khảo sát
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <!-- Khoảng giá theo hãng -->
+                                    <?php if ($priceRange): ?>
+                                        <div style="font-size:0.78rem;color:#64748b;margin-bottom:6px;">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Khoảng giá: <?= number_format($priceRange['min']) ?>đ – <?= number_format($priceRange['max']) ?>đ (theo hãng)
+                                        </div>
+                                    <?php endif; ?>
+
                                     <!-- Brand selector (chỉ hiện khi có nhiều hãng) -->
                                     <?php if ($hasBrands): ?>
                                         <div class="brand-selector">
@@ -290,8 +343,10 @@ $schema = [
                                                     <button class="brand-option<?= $i === 0 ? ' active' : '' ?>"
                                                         data-brand="<?= htmlspecialchars($bp['name']) ?>"
                                                         data-price="<?= (int)$bp['price'] ?>"
-                                                        data-material-cost="<?= (int)$bp['materialCost'] ?>"
-                                                        data-labor-cost="<?= (int)($service['labor_cost'] ?? 0) ?>">
+                                                        data-material-cost="<?= (int)($bp['materialCost'] ?? 0) ?>"
+                                                        data-labor-cost="<?= (int)($service['labor_cost'] ?? 0) ?>"
+                                                        data-travel-fee="<?= htmlspecialchars(json_encode($travelFee)) ?>"
+                                                        data-survey-fee="<?= htmlspecialchars(json_encode($surveyFee)) ?>">
                                                         <?= htmlspecialchars($bp['name']) ?>
                                                     </button>
                                                 <?php endforeach; ?>
@@ -324,12 +379,35 @@ $schema = [
                                                     <?php endif; ?>
                                                 </div>
                                             <?php endif; ?>
+
+                                            <?php if ($hasFees): ?>
+                                                <div class="sic-fee-breakdown" style="margin-top:8px;padding:8px 10px;background:#f0fdfb;border:1px solid rgba(17,153,142,0.2);border-radius:6px;font-size:0.8rem;">
+                                                    <?php if ($tfMax > 0): ?>
+                                                        <div style="display:flex;justify-content:space-between;color:#64748b;margin-bottom:3px;">
+                                                            <span><i class="fas fa-motorcycle me-1"></i>Phí di chuyển</span>
+                                                            <span><?= $tfMin === $tfMax ? number_format($tfMin).'đ' : number_format($tfMin).'đ – '.number_format($tfMax).'đ' ?></span>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php if ($sfAmt > 0): ?>
+                                                        <div style="display:flex;justify-content:space-between;color:#b45309;margin-bottom:3px;">
+                                                            <span><i class="fas fa-clipboard-check me-1"></i>Phí khảo sát (bắt buộc)</span>
+                                                            <span><?= number_format($sfAmt) ?>đ</span>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <div style="display:flex;justify-content:space-between;font-weight:600;color:var(--primary);border-top:1px dashed rgba(17,153,142,0.3);margin-top:5px;padding-top:5px;">
+                                                        <span>Tổng tạm tính:</span>
+                                                        <span><?= $estMin === $estMax ? number_format($estMin).'đ' : number_format($estMin).'đ – '.number_format($estMax).'đ' ?></span>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
 
                                         <button
                                             class="btn btn-gradient btn-sm booking-btn"
                                             data-service-name="<?= htmlspecialchars($service['name']) ?>"
                                             data-service-price="<?= (int)$initPrice ?>"
+                                            data-travel-fee="<?= htmlspecialchars(json_encode($travelFee)) ?>"
+                                            data-survey-fee="<?= htmlspecialchars(json_encode($surveyFee)) ?>"
                                         >
                                             <i class="fas fa-calendar-check me-1"></i> Đặt lịch
                                         </button>
@@ -412,7 +490,19 @@ $schema = [
                     <div class="price-card mb-4">
                         <h4>Giá dịch vụ tham khảo</h4>
                         <div class="price-amount"><?= $price_range ?></div>
-                        <p class="mb-4"><small>* Giá thực tế có thể thay đổi theo tình trạng cụ thể</small></p>
+                        <?php if ($category_travel_fee): ?>
+                            <?php
+                                $tf_min = (int)($category_travel_fee['min'] ?? $category_travel_fee['fixedAmount'] ?? 0);
+                                $tf_max = (int)($category_travel_fee['max'] ?? $category_travel_fee['fixedAmount'] ?? 0);
+                                $tf_label = $tf_min === $tf_max
+                                    ? number_format($tf_min) . 'đ'
+                                    : number_format($tf_min) . 'đ – ' . number_format($tf_max) . 'đ';
+                            ?>
+                            <div style="font-size:0.82rem;color:rgba(255,255,255,0.85);margin-bottom:4px;">
+                                <i class="fas fa-motorcycle me-1"></i>Phí di chuyển: <strong><?= $tf_label ?></strong>
+                            </div>
+                        <?php endif; ?>
+                        <p class="mb-4 mt-2"><small>* Giá thực tế có thể thay đổi theo tình trạng cụ thể</small></p>
                         <button class="btn btn-light w-100 mb-3" onclick="scrollToServices()">
                             <i class="fas fa-list me-2"></i> Xem bảng giá chi tiết
                         </button>
@@ -515,55 +605,8 @@ $schema = [
         </a>
     </div>
 
-    <!-- Modal Đặt Lịch -->
-    <div class="modal fade" id="bookingModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">
-                        <i class="fas fa-calendar-check me-2" style="color: var(--primary);"></i>
-                        Đặt Lịch Dịch Vụ
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="bookingForm">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="name" placeholder="Nguyễn Văn A" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                <input type="tel" class="form-control" id="phone" placeholder="0xxx xxx xxx" required>
-                            </div>
-                            <div class="col-12">
-                                <label for="selectedService" class="form-label">Dịch vụ đã chọn <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="selectedService" readonly>
-                            </div>
-                            <div class="col-12">
-                                <label for="servicePrice" class="form-label">Giá dịch vụ (tham khảo)</label>
-                                <input type="text" class="form-control" id="servicePrice" readonly>
-                            </div>
-                            <div class="col-12">
-                                <label for="address" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="address" rows="2" placeholder="Số nhà, đường, phường, quận..." required></textarea>
-                            </div>
-                            <div class="col-12">
-                                <label for="note" class="form-label">Ghi chú thêm</label>
-                                <textarea class="form-control" id="note" rows="2" placeholder="Mô tả thêm về tình trạng hư hỏng..."></textarea>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-gradient w-100" style="padding: 14px; font-size: 1rem;">
-                                <i class="fas fa-check-circle me-2"></i> Xác nhận đặt lịch
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Modal Đặt Lịch — được load từ partials/booking-modal-detail.html -->
+    <div id="booking-modal-container"></div>
 
     <!-- Modal Tra Cứu Đơn Hàng -->
     <div class="modal fade" id="viewOrderModal" tabindex="-1">
@@ -632,7 +675,48 @@ $schema = [
     <script>
         const fmt = n => parseInt(n).toLocaleString('vi-VN');
 
-        // ===== Brand selection: cập nhật giá khi chọn hãng =====
+        // ==================== PRICING HELPERS (PHP page) ====================
+        // Assumption: không có distance thực tế → dùng fixedAmount hoặc min/max
+        function calcPricingPHP(basePrice, travelFee, surveyFee) {
+            const travelMin = travelFee ? (travelFee.min ?? travelFee.fixedAmount ?? 0) : 0;
+            const travelMax = travelFee ? (travelFee.max ?? travelFee.fixedAmount ?? 0) : 0;
+            const survey    = (surveyFee && surveyFee.required) ? (surveyFee.amount || 0) : 0;
+            return { travelMin, travelMax, survey,
+                totalMin: basePrice + travelMin + survey,
+                totalMax: basePrice + travelMax + survey,
+                hasFees: travelMax > 0 || survey > 0 };
+        }
+
+        function updateModalBreakdown(price, travelFee, surveyFee) {
+            const wrap = document.getElementById('pricingBreakdownWrap');
+            if (!wrap) return;
+            const p = calcPricingPHP(price, travelFee, surveyFee);
+            if (!p.hasFees) { wrap.style.display = 'none'; return; }
+            document.getElementById('bd-service').textContent = price.toLocaleString('vi-VN') + 'đ';
+            const tRow = document.getElementById('bd-travel-row');
+            const tEl  = document.getElementById('bd-travel');
+            const sRow = document.getElementById('bd-survey-row');
+            const sEl  = document.getElementById('bd-survey');
+            const tot  = document.getElementById('bd-total');
+            if (p.travelMax > 0 && tRow && tEl) {
+                tRow.style.removeProperty('display');
+                tEl.textContent = p.travelMin === p.travelMax
+                    ? p.travelMin.toLocaleString('vi-VN') + 'đ'
+                    : p.travelMin.toLocaleString('vi-VN') + 'đ – ' + p.travelMax.toLocaleString('vi-VN') + 'đ';
+            } else if (tRow) tRow.style.setProperty('display','none','important');
+            if (p.survey > 0 && sRow && sEl) {
+                sRow.style.removeProperty('display');
+                sEl.textContent = p.survey.toLocaleString('vi-VN') + 'đ (bắt buộc, trừ vào tổng khi đặt)';
+            } else if (sRow) sRow.style.setProperty('display','none','important');
+            if (tot) {
+                tot.textContent = p.totalMin === p.totalMax
+                    ? p.totalMin.toLocaleString('vi-VN') + 'đ'
+                    : p.totalMin.toLocaleString('vi-VN') + 'đ – ' + p.totalMax.toLocaleString('vi-VN') + 'đ';
+            }
+            wrap.style.display = '';
+        }
+
+        // ===== Brand selection: cập nhật giá + fee breakdown khi chọn hãng =====
         document.addEventListener('click', function (e) {
             const btn = e.target.closest('.brand-option');
             if (!btn) return;
@@ -643,22 +727,45 @@ $schema = [
 
             const price     = parseInt(btn.dataset.price);
             const matCost   = parseInt(btn.dataset.materialCost) || 0;
-            const laborCost = parseInt(btn.dataset.laborCost)    || 0;
+            let travelFee   = null, surveyFee = null;
+            try { travelFee = btn.dataset.travelFee ? JSON.parse(btn.dataset.travelFee) : null; } catch(err){}
+            try { surveyFee = btn.dataset.surveyFee ? JSON.parse(btn.dataset.surveyFee) : null; } catch(err){}
 
-            // Cập nhật giá tổng
             card.querySelector('.sic-total-price').textContent = fmt(price) + 'đ';
-
-            // Cập nhật vật liệu trong breakdown
             const matEl = card.querySelector('.sic-bd-material');
             if (matEl && matCost) {
                 matEl.innerHTML = `<i class="fas fa-box"></i> Vật liệu: ${fmt(matCost)}đ`;
             }
 
-            // Cập nhật booking button
+            // Rebuild fee breakdown
+            const feeDiv = card.querySelector('.sic-fee-breakdown');
+            if (feeDiv) {
+                const p = calcPricingPHP(price, travelFee, surveyFee);
+                if (p.hasFees) {
+                    const travelRow = p.travelMax > 0
+                        ? `<div style="display:flex;justify-content:space-between;color:#64748b;margin-bottom:3px;">
+                               <span><i class="fas fa-motorcycle me-1"></i>Phí di chuyển</span>
+                               <span>${p.travelMin === p.travelMax ? p.travelMin.toLocaleString('vi-VN')+'đ' : p.travelMin.toLocaleString('vi-VN')+'đ – '+p.travelMax.toLocaleString('vi-VN')+'đ'}</span>
+                           </div>` : '';
+                    const surveyRow = p.survey > 0
+                        ? `<div style="display:flex;justify-content:space-between;color:#b45309;margin-bottom:3px;">
+                               <span><i class="fas fa-clipboard-check me-1"></i>Phí khảo sát (bắt buộc)</span>
+                               <span>${p.survey.toLocaleString('vi-VN')}đ</span>
+                           </div>` : '';
+                    const totalText = p.totalMin === p.totalMax
+                        ? p.totalMin.toLocaleString('vi-VN')+'đ'
+                        : p.totalMin.toLocaleString('vi-VN')+'đ – '+p.totalMax.toLocaleString('vi-VN')+'đ';
+                    feeDiv.innerHTML = travelRow + surveyRow
+                        + `<div style="display:flex;justify-content:space-between;font-weight:600;color:var(--primary);border-top:1px dashed rgba(17,153,142,0.3);margin-top:5px;padding-top:5px;">
+                               <span>Tổng tạm tính:</span><span>${totalText}</span>
+                           </div>`;
+                }
+            }
+
             card.querySelector('.booking-btn').dataset.servicePrice = price;
         });
 
-        // Mở modal và điền thông tin dịch vụ
+        // Mở modal và điền thông tin dịch vụ (dùng event delegation vì modal được fetch async)
         document.addEventListener('click', function (e) {
             const btn = e.target.closest('.booking-btn');
             if (!btn) return;
@@ -670,71 +777,94 @@ $schema = [
             const displayName  = activeBrand
                 ? `${serviceName} (${activeBrand.dataset.brand})`
                 : serviceName;
+            let travelFee = null, surveyFee = null;
+            try { travelFee = btn.dataset.travelFee ? JSON.parse(btn.dataset.travelFee) : null; } catch(err){}
+            try { surveyFee = btn.dataset.surveyFee ? JSON.parse(btn.dataset.surveyFee) : null; } catch(err){}
 
-            document.getElementById('selectedService').value = displayName;
-            document.getElementById('servicePrice').value =
-                new Intl.NumberFormat('vi-VN').format(servicePrice) + 'đ';
+            const selEl   = document.getElementById('selectedService');
+            const priceEl = document.getElementById('servicePrice');
+            if (selEl)   selEl.value   = displayName;
+            if (priceEl) priceEl.value = new Intl.NumberFormat('vi-VN').format(servicePrice) + 'đ';
+
+            updateModalBreakdown(parseInt(servicePrice), travelFee, surveyFee);
 
             new bootstrap.Modal(document.getElementById('bookingModal')).show();
         });
 
-        // Scroll đến bảng giá
         function scrollToServices() {
             const first = document.querySelector('.service-item-card');
             if (first) first.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Submit đặt lịch → gọi API thật
-        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Load modal từ partial, rồi gắn submit handler
+        fetch('partials/booking-modal-detail.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('booking-modal-container').innerHTML = html;
 
-            const name    = document.getElementById('name').value.trim();
-            const phone   = document.getElementById('phone').value.trim();
-            const service = document.getElementById('selectedService').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const note    = document.getElementById('note').value.trim();
+                document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
 
-            if (!name || !phone || !service || !address) {
-                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
-                return;
-            }
+                    const name    = document.getElementById('name').value.trim();
+                    const phone   = document.getElementById('phone').value.trim();
+                    const service = document.getElementById('selectedService').value.trim();
+                    const address = document.getElementById('address').value.trim();
+                    const note    = document.getElementById('note').value.trim();
 
-            const phoneRegex = /^(0|\+84)[0-9]{9}$/;
-            if (!phoneRegex.test(phone)) {
-                alert('Số điện thoại không hợp lệ!');
-                return;
-            }
+                    if (!name || !phone || !service || !address) {
+                        alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                        return;
+                    }
+                    if (!/^(0|\+84)[0-9]{9}$/.test(phone)) {
+                        alert('Số điện thoại không hợp lệ!');
+                        return;
+                    }
 
-            const submitBtn = this.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+                    // Lấy estimated_price từ breakdown nếu có
+                    const bdTot = document.getElementById('bd-total');
+                    const priceRaw = Number(
+                        (document.getElementById('servicePrice')?.value || '').replace(/[^\d]/g,'')
+                    ) || 0;
+                    const activeBrand = document.querySelector('#bookingModal .brand-option.active');
+                    const selectedBrand = activeBrand ? activeBrand.dataset.brand : null;
 
-            try {
-                const res = await fetch('api/book.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, phone, service_id: service, address, note })
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+
+                    try {
+                        const res  = await fetch('api/book.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                name, phone, service_id: service, address, note,
+                                selected_brand:  selectedBrand,
+                                estimated_price: priceRaw
+                            })
+                        });
+                        const data = await res.json();
+
+                        if (data.status === 'success') {
+                            alert('✅ Đặt lịch thành công! Mã đơn: ' + data.order_code);
+                            bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+                            this.reset();
+                            if (document.getElementById('pricingBreakdownWrap'))
+                                document.getElementById('pricingBreakdownWrap').style.display = 'none';
+                        } else {
+                            alert('❌ ' + (data.message || 'Có lỗi xảy ra, vui lòng thử lại!'));
+                        }
+                    } catch (err) {
+                        alert('❌ Không thể kết nối server. Vui lòng thử lại sau!');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Xác nhận đặt lịch';
+                    }
                 });
-
-                const data = await res.json();
-
-                if (data.status === 'success') {
-                    alert('✅ Đặt lịch thành công! Mã đơn: ' + data.order_code);
-                    bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
-                    this.reset();
-                } else {
-                    alert('❌ ' + (data.message || 'Có lỗi xảy ra, vui lòng thử lại!'));
-                }
-            } catch (err) {
-                console.error(err);
-                alert('❌ Không thể kết nối server. Vui lòng thử lại sau!');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Xác nhận đặt lịch';
-            }
-        });
+            });
     </script>
 
     <script src="js/order-tracking.js"></script>
+    <script src="js/auth-nav.js"></script>
+    <script src="js/booking-autofill.js"></script>
 </body>
 </html>
