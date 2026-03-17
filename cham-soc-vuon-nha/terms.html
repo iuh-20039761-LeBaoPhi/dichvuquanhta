@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 
 <head>
@@ -8,164 +9,180 @@
 
 <title>Điều khoản sử dụng | Chăm Sóc Vườn Nhà</title>
 
+<meta name="description" content="Điều khoản sử dụng dịch vụ chăm sóc vườn, cắt tỉa cây, dọn dẹp vườn và thiết kế cảnh quan tại Chăm Sóc Vườn Nhà.">
+
 <link rel="icon" href="assets/images/logo.jpg">
 
 <style>
 
-:root{
---green:#1f6f43;
---green-dark:#14532d;
---bg:#f4f7f5;
---border:#e5e7eb;
-}
-
-/* RESET */
+/* ===== RESET ===== */
 
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:'Segoe UI',sans-serif;
+font-family:Segoe UI, Arial, sans-serif;
 }
 
+/* ===== BODY ===== */
+
 body{
-background:var(--bg);
+background:#f6faf7;
 color:#333;
-line-height:1.7;
+line-height:1.8;
 margin-top:90px;
 }
 
-/* HERO */
+/* ===== HERO BANNER ===== */
 
-.terms-hero{
-height:300px;
-background:url("assets/images/chamsocvuonnha.jpg") center/cover no-repeat;
+.hero{
+
+position:relative;
+
+height:420px;
+
+background:url("assets/images/catcodinhky.jpg") center/cover no-repeat;
+
 display:flex;
+
 align-items:center;
+
 justify-content:center;
+
 text-align:center;
-position:relative;
+
 color:white;
+
 }
 
-.terms-hero::before{
-content:"";
+.hero-overlay{
+
 position:absolute;
-inset:0;
-background:rgba(0,0,0,0.55);
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,0.45);
+
 }
 
-.terms-hero h1{
+.hero-content{
+
 position:relative;
-font-size:42px;
+
+z-index:2;
+
+max-width:750px;
+
+padding:20px;
+
 }
 
-/* CONTAINER */
+.hero h1{
+
+font-size:48px;
+
+margin-bottom:10px;
+
+}
+
+.hero p{
+
+font-size:18px;
+
+opacity:.9;
+
+}
+
+/* ===== CONTAINER ===== */
 
 .container{
-max-width:1300px;
+
+max-width:950px;
+
 margin:auto;
-padding:0 20px;
+
+padding:80px 25px;
+
 }
 
-/* BREADCRUMB */
-
-.breadcrumb{
-margin:30px auto;
-font-size:14px;
-color:#666;
-}
-
-.breadcrumb a{
-text-decoration:none;
-color:var(--green);
-}
-
-.breadcrumb a:hover{
-text-decoration:underline;
-}
-
-/* SECTION */
-
-.terms-section{
-padding:40px 0 90px;
-}
-
-/* CARD */
+/* ===== CARD ===== */
 
 .terms-box{
-
-max-width:900px;
-margin:auto;
 
 background:white;
 
-padding:60px 70px;
+padding:70px;
 
 border-radius:20px;
 
-box-shadow:0 20px 55px rgba(0,0,0,0.08);
+box-shadow:0 20px 60px rgba(0,0,0,0.08);
 
 }
 
-/* TITLE */
+/* ===== SECTION ===== */
 
-.terms-box h1{
+.section{
+margin-bottom:45px;
+}
 
-text-align:center;
+.section h2{
 
-color:var(--green);
+font-size:24px;
 
-margin-bottom:40px;
+color:#1f6f43;
 
-font-size:34px;
+margin-bottom:12px;
 
 }
 
-/* SUBTITLE */
+.section p{
+margin-bottom:12px;
+}
 
-.terms-box h2{
+.section ul{
+padding-left:20px;
+}
 
-color:var(--green-dark);
+.section li{
+margin-bottom:6px;
+}
 
-margin-top:35px;
+/* ===== CONTACT BOX ===== */
 
-font-size:22px;
+.contact{
 
-border-left:4px solid var(--green);
+margin-top:50px;
 
-padding-left:10px;
+background:#f1f7f4;
+
+padding:25px;
+
+border-radius:12px;
 
 }
 
-/* TEXT */
+/* ===== MOBILE ===== */
 
-.terms-box p{
-margin-top:10px;
+@media(max-width:700px){
+
+.hero{
+height:300px;
+}
+
+.hero h1{
+font-size:32px;
+}
+
+.hero p{
 font-size:16px;
 }
 
-/* LIST */
-
-.terms-box ul{
-margin-top:10px;
-padding-left:22px;
-}
-
-.terms-box ul li{
-margin-bottom:7px;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:768px){
-
 .terms-box{
-padding:40px 30px;
-}
-
-.terms-box h1{
-font-size:28px;
+padding:40px 25px;
 }
 
 }
@@ -176,185 +193,205 @@ font-size:28px;
 
 <body>
 
-<!-- HEADER -->
-
 <div id="header"></div>
 
 <!-- HERO -->
 
-<section class="terms-hero">
-<h1>Điều Khoản Sử Dụng</h1>
-</section>
+<section class="hero">
 
-<div class="container">
+<div class="hero-overlay"></div>
 
-<!-- BREADCRUMB -->
+<div class="hero-content">
 
-<div class="breadcrumb">
-<a href="indexs.html">Trang chủ</a> > Điều khoản sử dụng
+<h1>Điều khoản sử dụng</h1>
+
+<p>
+Quy định và điều kiện khi sử dụng các dịch vụ chăm sóc vườn tại Chăm Sóc Vườn Nhà
+</p>
+
 </div>
+
+</section>
 
 <!-- CONTENT -->
 
-<section class="terms-section">
+<div class="container">
 
 <div class="terms-box">
 
-<h1>Điều khoản sử dụng dịch vụ</h1>
+<div class="section">
 
-<h2>1. Giới thiệu chung</h2>
+<h2>1. Giới thiệu</h2>
+
 <p>
-Chăm sóc vườn là nền tảng cung cấp dịch vụ chăm sóc vườn và cảnh quan. Khi truy cập và sử dụng website, người dùng đồng ý tuân thủ các điều khoản và điều kiện được quy định trong trang này.
+Chào mừng bạn đến với nền tảng Chăm Sóc Vườn Nhà. Khi truy cập website hoặc sử dụng các dịch vụ được cung cấp trên hệ thống, bạn đồng ý tuân thủ toàn bộ các điều khoản và điều kiện được quy định trong trang này.
 </p>
 
+<p>
+Các điều khoản này được thiết lập nhằm đảm bảo quyền lợi của khách hàng, nhà cung cấp dịch vụ và nền tảng, đồng thời tạo ra một môi trường minh bạch và chuyên nghiệp trong quá trình cung cấp dịch vụ chăm sóc vườn.
+</p>
+
+</div>
+
+<div class="section">
+
 <h2>2. Phạm vi dịch vụ</h2>
-<p>Chăm sóc vườn cung cấp các dịch vụ như:</p>
+
+<p>
+Chăm Sóc Vườn Nhà cung cấp nhiều dịch vụ liên quan đến chăm sóc và bảo dưỡng khu vườn cho hộ gia đình, doanh nghiệp và các khu vực cảnh quan.
+</p>
 
 <ul>
-<li>Chăm sóc và bảo dưỡng vườn</li>
-<li>Cắt tỉa cây xanh</li>
-<li>Dọn dẹp khu vườn</li>
+
+<li>Chăm sóc vườn định kỳ</li>
+<li>Cắt tỉa cây xanh và cây cảnh</li>
+<li>Dọn dẹp và vệ sinh khu vườn</li>
 <li>Thiết kế và thi công cảnh quan</li>
-<li>Tư vấn chăm sóc cây trồng</li>
+<li>Tư vấn trồng và chăm sóc cây</li>
+
 </ul>
+
+</div>
+
+<div class="section">
 
 <h2>3. Trách nhiệm của khách hàng</h2>
 
+<p>
+Khi sử dụng dịch vụ, khách hàng cần đảm bảo cung cấp thông tin chính xác và đầy đủ để quá trình thực hiện dịch vụ diễn ra thuận lợi.
+</p>
+
 <ul>
-<li>Cung cấp thông tin chính xác khi đặt dịch vụ.</li>
-<li>Thanh toán đầy đủ chi phí theo thỏa thuận.</li>
-<li>Hợp tác với đội ngũ thực hiện dịch vụ.</li>
-<li>Không sử dụng nền tảng cho mục đích trái pháp luật.</li>
+
+<li>Cung cấp địa chỉ và thông tin liên hệ chính xác</li>
+<li>Thanh toán chi phí dịch vụ theo thỏa thuận</li>
+<li>Hợp tác với đội ngũ thực hiện dịch vụ</li>
+<li>Không sử dụng nền tảng cho mục đích vi phạm pháp luật</li>
+
 </ul>
+
+</div>
+
+<div class="section">
 
 <h2>4. Trách nhiệm của nhà cung cấp dịch vụ</h2>
 
-<ul>
-<li>Cung cấp dịch vụ đúng nội dung đã cam kết.</li>
-<li>Đảm bảo an toàn cho cây trồng và khu vực làm việc.</li>
-<li>Thực hiện công việc đúng thời gian đã thống nhất.</li>
-</ul>
-
-<h2>5. Trách nhiệm của Chăm Sóc Vườn Nhà</h2>
+<p>
+Đội ngũ thực hiện dịch vụ có trách nhiệm đảm bảo chất lượng công việc và hoàn thành đúng nội dung đã cam kết với khách hàng.
+</p>
 
 <ul>
-<li>Cung cấp nền tảng đặt dịch vụ ổn định.</li>
-<li>Hiển thị thông tin minh bạch.</li>
-<li>Hỗ trợ khách hàng khi phát sinh vấn đề.</li>
-<li>Bảo mật thông tin người dùng.</li>
-</ul>
 
-<h2>6. Hoa hồng dịch vụ</h2>
+<li>Thực hiện công việc đúng nội dung dịch vụ</li>
+<li>Đảm bảo an toàn cho cây trồng và khu vực xung quanh</li>
+<li>Hoàn thành công việc đúng thời gian đã thỏa thuận</li>
 
-<p>
-Chăm Sóc Vườn Nhà áp dụng mức hoa hồng khoảng <strong>10%</strong> trên tổng giá trị dịch vụ khi đặt thông qua nền tảng.
-</p>
-
-<h2>7. Thanh toán</h2>
-
-<p>
-Khách hàng có thể thanh toán bằng chuyển khoản ngân hàng hoặc các phương thức thanh toán khác được hỗ trợ trên hệ thống.
-</p>
-
-<h2>8. Hủy hoặc thay đổi dịch vụ</h2>
-
-<p>
-Khách hàng có thể hủy hoặc thay đổi lịch dịch vụ trước ít nhất 24 giờ để tránh phát sinh chi phí.
-</p>
-
-<h2>9. Chính sách hoàn tiền</h2>
-
-<p>
-Nếu dịch vụ không được thực hiện đúng như thỏa thuận, khách hàng có thể gửi yêu cầu hỗ trợ để được xem xét hoàn tiền hoặc bồi thường phù hợp.
-</p>
-
-<h2>10. Bảo mật thông tin</h2>
-
-<p>
-Chăm Sóc Vườn Nhà cam kết bảo vệ thông tin cá nhân của khách hàng và không chia sẻ cho bên thứ ba nếu không có sự đồng ý.
-</p>
-
-<h2>11. Quyền sở hữu nội dung</h2>
-
-<p>
-Toàn bộ nội dung trên website bao gồm hình ảnh, văn bản và thiết kế đều thuộc quyền sở hữu của Chăm Sóc Vườn Nhà.
-</p>
-
-<h2>12. Giới hạn trách nhiệm</h2>
-
-<p>
-Chăm Sóc Vườn Nhà đóng vai trò nền tảng kết nối giữa khách hàng và nhà cung cấp dịch vụ.
-</p>
-
-<h2>13. Giải quyết tranh chấp</h2>
-
-<p>
-Trong trường hợp xảy ra tranh chấp, chúng tôi sẽ hỗ trợ các bên tìm giải pháp phù hợp.
-</p>
-
-<h2>14. Tuân thủ pháp luật</h2>
-
-<p>
-Tất cả hoạt động sử dụng nền tảng phải tuân thủ các quy định pháp luật hiện hành.
-</p>
-
-<h2>15. Thay đổi điều khoản</h2>
-
-<p>
-Chăm Sóc Vườn Nhà có quyền cập nhật điều khoản bất cứ lúc nào.
-</p>
-
-<h2>16. Quyền chấm dứt dịch vụ</h2>
-
-<p>
-Chúng tôi có quyền tạm ngưng hoặc chấm dứt quyền truy cập nếu phát hiện vi phạm.
-</p>
-
-<h2>17. Điều khoản hiệu lực</h2>
-
-<p>
-Các điều khoản này có hiệu lực ngay khi được đăng tải trên website.
-</p>
-
-<h2>18. Thông tin liên hệ</h2>
-
-<ul>
-<li>Email: dichvuquanhta.vn@gmail.com</li>
-<li>Hotline: 0775 472 347</li>
-<li>Địa chỉ: Gò Vấp, TP. Hồ Chí Minh</li>
 </ul>
 
 </div>
 
-</section>
+<div class="section">
+
+<h2>5. Thanh toán</h2>
+
+<p>
+Khách hàng có thể thanh toán thông qua chuyển khoản ngân hàng hoặc các phương thức thanh toán khác được hỗ trợ trên nền tảng.
+</p>
+
+<p>
+Chi phí dịch vụ có thể thay đổi tùy theo diện tích vườn, loại cây trồng và yêu cầu cụ thể của khách hàng.
+</p>
 
 </div>
 
-<!-- FOOTER -->
+<div class="section">
+
+<h2>6. Hủy hoặc thay đổi dịch vụ</h2>
+
+<p>
+Khách hàng có thể thay đổi hoặc hủy lịch dịch vụ trước ít nhất 24 giờ để tránh phát sinh chi phí không cần thiết.
+</p>
+
+</div>
+
+<div class="section">
+
+<h2>7. Chính sách hoàn tiền</h2>
+
+<p>
+Nếu dịch vụ không được thực hiện đúng như cam kết, khách hàng có thể gửi yêu cầu hỗ trợ để được xem xét hoàn tiền hoặc điều chỉnh dịch vụ phù hợp.
+</p>
+
+</div>
+
+<div class="section">
+
+<h2>8. Bảo mật thông tin</h2>
+
+<p>
+Chăm Sóc Vườn Nhà cam kết bảo mật thông tin cá nhân của khách hàng và không chia sẻ thông tin cho bên thứ ba khi chưa có sự đồng ý của người dùng.
+</p>
+
+</div>
+
+<div class="section">
+
+<h2>9. Quyền sở hữu nội dung</h2>
+
+<p>
+Tất cả nội dung trên website bao gồm văn bản, hình ảnh, thiết kế và dữ liệu đều thuộc quyền sở hữu của Chăm Sóc Vườn Nhà và được bảo vệ bởi pháp luật.
+</p>
+
+</div>
+
+<div class="section">
+
+<h2>10. Thay đổi điều khoản</h2>
+
+<p>
+Chúng tôi có quyền cập nhật hoặc thay đổi nội dung điều khoản sử dụng nhằm phù hợp với hoạt động của nền tảng và các quy định pháp luật hiện hành.
+</p>
+
+</div>
+
+<div class="section">
+
+<h2>11. Giải quyết tranh chấp</h2>
+
+<p>
+Trong trường hợp phát sinh tranh chấp, các bên sẽ ưu tiên giải quyết thông qua thương lượng và hòa giải. Nếu không thể giải quyết bằng thương lượng, tranh chấp sẽ được xử lý theo quy định pháp luật Việt Nam.
+</p>
+
+</div>
+
+<div class="contact">
+
+<strong>Thông tin liên hệ</strong>
+
+<p>Email: dichvuquanhta.vn@gmail.com</p>
+<p>Hotline: 0775 472 347</p>
+<p>Địa chỉ: TP. Hồ Chí Minh, Việt Nam</p>
+
+</div>
+
+</div>
+
+</div>
 
 <div id="footer"></div>
 
 <script>
 
-/* LOAD HEADER */
+/* HEADER */
 
 fetch("header.html")
 .then(res=>res.text())
 .then(data=>{
-
 document.getElementById("header").innerHTML=data;
-
-const current=location.pathname.split("/").pop();
-
-document.querySelectorAll(".main-nav a").forEach(link=>{
-if(link.getAttribute("href")===current){
-link.classList.add("active");
-}
 });
 
-});
 
-/* LOAD FOOTER */
+/* FOOTER */
 
 fetch("footer.html")
 .then(res=>res.text())

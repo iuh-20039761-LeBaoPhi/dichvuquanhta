@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 
 <head>
@@ -7,8 +6,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Chi tiết tin tức | Chăm Sóc Vườn Nhà</title>
-<meta name="description" content="Kiến thức chăm sóc cây và kinh nghiệm làm vườn.">
+<title>Chi tiết bài viết | Chăm Sóc Vườn Nhà</title>
+
+<meta name="description" content="Kiến thức chăm sóc cây và kinh nghiệm làm vườn">
 
 <link rel="icon" href="assets/images/logo.jpg">
 
@@ -20,11 +20,11 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:'Segoe UI',Arial,sans-serif;
+font-family:'Segoe UI',sans-serif;
 }
 
 body{
-background:#f5f7f6;
+background:#f4f7f6;
 color:#333;
 padding-top:90px;
 }
@@ -32,14 +32,23 @@ padding-top:90px;
 /* HERO */
 
 .hero{
+
 height:320px;
+
 background:url("assets/images/vesinhvacaitao.jpg") center/cover no-repeat;
+
 display:flex;
+
 align-items:center;
+
 justify-content:center;
+
 text-align:center;
+
 color:white;
+
 position:relative;
+
 }
 
 .hero::before{
@@ -54,8 +63,7 @@ position:relative;
 }
 
 .hero h1{
-font-size:42px;
-margin-bottom:10px;
+font-size:40px;
 }
 
 /* CONTAINER */
@@ -89,131 +97,302 @@ gap:40px;
 /* ARTICLE */
 
 .article{
+
 background:white;
+
 padding:40px;
-border-radius:14px;
-box-shadow:0 8px 25px rgba(0,0,0,0.08);
+
+border-radius:16px;
+
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+
 }
 
-.article h2{
+.article-title{
+
 font-size:34px;
-margin-bottom:10px;
+
+font-weight:700;
+
 color:#1f6f43;
+
+margin-bottom:10px;
+
 }
 
-.date{
-color:#888;
-margin-bottom:20px;
+.meta{
+
 font-size:14px;
+
+color:#777;
+
+margin-bottom:20px;
+
+}
+
+.meta span{
+margin-right:15px;
 }
 
 .article img{
-width:100%;
-border-radius:10px;
-margin:20px 0;
-}
 
-/* CONTENT */
+width:100%;
+
+border-radius:10px;
+
+margin:25px 0;
+
+}
 
 .content{
+
 font-size:17px;
-line-height:1.8;
+
+line-height:1.9;
+
 color:#444;
+
 }
 
-.content br{
-line-height:1.2;
+/* TAGS */
+
+.tags{
+
+margin-top:30px;
+
+padding-top:20px;
+
+border-top:1px solid #eee;
+
 }
 
-/* BACK BUTTON */
+.tag{
 
-.back-btn{
 display:inline-block;
-margin-bottom:25px;
-padding:10px 18px;
-background:#1f6f43;
-color:white;
-border-radius:30px;
-text-decoration:none;
-font-weight:600;
-transition:0.3s;
+
+background:#e8f5ef;
+
+color:#1f6f43;
+
+padding:6px 14px;
+
+border-radius:20px;
+
+font-size:13px;
+
+margin:5px;
+
 }
 
-.back-btn:hover{
-background:#14532d;
+/* SHARE */
+
+.share{
+
+margin-top:25px;
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+}
+
+.share button{
+
+border:none;
+
+padding:10px 18px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+color:white;
+
+font-weight:600;
+
+}
+
+.fb{background:#1877f2;}
+.tw{background:#1da1f2;}
+.copy{background:#16a085;}
+
+/* CTA */
+
+.cta{
+
+margin-top:40px;
+
+background:linear-gradient(90deg,#1f6f43,#38b46b);
+
+color:white;
+
+padding:35px;
+
+border-radius:18px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+flex-wrap:wrap;
+
+}
+
+.cta h3{
+font-size:24px;
+margin-bottom:6px;
+}
+
+.phone{
+
+background:white;
+
+color:#1f6f43;
+
+padding:12px 22px;
+
+border-radius:40px;
+
+font-weight:700;
+
 }
 
 /* SIDEBAR */
 
 .sidebar{
+display:flex;
+flex-direction:column;
+gap:25px;
+}
+
+.side-card{
+
 background:white;
-padding:25px;
+
+padding:20px;
+
 border-radius:14px;
-height:fit-content;
+
 box-shadow:0 6px 18px rgba(0,0,0,0.06);
+
 }
 
-.sidebar h3{
-margin-bottom:20px;
+.side-card h3{
+margin-bottom:15px;
 color:#1f6f43;
 }
 
-.sidebar ul{
-list-style:none;
+/* LATEST POST */
+
+.latest-post{
+
+display:flex;
+
+gap:12px;
+
+margin-bottom:14px;
+
 }
 
-.sidebar li{
-margin-bottom:12px;
+.latest-post img{
+
+width:70px;
+
+height:55px;
+
+object-fit:cover;
+
+border-radius:6px;
+
 }
 
-.sidebar a{
+.latest-post a{
+
 text-decoration:none;
+
+font-size:14px;
+
 color:#333;
+
+font-weight:600;
+
 }
 
-.sidebar a:hover{
-color:#1f6f43;
+.latest-post span{
+
+font-size:12px;
+
+color:#888;
+
 }
 
 /* RELATED */
 
-.related-section{
-margin-top:60px;
+.related{
+
+margin-top:70px;
+margin-bottom:80px;
+
 }
 
-.related-section h3{
-margin-bottom:25px;
+.related h3{
+
 font-size:24px;
+
+margin-bottom:25px;
+
 }
 
 .related-grid{
+
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
 gap:25px;
+
 }
 
 .related-card{
+
 background:white;
-border-radius:12px;
+
+border-radius:14px;
+
 overflow:hidden;
-box-shadow:0 6px 18px rgba(0,0,0,0.08);
+
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+
 transition:0.3s;
+
 }
 
 .related-card:hover{
-transform:translateY(-5px);
-box-shadow:0 14px 30px rgba(0,0,0,0.12);
+
+transform:translateY(-6px);
+
 }
 
 .related-card img{
+
 width:100%;
-height:160px;
+
+height:170px;
+
 object-fit:cover;
+
 }
 
 .related-card h4{
+
 padding:15px;
+
 font-size:16px;
+
 }
 
 .related-card a{
@@ -221,12 +400,17 @@ text-decoration:none;
 color:#1f6f43;
 }
 
-/* RESPONSIVE */
+/* MOBILE */
 
 @media(max-width:900px){
 
 .layout{
 grid-template-columns:1fr;
+}
+
+.cta{
+text-align:center;
+gap:15px;
 }
 
 }
@@ -237,50 +421,41 @@ grid-template-columns:1fr;
 
 <body>
 
-<!-- HEADER -->
-
 <div id="header"></div>
-
-<!-- HERO -->
 
 <section class="hero">
 <div class="hero-content">
 <h1>Tin Tức Làm Vườn</h1>
-<p>Kiến thức và kinh nghiệm chăm sóc cây</p>
 </div>
 </section>
 
 <div class="container">
 
-<!-- BREADCRUMB -->
-
 <div class="breadcrumb">
-<a href="indexs.html">Trang chủ</a> >
+<a href="index.html">Trang chủ</a> >
 <a href="news.html">Tin tức</a> >
 Chi tiết bài viết
 </div>
 
 <div class="layout">
 
-<!-- ARTICLE -->
-
 <article class="article" id="article"></article>
-
-<!-- SIDEBAR -->
 
 <aside class="sidebar">
 
+<div class="side-card">
+
 <h3>Tin mới</h3>
 
-<ul id="latest"></ul>
+<div id="latest"></div>
+
+</div>
 
 </aside>
 
 </div>
 
-<!-- RELATED -->
-
-<section class="related-section">
+<section class="related">
 
 <h3>Bài viết liên quan</h3>
 
@@ -290,8 +465,6 @@ Chi tiết bài viết
 
 </div>
 
-<!-- FOOTER -->
-
 <div id="footer"></div>
 
 <script>
@@ -300,31 +473,17 @@ Chi tiết bài viết
 
 fetch("header.html")
 .then(res=>res.text())
-.then(data=>{
-
-document.getElementById("header").innerHTML=data
-
-const current=location.pathname.split("/").pop()
-
-document.querySelectorAll(".main-nav a").forEach(link=>{
-if(link.getAttribute("href")===current){
-link.classList.add("active")
-}
-})
-
-})
+.then(data=>document.getElementById("header").innerHTML=data)
 
 /* LOAD FOOTER */
 
 fetch("footer.html")
 .then(res=>res.text())
-.then(data=>{
-document.getElementById("footer").innerHTML=data
-})
+.then(data=>document.getElementById("footer").innerHTML=data)
 
 /* GET SLUG */
 
-const params=new URLSearchParams(window.location.search)
+const params=new URLSearchParams(location.search)
 const slug=params.get("slug")
 
 fetch("news.json")
@@ -334,26 +493,70 @@ fetch("news.json")
 const news=data.news
 const post=news.find(n=>n.slug===slug)
 
-/* xử lý xuống dòng đẹp */
+/* TAGS */
 
-const content = post.content
-.replace(/\n/g,"<br>")
-.replace(/([0-9]+\.\s)/g,"<br><strong>$1</strong>")
+const tags=[
+
+post.category,
+"chăm sóc cây",
+"kỹ thuật làm vườn",
+"trồng cây",
+"vườn nhà"
+
+]
+
+const content=post.content.replace(/\n/g,"<br><br>")
 
 document.getElementById("article").innerHTML=`
 
-<a class="back-btn" href="news.html">← Quay lại trang Tin tức</a>
+<h2 class="article-title">${post.title}</h2>
 
-<h2>${post.title}</h2>
+<div class="meta">
 
-<div class="date">
-${new Date(post.date).toLocaleDateString('vi-VN')}
+<span>📅 ${new Date(post.date).toLocaleDateString('vi-VN')}</span>
+
+<span>⏱ ${post.readingTime} phút đọc</span>
+
+<span>👁 ${post.views} lượt xem</span>
+
 </div>
 
 <img src="assets/images/${post.image}">
 
-<div class="content">
-${content}
+<div class="content">${content}</div>
+
+<div class="tags">
+
+<strong>Từ khóa:</strong>
+
+${tags.map(t=>`<span class="tag">${t}</span>`).join("")}
+
+</div>
+
+<div class="share">
+
+<span>Chia sẻ:</span>
+
+<button class="fb">Facebook</button>
+
+<button class="tw">Twitter</button>
+
+<button class="copy" onclick="copyLink()">Sao chép link</button>
+
+</div>
+
+<div class="cta">
+
+<div>
+
+<h3>🌿 Cần Dịch Vụ Chăm Sóc Vườn Chuyên Nghiệp?</h3>
+
+<p>Đội ngũ chuyên gia của chúng tôi sẵn sàng hỗ trợ bạn 7 ngày / tuần.</p>
+
+</div>
+
+<div class="phone">📞 0775 472 347</div>
+
 </div>
 
 `
@@ -363,33 +566,69 @@ ${content}
 const latest=document.getElementById("latest")
 
 news.slice(0,5).forEach(n=>{
+
 latest.innerHTML+=`
-<li>
+
+<div class="latest-post">
+
+<img src="assets/images/${n.image}">
+
+<div>
+
 <a href="news_detail.html?slug=${n.slug}">
 ${n.title}
 </a>
-</li>
+
+<br>
+
+<span>⏱ ${n.readingTime} phút</span>
+
+</div>
+
+</div>
+
 `
+
 })
 
 /* RELATED */
 
 const related=document.getElementById("related")
 
-news.filter(n=>n.slug!==slug).slice(0,3).forEach(n=>{
+news
+
+.filter(n=>n.slug!==slug)
+
+.slice(0,3)
+
+.forEach(n=>{
+
 related.innerHTML+=`
 
 <div class="related-card">
+
 <a href="news_detail.html?slug=${n.slug}">
+
 <img src="assets/images/${n.image}">
+
 <h4>${n.title}</h4>
+
 </a>
+
 </div>
 
 `
+
 })
 
 })
+
+function copyLink(){
+
+navigator.clipboard.writeText(location.href)
+alert("Đã sao chép link bài viết!")
+
+}
 
 </script>
 

@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 
 <html lang="vi">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Chi tiết dịch vụ</title>
+<title id="seoTitle">Chi tiết dịch vụ | Garden Service</title>
+
+<meta name="description" content="Chi tiết dịch vụ chăm sóc vườn chuyên nghiệp. Đặt lịch nhanh chóng với Garden Service.">
+
+<link rel="icon" href="assets/images/logo.jpg">
 
 <style>
 
-/* ================= GLOBAL ================= */
+/* ===== GLOBAL ===== */
 
 :root{
 --green:#1f6f43;
---green-dark:#14532d;
---bg:#f6f7f8;
+--green2:#2e8b57;
+--light:#f7f8f9;
 --border:#e5e7eb;
 }
 
@@ -27,10 +32,11 @@ font-family:Segoe UI, sans-serif;
 }
 
 body{
-background:var(--bg);
+background:var(--light);
+color:#333;
 }
 
-/* ================= CONTAINER ================= */
+/* ===== CONTAINER ===== */
 
 .container{
 max-width:1200px;
@@ -38,116 +44,131 @@ margin:auto;
 padding:40px 20px;
 }
 
-/* ================= BANNER ================= */
+/* ===== HERO ===== */
 
-.banner{
-height:340px;
-background-size:cover;
-background-position:center;
+.hero{
+height:320px;
 display:flex;
 align-items:center;
 justify-content:center;
+text-align:center;
+color:white;
+background-size:cover;
+background-position:center;
 position:relative;
 }
 
-.banner::before{
+.hero::before{
 content:"";
 position:absolute;
 inset:0;
-background:rgba(0,0,0,0.6);
+background:rgba(0,0,0,0.55);
 }
 
-.banner h1{
+.hero h1{
 position:relative;
-color:white;
-font-size:42px;
-letter-spacing:1px;
+font-size:40px;
 }
 
-/* ================= SERVICE LAYOUT ================= */
+/* ===== SERVICE BOX ===== */
 
-.service-wrapper{
+.service-box{
 background:white;
-border-radius:14px;
+margin-top:-70px;
 padding:30px;
+border-radius:16px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:40px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
+position:relative;
+z-index:2;
 }
 
-.service-image img{
+/* ===== IMAGE ===== */
+
+.service-img img{
 width:100%;
 height:420px;
 object-fit:cover;
 border-radius:12px;
 }
 
+/* ===== INFO ===== */
+
 .service-info h2{
-font-size:28px;
 color:var(--green);
+font-size:28px;
+margin-bottom:10px;
 }
 
 .description{
-margin:12px 0;
 line-height:1.7;
 color:#555;
+margin-bottom:20px;
 }
 
 .price{
-font-size:26px;
-color:#e63946;
+font-size:24px;
 font-weight:bold;
+color:#e63946;
+margin-bottom:20px;
 }
 
-/* ================= AREA BOX ================= */
+/* ===== CALCULATOR ===== */
 
-.area-box{
+.calc{
 background:#f1f8f4;
-padding:18px;
-border-radius:8px;
-margin-top:15px;
+padding:20px;
+border-radius:10px;
 }
 
-.area-box input{
-margin-top:8px;
-padding:10px;
-width:180px;
-border:1px solid var(--border);
-border-radius:6px;
-}
-
-.total{
-margin-top:10px;
+.calc label{
 font-weight:600;
+}
+
+.calc input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:1px solid var(--border);
+border-radius:8px;
+font-size:15px;
+}
+
+.result{
+margin-top:15px;
+font-weight:bold;
+font-size:18px;
 color:#e63946;
 }
 
-/* ================= BUTTON ================= */
+/* ===== BUTTON ===== */
 
-.btn-order{
-margin-top:20px;
+.btn-book{
+margin-top:18px;
+width:100%;
+padding:14px;
 background:var(--green);
 color:white;
 border:none;
-padding:13px 28px;
-border-radius:6px;
+border-radius:8px;
+font-size:16px;
 cursor:pointer;
-font-size:15px;
 transition:.3s;
 }
 
-.btn-order:hover{
-background:var(--green-dark);
+.btn-book:hover{
+background:var(--green2);
 }
 
-/* ================= RELATED ================= */
+/* ===== RELATED ===== */
 
 .section-title{
 display:flex;
 align-items:center;
 gap:10px;
-margin:50px 0 20px;
+margin:60px 0 20px;
 }
 
 .section-title h3{
@@ -159,13 +180,13 @@ font-size:24px;
 content:"";
 flex:1;
 height:2px;
-background:#e5e7eb;
+background:#ddd;
 }
 
 .related-grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:22px;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:20px;
 }
 
 .related-card{
@@ -182,7 +203,7 @@ transform:translateY(-6px);
 
 .related-card img{
 width:100%;
-height:180px;
+height:170px;
 object-fit:cover;
 }
 
@@ -200,158 +221,54 @@ font-weight:bold;
 .related-card a{
 display:block;
 margin:12px;
-text-align:center;
+padding:10px;
 background:var(--green);
 color:white;
-padding:8px;
+text-align:center;
 border-radius:6px;
 text-decoration:none;
 }
 
-/* ================= MODAL ================= */
-
-.modal{
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.6);
-backdrop-filter:blur(4px);
-align-items:center;
-justify-content:center;
-z-index:999;
-}
-
-.modal-box{
-width:500px;
-background:white;
-border-radius:16px;
-padding:30px;
-box-shadow:0 25px 60px rgba(0,0,0,0.25);
-animation:popup .3s ease;
-}
-
-@keyframes popup{
-from{transform:scale(.9);opacity:0;}
-to{transform:scale(1);opacity:1;}
-}
-
-.modal-box h3{
-font-size:24px;
-color:var(--green);
-margin-bottom:12px;
-}
-
-/* SERVICE INFO MODAL */
-
-.service-info-box{
-background:#f8faf9;
-padding:12px;
-border-radius:8px;
-margin-bottom:10px;
-border:1px solid #e5e7eb;
-}
-
-.service-info-box p{
-margin:4px 0;
-font-size:14px;
-}
-
-/* FORM */
-
-.form-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px;
-}
-
-.form-grid input{
-padding:10px;
-border:1px solid var(--border);
-border-radius:6px;
-}
-
-textarea{
-width:100%;
-padding:10px;
-border:1px solid var(--border);
-border-radius:6px;
-margin-top:10px;
-}
-
-/* PRICE BOX */
-
-.price-box{
-background:#f9fafb;
-padding:15px;
-border-radius:10px;
-margin-top:15px;
-border:1px solid var(--border);
-}
-
-.price-box p{
-margin:5px 0;
-}
-
-.total-final{
-font-size:20px;
-font-weight:bold;
-color:#e63946;
-}
-
-/* BUTTONS */
-
-.modal-buttons{
-display:flex;
-gap:10px;
-margin-top:15px;
-}
-
-.confirm{
-flex:1;
-background:var(--green);
-color:white;
-border:none;
-padding:12px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.cancel{
-flex:1;
-background:#ddd;
-border:none;
-padding:12px;
-border-radius:6px;
-cursor:pointer;
-}
-
-/* SUCCESS */
-
-.success{
-display:none;
-text-align:center;
-background:#eafaf1;
-padding:10px;
-margin-bottom:10px;
-color:#1f6f43;
-border-radius:6px;
-font-weight:600;
-}
-
-/* ================= RESPONSIVE ================= */
+/* ===== TABLET ===== */
 
 @media(max-width:900px){
 
-.service-wrapper{
+.service-box{
 grid-template-columns:1fr;
 }
 
-.service-image img{
+.service-img img{
+height:280px;
+}
+
+.hero{
 height:260px;
 }
 
-.form-grid{
-grid-template-columns:1fr;
+.hero h1{
+font-size:28px;
+}
+
+}
+
+/* ===== MOBILE ===== */
+
+@media(max-width:600px){
+
+.container{
+padding:25px 15px;
+}
+
+.service-box{
+padding:20px;
+}
+
+.hero h1{
+font-size:24px;
+}
+
+.price{
+font-size:20px;
 }
 
 }
@@ -364,15 +281,17 @@ grid-template-columns:1fr;
 
 <div id="header"></div>
 
-<section class="banner" id="banner">
-<h1 id="bannerTitle"></h1>
+<!-- HERO -->
+
+<section class="hero" id="hero">
+<h1 id="heroTitle"></h1>
 </section>
 
 <div class="container">
 
-<div class="service-wrapper">
+<div class="service-box">
 
-<div class="service-image">
+<div class="service-img">
 <img id="serviceImage">
 </div>
 
@@ -384,19 +303,19 @@ grid-template-columns:1fr;
 
 <p class="price" id="servicePrice"></p>
 
-<div class="area-box">
+<div class="calc">
 
-<label>Nhập diện tích (m²)</label><br>
+<label>Nhập diện tích (m²)</label>
 
-<input type="number" id="area">
+<input type="number" id="area" placeholder="Ví dụ: 100">
 
-<p class="total" id="total"></p>
+<p class="result" id="total"></p>
+
+<button class="btn-book" id="bookBtn">
+Đặt lịch dịch vụ
+</button>
 
 </div>
-
-<button class="btn-order" id="openModal">
-Đặt dịch vụ
-</button>
 
 </div>
 
@@ -411,66 +330,6 @@ grid-template-columns:1fr;
 </div>
 
 <div id="footer"></div>
-
-<!-- MODAL -->
-
-<div class="modal" id="modal">
-
-<div class="modal-box">
-
-<div class="success" id="success">
-Đặt lịch thành công ✔
-</div>
-
-<h3>Đặt lịch dịch vụ</h3>
-
-<div class="service-info-box">
-
-<p><b>Dịch vụ:</b> <span id="modalServiceName"></span></p>
-
-<p><b>Diện tích:</b> <span id="modalArea"></span> m²</p>
-
-</div>
-
-<form id="form">
-
-<div class="form-grid">
-
-<input type="text" placeholder="Họ tên" required>
-<input type="tel" placeholder="Số điện thoại" required>
-
-<input type="date" required>
-<input type="text" placeholder="Địa chỉ" required>
-
-</div>
-
-<textarea placeholder="Ghi chú"></textarea>
-
-<div class="price-box">
-
-<p id="serviceTotal"></p>
-<p id="commission"></p>
-<p class="total-final" id="finalPrice"></p>
-
-</div>
-
-<div class="modal-buttons">
-
-<button class="confirm">
-Xác nhận đặt lịch
-</button>
-
-<button type="button" class="cancel" onclick="closeModal()">
-Hủy
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-</div>
 
 <script>
 
@@ -489,82 +348,76 @@ document.getElementById(id).innerHTML=data
 loadComponent("header","header.html")
 loadComponent("footer","footer.html")
 
-/* LẤY ID TỪ URL */
 
-const params = new URLSearchParams(window.location.search);
-const serviceId = parseInt(params.get("id"));
+/* GET SERVICE ID */
 
-let service = null;
-let services = [];
+const params=new URLSearchParams(window.location.search)
+const serviceId=parseInt(params.get("id"))
 
-/* LOAD JSON */
+let services=[]
+let service=null
+
 
 fetch("services.json")
 .then(res=>res.json())
 .then(data=>{
 
-services = data.services;
-
-/* TÌM ĐÚNG DỊCH VỤ */
-
-service = services.find(s => s.id === serviceId);
+services=data.services
+service=services.find(s=>s.id===serviceId)
 
 if(!service){
-document.body.innerHTML="<h2 style='padding:40px'>Không tìm thấy dịch vụ</h2>";
-return;
+document.body.innerHTML="<h2 style='padding:40px'>Không tìm thấy dịch vụ</h2>"
+return
 }
 
-/* HIỂN THỊ */
+/* HERO */
 
-banner.style.backgroundImage =
-"url('assets/images/"+service.image+"')";
+hero.style.backgroundImage=
+"url('assets/images/"+service.image+"')"
 
-bannerTitle.textContent = service.name;
+heroTitle.innerText=service.name
 
-serviceName.textContent = service.name;
+/* INFO */
 
-serviceDescription.textContent = service.description;
+serviceName.innerText=service.name
+serviceDescription.innerText=service.description
 
-servicePrice.textContent =
-service.price_m2_min.toLocaleString('vi-VN') +
-" VNĐ / " + service.area_unit;
+servicePrice.innerText=
+service.price_m2_min.toLocaleString('vi-VN')+
+" VNĐ / "+service.area_unit
 
-serviceImage.src =
-"assets/images/"+service.image;
+serviceImage.src="assets/images/"+service.image
 
-/* HIỂN THỊ RELATED */
+/* RELATED */
 
 service.related_services.forEach(id=>{
 
-let s = services.find(x=>x.id===id);
+let s=services.find(x=>x.id===id)
+if(!s) return
 
-if(!s) return;
+let card=document.createElement("div")
 
-let card=document.createElement("div");
-
-card.className="related-card";
+card.className="related-card"
 
 card.innerHTML=`
 
 <img src="assets/images/${s.image}">
 <h4>${s.name}</h4>
 <p>${s.price_m2_min.toLocaleString('vi-VN')} VNĐ / ${s.area_unit}</p>
-<a href="service_detail.html?id=${s.id}">Xem chi tiết</a>
+<a href="service_detail.html?id=${s.id}">
+Xem chi tiết
+</a>
 
-`;
+`
 
-related.appendChild(card);
+related.appendChild(card)
 
-});
+})
 
-});
+})
 
 
-/* TÍNH TIỀN */
-
-let totalService=0
-let commissionValue=0
-let finalPriceValue=0
+/* CALCULATE PRICE */
 
 area.oninput=function(){
 
@@ -575,85 +428,32 @@ total.innerText=""
 return
 }
 
-totalService = a * service.price_m2_min
-commissionValue=totalService*0.1
-finalPriceValue=totalService+commissionValue
+let serviceCost=a*service.price_m2_min
+let fee=serviceCost*0.1
+let final=serviceCost+fee
 
 total.innerText=
-"Tổng dự kiến: "+totalService.toLocaleString('vi-VN')+" VNĐ"
+"Tổng chi phí dự kiến: "+
+final.toLocaleString('vi-VN')+
+" VNĐ"
 
 }
 
 
-/* MODAL */
+/* BOOKING */
 
-openModal.onclick=()=>{
+bookBtn.onclick=function(){
 
 if(!area.value){
-alert("Nhập diện tích trước")
+alert("Vui lòng nhập diện tích")
 return
 }
 
-modalServiceName.innerText=service.name
-modalArea.innerText=area.value
-
-serviceTotal.innerText=
-"Tiền dịch vụ: "+totalService.toLocaleString('vi-VN')+" VNĐ"
-
-commission.innerText=
-"Hoa hồng nền tảng 10%: "+commissionValue.toLocaleString('vi-VN')+" VNĐ"
-
-finalPrice.innerText=
-"Tổng thanh toán: "+finalPriceValue.toLocaleString('vi-VN')+" VNĐ"
-
-modal.style.display="flex"
+window.location.href=
+"booking.html?service="+service.id+
+"&area="+area.value
 
 }
-
-function closeModal(){
-modal.style.display="none"
-}
-
-
-/* FORM */
-
-form.onsubmit=function(e){
-
-e.preventDefault()
-
-success.style.display="block"
-
-setTimeout(()=>{
-
-window.location="services.html"
-
-},1500)
-
-}
-
-
-/* RELATED */
-
-service.related.forEach(id=>{
-
-let s=services.find(x=>x.id==id)
-
-let card=document.createElement("div")
-
-card.className="related-card"
-
-card.innerHTML=`
-
-<img src="assets/images/${s.image}">
-<h4>${s.name}</h4>
-<p>${s.price} VNĐ / m²</p>
-<a href="#">Xem chi tiết</a>
-
-`
-
-related.appendChild(card)
-
-})
 
 </script>
 

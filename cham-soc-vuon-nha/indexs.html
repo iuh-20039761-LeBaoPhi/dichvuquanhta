@@ -6,23 +6,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Garden Service | Dịch vụ chăm sóc vườn chuyên nghiệp</title>
+<title>Chăm Sóc Vườn Nhà | Dịch vụ chăm sóc vườn chuyên nghiệp</title>
 
-<meta name="description" content="Dịch vụ chăm sóc vườn, thiết kế cảnh quan, cải tạo vườn chuyên nghiệp. Mang đến không gian xanh cho ngôi nhà của bạn.">
+<meta name="description" content="Dịch vụ chăm sóc vườn, thiết kế cảnh quan và cải tạo vườn chuyên nghiệp. Mang không gian xanh đến ngôi nhà của bạn.">
 
-<link rel="icon" href="assets/images/logo.jpg" type="image/x-icon">
+<link rel="icon" href="assets/images/logo.jpg">
 
 <style>
 
-/* ===== BIẾN ===== */
+/* ROOT */
 
 :root{
 --green:#1f6f43;
 --green-dark:#14532d;
 --green-light:#eaf5ef;
---bg:#f3f7f4;
+--bg:#f4f7f5;
 --text:#333;
 }
+
+/* RESET */
 
 *{
 margin:0;
@@ -31,239 +33,310 @@ box-sizing:border-box;
 font-family:'Segoe UI',sans-serif;
 }
 
-body{
+/* MAIN */
+
+main{
 background:var(--bg);
-margin-top:90px;
 color:var(--text);
-line-height:1.6;
+margin-top:90px;
 }
 
 /* HERO */
 
-.hero{
-height:540px;
-background:url('assets/images/thietkesanvuon.jpg') center/cover no-repeat;
+main .hero{
+
+height:600px;
+
+background:
+linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)),
+url("assets/images/thietkesanvuon.jpg") center/cover;
+
 display:flex;
 align-items:center;
 justify-content:center;
 text-align:center;
-position:relative;
+
 }
 
-.hero::before{
-content:"";
-position:absolute;
-inset:0;
-background:linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.55));
-}
-
-.hero-content{
-position:relative;
-color:white;
+main .hero-content{
 max-width:850px;
+color:white;
 padding:20px;
 }
 
-.hero h1{
-font-size:52px;
+main .hero h1{
+font-size:54px;
 margin-bottom:20px;
 font-weight:700;
 }
 
-.hero p{
+main .hero p{
 font-size:20px;
-margin-bottom:30px;
-opacity:0.95;
+margin-bottom:35px;
 }
 
-.hero-btn{
+main .hero-btn{
+
 background:#ffd54f;
 color:#14532d;
-padding:15px 36px;
+padding:16px 36px;
 border-radius:40px;
-text-decoration:none;
 font-weight:700;
+text-decoration:none;
 font-size:18px;
 transition:0.3s;
-box-shadow:0 6px 15px rgba(0,0,0,0.25);
+
 }
 
-.hero-btn:hover{
+main .hero-btn:hover{
 background:#ffca28;
-transform:translateY(-2px);
+transform:translateY(-3px);
 }
 
-/* SLOGAN */
+/* FEATURES */
 
-.slogan{
+main .features{
+padding:90px 70px;
 background:white;
-padding:90px 80px;
 }
 
-.slogan-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:40px;
+main .features-grid{
+
 max-width:1200px;
 margin:auto;
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:35px;
+
 }
 
-.slogan-card{
+main .feature-card{
+
 background:var(--green-light);
-padding:40px;
-border-radius:20px;
+padding:35px;
+border-radius:18px;
 text-align:center;
 transition:0.3s;
+
 }
 
-.slogan-card:hover{
+main .feature-card:hover{
+
 transform:translateY(-6px);
-box-shadow:0 12px 25px rgba(0,0,0,0.08);
+box-shadow:0 15px 35px rgba(0,0,0,0.08);
+
 }
 
-.slogan-card h3{
+main .feature-icon{
+font-size:38px;
+margin-bottom:15px;
+}
+
+main .feature-card h3{
 color:var(--green);
-margin-bottom:12px;
-font-size:20px;
-}
-
-.slogan-card p{
-color:#555;
+margin-bottom:10px;
 }
 
 /* ABOUT */
 
-.about{
+main .about{
 padding:110px 80px;
-background:white;
+background:#fff;
 }
 
-.about-container{
+main .about-container{
+
+max-width:1300px;
+margin:auto;
+
 display:flex;
 align-items:center;
 gap:70px;
-max-width:1300px;
-margin:auto;
+
 }
 
-.about img{
-width:500px;
-border-radius:20px;
+main .about img{
+width:480px;
+border-radius:18px;
 box-shadow:0 20px 45px rgba(0,0,0,0.18);
 }
 
-.about-text h2{
+main .about-text h2{
+font-size:38px;
 color:var(--green);
-font-size:36px;
 margin-bottom:20px;
 }
 
-.about-text p{
+main .about-text p{
 font-size:17px;
-color:#555;
 line-height:1.8;
 margin-bottom:15px;
+color:#555;
 }
 
 /* SERVICES */
 
-.services{
+main .services{
 padding:110px 80px;
 }
 
-.section-title{
+main .section-title{
+
 text-align:center;
 font-size:40px;
 color:var(--green);
 margin-bottom:70px;
 font-weight:700;
+
 }
 
-.services-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:35px;
+main .services-grid{
+
 max-width:1200px;
 margin:auto;
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:30px;
+
 }
 
-.service-card{
+main .service-card{
+
 background:white;
-border-radius:22px;
+border-radius:20px;
 overflow:hidden;
-box-shadow:0 12px 35px rgba(0,0,0,0.08);
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
 transition:0.35s;
+
 }
 
-.service-card:hover{
+main .service-card:hover{
+
 transform:translateY(-8px);
-box-shadow:0 18px 45px rgba(0,0,0,0.12);
+box-shadow:0 18px 40px rgba(0,0,0,0.12);
+
 }
 
-.service-card img{
+main .service-card img{
 width:100%;
-height:220px;
+height:210px;
 object-fit:cover;
-transition:0.5s;
 }
 
-.service-card:hover img{
-transform:scale(1.05);
+main .service-content{
+padding:25px;
 }
 
-.service-content{
-padding:28px;
-}
-
-.service-content h3{
+main .service-content h3{
 color:var(--green);
 margin-bottom:10px;
-font-size:20px;
 }
 
-.service-content p{
-color:#666;
-}
-
-.service-btn{
+main .service-btn{
 display:inline-block;
-margin-top:14px;
+margin-top:12px;
 color:var(--green);
 font-weight:600;
 text-decoration:none;
+}
+
+/* STATS */
+
+main .stats{
+
+background:var(--green);
+padding:80px 60px;
+color:white;
+
+}
+
+main .stats-grid{
+
+max-width:1200px;
+margin:auto;
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:40px;
+
+text-align:center;
+
+}
+
+main .stat h3{
+font-size:42px;
+margin-bottom:5px;
+}
+
+main .stat p{
+opacity:0.9;
+}
+
+/* CTA */
+
+main .cta{
+
+padding:100px 60px;
+background:white;
+text-align:center;
+
+}
+
+main .cta h2{
+
+font-size:36px;
+color:var(--green);
+margin-bottom:20px;
+
+}
+
+main .cta-btn{
+
+background:var(--green);
+color:white;
+
+padding:16px 38px;
+border-radius:40px;
+text-decoration:none;
+font-weight:700;
+font-size:18px;
+
 transition:0.3s;
+
 }
 
-.service-btn:hover{
-color:var(--green-dark);
+main .cta-btn:hover{
+background:var(--green-dark);
 }
 
-/* FOOTER SPACING */
-
-.footer-space{
-margin-top:100px;
-}
-
-/* RESPONSIVE */
+/* MOBILE */
 
 @media(max-width:900px){
 
-.about-container{
+main .hero{
+height:500px;
+}
+
+main .hero h1{
+font-size:36px;
+}
+
+main .about-container{
 flex-direction:column;
 text-align:center;
 }
 
-.about img{
+main .about img{
 width:100%;
-max-width:450px;
+max-width:420px;
 }
 
-.hero h1{
-font-size:36px;
-}
-
-.hero{
-height:450px;
+main .services,
+main .about,
+main .features{
+padding:80px 25px;
 }
 
 }
@@ -274,121 +347,106 @@ height:450px;
 
 <body>
 
-<!-- HEADER -->
 <div id="header"></div>
 
+<main>
 
 <!-- HERO -->
-
 <section class="hero">
-
 <div class="hero-content">
 
 <h1>Chăm sóc khu vườn của bạn bằng sự tận tâm</h1>
 
 <p>
-Mang đến không gian xanh, sạch và thư giãn với dịch vụ chăm sóc vườn
-chuyên nghiệp từ Chăm Sóc Vườn Nhà.
+Mang đến không gian xanh, sạch và thư giãn với dịch vụ chăm sóc vườn chuyên nghiệp.
 </p>
 
-<a href="services.html" class="hero-btn">Xem dịch vụ</a>
+<a href="services.html" class="hero-btn">
+Xem dịch vụ
+</a>
 
 </div>
-
 </section>
 
+<!-- FEATURES -->
+<section class="features">
+<div class="features-grid">
 
-<!-- SLOGAN -->
-
-<section class="slogan">
-
-<div class="slogan-grid">
-
-<div class="slogan-card">
-<h3>🌿 Không gian xanh hoàn hảo</h3>
-<p>Giúp khu vườn luôn tươi tốt và tràn đầy sức sống.</p>
+<div class="feature-card">
+<div class="feature-icon">🌿</div>
+<h3>Không gian xanh</h3>
+<p>Khu vườn luôn tươi tốt và đầy sức sống.</p>
 </div>
 
-<div class="slogan-card">
-<h3>👨‍🌾 Đội ngũ chuyên nghiệp</h3>
-<p>Kỹ thuật viên nhiều kinh nghiệm chăm sóc cây trồng.</p>
+<div class="feature-card">
+<div class="feature-icon">👨‍🌾</div>
+<h3>Đội ngũ chuyên nghiệp</h3>
+<p>Kỹ thuật viên nhiều kinh nghiệm chăm sóc cây.</p>
 </div>
 
-<div class="slogan-card">
-<h3>⚡ Dịch vụ nhanh chóng</h3>
+<div class="feature-card">
+<div class="feature-icon">⚡</div>
+<h3>Phục vụ nhanh</h3>
 <p>Đặt lịch dễ dàng – phục vụ tận nơi.</p>
 </div>
 
 </div>
-
 </section>
 
-
 <!-- ABOUT -->
-
 <section class="about">
-
 <div class="about-container">
 
-<img src="assets/images/chamsocvuonnha.jpg" alt="Chăm sóc vườn">
+<img src="assets/images/chamsocvuonnha.jpg">
 
 <div class="about-text">
-
 <h2>Về Chăm Sóc Vườn Nhà</h2>
 
 <p>
-Chăm Sóc Vườn Nhà cung cấp các dịch vụ chăm sóc vườn, thiết kế cảnh quan,
-cải tạo đất và bảo dưỡng cây xanh cho nhà ở, biệt thự và trang trại.
+Chúng tôi cung cấp các dịch vụ chăm sóc vườn, thiết kế cảnh quan và cải tạo khu vườn cho nhà ở và trang trại.
 </p>
 
 <p>
-Với đội ngũ kỹ thuật viên giàu kinh nghiệm, chúng tôi giúp khu vườn
-của bạn luôn xanh tươi, sạch đẹp và phát triển bền vững theo thời gian.
-</p>
-
-<p>
-Mục tiêu của chúng tôi là mang thiên nhiên đến gần hơn với cuộc sống,
-tạo nên không gian thư giãn và trong lành cho mọi gia đình.
+Đội ngũ kỹ thuật viên nhiều năm kinh nghiệm giúp khu vườn luôn xanh tươi và phát triển bền vững.
 </p>
 
 </div>
 
 </div>
-
 </section>
 
-
 <!-- SERVICES -->
-
 <section class="services">
 
-<h2 class="section-title">Các Dịch Vụ Nổi Bật</h2>
+<h2 class="section-title">
+Dịch Vụ Nổi Bật
+</h2>
 
 <div class="services-grid">
 
 <div class="service-card">
-<img src="assets/images/thietkevathicong.jpg" alt="Thiết kế vườn">
+<img src="assets/images/thietkevathicong.jpg">
 <div class="service-content">
 <h3>Thiết kế và thi công</h3>
-<p>Tạo nên khu vườn đẹp và hài hòa với không gian sống.</p>
+<p>Tạo khu vườn đẹp và hài hòa.</p>
 <a href="services.html" class="service-btn">Xem thêm →</a>
 </div>
 </div>
 
 <div class="service-card">
-<img src="assets/images/chamsocnangcao.jpg" alt="Chăm sóc vườn">
+<img src="assets/images/chamsocnangcao.jpg">
 <div class="service-content">
 <h3>Chăm sóc nâng cao</h3>
-<p>Cắt tỉa, bón phân và chăm sóc cây trồng định kỳ.</p>
+<p>Bón phân, cắt tỉa và chăm sóc cây.</p>
 <a href="services.html" class="service-btn">Xem thêm →</a>
 </div>
 </div>
 
 <div class="service-card">
-<img src="assets/images/vesinhvacaitao.jpg" alt="Cải tạo vườn">
+<img src="assets/images/vesinhvacaitao.jpg">
 <div class="service-content">
-<h3>Vệ sinh và cải tạo vườn</h3>
-<p>Làm sạch, cải tạo và nâng cấp khu vườn của bạn.</p>
+<h3>Cải tạo vườn</h3>
+<p>Làm sạch và nâng cấp khu vườn.</p>
 <a href="services.html" class="service-btn">Xem thêm →</a>
 </div>
 </div>
@@ -397,34 +455,57 @@ tạo nên không gian thư giãn và trong lành cho mọi gia đình.
 
 </section>
 
+<!-- STATS -->
+<section class="stats">
 
-<!-- FOOTER -->
+<div class="stats-grid">
 
-<div id="footer" class="footer-space"></div>
+<div class="stat">
+<h3>500+</h3>
+<p>Khách hàng hài lòng</p>
+</div>
 
+<div class="stat">
+<h3>200+</h3>
+<p>Khu vườn đã cải tạo</p>
+</div>
+
+<div class="stat">
+<h3>5+</h3>
+<p>Năm kinh nghiệm</p>
+</div>
+
+<div class="stat">
+<h3>100%</h3>
+<p>Cam kết chất lượng</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- CTA -->
+<section class="cta">
+
+<h2>Bạn muốn khu vườn xanh đẹp hơn?</h2>
+
+<a href="booking.html" class="cta-btn">
+Đặt lịch chăm sóc ngay
+</a>
+
+</section>
+
+</main>
+
+<div id="footer"></div>
 
 <script>
-
-/* LOAD HEADER */
 
 fetch("header.html")
 .then(res=>res.text())
 .then(data=>{
-
 document.getElementById("header").innerHTML=data;
-
-const current=location.pathname.split("/").pop();
-
-document.querySelectorAll(".main-nav a").forEach(link=>{
-if(link.getAttribute("href")===current){
-link.classList.add("active");
-}
 });
-
-});
-
-
-/* LOAD FOOTER */
 
 fetch("footer.html")
 .then(res=>res.text())

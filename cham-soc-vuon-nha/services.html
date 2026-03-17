@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 
 <html lang="vi">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Dịch vụ | Garden Service</title>
+<title>Dịch vụ chăm sóc vườn | Garden Service</title>
+
+<meta name="description" content="Dịch vụ chăm sóc vườn chuyên nghiệp: cắt cỏ, chăm sóc cây, thiết kế cảnh quan và cải tạo vườn.">
 
 <link rel="icon" href="assets/images/logo.jpg">
 
 <style>
 
+/* ===== ROOT ===== */
+
 :root{
 --green:#1f6f43;
 --green-dark:#14532d;
 --green-light:#eaf5ef;
---bg:#f6f8f7;
+--bg:#f6f9f7;
 --text:#333;
---border:#e5e7eb;
 }
 
 /* RESET */
@@ -33,206 +37,284 @@ font-family:'Segoe UI',sans-serif;
 body{
 background:var(--bg);
 color:var(--text);
-margin-top:90px;
 }
 
-/* HERO */
 
-.services-hero{
+/* ===== HERO ===== */
+
+.hero{
+
 height:420px;
-background:url("assets/images/cattianghethuat.jpg") center/cover no-repeat;
-position:relative;
+
+background:
+linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.6)),
+url("assets/images/cattianghethuat.jpg") center/cover;
+
 display:flex;
 align-items:center;
 justify-content:center;
 text-align:center;
+
 color:white;
+
+padding:20px;
+
 }
 
-.services-hero::before{
-content:"";
-position:absolute;
-inset:0;
-background:rgba(0,0,0,0.6);
-}
-
-.services-hero-content{
-position:relative;
-z-index:2;
-max-width:700px;
-}
-
-.services-hero h1{
+.hero h1{
 font-size:48px;
 margin-bottom:10px;
 }
 
-.services-hero p{
-font-size:18px;
-opacity:0.9;
+.hero p{
+opacity:.9;
+margin-bottom:25px;
 }
 
-/* LAYOUT */
+/* SEARCH */
 
-.services-layout{
-display:flex;
-gap:40px;
-padding:60px 80px;
-max-width:1400px;
+.search-box{
+
+max-width:520px;
 margin:auto;
-}
-
-/* SIDEBAR */
-
-.category-sidebar{
-width:260px;
+display:flex;
 background:white;
-padding:25px;
-border-radius:14px;
-box-shadow:0 6px 20px rgba(0,0,0,0.06);
-height:fit-content;
+border-radius:50px;
+overflow:hidden;
+
 }
 
-.category-sidebar h3{
-margin-bottom:20px;
-color:var(--green);
-}
+.search-box input{
 
-.category-sidebar ul{
-list-style:none;
-}
-
-.category-sidebar li{
-margin-bottom:8px;
-}
-
-.category-sidebar a{
-display:block;
-padding:12px 14px;
-border-radius:8px;
-text-decoration:none;
-color:#444;
-transition:0.2s;
+flex:1;
+border:none;
+padding:14px 18px;
 font-size:15px;
+outline:none;
+
 }
 
-.category-sidebar a:hover{
+.search-box button{
+
+background:var(--green);
+color:white;
+border:none;
+padding:14px 22px;
+cursor:pointer;
+
+}
+
+
+/* ===== CATEGORY ===== */
+
+.category-bar{
+
+max-width:1200px;
+margin:50px auto;
+
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:12px;
+
+padding:0 20px;
+
+}
+
+.category-btn{
+
+padding:10px 18px;
+
+border-radius:30px;
+
+background:white;
+
+border:1px solid #ddd;
+
+cursor:pointer;
+
+transition:.25s;
+
+font-size:14px;
+
+}
+
+.category-btn:hover{
 background:var(--green-light);
 }
 
-.category-sidebar a.active{
+.category-btn.active{
+
 background:var(--green);
 color:white;
-font-weight:600;
+border:none;
+
 }
 
-/* SERVICES GRID */
 
-.services-grid{
-flex:1;
+/* ===== SERVICES GRID ===== */
+
+.services-container{
+
+max-width:1300px;
+margin:auto;
+
+padding:0 25px 80px;
+
 display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:30px;
+
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+
+gap:28px;
+
 }
 
-/* SERVICE CARD */
+
+/* ===== SERVICE CARD ===== */
 
 .service-card{
+
 background:white;
-border-radius:14px;
+
+border-radius:18px;
+
 overflow:hidden;
-box-shadow:0 8px 20px rgba(0,0,0,0.08);
-transition:0.3s;
+
+box-shadow:0 10px 25px rgba(0,0,0,0.07);
+
+transition:.35s;
+
 display:flex;
 flex-direction:column;
+
 }
 
 .service-card:hover{
-transform:translateY(-6px);
-box-shadow:0 12px 28px rgba(0,0,0,0.12);
+
+transform:translateY(-8px);
+
+box-shadow:0 20px 45px rgba(0,0,0,0.12);
+
 }
 
-.service-card img{
+
+/* IMAGE */
+
+.service-image{
+height:200px;
+overflow:hidden;
+}
+
+.service-image img{
+
 width:100%;
-height:210px;
+height:100%;
 object-fit:cover;
+
+transition:.4s;
+
 }
 
-.service-card-content{
-padding:18px;
+.service-card:hover img{
+transform:scale(1.08);
+}
+
+
+/* CONTENT */
+
+.service-content{
+
+padding:20px;
 flex:1;
+
 display:flex;
 flex-direction:column;
+
 }
 
-.service-card h3{
-font-size:18px;
+.service-content h3{
+
 color:var(--green);
 margin-bottom:8px;
+font-size:18px;
+
 }
 
-.service-card p{
+.service-content p{
+
 font-size:14px;
 color:#555;
-line-height:1.5;
+line-height:1.6;
+
 flex:1;
+
 }
+
+
+/* INFO */
+
+.service-meta{
+
+margin-top:10px;
+font-size:13px;
+color:#777;
+
+}
+
 
 /* PRICE */
 
 .service-price{
-font-size:18px;
+
+font-size:20px;
 font-weight:bold;
+
 color:#e63946;
+
 margin-top:10px;
+
 }
+
 
 /* BUTTON */
 
-.detail-btn{
-display:block;
-margin-top:14px;
-padding:11px;
+.service-btn{
+
+margin-top:15px;
+
 text-align:center;
+
 background:var(--green);
+
 color:white;
+
+padding:12px;
+
+border-radius:8px;
+
 text-decoration:none;
-border-radius:6px;
+
 font-weight:600;
-transition:0.2s;
+
+transition:.25s;
+
 }
 
-.detail-btn:hover{
+.service-btn:hover{
 background:var(--green-dark);
 }
 
-/* RESPONSIVE */
 
-@media(max-width:1100px){
-
-.services-layout{
-flex-direction:column;
-padding:50px 30px;
-}
-
-.category-sidebar{
-width:100%;
-}
-
-.services-grid{
-grid-template-columns:repeat(2,1fr);
-}
-
-}
+/* ===== MOBILE ===== */
 
 @media(max-width:600px){
 
-.services-grid{
-grid-template-columns:1fr;
+.hero{
+height:300px;
 }
 
-.services-hero h1{
-font-size:32px;
+.hero h1{
+font-size:30px;
 }
 
 }
@@ -247,64 +329,51 @@ font-size:32px;
 
 <!-- HERO -->
 
-<section class="services-hero">
+<section class="hero">
 
-<div class="services-hero-content">
-<h1>Dịch Vụ Chăm Sóc Vườn</h1>
-<p>Dịch vụ chuyên nghiệp giúp khu vườn và nông trại của bạn luôn xanh tốt</p>
+<div>
+
+<h1>Dịch vụ chăm sóc vườn</h1>
+
+<p>Giải pháp chuyên nghiệp cho khu vườn của bạn</p>
+
+<div class="search-box">
+
+<input type="text" id="searchInput" placeholder="Tìm dịch vụ...">
+
+<button>Tìm</button>
+
+</div>
+
 </div>
 
 </section>
 
-<div class="services-layout">
+<!-- CATEGORY -->
 
-<!-- SIDEBAR -->
+<div class="category-bar">
 
-<aside class="category-sidebar">
-
-<h3>Danh mục dịch vụ</h3>
-
-<ul>
-
-<li><a href="#" data-category="all" class="active">Tất cả</a></li>
-<li><a href="#" data-category="coban">Chăm sóc cơ bản</a></li>
-<li><a href="#" data-category="nangcao">Chăm sóc nâng cao</a></li>
-<li><a href="#" data-category="thietke">Thiết kế và thi công</a></li>
-<li><a href="#" data-category="ray">Chăm sóc rẫy</a></li>
-<li><a href="#" data-category="vesinh">Vệ sinh vườn</a></li>
-
-</ul>
-
-</aside>
-
-<!-- SERVICES GRID -->
-
-<div class="services-grid" id="servicesContainer"></div>
+<button class="category-btn active" data-category="all">Tất cả</button> <button class="category-btn" data-category="coban">Chăm sóc cơ bản</button> <button class="category-btn" data-category="nangcao">Chăm sóc nâng cao</button> <button class="category-btn" data-category="thietke">Thiết kế</button> <button class="category-btn" data-category="ray">Chăm sóc rẫy</button> <button class="category-btn" data-category="vesinh">Vệ sinh vườn</button>
 
 </div>
+
+<!-- SERVICES -->
+
+<div class="services-container" id="servicesContainer"></div>
 
 <div id="footer"></div>
 
 <script>
 
-/* LOAD HEADER */
+/* HEADER */
 
 fetch("header.html")
 .then(res=>res.text())
 .then(data=>{
 document.getElementById("header").innerHTML=data;
-
-const current=location.pathname.split("/").pop();
-
-document.querySelectorAll(".main-nav a").forEach(link=>{
-if(link.getAttribute("href")===current){
-link.classList.add("active");
-}
 });
 
-});
-
-/* LOAD FOOTER */
+/* FOOTER */
 
 fetch("footer.html")
 .then(res=>res.text())
@@ -312,8 +381,6 @@ fetch("footer.html")
 document.getElementById("footer").innerHTML=data;
 });
 
-
-/* LOAD SERVICES */
 
 let allServices=[];
 const container=document.getElementById("servicesContainer");
@@ -325,20 +392,16 @@ container.innerHTML="";
 
 list.forEach(service=>{
 
-/* FORMAT PRICE */
-
 let price="Liên hệ";
 
 if(service.price_m2_min){
 
 price=
-service.price_m2_min.toLocaleString('vi-VN') +
-" VNĐ / " +
+service.price_m2_min.toLocaleString('vi-VN')
++" VNĐ / "+
 (service.area_unit || "m²");
 
 }
-
-/* CREATE CARD */
 
 const card=document.createElement("div");
 
@@ -346,21 +409,23 @@ card.className="service-card";
 
 card.innerHTML=`
 
+<div class="service-image">
 <img src="assets/images/${service.image}" alt="${service.name}">
+</div>
 
-<div class="service-card-content">
+<div class="service-content">
 
 <h3>${service.name}</h3>
 
-<p>${service.description.substring(0,120)}...</p>
+<p>${service.description.substring(0,110)}...</p>
 
-<p style="font-size:13px;color:#777;margin-top:6px;">
+<div class="service-meta">
 Khu vực: ${service.service_area || "Đang cập nhật"}
-</p>
+</div>
 
 <div class="service-price">${price}</div>
 
-<a href="service_detail.html?id=${service.id}" class="detail-btn">
+<a href="service_detail.html?id=${service.id}" class="service-btn">
 Xem chi tiết
 </a>
 
@@ -375,7 +440,7 @@ container.appendChild(card);
 }
 
 
-/* FETCH JSON */
+/* LOAD JSON */
 
 fetch("services.json?v="+Date.now())
 .then(res=>res.json())
@@ -388,36 +453,41 @@ renderServices(allServices);
 });
 
 
-/* FILTER CATEGORY */
+/* CATEGORY FILTER */
 
-document.querySelectorAll(".category-sidebar a").forEach(link=>{
+document.querySelectorAll(".category-btn").forEach(btn=>{
 
-link.addEventListener("click",function(e){
+btn.onclick=function(){
 
-e.preventDefault();
-
-document.querySelectorAll(".category-sidebar a").forEach(a=>{
-a.classList.remove("active");
-});
+document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
 
 this.classList.add("active");
 
 const category=this.dataset.category;
 
 if(category==="all"){
-
 renderServices(allServices);
-
 }
 else{
-
-const filtered=allServices.filter(s=>s.category===category);
-
-renderServices(filtered);
+renderServices(allServices.filter(s=>s.category===category));
+}
 
 }
 
 });
+
+
+/* SEARCH */
+
+document.getElementById("searchInput").addEventListener("keyup",function(){
+
+const keyword=this.value.toLowerCase();
+
+const filtered=allServices.filter(s=>
+s.name.toLowerCase().includes(keyword)
+);
+
+renderServices(filtered);
 
 });
 

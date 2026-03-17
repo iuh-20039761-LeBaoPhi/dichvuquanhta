@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Đặt lịch dịch vụ | Chăm Sóc Vườn Nhà</title>
+
+<link rel="shortcut icon" href="./assets/images/logo.jpg">
+
+<style>
+
+/* RESET */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:#f4f7f6;
+color:#333;
+}
+
+/* HERO */
+
+.hero{
+
+height:280px;
+background:url("assets/images/vesinhvacaitao.jpg") center/cover no-repeat;
+
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+
+color:white;
+
+position:relative;
+
+}
+
+.hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:rgba(0,0,0,0.55);
+}
+
+.hero-content{
+position:relative;
+}
+
+.hero h1{
+font-size:38px;
+margin-bottom:10px;
+}
+
+.hero p{
+opacity:0.9;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:1000px;
+margin:-80px auto 60px;
+padding:0 20px;
+}
+
+/* CARD */
+
+.booking-card{
+
+background:white;
+padding:40px;
+border-radius:18px;
+box-shadow:0 15px 40px rgba(0,0,0,0.1);
+
+}
+
+/* BACK */
+
+.back-btn{
+
+display:inline-block;
+margin-bottom:25px;
+
+background:#1f6f43;
+color:white;
+
+padding:10px 18px;
+
+border-radius:30px;
+text-decoration:none;
+font-size:14px;
+
+}
+
+.back-btn:hover{
+background:#2ea15f;
+}
+
+/* LOGO */
+
+.logo-box{
+text-align:center;
+margin-bottom:25px;
+}
+
+.logo-box img{
+width:80px;
+height:80px;
+border-radius:50%;
+}
+
+.logo-title{
+font-size:22px;
+font-weight:700;
+color:#1f6f43;
+margin-top:8px;
+}
+
+/* FORM GRID */
+
+.form-grid{
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+
+}
+
+.form-group{
+display:flex;
+flex-direction:column;
+}
+
+label{
+font-weight:600;
+margin-bottom:6px;
+}
+
+/* INPUT */
+
+input,select,textarea{
+
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
+font-size:15px;
+transition:0.2s;
+
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+
+outline:none;
+border-color:#1f6f43;
+box-shadow:0 0 0 2px rgba(31,111,67,0.15);
+
+}
+
+textarea{
+
+grid-column:1/3;
+height:90px;
+
+}
+
+/* PRICE BOX */
+
+.price-box{
+
+margin-top:35px;
+
+background:#f7faf8;
+
+border:1px solid #e2eee7;
+
+padding:25px;
+
+border-radius:12px;
+
+}
+
+.price-row{
+
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+
+font-size:16px;
+
+}
+
+.total{
+
+font-size:22px;
+font-weight:700;
+color:#e63946;
+
+}
+
+/* BUTTON */
+
+.submit-btn{
+
+margin-top:30px;
+
+width:100%;
+
+padding:16px;
+
+border:none;
+
+border-radius:10px;
+
+font-size:18px;
+
+font-weight:600;
+
+background:linear-gradient(135deg,#1f6f43,#38b46b);
+
+color:white;
+
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.submit-btn:hover{
+
+transform:translateY(-2px);
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+
+}
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+.form-grid{
+grid-template-columns:1fr;
+}
+
+textarea{
+grid-column:1;
+}
+
+.hero h1{
+font-size:28px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HERO -->
+
+<section class="hero">
+
+<div class="hero-content">
+
+<h1>Đặt Lịch Dịch Vụ</h1>
+<p>Đặt lịch chăm sóc vườn nhanh chóng và tiện lợi</p>
+
+</div>
+
+</section>
+
+<div class="container">
+
+<div class="booking-card">
+
+<a href="indexs.html" class="back-btn">← Quay về trang chủ</a>
+
+<div class="logo-box">
+
+<a href="indexs.html">
+
+<img src="./assets/images/logo.jpg" alt="Chăm Sóc Vườn Nhà">
+
+</a>
+
+<div class="logo-title">
+Chăm Sóc Vườn Nhà
+</div>
+
+</div>
+
+<form id="bookingForm">
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Nhà cung cấp</label>
+<input type="text" value="Công ty TNHH Dịch Vụ Quanh Ta Keri" readonly>
+</div>
+
+<div class="form-group">
+<label>Chọn dịch vụ</label>
+<select id="serviceSelect"></select>
+</div>
+
+<div class="form-group">
+<label>Diện tích (m²)</label>
+<input type="number" id="area" placeholder="Ví dụ 50">
+</div>
+
+<div class="form-group">
+<label>Ngày hẹn làm</label>
+<input type="date" id="appointmentDate" required>
+</div>
+
+<div class="form-group">
+<label>Tên người đặt</label>
+<input type="text" id="customerName" required>
+</div>
+
+<div class="form-group">
+<label>Số điện thoại</label>
+<input type="tel" id="phone" required>
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input type="email">
+</div>
+
+<div class="form-group">
+<label>Địa chỉ</label>
+<input type="text">
+</div>
+
+<textarea placeholder="Ghi chú thêm"></textarea>
+
+</div>
+
+<!-- PRICE -->
+
+<div class="price-box">
+
+<div class="price-row">
+<span>Tiền dịch vụ</span>
+<strong id="servicePrice">0 VNĐ</strong>
+</div>
+
+<div class="price-row">
+<span>Hoa hồng nền tảng (10%)</span>
+<strong id="commission">0 VNĐ</strong>
+</div>
+
+<hr style="margin:10px 0">
+
+<div class="price-row total">
+<span>Tổng thanh toán</span>
+<span id="totalPrice">0 VNĐ</span>
+</div>
+
+</div>
+
+<button type="submit" class="submit-btn">
+Đặt lịch ngay
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<script>
+
+/* JS CỦA BẠN GIỮ NGUYÊN */
+
+let services=[];
+
+const serviceSelect=document.getElementById("serviceSelect");
+const areaInput=document.getElementById("area");
+
+const servicePrice=document.getElementById("servicePrice");
+const commission=document.getElementById("commission");
+const totalPrice=document.getElementById("totalPrice");
+
+document.getElementById("appointmentDate").min =
+new Date().toISOString().split("T")[0];
+
+fetch("services.json")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+services=data.services;
+
+serviceSelect.innerHTML="<option value=''>-- Chọn dịch vụ --</option>";
+
+services.forEach(service=>{
+
+let option=document.createElement("option");
+
+option.value=service.price_m2_min;
+
+option.dataset.id=service.id;
+
+option.textContent=
+service.name+
+" ("+
+service.price_m2_min.toLocaleString()+
+" VNĐ/m²)";
+
+serviceSelect.appendChild(option);
+
+});
+
+autoFillFromServiceDetail();
+
+});
+
+function autoFillFromServiceDetail(){
+
+const params=new URLSearchParams(window.location.search);
+
+let serviceId=params.get("service");
+let area=params.get("area");
+
+if(serviceId){
+
+let option=[...serviceSelect.options]
+.find(o=>o.dataset.id==serviceId);
+
+if(option){
+option.selected=true;
+}
+
+}
+
+if(area){
+areaInput.value=area;
+}
+
+calculatePrice();
+
+}
+
+function calculatePrice(){
+
+let price=Number(serviceSelect.value);
+let area=Number(areaInput.value);
+
+if(!price||!area){
+
+servicePrice.textContent="0 VNĐ";
+commission.textContent="0 VNĐ";
+totalPrice.textContent="0 VNĐ";
+return;
+
+}
+
+let serviceTotal=price*area;
+
+let hoaHong=serviceTotal*0.1;
+
+let total=serviceTotal+hoaHong;
+
+servicePrice.textContent=serviceTotal.toLocaleString()+" VNĐ";
+commission.textContent=hoaHong.toLocaleString()+" VNĐ";
+totalPrice.textContent=total.toLocaleString()+" VNĐ";
+
+}
+
+serviceSelect.addEventListener("change",calculatePrice);
+areaInput.addEventListener("input",calculatePrice);
+
+document.getElementById("bookingForm")
+
+.addEventListener("submit",function(e){
+
+e.preventDefault();
+
+let bookings=JSON.parse(localStorage.getItem("bookings"))||[];
+
+let bookingId="BK"+Date.now();
+
+let name=document.getElementById("customerName").value;
+let phone=document.getElementById("phone").value;
+let appointmentDate=document.getElementById("appointmentDate").value;
+
+let total=Number(totalPrice.textContent.replace(/[^\d]/g,""));
+
+let newBooking={
+
+id:bookingId,
+name:name,
+phone:phone,
+service:serviceSelect.options[serviceSelect.selectedIndex].text,
+area:areaInput.value,
+total:total,
+date:new Date().toLocaleDateString("vi-VN"),
+appointment:appointmentDate
+
+};
+
+bookings.push(newBooking);
+
+localStorage.setItem("bookings",JSON.stringify(bookings));
+
+alert("Đặt lịch thành công!");
+
+window.location.href="lookup.html";
+
+});
+
+</script>
+
+</body>
+</html>
