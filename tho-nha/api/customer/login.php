@@ -4,21 +4,23 @@ header('Content-Type: application/json; charset=utf-8');
 require_once '../db.php';
 
 $data     = json_decode(file_get_contents('php://input'), true);
-$email    = strtolower(trim($data['email'] ?? ''));
+$phone    = trim($data['identifier'] ?? '');
 $password = $data['password'] ?? '';
 
-if (!$email || !$password) {
+if (!$phone || !$password) {
     echo json_encode(['status' => 'error', 'message' => 'Vui lòng điền đầy đủ thông tin']);
     exit;
 }
 
-$stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND role = 'customer' LIMIT 1");
-$stmt->bind_param("s", $email);
+$stmt = $conn->prepare(
+    "SELECT * FROM users WHERE phone = ? AND role = 'customer' LIMIT 1"
+);
+$stmt->bind_param("s", $phone);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
 
 if (!$user || !password_verify($password, $user['password'])) {
-    echo json_encode(['status' => 'error', 'message' => 'Email hoặc mật khẩu không đúng']);
+    echo json_encode(['status' => 'error', 'message' => 'Số điện thoại hoặc mật khẩu không đúng']);
     exit;
 }
 if ($user['status'] === 'blocked') {

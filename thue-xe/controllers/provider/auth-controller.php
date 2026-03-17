@@ -92,10 +92,10 @@ if ($action === 'register') {
 
 if ($action === 'login') {
     $data     = json_decode(file_get_contents('php://input'), true);
-    $email    = strtolower(trim($data['email'] ?? ''));
+    $phone    = trim($data['phone'] ?? '');
     $password = $data['password'] ?? '';
 
-    if (!$email || !$password) {
+    if (!$phone || !$password) {
         echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ thông tin']); exit;
     }
 
@@ -103,12 +103,12 @@ if ($action === 'login') {
         $db   = new Database();
         $conn = $db->getConnection();
 
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND role = 'provider' LIMIT 1");
-        $stmt->execute([$email]);
+        $stmt = $conn->prepare("SELECT * FROM users WHERE phone = ? AND role = 'provider' LIMIT 1");
+        $stmt->execute([$phone]);
         $user = $stmt->fetch();
 
         if (!$user || !password_verify($password, $user['password'])) {
-            echo json_encode(['success' => false, 'message' => 'Email hoặc mật khẩu không đúng']); exit;
+            echo json_encode(['success' => false, 'message' => 'Số điện thoại hoặc mật khẩu không đúng']); exit;
         }
 
         switch ($user['status']) {

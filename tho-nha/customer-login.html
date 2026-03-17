@@ -85,10 +85,10 @@
         <p class="auth-subtitle">Đăng nhập để đặt dịch vụ và theo dõi đơn hàng</p>
 
         <div class="mb-3">
-            <label class="form-label">Email</label>
+            <label class="form-label">Số điện thoại</label>
             <div class="input-group input-icon">
-                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                <input type="email" id="email" class="form-control" placeholder="example@email.com" autocomplete="email">
+                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                <input type="tel" id="identifier" class="form-control" placeholder="0901234567" autocomplete="tel">
             </div>
         </div>
 
@@ -130,16 +130,16 @@
         });
 
         document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-        document.getElementById('email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+        document.getElementById('identifier').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
         document.getElementById('loginBtn').addEventListener('click', login);
 
         function login() {
-            const email    = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
+            const identifier = document.getElementById('identifier').value.trim();
+            const password   = document.getElementById('password').value;
             const btn = document.getElementById('loginBtn');
             const msg = document.getElementById('msg');
 
-            if (!email || !password) {
+            if (!identifier || !password) {
                 msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng nhập đầy đủ thông tin</span>';
                 return;
             }
@@ -151,7 +151,7 @@
             fetch('api/customer/login.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ identifier, password })
             })
             .then(r => r.json())
             .then(res => {

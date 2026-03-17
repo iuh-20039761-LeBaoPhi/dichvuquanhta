@@ -1,7 +1,7 @@
 -- =====================================================
 -- Thuê Xe — Full Database Schema
 -- Import file này để tạo mới hoàn toàn
--- Admin mặc định: admin@carrental.com / admin123
+-- Admin mặc định: admin.thuexe@gmail.com / admin123
 -- =====================================================
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -39,7 +39,7 @@ CREATE TABLE `users` (
 
 -- Admin mặc định (password: admin123)
 INSERT INTO `users` (`full_name`, `email`, `phone`, `password`, `role`, `status`) VALUES
-('Quản trị viên', 'admin@carrental.com', '', '$2y$10$lEmVivDyXWB.Oe.XyB9uK.fg57b63A.CbDA5Lqh1aBZhABqIxnhO6', 'admin', 'active');
+('Quản trị viên', 'admin.thuexe@gmail.com', '', '$2y$10$lEmVivDyXWB.Oe.XyB9uK.fg57b63A.CbDA5Lqh1aBZhABqIxnhO6', 'admin', 'active');
 
 -- =====================================================
 -- BẢNG ĐƠN ĐẶT XE (bookings)
