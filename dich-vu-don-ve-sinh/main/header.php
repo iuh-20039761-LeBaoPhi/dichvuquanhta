@@ -36,7 +36,7 @@ $customer = $_SESSION['customer'] ?? null;
 }
 
 .site-logo img{
-    height:40px;
+    height:42px;
 }
 
 .logo-text{
@@ -87,15 +87,49 @@ $customer = $_SESSION['customer'] ?? null;
 .site-btn:hover{
     background:#16a085;
 }
+/* GROUP LOGO */
+.logo-group{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+/* Logo phụ */
+.logo-sub{
+    height:42px;          /* tăng nhẹ cho cân */
+    width:auto;           /* giữ đúng tỉ lệ */
+    object-fit:contain;   /* không bị méo */
+    padding:4px 8px;      /* tạo khoảng thở */
+    background:#fff;      /* nền trắng cho sạch */
+    border-radius:8px;
+    border:1px solid #eee;
+    transition:0.3s;
+}
+
+/* Hover effect */
+.logo-sub:hover{
+    transform:translateY(-2px) scale(1.05);
+    box-shadow:0 6px 14px rgba(0,0,0,0.12);
+}
 </style>
 
 <header class="site-header">
   <div class="container site-header-content">
 
+   <div class="logo-group">
+
+    <!-- Logo chính -->
     <a href="index.php" class="site-logo">
-    <img src="../img/ChatGPT Image 14_12_57 7 thg 3, 2026.png" alt="logo">
-    <span class="logo-text">DỊCH VỤ VỆ SINH</span>
-</a>
+        <img src="../img/ChatGPT Image 14_12_57 7 thg 3, 2026.png">
+        <span class="logo-text">DỊCH VỤ VỆ SINH</span>
+    </a>
+
+    <!-- Logo dịch vụ quanh ta -->
+    <a href="https://iuh-20039761-lebaophi.github.io/GlobalCare/index.html" target="_blank">
+        <img src="../demo/img/dichvuquanhta.png" class="logo-sub">
+    </a>
+
+</div>
     <nav class="site-nav">
       <a href="index.php">Trang chủ</a>
       <a href="about.php">Giới thiệu</a>

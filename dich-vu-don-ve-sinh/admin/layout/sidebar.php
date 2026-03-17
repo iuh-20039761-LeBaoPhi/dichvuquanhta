@@ -29,6 +29,16 @@ $currentPage = basename($_SERVER['PHP_SELF']);
        class="<?= $currentPage == 'statistics.php' ? 'active' : '' ?>">
         📈 Thống kê
     </a>
+    
+    <a href="add_post.php"
+   class="<?= $currentPage == 'add_post.php' ? 'active' : '' ?>">
+    📝 Đăng bài
+</a>
 
+<a href="post.php"
+   class="<?= $currentPage == 'post.php' ? 'active' : '' ?>">
+    📚 Quản lý bài viết
+</a>
+    
     <a href="logout.php">🚪 Đăng xuất</a>
 </aside>

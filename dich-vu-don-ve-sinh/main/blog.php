@@ -105,34 +105,33 @@ font-size:14px;
 
 <h2 class="blog-title">Bài viết & Mẹo vệ sinh</h2>
 
+<?php
+require_once "db.php";
+$result = $conn->query("SELECT * FROM posts ORDER BY id DESC");
+?>
+
 <div class="blog-grid">
 
+<?php while($row = $result->fetch_assoc()): ?>
+
 <div class="blog-card">
-<img src="..\demo\img\ddnc-3.jpg">
+<img src="../uploads/<?= $row['image'] ?>">
+
 <div class="blog-content">
-<h3>5 mẹo dọn nhà nhanh trong 30 phút</h3>
-<p>Những mẹo đơn giản giúp bạn làm sạch nhà cửa nhanh chóng.</p>
-<a href="post1.php" class="read-more">Xem bài viết</a>
+<h3><?= htmlspecialchars($row['title']) ?></h3>
+
+<p>
+<?= substr(strip_tags($row['content']), 0, 100) ?>...
+</p>
+
+<a href="post.php?id=<?= $row['id'] ?>" class="read-more">
+Xem bài viết
+</a>
+
 </div>
 </div>
 
-<div class="blog-card">
-<img src="..\demo\img\ChatGPT Image 11_15_41 15 thg 3, 2026.png">
-<div class="blog-content">
-<h3>Cách vệ sinh sofa tại nhà</h3>
-<p>Hướng dẫn vệ sinh sofa đúng cách và an toàn.</p>
-<a href="post2.php" class="read-more">Xem bài viết</a>
-</div>
-</div>
-
-<div class="blog-card">
-<img src="..\demo\img\laukinhkobivet.jpg">
-<div class="blog-content">
-<h3>Cách lau kính không bị vệt</h3>
-<p>Bí quyết giúp kính sáng bóng như mới.</p>
-<a href="post3.php" class="read-more">Xem bài viết</a>
-</div>
-</div>
+<?php endwhile; ?>
 
 </div>
 

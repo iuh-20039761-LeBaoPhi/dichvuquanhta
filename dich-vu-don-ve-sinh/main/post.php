@@ -1,8 +1,25 @@
+<?php
+require_once "db.php";
+
+$id = $_GET['id'] ?? 0;
+
+$stmt = $conn->prepare("SELECT * FROM posts WHERE id=?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+
+$post = $stmt->get_result()->fetch_assoc();
+
+if(!$post){
+    die("Không tìm thấy bài viết");
+}
+?>
+
+
 <!doctype html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>5 mẹo dọn nhà nhanh</title>
+<title><?= htmlspecialchars($post['title']) ?></title>
 
 <link rel="stylesheet" href="../demo/style.css">
 <link rel="stylesheet" href="../demo/header.css">
@@ -32,7 +49,7 @@
         </nav>
 
         <div class="site-user-area">
-          <a href="login_customer.php   " class="site-btn">Đăng nhập</a>
+          <a href="login_customer.php" class="site-btn">Đăng nhập</a>
         </div>
       </div>
     </header>
@@ -41,40 +58,23 @@
 
 <div class="post-container">
 
-<h1 class="post-title">5 mẹo dọn nhà nhanh trong 30 phút</h1>
+  
+
+<h1 class="post-title"><?= htmlspecialchars($post['title']) ?></h1>
 
 <div class="post-meta">
-Đăng ngày: 20/03/2026 • Vệ sinh Care
+📅 <?= $post['created_at'] ?>
 </div>
 
-<img src="..\demo\img\ddnc-3.jpg" class="post-image">
+<img src="../uploads/<?= $post['image'] ?>" class="post-image">
 
 <div class="post-content">
-
-<p>
-Nếu bạn bận rộn, bạn vẫn có thể dọn dẹp nhà cửa nhanh chóng với những mẹo đơn giản sau.
-</p>
-
-<h2>1. Dọn từ trên xuống dưới</h2>
-<p>
-Hãy bắt đầu từ kệ, bàn, sau đó mới lau sàn.
-</p>
-
-<h2>2. Gom rác trước</h2>
-<p>
-Thu gom tất cả rác trước khi bắt đầu lau dọn.
-</p>
-
-<h2>3. Hút bụi sau cùng</h2>
-<p>
-Hút bụi sau khi lau bề mặt để tránh bụi rơi xuống sàn.
-</p>
-
+<?= $post['content'] ?>
 </div>
 
 <a href="blog.php" class="back-btn">← Quay lại bài viết</a>
 
-</div>
+
 
 </section>
   <footer class="footer">
