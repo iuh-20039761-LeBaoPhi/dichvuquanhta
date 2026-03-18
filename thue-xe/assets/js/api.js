@@ -38,10 +38,28 @@ const API = {
                 return result;
             } catch {
                 const sd = await STATIC_DATA_PROMISE;
-                const car = sd.cars.find(c => c.id === parseInt(id));
-                return car
-                    ? { success: true, data: { car, images: [] } }
-                    : { success: false, message: 'Không tìm thấy xe' };
+                const targetId = parseInt(id, 10);
+                const car = sd.cars.find(c => c.id === targetId);
+                if (!car) {
+                    return { success: false, message: 'Không tìm thấy xe' };
+                }
+
+                const carType = sd.car_types.find(t => t.id === car.type_id) || {};
+                const imageSet = car.images || carType.images || {};
+                const fallbackMain = 'thue-xe-xe-anh-mac-dinh-fallback.jpg';
+                const mergedCar = {
+                    ...carType,
+                    ...car,
+                    main_image: car.main_image || imageSet.front || carType.main_image || fallbackMain
+                };
+
+                const detailImages = ['back', 'left', 'right', 'interior']
+                    .map(view => imageSet?.[view])
+                    .filter(Boolean)
+                    .filter(path => path !== mergedCar.main_image)
+                    .map(path => ({ image_path: path, is_main: 0 }));
+
+                return { success: true, data: { car: mergedCar, images: detailImages } };
             }
         },
         search: async (params) => {

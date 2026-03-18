@@ -1,0 +1,238 @@
+<!-- Form đặt lịch dịch vụ CHUYỂN DỌN (có tính giá) -->
+<div id="booking-modal-moving" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden" style="font-family: 'Poppins', 'Inter', sans-serif">
+  <div class="bg-white rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col md:flex-row overflow-hidden relative">
+    
+    <!-- Left Cột (Tính giá & Form thu thập) -->
+    <div class="flex-1 flex flex-col max-h-[90vh]">
+      
+      <!-- Cột tiêu đề -->
+      <div class="bg-gradient-to-r from-primary to-secondary-light p-6 text-white relative shrink-0">
+        <h2 class="text-2xl font-bold mb-1">Dự toán & Đặt Dịch vụ</h2>
+        <p class="text-green-50 text-sm">Hệ thống tính cước tự động minh bạch.</p>
+        <button type="button" onclick="closeBookingModal('moving')" class="absolute top-4 right-4 text-white hover:text-green-200 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- List Input Form có scroll -->
+      <div class="p-6 overflow-y-auto flex-1 custom-scroll">
+        <form id="moving-booking-form" class="space-y-6">
+          
+          <!-- Thông tin cá nhân -->
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-4 pb-2 border-b">1. Thông tin liên hệ</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Họ và tên *</label>
+                <input type="text" id="moving-customer-name" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-sm" placeholder="Nguyễn Văn A">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Số điện thoại *</label>
+                <input type="tel" id="moving-customer-phone" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-sm" placeholder="09xx xxx xxx">
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center space-x-2">
+              <input type="checkbox" id="is_corporate_checkbox_moving" class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary">
+              <label for="is_corporate_checkbox_moving" class="text-sm font-medium text-slate-700">Tôi đặt cho doanh nghiệp (Cần xuất hóa đơn)</label>
+            </div>
+            
+            <div id="corporate-fields-moving" class="mt-4 space-y-4 p-4 bg-slate-50 border rounded-lg hidden">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Tên doanh nghiệp</label>
+                 <input type="text" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none placeholder:text-sm" placeholder="Công ty TNHH...">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Mã số thuế</label>
+                <input type="text" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none placeholder:text-sm" placeholder="031xxxxxxx">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Lựa chọn cấu hình Dịch vụ (5 tiêu chí) -->
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-4 pb-2 border-b">2. Cấu hình vận chuyển</h3>
+            
+            <!-- Loại hình & xe -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Gói dịch vụ *</label>
+                <select id="order-service-type-moving" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer">
+                  <option value="">Chọn loại dịch vụ</option>
+                  <option value="moving_house">Chuyển Nhà Trọn Gói</option>
+                  <option value="moving_office">Chuyển Văn Phòng</option>
+                  <option value="moving_warehouse">Chuyển Kho Bãi</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Loại xe đề xuất *</label>
+                <select id="moving-vehicle-type" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer">
+                  <option value="xe_van_500kg">Xe Van 500kg (Đồ cá nhân ít)</option>
+                  <option value="xe_tai_1_5_tan">Xe Tải 1.5 Tấn (Nhà trọ 1-2 người)</option>
+                  <option value="xe_tai_2_5_tan" selected>Xe Tải 2.5 Tấn (Nhà nguyên căn)</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Các thông số ảnh hưởng giá -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Quãng đường (km)*</label>
+                <input type="number" id="moving-distance" value="10" min="0.1" step="0.1" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none text-center bg-slate-50" readonly title="Tự động tính từ bản đồ">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1" title="Số mét khối đồ đạc chiếm chỗ">Thể tích (m3)</label>
+                <input type="number" id="moving-volume" value="5" min="0" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none text-center">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1" title="Tổng trọng lượng đồ vận chuyển">Trọng lượng (kg)</label>
+                <input type="number" id="moving-weight" value="300" min="0" step="50" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none text-center">
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Tính chất đồ đạc (Chọn nhiều loại)</label>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                <label class="flex items-center space-x-2 bg-slate-50 p-2 rounded border hover:bg-slate-100 cursor-pointer">
+                  <input type="checkbox" value="de_vo" class="moving-nature text-primary"><span>Dễ vỡ</span>
+                </label>
+                <label class="flex items-center space-x-2 bg-slate-50 p-2 rounded border hover:bg-slate-100 cursor-pointer">
+                  <input type="checkbox" value="cong_kenh" class="moving-nature text-primary"><span>Cồng kềnh</span>
+                </label>
+                <label class="flex items-center space-x-2 bg-slate-50 p-2 rounded border hover:bg-slate-100 cursor-pointer">
+                  <input type="checkbox" value="gia_tri_cao" class="moving-nature text-primary"><span>Giá trị cao</span>
+                </label>
+                <label class="flex items-center space-x-2 bg-slate-50 p-2 rounded border hover:bg-slate-100 cursor-pointer">
+                  <input type="checkbox" value="dong_goi_dac_biet" class="moving-nature text-primary"><span>Đóng gói đặc biệt</span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="flex items-center justify-between border-t border-b py-3 mb-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700">Dịch vụ đóng gói chuyên nghiệp</label>
+                <p class="text-xs text-slate-500">Giảm thiểu rủi ro hư hỏng, bao gồm thùng carton màng bọc</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="moving-full-packing" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+            
+            <!-- Điều kiện thời gian/thời tiết -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1">Khung giờ thực hiện</label>
+                  <select id="moving-time-slot" class="w-full px-4 py-2 border rounded-lg outline-none">
+                    <option value="ban_ngay">Ban ngày (08:00 - 18:00)</option>
+                    <option value="buoi_toi">Buổi tối (18:00 - 22:00) : Có phụ phí</option>
+                    <option value="ban_dem">Ban đêm (Sau 22:00) : Có phụ phí</option>
+                  </select>
+                </div>
+                <!-- Hidden weather field to mimic UI of API/backend inputs -->
+                <input type="hidden" id="moving-weather" value="binh_thuong">
+            </div>
+
+          </div>
+        
+          <!-- Địa chỉ -->
+          <div>
+            <h3 class="text-lg font-bold text-slate-800 mb-4 pb-2 border-b">3. Lộ trình</h3>
+            
+            <div class="relative pl-6 before:absolute before:inset-0 before:left-2 before:w-0.5 before:bg-slate-200 before:z-0 space-y-4">
+              
+              <!-- Take -->
+              <div class="relative z-10">
+                <div class="absolute -left-8 top-8 w-4 h-4 rounded-full bg-white border-4 border-blue-500 shadow-sm z-20"></div>
+                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                  <h4 class="font-semibold text-blue-800 text-sm mb-3">TỪ ĐỊA CHỈ:</h4>
+                  <div class="relative mb-3">
+                     <input type="text" id="pickup-addr-moving" placeholder="Nhập địa chỉ, tên đường, phường, quận..." autocomplete="off" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 outline-none">
+                     <div id="pickup-sug-moving" class="absolute z-10 w-full bg-white border border-slate-200 shadow-xl rounded-lg max-h-60 overflow-y-auto hidden top-full mt-1"></div>
+                  </div>
+                  
+                  <!-- Address Notes (Stairs) -->
+                  <div class="mt-2 flex space-x-4">
+                    <label class="inline-flex items-center text-xs">
+                      <input type="checkbox" id="pickup-has-elevator" class="form-checkbox text-blue-500 rounded border-gray-300 mr-1"> Có thang máy
+                    </label>
+                    <label class="inline-flex items-center text-xs">
+                      <input type="checkbox" id="pickup-small-alley" class="form-checkbox text-blue-500 rounded border-gray-300 mr-1"> Hẻm nhỏ xe không vào
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Drop -->
+              <div class="relative z-10 pt-2">
+                <div class="absolute -left-8 top-10 w-4 h-4 rounded-full bg-white border-4 border-green-500 shadow-sm z-20"></div>
+                <div class="bg-green-50/50 p-4 rounded-xl border border-green-100">
+                  <h4 class="font-semibold text-green-800 text-sm mb-3">ĐẾN ĐỊA CHỈ NƠI NHẬN:</h4>
+                  <div class="relative mb-3">
+                     <input type="text" id="delivery-addr-moving" placeholder="Nhập địa chỉ, tên đường, phường, quận..." autocomplete="off" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 outline-none">
+                     <div id="delivery-sug-moving" class="absolute z-10 w-full bg-white border border-slate-200 shadow-xl rounded-lg max-h-60 overflow-y-auto hidden top-full mt-1"></div>
+                  </div>
+                  
+                  <div class="mt-2 flex space-x-4">
+                    <label class="inline-flex items-center text-xs">
+                      <input type="checkbox" id="delivery-has-elevator" class="form-checkbox text-green-500 rounded border-gray-300 mr-1"> Có thang máy
+                    </label>
+                    <label class="inline-flex items-center text-xs">
+                      <input type="checkbox" id="delivery-small-alley" class="form-checkbox text-green-500 rounded border-gray-300 mr-1"> Hẻm nhỏ xe không vào
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Map Container -->
+              <div class="relative z-10 pt-2">
+                 <p class="text-xs text-slate-500 mb-2"><i class="fas fa-info-circle"></i> Hoặc kéo ghim trực tiếp trên bản đồ.</p>
+                 <div id="booking-map" class="w-full h-48 rounded-lg border border-slate-300 z-0 relative"></div>
+              </div>
+
+            </div>
+          </div>
+          
+        </form>
+      </div>
+      
+    </div>
+    
+    <!-- Right Cột (Hiển thị Bảng tính giá)-->
+    <div class="w-full md:w-80 bg-slate-50 border-l flex flex-col shrink-0">
+      
+      <div class="p-6 pb-2 border-b">
+        <h3 class="text-xl font-bold text-slate-800">Tóm tắt Chi phí</h3>
+        <p class="text-sm text-slate-500">Ước tính cước tự động</p>
+      </div>
+      
+      <div class="p-6 flex-1 overflow-y-auto">
+        <ul id="moving-price-breakdown" class="space-y-3 font-medium text-sm text-slate-700">
+           <!-- Dynamic JS items -->
+           <li class="flex justify-between items-center text-slate-400 italic">Nhập dữ liệu để xem cước</li>
+        </ul>
+        
+        <hr class="my-4 border-slate-200">
+        
+        <div class="mb-2">
+            <span class="text-slate-500 text-sm font-semibold uppercase">Tổng cước tạm tính</span>
+        </div>
+        <div class="text-3xl font-bold text-accent mb-1 tracking-tight" id="moving-total-cost">
+            0đ
+        </div>
+        <p class="text-xs text-slate-400 italic">Giá trên chỉ mang tính chất tham khảo, chưa bao gồm các phụ phí cầu đường và có thể thay đổi sau khi khảo sát thực tế.</p>
+        
+      </div>
+      
+      <div class="p-4 border-t bg-white">
+        <button type="button" id="confirm-moving-booking-btn" class="w-full bg-accent hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow transition-all hover:-translate-y-0.5">
+          Gửi Yêu Cầu Chuyển Dọn
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -18,7 +18,7 @@ html {
 .navbar {
   background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  /* padding: 1rem 0; */
+  padding: 1rem 0;
   position: fixed;
   width: 100%;
   top: 0;

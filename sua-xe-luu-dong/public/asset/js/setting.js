@@ -21,15 +21,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Form submission (FIX ở đây)
-  const form = document.getElementById("bookingForm");
-  if (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      alert(
-        "Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
-      );
-      this.reset();
-    });
-  }
+  // Luồng submit booking được xử lý trong public/asset/js/data.js
 });

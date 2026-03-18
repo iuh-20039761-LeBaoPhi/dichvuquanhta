@@ -96,6 +96,13 @@
   text-align: center;
 }
 
+.process-section .section-subtitle {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 700px;
+  margin: 10px auto 50px;
+}
+
 .process-container {
   display: flex;
   justify-content: space-between;
@@ -109,8 +116,20 @@
   padding: 20px;
 }
 
+.process-img {
+  max-width: 250px;
+  width: 100%;
+  height: auto;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.process-item:hover .process-img {
+  transform: scale(1.05);
+}
+
 .process-arrow {
-  font-size: 30px;
+  font-size: 40px;
   color: #ccc;
 }
 
@@ -682,7 +701,8 @@
   #faq,
   #pricing,
   #features,
-  #services {
+  #services,
+  .process-section {
     padding: 60px 20px;
   }
 
@@ -690,27 +710,17 @@
     font-size: 28px;
   }
 
-  /* Mobile service layout: app-like horizontal cards */
+  /* Mobile service layout: vertical stack */
   .service-showcase-grid {
-    display: flex;
-    gap: 14px;
-    overflow-x: auto;
-    padding: 2px 4px 10px;
-    scroll-snap-type: x mandatory;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .service-showcase-grid::-webkit-scrollbar {
-    display: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0;
   }
 
   .service-showcase-card {
-    flex: 0 0 88%;
-    min-width: 88%;
-    scroll-snap-align: start;
     border-radius: 14px;
-    padding: 18px;
+    padding: 20px;
   }
 
   .service-card-head h3 {
@@ -718,22 +728,13 @@
   }
 
   .service-mini-grid {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 4px;
-    scroll-snap-type: x proximity;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .service-mini-grid::-webkit-scrollbar {
-    display: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .service-mini-item {
-    min-width: 170px;
-    scroll-snap-align: start;
+    width: 100%;
   }
 
   .service-status-grid {
@@ -765,11 +766,22 @@
   }
 
   .section-title {
-    font-size: 22px;
+    font-size: 24px;
+    line-height: 1.3;
+  }
+  
+  .process-img {
+    max-width: 300px;
+    height: auto;
   }
   .service-list,
   .feature-list,
-  .service-showcase-grid {
-    grid-template-columns: 1fr;
+  .service-showcase-grid,
+  .moving-service-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .moving-card {
+    padding: 16px !important;
   }
 }

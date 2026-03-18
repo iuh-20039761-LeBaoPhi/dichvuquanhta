@@ -16,26 +16,6 @@
   text-decoration: none;
 }
 
-/* ===== IPHONE BACK BUTTON (MOBILE ONLY) ===== */
-.back-button {
-  display: none; /* Ẩn mặc định */
-  align-items: center;
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
-  transition: opacity 0.3s;
-}
-
-.back-button:hover {
-  opacity: 0.8;
-}
-
-.back-button i {
-  margin-right: 6px;
-  font-size: 18px;
-}
-
 /* ===== RESPONSIVE HEADER ===== */
 @media (max-width: 768px) {
   #header {
@@ -44,12 +24,6 @@
     height: auto;
     overflow: visible !important;
     z-index: 1000;
-  }
-
-  /* Hiển thị nút quay lại trên mobile */
-  .back-button {
-    display: flex;
-    margin-right: 15px;
   }
 
   .logo h1 {

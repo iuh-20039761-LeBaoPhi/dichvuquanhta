@@ -501,6 +501,9 @@ document.getElementById('showAllBtn').addEventListener('click', () => {
 
 renderCarTypes(STATIC_DATA.car_types.slice(0, 6));
 renderServices(STATIC_DATA.services);
+setTimeout(() => {
+    document.getElementById('cars').scrollIntoView({ behavior: 'smooth' });
+}, 300);
 }); // end STATIC_DATA_PROMISE.then
 </script>
 

@@ -67,8 +67,29 @@
     syncBodyScrollState();
   }
 
+  function getSurveyModal() {
+    return document.getElementById('survey-modal');
+  }
+
+  function openSurveyModalUI() {
+    const modal = getSurveyModal();
+    if (!modal) return;
+    modal.style.display = "flex";
+    modal.classList.remove('hidden');
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeSurveyModalUI() {
+    const modal = getSurveyModal();
+    if (!modal) return;
+    modal.style.display = "none";
+    modal.classList.add('hidden');
+    syncBodyScrollState();
+  }
+
   function closeAllModals() {
     closeModal("moving");
+    closeSurveyModalUI();
   }
 
   function setSelectOptions(selectEl, options, placeholder) {
@@ -368,7 +389,15 @@
 
     window.addEventListener("click", function (event) {
       if (event.target === movingModal) closeModal("moving");
+      
+      const surveyModal = getSurveyModal();
+      if (event.target === surveyModal) closeSurveyModalUI();
     });
+
+    const closeSurveyBtn = document.getElementById('close-survey-modal');
+    if (closeSurveyBtn) {
+      closeSurveyBtn.addEventListener('click', closeSurveyModalUI);
+    }
   }
 
   window.openBookingModal = async function (serviceType) {
@@ -398,6 +427,19 @@
       return;
     }
     closeAllModals();
+  };
+
+  window.openSurveyModal = function(serviceType) {
+    closeAllModals();
+    const select = document.getElementById('survey-service-type');
+    if (select && serviceType) {
+      select.value = serviceType;
+    }
+    openSurveyModalUI();
+  };
+
+  window.closeSurveyModal = function() {
+    closeSurveyModalUI();
   };
 
   ensureModalMarkup();

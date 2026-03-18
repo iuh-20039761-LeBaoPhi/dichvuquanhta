@@ -16,12 +16,18 @@
   function initFaqAccordion() {
     document.querySelectorAll(".faq-question").forEach((q) => {
       q.addEventListener("click", () => {
-        const ans = q.nextElementSibling;
-        const isVisible = ans.style.display === "block";
-        document
-          .querySelectorAll(".faq-answer")
-          .forEach((a) => (a.style.display = "none"));
-        ans.style.display = isVisible ? "none" : "block";
+        const item = q.closest(".faq-item");
+        const isActive = item.classList.contains("active");
+
+        // Close all other FAQ items
+        document.querySelectorAll(".faq-item").forEach((i) => {
+          i.classList.remove("active");
+        });
+
+        // Toggle current item
+        if (!isActive) {
+          item.classList.add("active");
+        }
       });
     });
   }
@@ -75,6 +81,14 @@
         "Tượng đá/đồ thủ công mỹ nghệ",
         "Đèn trang trí/đèn chùm",
       ],
+      "mui-hoi": [
+        "Mắm tôm/nước mắm đặc biệt",
+        "Sầu riêng/chôm chôm",
+        "Hải sản mắm",
+        "Thực phẩm lên men (dưa cải, kim chi)",
+        "Phân bón/chế phẩm sinh học",
+        "Hóa chất có mùi đặc biệt",
+      ],
       "chat-long": [
         "Dầu ăn/nước mắm",
         "Mật ong/rượu vang",
@@ -109,6 +123,7 @@
       thuong: "volume",
       "gia-tri-cao": "weight",
       "de-vo": "volume",
+      "mui-hoi": "weight",
       "chat-long": "weight",
       "pin-lithium": "weight",
       "dong-lanh": "volume",
@@ -181,6 +196,7 @@
       services,
       mode,
       summaryNote = "",
+      explanation = [],
     ) {
       if (!resultDiv) return;
       if (!Array.isArray(services) || !services.length) {
@@ -193,20 +209,20 @@
         .map((service, index) => {
           const breakdown = service.breakdown || {};
           const domesticFeeList = `
-            <li>Cước cơ bản: <strong>${formatVnd(breakdown.basePrice || 0)}</strong></li>
-            <li>Phí khối lượng: <strong>${formatVnd(breakdown.weightFee || 0)}</strong></li>
-            ${breakdown.goodsFee > 0 ? `<li>Phụ phí loại hàng: <strong>${formatVnd(breakdown.goodsFee)}</strong></li>` : ""}
-            ${breakdown.codFee > 0 ? `<li>Phí COD: <strong>${formatVnd(breakdown.codFee)}</strong></li>` : ""}
-            ${breakdown.insuranceFee > 0 ? `<li>Phí bảo hiểm: <strong>${formatVnd(breakdown.insuranceFee)}</strong></li>` : ""}
+            <li>① Cước cơ bản: <strong>${formatVnd(breakdown.basePrice || 0)}</strong></li>
+            <li>② Phí trọng lượng: <strong>${formatVnd(breakdown.weightFee || 0)}</strong></li>
+            ${breakdown.goodsFee > 0 ? `<li>③ Phụ phí loại hàng: <strong>${formatVnd(breakdown.goodsFee)}</strong></li>` : ""}
+            ${breakdown.codFee > 0 ? `<li>④ Phí thu hộ COD: <strong>${formatVnd(breakdown.codFee)}</strong></li>` : ""}
+            ${breakdown.insuranceFee > 0 ? `<li>⑤ Phí bảo hiểm: <strong>${formatVnd(breakdown.insuranceFee)}</strong></li>` : ""}
           `;
           const intlFeeList = `
-            <li>Cước cơ bản: <strong>${formatVnd(breakdown.basePrice || 0)}</strong></li>
-            <li>Phí khối lượng: <strong>${formatVnd(breakdown.weightFee || 0)}</strong></li>
-            ${breakdown.goodsAdjustedFee > 0 ? `<li>Phụ phí loại hàng: <strong>${formatVnd(breakdown.goodsAdjustedFee)}</strong></li>` : ""}
-            <li>Phụ phí nhiên liệu: <strong>${formatVnd(breakdown.fuelFee || 0)}</strong></li>
-            <li>Phí khai quan: <strong>${formatVnd(breakdown.customsFee || 0)}</strong></li>
-            <li>Phí an ninh: <strong>${formatVnd(breakdown.securityFee || 0)}</strong></li>
-            ${breakdown.insuranceFee > 0 ? `<li>Phí bảo hiểm: <strong>${formatVnd(breakdown.insuranceFee)}</strong></li>` : ""}
+            <li>① Cước cơ bản: <strong>${formatVnd(breakdown.basePrice || 0)}</strong></li>
+            <li>② Phí trọng lượng: <strong>${formatVnd(breakdown.weightFee || 0)}</strong></li>
+            ${breakdown.goodsAdjustedFee > 0 ? `<li>③ Phụ phí loại hàng: <strong>${formatVnd(breakdown.goodsAdjustedFee)}</strong></li>` : ""}
+            <li>④ Phụ phí nhiên liệu: <strong>${formatVnd(breakdown.fuelFee || 0)}</strong></li>
+            <li>⑤ Phí khai quan: <strong>${formatVnd(breakdown.customsFee || 0)}</strong></li>
+            <li>⑥ Phí an ninh: <strong>${formatVnd(breakdown.securityFee || 0)}</strong></li>
+            ${breakdown.insuranceFee > 0 ? `<li>⑦ Phí bảo hiểm: <strong>${formatVnd(breakdown.insuranceFee)}</strong></li>` : ""}
           `;
 
           return `
@@ -215,8 +231,9 @@
                 <h4>${escapeHtml(service.serviceName || "Gói cước")}</h4>
                 ${index === 0 ? '<span class="quote-badge">Giá tốt nhất</span>' : ""}
               </div>
-              <p class="quote-service-eta">Thời gian dự kiến: <strong>${escapeHtml(service.estimate || "Đang cập nhật")}</strong></p>
-              <p class="quote-service-eta">Phương tiện đề xuất: <strong>${escapeHtml(service.vehicleSuggestion || "Đang cập nhật")}</strong></p>
+              <p class="quote-service-eta">⏱ Thời gian dự kiến: <strong>${escapeHtml(service.estimate || "Đang cập nhật")}</strong></p>
+              <p class="quote-service-eta">🚚 Phương tiện đề xuất: <strong>${escapeHtml(service.vehicleSuggestion || "Đang cập nhật")}</strong></p>
+              <p class="quote-breakdown-title">Chi tiết tính cước:</p>
               <ul class="quote-breakdown-list">
                 ${mode === "domestic" ? domesticFeeList : intlFeeList}
               </ul>
@@ -225,6 +242,7 @@
           `;
         })
         .join("");
+
       const metricsHtml = (Array.isArray(summaryMetrics) ? summaryMetrics : [])
         .map(
           (metric) => `
@@ -239,6 +257,30 @@
         )
         .join("");
 
+      // Tạo HTML phần giải thích công thức tính cước
+      let explanationHtml = "";
+      if (Array.isArray(explanation) && explanation.length > 0) {
+        const stepItems = explanation
+          .filter(s => s.title)
+          .map(s => `
+            <li class="pricing-step">
+              <div class="pricing-step-header">
+                ${s.step ? `<span class="pricing-step-num">${s.step}</span>` : '<span class="pricing-step-sub">↳</span>'}
+                <strong>${escapeHtml(s.title)}</strong>
+              </div>
+              <div class="pricing-step-detail">${s.detail || ""}</div>
+              ${s.formula ? `<div class="pricing-step-formula">${s.formula}</div>` : ""}
+            </li>
+          `).join("");
+        explanationHtml = `
+          <details class="pricing-explanation" open>
+            <summary class="pricing-explanation-title">📐 Xem cách tính chi tiết (từng bước)</summary>
+            <ol class="pricing-step-list">${stepItems}</ol>
+            <p class="pricing-explanation-note">💡 Trên đây là cách hệ thống tính cước minh bạch. Giá chỉ mang tính tham khảo, có thể thay đổi nhỏ theo thực tế.</p>
+          </details>
+        `;
+      }
+
       resultDiv.innerHTML = `
         <div class="quote-success">
           <div class="quote-total">
@@ -251,6 +293,7 @@
             ${metricsHtml}
           </section>
           ${summaryNote ? `<p class="quote-infobar-note">${escapeHtml(summaryNote)}</p>` : ""}
+          ${explanationHtml}
           <div class="quote-package-list">
             ${cardsHtml}
           </div>
@@ -660,11 +703,17 @@
 
         const result = window.calculateDomesticQuote(payload);
         const domesticCheapestService = result && Array.isArray(result.services) ? result.services[0] : null;
+        
+        // Xây dựng giải thích công thức tính cước từng bước
+        const pricingExplanation = (typeof window.buildDomesticPricingExplanation === 'function')
+          ? window.buildDomesticPricingExplanation(payload, result)
+          : [];
+
         const summaryMetrics = [
           {
             icon: "📍",
             label: "Tuyến",
-            value: `${payload.fromCity} - ${payload.fromDistrict} -> ${payload.toCity} - ${payload.toDistrict}`,
+            value: `${payload.fromCity} - ${payload.fromDistrict} → ${payload.toCity} - ${payload.toDistrict}`,
           },
           {
             icon: "📦",
@@ -678,7 +727,7 @@
           },
           {
             icon: "⚖️",
-            label: "Khối lượng",
+            label: "Khối lượng tính cước",
             value: `${String(result.billableWeight)} kg`,
           },
           {
@@ -695,11 +744,12 @@
 
         renderQuoteCards(
           `Hàng hóa: ${payload.itemName}`,
-          "Bảng giá hardcode JavaScript cho vận chuyển trong nước.",
+          `Bảng giá vận chuyển nội địa — ${result.zoneLabel || ""}`,
           summaryMetrics,
           result.services,
           "domestic",
           `${getMeasurementModeLabel(domesticMeasurementMode)} | Vùng giá: ${result.zoneLabel || ""}`,
+          pricingExplanation,
         );
         return;
       }
@@ -929,5 +979,10 @@
   onReady(initTestimonials);
   onReady(initBackToTop);
   onReady(initShipperPodValidation);
+  onReady(() => {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  });
   initHeroAnimation();
 })(window, document);

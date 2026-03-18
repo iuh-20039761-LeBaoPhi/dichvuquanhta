@@ -1,0 +1,134 @@
+{
+  "orders": [
+    {
+      "id": "GNH-250318-01",
+      "serviceId": 1,
+      "subServiceId": 1,
+      "serviceTypeName": "Dịch Vụ Giặt Sấy Nhanh",
+      "serviceName": "Giặt sấy quần áo thường",
+      "quantity": "7 kg",
+      "orderDate": "2026-03-18",
+      "shippingFee": 20000,
+      "totalPrice": 210000,
+      "note": "",
+      "order_status": "Cancel",
+      "transaction_status": "UnPaid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "",
+        "phone": "",
+        "email": "",
+        "address": ""
+      }
+    },
+    {
+      "id": "GNH-250319-02",
+      "serviceId": 3,
+      "subServiceId": 1,
+      "serviceTypeName": "Dịch Vụ Giặt Sấy Chăn Mền",
+      "serviceName": "Giặt chăn đơn",
+      "quantity": "5 kg",
+      "orderDate": "2026-03-19",
+      "shippingFee": 20000,
+      "totalPrice": 500000,
+      "note": "",
+      "order_status": "Processing",
+      "transaction_status": "Paid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "Trần Thị Hương",
+        "phone": "0976543210",
+        "email": "huong.tran@giatuinhanh.vn",
+        "address": "Chi nhánh Tân Bình, TP HCM"
+      }
+    },
+    {
+      "id": "GNH-250320-03",
+      "serviceId": 4,
+      "subServiceId": 1,
+      "serviceTypeName": "Dịch Vụ Giặt Hấp Áo Vest, Váy Cưới",
+      "serviceName": "Giặt hấp áo vest",
+      "quantity": "3 gói",
+      "orderDate": "2026-03-20",
+      "shippingFee": 20000,
+      "totalPrice": 300000,
+      "note": "Giao đúng giờ",
+      "order_status": "Completed",
+      "transaction_status": "Paid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "Nguyễn Quốc Huy",
+        "phone": "0965432109",
+        "email": "huy.nguyen@giatuinhanh.vn",
+        "address": "Chi nhánh Tân Phú, TP HCM"
+      }
+    },
+    {
+      "id": "GNH-250321-04",
+      "serviceId": 5,
+      "subServiceId": 2,
+      "serviceTypeName": "Dịch vụ Vệ Sinh Thảm",
+      "serviceName": "Vệ sinh thảm trung",
+      "quantity": "4 gói",
+      "orderDate": "2026-03-21",
+      "shippingFee": 20000,
+      "totalPrice": 600000,
+      "note": "Khách yêu cầu xử lý mùi",
+      "order_status": "Processing",
+      "transaction_status": "UnPaid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "Đặng Minh Tuấn",
+        "phone": "0954321098",
+        "email": "tuan.dang@giatuinhanh.vn",
+        "address": "Chi nhánh Thủ Đức, TP HCM"
+      }
+    },
+    {
+      "id": "GNH-250322-05",
+      "serviceId": 6,
+      "subServiceId": 2,
+      "serviceTypeName": "Dịch Vụ Vệ Sinh Giày",
+      "serviceName": "Vệ sinh giày sneaker",
+      "quantity": "6 đôi",
+      "orderDate": "2026-03-22",
+      "shippingFee": 20000,
+      "totalPrice": 600000,
+      "note": "",
+      "order_status": "Pending",
+      "transaction_status": "UnPaid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "",
+        "phone": "",
+        "email": "",
+        "address": ""
+      }
+    }
+  ]
+}

@@ -58,6 +58,10 @@
     // LƯU Ý: Logic này có thể không chính xác nếu cấu trúc thư mục thay đổi.
     const externalServicePrefix = inPublicDir ? '../../' : '../';
 
+    // Dịch vụ luôn trỏ về id="bao-gia" của trang hiện tại nếu đang ở các trang dịch vụ
+    const isServicePage = ["chuyen-nha.html", "chuyen-kho-bai.html", "chuyen-van-phong.html"].includes(currentPage);
+    const servicesLink = isServicePage ? "#bao-gia" : `${rootPath}index.html#services`;
+
     // Sử dụng rootPath để tạo các đường dẫn chính xác, bất kể dự án được đặt ở đâu.
     return {
       mainSite: `${externalServicePrefix}index.html`,
@@ -65,7 +69,7 @@
       mainLogo: `${externalServicePrefix}public/asset/image/logo.png`,
       home: `${rootPath}index.html#hero`,
       about: `${rootPath}index.html#hero`, // Giả sử 'about' trỏ về mục hero ở trang chủ
-      services: `${rootPath}index.html#services`,
+      services: servicesLink,
       pricing: pricingLink,
       contact: `${rootPath}index.html#contact`,
       booking: `${rootPath}index.html#contact`,
@@ -161,6 +165,37 @@
   if (headerHost) applyLinks(headerHost, linkMap);
   if (headerHost) applyActiveNav(headerHost);
   if (footerHost) applyLinks(footerHost, linkMap);
+
+  // INJECT BOOKING MODAL
+  const modalContainer = document.createElement('div');
+  modalContainer.id = 'booking-modal-placeholder';
+  document.body.appendChild(modalContainer);
+  injectPartial('booking-modal-placeholder', 'booking-modal.html');
+
+  // INJECT SURVEY MODAL
+  const surveyModalContainer = document.createElement('div');
+  surveyModalContainer.id = 'survey-modal-placeholder';
+  document.body.appendChild(surveyModalContainer);
+  injectPartial('survey-modal-placeholder', 'survey-modal.html');
+
+  // TRIGGER MODALS VIA DATA-ATTRIBUTE
+  document.addEventListener('click', function(e) {
+    // Booking Modal
+    const bookingTrigger = e.target.closest('[data-open-booking]');
+    if (bookingTrigger && typeof window.openBookingModal === 'function') {
+      e.preventDefault();
+      const serviceType = bookingTrigger.getAttribute('data-open-booking');
+      window.openBookingModal(serviceType);
+    }
+    
+    // Survey Modal
+    const surveyTrigger = e.target.closest('[data-open-survey]');
+    if (surveyTrigger && typeof window.openSurveyModal === 'function') {
+      e.preventDefault();
+      const serviceType = surveyTrigger.getAttribute('data-open-survey');
+      window.openSurveyModal(serviceType);
+    }
+  });
 
   window.addEventListener("hashchange", function () {
     if (headerHost) applyActiveNav(headerHost);

@@ -764,6 +764,12 @@
                 document.getElementById('footer-container').innerHTML = data;
             });
 
+        // Scroll to services on load
+        setTimeout(() => {
+            const services = document.getElementById('services');
+            if (services) services.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+
         // Navbar scroll effect
         window.addEventListener('scroll', () => {
             const navbar = document.querySelector('.navbar');
