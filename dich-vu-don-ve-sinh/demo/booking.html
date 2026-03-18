@@ -2,9 +2,11 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt lịch | Vệ sinh Care</title>
      <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="footer.css">  
 </head>
 <body>
 
@@ -12,26 +14,39 @@
 <header class="site-header">
   <div class="container site-header-content">
 
-        <a href="index.html" class="site-logo">
-    <img src="../img/ChatGPT Image 14_12_57 7 thg 3, 2026.png" alt="logo">
-    <span class="logo-text">DỊCH VỤ VỆ SINH</span>
-</a>
+   <div class="logo-group">
+    <!-- Logo chính -->
+    <a href="index.html" class="site-logo">
+        <img src="../img/ChatGPT Image 14_12_57 7 thg 3, 2026.png">
+        <span class="logo-text">DỊCH VỤ VỆ SINH</span>
+    </a>
 
-    <nav class="site-nav">
-      <a href="index.html">Trang chủ</a>
-      <a href="about.html">Giới thiệu</a>
-      <a href="services.html">Dịch vụ</a>
-      <a href="booking.html">Đặt lịch</a>
-      <a href="pricing.html">Bảng giá</a>
-      <a href="faq.html">FAQ</a>
-      <a href="contact.html">Liên hệ</a>
-      <a href="blog.html">Bài viết</a>
-       <a href="terms.html">Điều khoản dịch vụ</a>
-    </nav>
+    <!-- Logo dịch vụ quanh ta -->
+    <a href="https://iuh-20039761-lebaophi.github.io/GlobalCare/index.html" target="_blank">
+        <img src="../demo/img/dichvuquanhta.png" class="logo-sub">
+    </a>
+  </div>
 
-    <div class="site-user-area">
-      <a href="login_customer.html" class="site-btn">Đăng nhập</a>
-    </div>
+  <button class="menu-toggle">☰</button>
+
+  <nav class="site-nav">
+    <!-- Active class tĩnh, bạn có thể thay đổi theo trang -->
+    <a href="index.html">Trang chủ</a>
+    <a href="about.html">Giới thiệu</a>
+    <a href="services.html">Dịch vụ</a>
+    <a href="booking.html">Đặt lịch</a>
+    <a href="pricing.html">Bảng giá</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contact.html">Liên hệ</a>
+    <a href="blog.html">Bài viết</a>
+    <a href="terms.html">Điều khoản dịch vụ</a>
+  </nav>
+
+  <!-- USER AREA -->
+  <div class="site-user-area">
+    <!-- Tạm để link đăng nhập -->
+    <a href="login.html" class="site-btn">Đăng nhập</a>
+  </div>
 
   </div>
 </header>
@@ -147,72 +162,53 @@
 
 <!-- ===== FOOTER ===== -->
 <footer class="footer">
-    <div class="container footer-content">
-
-        <!-- CỘT 1 -->
-        <div class="footer-col">
-            <h3>VỆ SINH CARE</h3>
-            <p>
-                Dịch vụ vệ sinh chuyên nghiệp cho nhà ở, văn phòng
-                và công trình sau xây dựng.
-            </p>
-        </div>
-
-        <!-- CỘT 2 -->
-        <div class="footer-col">
-            <h4>Liên kết nhanh</h4>
-            <ul>
-                <li>
-                    <a target="_blank" href="../demo/">Lau Dọn Vệ Sinh</a>
-                </li>
-                <li><a target="_blank" href="../../csmvb/">Chăm Sóc Mẹ & Bé</a></li>
-                <li>
-                <a target="_blank" href="../../web-cham-soc-vuon-nha/"
-                    >Chăm Sóc Vườn & Rẫy</a
-                >
-                </li>
-                <li>
-                <a target="_blank" href="../../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a>
-                </li>
-                <li>
-                <a target="_blank" href="../../tho-nha/">Thợ Nhà & Sửa Chữa</a>
-                </li>
-                <li>
-                <a target="_blank" href="../../csng/">Chăm Sóc Người Già</a>
-                </li>
-                <li>
-                <a target="_blank" href="../../csbn/">Chăm Sóc Bệnh Nhân</a>
-                </li>
-                <li>
-                <a target="_blank" href="../../he-thong-giao-hang-chuyen-don/"
-                    >Giao Hàng Nhanh</a
-                >
-                </li>
-        </div>
-
-        <!-- CỘT 3 -->
-        <div class="footer-col">
-            <h4>Thông tin liên hệ</h4>
-            <p>📍 273 Trần Thủ Độ, Tân Phú, TP.HCM</p>
-            <p>📞 <a href="tel:0775472347">0775 472 347</a></p>
-            <p>
-                ✉
-                <a href="mailto:dichvuquanhta.vn@gmail.com"
-                >dichvuquanhta.vn@gmail.com</a
-                >
-            </p>
-        </div>
-
+  <div class="container footer-content">
+    <!-- CỘT 1 -->
+    <div class="footer-col">
+      <h3>VỆ SINH CARE</h3>
+      <p>Dịch vụ vệ sinh chuyên nghiệp cho nhà ở, văn phòng và công trình sau xây dựng.</p>
     </div>
 
-    <div class="footer-bottom">
-        <p>© 2026 Vệ sinh Care. All rights reserved.</p>
-         <a href="terms.html">Điều khoản sử dụng</a>
+    <!-- CỘT 2 -->
+    <div class="footer-col">
+      <h4>Liên kết nhanh</h4>
+      <ul>
+        <li><a target="_blank" href="../demo/">Lau Dọn Vệ Sinh</a></li>
+        <li><a target="_blank" href="../../csmvb/">Chăm Sóc Mẹ & Bé</a></li>
+        <li><a target="_blank" href="../../web-cham-soc-vuon-nha/">Chăm Sóc Vườn & Rẫy</a></li>
+        <li><a target="_blank" href="../../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a></li>
+        <li><a target="_blank" href="../../tho-nha/">Thợ Nhà & Sửa Chữa</a></li>
+        <li><a target="_blank" href="../../csng/">Chăm Sóc Người Già</a></li>
+        <li><a target="_blank" href="../../csbn/">Chăm Sóc Bệnh Nhân</a></li>
+        <li><a target="_blank" href="../../he-thong-giao-hang-chuyen-don/">Giao Hàng Nhanh</a></li>
+      </ul>
     </div>
+
+    <!-- CỘT 3 -->
+    <div class="footer-col">
+      <h4>Thông tin liên hệ</h4>
+      <p>📍Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP.HCM</p>
+      <p>📞 <a href="tel:0775472347">0775472347</a></p>
+      <p>✉ <a href="mailto:dichvuquanhta.vn@gmail.com">dichvuquanhta.vn@gmail.com</a></p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2026 Vệ sinh Care. All rights reserved.</p>
+    <a href="terms.html">Điều khoản sử dụng</a>
+  </div>
 </footer>
 
 
 <script src="main.js"></script>
 </body>
+    <script>
+const menuToggle = document.querySelector('.menu-toggle');
+const siteNav = document.querySelector('.site-nav');
+
+menuToggle.addEventListener('click', () => {
+    siteNav.classList.toggle('active');
+});
+</script>
 </html>
 

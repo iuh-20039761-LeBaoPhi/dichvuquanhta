@@ -1,118 +1,72 @@
-<!doctype html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bài viết | Vệ sinh Care</title>
-
-<link rel="stylesheet" href="../demo/style.css">
-
-
 <style>
+/* ===== FOOTER ===== */
 
-.blog-section{
-padding:60px 20px;
+.footer{
+    background:#34495e;
+    color:white;
 }
 
-.blog-title{
-text-align:center;
-margin-bottom:40px;
+/* Layout */
+.footer-content {
+    display: flex;
+    gap: 30px;
+    padding: 40px 0;
+    flex-wrap: wrap;
 }
 
-.blog-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:25px;
+.footer-col {
+    flex: 1;
+    min-width: 220px;
 }
 
-.blog-card{
-background:white;
-border-radius:10px;
-overflow:hidden;
-box-shadow:0 5px 20px rgba(0,0,0,0.08);
-transition:0.3s;
+/* Title */
+.footer-col h3,
+.footer-col h4 {
+    margin-bottom: 15px;
+    color: var(--accent);
 }
 
-.blog-card:hover{
-transform:translateY(-5px);
+/* Text */
+.footer-col p {
+    line-height: 1.6;
+    margin-bottom: 10px;
 }
 
-.blog-card img{
-width:100%;
-height:180px;
-object-fit:cover;
+/* List */
+.footer-col ul {
+    list-style: none;
 }
 
-.blog-content{
-padding:20px;
+.footer-col ul li {
+    margin-bottom: 8px;
 }
 
-.blog-content h3{
-margin-bottom:10px;
+/* Link */
+.footer-col a {
+    color: #ecf0f1;
+    text-decoration: none;
 }
 
-.blog-content p{
-color:#666;
-font-size:14px;
-margin-bottom:15px;
+.footer-col a:hover {
+    text-decoration: underline;
 }
 
-.read-more{
-text-decoration:none;
-color:white;
-background:#1abc9c;
-padding:8px 14px;
-border-radius:5px;
-font-size:14px;
+/* Bottom */
+.footer-bottom {
+    background: #1a252f;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 0.9rem;
 }
 
+/* ===== MOBILE ===== */
+@media (max-width: 768px){
+    .footer-content{
+        flex-direction: column;
+    }
+}
 </style>
-</head>
-
-<body>
-
-<!-- HEADER -->
-<?php require_once "header.php"; ?>
-
-
-<!-- BLOG -->
-
-<section class="blog-section container">
-
-<h2 class="blog-title">Bài viết & Mẹo vệ sinh</h2>
-
-<?php
-require_once "db.php";
-$result = $conn->query("SELECT * FROM posts ORDER BY id DESC");
-?>
-
-<div class="blog-grid">
-
-<?php while($row = $result->fetch_assoc()): ?>
-
-<div class="blog-card">
-<img src="../uploads/<?= $row['image'] ?>">
-
-<div class="blog-content">
-<h3><?= htmlspecialchars($row['title']) ?></h3>
-
-<p>
-<?= substr(strip_tags($row['content']), 0, 100) ?>...
-</p>
-
-<a href="post.php?id=<?= $row['id'] ?>" class="read-more">
-Xem bài viết
-</a>
-
-</div>
-</div>
-
-<?php endwhile; ?>
-
-</div>
-
-</section>
-  <footer class="footer">
+<footer class="footer">
       <div class="container footer-content">
         <!-- CỘT 1 -->
         <div class="footer-col">
@@ -170,7 +124,3 @@ Xem bài viết
         <a href="terms.php">Điều khoản sử dụng</a>
       </div>
     </footer>
-</body>
-</html>
-
-
