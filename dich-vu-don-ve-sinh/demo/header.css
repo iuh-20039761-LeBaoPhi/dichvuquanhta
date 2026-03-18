@@ -1,4 +1,3 @@
-/* ===== HEADER ===== */
 
 .site-header{
     background:#fff;
@@ -15,9 +14,8 @@
     align-items:center;
     justify-content:space-between;
     padding:14px 20px;
+      flex-wrap:nowrap;
 }
-
-/* LOGO */
 
 .site-logo{
     display:flex;
@@ -27,7 +25,7 @@
 }
 
 .site-logo img{
-    height:40px;
+    height:42px;
 }
 
 .logo-text{
@@ -37,12 +35,12 @@
     white-space:nowrap;
 }
 
-/* MENU */
-
 .site-nav{
     display:flex;
     align-items:center;
     gap:22px;
+      flex-shrink:0;
+      margin-left:40px;
 }
 
 .site-nav a{
@@ -50,31 +48,133 @@
     color:#333;
     font-size:14px;
     font-weight:500;
-    transition:0.2s;
+    white-space:nowrap; 
+       transition: color 0.2s ease;
 }
-
-.site-nav a:hover{
+.site-nav a.active{
     color:#1abc9c;
+    font-weight:600;
 }
-
-/* LOGIN BUTTON */
-
-.site-user-area{
-    display:flex;
-    align-items:center;
+.site-nav a:active{
+    transform: scale(0.95);
 }
-
 .site-btn{
     background:#1abc9c;
     color:#fff;
-    padding:9px 20px;
+    padding:6px 12px;
     border-radius:6px;
-    text-decoration:none;
-    font-size:14px;
-    font-weight:600;
-    transition:0.2s;
+     font-size:13px;
 }
 
-.site-btn:hover{
-    background:#16a085;
+.logo-group{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo-sub{
+    height:42px;
+    border-radius:8px;
+    border:1px solid #eee;
+}
+.nav-user{
+    font-size:14px;
+    font-weight:500;
+    color:#333;
+    max-width:140px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.site-user-area{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-shrink:0;
+     border-left:1px solid #eee;
+    padding-left:10px;
+}
+.site-user-area a{
+    text-decoration:none;
+    font-size:14px;
+}
+/* ===== MENU TOGGLE ===== */
+.menu-toggle{
+    display:none;
+    font-size:24px;
+    background:none;
+    border:none;
+    cursor:pointer;
+}
+.site-nav a:hover{
+    color:#1abc9c;
+}
+.site-nav{
+    transition: all 0.3s ease;
+}
+/* ===== MOBILE ===== */
+@media (max-width: 768px){
+
+    /* hiện nút ☰ */
+    .menu-toggle{
+        display:block;
+        margin-left:auto;
+    }
+
+    /* ẨN MENU */
+    .site-nav{
+        display:none;
+        flex-direction:column;
+        width:100%;
+        background:#fff;
+        padding:10px 0;
+        border-top:1px solid #eee;
+    }
+
+    /* Khi bấm thì hiện */
+    .site-nav.active{
+        display:flex;
+    }
+
+    /* Menu item */
+    .site-nav a{
+        padding:10px 20px;
+        width:100%;
+        
+    }
+
+    /* USER AREA xuống dưới */
+    .site-user-area{
+        width:100%;
+        justify-content:space-between;
+        padding-top:10px;
+    }
+}
+
+@media (max-width: 768px){
+
+    .site-header-content{
+        flex-direction: column;
+        align-items: flex-start;
+        gap:10px;
+    }
+
+    .site-nav a{
+        font-size:13px;
+    }
+
+    .logo-group{
+        width:100%;
+        justify-content: space-between;
+    }
+
+    .site-user-area{
+        width:100%;
+        justify-content: space-between;
+    }
+
+    .nav-user{
+        max-width:120px;
+    }
+
 }

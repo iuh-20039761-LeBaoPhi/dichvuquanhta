@@ -19,6 +19,7 @@ if(!$post){
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= htmlspecialchars($post['title']) ?></title>
 
 <link rel="stylesheet" href="../demo/style.css">
@@ -77,7 +78,7 @@ if(!$post){
 
 
 </section>
-  <footer class="footer">
+  <?php require_once "footer.php"; ?>
       <div class="container footer-content">
         <!-- CỘT 1 -->
         <div class="footer-col">

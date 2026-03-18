@@ -1,84 +1,54 @@
 {
-  "SHIPPING_DATA": {
-    "noi-thanh": {
-      "slow": {
-        "base": 18000,
-        "next": 2500,
-        "time": "12h-24h"
+  "BANGGIA": {
+    "cungtinh": {
+      "tieuchuan": {
+        "coban": 22000,
+        "tieptheo": 3000,
+        "thoigian": "6h-12h"
       },
-      "standard": {
-        "base": 22000,
-        "next": 3000,
-        "time": "6h-12h"
+      "nhanh": {
+        "coban": 28000,
+        "tieptheo": 4000,
+        "thoigian": "3h-6h"
       },
-      "fast": {
-        "base": 28000,
-        "next": 4000,
-        "time": "3h-6h"
-      },
-      "express": {
-        "base": 35000,
-        "next": 5000,
-        "time": "2h"
+      "hoatoc": {
+        "coban": 35000,
+        "tieptheo": 5000,
+        "thoigian": "2h"
       }
     },
-    "ngoai-thanh": {
-      "slow": {
-        "base": 25000,
-        "next": 3000,
-        "time": "1-2 ngày"
+    "lientinh": {
+      "tieuchuan": {
+        "coban": 35000,
+        "tieptheo": 8000,
+        "thoigian": "2-3 ngày"
       },
-      "standard": {
-        "base": 30000,
-        "next": 4000,
-        "time": "24h"
+      "nhanh": {
+        "coban": 45000,
+        "tieptheo": 10000,
+        "thoigian": "1-2 ngày"
       },
-      "fast": {
-        "base": 38000,
-        "next": 5000,
-        "time": "8h-12h"
-      },
-      "express": {
-        "base": 45000,
-        "next": 6000,
-        "time": "6h-12h"
+      "hoatoc": {
+        "coban": 55000,
+        "tieptheo": 12000,
+        "thoigian": "1-2 ngày"
       }
     },
-    "lien-tinh": {
-      "slow": {
-        "base": 30000,
-        "next": 6000,
-        "time": "3-5 ngày"
+    "phuthu": {
+      "thuho": {
+        "nguong": 1000000,
+        "kieu": 0.012,
+        "toithieu": 15000
       },
-      "standard": {
-        "base": 35000,
-        "next": 8000,
-        "time": "2-3 ngày"
-      },
-      "fast": {
-        "base": 45000,
-        "next": 10000,
-        "time": "1-2 ngày"
-      },
-      "express": {
-        "base": 55000,
-        "next": 12000,
-        "time": "1-2 ngày"
-      }
-    },
-    "addons": {
-      "cod": {
-        "threshold": 1000000,
-        "fee_rate": 0.012,
-        "min": 15000
-      },
-      "ins": {
-        "fee_rate": 0.005
+      "baohiem": {
+        "nguong": 1000000,
+        "kieu": 0.005,
+        "toithieu": 5000
       }
     }
   },
-  "QUOTE_SHIPPING_DATA": {
-    "cities": {
+  "BAOGIACHITIET": {
+    "thanhpho": {
       "TP. Hồ Chí Minh": [
         "Quận 1",
         "Quận 3",
@@ -164,1053 +134,92 @@
         "Thới Lai"
       ]
     },
-    "domestic": {
-      "cityOptions": [
+    "noidia": {
+      "danhsachthanhpho": [
         "TP. Hồ Chí Minh",
         "Hà Nội",
         "Đà Nẵng",
         "Hải Phòng",
         "Cần Thơ"
       ],
-      "volumeDivisor": 6000,
-      "baseIncludedWeight": 2,
-      "zoneLabels": {
+      "tenvung": {
         "same_district": "Nội quận/huyện",
         "same_city": "Nội thành",
         "inter_city": "Liên tỉnh"
       },
-      "goodsTypeFee": {
-        "thuong": 3000,
-        "de-vo": 9000,
-        "gia-tri-cao": 15000,
-        "chat-long": 0,
-        "pin-lithium": 14000,
-        "dong-lanh": 13000,
-        "cong-kenh": 18000
-      },
-      "goodsTypeMultiplier": {
-        "chat-long": 1.1
-      },
-      "cod": {
-        "freeThreshold": 100000,
-        "rate": 0.01,
-        "min": 5000
-      },
-      "insurance": {
-        "freeThreshold": 1000000,
-        "rate": 0.005,
-        "minAboveThreshold": 5000
-      },
-      "services": {
-        "slow": {
-          "label": "Gói Chậm",
-          "base": {
-            "same_district": 14000,
-            "same_city": 21000,
-            "inter_city": 32000
-          },
-          "perHalfKg": 2500,
-          "estimate": {
-            "same_district": "8-12 giờ",
-            "same_city": "12-24 giờ",
-            "inter_city": "2-4 ngày"
-          }
-        },
-        "standard": {
-          "label": "Gói Tiêu chuẩn",
-          "base": {
-            "same_district": 18000,
-            "same_city": 26000,
-            "inter_city": 39000
-          },
-          "perHalfKg": 3500,
-          "estimate": {
+      "dichvu": {
+        "tieuchuan": {
+          "ten": "Tiêu Chuẩn",
+          "thoigian": {
             "same_district": "4-6 giờ",
             "same_city": "8-12 giờ",
             "inter_city": "1-3 ngày"
-          }
-        },
-        "fast": {
-          "label": "Gói Nhanh",
-          "base": {
-            "same_district": 24000,
-            "same_city": 34000,
-            "inter_city": 49000
           },
-          "perHalfKg": 4500,
-          "estimate": {
+          "coban": {
+            "cungquan": 18000,
+            "khacquan": 26000,
+            "lientinh": 39000
+          },
+          "buoctiep": 3500
+        },
+        "nhanh": {
+          "ten": "Giao Nhanh",
+          "thoigian": {
             "same_district": "2-3 giờ",
             "same_city": "4-8 giờ",
             "inter_city": "18-30 giờ"
-          }
-        },
-        "express": {
-          "label": "Gói Hỏa tốc",
-          "base": {
-            "same_district": 32000,
-            "same_city": 45000,
-            "inter_city": 65000
           },
-          "perHalfKg": 6000,
-          "estimate": {
+          "coban": {
+            "cungquan": 24000,
+            "khacquan": 34000,
+            "lientinh": 49000
+          },
+          "buoctiep": 4500
+        },
+        "hoatoc": {
+          "ten": "Hỏa Tốc",
+          "thoigian": {
             "same_district": "1-2 giờ",
             "same_city": "2-4 giờ",
             "inter_city": "12-24 giờ"
-          }
+          },
+          "coban": {
+            "cungquan": 32000,
+            "khacquan": 45000,
+            "lientinh": 65000
+          },
+          "buoctiep": 6000
         }
-      }
-    },
-    "international": {
-      "countries": [
-        "Nhật Bản",
-        "Hàn Quốc",
-        "Trung Quốc",
-        "Đài Loan",
-        "Hong Kong",
-        "Singapore",
-        "Malaysia",
-        "Thái Lan",
-        "Indonesia",
-        "Philippines",
-        "Ấn Độ",
-        "UAE",
-        "Qatar",
-        "Kuwait",
-        "Saudi Arabia",
-        "Israel",
-        "Thổ Nhĩ Kỳ",
-        "Anh",
-        "Pháp",
-        "Đức",
-        "Ý",
-        "Tây Ban Nha",
-        "Bồ Đào Nha",
-        "Hà Lan",
-        "Bỉ",
-        "Thụy Sĩ",
-        "Thụy Điển",
-        "Na Uy",
-        "Đan Mạch",
-        "Phần Lan",
-        "Ireland",
-        "Ba Lan",
-        "Áo",
-        "Séc",
-        "Hungary",
-        "Romania",
-        "Nga",
-        "Hoa Kỳ",
-        "Canada",
-        "Mexico",
-        "Brazil",
-        "Argentina",
-        "Chile",
-        "Peru",
-        "Colombia",
-        "Úc",
-        "New Zealand",
-        "Nam Phi",
-        "Ai Cập",
-        "Morocco",
-        "Kenya",
-        "Nigeria",
-        "Lào",
-        "Campuchia",
-        "Myanmar",
-        "Brunei",
-        "Nepal",
-        "Pakistan",
-        "Bangladesh",
-        "Sri Lanka",
-        "Kazakhstan",
-        "Mông Cổ",
-        "Jordan",
-        "Oman",
-        "Bahrain",
-        "Iran",
-        "Iraq",
-        "Greece",
-        "Ukraine",
-        "Belarus",
-        "Bulgaria",
-        "Croatia",
-        "Slovakia",
-        "Slovenia",
-        "Lithuania",
-        "Latvia",
-        "Estonia",
-        "Luxembourg",
-        "Iceland",
-        "Serbia",
-        "Albania",
-        "Bosnia và Herzegovina",
-        "Venezuela",
-        "Ecuador",
-        "Bolivia",
-        "Uruguay",
-        "Paraguay",
-        "Guatemala",
-        "Panama",
-        "Costa Rica",
-        "Dominican Republic",
-        "Cuba",
-        "Algeria",
-        "Tunisia",
-        "Ghana",
-        "Ethiopia",
-        "Tanzania",
-        "Uganda",
-        "Angola",
-        "Cameroon",
-        "Zimbabwe",
-        "Mozambique",
-        "Fiji",
-        "Papua New Guinea"
-      ],
-      "destinationRegions": {
-        "Nhật Bản": [
-          "Tokyo",
-          "Osaka",
-          "Aichi",
-          "Fukuoka",
-          "Hokkaido"
-        ],
-        "Hàn Quốc": [
-          "Seoul",
-          "Busan",
-          "Incheon",
-          "Daegu",
-          "Gyeonggi-do"
-        ],
-        "Trung Quốc": [
-          "Beijing",
-          "Shanghai",
-          "Guangdong",
-          "Shenzhen",
-          "Zhejiang"
-        ],
-        "Đài Loan": [
-          "Taipei",
-          "New Taipei",
-          "Taichung",
-          "Kaohsiung",
-          "Tainan"
-        ],
-        "Hong Kong": [
-          "Hong Kong Island",
-          "Kowloon",
-          "New Territories",
-          "Lantau"
-        ],
-        "Singapore": [
-          "Central Region",
-          "North East",
-          "North West",
-          "South East",
-          "South West"
-        ],
-        "Malaysia": [
-          "Kuala Lumpur",
-          "Selangor",
-          "Penang",
-          "Johor",
-          "Sabah"
-        ],
-        "Thái Lan": [
-          "Bangkok",
-          "Chiang Mai",
-          "Phuket",
-          "Pattaya",
-          "Khon Kaen"
-        ],
-        "Indonesia": [
-          "Jakarta",
-          "Surabaya",
-          "Bandung",
-          "Medan",
-          "Bali"
-        ],
-        "Philippines": [
-          "Metro Manila",
-          "Cebu",
-          "Davao",
-          "Quezon City",
-          "Iloilo"
-        ],
-        "Ấn Độ": [
-          "Delhi",
-          "Mumbai",
-          "Bangalore",
-          "Chennai",
-          "Kolkata"
-        ],
-        "UAE": [
-          "Dubai",
-          "Abu Dhabi",
-          "Sharjah",
-          "Ajman",
-          "Ras Al Khaimah"
-        ],
-        "Qatar": [
-          "Doha",
-          "Al Rayyan",
-          "Al Wakrah",
-          "Umm Salal"
-        ],
-        "Kuwait": [
-          "Kuwait City",
-          "Hawalli",
-          "Farwaniya",
-          "Ahmadi"
-        ],
-        "Saudi Arabia": [
-          "Riyadh",
-          "Jeddah",
-          "Dammam",
-          "Mecca",
-          "Medina"
-        ],
-        "Israel": [
-          "Tel Aviv",
-          "Jerusalem",
-          "Haifa",
-          "Beersheba"
-        ],
-        "Thổ Nhĩ Kỳ": [
-          "Istanbul",
-          "Ankara",
-          "Izmir",
-          "Bursa",
-          "Antalya"
-        ],
-        "Lào": [
-          "Vientiane",
-          "Luang Prabang",
-          "Savannakhet",
-          "Pakse"
-        ],
-        "Campuchia": [
-          "Phnom Penh",
-          "Siem Reap",
-          "Sihanoukville",
-          "Battambang"
-        ],
-        "Myanmar": [
-          "Yangon",
-          "Mandalay",
-          "Naypyidaw",
-          "Bago"
-        ],
-        "Brunei": [
-          "Bandar Seri Begawan",
-          "Kuala Belait",
-          "Seria",
-          "Tutong"
-        ],
-        "Nepal": [
-          "Kathmandu",
-          "Pokhara",
-          "Lalitpur",
-          "Biratnagar"
-        ],
-        "Pakistan": [
-          "Karachi",
-          "Lahore",
-          "Islamabad",
-          "Faisalabad"
-        ],
-        "Bangladesh": [
-          "Dhaka",
-          "Chittagong",
-          "Khulna",
-          "Sylhet"
-        ],
-        "Sri Lanka": [
-          "Colombo",
-          "Kandy",
-          "Galle",
-          "Jaffna"
-        ],
-        "Kazakhstan": [
-          "Almaty",
-          "Astana",
-          "Shymkent",
-          "Aktobe"
-        ],
-        "Mông Cổ": [
-          "Ulaanbaatar",
-          "Erdenet",
-          "Darkhan",
-          "Choibalsan"
-        ],
-        "Jordan": [
-          "Amman",
-          "Irbid",
-          "Aqaba",
-          "Zarqa"
-        ],
-        "Oman": [
-          "Muscat",
-          "Salalah",
-          "Sohar",
-          "Nizwa"
-        ],
-        "Bahrain": [
-          "Manama",
-          "Muharraq",
-          "Riffa",
-          "Isa Town"
-        ],
-        "Iran": [
-          "Tehran",
-          "Mashhad",
-          "Isfahan",
-          "Shiraz"
-        ],
-        "Iraq": [
-          "Baghdad",
-          "Basra",
-          "Erbil",
-          "Mosul"
-        ],
-        "Hoa Kỳ": [
-          "California",
-          "Texas",
-          "New York",
-          "Florida",
-          "Washington"
-        ],
-        "Canada": [
-          "Ontario",
-          "Quebec",
-          "British Columbia",
-          "Alberta",
-          "Manitoba"
-        ],
-        "Mexico": [
-          "Mexico City",
-          "Jalisco",
-          "Nuevo Leon",
-          "Puebla",
-          "Guanajuato"
-        ],
-        "Brazil": [
-          "Sao Paulo",
-          "Rio de Janeiro",
-          "Minas Gerais",
-          "Bahia",
-          "Parana"
-        ],
-        "Argentina": [
-          "Buenos Aires",
-          "Cordoba",
-          "Santa Fe",
-          "Mendoza"
-        ],
-        "Chile": [
-          "Santiago",
-          "Valparaiso",
-          "Biobio",
-          "Antofagasta"
-        ],
-        "Peru": [
-          "Lima",
-          "Arequipa",
-          "Cusco",
-          "La Libertad"
-        ],
-        "Colombia": [
-          "Bogota",
-          "Antioquia",
-          "Valle del Cauca",
-          "Atlantico"
-        ],
-        "Venezuela": [
-          "Caracas",
-          "Maracaibo",
-          "Valencia",
-          "Barquisimeto"
-        ],
-        "Ecuador": [
-          "Quito",
-          "Guayaquil",
-          "Cuenca",
-          "Manta"
-        ],
-        "Bolivia": [
-          "La Paz",
-          "Santa Cruz",
-          "Cochabamba",
-          "Sucre"
-        ],
-        "Uruguay": [
-          "Montevideo",
-          "Salto",
-          "Paysandu",
-          "Maldonado"
-        ],
-        "Paraguay": [
-          "Asuncion",
-          "Ciudad del Este",
-          "Encarnacion",
-          "Luque"
-        ],
-        "Guatemala": [
-          "Guatemala City",
-          "Quetzaltenango",
-          "Escuintla",
-          "Peten"
-        ],
-        "Panama": [
-          "Panama City",
-          "Colon",
-          "David",
-          "Santiago"
-        ],
-        "Costa Rica": [
-          "San Jose",
-          "Alajuela",
-          "Heredia",
-          "Cartago"
-        ],
-        "Dominican Republic": [
-          "Santo Domingo",
-          "Santiago",
-          "La Romana",
-          "Punta Cana"
-        ],
-        "Cuba": [
-          "Havana",
-          "Santiago de Cuba",
-          "Holguin",
-          "Camaguey"
-        ],
-        "Úc": [
-          "New South Wales",
-          "Victoria",
-          "Queensland",
-          "Western Australia",
-          "South Australia"
-        ],
-        "Anh": [
-          "England",
-          "Scotland",
-          "Wales",
-          "Northern Ireland"
-        ],
-        "Đức": [
-          "Berlin",
-          "Bavaria",
-          "Hamburg",
-          "Hesse",
-          "North Rhine-Westphalia"
-        ],
-        "Pháp": [
-          "Ile-de-France",
-          "Auvergne-Rhone-Alpes",
-          "Provence-Alpes-Cote d'Azur"
-        ],
-        "Ý": [
-          "Lombardy",
-          "Lazio",
-          "Campania",
-          "Sicily",
-          "Veneto"
-        ],
-        "Tây Ban Nha": [
-          "Madrid",
-          "Catalonia",
-          "Andalusia",
-          "Valencia"
-        ],
-        "Bồ Đào Nha": [
-          "Lisbon",
-          "Porto",
-          "Braga",
-          "Setubal"
-        ],
-        "Hà Lan": [
-          "Amsterdam",
-          "Rotterdam",
-          "The Hague",
-          "Utrecht"
-        ],
-        "Bỉ": [
-          "Brussels",
-          "Antwerp",
-          "Ghent",
-          "Liege"
-        ],
-        "Thụy Sĩ": [
-          "Zurich",
-          "Geneva",
-          "Basel",
-          "Bern"
-        ],
-        "Thụy Điển": [
-          "Stockholm",
-          "Gothenburg",
-          "Malmo",
-          "Uppsala"
-        ],
-        "Na Uy": [
-          "Oslo",
-          "Bergen",
-          "Trondheim",
-          "Stavanger"
-        ],
-        "Đan Mạch": [
-          "Copenhagen",
-          "Aarhus",
-          "Odense",
-          "Aalborg"
-        ],
-        "Phần Lan": [
-          "Helsinki",
-          "Espoo",
-          "Tampere",
-          "Turku"
-        ],
-        "Ireland": [
-          "Dublin",
-          "Cork",
-          "Limerick",
-          "Galway"
-        ],
-        "Ba Lan": [
-          "Warsaw",
-          "Krakow",
-          "Lodz",
-          "Wroclaw"
-        ],
-        "Áo": [
-          "Vienna",
-          "Graz",
-          "Linz",
-          "Salzburg"
-        ],
-        "Séc": [
-          "Prague",
-          "Brno",
-          "Ostrava",
-          "Plzen"
-        ],
-        "Hungary": [
-          "Budapest",
-          "Debrecen",
-          "Szeged",
-          "Miskolc"
-        ],
-        "Romania": [
-          "Bucharest",
-          "Cluj-Napoca",
-          "Timisoara",
-          "Iasi"
-        ],
-        "Nga": [
-          "Moscow",
-          "Saint Petersburg",
-          "Novosibirsk",
-          "Yekaterinburg"
-        ],
-        "Greece": [
-          "Athens",
-          "Thessaloniki",
-          "Patras",
-          "Heraklion"
-        ],
-        "Ukraine": [
-          "Kyiv",
-          "Kharkiv",
-          "Odesa",
-          "Lviv"
-        ],
-        "Belarus": [
-          "Minsk",
-          "Gomel",
-          "Brest",
-          "Vitebsk"
-        ],
-        "Bulgaria": [
-          "Sofia",
-          "Plovdiv",
-          "Varna",
-          "Burgas"
-        ],
-        "Croatia": [
-          "Zagreb",
-          "Split",
-          "Rijeka",
-          "Osijek"
-        ],
-        "Slovakia": [
-          "Bratislava",
-          "Kosice",
-          "Presov",
-          "Zilina"
-        ],
-        "Slovenia": [
-          "Ljubljana",
-          "Maribor",
-          "Koper",
-          "Celje"
-        ],
-        "Lithuania": [
-          "Vilnius",
-          "Kaunas",
-          "Klaipeda",
-          "Siauliai"
-        ],
-        "Latvia": [
-          "Riga",
-          "Daugavpils",
-          "Liepaja",
-          "Jelgava"
-        ],
-        "Estonia": [
-          "Tallinn",
-          "Tartu",
-          "Narva",
-          "Parnu"
-        ],
-        "Luxembourg": [
-          "Luxembourg City",
-          "Esch-sur-Alzette",
-          "Differdange",
-          "Dudelange"
-        ],
-        "Iceland": [
-          "Reykjavik",
-          "Kopavogur",
-          "Hafnarfjordur",
-          "Akureyri"
-        ],
-        "Serbia": [
-          "Belgrade",
-          "Novi Sad",
-          "Nis",
-          "Kragujevac"
-        ],
-        "Albania": [
-          "Tirana",
-          "Durres",
-          "Vlore",
-          "Shkoder"
-        ],
-        "Bosnia và Herzegovina": [
-          "Sarajevo",
-          "Banja Luka",
-          "Mostar",
-          "Tuzla"
-        ],
-        "New Zealand": [
-          "Auckland",
-          "Wellington",
-          "Canterbury",
-          "Otago"
-        ],
-        "Fiji": [
-          "Suva",
-          "Nadi",
-          "Lautoka",
-          "Labasa"
-        ],
-        "Papua New Guinea": [
-          "Port Moresby",
-          "Lae",
-          "Mount Hagen",
-          "Madang"
-        ],
-        "Nam Phi": [
-          "Johannesburg",
-          "Cape Town",
-          "Durban",
-          "Pretoria"
-        ],
-        "Ai Cập": [
-          "Cairo",
-          "Alexandria",
-          "Giza",
-          "Sharm El Sheikh"
-        ],
-        "Morocco": [
-          "Casablanca",
-          "Rabat",
-          "Marrakesh",
-          "Tangier"
-        ],
-        "Kenya": [
-          "Nairobi",
-          "Mombasa",
-          "Kisumu",
-          "Nakuru"
-        ],
-        "Nigeria": [
-          "Lagos",
-          "Abuja",
-          "Kano",
-          "Port Harcourt"
-        ],
-        "Algeria": [
-          "Algiers",
-          "Oran",
-          "Constantine",
-          "Annaba"
-        ],
-        "Tunisia": [
-          "Tunis",
-          "Sfax",
-          "Sousse",
-          "Bizerte"
-        ],
-        "Ghana": [
-          "Accra",
-          "Kumasi",
-          "Takoradi",
-          "Tamale"
-        ],
-        "Ethiopia": [
-          "Addis Ababa",
-          "Dire Dawa",
-          "Mekelle",
-          "Bahir Dar"
-        ],
-        "Tanzania": [
-          "Dar es Salaam",
-          "Dodoma",
-          "Arusha",
-          "Mwanza"
-        ],
-        "Uganda": [
-          "Kampala",
-          "Entebbe",
-          "Gulu",
-          "Mbarara"
-        ],
-        "Angola": [
-          "Luanda",
-          "Huambo",
-          "Benguela",
-          "Lubango"
-        ],
-        "Cameroon": [
-          "Yaounde",
-          "Douala",
-          "Garoua",
-          "Bafoussam"
-        ],
-        "Zimbabwe": [
-          "Harare",
-          "Bulawayo",
-          "Mutare",
-          "Gweru"
-        ],
-        "Mozambique": [
-          "Maputo",
-          "Beira",
-          "Nampula",
-          "Matola"
-        ]
       },
-      "defaultDestinationRegions": [
-        "Khu vực trung tâm",
-        "Khu vực ngoại ô",
-        "Khu vực khác"
-      ],
-      "volumeDivisor": 6000,
-      "baseIncludedWeight": 0.5,
-      "countryZoneMap": {
-        "Nhật Bản": "asia",
-        "Hàn Quốc": "asia",
-        "Trung Quốc": "asia",
-        "Đài Loan": "asia",
-        "Hong Kong": "asia",
-        "Singapore": "asia",
-        "Malaysia": "asia",
-        "Thái Lan": "asia",
-        "Indonesia": "asia",
-        "Philippines": "asia",
-        "Ấn Độ": "asia",
-        "UAE": "asia",
-        "Qatar": "asia",
-        "Kuwait": "asia",
-        "Saudi Arabia": "asia",
-        "Israel": "asia",
-        "Thổ Nhĩ Kỳ": "europe",
-        "Anh": "europe",
-        "Pháp": "europe",
-        "Đức": "europe",
-        "Ý": "europe",
-        "Tây Ban Nha": "europe",
-        "Bồ Đào Nha": "europe",
-        "Hà Lan": "europe",
-        "Bỉ": "europe",
-        "Thụy Sĩ": "europe",
-        "Thụy Điển": "europe",
-        "Na Uy": "europe",
-        "Đan Mạch": "europe",
-        "Phần Lan": "europe",
-        "Ireland": "europe",
-        "Ba Lan": "europe",
-        "Áo": "europe",
-        "Séc": "europe",
-        "Hungary": "europe",
-        "Romania": "europe",
-        "Nga": "europe",
-        "Hoa Kỳ": "america",
-        "Canada": "america",
-        "Mexico": "america",
-        "Brazil": "america",
-        "Argentina": "america",
-        "Chile": "america",
-        "Peru": "america",
-        "Colombia": "america",
-        "Úc": "oceania",
-        "New Zealand": "oceania",
-        "Nam Phi": "africa",
-        "Ai Cập": "africa",
-        "Morocco": "africa",
-        "Kenya": "africa",
-        "Nigeria": "africa",
-        "Lào": "asia",
-        "Campuchia": "asia",
-        "Myanmar": "asia",
-        "Brunei": "asia",
-        "Nepal": "asia",
-        "Pakistan": "asia",
-        "Bangladesh": "asia",
-        "Sri Lanka": "asia",
-        "Kazakhstan": "asia",
-        "Mông Cổ": "asia",
-        "Jordan": "asia",
-        "Oman": "asia",
-        "Bahrain": "asia",
-        "Iran": "asia",
-        "Iraq": "asia",
-        "Greece": "europe",
-        "Ukraine": "europe",
-        "Belarus": "europe",
-        "Bulgaria": "europe",
-        "Croatia": "europe",
-        "Slovakia": "europe",
-        "Slovenia": "europe",
-        "Lithuania": "europe",
-        "Latvia": "europe",
-        "Estonia": "europe",
-        "Luxembourg": "europe",
-        "Iceland": "europe",
-        "Serbia": "europe",
-        "Albania": "europe",
-        "Bosnia và Herzegovina": "europe",
-        "Venezuela": "america",
-        "Ecuador": "america",
-        "Bolivia": "america",
-        "Uruguay": "america",
-        "Paraguay": "america",
-        "Guatemala": "america",
-        "Panama": "america",
-        "Costa Rica": "america",
-        "Dominican Republic": "america",
-        "Cuba": "america",
-        "Algeria": "africa",
-        "Tunisia": "africa",
-        "Ghana": "africa",
-        "Ethiopia": "africa",
-        "Tanzania": "africa",
-        "Uganda": "africa",
-        "Angola": "africa",
-        "Cameroon": "africa",
-        "Zimbabwe": "africa",
-        "Mozambique": "africa",
-        "Fiji": "oceania",
-        "Papua New Guinea": "oceania"
+      "philoaihang": {
+        "thuong": 0,
+        "giatricao": 15000,
+        "devo": 9000,
+        "muihoi": 5000,
+        "chatlong": 0,
+        "pinlithium": 14000,
+        "donglanh": 13000,
+        "congkenh": 18000
       },
-      "zoneLabels": {
-        "asia": "Châu Á",
-        "europe": "Châu Âu",
-        "america": "Châu Mỹ",
-        "oceania": "Châu Đại Dương",
-        "africa": "Châu Phi",
-        "other": "Khu vực khác"
+      "motaloaihang": {
+        "thuong": "Hàng thông thường, không phụ phí đặc biệt.",
+        "giatricao": "Cần bảo vệ đặc biệt, theo dõi chặt chẽ, quy trình bàn giao nghiêm ngặt.",
+        "devo": "Đóng gói cẩn thận bằng mút/bọt xốp, xử lý nhẹ nhàng trong suốt hành trình.",
+        "muihoi": "Cách ly riêng biệt để không ảnh hưởng hàng xung quanh, bao kín đặc biệt.",
+        "chatlong": "Hộp chịu lực, lớp chống rò rỉ, tăng 10% phí do yêu cầu xử lý riêng.",
+        "pinlithium": "Tuân thủ quy định an toàn vận chuyển pin (phân loại, báo cáo theo tiêu chuẩn).",
+        "donglanh": "Xe lạnh chuyên dụng, duy trì nhiệt độ bảo quản suốt hành trình.",
+        "congkenh": "Phương tiện đặc biệt chịu tải, quy trình bốc xếp riêng."
       },
-      "goodsTypeMultiplier": {
-        "thuong": 1.05,
-        "de-vo": 1.12,
-        "gia-tri-cao": 1.18,
-        "chat-long": 1.16,
-        "pin-lithium": 1.2,
-        "dong-lanh": 1.22,
-        "cong-kenh": 1.25
-      },
-      "customsFee": {
-        "asia": 20000,
-        "europe": 35000,
-        "america": 40000,
-        "oceania": 35000,
-        "africa": 38000,
-        "other": 38000
-      },
-      "fuelRate": 0.08,
-      "securityFee": 12000,
-      "insurance": {
-        "rate": 0.01,
-        "min": 0
-      },
-      "services": {
-        "intl_economy": {
-          "label": "Tiêu chuẩn quốc tế",
-          "base": {
-            "asia": 210000,
-            "europe": 360000,
-            "america": 460000,
-            "oceania": 340000,
-            "africa": 390000,
-            "other": 420000
-          },
-          "perHalfKg": {
-            "asia": 50000,
-            "europe": 70000,
-            "america": 90000,
-            "oceania": 70000,
-            "africa": 75000,
-            "other": 80000
-          },
-          "estimate": {
-            "asia": "5-7 ngày",
-            "europe": "6-9 ngày",
-            "america": "7-10 ngày",
-            "oceania": "6-9 ngày",
-            "africa": "7-10 ngày",
-            "other": "8-12 ngày"
-          }
-        },
-        "intl_express": {
-          "label": "Chuyển phát nhanh quốc tế",
-          "base": {
-            "asia": 320000,
-            "europe": 500000,
-            "america": 620000,
-            "oceania": 470000,
-            "africa": 530000,
-            "other": 560000
-          },
-          "perHalfKg": {
-            "asia": 70000,
-            "europe": 90000,
-            "america": 120000,
-            "oceania": 95000,
-            "africa": 98000,
-            "other": 105000
-          },
-          "estimate": {
-            "asia": "2-4 ngày",
-            "europe": "3-5 ngày",
-            "america": "4-6 ngày",
-            "oceania": "3-5 ngày",
-            "africa": "4-6 ngày",
-            "other": "5-7 ngày"
-          }
-        }
+      "distance_config": {
+        "base_km": 3,
+        "base_price": 20000,
+        "next_km_price": 5000,
+        "long_distance_threshold": 50,
+        "long_distance_price": 3500,
+        "base_included_weight": 2.0,
+        "volume_divisor": 6000,
+        "vat_included": true
       }
     }
   }

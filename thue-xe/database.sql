@@ -42,6 +42,90 @@ INSERT INTO `users` (`full_name`, `email`, `phone`, `password`, `role`, `status`
 ('Quản trị viên', 'admin.thuexe@gmail.com', '', '$2y$10$lEmVivDyXWB.Oe.XyB9uK.fg57b63A.CbDA5Lqh1aBZhABqIxnhO6', 'admin', 'active');
 
 -- =====================================================
+-- BẢNG XE (cars)
+-- Bảng phẳng (denormalized): kết hợp loại xe + thông tin hiển thị
+-- car-controller.php và booking-controller.php đều SELECT từ bảng này
+-- =====================================================
+CREATE TABLE `cars` (
+  `id`                     INT           NOT NULL AUTO_INCREMENT,
+  `name`                   VARCHAR(255)  NOT NULL,
+  `brand`                  VARCHAR(100)  NOT NULL,
+  `model`                  VARCHAR(100)  NOT NULL DEFAULT '',
+  `year`                   INT           NOT NULL DEFAULT 2023,
+  `car_type`               VARCHAR(100)  NOT NULL DEFAULT 'Sedan',
+  `seats`                  INT           NOT NULL DEFAULT 5,
+  `transmission`           VARCHAR(50)   NOT NULL DEFAULT 'Tự động',
+  `fuel_type`              VARCHAR(50)   NOT NULL DEFAULT 'Xăng',
+  `price_per_day`          DECIMAL(12,0) NOT NULL,
+  `weekend_surcharge_rate` DECIMAL(5,4)  NOT NULL DEFAULT 0.1000 COMMENT 'Tỷ lệ phụ thu cuối tuần',
+  `deposit_rate`           DECIMAL(5,4)  NOT NULL DEFAULT 0.3000 COMMENT 'Tỷ lệ đặt cọc',
+  `main_image`             VARCHAR(255)  NOT NULL DEFAULT '',
+  `description`            TEXT,
+  `features`               TEXT          COMMENT 'Comma-separated feature list',
+  `status`                 ENUM('available','rented','maintenance') NOT NULL DEFAULT 'available',
+  `provider_id`            INT           DEFAULT NULL COMMENT 'FK → users (provider)',
+  `video_url`              VARCHAR(500)  DEFAULT NULL,
+  `created_at`             DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_status`      (`status`),
+  KEY `idx_brand`       (`brand`),
+  KEY `idx_provider_id` (`provider_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `cars`
+  (`id`,`name`,`brand`,`model`,`year`,`car_type`,`seats`,`transmission`,`fuel_type`,`price_per_day`,`main_image`,`description`,`features`,`status`,`video_url`)
+VALUES
+(1, 'Toyota Camry 2023',      'Toyota',    'Camry',   2023, 'Sedan',     5, 'Tự động', 'Xăng',  1200000, 'thue-xe-xe-toyota-camry-2023.jpg',        'Toyota Camry 2023 - Sedan hạng sang với thiết kế sang trọng, nội thất tiện nghi và tiết kiệm nhiên liệu.',         'Điều hòa tự động,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Ghế da cao cấp',         'available', 'https://www.youtube.com/embed/BpMBkt7RCHo'),
+(2, 'Honda CR-V 2022',        'Honda',     'CR-V',    2022, 'SUV',       7, 'Tự động', 'Xăng',  1500000, 'thue-xe-xe-honda-crv-2022.jpg',            'Honda CR-V 7 chỗ rộng rãi, phù hợp gia đình. Vận hành mạnh mẽ, an toàn tuyệt đối.',                           'Điều hòa hai vùng,Camera 360,Cảm biến va chạm,Apple CarPlay,Android Auto,Cốp điện',                    'available', 'https://www.youtube.com/embed/iiMmRJlCeDM'),
+(3, 'Hyundai Tucson 2023',    'Hyundai',   'Tucson',  2023, 'SUV',       5, 'Tự động', 'Xăng',  1100000, 'thue-xe-xe-anh-mac-dinh-fallback.jpg',     'Hyundai Tucson 2023 với thiết kế trẻ trung, hiện đại. Tiêu thụ nhiên liệu thấp.',                           'Điều hòa tự động,Camera lùi,Hỗ trợ phanh khẩn cấp,Màn hình 10.25 inch,Sạc không dây',                  'available', 'https://www.youtube.com/embed/nPVzCCnCRTo'),
+(4, 'Ford Ranger 2022',       'Ford',      'Ranger',  2022, 'Bán tải',   5, 'Số sàn',  'Dầu',    900000, 'thue-xe-xe-ford-ranger-2022.jpg',           'Ford Ranger bán tải mạnh mẽ, thích hợp cho cả đường thành phố và địa hình.',                                 'Điều hòa,Camera lùi,Lốp địa hình,Cầu ngang,Kéo tải 3.5 tấn',                                           'available', 'https://www.youtube.com/embed/XhPCz-q8GIQ'),
+(5, 'Mitsubishi Xpander 2023','Mitsubishi','Xpander', 2023, 'MPV',       7, 'Tự động', 'Xăng',   850000, 'thue-xe-xe-mitsubishi-xpander-2023.jpg',   'MPV 7 chỗ rộng rãi, phù hợp cho gia đình và nhóm bạn du lịch.',                                               'Điều hòa,Camera lùi,Màn hình cảm ứng,Kết nối Bluetooth,Ghế lái chỉnh điện',                            'available', 'https://www.youtube.com/embed/oC3TBPB5YBo'),
+(6, 'VinFast VF8 2023',       'VinFast',   'VF8',     2023, 'SUV điện', 5, 'Tự động', 'Điện',  1800000, 'thue-xe-xe-vinfast-vf8-2023.jpg',          'SUV điện thương hiệu Việt Nam. Phạm vi 420km/sạc, tăng tốc 0-100km/h trong 5.9 giây.',                        'Điều hòa,Camera 360,ADAS,Màn hình 15.6 inch,Sạc nhanh AC/DC,Hỗ trợ phanh tự động',                    'available', 'https://www.youtube.com/embed/Iy4J4Hfnfz8'),
+(7, 'Honda City 2023',        'Honda',     'City',    2023, 'Sedan',     5, 'Tự động', 'Xăng',   750000, 'thue-xe-xe-honda-city-2023.jpg',           'Honda City 2023 - Sedan hạng B thế hệ mới với ngoại thất thể thao, nội thất hiện đại và tiết kiệm nhiên liệu vượt trội.', 'Điều hòa tự động,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng 8 inch,Kết nối Bluetooth,Honda Sensing',   'available', 'https://www.youtube.com/embed/7KBSfQFSfkM'),
+(8, 'Mazda CX-5 2023',        'Mazda',     'CX-5',    2023, 'SUV',       5, 'Tự động', 'Xăng',  1150000, 'thue-xe-xe-mazda-cx5-2023.jpg',            'Mazda CX-5 2023 - SUV hạng C với thiết kế Kodo sang trọng, cabin cách âm tốt và hệ thống an toàn hiện đại.',   'Điều hòa hai vùng,Camera 360,Cảm biến va chạm,Màn hình 10.25 inch,Ghế da,i-Activsense',                'available', 'https://www.youtube.com/embed/nYrFWMJEY3U'),
+(9, 'Mazda 3 2023',           'Mazda',     'Mazda3',  2023, 'Sedan',     5, 'Tự động', 'Xăng',   850000, 'thue-xe-xe-mazda3-2023.jpg',               'Mazda 3 2023 - Sedan hạng C với thiết kế thời thượng, động cơ Skyactiv tiết kiệm và vận hành mượt mà.',         'Điều hòa tự động,Camera lùi,Cảm biến đỗ xe,Màn hình 8.8 inch,Sạc không dây,Ghế da',                   'available', 'https://www.youtube.com/embed/H-VFm0sgkbU'),
+(10,'Toyota Vios 2023',       'Toyota',    'Vios',    2023, 'Sedan',     5, 'Tự động', 'Xăng',   700000, 'thue-xe-xe-toyota-vios-2023.jpg',          'Toyota Vios 2023 - Sedan hạng B phổ biến, bền bỉ và tiết kiệm nhiên liệu, phù hợp di chuyển đô thị.',          'Điều hòa,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Túi khí đôi',                   'available', 'https://www.youtube.com/embed/BSRV9dLrN8g'),
+(11,'VinFast VF5 2023',       'VinFast',   'VF5',     2023, 'SUV điện', 5, 'Tự động', 'Điện',   900000, 'thue-xe-xe-vinfast-vf5-2023.jpg',          'VinFast VF5 - SUV điện mini thương hiệu Việt, phạm vi 326km/sạc, phù hợp di chuyển nội đô kinh tế.',           'Điều hòa,Camera lùi,Màn hình 10 inch,Sạc nhanh AC/DC,Kết nối điện thoại,Túi khí đôi',                 'available', 'https://www.youtube.com/embed/MJMhLTSWXd4'),
+(12,'Suzuki XL7 2023',        'Suzuki',    'XL7',     2023, 'SUV',       7, 'Tự động', 'Xăng',   820000, 'thue-xe-xe-suzuki-xl7-2023.jpg',           'Suzuki XL7 2023 - SUV 7 chỗ gọn gàng, tiết kiệm nhiên liệu, thiết kế hiện đại phù hợp gia đình.',             'Điều hòa,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Hàng ghế thứ 3',               'available', 'https://www.youtube.com/embed/s5k5y8fCyOI');
+
+-- =====================================================
+-- BẢNG ẢNH XE (car_images)
+-- car-controller.php: SELECT * FROM car_images WHERE car_id = :id
+-- =====================================================
+CREATE TABLE `car_images` (
+  `id`       INT          NOT NULL AUTO_INCREMENT,
+  `car_id`   INT          NOT NULL,
+  `type`     ENUM('front','back','left','right','interior') NOT NULL DEFAULT 'front',
+  `filename` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_car_id` (`car_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- BẢNG DỊCH VỤ ĐI KÈM (services)
+-- service-controller.php: SELECT * FROM services WHERE status = 1
+-- booking-controller.php: SELECT name, price, unit FROM services WHERE name IN (...)
+-- =====================================================
+CREATE TABLE `services` (
+  `id`          INT           NOT NULL AUTO_INCREMENT,
+  `name`        VARCHAR(255)  NOT NULL,
+  `icon`        VARCHAR(100)  NOT NULL DEFAULT 'star',
+  `price`       DECIMAL(12,0) NOT NULL DEFAULT 0,
+  `unit`        ENUM('ngày','chuyến') NOT NULL DEFAULT 'chuyến' COMMENT 'Đơn vị tính phí',
+  `description` TEXT,
+  `status`      TINYINT(1)    NOT NULL DEFAULT 1 COMMENT '1=active, 0=inactive',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `services` (`id`,`name`,`icon`,`price`,`unit`,`description`,`status`) VALUES
+(1, 'Giao xe tận nơi',  'map-marker-alt', 100000, 'chuyến', 'Giao xe đến tận địa chỉ của bạn trong nội thành, tiết kiệm thời gian và thuận tiện tối đa.', 1),
+(2, 'Bảo hiểm mở rộng', 'shield-alt',     150000, 'ngày',   'Gói bảo hiểm toàn diện bảo vệ xe và người lái trong suốt chuyến đi, an tâm không lo rủi ro.', 1),
+(3, 'Xe có tài xế',     'user-tie',        300000, 'ngày',   'Tài xế chuyên nghiệp, am hiểu đường xá TP.HCM, phong thái lịch sự và nhiệt tình phục vụ.', 1),
+(4, 'GPS định vị',      'map-marker-alt',   50000, 'chuyến', 'Thiết bị GPS dẫn đường chính xác, bản đồ cập nhật mới nhất, không lo lạc đường.', 1),
+(5, 'Ghế trẻ em',       'baby',            100000, 'chuyến', 'Ghế ngồi an toàn cho bé dưới 10 tuổi, đạt tiêu chuẩn an toàn quốc tế.', 1),
+(6, 'WiFi di động',     'wifi',             80000, 'chuyến', 'Bộ phát WiFi di động tốc độ cao, kết nối internet ổn định suốt chuyến đi.', 1);
+
+-- =====================================================
 -- BẢNG ĐƠN ĐẶT XE (bookings)
 -- user_id:     khách hàng đặt xe (FK → users)
 -- provider_id: nhà cung cấp nhận đơn (FK → users)

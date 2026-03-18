@@ -4,7 +4,7 @@
             "id": 1, "name": "Toyota Camry 2023", "brand": "Toyota", "model": "Camry", "year": 2023,
             "car_type": "Sedan", "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 1200000, "main_image": "thue-xe-xe-toyota-camry-2023.jpg",
-            "images": { "front": "thue-xe-xe-toyota-camry-2023.jpg", "back": "camry_back.jpg", "left": "camry_left.jpg", "right": "camry_right.jpg", "interior": "camry_interior.jpg" },
+            "images": { "front": "thue-xe-xe-toyota-camry-2023.jpg", "back": "thue-xe-xe-toyota-camry-2023-back.jpg", "left": "thue-xe-xe-toyota-camry-2023-left.jpg", "right": "thue-xe-xe-toyota-camry-2023-right.jpg", "interior": "thue-xe-xe-toyota-camry-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/BpMBkt7RCHo",
             "description": "Toyota Camry 2023 - Sedan hạng sang với thiết kế sang trọng, nội thất tiện nghi và tiết kiệm nhiên liệu.",
             "features": "Điều hòa tự động,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Ghế da cao cấp"
@@ -13,7 +13,7 @@
             "id": 2, "name": "Honda CR-V 2022", "brand": "Honda", "model": "CR-V", "year": 2022,
             "car_type": "SUV", "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 1500000, "main_image": "thue-xe-xe-honda-crv-2022.jpg",
-            "images": { "front": "thue-xe-xe-honda-crv-2022.jpg", "back": "crv_back.jpg", "left": "crv_left.jpg", "right": "crv_right.jpg", "interior": "crv_interior.jpg" },
+            "images": { "front": "thue-xe-xe-honda-crv-2022.jpg", "back": "thue-xe-xe-honda-crv-2022-back.jpg", "left": "thue-xe-xe-honda-crv-2022-left.jpg", "right": "thue-xe-xe-honda-crv-2022-right.jpg", "interior": "thue-xe-xe-honda-crv-2022-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/iiMmRJlCeDM",
             "description": "Honda CR-V 7 chỗ rộng rãi, phù hợp gia đình. Vận hành mạnh mẽ, an toàn tuyệt đối.",
             "features": "Điều hòa hai vùng,Camera 360,Cảm biến va chạm,Apple CarPlay,Android Auto,Cốp điện"
@@ -21,8 +21,8 @@
         {
             "id": 3, "name": "Hyundai Tucson 2023", "brand": "Hyundai", "model": "Tucson", "year": 2023,
             "car_type": "SUV", "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
-            "price_per_day": 1100000, "main_image": "thue-xe-xe-anh-mac-dinh-fallback.jpg",
-            "images": { "front": "thue-xe-xe-anh-mac-dinh-fallback.jpg", "back": "thue-xe-xe-anh-mac-dinh-fallback.jpg", "left": "thue-xe-xe-anh-mac-dinh-fallback.jpg", "right": "thue-xe-xe-anh-mac-dinh-fallback.jpg", "interior": "thue-xe-xe-anh-mac-dinh-fallback.jpg" },
+            "price_per_day": 1100000, "main_image": "thue-xe-xe-hyundai-tucson-2023-front.jpg",
+            "images": { "front": "thue-xe-xe-hyundai-tucson-2023-front.jpg", "back": "thue-xe-xe-hyundai-tucson-2023-back.jpg", "left": "thue-xe-xe-hyundai-tucson-2023-left.jpg", "right": "thue-xe-xe-hyundai-tucson-2023-right.jpg", "interior": "thue-xe-xe-hyundai-tucson-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/nPVzCCnCRTo",
             "description": "Hyundai Tucson 2023 với thiết kế trẻ trung, hiện đại. Tiêu thụ nhiên liệu thấp.",
             "features": "Điều hòa tự động,Camera lùi,Hỗ trợ phanh khẩn cấp,Màn hình 10.25 inch,Sạc không dây"
@@ -31,7 +31,7 @@
             "id": 4, "name": "Ford Ranger 2022", "brand": "Ford", "model": "Ranger", "year": 2022,
             "car_type": "Bán tải", "seats": 5, "transmission": "Số sàn", "fuel_type": "Dầu",
             "price_per_day": 900000, "main_image": "thue-xe-xe-ford-ranger-2022.jpg",
-            "images": { "front": "thue-xe-xe-ford-ranger-2022.jpg", "back": "ranger_back.jpg", "left": "ranger_left.jpg", "right": "ranger_right.jpg", "interior": "ranger_interior.jpg" },
+            "images": { "front": "thue-xe-xe-ford-ranger-2022.jpg", "back": "thue-xe-xe-ford-ranger-2022-back.jpg", "left": "thue-xe-xe-ford-ranger-2022-left.jpg", "right": "thue-xe-xe-ford-ranger-2022-right.jpg", "interior": "thue-xe-xe-ford-ranger-2022-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/XhPCz-q8GIQ",
             "description": "Ford Ranger bán tải mạnh mẽ, thích hợp cho cả đường thành phố và địa hình.",
             "features": "Điều hòa,Camera lùi,Lốp địa hình,Cầu ngang,Kéo tải 3.5 tấn"
@@ -40,7 +40,7 @@
             "id": 5, "name": "Mitsubishi Xpander 2023", "brand": "Mitsubishi", "model": "Xpander", "year": 2023,
             "car_type": "MPV", "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 850000, "main_image": "thue-xe-xe-mitsubishi-xpander-2023.jpg",
-            "images": { "front": "thue-xe-xe-mitsubishi-xpander-2023.jpg", "back": "mitsubishi-xpander_back.jpg", "left": "mitsubishi-xpander_left.jpg", "right": "mitsubishi-xpander_right.jpg", "interior": "mitsubishi-xpander_interior.jpg" },
+            "images": { "front": "thue-xe-xe-mitsubishi-xpander-2023.jpg", "back": "thue-xe-xe-mitsubishi-xpander-2023-back.jpg", "left": "thue-xe-xe-mitsubishi-xpander-2023-left.jpg", "right": "thue-xe-xe-mitsubishi-xpander-2023-right.jpg", "interior": "thue-xe-xe-mitsubishi-xpander-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/oC3TBPB5YBo",
             "description": "MPV 7 chỗ rộng rãi, phù hợp cho gia đình và nhóm bạn du lịch.",
             "features": "Điều hòa,Camera lùi,Màn hình cảm ứng,Kết nối Bluetooth,Ghế lái chỉnh điện"
@@ -49,7 +49,7 @@
             "id": 6, "name": "VinFast VF8 2023", "brand": "VinFast", "model": "VF8", "year": 2023,
             "car_type": "SUV điện", "seats": 5, "transmission": "Tự động", "fuel_type": "Điện",
             "price_per_day": 1800000, "main_image": "thue-xe-xe-vinfast-vf8-2023.jpg",
-            "images": { "front": "thue-xe-xe-vinfast-vf8-2023.jpg", "back": "vf8_back.jpg", "left": "vf8_left.jpg", "right": "vf8_right.jpg", "interior": "vf8_interior.jpg" },
+            "images": { "front": "thue-xe-xe-vinfast-vf8-2023.jpg", "back": "thue-xe-xe-vinfast-vf8-2023-back.jpg", "left": "thue-xe-xe-vinfast-vf8-2023-left.jpg", "right": "thue-xe-xe-vinfast-vf8-2023-right.jpg", "interior": "thue-xe-xe-vinfast-vf8-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/Iy4J4Hfnfz8",
             "description": "SUV điện thương hiệu Việt Nam. Phạm vi 420km/sạc, tăng tốc 0-100km/h trong 5.9 giây.",
             "features": "Điều hòa,Camera 360,ADAS,Màn hình 15.6 inch,Sạc nhanh AC/DC,Hỗ trợ phanh tự động"
@@ -58,7 +58,7 @@
             "id": 7, "name": "Honda City 2023", "brand": "Honda", "model": "City", "year": 2023,
             "car_type": "Sedan", "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 750000, "main_image": "thue-xe-xe-honda-city-2023.jpg",
-            "images": { "front": "thue-xe-xe-honda-city-2023.jpg", "back": "city_back.jpg", "left": "city_left.jpg", "right": "city_right.jpg", "interior": "city_interior.jpg" },
+            "images": { "front": "thue-xe-xe-honda-city-2023.jpg", "back": "thue-xe-xe-honda-city-2023-back.jpg", "left": "thue-xe-xe-honda-city-2023-left.jpg", "right": "thue-xe-xe-honda-city-2023-right.jpg", "interior": "thue-xe-xe-honda-city-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/7KBSfQFSfkM",
             "description": "Honda City 2023 - Sedan hạng B thế hệ mới với ngoại thất thể thao, nội thất hiện đại và tiết kiệm nhiên liệu vượt trội.",
             "features": "Điều hòa tự động,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng 8 inch,Kết nối Bluetooth,Honda Sensing"
@@ -67,7 +67,7 @@
             "id": 8, "name": "Mazda CX-5 2023", "brand": "Mazda", "model": "CX-5", "year": 2023,
             "car_type": "SUV", "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 1150000, "main_image": "thue-xe-xe-mazda-cx5-2023.jpg",
-            "images": { "front": "thue-xe-xe-mazda-cx5-2023.jpg", "back": "cx5_back.jpg", "left": "cx5_left.jpg", "right": "cx5_right.jpg", "interior": "cx5_interior.jpg" },
+            "images": { "front": "thue-xe-xe-mazda-cx5-2023.jpg", "back": "thue-xe-xe-mazda-cx5-2023-back.jpg", "left": "thue-xe-xe-mazda-cx5-2023-left.jpg", "right": "thue-xe-xe-mazda-cx5-2023-right.jpg", "interior": "thue-xe-xe-mazda-cx5-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/nYrFWMJEY3U",
             "description": "Mazda CX-5 2023 - SUV hạng C với thiết kế Kodo sang trọng, cabin cách âm tốt và hệ thống an toàn hiện đại.",
             "features": "Điều hòa hai vùng,Camera 360,Cảm biến va chạm,Màn hình 10.25 inch,Ghế da,i-Activsense"
@@ -76,7 +76,7 @@
             "id": 9, "name": "Mazda 3 2023", "brand": "Mazda", "model": "Mazda3", "year": 2023,
             "car_type": "Sedan", "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 850000, "main_image": "thue-xe-xe-mazda3-2023.jpg",
-            "images": { "front": "thue-xe-xe-mazda3-2023.jpg", "back": "mazda3_back.jpg", "left": "mazda3_left.jpg", "right": "mazda3_right.jpg", "interior": "mazda3_interior.jpg" },
+            "images": { "front": "thue-xe-xe-mazda3-2023.jpg", "back": "thue-xe-xe-mazda3-2023-back.jpg", "left": "thue-xe-xe-mazda3-2023-left.jpg", "right": "thue-xe-xe-mazda3-2023-right.jpg", "interior": "thue-xe-xe-mazda3-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/H-VFm0sgkbU",
             "description": "Mazda 3 2023 - Sedan hạng C với thiết kế thời thượng, động cơ Skyactiv tiết kiệm và vận hành mượt mà.",
             "features": "Điều hòa tự động,Camera lùi,Cảm biến đỗ xe,Màn hình 8.8 inch,Sạc không dây,Ghế da"
@@ -85,7 +85,7 @@
             "id": 10, "name": "Toyota Vios 2023", "brand": "Toyota", "model": "Vios", "year": 2023,
             "car_type": "Sedan", "seats": 5, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 700000, "main_image": "thue-xe-xe-toyota-vios-2023.jpg",
-            "images": { "front": "thue-xe-xe-toyota-vios-2023.jpg", "back": "toyota-vios_back.jpg", "left": "toyota-vios_left.jpg", "right": "toyota-vios_right.jpg", "interior": "toyota-vios_interior.jpg" },
+            "images": { "front": "thue-xe-xe-toyota-vios-2023.jpg", "back": "thue-xe-xe-toyota-vios-2023-back.jpg", "left": "thue-xe-xe-toyota-vios-2023-left.jpg", "right": "thue-xe-xe-toyota-vios-2023-right.jpg", "interior": "thue-xe-xe-toyota-vios-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/BSRV9dLrN8g",
             "description": "Toyota Vios 2023 - Sedan hạng B phổ biến, bền bỉ và tiết kiệm nhiên liệu, phù hợp di chuyển đô thị.",
             "features": "Điều hòa,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Túi khí đôi"
@@ -94,7 +94,7 @@
             "id": 11, "name": "VinFast VF5 2023", "brand": "VinFast", "model": "VF5", "year": 2023,
             "car_type": "SUV điện", "seats": 5, "transmission": "Tự động", "fuel_type": "Điện",
             "price_per_day": 900000, "main_image": "thue-xe-xe-vinfast-vf5-2023.jpg",
-            "images": { "front": "thue-xe-xe-vinfast-vf5-2023.jpg", "back": "vf5_back.jpg", "left": "vf5_left.jpg", "right": "vf5_right.jpg", "interior": "vf5_interior.jpg" },
+            "images": { "front": "thue-xe-xe-vinfast-vf5-2023.jpg", "back": "thue-xe-xe-vinfast-vf5-2023-back.jpg", "left": "thue-xe-xe-vinfast-vf5-2023-left.jpg", "right": "thue-xe-xe-vinfast-vf5-2023-right.jpg", "interior": "thue-xe-xe-vinfast-vf5-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/MJMhLTSWXd4",
             "description": "VinFast VF5 - SUV điện mini thương hiệu Việt, phạm vi 326km/sạc, phù hợp di chuyển nội đô kinh tế.",
             "features": "Điều hòa,Camera lùi,Màn hình 10 inch,Sạc nhanh AC/DC,Kết nối điện thoại,Túi khí đôi"
@@ -103,7 +103,7 @@
             "id": 12, "name": "Suzuki XL7 2023", "brand": "Suzuki", "model": "XL7", "year": 2023,
             "car_type": "SUV", "seats": 7, "transmission": "Tự động", "fuel_type": "Xăng",
             "price_per_day": 820000, "main_image": "thue-xe-xe-suzuki-xl7-2023.jpg",
-            "images": { "front": "thue-xe-xe-suzuki-xl7-2023.jpg", "back": "xl7_back.jpg", "left": "xl7_left.jpg", "right": "xl7_right.jpg", "interior": "xl7_interior.jpg" },
+            "images": { "front": "thue-xe-xe-suzuki-xl7-2023.jpg", "back": "thue-xe-xe-suzuki-xl7-2023-back.jpg", "left": "thue-xe-xe-suzuki-xl7-2023-left.jpg", "right": "thue-xe-xe-suzuki-xl7-2023-right.jpg", "interior": "thue-xe-xe-suzuki-xl7-2023-interior.jpg" },
             "video_url": "https://www.youtube.com/embed/s5k5y8fCyOI",
             "description": "Suzuki XL7 2023 - SUV 7 chỗ gọn gàng, tiết kiệm nhiên liệu, thiết kế hiện đại phù hợp gia đình.",
             "features": "Điều hòa,Camera lùi,Cảm biến đỗ xe,Màn hình cảm ứng,Kết nối Bluetooth,Hàng ghế thứ 3"
@@ -113,19 +113,19 @@
     "cars": [
         { "id": 1,  "type_id": 1,  "license_plate": "51G-123.45", "manufacture_year": 2023, "mileage": 12500, "color": "Trắng ngọc trai",
           "status": "available",
-          "images": { "front": "car_1_front.jpg", "back": "car_1_back.jpg", "left": "car_1_left.jpg", "right": "car_1_right.jpg", "interior": "car_1_interior.jpg" }
+                    "images": { "front": "thue-xe-xe-toyota-camry-2023.jpg", "back": "thue-xe-xe-toyota-camry-2023-back.jpg", "left": "thue-xe-xe-toyota-camry-2023-left.jpg", "right": "thue-xe-xe-toyota-camry-2023-right.jpg", "interior": "thue-xe-xe-toyota-camry-2023-interior.jpg" }
         },
         { "id": 2,  "type_id": 1,  "license_plate": "51G-678.90", "manufacture_year": 2023, "mileage": 8300,  "color": "Đen bóng",
           "status": "rented",
-          "images": { "front": "car_2_front.jpg", "back": "car_2_back.jpg", "left": "car_2_left.jpg", "right": "car_2_right.jpg", "interior": "car_2_interior.jpg" }
+                    "images": { "front": "thue-xe-xe-toyota-camry-2023.jpg", "back": "thue-xe-xe-toyota-camry-2023-back.jpg", "left": "thue-xe-xe-toyota-camry-2023-left.jpg", "right": "thue-xe-xe-toyota-camry-2023-right.jpg", "interior": "thue-xe-xe-toyota-camry-2023-interior.jpg" }
         },
         { "id": 3,  "type_id": 2,  "license_plate": "51F-456.78", "manufacture_year": 2022, "mileage": 28000, "color": "Xanh dương đậm",
           "status": "available",
-          "images": { "front": "car_3_front.jpg", "back": "car_3_back.jpg", "left": "car_3_left.jpg", "right": "car_3_right.jpg", "interior": "car_3_interior.jpg" }
+                    "images": { "front": "thue-xe-xe-honda-crv-2022.jpg", "back": "thue-xe-xe-honda-crv-2022-back.jpg", "left": "thue-xe-xe-honda-crv-2022-left.jpg", "right": "thue-xe-xe-honda-crv-2022-right.jpg", "interior": "thue-xe-xe-honda-crv-2022-interior.jpg" }
         },
         { "id": 4,  "type_id": 2,  "license_plate": "51F-112.34", "manufacture_year": 2022, "mileage": 19500, "color": "Trắng tinh",
           "status": "available",
-          "images": { "front": "car_4_front.jpg", "back": "car_4_back.jpg", "left": "car_4_left.jpg", "right": "car_4_right.jpg", "interior": "car_4_interior.jpg" }
+                    "images": { "front": "thue-xe-xe-honda-crv-2022.jpg", "back": "thue-xe-xe-honda-crv-2022-back.jpg", "left": "thue-xe-xe-honda-crv-2022-left.jpg", "right": "thue-xe-xe-honda-crv-2022-right.jpg", "interior": "thue-xe-xe-honda-crv-2022-interior.jpg" }
         },
         { "id": 5,  "type_id": 3,  "license_plate": "51H-789.01", "manufacture_year": 2023, "mileage": 9800,  "color": "Bạc ánh kim",         "status": "available" },
         { "id": 6,  "type_id": 4,  "license_plate": "51K-234.56", "manufacture_year": 2022, "mileage": 45000, "color": "Đen bóng",            "status": "rented" },
@@ -161,7 +161,7 @@
 
         { "id": 32, "type_id": 1,  "license_plate": "51G-901.23", "manufacture_year": 2024, "mileage": 3200,  "color": "Xám Platinum",
           "status": "available",
-          "images": { "front": "car_32_front.jpg", "back": "car_32_back.jpg", "left": "car_32_left.jpg", "right": "car_32_right.jpg", "interior": "car_32_interior.jpg" }
+                    "images": { "front": "thue-xe-xe-toyota-camry-2023.jpg", "back": "thue-xe-xe-toyota-camry-2023-back.jpg", "left": "thue-xe-xe-toyota-camry-2023-left.jpg", "right": "thue-xe-xe-toyota-camry-2023-right.jpg", "interior": "thue-xe-xe-toyota-camry-2023-interior.jpg" }
         },
 
         { "id": 33, "type_id": 5,  "license_plate": "51L-443.77", "manufacture_year": 2023, "mileage": 29500, "color": "Bạc ánh kim",         "status": "available" },

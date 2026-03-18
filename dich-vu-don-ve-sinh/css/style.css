@@ -24,12 +24,7 @@ body{
     padding:20px 0;
 }
 
-.header{ background:#1abc9c; color:white; padding:15px 0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08); } 
-.header-content{ display:flex; justify-content:space-between; align-items:center; }
+
  .nav a{ color:white; margin-left:15px; text-decoration:none; font-weight:500; } 
 
 
@@ -58,13 +53,6 @@ body{
 .page-title{
     text-align:center;
     padding:20px 0;
-}
-
-footer.footer{
-    background:#34495e;
-    color:white;
-    text-align:center;
-    padding:15px;
 }
 /* ===== MODAL ===== */
 .modal {
@@ -598,52 +586,7 @@ footer.footer{
 }
 
 
-.footer-content {
-    display: flex;
-    gap: 30px;
-    padding: 40px 0;
-    flex-wrap: wrap;
-}
 
-.footer-col {
-    flex: 1;
-    min-width: 220px;
-}
-
-.footer-col h3,
-.footer-col h4 {
-    margin-bottom: 15px;
-    color: #1abc9c;
-}
-
-.footer-col p {
-    line-height: 1.6;
-    margin-bottom: 10px;
-}
-
-.footer-col ul {
-    list-style: none;
-}
-
-.footer-col ul li {
-    margin-bottom: 8px;
-}
-
-.footer-col a {
-    color: #ecf0f1;
-    text-decoration: none;
-}
-
-.footer-col a:hover {
-    text-decoration: underline;
-}
-
-.footer-bottom {
-    background: #1a252f;
-    text-align: center;
-    padding: 15px 0;
-    font-size: 0.9rem;
-}
 .why-us {
     background: linear-gradient(180deg, #ffffff, var(--light-bg));
 }
@@ -672,11 +615,6 @@ footer.footer{
 }
 
 
-.footer-col h3,
-.footer-col h4 {
-    color: var(--accent);
-}
-
 /* ===== BOOKING SECTION BACKGROUND ===== */
 .booking-bg {
     background:
@@ -703,4 +641,42 @@ footer.footer{
         opacity: 1;
         transform: translateY(0);
     }
+}
+/* ===== MOBILE FIX ===== */
+@media (max-width: 768px){
+
+    .container{
+        width:95%;
+        padding:10px 0;
+    }
+
+    h1{font-size:22px;}
+    h2{font-size:20px;}
+    p{font-size:14px;}
+
+    .hero{
+        padding:60px 10px;
+    }
+
+    .hero-content h2{
+        font-size:22px;
+    }
+
+    .hero-buttons{
+        flex-direction: column;
+    }
+
+    .btn{
+        width:100%;
+        text-align:center;
+    }
+
+    .cards{
+        flex-direction: column;
+    }
+
+    .service-preview-card{
+        width:100%;
+    }
+
 }

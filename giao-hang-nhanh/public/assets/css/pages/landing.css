@@ -130,7 +130,9 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   height: 100%;
 }
 
@@ -163,7 +165,7 @@
   font-style: italic;
   color: #4b5563;
   margin-bottom: 16px;
-  border-left: 3px solid #ff7a00; 
+  border-left: 3px solid #ff7a00;
   padding-left: 12px;
 }
 
@@ -246,7 +248,10 @@
   flex-direction: column;
   height: 100%;
   box-shadow: 0 8px 22px rgba(10, 42, 102, 0.06);
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .service-showcase-card:hover {
@@ -410,7 +415,9 @@
   border-radius: 10px;
   border: 1px solid #e7edf7;
   background: #f7f9fd;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .service-link-list a:hover {
@@ -431,7 +438,9 @@
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition: filter 0.2s ease, transform 0.2s ease;
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
 }
 
 .service-showcase-card > .service-action-btn {
@@ -560,6 +569,44 @@
   gap: 32px;
 }
 
+.feature-item {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid #eef2f8;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.feature-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(10, 42, 102, 0.08);
+  border-color: #ff7a00;
+}
+
+.feature-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  background: #f0f7ff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: #0a2a66;
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover .feature-icon-wrapper {
+  background: #0a2a66;
+  color: #fff;
+}
+
+.feature-lucide-icon {
+  width: 28px;
+  height: 28px;
+}
+
 /* PRICING SECTION */
 #pricing {
   padding: 80px 40px;
@@ -656,6 +703,7 @@
 /* FAQ SECTION */
 #faq {
   padding: 80px 40px;
+  background-color: #f8fafc;
   text-align: center;
 }
 
@@ -951,30 +999,27 @@ main section h2.section-title {
   }
 
   .section-title {
-    font-size: 28px;
+    font-size: 26px;
   }
 
-  /* Mobile service layout: app-like horizontal cards */
-  .service-showcase-grid {
-    display: flex;
-    gap: 14px;
-    overflow-x: auto;
-    padding: 2px 4px 10px;
-    scroll-snap-type: x mandatory;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  .process-img {
+    max-width: 120px;
+    height: auto;
   }
 
-  .service-showcase-grid::-webkit-scrollbar {
-    display: none;
+  /* Mobile service layout: vertical stack */
+  .service-showcase-grid,
+  .service-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+    padding: 0;
   }
 
-  .service-showcase-card {
-    flex: 0 0 88%;
-    min-width: 88%;
-    scroll-snap-align: start;
+  .service-showcase-card,
+  .service-card {
     border-radius: 14px;
-    padding: 18px;
+    padding: 20px;
   }
 
   .service-card-head h3 {
@@ -982,22 +1027,13 @@ main section h2.section-title {
   }
 
   .service-mini-grid {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 4px;
-    scroll-snap-type: x proximity;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .service-mini-grid::-webkit-scrollbar {
-    display: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .service-mini-item {
-    min-width: 170px;
-    scroll-snap-align: start;
+    width: 100%;
   }
 
   .service-status-grid {
@@ -1033,11 +1069,726 @@ main section h2.section-title {
   }
 
   .section-title {
-    font-size: 22px;
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .process-img {
+    max-width: 300px;
   }
   .service-list,
   .feature-list,
-  .service-showcase-grid {
+  .service-showcase-grid,
+  .service-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* FAQ ACCORDION ENHANCEMENTS */
+.faq-item {
+  border: 1px solid #e2e8f0;
+  margin-bottom: 20px;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-item:hover {
+  border-color: #ff7a00;
+  box-shadow: 0 10px 15px -3px rgba(10, 42, 102, 0.08);
+  transform: translateY(-2px);
+}
+
+.faq-question {
+  padding: 20px;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  transition: color 0.3s ease;
+}
+
+.faq-question::after {
+  content: " \f078"; /* FontAwesome chevron-down */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 12px;
+  transition: transform 0.3s ease;
+  color: #64748b;
+}
+
+.faq-item.active .faq-question {
+  color: #ff7a00;
+}
+
+.faq-item.active .faq-question::after {
+  transform: rotate(180deg);
+  color: #ff7a00;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 20px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 200px; /* Adjust based on content */
+  padding-bottom: 20px;
+}
+
+/* =====================================================
+   PRICING TABLE SECTION (#bang-gia)
+   ===================================================== */
+.pricing-table-section {
+  padding: 80px 40px;
+  background: linear-gradient(180deg, #f0f5ff 0%, #ffffff 100%);
+  text-align: center;
+}
+
+/* --- Công thức tổng quát --- */
+.pricing-formula-banner {
+  margin: 0 auto 40px;
+  max-width: 900px;
+  background: linear-gradient(135deg, #0a2a66 0%, #1a45a0 100%);
+  border-radius: 20px;
+  padding: 32px 24px;
+  box-shadow: 0 12px 40px rgba(10, 42, 102, 0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-formula-banner::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.pricing-formula-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.formula-icon {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.formula-title {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+
+.formula-equation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.formula-term {
+  background: rgba(255, 255, 255, 0.13);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: background 0.2s;
+}
+
+.formula-term:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+.formula-term.primary {
+  background: rgba(255, 122, 0, 0.85);
+  border-color: #ff9a40;
+}
+.formula-term.accent {
+  background: rgba(37, 195, 130, 0.85);
+  border-color: #25c382;
+}
+
+.formula-op {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+/* --- Tabs --- */
+.pricing-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 28px;
+  max-width: 700px;
+}
+
+.pricing-tab-btn {
+  padding: 10px 22px;
+  border-radius: 30px;
+  border: 2px solid #d4dff7;
+  background: #fff;
+  color: #4d5b7c;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.pricing-tab-btn:hover {
+  border-color: #0a2a66;
+  color: #0a2a66;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(10, 42, 102, 0.1);
+}
+
+.pricing-tab-btn.active {
+  background: #0a2a66;
+  color: #fff;
+  border-color: #0a2a66;
+  box-shadow: 0 4px 16px rgba(10, 42, 102, 0.25);
+}
+
+.pricing-tab-panel {
+  display: none;
+  animation: tabFadeIn 0.3s ease;
+}
+
+.pricing-tab-panel.active {
+  display: block;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-desc {
+  font-size: 15px;
+  color: #4d5b7c;
+  margin: 0 auto 20px;
+  max-width: 720px;
+  line-height: 1.7;
+}
+
+/* --- Bảng giá --- */
+.pricing-table-wrapper {
+  overflow-x: auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(10, 42, 102, 0.08);
+  margin: 0 auto 16px;
+  max-width: 860px;
+}
+
+.pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 14px;
+  min-width: 480px;
+}
+
+.pricing-table thead tr {
+  background: linear-gradient(90deg, #0a2a66, #1a45a0);
+  color: #fff;
+}
+
+.pricing-table th {
+  padding: 14px 18px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.pricing-table th:first-child {
+  text-align: left;
+}
+
+.pricing-table tbody tr {
+  border-bottom: 1px solid #eef2f8;
+  transition: background 0.15s;
+}
+
+.pricing-table tbody tr:last-child {
+  border-bottom: none;
+}
+.pricing-table tbody tr:hover {
+  background: #f7f9ff;
+}
+
+.pricing-table td {
+  padding: 13px 18px;
+  text-align: center;
+  color: #334155;
+  font-size: 14px;
+}
+
+.pricing-table td:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+
+.pricing-table .highlight-row {
+  background: #fafbff;
+}
+.pricing-table strong {
+  color: #0a2a66;
+}
+.price-zero {
+  color: #22c55e;
+  font-weight: 700;
+}
+
+/* Zone badges */
+.zone-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.zone-badge.same-district {
+  background: #e0fdf4;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.zone-badge.same-city {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+.zone-badge.inter-city {
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
+.pricing-note {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 auto;
+  max-width: 720px;
+  padding: 12px 20px;
+  background: #fef9e7;
+  border-radius: 10px;
+  border-left: 4px solid #f59e0b;
+  text-align: left;
+}
+
+/* --- COD & Bảo hiểm cards --- */
+.pricing-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.pricing-info-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 24px;
+  border: 2px solid #e9f0ff;
+  box-shadow: 0 4px 20px rgba(10, 42, 102, 0.07);
+  text-align: left;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.pricing-info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(10, 42, 102, 0.12);
+  border-color: #0a2a66;
+}
+
+.pricing-info-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.pricing-info-card-head span {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.pricing-info-card-head h4 {
+  margin: 0;
+  font-size: 17px;
+  color: #0a2a66;
+  font-weight: 800;
+}
+
+.pricing-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pricing-info-list li {
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.5;
+}
+.pricing-info-list strong {
+  color: #0a2a66;
+}
+
+.pricing-example {
+  background: #f0f5ff;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #4d5b7c;
+  line-height: 1.7;
+  border-left: 4px solid #0a2a66;
+}
+
+.pricing-example strong {
+  color: #0a2a66;
+}
+
+/* --- Tính cân nặng --- */
+.weight-rule-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  max-width: 680px;
+  margin: 0 auto 24px;
+  background: #fff;
+  border-radius: 16px;
+  border: 2px solid #e9f0ff;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(10, 42, 102, 0.07);
+}
+
+.weight-rule-item {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 24px 20px;
+  text-align: left;
+}
+
+.weight-rule-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.weight-rule-item strong {
+  display: block;
+  font-size: 15px;
+  color: #0a2a66;
+  margin-bottom: 4px;
+}
+.weight-rule-item p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.weight-rule-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #ff7a00;
+  color: #fff;
+  font-weight: 900;
+  font-size: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  align-self: center;
+  margin: 12px 0;
+}
+
+.weight-threshold-box {
+  max-width: 680px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  border: 2px solid #e9f0ff;
+  padding: 24px 28px;
+  text-align: left;
+  box-shadow: 0 4px 20px rgba(10, 42, 102, 0.07);
+}
+
+.weight-threshold-box p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #0a2a66;
+}
+.weight-threshold-box ul {
+  margin: 0 0 16px;
+  padding-left: 20px;
+}
+.weight-threshold-box li {
+  font-size: 14px;
+  color: #334155;
+  margin-bottom: 6px;
+}
+.weight-threshold-box strong {
+  color: #0a2a66;
+}
+
+.weight-example {
+  background: #fef9e7;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #4d5b7c;
+  line-height: 1.8;
+  border-left: 4px solid #f59e0b;
+  margin-top: 8px;
+}
+
+.weight-example strong {
+  color: #0a2a66;
+}
+
+/* =====================================================
+   QUOTE RESULT: Chi tiết & Giải thích tính cước
+   ===================================================== */
+.quote-breakdown-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #8899aa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 12px 0 6px;
+}
+
+/* Giải thích công thức step-by-step */
+.pricing-explanation {
+  margin: 20px 0;
+  background: #f7fbff;
+  border-radius: 14px;
+  border: 2px solid #d4e3ff;
+  overflow: hidden;
+  text-align: left;
+}
+
+.pricing-explanation[open] > summary {
+  border-bottom: 1px solid #d4e3ff;
+}
+
+.pricing-explanation-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0a2a66;
+  cursor: pointer;
+  list-style: none;
+  background: #eef5ff;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.pricing-explanation-title::-webkit-details-marker {
+  display: none;
+}
+
+.pricing-explanation-title::after {
+  content: "▾";
+  margin-left: auto;
+  font-size: 16px;
+  transition: transform 0.25s;
+}
+
+.pricing-explanation[open] .pricing-explanation-title::after {
+  transform: rotate(180deg);
+}
+.pricing-explanation-title:hover {
+  background: #e3efff;
+}
+
+.pricing-step-list {
+  list-style: none;
+  padding: 16px 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pricing-step {
+  border-left: 3px solid #d4e3ff;
+  padding-left: 14px;
+  animation: fadeStep 0.3s ease;
+}
+
+@keyframes fadeStep {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.pricing-step-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.pricing-step-num {
+  min-width: 24px;
+  height: 24px;
+  background: #0a2a66;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pricing-step-sub {
+  min-width: 24px;
+  height: 24px;
+  color: #0a2a66;
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pricing-step-header strong {
+  font-size: 13px;
+  color: #1e293b;
+  line-height: 1.4;
+}
+
+.pricing-step-detail {
+  font-size: 13px;
+  color: #4d5b7c;
+  line-height: 1.7;
+  padding: 2px 0;
+}
+.pricing-step-detail strong {
+  color: #0a2a66;
+}
+
+.pricing-step-formula {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #22543d;
+  background: #f0fff4;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-weight: 600;
+}
+
+.pricing-step-formula strong {
+  color: #15803d;
+}
+
+.pricing-explanation-note {
+  padding: 10px 20px 14px;
+  font-size: 12px;
+  color: #64748b;
+  font-style: italic;
+  margin: 0;
+  border-top: 1px dashed #d4e3ff;
+}
+
+/* =====================================================
+   RESPONSIVE cho pricing-table-section
+   ===================================================== */
+@media (max-width: 768px) {
+  .pricing-table-section {
+    padding: 60px 16px;
+  }
+  .pricing-formula-banner {
+    padding: 24px 16px;
+  }
+  .formula-equation {
+    gap: 6px;
+  }
+  .formula-term {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .formula-op {
+    font-size: 16px;
+  }
+  .pricing-tab-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  .pricing-table th,
+  .pricing-table td {
+    padding: 10px 12px;
+  }
+  .weight-rule-box {
+    flex-direction: column;
+  }
+  .weight-rule-item {
+    width: 100%;
+  }
+  .weight-rule-vs {
+    transform: rotate(90deg);
+  }
+  .pricing-card-grid {
     grid-template-columns: 1fr;
+  }
+  #bang-gia {
+    padding: 60px 16px;
   }
 }

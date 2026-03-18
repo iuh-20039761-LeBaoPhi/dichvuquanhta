@@ -63,7 +63,7 @@
       services: `${rootPath}index.html#services`,
       pricing: pricingLink,
       contact: `${rootPath}index.html#contact`,
-      booking: `${rootPath}index.html#contact`,
+      booking: `${rootPath}public/dat-lich.html`,
       tracking: `${rootPath}index.html#home-tracking`,
       guide: `${rootPath}public/huong-dan-dat-hang.html`,
       login: `${rootPath}public/login.php`,
@@ -130,6 +130,7 @@
     }
 
     if (currentPage === "huong-dan-dat-hang.html") return "guide";
+    if (currentPage === "dat-lich.html") return "booking";
 
     const onRootIndexPage =
       !inPublicDir && (currentPage === "index.html" || currentPage === "");
@@ -139,7 +140,7 @@
     if (hash === "#services") return "services";
     if (hash === "#quick-quote") return "pricing";
     if (hash === "#home-tracking") return "tracking";
-    if (hash === "#contact") return "booking";
+    if (hash === "#contact") return "contact";
     return "home";
   }
 

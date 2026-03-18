@@ -1,164 +1,206 @@
 [
   {
     "id": "moving_house",
-    "service_name": "Chuyển Nhà Trọn Gói",
-    "pricing_items": [
+    "ten_dich_vu": "Chuyển Nhà Trọn Gói",
+    "hang_muc_bao_gia": [
       {
-        "name": "Xe tải vận chuyển",
-        "price_range": "300.000 – 800.000",
-        "unit": "chuyến",
-        "note": "Xe từ 500kg – 2 tấn",
-        "image": "assets/images/hero-chuyen-nha.png",
-        "icon_d": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
+        "ten": "Xe tải vận chuyển",
+        "khoang_gia": "200.000 – 800.000",
+        "don_vi": "chuyến",
+        "ghi_chu": "Hệ thống xe tải đa dạng từ 500kg đến 2 tấn, phù hợp với mọi ngõ ngách và khối lượng đồ đạc.",
+        "hinh_anh": "assets/images/chuyendon-nha-o.png",
+        "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
       },
       {
-        "name": "Nhân công bốc xếp",
-        "price_range": "200.000 – 400.000",
-        "unit": "người",
-        "note": "Tùy khối lượng đồ",
-        "image": "assets/images/staff-deliver.png",
-        "icon_d": "M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
+        "ten": "Nhân công bốc xếp",
+        "khoang_gia": "200.000 – 400.000",
+        "don_vi": "người",
+        "ghi_chu": "Đội ngũ nhân viên khỏe mạnh, tháo vát và có trách nhiệm cao trong công việc.",
+        "hinh_anh": "assets/images/staff-deliver.png",
+        "icon_svg": "M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
       },
       {
-        "name": "Đóng gói đồ đạc",
-        "price_range": "100.000 – 300.000",
-        "unit": "gói",
-        "note": "Thùng carton, màng PE",
-        "image": "assets/images/items-deliver.png",
-        "icon_d": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
+        "ten": "Đóng gói đồ đạc",
+        "khoang_gia": "100.000 – 300.000",
+        "don_vi": "gói",
+        "ghi_chu": "Sử dụng vật liệu bảo vệ chuyên dụng: thùng carton, màng PE, xốp chống sốc.",
+        "hinh_anh": "assets/images/chuyendon-van-chuyen-an-toan.png",
+        "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
       },
       {
-        "name": "Tháo lắp nội thất",
-        "price_range": "150.000 – 350.000",
-        "unit": "món",
-        "note": "Giường, tủ, bàn ghế",
-        "image": "assets/images/feature-relocation-staff.png",
-        "icon_d": "M4 12h16M4 7h16M4 17h10m6-7v10"
+        "ten": "Tháo lắp đồ gỗ",
+        "khoang_gia": "150.000 – 350.000",
+        "don_vi": "món",
+        "ghi_chu": "Xử lý tủ quần áo, giường ngủ, bàn gỗ tự nhiên và gỗ công nghiệp đúng kỹ thuật.",
+        "hinh_anh": "assets/images/feature-relocation-staff.png",
+        "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
       },
       {
-        "name": "Hỗ trợ tháo lắp kỹ thuật",
-        "price_range": "150.000 – 350.000",
-        "unit": "bộ",
-        "note": "Tùy độ khó (Máy lạnh, TV...)",
-        "image": "assets/images/home-tech.png",
-        "icon_d": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8zm0 0h6m-6 0H6m12 10.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm-7 0a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+        "ten": "Tháo lắp thiết bị",
+        "khoang_gia": "200.000 – 500.000",
+        "don_vi": "thiết bị",
+        "ghi_chu": "Tháo lắp máy lạnh, bình nóng lạnh, tivi treo tường đúng kỹ thuật và an toàn.",
+        "hinh_anh": "assets/images/chuyendon-thiet-bi-gia-dinh.png",
+        "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
       },
       {
-        "name": "Sắp xếp tại nhà mới",
-        "price_range": "Miễn phí / hỗ trợ",
-        "unit": "dịch vụ",
-        "note": "Khi sử dụng gói trọn gói",
-        "image": "assets/images/new-home-setup.png",
-        "icon_d": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
+        "ten": "Sắp xếp tại nhà mới",
+        "khoang_gia": "Hỗ trợ miễn phí",
+        "don_vi": "lần",
+        "ghi_chu": "Hỗ trợ lắp đặt và sắp xếp đồ đạc vào đúng vị trí theo yêu cầu của gia chủ.",
+        "hinh_anh": "assets/images/chuyendon-tron-goi.png",
+        "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
       }
-    ]
+    ],
+    "cau_hinh_tinh_gia": {
+      "loai_xe": {
+        "xe_van_500kg": { "gia_co_ban": 200000, "km_co_ban": 4, "gia_moi_km_tiep": 20000, "ten_hien_thi": "Xe Van 500kg" },
+        "xe_tai_1_5_tan": { "gia_co_ban": 450000, "km_co_ban": 4, "gia_moi_km_tiep": 28000, "ten_hien_thi": "Xe Tải 1.5 Tấn" },
+        "xe_tai_2_5_tan": { "gia_co_ban": 650000, "km_co_ban": 4, "gia_moi_km_tiep": 35000, "ten_hien_thi": "Xe Tải 2.5 Tấn" }
+      },
+      "phu_phi": {
+        "the_tich": { "nguong_mien_phi": 5, "buoc_nhay": 1, "don_gia_moi_buoc": 50000 },
+        "trong_luong": { "nguong_mien_phi": 500, "buoc_nhay": 100, "don_gia_moi_buoc": 50000 },
+        "tinh_chat_do_dac": { "de_vo": 50000, "cong_kenh": 80000, "gia_tri_cao": 150000, "dong_goi_dac_biet": 100000 },
+        "thoi_tiet": { "troi_mua": 50000 },
+        "khung_gio": { "buoi_toi": 100000, "ban_dem": 200000 }
+      }
+    }
   },
   {
     "id": "moving_office",
-    "service_name": "Chuyển Văn Phòng",
-    "pricing_items": [
+    "ten_dich_vu": "Chuyển Văn Phòng",
+    "hang_muc_bao_gia": [
       {
-        "name": "Cung cấp xe tải",
-        "price_range": "500.000 – 1.500.000",
-        "unit": "chuyến",
-        "note": "Xe từ 1 tấn – 5 tấn",
-        "image": "assets/images/hero-van-phong.png",
-        "icon_d": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
+        "ten": "Cung cấp xe tải",
+        "khoang_gia": "250.000 – 1.500.000",
+        "don_vi": "chuyến",
+        "ghi_chu": "Đội xe tải đa dạng tải trọng, có thùng kín bảo vệ tài sản, phù hợp mọi quy mô.",
+        "hinh_anh": "assets/images/chuyendon-van-phong.png",
+        "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
       },
       {
-        "name": "Đóng gói hồ sơ, tài liệu",
-        "price_range": "150.000 – 400.000",
-        "unit": "thùng",
-        "note": "Bao gồm vật tư",
-        "image": "assets/images/dong-goi-tai-lieu.png",
-        "icon_d": "M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
+        "ten": "Đóng gói hồ sơ, tài liệu",
+        "khoang_gia": "150.000 – 400.000",
+        "don_vi": "thùng",
+        "ghi_chu": "Phân loại, đóng thùng và niêm phong tài liệu theo từng phòng ban bảo mật.",
+        "hinh_anh": "assets/images/dong-goi-tai-lieu.png",
+        "icon_svg": "M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
       },
       {
-        "name": "Bảo vệ thiết bị IT",
-        "price_range": "250.000 – 500.000",
-        "unit": "bộ máy",
-        "note": "Bao gồm vật tư chống sốc",
-        "image": "assets/images/boc-lot-it.png",
-        "icon_d": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
+        "ten": "Bảo vệ thiết bị IT",
+        "khoang_gia": "250.000 – 500.000",
+        "don_vi": "bộ",
+        "ghi_chu": "Đóng gói máy tính, màn hình, server bằng xốp nổ và vật tư chuyên dụng.",
+        "hinh_anh": "assets/images/boc-lot-it.png",
+        "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m0-10L4 7m8 4v10"
       },
       {
-        "name": "Tháo lắp nội thất văn phòng",
-        "price_range": "150.000 – 350.000",
-        "unit": "món",
-        "note": "Bàn, ghế, tủ, kệ",
-        "image": "assets/images/thao-lap-van-phong.png",
-        "icon_d": "M4 12h16M4 7h16M4 17h10m6-7v10"
+        "ten": "Tháo lắp nội thất VP",
+        "khoang_gia": "150.000 – 350.000",
+        "don_vi": "món",
+        "ghi_chu": "Kỹ thuật tháo lắp bàn làm việc, tủ hồ sơ, vách ngăn văn phòng chuyên nghiệp.",
+        "hinh_anh": "assets/images/thao-lap-van-phong.png",
+        "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
       },
       {
-        "name": "Vận chuyển thiết bị nặng",
-        "price_range": "500.000 – 2.000.000",
-        "unit": "thiết bị",
-        "note": "Két sắt, máy photocopy...",
-        "image": "assets/images/van-chuyen-thiet-bi-nang.png",
-        "icon_d": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8zm0 0h6m-6 0H6m12 10.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm-7 0a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+        "ten": "Chuyển thiết bị nặng",
+        "khoang_gia": "500.000 – 2.000.000",
+        "don_vi": "máy",
+        "ghi_chu": "Di dời két sắt, máy photocopy, tủ server bằng công cụ chuyên dụng an toàn.",
+        "hinh_anh": "assets/images/van-chuyen-thiet-bi-nang.png",
+        "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8zm0 0h6m-6 0H6"
       },
       {
-        "name": "Lắp đặt tại văn phòng mới",
-        "price_range": "Miễn phí / hỗ trợ",
-        "unit": "dịch vụ",
-        "note": "Khi sử dụng gói trọn gói",
-        "image": "assets/images/lap-dat-van-phong-moi.png",
-        "icon_d": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
+        "ten": "Lắp đặt văn phòng mới",
+        "khoang_gia": "Hỗ trợ miễn phí",
+        "don_vi": "lần",
+        "ghi_chu": "Lắp đặt lại bàn ghế, hệ thống máy tính theo sơ đồ bố trí để làm việc ngay.",
+        "hinh_anh": "assets/images/lap-dat-van-phong-moi.png",
+        "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
       }
-    ]
+    ],
+    "cau_hinh_tinh_gia": {
+      "loai_xe": {
+        "xe_van_500kg": { "gia_co_ban": 250000, "km_co_ban": 4, "gia_moi_km_tiep": 25000, "ten_hien_thi": "Xe Van 500kg (VP)" },
+        "xe_tai_1_5_tan": { "gia_co_ban": 550000, "km_co_ban": 4, "gia_moi_km_tiep": 32000, "ten_hien_thi": "Xe Tải 1.5 Tấn (VP)" },
+        "xe_tai_2_5_tan": { "gia_co_ban": 800000, "km_co_ban": 4, "gia_moi_km_tiep": 40000, "ten_hien_thi": "Xe Tải 2.5 Tấn (VP)" }
+      },
+      "phu_phi": {
+        "the_tich": { "nguong_mien_phi": 5, "buoc_nhay": 1, "don_gia_moi_buoc": 70000 },
+        "trong_luong": { "nguong_mien_phi": 500, "buoc_nhay": 100, "don_gia_moi_buoc": 70000 },
+        "tinh_chat_do_dac": { "de_vo": 100000, "cong_kenh": 120000, "gia_tri_cao": 300000, "dong_goi_dac_biet": 200000 },
+        "thoi_tiet": { "troi_mua": 100000 },
+        "khung_gio": { "buoi_toi": 150000, "ban_dem": 300000 }
+      }
+    }
   },
   {
     "id": "moving_warehouse",
-    "service_name": "Chuyển Kho Bãi",
-    "pricing_items": [
+    "ten_dich_vu": "Chuyển Kho Bãi",
+    "hang_muc_bao_gia": [
       {
-        "name": "Xe tải và xe thùng kín",
-        "price_range": "800.000 – 2.500.000",
-        "unit": "chuyến",
-        "note": "Xe từ 1 tấn – 10 tấn",
-        "image": "assets/images/hero-kho-bai.png",
-        "icon_d": "M8 11V5a4 4 0 118 0v6M3 11h18M7 13l1 8h8l1-8"
+        "ten": "Xe tải & xe thùng kín",
+        "khoang_gia": "1.000.000 – 3.500.000",
+        "don_vi": "chuyến",
+        "ghi_chu": "Xe tải hạng nặng từ 2 tấn đến 10 tấn, phù hợp di dời kho xưởng quy mô lớn.",
+        "hinh_anh": "assets/images/chuyendon-kho-bai.png",
+        "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
       },
       {
-        "name": "Luân chuyển hàng pallet",
-        "price_range": "150.000 – 300.000",
-        "unit": "pallet",
-        "note": "Bốc xếp & cố định",
-        "image": "assets/images/feature-pallet.png",
-        "icon_d": "M20 7L12 3 4 7m16 0v10l-8 4m0-10L4 7m8 4v10"
+        "ten": "Luân chuyển pallet",
+        "khoang_gia": "150.000 – 300.000",
+        "don_vi": "pallet",
+        "ghi_chu": "Bốc xếp, cố định hàng hóa trên pallet và luân chuyển hàng loạt an toàn.",
+        "hinh_anh": "assets/images/feature-pallet.png",
+        "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m0-10L4 7m8 4v10"
       },
       {
-        "name": "Thuê xe nâng - xe cẩu",
-        "price_range": "1.500.000 – 3.500.000",
-        "unit": "ca",
-        "note": "Xe nâng, xe cẩu chuyên dụng",
-        "image": "assets/images/feature-heavy-cargo.png",
-        "icon_d": "M7 16V4m0 0L3 8m4-4l4 4m6 8V8m0 0l-4 4m4-4l4 4"
+        "ten": "Xe nâng & xe cẩu",
+        "khoang_gia": "1.500.000 – 3.500.000",
+        "don_vi": "ca",
+        "ghi_chu": "Hỗ trợ nâng hạ máy móc nặng, kệ kho và các kiện hàng cồng kềnh đặc thù.",
+        "hinh_anh": "assets/images/chuyendon-kho-bai.png",
+        "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8z"
       },
       {
-        "name": "Nhân công bốc xếp nặng",
-        "price_range": "300.000 – 600.000",
-        "unit": "người",
-        "note": "Hàng cồng kềnh, máy móc",
-        "image": "assets/images/nhan-cong-boc-xep.png",
-        "icon_d": "M17 20H7m10 0a2 2 0 002-2v-1a4 4 0 00-4-4H9a4 4 0 00-4 4v1a2 2 0 002 2m10 0V8a2 2 0 00-2-2H9a2 2 0 00-2 2v12"
+        "ten": "Nhân công bốc xếp nặng",
+        "khoang_gia": "300.000 – 600.000",
+        "don_vi": "người",
+        "ghi_chu": "Đội ngũ nhân sự chuyên trách bốc xếp hàng kho xưởng, kiện hàng nặng.",
+        "hinh_anh": "assets/images/nhan-cong-boc-xep.png",
+        "icon_svg": "M17 20H7m10 0a2 2 0 002-2v-1a4 4 0 00-4-4H9a4 4 0 00-4 4v1a2 2 0 002 2"
       },
       {
-        "name": "Gia cố và đóng gói",
-        "price_range": "200.000 – 500.000",
-        "unit": "đơn vị",
-        "note": "Gia cố đồ máy móc nặng",
-        "image": "assets/images/dong-goi-va-gia-co.png",
-        "icon_d": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
+        "ten": "Đóng gói & Gia cố",
+        "khoang_gia": "200.000 – 500.000",
+        "don_vi": "gói",
+        "ghi_chu": "Gia cố kiện hàng, chống rung lắc, bảo vệ máy móc khi di chuyển đường dài.",
+        "hinh_anh": "assets/images/dong-goi-va-gia-co.png",
+        "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0"
       },
       {
-        "name": "Kiểm kê và bàn giao",
-        "price_range": "Miễn phí",
-        "unit": "dịch vụ",
-        "note": "Kiểm kê 100% tài sản",
-        "image": "assets/images/kiem-ke-va-ban-giao.png",
-        "icon_d": "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+        "ten": "Kiểm kê & Bàn giao",
+        "khoang_gia": "Miễn phí",
+        "don_vi": "lần",
+        "ghi_chu": "Đối soát 100% số lượng hàng hóa, thiết bị trước và sau khi di dời kho bãi.",
+        "hinh_anh": "assets/images/kiem-ke-va-ban-giao.png",
+        "icon_svg": "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2"
       }
-    ]
+    ],
+    "cau_hinh_tinh_gia": {
+      "loai_xe": {
+        "xe_tai_1_5_tan": { "gia_co_ban": 1000000, "km_co_ban": 10, "gia_moi_km_tiep": 45000, "ten_hien_thi": "Xe Tải 1.5 Tấn (Kho)" },
+        "xe_tai_2_5_tan": { "gia_co_ban": 1500000, "km_co_ban": 10, "gia_moi_km_tiep": 55000, "ten_hien_thi": "Xe Tải 2.5 Tấn (Kho)" },
+        "xe_tai_5_tan": { "gia_co_ban": 2500000, "km_co_ban": 10, "gia_moi_km_tiep": 75000, "ten_hien_thi": "Xe Tải 5 Tấn (Kho)" }
+      },
+      "phu_phi": {
+        "the_tich": { "nguong_mien_phi": 10, "buoc_nhay": 1, "don_gia_moi_buoc": 100000 },
+        "trong_luong": { "nguong_mien_phi": 1000, "buoc_nhay": 100, "don_gia_moi_buoc": 100000 },
+        "tinh_chat_do_dac": { "de_vo": 200000, "cong_kenh": 300000, "gia_tri_cao": 1000000, "dong_goi_dac_biet": 500000 },
+        "thoi_tiet": { "troi_mua": 200000 },
+        "khung_gio": { "buoi_toi": 300000, "ban_dem": 500000 }
+      }
+    }
   }
 ]

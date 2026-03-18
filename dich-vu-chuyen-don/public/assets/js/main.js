@@ -13,6 +13,7 @@
     "modules/main-landing.js",
     "modules/main-news.js",
     "modules/main-pricing.js",
+    "modules/moving-booking.js",
   ];
 
   const current = document.currentScript;

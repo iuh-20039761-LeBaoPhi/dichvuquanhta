@@ -796,20 +796,81 @@ $schema = [
             if (first) first.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
+        // ===== MEDIA CAPTURE (ảnh / video) =====
+        let _sdMediaFiles = [];
+
+        function sdSetupMediaCapture() {
+            const photoInput = document.getElementById('mediaPhotoInput');
+            const videoInput = document.getElementById('mediaVideoInput');
+            const photoBtn   = document.getElementById('photoCaptureBtn');
+            const videoBtn   = document.getElementById('videoCaptureBtn');
+            const previewBox = document.getElementById('mediaPreviewContainer');
+            if (!photoInput || !videoInput) return;
+
+            photoBtn.addEventListener('click', () => photoInput.click());
+            videoBtn.addEventListener('click', () => videoInput.click());
+
+            photoInput.addEventListener('change', function () {
+                Array.from(this.files).forEach(f => sdAddMedia(f, previewBox));
+                this.value = '';
+            });
+            videoInput.addEventListener('change', function () {
+                Array.from(this.files).forEach(f => sdAddMedia(f, previewBox));
+                this.value = '';
+            });
+        }
+
+        function sdAddMedia(file, previewBox) {
+            const id = Date.now() + Math.random();
+            _sdMediaFiles.push({ id, file });
+
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:2px solid rgba(17,153,142,0.4);';
+            wrap.dataset.mediaId = id;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.style.cssText = 'position:absolute;top:2px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:16px;cursor:pointer;padding:0;z-index:1;';
+            removeBtn.addEventListener('click', () => {
+                _sdMediaFiles = _sdMediaFiles.filter(m => m.id !== id);
+                wrap.remove();
+            });
+
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+                img.src = URL.createObjectURL(file);
+                wrap.appendChild(img);
+            } else {
+                const icon = document.createElement('div');
+                icon.style.cssText = 'width:100%;height:100%;background:#0f2027;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;';
+                icon.innerHTML = '<i class="fas fa-video" style="color:#38ef7d;font-size:1.4rem;"></i><span style="color:#ccc;font-size:0.6rem;text-align:center;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%;">' + file.name + '</span>';
+                wrap.appendChild(icon);
+            }
+            wrap.appendChild(removeBtn);
+            previewBox.appendChild(wrap);
+        }
+
         // Load modal từ partial, rồi gắn submit handler
         fetch('partials/booking-modal-detail.html')
             .then(r => r.text())
             .then(html => {
                 document.getElementById('booking-modal-container').innerHTML = html;
 
-                document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+                sdSetupMediaCapture();
+
+                let _sdPendingData = null;
+
+                // Submit → hiện bảng xác nhận
+                document.getElementById('bookingForm').addEventListener('submit', function(e) {
                     e.preventDefault();
 
                     const name    = document.getElementById('name').value.trim();
                     const phone   = document.getElementById('phone').value.trim();
                     const service = document.getElementById('selectedService').value.trim();
                     const address = document.getElementById('address').value.trim();
-                    const note    = document.getElementById('note').value.trim();
+                    let   note    = document.getElementById('note').value.trim();
 
                     if (!name || !phone || !service || !address) {
                         alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
@@ -820,44 +881,115 @@ $schema = [
                         return;
                     }
 
-                    // Lấy estimated_price từ breakdown nếu có
-                    const bdTot = document.getElementById('bd-total');
+                    // Gộp thông tin file đính kèm vào note
+                    if (_sdMediaFiles.length > 0) {
+                        const imgs = _sdMediaFiles.filter(m => m.file.type.startsWith('image/')).length;
+                        const vids = _sdMediaFiles.filter(m => m.file.type.startsWith('video/')).length;
+                        const parts = [];
+                        if (imgs > 0) parts.push(`${imgs} ảnh`);
+                        if (vids > 0) parts.push(`${vids} video`);
+                        note = (note ? note + '\n' : '') + `[Đính kèm: ${parts.join(', ')}]`;
+                    }
+
                     const priceRaw = Number(
                         (document.getElementById('servicePrice')?.value || '').replace(/[^\d]/g,'')
                     ) || 0;
-                    const activeBrand = document.querySelector('#bookingModal .brand-option.active');
+                    const activeBrand   = document.querySelector('#bookingModal .brand-option.active');
                     const selectedBrand = activeBrand ? activeBrand.dataset.brand : null;
 
-                    const submitBtn = this.querySelector('button[type="submit"]');
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+                    _sdPendingData = { name, phone, service_id: service, address, note, selected_brand: selectedBrand, estimated_price: priceRaw };
+
+                    // Điền vào bảng xác nhận
+                    document.getElementById('cf-name').textContent    = name;
+                    document.getElementById('cf-phone').textContent   = phone;
+                    document.getElementById('cf-service').textContent = service;
+                    document.getElementById('cf-address').textContent = address;
+
+                    const bdTotal    = document.getElementById('bd-total');
+                    const bdWrap     = document.getElementById('pricingBreakdownWrap');
+                    const bdVis      = bdWrap && bdWrap.style.display !== 'none';
+                    const totalText  = bdVis && bdTotal && bdTotal.textContent ? bdTotal.textContent : '';
+                    const priceDisplay = totalText || (document.getElementById('servicePrice')?.value || '');
+                    const priceRow = document.getElementById('cf-price-row');
+                    if (priceDisplay) {
+                        const cfLabel = priceRow.querySelector('.cf-label');
+                        if (cfLabel) cfLabel.textContent = totalText ? 'Tổng tạm tính' : 'Giá tham khảo';
+                        document.getElementById('cf-price').textContent = priceDisplay;
+                        priceRow.style.display = '';
+                    } else priceRow.style.display = 'none';
+
+                    const rawNote = document.getElementById('note').value.trim();
+                    const noteRow = document.getElementById('cf-note-row');
+                    if (rawNote) { document.getElementById('cf-note').textContent = rawNote; noteRow.style.display = ''; }
+                    else noteRow.style.display = 'none';
+
+                    const mediaRow = document.getElementById('cf-media-row');
+                    if (_sdMediaFiles.length > 0) {
+                        const imgs = _sdMediaFiles.filter(m => m.file.type.startsWith('image/')).length;
+                        const vids = _sdMediaFiles.filter(m => m.file.type.startsWith('video/')).length;
+                        const parts = [];
+                        if (imgs > 0) parts.push(`${imgs} ảnh`);
+                        if (vids > 0) parts.push(`${vids} video`);
+                        document.getElementById('cf-media').textContent = parts.join(', ');
+                        mediaRow.style.display = '';
+                    } else mediaRow.style.display = 'none';
+
+                    // Chuyển sang màn hình xác nhận
+                    document.getElementById('bookingForm').style.display    = 'none';
+                    document.getElementById('bookingConfirm').style.display = '';
+                });
+
+                // Quay lại form
+                document.getElementById('confirmBackBtn').addEventListener('click', () => {
+                    document.getElementById('bookingConfirm').style.display = 'none';
+                    document.getElementById('bookingForm').style.display    = '';
+                    _sdPendingData = null;
+                });
+
+                // Xác nhận → gọi API
+                document.getElementById('confirmSubmitBtn').addEventListener('click', async function() {
+                    if (!_sdPendingData) return;
+
+                    this.disabled  = true;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+                    const btn = this;
+
+                    const resetBtn = () => {
+                        btn.disabled  = false;
+                        btn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Xác nhận';
+                    };
+
+                    const onSuccess = (orderCode) => {
+                        alert(orderCode ? `✅ Đặt lịch thành công! Mã đơn: ${orderCode}` : '✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại sớm nhất.');
+                        bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+                        document.getElementById('bookingForm').reset();
+                        document.getElementById('bookingForm').style.display    = '';
+                        document.getElementById('bookingConfirm').style.display = 'none';
+                        _sdMediaFiles = [];
+                        const previewBox = document.getElementById('mediaPreviewContainer');
+                        if (previewBox) previewBox.innerHTML = '';
+                        if (document.getElementById('pricingBreakdownWrap'))
+                            document.getElementById('pricingBreakdownWrap').style.display = 'none';
+                        _sdPendingData = null;
+                        resetBtn();
+                    };
 
                     try {
                         const res  = await fetch('api/book.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                name, phone, service_id: service, address, note,
-                                selected_brand:  selectedBrand,
-                                estimated_price: priceRaw
-                            })
+                            body: JSON.stringify(_sdPendingData)
                         });
                         const data = await res.json();
-
                         if (data.status === 'success') {
-                            alert('✅ Đặt lịch thành công! Mã đơn: ' + data.order_code);
-                            bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
-                            this.reset();
-                            if (document.getElementById('pricingBreakdownWrap'))
-                                document.getElementById('pricingBreakdownWrap').style.display = 'none';
+                            onSuccess(data.order_code);
                         } else {
                             alert('❌ ' + (data.message || 'Có lỗi xảy ra, vui lòng thử lại!'));
+                            resetBtn();
                         }
-                    } catch (err) {
+                    } catch {
                         alert('❌ Không thể kết nối server. Vui lòng thử lại sau!');
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Xác nhận đặt lịch';
+                        resetBtn();
                     }
                 });
             });

@@ -71,6 +71,27 @@
                             <label class="form-label">Ghi chú</label>
                             <textarea class="form-control" name="notes" rows="2"></textarea>
                         </div>
+                        <!-- Đính kèm hình ảnh / video -->
+                        <div class="col-md-12">
+                            <label class="form-label">Đính kèm hình ảnh / video <small class="text-muted">(tùy chọn)</small></label>
+                            <div class="d-flex gap-2 flex-wrap mb-2">
+                                <button type="button" id="txPhotoCaptureBtn"
+                                    style="background:var(--gradient-primary);color:white;border:none;
+                                           padding:8px 18px;border-radius:50px;font-size:0.85rem;font-weight:600;
+                                           cursor:pointer;display:flex;align-items:center;gap:6px;">
+                                    <i class="fas fa-camera"></i> Chụp hình
+                                </button>
+                                <button type="button" id="txVideoCaptureBtn"
+                                    style="background:linear-gradient(135deg,#0f172a,#1e3a5f);color:white;border:none;
+                                           padding:8px 18px;border-radius:50px;font-size:0.85rem;font-weight:600;
+                                           cursor:pointer;display:flex;align-items:center;gap:6px;">
+                                    <i class="fas fa-video"></i> Quay video
+                                </button>
+                            </div>
+                            <input type="file" id="txMediaPhotoInput" accept="image/*" multiple style="display:none">
+                            <input type="file" id="txMediaVideoInput" accept="video/*" style="display:none">
+                            <div id="txMediaPreviewContainer" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                        </div>
                         <div class="col-12">
                             <label class="form-label fw-semibold">Dịch vụ đi kèm <span class="text-muted fw-normal">(không bắt buộc)</span></label>
                             <div class="row g-2" id="addonServiceList">
@@ -99,6 +120,39 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- ===== BẢNG XÁC NHẬN THÔNG TIN ===== -->
+                <div id="txBookingConfirm" style="display:none;">
+                    <div style="text-align:center;margin-bottom:20px;">
+                        <div style="width:64px;height:64px;background:var(--gradient-primary);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="fas fa-clipboard-check" style="color:white;font-size:1.6rem;"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1" style="font-size:1.05rem;">Xác nhận thông tin đặt xe</h6>
+                        <p class="text-muted small mb-0">Vui lòng kiểm tra lại trước khi gửi</p>
+                    </div>
+                    <div style="background:#eff6ff;border:1px solid rgba(59,130,246,0.25);border-radius:12px;padding:4px 16px;margin-bottom:20px;">
+                        <div class="tx-cf-row"><span class="tx-cf-label">Họ và tên</span><span id="tx-cf-name" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row"><span class="tx-cf-label">Số điện thoại</span><span id="tx-cf-phone" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row"><span class="tx-cf-label">Email</span><span id="tx-cf-email" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row" id="tx-cf-id-row"><span class="tx-cf-label">CMND/CCCD</span><span id="tx-cf-id" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row"><span class="tx-cf-label">Ngày nhận xe</span><span id="tx-cf-pickup" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row"><span class="tx-cf-label">Ngày trả xe</span><span id="tx-cf-return" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row"><span class="tx-cf-label">Số ngày thuê</span><span id="tx-cf-days" class="tx-cf-val" style="color:var(--color-primary);font-weight:700;"></span></div>
+                        <div class="tx-cf-row" id="tx-cf-pickup-loc-row"><span class="tx-cf-label">Địa điểm nhận</span><span id="tx-cf-pickup-loc" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row" id="tx-cf-addon-row"><span class="tx-cf-label">Dịch vụ kèm</span><span id="tx-cf-addon" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row" id="tx-cf-total-row"><span class="tx-cf-label">Tổng ước tính</span><span id="tx-cf-total" class="tx-cf-val" style="color:var(--color-primary);font-weight:700;"></span></div>
+                        <div class="tx-cf-row" id="tx-cf-note-row"><span class="tx-cf-label">Ghi chú</span><span id="tx-cf-note" class="tx-cf-val"></span></div>
+                        <div class="tx-cf-row" id="tx-cf-media-row"><span class="tx-cf-label">Đính kèm</span><span id="tx-cf-media" class="tx-cf-val"></span></div>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <button type="button" id="txConfirmBackBtn" class="btn btn-outline-secondary w-50" style="padding:12px;">
+                            <i class="fas fa-arrow-left me-2"></i> Quay lại
+                        </button>
+                        <button type="button" id="txConfirmSubmitBtn" class="btn btn-gradient w-50" style="padding:12px;font-size:1rem;">
+                            <i class="fas fa-check me-2"></i> Xác nhận đặt xe
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

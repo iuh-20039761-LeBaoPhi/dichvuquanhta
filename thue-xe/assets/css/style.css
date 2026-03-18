@@ -483,3 +483,26 @@ header.sticky-top {
     top: 80px;   /* = chiều cao navbar */
     z-index: 1010; /* thấp hơn navbar */
 }
+/* ===== Booking confirm panel ===== */
+.tx-cf-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+}
+.tx-cf-row:last-child { border-bottom: none; }
+.tx-cf-label {
+    flex-shrink: 0;
+    min-width: 120px;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.tx-cf-val {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    text-align: right;
+    word-break: break-word;
+}

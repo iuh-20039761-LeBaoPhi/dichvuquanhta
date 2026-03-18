@@ -591,73 +591,7 @@
         </div>
     </section>
 
-    <!-- ==================== TESTIMONIALS SECTION ==================== -->
-    <section class="testimonials-section">
-        <div class="container">
-            <div class="text-center mb-2">
-                <span class="section-label">Khách hàng nói gì</span>
-            </div>
-            <h2 class="section-title center">
-                Hơn <span class="gradient-text">5.000 Khách Hàng</span><br>
-                Đã Tin Tưởng Thợ Nhà
-            </h2>
-            <p class="section-subtitle center">
-                Sự hài lòng của khách hàng là thước đo quan trọng nhất đối với chúng tôi.
-            </p>
-
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="testimonial-card">
-                        <div class="testimonial-stars">★★★★★</div>
-                        <p class="testimonial-text">
-                            "Máy lạnh nhà mình bị hỏng bơm nước, gọi Thợ Nhà là có thợ tới trong vòng 30 phút. Thợ kiểm tra kỹ, giải thích rõ vấn đề, báo giá trước rồi mới làm. Rất hài lòng!"
-                        </p>
-                        <div class="testimonial-author">
-                            <div class="author-avatar">H</div>
-                            <div class="author-info">
-                                <strong>Chị Hương Trần</strong>
-                                <span>Quận Gò Vấp</span>
-                            </div>
-                            <span class="author-service">Sửa máy lạnh</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="testimonial-card">
-                        <div class="testimonial-stars">★★★★★</div>
-                        <p class="testimonial-text">
-                            "Thợ sửa điện nước rất chuyên nghiệp, đến đúng giờ hẹn, làm việc gọn gàng. Phát hiện thêm 2 điểm hỏng nhỏ và báo trước khi xử lý. Giá cả rất hợp lý."
-                        </p>
-                        <div class="testimonial-author">
-                            <div class="author-avatar">M</div>
-                            <div class="author-info">
-                                <strong>Anh Minh Tuấn</strong>
-                                <span>Quận Bình Thạnh</span>
-                            </div>
-                            <span class="author-service">Điện nước</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="testimonial-card">
-                        <div class="testimonial-stars">★★★★★</div>
-                        <p class="testimonial-text">
-                            "Nhờ Thợ Nhà cải tạo lại căn bếp và phòng tắm, kết quả vượt ngoài mong đợi! Thợ tỉ mỉ, chu đáo, bàn giao đúng hẹn. Chắc chắn sẽ giới thiệu cho bạn bè."
-                        </p>
-                        <div class="testimonial-author">
-                            <div class="author-avatar">L</div>
-                            <div class="author-info">
-                                <strong>Chị Linh Phạm</strong>
-                                <span>Quận Tân Bình</span>
-                            </div>
-                            <span class="author-service">Cải tạo nhà</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    
     <!-- ==================== CONTACT SECTION ==================== -->
     <!-- <section id="contact" class="contact-section">
         <div class="container">
@@ -829,6 +763,12 @@
             .then(data => {
                 document.getElementById('footer-container').innerHTML = data;
             });
+
+        // Scroll to services on load
+        setTimeout(() => {
+            const services = document.getElementById('services');
+            if (services) services.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
 
         // Navbar scroll effect
         window.addEventListener('scroll', () => {
