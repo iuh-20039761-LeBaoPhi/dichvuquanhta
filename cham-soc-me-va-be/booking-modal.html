@@ -40,9 +40,16 @@
                   <button type="button" onclick="getLocation()" class="btn btn-success btn-sm flex-fill">
                     <i class="fas fa-location-dot me-1"></i>Lấy vị trí
                   </button>
-                  <a id="mapLink" target="_blank" class="btn btn-primary btn-sm flex-fill text-white text-decoration-none">
+                  <button type="button" id="toggleMapBtn" onclick="toggleMapPicker()" class="btn btn-warning btn-sm flex-fill">
+                    <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
+                  </button>
+                  <!-- <a id="mapLink" target="_blank" class="btn btn-primary btn-sm flex-fill text-white text-decoration-none">
                     <i class="fas fa-map me-1"></i>Mở Google Map
-                  </a>
+                  </a> -->
+                </div>
+                <div id="mapPickerBox" class="mt-2 d-none">
+                  <div id="mapPickerEl" style="height:260px;border-radius:12px;border:1px solid #f1b8ce"></div>
+                  <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
                 </div>
               </div>
               <!-- Tên dịch vụ -->
@@ -176,7 +183,25 @@
                 <textarea id="customerNote" rows="2" class="form-control"
                   placeholder="Thời gian mong muốn, yêu cầu đặc biệt..."></textarea>
               </div>
-
+              <div class="mb-3">
+                <label class="form-label fw-bold" style="color:#F06292">
+                  <i class="fas fa-camera-retro me-1"></i>Tệp đính kèm nhanh
+                </label>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn flex-fill fw-bold rounded-pill"
+                    style="background:linear-gradient(135deg,#ffe0ec,#ffd1e3);color:#c2185b;border:1px solid #f8bbd0"
+                    disabled title="Tính năng sắp ra mắt">
+                    <i class="fas fa-camera me-1"></i>Chụp ảnh
+                  </button>
+                  <button type="button" class="btn flex-fill fw-bold rounded-pill"
+                    style="background:linear-gradient(135deg,#e3f2fd,#d6ecff);color:#1565c0;border:1px solid #bbdefb"
+                    disabled title="Tính năng sắp ra mắt">
+                    <i class="fas fa-video me-1"></i>Quay hình
+                  </button>
+                </div>
+                <div class="form-text">Nút hiển thị để minh họa giao diện, chức năng sẽ cập nhật sau.</div>
+              </div>
+              
               <!-- Buttons -->
               <div class="d-flex gap-2 mt-3">
                 <button type="button" class="btn btn-secondary rounded-pill flex-fill fw-bold"

@@ -12,6 +12,16 @@
         <div class="modal-header">
           <h4 class="modal-title">Đặt dịch vụ</h4>
           <button
+            class="btn btn-success me-2 info"
+            type="button"
+            id="autoFillBtn"
+            data-customer="Lê Bảo Phi"
+            data-phone="0374360449"
+            data-address="94 Trần Thị Trọng, Phường Tân Sơn, TP. Hồ Chí Minh"
+          >
+            <i class="fas fa-pencil-alt"></i> Tự điền thông tin
+          </button>
+          <button
             type="button"
             class="btn-close"
             data-bs-dismiss="modal"
@@ -21,13 +31,13 @@
         <!-- Modal body -->
         <div class="modal-body">
           <div class="form-group">
-            <label for="name">Họ và tên *</label>
-            <input type="text" id="name" name="name" required />
+            <label for="nameCustomer">Họ và tên *</label>
+            <input type="text" id="nameCustomer" name="name" required />
           </div>
 
           <div class="form-group">
-            <label for="phone">Số điện thoại *</label>
-            <input type="number" id="phone" name="phone" required />
+            <label for="phoneCustomer">Số điện thoại *</label>
+            <input type="number" id="phoneCustomer" name="phone" required />
           </div>
 
           <div class="form-group">

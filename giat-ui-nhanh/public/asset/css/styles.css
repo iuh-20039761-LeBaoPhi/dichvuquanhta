@@ -13,10 +13,11 @@ body {
   line-height: 1.6;
   color: #333;
   overflow-x: hidden;
+  /* width: 100%; */
 }
 
 /* Scrollbar */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 10px;
 }
 
@@ -31,7 +32,7 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #2563eb, #7c3aed);
-}
+} */
 
 /* Navigation */
 .navbar {
@@ -201,8 +202,7 @@ body {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: url("../image/ChatGPT Image 20_13_27 26 thg 2, 2026.png")
-    center/cover;
+  background: url("../image/dich-vu-giat-ui-tai-nha-03.png");
   mix-blend-mode: overlay;
   opacity: 0.2;
 }
@@ -1063,8 +1063,15 @@ footer {
 .footer-about {
   grid-column: span 2;
 }
+.info {
+  margin-left: 10px;
+  padding: 5px;
+}
 /* Responsive */
 @media (max-width: 768px) {
+  .btn.info {
+    width: auto;
+  }
   .menu-toggle {
     display: flex;
     color: white;

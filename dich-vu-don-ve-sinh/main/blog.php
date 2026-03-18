@@ -2,10 +2,11 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bài viết | Vệ sinh Care</title>
 
 <link rel="stylesheet" href="../demo/style.css">
-<link rel="stylesheet" href="../demo/header.css">
+
 
 <style>
 
@@ -71,32 +72,7 @@ font-size:14px;
 <body>
 
 <!-- HEADER -->
-<header class="site-header">
-<div class="container site-header-content">
-
-<a href="index.html" class="site-logo">
-<img src="../img/ChatGPT Image 14_12_57 7 thg 3, 2026.png">
-<span class="logo-text">DỊCH VỤ VỆ SINH</span>
-</a>
-
-<nav class="site-nav">
-    <a href="index.php">Trang chủ</a>
-      <a href="about.php">Giới thiệu</a>
-      <a href="services.php">Dịch vụ</a>
-      <a href="booking.php">Đặt lịch</a>
-      <a href="pricing.php">Bảng giá</a>
-      <a href="faq.php">FAQ</a>
-      <a href="contact.php">Liên hệ</a>
-      <a href="blog.php">Bài viết</a>
-       <a href="terms.php   ">Điều khoản dịch vụ</a>
-</nav>
-
-<div class="site-user-area">
-<a href="login_customer.php" class="site-btn">Đăng nhập</a>
-</div>
-
-</div>
-</header>
+<?php require_once "header.php"; ?>
 
 
 <!-- BLOG -->
@@ -181,22 +157,20 @@ Xem bài viết
         </div>
 
         <!-- CỘT 3 -->
-        <div class="footer-col">
-          <h4>Thông tin liên hệ</h4>
-          <p>📍 273 Trần Thủ Độ, Tân Phú, TP.HCM</p>
-          <p>📞 <a href="tel:0775472347">0775 472 347</a></p>
-          <p>
-            ✉
-            <a href="mailto:dichvuquanhta.vn@gmail.com"
-              >dichvuquanhta.vn@gmail.com</a
-            >
-          </p>
+           <div class="footer-col">
+            <h4>Thông tin liên hệ</h4>
+            <p>📍Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh, Việt Nam, TP.HCM</p>
+            <p>📞 <a href="tel:0775472347"> 0775472347</a></p>
+            <p>✉ <a href="mailto:dichvuquanhta.vn@gmail.com">dichvuquanhta.vn@gmail.com</a></p>
         </div>
       </div>
 
       <div class="footer-bottom">
         <p>© 2026 Vệ sinh Care. All rights reserved.</p>
+        <a href="terms.php">Điều khoản sử dụng</a>
       </div>
     </footer>
 </body>
 </html>
+
+

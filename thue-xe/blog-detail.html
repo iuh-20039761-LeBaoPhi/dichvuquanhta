@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="" id="canonicalUrl">
-    <link rel="icon" type="image/png" href="assets/images/logo.png">
+    <link rel="icon" type="image/png" href="assets/images/thue-xe-logo-thuong-hieu.png">
     <meta property="og:type" content="article">
     <meta property="og:locale" content="vi_VN">
 
@@ -456,7 +456,7 @@ function loadArticle(a) {
         "publisher": {
             "@type": "Organization",
             "name": "Thuê Xe – GlobalCare",
-            "logo": { "@type": "ImageObject", "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/logo.png" }
+            "logo": { "@type": "ImageObject", "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/thue-xe-logo-thuong-hieu.png" }
         }
     };
     const s = document.createElement('script');
@@ -526,7 +526,7 @@ function buildRelated(cur) {
     if (rel.length < 4) rel.push(...window.BLOG_DATA.filter(a => a.id !== cur.id && a.category !== cur.category).slice(0, 4 - rel.length));
     document.getElementById('relList').innerHTML = rel.map(a => `
         <a href="blog-detail.html?slug=${a.slug}" class="rel-item">
-            <img src="${a.image}" alt="${a.title}" onerror="this.src='assets/images/cars/default.jpg'">
+            <img src="${a.image}" alt="${a.title}" onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
             <div>
                 <div class="rel-cat">${a.categoryLabel}</div>
                 <div class="rel-ttl">${a.title}</div>

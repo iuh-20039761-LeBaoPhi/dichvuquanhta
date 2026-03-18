@@ -9,7 +9,7 @@
     />
     <link
       rel="icon"
-      href="public/asset/image/Laundry logo vector _ Premium Vector.png"
+      href="public/asset/image/thuong-hieu-favicon-quan-tri.png"
       type="image/x-icon"
     />
 
@@ -37,7 +37,7 @@
             <div class="logo-header" data-background-color="dark">
               <a href="?ctrl=page&act=dashboard" class="logo">
                 <img
-                  src="public/asset/image/Frame 1.png"
+                  src="public/asset/image/thuong-hieu-khung-logo.png"
                   alt="navbar brand"
                   class="navbar-brand"
                   height="20"
@@ -72,7 +72,7 @@
                   >
                     <div class="avatar-sm">
                       <img
-                        src="public/asset/image/logo-admin.jpg"
+                        src="public/asset/image/chuc-nang-avatar-admin.jpg"
                         alt="..."
                         class="avatar-img rounded-circle"
                       />
@@ -88,7 +88,7 @@
                         <div class="user-box">
                           <div class="avatar-lg">
                             <img
-                              src="public/asset/image/logo-admin.jpg"
+                              src="public/asset/image/chuc-nang-avatar-admin.jpg"
                               alt="image profile"
                               class="avatar-img rounded"
                             />

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
@@ -14,14 +14,14 @@
   <meta name="geo.placename" content="Việt Nam" />
 
   <link rel="canonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/" />
-  <link rel="icon" type="image/png" href="assets/images/cars/default.jpg" />
+  <link rel="icon" type="image/png" href="assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/" />
   <meta property="og:title" content="Thuê Xe – Thuê Xe Uy Tín Toàn Quốc | Giá Từ 450.000đ/Ngày" />
   <meta property="og:description" content="Dịch vụ thuê xe tự lái và có tài xế uy tín trên toàn quốc. Toyota, Honda, Mazda, VinFast. Giao xe tận nơi. Hotline: 0775 472 347." />
-  <meta property="og:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/camry.jpg" />
+  <meta property="og:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/thue-xe-xe-toyota-camry-2023.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="theme-color" content="#667eea" />
@@ -33,7 +33,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Thuê Xe – Thuê Xe Uy Tín Toàn Quốc" />
   <meta name="twitter:description" content="Thuê xe tự lái và có tài xế trên toàn quốc. Giá từ 450.000đ/ngày. Giao xe tận nơi." />
-  <meta name="twitter:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/camry.jpg" />
+  <meta name="twitter:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/thue-xe-xe-toyota-camry-2023.jpg" />
 
   <!-- Schema.org JSON-LD -->
   <script type="application/ld+json">
@@ -399,28 +399,41 @@ loadHeader();
 STATIC_DATA_PROMISE.then(STATIC_DATA => {
 const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
 
-function renderCars(cars) {
-    document.getElementById('carList').innerHTML = cars.map(car => `
+// Count available physical cars for a given type
+function availCount(typeId) {
+    return (STATIC_DATA.cars || []).filter(c => c.type_id === typeId && c.status === 'available').length;
+}
+
+function renderCarTypes(carTypes) {
+    document.getElementById('carList').innerHTML = carTypes.map(type => {
+        const avail = availCount(type.id);
+        const badge = avail > 0
+            ? `<span class="badge badge-status badge-available">Còn ${avail} xe</span>`
+            : `<span class="badge badge-status" style="background:linear-gradient(135deg,#6c757d,#495057);">Hết xe</span>`;
+        const action = avail > 0
+            ? `<a href="car-detail.html?type_id=${type.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>`
+            : `<button class="btn btn-secondary btn-sm" disabled>Hết xe</button>`;
+        return `
         <div class="col-lg-4 col-md-6">
             <div class="card car-card h-100">
                 <div class="position-relative">
-                    <img src="assets/images/cars/${car.main_image}"
+                    <img src="assets/images/cars/${type.main_image}"
                          class="card-img-top car-card-img"
-                         alt="${car.name}"
-                         onerror="this.src='assets/images/cars/default.jpg'">
-                    <span class="badge badge-status badge-available">Có sẵn</span>
+                         alt="${type.name}"
+                         onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
+                    ${badge}
                 </div>
                 <div class="card-body">
-                    <h5 class="fw-bold mb-1">${car.name}</h5>
-                    <p class="text-muted small mb-2">${car.brand} · ${car.seats} chỗ · ${car.transmission} · ${car.fuel_type}</p>
+                    <h5 class="fw-bold mb-1">${type.name}</h5>
+                    <p class="text-muted small mb-2">${type.brand} · ${type.seats} chỗ · ${type.transmission} · ${type.fuel_type}</p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="car-price">${fmt(car.price_per_day)}đ/ngày</span>
-                        <a href="car-detail.html?id=${car.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>
+                        <span class="car-price">${fmt(type.price_per_day)}đ/ngày</span>
+                        ${action}
                     </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 }
 
 function renderServices(services) {
@@ -456,19 +469,19 @@ document.getElementById('searchForm').addEventListener('submit', e => {
     const seats = document.getElementById('searchSeats').value;
     const price = document.getElementById('searchPrice').value;
 
-    let cars = [...STATIC_DATA.cars];
-    if (brand) cars = cars.filter(c => c.brand === brand);
-    if (seats) cars = cars.filter(c => c.seats === parseInt(seats));
+    let types = [...STATIC_DATA.car_types];
+    if (brand) types = types.filter(t => t.brand === brand);
+    if (seats) types = types.filter(t => t.seats === parseInt(seats));
     if (price) {
         if (price.includes('-')) {
             const [min, max] = price.split('-').map(Number);
-            cars = cars.filter(c => c.price_per_day >= min && c.price_per_day <= max);
+            types = types.filter(t => t.price_per_day >= min && t.price_per_day <= max);
         } else {
-            cars = cars.filter(c => c.price_per_day >= parseInt(price));
+            types = types.filter(t => t.price_per_day >= parseInt(price));
         }
     }
 
-    renderCars(cars.length ? cars : STATIC_DATA.cars);
+    renderCarTypes(types.length ? types : STATIC_DATA.car_types);
     showingAll = true;
     document.getElementById('showAllBtn').textContent = 'Thu gọn';
     document.getElementById('cars').scrollIntoView({ behavior: 'smooth' });
@@ -476,18 +489,21 @@ document.getElementById('searchForm').addEventListener('submit', e => {
 
 document.getElementById('showAllBtn').addEventListener('click', () => {
     if (showingAll) {
-        renderCars(STATIC_DATA.cars.slice(0, 6));
+        renderCarTypes(STATIC_DATA.car_types.slice(0, 6));
         document.getElementById('showAllBtn').innerHTML = '<i class="fas fa-search me-2"></i>Xem tất cả xe';
         showingAll = false;
     } else {
-        renderCars(STATIC_DATA.cars);
+        renderCarTypes(STATIC_DATA.car_types);
         document.getElementById('showAllBtn').innerHTML = '<i class="fas fa-chevron-up me-2"></i>Thu gọn';
         showingAll = true;
     }
 });
 
-renderCars(STATIC_DATA.cars.slice(0, 6));
+renderCarTypes(STATIC_DATA.car_types.slice(0, 6));
 renderServices(STATIC_DATA.services);
+setTimeout(() => {
+    document.getElementById('cars').scrollIntoView({ behavior: 'smooth' });
+}, 300);
 }); // end STATIC_DATA_PROMISE.then
 </script>
 

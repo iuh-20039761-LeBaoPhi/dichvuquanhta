@@ -24,6 +24,63 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap"
       rel="stylesheet"
     />
+<style>
+/* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
+.navbar .container {
+  display: flex;
+  flex-wrap: nowrap !important;
+  align-items: center;
+}
+
+/* ================= MOBILE ONLY ================= */
+@media (max-width: 991.98px) {
+
+  /* ÉP menu xuống dưới navbar */
+  .navbar-collapse {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 999;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+
+  /* Khi mở menu */
+  .navbar-collapse.show {
+    display: block;
+  }
+
+  /* UL dọc + căn giữa */
+  .navbar-collapse .navbar-nav {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px;
+    padding: 15px 0;
+  }
+
+  /* Item */
+  .navbar-collapse .nav-item {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Link */
+  .navbar-collapse .nav-link {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  /* Button */
+  .navbar-collapse .btn {
+    width: 80%;
+    margin-top: 10px;
+  }
+}
+</style>
   </head>
   <body>
 
@@ -166,7 +223,7 @@
             </div>
             <div class="col-lg-6 text-center">
               <img
-                src="assets/1.png"
+                src="assets/cham-be.png"
                 class="img-fluid rounded-pill shadow-lg"
                 alt="Chăm sóc Mẹ và bé"
                 style="width: 500px; height: 450px"

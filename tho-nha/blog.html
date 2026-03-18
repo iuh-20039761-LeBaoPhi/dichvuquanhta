@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -10,13 +10,13 @@
     <meta name="keywords" content="blog sửa chữa nhà, kiến thức thợ nhà, hướng dẫn sửa máy lạnh, sửa điện nước, cải tạo nhà tphcm">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/blog.html">
-    <link rel="icon" type="image/png" href="image/logo.png">
+    <link rel="icon" type="image/png" href="image/tho-nha-logo-thuong-hieu.png">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Blog Kiến Thức Sửa Chữa Nhà | Thợ Nhà">
     <meta property="og:description" content="30 bài viết chuyên sâu về sửa chữa, bảo dưỡng thiết bị gia đình từ chuyên gia Thợ Nhà TP.HCM.">
-    <meta property="og:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/image/1.jpg">
+    <meta property="og:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/image/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg">
     <meta property="og:locale" content="vi_VN">
 
     <!-- Fonts & Icons -->
@@ -556,12 +556,7 @@ function patchNavForBlogPages() {
         orderLink.setAttribute('href', 'index.html#contact');
     }
 
-    const bookingLink = header.querySelector('.nav-link[data-bs-target="#bookingModal"]');
-    if (bookingLink) {
-        bookingLink.removeAttribute('data-bs-toggle');
-        bookingLink.removeAttribute('data-bs-target');
-        bookingLink.setAttribute('href', 'index.html#contact');
-    }
+    // #bookingModal: giữ nguyên để mở modal tại trang này
 
     header.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
     const blogLink = header.querySelector('.nav-link[href="blog.html"]');
@@ -790,7 +785,7 @@ function renderArticles() {
         <div class="col-md-6 col-xl-4">
             <div class="article-card ${isChecked ? 'highlighted' : ''}">
                 <div class="article-img">
-                    <img src="${a.image}" alt="${a.title}" loading="lazy" onerror="this.src='image/1.jpg'">
+                    <img src="${a.image}" alt="${a.title}" loading="lazy" onerror="this.src='image/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'">
                     <span class="article-cat-badge">${a.categoryLabel}</span>
                     ${isChecked ? '<span style="position:absolute;top:12px;right:12px;background:#fff;color:var(--primary);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;box-shadow:0 2px 8px rgba(0,0,0,0.15);"><i class="fas fa-check"></i></span>' : ''}
                 </div>
@@ -848,6 +843,11 @@ function toggleSidebar() {
     btn.classList.toggle('open');
 }
 </script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/map-picker.js"></script>
+<script src="js/booking.js"></script>
+<script src="js/booking-autofill.js"></script>
 <script src="js/auth-nav.js"></script>
 
 </body>

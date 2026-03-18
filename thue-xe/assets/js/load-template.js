@@ -1,4 +1,4 @@
-function loadHeader() {
+﻿function loadHeader() {
     // Inject CSS vào head ngay lập tức nếu trang chưa có (tránh FOUC)
     if (!document.querySelector('link[href*="bootstrap.min.css"]')) {
         [
@@ -99,7 +99,7 @@ function injectBaseSEO() {
     const desc  = seo.desc  || 'Thuê Xe – dịch vụ cho thuê xe tự lái và có tài xế uy tín tại TP.HCM. Hơn 100 dòng xe từ 450.000đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ. Hotline: 0775 472 347.';
     const keys  = seo.keys  || 'thuê xe tphcm, thuê xe tự lái, cho thuê xe có tài xế, thuê xe giá rẻ, car rental hcm';
     const url   = seo.url   || SITE_BASE + '/';
-    const img   = seo.img   || SITE_BASE + '/assets/images/cars/camry.jpg';
+    const img   = seo.img   || SITE_BASE + '/assets/images/cars/thue-xe-xe-toyota-camry-2023.jpg';
 
     document.title = title;
 
@@ -145,7 +145,7 @@ function injectBaseSEO() {
         favicon = document.createElement('link');
         favicon.rel = 'icon';
         favicon.type = 'image/png';
-        favicon.href = 'assets/images/cars/default.jpg';
+        favicon.href = 'assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg';
         document.head.appendChild(favicon);
     }
 }

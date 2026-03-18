@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link
       rel="icon"
-      href="public/asset/image/Laundry logo vector _ Premium Vector.png"
+      href="public/asset/image/thuong-hieu-favicon-quan-tri.png"
       type="image/x-icon"
     />
     <title>Đăng Nhập Admin</title>

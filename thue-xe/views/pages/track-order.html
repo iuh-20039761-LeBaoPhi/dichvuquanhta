@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -141,7 +141,7 @@ function renderBookings(bookings, phone) {
         const s   = STATUS_MAP[b.status] || { label: b.status, badge: 'secondary', icon: 'question' };
         const img = b.main_image
             ? `assets/images/cars/${b.main_image}`
-            : 'assets/images/cars/default.jpg';
+            : 'assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg';
 
         return `
         <div class="card border-0 shadow-sm mb-3">
@@ -155,7 +155,7 @@ function renderBookings(bookings, phone) {
                 <div class="d-flex gap-3 align-items-start">
                     <img src="${img}" alt="${b.car_name||''}"
                          class="rounded flex-shrink-0" style="width:90px;height:65px;object-fit:cover;"
-                         onerror="this.src='assets/images/cars/default.jpg'">
+                         onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
                     <div class="flex-grow-1">
                         <h6 class="fw-bold mb-1">${b.car_name || 'Xe không xác định'}</h6>
                         <div class="row g-1 small text-muted">

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -6,8 +6,8 @@
     <title>Điều Khoản Sử Dụng | Thợ Nhà – GlobalCare</title>
     <meta name="description" content="Điều khoản sử dụng dịch vụ Thợ Nhà – Quy định trách nhiệm các bên, trách nhiệm thuế và pháp luật áp dụng.">
     <meta name="robots" content="index, follow">
-    <link rel="icon" type="image/png" href="image/logo.png">
-    <link rel="apple-touch-icon" href="image/logo.png">
+    <link rel="icon" type="image/png" href="image/tho-nha-logo-thuong-hieu.png">
+    <link rel="apple-touch-icon" href="image/tho-nha-logo-thuong-hieu.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -767,14 +767,15 @@
                     link.removeAttribute('data-bs-toggle');
                     link.removeAttribute('data-bs-target');
                 }
-                // Booking & search buttons → redirect to index.html
+                // viewOrderModal → redirect về index
                 if (href === '#' && link.hasAttribute('data-bs-toggle')) {
                     const target = link.getAttribute('data-bs-target');
-                    if (target === '#bookingModal' || target === '#viewOrderModal') {
+                    if (target === '#viewOrderModal') {
                         link.setAttribute('href', 'index.html');
                         link.removeAttribute('data-bs-toggle');
                         link.removeAttribute('data-bs-target');
                     }
+                    // #bookingModal: giữ nguyên để mở modal tại trang này
                 }
             });
         }).catch(() => {});
@@ -808,6 +809,11 @@
             });
         });
     </script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/map-picker.js"></script>
+    <script src="js/booking.js"></script>
+    <script src="js/booking-autofill.js"></script>
     <script src="js/auth-nav.js"></script>
 </body>
 </html>

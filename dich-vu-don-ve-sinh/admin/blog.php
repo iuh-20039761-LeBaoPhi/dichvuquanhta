@@ -10,8 +10,8 @@ $result = $conn->query("SELECT * FROM posts ORDER BY id DESC");
 <meta charset="UTF-8">
 <title>Bài viết</title>
 
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="post.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/post.css">
 
 <style>
 .blog-container{
@@ -75,12 +75,12 @@ $result = $conn->query("SELECT * FROM posts ORDER BY id DESC");
 
 <div class="blog-card">
 
-<img src="uploads/<?= $row['image'] ?>">
+<img src="../uploads/<?= $row['image'] ?>">
 
 <div class="blog-info">
 
 <div class="blog-title">
-<a href="post.php?id=<?= $row['id'] ?>">
+<a href="../post.php?id=<?= $row['id'] ?>">
 <?= $row['title'] ?>
 </a>
 </div>
@@ -89,7 +89,7 @@ $result = $conn->query("SELECT * FROM posts ORDER BY id DESC");
 <?= substr($row['content'], 0, 120) ?>...
 </p>
 
-<a href="post.php?id=<?= $row['id'] ?>" class="read-more">
+<a href="../post.php?id=<?= $row['id'] ?>" class="read-more">
 Xem chi tiết →
 </a>
 

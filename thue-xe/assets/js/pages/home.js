@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+﻿document.addEventListener('DOMContentLoaded', async () => {
     await Promise.all([loadCars(), loadServices(), loadFilterOptions()]);
     setupSearchForm();
 });
@@ -19,7 +19,7 @@ function displayCars(cars) {
                     <img src="assets/images/cars/${car.main_image}"
                         class="card-img-top car-card-img"
                         alt="${car.name}"
-                        onerror="this.src='assets/images/cars/default.jpg'">
+                        onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
                     <span class="badge badge-status badge-available">Có sẵn</span>
                 </div>
                 <div class="card-body">

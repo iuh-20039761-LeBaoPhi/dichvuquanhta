@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liên hệ | Vệ sinh Care</title>
      <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/header.css">
@@ -66,45 +67,7 @@
 </section>
 
 <!-- ===== FOOTER ===== -->
-<footer class="footer">
-    <div class="container footer-content">
-
-        <!-- CỘT 1 -->
-        <div class="footer-col">
-            <h3>VỆ SINH CARE</h3>
-            <p>
-                Dịch vụ vệ sinh chuyên nghiệp cho nhà ở, văn phòng
-                và công trình sau xây dựng.
-            </p>
-        </div>
-
-        <!-- CỘT 2 -->
-        <div class="footer-col">
-            <h4>Liên kết nhanh</h4>
-            <ul>
-                <li><a href="index.php">Trang chủ</a></li>
-                <li><a href="about.php">Giới thiệu</a></li>
-                <li><a href="services.php">Dịch vụ</a></li>
-                <li><a href="booking.php">Đặt lịch</a></li>
-                <li><a href="contact.php">Liên hệ</a></li>
-            </ul>
-        </div>
-
-        <!-- CỘT 3 -->
-        <div class="footer-col">
-            <h4>Thông tin liên hệ</h4>
-            <p>📍 273 Trần Thủ Độ, Tân Phú, TP.HCM</p>
-            <p>📞 <a href="tel:0966223312">0966 223 312</a></p>
-            <p>✉ <a href="mailto:info@vesinhcare.com">info@vesinhcare.com</a></p>
-        </div>
-
-    </div>
-
-    <div class="footer-bottom">
-        <p>© 2026 Vệ sinh Care. All rights reserved.</p>
-        <a href="terms.php">Điều khoản sử dụng</a>
-    </div>
-</footer>
+<?php require_once "footer.php"; ?>
 <script src="../js/contact.js"></script>
 
 </body>
