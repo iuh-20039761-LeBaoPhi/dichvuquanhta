@@ -7,6 +7,16 @@
         <div class="modal-header">
           <h4 class="modal-title">Đặt dịch vụ</h4>
           <button
+            class="btn btn-success me-2 info"
+            type="button"
+            id="autoFillBtn"
+            data-customer="Lê Bảo Phi"
+            data-phone="0374360449"
+            data-address="94 Trần Thị Trọng, Phường Tân Sơn, TP. Hồ Chí Minh"
+          >
+            <i class="fas fa-pencil-alt"></i> Tự điền thông tin
+          </button>
+          <button
             type="button"
             class="btn-close"
             data-bs-dismiss="modal"
@@ -24,6 +34,7 @@
               <input
                 type="text"
                 class="form-control"
+                id="nameCustomer"
                 placeholder="Nhập họ tên của bạn"
                 required
               />
@@ -36,6 +47,7 @@
               <input
                 type="tel"
                 class="form-control"
+                id="phoneCustomer"
                 placeholder="Nhập số điện thoại"
                 required
               />

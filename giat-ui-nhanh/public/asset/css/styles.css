@@ -13,10 +13,11 @@ body {
   line-height: 1.6;
   color: #333;
   overflow-x: hidden;
+  /* width: 100%; */
 }
 
 /* Scrollbar */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 10px;
 }
 
@@ -31,7 +32,7 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #2563eb, #7c3aed);
-}
+} */
 
 /* Navigation */
 .navbar {
@@ -1063,8 +1064,15 @@ footer {
 .footer-about {
   grid-column: span 2;
 }
+.info {
+  margin-left: 10px;
+  padding: 5px;
+}
 /* Responsive */
 @media (max-width: 768px) {
+  .btn.info {
+    width: auto;
+  }
   .menu-toggle {
     display: flex;
     color: white;

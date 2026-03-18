@@ -7,7 +7,7 @@
     <link
       rel="shortcut icon"
       type="image/x-icon"
-      href="public/asset/image/Laundry logo vector _ Premium Vector.png"
+      href="public/asset/image/thuong-hieu-favicon-quan-tri.png"
     />
     <link rel="stylesheet" href="public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="public/asset/css/styles.css" />
@@ -56,7 +56,7 @@
         <a href="#home" class="logo">
           <img
             style="width: 80px; height: 60px"
-            src="public/asset/image/Frame 1.png"
+            src="public/asset/image/thuong-hieu-khung-logo.png"
             alt=""
           />
           <span>Giặt Ủi Nhanh</span>
@@ -501,12 +501,12 @@
 
           <?php
           $icons = [
-            ['img' => 'public/asset/image/giat1.png', 'style' => ''],
-            ['img' => 'public/asset/image/Frame 2.png', 'style' => 'background: linear-gradient(135deg, #8b5cf6, #ec4899)'],
-            ['img' => 'public/asset/image/say1.png', 'style' => 'background: linear-gradient(135deg, #f97316, #dc2626)'],
-            ['img' => 'public/asset/image/giat1.png', 'style' => 'background: linear-gradient(135deg, #10b981, #14b8a6)'],
-            ['img' => 'public/asset/image/Frame 2.png', 'style' => 'background: linear-gradient(135deg, #6366f1, #8b5cf6)'],
-            ['img' => 'public/asset/image/say1.png', 'style' => 'background: linear-gradient(135deg, #fbbf24, #f97316)'],
+            ['img' => 'public/asset/image/dich-vu-giat-minh-hoa.png', 'style' => ''],
+            ['img' => 'public/asset/image/dich-vu-giat-ui-minh-hoa.png', 'style' => 'background: linear-gradient(135deg, #8b5cf6, #ec4899)'],
+            ['img' => 'public/asset/image/dich-vu-say-minh-hoa.png', 'style' => 'background: linear-gradient(135deg, #f97316, #dc2626)'],
+            ['img' => 'public/asset/image/dich-vu-giat-minh-hoa.png', 'style' => 'background: linear-gradient(135deg, #10b981, #14b8a6)'],
+            ['img' => 'public/asset/image/dich-vu-giat-ui-minh-hoa.png', 'style' => 'background: linear-gradient(135deg, #6366f1, #8b5cf6)'],
+            ['img' => 'public/asset/image/dich-vu-say-minh-hoa.png', 'style' => 'background: linear-gradient(135deg, #fbbf24, #f97316)'],
           ];
 
           $icon = $icons[$index % count($icons)];
