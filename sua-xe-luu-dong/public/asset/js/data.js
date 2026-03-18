@@ -206,6 +206,18 @@ function initBookingModal() {
     if (priceInput) priceInput.value = "";
     if (totalInput) totalInput.value = "";
   }
+  const autoFillBtn = document.getElementById("autoFillBtn");
+  if (autoFillBtn) {
+    autoFillBtn.addEventListener("click", function () {
+      const customer = this.dataset.customer;
+      const phone = this.dataset.phone;
+      const address = this.dataset.address;
+
+      document.getElementById("nameCustomer").value = customer;
+      document.getElementById("phoneCustomer").value = phone;
+      document.getElementById("addressInput").value = address;
+    });
+  }
 }
 
 // document.addEventListener("DOMContentLoaded", function () {

@@ -4,7 +4,7 @@
                 <!-- Logo Header -->
                 <div class="logo-header" data-background-color="dark">
                     <a href="?ctrl=page&act=dashboard" style="color: white; font-weight: bold;" class="logo">
-                        <img src="public/asset/image/Frame 1.png" alt="navbar brand" class="navbar-brand" height="40" /> Giặt Ủi Nhanh
+                        <img src="public/asset/image/thuong-hieu-khung-logo.png" alt="navbar brand" class="navbar-brand" height="40" /> Giặt Ủi Nhanh
                     </a>
                     <div class="nav-toggle">
                         <button class="btn btn-toggle toggle-sidebar">
