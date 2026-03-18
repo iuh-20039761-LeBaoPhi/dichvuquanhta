@@ -75,6 +75,24 @@
       .back-to-news:hover {
         text-decoration: underline;
       }
+      .back-to-list-top {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        color: #64748b;
+        font-size: 0.95em;
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+      }
+      .back-to-list-top:hover {
+        color: #ff7a00;
+        transform: translateX(-5px);
+      }
+      .back-to-list-top i {
+        margin-right: 8px;
+        font-size: 0.9em;
+      }
 
       /* CSS cho phần Bài viết liên quan */
       .related-section {
@@ -158,6 +176,11 @@
 
     <main class="container" style="padding-top: 120px; padding-bottom: 60px">
       <article>
+        <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 25px;">
+          <a href="bai-viet.html" class="back-to-list-top">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách bài viết
+          </a>
+        </div>
         <header class="article-header" id="article-header-host">
           <!-- Header bài viết sẽ được JS chèn vào đây -->
         </header>
@@ -172,8 +195,8 @@
 
         <div class="article-content" id="article-content-host">
           <!-- Nội dung bài viết sẽ được JS chèn vào đây -->
-          <a href="tin-tuc.html" class="back-to-news"
-            >← Quay lại trang tin tức</a
+          <a href="bai-viet.html" class="back-to-news"
+            >← Quay lại trang bài viết</a
           >
         </div>
       </article>

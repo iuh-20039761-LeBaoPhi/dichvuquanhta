@@ -25,12 +25,13 @@
     <meta property="og:url" content="https://dichvuquanhta.vn/" />
     <meta property="og:title" content="Dịch vụ Chuyển Dọn Trọn Gói - Uy Tín Tại Việt Nam" />
     <meta property="og:description" content="Chuyển nhà, văn phòng, kho bãi trọn gói. Khảo sát miễn phí, báo giá minh bạch, bồi thường 100% tài sản." /> 
-    <meta property="og:image" content="public/assets/images/hero.png" />
+    <meta property="og:image" content="public/assets/images/chuyendon-tron-goi.png" />
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://dichvuquanhta.vn/" />
 
     <link rel="stylesheet" href="public/assets/css/styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- FontAwesome 6.4.0 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -68,6 +69,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     />
+    <script src="https://unpkg.com/lucide@latest"></script>
   </head>
 
   <body>
@@ -107,8 +109,8 @@
           <p
             class="animate-bottom mt-4 max-w-2xl text-lg text-white/90 sm:mt-6"
           >
-            Giải pháp chuyển nhà &mdash; văn phòng &mdash; kho bãi trọn gói với
-            quy trình chuẩn hóa, khảo sát miễn phí và đội ngũ bốc xếp tận tâm.
+            Giải pháp chuyển nhà &mdash; văn phòng &mdash; kho bãi trọn gói.<br>
+            <strong>✨ Đặc biệt: Khách hàng có thể theo dõi hành trình xe thời gian thực tế.</strong>
           </p>
           <div
             class="hero-btns animate-bottom mt-8 flex flex-wrap items-center gap-4"
@@ -182,7 +184,7 @@
         </div>
         <div class="hero-image animate-right relative">
           <img
-            src="public/assets/images/hero.png"
+            src="public/assets/images/chuyendon-tron-goi.png"
             alt="Đội ngũ nhân viên Dịch vụ Chuyển Dọn chuyên nghiệp"
             class="w-full h-auto rounded-twelve shadow-2xl"
           />
@@ -206,7 +208,7 @@
         <div class="process-container">
           <div class="process-item animate-up">
             <img
-              src="public/assets/images/order.png"
+              src="public/assets/images/chuyendon-quy-trinh-khao-sat.png"
               alt="Bước 1: Khảo sát thực tế và báo giá"
               class="process-img"
             />
@@ -219,7 +221,7 @@
           <div class="process-arrow">➔</div>
           <div class="process-item animate-up process-delay-2">
             <img
-              src="public/assets/images/package.png"
+              src="public/assets/images/chuyendon-quy-trinh-dong-goi.png"
               alt="Bước 2: Đóng gói và bọc lót chuyên nghiệp"
               class="process-img"
             />
@@ -232,7 +234,7 @@
           <div class="process-arrow">➔</div>
           <div class="process-item animate-up process-delay-4">
             <img
-              src="public/assets/images/hero-shipper.png"
+              src="public/assets/images/chuyendon-nhan-vien-boc-xep.png"
               alt="Bước 3: Vận chuyển và lắp đặt tại nơi mới"
               class="process-img"
             />
@@ -246,6 +248,7 @@
       </div>
     </section>
 
+
     <!-- SERVICES -->
     <section id="services">
       <div class="container">
@@ -258,7 +261,9 @@
         <div class="moving-service-grid">
           <article class="moving-card">
             <div class="moving-card-head">
-              <div class="moving-card-icon">🏠</div>
+              <div class="moving-card-icon" style="background: #e7f3ee; color: #1b4332;">
+                <i data-lucide="home"></i>
+              </div>
               <h3>Chuyển Nhà Trọn Gói</h3>
             </div>
             <p class="moving-card-slogan">
@@ -295,7 +300,9 @@
 
           <article class="moving-card">
             <div class="moving-card-head">
-              <div class="moving-card-icon">🏢</div>
+              <div class="moving-card-icon" style="background: #e7f3ee; color: #1b4332;">
+                <i data-lucide="building-2"></i>
+              </div>
               <h3>Chuyển Văn Phòng</h3>
             </div>
             <p class="moving-card-slogan">
@@ -332,7 +339,9 @@
 
           <article class="moving-card">
             <div class="moving-card-head">
-              <div class="moving-card-icon">🏭</div>
+              <div class="moving-card-icon" style="background: #e7f3ee; color: #1b4332;">
+                <i data-lucide="factory"></i>
+              </div>
               <h3>Chuyển Kho Bãi</h3>
             </div>
             <p class="moving-card-slogan">
@@ -375,7 +384,9 @@
       <h2 class="section-title">Vì sao khách hàng chọn Dịch vụ Chuyển Dọn?</h2>
       <div class="feature-list">
         <div class="feature-item">
-          <span class="feature-icon">🚀</span>
+          <span class="feature-icon" style="background: #e7f3ee; color: #1b4332; display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; margin-bottom: 15px;">
+            <i data-lucide="rocket"></i>
+          </span>
           <h3>An tâm &amp; đúng giờ</h3>
           <p>
             Cam kết đúng lịch hẹn khảo sát và vận chuyển, đảm bảo tiến độ di dời
@@ -383,7 +394,9 @@
           </p>
         </div>
         <div class="feature-item">
-          <span class="feature-icon">📦</span>
+          <span class="feature-icon" style="background: #e7f3ee; color: #1b4332; display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; margin-bottom: 15px;">
+            <i data-lucide="package"></i>
+          </span>
           <h3>Bọc lót 5 lớp</h3>
           <p>
             Tài sản được bảo vệ tuyệt đối với quy trình bọc lót nhiều lớp bằng
@@ -391,7 +404,9 @@
           </p>
         </div>
         <div class="feature-item">
-          <span class="feature-icon">👨‍✈️</span>
+          <span class="feature-icon" style="background: #e7f3ee; color: #1b4332; display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; margin-bottom: 15px;">
+            <i data-lucide="user-check"></i>
+          </span>
           <h3>Đội ngũ tận tâm</h3>
           <p>
             Nhân viên tháo lắp và bóc xếp chuyên nghiệp, có tay nghề cao và
@@ -399,7 +414,9 @@
           </p>
         </div>
         <div class="feature-item">
-          <span class="feature-icon">🔍</span>
+          <span class="feature-icon" style="background: #e7f3ee; color: #1b4332; display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; margin-bottom: 15px;">
+            <i data-lucide="search"></i>
+          </span>
           <h3>Khảo sát miễn phí</h3>
           <p>
             Chuyên gia khảo sát tận nơi và tư vấn phương án vận chuyển tối ưu,
@@ -407,7 +424,9 @@
           </p>
         </div>
         <div class="feature-item">
-          <span class="feature-icon">💰</span>
+          <span class="feature-icon" style="background: #e7f3ee; color: #1b4332; display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; margin-bottom: 15px;">
+            <i data-lucide="dollar-sign"></i>
+          </span>
           <h3>Giá cước trọn gói</h3>
           <p>
             Báo giá minh bạch sau khi khảo sát, cam kết không phát sinh phụ phí
@@ -415,11 +434,12 @@
           </p>
         </div>
         <div class="feature-item">
-          <span class="feature-icon">🛡️</span>
-          <h3>Cam kết bồi thường</h3>
+          <span class="feature-icon" style="background: #e7f3ee; color: #1b4332; display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; margin-bottom: 15px;">
+            <i data-lucide="map-pin"></i>
+          </span>
+          <h3>Theo dõi thời gian thực</h3>
           <p>
-            Đền bù 100% giá trị tài sản nếu xảy ra hư hỏng hoặc thất thoát trong
-            quá trình di chuyển.
+            An tâm theo dõi vị trí đội ngũ vận chuyển và lộ trình di chuyển của tài sản trực tuyến 24/7.
           </p>
         </div>
       </div>
@@ -445,83 +465,92 @@
           border: 1px solid rgba(255, 255, 255, 0.1);
         "
       >
-        <form
-          id="quick-contact-form"
-          class="quick-form"
-          style="
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 15px;
-            align-items: flex-end;
-          "
-        >
-          <div style="text-align: left">
-            <label
-              style="
-                display: block;
-                margin-bottom: 8px;
-                font-size: 14px;
-                color: #d0d8f0;
-              "
-              >Họ và tên</label
-            >
-            <input
-              type="text"
-              name="name"
-              placeholder="Nhập tên của bạn"
-              required
-              style="
-                width: 100%;
-                padding: 12px;
-                border-radius: 8px;
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                background: rgba(255, 255, 255, 0.1);
-                color: white;
-              "
-            />
-          </div>
-          <div style="text-align: left">
-            <label
-              style="
-                display: block;
-                margin-bottom: 8px;
-                font-size: 14px;
-                color: #d0d8f0;
-              "
-              >Số điện thoại</label
-            >
-            <input
-              type="tel"
-              name="phone"
-              placeholder="09xx xxx xxx"
-              required
-              style="
-                width: 100%;
-                padding: 12px;
-                border-radius: 8px;
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                background: rgba(255, 255, 255, 0.1);
-                color: white;
-              "
-            />
-          </div>
-          <button
-            type="submit"
-            class="btn-primary"
+          <form
+            id="quick-contact-form"
+            class="quick-form"
             style="
-              background-color: var(--accent-color);
-              color: var(--primary-color);
-              font-weight: 700;
-              border: none;
-              padding: 12px 25px;
-              border-radius: 8px;
-              cursor: pointer;
-              height: 46px;
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+              gap: 15px;
+              align-items: flex-end;
             "
           >
-            Gửi yêu cầu
-          </button>
-        </form>
+            <div style="text-align: left">
+              <label
+                style="
+                  display: block;
+                  margin-bottom: 8px;
+                  font-size: 14px;
+                  color: #d0d8f0;
+                "
+                >Họ và tên</label
+              >
+              <input
+                type="text"
+                name="name"
+                placeholder="Nhập tên của bạn"
+                required
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(255, 255, 255, 0.2);
+                  background: rgba(255, 255, 255, 0.1);
+                  color: white;
+                  height: 46px;
+                  box-sizing: border-box;
+                "
+              />
+            </div>
+            <div style="text-align: left">
+              <label
+                style="
+                  display: block;
+                  margin-bottom: 8px;
+                  font-size: 14px;
+                  color: #d0d8f0;
+                "
+                >Số điện thoại</label
+              >
+              <input
+                type="tel"
+                name="phone"
+                placeholder="09xx xxx xxx"
+                required
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(255, 255, 255, 0.2);
+                  background: rgba(255, 255, 255, 0.1);
+                  color: white;
+                  height: 46px;
+                  box-sizing: border-box;
+                "
+              />
+            </div>
+            <button
+              type="submit"
+              class="btn-primary"
+              style="
+                background-color: var(--accent-color);
+                color: var(--primary-color);
+                font-weight: 700;
+                border: none;
+                padding: 0 25px;
+                border-radius: 8px;
+                cursor: pointer;
+                height: 46px;
+                width: 100%;
+                box-sizing: border-box;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              Gửi yêu cầu
+            </button>
+          </form>
         <p style="margin-top: 15px; font-size: 13px; color: #d0d8f0">
           Hoặc nhấn
           <a
@@ -555,7 +584,13 @@
         <div class="swiper-wrapper" id="testimonials-wrapper">
           <div class="swiper-slide">
             <div class="testimonial-item">
-              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <div class="stars" style="color: #ffb703; margin-bottom: 15px; display: flex; justify-content: center; gap: 4px;">
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+              </div>
               <p class="feedback">
                 "Dịch vụ chuyển nhà cực kỳ chuyên nghiệp. Các bạn bọc lót tủ
                 lạnh và tivi rất kỹ, không một vết trầy xước khi sang nhà mới."
@@ -568,7 +603,13 @@
           </div>
           <div class="swiper-slide">
             <div class="testimonial-item">
-              <div class="stars">⭐⭐⭐⭐⭐</div>
+              <div class="stars" style="color: #ffb703; margin-bottom: 15px; display: flex; justify-content: center; gap: 4px;">
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 18px; height: 18px;"></i>
+              </div>
               <p class="feedback">
                 "Công ty tôi chuyển văn phòng quy mô 50 nhân sự chỉ trong 1 ngày
                 cuối tuần. Quy trình nhanh gọn, không ảnh hưởng tới giờ làm
@@ -582,7 +623,13 @@
           </div>
           <div class="swiper-slide">
             <div class="testimonial-item">
-              <div class="stars">⭐⭐⭐⭐</div>
+              <div class="stars" style="color: #ffb703; margin-bottom: 10px;">
+                <i data-lucide="star" fill="currentColor" style="width: 16px; height: 16px; display: inline-block;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 16px; height: 16px; display: inline-block;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 16px; height: 16px; display: inline-block;"></i>
+                <i data-lucide="star" fill="currentColor" style="width: 16px; height: 16px; display: inline-block;"></i>
+                <i data-lucide="star" fill="none" style="width: 16px; height: 16px; display: inline-block;"></i>
+              </div>
               <p class="feedback">
                 "Khảo sát báo giá rất nhanh và minh bạch. Đội ngũ nhân viên bốc
                 xếp khỏe mạnh, lễ phép. Rất hài lòng!"
@@ -641,9 +688,19 @@
       src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
       defer
     ></script> 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="public/assets/js/components/navbar.js"></script>
     <script src="public/assets/js/shared-layout.js"></script>
 
     <script src="public/assets/js/main.js" defer></script>
+    <script>
+      // Initialize Lucide icons
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      });
+    </script>
     
     <!-- Schema.org LocalBusiness -->
     <script type="application/ld+json">

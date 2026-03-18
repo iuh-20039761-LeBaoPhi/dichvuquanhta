@@ -2,18 +2,21 @@
 
 /* Nút chính (Cam) */
 .btn-primary {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: #ff7a00;
   color: #ffffff;
-  padding: 12px 24px;
+  padding: 10px 24px; /* Giảm padding để bù cho border 2px */
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
-  border: none;
+  border: 2px solid transparent;
   cursor: pointer;
   transition:
     background-color 0.3s ease,
     transform 0.2s ease;
+  box-sizing: border-box;
 }
 
 .btn-primary:hover {
@@ -27,14 +30,18 @@
 
 /* Nút phụ (Viền trắng/trong suốt) */
 .btn-secondary {
-  display: inline-block;
-  border: 2px solid #ffffff;
-  color: #ffffff;
-  padding: 12px 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #0a2a66; /* Mặc định dùng màu navy nếu không chỉ định */
+  color: #0a2a66;
+  padding: 10px 24px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background-color: transparent;
 }
 
 .btn-secondary:hover {
@@ -200,6 +207,19 @@
 .hero-btns {
   display: flex;
   gap: 15px;
+}
+
+.centered-btns {
+  justify-content: center;
+}
+
+.hero-btns .btn-secondary {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.hero-btns .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive */

@@ -137,13 +137,17 @@
 
 .quote-package-list {
   display: grid;
-  gap: 12px;
-  margin-bottom: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .quote-package-item {
   border-color: #dbe4ff;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .quote-package-item.is-best {
@@ -191,8 +195,12 @@
 }
 
 .quote-service-total {
-  margin-top: 10px;
+  margin-top: auto;
+  padding-top: 12px;
   color: var(--primary-color);
+  font-size: 18px;
+  font-weight: 700;
+  border-top: 1px dashed #dbe4ff;
 }
 
 .quote-cta-link {

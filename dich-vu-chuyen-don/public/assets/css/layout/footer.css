@@ -167,10 +167,10 @@ footer {
 }
 
 .social-icons a:hover {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
+  background: #ffb703;
+  border-color: #ffb703;
   transform: translateY(-3px);
-  color: #111;
+  color: #1b4332;
 }
 
 /* Bottom bar */
