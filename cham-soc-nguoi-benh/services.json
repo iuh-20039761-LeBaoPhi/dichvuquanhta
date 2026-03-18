@@ -2,7 +2,7 @@
   {
     "id": 201,
     "name": "Gói Phục hồi & Trị liệu cơ bản",
-    "image": "assets/1.png",
+    "image": "assets/dich-vu-phuc-hoi-tri-lieu-co-ban.png",
     "description": "Tập trung vào việc vận động và phục hồi chức năng vật lý cho người bệnh.",
     "includes": [
       "Trọng tâm: Hỗ trợ tập vật lý trị liệu và vận động theo chỉ định",
@@ -37,7 +37,7 @@
   {
     "id": 202,
     "name": "Gói Theo dõi Y tế & Thuốc men",
-    "image": "assets/2.png",
+    "image": "assets/dich-vu-theo-doi-y-te-thuoc-men.png",
     "description": "Đảm bảo tính chính xác trong việc dùng thuốc và theo dõi chỉ số sinh tồn.",
     "includes": [
       "Trọng tâm: Quản lý và nhắc nhở uống thuốc đúng liều, đúng giờ",
@@ -72,7 +72,7 @@
   {
     "id": 203,
     "name": "Gói Dinh dưỡng & Chế độ ăn uống",
-    "image": "assets/3.png",
+    "image": "assets/dich-vu-dinh-duong-che-do-an-uong.png",
     "description": "Chăm sóc chuyên sâu về khẩu phần ăn phù hợp với bệnh lý.",
     "includes": [
       "Trọng tâm: Chế biến thực đơn dinh dưỡng theo bệnh lý",
@@ -107,7 +107,7 @@
   {
     "id": 204,
     "name": "Gói Vệ sinh & Tiện ích cá nhân",
-    "image": "assets/4.png",
+    "image": "assets/dich-vu-ve-sinh-tien-ich-ca-nhan.png",
     "description": "Giữ gìn vệ sinh thân thể và không gian sống sạch sẽ cho người bệnh.",
     "includes": [
       "Trọng tâm: Tắm rửa, vệ sinh cá nhân và thay tã (nếu cần)",
@@ -142,7 +142,7 @@
   {
     "id": 205,
     "name": "Gói Đồng hành & Chăm sóc Tinh thần",
-    "image": "assets/5.png",
+    "image": "assets/dich-vu-dong-hanh-cham-soc-tinh-than.png",
     "description": "Giúp người bệnh có tâm lý thoải mái để nhanh chóng hồi phục.",
     "includes": [
       "Trọng tâm: Trò chuyện, đọc báo, nghe nhạc cùng người bệnh",
@@ -177,7 +177,7 @@
   {
     "id": 206,
     "name": "Gói Chăm sóc Toàn Diện",
-    "image": "assets/6.png",
+    "image": "assets/dich-vu-cham-soc-toan-dien.png",
     "description": "Giải pháp tối ưu kết hợp tất cả các dịch vụ trọng yếu nhất.",
     "includes": [
       "Hỗ trợ tập vận động và phục hồi chức năng (Gói 1)",

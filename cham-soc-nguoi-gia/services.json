@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Gói Theo dõi Sức khỏe Y tế",
-    "image": "assets/1.png",
+    "image": "assets/bai-viet-bi-quyet-cham-soc-nguoi-gia-kho-di-lai.png",
     "description": "Tập trung kiểm soát các chỉ số sinh tồn và nhắc nhở y tế cho người cao tuổi.",
     "includes": [
       "Trọng tâm: Kiểm tra huyết áp, nhịp tim và đường huyết định kỳ",
@@ -37,7 +37,7 @@
   {
     "id": 2,
     "name": "Gói Dinh dưỡng & Ẩm thực",
-    "image": "assets/2.png",
+    "image": "assets/bai-viet-tam-ly-nguoi-cao-tuoi-khong-the-tu-cham-soc.png",
     "description": "Đảm bảo chế độ ăn uống khoa học, phù hợp với bệnh lý người già.",
     "includes": [
       "Trọng tâm: Nấu ăn dinh dưỡng phù hợp với bệnh lý (tiểu đường, cao huyết áp...)",
@@ -72,7 +72,7 @@
   {
     "id": 3,
     "name": "Gói Vệ sinh & Chăm sóc Thân thể",
-    "image": "assets/3.png",
+    "image": "assets/bai-viet-nguyen-tac-dinh-duong-cho-nguoi-gia-nam-liet.png",
     "description": "Giữ gìn vệ sinh cá nhân và môi trường sống sạch sẽ cho cụ.",
     "includes": [
       "Trọng tâm: Tắm rửa, gội đầu và vệ sinh cá nhân tại giường/phòng",
@@ -107,7 +107,7 @@
   {
     "id": 4,
     "name": "Gói Vận động & Vật lý trị liệu",
-    "image": "assets/4.png",
+    "image": "assets/bai-viet-cach-phong-ngua-loet-ti-de-o-nguoi-gia.png",
     "description": "Khuyến khích vận động nhẹ nhàng để duy trì sức khỏe dẻo dai.",
     "includes": [
       "Trọng tâm: Hỗ trợ tập vật lý trị liệu hoặc các bài tập phục hồi chức năng",
@@ -142,7 +142,7 @@
   {
     "id": 5,
     "name": "Gói Đồng hành & Trị liệu Tinh thần",
-    "image": "assets/5.png",
+    "image": "assets/bai-viet-loi-ich-thue-osin-cham-soc-nguoi-gia.png",
     "description": "Giảm bớt sự cô đơn, mang lại niềm vui tinh thần cho người cao tuổi.",
     "includes": [
       "Trọng tâm: Trò chuyện, tâm sự và lắng nghe người cao tuổi",
@@ -177,7 +177,7 @@
   {
     "id": 6,
     "name": "Gói Chăm sóc Toàn Diện",
-    "image": "assets/6.png",
+    "image": "assets/bai-viet-ve-sinh-ca-nhan-cho-nguoi-gia-dung-cach.png",
     "description": "Giải pháp cao cấp kết hợp tất cả các dịch vụ trọng yếu nhất.",
     "includes": [
       "Kiểm tra y tế và theo dõi chỉ số sinh tồn hàng ngày (Gói 1)",
