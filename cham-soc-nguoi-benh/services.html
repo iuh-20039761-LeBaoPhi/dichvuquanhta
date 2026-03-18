@@ -410,6 +410,7 @@
          BOOKING MODAL  (Bootstrap modal)
     ============================================================ -->
     <div id="modalContainer"></div>
+    <div id="reviewModalContainer"></div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -417,6 +418,7 @@
      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+    window.__bookingFlowPreserveState = false;
     $(document).ready(function () {
           // 1. Tải modal vào
           $("#modalContainer").load("booking-modal.html", function() {
@@ -433,6 +435,9 @@
                   myModal.show();
               });
           });
+                $("#reviewModalContainer").load("review-booking.html", function() {
+                  console.log("Modal review đã được load thành công!");
+                });
       });
       // Thay vì dùng $('.modal').modal('hide') - cách này cũ
       // Hãy dùng cách này trong file services.html của bạn:
@@ -449,6 +454,11 @@
               'overflow': '',
               'padding-right': ''
           });
+
+          // Khi chuyển sang modal review thì giữ nguyên dữ liệu form
+          if (window.__bookingFlowPreserveState) {
+            return;
+          }
           
           // 4. Reset form để lần sau mở lại là sạch sẽ
           $('#bookingForm')[0].reset();
@@ -584,8 +594,10 @@
 
       var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAYI7UOZOtkwHjrA7eSx9jyCXOY7b06Vo-SAI4xoHvy_ocKZBYxbDOuHODO9ytfncZSw/exec";
       var bsModal;   // Bootstrap modal instance
+      var reviewModal;
       var SERVICES = [];
       var CURRENT_SERVICE = null;
+      var PENDING_BOOKING_DATA = null;
 
       /* --------------------------------------------------
          LOAD JSON
@@ -705,6 +717,9 @@
 
       // Reset form khi modal đóng
       document.getElementById("bookingModal").addEventListener("hidden.bs.modal", function() {
+        if (window.__bookingFlowPreserveState) {
+          return;
+        }
         $("#bookingForm")[0].reset();
         $("#servicePackages").empty();
         $("#serviceJobs").empty();
@@ -874,6 +889,169 @@
         return d ? d.toLocaleDateString("vi-VN", {day:"2-digit",month:"2-digit",year:"numeric"}) : "";
       }
 
+      function formatDateFromInput(dateStr) {
+        if (!dateStr) return "-";
+        var d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        return formatDateVN(d);
+      }
+
+      function collectBookingData() {
+        var selectedPackage = $(".package-check:checked");
+        var selectedPackageLabel = selectedPackage.data("label") || "Không chọn gói";
+        var selectedJobs = $(".job-check:checked").map(function(){ return $(this).val(); }).get();
+        var unit = $("#durationUnit").val();
+        var endDateValue = "";
+
+        if (unit === "day") {
+          endDateValue = $("#endDate").val();
+        } else {
+          var autoEnd = computeEndDate();
+          endDateValue = autoEnd ? autoEnd.toISOString().split("T")[0] : "";
+        }
+
+        return {
+          serviceId:      $("#serviceSelector").val() || "",
+          name:           $("#customerName").val().trim(),
+          phone:          $("#customerPhone").val().trim(),
+          email:          $("#customerEmail").val().trim(),
+          address:        $("#customerAddress").val().trim(),
+          service:        $("#serviceSelector option:selected").text() || "",
+          packageValue:   selectedPackage.length ? String(selectedPackage.val()) : "",
+          package:        selectedPackageLabel,
+          jobsList:       selectedJobs,
+          jobs:           selectedJobs.join(", "),
+          startDate:      $("#startDate").val(),
+          endDate:        endDateValue,
+          durationUnit:   unit,
+          durationAmount: unit !== "day" ? ($("#durationAmount").val() || "") : "",
+          totalDays:      getDays(),
+          startTime:      $("#startTime").val(),
+          endTime:        $("#endTime").val(),
+          totalHours:     getHours(),
+          extraRequest:   $("#extraRequest").val(),
+          price:          $("#totalPrice").val(),
+          note:           $("#customerNote").val().trim()
+        };
+      }
+
+      function restoreBookingForm(data) {
+        if (!data) return;
+
+        if (data.serviceId) {
+          var service = SERVICES.find(function(s) { return String(s.id) === String(data.serviceId); });
+          if (service) {
+            renderService(service);
+            $("#serviceSelector").val(String(data.serviceId));
+          }
+        }
+
+        $("#customerName").val(data.name || "");
+        $("#customerPhone").val(data.phone || "");
+        $("#customerEmail").val(data.email || "");
+        $("#customerAddress").val(data.address || "");
+        $("#extraRequest").val(data.extraRequest || "");
+        $("#customerNote").val(data.note || "");
+
+        if (data.packageValue) {
+          var $pkg = $('.package-check[value="' + data.packageValue + '"]');
+          if ($pkg.length) {
+            $pkg.prop("checked", true);
+            $(".package-check").closest("label").removeClass("active");
+            $pkg.closest("label").addClass("active");
+            applyShiftHints();
+          }
+        }
+
+        $(".job-check").prop("checked", false);
+        if (Array.isArray(data.jobsList)) {
+          data.jobsList.forEach(function(job) {
+            $('.job-check[value="' + job + '"]').prop("checked", true);
+          });
+        }
+
+        $("#durationUnit").val(data.durationUnit || "");
+        updateDurationUI();
+        if (data.durationAmount) {
+          $("#durationAmount").val(data.durationAmount);
+        }
+
+        $("#startDate").val(data.startDate || "");
+        if (data.durationUnit === "day") {
+          $("#endDate").val(data.endDate || "");
+        }
+        $("#startTime").val(data.startTime || "");
+        $("#endTime").val(data.endTime || "");
+
+        updateAutoEndDate();
+        updateTotalPrice();
+      }
+
+      function renderReviewData(data) {
+        $("#reviewName").text(data.name || "-");
+        $("#reviewPhone").text(data.phone || "-");
+        $("#reviewEmail").text(data.email || "-");
+        $("#reviewAddress").text(data.address || "-");
+
+        $("#reviewService").text(data.service || "-");
+        $("#reviewPackage").text(data.package || "-");
+        $("#reviewJobs").text(data.jobs || "-");
+        $("#reviewStartDate").text(formatDateFromInput(data.startDate));
+        $("#reviewEndDate").text(formatDateFromInput(data.endDate));
+        $("#reviewTime").text((data.startTime || "-") + " - " + (data.endTime || "-"));
+        $("#reviewTotalDays").text(data.totalDays ? (data.totalDays + " ngày") : "-");
+        $("#reviewTotalHours").text(data.totalHours ? (data.totalHours.toFixed(1) + " giờ") : "-");
+        $("#reviewExtraRequest").text(data.extraRequest || "-");
+        $("#reviewNote").text(data.note || "-");
+        $("#reviewPrice").text(data.price || "0 đ");
+      }
+
+      function submitBookingToSheet(data) {
+        var saveBtn = $("#btnConfirmSave");
+        var backBtn = $("#btnBackToEdit");
+        var originalText = saveBtn.html();
+
+        saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...').prop("disabled", true);
+        backBtn.prop("disabled", true);
+
+        fetch(SCRIPT_URL, {
+          method:  "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body:    JSON.stringify(data)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(result) {
+          if (result.result === "success") {
+            if (!reviewModal) reviewModal = new bootstrap.Modal(document.getElementById("reviewBookingModal"));
+            if (!bsModal) bsModal = new bootstrap.Modal(document.getElementById("bookingModal"));
+            $("#reviewBookingModal").one("hidden.bs.modal", function() {
+              bsModal.show();
+              $("#bookingForm").slideUp();
+              $("#successMessage").removeClass("d-none");
+            });
+            reviewModal.hide();
+
+            setTimeout(function() {
+              window.__bookingFlowPreserveState = false;
+              bsModal.hide();
+              saveBtn.html(originalText).prop("disabled", false);
+              backBtn.prop("disabled", false);
+              PENDING_BOOKING_DATA = null;
+            }, 2500);
+          } else {
+            saveBtn.html(originalText).prop("disabled", false);
+            backBtn.prop("disabled", false);
+            alert("Không thể lưu dữ liệu. Vui lòng thử lại.");
+          }
+        })
+        .catch(function(err) {
+          console.error("Lỗi khi gửi dữ liệu:", err);
+          saveBtn.html(originalText).prop("disabled", false);
+          backBtn.prop("disabled", false);
+          alert("Có lỗi xảy ra khi gửi. Vui lòng thử lại.");
+        });
+      }
+
       /* --------------------------------------------------
          UPDATE DURATION UI
       -------------------------------------------------- */
@@ -1029,66 +1207,48 @@
         e.preventDefault();
         if (!validateTimeForShift()) return;
 
-        var selectedPackageLabel = $(".package-check:checked").data("label") || "Không chọn gói";
-        var selectedJobs = $(".job-check:checked").map(function(){ return $(this).val(); }).get();
-        var submitBtn    = $(this).find('button[type="submit"]');
-        var origBtnText  = submitBtn.html();
+        var selectedPackage = $(".package-check:checked");
+        var selectedJobCount = $(".job-check:checked").length;
+        var days = getDays();
+        var hours = getHours();
 
-        var unit = $("#durationUnit").val();
-        var endDateValue = "";
-        if (unit === "day") {
-          endDateValue = $("#endDate").val();
-        } else {
-          var autoEnd = computeEndDate();
-          endDateValue = autoEnd ? autoEnd.toISOString().split("T")[0] : "";
+        if (!selectedPackage.length || selectedJobCount === 0 || hours === 0 || days === 0) {
+          alert("Vui lòng chọn đầy đủ gói dịch vụ, công việc, ngày và giờ hợp lệ trước khi xác nhận.");
+          return;
         }
 
-        var bookingData = {
-          name:           $("#customerName").val().trim(),
-          phone:          $("#customerPhone").val().trim(),
-          email:          $("#customerEmail").val().trim(),
-          address:        $("#customerAddress").val().trim(),
-          service:        $("#serviceName").val(),
-          package:        selectedPackageLabel,
-          jobs:           selectedJobs.join(", "),
-          startDate:      $("#startDate").val(),
-          endDate:        endDateValue,
-          durationUnit:   unit,
-          durationAmount: unit !== "day" ? ($("#durationAmount").val() || "") : "",
-          totalDays:      getDays(),
-          startTime:      $("#startTime").val(),
-          endTime:        $("#endTime").val(),
-          totalHours:     getHours(),
-          extraRequest:   $("#extraRequest").val(),
-          price:          $("#totalPrice").val(),
-          note:           $("#customerNote").val().trim()
-        };
+        PENDING_BOOKING_DATA = collectBookingData();
+        renderReviewData(PENDING_BOOKING_DATA);
 
-        submitBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang xử lý...').prop("disabled", true);
+        if (!reviewModal) reviewModal = new bootstrap.Modal(document.getElementById("reviewBookingModal"));
+        if (!bsModal) bsModal = new bootstrap.Modal(document.getElementById("bookingModal"));
 
-        fetch(SCRIPT_URL, {
-          method:  "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body:    JSON.stringify(bookingData)
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-          if (data.result === "success") {
-            $("#bookingForm").slideUp();
-            $("#successMessage").removeClass("d-none");
-            setTimeout(function() {
-              bsModal.hide();
-              submitBtn.html(origBtnText).prop("disabled", false);
-            }, 3000);
-          }
-        })
-        .catch(function(err) {
-          console.error("Lỗi khi gửi dữ liệu:", err);
-          submitBtn.html(origBtnText).prop("disabled", false);
-          alert("Có lỗi xảy ra khi gửi. Vui lòng thử lại.");
+        window.__bookingFlowPreserveState = true;
+        $("#bookingModal").one("hidden.bs.modal", function() {
+          reviewModal.show();
+          window.__bookingFlowPreserveState = false;
         });
+        bsModal.hide();
 
       }); // end submit
+
+      $(document).on("click", "#btnBackToEdit", function() {
+        if (!reviewModal) reviewModal = new bootstrap.Modal(document.getElementById("reviewBookingModal"));
+        if (!bsModal) bsModal = new bootstrap.Modal(document.getElementById("bookingModal"));
+        $("#reviewBookingModal").one("hidden.bs.modal", function() {
+          restoreBookingForm(PENDING_BOOKING_DATA);
+          bsModal.show();
+        });
+        reviewModal.hide();
+      });
+
+      $(document).on("click", "#btnConfirmSave", function() {
+        if (!PENDING_BOOKING_DATA) {
+          alert("Không tìm thấy dữ liệu đặt lịch để lưu. Vui lòng kiểm tra lại.");
+          return;
+        }
+        submitBookingToSheet(PENDING_BOOKING_DATA);
+      });
 
     }); // end document.ready
     </script>
