@@ -202,8 +202,7 @@ body {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: url("../image/ChatGPT Image 20_13_27 26 thg 2, 2026.png")
-    center/cover;
+  background: url("../image/dich-vu-giat-ui-tai-nha-03.png");
   mix-blend-mode: overlay;
   opacity: 0.2;
 }
