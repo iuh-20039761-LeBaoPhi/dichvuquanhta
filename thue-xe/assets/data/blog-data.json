@@ -1,4 +1,4 @@
-[
+﻿[
     {
         "id": 1,
         "slug": "thue-xe-tu-lai-toan-quoc-thu-tuc-gia-ca-va-kinh-nghiem-tranh-phat-sinh",
@@ -8,7 +8,7 @@
         "description": "Bài hướng dẫn đầy đủ về thuê xe tự lái toàn quốc: chuẩn bị giấy tờ, đặt cọc, kiểm tra xe trước khi nhận, cách đọc hợp đồng và mẹo tránh phí phát sinh khi trả xe.",
         "date": "2026-03-01",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/1.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-kinh-nghiem-thue-xe-tu-lai-toan-quoc.jpg",
         "tags": [
             "thuê xe tự lái",
             "thuê xe tự lái toàn quốc",
@@ -30,7 +30,7 @@
         "description": "Khi nào nên thuê xe có tài xế? Bài viết phân tích lợi ích, cách tính chi phí, các hạng xe phổ biến và kinh nghiệm đặt xe trọn gói an tâm.",
         "date": "2026-02-28",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/2.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-co-tai-xe-toan-quoc-an-toan.jpg",
         "tags": [
             "thuê xe có tài xế",
             "thuê xe toàn quốc",
@@ -51,7 +51,7 @@
         "description": "Giải thích cách hình thành giá thuê xe tự lái theo ngày\/tuần\/tháng, mùa cao điểm, dòng xe, giới hạn km và dịch vụ giao nhận. Kèm mẹo lấy báo giá chuẩn nhu cầu.",
         "date": "2026-02-27",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/3.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-gia-ca-bang-gia-thue-xe-tu-lai-2025.jpg",
         "tags": [
             "bảng giá thuê xe tự lái",
             "giá thuê xe",
@@ -72,7 +72,7 @@
         "description": "Đi sân bay cần đúng giờ. Bài viết hướng dẫn chọn loại xe, cách đặt giờ đón hợp lý, chính sách chờ và các khoản phí thường gặp để bạn đặt xe đưa đón sân bay trọn gói.",
         "date": "2026-02-26",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/4.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tai-xe-di-san-bay-meo-hay.jpg",
         "tags": [
             "thuê xe sân bay",
             "xe đưa đón sân bay",
@@ -93,7 +93,7 @@
         "description": "Hướng dẫn người mới thuê xe tự lái đi tỉnh: chuẩn bị lộ trình, dự trù chi phí xăng\/cao tốc, kiểm tra lốp-phanh, cách lái an toàn đường đèo và xử lý sự cố cơ bản.",
         "date": "2026-02-25",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/5.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-kinh-nghiem-thue-xe-tu-lai-di-tinh.jpg",
         "tags": [
             "thuê xe tự lái đi tỉnh",
             "kinh nghiệm lái xe đường dài",
@@ -114,7 +114,7 @@
         "description": "Bài viết dành cho khách công tác: tiêu chí chọn dịch vụ thuê xe có tài xế, chuẩn hóa lịch trình, cách tối ưu chi phí chờ, và những điều nên ghi rõ khi đặt xe.",
         "date": "2026-02-24",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/6.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tai-xe-cong-tac-toan-quoc.jpg",
         "tags": [
             "thuê xe công tác",
             "thuê xe có tài xế",
@@ -135,7 +135,7 @@
         "description": "Tổng hợp 10 điều khoản quan trọng trong hợp đồng thuê xe tự lái: giới hạn km, trả trễ, nhiên liệu, bảo hiểm, xử lý va quẹt, phạm vi di chuyển… giúp bạn tránh tranh chấp khi trả xe.",
         "date": "2026-02-23",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/7.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-hop-dong-thue-xe-tu-lai-dieu-khoan.jpg",
         "tags": [
             "hợp đồng thuê xe",
             "thuê xe tự lái",
@@ -156,7 +156,7 @@
         "description": "Hướng dẫn chọn xe 4 chỗ\/7 chỗ khi đi du lịch gia đình: số người, hành lý, cung đường, ngân sách và trải nghiệm. Kèm checklist đặt xe và mẹo tối ưu chi phí.",
         "date": "2026-02-22",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/8.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tai-xe-du-lich-gia-dinh.jpg",
         "tags": [
             "thuê xe du lịch",
             "thuê xe có tài xế",
@@ -177,7 +177,7 @@
         "description": "Thuê xe tự lái theo tháng là giải pháp linh hoạt cho công tác dài ngày và doanh nghiệp. Bài viết phân tích lợi ích, cách thương lượng chi phí, điều khoản km, bảo dưỡng và trách nhiệm hai bên.",
         "date": "2026-02-21",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/9.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tu-lai-theo-thang-toan-quoc.jpg",
         "tags": [
             "thuê xe tự lái theo tháng",
             "thuê xe dài hạn",
@@ -198,7 +198,7 @@
         "description": "Thuê xe có tài xế theo ngày phù hợp khi di chuyển nhiều điểm. Bài viết hướng dẫn cách lên lịch trình theo cụm, tối ưu thời gian chờ và các chi phí cần làm rõ trước khi đặt.",
         "date": "2026-02-20",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/10.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tai-xe-theo-ngay-len-lich-trinh.jpg",
         "tags": [
             "thuê xe theo ngày",
             "thuê xe có tài xế",
@@ -219,7 +219,7 @@
         "description": "So sánh sedan và hatchback khi thuê xe tự lái 4 chỗ: ưu nhược điểm, mức tiêu hao, độ tiện dụng khi đi phố\/đi tỉnh, và checklist chọn xe phù hợp nhu cầu.",
         "date": "2026-02-19",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/11.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tu-lai-4-cho-sedan-hatchback.jpg",
         "tags": [
             "thuê xe tự lái 4 chỗ",
             "thuê xe sedan",
@@ -240,7 +240,7 @@
         "description": "Tư vấn thuê xe 7 chỗ có tài xế cho gia đình: cách chọn xe theo số người\/vali, mẹo sắp xếp hành lý, lịch trình phù hợp trẻ nhỏ và các khoản chi phí cần làm rõ trước khi đi.",
         "date": "2026-02-18",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/12.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-kinh-nghiem-thue-xe-tai-xe-7-cho-gia-dinh.jpg",
         "tags": [
             "thuê xe 7 chỗ",
             "thuê xe có tài xế 7 chỗ",
@@ -260,7 +260,7 @@
         "description": "Cuối tuần thường cháy xe và giá cao. Bài viết chia sẻ thời điểm đặt xe hợp lý, cách chọn gói km, mẹo kiểm tra xe trước khi nhận và cách tránh phát sinh khi trả xe sau chuyến đi.",
         "date": "2026-02-17",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/13.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tu-lai-cuoi-tuan-dat-som.jpg",
         "tags": [
             "thuê xe tự lái cuối tuần",
             "đặt xe tự lái",
@@ -281,7 +281,7 @@
         "description": "Hướng dẫn đặt xe sự kiện: chọn xe theo dress code, giờ đón chuẩn, dự phòng phương án kẹt xe, quy trình bàn giao, và các điều cần xác nhận để sự kiện diễn ra trơn tru.",
         "date": "2026-02-16",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/14.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tai-xe-su-kien-dam-cuoi.jpg",
         "tags": [
             "thuê xe sự kiện",
             "thuê xe đám cưới",
@@ -301,7 +301,7 @@
         "description": "Bài viết so sánh chi tiết 2 hình thức thuê xe: chi phí, tính linh hoạt, phù hợp đi gia đình\/công tác\/sự kiện, và gợi ý cách chọn dịch vụ tối ưu theo lịch trình.",
         "date": "2026-02-15",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/15.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-so-sanh-tu-lai-va-co-tai-xe.jpg",
         "tags": [
             "thuê xe tự lái",
             "thuê xe có tài xế",
@@ -322,7 +322,7 @@
         "description": "Tổng hợp các lỗi phổ biến khi thuê xe tự lái: không chụp ảnh hiện trạng, trả trễ, vượt km, xăng thiếu, vệ sinh kém… và cách phòng tránh để thuê xe minh bạch, an tâm.",
         "date": "2026-02-14",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/16.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-an-toan-loi-thue-xe-tu-lai-xu-ly.jpg",
         "tags": [
             "lỗi khi thuê xe",
             "thuê xe tự lái",
@@ -344,7 +344,7 @@
         "description": "Muốn báo giá nhanh và chính xác, bạn cần cung cấp đủ lịch trình. Bài viết liệt kê thông tin bắt buộc và thông tin nên có khi đặt xe có tài xế, giúp hạn chế phát sinh và chốt xe nhanh.",
         "date": "2026-02-13",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/17.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thu-tuc-thue-xe-co-tai-xe-toan-quoc.jpg",
         "tags": [
             "thủ tục thuê xe có tài xế",
             "báo giá thuê xe",
@@ -365,7 +365,7 @@
         "description": "Thuê xe 7 chỗ tự lái giúp đi nhóm thoải mái. Bài viết chia sẻ cách chọn xe theo hành lý, cung đường, điều hòa, tính năng an toàn và những điểm cần kiểm tra trước khi nhận xe.",
         "date": "2026-02-12",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/18.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tu-lai-7-cho-nhom-ban-gia-dinh.jpg",
         "tags": [
             "thuê xe tự lái 7 chỗ",
             "thuê xe 7 chỗ",
@@ -385,7 +385,7 @@
         "description": "Hướng dẫn quy trình xử lý khi xe thuê bị hỏng vặt, thủng lốp, báo lỗi taplo, hết bình, kẹt xe hoặc gặp sự cố. Giúp bạn bình tĩnh xử lý đúng và hạn chế rủi ro phát sinh.",
         "date": "2026-02-11",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/19.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-an-toan-ket-xe-hong-xe-tu-lai-xu-ly.jpg",
         "tags": [
             "hỏng vặt xe thuê",
             "cứu hộ xe",
@@ -406,7 +406,7 @@
         "description": "Phân tích ưu nhược điểm đặt xe 1 chiều vs khứ hồi: phù hợp tình huống nào, cách tối ưu chi phí chờ, và những thông tin cần chốt trước để báo giá minh bạch.",
         "date": "2026-02-10",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/20.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tai-xe-di-tinh-1-chieu-khu-hoi.jpg",
         "tags": [
             "thuê xe đi tỉnh 1 chiều",
             "thuê xe đi tỉnh khứ hồi",
@@ -427,7 +427,7 @@
         "description": "Dịp lễ Tết nhu cầu thuê xe tự lái tăng mạnh. Bài viết hướng dẫn thời điểm đặt xe, cách chốt giá, điều khoản hoàn\/hủy, giới hạn km và checklist nhận xe để tránh phát sinh.",
         "date": "2026-02-09",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/21.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tu-lai-le-tet-dat-som.jpg",
         "tags": [
             "thuê xe tự lái lễ tết",
             "đặt xe dịp lễ",
@@ -448,7 +448,7 @@
         "description": "Giải thích phụ phí thuê xe có tài xế ban đêm: khi nào áp dụng, cách tính phổ biến theo giờ\/chuyến, những yếu tố ảnh hưởng như quãng đường và thời gian chờ, và mẹo đặt xe minh bạch.",
         "date": "2026-02-08",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/22.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-gia-ca-thue-xe-tai-xe-dem-muon-phu-phi.jpg",
         "tags": [
             "thuê xe đêm",
             "phụ phí ban đêm",
@@ -469,7 +469,7 @@
         "description": "Gợi ý chọn xe tự lái cho người mới: kích thước xe, hộp số, camera\/cảm biến, tầm nhìn, và các bài kiểm tra trước khi nhận xe để lái an toàn và tự tin.",
         "date": "2026-02-07",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/23.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tu-lai-nguoi-moi-lai.jpg",
         "tags": [
             "thuê xe cho người mới",
             "thuê xe tự lái",
@@ -490,7 +490,7 @@
         "description": "Bài viết dành cho doanh nghiệp: thiết lập quy trình đặt xe, chuẩn hóa báo giá, kiểm soát phụ phí chờ\/cao tốc, quy định xuất hóa đơn và mẹo chọn gói theo ngày\/tháng tối ưu ngân sách.",
         "date": "2026-02-06",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/24.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tai-xe-doanh-nghiep-chi-phi.jpg",
         "tags": [
             "thuê xe doanh nghiệp",
             "thuê xe có tài xế",
@@ -511,7 +511,7 @@
         "description": "Giải thích vì sao cần đặt cọc khi thuê xe tự lái, các hình thức đặt cọc phổ biến, thời gian hoàn cọc, trường hợp bị trừ cọc, và câu hỏi quan trọng cần làm rõ trước khi thuê.",
         "date": "2026-02-05",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/25.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tu-lai-dat-coc-hoan-coc.jpg",
         "tags": [
             "đặt cọc thuê xe",
             "hoàn cọc thuê xe",
@@ -532,7 +532,7 @@
         "description": "Gợi ý cách lên lịch city tour 1 ngày: gom điểm theo khu vực, tối ưu giờ di chuyển, hạn chế kẹt xe, thống nhất thời gian chờ và chọn loại xe phù hợp số người\/hành lý.",
         "date": "2026-02-04",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/26.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tai-xe-city-tour-lich-trinh.jpg",
         "tags": [
             "city tour",
             "thuê xe có tài xế",
@@ -553,7 +553,7 @@
         "description": "Phân tích giao nhận xe tận nơi: lợi ích tiết kiệm thời gian, các khoản phí có thể phát sinh, cách chốt giờ giao nhận để tránh trễ và checklist bàn giao xe tại nhà\/khách sạn\/sân bay.",
         "date": "2026-02-03",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/27.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tu-lai-giao-nhan-tan-noi.jpg",
         "tags": [
             "giao xe tận nơi",
             "thuê xe tự lái",
@@ -574,7 +574,7 @@
         "description": "Giải đáp thắc mắc đặt cọc khi thuê xe có tài xế: khi nào cần, hình thức thanh toán, cách xác nhận lịch trình, và những thông tin nên có để chuyến đi diễn ra đúng cam kết.",
         "date": "2026-02-02",
         "readTime": "9 phút đọc",
-        "image": "assets\/images\/blogs\/28.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-thue-xe-tai-xe-dat-coc-thanh-toan.jpg",
         "tags": [
             "đặt cọc thuê xe",
             "thuê xe có tài xế",
@@ -594,7 +594,7 @@
         "description": "Danh sách 10 câu hỏi quan trọng trước khi thuê xe tự lái: km giới hạn, phí vượt, trả trễ, xăng, bảo hiểm, va quẹt, đổi lịch, hoàn cọc… giúp bạn thuê xe minh bạch và an tâm.",
         "date": "2026-02-01",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/29.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-an-toan-10-cau-hoi-truoc-khi-thue-xe.jpg",
         "tags": [
             "câu hỏi thuê xe",
             "thuê xe tự lái",
@@ -616,7 +616,7 @@
         "description": "Bài tổng hợp giúp bạn chọn đúng dịch vụ: thuê xe tự lái hay thuê xe có tài xế, gợi ý theo nhu cầu đi gia đình\/công tác\/sân bay\/du lịch, và checklist thông tin cần chuẩn bị để đặt xe nhanh.",
         "date": "2026-01-31",
         "readTime": "10 phút đọc",
-        "image": "assets\/images\/blogs\/30.jpg",
+        "image": "assets\/images\/blogs\/thue-xe-blog-tong-hop-dich-vu-thue-xe-toan-quoc.jpg",
         "tags": [
             "Thuê Xe Toàn Quốc",
             "thuê xe tự lái",

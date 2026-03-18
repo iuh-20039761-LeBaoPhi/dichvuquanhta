@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'api/db.php';
 
 // Lấy category_id từ URL
@@ -51,18 +51,18 @@ $category_icons = [
 
 // Định nghĩa hình ảnh cho từng category
 $category_images = [
-    'Sửa máy lạnh' => 'image/2.jpg',
-    'Sửa máy giặt' => 'image/4.jpg',
-    'Nhà vệ sinh'  => 'image/3.jpg',
-    'Điện nước'    => 'image/6.jpg',
-    'Sửa tủ lạnh'  => 'image/5.jpg',
-    'Sửa tivi'     => 'image/5.jpg',
-    'Sửa bếp từ'   => 'image/5.jpg',
-    'Cải tạo nhà'  => 'image/7.jpg'
+    'Sửa máy lạnh' => 'image/tho-nha-dich-vu-sua-may-lanh-gia-dinh.jpg',
+    'Sửa máy giặt' => 'image/tho-nha-dich-vu-sua-may-giat-chuyen-nghiep.jpg',
+    'Nhà vệ sinh'  => 'image/tho-nha-dich-vu-nha-ve-sinh-thong-tac-chong-tham.jpg',
+    'Điện nước'    => 'image/tho-nha-dich-vu-sua-dien-nuoc-gia-dinh.jpg',
+    'Sửa tủ lạnh'  => 'image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg',
+    'Sửa tivi'     => 'image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg',
+    'Sửa bếp từ'   => 'image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg',
+    'Cải tạo nhà'  => 'image/tho-nha-dich-vu-sua-bep-tu-dien-tu.jpg'
 ];
 
 $icon       = $category_icons[$category['name']]  ?? 'fa-tools';
-$main_image = $category_images[$category['name']] ?? 'image/1.jpg';
+$main_image = $category_images[$category['name']] ?? 'image/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg';
 
 // Tính giá thấp nhất và cao nhất (bao gồm cả brandPrices)
 $all_prices = [];
@@ -160,8 +160,8 @@ $schema = [
     <meta name="geo.region"    content="VN-SG">
     <meta name="geo.placename" content="Thành phố Hồ Chí Minh">
     <link rel="canonical"    href="<?= $seo_url ?>">
-    <link rel="icon"          type="image/png" href="image/logo.png">
-    <link rel="apple-touch-icon" href="image/logo.png">
+    <link rel="icon"          type="image/png" href="image/tho-nha-logo-thuong-hieu.png">
+    <link rel="apple-touch-icon" href="image/tho-nha-logo-thuong-hieu.png">
 
     <!-- ===== Open Graph / Facebook ===== -->
     <meta property="og:type"        content="website">
@@ -471,10 +471,10 @@ $schema = [
                                 <img src="<?= $main_image ?>" alt="<?= htmlspecialchars($category['name']) ?>">
                             </div>
                             <div class="gallery-item">
-                                <img src="image/8.jpg" alt="Khách hàng hài lòng">
+                                <img src="image/tho-nha-dich-vu-cai-tao-nha-thi-cong.jpg" alt="Khách hàng hài lòng">
                             </div>
                             <div class="gallery-item">
-                                <img src="image/1.jpg" alt="Thợ chuyên nghiệp">
+                                <img src="image/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg" alt="Thợ chuyên nghiệp">
                             </div>
                             <div class="gallery-item">
                                 <img src="<?= $main_image ?>" alt="<?= htmlspecialchars($category['name']) ?>">
@@ -569,7 +569,7 @@ $schema = [
                     <div class="row g-4">
                         <?php foreach ($related_categories as $related):
                             $r_icon  = $category_icons[$related['name']]  ?? 'fa-tools';
-                            $r_image = $category_images[$related['name']] ?? 'image/1.jpg';
+                            $r_image = $category_images[$related['name']] ?? 'image/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg';
                         ?>
                             <div class="col-md-4">
                                 <div class="related-service" onclick="window.location.href='service-detail.php?id=<?= $related['id'] ?>'">

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+﻿document.addEventListener('DOMContentLoaded', async () => {
     await loadFilterOptions();
     await performSearch();
     setupFilterForm();
@@ -136,7 +136,7 @@ function displaySearchResults(cars, searchParams) {
                         <img src="assets/images/cars/${car.main_image}"
                              class="card-img-top"
                              alt="${car.name}"
-                             onerror="this.src='assets/images/cars/default.jpg'">
+                             onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
                         <span class="badge badge-status ${car.status === 'available' ? 'badge-available' : 'badge-rented'}">
                             ${car.status === 'available' ? 'Có sẵn' : 'Đã thuê'}
                         </span>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Car Detail Page JavaScript
  */
 
@@ -116,7 +116,7 @@ function displayCarDetail(data) {
                          class="w-100" 
                          style="height: 400px; object-fit: cover; border-radius: 8px 8px 0 0;"
                          alt="${car.name}"
-                         onerror="this.src='assets/images/cars/default.jpg'">
+                         onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
                     <span class="badge badge-status ${car.status === 'available' ? 'badge-available' : 'badge-rented'}" 
                           style="position: absolute; top: 20px; right: 20px;">
                         ${car.status === 'available' ? 'Có sẵn' : 'Đã thuê'}
@@ -133,7 +133,7 @@ function displayCarDetail(data) {
                                      class="img-thumbnail cursor-pointer ${index === 0 ? 'border-primary' : ''}" 
                                      style="height: 80px; object-fit: cover; cursor: pointer;"
                                      onclick="changeMainImage('${img.path}', ${index})"
-                                     onerror="this.src='assets/images/cars/default.jpg'">
+                                     onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
                             </div>
                         `).join('')}
                     </div>
