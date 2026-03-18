@@ -24,32 +24,34 @@
       rel="stylesheet"
     />
 <style>
-/* Giữ header luôn 1 hàng */
+/* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
 .navbar .container {
   display: flex;
   flex-wrap: nowrap !important;
   align-items: center;
 }
 
-/* QUAN TRỌNG: ép menu xuống dòng riêng */
-.navbar-collapse {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: white;
-  z-index: 999;
-}
-
-/* MOBILE */
+/* ================= MOBILE ONLY ================= */
 @media (max-width: 991.98px) {
 
-  /* Menu hiển thị dạng block riêng hàng */
+  /* ÉP menu xuống dưới navbar */
+  .navbar-collapse {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 999;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+
+  /* Khi mở menu */
   .navbar-collapse.show {
     display: block;
   }
 
-  /* Danh sách dọc */
+  /* UL dọc + căn giữa */
   .navbar-collapse .navbar-nav {
     flex-direction: column !important;
     align-items: center !important;
@@ -57,15 +59,16 @@
     padding: 15px 0;
   }
 
-  /* Item căn giữa */
+  /* Item */
   .navbar-collapse .nav-item {
     width: 100%;
     text-align: center;
   }
 
-  /* Link đẹp */
+  /* Link */
   .navbar-collapse .nav-link {
     display: block;
+    width: 100%;
     padding: 10px;
     font-size: 16px;
   }
