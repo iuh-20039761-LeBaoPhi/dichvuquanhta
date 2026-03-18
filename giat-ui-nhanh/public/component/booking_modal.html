@@ -52,9 +52,27 @@
             </div>
           </div>
           <div class="form-group">
-            <button class="btn btn-info" type="button" id="locateBtn">
-              <i class="fas fa-location-arrow"></i> Vị trí hiện tại
-            </button>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-info" type="button" id="locateBtn">
+                <i class="fas fa-location-arrow"></i> Vị trí hiện tại
+              </button>
+              <button
+                class="btn btn-outline-info"
+                type="button"
+                id="toggleMapBtn"
+              >
+                <i class="fas fa-map-marked-alt"></i> Mở bản đồ
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="form-group map-wrapper"
+            id="osmMapWrapper"
+            style="display: none"
+          >
+            <label>Chọn vị trí trên bản đồ</label>
+            <div id="osmMap" style="height: 320px; border-radius: 12px"></div>
           </div>
 
           <div class="row">
@@ -99,6 +117,12 @@
                   <label>Đôi</label>
                   <input type="number" id="pair" min="1" />
                 </div>
+                <input
+                  type="hidden"
+                  id="quantityContact"
+                  name="quantity"
+                  value="1"
+                />
               </div>
             </div>
           </div>
@@ -121,6 +145,26 @@
               placeholder="Nội dung cần tư vấn..."
             ></textarea>
           </div>
+
+          <div class="form-group">
+            <label>Hình ảnh và video</label>
+            <div class="d-flex gap-2 flex-wrap">
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                id="capturePhotoBtn"
+              >
+                <i class="fas fa-camera"></i> Chụp ảnh
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-danger"
+                id="recordVideoBtn"
+              >
+                <i class="fas fa-video"></i> Quay video
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Modal footer -->
@@ -134,6 +178,86 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="bookingConfirmModal"
+  tabindex="-1"
+  aria-labelledby="bookingConfirmModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bookingConfirmModalLabel">
+          Xác nhận thông tin đặt dịch vụ
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          id="confirmCloseBtn"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-striped align-middle mb-0">
+            <tbody>
+              <tr>
+                <th scope="row">Họ và tên</th>
+                <td id="confirmName">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Số điện thoại</th>
+                <td id="confirmPhone">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Địa chỉ</th>
+                <td id="confirmAddress">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Dịch vụ quan tâm</th>
+                <td id="confirmService">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Dịch vụ cụ thể</th>
+                <td id="confirmSubService">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Số lượng</th>
+                <td id="confirmQuantity">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Giá dịch vụ</th>
+                <td id="confirmPrice">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Phí vận chuyển</th>
+                <td id="confirmShip">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Tổng tiền</th>
+                <td id="confirmTotal">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Ghi chú</th>
+                <td id="confirmMessage">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="confirmBackBtn">
+          Quay lại
+        </button>
+        <button type="button" class="btn btn-primary" id="confirmSubmitBtn">
+          Xác nhận đặt lịch
+        </button>
+      </div>
     </div>
   </div>
 </div>

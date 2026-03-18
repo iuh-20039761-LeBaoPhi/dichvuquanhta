@@ -1,0 +1,159 @@
+<div class="modal fade" id="myModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header" style="justify-content: space-between">
+        <h4 class="modal-title">Gửi Thông Tin Cho Chúng Tôi</h4>
+        <a type="button" data-bs-dismiss="modal"> &#215; </a>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div class="contact-form">
+          <form id="contactForm" class="contactFormCombo">
+            <div class="form-group">
+              <button
+                class="btn btn-success me-2 info"
+                type="button"
+                id="autoFillBtnCombo"
+                data-customer="Lê Bảo Phi"
+                data-phone="0374360449"
+                data-address="94 Trần Thị Trọng, Phường Tân Sơn, TP. Hồ Chí Minh"
+              >
+                <i class="fas fa-pencil-alt"></i> Tự điền thông tin
+              </button>
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                placeholder="👤 Họ và tên"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="number"
+                id="phone"
+                name="phone"
+                required
+                placeholder="📱 SĐT"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="address"
+                name="address"
+                placeholder="🏠 Địa chỉ "
+              />
+            </div>
+            <div class="form-group">
+              <select id="service" name="service">
+                <option value="">Chọn gói dịch vụ</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <input
+                type="number"
+                id="price"
+                name="price"
+                readonly
+                placeholder="Giá dịch vụ"
+              />
+            </div>
+            <input type="hidden" id="quantity" name="quantity" value="1" />
+            <div class="form-group">
+              <textarea
+                id="message"
+                name="message"
+                placeholder="📝 Nội dung cần tư vấn..."
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              style="width: 100%; justify-content: center"
+            >
+              <span>Đặt dịch vụ</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="comboConfirmModal"
+  tabindex="-1"
+  aria-labelledby="comboConfirmModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="comboConfirmModalLabel">
+          Xác nhận thông tin đặt gói
+        </h4>
+        <button
+          type="button"
+          class="btn-close"
+          id="comboConfirmCloseBtn"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <tbody>
+              <tr>
+                <th scope="row">Họ và tên</th>
+                <td id="comboConfirmName">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Số điện thoại</th>
+                <td id="comboConfirmPhone">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Địa chỉ</th>
+                <td id="comboConfirmAddress">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Gói dịch vụ</th>
+                <td id="comboConfirmService">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Giá gói</th>
+                <td id="comboConfirmPrice">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Số lượng</th>
+                <td id="comboConfirmQuantity">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Ghi chú</th>
+                <td id="comboConfirmMessage">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="comboConfirmBackBtn">
+          Quay lại
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="comboConfirmSubmitBtn"
+        >
+          Xác nhận đặt dịch vụ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="asset/js/booking_combo.js"></script>

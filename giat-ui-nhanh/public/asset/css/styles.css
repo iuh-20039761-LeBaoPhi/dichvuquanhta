@@ -1065,7 +1065,7 @@ footer {
 }
 .info {
   margin-left: 10px;
-  padding: 5px;
+  padding: 10px;
 }
 /* Responsive */
 @media (max-width: 768px) {
@@ -1259,6 +1259,19 @@ footer {
   }
   .footer-about h3 {
     font-size: 1.5rem;
+  }
+  .hero {
+    min-height: 210px;
+    padding: 84px 0 36px;
+  }
+
+  .hero .hero-text h1 {
+    font-size: 1.45rem;
+    line-height: 1.35;
+  }
+
+  .hero .hero-text h1 span {
+    font-size: 0.82rem;
   }
 }
 

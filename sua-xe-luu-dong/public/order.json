@@ -1,0 +1,144 @@
+{
+  "orders": [
+    {
+      "id": "SXLD-250318-01",
+      "serviceId": 1,
+      "subServiceId": 101,
+      "serviceTypeName": "Sửa xe máy lưu động",
+      "serviceName": "Sửa xe chết máy",
+      "vehicleBrand": "Honda",
+      "repairItem": "Xử lý ngập nước/súc bình xăng con",
+      "orderDate": "2026-03-18",
+      "shippingFee": 30000,
+      "surveyFee": 50000,
+      "totalPrice": 230000,
+      "note": "",
+      "order_status": "Pending",
+      "transaction_status": "UnPaid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "",
+        "phone": "",
+        "email": "",
+        "address": ""
+      }
+    },
+    {
+      "id": "SXLD-250319-02",
+      "serviceId": 2,
+      "subServiceId": 201,
+      "serviceTypeName": "Vá lốp - Thay lốp",
+      "serviceName": "Vá trong",
+      "vehicleBrand": "Yamaha",
+      "repairItem": "Lốp không ruột (NVX, Grande, Janus, Latte, FreeGo)",
+      "orderDate": "2026-03-19",
+      "shippingFee": 30000,
+      "surveyFee": 30000,
+      "totalPrice": 120000,
+      "note": "Khách yêu cầu xử lý nhanh",
+      "order_status": "Processing",
+      "transaction_status": "Paid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "Nguyễn Văn Nam",
+        "phone": "0911222333",
+        "email": "nam.nguyen@sxld.vn",
+        "address": "Chi nhánh Quận 12, TP HCM"
+      }
+    },
+    {
+      "id": "SXLD-250320-03",
+      "serviceId": 3,
+      "subServiceId": 301,
+      "serviceTypeName": "Dịch vụ ắc quy",
+      "serviceName": "Thay ắc quy mới",
+      "vehicleBrand": "Honda",
+      "repairItem": "Ắc quy GS GTZ5V (Vision, AirBlade)",
+      "orderDate": "2026-03-20",
+      "shippingFee": 30000,
+      "surveyFee": 0,
+      "totalPrice": 550000,
+      "note": "Đã bàn giao và test điện ổn định",
+      "order_status": "Completed",
+      "transaction_status": "Paid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "Trần Minh Khoa",
+        "phone": "0988333444",
+        "email": "khoa.tran@sxld.vn",
+        "address": "Chi nhánh Gò Vấp, TP HCM"
+      }
+    },
+    {
+      "id": "SXLD-250321-04",
+      "serviceId": 1,
+      "subServiceId": 102,
+      "serviceTypeName": "Sửa xe máy lưu động",
+      "serviceName": "Sửa xe không đề được",
+      "vehicleBrand": "Yamaha",
+      "repairItem": "Bảo dưỡng củ đề Exciter/NVX",
+      "orderDate": "2026-03-21",
+      "shippingFee": 30000,
+      "surveyFee": 30000,
+      "totalPrice": 210000,
+      "note": "Chờ thay linh kiện đúng mã",
+      "order_status": "Processing",
+      "transaction_status": "UnPaid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "Phạm Quốc Bảo",
+        "phone": "0977444555",
+        "email": "bao.pham@sxld.vn",
+        "address": "Chi nhánh Tân Bình, TP HCM"
+      }
+    },
+    {
+      "id": "SXLD-250322-05",
+      "serviceId": 2,
+      "subServiceId": 202,
+      "serviceTypeName": "Vá lốp - Thay lốp",
+      "serviceName": "Thay lốp xe",
+      "vehicleBrand": "Yamaha",
+      "repairItem": "Lốp Maxxis Exciter 150",
+      "orderDate": "2026-03-22",
+      "shippingFee": 30000,
+      "surveyFee": 30000,
+      "totalPrice": 580000,
+      "note": "",
+      "order_status": "Pending",
+      "transaction_status": "UnPaid",
+      "customer": {
+        "name": "Lê Bảo Phi",
+        "phone": "0901234567",
+        "email": "leephi792@gmail.com",
+        "address": "Phường Tân Chánh Hiệp, Quận 12, TP HCM"
+      },
+      "provider": {
+        "name": "",
+        "phone": "",
+        "email": "",
+        "address": ""
+      }
+    }
+  ]
+}

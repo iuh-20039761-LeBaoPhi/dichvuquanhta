@@ -53,16 +53,17 @@
           <li><a href="#about" class="nav-link">Giới thiệu</a></li>
           <li><a href="#services" class="nav-link">Dịch vụ</a></li>
           <li><a href="#process" class="nav-link">Quy trình</a></li>
-          <li><a class="nav-link" data-bs-toggle="modal"data-bs-target="#bookingModal">Đặt dịch vụ</a></li>
           <li><a href="blog.html" class="nav-link" >Bài viết</a></li>
-          <li>
+          <li><a href="booking_order.html" class="nav-link" >Đơn đặt</a></li>
+          <li><a class="nav-link" data-bs-toggle="modal"data-bs-target="#bookingModal">Đặt dịch vụ</a></li>
+          <!-- <li>
             <a
               class="nav-link"
               data-bs-toggle="modal"
               data-bs-target="#searchModal"
               ><i class="fas fa-search"></i> Tra cứu đơn đặt</a
             >
-          </li>
+          </li> -->
         </ul>
         <button class="menu-toggle" id="menuToggle" aria-label="Menu">
           <svg
@@ -199,7 +200,7 @@
             </div>
 
             <div class="cta-buttons">
-              <a href="#contact" class="btn btn-primary">
+              <a class="btn btn-primary" data-bs-toggle="modal"data-bs-target="#bookingModal">
                 <span>Đặt dịch vụ ngay</span>
               </a>
               <a href="#services" class="btn btn-secondary">
@@ -618,7 +619,9 @@
                 <b>Giá từ:</b> 
                 ${service.min_price.toLocaleString("vi-VN")} VNĐ / ${unit}
               </p>
-              
+              <button class="btn btn-info" data-service-id="${service.id}" data-bs-toggle="modal"data-bs-target="#bookingModal">
+                <span>Đặt dịch vụ</span>
+              </button> 
             </div>
             `;
                   });
@@ -953,140 +956,7 @@
           });
         </script>
         <!-- The Modal -->
-        <div class="modal fade" id="myModal" tabindex="-1">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <!-- Modal Header -->
-              <div class="modal-header" style="justify-content: space-between">
-                <h4 class="modal-title">Gửi Thông Tin Cho Chúng Tôi</h4>
-                <a type="button" data-bs-dismiss="modal"> &#215; </a>
-              </div>
-              <!-- Modal body -->
-              <div class="modal-body">
-                <div class="contact-form">
-                  <form id="contactForm" class="contactFormCombo">
-                    <div class="form-group">
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        required
-                        placeholder="👤 Họ và tên"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <input
-                        type="number"
-                        id="phone"
-                        name="phone"
-                        required
-                        placeholder="📱 SĐT"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <input
-                        type="text"
-                        id="address"
-                        name="address"
-                        placeholder="🏠 Địa chỉ "
-                      />
-                    </div>
-                    <div class="form-group">
-                      <select id="service" name="service">
-                        <option value="">Chọn gói dịch vụ</option>
-
-                    <script>
-                      document.addEventListener("DOMContentLoaded", function () {
-                        const serviceSelect = document.getElementById("service");
-
-                        Promise.all([
-                          fetch("public/services.json").then(res => res.json()),
-                          fetch("public/discount.json").then(res => res.json())
-                        ])
-                        .then(([servicesData, discounts]) => {
-
-                          function isDiscountActive(discount) {
-                            const today = new Date();
-                            const start = new Date(discount.start_date);
-                            const end = new Date(discount.end_date);
-                            return today >= start && today <= end;
-                          }
-
-                          function getDiscount(serviceId) {
-                            return discounts.find(d => d.service_id === serviceId);
-                          }
-
-                          // Lọc combo
-                          const services = servicesData.filter(
-                            (service) => service.price_unit === "combo"
-                          );
-
-                          services.forEach((service) => {
-                            const price = service.sub_services[0].price;
-
-                            // 🔥 lấy discount
-                            const discount = getDiscount(service.id);
-
-                            let finalPrice = price;
-                            let label = "";
-
-                            if (discount && isDiscountActive(discount)) {
-                              finalPrice = price - (price * discount.discount_percent / 100);
-                              label = ` (${discount.label})`;
-                            }
-
-                            const option = document.createElement("option");
-
-                            option.value = service.id;
-
-                            // 👇 hiển thị luôn giá đã giảm
-                            option.textContent =
-                              service.service_name;
-
-                            // 👇 lưu giá đã giảm
-                            option.dataset.price = finalPrice;
-
-                            option.dataset.originalPrice = price; // nếu cần
-                            option.dataset.unit = service.price_unit;
-
-                            serviceSelect.appendChild(option);
-                          });
-
-                        })
-                        .catch((err) => console.log(err));
-                      });
-                    </script>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <input
-                        type="number"
-                        id="price"
-                        name="price"
-                        readonly
-                        placeholder="Giá dịch vụ"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <textarea
-                        id="message"
-                        name="message"
-                        placeholder="📝 Nội dung cần tư vấn..."
-                      ></textarea>
-                    </div>
-                    <button
-                      type="submit"
-                      class="btn btn-primary"
-                      style="width: 100%; justify-content: center"
-                    >
-                      <span>Đặt dịch vụ</span>
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div id="bookingCombo"></div>
       </div>
     </section>
 

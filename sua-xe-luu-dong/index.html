@@ -59,9 +59,6 @@
             <li class="nav-item">
               <a class="nav-link" href="#services">Dịch vụ</a>
             </li>
-            <!-- <li class="nav-item">
-              <a class="nav-link" href="#workflow">Quy trình</a>
-            </li> -->
             <li class="nav-item">
               <a class="nav-link" href="#about">Về Chúng Tôi</a>
             </li>
@@ -70,6 +67,9 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#contact">Liên hệ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="booking_order.html">Đơn đặt</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="modal" data-bs-target="#bookingModal">Đặt dịch vụ</a>
@@ -156,15 +156,34 @@
 
                   let html = "";
 
+                  function getMinServicePrice(service) {
+                    if (!service?.sub_services?.length) return null;
+
+                    const prices = [];
+
+                    service.sub_services.forEach((sub) => {
+                      (sub.vehicles || []).forEach((vehicle) => {
+                        (vehicle.brands || []).forEach((brand) => {
+                          (brand.items || []).forEach((item) => {
+                            const price = Number(item.price);
+                            if (Number.isFinite(price) && price > 0) {
+                              prices.push(price);
+                            }
+                          });
+                        });
+                      });
+                    });
+
+                    if (!prices.length) return null;
+                    return Math.min(...prices);
+                  }
+
                   data.services.forEach((service, index) => {
                     const icon = icons[index % icons.length];
-                    // determine minimum price among sub-services (if any)
                     let minPriceText = "";
-                    if (service.sub_services && service.sub_services.length) {
-                      const prices = service.sub_services.map(
-                        (s) => Number(s.price) || 0,
-                      );
-                      const minPrice = Math.min(...prices);
+
+                    const minPrice = getMinServicePrice(service);
+                    if (minPrice !== null) {
                       minPriceText = `<b>Giá từ:</b> ${minPrice.toLocaleString("vi-VN")} VND`;
                     }
 
@@ -177,7 +196,11 @@
                         <h5>${service.name}</h5>
                         <p>${service.summary}</p>
                         ${minPriceText ? `<p class="service-price">${minPriceText}</p>` : ""}
-                        
+                        <div class="col-12 text-center">
+                          <button type="button" data-id="${service.id}" data-booking-service-btn="true" class="btn btn-primary-custom px-5 py-3">
+                            Đặt dịch vụ
+                          </button>
+                        </div>
                       </div>
                     </div>
                   `;
