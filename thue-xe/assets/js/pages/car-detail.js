@@ -66,7 +66,7 @@ async function loadCarDetail(carId) {
         // Update page SEO dynamically
         const car = result.data.car;
         const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe';
-        const carUrl = `${SITE_BASE}/car-detail.html?id=${car.id}`;
+        const carUrl = `${SITE_BASE}/pages/public/chi-tiet-xe.html?id=${car.id}`;
         const carImg = `${SITE_BASE}/assets/images/cars/${car.main_image}`;
         const carTitle = `${car.name} – Thuê Xe TP.HCM | ${new Intl.NumberFormat('vi-VN').format(car.price_per_day)}đ/ngày`;
         const carDesc = `Thuê ${car.name} tại Thuê Xe TP.HCM. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá chỉ từ ${new Intl.NumberFormat('vi-VN').format(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
@@ -385,7 +385,7 @@ function setupDateCalculation(pricePerDay) {
 
 async function loadBookingModal() {
     if (document.getElementById('bookingModal')) return;
-    const res = await fetch('views/partials/booking-modal.html?v=2');
+    const res = await fetch('partials/dat-lich-modal.html?v=2');
     const html = await res.text();
     document.body.insertAdjacentHTML('beforeend', html);
 }
@@ -518,7 +518,6 @@ async function showTxBookingConfirm(car) {
         return_date:      returnDate,
         pickup_time:      pickupTime,
         return_time:      returnTime,
-        pickup_location:  formData.get('pickup_location'),
         notes,
         addon_services:   addonServices,
         _days:            days,
@@ -534,14 +533,21 @@ async function showTxBookingConfirm(car) {
     if (idNumber) { document.getElementById('tx-cf-id').textContent = idNumber; idRow.style.display = ''; }
     else idRow.style.display = 'none';
 
+    const addressRow = document.getElementById('tx-cf-address-row');
+    const addressEl = document.getElementById('tx-cf-address');
+    if (addressRow && addressEl) {
+        const customerAddress = (_txPendingData.customer_address || '').trim();
+        if (customerAddress) {
+            addressEl.textContent = customerAddress;
+            addressRow.style.display = '';
+        } else {
+            addressRow.style.display = 'none';
+        }
+    }
+
     document.getElementById('tx-cf-pickup').textContent = `${pickupDate.split('-').reverse().join('/')} ${pickupTime}`;
     document.getElementById('tx-cf-return').textContent = `${returnDate.split('-').reverse().join('/')} ${returnTime}`;
     document.getElementById('tx-cf-days').textContent   = `${days} ngày`;
-
-    const pickupLoc    = formData.get('pickup_location') || '';
-    const pickupLocRow = document.getElementById('tx-cf-pickup-loc-row');
-    if (pickupLoc) { document.getElementById('tx-cf-pickup-loc').textContent = pickupLoc; pickupLocRow.style.display = ''; }
-    else pickupLocRow.style.display = 'none';
 
     const addonRow = document.getElementById('tx-cf-addon-row');
     if (addonServices.length) { document.getElementById('tx-cf-addon').textContent = addonServices.join(', '); addonRow.style.display = ''; }
@@ -775,7 +781,7 @@ function bookingAutoFillTX() {
                 banner.innerHTML =
                     '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:0.83rem;color:#92400e;margin-bottom:4px;">' +
                         '<i class="fas fa-info-circle me-2"></i>' +
-                        '<a href="customer-login.html" style="color:#d97706;font-weight:600;text-decoration:none;">Đăng nhập</a>' +
+                        '<a href="pages/customer/dang-nhap.html" style="color:#d97706;font-weight:600;text-decoration:none;">Đăng nhập</a>' +
                         ' để tự động điền tên, số điện thoại và email.' +
                     '</div>';
             }

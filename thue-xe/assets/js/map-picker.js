@@ -1,6 +1,6 @@
 /**
  * CarMapPicker — Leaflet + OpenStreetMap + Nominatim reverse geocoding
- * Hỗ trợ nhiều picker trên cùng một trang (addr, pickup)
+ * Hỗ trợ picker địa chỉ trên form đặt xe
  */
 const CarMapPicker = (() => {
     const HCM = [10.7769, 106.7009];
@@ -13,18 +13,12 @@ const CarMapPicker = (() => {
             btnId:   'mapBtnAddr',
             inputId: 'customerAddress',
             placeholder: 'Số nhà, đường, phường, quận...'
-        },
-        pickup: {
-            boxId:   'mapBoxPickup',
-            mapId:   'mapElPickup',
-            btnId:   'mapBtnPickup',
-            inputId: 'pickupLocation',
-            placeholder: 'Để trống nếu nhận tại văn phòng'
         }
     };
 
     function init(key) {
         const cfg = config[key];
+        if (!cfg) return;
         if (instances[key]) {
             instances[key].map.invalidateSize();
             return;
@@ -40,6 +34,7 @@ const CarMapPicker = (() => {
 
     function pick(key, lat, lng) {
         const cfg = config[key];
+        if (!cfg) return;
         const inst = instances[key];
         if (!inst) return;
 
@@ -79,6 +74,7 @@ const CarMapPicker = (() => {
 
     function toggle(key) {
         const cfg = config[key];
+        if (!cfg) return;
         const box = document.getElementById(cfg.boxId);
         const btn = document.getElementById(cfg.btnId);
         if (!box || !btn) return;
@@ -98,6 +94,7 @@ const CarMapPicker = (() => {
     function gps(key) {
         if (!navigator.geolocation) { alert('Trình duyệt của bạn không hỗ trợ định vị GPS.'); return; }
         const cfg = config[key];
+        if (!cfg) return;
         const input = document.getElementById(cfg.inputId);
         if (!input) return;
         const orig = input.placeholder;
