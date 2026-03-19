@@ -47,16 +47,8 @@
     const cityMap = quoteData.cities || {};
     const domesticCities =
       (quoteData.domestic && quoteData.domestic.cityOptions) || Object.keys(cityMap);
-    const intlCountries =
-      (quoteData.international && quoteData.international.countries) || [];
-    const intlDestinationRegions =
-      (quoteData.international && quoteData.international.destinationRegions) || {};
-    const defaultIntlDestinationRegions =
-      (quoteData.international &&
-        quoteData.international.defaultDestinationRegions) ||
-      [];
     const districtMap = Object.assign({}, cityMap);
-    const itemOptionsByType = {
+    const defaultItemOptionsByType = {
       thuong: [
         "Quần áo/vải vóc",
         "Giày dép/túi xách",
@@ -119,6 +111,7 @@
         "Cuộn cáp điện lớn",
       ],
     };
+    let itemOptionsByType = Object.assign({}, defaultItemOptionsByType);
     const measurementModeByType = {
       thuong: "volume",
       "gia-tri-cao": "weight",
@@ -132,6 +125,63 @@
     const cityNameAliases = {
       "thua thien hue": ["hue"],
     };
+    function resolveOrderFormConfigUrl() {
+      if (typeof window === "undefined") return "assets/data/form-dat-hang.json";
+      const path = window.location.pathname || "";
+      const publicIndex = path.indexOf("/public/");
+      if (publicIndex === -1) return "assets/data/form-dat-hang.json";
+      const basePath = path.slice(0, publicIndex + "/public/".length);
+      return `${basePath}assets/data/form-dat-hang.json`;
+    }
+
+    function applyOrderFormConfig(config) {
+      if (!config || typeof config !== "object") return;
+
+      if (Array.isArray(config.loaihang) && config.loaihang.length) {
+        itemOptionsByType = {};
+        config.loaihang.forEach((type) => {
+          if (!type || !type.key) return;
+          itemOptionsByType[type.key] = Array.isArray((config.tenhangtheoloai || {})[type.key])
+            ? config.tenhangtheoloai[type.key]
+            : [];
+        });
+
+        const domesticTypeSelect = document.getElementById("domestic-item-type");
+        if (domesticTypeSelect) {
+          const current = domesticTypeSelect.value;
+          domesticTypeSelect.innerHTML = '<option value="">Chọn loại hàng</option>';
+          config.loaihang.forEach((type) => {
+            const option = document.createElement("option");
+            option.value = type.key;
+            option.textContent = type.label || type.key;
+            domesticTypeSelect.appendChild(option);
+          });
+          if (current && itemOptionsByType[current]) {
+            domesticTypeSelect.value = current;
+          }
+        }
+      }
+
+      updateItemNameOptions(
+        document.getElementById("domestic-item-type"),
+        document.getElementById("domestic-item-name"),
+      );
+    }
+
+    function loadOrderFormConfig() {
+      if (typeof window.fetch !== "function") return Promise.resolve();
+      return fetch(resolveOrderFormConfigUrl())
+        .then((response) => {
+          if (!response.ok) throw new Error("Cannot load order form config");
+          return response.json();
+        })
+        .then((config) => {
+          applyOrderFormConfig(config);
+        })
+        .catch((error) => {
+          console.warn("Cannot load order form config:", error);
+        });
+    }
 
     function escapeHtml(text) {
       if (core && typeof core.escapeHtml === "function") return core.escapeHtml(text);
@@ -194,7 +244,6 @@
       subtitle,
       summaryMetrics,
       services,
-      mode,
       summaryNote = "",
       explanation = [],
     ) {
@@ -210,19 +259,13 @@
           const breakdown = service.breakdown || {};
           const domesticFeeList = `
             <li>① Cước cơ bản: <strong>${formatVnd(breakdown.basePrice || 0)}</strong></li>
-            <li>② Phí trọng lượng: <strong>${formatVnd(breakdown.weightFee || 0)}</strong></li>
-            ${breakdown.goodsFee > 0 ? `<li>③ Phụ phí loại hàng: <strong>${formatVnd(breakdown.goodsFee)}</strong></li>` : ""}
-            ${breakdown.codFee > 0 ? `<li>④ Phí thu hộ COD: <strong>${formatVnd(breakdown.codFee)}</strong></li>` : ""}
-            ${breakdown.insuranceFee > 0 ? `<li>⑤ Phí bảo hiểm: <strong>${formatVnd(breakdown.insuranceFee)}</strong></li>` : ""}
-          `;
-          const intlFeeList = `
-            <li>① Cước cơ bản: <strong>${formatVnd(breakdown.basePrice || 0)}</strong></li>
-            <li>② Phí trọng lượng: <strong>${formatVnd(breakdown.weightFee || 0)}</strong></li>
-            ${breakdown.goodsAdjustedFee > 0 ? `<li>③ Phụ phí loại hàng: <strong>${formatVnd(breakdown.goodsAdjustedFee)}</strong></li>` : ""}
-            <li>④ Phụ phí nhiên liệu: <strong>${formatVnd(breakdown.fuelFee || 0)}</strong></li>
-            <li>⑤ Phí khai quan: <strong>${formatVnd(breakdown.customsFee || 0)}</strong></li>
-            <li>⑥ Phí an ninh: <strong>${formatVnd(breakdown.securityFee || 0)}</strong></li>
-            ${breakdown.insuranceFee > 0 ? `<li>⑦ Phí bảo hiểm: <strong>${formatVnd(breakdown.insuranceFee)}</strong></li>` : ""}
+            <li>② Phí trọng lượng vượt mức: <strong>${formatVnd(breakdown.overweightFee || 0)}</strong></li>
+            <li>③ Phí thể tích: <strong>${formatVnd(breakdown.volumeFee || 0)}</strong></li>
+            ${breakdown.goodsFee > 0 ? `<li>④ Phụ phí loại hàng: <strong>${formatVnd(breakdown.goodsFee)}</strong></li>` : ""}
+            ${breakdown.timeFee > 0 ? `<li>⑤ Phụ phí khung giờ: <strong>${formatVnd(breakdown.timeFee)}</strong></li>` : ""}
+            ${breakdown.vehicleFee > 0 ? `<li>⑥ Điều chỉnh theo xe: <strong>${formatVnd(breakdown.vehicleFee)}</strong></li>` : ""}
+            ${breakdown.codFee > 0 ? `<li>⑦ Phí thu hộ COD: <strong>${formatVnd(breakdown.codFee)}</strong></li>` : ""}
+            ${breakdown.insuranceFee > 0 ? `<li>⑧ Phí bảo hiểm: <strong>${formatVnd(breakdown.insuranceFee)}</strong></li>` : ""}
           `;
 
           return `
@@ -233,9 +276,10 @@
               </div>
               <p class="quote-service-eta">⏱ Thời gian dự kiến: <strong>${escapeHtml(service.estimate || "Đang cập nhật")}</strong></p>
               <p class="quote-service-eta">🚚 Phương tiện đề xuất: <strong>${escapeHtml(service.vehicleSuggestion || "Đang cập nhật")}</strong></p>
+              <p class="quote-service-eta">🛻 Xe áp giá mặc định: <strong>${escapeHtml(service.selectedVehicleLabel || service.vehicleSuggestion || "Đang cập nhật")}</strong>${service.vehicleMultiplier > 1 ? ` (x${escapeHtml(service.vehicleMultiplier)})` : ""}</p>
               <p class="quote-breakdown-title">Chi tiết tính cước:</p>
               <ul class="quote-breakdown-list">
-                ${mode === "domestic" ? domesticFeeList : intlFeeList}
+                ${domesticFeeList}
               </ul>
               <p class="quote-service-total">Tổng cước: <strong>${formatVnd(service.total || 0)}</strong></p>
             </article>
@@ -257,7 +301,6 @@
         )
         .join("");
 
-      // Tạo HTML phần giải thích công thức tính cước
       let explanationHtml = "";
       if (Array.isArray(explanation) && explanation.length > 0) {
         const stepItems = explanation
@@ -373,12 +416,6 @@
       return mode === "weight" || mode === "volume" ? mode : "both";
     }
 
-    function getMeasurementModeLabel(measurementMode) {
-      if (measurementMode === "weight") return "Ưu tiên theo khối lượng";
-      if (measurementMode === "volume") return "Ưu tiên theo thể tích";
-      return "Tính theo khối lượng/thể tích";
-    }
-
     function hasValidMeasurements(payload) {
       const hasWeight = payload.weight > 0;
       const hasVolume = payload.length > 0 && payload.width > 0 && payload.height > 0;
@@ -400,7 +437,6 @@
     }
 
     function applyMeasurementLayout(prefix, measurementMode, isActivePanel) {
-      // Hiển thị cả 2 nhóm input để tính theo luật max(thực cân, thể tích).
       const showWeight = true;
       const showVolume = true;
       setMeasurementGroupState(`${prefix}-weight-group`, showWeight, isActivePanel);
@@ -412,7 +448,6 @@
     function syncMeasurementInputsByMode(activeMode) {
       const mappings = [
         { mode: "domestic", typeId: "domestic-item-type", prefix: "domestic" },
-        { mode: "international", typeId: "intl-item-type", prefix: "intl" },
       ];
 
       mappings.forEach(({ mode, typeId, prefix }) => {
@@ -428,9 +463,7 @@
       if (!typeSelect || !itemSelect) return;
       typeSelect.addEventListener("change", () => {
         updateItemNameOptions(typeSelect, itemSelect);
-        const activeMode =
-          modeInput && modeInput.value === "international" ? "international" : "domestic";
-        syncMeasurementInputsByMode(activeMode);
+        syncMeasurementInputsByMode("domestic");
       });
       updateItemNameOptions(typeSelect, itemSelect);
     }
@@ -441,11 +474,6 @@
           mode: "domestic",
           typeId: "domestic-item-type",
           itemId: "domestic-item-name",
-        },
-        {
-          mode: "international",
-          typeId: "intl-item-type",
-          itemId: "intl-item-name",
         },
       ];
 
@@ -464,7 +492,6 @@
       [
         ["domestic-from-city", "domestic-from-district"],
         ["domestic-to-city", "domestic-to-district"],
-        ["intl-origin-city", "intl-origin-district"],
       ].forEach(([cityId, districtId]) => {
         const citySelect = document.getElementById(cityId);
         const districtSelect = document.getElementById(districtId);
@@ -526,32 +553,6 @@
         domesticCities,
         "Chọn tỉnh/thành phố",
       );
-      fillSelectOptions(
-        document.getElementById("intl-origin-city"),
-        domesticCities,
-        "Chọn tỉnh/thành phố",
-      );
-      fillSelectOptions(
-        document.getElementById("intl-country"),
-        intlCountries,
-        "Chọn quốc gia",
-      );
-    }
-
-    function updateIntlProvinceOptions() {
-      const countrySelect = document.getElementById("intl-country");
-      const provinceSelect = document.getElementById("intl-province");
-      if (!countrySelect || !provinceSelect) return;
-      const country = countrySelect.value;
-      if (!country) {
-        fillSelectOptions(provinceSelect, [], "Chọn tỉnh/thành phố đến");
-        return;
-      }
-      const regions =
-        intlDestinationRegions[country] && intlDestinationRegions[country].length
-          ? intlDestinationRegions[country]
-          : defaultIntlDestinationRegions;
-      fillSelectOptions(provinceSelect, regions, "Chọn tỉnh/thành phố đến");
     }
 
     function updateDistricts(citySelect, districtSelect) {
@@ -594,7 +595,7 @@
     }
 
     function setActiveMode(mode) {
-      const selectedMode = mode === "international" ? "international" : "domestic";
+      const selectedMode = "domestic";
       if (modeInput) modeInput.value = selectedMode;
 
       modeButtons.forEach((btn) => {
@@ -607,11 +608,6 @@
         const active = panel.dataset.modePanel === selectedMode;
         panel.classList.toggle("is-hidden", !active);
         panel.querySelectorAll("input, select, textarea").forEach((field) => {
-          if (field.id === "intl-origin-country") {
-            field.readOnly = true;
-            field.disabled = false;
-            return;
-          }
           field.disabled = !active;
         });
       });
@@ -632,14 +628,8 @@
     initLocationOptions();
     bindCityDistrict("domestic-from-city", "domestic-from-district");
     bindCityDistrict("domestic-to-city", "domestic-to-district");
-    bindCityDistrict("intl-origin-city", "intl-origin-district");
     bindTypeAndItemName("domestic-item-type", "domestic-item-name");
-    bindTypeAndItemName("intl-item-type", "intl-item-name");
-    const intlCountrySelect = document.getElementById("intl-country");
-    if (intlCountrySelect) {
-      intlCountrySelect.addEventListener("change", updateIntlProvinceOptions);
-    }
-    updateIntlProvinceOptions();
+    loadOrderFormConfig();
     loadAccurateDistrictData();
     setActiveMode(modeInput && modeInput.value ? modeInput.value : "domestic");
     function initCurrencyInputs() {
@@ -659,191 +649,94 @@
 
     quickQuoteForm.addEventListener("submit", function (e) {
       e.preventDefault();
-
-      const mode = modeInput && modeInput.value === "international" ? "international" : "domestic";
-
-      if (mode === "domestic") {
-        const payload = {
-          fromCity: getValue("domestic-from-city"),
-          fromDistrict: getValue("domestic-from-district"),
-          toCity: getValue("domestic-to-city"),
-          toDistrict: getValue("domestic-to-district"),
-          itemName: getValue("domestic-item-name"),
-          itemType: getValue("domestic-item-type"),
-          weight: getNumber("domestic-weight"),
-          quantity: getInteger("domestic-quantity", 1),
-          length: getNumber("domestic-length"),
-          width: getNumber("domestic-width"),
-          height: getNumber("domestic-height"),
-          codValue: getMoney("domestic-cod"),
-          insuranceValue: getMoney("domestic-insurance"),
-        };
-
-        if (!payload.fromCity || !payload.fromDistrict || !payload.toCity || !payload.toDistrict) {
-          renderError("Vui lòng chọn đầy đủ thành phố/quận cho điểm gửi và điểm nhận.");
-          return;
-        }
-        if (!payload.itemName || !payload.itemType) {
-          renderError("Vui lòng chọn loại hàng và tên hàng.");
-          return;
-        }
-        if (payload.quantity <= 0) {
-          renderError("Vui lòng nhập số lượng kiện hợp lệ.");
-          return;
-        }
-        const domesticMeasurementMode = getMeasurementModeByType(payload.itemType);
-        if (!hasValidMeasurements(payload)) {
-          renderError(getMeasurementValidationMessage("nội địa"));
-          return;
-        }
-        if (typeof window.calculateDomesticQuote !== "function") {
-          renderError("Không tải được cấu hình giá trong nước.");
-          return;
-        }
-
-        const result = window.calculateDomesticQuote(payload);
-        const domesticCheapestService = result && Array.isArray(result.services) ? result.services[0] : null;
-        
-        // Xây dựng giải thích công thức tính cước từng bước
-        const pricingExplanation = (typeof window.buildDomesticPricingExplanation === 'function')
-          ? window.buildDomesticPricingExplanation(payload, result)
-          : [];
-
-        const summaryMetrics = [
-          {
-            icon: "📍",
-            label: "Tuyến",
-            value: `${payload.fromCity} - ${payload.fromDistrict} → ${payload.toCity} - ${payload.toDistrict}`,
-          },
-          {
-            icon: "📦",
-            label: "Tên hàng",
-            value: getSelectedText("domestic-item-name"),
-          },
-          {
-            icon: "⚠️",
-            label: "Loại hàng",
-            value: getSelectedText("domestic-item-type"),
-          },
-          {
-            icon: "⚖️",
-            label: "Khối lượng tính cước",
-            value: `${String(result.billableWeight)} kg`,
-          },
-          {
-            icon: "🔢",
-            label: "Số lượng",
-            value: `${payload.quantity} kiện`,
-          },
-          {
-            icon: "🚚",
-            label: "Phương tiện",
-            value: (domesticCheapestService && domesticCheapestService.vehicleSuggestion) || "Đang cập nhật",
-          },
-        ];
-
-        renderQuoteCards(
-          `Hàng hóa: ${payload.itemName}`,
-          `Bảng giá vận chuyển nội địa — ${result.zoneLabel || ""}`,
-          summaryMetrics,
-          result.services,
-          "domestic",
-          `${getMeasurementModeLabel(domesticMeasurementMode)} | Vùng giá: ${result.zoneLabel || ""}`,
-          pricingExplanation,
-        );
-        return;
-      }
-
-      const intlPayload = {
-        originCountry: getValue("intl-origin-country") || "Việt Nam",
-        originCity: getValue("intl-origin-city"),
-        originDistrict: getValue("intl-origin-district"),
-        country: getValue("intl-country"),
-        destinationProvince: getValue("intl-province"),
-        itemName: getValue("intl-item-name"),
-        itemType: getValue("intl-item-type"),
-        weight: getNumber("intl-weight"),
-        quantity: getInteger("intl-quantity", 1),
-        length: getNumber("intl-length"),
-        width: getNumber("intl-width"),
-        height: getNumber("intl-height"),
-        insuranceValue: getMoney("intl-insurance"),
+      const payload = {
+        fromCity: getValue("domestic-from-city"),
+        fromDistrict: getValue("domestic-from-district"),
+        toCity: getValue("domestic-to-city"),
+        toDistrict: getValue("domestic-to-district"),
+        itemName: getValue("domestic-item-name"),
+        itemType: getValue("domestic-item-type"),
+        weight: getNumber("domestic-weight"),
+        quantity: getInteger("domestic-quantity", 1),
+        length: getNumber("domestic-length"),
+        width: getNumber("domestic-width"),
+        height: getNumber("domestic-height"),
+        codValue: getMoney("domestic-cod"),
+        insuranceValue: getMoney("domestic-insurance"),
+        vehicleType: "auto",
       };
 
-      if (!intlPayload.originCity || !intlPayload.originDistrict) {
-        renderError("Vui lòng chọn thành phố và quận/huyện gửi tại Việt Nam.");
+      if (!payload.fromCity || !payload.fromDistrict || !payload.toCity || !payload.toDistrict) {
+        renderError("Vui lòng chọn đầy đủ thành phố/quận cho điểm gửi và điểm nhận.");
         return;
       }
-      if (
-        !intlPayload.country ||
-        !intlPayload.destinationProvince
-      ) {
-        renderError("Vui lòng nhập đủ thông tin quốc gia đến và tỉnh/thành.");
+      if (!payload.itemName || !payload.itemType) {
+        renderError("Vui lòng chọn loại hàng và tên hàng.");
         return;
       }
-      if (
-        !intlPayload.itemName ||
-        !intlPayload.itemType
-      ) {
-        renderError("Vui lòng chọn loại hàng và tên hàng quốc tế.");
+      if (payload.quantity <= 0) {
+        renderError("Vui lòng nhập số lượng kiện hợp lệ.");
         return;
       }
-      if (intlPayload.quantity <= 0) {
-        renderError("Vui lòng nhập số lượng kiện quốc tế hợp lệ.");
+      if (!hasValidMeasurements(payload)) {
+        renderError(getMeasurementValidationMessage("nội địa"));
         return;
       }
-      const intlMeasurementMode = getMeasurementModeByType(intlPayload.itemType);
-      if (!hasValidMeasurements(intlPayload)) {
-        renderError(getMeasurementValidationMessage("quốc tế"));
-        return;
-      }
-      if (typeof window.calculateInternationalQuote !== "function") {
-        renderError("Không tải được cấu hình giá quốc tế.");
+      if (typeof window.calculateDomesticQuote !== "function") {
+        renderError("Không tải được cấu hình giá trong nước.");
         return;
       }
 
-      const intlResult = window.calculateInternationalQuote(intlPayload);
-      const internationalCheapestService = intlResult && Array.isArray(intlResult.services) ? intlResult.services[0] : null;
-      const intlSummaryMetrics = [
+      const result = window.calculateDomesticQuote(payload);
+      const domesticCheapestService = result && Array.isArray(result.services) ? result.services[0] : null;
+      const pricingExplanation = (typeof window.buildDomesticPricingExplanation === "function")
+        ? window.buildDomesticPricingExplanation(payload, result)
+        : [];
+
+      const summaryMetrics = [
         {
           icon: "📍",
           label: "Tuyến",
-          value: `${intlPayload.originCountry} - ${intlPayload.originCity} - ${intlPayload.originDistrict} -> ${intlPayload.country} - ${intlPayload.destinationProvince}`,
+          value: `${payload.fromCity} - ${payload.fromDistrict} → ${payload.toCity} - ${payload.toDistrict}`,
         },
         {
           icon: "📦",
           label: "Tên hàng",
-          value: getSelectedText("intl-item-name"),
+          value: getSelectedText("domestic-item-name"),
         },
         {
           icon: "⚠️",
           label: "Loại hàng",
-          value: getSelectedText("intl-item-type"),
+          value: getSelectedText("domestic-item-type"),
         },
         {
           icon: "⚖️",
-          label: "Khối lượng",
-          value: `${String(intlResult.billableWeight)} kg`,
+          label: "Khối lượng tính cước",
+          value: `${String(result.billableWeight)} kg`,
         },
         {
           icon: "🔢",
           label: "Số lượng",
-          value: `${intlPayload.quantity} kiện`,
+          value: `${payload.quantity} kiện`,
         },
         {
           icon: "🚚",
-          label: "Phương tiện",
-          value: (internationalCheapestService && internationalCheapestService.vehicleSuggestion) || "Đang cập nhật",
+          label: "Xe đề xuất",
+          value: (domesticCheapestService && domesticCheapestService.vehicleSuggestion) || "Đang cập nhật",
+        },
+        {
+          icon: "🛻",
+          label: "Xe đang tính giá",
+          value: (domesticCheapestService && domesticCheapestService.selectedVehicleLabel) || "Đang cập nhật",
         },
       ];
-
       renderQuoteCards(
-        `Hàng hóa quốc tế: ${intlPayload.itemName}`,
-        "Bảng giá hardcode JavaScript cho vận chuyển quốc tế.",
-        intlSummaryMetrics,
-        intlResult.services,
-        "international",
-        `${getMeasurementModeLabel(intlMeasurementMode)} | Khu vực: ${intlResult.zoneLabel || ""}`,
+        `Hàng hóa: ${payload.itemName}`,
+        `Bảng giá vận chuyển nội địa — ${result.zoneLabel || ""}`,
+        summaryMetrics,
+        result.services,
+        `Giá tham khảo nhanh = cước cơ bản theo km và gói dịch vụ + vượt cân + thể tích + phụ phí loại hàng + COD + bảo hiểm. Hệ thống đang lấy max(${result.actualWeight || 0}kg thực, ${result.volumetricWeight || 0}kg thể tích). Giá cuối ở bước đặt đơn có thể thay đổi nếu bạn chọn khung giờ lấy hàng ngoài giờ hoặc đổi phương tiện.`,
+        pricingExplanation,
       );
     });
   }

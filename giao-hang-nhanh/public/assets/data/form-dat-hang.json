@@ -1,0 +1,48 @@
+{
+  "loaihang": [
+    { "key": "thuong", "label": "Hàng thông thường" },
+    { "key": "gia-tri-cao", "label": "Hàng giá trị cao" },
+    { "key": "de-vo", "label": "Hàng dễ vỡ" },
+    { "key": "mui-hoi", "label": "Hàng có mùi hôi" },
+    { "key": "chat-long", "label": "Hàng chất lỏng" },
+    { "key": "pin-lithium", "label": "Hàng có pin Lithium" },
+    { "key": "dong-lanh", "label": "Hàng đông lạnh" },
+    { "key": "cong-kenh", "label": "Hàng cồng kềnh" }
+  ],
+  "tenhangtheoloai": {
+    "thuong": ["Quần áo/vải vóc", "Giày dép/túi xách", "Sách vở/văn phòng phẩm", "Đồ chơi nhựa", "Đồ gia dụng nhựa/inox", "Phụ kiện điện tử đơn giản"],
+    "gia-tri-cao": ["Điện thoại/máy tính bảng", "Laptop/máy ảnh", "Đồng hồ thông minh/tai nghe cao cấp", "Mỹ phẩm chính hãng", "Nước hoa", "Trang sức/đá quý"],
+    "de-vo": ["Đồ gốm sứ/chén dĩa", "Bình thủy tinh", "Màn hình TV/máy tính", "Gương soi", "Tượng đá/đồ thủ công mỹ nghệ", "Đèn trang trí"],
+    "mui-hoi": ["Mắm tôm/nước mắm đặc biệt", "Sầu riêng/chôm chôm", "Hải sản mắm", "Thực phẩm lên men", "Phân bón", "Hóa chất"],
+    "chat-long": ["Dầu ăn/nước mắm", "Mật ong/rượu vang", "Sữa nước/đồ uống đóng chai", "Sơn/dung môi", "Dầu nhớt"],
+    "pin-lithium": ["Sạc dự phòng", "Pin xe máy điện", "Xe điện", "Quạt tích điện", "Đèn pin"],
+    "dong-lanh": ["Thịt/cá/hải sản tươi sống", "Thực phẩm đông lạnh", "Rau củ/trái cây tươi", "Vaccine", "Dược phẩm bảo quản lạnh"],
+    "cong-kenh": ["Sofa/tủ quần áo/giường gỗ", "Lốp xe tải", "Máy móc công trình", "Bồn nước inox", "Cuộn cáp điện"]
+  },
+  "loaixe": [
+    { "key": "auto", "label": "Để hệ thống tự đề xuất" },
+    { "key": "xe_may", "label": "Xe máy" },
+    { "key": "xe_loi", "label": "Xe lôi / xe ba gác" },
+    { "key": "xe_ban_tai", "label": "Xe bán tải / xe van" },
+    { "key": "xe_tai", "label": "Xe tải nhẹ" }
+  ],
+  "khunggiolayhang": [
+    { "key": "sang_08_10", "label": "08:00 - 10:00", "start": "08:00", "end": "10:00", "phicodinh": 0, "heso": 1, "ghichu": "Khung giờ tiêu chuẩn" },
+    { "key": "sang_10_12", "label": "10:00 - 12:00", "start": "10:00", "end": "12:00", "phicodinh": 0, "heso": 1, "ghichu": "Khung giờ tiêu chuẩn" },
+    { "key": "trua_12_14", "label": "12:00 - 14:00", "start": "12:00", "end": "14:00", "phicodinh": 5000, "heso": 1, "ghichu": "Giờ nghỉ trưa" },
+    { "key": "chieu_14_16", "label": "14:00 - 16:00", "start": "14:00", "end": "16:00", "phicodinh": 0, "heso": 1, "ghichu": "Khung giờ tiêu chuẩn" },
+    { "key": "chieu_16_18", "label": "16:00 - 18:00", "start": "16:00", "end": "18:00", "phicodinh": 5000, "heso": 1, "ghichu": "Giờ cao điểm" },
+    { "key": "toi_18_20", "label": "18:00 - 20:00", "start": "18:00", "end": "20:00", "phicodinh": 15000, "heso": 1.08, "ghichu": "Ngoài giờ hành chính" },
+    { "key": "dem_20_22", "label": "20:00 - 22:00", "start": "20:00", "end": "22:00", "phicodinh": 25000, "heso": 1.15, "ghichu": "Khung ban đêm" }
+  ],
+  "khunggionhanhang": [
+    { "key": "sang_08_10", "label": "08:00 - 10:00", "start": "08:00", "end": "10:00" },
+    { "key": "sang_10_12", "label": "10:00 - 12:00", "start": "10:00", "end": "12:00" },
+    { "key": "trua_12_14", "label": "12:00 - 14:00", "start": "12:00", "end": "14:00" },
+    { "key": "chieu_14_16", "label": "14:00 - 16:00", "start": "14:00", "end": "16:00" },
+    { "key": "chieu_16_18", "label": "16:00 - 18:00", "start": "16:00", "end": "18:00" },
+    { "key": "toi_18_20", "label": "18:00 - 20:00", "start": "18:00", "end": "20:00" },
+    { "key": "dem_20_22", "label": "20:00 - 22:00", "start": "20:00", "end": "22:00" }
+  ],
+  "huongdankhaibao": "Hang co gia tri khai bao tren 1.000.000d se tinh phi bao hiem 0,5%, toi thieu 5.000d."
+}

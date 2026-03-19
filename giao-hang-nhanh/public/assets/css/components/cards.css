@@ -138,9 +138,9 @@
   display: block;
   color: #5c698a;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
   margin-bottom: 2px;
 }
 
@@ -200,7 +200,7 @@
   background: #ff7a00;
   color: #fff;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .quote-service-eta {

@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fullname = trim($_POST['fullname'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
+    $role = $_POST['role'] ?? 'customer';
 
     // Validate
     if (empty($username) || empty($password) || empty($email) || empty($phone) || empty($fullname)) {
@@ -34,6 +35,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (strlen($fullname) < 2) {
         echo json_encode(['status' => 'error', 'message' => 'Họ và tên quá ngắn.']);
         exit;
+    } elseif (!in_array($role, ['customer', 'shipper'], true)) {
+        echo json_encode(['status' => 'error', 'message' => 'Vai trò đăng ký không hợp lệ.']);
+        exit;
     }
 
     // Kiểm tra trùng lặp (Username, Email hoặc Số điện thoại)
@@ -52,26 +56,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         // Tạo tài khoản
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $role = 'customer';
+        $is_approved = ($role === 'shipper') ? 0 : 1;
 
-        $insert_stmt = $conn->prepare("INSERT INTO users (username, email, phone, fullname, password, role) VALUES (?, ?, ?, ?, ?, ?)");
+        $insert_stmt = $conn->prepare("INSERT INTO users (username, email, phone, fullname, password, role, is_approved) VALUES (?, ?, ?, ?, ?, ?, ?)");
         if (!$insert_stmt) {
             error_log('Register Insert Error: ' . $conn->error);
             echo json_encode(['status' => 'error', 'message' => 'Lỗi hệ thống. Vui lòng thử lại sau.']);
             exit;
         }
-        $insert_stmt->bind_param("ssssss", $username, $email, $phone, $fullname, $hashed_password, $role);
+        $insert_stmt->bind_param("ssssssi", $username, $email, $phone, $fullname, $hashed_password, $role, $is_approved);
 
         if ($insert_stmt->execute()) {
-            // BẢO MẬT: Chống Session Fixation
-            session_regenerate_id(true);
-            // Đăng ký thành công -> Tự động đăng nhập luôn (Set Session)
-            $_SESSION['user_id'] = $insert_stmt->insert_id;
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = $role;
+            if ($role === 'shipper') {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Đăng ký thành công. Tài khoản shipper của bạn đang chờ quản trị viên duyệt.',
+                    'requires_approval' => true
+                ]);
+            } else {
+                // BẢO MẬT: Chống Session Fixation
+                session_regenerate_id(true);
+                // Đăng ký thành công -> Tự động đăng nhập luôn (Set Session)
+                $_SESSION['user_id'] = $insert_stmt->insert_id;
+                $_SESSION['username'] = $username;
+                $_SESSION['role'] = $role;
 
-            // Trả về thông tin user để điền vào form đặt hàng
-            echo json_encode(['status' => 'success', 'message' => 'Đăng ký thành công!', 'user' => ['fullname' => $fullname, 'phone' => $phone]]);
+                // Trả về thông tin user để điền vào form đặt hàng
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Đăng ký thành công!',
+                    'user' => ['fullname' => $fullname, 'phone' => $phone, 'role' => $role]
+                ]);
+            }
         } else {
             error_log('Register Execute Error: ' . $insert_stmt->error);
             echo json_encode(['status' => 'error', 'message' => 'Không thể tạo tài khoản. Vui lòng thử lại.']);

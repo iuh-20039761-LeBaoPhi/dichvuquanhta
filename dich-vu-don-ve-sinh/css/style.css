@@ -631,6 +631,17 @@ body{
 }
 
 
+.service-preview-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.service-preview-card:hover {
+    transform: translateY(-5px);
+}
+
 /* Animation */
 @keyframes fadeIn {
     from {

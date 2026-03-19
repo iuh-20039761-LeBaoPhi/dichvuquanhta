@@ -1,5 +1,11 @@
 (function (window, document) {
+  const core = window.FastGoCore;
   let ALL_SERVICES_DATA = null;
+  const surveyServiceLabels = {
+    moving_house: "Chuyển nhà trọn gói",
+    moving_office: "Chuyển văn phòng",
+    moving_warehouse: "Chuyển kho bãi",
+  };
 
   async function loadPricingData() {
     try {
@@ -73,6 +79,18 @@
     // Natures (checkboxes)
     const selectedNatures = Array.from(form.querySelectorAll('.moving-nature:checked')).map(cb => cb.value);
 
+    // Selected Additional Services
+    const serviceSelectId = document.getElementById('order-service-type-moving');
+    const serviceType = serviceSelectId ? serviceSelectId.value : '';
+    let selectedServices = [];
+    if (serviceType === 'moving_house') {
+       selectedServices = Array.from(form.querySelectorAll('input[name="services[]"]:checked')).map(cb => cb.value);
+    } else if (serviceType === 'moving_office') {
+       selectedServices = Array.from(form.querySelectorAll('input[name="office_services[]"]:checked')).map(cb => cb.value);
+    } else if (serviceType === 'moving_warehouse') {
+       selectedServices = Array.from(form.querySelectorAll('input[name="warehouse_services[]"]:checked')).map(cb => cb.value);
+    }
+
     // Bắt đầu tính giá dựa trên config của đúng dịch vụ đó
     const vehicleConfig = config.loai_xe[vehicleType];
     if(!vehicleConfig) return;
@@ -109,6 +127,29 @@
       total += config.phu_phi.khung_gio[timeOfDay];
     }
 
+    // 6. Dịch vụ phụ
+    const dichVuPhuConfig = config.phu_phi.dich_vu_phu || {};
+    let parsedServices = [];
+    selectedServices.forEach(srv => {
+      let qtyInput = form.querySelector(`input[name="qty_${srv}"]`);
+      let qty = 1;
+      if (qtyInput) {
+        qty = parseInt(qtyInput.value) || 1;
+      }
+      
+      let srvData = dichVuPhuConfig[srv];
+      if (srvData) {
+        let cost = srvData.don_gia * qty;
+        total += cost;
+        parsedServices.push({
+          name: srv,
+          qty: qty,
+          unit: srvData.don_vi,
+          cost: cost
+        });
+      }
+    });
+
     // Cập nhật lên UI
     const priceEl = document.getElementById('moving-total-cost');
     const breakdownEl = document.getElementById('moving-price-breakdown');
@@ -118,7 +159,7 @@
     }
     
     if (breakdownEl) {
-      let breakdownHtml = '';
+      let breakdownHtml = `<li class="text-slate-800 font-bold mb-2 border-b border-slate-200 pb-1 mt-1">Ước tính vận chuyển cơ bản</li>`;
       
       // Phí cơ bản
       breakdownHtml += `<li class="flex justify-between items-center text-slate-700">
@@ -128,27 +169,32 @@
 
       // Phí quãng đường
       if (distanceKm > vehicleConfig.km_co_ban) {
-        let distFee = (distanceKm - vehicleConfig.km_co_ban) * vehicleConfig.gia_moi_km_tiep;
+        let extraKm = distanceKm - vehicleConfig.km_co_ban;
+        let distFee = extraKm * vehicleConfig.gia_moi_km_tiep;
         breakdownHtml += `<li class="flex justify-between items-center text-slate-600">
-            <span class="pl-2">- Thêm quãng đường (+${(distanceKm - vehicleConfig.km_co_ban).toFixed(1)}km):</span>
+            <span class="pl-2 text-xs text-slate-500">- KM Vượt (+${extraKm.toFixed(1)}km x ${formatCurrency(vehicleConfig.gia_moi_km_tiep)})</span>
             <span>${formatCurrency(distFee)}</span>
         </li>`;
       }
 
       // Thể tích
       if (volume > volConfig.nguong_mien_phi) {
-        let volFee = Math.ceil((volume - volConfig.nguong_mien_phi) / volConfig.buoc_nhay) * volConfig.don_gia_moi_buoc;
+        let extraVol = volume - volConfig.nguong_mien_phi;
+        let steps = Math.ceil(extraVol / volConfig.buoc_nhay);
+        let volFee = steps * volConfig.don_gia_moi_buoc;
         breakdownHtml += `<li class="flex justify-between items-center text-slate-600">
-            <span class="pl-2">- Phụ phí thể tích (>${volConfig.nguong_mien_phi}m3):</span>
+            <span class="pl-2 text-xs text-slate-500">- Thể tích vượt (+${extraVol}m³ ~ ${steps} bậc x ${formatCurrency(volConfig.don_gia_moi_buoc)})</span>
             <span>${formatCurrency(volFee)}</span>
         </li>`;
       }
 
       // Trọng lượng
       if (weight > weightConfig.nguong_mien_phi) {
-        let weightFee = Math.ceil((weight - weightConfig.nguong_mien_phi) / weightConfig.buoc_nhay) * weightConfig.don_gia_moi_buoc;
+        let extraWeight = weight - weightConfig.nguong_mien_phi;
+        let steps = Math.ceil(extraWeight / weightConfig.buoc_nhay);
+        let weightFee = steps * weightConfig.don_gia_moi_buoc;
         breakdownHtml += `<li class="flex justify-between items-center text-slate-600">
-            <span class="pl-2">- Phụ phí trọng lượng:</span>
+            <span class="pl-2 text-xs text-slate-500">- Trọng tải vượt (+${extraWeight}kg ~ ${steps} bậc x ${formatCurrency(weightConfig.don_gia_moi_buoc)})</span>
             <span>${formatCurrency(weightFee)}</span>
         </li>`;
       }
@@ -157,17 +203,34 @@
       if (selectedNatures.length > 0) {
         let natureFee = selectedNatures.reduce((acc, n) => acc + (config.phu_phi.tinh_chat_do_dac[n] || 0), 0);
         breakdownHtml += `<li class="flex justify-between items-center text-slate-600">
-            <span class="pl-2">- Phụ phí đặc tính (${selectedNatures.length} món):</span>
+            <span class="pl-2 text-xs text-slate-500">- Thuộc tính đồ đạc (${selectedNatures.length} mục)</span>
             <span>${formatCurrency(natureFee)}</span>
         </li>`;
       }
 
-      // Giờ giấc
+      // Giờ giấc/ Thời tiết
       if (config.phu_phi.khung_gio[timeOfDay]) {
         breakdownHtml += `<li class="flex justify-between items-center text-slate-600">
-            <span class="pl-2">- Phụ phí ngoài giờ:</span>
+            <span class="pl-2 text-xs text-slate-500">- Khung giờ đặc biệt</span>
             <span>${formatCurrency(config.phu_phi.khung_gio[timeOfDay])}</span>
         </li>`;
+      }
+      if (weather === 'troi_mua') {
+        breakdownHtml += `<li class="flex justify-between items-center text-slate-600">
+            <span class="pl-2 text-xs text-slate-500">- Phụ phí thời tiết (mưa)</span>
+            <span>${formatCurrency(config.phu_phi.thoi_tiet.troi_mua)}</span>
+        </li>`;
+      }
+
+      // Dịch vụ bổ sung
+      if (parsedServices.length > 0) {
+        breakdownHtml += `<li class="text-slate-800 font-bold mt-4 mb-2 border-b border-slate-200 pb-1">Dịch vụ bổ sung (Tham khảo)</li>`;
+        parsedServices.forEach(item => {
+           breakdownHtml += `<li class="flex justify-between items-center text-slate-600">
+               <span class="pl-2 text-xs text-slate-500">- ${item.name} (x${item.qty} ${item.unit})</span>
+               <span>${formatCurrency(item.cost)}</span>
+           </li>`;
+        });
       }
 
       breakdownEl.innerHTML = breakdownHtml;
@@ -176,42 +239,325 @@
 
   function attachComputeEvent() {
     const form = document.getElementById('moving-booking-form');
-    if (!form) return;
-    
-    // Listen to changes on inputs to recalculate price live
-    form.addEventListener('input', calculatePrice);
-    form.addEventListener('change', calculatePrice);
+    if (form && form.dataset.computeBound !== 'true') {
+      form.dataset.computeBound = 'true';
 
-    // Khi đổi loại dịch vụ -> Update danh sách xe
-    const serviceSelect = document.getElementById('order-service-type-moving');
-    if (serviceSelect) {
-      serviceSelect.addEventListener('change', () => {
-        updateVehicleOptions();
-        calculatePrice();
+      // Listen to changes on inputs to recalculate price live
+      form.addEventListener('input', calculatePrice);
+      form.addEventListener('change', calculatePrice);
+
+      // Khi đổi loại dịch vụ -> Update danh sách xe
+      const serviceSelect = document.getElementById('order-service-type-moving');
+      if (serviceSelect && serviceSelect.dataset.computeBound !== 'true') {
+        serviceSelect.dataset.computeBound = 'true';
+        serviceSelect.addEventListener('change', () => {
+          updateVehicleOptions();
+          calculatePrice();
+        });
+      }
+
+      // Submit form (chạy sau khi submit validate của HTML5 thành công)
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Cảm ơn bạn! Yêu cầu Đặt Lịch đã được ghi nhận. Chúng tôi sẽ liên hệ báo giá chính thức sau khi đối chiếu lộ trình.');
+        if(typeof window.closeBookingModal === 'function') window.closeBookingModal('moving');
       });
-    }
-    
-    const confirmBtn = document.getElementById('confirm-moving-booking-btn');
-    if(confirmBtn) {
-       confirmBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          if(!document.getElementById('moving-customer-name').value || !document.getElementById('moving-customer-phone').value) {
-              alert('Vui lòng điền đầy đủ các thông tin bắt buộc (*).');
-              return;
-          }
-          alert('Cảm ơn bạn! Yêu cầu Đặt Lịch đã được ghi nhận. Chúng tôi sẽ liên hệ báo giá chính thức sau khi đối chiếu lộ trình.');
-          if(typeof window.closeBookingModal === 'function') window.closeBookingModal('moving');
-       });
     }
 
     const surveyForm = document.getElementById('moving-survey-form');
-    if(surveyForm) {
-      surveyForm.onsubmit = function(e) {
-        e.preventDefault();
-        alert('Cảm ơn bạn! Yêu cầu Khảo Sát thực tế đã được gửi.');
-        if(typeof window.closeSurveyModal === 'function') window.closeSurveyModal();
+    if (surveyForm && surveyForm.dataset.computeBound !== 'true') {
+      surveyForm.dataset.computeBound = 'true';
+      surveyForm.addEventListener('submit', handleSurveySubmit);
+    }
+  }
+
+  function clearSurveyErrors(form) {
+    if (!core || !form) return;
+    [
+      "name",
+      "phone",
+      "service_type",
+      "survey_address",
+      "moving_survey_date",
+      "moving_survey_time_slot",
+      "survey_files[]",
+    ].forEach((fieldName) => {
+      const input = form.querySelector(`[name="${fieldName}"]`);
+      if (input) core.clearFieldError(input);
+    });
+  }
+
+  function getSurveyFieldValue(form, name) {
+    return String(form.querySelector(`[name="${name}"]`)?.value || "").trim();
+  }
+
+  function getSurveySelectText(form, name) {
+    const select = form.querySelector(`[name="${name}"]`);
+    if (!select) return "";
+    const selectedOption = select.options[select.selectedIndex];
+    return String(selectedOption?.textContent || "").trim();
+  }
+
+  function getSurveyCheckboxState(form, name) {
+    return !!form.querySelector(`[name="${name}"]`)?.checked;
+  }
+
+  function buildSurveyServiceDetails(form, serviceType) {
+    const serviceDetails = {
+      service_type: serviceType,
+      service_label: surveyServiceLabels[serviceType] || "Chuyển dọn",
+      survey_address: getSurveyFieldValue(form, "survey_address"),
+      survey_lat: getSurveyFieldValue(form, "survey_lat"),
+      survey_lng: getSurveyFieldValue(form, "survey_lng"),
+      survey_date: getSurveyFieldValue(form, "moving_survey_date"),
+      survey_time_slot: getSurveyFieldValue(form, "moving_survey_time_slot"),
+      note: getSurveyFieldValue(form, "note"),
+      uploaded_file_names: Array.from(
+        form.querySelector('[name="survey_files[]"]')?.files || [],
+      ).map((file) => file.name),
+    };
+
+    if (serviceType === "moving_house") {
+      serviceDetails.house = {
+        house_type: getSurveySelectText(form, "survey_house_type"),
+        floors: getSurveyFieldValue(form, "survey_house_floors"),
+        has_elevator: getSurveyCheckboxState(form, "survey_elevator"),
+        truck_access: getSurveyCheckboxState(form, "survey_house_truck"),
+      };
+    } else if (serviceType === "moving_office") {
+      serviceDetails.office = {
+        staff_count: getSurveyFieldValue(form, "survey_office_staff"),
+        area: getSurveyFieldValue(form, "survey_office_area"),
+        complex_it: getSurveyCheckboxState(form, "survey_office_it"),
+        needs_dismantle: getSurveyCheckboxState(
+          form,
+          "survey_office_dismantle",
+        ),
+      };
+    } else if (serviceType === "moving_warehouse") {
+      serviceDetails.warehouse = {
+        warehouse_type: getSurveySelectText(form, "survey_warehouse_type"),
+        estimated_volume: getSurveyFieldValue(form, "survey_warehouse_vol"),
+        needs_crane: getSurveyCheckboxState(form, "survey_warehouse_crane"),
+        needs_wrapping: getSurveyCheckboxState(
+          form,
+          "survey_warehouse_wrapping",
+        ),
       };
     }
+
+    return serviceDetails;
+  }
+
+  function validateSurveyForm(form) {
+    if (!form) return false;
+    clearSurveyErrors(form);
+
+    const nameInput = form.querySelector('[name="name"]');
+    const phoneInput = form.querySelector('[name="phone"]');
+    const serviceInput = form.querySelector('[name="service_type"]');
+    const addressInput = form.querySelector('[name="survey_address"]');
+    const dateInput = form.querySelector('[name="moving_survey_date"]');
+    const timeInput = form.querySelector('[name="moving_survey_time_slot"]');
+    const fileInput = form.querySelector('[name="survey_files[]"]');
+    let isValid = true;
+
+    if (!nameInput?.value.trim()) {
+      if (core && nameInput) core.showFieldError(nameInput, "Vui lòng nhập họ và tên");
+      isValid = false;
+    }
+
+    const phoneValue = phoneInput?.value.trim() || "";
+    if (!phoneValue) {
+      if (core && phoneInput) core.showFieldError(phoneInput, "Vui lòng nhập số điện thoại");
+      isValid = false;
+    } else if (!/^0\d{9,10}$/.test(phoneValue)) {
+      if (core && phoneInput) core.showFieldError(phoneInput, "Số điện thoại phải gồm 10-11 số và bắt đầu bằng 0");
+      isValid = false;
+    }
+
+    if (!serviceInput?.value) {
+      if (core && serviceInput) core.showFieldError(serviceInput, "Vui lòng chọn loại dịch vụ");
+      isValid = false;
+    }
+
+    const addressValue = addressInput?.value.trim() || "";
+    if (!addressValue) {
+      if (core && addressInput) core.showFieldError(addressInput, "Vui lòng nhập địa chỉ khảo sát");
+      isValid = false;
+    } else if (addressValue.length < 10) {
+      if (core && addressInput) core.showFieldError(addressInput, "Địa chỉ quá ngắn, cần ghi rõ số nhà và tên đường");
+      isValid = false;
+    }
+
+    const selectedDate = dateInput?.value || "";
+    if (!selectedDate) {
+      if (core && dateInput) core.showFieldError(dateInput, "Vui lòng chọn ngày khảo sát");
+      isValid = false;
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const surveyDate = new Date(`${selectedDate}T00:00:00`);
+      if (surveyDate < today) {
+        if (core && dateInput) core.showFieldError(dateInput, "Không thể chọn ngày trong quá khứ");
+        isValid = false;
+      }
+    }
+
+    if (!timeInput?.value) {
+      if (core && timeInput) core.showFieldError(timeInput, "Vui lòng chọn khung giờ phù hợp");
+      isValid = false;
+    }
+
+    const selectedFiles = Array.from(fileInput?.files || []);
+    if (selectedFiles.length > 8) {
+      if (core && fileInput) core.showFieldError(fileInput, "Tối đa 8 tệp cho một yêu cầu khảo sát");
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function renderSurveyResult(form, data) {
+    const messageDiv = document.getElementById("moving-survey-message");
+    if (!messageDiv || !core) return;
+
+    const serviceType = getSurveyFieldValue(form, "service_type");
+    const serviceLabel = surveyServiceLabels[serviceType] || "Khảo sát";
+    const address = core.escapeHtml(getSurveyFieldValue(form, "survey_address"));
+    const surveyDate = core.escapeHtml(getSurveyFieldValue(form, "moving_survey_date"));
+    const surveyTime = core.escapeHtml(
+      getSurveySelectText(form, "moving_survey_time_slot"),
+    );
+
+    form.classList.add("hidden");
+    messageDiv.classList.remove("hidden");
+    messageDiv.innerHTML = `
+      <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-6 text-slate-800">
+        <h3 class="text-xl font-bold text-emerald-700">Đã ghi nhận lịch khảo sát</h3>
+        <p class="mt-2 text-sm">Mã yêu cầu: <strong>${core.escapeHtml(data.order_code || "")}</strong></p>
+        <div class="mt-4 space-y-2 rounded-xl bg-white p-4 text-sm shadow-sm">
+          <p><strong>Dịch vụ:</strong> ${core.escapeHtml(serviceLabel)}</p>
+          <p><strong>Địa chỉ khảo sát:</strong> ${address}</p>
+          <p><strong>Lịch hẹn:</strong> ${surveyDate} ${surveyTime ? `- ${surveyTime}` : ""}</p>
+          <p><strong>Phí đi lại:</strong> 50.000 VNĐ, thanh toán sau khi nhân viên đến nơi.</p>
+        </div>
+        <div class="mt-5 flex gap-3">
+          <button type="button" onclick="window.closeSurveyModal && window.closeSurveyModal()" class="rounded-xl bg-accent px-5 py-3 font-semibold text-white">Đóng</button>
+        </div>
+      </div>
+    `;
+  }
+
+  window.resetSurveyForm = function() {
+    const form = document.getElementById("moving-survey-form");
+    const messageDiv = document.getElementById("moving-survey-message");
+    if (!form) return;
+
+    form.reset();
+    form.classList.remove("hidden");
+    clearSurveyErrors(form);
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = submitBtn.dataset.defaultText || "Đặt lịch khảo sát";
+    }
+
+    const fileInput = form.querySelector('[name="survey_files[]"]');
+    if (fileInput) {
+      fileInput._managedFiles = [];
+      const dataTransfer = new DataTransfer();
+      fileInput.files = dataTransfer.files;
+      const previewGrid = fileInput.parentNode.querySelector(".file-preview-grid");
+      if (previewGrid) previewGrid.innerHTML = "";
+    }
+
+    const latInput = form.querySelector('[name="survey_lat"]');
+    const lngInput = form.querySelector('[name="survey_lng"]');
+    if (latInput) latInput.value = "";
+    if (lngInput) lngInput.value = "";
+
+    const serviceSelect = form.querySelector('[name="service_type"]');
+    if (serviceSelect) {
+      serviceSelect.dispatchEvent(new Event("change"));
+    }
+
+    if (messageDiv) {
+      messageDiv.classList.add("hidden");
+      messageDiv.innerHTML = "";
+    }
+  };
+
+  function handleSurveySubmit(e) {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    if (!form) return;
+    if (!validateSurveyForm(form)) return;
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      if (!submitBtn.dataset.defaultText) {
+        submitBtn.dataset.defaultText = submitBtn.textContent.trim();
+      }
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Đang gửi yêu cầu...";
+    }
+
+    const formData = new FormData(form);
+    formData.append("survey_fee", "50000");
+    formData.append(
+      "service_details",
+      JSON.stringify(
+        buildSurveyServiceDetails(form, getSurveyFieldValue(form, "service_type")),
+      ),
+    );
+
+    const messageDiv = document.getElementById("moving-survey-message");
+    if (messageDiv) {
+      messageDiv.classList.add("hidden");
+      messageDiv.innerHTML = "";
+    }
+
+    fetch(
+      core ? core.toApiUrl("admin-chuyendon/api/save_survey.php") : "/dich-vu-chuyen-don/admin-chuyendon/api/save_survey.php",
+      {
+        method: "POST",
+        body: formData,
+      },
+    )
+      .then(async (response) => {
+        const data = await response
+          .json()
+          .catch(() => ({ status: "error", message: "Máy chủ trả về dữ liệu không hợp lệ." }));
+        if (!response.ok) {
+          throw new Error(data.message || "Không thể lưu lịch khảo sát.");
+        }
+        return data;
+      })
+      .then((data) => {
+        if (data.status !== "success") {
+          throw new Error(data.message || "Không thể lưu lịch khảo sát.");
+        }
+        renderSurveyResult(form, data);
+      })
+      .catch((error) => {
+        if (messageDiv) {
+          messageDiv.classList.remove("hidden");
+          messageDiv.innerHTML = `
+            <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+              ${core ? core.escapeHtml(error.message) : error.message}
+            </div>
+          `;
+        }
+      })
+      .finally(() => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = submitBtn.dataset.defaultText || "Đặt lịch khảo sát";
+        }
+      });
   }
 
   if (document.readyState === "loading") {

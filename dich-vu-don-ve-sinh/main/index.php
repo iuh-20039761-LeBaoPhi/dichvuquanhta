@@ -66,38 +66,67 @@ $customer = $_SESSION['customer'] ?? null;
 <section class="services-preview container">
     <h2>Dịch vụ nổi bật</h2>
     <p class="section-desc">
-        Chúng tôi cung cấp nhiều giải pháp vệ sinh phù hợp với mọi nhu cầu
+        Chọn nhanh dịch vụ bạn cần – đặt lịch chỉ trong 30s
     </p>
 
     <div class="cards">
+
+        <!-- Căn hộ -->
         <div class="service-preview-card">
-            <img src="..\img\Bi-Quyet-Don-Nha-Sac.jpg" alt="Vệ sinh nhà ở">
+            <img src="../img/Bi-Quyet-Don-Nha-Sac.jpg">
             <div class="card-body">
-                <h3>Vệ sinh nhà ở</h3>
-                <p>Làm sạch toàn diện không gian sống của bạn</p>
-                <a href="house-cleaning.php" class="btn-small">
+                <h3>Vệ sinh căn hộ</h3>
+                <p>Phù hợp chung cư, nhà nhỏ</p>
+                <a href="booking.php?service=apartment" class="btn-small">
                     Đặt lịch
                 </a>
             </div>
         </div>
 
+        <!-- Nhà phố -->
         <div class="service-preview-card">
-            <img src="..\img\baogom_930de0865e.png" alt="Vệ sinh văn phòng">
+            <img src="../img/Bi-Quyet-Don-Nha-Sac.jpg">
+            <div class="card-body">
+                <h3>Nhà phố / Biệt thự</h3>
+                <p>Dọn dẹp toàn diện, sạch sâu</p>
+                <a href="booking.php?service=house" class="btn-small">
+                    Đặt lịch
+                </a>
+            </div>
+        </div>
+
+        <!-- Văn phòng -->
+        <div class="service-preview-card">
+            <img src="../img/baogom_930de0865e.png">
             <div class="card-body">
                 <h3>Vệ sinh văn phòng</h3>
-                <p>Không gian làm việc sạch sẽ – hiệu quả hơn</p>
-                <a href="office-cleaning.php" class="btn-small">
+                <p>Không gian làm việc chuyên nghiệp</p>
+                <a href="booking.php?service=restaurant" class="btn-small">
                     Đặt lịch
                 </a>
             </div>
         </div>
+
+        <!-- Sofa -->
+        <div class="service-preview-card">
+            <img src="../img/baogom_930de0865e.png">
+            <div class="card-body">
+                <h3>Giặt sofa</h3>
+                <p>Loại bỏ bụi bẩn & vi khuẩn</p>
+                <a href="booking.php?service=sofa" class="btn-small">
+                    Đặt lịch
+                </a>
+            </div>
+        </div>
+
     </div>
 
-    <div class="center">
-        <a href="services.php" class="btn btn-outline">Xem tất cả dịch vụ</a>
+    <div class="center mt-4">
+        <a href="services.php" class="btn btn-outline">
+            Xem tất cả dịch vụ
+        </a>
     </div>
 </section>
-
 
 
 

@@ -228,7 +228,7 @@ $result = $stmt->get_result();
                                         </button>
                                     <?php endif; ?>
 
-                                    <a href="create_order.php?reorder_id=<?php echo $row['id']; ?>" class="btn-sm btn-outline"
+                                    <a href="dat-lich-giao-hang-nhanh.html?reorder_id=<?php echo $row['id']; ?>" class="btn-sm btn-outline"
                                         style="border-color:#ff7a00; color:#ff7a00;">Đặt lại</a>
                                 </td>
                             </tr>

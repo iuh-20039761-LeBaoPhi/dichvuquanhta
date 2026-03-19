@@ -1,158 +1,203 @@
 <div
   id="survey-modal"
-  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden"
+  class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden"
   style="font-family: 'Poppins', 'Inter', sans-serif"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="survey-modal-title"
 >
-  <div
-    class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden relative"
-  >
+  <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden relative">
     <!-- Modal Header -->
-    <div
-      class="bg-gradient-to-r from-primary to-secondary-light p-6 text-white text-center"
-    >
-      <button
-        id="close-survey-modal"
-        class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewbox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          ></path>
-        </svg>
+    <div class="bg-gradient-to-r from-primary to-secondary-light p-6 text-white text-center">
+      <button id="close-survey-modal" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors" aria-label="Đóng form khảo sát">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
-      <h2 class="text-2xl font-bold mb-2">Đăng ký hẹn khảo sát</h2>
-      <p class="text-green-50 text-sm">
-        Chuyên viên của chúng tôi sẽ đến tận nơi để ước tính chi phí chính xác
-        nhất cho bạn.
-      </p>
+      <h2 id="survey-modal-title" class="text-2xl font-bold mb-2">Đăng ký hẹn khảo sát</h2>
+      <p class="text-green-50 text-sm">Nhân viên của chúng tôi sẽ đến tận nơi để ước tính chi phí chính xác nhất cho bạn.</p>
     </div>
 
     <!-- Modal Body -->
-    <div class="p-6 md:p-8 overflow-y-auto max-h-[70vh] custom-scroll">
-      <form id="moving-survey-form" class="space-y-5">
+    <div class="p-6 md:p-8 overflow-y-auto max-h-[75vh] custom-scroll">
+      <!-- Thông báo rõ ràng về phí đi lại -->
+      <div class="mb-6 p-4 bg-teal-50 border-l-4 border-teal-500 rounded-lg text-sm text-teal-900 flex items-start gap-3">
+        <i class="fas fa-shield-alt text-teal-600 mt-0.5 text-lg"></i>
+        <div>
+          <strong class="block text-teal-700 mb-1 text-base">Phí đi lại 50.000đ · Khảo sát miễn phí</strong>
+          Chúng tôi thu phí đi lại 50.000đ khi nhân viên tới khảo sát. Phí khảo sát, tư vấn và đo đạc là miễn phí.
+        </div>
+      </div>
+
+      <form id="moving-survey-form" class="space-y-8" novalidate>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1"
-              >Họ và tên *</label
-            >
-            <input
-              type="text"
-              required
-              class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-              placeholder="Nhập tên của bạn"
-            />
+            <label for="survey-name" class="block text-sm font-semibold text-slate-700 mb-1">Họ và tên *</label>
+            <input id="survey-name" type="text" name="name" required autocomplete="name" maxlength="100" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Nhập tên của bạn"/>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1"
-              >Số điện thoại *</label
-            >
-            <input
-              type="tel"
-              required
-              class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-              placeholder="09xx xxx xxx"
-            />
+            <label for="survey-phone" class="block text-sm font-semibold text-slate-700 mb-1">Số điện thoại *</label>
+            <input id="survey-phone" type="tel" name="phone" required inputmode="tel" autocomplete="tel" pattern="^0\d{9,10}$" maxlength="11" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="09xx xxx xxx"/>
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1"
-            >Loại dịch vụ quan tâm</label
-          >
+          <label for="survey-service-type" class="block text-sm font-semibold text-slate-700 mb-1">Loại dịch vụ quan tâm *</label>
           <div class="relative">
-            <select
-              id="survey-service-type"
-              class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none"
-            >
+            <select id="survey-service-type" name="service_type" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none">
+              <option value="">Chọn loại dịch vụ</option>
               <option value="moving_house">Chuyển Nhà Trọn Gói</option>
               <option value="moving_office">Chuyển Văn Phòng</option>
               <option value="moving_warehouse">Chuyển Kho Bãi</option>
             </select>
-            <div
-              class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500"
-            >
-              <i class="fas fa-chevron-down text-xs"></i>
-            </div>
+            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
           </div>
         </div>
 
+
+        <!-- Thông tin khảo sát ban đầu (gộp từ form cũ) -->
+        <div class="pt-2">
+          <h3 class="text-base font-bold text-slate-800 mb-3">Thông tin khảo sát ban đầu</h3>
+          <!-- Khối câu hỏi lọc theo dịch vụ (Ẩn/Hiện bằng JS) -->
+        <div id="service-specific-questions">
+          
+          <!-- Chuyển Nhà -->
+          <div id="survey-detail-moving_house" class="survey-subform space-y-4">
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                  <label for="survey-house-type" class="block text-sm font-semibold text-slate-700 mb-1">Loại nhà</label>
+                  <select id="survey-house-type" name="survey_house_type" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none">
+                     <option value="">Chọn loại nhà</option>
+                     <option value="can-ho">Căn hộ</option>
+                     <option value="nha-pho-hem">Nhà phố / hẻm</option>
+                     <option value="chung-cu">Chung cư</option>
+                  </select>
+               </div>
+               <div>
+                  <label for="survey-house-floors" class="block text-sm font-semibold text-slate-700 mb-1">Số tầng</label>
+                  <input id="survey-house-floors" type="text" name="survey_house_floors" placeholder="VD: 3 tầng" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none" />
+                </div>
+             </div>
+             <div class="flex gap-4">
+                <label class="inline-flex items-center text-sm"><input type="checkbox" name="survey_elevator" value="1" class="mr-2"> Có thang máy</label>
+                <label class="inline-flex items-center text-sm"><input type="checkbox" name="survey_house_truck" value="1" class="mr-2"> Hẻm xe tải vào được?</label>
+             </div>
+          </div>
+
+          <!-- Chuyển Văn Phòng -->
+          <div id="survey-detail-moving_office" class="survey-subform space-y-4" style="display: none">
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                  <label for="survey-office-staff" class="block text-sm font-semibold text-slate-700 mb-1">Số lượng nhân viên</label>
+                  <input id="survey-office-staff" type="number" name="survey_office_staff" min="1" step="1" placeholder="VD: 50" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none" />
+               </div>
+               <div>
+                  <label for="survey-office-area" class="block text-sm font-semibold text-slate-700 mb-1">Diện tích (m2)</label>
+                  <input id="survey-office-area" type="text" name="survey_office_area" placeholder="VD: 200m2" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none" />
+               </div>
+             </div>
+             <div class="flex gap-4">
+                <label class="inline-flex items-center text-sm"><input type="checkbox" name="survey_office_it" value="1" class="mr-2"> Có server/IT phức tạp</label>
+                <label class="inline-flex items-center text-sm"><input type="checkbox" name="survey_office_dismantle" value="1" class="mr-2"> Cần tháo lắp nội thất gỗ</label>
+             </div>
+          </div>
+
+          <!-- Chuyển Kho Bãi -->
+          <div id="survey-detail-moving_warehouse" class="survey-subform space-y-4" style="display: none">
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                  <label for="survey-warehouse-type" class="block text-sm font-semibold text-slate-700 mb-1">Loại kho bãi</label>
+                  <select id="survey-warehouse-type" name="survey_warehouse_type" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none">
+                     <option value="">Chọn loại kho</option>
+                     <option value="kho-thuong">Kho thường</option>
+                     <option value="kho-lanh">Kho lạnh</option>
+                     <option value="kho-cong-nghiep">Kho công nghiệp</option>
+                     <option value="kho-logistics">Kho logistics</option>
+                     <option value="kho-hang-de-vo">Kho hàng dễ vỡ</option>
+                  </select>
+               </div>
+               <div>
+                  <label for="survey-warehouse-vol" class="block text-sm font-semibold text-slate-700 mb-1">Khối lượng (tấn/m3)</label>
+                  <input id="survey-warehouse-vol" type="text" name="survey_warehouse_vol" placeholder="VD: 10 tấn" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 outline-none" />
+               </div>
+             </div>
+             <div class="flex gap-4">
+                <label class="inline-flex items-center text-sm"><input type="checkbox" name="survey_warehouse_crane" value="1" class="mr-2"> Cần xe nâng / xe cẩu</label>
+                <label class="inline-flex items-center text-sm"><input type="checkbox" name="survey_warehouse_wrapping" value="1" class="mr-2"> Cần quấn màng co / đóng gói</label>
+             </div>
+          </div>
+
+          <p class="text-[11px] text-slate-500 mt-3 bg-blue-50 p-3 rounded-lg border border-blue-100 italic">
+            <i class="fas fa-info-circle mr-1"></i> Khảo sát thực tế giúp chúng tôi tư vấn phương án vận chuyển tối ưu và báo giá chuẩn xác nhất.
+          </p>
+        </div>
+
+
         <!-- Tìm kiếm địa chỉ với gợi ý và bản đồ -->
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1"
-            >Địa chỉ cần khảo sát *</label
-          >
+          <label for="survey-address-input" class="block text-sm font-semibold text-slate-700 mb-1">Khu vực cần khảo sát (Địa chỉ đến kiểm tra) *</label>
           <div class="relative">
              <input
                type="text"
                id="survey-address-input"
+               name="survey_address"
                required
                class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                placeholder="Nhập địa chỉ, đường, phường/xã..."
                autocomplete="off"
              />
-             <div id="survey-address-sug" class="absolute z-10 w-full bg-white border border-slate-200 shadow-xl rounded-lg max-h-60 overflow-y-auto hidden top-full mt-1"></div>
+             <div id="survey-address-input-sug" class="absolute z-10 w-full bg-white border border-slate-200 shadow-xl rounded-lg max-h-60 overflow-y-auto hidden top-full mt-1"></div>
           </div>
-          <p class="text-xs text-slate-500 mt-2 mb-2"><i class="fas fa-info-circle"></i> Hoặc kéo ghim trực tiếp trên bản đồ bên dưới.</p>
-          <div id="survey-map" class="w-full h-48 rounded-lg border border-slate-300 z-0"></div>
+          <input type="hidden" id="survey-lat" name="survey_lat" />
+          <input type="hidden" id="survey-lng" name="survey_lng" />
+          <p class="text-xs text-slate-500 mt-2 mb-2"><i class="fas fa-info-circle"></i> Hoặc kéo ghim trực tiếp trên bản đồ.</p>
+          <div id="survey-map" class="w-full h-56 rounded-xl border border-slate-300 z-[1] relative shadow-inner"></div>
         </div>
+
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1"
-              >Ngày khảo sát dự kiến</label
-            >
-            <input
-              type="date"
-              class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-            />
+            <label for="moving-survey-date" class="block text-sm font-semibold text-slate-700 mb-1">Ngày mong muốn khảo sát *</label>
+            <input id="moving-survey-date" type="date" name="moving_survey_date" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"/>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1"
-              >Khung giờ</label
-            >
+            <label for="moving-survey-time-slot" class="block text-sm font-semibold text-slate-700 mb-1">Khung giờ rảnh *</label>
             <div class="relative">
-              <select
-                class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none"
-              >
+              <select id="moving-survey-time-slot" name="moving_survey_time_slot" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none">
+                <option value="">Chọn khung giờ phù hợp</option>
                 <option value="sang">Sáng (08:00 - 11:30)</option>
                 <option value="chieu">Chiều (13:30 - 17:00)</option>
                 <option value="toi">Tối (Sau 17:00)</option>
+                <option value="bat-ky">Bất cứ lúc nào (Linh động)</option>
               </select>
-              <div
-                class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500"
-              >
-                <i class="fas fa-chevron-down text-xs"></i>
-              </div>
+              <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500"><i class="fas fa-chevron-down text-xs"></i></div>
             </div>
           </div>
         </div>
 
+        <!-- Upload Hình ảnh/Video -->
+        <details class="border border-slate-200 rounded-xl p-4 bg-white">
+          <summary class="cursor-pointer text-sm font-semibold text-slate-700">
+            Tải lên sơ bộ Hình Ảnh / Video không gian (tùy chọn)
+          </summary>
+          <div class="mt-3 border-2 border-dashed border-slate-300 rounded-xl p-4 text-center cursor-pointer hover:bg-slate-50 transition-colors group" onclick="this.querySelector('input').click()">
+            <input type="file" name="survey_files[]" accept="image/*,video/*" multiple class="hidden" onchange="window.handleFileSelect(this)">
+            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+              <i class="fas fa-photo-video text-xl text-slate-500 group-hover:text-primary"></i>
+            </div>
+            <p class="text-sm font-medium text-slate-700">Chụp bằng điện thoại hoặc tải ảnh/video</p>
+            <p class="text-xs text-slate-400 mt-1">Giúp nhân viên trước khi xuất phát có đủ đồ nghề và nắm bắt 90% khối lượng đồ. Tối đa 8 tệp, mỗi tệp không quá 15MB.</p>
+            <div class="file-preview-grid mt-4 grid gap-2 grid-cols-2 sm:grid-cols-4 px-2" style="text-align:left;"></div>
+          </div>
+        </details>
+
+
         <div>
-           <label class="block text-sm font-semibold text-slate-700 mb-1"
-            >Ghi chú thêm (Tùy chọn)</label
-          >
-          <textarea
-             class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-             rows="3"
-             placeholder="Ví dụ: Nhà trong hẻm nhỏ xe tải không vào được..."
-          ></textarea>
+           <label for="survey-note" class="block text-sm font-semibold text-slate-700 mb-1">Nhắn nhủ thêm cho Nhân viên</label>
+          <textarea id="survey-note" name="note" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" rows="2" placeholder="Ví dụ: Nhà trong hẻm sâu, yêu cầu vận chuyển đồ gỗ cẩn thận, cần bọc lót kỹ các thiết bị điện tử..."></textarea>
         </div>
 
-        <button
-          type="submit"
-          class="w-full bg-accent hover:brightness-90 text-white font-bold py-3.5 rounded-xl shadow-lg transition-transform hover:-translate-y-0.5"
-        >
-          Hoàn Tất Gửi Yêu Cầu
-        </button>
+        <button type="submit" class="w-full bg-accent hover:brightness-90 text-white font-bold py-4 rounded-xl shadow-lg transition-transform hover:-translate-y-0.5 mt-4">Đặt lịch khảo sát</button>
       </form>
+      <div id="moving-survey-message" class="hidden mt-6" aria-live="polite"></div>
     </div>
   </div>
 </div>

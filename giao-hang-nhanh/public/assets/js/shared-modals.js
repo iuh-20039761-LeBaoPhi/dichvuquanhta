@@ -99,21 +99,7 @@
     const value = String(typeKey || "")
       .trim()
       .toLowerCase();
-    return [
-      "slow",
-      "standard",
-      "fast",
-      "express",
-      "intl_economy",
-      "intl_express",
-    ].includes(value);
-  }
-
-  function isInternationalDeliveryType(typeKey) {
-    const value = String(typeKey || "")
-      .trim()
-      .toLowerCase();
-    return ["intl_economy", "intl_express"].includes(value);
+    return ["slow", "standard", "fast", "express"].includes(value);
   }
 
   function ensureModalStyles() {
@@ -382,107 +368,16 @@
     );
   }
 
-  function initInternationalDestinationFields() {
-    const countrySelect = document.getElementById("delivery-intl-country");
-    const provinceSelect = document.getElementById("delivery-intl-province");
-    if (!countrySelect || !provinceSelect) return;
-
-    const quoteData =
-      window.QUOTE_SHIPPING_DATA &&
-      typeof window.QUOTE_SHIPPING_DATA === "object"
-        ? window.QUOTE_SHIPPING_DATA
-        : {};
-    const intlData =
-      quoteData.international && typeof quoteData.international === "object"
-        ? quoteData.international
-        : {};
-    const countries = toUniqueSortedLocations(
-      Array.isArray(intlData.countries) ? intlData.countries : [],
-    );
-    const destinationRegions =
-      intlData.destinationRegions &&
-      typeof intlData.destinationRegions === "object"
-        ? intlData.destinationRegions
-        : {};
-    const countryZoneMap =
-      intlData.countryZoneMap && typeof intlData.countryZoneMap === "object"
-        ? intlData.countryZoneMap
-        : {};
-    const regionCountries = toUniqueSortedLocations(
-      Object.keys(destinationRegions),
-    );
-    const zoneCountries = toUniqueSortedLocations(Object.keys(countryZoneMap));
-
-    // Chỉ giữ quốc gia đồng nhất giữa danh sách hiển thị + vùng đến + zone tính giá.
-    const regionSet = new Set(regionCountries.map(normalizeLocationKey));
-    const zoneSet = new Set(zoneCountries.map(normalizeLocationKey));
-    const countryOptions = countries.filter(
-      (c) =>
-        regionSet.has(normalizeLocationKey(c)) &&
-        zoneSet.has(normalizeLocationKey(c)),
-    );
-
-    setSelectOptions(countrySelect, countryOptions, "Chọn quốc gia nhận");
-    setSelectOptions(provinceSelect, [], "Chọn tỉnh/thành phố nhận");
-    provinceSelect.disabled = true;
-
-    const applyRegions = () => {
-      const country = countrySelect.value;
-      const regions = toUniqueSortedLocations(
-        Array.isArray(destinationRegions[country])
-          ? destinationRegions[country]
-          : [],
-      );
-      setSelectOptions(provinceSelect, regions, "Chọn tỉnh/thành phố nhận");
-      provinceSelect.disabled = regions.length === 0;
-    };
-
-    countrySelect.addEventListener("change", applyRegions);
-    applyRegions();
-  }
-
   function initDeliveryServiceMode() {
     const serviceSelect = document.getElementById("order-service-type");
     if (!serviceSelect) return;
-
-    const deliveryCityGroup = document.getElementById(
-      "delivery-domestic-city-group",
-    );
-    const deliveryDistrictGroup = document.getElementById(
-      "delivery-domestic-district-group",
-    );
-    const intlCountryGroup = document.getElementById(
-      "delivery-intl-country-group",
-    );
-    const intlProvinceGroup = document.getElementById(
-      "delivery-intl-province-group",
-    );
-    const intlCountrySelect = document.getElementById("delivery-intl-country");
     const codField = document.getElementById("cod-field-group");
     const codInput = document.getElementById("cod_amount");
 
     const applyState = () => {
-      const isIntl = isInternationalDeliveryType(serviceSelect.value);
-      if (deliveryCityGroup)
-        deliveryCityGroup.style.display = isIntl ? "none" : "";
-      if (deliveryDistrictGroup) {
-        deliveryDistrictGroup.style.display = isIntl ? "none" : "";
-      }
-      if (intlCountryGroup)
-        intlCountryGroup.style.display = isIntl ? "block" : "none";
-      if (intlProvinceGroup)
-        intlProvinceGroup.style.display = isIntl ? "block" : "none";
-      if (intlCountrySelect) {
-        intlCountrySelect.required = isIntl;
-      }
-      if (codField) codField.style.display = isIntl ? "none" : "";
+      if (codField) codField.style.display = "";
       if (codInput) {
-        if (isIntl) {
-          codInput.value = "0";
-          codInput.disabled = true;
-        } else {
-          codInput.disabled = false;
-        }
+        codInput.disabled = false;
       }
     };
 
@@ -549,7 +444,6 @@
     initAddressAutocomplete();
     initDeliveryItemFields();
     initDeliveryRouteFields();
-    initInternationalDestinationFields();
     initDeliveryServiceMode();
     ensureCoreBindings();
 

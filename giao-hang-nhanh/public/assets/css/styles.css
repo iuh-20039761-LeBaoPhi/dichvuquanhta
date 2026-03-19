@@ -20,6 +20,3 @@
 @import "pages/landing.css";
 @import "pages/auth.css";
 @import "pages/dashboard.css";
-
-/* ===== RESPONSIVE UTILITIES (Load last to override) ===== */
-/* @import "responsive.css"; */

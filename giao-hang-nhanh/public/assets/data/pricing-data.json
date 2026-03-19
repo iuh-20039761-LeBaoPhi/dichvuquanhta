@@ -143,17 +143,17 @@
         "Cần Thơ"
       ],
       "tenvung": {
-        "same_district": "Nội quận/huyện",
-        "same_city": "Nội thành",
-        "inter_city": "Liên tỉnh"
+        "cung_quan": "Nội quận/huyện",
+        "noi_thanh": "Nội thành",
+        "lien_tinh": "Liên tỉnh"
       },
       "dichvu": {
         "tieuchuan": {
           "ten": "Tiêu Chuẩn",
           "thoigian": {
-            "same_district": "4-6 giờ",
-            "same_city": "8-12 giờ",
-            "inter_city": "1-3 ngày"
+            "cung_quan": "4-6 giờ",
+            "noi_thanh": "8-12 giờ",
+            "lien_tinh": "1-3 ngày"
           },
           "coban": {
             "cungquan": 18000,
@@ -165,9 +165,9 @@
         "nhanh": {
           "ten": "Giao Nhanh",
           "thoigian": {
-            "same_district": "2-3 giờ",
-            "same_city": "4-8 giờ",
-            "inter_city": "18-30 giờ"
+            "cung_quan": "2-3 giờ",
+            "noi_thanh": "4-8 giờ",
+            "lien_tinh": "18-30 giờ"
           },
           "coban": {
             "cungquan": 24000,
@@ -179,9 +179,9 @@
         "hoatoc": {
           "ten": "Hỏa Tốc",
           "thoigian": {
-            "same_district": "1-2 giờ",
-            "same_city": "2-4 giờ",
-            "inter_city": "12-24 giờ"
+            "cung_quan": "1-2 giờ",
+            "noi_thanh": "2-4 giờ",
+            "lien_tinh": "12-24 giờ"
           },
           "coban": {
             "cungquan": 32000,
@@ -211,15 +211,15 @@
         "donglanh": "Xe lạnh chuyên dụng, duy trì nhiệt độ bảo quản suốt hành trình.",
         "congkenh": "Phương tiện đặc biệt chịu tải, quy trình bốc xếp riêng."
       },
-      "distance_config": {
-        "base_km": 3,
-        "base_price": 20000,
-        "next_km_price": 5000,
-        "long_distance_threshold": 50,
-        "long_distance_price": 3500,
-        "base_included_weight": 2.0,
-        "volume_divisor": 6000,
-        "vat_included": true
+      "cauhinh_khoangcach": {
+        "km_coban": 3,
+        "gia_coban": 20000,
+        "gia_tiep_theo_km": 5000,
+        "nguong_xa": 50,
+        "gia_xa": 3500,
+        "can_mien_phi": 2.0,
+        "he_so_the_tich": 6000,
+        "da_gom_vat": true
       }
     }
   }

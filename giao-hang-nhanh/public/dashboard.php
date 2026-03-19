@@ -166,7 +166,7 @@ if (empty($todo_items)) {
         'type' => 'success',
         'message' => 'Mọi thứ đang ổn. Bạn có thể tạo thêm đơn mới khi cần.',
         'cta' => 'Tạo đơn ngay',
-        'link' => 'create_order.php'
+        'link' => 'dat-lich-giao-hang-nhanh.html'
     ];
 }
 ?>
@@ -197,7 +197,7 @@ if (empty($todo_items)) {
                 <p class="dashboard-subtitle">Theo dõi đơn hàng mới nhất, việc cần xử lý và thao tác nhanh trong một màn hình.</p>
             </div>
             <div class="dashboard-hero-actions">
-                <a href="create_order.php" class="btn-primary">+ Tạo đơn ngay</a>
+                <a href="dat-lich-giao-hang-nhanh.html" class="btn-primary">+ Tạo đơn ngay</a>
                 <a href="order_history.php" class="dashboard-btn-outline">Lịch sử đơn</a>
             </div>
         </section>
@@ -259,7 +259,7 @@ if (empty($todo_items)) {
                                 </div>
                                 <div class="dashboard-order-actions">
                                     <a href="customer_order_detail.php?id=<?php echo (int) $order['id']; ?>" class="btn-sm btn-outline">Chi tiết</a>
-                                    <a href="create_order.php?reorder_id=<?php echo (int) $order['id']; ?>" class="btn-sm dashboard-reorder-btn">Đặt lại</a>
+                                    <a href="dat-lich-giao-hang-nhanh.html?reorder_id=<?php echo (int) $order['id']; ?>" class="btn-sm dashboard-reorder-btn">Đặt lại</a>
                                 </div>
                             </article>
                         <?php endforeach; ?>
@@ -272,7 +272,7 @@ if (empty($todo_items)) {
                 <?php else: ?>
                     <div class="dashboard-empty">
                         <p>Bạn chưa có đơn hàng nào. Bắt đầu tạo đơn đầu tiên để theo dõi trạng thái tại đây.</p>
-                        <a href="create_order.php" class="btn-primary">Tạo đơn đầu tiên</a>
+                        <a href="dat-lich-giao-hang-nhanh.html" class="btn-primary">Tạo đơn đầu tiên</a>
                     </div>
                 <?php endif; ?>
             </article>
@@ -298,7 +298,7 @@ if (empty($todo_items)) {
                 <article class="dashboard-action-card">
                     <h4>📦 Đặt đơn mới</h4>
                     <p>Tạo đơn vận chuyển ngay lập tức với biểu mẫu đã tối ưu cho cá nhân.</p>
-                    <a href="create_order.php" class="btn-primary">Tạo đơn</a>
+                    <a href="dat-lich-giao-hang-nhanh.html" class="btn-primary">Tạo đơn</a>
                 </article>
                 <article class="dashboard-action-card">
                     <h4>🔍 Lịch sử đơn hàng</h4>
@@ -318,7 +318,7 @@ if (empty($todo_items)) {
             </div>
         </section>
 
-        <a href="create_order.php" class="dashboard-mobile-cta">+ Tạo đơn nhanh</a>
+        <a href="dat-lich-giao-hang-nhanh.html" class="dashboard-mobile-cta">+ Tạo đơn nhanh</a>
     </main>
 
     <?php include __DIR__ . '/../includes/footer.php'; ?>

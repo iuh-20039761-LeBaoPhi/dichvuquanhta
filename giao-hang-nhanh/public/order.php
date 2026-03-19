@@ -114,9 +114,11 @@ $payment_method = $_POST['payment_method'] ?? 'cod';
 $note = $_POST['note'] ?? '';
 $goods_description = $_POST['goods_description'] ?? '';
 $client_order_code = trim($_POST['client_order_code'] ?? '');
-if ($client_order_code === '') $client_order_code = null;
+if ($client_order_code === '')
+    $client_order_code = null;
 $vehicle_type = trim($_POST['vehicle_type'] ?? '');
-if ($vehicle_type === '') $vehicle_type = null;
+if ($vehicle_type === '')
+    $vehicle_type = null;
 
 // Đồng bộ giá trị từ nhiều form frontend cũ/mới
 if ($payment_method === 'bank') {
@@ -155,7 +157,8 @@ if (is_array($goods_item_names)) {
         }
     }
 }
-if (!$has_items) $errors[] = "Vui lòng thêm ít nhất một hàng hóa vào đơn hàng.";
+if (!$has_items)
+    $errors[] = "Vui lòng thêm ít nhất một hàng hóa vào đơn hàng.";
 if (empty($receiver_name))
     $errors[] = "Chưa nhập tên người nhận";
 if (empty($receiver_phone))
@@ -247,18 +250,20 @@ if (!empty($note_extras)) {
 }
 
 if ($insurance_value > 0) {
-    if ($note !== '') $note .= "\n";
+    if ($note !== '')
+        $note .= "\n";
     $note .= "💎 Bảo hiểm hàng hóa: " . number_format($insurance_value) . " VNĐ";
 }
 
 if (!empty($items_list)) {
-    if ($note !== '') $note .= "\n";
+    if ($note !== '')
+        $note .= "\n";
     $note .= "--- CHI TIẾT HÀNG HÓA ---\n";
     foreach ($items_list as $idx => $it) {
         $it_name = $it['name'] ?: 'Chưa đặt tên';
         $it_qty = $it['quantity'] ?: 1;
         $it_weight = $it['weight_per_unit'] ?: 0;
-        $it_insured = isset($it['insurance_value']) ? " (Khai giá: ".number_format($it['insurance_value'])."đ)" : "";
+        $it_insured = isset($it['insurance_value']) ? " (Khai giá: " . number_format($it['insurance_value']) . "đ)" : "";
         $note .= ($idx + 1) . ". " . $it_name . " [x" . $it_qty . "] - " . $it_weight . "kg/kiện" . $it_insured . "\n";
     }
 }

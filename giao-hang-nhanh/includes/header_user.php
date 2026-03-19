@@ -44,8 +44,8 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
             <li class="<?php echo ($current_page === 'dashboard.php') ? 'active' : ''; ?>">
                 <a href="dashboard.php">Dashboard</a>
             </li>
-            <li class="<?php echo ($current_page === 'create_order.php') ? 'active' : ''; ?>">
-                <a href="create_order.php">Tạo đơn hàng</a>
+            <li class="<?php echo ($current_page === 'dat-lich-giao-hang-nhanh.html') ? 'active' : ''; ?>">
+                <a href="dat-lich-giao-hang-nhanh.html">Tạo đơn hàng</a>
             </li>
             <li class="<?php echo ($current_page === 'order_history.php') ? 'active' : ''; ?>">
                 <a href="order_history.php">Lịch sử đơn</a>

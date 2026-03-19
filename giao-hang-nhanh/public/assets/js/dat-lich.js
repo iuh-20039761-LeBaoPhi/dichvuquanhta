@@ -9,41 +9,130 @@
 let map, markerPickup, markerDelivery;
 let khoang_cach_km = 0;
 let selectedService = null;
+let reorderContext = null;
 let orderItems = [
-  { loai_hang: 'thuong', ten_hang: '', can_nang: 1.0, chieu_dai: 15, chieu_rong: 10, chieu_cao: 10, gia_tri_khai_bao: 0 }
+  { loai_hang: '', ten_hang: '', so_luong: 1, gia_tri_khai_bao: 0, can_nang: 1.0, chieu_dai: 15, chieu_rong: 10, chieu_cao: 10 }
 ];
 
-// Danh sách tên hàng theo loại (giống form tính cước nhanh trên index.html)
-const ITEM_NAMES_BY_TYPE = {
-  thuong:       ["Quần áo/vải vóc", "Giày dép/túi xách", "Sách vở/văn phòng phẩm", "Đồ chơi nhựa", "Đồ gia dụng nhựa/inox", "Phụ kiện điện tử đơn giản"],
-  'gia-tri-cao':["Điện thoại/máy tính bảng", "Laptop/máy ảnh", "Đồng hồ thông minh/tai nghe cao cấp", "Mỹ phẩm chính hãng", "Nước hoa", "Trang sức/đá quý"],
-  'de-vo':      ["Đồ gốm sứ/chén dĩa", "Bình thủy tinh", "Màn hình TV/máy tính", "Gương soi", "Tượng đá/đồ thủ công mỹ nghệ", "Đèn trang trí"],
-  'mui-hoi':    ["Mắm tôm/nước mắm đặc biệt", "Sầu riêng/chôm chôm", "Hải sản mắm", "Thực phẩm lên men", "Phân bón", "Hóa chất"],
-  'chat-long':  ["Dầu ăn/nước mắm", "Mật ong/rượu vang", "Sữa nước/đồ uống đóng chai", "Sơn/dung môi", "Dầu nhớt"],
-  'pin-lithium':["Sạc dự phòng", "Pin xe máy điện", "Xe điện", "Quạt tích điện", "Đèn pin"],
-  'dong-lanh':  ["Thịt/cá/hải sản tươi sống", "Thực phẩm đông lạnh", "Rau củ/trái cây tươi", "Vaccine", "Dược phẩm bảo quản lạnh"],
-  'cong-kenh':  ["Sofa/tủ quần áo/giường gỗ", "Lốp xe tải", "Máy móc công trình", "Bồn nước inox", "Cuộn cáp điện"],
-};
+function resolveOrderFormConfigUrl() {
+  if (typeof window === "undefined") return "assets/data/form-dat-hang.json";
+  const inPublicDir = window.location.pathname.toLowerCase().includes("/public/");
+  const basePath =
+    typeof window.apiBasePath === "string"
+      ? window.apiBasePath
+      : inPublicDir
+        ? ""
+        : "public/";
+  return `${basePath}assets/data/form-dat-hang.json`;
+}
+
+function loadOrderFormConfigSync() {
+  const fallback = {
+    loaihang: [
+      { key: "thuong", label: "Hàng thông thường" },
+      { key: "gia-tri-cao", label: "Hàng giá trị cao" },
+      { key: "de-vo", label: "Hàng dễ vỡ" },
+      { key: "mui-hoi", label: "Hàng có mùi hôi" },
+      { key: "chat-long", label: "Hàng chất lỏng" },
+      { key: "pin-lithium", label: "Hàng có pin Lithium" },
+      { key: "dong-lanh", label: "Hàng đông lạnh" },
+      { key: "cong-kenh", label: "Hàng cồng kềnh" },
+    ],
+    tenhangtheoloai: {},
+    loaixe: [
+      { key: "auto", label: "Để hệ thống tự đề xuất" },
+      { key: "xe_may", label: "Xe máy" },
+      { key: "xe_loi", label: "Xe lôi / xe ba gác" },
+      { key: "xe_ban_tai", label: "Xe bán tải / xe van" },
+      { key: "xe_tai", label: "Xe tải nhẹ" },
+    ],
+    khunggiolayhang: [],
+    khunggionhanhang: [],
+    huongdankhaibao:
+      "Hang co gia tri khai bao tren 1.000.000d se tinh phi bao hiem 0,5%, toi thieu 5.000d.",
+  };
+
+  if (typeof XMLHttpRequest === "undefined") return fallback;
+  try {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", resolveOrderFormConfigUrl(), false);
+    xhr.send(null);
+    if (xhr.status >= 200 && xhr.status < 300 && xhr.responseText) {
+      return Object.assign(fallback, JSON.parse(xhr.responseText));
+    }
+  } catch (error) {
+    console.error("Không tải được cấu hình form đặt hàng:", error);
+  }
+  return fallback;
+}
+
+const ORDER_FORM_CONFIG = loadOrderFormConfigSync();
+const ITEM_TYPES = Array.isArray(ORDER_FORM_CONFIG.loaihang)
+  ? ORDER_FORM_CONFIG.loaihang
+  : [];
+const ITEM_NAMES_BY_TYPE = ORDER_FORM_CONFIG.tenhangtheoloai || {};
+const ITEM_TYPE_LABELS = ITEM_TYPES.reduce((acc, item) => {
+  if (item && item.key) acc[item.key] = item.label || item.key;
+  return acc;
+}, {});
+const VEHICLE_OPTIONS = Array.isArray(ORDER_FORM_CONFIG.loaixe)
+  ? ORDER_FORM_CONFIG.loaixe
+  : [];
+const PICKUP_SLOT_OPTIONS = Array.isArray(ORDER_FORM_CONFIG.khunggiolayhang)
+  ? ORDER_FORM_CONFIG.khunggiolayhang
+  : [];
+const DELIVERY_SLOT_OPTIONS = Array.isArray(ORDER_FORM_CONFIG.khunggionhanhang)
+  ? ORDER_FORM_CONFIG.khunggionhanhang
+  : [];
+const DECLARED_VALUE_HELP =
+  ORDER_FORM_CONFIG.huongdankhaibao ||
+  "Hang co gia tri khai bao tren 1.000.000d se tinh phi bao hiem 0,5%, toi thieu 5.000d.";
 
 // ========== INIT ==========
 document.addEventListener("DOMContentLoaded", () => {
   initMap();
   initAddressSearch("search-pickup",   "sug-pickup",   "pickup");
   initAddressSearch("search-delivery", "sug-delivery", "delivery");
+  initPickupSlotOptions();
+  initDeliverySlotOptions();
+  initVehicleOptions();
 
   renderItems();
   document.getElementById("btn-add-item").addEventListener("click", addItem);
-  document.getElementById("cod-value").addEventListener("input", () => renderItems());
+  document.getElementById("cod-value").addEventListener("input", () => {
+    renderItems();
+    if (getCurrentStep() >= 3) renderServiceCards();
+  });
 
   // Default date = today
   const today = new Date().toISOString().split('T')[0];
   document.getElementById("pickup-date").value = today;
+  document.getElementById("delivery-date").value = today;
+  document.getElementById("vehicle-choice").addEventListener("change", () => {
+    if (getCurrentStep() >= 3) renderServiceCards();
+  });
+  document.getElementById("pickup-date").addEventListener("change", () => {
+    if (getCurrentStep() >= 3) renderServiceCards();
+  });
+  document.getElementById("pickup-slot").addEventListener("change", () => {
+    if (getCurrentStep() >= 3) renderServiceCards();
+  });
+  document.getElementById("delivery-date").addEventListener("change", () => {
+    if (getCurrentStep() >= 3) renderServiceCards();
+  });
+  document.getElementById("delivery-slot").addEventListener("change", () => {
+    if (getCurrentStep() >= 3) renderServiceCards();
+  });
 
   document.getElementById("btn-1-to-2").addEventListener("click", () => validateStep1() && goToStep(2));
-  document.getElementById("btn-2-to-3").addEventListener("click", () => validateStep2() && goToStep(3));
+  document.getElementById("btn-2-to-3").addEventListener("click", () => {
+    if (validateStep2()) {
+      renderServiceCards();
+      goToStep(3);
+    }
+  });
   document.getElementById("btn-3-to-4").addEventListener("click", () => {
     if (validateStep3()) {
-      renderServiceCards();
       goToStep(4);
     }
   });
@@ -71,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (s === 4 && !validateStep4()) { ok = false; break; }
         }
         if (ok) {
-          if (step === 4) renderServiceCards();
+          if (step === 3) renderServiceCards();
           if (step === 5) prepareReview();
           goToStep(step);
         }
@@ -79,6 +168,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     item.style.cursor = "pointer";
   });
+
+  initReorderPrefill();
 });
 
 function getCurrentStep() {
@@ -86,6 +177,68 @@ function getCurrentStep() {
     if (document.getElementById(`step-${i}`).classList.contains("active")) return i;
   }
   return 1;
+}
+
+function getPickupSlotOptions() {
+  return PICKUP_SLOT_OPTIONS;
+}
+
+function getDeliverySlotOptions() {
+  return DELIVERY_SLOT_OPTIONS;
+}
+
+function initPickupSlotOptions() {
+  const select = document.getElementById("pickup-slot");
+  if (!select) return;
+  const options = getPickupSlotOptions();
+  if (!options.length) return;
+  select.innerHTML = options
+    .map((slot, index) => {
+      const selectedAttr = index === 0 ? " selected" : "";
+      const note = slot.ghichu ? ` - ${slot.ghichu}` : "";
+      return `<option value="${slot.key}" data-start="${slot.start}" data-end="${slot.end}"${selectedAttr}>${slot.label}${note}</option>`;
+    })
+    .join("");
+}
+
+function initDeliverySlotOptions() {
+  const select = document.getElementById("delivery-slot");
+  if (!select) return;
+  const options = getDeliverySlotOptions();
+  if (!options.length) return;
+  select.innerHTML = options
+    .map((slot, index) => {
+      const selectedAttr = index === 0 ? " selected" : "";
+      return `<option value="${slot.key}" data-start="${slot.start}" data-end="${slot.end}"${selectedAttr}>${slot.label}</option>`;
+    })
+    .join("");
+}
+
+function initVehicleOptions() {
+  const select = document.getElementById("vehicle-choice");
+  if (!select || !VEHICLE_OPTIONS.length) return;
+  select.innerHTML = VEHICLE_OPTIONS
+    .map((option, index) => {
+      const selectedAttr = index === 0 ? " selected" : "";
+      return `<option value="${option.key}"${selectedAttr}>${option.label}</option>`;
+    })
+    .join("");
+}
+
+function getSelectedPickupSlot() {
+  const select = document.getElementById("pickup-slot");
+  if (!select) return null;
+  const options = getPickupSlotOptions();
+  const selected = options.find((slot) => slot.key === select.value);
+  return selected || null;
+}
+
+function getSelectedDeliverySlot() {
+  const select = document.getElementById("delivery-slot");
+  if (!select) return null;
+  const options = getDeliverySlotOptions();
+  const selected = options.find((slot) => slot.key === select.value);
+  return selected || null;
 }
 
 // ========== UI HELPERS ==========
@@ -113,6 +266,15 @@ function isDateInPast(dateStr) {
   today.setHours(0, 0, 0, 0);
   const selected = new Date(dateStr);
   return selected < today;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 // ========== MAP ==========
@@ -148,20 +310,22 @@ function initMap() {
   recalculateDistance();
 }
 
-function recalculateDistance() {
+async function recalculateDistance() {
   const a = markerPickup.getLatLng();
   const b = markerDelivery.getLatLng();
   const url = `https://router.project-osrm.org/route/v1/driving/${a.lng},${a.lat};${b.lng},${b.lat}?overview=false`;
-  fetch(url)
-    .then(r => r.json())
-    .then(d => {
-      khoang_cach_km = d.routes[0].distance / 1000;
-      showDistance();
-    })
-    .catch(() => {
-      khoang_cach_km = a.distanceTo(b) / 1000;
-      showDistance();
-    });
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data && data.routes && data.routes[0] && data.routes[0].distance) {
+      khoang_cach_km = data.routes[0].distance / 1000;
+    } else {
+      throw new Error("No route");
+    }
+  } catch (error) {
+    khoang_cach_km = a.distanceTo(b) / 1000;
+  }
+  showDistance();
 }
 
 function showDistance() {
@@ -218,9 +382,146 @@ function reverseGeocode(latlng, inputId) {
     .then(d => { if (d.display_name) document.getElementById(inputId).value = d.display_name; });
 }
 
+function getQueryParam(name) {
+  if (typeof window === "undefined") return "";
+  return new URLSearchParams(window.location.search).get(name) || "";
+}
+
+async function resolveAddressToLatLng(address) {
+  const query = String(address || "").trim();
+  if (!query) return null;
+
+  const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&countrycodes=vn&limit=1`);
+  const data = await response.json();
+  if (!Array.isArray(data) || !data.length) {
+    return null;
+  }
+
+  return {
+    lat: parseFloat(data[0].lat),
+    lng: parseFloat(data[0].lon),
+  };
+}
+
+function setOptionGroupValue(groupId, value) {
+  const button = document.querySelector(`#${groupId} .option-btn[data-val="${value}"]`);
+  if (button) {
+    selectOption(groupId, button);
+  }
+}
+
+function normalizeReorderItems(items) {
+  if (!Array.isArray(items) || !items.length) {
+    return [{ loai_hang: '', ten_hang: '', so_luong: 1, gia_tri_khai_bao: 0, can_nang: 1, chieu_dai: 15, chieu_rong: 10, chieu_cao: 10 }];
+  }
+
+  return items.map((item) => ({
+    loai_hang: item.loai_hang || 'thuong',
+    ten_hang: item.ten_hang || '',
+    so_luong: Math.max(1, parseInt(item.so_luong, 10) || 1),
+    gia_tri_khai_bao: parseFloat(item.gia_tri_khai_bao) || 0,
+    can_nang: Math.max(0.1, parseFloat(item.can_nang) || 0.1),
+    chieu_dai: Math.max(0, parseFloat(item.chieu_dai) || 0),
+    chieu_rong: Math.max(0, parseFloat(item.chieu_rong) || 0),
+    chieu_cao: Math.max(0, parseFloat(item.chieu_cao) || 0),
+  }));
+}
+
+function markReorderMode(orderCode) {
+  const container = document.querySelector(".booking-container");
+  if (!container || document.getElementById("reorder-banner")) return;
+
+  const banner = document.createElement("div");
+  banner.id = "reorder-banner";
+  banner.style.cssText = "margin-bottom:18px;padding:14px 16px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-weight:700;";
+  banner.innerHTML = `<i class="fas fa-rotate-right"></i> Đang đặt lại từ đơn <strong>${escapeHtml(orderCode || "")}</strong>. Bạn có thể chỉnh lại trước khi gửi.`;
+  container.insertBefore(banner, container.firstChild);
+}
+
+async function applyReorderAddresses(data) {
+  document.getElementById("search-pickup").value = data.pickup_address || "";
+  document.getElementById("search-delivery").value = data.delivery_address || "";
+
+  const [pickupPoint, deliveryPoint] = await Promise.all([
+    resolveAddressToLatLng(data.pickup_address).catch(() => null),
+    resolveAddressToLatLng(data.delivery_address).catch(() => null),
+  ]);
+
+  if (pickupPoint) {
+    markerPickup.setLatLng([pickupPoint.lat, pickupPoint.lng]);
+  }
+  if (deliveryPoint) {
+    markerDelivery.setLatLng([deliveryPoint.lat, deliveryPoint.lng]);
+  }
+
+  if (pickupPoint && deliveryPoint) {
+    map.fitBounds([
+      [pickupPoint.lat, pickupPoint.lng],
+      [deliveryPoint.lat, deliveryPoint.lng],
+    ], { padding: [40, 40] });
+  } else if (pickupPoint || deliveryPoint) {
+    const point = pickupPoint || deliveryPoint;
+    map.panTo([point.lat, point.lng]);
+  }
+
+  await recalculateDistance();
+}
+
+async function applyReorderPrefill(data) {
+  reorderContext = {
+    source_order_id: data.source_order_id || null,
+    source_order_code: data.source_order_code || "",
+  };
+
+  document.getElementById("sender-name").value = data.sender_name || "";
+  document.getElementById("sender-phone").value = data.sender_phone || "";
+  document.getElementById("receiver-name").value = data.receiver_name || "";
+  document.getElementById("receiver-phone").value = data.receiver_phone || "";
+  document.getElementById("notes").value = data.notes || "";
+  document.getElementById("cod-value").value = parseFloat(data.cod_value) || 0;
+
+  const vehicleChoice = document.getElementById("vehicle-choice");
+  if (vehicleChoice) {
+    vehicleChoice.value = Array.from(vehicleChoice.options).some((option) => option.value === data.vehicle) ? data.vehicle : "auto";
+  }
+
+  setOptionGroupValue("payer-group", data.fee_payer || "gui");
+  setOptionGroupValue("payment-group", data.payment_method || "tien_mat");
+
+  orderItems = normalizeReorderItems(data.items);
+  renderItems();
+
+  if (data.service_type) {
+    selectedService = { serviceType: data.service_type };
+  }
+
+  await applyReorderAddresses(data);
+  if (data.service_type) {
+    renderServiceCards();
+  }
+  markReorderMode(data.source_order_code || `#${data.source_order_id || ""}`);
+}
+
+async function initReorderPrefill() {
+  const reorderId = getQueryParam("reorder_id");
+  if (!reorderId) return;
+
+  try {
+    const response = await fetch(`dat-lich-ajax.php?reorder_id=${encodeURIComponent(reorderId)}`);
+    const result = await response.json();
+    if (!response.ok || !result.success || !result.data) {
+      throw new Error(result.message || "Không thể tải dữ liệu đơn cần đặt lại.");
+    }
+    await applyReorderPrefill(result.data);
+  } catch (error) {
+    console.error(error);
+    showError(1, error.message || "Không thể tải dữ liệu đơn cũ để đặt lại.");
+  }
+}
+
 // ========== ITEMS ==========
 function addItem() {
-  orderItems.push({ loai_hang: 'thuong', ten_hang: '', can_nang: 1.0, chieu_dai: 15, chieu_rong: 10, chieu_cao: 10, gia_tri_khai_bao: 0 });
+  orderItems.push({ loai_hang: '', ten_hang: '', so_luong: 1, gia_tri_khai_bao: 0, can_nang: 1.0, chieu_dai: 15, chieu_rong: 10, chieu_cao: 10 });
   renderItems();
 }
 
@@ -237,7 +538,13 @@ function handleLoaiHangChange(idx, val) {
 }
 
 function updateItemField(idx, field, val) {
-  orderItems[idx][field] = (field === 'loai_hang' || field === 'ten_hang') ? val : (parseFloat(val) || 0);
+  if (field === 'loai_hang' || field === 'ten_hang') {
+    orderItems[idx][field] = val;
+  } else if (field === 'so_luong') {
+    orderItems[idx][field] = Math.max(1, parseInt(val, 10) || 1);
+  } else {
+    orderItems[idx][field] = parseFloat(val) || 0;
+  }
   updateWeightDisplay();
 }
 
@@ -246,7 +553,15 @@ function renderItems() {
   container.innerHTML = "";
   orderItems.forEach((item, idx) => {
     const names = ITEM_NAMES_BY_TYPE[item.loai_hang] || [];
-    const nameOpts = names.map(n => `<option value="${n}" ${item.ten_hang===n?'selected':''}>${n}</option>`).join('');
+    const hasCustomName = item.ten_hang && !names.includes(item.ten_hang);
+    const nameOpts = [
+      hasCustomName ? `<option value="${escapeHtml(item.ten_hang)}" selected>${escapeHtml(item.ten_hang)}</option>` : "",
+      ...names.map(n => `<option value="${escapeHtml(n)}" ${item.ten_hang===n?'selected':''}>${escapeHtml(n)}</option>`),
+    ].join('');
+    const typeOptions = ITEM_TYPES.map((type) => `
+      <option value="${escapeHtml(type.key)}" ${item.loai_hang===type.key?'selected':''}>${escapeHtml(type.label)}</option>
+    `).join("");
+    const isTypeChosen = Boolean(item.loai_hang);
     const div = document.createElement("div");
     div.className = "item-row";
     div.innerHTML = `
@@ -256,35 +571,39 @@ function renderItems() {
         <div class="form-group" style="margin:0;">
           <label style="font-size:12px;">Loại hàng</label>
           <select class="form-control" onchange="handleLoaiHangChange(${idx}, this.value)">
-            <option value="thuong"       ${item.loai_hang==='thuong'?'selected':''}>Hàng thông thường</option>
-            <option value="gia-tri-cao"  ${item.loai_hang==='gia-tri-cao'?'selected':''}>Hàng giá trị cao</option>
-            <option value="de-vo"        ${item.loai_hang==='de-vo'?'selected':''}>Hàng dễ vỡ</option>
-            <option value="mui-hoi"      ${item.loai_hang==='mui-hoi'?'selected':''}>Hàng có mùi hôi</option>
-            <option value="chat-long"    ${item.loai_hang==='chat-long'?'selected':''}>Hàng chất lỏng</option>
-            <option value="pin-lithium"  ${item.loai_hang==='pin-lithium'?'selected':''}>Điện tử (Pin Lithium)</option>
-            <option value="dong-lanh"    ${item.loai_hang==='dong-lanh'?'selected':''}>Hàng đông lạnh</option>
-            <option value="cong-kenh"    ${item.loai_hang==='cong-kenh'?'selected':''}>Hàng cồng kềnh</option>
+            <option value="">Chọn loại hàng...</option>
+            ${typeOptions}
           </select>
         </div>
         <div class="form-group" style="margin:0;">
           <label style="font-size:12px;">Tên hàng cụ thể</label>
-          <select class="form-control" onchange="updateItemField(${idx}, 'ten_hang', this.value)">
-            <option value="">Chọn tên hàng...</option>
+          <select class="form-control" onchange="updateItemField(${idx}, 'ten_hang', this.value)" ${isTypeChosen ? '' : 'disabled'}>
+            <option value="">${isTypeChosen ? 'Chọn tên hàng...' : 'Chọn loại hàng trước'}</option>
             ${nameOpts}
           </select>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+      <div class="item-grid item-grid-2">
         <div class="form-group" style="margin:0;">
-          <label style="font-size:12px;">Cân nặng (kg)</label>
-          <input type="number" class="form-control" step="0.1" value="${item.can_nang}" onchange="updateItemField(${idx},'can_nang',this.value)" />
-        </div>
-        <div class="form-group" style="margin:0;">
-          <label style="font-size:12px;">Khai báo giá trị (₫)</label>
+          <label style="font-size:12px;">
+            Khai báo giá trị (₫)
+            <span class="field-help" tabindex="0" aria-label="${DECLARED_VALUE_HELP}">
+              i
+              <span class="field-help__tooltip">${DECLARED_VALUE_HELP}</span>
+            </span>
+          </label>
           <input type="number" class="form-control" placeholder="0" value="${item.gia_tri_khai_bao}" onchange="updateItemField(${idx},'gia_tri_khai_bao',this.value)" />
         </div>
+        <div class="form-group" style="margin:0;">
+          <label style="font-size:12px;">Số lượng</label>
+          <input type="number" class="form-control" min="1" step="1" value="${item.so_luong || 1}" onchange="updateItemField(${idx},'so_luong',this.value)" />
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div class="item-grid item-grid-4">
+        <div class="form-group" style="margin:0;">
+          <label style="font-size:11px;">Cân nặng / kiện (kg)</label>
+          <input type="number" class="form-control" step="0.1" value="${item.can_nang}" onchange="updateItemField(${idx},'can_nang',this.value)" />
+        </div>
         <div class="form-group" style="margin:0;">
           <label style="font-size:11px;">Dài (cm)</label>
           <input type="number" class="form-control" value="${item.chieu_dai}" onchange="updateItemField(${idx},'chieu_dai',this.value)" />
@@ -307,41 +626,112 @@ function renderItems() {
 function updateWeightDisplay() {
   let totalAct = 0, totalVol = 0;
   orderItems.forEach(it => {
-    totalAct += it.can_nang;
-    totalVol += (it.chieu_dai * it.chieu_rong * it.chieu_cao) / 6000;
+    totalAct += it.can_nang * (it.so_luong || 1);
+    totalVol += ((it.chieu_dai * it.chieu_rong * it.chieu_cao) / 6000) * (it.so_luong || 1);
   });
   const billable = Math.max(totalAct, totalVol);
   document.getElementById("total-weight-display").textContent = `${billable.toFixed(1)} kg`;
 }
 
+function getPrimaryItemMeta() {
+  const priority = [
+    "cong-kenh",
+    "dong-lanh",
+    "pin-lithium",
+    "chat-long",
+    "mui-hoi",
+    "de-vo",
+    "gia-tri-cao",
+    "thuong",
+  ];
+  for (const type of priority) {
+    const found = orderItems.find((item) => item.loai_hang === type);
+    if (found) return found;
+  }
+  const firstSelected = orderItems.find((item) => item.loai_hang);
+  return firstSelected || orderItems[0] || { loai_hang: "thuong", ten_hang: "" };
+}
+
 function buildQuotePayload() {
   let totalCanNang = 0, totalKhaiGia = 0;
-  let maxDai = 0, maxRong = 0, tongCao = 0;
+  let maxDai = 0, maxRong = 0, tongCao = 0, tongSoLuong = 0;
   orderItems.forEach(it => {
-    totalCanNang  += it.can_nang;
-    totalKhaiGia  += it.gia_tri_khai_bao;
+    const itemQty = Math.max(1, parseInt(it.so_luong, 10) || 1);
+    totalCanNang  += it.can_nang * itemQty;
+    totalKhaiGia  += it.gia_tri_khai_bao * itemQty;
     maxDai  = Math.max(maxDai,  it.chieu_dai);
     maxRong = Math.max(maxRong, it.chieu_rong);
-    tongCao += it.chieu_cao;
+    tongCao += it.chieu_cao * itemQty;
+    tongSoLuong += itemQty;
   });
+  const primaryItem = getPrimaryItemMeta();
   return {
     khoang_cach_km:   khoang_cach_km,
-    loai_hang:        orderItems[0].loai_hang,
-    ten_hang:         orderItems[0].ten_hang,
+    loai_hang:        primaryItem.loai_hang,
+    ten_hang:         primaryItem.ten_hang,
     can_nang:         totalCanNang,
     chieu_dai:        maxDai,
     chieu_rong:       maxRong,
     chieu_cao:        tongCao,
-    so_luong:         orderItems.length,
+    so_luong:         tongSoLuong,
     gia_tri_khai_bao: totalKhaiGia,
     phi_thu_ho:       parseFloat(document.getElementById("cod-value").value) || 0,
+    loai_xe:          document.getElementById("vehicle-choice").value || "auto",
+    khung_gio_lay_hang: document.getElementById("pickup-slot").value || "",
+    ten_khung_gio_lay_hang: (getSelectedPickupSlot() && getSelectedPickupSlot().label) || "",
+    phi_khung_gio: (getSelectedPickupSlot() && getSelectedPickupSlot().phicodinh) || 0,
+    he_so_khung_gio: (getSelectedPickupSlot() && getSelectedPickupSlot().heso) || 1,
   };
+}
+
+function parseEstimateToHours(estimateText) {
+  const text = String(estimateText || "").trim().toLowerCase();
+  if (!text) return { minHours: 0, maxHours: 0 };
+  const rangeMatch = text.match(/(\d+(?:[.,]\d+)?)\s*-\s*(\d+(?:[.,]\d+)?)\s*(giờ|gio|h|ngày|ngay|d)/i);
+  if (rangeMatch) {
+    const min = parseFloat(rangeMatch[1].replace(",", "."));
+    const max = parseFloat(rangeMatch[2].replace(",", "."));
+    const multiplier = /ngày|ngay|d/i.test(rangeMatch[3]) ? 24 : 1;
+    return { minHours: min * multiplier, maxHours: max * multiplier };
+  }
+  const singleMatch = text.match(/(\d+(?:[.,]\d+)?)\s*(giờ|gio|h|ngày|ngay|d)/i);
+  if (singleMatch) {
+    const value = parseFloat(singleMatch[1].replace(",", "."));
+    const multiplier = /ngày|ngay|d/i.test(singleMatch[2]) ? 24 : 1;
+    return { minHours: value * multiplier, maxHours: value * multiplier };
+  }
+  return { minHours: 0, maxHours: 0 };
+}
+
+function getDesiredDeliveryStatus(estimateText) {
+  const deliveryDate = document.getElementById("delivery-date").value;
+  const deliverySlot = getSelectedDeliverySlot();
+  const pickupDate = document.getElementById("pickup-date").value;
+  const pickupSlot = getSelectedPickupSlot();
+  if (!deliveryDate || !deliverySlot || !pickupDate || !pickupSlot) return "";
+
+  const pickupStart = pickupSlot.start;
+  const pickupAt = new Date(`${pickupDate}T${pickupStart}`);
+  const deadlineAt = new Date(`${deliveryDate}T${deliverySlot.end}`);
+  if (Number.isNaN(pickupAt.getTime()) || Number.isNaN(deadlineAt.getTime())) return "";
+
+  const parsed = parseEstimateToHours(estimateText);
+  if (!parsed.maxHours) return "";
+
+  const latestExpected = new Date(pickupAt.getTime() + parsed.maxHours * 60 * 60 * 1000);
+  if (latestExpected <= deadlineAt) {
+    return `<div class="service-deadline-badge good"><i class="fas fa-check-circle"></i> Có thể kịp mốc bạn mong muốn</div>`;
+  }
+  return `<div class="service-deadline-badge warn"><i class="fas fa-hourglass-half"></i> Có thể không kịp mốc bạn mong muốn</div>`;
 }
 
 // ========== SERVICE CARDS ==========
 function renderServiceCards() {
   const container = document.getElementById("service-list");
   const btn5 = document.getElementById("btn-4-to-5");
+  const etaPanel = document.getElementById("eta-panel");
+  etaPanel.classList.add("is-hidden");
+  document.getElementById("eta-display").textContent = "—";
 
   if (typeof window.calculateDomesticQuote !== "function") {
     container.innerHTML = `<div style="color:#ef4444;">Không tải được dữ liệu bảng giá.</div>`;
@@ -362,9 +752,20 @@ function renderServiceCards() {
     return;
   }
 
+  if (selectedService) {
+    const matchedService = result.services.find((svc) => svc.serviceType === selectedService.serviceType);
+    selectedService = matchedService || null;
+  }
+  btn5.disabled = !selectedService;
+  if (selectedService) {
+    document.getElementById("eta-display").textContent = selectedService.estimate;
+    etaPanel.classList.remove("is-hidden");
+  }
+
   container.innerHTML = "";
   result.services.forEach(svc => {
     const bd = svc.breakdown || {};
+    const deadlineHint = getDesiredDeliveryStatus(svc.estimate);
     const card = document.createElement("div");
     card.className = "service-card" + (selectedService && selectedService.serviceType === svc.serviceType ? " selected" : "");
     card.innerHTML = `
@@ -372,16 +773,23 @@ function renderServiceCards() {
         <div class="service-name"><i class="fas fa-truck-fast"></i> ${svc.serviceName}</div>
         <div class="service-price">${svc.total.toLocaleString()} ₫</div>
       </div>
-      <div style="display: flex; gap: 15px; margin-top: 8px;">
+      <div style="display: flex; gap: 15px; margin-top: 8px; flex-wrap: wrap;">
         <div class="service-eta"><i class="far fa-clock"></i> ${svc.estimate}</div>
         <div class="service-eta" style="color: #16a34a; font-weight: 700;">
-          <i class="fas fa-shipping-fast"></i> Phương tiện: ${svc.vehicleSuggestion || 'Xe máy'}
+          <i class="fas fa-shipping-fast"></i> Gợi ý: ${svc.vehicleSuggestion || 'Xe máy'}
+        </div>
+        <div class="service-eta" style="color: #0a2a66; font-weight: 700;">
+          <i class="fas fa-truck-ramp-box"></i> Đang tính giá: ${svc.selectedVehicleLabel || svc.vehicleSuggestion || 'Xe máy'}${svc.vehicleMultiplier > 1 ? ` (x${svc.vehicleMultiplier})` : ""}
         </div>
       </div>
+      ${deadlineHint}
       <div class="service-breakdown">
         <div class="breakdown-row"><span>Cước cơ bản</span><span>${(bd.basePrice||0).toLocaleString()} ₫</span></div>
-        <div class="breakdown-row"><span>Phí cân nặng</span><span>${(bd.weightFee||0).toLocaleString()} ₫</span></div>
+        <div class="breakdown-row"><span>Phí trọng lượng vượt mức</span><span>${(bd.overweightFee||0).toLocaleString()} ₫</span></div>
+        <div class="breakdown-row"><span>Phí thể tích</span><span>${(bd.volumeFee||0).toLocaleString()} ₫</span></div>
         ${(bd.goodsFee||0)>0 ? `<div class="breakdown-row"><span>Phụ phí loại hàng</span><span>${bd.goodsFee.toLocaleString()} ₫</span></div>` : ''}
+        ${(bd.timeFee||0)>0 ? `<div class="breakdown-row"><span>Phụ phí khung giờ lấy hàng</span><span>${bd.timeFee.toLocaleString()} ₫</span></div>` : ''}
+        ${(bd.vehicleFee||0)>0 ? `<div class="breakdown-row"><span>Điều chỉnh theo xe</span><span>${bd.vehicleFee.toLocaleString()} ₫</span></div>` : ''}
         ${(bd.codFee||0)>0   ? `<div class="breakdown-row"><span>Phí COD</span><span>${bd.codFee.toLocaleString()} ₫</span></div>` : ''}
         ${(bd.insuranceFee||0)>0 ? `<div class="breakdown-row"><span>Phí bảo hiểm</span><span>${bd.insuranceFee.toLocaleString()} ₫</span></div>` : ''}
         <div class="breakdown-row"><span>Tổng</span><span>${svc.total.toLocaleString()} ₫</span></div>
@@ -394,6 +802,7 @@ function renderServiceCards() {
       btn5.disabled = false;
       // Cập nhật ETA ở bước 3
       document.getElementById("eta-display").textContent = svc.estimate;
+      etaPanel.classList.remove("is-hidden");
     });
     container.appendChild(card);
   });
@@ -465,8 +874,16 @@ function validateStep2() {
   }
   for (let i = 0; i < orderItems.length; i++) {
     const it = orderItems[i];
+    if (!it.loai_hang) {
+      showError(2, `Vui lòng chọn loại hàng cho món hàng thứ ${i+1}.`);
+      return false;
+    }
     if (!it.ten_hang) {
       showError(2, `Vui lòng chọn hoặc nhập tên cho món hàng thứ ${i+1}.`);
+      return false;
+    }
+    if ((it.so_luong || 0) <= 0) {
+      showError(2, `Số lượng món hàng thứ ${i+1} phải từ 1 trở lên.`);
       return false;
     }
     if (it.can_nang <= 0 || it.can_nang > 1000) {
@@ -504,29 +921,48 @@ function validateStep3() {
     showError(3, "Vui lòng chọn khung giờ lấy hàng.");
     return false;
   }
+  const pickupSlot = getSelectedPickupSlot();
+  if (!pickupSlot) {
+    showError(3, "Khung giờ lấy hàng không hợp lệ. Vui lòng chọn lại.");
+    return false;
+  }
+  const deliveryDate = document.getElementById("delivery-date").value;
+  if (!deliveryDate) {
+    showError(3, "Vui lòng chọn ngày nhận mong muốn.");
+    return false;
+  }
+  const deliverySlot = getSelectedDeliverySlot();
+  if (!deliverySlot) {
+    showError(3, "Vui lòng chọn khung giờ nhận mong muốn.");
+    return false;
+  }
+  const pickupCompare = new Date(`${pDateVal}T${pickupSlot.start}`);
+  const deliveryCompare = new Date(`${deliveryDate}T${deliverySlot.end}`);
+  if (!Number.isNaN(pickupCompare.getTime()) && !Number.isNaN(deliveryCompare.getTime()) && deliveryCompare < pickupCompare) {
+    showError(3, "Thời gian mong muốn người nhận nhận hàng phải sau thời gian lấy hàng.");
+    return false;
+  }
 
   // Logic: Check if slot is in the past for TODAY
   if (pDateVal === todayDate) {
     const now = new Date();
     const currentHour = now.getHours();
-    // Ex: "08:00 - 10:00" -> end hour is 10
-    const parts = pSlot.split(" - ");
-    const endHour = parseInt(parts[1].split(":")[0]);
+    const endHour = parseInt(String(pickupSlot.end || "").split(":")[0], 10);
     
     if (currentHour >= endHour) {
-      showError(3, `Khung giờ ${pSlot} của ngày hôm nay đã trôi qua. Vui lòng chọn khung giờ khác.`);
+      showError(3, `Khung giờ ${pickupSlot.label} của ngày hôm nay đã trôi qua. Vui lòng chọn khung giờ khác.`);
       return false;
     }
+  }
+  if (!selectedService) {
+    showError(3, "Vui lòng chọn một gói cước vận chuyển.");
+    return false;
   }
   return true;
 }
 
 function validateStep4() {
   clearError(4);
-  if (!selectedService) {
-    showError(4, "Vui lòng chọn một gói cước vận chuyển.");
-    return false;
-  }
   return true;
 }
 
@@ -552,9 +988,9 @@ function prepareReview() {
         <i class="fas fa-box"></i>
       </div>
       <div style="flex: 1;">
-        <div style="font-weight: 800; color: #1e293b; font-size: 14px;">${it.ten_hang || 'Hàng hóa #' + (idx+1)}</div>
+        <div style="font-weight: 800; color: #1e293b; font-size: 14px;">${escapeHtml(it.ten_hang || ('Hàng hóa #' + (idx+1)))}</div>
         <div style="font-size: 12px; color: #64748b;">
-          Loại: <strong>${it.loai_hang}</strong> • Nặng: <strong>${it.can_nang}kg</strong> • Khai giá: <strong>${it.gia_tri_khai_bao.toLocaleString()}₫</strong>
+          Loại: <strong>${escapeHtml(ITEM_TYPE_LABELS[it.loai_hang] || it.loai_hang)}</strong> • Số lượng: <strong>${it.so_luong || 1}</strong> • Nặng: <strong>${it.can_nang}kg/kiện</strong> • Khai giá: <strong>${it.gia_tri_khai_bao.toLocaleString()}₫</strong>
         </div>
       </div>
       <div style="font-size: 11px; color: #94a3b8; text-align: right;">
@@ -569,8 +1005,11 @@ function prepareReview() {
 
   // Lịch trình (Phần 3: Thời gian và khoảng thời gian)
   const pDate = document.getElementById("pickup-date").value;
-  const pSlot = document.getElementById("pickup-slot").value;
-  document.getElementById("rv-pickup-time").textContent = `${pDate} | ${pSlot}`;
+  const pSlot = getSelectedPickupSlot();
+  document.getElementById("rv-pickup-time").textContent = `${pDate} | ${(pSlot && pSlot.label) || "—"}`;
+  const deliveryDate = document.getElementById("delivery-date").value;
+  const deliverySlot = getSelectedDeliverySlot();
+  document.getElementById("rv-delivery-deadline").textContent = `${deliveryDate || "—"} | ${(deliverySlot && deliverySlot.label) || "—"}`;
   document.getElementById("rv-eta").textContent = selectedService.estimate;
 
   // Giá & Phương tiện (Phần 4: Phương tiện)
@@ -579,9 +1018,13 @@ function prepareReview() {
   rvPrice.innerHTML = `
     <div class="rv-row"><span class="rv-label">Gói dịch vụ:</span><span class="rv-val" style="color:#ff7a00; font-weight:800;">${selectedService.serviceName}</span></div>
     <div class="rv-row"><span class="rv-label">Phương tiện gợi ý:</span><span class="rv-val">${selectedService.vehicleSuggestion || 'Xe máy'}</span></div>
+    <div class="rv-row"><span class="rv-label">Phương tiện đang tính giá:</span><span class="rv-val">${selectedService.selectedVehicleLabel || selectedService.vehicleSuggestion || 'Xe máy'}</span></div>
     <div class="rv-row"><span class="rv-label">Cước cơ bản:</span><span class="rv-val">${(bd.basePrice||0).toLocaleString()} ₫</span></div>
-    <div class="rv-row"><span class="rv-label">Phí cân nặng:</span><span class="rv-val">${(bd.weightFee||0).toLocaleString()} ₫</span></div>
+    <div class="rv-row"><span class="rv-label">Phí trọng lượng vượt mức:</span><span class="rv-val">${(bd.overweightFee||0).toLocaleString()} ₫</span></div>
+    <div class="rv-row"><span class="rv-label">Phí thể tích:</span><span class="rv-val">${(bd.volumeFee||0).toLocaleString()} ₫</span></div>
     ${(bd.goodsFee||0)>0 ? `<div class="rv-row"><span class="rv-label">Phụ phí loại hàng:</span><span class="rv-val">${bd.goodsFee.toLocaleString()} ₫</span></div>` : ''}
+    ${(bd.timeFee||0)>0 ? `<div class="rv-row"><span class="rv-label">Phụ phí khung giờ lấy hàng:</span><span class="rv-val">${bd.timeFee.toLocaleString()} ₫</span></div>` : ''}
+    ${(bd.vehicleFee||0)>0 ? `<div class="rv-row"><span class="rv-label">Điều chỉnh theo xe:</span><span class="rv-val">${bd.vehicleFee.toLocaleString()} ₫</span></div>` : ''}
     ${(bd.codFee||0)>0   ? `<div class="rv-row"><span class="rv-label">Phí COD:</span><span class="rv-val">${bd.codFee.toLocaleString()} ₫</span></div>` : ''}
     ${(bd.insuranceFee||0)>0 ? `<div class="rv-row"><span class="rv-label">Phí bảo hiểm:</span><span class="rv-val">${bd.insuranceFee.toLocaleString()} ₫</span></div>` : ''}
     <div class="rv-row" style="margin-top: 8px; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
@@ -593,21 +1036,32 @@ function prepareReview() {
 }
 
 // ========== UPLOAD ==========
-function previewFile() {
-  const file = document.getElementById("file-upload").files[0];
+function previewUpload(type) {
+  const inputId = type === "video" ? "video-upload" : "image-upload";
+  const previewId = type === "video" ? "preview-video" : "preview-image";
+  const metaId = type === "video" ? "video-upload-meta" : "image-upload-meta";
+  const file = document.getElementById(inputId).files[0];
   if (!file) return;
+  const preview = document.getElementById(previewId);
+  document.getElementById(metaId).textContent = `${file.name} • ${Math.round(file.size / 1024)} KB`;
+
+  if (type === "video") {
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = e => {
-    const img = document.getElementById("preview-image");
-    img.src = e.target.result;
-    img.style.display = "block";
+    preview.src = e.target.result;
+    preview.style.display = "block";
   };
   reader.readAsDataURL(file);
 }
 
 // ========== SUBMIT ==========
 async function submitOrder() {
-  const btn = document.querySelector(".btn-next.orange");
+  const btn = document.getElementById("btn-submit-order");
   const originalText = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang xử lý...`;
@@ -653,6 +1107,7 @@ async function submitOrder() {
 
 function buildPayload() {
   return {
+    reorder_id:       reorderContext && reorderContext.source_order_id ? reorderContext.source_order_id : null,
     sender_name:      document.getElementById("sender-name").value,
     sender_phone:     document.getElementById("sender-phone").value,
     receiver_name:    document.getElementById("receiver-name").value,
@@ -661,12 +1116,17 @@ function buildPayload() {
     search_delivery:  document.getElementById("search-delivery").value,
     pickup_date:      document.getElementById("pickup-date").value,
     pickup_slot:      document.getElementById("pickup-slot").value,
+    pickup_slot_label: (getSelectedPickupSlot() && getSelectedPickupSlot().label) || "",
+    delivery_date:    document.getElementById("delivery-date").value,
+    delivery_slot:    document.getElementById("delivery-slot").value,
+    delivery_slot_label: (getSelectedDeliverySlot() && getSelectedDeliverySlot().label) || "",
     notes:            document.getElementById("notes").value,
     cod_value:        parseFloat(document.getElementById("cod-value").value) || 0,
     payment_method:   document.getElementById("payment-val").value,
     fee_payer:        document.getElementById("payer-val").value,
-    service:          selectedService.type_key,
-    vehicle:          selectedService.vehicleSuggestion,
+    service:          selectedService.serviceType,
+    vehicle:          selectedService.selectedVehicleKey || "",
+    vehicle_label:    selectedService.selectedVehicleLabel || selectedService.vehicleSuggestion,
     total_fee:        selectedService.total,
     khoang_cach_km:   khoang_cach_km,
     items:            orderItems

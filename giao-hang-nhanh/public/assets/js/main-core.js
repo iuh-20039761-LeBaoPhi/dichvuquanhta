@@ -11,7 +11,6 @@
         ? ""
         : "public/";
 
-  // districtGroups hardcoded HCM đã được gỡ bỏ để chuyển sang dùng dữ liệu từ JSON.
   let orderShippingBound = false;
 
   function toApiUrl(path) {
@@ -75,36 +74,15 @@
     }, 4000);
   }
 
-  function checkDistrict(address, group) {
-    if (!address || !Array.isArray(group)) return false;
-    return group.some((d) => address.toLowerCase().includes(d.toLowerCase()));
-  }
-
   function resolveDomesticArea(pickupAddr, deliveryAddr, extras = {}) {
-    // 1. Ưu tiên dùng dữ liệu Tỉnh/Thành có cấu trúc từ Select
     const fCity = String(extras.fromCity || "").trim();
     const tCity = String(extras.toCity || "").trim();
-    const fDist = String(extras.fromDistrict || "").trim();
-    const tDist = String(extras.toDistrict || "").trim();
 
     if (fCity && tCity) {
-      if (fCity !== tCity) {
-        return "lien-tinh";
-      }
-      // Cùng tỉnh thành
-      // Ở đây ta có thể định nghĩa nội/ngoại thành linh hoạt hơn.
-      // Tạm thời: Cùng tỉnh thành thì coi là nội thành (hoặc ngoại thành tùy cấu hình)
-      // Theo logic cũ: nội thành là group 1, ngoại thành là group 2.
-      return "noi-thanh";
+      return fCity !== tCity ? "lien-tinh" : "noi-thanh";
     }
 
-    // 2. Fallback: Dùng search chuỗi (Legacy)
     if (!pickupAddr || !deliveryAddr) return "lien-tinh";
-    const pickupLower = pickupAddr.toLowerCase();
-    const deliveryLower = deliveryAddr.toLowerCase();
-
-    // Nếu không cùng một Tỉnh/Thành phố (dựa trên tìm kiếm chuỗi cơ bản)
-    // Đây là phần cần cải thiện thêm nếu muốn chính xác tuyệt đối mà không có select.
     return "lien-tinh";
   }
 
@@ -354,11 +332,6 @@
         serviceName = "Chuyển phát nhanh quốc tế";
     }
 
-    // Bỏ qua việc trả về "Liên hệ" sớm nếu base_price = 0, để logic quote từ JSON (calculateDomesticQuote) có cơ hội chạy.
-    // if (isContactPrice) {
-    //   return { isContactPrice: true, serviceName };
-    // }
-
     const quoteMatch = getServiceQuoteFromDomesticCalculator(
       normalizedServiceType,
       {
@@ -449,9 +422,6 @@
       };
     }
 
-    // Phần fallback legacy dựa trên districtGroups đã gỡ bỏ.
-    // Nếu quote từ JSON thất bại, ta mặc định phí vùng = 0.
-
     const w = parseFloat(weight) || 0;
     if (w > config.weight_free) {
       weightFee = Math.ceil(w - config.weight_free) * config.weight_price;
@@ -509,11 +479,10 @@
     }
     const weightInput = document.getElementById("weight");
     const codInput = document.getElementById("cod_amount");
-      const weight = weightInput ? weightInput.value || 0 : 0;
-      const codRaw = codInput ? codInput.value || "" : "";
-      // Sử dụngRegex để lấy chỉ số, hỗ trợ format VND (200.000 -> 200000)
-      const codAmount = parseInt(String(codRaw).replace(/[^\d]/g, "")) || 0;
-      const deliveryForm = document.getElementById("create-order-form");
+    const weight = weightInput ? weightInput.value || 0 : 0;
+    const codRaw = codInput ? codInput.value || "" : "";
+    const codAmount = parseInt(String(codRaw).replace(/[^\d]/g, ""), 10) || 0;
+    const deliveryForm = document.getElementById("create-order-form");
     const quantity =
       deliveryForm?.querySelector("[name='quantity']")?.value || "1";
     const length =
@@ -570,16 +539,20 @@
         },
       );
 
-      // Nếu đã có gói được chọn (Card), lấy giá trực tiếp từ Card để đảm bảo đồng nhất
-      const selectedCard = document.querySelector('.order-service-package.is-selected');
+      const selectedCard = document.querySelector(
+        ".order-service-package.is-selected",
+      );
       if (selectedCard) {
-        const cardTotalText = selectedCard.querySelector('.quote-service-total strong')?.innerText || '';
-        const cardTotal = parseInt(cardTotalText.replace(/[^0-9]/g, '')) || 0;
+        const cardTotalText =
+          selectedCard.querySelector(".quote-service-total strong")
+            ?.innerText || "";
+        const cardTotal =
+          parseInt(cardTotalText.replace(/[^0-9]/g, ""), 10) || 0;
         if (cardTotal > 0) {
-            pricePreview.style.display = "block";
-            feeDisplay.innerText = cardTotal.toLocaleString("vi-VN") + "đ";
-            feeInput.value = cardTotal;
-            return;
+          pricePreview.style.display = "block";
+          feeDisplay.innerText = cardTotal.toLocaleString("vi-VN") + "đ";
+          feeInput.value = cardTotal;
+          return;
         }
       }
 
@@ -650,7 +623,6 @@
     inPublicDir,
     apiBasePath,
     toApiUrl,
-    checkDistrict,
     resolveDomesticArea,
     mapServiceLevelByArea,
     isInternationalServiceType,

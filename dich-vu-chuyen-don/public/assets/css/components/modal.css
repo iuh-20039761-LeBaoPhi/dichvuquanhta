@@ -2,7 +2,7 @@
 .modal {
   display: none; /* Hidden by default */
   position: fixed;
-  z-index: 2000; /* Sit on top */
+  z-index: 9999; /* Sit on top */
   left: 0;
   top: 0;
   width: 100%;
@@ -470,3 +470,131 @@
   .form-grid .span-2 { grid-column: span 1; }
   .booking-summary { flex-direction: column; gap: 20px; text-align: center; }
 }
+/* Address Autocomplete Suggestions Box */
+.suggestions-box-dynamic {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 10001;
+  max-height: 250px;
+  overflow-y: auto;
+  display: none;
+  margin-top: 4px;
+}
+
+.suggestion-item-dynamic {
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #475569;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.2s;
+}
+
+.suggestion-item-dynamic:hover {
+  background: #f8fafc;
+}
+
+.suggestion-item-dynamic i {
+  color: #94a3b8;
+  margin-top: 3px;
+}
+
+.suggestion-item-dynamic span {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.suggestion-item-dynamic:last-child {
+  border-bottom: none;
+}
+
+/* Upload Zone Styles */
+.upload-zone {
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f8fafc;
+  margin-top: 8px;
+  border-color: #cbd5e1;
+}
+
+.upload-zone:hover {
+  border-color: var(--primary-color);
+  background: #f1f5f9;
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-content i {
+  font-size: 32px;
+  color: #94a3b8;
+}
+
+.upload-content p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.file-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.preview-item img, .preview-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-file {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+  z-index: 10;
+}
+
+.remove-file:hover {
+  background: #dc2626;
+}
+
