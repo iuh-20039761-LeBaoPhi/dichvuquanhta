@@ -37,6 +37,12 @@
   flex-wrap: nowrap !important;
   align-items: center;
 }
+/* Khóa mờ các ca còn lại khi đã chọn 1 ca */
+.package-locked {
+  opacity: 0.45;
+  filter: grayscale(0.2);
+  cursor: not-allowed;
+}
 
 /* ================= MOBILE ONLY ================= */
 @media (max-width: 991.98px) {
@@ -685,6 +691,7 @@
         $("#serviceJobs").html(jobHtml);
 
         resetFormState();
+        updatePackageLockState();
       }
 
       /* --------------------------------------------------
@@ -800,7 +807,17 @@
           $("#endTimeHint").text("Giờ bất kỳ ngày thứ hai (max 24h)");
         }
       }
+      function updatePackageLockState() {
+        var $all = $(".package-check");
+        var $selected = $all.filter(":checked");
 
+        $all.prop("disabled", false);
+        $all.closest("label").removeClass("package-locked");
+
+        if ($selected.length) {
+          $all.not($selected).prop("disabled", true).closest("label").addClass("package-locked");
+        }
+      }
       /* --------------------------------------------------
          VALIDATE TIME
       -------------------------------------------------- */
@@ -970,6 +987,7 @@
             $(".package-check").closest("label").removeClass("active");
             $pkg.closest("label").addClass("active");
             applyShiftHints();
+            updatePackageLockState();
           }
         }
 
@@ -1005,7 +1023,25 @@
 
         $("#reviewService").text(data.service || "-");
         $("#reviewPackage").text(data.package || "-");
-        $("#reviewJobs").text(data.jobs || "-");
+        var jobs = Array.isArray(data.jobsList) ? data.jobsList : [];
+        if (!jobs.length && data.jobs) {
+          jobs = String(data.jobs).split(",").map(function(item) { return item.trim(); }).filter(Boolean);
+        }
+
+        if (!jobs.length) {
+          $("#reviewJobs").html("-");
+        } else {
+          var jobsHtml = '<div class="d-flex flex-column gap-1">';
+          jobs.forEach(function(job, idx) {
+            jobsHtml +=
+              '<div class="d-flex align-items-start gap-2">' +
+                '<span style="min-width:24px;height:24px;border-radius:50%;background:#66bb6a;color:#000;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;line-height:1;">' + (idx + 1) + '</span>' +
+                '<span>' + $("<div>").text(job).html() + '</span>' +
+              '</div>';
+          });
+          jobsHtml += '</div>';
+          $("#reviewJobs").html(jobsHtml);
+        }
         $("#reviewStartDate").text(formatDateFromInput(data.startDate));
         $("#reviewEndDate").text(formatDateFromInput(data.endDate));
         $("#reviewTime").text((data.startTime || "-") + " - " + (data.endTime || "-"));
@@ -1242,12 +1278,30 @@
          EVENTS
       -------------------------------------------------- */
 
+      // Cho phép bỏ chọn ca hiện tại bằng cách bấm lại ở bất kỳ vị trí nào trên label của ca
+      $(document).on("mousedown", "#servicePackages label", function() {
+        var $radio = $(this).find(".package-check");
+        $(this).data("wasChecked", $radio.is(":checked"));
+      });
+
+      $(document).on("click", "#servicePackages label", function(e) {
+        var $radio = $(this).find(".package-check");
+        if ($(this).data("wasChecked") && $radio.length) {
+          e.preventDefault();
+          $radio.prop("checked", false).trigger("change");
+        }
+        $(this).removeData("wasChecked");
+      });
+
       // Chọn ca
       $(document).on("change", ".package-check", function() {
         $(".package-check").closest("label").removeClass("active");
-        $(this).closest("label").addClass("active");
+        if ($(this).is(":checked")) {
+          $(this).closest("label").addClass("active");
+        }
         $("#startTime").val(""); $("#endTime").val("");
         applyShiftHints();
+        updatePackageLockState();
         updateTotalPrice();
       });
 

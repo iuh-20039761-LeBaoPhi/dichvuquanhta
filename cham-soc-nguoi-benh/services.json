@@ -14,22 +14,16 @@
     ],
     "pricing": [
       {
-        "label": "Ca sáng (6h - 18h)",
-        "value": 700000,
-        "hours": 12,
-        "type": "day_morning"
-      },
-      {
-        "label": "Ca đêm (18h - 6h)",
-        "value": 750000,
-        "hours": 12,
-        "type": "day_night"
-      },
-      {
         "label": "Cả ngày 24h",
         "value": 1400000,
         "hours": 24,
         "type": "day_full"
+      },
+      {
+        "label": "khác",
+        "value": 50000,
+        "hours": 1,
+        "type": "gio"
       }
     ]
   },
@@ -48,22 +42,16 @@
     ],
     "pricing": [
       {
-        "label": "Ca sáng (6h - 18h)",
-        "value": 700000,
-        "hours": 12,
-        "type": "day_morning"
-      },
-      {
-        "label": "Ca đêm (18h - 6h)",
-        "value": 750000,
-        "hours": 12,
-        "type": "day_night"
-      },
-      {
         "label": "Cả ngày 24h",
         "value": 1400000,
         "hours": 24,
         "type": "day_full"
+      },
+      {
+        "label": "khác",
+        "value": 50000,
+        "hours": 1,
+        "type": "gio"
       }
     ]
   },
@@ -83,22 +71,16 @@
     ],
     "pricing": [
       {
-        "label": "Ca sáng (6h - 18h)",
-        "value": 700000,
-        "hours": 12,
-        "type": "day_morning"
-      },
-      {
-        "label": "Ca đêm (18h - 6h)",
-        "value": 750000,
-        "hours": 12,
-        "type": "day_night"
-      },
-      {
         "label": "Cả ngày 24h",
         "value": 1400000,
         "hours": 24,
         "type": "day_full"
+      },
+      {
+        "label": "khác",
+        "value": 50000,
+        "hours": 1,
+        "type": "gio"
       }
     ]
   },
@@ -118,22 +100,16 @@
     ],
     "pricing": [
       {
-        "label": "Ca sáng (6h - 18h)",
-        "value": 700000,
-        "hours": 12,
-        "type": "day_morning"
-      },
-      {
-        "label": "Ca đêm (18h - 6h)",
-        "value": 750000,
-        "hours": 12,
-        "type": "day_night"
-      },
-      {
         "label": "Cả ngày 24h",
         "value": 1400000,
         "hours": 24,
         "type": "day_full"
+      },
+      {
+        "label": "khác",
+        "value": 50000,
+        "hours": 1,
+        "type": "gio"
       }
     ]
   }

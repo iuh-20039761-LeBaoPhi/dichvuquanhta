@@ -1,4 +1,32 @@
 <div class="modal fade" id="reviewBookingModal" tabindex="-1" aria-labelledby="reviewBookingModalLabel" aria-hidden="true">
+  <style>
+    #reviewBookingModal .review-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    #reviewBookingModal .review-label {
+      width: 120px;
+      min-width: 120px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    #reviewBookingModal .review-value {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    @media (max-width: 575.98px) {
+      #reviewBookingModal .review-label {
+        width: 110px;
+        min-width: 110px;
+      }
+    }
+  </style>
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
     <div class="modal-content rounded-4 shadow">
       <div class="modal-header border-0 pb-0">
@@ -18,10 +46,10 @@
           <div class="card-body py-3">
             <h6 class="fw-bold mb-3" style="color:#F06292">Thông tin khách hàng</h6>
             <div class="row g-2 small">
-              <div class="col-12"><strong>Họ và tên:</strong> <span id="reviewName">-</span></div>
-              <div class="col-12"><strong>Số điện thoại:</strong> <span id="reviewPhone">-</span></div>
-              <div class="col-12"><strong>Email:</strong> <span id="reviewEmail">-</span></div>
-              <div class="col-12"><strong>Địa chỉ:</strong> <span id="reviewAddress">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Họ và tên:</span><span id="reviewName" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Số điện thoại:</span><span id="reviewPhone" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Email:</span><span id="reviewEmail" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Địa chỉ:</span><span id="reviewAddress" class="review-value">-</span></div>
             </div>
           </div>
         </div>
@@ -30,16 +58,16 @@
           <div class="card-body py-3">
             <h6 class="fw-bold mb-3" style="color:#F06292">Chi tiết đặt lịch</h6>
             <div class="row g-2 small">
-              <div class="col-12"><strong>Dịch vụ:</strong> <span id="reviewService">-</span></div>
-              <div class="col-12"><strong>Gói dịch vụ:</strong> <span id="reviewPackage">-</span></div>
-              <div class="col-12"><strong>Công việc:</strong> <span id="reviewJobs">-</span></div>
-              <div class="col-12"><strong>Ngày bắt đầu:</strong> <span id="reviewStartDate">-</span></div>
-              <div class="col-12"><strong>Ngày kết thúc:</strong> <span id="reviewEndDate">-</span></div>
-              <div class="col-12"><strong>Khung giờ:</strong> <span id="reviewTime">-</span></div>
-              <div class="col-12"><strong>Tổng số ngày:</strong> <span id="reviewTotalDays">-</span></div>
-              <div class="col-12"><strong>Tổng số giờ:</strong> <span id="reviewTotalHours">-</span></div>
-              <div class="col-12"><strong>Yêu cầu khác:</strong> <span id="reviewExtraRequest">-</span></div>
-              <div class="col-12"><strong>Ghi chú:</strong> <span id="reviewNote">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Dịch vụ:</span><span id="reviewService" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Gói dịch vụ:</span><span id="reviewPackage" class="review-value">-</span></div>
+              <div class="col-12"><strong>Công việc:</strong><div id="reviewJobs" class="mt-1">-</div></div>
+              <div class="col-12 review-row"><span class="review-label">Ngày bắt đầu:</span><span id="reviewStartDate" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Ngày kết thúc:</span><span id="reviewEndDate" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Khung giờ:</span><span id="reviewTime" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Tổng số ngày:</span><span id="reviewTotalDays" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Tổng số giờ:</span><span id="reviewTotalHours" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Yêu cầu khác:</span><span id="reviewExtraRequest" class="review-value">-</span></div>
+              <div class="col-12 review-row"><span class="review-label">Ghi chú:</span><span id="reviewNote" class="review-value">-</span></div>
             </div>
           </div>
         </div>
