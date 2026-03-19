@@ -177,21 +177,49 @@
                   "
                 >Tra cứu đơn hàng</a>
               </li>
-              <li class="nav-item ms-lg-3">
+              <li class="nav-item ms-lg-3" id="loginNavItem">
                 <a
-                  href="html/contact.html"
+                  href="login.html"
+                  data-login-modal
+                  data-login-modal-src="login.html"
                   class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-                  style="background-color: #007bff"
+                  style="background-color: #f06292"
                   onmouseover="
                     this.style.backgroundColor = '#d84374';
                     this.style.transform = 'scale(1.05)';
                   "
                   onmouseout="
-                    this.style.backgroundColor = '#007bff';
+                    this.style.backgroundColor = '#F06292';
                     this.style.transform = 'scale(1)';
                   "
-                  >Đặt Lịch Tư Vấn</a
+                  >Đăng Nhập</a
                 >
+              </li>
+              <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
+                <div class="dropdown">
+                  <button
+                    class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-flex align-items-center gap-2"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <img
+                      id="navAvatar"
+                      src="assets/logo-cham-soc-benh-nhan.png"
+                      alt="avatar"
+                      width="32"
+                      height="32"
+                      class="rounded-circle border"
+                    />
+                    <span id="navUserName" class="fw-semibold small">Tài khoản</span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <li><a class="dropdown-item" href="khach_hang/profile.html" data-profile-modal data-profile-modal-src="khach_hang/profile.html">Sửa đổi thông tin</a></li>
+                    <li><a class="dropdown-item" href="khach_hang/dshoadon.html" data-dashboard-modal data-dashboard-modal-src="khach_hang/dshoadon.html">Danh sách hóa đơn đã đặt</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="api/logout.php">Đăng xuất</a></li>
+                  </ul>
+                </div>
               </li>
             </ul>
           </div>
