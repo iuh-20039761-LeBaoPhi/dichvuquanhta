@@ -99,6 +99,18 @@
   display: block;
 }
 
+.eta-panel {
+  background: #f0f9ff;
+  border-radius: 10px;
+  border: 1.5px solid #bae6fd;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.eta-panel.is-hidden {
+  display: none;
+}
+
 /* --- Error Styling --- */
 .step-error {
   display: none;
@@ -156,6 +168,20 @@
   font-weight: 700;
   color: #475569;
   margin-bottom: 6px;
+}
+
+.item-grid {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.item-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.item-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .form-control {
@@ -369,6 +395,27 @@ textarea.form-control {
   box-shadow: 0 0 0 2px #0a2a66 inset;
 }
 
+.service-deadline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.service-deadline-badge.good {
+  background: #ecfdf5;
+  color: #15803d;
+}
+
+.service-deadline-badge.warn {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
 .service-card-top {
   display: flex;
   justify-content: space-between;
@@ -481,6 +528,13 @@ textarea.form-control {
 }
 
 /* --- Upload --- */
+.upload-split-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
 .upload-zone {
   border: 2px dashed #cbd5e1;
   border-radius: 10px;
@@ -496,12 +550,41 @@ textarea.form-control {
   background: #f1f5f9;
 }
 
-#preview-image {
+#preview-image,
+#preview-video {
   max-width: 100%;
   max-height: 200px;
   margin-top: 14px;
   border-radius: 8px;
   display: none;
+}
+
+.upload-meta {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.vehicle-choice-panel {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #dbeafe;
+}
+
+.vehicle-choice-panel h3 {
+  margin: 0 0 8px;
+  color: #0a2a66;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.vehicle-choice-panel p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #64748b;
 }
 
 /* --- Payment / Payer options --- */
@@ -594,10 +677,26 @@ textarea.form-control {
   .form-grid {
     grid-template-columns: 1fr;
   }
+  .item-grid-2,
+  .item-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .booking-card {
     padding: 20px 16px;
   }
   .step-label {
     display: none;
+  }
+  .upload-split-grid {
+    grid-template-columns: 1fr;
+  }
+  .service-card-top,
+  .rv-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .rv-val {
+    text-align: left;
   }
 }

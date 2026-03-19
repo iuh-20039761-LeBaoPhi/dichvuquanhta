@@ -7,6 +7,28 @@
   const movingModalId = "booking-modal-moving";
   let initialized = false;
   let loadingPromise = null;
+  let mapInstances = {}; // Lưu trữ instance của bản đồ Leaflet
+  let bookingMarkerIcons = null;
+  const surveyFileLimit = 8;
+  const surveyMaxFileSize = 15 * 1024 * 1024;
+
+  function setSurveyCoordinates(lat, lng) {
+    const latInput = document.getElementById("survey-lat");
+    const lngInput = document.getElementById("survey-lng");
+    if (latInput) latInput.value = lat || "";
+    if (lngInput) lngInput.value = lng || "";
+  }
+
+  function initSurveyDateInput() {
+    const dateInput = document.getElementById("moving-survey-date");
+    if (!dateInput) return;
+    const now = new Date();
+    const timezoneOffset = now.getTimezoneOffset() * 60000;
+    const localDate = new Date(now.getTime() - timezoneOffset)
+      .toISOString()
+      .slice(0, 10);
+    dateInput.min = localDate;
+  }
 
   function ensureModalMarkup() {
     if (document.getElementById(movingModalId)) {
@@ -58,6 +80,11 @@
     if (!modal) return;
     modal.style.display = "block";
     syncBodyScrollState();
+    
+    // Tự động khởi tạo và căn chỉnh bản đồ khi mở modal
+    if (kind === 'moving') {
+       setTimeout(() => initMap('booking-map'), 200);
+    }
   }
 
   function closeModal(kind) {
@@ -77,6 +104,10 @@
     modal.style.display = "flex";
     modal.classList.remove('hidden');
     document.body.style.overflow = "hidden";
+    initSurveyDateInput();
+    
+    // Tự động khởi tạo bản đồ Survey
+    setTimeout(() => initMap('survey-map'), 200);
   }
 
   function closeSurveyModalUI() {
@@ -85,6 +116,46 @@
     modal.style.display = "none";
     modal.classList.add('hidden');
     syncBodyScrollState();
+  }
+
+  function toggleSurveyServiceDetails() {
+    const sel = document.getElementById('survey-service-type');
+    if (!sel) return;
+    const val = sel.value;
+    const blocks = document.querySelectorAll('.survey-subform');
+    blocks.forEach((b) => {
+      b.style.display = 'none';
+      b.querySelectorAll('input, select, textarea').forEach((input) => {
+        if (input.dataset.wasRequired === undefined) {
+          input.dataset.wasRequired = input.required ? 'true' : 'false';
+        }
+        input.required = false;
+        input.disabled = true;
+      });
+    });
+
+    const active = document.getElementById('survey-detail-' + val);
+    if (active) {
+      active.style.display = 'block';
+      active.querySelectorAll('input, select, textarea').forEach((input) => {
+        if (input.dataset.wasRequired === 'true') {
+          input.required = true;
+        }
+        input.disabled = false;
+      });
+    }
+  }
+
+  function initSurveyServiceDetails() {
+    const serviceSelect = document.getElementById('survey-service-type');
+    if (!serviceSelect) return;
+    if (serviceSelect.dataset.bound === 'true') {
+      toggleSurveyServiceDetails();
+      return;
+    }
+    serviceSelect.dataset.bound = 'true';
+    serviceSelect.addEventListener('change', toggleSurveyServiceDetails);
+    toggleSurveyServiceDetails();
   }
 
   function closeAllModals() {
@@ -172,52 +243,255 @@
     return { cityMap, cities };
   }
 
-  function initAddressAutocomplete() {
-    const datalistId = "booking-address-suggestions";
-    let datalist = document.getElementById(datalistId);
-    if (!datalist) {
-      datalist = document.createElement("datalist");
-      datalist.id = datalistId;
-      document.body.appendChild(datalist);
+  function getBookingMarkerIcons() {
+    if (bookingMarkerIcons) return bookingMarkerIcons;
+    bookingMarkerIcons = {
+      pickup: L.icon({
+        iconUrl:
+          "https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-2x-blue.png",
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      }),
+      delivery: L.icon({
+        iconUrl:
+          "https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-2x-red.png",
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      }),
+      default: null,
+    };
+    return bookingMarkerIcons;
+  }
+
+  function setMovingDistanceKm(value) {
+    const input = document.getElementById("moving-distance");
+    if (!input) return;
+    const num = Number(value);
+    if (!Number.isFinite(num)) return;
+    input.value = num.toFixed(2);
+  }
+
+  function recalculateMovingDistance(instance) {
+    if (!instance) return;
+    const pickup = instance.markers["pickup-addr-moving"];
+    const delivery = instance.markers["delivery-addr-moving"];
+    if (!pickup || !delivery) return;
+
+    const a = pickup.getLatLng();
+    const b = delivery.getLatLng();
+    const url = `https://router.project-osrm.org/route/v1/driving/${a.lng},${a.lat};${b.lng},${b.lat}?overview=false`;
+
+    fetch(url)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d && d.routes && d.routes[0] && d.routes[0].distance) {
+          setMovingDistanceKm(d.routes[0].distance / 1000);
+          return;
+        }
+        setMovingDistanceKm(a.distanceTo(b) / 1000);
+      })
+      .catch(() => {
+        setMovingDistanceKm(a.distanceTo(b) / 1000);
+      });
+  }
+
+  function updateBookingRouteLine(instance) {
+    if (!instance) return;
+    const pickup = instance.markers["pickup-addr-moving"];
+    const delivery = instance.markers["delivery-addr-moving"];
+    if (!pickup || !delivery) return;
+
+    const latlngs = [pickup.getLatLng(), delivery.getLatLng()];
+    if (instance.routeLine) {
+      instance.routeLine.setLatLngs(latlngs);
+    } else {
+      instance.routeLine = L.polyline(latlngs, {
+        color: "#1b4332",
+        weight: 3,
+        opacity: 0.8,
+        dashArray: "6 6",
+      }).addTo(instance.map);
+    }
+    instance.map.fitBounds(L.latLngBounds(latlngs), { padding: [30, 30] });
+    recalculateMovingDistance(instance);
+  }
+
+  window.updateMapMarker = function(inputId, coords, display_name) {
+    if (!window.L) return;
+    
+    // Tìm map container cha hoặc map liên quan
+    let mapId = inputId === 'survey-address-input' ? 'survey-map' : 'booking-map';
+    const instance = mapInstances[mapId];
+    if (!instance) return;
+
+    const { map, markers } = instance;
+    
+    // Xóa marker cũ nếu có
+    if (markers[inputId]) {
+      map.removeLayer(markers[inputId]);
     }
 
-    const { cityMap, cities } = getRouteLocationSource();
-    const suggestions = new Set([
-      "Số nhà ..., Quận 1, TP Hồ Chí Minh",
-      "Số nhà ..., Quận Cầu Giấy, Hà Nội",
-      "Số nhà ..., Quận Hải Châu, Đà Nẵng",
-    ]);
+    const iconSet = mapId === "booking-map" ? getBookingMarkerIcons() : null;
+    const markerType =
+      inputId === "pickup-addr-moving"
+        ? "pickup"
+        : inputId === "delivery-addr-moving"
+          ? "delivery"
+          : "default";
 
-    const sortedCities = toUniqueSortedLocations(cities);
-    let districtOptionCount = 0;
-    const maxDistrictOptions = 320;
+    // Icon chuẩn từ UNPKG để tránh lỗi mất icon khi dùng Leaflet mặc định
+    const defaultIcon =
+      iconSet && iconSet[markerType]
+        ? iconSet[markerType]
+        : L.icon({
+            iconUrl:
+              "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+            shadowUrl:
+              "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+          });
 
-    sortedCities.forEach((city) => {
-      suggestions.add(city);
-      const districts = toUniqueSortedLocations(cityMap[city] || []);
-      districts.forEach((district) => {
-        if (districtOptionCount >= maxDistrictOptions) return;
-        suggestions.add(`${district}, ${city}`);
-        suggestions.add(`Số nhà ..., ${district}, ${city}`);
-        districtOptionCount += 1;
+    const marker = L.marker(coords, { icon: defaultIcon, draggable: true }).addTo(map);
+    markers[inputId] = marker;
+    if (inputId === "survey-address-input") {
+      setSurveyCoordinates(coords[0], coords[1]);
+    }
+    
+    if (display_name) {
+      marker.bindPopup(display_name).openPopup();
+    } else if (mapId === "booking-map") {
+      marker.bindPopup(
+        inputId === "pickup-addr-moving" ? "📍 Lấy hàng" : "🏁 Giao hàng",
+      );
+    }
+    
+    if (mapId === "booking-map") {
+      updateBookingRouteLine(instance);
+      if (!instance.routeLine) {
+        map.flyTo(coords, 16);
+      }
+    } else {
+      map.flyTo(coords, 16);
+    }
+    
+    // Tự động lấy địa chỉ khi kéo ghim (Reverse Geocoding)
+    marker.on('dragend', function() {
+       const pos = marker.getLatLng();
+       if (inputId === "survey-address-input") {
+         setSurveyCoordinates(pos.lat, pos.lng);
+       }
+       fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`)
+         .then(r => r.json())
+         .then(result => {
+           if (result && result.display_name) {
+             const input = document.getElementById(inputId);
+             if (input) input.value = result.display_name;
+             marker.bindPopup(result.display_name).openPopup();
+           }
+         })
+         .catch(err => console.error("Reverse Geocoding Error:", err));
+       if (mapId === "booking-map") {
+         updateBookingRouteLine(instance);
+       }
+    });
+  }
+
+  function initMap(mapId) {
+    if (!window.L) return;
+    const el = document.getElementById(mapId);
+    if (!el || mapInstances[mapId]) return;
+
+    const map = L.map(mapId).setView([10.7769, 106.7009], 13); // Center TP.HCM
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    mapInstances[mapId] = {
+      map: map,
+      markers: {}
+    };
+    
+    // Fix issue map bị xám khi khởi tạo trong hidden element (modal)
+    setTimeout(() => {
+      map.invalidateSize();
+      // Thêm ghim mặc định tại tâm
+      if (mapId === 'survey-map') {
+        window.updateMapMarker('survey-address-input', [10.7769, 106.7009]);
+        return;
+      }
+      const base = [10.7769, 106.7009];
+      window.updateMapMarker('pickup-addr-moving', base, "📍 Lấy hàng");
+      window.updateMapMarker(
+        'delivery-addr-moving',
+        [base[0] + 0.003, base[1] + 0.003],
+        "🏁 Giao hàng",
+      );
+    }, 400);
+  }
+
+  function initAddressAutocomplete() {
+    const ids = ["pickup-addr-moving", "delivery-addr-moving", "booking-address-start-input", "booking-address-end-input", "survey-address-input"];
+    ids.forEach(id => {
+      const input = document.getElementById(id);
+      if (!input) return;
+
+      // Tạo box gợi ý nếu chưa có
+      let sugBox = document.getElementById(id + "-sug");
+      if (!sugBox) {
+        sugBox = document.createElement("div");
+        sugBox.id = id + "-sug";
+        sugBox.className = "suggestions-box-dynamic";
+        input.parentNode.style.position = "relative";
+        input.parentNode.appendChild(sugBox);
+      }
+
+      let timer;
+      input.addEventListener("input", () => {
+        clearTimeout(timer);
+        const q = input.value.trim();
+        if (id === "survey-address-input") {
+          setSurveyCoordinates("", "");
+        }
+        if (q.length < 3) { sugBox.style.display = "none"; return; }
+        timer = setTimeout(() => {
+          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&countrycodes=vn&limit=5`)
+            .then(r => r.json())
+            .then(data => {
+              sugBox.innerHTML = "";
+              if (!data.length) { sugBox.style.display = "none"; return; }
+              data.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "suggestion-item-dynamic";
+                div.innerHTML = `<i class="fas fa-map-marker-alt"></i> <span>${item.display_name}</span>`;
+                div.addEventListener("click", () => {
+                  input.value = item.display_name;
+                  sugBox.style.display = "none";
+                  // Nếu có bản đồ, cập nhật vị trí ở đây (L.marker...)
+                  if (typeof window.updateMapMarker === 'function') {
+                    window.updateMapMarker(id, [item.lat, item.lon]);
+                  }
+                });
+                sugBox.appendChild(div);
+              });
+              sugBox.style.display = "block";
+            });
+        }, 500);
+      });
+
+      document.addEventListener("click", e => {
+        if (e.target !== input) sugBox.style.display = "none";
       });
     });
-
-    const optionList = Array.from(suggestions).filter(Boolean).slice(0, 700);
-    datalist.innerHTML = "";
-    optionList.forEach((value) => {
-      const option = document.createElement("option");
-      option.value = value;
-      datalist.appendChild(option);
-    });
-
-    ["pickup-addr-moving", "delivery-addr-moving"]
-      .map((id) => document.getElementById(id))
-      .filter(Boolean)
-      .forEach((input) => {
-        input.setAttribute("list", datalistId);
-        input.setAttribute("autocomplete", "street-address");
-      });
   }
 
   function bindCityDistrictFields(
@@ -251,18 +525,7 @@
     applyDistrict();
   }
 
-  function initCorporateSection(checkboxId, fieldsId) {
-    const checkbox = document.getElementById(checkboxId);
-    const fields = document.getElementById(fieldsId);
-    if (!checkbox || !fields) return;
-
-    const applyState = () => {
-      fields.style.display = checkbox.checked ? "block" : "none";
-    };
-
-    checkbox.addEventListener("change", applyState);
-    applyState();
-  }
+  // Đã xóa phần xử lý doanh nghiệp theo yêu cầu.
 
   function toggleMovingPanelInputs(panel, isActive) {
     if (!panel) return;
@@ -377,10 +640,7 @@
 
     initialized = true;
 
-    initCorporateSection(
-      "is_corporate_checkbox_moving",
-      "corporate-fields-moving",
-    );
+    // Đã bỏ initCorporateSection theo yêu cầu.
     initMovingOtherServiceFields();
     initMovingServiceDetails();
     initBookingTriggerButtons();
@@ -398,6 +658,8 @@
     if (closeSurveyBtn) {
       closeSurveyBtn.addEventListener('click', closeSurveyModalUI);
     }
+
+    initSurveyServiceDetails();
   }
 
   window.openBookingModal = async function (serviceType) {
@@ -431,10 +693,14 @@
 
   window.openSurveyModal = function(serviceType) {
     closeAllModals();
+    if (typeof window.resetSurveyForm === "function") {
+      window.resetSurveyForm();
+    }
     const select = document.getElementById('survey-service-type');
     if (select && serviceType) {
       select.value = serviceType;
     }
+    initSurveyServiceDetails();
     openSurveyModalUI();
   };
 
@@ -442,7 +708,95 @@
     closeSurveyModalUI();
   };
 
+  window.handleFileSelect = function (input) {
+    const previewGrid = input.parentNode.querySelector(".file-preview-grid");
+    if (!previewGrid) return;
+    const existingFiles = Array.isArray(input._managedFiles)
+      ? input._managedFiles
+      : [];
+    core.clearFieldError(input);
+
+    const mergedFiles = [...existingFiles];
+    const seenKeys = new Set(
+      mergedFiles.map((file) =>
+        [file.name, file.size, file.lastModified, file.type].join("::"),
+      ),
+    );
+
+    Array.from(input.files || []).forEach((file) => {
+      const fileKey = [
+        file.name,
+        file.size,
+        file.lastModified,
+        file.type,
+      ].join("::");
+      if (seenKeys.has(fileKey)) return;
+      if (file.size > surveyMaxFileSize) {
+        core.showFieldError(
+          input,
+          `Tệp "${file.name}" vượt quá 15MB.`,
+        );
+        return;
+      }
+      if (mergedFiles.length >= surveyFileLimit) {
+        core.showFieldError(
+          input,
+          `Chỉ được tải tối đa ${surveyFileLimit} tệp.`,
+        );
+        return;
+      }
+      seenKeys.add(fileKey);
+      mergedFiles.push(file);
+    });
+
+    input._managedFiles = mergedFiles;
+    const dataTransfer = new DataTransfer();
+    mergedFiles.forEach((file) => dataTransfer.items.add(file));
+    input.files = dataTransfer.files;
+    previewGrid.innerHTML = "";
+
+    mergedFiles.forEach((file, index) => {
+      const reader = new FileReader();
+      const isVideo = file.type.startsWith("video/");
+
+      reader.onload = function (e) {
+        const item = document.createElement("div");
+        item.className = "preview-item";
+
+        if (isVideo) {
+          item.innerHTML = `
+            <video src="${e.target.result}" muted></video>
+            <button type="button" class="remove-file" aria-label="Xóa tệp">&times;</button>
+          `;
+        } else {
+          item.innerHTML = `
+            <img src="${e.target.result}" alt="preview">
+            <button type="button" class="remove-file" aria-label="Xóa tệp">&times;</button>
+          `;
+        }
+
+        item.querySelector(".remove-file").addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          const nextFiles = (input._managedFiles || []).filter(
+            (_, fileIndex) => fileIndex !== index,
+          );
+          input._managedFiles = nextFiles;
+          const nextTransfer = new DataTransfer();
+          nextFiles.forEach((managedFile) => nextTransfer.items.add(managedFile));
+          input.files = nextTransfer.files;
+          previewGrid.innerHTML = "";
+          window.handleFileSelect(input);
+        });
+
+        previewGrid.appendChild(item);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  };
+
   ensureModalMarkup();
+
 
   document.addEventListener("DOMContentLoaded", function () {
     ensureModalMarkup().then(() => {

@@ -4,7 +4,7 @@
     <span class="modal-close-btn" onclick="closeBookingModal('moving')"
       >&times;</span
     >
-    <h2 class="booking-modal-title">🚚 Đăng ký khảo sát chuyển dọn</h2>
+    <h2 class="booking-modal-title">🚚 Đặt dịch vụ chuyển dọn</h2>
     <p class="booking-modal-subtitle">
       Dành cho chuyển nhà, chuyển văn phòng và chuyển kho bãi. Đơn chính thức sẽ
       được xác nhận sau khi khảo sát thực tế.
@@ -118,470 +118,147 @@
       </div>
 
       <div class="form-section">
-        <h3>3. Thông tin địa điểm</h3>
-        <div class="form-grid">
-          <div class="grid-span-full">
-            <label>Địa chỉ chuyển đi *</label>
-            <input
-              type="text"
-              id="pickup-addr-moving"
-              name="pickup"
-              list="booking-address-suggestions"
-              autocomplete="street-address"
-              placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."
-              required
-            />
+        <h3>3. Lộ trình chuyển dọn</h3>
+        <div class="route-container" style="position: relative; padding-left: 20px; border-left: 2px solid #e2e8f0; margin-left: 10px;">
+          <div class="route-step mb-4" style="position: relative;">
+            <div style="position: absolute; left: -28px; top: 0; width: 14px; height: 14px; border-radius: 50%; background: #3b82f6; border: 3px solid white; box-shadow: 0 0 0 2px #3b82f6;"></div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1 font-bold" style="color:#3b82f6">ĐIỂM ĐI (LẤY ĐỒ):</label>
+            <div class="relative">
+              <input type="text" id="pickup-addr-moving" name="pickup" autocomplete="off" placeholder="Số nhà, tên đường, phường/xã..." required style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+            </div>
           </div>
-          <div class="grid-span-full">
-            <label>Địa chỉ chuyển đến *</label>
-            <input
-              type="text"
-              id="delivery-addr-moving"
-              name="delivery"
-              list="booking-address-suggestions"
-              autocomplete="street-address"
-              placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."
-              required
-            />
+          
+          <div class="route-step" style="position: relative;">
+            <div style="position: absolute; left: -28px; top: 0; width: 14px; height: 14px; border-radius: 50%; background: #10b981; border: 3px solid white; box-shadow: 0 0 0 2px #10b981;"></div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1 font-bold" style="color:#10b981">ĐIỂM ĐẾN (GIAO ĐỒ):</label>
+            <div class="relative">
+              <input type="text" id="delivery-addr-moving" name="delivery" autocomplete="off" placeholder="Số nhà, tên đường, phường/xã..." required style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+            </div>
           </div>
         </div>
+        <div id="booking-map" class="w-full h-48 rounded-lg border border-slate-300 z-0 relative mt-4"></div>
       </div>
 
       <div class="form-section">
-        <h3>4. Thông tin khảo sát</h3>
+        <h3>4. Thời gian chuyển dự kiến</h3>
         <div class="form-grid">
-          <div>
-            <label>Ngày khảo sát mong muốn *</label>
-            <input type="date" name="moving_survey_date" required />
+           <div>
+            <label>Ngày chuyển *</label>
+            <input type="date" name="moving_date" required />
           </div>
           <div>
-            <label>Khung giờ khảo sát *</label>
-            <select name="moving_survey_time_slot" required>
+            <label>Khung giờ ưu tiên *</label>
+            <select name="moving_time_slot" required id="moving-time-slot">
               <option value="">Chọn khung giờ</option>
               <option value="morning">Sáng (08:00 - 12:00)</option>
               <option value="afternoon">Chiều (13:00 - 17:00)</option>
-              <option value="evening">Tối (17:00 - 21:00)</option>
+              <option value="evening">Tối (17:00 - 21:00) : Có phụ phí</option>
+              <option value="night">Đêm (Sau 21:00) : Có phụ phí</option>
               <option value="flexible">Linh hoạt theo khảo sát</option>
             </select>
           </div>
         </div>
       </div>
 
-      <div
-        class="form-section moving-detail detail-panel"
-        data-moving-service="moving_house"
-      >
+      <div class="form-section moving-detail detail-panel" data-moving-service="moving_house">
         <h3>5. Thông tin chi tiết - Chuyển nhà</h3>
         <div class="form-grid">
           <div>
             <label>Loại nhà *</label>
-            <select name="moving_house_type" required>
-              <option value="">Chọn loại nhà</option>
-              <option value="nha-pho">Nhà phố</option>
-              <option value="can-ho">Căn hộ</option>
-              <option value="chung-cu">Chung cư</option>
+            <select name="moving_house_type">
+              <option>Căn hộ</option>
+              <option>Nhà phố / hẻm</option>
+              <option>Chung cư</option>
             </select>
           </div>
           <div>
-            <label>Số tầng *</label>
-            <input
-              type="text"
-              name="moving_house_floors"
-              placeholder="VD: 3 tầng"
-              required
-            />
-          </div>
-          <div>
-            <label>Có thang máy không *</label>
-            <select name="moving_house_elevator" required>
-              <option value="">Chọn</option>
-              <option value="co">Có</option>
-              <option value="khong">Không</option>
-            </select>
+            <label>Số tầng (nếu có)</label>
+            <input type="text" name="moving_house_floors" placeholder="VD: 3 tầng" />
           </div>
           <div class="grid-span-full">
-            <label>Danh sách đồ cần chuyển (tùy chọn)</label>
-            <textarea
-              name="moving_house_items"
-              placeholder="VD: 1 tủ lạnh, 2 giường, 1 sofa..."
-            ></textarea>
-          </div>
-          <div
-            class="grid-span-full"
-            style="
-              background-color: #f7fbee;
-              border-left: 4px solid var(--primary-color);
-              padding: 12px 16px;
-              margin-top: 1rem;
-              border-radius: 4px;
-            "
-          >
-            <h4
-              style="margin-top: 0; font-size: 1em; color: var(--primary-color)"
-            >
-              Tại sao cần khảo sát trước?
-            </h4>
-            <p style="margin-bottom: 0; font-size: 0.9em; color: #333">
-              Dịch vụ chuyển nhà rất đa dạng. Khảo sát thực tế giúp chúng tôi
-              hiểu rõ nhu cầu của bạn (khối lượng đồ, độ phức tạp tháo lắp...)
-              để đưa ra báo giá <strong>chính xác nhất</strong> và kế hoạch tối
-              ưu, tránh phát sinh chi phí ngoài dự kiến.
-            </p>
+            <label class="checkbox-inline"><input type="checkbox" name="moving_elevator" /> Có thang máy</label>
+            <label class="checkbox-inline"><input type="checkbox" name="house_truck_access" /> Hẻm xe tải vào được?</label>
           </div>
           <div class="grid-span-full">
-            <label>Dịch vụ cần tư vấn theo hạng mục</label>
-            <label>Các dịch vụ hỗ trợ bạn có thể cần:</label>
+            <label>Nhu cầu cần hỗ trợ:</label>
             <div class="moving-services-list">
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_house_services[]"
-                  value="Xe tải vận chuyển"
-                />
-                Xe tải vận chuyển
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_house_services[]"
-                  value="Nhân công bốc xếp"
-                />
-                Nhân công bốc xếp
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_house_services[]"
-                  value="Đóng gói đồ đạc"
-                />
-                Đóng gói đồ đạc
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_house_services[]"
-                  value="Tháo lắp nội thất"
-                />
-                Tháo lắp nội thất
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_house_services[]"
-                  value="Bọc lót đồ dễ vỡ"
-                />
-                Bọc lót đồ dễ vỡ
-              </label>
+              <label class="checkbox-inline"><input type="checkbox" name="moving_house_services[]" value="Xe tải vận chuyển" checked /> Xe tải <span style="font-size: 0.85em; color: var(--primary-color); display: block;">(300k - 800k/chuyến)</span></label>
+              <label class="checkbox-inline"><input type="checkbox" name="moving_house_services[]" value="Nhân công bốc xếp" /> Bốc xếp <span style="font-size: 0.85em; color: var(--primary-color); display: block;">(200k - 400k/người)</span></label>
+              <label class="checkbox-inline"><input type="checkbox" name="moving_house_services[]" value="Tháo lắp đồ gỗ" /> Mộc gỗ <span style="font-size: 0.85em; color: var(--primary-color); display: block;">(150k - 350k/món)</span></label>
             </div>
-          </div>
-          <!-- Hợp nhất checkbox và input cho Dịch vụ khác -->
-          <div class="grid-span-full">
-            <label class="checkbox-inline">
-              <input
-                type="checkbox"
-                class="moving-other-service-checkbox"
-                data-target="moving-house-service-other-wrapper"
-              />
-              <span>Dịch vụ khác</span>
-            </label>
-            <div id="moving-house-service-other-wrapper" class="mt-2 hidden">
-              <input
-                type="text"
-                name="moving_house_service_other"
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-                placeholder="Vui lòng mô tả chi tiết dịch vụ bạn cần..."
-              />
-            </div>
-          </div>
-
-          <div class="grid-span-full">
-            <label>Ghi chú thêm</label>
-            <textarea
-              name="moving_house_note"
-              placeholder="Nhập thêm yêu cầu cụ thể (nếu có)"
-            ></textarea>
           </div>
         </div>
       </div>
 
-      <div
-        class="form-section moving-detail detail-panel is-hidden"
-        data-moving-service="moving_office"
-      >
+      <div class="form-section moving-detail detail-panel is-hidden" data-moving-service="moving_office" style="display: none;">
         <h3>5. Thông tin chi tiết - Chuyển văn phòng</h3>
         <div class="form-grid">
           <div>
             <label>Số lượng nhân viên *</label>
-            <input
-              type="number"
-              name="moving_office_staff_count"
-              min="1"
-              step="1"
-              placeholder="VD: 30"
-              required
-            />
+            <input type="number" name="moving_office_staff_count" placeholder="VD: 30" />
           </div>
           <div>
-            <label>Diện tích văn phòng (ước lượng) *</label>
-            <input
-              type="text"
-              name="moving_office_area"
-              placeholder="VD: 250m2"
-              required
-            />
-          </div>
-          <div>
-            <label>Có thang máy không *</label>
-            <select name="moving_office_elevator" required>
-              <option value="">Chọn</option>
-              <option value="co">Có</option>
-              <option value="khong">Không</option>
-            </select>
-          </div>
-          <div>
-            <label>Có cần tháo lắp nội thất không *</label>
-            <select name="moving_office_dismantle" required>
-              <option value="">Chọn</option>
-              <option value="co">Có</option>
-              <option value="khong">Không</option>
-            </select>
-          </div>
-          <div
-            class="grid-span-full"
-            style="
-              background-color: #f7fbee;
-              border-left: 4px solid var(--primary-color);
-              padding: 12px 16px;
-              margin-top: 1rem;
-              border-radius: 4px;
-            "
-          >
-            <h4
-              style="margin-top: 0; font-size: 1em; color: var(--primary-color)"
-            >
-              Tại sao cần khảo sát trước?
-            </h4>
-            <p style="margin-bottom: 0; font-size: 0.9em; color: #333">
-              Chuyển văn phòng yêu cầu độ chính xác cao. Khảo sát giúp chúng tôi
-              lập kế hoạch chi tiết (thiết bị IT, hồ sơ, nội thất...) để đảm bảo
-              quá trình chuyển diễn ra <strong>nhanh chóng, an toàn</strong> và
-              không ảnh hưởng đến hoạt động kinh doanh của bạn.
-            </p>
+            <label>Diện tích (ước lượng)</label>
+            <input type="text" name="moving_office_area" placeholder="VD: 150m2" />
           </div>
           <div class="grid-span-full">
-            <label>Dịch vụ cần tư vấn theo hạng mục</label>
-            <label>Các dịch vụ hỗ trợ bạn có thể cần:</label>
+            <label class="checkbox-inline"><input type="checkbox" name="moving_office_elevator" /> Có thang máy</label>
+            <label class="checkbox-inline"><input type="checkbox" name="office_it_move" /> Di dời hệ thống Server/IT</label>
+          </div>
+          <div class="grid-span-full">
+            <label>Dịch vụ doanh nghiệp cần:</label>
             <div class="moving-services-list">
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_office_services[]"
-                  value="Di dời nội thất văn phòng"
-                />
-                Di dời nội thất văn phòng
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_office_services[]"
-                  value="Di dời thiết bị công nghệ"
-                />
-                Di dời thiết bị công nghệ
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_office_services[]"
-                  value="Đóng gói hồ sơ tài liệu"
-                />
-                Đóng gói hồ sơ tài liệu
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_office_services[]"
-                  value="Tháo lắp bàn ghế và vách ngăn"
-                />
-                Tháo lắp bàn ghế và vách ngăn
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_office_services[]"
-                  value="Điều phối ngoài giờ"
-                />
-                Điều phối ngoài giờ
-              </label>
+              <label class="checkbox-inline"><input type="checkbox" name="moving_office_services[]" value="Đóng gói hồ sơ" /> Hồ sơ/Tài liệu <span style="font-size: 0.85em; color: var(--primary-color); display: block;">(150k - 400k/thùng)</span></label>
+              <label class="checkbox-inline"><input type="checkbox" name="moving_office_services[]" value="Bảo vệ thiết bị IT" /> Bảo vệ IT/Máy tính <span style="font-size: 0.85em; color: var(--primary-color); display: block;">(250k - 500k/máy)</span></label>
+              <label class="checkbox-inline"><input type="checkbox" name="moving_office_services[]" value="Tháo lắp nội thất VP" /> Tháo lắp Nội thất <span style="font-size: 0.85em; color: var(--primary-color); display: block;">(150k - 350k/món)</span></label>
             </div>
-          </div>
-          <!-- Hợp nhất checkbox và input cho Dịch vụ khác -->
-          <div class="grid-span-full">
-            <label class="checkbox-inline">
-              <input
-                type="checkbox"
-                class="moving-other-service-checkbox"
-                data-target="moving-office-service-other-wrapper"
-              />
-              <span>Dịch vụ khác</span>
-            </label>
-            <div id="moving-office-service-other-wrapper" class="mt-2 hidden">
-              <input
-                type="text"
-                name="moving_office_service_other"
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-                placeholder="Vui lòng mô tả chi tiết dịch vụ bạn cần..."
-              />
-            </div>
-          </div>
-
-          <div class="grid-span-full">
-            <label>Ghi chú thêm</label>
-            <textarea
-              name="moving_office_note"
-              placeholder="Nhập thêm yêu cầu cụ thể (nếu có)"
-            ></textarea>
           </div>
         </div>
       </div>
 
-      <div
-        class="form-section moving-detail detail-panel is-hidden"
-        data-moving-service="moving_warehouse"
-      >
+      <div class="form-section moving-detail detail-panel is-hidden" data-moving-service="moving_warehouse" style="display: none;">
         <h3>5. Thông tin chi tiết - Chuyển kho bãi</h3>
         <div class="form-grid">
           <div>
             <label>Loại hàng hóa *</label>
-            <select name="moving_warehouse_goods_type" required>
-              <option value="">Chọn loại hàng hóa</option>
-              <option value="thiet-bi">Thiết bị</option>
-              <option value="pallet">Pallet</option>
-              <option value="hang-roi">Hàng rời</option>
-            </select>
+            <input type="text" name="moving_warehouse_goods_type" placeholder="VD: Linh kiện, Pallet..." />
           </div>
           <div>
-            <label>Khối lượng ước tính *</label>
-            <input
-              type="text"
-              name="moving_warehouse_estimated_volume"
-              placeholder="VD: 12 tấn"
-              required
-            />
-          </div>
-          <div>
-            <label>Diện tích kho *</label>
-            <input
-              type="text"
-              name="moving_warehouse_area"
-              placeholder="VD: 600m2"
-              required
-            />
-          </div>
-          <div>
-            <label>Có cần xe nâng / thiết bị hỗ trợ không *</label>
-            <select name="moving_warehouse_equipment_support" required>
-              <option value="">Chọn</option>
-              <option value="co">Có</option>
-              <option value="khong">Không</option>
-            </select>
-          </div>
-          <div
-            class="grid-span-full"
-            style="
-              background-color: #f7fbee;
-              border-left: 4px solid var(--primary-color);
-              padding: 12px 16px;
-              margin-top: 1rem;
-              border-radius: 4px;
-            "
-          >
-            <h4
-              style="margin-top: 0; font-size: 1em; color: var(--primary-color)"
-            >
-              Tại sao cần khảo sát trước?
-            </h4>
-            <p style="margin-bottom: 0; font-size: 0.9em; color: #333">
-              Với quy mô lớn của việc chuyển kho, khảo sát là bước bắt buộc để
-              xác định đúng loại xe tải, xe nâng/cẩu, số lượng nhân công và các
-              phương án gia cố hàng hóa, đảm bảo an toàn tuyệt đối cho tài sản
-              của doanh nghiệp.
-            </p>
+            <label>Khối lượng ước tính</label>
+            <input type="text" name="moving_warehouse_estimated_volume" placeholder="VD: 10 tấn" />
           </div>
           <div class="grid-span-full">
-            <label>Dịch vụ cần tư vấn theo hạng mục</label>
-            <label>Các dịch vụ hỗ trợ bạn có thể cần:</label>
+            <label class="checkbox-inline"><input type="checkbox" name="moving_warehouse_elevator" /> Có thang máy/Nâng hạ</label>
+            <label class="checkbox-inline"><input type="checkbox" name="warehouse_crane_support" /> Cần xe cẩu/Xe nâng</label>
+          </div>
+          <div class="grid-span-full">
+            <label>Yêu cầu hỗ trợ kho:</label>
             <div class="moving-services-list">
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_warehouse_services[]"
-                  value="Xe tải và xe thùng kín"
-                />
-                Xe tải và xe thùng kín
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_warehouse_services[]"
-                  value="Luân chuyển hàng pallet"
-                />
-                Luân chuyển hàng pallet
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_warehouse_services[]"
-                  value="Thuê xe nâng - xe cẩu"
-                />
-                Thuê xe nâng - xe cẩu
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_warehouse_services[]"
-                  value="Nhân công bốc xếp chuyên trách"
-                />
-                Nhân công bốc xếp chuyên trách
-              </label>
-              <label class="checkbox-inline">
-                <input
-                  type="checkbox"
-                  name="moving_warehouse_services[]"
-                  value="Đóng gói và gia cố hàng hóa"
-                />
-                Đóng gói và gia cố hàng hóa
-              </label>
+              <label class="checkbox-inline"><input type="checkbox" name="moving_warehouse_services[]" value="Xe tải hạng nặng" checked /> Xe tải 5-10T <span style="font-size: 0.85em; color: var(--primary-color); display: block;">(800k - 2.5M/chuyến)</span></label>
+              <label class="checkbox-inline"><input type="checkbox" name="moving_warehouse_services[]" value="Đóng màng co Pallet" /> Quấn màng Pallet <span style="font-size: 0.85em; color: var(--primary-color); display: block;">(150k - 300k/pallet)</span></label>
+              <label class="checkbox-inline"><input type="checkbox" name="moving_warehouse_services[]" value="Bốc xếp nặng" /> Bốc xếp hạng nặng <span style="font-size: 0.85em; color: var(--primary-color); display: block;">(300k - 600k/người)</span></label>
             </div>
           </div>
-          <!-- Hợp nhất checkbox và input cho Dịch vụ khác -->
-          <div class="grid-span-full">
-            <label class="checkbox-inline">
-              <input
-                type="checkbox"
-                class="moving-other-service-checkbox"
-                data-target="moving-warehouse-service-other-wrapper"
-              />
-              <span>Dịch vụ khác</span>
-            </label>
-            <div
-              id="moving-warehouse-service-other-wrapper"
-              class="mt-2 hidden"
-            >
-              <input
-                type="text"
-                name="moving_warehouse_service_other"
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-                placeholder="Vui lòng mô tả chi tiết dịch vụ bạn cần..."
-              />
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>6. Hình ảnh & Ghi chú</h3>
+        <div class="grid-span-full">
+          <label>Hình ảnh/Video thực tế (Rất khuyến khích)</label>
+          <div class="upload-zone" onclick="this.querySelector('input').click()" style="border: 2px dashed #ddd; padding: 20px; text-align: center; border-radius: 12px; cursor: pointer; background: #fafafa;">
+            <input type="file" name="files[]" accept="image/*,video/*" multiple class="is-hidden" onchange="window.handleFileSelect(this)" />
+            <div class="upload-content">
+              <i class="fas fa-photo-video" style="font-size: 24px; color: #aaa; margin-bottom: 10px;"></i>
+              <p style="font-size: 13px; color: #666;">Nhấp để tải lên Hình ảnh hoặc Video đồ đạc</p>
+              <p style="font-size: 11px; color: #999;">Video giúp chúng tôi báo giá cực kỳ chính xác</p>
             </div>
+            <div class="file-preview-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px;"></div>
           </div>
-          <div class="grid-span-full">
-            <label>Ghi chú thêm</label>
-            <textarea
-              name="moving_warehouse_note"
-              placeholder="Nhập thêm yêu cầu cụ thể (nếu có)"
-            ></textarea>
-          </div>
+        </div>
+        <div class="grid-span-full" style="margin-top: 15px;">
+          <label>Ghi chú khác</label>
+          <textarea name="moving_note_extra" placeholder="VD: Nhà trong hẻm sâu, có đồ điện tử giá trị cao..."></textarea>
         </div>
       </div>
 
@@ -590,20 +267,11 @@
       <input type="hidden" name="package_type" value="other" />
       <input type="hidden" name="weight" value="0" />
       <input type="hidden" name="cod_amount" value="0" />
-      <input type="hidden" name="payment_method" value="cod" />
+
       <input type="hidden" name="pickup_time" value="" />
-      <input
-        type="hidden"
-        name="shipping_fee"
-        id="shipping-fee-input-moving"
-        value="0"
-      />
-      <textarea
-        id="moving-note-hidden"
-        name="note"
-        class="is-hidden"
-      ></textarea>
-      <datalist id="booking-address-suggestions"></datalist>
+      <input type="hidden" name="shipping_fee" id="shipping-fee-input-moving" value="0" />
+      <textarea id="moving-note-hidden" name="note" class="is-hidden"></textarea>
+
 
       <div class="moving-price-note" style="border-top: 2px solid #eee; padding-top: 15px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">

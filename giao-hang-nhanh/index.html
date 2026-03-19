@@ -54,18 +54,18 @@
           <p
             class="animate-bottom mt-4 max-w-2xl text-lg text-gray-600 sm:mt-6"
           >
-            Giao Hàng Nhanh cung cấp giải pháp giao thông xuyên suốt nội địa/quốc tế. <br><strong>✨ Mới: Khách hàng có thể theo dõi đơn hàng thời gian thực tế.</strong>
+            Giao Hàng Nhanh cung cấp giải pháp giao thông xuyên suốt trong nước. <br><strong>✨ Mới: Khách hàng có thể theo dõi đơn hàng thời gian thực tế.</strong>
           </p>
           <div
             class="hero-btns animate-bottom mt-8 flex flex-wrap items-center gap-4"
           >
             <a
-              href="#quick-quote"
+              href="public/tra-don-hang.html"
               class="btn-primary shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-              >Tính giá giao hàng</a
+              >Tra đơn hàng</a
             >
             <a
-              href="public/dat-lich.html"
+              href="public/dat-lich-giao-hang-nhanh.html"
               class="btn-secondary btn-blink transition-all hover:bg-gray-100"
               >Đặt đơn ngay</a
             >
@@ -120,28 +120,6 @@
             Ảnh: Dịch vụ shipper Giao Hàng Nhanh tại TP.HCM.
           </p>
         </div>
-      </div>
-    </section>
-
-    <!-- TRACKING SECTION -->
-    <section id="home-tracking">
-      <div class="container">
-        <h2 class="section-title">Tra cứu hành trình đơn hàng</h2>
-        <p class="section-desc">
-          Nhập mã vận đơn để theo dõi tình trạng đơn hàng của bạn
-        </p>
-
-        <form class="tracking-form" onsubmit="trackOrder(event, 'standard')">
-          <input
-            type="text"
-            id="standard-code"
-            placeholder="Nhập mã đơn hàng..."
-            required
-          />
-          <button type="submit" class="btn-primary">Tra cứu</button>
-        </form>
-        <div id="loading-spinner-standard" class="spinner"></div>
-        <div id="result-standard"></div>
       </div>
     </section>
 
@@ -229,7 +207,7 @@
               </li>
             </ul>
             <a
-              href="#quick-quote"
+              href="public/tra-cuu-gia.html"
               class="service-action-btn service-action-primary"
             >
               Tính cước nhanh →
@@ -256,7 +234,7 @@
               </li>
             </ul>
             <a
-              href="#quick-quote"
+              href="public/tra-cuu-gia.html"
               class="service-action-btn service-action-primary"
             >
               Tính cước nhanh →
@@ -279,7 +257,7 @@
               </li>
             </ul>
             <a
-              href="#quick-quote"
+              href="public/tra-cuu-gia.html"
               class="service-action-btn service-action-primary"
             >
               Tính cước nhanh →
@@ -318,371 +296,6 @@
           <p>Sẵn sàng hỗ trợ khách hàng mọi lúc, mọi nơi.</p>
         </div>
       </div>
-    </section>
-
-    <!-- BANG GIA & CACH TINH -->
-    <section id="bang-gia" class="pricing-table-section">
-      <div class="container">
-        <h2 class="section-title">Bảng giá &amp; Cách tính cước</h2>
-        <p class="section-desc">
-          Minh bạch từng đồng — tất cả các khoản phí được công bố rõ ràng trước khi bạn xác nhận đơn hàng.
-        </p>
-
-        <!-- CONG THUC TONG QUAT -->
-        <div class="pricing-formula-banner">
-          <div class="pricing-formula-inner">
-            <span class="formula-icon">📊</span>
-            <p class="formula-title">Công thức tính cước</p>
-            <div class="formula-equation">
-              <span class="formula-term primary">Phí cơ bản</span>
-              <span class="formula-op">+</span>
-              <span class="formula-term">Phí cân nặng</span>
-              <span class="formula-op">+</span>
-              <span class="formula-term accent">Phụ phí loại hàng</span>
-              <span class="formula-op">+</span>
-              <span class="formula-term">Phí COD</span>
-              <span class="formula-op">+</span>
-              <span class="formula-term">Phí Bảo hiểm</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- TABS -->
-        <div class="pricing-tabs" id="pricing-tabs">
-          <button class="pricing-tab-btn active" data-tab="tab-base">Phí cơ bản</button>
-          <button class="pricing-tab-btn" data-tab="tab-surcharge">Phụ phí hàng hóa</button>
-          <button class="pricing-tab-btn" data-tab="tab-cod">COD &amp; Bảo hiểm</button>
-          <button class="pricing-tab-btn" data-tab="tab-weight">Tính cân nặng</button>
-        </div>
-
-        <!-- TAB: PHI CO BAN -->
-        <div class="pricing-tab-panel active" id="tab-base">
-          <p class="tab-desc">✅ Hệ thống tính cước <strong>dựa trên số Km thực tế</strong> giữa điểm gửi và nhận. Càng đi xa, đơn giá mỗi km càng được ưu đãi.</p>
-          <div class="pricing-table-wrapper">
-            <table class="pricing-table">
-              <thead>
-                <tr>
-                  <th>Cự ly vận chuyển</th>
-                  <th>Đơn giá (VND)</th>
-                  <th>Ghi chú</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="zone-badge same-district">3 Km đầu tiên</span></td>
-                  <td><strong>20.000đ</strong></td>
-                  <td>Mức phí tối thiểu (Base price)</td>
-                </tr>
-                <tr>
-                  <td><span class="zone-badge same-city">Từ Km thứ 4 đến 50</span></td>
-                  <td><strong>+5.000đ / km</strong></td>
-                  <td>Áp dụng chặng ngắn & nội thành</td>
-                </tr>
-                <tr>
-                  <td><span class="zone-badge inter-city">Trên 50 Km (Lộ trình xa)</span></td>
-                  <td><strong>+3.500đ / km</strong></td>
-                  <td>Ưu đãi đường trường liên tỉnh</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="pricing-note">
-             <p>🚀 <strong>Hệ số dịch vụ:</strong> Tiêu chuẩn (×1.0) | Nhanh (×1.25) | Hỏa tốc (×1.50)</p>
-             <p>🕑 Thời gian: Ước tính dựa trên tốc độ di chuyển trung bình từng loại dịch vụ.</p>
-          </div>
-        </div>
-
-        <!-- TAB: PHU PHI HANG HOA -->
-        <div class="pricing-tab-panel" id="tab-surcharge">
-          <p class="tab-desc">✅ Phụ phí áp dụng <strong>thêm vào phí cơ bản</strong> do đặc điểm riêng của hàng hóa cần xử lý đặc biệt.</p>
-          <div class="pricing-table-wrapper">
-            <table class="pricing-table">
-              <thead>
-                <tr>
-                  <th>Loại hàng</th>
-                  <th>Phụ phí (thêm/kiện)</th>
-                  <th>Lý do</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>📦 Hàng thông thường</td>
-                  <td><strong class="price-zero">0đ</strong></td>
-                  <td>Không có yêu cầu đặc biệt</td>
-                </tr>
-                <tr class="highlight-row">
-                  <td>💎 Hàng giá trị cao</td>
-                  <td><strong>+15.000đ</strong></td>
-                  <td>Bảo vệ đặc biệt, theo dõi chặt chẽ, bàn giao nghiêm ngặt</td>
-                </tr>
-                <tr class="highlight-row">
-                  <td>🍣 Hàng dễ vỡ</td>
-                  <td><strong>+9.000đ</strong></td>
-                  <td>Đóng gói cẩn thận bằng mút xoốp, xử lý nhẹ nhàng thường xuyên</td>
-                </tr>
-                <tr class="highlight-row">
-                  <td>💨 Hàng có mùi hôi</td>
-                  <td><strong>+5.000đ</strong></td>
-                  <td>Cách ly riêng, bao kín đặc biệt, không ảnh hưởng hàng xung quanh</td>
-                </tr>
-                <tr>
-                  <td>🧪 Hàng chất lỏng/Hóa phẩm</td>
-                  <td><strong>Hệ số ×1.1</strong></td>
-                  <td>Tăng 10% phí cơ bản + cân nặng do đóng gói đặc biệt, chống rò rỉ</td>
-                </tr>
-                <tr class="highlight-row">
-                  <td>🔋 Hàng có pin Lithium</td>
-                  <td><strong>+14.000đ</strong></td>
-                  <td>Tuân thủ quy định an toàn, phân loại theo tiêu chuẩn vận chuyển</td>
-                </tr>
-                <tr class="highlight-row">
-                  <td>❄️ Hàng đông lạnh/Tươi sống</td>
-                  <td><strong>+13.000đ</strong></td>
-                  <td>Xe lạnh chuyên dụng, duy trì nhiệt độ suốt hành trình</td>
-                </tr>
-                <tr class="highlight-row">
-                  <td>🗯 Hàng cồng kềnh/Quá khổ</td>
-                  <td><strong>+18.000đ</strong></td>
-                  <td>Phương tiện đặc biệt chịu tải, quy trình bốc xếp riêng</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- TAB: COD & BAO HIEM -->
-        <div class="pricing-tab-panel" id="tab-cod">
-          <div class="pricing-card-grid">
-            <div class="pricing-info-card">
-              <div class="pricing-info-card-head">
-                <span>💰</span>
-                <h4>Phí Thu Hộ (COD)</h4>
-              </div>
-              <ul class="pricing-info-list">
-                <li>✅ Miễn phí nếu giá trị thu hộ ≤ <strong>1.000.000đ</strong></li>
-                <li>💳 Phí: <strong>1,2%</strong> giá trị thu hộ</li>
-                <li>⚠️ Tối thiểu: <strong>15.000đ</strong></li>
-              </ul>
-              <div class="pricing-example">
-                <strong>Ví dụ:</strong> Thu hộ 2.000.000đ<br/>
-                → Phí COD = 1,2% × 2.000.000đ = <strong>24.000đ</strong>
-              </div>
-            </div>
-            <div class="pricing-info-card">
-              <div class="pricing-info-card-head">
-                <span>🛡️</span>
-                <h4>Phí Bảo Hiểm Hàng Hóa</h4>
-              </div>
-              <ul class="pricing-info-list">
-                <li>✅ Miễn phí nếu giá trị khai báo ≤ <strong>1.000.000đ</strong></li>
-                <li>📄 Phí: <strong>0,5%</strong> giá trị khai báo</li>
-                <li>⚠️ Tối thiểu: <strong>5.000đ</strong></li>
-                <li>✔️ Bồi thường 100% nếu mất/ hỏng</li>
-              </ul>
-              <div class="pricing-example">
-                <strong>Ví dụ:</strong> Khai giá 3.000.000đ<br/>
-                → Phí bảo hiểm = 0,5% × 3.000.000đ = <strong>15.000đ</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TAB: CAM NANG TINH CAN NANG -->
-        <div class="pricing-tab-panel" id="tab-weight">
-          <p class="tab-desc">✅ Hệ thống tính theo <strong>trọng lượng thực tế</strong> hoặc <strong>trọng lượng thể tích</strong> — lấy giá trị nào lớn hơn.</p>
-          <div class="weight-rule-box">
-            <div class="weight-rule-item">
-              <span class="weight-rule-icon">⚖️</span>
-              <div>
-                <strong>Trọng lượng thực tế</strong>
-                <p>Cân như thường, đơn vị kg.</p>
-              </div>
-            </div>
-            <div class="weight-rule-vs">VS</div>
-            <div class="weight-rule-item">
-              <span class="weight-rule-icon">📦</span>
-              <div>
-                <strong>Trọng lượng thể tích</strong>
-                <p>Dài (cm) × Rộng (cm) × Cao (cm) ÷ <strong>6.000</strong></p>
-              </div>
-            </div>
-          </div>
-          <div class="weight-threshold-box">
-            <p>🎁 <strong>Miễn phí 2 kg đầu tiên</strong> cho mọi gói dịch vụ.</p>
-            <p>➕ Mỗi <strong>0,5 kg vượt ngưỡng</strong>, tính thêm:</p>
-            <ul>
-              <li>Giao Tiêu chuẩn: <strong>+3.500đ/0,5kg</strong></li>
-              <li>Giao Nhanh: <strong>+4.500đ/0,5kg</strong></li>
-              <li>Hỏa Tốc: <strong>+6.000đ/0,5kg</strong></li>
-            </ul>
-            <div class="weight-example">
-              <strong>Ví dụ:</strong> Gói 3kg, giao nhanh, nội thành:<br/>
-              • Phí cơ bản: 34.000đ<br/>
-              • Vượt 2kg: (3 - 2) = 1kg = 2 bậc × 4.500đ = +9.000đ<br/>
-              • Tổng: 34.000đ + 9.000đ = <strong>43.000đ</strong>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- QUICK QUOTE -->
-    <section id="quick-quote">
-      <h2 class="section-title">Tự tính cước phí vận chuyển</h2>
-      <p class="section-desc">
-        Chọn loại vận chuyển và nhập thông tin để hệ thống tính cước tự động.
-      </p>
-      <form id="quick-quote-form">
-        <input type="hidden" id="quote-mode" value="domestic" />
-
-        <div class="quote-panel" data-mode-panel="domestic">
-          <h3 class="quote-group-title">Thông tin hành trình</h3>
-          <div class="quote-grid quote-grid-2">
-            <div class="quote-box">
-              <h4>Điểm gửi</h4>
-              <div class="quote-grid quote-grid-2">
-                <div>
-                  <label for="domestic-from-city">Tỉnh/Thành phố gửi</label>
-                  <select id="domestic-from-city" required>
-                    <option value="">Chọn tỉnh/thành phố</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="domestic-from-district">Quận/Huyện gửi</label>
-                  <select id="domestic-from-district" required>
-                    <option value="">Chọn quận/huyện</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="quote-box">
-              <h4>Điểm nhận</h4>
-              <div class="quote-grid quote-grid-2">
-                <div>
-                  <label for="domestic-to-city">Tỉnh/Thành phố nhận</label>
-                  <select id="domestic-to-city" required>
-                    <option value="">Chọn tỉnh/thành phố</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="domestic-to-district">Quận/Huyện nhận</label>
-                  <select id="domestic-to-district" required>
-                    <option value="">Chọn quận/huyện</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <h3 class="quote-group-title">Thông tin hàng hóa</h3>
-          <div class="quote-grid quote-grid-2">
-            <div>
-              <label for="domestic-item-type">Loại hàng</label>
-              <select id="domestic-item-type" required>
-                <option value="">Chọn loại hàng</option>
-                <option value="thuong">Hàng thông thường</option>
-                <option value="gia-tri-cao">Hàng giá trị cao</option>
-                <option value="de-vo">Hàng dễ vỡ</option>
-                <option value="mui-hoi">Hàng có mùi hôi (thực phẩm, mắtm...)</option>
-                <option value="chat-long">Hàng chất lỏng/Hóa phẩm</option>
-                <option value="pin-lithium">
-                  Hàng điện tử có pin (Lithium)
-                </option>
-                <option value="dong-lanh">Hàng đông lạnh/Thực phẩm tươi</option>
-                <option value="cong-kenh">Hàng cồng kềnh/Quá khổ</option>
-              </select>
-            </div>
-            <div>
-              <label for="domestic-item-name">Tên hàng</label>
-              <select id="domestic-item-name" required disabled>
-                <option value="">Chọn loại hàng trước</option>
-              </select>
-            </div>
-            <div id="domestic-weight-group">
-              <label for="domestic-weight">Khối lượng (kg)</label>
-              <input
-                type="number"
-                id="domestic-weight"
-                min="0.1"
-                step="0.1"
-                placeholder="0.5"
-              />
-            </div>
-            <div>
-              <label for="domestic-quantity">Số lượng (kiện)</label>
-              <input
-                type="number"
-                id="domestic-quantity"
-                min="1"
-                step="1"
-                value="1"
-              />
-            </div>
-            <div id="domestic-length-group">
-              <label for="domestic-length">Chiều dài (cm)</label>
-              <input
-                type="number"
-                id="domestic-length"
-                min="1"
-                step="1"
-                placeholder="30"
-              />
-            </div>
-            <div id="domestic-width-group">
-              <label for="domestic-width">Chiều rộng (cm)</label>
-              <input
-                type="number"
-                id="domestic-width"
-                min="1"
-                step="1"
-                placeholder="20"
-              />
-            </div>
-            <div id="domestic-height-group">
-              <label for="domestic-height">Chiều cao (cm)</label>
-              <input
-                type="number"
-                id="domestic-height"
-                min="1"
-                step="1"
-                placeholder="15"
-              />
-            </div>
-            <div>
-              <label for="domestic-cod">Phí COD (giá trị thu hộ, VNĐ)</label>
-              <input
-                type="text"
-                id="domestic-cod"
-                class="input-currency"
-                placeholder="0"
-              />
-            </div>
-            <div>
-              <label for="domestic-insurance"
-                >Giá trị hàng hóa (Khai giá VNĐ)</label
-              >
-              <input
-                type="text"
-                id="domestic-insurance"
-                class="input-currency"
-                placeholder="0"
-              />
-            </div>
-            <div class="quote-span-2">
-              <p class="quote-note">
-                Lưu ý: Một tên hàng có thể thuộc nhiều loại. Khai sai loại hàng
-                có thể bị từ chối bồi thường khi phát sinh sự cố.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 16px; margin-top: 24px; justify-content: center;">
-          <button type="submit" class="btn-primary">Tra cứu cước phí ước tính</button>
-          <a href="public/dat-lich.html" class="btn-secondary" style="display: inline-flex; align-items: center; justify-content: center;">Đến Trang Đặt Lịch (Bản đồ) <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></a>
-        </div>
-      </form>
-      <div id="quote-result" class="quote-result"></div>
     </section>
 
     <!-- CONTACT -->
@@ -845,24 +458,6 @@
       src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
       defer
     ></script>
-    <script src="public/assets/js/pricing-data.js" defer></script>
-
-    <!-- Tab bảng giá -->
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        var tabBtns = document.querySelectorAll('.pricing-tab-btn');
-        var tabPanels = document.querySelectorAll('.pricing-tab-panel');
-        tabBtns.forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            tabBtns.forEach(function (b) { b.classList.remove('active'); });
-            tabPanels.forEach(function (p) { p.classList.remove('active'); });
-            btn.classList.add('active');
-            var target = document.getElementById(btn.dataset.tab);
-            if (target) target.classList.add('active');
-          });
-        });
-      });
-    </script>
     <script src="public/assets/js/service-catalog.js"></script>
     <script src="public/assets/js/shared-layout.js"></script>
     <script src="public/assets/js/shared-modals.js" defer></script>

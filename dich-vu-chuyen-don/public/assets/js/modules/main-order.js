@@ -155,8 +155,10 @@
     const phone = getFieldValue(form, "phone");
     const pickup = getFieldValue(form, "pickup");
     const delivery = getFieldValue(form, "delivery");
-    const surveyDate = getFieldValue(form, "moving_survey_date");
-    const surveySlot = getSelectText(form, "moving_survey_time_slot");
+    const moveDate = getFieldValue(form, "moving_date") || getFieldValue(form, "moving_survey_date");
+    const moveTime = getSelectText(form, "moving_time_slot") || getSelectText(form, "moving_survey_time_slot");
+    const floors = getFieldValue(form, "moving_floors");
+    const hasElevator = form.querySelector("[name=moving_elevator]")?.checked || form.querySelector("[name=moving_house_elevator]")?.value === "co";
 
     lines.push("");
     lines.push("Thông tin liên hệ:");
@@ -169,15 +171,18 @@
     lines.push(`- Địa chỉ chuyển đến: ${delivery}`);
 
     lines.push("");
-    lines.push("Thông tin khảo sát:");
-    lines.push(`- Ngày khảo sát mong muốn: ${surveyDate || "Chưa chọn"}`);
-    lines.push(`- Khung giờ khảo sát: ${surveySlot || "Chưa chọn"}`);
+    lines.push("Thông tin khảo sát/vận chuyển:");
+    lines.push(`- Ngày dự kiến: ${moveDate || "Chưa chọn"}`);
+    lines.push(`- Khung giờ: ${moveTime || "Chưa chọn"}`);
+    lines.push(`- Số tầng: ${floors || "Chưa xác định"}`);
+    lines.push(`- Thang máy: ${hasElevator ? "Có" : "Không"}`);
 
     if (serviceType === "moving_house") {
       const email = getFieldValue(form, "moving_house_email");
       const houseType = getSelectText(form, "moving_house_type");
-      const floors = getFieldValue(form, "moving_house_floors");
-      const elevator = getSelectText(form, "moving_house_elevator");
+      const houseFloors = getFieldValue(form, "moving_house_floors") || floors;
+      const elevator = getSelectText(form, "moving_house_elevator") || (hasElevator ? "Có" : "Không");
+      const truckAccess = form.querySelector("[name=house_truck_access]")?.checked ? "Vào được" : "Không rõ/Khó vào";
       const items = getFieldValue(form, "moving_house_items");
       const note = getFieldValue(form, "moving_house_note");
       const services = getCheckedValues(form, "moving_house_services[]");
@@ -195,6 +200,7 @@
       lines.push(
         `- Dịch vụ cần tư vấn: ${services.length ? services.join(", ") : "Chưa chọn"}`,
       );
+      lines.push(`- Hẻm xe tải: ${truckAccess}`);
       lines.push(`- Dịch vụ khác: ${serviceOther || "Không có"}`);
       lines.push(`- Ghi chú thêm: ${note || "Không có"}`);
     } else if (serviceType === "moving_office") {
@@ -204,6 +210,7 @@
       const area = getFieldValue(form, "moving_office_area");
       const elevator = getSelectText(form, "moving_office_elevator");
       const dismantle = getSelectText(form, "moving_office_dismantle");
+      const itMove = form.querySelector("[name=office_it_move]")?.checked ? "Có" : "Không";
       const note = getFieldValue(form, "moving_office_note");
       const services = getCheckedValues(form, "moving_office_services[]");
       const serviceOther = getFieldValue(form, "moving_office_service_other");
@@ -220,6 +227,7 @@
       lines.push(
         `- Có cần tháo lắp nội thất không: ${dismantle || "Không có"}`,
       );
+      lines.push(`- Di dời Server/IT: ${itMove}`);
       lines.push(
         `- Dịch vụ cần tư vấn: ${services.length ? services.join(", ") : "Chưa chọn"}`,
       );
@@ -238,6 +246,7 @@
         form,
         "moving_warehouse_equipment_support",
       );
+      const warehouseVolume = getFieldValue(form, "warehouse_volume") || getFieldValue(form, "moving_warehouse_estimated_volume");
       const note = getFieldValue(form, "moving_warehouse_note");
       const services = getCheckedValues(form, "moving_warehouse_services[]");
       const serviceOther = getFieldValue(
@@ -257,6 +266,7 @@
       lines.push(
         `- Có cần xe nâng / thiết bị hỗ trợ không: ${equipmentSupport || "Không có"}`,
       );
+      lines.push(`- Khối lượng/Thể tích sơ bộ: ${warehouseVolume || "Không có"}`);
       lines.push(
         `- Dịch vụ cần tư vấn: ${services.length ? services.join(", ") : "Chưa chọn"}`,
       );
@@ -275,11 +285,11 @@
 
     const pickupTimeField = form.querySelector("[name=pickup_time]");
     if (pickupTimeField) {
-      const surveyDate = getFieldValue(form, "moving_survey_date");
-      const surveySlot = getSelectText(form, "moving_survey_time_slot");
+      const moveDate = getFieldValue(form, "moving_date") || getFieldValue(form, "moving_survey_date");
+      const moveTime = getSelectText(form, "moving_time_slot") || getSelectText(form, "moving_survey_time_slot");
       const normalizedSlot =
-        surveySlot || getFieldValue(form, "moving_survey_time_slot");
-      pickupTimeField.value = [surveyDate, normalizedSlot]
+        moveTime || getFieldValue(form, "moving_time_slot") || getFieldValue(form, "moving_survey_time_slot");
+      pickupTimeField.value = [moveDate, normalizedSlot]
         .filter(Boolean)
         .join(" - ");
     }

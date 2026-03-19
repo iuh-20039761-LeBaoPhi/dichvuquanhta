@@ -23,11 +23,6 @@
             areaLabel: "Liên tỉnh",
             packages: ["slow", "standard", "fast", "express"],
           },
-          {
-            area: "international",
-            areaLabel: "Quốc tế",
-            packages: ["intl_economy", "intl_express"],
-          },
         ],
       },
     ],

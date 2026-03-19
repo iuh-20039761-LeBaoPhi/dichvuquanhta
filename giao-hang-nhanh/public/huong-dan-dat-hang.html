@@ -4,114 +4,76 @@
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hướng dẫn sử dụng hệ thống | Giao Hàng Nhanh</title>
+    <title>Hướng dẫn đặt hàng | Giao Hàng Nhanh</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="assets/css/styles.css" />
     <link rel="stylesheet" href="assets/css/guide.css" />
-    <!-- FontAwesome 6.4.0 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
 
   <body>
-    <!-- HEADER -->
-    <header>
-      <div class="container">
-        <div class="logo" style="display: flex; align-items: center">
-          <a
-            href="../index.html"
-            style="display: flex; align-items: center; margin-right: 10px"
-          >
-            <img
-              src="assets/images/favicon.ico"
-              alt="Logo"
-              style="width: 40px; height: 40px"
-            />
-          </a>
-          <a href="index.html" style="text-decoration: none">
-            <span style="font-size: 1.5em; font-weight: bold; color: inherit"
-              >Giao Hàng Nhanh</span
-            >
-          </a>
-        </div>
-      </div>
-    </header>
+    <div id="site-header"></div>
 
-    <div class="container">
-      <!-- INTRO -->
-      <div style="margin-top: 40px; text-align: center">
-        <h1 style="color: var(--primary)">
-          Tài liệu Hướng dẫn Sử dụng Giao Hàng Nhanh
-        </h1>
-        <p style="color: #666; max-width: 600px; margin: 10px auto">
-          Hướng dẫn chi tiết quy trình vận hành cho Khách hàng, Tài xế và Quản
-          trị viên.
+    <div class="guide-content">
+      <div style="margin-top: 130px; text-align: center">
+        <h1 style="color: var(--primary)">Hướng dẫn đặt đơn cho người dùng</h1>
+        <p style="color: #666; max-width: 760px; margin: 12px auto 0">
+          Tài liệu này chỉ dành cho người dùng đặt giao hàng. Nội dung đã được
+          cập nhật theo luồng nghiệp vụ hiện tại: tra cước trước, chọn gói phù
+          hợp, khai báo hàng hóa chi tiết, tạo đơn và theo dõi hành trình.
         </p>
 
-        <!-- Table of Contents -->
         <div
           class="toc-links"
           style="
             margin-top: 20px;
-            padding: 15px;
+            padding: 15px 18px;
             background: #fff;
             border-radius: 8px;
             display: inline-block;
           "
         >
           <strong>Mục lục nhanh:</strong><br />
-          <a href="#customer-guide">1. Dành cho Khách hàng</a>
-          <a href="#shipper-guide">2. Dành cho Tài xế (Shipper)</a>
-          <a href="#admin-guide">3. Dành cho Admin</a>
+          <a href="#bat-dau">1. Bắt đầu</a>
+          <a href="#tinh-cuoc">2. Tự tính cước</a>
+          <a href="#tao-don">3. Tạo đơn hàng</a>
+          <a href="#theo-doi">4. Theo dõi đơn</a>
+          <a href="#luu-y">5. Lưu ý quan trọng</a>
+          <a href="#faq">6. Câu hỏi thường gặp</a>
         </div>
       </div>
 
-      <!-- ========================================= -->
-      <!-- PHẦN 1: KHÁCH HÀNG (CUSTOMER)             -->
-      <!-- ========================================= -->
-      <section id="customer-guide">
-        <span class="role-badge badge-customer">Khách hàng</span>
-        <h2 class="section-title">I. Hướng dẫn cho Khách hàng</h2>
+      <section id="bat-dau">
+        <span class="role-badge badge-customer">Người dùng</span>
+        <h2 class="section-title">1. Bắt đầu sử dụng</h2>
         <p>
-          Bạn có thể mở form đặt đơn ngay từ trang chủ. Khi bấm xác nhận
-          <strong>Đặt lịch</strong>, hệ thống sẽ yêu cầu đăng nhập/đăng ký nếu
-          bạn chưa có phiên đăng nhập.
+          Bạn có thể bắt đầu từ trang chủ để xem dịch vụ, sau đó chuyển sang
+          trang <a href="tra-cuu-gia.html"><strong>Tra cứu giá</strong></a> để
+          xem bảng giá minh bạch và tự tính cước trước khi tạo đơn. Nếu chưa có
+          tài khoản, hệ thống sẽ yêu cầu đăng ký hoặc đăng nhập trước khi xác
+          nhận đơn hàng.
         </p>
 
         <div class="timeline" style="margin-top: 30px">
           <div class="timeline-item">
             <div class="timeline-marker"></div>
             <div class="timeline-content">
-              </section>
-
-      <!-- ========================================= -->
-      <!-- PHẦN 2: TÀI XẾ (SHIPPER)                  -->
-      <!-- ========================================= -->
-      <section id="shipper-guide">
-        <span class="role-badge badge-shipper">Tài xế (Shipper)</span>
-        <h2 class="section-title">II. Hướng dẫn cho Tài xế</h2>
-
-        <div class="timeline">
-          <div class="timeline-item">
-            <div class="timeline-marker"></div>
-            <div class="timeline-content">
-              <h3>1. Đăng ký & Chờ duyệt</h3>
+              <h3>Đăng ký hoặc đăng nhập</h3>
               <p>
-                Quy trình đăng ký tương tự như Khách hàng. Tại bước điền thông
-                tin, bạn hãy chọn vai trò là
-                <strong>"Tài xế (Nhận đơn)"</strong>.
-              </p>
-              <p style="margin-top: 5px">
-                <em
-                  >Lưu ý: Tài khoản Shipper cần được Admin phê duyệt trước khi
-                  có thể đăng nhập nhận đơn.</em
-                >
+                Chọn <strong>Đăng ký</strong> nếu bạn là khách mới. Sau khi có
+                tài khoản, bạn có thể tạo đơn, xem lịch sử đặt hàng và quản lý
+                thông tin liên hệ thuận tiện hơn.
               </p>
               <div class="screenshot-placeholder">
                 <img
-                  src="assets/images/shipper-register.png"
-                  alt="Ảnh màn hình: Chọn vai trò Tài xế khi đăng ký"
+                  src="assets/images/step1-click-register.png"
+                  alt="Đăng ký tài khoản để bắt đầu đặt đơn"
                 />
               </div>
             </div>
@@ -120,224 +82,239 @@
           <div class="timeline-item">
             <div class="timeline-marker"></div>
             <div class="timeline-content">
-              <h3>2. Nhận đơn hàng (Dashboard)</h3>
+              <h3>Chọn đúng nhu cầu gửi hàng</h3>
               <p>
-                Truy cập <strong>Dashboard Shipper</strong>. Tại đây bạn sẽ thấy
-                danh sách các đơn hàng được Admin phân công.
+                Hệ thống hiện hỗ trợ luồng đặt đơn nội địa và quốc tế. Trước khi
+                tạo đơn, bạn nên xác định rõ điểm gửi, điểm nhận, loại hàng, số
+                kiện và khung thời gian mong muốn để nhận báo giá chính xác.
               </p>
               <ul class="field-list">
-                <li><strong>Chờ lấy hàng:</strong> Đơn mới cần đi lấy.</li>
-                <li>
-                  <strong>Đang giao:</strong> Đơn bạn đang giữ và đi giao.
-                </li>
-                <li><strong>Hoàn tất:</strong> Lịch sử đơn đã giao xong.</li>
+                <li><strong>Nội địa:</strong> Phù hợp khi gửi hàng trong nước.</li>
+                <li><strong>Quốc tế:</strong> Cần thêm quốc gia đến, khu vực nhận và thông tin giấy tờ.</li>
+                <li><strong>Nhiều kiện:</strong> Nên khai đủ số lượng, kích thước và khai giá bảo hiểm nếu có.</li>
               </ul>
-              <div class="screenshot-placeholder">
-                <img
-                  src="assets/images/shipper-dashboard.png"
-                  alt="Ảnh màn hình: Giao diện Dashboard Shipper với danh sách đơn"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="timeline-item">
-            <div class="timeline-marker"></div>
-            <div class="timeline-content">
-              <h3>3. Quy trình Giao hàng & Cập nhật trạng thái</h3>
-              <p>
-                Bấm vào nút <strong>"Xem chi tiết"</strong> của một đơn hàng để
-                thực hiện quy trình:
-              </p>
-              <ol style="margin-left: 20px; margin-top: 10px">
-                <li>
-                  Bấm <strong>"Đã lấy hàng"</strong> khi nhận hàng từ người gửi.
-                </li>
-                <li>
-                  Bấm <strong>"Đang giao hàng"</strong> khi bắt đầu di chuyển
-                  đến người nhận.
-                </li>
-                <li>
-                  Nếu giao thất bại, chọn <strong>"Hủy đơn"</strong> và nhập lý
-                  do.
-                </li>
-              </ol>
-              <div class="screenshot-placeholder">
-                <img
-                  src="assets/images/shipper-process.png"
-                  alt="Ảnh màn hình: Trang chi tiết đơn hàng của Shipper với các nút trạng thái"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="timeline-item">
-            <div class="timeline-marker"></div>
-            <div class="timeline-content">
-              <h3>4. Xác thực giao hàng (POD)</h3>
-              <p>Đây là bước bắt buộc. Khi giao thành công, bạn phải:</p>
-              <ul class="field-list">
-                <li>
-                  Chụp ảnh gói hàng tại địa điểm giao (hoặc ảnh người nhận cầm
-                  hàng).
-                </li>
-                <li>
-                  Tải ảnh lên hệ thống tại mục
-                  <strong>"Bằng chứng giao hàng"</strong>.
-                </li>
-                <li>Bấm <strong>"Hoàn tất đơn hàng"</strong>.</li>
-              </ul>
-              <div class="screenshot-placeholder">
-                <img
-                  src="assets/images/shipper-pod.png"
-                  alt="Ảnh màn hình: Form upload ảnh POD (Proof of Delivery)"
-                />
-              </div>
             </div>
           </div>
         </div>
         <div class="back-to-top"><a href="#">⬆ Về đầu trang</a></div>
       </section>
 
-      <!-- ========================================= -->
-      <!-- PHẦN 3: QUẢN TRỊ VIÊN (ADMIN)             -->
-      <!-- ========================================= -->
-      <section id="admin-guide">
-        <span class="role-badge badge-admin">Quản trị viên (Admin)</span>
-        <h2 class="section-title">III. Hướng dẫn cho Admin</h2>
+      <section id="tinh-cuoc">
+        <h2 class="section-title">2. Tự tính cước trước khi tạo đơn</h2>
+        <p>
+          Ở trang <a href="tra-cuu-gia.html"><strong>Tra cứu giá</strong></a>,
+          bạn có thể xem bảng giá minh bạch và dùng mục
+          <strong>Tự tính cước phí vận chuyển</strong> để so sánh các gói dịch
+          vụ trước khi đặt hàng. Đây là bước nên làm trước để tránh nhập đơn
+          thiếu thông tin rồi phải sửa lại nhiều lần.
+        </p>
 
-        <div class="step-grid">
-          <div class="step-card">
-            <h3>1. Tổng quan (Dashboard)</h3>
+        <div class="step-grid" style="margin-top: 24px">
+          <article class="step-card">
+            <h3>Nhập tuyến gửi và nhận</h3>
             <p>
-              Xem thống kê doanh thu, số lượng đơn hàng trong ngày/tuần và biểu
-              đồ hiệu suất.
+              Chọn tỉnh/thành, quận/huyện gửi và nhận. Với quốc tế, chọn thêm
+              quốc gia đến và khu vực nhận hàng.
             </p>
-            <div class="screenshot-placeholder">
-              <img
-                src="assets/images/admin-dashboard.png"
-                alt="Ảnh màn hình: Admin Dashboard với biểu đồ thống kê"
-              />
+          </article>
+
+          <article class="step-card">
+            <h3>Khai báo hàng hóa</h3>
+            <p>
+              Chọn <strong>Loại hàng</strong>, <strong>Tên hàng</strong>,
+              khối lượng, số kiện và kích thước. Hệ thống dùng dữ liệu này để
+              tính khối lượng tính cước và đề xuất phương tiện phù hợp.
+            </p>
+          </article>
+
+          <article class="step-card">
+            <h3>So sánh các gói cước</h3>
+            <p>
+              Kết quả sẽ hiển thị giá tham khảo, ETA, phương tiện đề xuất và
+              phần giải thích công thức tính cước nếu có.
+            </p>
+          </article>
+        </div>
+
+        <div class="screenshot-placeholder">
+          <img
+            src="assets/images/huong-dan-dat-giao-hang-nhanh.png"
+            alt="Tự tính cước vận chuyển trước khi tạo đơn"
+          />
+        </div>
+
+        <div class="alert-box">
+          Mẹo: Nếu bạn gửi nhiều kiện hoặc hàng đặc thù như dễ vỡ, pin lithium,
+          đông lạnh hoặc cồng kềnh, hãy nhập đầy đủ kích thước để hệ thống tính
+          đúng khối lượng tính cước.
+        </div>
+        <div class="back-to-top"><a href="#">⬆ Về đầu trang</a></div>
+      </section>
+
+      <section id="tao-don">
+        <h2 class="section-title">3. Tạo đơn hàng</h2>
+        <p>
+          Sau khi đã tra cước, bạn chuyển sang bước tạo đơn. Hệ thống hiện ưu
+          tiên việc chọn gói phù hợp trước khi xác nhận, thay vì chỉ nhập form
+          rồi gửi đi như trước.
+        </p>
+
+        <div class="timeline" style="margin-top: 30px">
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>Bước 1. Nhập địa chỉ gửi và nhận</h3>
+              <p>
+                Điền đầy đủ địa chỉ lấy hàng, địa chỉ giao hàng, tên người nhận
+                và số điện thoại nhận hàng. Thông tin càng rõ thì ETA và khả
+                năng giao thành công càng tốt.
+              </p>
+              <div class="screenshot-placeholder">
+                <img
+                  src="assets/images/step2-address-input.png"
+                  alt="Nhập địa chỉ gửi và nhận hàng"
+                />
+              </div>
             </div>
           </div>
 
-          <div class="step-card">
-            <h3>2. Quản lý Đơn hàng</h3>
-            <p>Xem tất cả đơn hàng. Admin có quyền:</p>
-            <ul>
-              <li>
-                <strong>Phân công:</strong> Chọn Shipper cho đơn hàng mới.
-              </li>
-              <li>
-                <strong>Can thiệp:</strong> Hủy đơn hoặc cập nhật trạng thái
-                thay cho Shipper nếu có sự cố.
-              </li>
-              <li><strong>In ấn:</strong> In phiếu gửi hàng.</li>
-            </ul>
-            <div class="screenshot-placeholder">
-              <img
-                src="assets/images/admin-orders.png"
-                alt="Ảnh màn hình: Danh sách quản lý đơn hàng của Admin"
-              />
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>Bước 2. Khai báo chi tiết hàng hóa</h3>
+              <p>
+                Hãy nhập đúng loại hàng, số kiện, khối lượng, kích thước, COD
+                và khai giá bảo hiểm nếu cần. Với hàng quốc tế, bạn cần nhập
+                thêm thông tin giấy tờ và mục đích gửi.
+              </p>
+              <ul class="field-list">
+                <li><strong>COD:</strong> Chỉ dùng khi thực sự cần thu hộ.</li>
+                <li><strong>Bảo hiểm:</strong> Nên khai khi hàng có giá trị cao.</li>
+                <li><strong>Hàng nhiều kiện:</strong> Nhập đủ số lượng và kích thước từng kiện.</li>
+              </ul>
             </div>
           </div>
 
-          <div class="step-card">
-            <h3>3. Quản lý Người dùng</h3>
-            <p>
-              Duyệt tài khoản Shipper mới, khóa tài khoản vi phạm hoặc reset mật
-              khẩu cho người dùng.
-            </p>
-            <div class="screenshot-placeholder">
-              <img
-                src="assets/images/admin-users.png"
-                alt="Ảnh màn hình: Trang quản lý Users"
-              />
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>Bước 3. Chọn gói dịch vụ hệ thống đề xuất</h3>
+              <p>
+                Khi dữ liệu đủ, hệ thống sẽ hiển thị danh sách gói cước phù hợp.
+                Bạn nên so sánh tổng phí, thời gian giao và phương tiện đề xuất
+                trước khi bấm xác nhận.
+              </p>
+              <div class="screenshot-placeholder">
+                <img
+                  src="assets/images/quan-ly-don-hang-2.png"
+                  alt="Chọn gói cước vận chuyển phù hợp"
+                />
+              </div>
             </div>
           </div>
 
-          <div class="step-card">
-            <h3>4. Cấu hình Hệ thống</h3>
-            <p>
-              Cài đặt thông tin ngân hàng (để tạo mã QR), quản lý bảng giá dịch
-              vụ và các nội dung trang chủ (FAQ, Testimonials).
-            </p>
-            <div class="screenshot-placeholder">
-              <img
-                src="assets/images/admin-settings.png"
-                alt="Ảnh màn hình: Trang cài đặt hệ thống"
-              />
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h3>Bước 4. Xác nhận đơn và kiểm tra lại thông tin</h3>
+              <p>
+                Trước khi gửi, hãy kiểm tra kỹ địa chỉ, số điện thoại, loại
+                hàng, COD và khai giá. Sau khi xác nhận, mã đơn sẽ được tạo để
+                bạn tiếp tục theo dõi hành trình.
+              </p>
             </div>
           </div>
         </div>
         <div class="back-to-top"><a href="#">⬆ Về đầu trang</a></div>
       </section>
 
-      <!-- PHẦN 3: TRA CỨU & BẢNG GIÁ -->
-      <section id="tracking-pricing">
-        <h2 class="section-title">IV. Tra cứu & Bảng giá</h2>
+      <section id="theo-doi">
+        <h2 class="section-title">4. Theo dõi và xử lý đơn hàng</h2>
+        <p>
+          Sau khi tạo đơn thành công, bạn có thể chuyển sang trang
+          <a href="tra-don-hang.html"><strong>Tra đơn hàng</strong></a> để tra
+          cứu hành trình, nắm trạng thái giao nhận và xử lý nhanh khi có phát
+          sinh.
+        </p>
 
         <div
           style="
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
+            gap: 28px;
+            margin-top: 24px;
           "
         >
-          <!-- Tra cứu -->
           <div>
-            <h3>🔍 Tra cứu hành trình</h3>
+            <h3>Tra cứu hành trình</h3>
             <p>
-              Nhập mã đơn hàng (VD: <strong>GH-XXXXXX</strong>) vào ô tìm kiếm
-              để xem vị trí đơn hàng.
+              Nhập mã đơn để xem trạng thái hiện tại, các mốc thời gian và hành
+              trình xử lý của đơn hàng.
             </p>
             <div class="screenshot-placeholder">
               <img
-                src="assets/images/tracking-guide.png"
-                alt="Tra cứu vận đơn"
+                src="assets/images/theo-doi-don-hang-nhanh-chong.png"
+                alt="Tra cứu và theo dõi trạng thái đơn hàng"
               />
             </div>
           </div>
 
-          <!-- Bảng giá -->
           <div>
-            <h3>💰 Cách xem giá chính xác</h3>
-            <ul class="field-list">
-              <li>
-                Dùng mục <strong>Tự tính cước phí vận chuyển</strong> tại trang
-                chủ để xem giá theo tuyến nội địa hoặc quốc tế.
-              </li>
-              <li>
-                Danh sách <strong>tỉnh/thành, quận/huyện, quốc gia</strong> đã
-                được đồng bộ một nguồn dữ liệu để tránh trùng/lệch tên.
-              </li>
-              <li>
-                Giá cuối cùng phụ thuộc gói dịch vụ, loại hàng, khối lượng tính
-                cước, kích thước, COD và khai giá bảo hiểm.
-              </li>
-            </ul>
-
-            <h3 style="margin-top: 28px">⏱️ Thời gian giao hàng dự kiến</h3>
-            <p style="margin-bottom: 10px">Thời gian ETA hiển thị là <strong>thời gian tham chiếu</strong>. Thực tế có thể kéo dài hơn tùy:</p>
-            <ul class="field-list">
-              <li>📦 <strong>Số lượng kiện:</strong> ≥ 2 kiện → cộng thêm tối đa +24 giờ.</li>
-              <li>🏺 <strong>Hàng dễ vỡ / giá trị cao:</strong> +2–8 giờ xử lý cẩn thận.</li>
-              <li>🔋 <strong>Hàng có pin Lithium:</strong> +8–12 giờ kiểm định an toàn.</li>
-              <li>❄️ <strong>Hàng đông lạnh / cồng kềnh:</strong> +12 giờ chờ phương tiện chuyên dụng.</li>
-              <li>⚖️ <strong>Khối lượng &gt; 10kg:</strong> +4–10 giờ; &gt; 30kg: +tới 48 giờ.</li>
-              <li>🛡️ <strong>Khai giá bảo hiểm ≥ 20 triệu:</strong> +4 giờ kiểm định.</li>
-              <li>🗺️ <strong>Liên tỉnh:</strong> Phụ thuộc lịch xe/tàu, có thể trễ trong dịp lễ/Tết.</li>
-            </ul>
-            <div class="alert-box" style="background-color: #fff3cd; color: #856404; border-left-color: #ffc107; margin-top: 12px">
-              ⚠️ Xem chi tiết tại <a href="dieu-khoan-su-dung.html" style="color: #856404; font-weight: 600">Điều khoản sử dụng – Điều 7</a>.
+            <h3>Quản lý COD và đối soát</h3>
+            <p>
+              Nếu đơn có COD, bạn nên theo dõi kỹ tổng thu hộ và ghi chú thanh
+              toán để tránh sai lệch khi đối chiếu về sau.
+            </p>
+            <div class="screenshot-placeholder">
+              <img
+                src="assets/images/huong-dan-gui-hang-thu-ho-cod.png"
+                alt="Theo dõi COD và xử lý đơn hàng"
+              />
             </div>
           </div>
         </div>
+
+        <div class="alert-box">
+          Nếu đơn vẫn ở trạng thái chờ xử lý, bạn có thể hủy trước khi đơn được
+          lấy hàng. Khi đơn đã vào quá trình giao nhận, hãy liên hệ hỗ trợ để
+          được hướng dẫn.
+        </div>
+        <div class="back-to-top"><a href="#">⬆ Về đầu trang</a></div>
       </section>
 
-      <!-- PHẦN 4: FAQ -->
+      <section id="luu-y">
+        <h2 class="section-title">5. Lưu ý quan trọng trước khi gửi hàng</h2>
+        <ul class="field-list">
+          <li><strong>Nhập địa chỉ rõ ràng:</strong> gồm số nhà, đường, quận/huyện và số điện thoại.</li>
+          <li><strong>Khai đúng loại hàng:</strong> để hệ thống gợi ý đúng gói và phương tiện.</li>
+          <li><strong>Đo kích thước thật:</strong> đặc biệt với hàng cồng kềnh, nhiều kiện hoặc dễ vỡ.</li>
+          <li><strong>Khai giá bảo hiểm khi cần:</strong> áp dụng cho hàng giá trị cao.</li>
+          <li><strong>Kiểm tra ETA:</strong> ETA chỉ là thời gian tham chiếu, có thể tăng nếu hàng đặc thù hoặc tuyến xa.</li>
+        </ul>
+
+        <div class="alert-box">
+          Xem thêm tại
+          <a
+            href="dieu-khoan-su-dung.html"
+            style="color: #856404; font-weight: 600"
+            >Điều khoản sử dụng</a
+          >
+          và
+          <a
+            href="chinh-sach-van-chuyen.html"
+            style="color: #856404; font-weight: 600"
+            >Chính sách vận chuyển</a
+          >
+          để nắm rõ các trường hợp phát sinh, giới hạn trách nhiệm và thời gian
+          giao hàng dự kiến.
+        </div>
+        <div class="back-to-top"><a href="#">⬆ Về đầu trang</a></div>
+      </section>
+
       <section id="faq">
-        <h2 class="section-title">V. Hỏi đáp (FAQ)</h2>
+        <h2 class="section-title">6. Câu hỏi thường gặp</h2>
+
+        <div style="display: grid; gap: 16px">
           <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
             <h3
               style="
@@ -346,14 +323,11 @@
                 margin-bottom: 10px;
               "
             >
-              Thời gian giao hàng có thể bị trễ không?
+              Tôi có bắt buộc phải đăng nhập mới tạo đơn không?
             </h3>
             <p>
-              Có. Thời gian ETA là <strong>dự kiến</strong>, không phải cam kết tuyệt đối.
-              Thời gian thực tế có thể kéo dài hơn nếu đơn có nhiều kiện, hàng đặc thù
-              (dễ vỡ, pin Lithium, đông lạnh...), khối lượng lớn, hoặc khai giá bảo hiểm
-              cao. Xem chi tiết tại
-              <a href="dieu-khoan-su-dung.html" style="color: var(--primary); font-weight: 600">Điều khoản – Điều 7</a>.
+              Có. Bạn có thể xem nội dung và tra cước trước, nhưng khi xác nhận
+              tạo đơn hệ thống sẽ yêu cầu đăng nhập hoặc đăng ký tài khoản.
             </p>
           </div>
 
@@ -365,12 +339,12 @@
                 margin-bottom: 10px;
               "
             >
-              Hàng cồng kềnh/đông lạnh có giao được không?
+              Vì sao giá hiển thị có thể thay đổi?
             </h3>
             <p>
-              Được. Chọn đúng <strong>Loại hàng hóa</strong> khi đặt đơn để hệ thống
-              đề xuất phương tiện phù hợp (xe tải lạnh, xe tải lớn...). Lưu ý thời gian
-              giao sẽ kéo dài hơn so với hàng thông thường.
+              Giá tham khảo phụ thuộc vào tuyến gửi nhận, loại hàng, khối lượng
+              tính cước, số kiện, COD, khai giá bảo hiểm và một số phụ phí xử lý
+              đặc thù.
             </p>
           </div>
 
@@ -382,38 +356,14 @@
                 margin-bottom: 10px;
               "
             >
-              Shipper đến lấy hàng trong bao lâu?
-            </h3>
-            <p>Thường từ 15 - 45 phút đối với đơn nội thành (gói Hỏa tốc). Gói Tiêu chuẩn hoặc Chậm có thể mất 1–3 giờ tùy lịch.</p>
-          </div>
-          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
-            <h3
-              style="
-                color: var(--primary);
-                font-size: 18px;
-                margin-bottom: 10px;
-              "
-            >
-              Tôi có thể hủy đơn không?
-            </h3>
-            <p>Có, bạn có thể hủy khi đơn ở trạng thái "Chờ xử lý" (trước khi Shipper xác nhận lấy hàng). Xem chi tiết tại <a href="dieu-khoan-su-dung.html" style="color: var(--primary); font-weight: 600">Điều khoản – Điều 5</a>.</p>
-          </div>
-          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
-            <h3
-              style="
-                color: var(--primary);
-                font-size: 18px;
-                margin-bottom: 10px;
-              "
-            >
-              Làm sao để xuất hóa đơn đỏ (VAT)?
+              Tôi có thể gửi hàng quốc tế không?
             </h3>
             <p>
-              Tại bước tạo đơn, hãy tích chọn ô
-              <strong>"Yêu cầu xuất hóa đơn công ty"</strong> và điền mã số
-              thuế.
+              Có. Khi chọn luồng quốc tế, bạn cần nhập thêm quốc gia đến, khu
+              vực nhận, thông tin giấy tờ người nhận và mục đích gửi hàng.
             </p>
           </div>
+
           <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
             <h3
               style="
@@ -422,35 +372,41 @@
                 margin-bottom: 10px;
               "
             >
-              Tôi có thể lưu địa chỉ giao hàng không?
+              Tôi có thể hủy đơn sau khi tạo không?
             </h3>
             <p>
-              Có. Hệ thống tự động lưu các địa chỉ bạn đã dùng vào
-              <strong>Sổ địa chỉ</strong> để chọn nhanh cho lần sau.
+              Có thể hủy khi đơn vẫn còn ở trạng thái chờ xử lý. Nếu đơn đã được
+              lấy hàng hoặc đang giao, bạn nên liên hệ hỗ trợ để được kiểm tra
+              tình trạng thực tế.
+            </p>
+          </div>
+
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px">
+            <h3
+              style="
+                color: var(--primary);
+                font-size: 18px;
+                margin-bottom: 10px;
+              "
+            >
+              Tôi nên làm gì nếu hàng dễ vỡ hoặc giá trị cao?
+            </h3>
+            <p>
+              Hãy đóng gói kỹ, chọn đúng loại hàng, khai báo bảo hiểm nếu cần và
+              nhập đầy đủ kích thước để hệ thống đề xuất đúng phương tiện vận
+              chuyển.
             </p>
           </div>
         </div>
       </section>
     </div>
 
-    <footer
-      style="
-        background: var(--primary);
-        color: white;
-        text-align: center;
-        padding: 30px 20px;
-        margin-top: 40px;
-      "
-    >
-      <div class="container">
-        <h3>Giao Hàng Nhanh Shipper Service</h3>
-        <p style="opacity: 0.8; font-size: 14px; margin: 10px 0">
-          Dịch vụ giao hàng nhanh chóng - An toàn - Tiện lợi
-        </p>
-        <p style="font-size: 13px">
-          &copy; 2026 Giao Hàng Nhanh. All rights reserved.
-        </p>
-      </div>
-    </footer>
+    <div id="site-footer"></div>
+    <script src="assets/js/shared-layout.js"></script>
+    <script>
+      window.isLoggedIn = false;
+      window.apiBasePath = "";
+    </script>
+    <script src="assets/js/main.js" defer></script>
   </body>
 </html>

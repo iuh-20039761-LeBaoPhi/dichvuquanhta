@@ -32,6 +32,10 @@ function loadPricingDataSync() {
       // Adapter cho cấu trúc Tiếng Việt mới "BANGGIA" và "BAOGIACHITIET"
       if (parsed.BANGGIA && parsed.BAOGIACHITIET) {
         const bd = parsed.BAOGIACHITIET.noidia;
+        const tenVung = bd.tenvung || {};
+        const thoigianTieuChuan = (bd.dichvu.tieuchuan && bd.dichvu.tieuchuan.thoigian) || {};
+        const thoigianNhanh = (bd.dichvu.nhanh && bd.dichvu.nhanh.thoigian) || {};
+        const thoigianHoaToc = (bd.dichvu.hoatoc && bd.dichvu.hoatoc.thoigian) || {};
         QUOTE_SHIPPING_DATA = {
           cities: parsed.BAOGIACHITIET.thanhpho,
           domestic: {
@@ -39,9 +43,9 @@ function loadPricingDataSync() {
             volumeDivisor: 6000,
             baseIncludedWeight: 2,
             zoneLabels: {
-              same_district: "Nội quận/huyện",
-              same_city: "Nội thành",
-              inter_city: "Liên tỉnh"
+              same_district: tenVung.cung_quan || tenVung.same_district || "Nội quận/huyện",
+              same_city: tenVung.noi_thanh || tenVung.same_city || "Nội thành",
+              inter_city: tenVung.lien_tinh || tenVung.inter_city || "Liên tỉnh"
             },
             goodsTypeFee: {
               "thuong": bd.philoaihang.thuong !== undefined ? bd.philoaihang.thuong : 0,
@@ -95,7 +99,9 @@ function loadPricingDataSync() {
                 },
                 perHalfKg: bd.dichvu.tieuchuan.buoctiep || 3500,
                 estimate: {
-                  same_district: "4-6 giờ", same_city: "8-12 giờ", inter_city: "1-3 ngày"
+                  same_district: thoigianTieuChuan.cung_quan || thoigianTieuChuan.same_district || "4-6 giờ",
+                  same_city: thoigianTieuChuan.noi_thanh || thoigianTieuChuan.same_city || "8-12 giờ",
+                  inter_city: thoigianTieuChuan.lien_tinh || thoigianTieuChuan.inter_city || "1-3 ngày"
                 }
               },
               fast: {
@@ -107,7 +113,9 @@ function loadPricingDataSync() {
                 },
                 perHalfKg: bd.dichvu.nhanh.buoctiep || 4500,
                 estimate: {
-                  same_district: "2-3 giờ", same_city: "4-8 giờ", inter_city: "18-30 giờ"
+                  same_district: thoigianNhanh.cung_quan || thoigianNhanh.same_district || "2-3 giờ",
+                  same_city: thoigianNhanh.noi_thanh || thoigianNhanh.same_city || "4-8 giờ",
+                  inter_city: thoigianNhanh.lien_tinh || thoigianNhanh.inter_city || "18-30 giờ"
                 }
               },
               express: {
@@ -119,7 +127,9 @@ function loadPricingDataSync() {
                 },
                 perHalfKg: bd.dichvu.hoatoc.buoctiep || 6500,
                 estimate: {
-                  same_district: "1-2 giờ", same_city: "2-4 giờ", inter_city: "12-24 giờ"
+                  same_district: thoigianHoaToc.cung_quan || thoigianHoaToc.same_district || "1-2 giờ",
+                  same_city: thoigianHoaToc.noi_thanh || thoigianHoaToc.same_city || "2-4 giờ",
+                  inter_city: thoigianHoaToc.lien_tinh || thoigianHoaToc.inter_city || "12-24 giờ"
                 }
               }
             }
@@ -145,6 +155,29 @@ function toPositiveNumber(value) {
 function roundCurrency(value) {
   return Math.round(value / 1000) * 1000;
 }
+
+const DOMESTIC_VEHICLE_OPTIONS = {
+  auto: {
+    label: "Để hệ thống tự đề xuất",
+    multiplier: 1,
+  },
+  xe_may: {
+    label: "Xe máy",
+    multiplier: 1,
+  },
+  xe_loi: {
+    label: "Xe lôi / xe ba gác",
+    multiplier: 2,
+  },
+  xe_ban_tai: {
+    label: "Xe bán tải / xe van",
+    multiplier: 2.8,
+  },
+  xe_tai: {
+    label: "Xe tải nhẹ",
+    multiplier: 4,
+  },
+};
 
 function getVolumetricWeight(length, width, height, divisor) {
   const l = toPositiveNumber(length);
@@ -253,12 +286,7 @@ function getDomesticEstimateAdjustmentHours(zoneKey, billableWeight, itemType) {
   return adjust;
 }
 
-function buildDomesticEstimate(
-  serviceConfig,
-  zoneKey,
-  billableWeight,
-  itemType,
-) {
+function buildDomesticEstimate(serviceConfig, zoneKey, billableWeight, itemType) {
   const estimateText = serviceConfig.estimate[zoneKey] || "";
   const parsed = parseEstimateRangeToHours(estimateText);
   const adjust = getDomesticEstimateAdjustmentHours(
@@ -269,112 +297,6 @@ function buildDomesticEstimate(
   const minHours = Math.max(1, parsed.minHours + adjust);
   const maxHours = Math.max(minHours, parsed.maxHours + adjust);
   return formatEstimateFromHours(minHours, maxHours);
-}
-
-  function getDomesticVehicleSuggestion(
-  serviceType,
-  zoneKey,
-  billableWeight,
-  itemType,
-) {
-  if (itemType === "cong-kenh" || billableWeight >= 40) {
-    return zoneKey === "inter_city"
-      ? "Xe tải liên tỉnh (2-5 tấn)"
-      : "Xe tải nhẹ (1-2 tấn)";
-  }
-  if (itemType === "dong-lanh") return "Xe tải lạnh/xe van lạnh";
-  if (itemType === "de-vo" || billableWeight >= 15) return "Xe van/xe tải nhẹ";
-  if (itemType === "pin-lithium" && zoneKey === "inter_city")
-    return "Xe tải liên tỉnh (hạn chế hàng không)";
-
-  if (serviceType === "slow") {
-    return zoneKey === "inter_city"
-      ? "Xe tải ghép liên tỉnh"
-      : "Xe tải nhẹ ghép tuyến";
-  }
-  if (
-    serviceType === "fast" &&
-    zoneKey !== "inter_city" &&
-    billableWeight <= 15
-  ) {
-    return "Xe máy/xe van nhanh";
-  }
-  if (
-    serviceType === "express" &&
-    zoneKey !== "inter_city" &&
-    billableWeight <= 10
-  ) {
-    return "Xe máy";
-  }
-  if (zoneKey === "inter_city") return "Xe tải liên tỉnh + trung chuyển";
-  return "Xe máy";
-}
-
-function getInternationalEstimateAdjustmentDays(
-  zoneKey,
-  billableWeight,
-  itemType,
-) {
-  let adjustDays = 0;
-
-  if (billableWeight > 50) adjustDays += 5;
-  else if (billableWeight > 30) adjustDays += 3;
-  else if (billableWeight > 15) adjustDays += 2;
-  else if (billableWeight > 5) adjustDays += 1;
-
-  const itemAdjustByType = {
-    "de-vo": 1,
-    "chat-long": 1,
-    "pin-lithium": 2,
-    "dong-lanh": 1,
-    "cong-kenh": 2,
-  };
-  adjustDays += itemAdjustByType[itemType] || 0;
-
-  const zoneAdjustByKey = {
-    asia: 0,
-    europe: 0,
-    america: 1,
-    oceania: 1,
-    africa: 1,
-    other: 1,
-  };
-  adjustDays += zoneAdjustByKey[zoneKey] || 0;
-
-  return adjustDays;
-}
-
-function buildInternationalEstimate(
-  serviceConfig,
-  zoneKey,
-  billableWeight,
-  itemType,
-) {
-  const estimateText =
-    serviceConfig.estimate[zoneKey] || serviceConfig.estimate.other || "";
-  const parsed = parseEstimateRangeToHours(estimateText);
-  const adjustDays = getInternationalEstimateAdjustmentDays(
-    zoneKey,
-    billableWeight,
-    itemType,
-  );
-  const adjustHours = adjustDays * 24;
-  const minHours = Math.max(24, parsed.minHours + adjustHours);
-  const maxHours = Math.max(minHours, parsed.maxHours + adjustHours);
-  return formatEstimateFromHours(minHours, maxHours);
-}
-
-function getInternationalVehicleSuggestion(zoneKey, billableWeight, itemType) {
-  if (itemType === "pin-lithium") {
-    return "Đường bộ/biển + xe tải chặng cuối";
-  }
-  if (itemType === "cong-kenh" || billableWeight >= 30) {
-    return "Đường biển/đường bộ + xe tải chặng cuối";
-  }
-  if (zoneKey === "asia" && billableWeight <= 5) {
-    return "Máy bay + xe van chặng cuối";
-  }
-  return "Máy bay + xe tải chặng cuối";
 }
 
 function calculateShipping(
@@ -477,6 +399,10 @@ function calculateDomesticQuote(payload) {
     toDistrict:     payload.quan_huyen_nhan|| payload.toDistrict    || "",
     // Khoảng cách thực từ OSM (ưu tiên sử dụng nếu có)
     khoangCachKm:   toPositiveNumber(payload.khoang_cach_km || payload.khoangCachKm || 0),
+    vehicleType:    String(payload.loai_xe || payload.vehicleType || "auto").trim().toLowerCase() || "auto",
+    pickupSlotLabel: String(payload.ten_khung_gio_lay_hang || payload.pickupSlotLabel || payload.khung_gio_lay_hang || payload.pickupSlot || "").trim(),
+    pickupSlotFixedFee: toPositiveNumber(payload.phi_khung_gio || payload.pickupSlotFixedFee),
+    pickupSlotMultiplier: toPositiveNumber(payload.he_so_khung_gio || payload.pickupSlotMultiplier) || 1,
   };
 
   const quantity = norm.quantity;
@@ -491,25 +417,33 @@ function calculateDomesticQuote(payload) {
     : estimateDistance(norm.fromCity, norm.fromDistrict, norm.toCity, norm.toDistrict);
   const dc = config.distanceConfig || {};
   const volumeDivisor = dc.volume_divisor || 6000;
+  const actualWeightTotal = norm.weight * quantity;
+  const volumetricWeightPerPackage = getVolumetricWeight(
+    norm.length,
+    norm.width,
+    norm.height,
+    volumeDivisor,
+  );
   
   const billableWeightPerPackage = Math.max(
     norm.weight,
-    getVolumetricWeight(
-      norm.length,
-      norm.width,
-      norm.height,
-      volumeDivisor,
-    ),
+    volumetricWeightPerPackage,
     0.1,
   );
   const billableWeight = billableWeightPerPackage * quantity;
 
   // Quy tắc mới: Miễn phí x kg đầu (thường là 2kg) cho TOÀN ĐƠN HÀNG
   const baseIncludedWeight = toPositiveNumber(dc.base_included_weight || dc.can_mien_phi) || 2;
-  const extraWeightSteps = Math.max(
+  const totalChargeableSteps = Math.max(
     0,
     Math.ceil((billableWeight - baseIncludedWeight) / 0.5),
   );
+  const actualChargeableSteps = Math.max(
+    0,
+    Math.ceil((actualWeightTotal - baseIncludedWeight) / 0.5),
+  );
+  const volumetricExtraSteps = Math.max(0, totalChargeableSteps - actualChargeableSteps);
+  const overweightSteps = Math.max(0, totalChargeableSteps - volumetricExtraSteps);
   const goodsFixedFee = config.goodsTypeFee[norm.itemType] || 0;
   const goodsMultiplier =
     (config.goodsTypeMultiplier || {})[norm.itemType] || 1;
@@ -528,6 +462,19 @@ function calculateDomesticQuote(payload) {
     insuranceValue > freeThreshold && insuranceRate > 0
       ? Math.max(insuranceValue * insuranceRate, insuranceMin)
       : 0;
+  const vehicleSuggestion = getDomesticVehicleSuggestion({
+    serviceType: "standard",
+    zoneKey,
+    billableWeight,
+    itemType: norm.itemType,
+    length: norm.length,
+    width: norm.width,
+    height: norm.height,
+  });
+  const selectedVehicle = resolveDomesticVehicleSelection(
+    norm.vehicleType,
+    vehicleSuggestion.key,
+  );
 
   const services = Object.entries(config.services).map(
     ([serviceType, serviceConfig]) => {
@@ -547,19 +494,30 @@ function calculateDomesticQuote(payload) {
       }
 
       // Hệ số nhân theo gói dịch vụ (Tùy chọn: Hoả tốc nhân 1.5, Nhanh nhân 1.2)
-      const serviceMultipliers = { "standard": 1, "nhanh": 1.25, "hoatoc": 1.5 };
+      const serviceMultipliers = { standard: 1, fast: 1.25, express: 1.5 };
       const sMul = serviceMultipliers[serviceType] || 1;
       basePricePerOrder = basePricePerOrder * sMul;
 
-      const weightFeePerOrder = extraWeightSteps * (serviceConfig.perHalfKg || 0);
+      const perHalfKg = serviceConfig.perHalfKg || 0;
+      const overweightFee = overweightSteps * perHalfKg;
+      const volumeFee = volumetricExtraSteps * perHalfKg;
+      const weightFeePerOrder = overweightFee + volumeFee;
       const basePrice = basePricePerOrder;
       const weightFee = weightFeePerOrder;
       const goodsMultiplierFee =
         (basePricePerOrder + weightFeePerOrder) *
         Math.max(goodsMultiplier - 1, 0);
       const goodsFee = (goodsFixedFee * quantity) + goodsMultiplierFee;
+      const transportSubtotal = basePrice + weightFee + goodsFee;
+      const pickupSlotMultiplier = norm.pickupSlotMultiplier || 1;
+      const pickupSlotFixedFee = norm.pickupSlotFixedFee;
+      const timeFee =
+        transportSubtotal * Math.max(pickupSlotMultiplier - 1, 0) + pickupSlotFixedFee;
+      const transportWithTime = transportSubtotal + timeFee;
+      const vehicleAdjustedTransport = transportWithTime * selectedVehicle.multiplier;
+      const vehicleFee = vehicleAdjustedTransport - transportWithTime;
       const total = roundCurrency(
-        basePrice + weightFee + goodsFee + codFee + insuranceFee,
+        vehicleAdjustedTransport + codFee + insuranceFee,
       );
       const estimate = buildDomesticEstimate(
         serviceConfig,
@@ -567,24 +525,40 @@ function calculateDomesticQuote(payload) {
         billableWeight,
         norm.itemType,
       );
-      const vehicleSuggestion = getDomesticVehicleSuggestion(
+      const serviceVehicleSuggestion = getDomesticVehicleSuggestion({
         serviceType,
         zoneKey,
         billableWeight,
-        norm.itemType,
-      );
+        itemType: norm.itemType,
+        length: norm.length,
+        width: norm.width,
+        height: norm.height,
+      });
       return {
         serviceType,
         serviceName: serviceConfig.label,
         estimate,
-        vehicleSuggestion,
+        vehicleSuggestion: serviceVehicleSuggestion.label,
+        suggestedVehicleKey: serviceVehicleSuggestion.key,
+        selectedVehicleKey: selectedVehicle.key,
+        selectedVehicleLabel: selectedVehicle.label,
+        vehicleMultiplier: selectedVehicle.multiplier,
+        pickupSlotLabel: norm.pickupSlotLabel,
         total,
         breakdown: {
           basePrice,
-          weightFee,
+          overweightFee: roundCurrency(overweightFee),
+          volumeFee: roundCurrency(volumeFee),
+          weightFee: roundCurrency(weightFee),
           goodsFee: roundCurrency(goodsFee),
+          timeFee: roundCurrency(timeFee),
           codFee,
           insuranceFee,
+          vehicleFee: roundCurrency(vehicleFee),
+          actualWeight: Number(actualWeightTotal.toFixed(2)),
+          volumetricWeight: Number((volumetricWeightPerPackage * quantity).toFixed(2)),
+          billableWeight: Number(billableWeight.toFixed(2)),
+          billableWeightPerPackage: Number(billableWeightPerPackage.toFixed(2)),
         },
       };
     },
@@ -598,125 +572,15 @@ function calculateDomesticQuote(payload) {
     zoneLabel: config.zoneLabels[zoneKey] || "",
     billableWeight: Number(billableWeight.toFixed(2)),
     billableWeightPerPackage: Number(billableWeightPerPackage.toFixed(2)),
+    actualWeight: Number(actualWeightTotal.toFixed(2)),
+    volumetricWeight: Number((volumetricWeightPerPackage * quantity).toFixed(2)),
     quantity,
     distanceKm,
-    services,
-  };
-}
-
-function getInternationalZone(countryName) {
-  const zoneMap = QUOTE_SHIPPING_DATA.international.countryZoneMap;
-  return zoneMap[countryName] || "other";
-}
-
-function calculateInternationalQuote(payload) {
-  const config = QUOTE_SHIPPING_DATA.international;
-  const quantity = Math.max(
-    1,
-    Math.round(toPositiveNumber(payload.quantity) || 1),
-  );
-  const zoneKey = getInternationalZone(payload.country);
-  const goodsMultiplier = config.goodsTypeMultiplier[payload.itemType] || 1;
-  const billableWeightPerPackage = Math.max(
-    toPositiveNumber(payload.weight),
-    getVolumetricWeight(
-      payload.length,
-      payload.width,
-      payload.height,
-      config.volumeDivisor,
-    ),
-    0.1,
-  );
-  const billableWeight = billableWeightPerPackage * quantity;
-  const baseIncludedWeight = Math.max(
-    toPositiveNumber(config.baseIncludedWeight),
-    0.5,
-  );
-  const extraWeightSteps = Math.max(
-    0,
-    Math.ceil((billableWeightPerPackage - baseIncludedWeight) / 0.5),
-  );
-  const customsFeePerPackage =
-    config.customsFee[zoneKey] || config.customsFee.other || 0;
-  const customsFee = customsFeePerPackage * quantity;
-  const insuranceValue = toPositiveNumber(payload.insuranceValue);
-  const intlInsurance = config.insurance || {};
-  const intlInsuranceRate = toPositiveNumber(intlInsurance.rate);
-  const intlInsuranceMin = toPositiveNumber(intlInsurance.min);
-  const insuranceFee =
-    insuranceValue > 0 && intlInsuranceRate > 0
-      ? Math.max(insuranceValue * intlInsuranceRate, intlInsuranceMin)
-      : 0;
-
-  const services = Object.entries(config.services).map(
-    ([serviceType, serviceConfig]) => {
-      const basePricePerOrder =
-        serviceConfig.base[zoneKey] || serviceConfig.base.other || 0;
-      const perHalf =
-        serviceConfig.perHalfKg[zoneKey] || serviceConfig.perHalfKg.other || 0;
-      const weightFeePerOrder = extraWeightSteps * perHalf;
-      const basePrice = basePricePerOrder;
-      const weightFee = weightFeePerOrder;
-      const goodsAdjustedFee =
-        (basePricePerOrder + weightFeePerOrder) *
-        (goodsMultiplier - 1);
-      // Fix: dùng đúng biến đã khai báo ở trên (basePricePerOrder, weightFeePerOrder)
-      const basePricePerPackage = basePricePerOrder;
-      const weightFeePerPackage = weightFeePerOrder;
-      const fuelFee =
-        (basePricePerPackage + weightFeePerPackage) *
-        config.fuelRate *
-        quantity;
-      const securityFee = config.securityFee * quantity;
-      const total = roundCurrency(
-        basePrice +
-          weightFee +
-          goodsAdjustedFee +
-          fuelFee +
-          customsFee +
-          securityFee +
-          insuranceFee,
-      );
-      const estimate = buildInternationalEstimate(
-        serviceConfig,
-        zoneKey,
-        billableWeight,
-        payload.itemType,
-      );
-      const vehicleSuggestion = getInternationalVehicleSuggestion(
-        zoneKey,
-        billableWeight,
-        payload.itemType,
-      );
-
-      return {
-        serviceType,
-        serviceName: serviceConfig.label,
-        estimate,
-        vehicleSuggestion,
-        total,
-        breakdown: {
-          basePrice,
-          weightFee,
-          goodsAdjustedFee: roundCurrency(goodsAdjustedFee),
-          fuelFee: roundCurrency(fuelFee),
-          customsFee,
-          securityFee,
-          insuranceFee,
-        },
-      };
-    },
-  );
-
-  services.sort((a, b) => a.total - b.total);
-
-  return {
-    mode: "international",
-    zoneKey,
-    zoneLabel: config.zoneLabels[zoneKey] || "",
-    billableWeight: Number(billableWeight.toFixed(2)),
-    billableWeightPerPackage: Number(billableWeightPerPackage.toFixed(2)),
-    quantity,
+    selectedVehicleKey: selectedVehicle.key,
+    selectedVehicleLabel: selectedVehicle.label,
+    suggestedVehicleKey: vehicleSuggestion.key,
+    suggestedVehicleLabel: vehicleSuggestion.label,
+    pickupSlotLabel: norm.pickupSlotLabel,
     services,
   };
 }
@@ -814,22 +678,25 @@ function buildDomesticPricingExplanation(payload, result) {
   // Bước 3 + 4: Phí cơ bản theo Km + phí cân nặng
   result.services.forEach((svc, idx) => {
     const bd = svc.breakdown || {};
-    const weightExplain = extraSteps > 0
-      ? `${extraSteps} bậc × phí/bậc = <strong>${(bd.weightFee || 0).toLocaleString("vi-VN")}đ</strong> (mỗi 0.5kg vượt ${baseIncludedWeight}kg đầu)`
-      : `Dưới ${baseIncludedWeight}kg → <strong>Miễn phí trọng lượng</strong>`;
+    const weightExplain = (bd.overweightFee || 0) > 0
+      ? `Phần vượt cân thực = <strong>${(bd.overweightFee || 0).toLocaleString("vi-VN")}đ</strong>`
+      : `Khối lượng thực nằm trong ngưỡng ${baseIncludedWeight}kg đầu → <strong>0đ</strong>`;
+    const volumeExplain = (bd.volumeFee || 0) > 0
+      ? `Phần chênh thể tích = <strong>${(bd.volumeFee || 0).toLocaleString("vi-VN")}đ</strong>`
+      : `Không phát sinh phí thể tích`;
     
     // Giải thích chi tiết phí KM cho bước 3
-    let kmExplain = `Km cơ bản (${dc.base_km}km): <strong>${(dc.base_price * (svc.serviceType === "hoatoc" ? 1.5 : (svc.serviceType === "nhanh" ? 1.25 : 1))).toLocaleString("vi-VN")}đ</strong>`;
+    let kmExplain = `Km cơ bản (${dc.base_km}km): <strong>${(dc.base_price * (svc.serviceType === "express" ? 1.5 : (svc.serviceType === "fast" ? 1.25 : 1))).toLocaleString("vi-VN")}đ</strong>`;
     const extraKm = Math.max(0, result.distanceKm - dc.base_km);
     if (extraKm > 0) {
-       kmExplain += ` | Km vượt (${extraKm.toFixed(1)}km): <strong>+${(bd.basePrice - dc.base_price * (svc.serviceType === "hoatoc" ? 1.5 : (svc.serviceType === "nhanh" ? 1.25 : 1))).toLocaleString("vi-VN")}đ</strong>`;
+       kmExplain += ` | Km vượt (${extraKm.toFixed(1)}km): <strong>+${(bd.basePrice - dc.base_price * (svc.serviceType === "express" ? 1.5 : (svc.serviceType === "fast" ? 1.25 : 1))).toLocaleString("vi-VN")}đ</strong>`;
     }
 
     steps.push({
       step: idx === 0 ? 3 : undefined,
       serviceContext: svc.serviceName,
-      title: idx === 0 ? `Phí vận chuyển theo Km + Phí trọng lượng` : null,
-      detail: `[${svc.serviceName}] ${kmExplain}.<br>Phí cân: ${weightExplain}`,
+      title: idx === 0 ? `Phí vận chuyển theo Km + Phí khối lượng/thể tích` : null,
+      detail: `[${svc.serviceName}] ${kmExplain}.<br>Phí vượt cân: ${weightExplain}.<br>Phí thể tích: ${volumeExplain}.`,
       formula: null
     });
   });
@@ -921,17 +788,108 @@ function buildDomesticPricingExplanation(payload, result) {
     });
   }
 
+  if (result.pickupSlotLabel) {
+    const cheapestServiceWithTime = result.services[0] || null;
+    const timeFee = ((cheapestServiceWithTime || {}).breakdown || {}).timeFee || 0;
+    steps.push({
+      step: 7,
+      title: "Điều chỉnh theo thời gian lấy hàng",
+      detail: timeFee > 0
+        ? `Khung giờ lấy hàng: <strong>${result.pickupSlotLabel}</strong> → phát sinh phụ phí theo lịch vận hành.`
+        : `Khung giờ lấy hàng: <strong>${result.pickupSlotLabel}</strong> → đang nằm trong khung giờ tiêu chuẩn, không cộng thêm phí.`,
+      formula: timeFee > 0 ? `→ Phụ phí thời gian: <strong>${timeFee.toLocaleString("vi-VN")}đ</strong>` : null,
+    });
+  }
+
+  const cheapestService = result.services[0] || null;
+  if (cheapestService && cheapestService.vehicleMultiplier > 1) {
+    steps.push({
+      step: 8,
+      title: "Điều chỉnh theo phương tiện",
+      detail: `Bạn đang chọn <strong>${cheapestService.selectedVehicleLabel}</strong>. Gói cước được nhân hệ số <strong>x${cheapestService.vehicleMultiplier}</strong> cho phần vận chuyển.`,
+      formula: `→ Phụ phí phương tiện: <strong>${((cheapestService.breakdown || {}).vehicleFee || 0).toLocaleString("vi-VN")}đ</strong>`
+    });
+  } else {
+    steps.push({
+      step: 8,
+      title: "Điều chỉnh theo phương tiện",
+      detail: `Phương tiện đang dùng: <strong>${(cheapestService && cheapestService.selectedVehicleLabel) || "Xe máy"}</strong> → <strong>không nhân thêm hệ số</strong>.`,
+      formula: null
+    });
+  }
+
   return steps;
 }
 
-function getDomesticVehicleSuggestion(serviceType, zoneKey, billableWeight, itemType) {
-  if (itemType === "cong-kenh" || billableWeight > 50) {
-    return "Xe Tải (500kg - 1.5 tấn)";
+function resolveDomesticVehicleSelection(requestedKey, suggestedKey) {
+  const safeRequestedKey = DOMESTIC_VEHICLE_OPTIONS[requestedKey]
+    ? requestedKey
+    : "auto";
+  const finalKey =
+    safeRequestedKey === "auto"
+      ? suggestedKey
+      : safeRequestedKey;
+  const finalConfig =
+    DOMESTIC_VEHICLE_OPTIONS[finalKey] || DOMESTIC_VEHICLE_OPTIONS.xe_may;
+
+  return {
+    key: finalKey,
+    label: finalConfig.label,
+    multiplier: finalConfig.multiplier,
+  };
+}
+
+function getDomesticVehicleSuggestion({
+  zoneKey,
+  billableWeight,
+  itemType,
+  length,
+  width,
+  height,
+}) {
+  const longestEdge = Math.max(
+    toPositiveNumber(length),
+    toPositiveNumber(width),
+    toPositiveNumber(height),
+  );
+  const bulkyVolume = toPositiveNumber(length) * toPositiveNumber(width) * toPositiveNumber(height);
+
+  if (
+    itemType === "cong-kenh" ||
+    billableWeight >= 60 ||
+    longestEdge > 180 ||
+    bulkyVolume >= 250000
+  ) {
+    return {
+      key: "xe_tai",
+      label: zoneKey === "inter_city" ? "Xe tải nhẹ liên tỉnh" : "Xe tải nhẹ",
+    };
   }
-  if (billableWeight > 20) {
-    return "Xe Bán Tải / Xe Lôi";
+
+  if (itemType === "dong-lanh") {
+    return {
+      key: billableWeight > 20 || longestEdge > 50 ? "xe_tai" : "xe_ban_tai",
+      label:
+        billableWeight > 20 || longestEdge > 50
+          ? "Xe tải lạnh / xe tải nhẹ"
+          : "Xe van lạnh / xe bán tải",
+    };
   }
-  return "Xe Máy (Shipper)";
+
+  if (billableWeight > 20 || longestEdge > 50) {
+    return {
+      key: longestEdge > 120 || billableWeight > 35 ? "xe_ban_tai" : "xe_loi",
+      label:
+        longestEdge > 120 || billableWeight > 35
+          ? "Xe bán tải / xe van"
+          : "Xe lôi / xe ba gác",
+    };
+  }
+
+  return {
+    key: "xe_may",
+    label: "Xe máy (giao nhanh nội thành)",
+  };
 }
 
 if (typeof window !== "undefined") {
@@ -939,8 +897,6 @@ if (typeof window !== "undefined") {
   window.QUOTE_SHIPPING_DATA = QUOTE_SHIPPING_DATA;
   window.calculateShipping = calculateShipping;
   window.calculateDomesticQuote = calculateDomesticQuote;
-  window.calculateInternationalQuote = calculateInternationalQuote;
-  window.getDomesticGoodsTypeInfo = getDomesticGoodsTypeInfo;
   window.buildDomesticPricingExplanation = buildDomesticPricingExplanation;
-  window.getDomesticVehicleSuggestion = getDomesticVehicleSuggestion;
+  window.DOMESTIC_VEHICLE_OPTIONS = DOMESTIC_VEHICLE_OPTIONS;
 }

@@ -4,6 +4,36 @@ session_start();
 
 require_once __DIR__ . '/../config/db.php';
 
+function first_non_empty_value(...$values) {
+    foreach ($values as $value) {
+        if ($value !== null && $value !== '') {
+            return $value;
+        }
+    }
+    return '';
+}
+
+function extract_slot_start_time($slotValue, $fallback = '08:00') {
+    $slotText = trim((string)$slotValue);
+    if ($slotText === '') {
+        return $fallback;
+    }
+
+    if (preg_match('/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/', $slotText, $matches)) {
+        return $matches[1];
+    }
+
+    if (preg_match('/(\d{1,2})_(\d{2})_(\d{1,2})_(\d{2})/', $slotText, $matches)) {
+        return sprintf('%02d:%02d', intval($matches[1]), intval($matches[2]));
+    }
+
+    if (preg_match('/(\d{1,2}:\d{2})/', $slotText, $matches)) {
+        return $matches[1];
+    }
+
+    return $fallback;
+}
+
 // Chỉ cho phép người dùng đăng nhập
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập để đặt đơn.']);
@@ -34,7 +64,7 @@ try {
     $delivery_address = $data['search_delivery'] ?? '';
     
     $service_type = $data['service'] ?? '';
-    $vehicle_type = $data['vehicle'] ?? '';
+    $vehicle_type = first_non_empty_value($data['vehicle_label'] ?? '', $data['vehicle'] ?? '');
     $shipping_fee = floatval($data['total_fee'] ?? 0);
     $cod_amount = floatval($data['cod_value'] ?? 0);
     $note = $data['notes'] ?? '';
@@ -43,13 +73,15 @@ try {
     // Thời gian lấy hàng
     $pickup_date = $data['pickup_date'] ?? date('Y-m-d');
     $pickup_slot = $data['pickup_slot'] ?? '';
-    $pickup_time_str = $pickup_date . ' ' . explode(' - ', $pickup_slot)[0];
+    $pickup_slot_label = first_non_empty_value($data['pickup_slot_label'] ?? '', $pickup_slot);
+    $pickup_time_str = $pickup_date . ' ' . extract_slot_start_time($pickup_slot_label);
     
     // Tính tổng trọng lượng
     $total_weight = 0;
     if (isset($data['items']) && is_array($data['items'])) {
         foreach ($data['items'] as $item) {
-            $total_weight += floatval($item['can_nang'] ?? 0);
+            $qty = max(1, intval($item['so_luong'] ?? 1));
+            $total_weight += floatval($item['can_nang'] ?? 0) * $qty;
         }
     }
 
@@ -86,8 +118,8 @@ try {
         $item_stmt = $conn->prepare($item_sql);
         
         foreach ($data['items'] as $item) {
-            $item_name = $item['ten_hang'] ?: 'Hàng hóa';
-            $qty = 1;
+            $item_name = first_non_empty_value($item['ten_hang'] ?? '', 'Hàng hóa');
+            $qty = max(1, intval($item['so_luong'] ?? 1));
             $w = floatval($item['can_nang'] ?? 0);
             $l = floatval($item['chieu_dai'] ?? 0);
             $wd = floatval($item['chieu_rong'] ?? 0);

@@ -223,8 +223,6 @@
     submitCancelOrder(currentCancelCode, reason);
   };
 
-  window.cancelOrder = window.openCancelModal;
-
   window.addEventListener("click", function (event) {
     const modal = document.getElementById("cancel-modal");
     if (event.target == modal) {

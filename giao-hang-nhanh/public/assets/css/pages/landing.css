@@ -2,8 +2,10 @@
 
 /* HERO SECTION */
 .hero-section {
-  padding: 80px 0;
-  background: linear-gradient(135deg, #0a2a66, #0d3580);
+  padding: 48px 0 72px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 122, 0, 0.2), transparent 28%),
+    linear-gradient(135deg, #0a2a66 0%, #14479c 58%, #ff7a00 100%);
   color: #ffffff;
 }
 
@@ -34,6 +36,104 @@
 
 .hero-image img {
   max-width: 420px;
+}
+
+.subpage-hero {
+  padding: 36px 0 44px;
+  color: #ffffff;
+}
+
+.subpage-hero--pricing {
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.1), transparent 26%),
+    linear-gradient(135deg, #0a2a66 0%, #14479c 58%, #ff7a00 100%);
+}
+
+.subpage-hero--tracking {
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.08), transparent 28%),
+    linear-gradient(135deg, #0a2a66 0%, #14479c 48%, #183b61 100%);
+}
+
+.subpage-hero__content {
+  max-width: 760px;
+}
+
+.subpage-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+.subpage-hero__title {
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  line-height: 1.1;
+}
+
+.subpage-hero__desc {
+  margin-top: 16px;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.subpage-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.subpage-hero__actions .btn-secondary {
+  background-color: transparent;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.subpage-hero__actions .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+}
+
+.pricing-clarity-grid {
+  max-width: 980px;
+  margin: 0 auto 32px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pricing-clarity-card {
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid #dbe6ff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(10, 42, 102, 0.06);
+}
+
+.pricing-clarity-card h4 {
+  margin: 0 0 8px;
+  color: #0a2a66;
+  font-size: 15px;
+}
+
+.pricing-clarity-card p {
+  margin: 0;
+  color: #4d5b7c;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+@media (max-width: 1024px) {
+  .pricing-clarity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* ANIMATIONS */
@@ -972,6 +1072,19 @@ main section h2.section-title {
   .hero-content h1 {
     font-size: 32px;
   }
+  .subpage-hero {
+    padding: 24px 0 32px;
+  }
+  .subpage-hero__title {
+    font-size: clamp(1.9rem, 6vw, 2.8rem);
+  }
+  .subpage-hero__desc {
+    font-size: 0.98rem;
+    line-height: 1.7;
+  }
+  .subpage-hero__actions {
+    justify-content: center;
+  }
   .hero-image img {
     max-width: 80%;
   }
@@ -1054,10 +1167,28 @@ main section h2.section-title {
 
 @media (max-width: 480px) {
   #hero {
-    padding: 40px 15px;
+    padding: 28px 15px 42px;
   }
   .hero-content h1 {
     font-size: 22px;
+  }
+  .subpage-hero {
+    padding: 20px 0 26px;
+  }
+  .subpage-hero__badge {
+    margin-bottom: 14px;
+  }
+  .subpage-hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .subpage-hero__actions a {
+    width: 100%;
+    justify-content: center;
+  }
+  .pricing-clarity-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   #contact,
@@ -1236,6 +1367,14 @@ main section h2.section-title {
   font-size: 20px;
   font-weight: 300;
   line-height: 1;
+}
+
+.formula-caption {
+  margin: 18px auto 0;
+  max-width: 720px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 13px;
+  line-height: 1.7;
 }
 
 /* --- Tabs --- */
@@ -1737,6 +1876,46 @@ main section h2.section-title {
 
 .pricing-step-formula strong {
   color: #15803d;
+}
+
+.field-help {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: #0a2a66;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: help;
+}
+
+.field-help__tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  width: min(260px, 70vw);
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #102a63;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.5;
+  transform: translateX(-50%);
+  box-shadow: 0 10px 24px rgba(10, 42, 102, 0.24);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.field-help:hover .field-help__tooltip,
+.field-help:focus .field-help__tooltip {
+  opacity: 1;
 }
 
 .pricing-explanation-note {

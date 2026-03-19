@@ -1,5 +1,5 @@
 <!-- Form đặt lịch dịch vụ CHUYỂN DỌN (có tính giá) -->
-<div id="booking-modal-moving" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden" style="font-family: 'Poppins', 'Inter', sans-serif">
+<div id="booking-modal-moving" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden" style="font-family: 'Poppins', 'Inter', sans-serif">
   <div class="bg-white rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col md:flex-row overflow-hidden relative">
     
     <!-- Left Cột (Tính giá & Form thu thập) -->
@@ -26,29 +26,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1">Họ và tên *</label>
-                <input type="text" id="moving-customer-name" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-sm" placeholder="Nguyễn Văn A">
+                <input type="text" id="moving-customer-name" name="name" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-sm" placeholder="Nguyễn Văn A">
               </div>
               <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1">Số điện thoại *</label>
-                <input type="tel" id="moving-customer-phone" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-sm" placeholder="09xx xxx xxx">
+                <input type="tel" id="moving-customer-phone" name="phone" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-sm" placeholder="09xx xxx xxx">
               </div>
             </div>
             
-            <div class="mt-4 flex items-center space-x-2">
-              <input type="checkbox" id="is_corporate_checkbox_moving" class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary">
-              <label for="is_corporate_checkbox_moving" class="text-sm font-medium text-slate-700">Tôi đặt cho doanh nghiệp (Cần xuất hóa đơn)</label>
-            </div>
-            
-            <div id="corporate-fields-moving" class="mt-4 space-y-4 p-4 bg-slate-50 border rounded-lg hidden">
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Tên doanh nghiệp</label>
-                 <input type="text" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none placeholder:text-sm" placeholder="Công ty TNHH...">
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Mã số thuế</label>
-                <input type="text" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none placeholder:text-sm" placeholder="031xxxxxxx">
-              </div>
-            </div>
+
           </div>
           
           <!-- Lựa chọn cấu hình Dịch vụ (5 tiêu chí) -->
@@ -59,7 +45,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1">Gói dịch vụ *</label>
-                <select id="order-service-type-moving" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer">
+                <select id="order-service-type-moving" name="service_type" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer">
                   <option value="">Chọn loại dịch vụ</option>
                   <option value="moving_house">Chuyển Nhà Trọn Gói</option>
                   <option value="moving_office">Chuyển Văn Phòng</option>
@@ -68,7 +54,7 @@
               </div>
               <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1">Loại xe đề xuất *</label>
-                <select id="moving-vehicle-type" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer">
+                <select id="moving-vehicle-type" name="vehicle_type" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer">
                   <option value="xe_van_500kg">Xe Van 500kg (Đồ cá nhân ít)</option>
                   <option value="xe_tai_1_5_tan">Xe Tải 1.5 Tấn (Nhà trọ 1-2 người)</option>
                   <option value="xe_tai_2_5_tan" selected>Xe Tải 2.5 Tấn (Nhà nguyên căn)</option>
@@ -80,15 +66,15 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
               <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1">Quãng đường (km)*</label>
-                <input type="number" id="moving-distance" value="10" min="0.1" step="0.1" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none text-center bg-slate-50" readonly title="Tự động tính từ bản đồ">
+                <input type="number" id="moving-distance" name="distance_km" value="10" min="0.1" step="0.1" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none text-center bg-slate-50" readonly title="Tự động tính từ bản đồ">
               </div>
               <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1" title="Số mét khối đồ đạc chiếm chỗ">Thể tích (m3)</label>
-                <input type="number" id="moving-volume" value="5" min="0" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none text-center">
+                <input type="number" id="moving-volume" name="volume_m3" value="5" min="0" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none text-center">
               </div>
               <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1" title="Tổng trọng lượng đồ vận chuyển">Trọng lượng (kg)</label>
-                <input type="number" id="moving-weight" value="300" min="0" step="50" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none text-center">
+                <input type="number" id="moving-weight" name="weight_kg" value="300" min="0" step="50" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-primary outline-none text-center">
               </div>
             </div>
             
@@ -96,43 +82,43 @@
               <label class="block text-sm font-semibold text-slate-700 mb-2">Tính chất đồ đạc (Chọn nhiều loại)</label>
               <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                 <label class="flex items-center space-x-2 bg-slate-50 p-2 rounded border hover:bg-slate-100 cursor-pointer">
-                  <input type="checkbox" value="de_vo" class="moving-nature text-primary"><span>Dễ vỡ</span>
+                  <input type="checkbox" name="moving_nature[]" value="de_vo" class="moving-nature text-primary"><span>Dễ vỡ</span>
                 </label>
                 <label class="flex items-center space-x-2 bg-slate-50 p-2 rounded border hover:bg-slate-100 cursor-pointer">
-                  <input type="checkbox" value="cong_kenh" class="moving-nature text-primary"><span>Cồng kềnh</span>
+                  <input type="checkbox" name="moving_nature[]" value="cong_kenh" class="moving-nature text-primary"><span>Cồng kềnh</span>
                 </label>
                 <label class="flex items-center space-x-2 bg-slate-50 p-2 rounded border hover:bg-slate-100 cursor-pointer">
-                  <input type="checkbox" value="gia_tri_cao" class="moving-nature text-primary"><span>Giá trị cao</span>
+                  <input type="checkbox" name="moving_nature[]" value="gia_tri_cao" class="moving-nature text-primary"><span>Giá trị cao</span>
                 </label>
                 <label class="flex items-center space-x-2 bg-slate-50 p-2 rounded border hover:bg-slate-100 cursor-pointer">
-                  <input type="checkbox" value="dong_goi_dac_biet" class="moving-nature text-primary"><span>Đóng gói đặc biệt</span>
+                  <input type="checkbox" name="moving_nature[]" value="dong_goi_dac_biet" class="moving-nature text-primary"><span>Đóng gói đặc biệt</span>
                 </label>
               </div>
             </div>
             
-            <div class="flex items-center justify-between border-t border-b py-3 mb-4">
-              <div>
-                <label class="block text-sm font-semibold text-slate-700">Dịch vụ đóng gói chuyên nghiệp</label>
-                <p class="text-xs text-slate-500">Giảm thiểu rủi ro hư hỏng, bao gồm thùng carton màng bọc</p>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="moving-full-packing" class="sr-only peer">
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-              </label>
-            </div>
             
             <!-- Điều kiện thời gian/thời tiết -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-1">Khung giờ thực hiện</label>
-                  <select id="moving-time-slot" class="w-full px-4 py-2 border rounded-lg outline-none">
+                  <label class="block text-sm font-semibold text-slate-700 mb-1">Số tầng (Đi ➔ Đến) <span class="font-normal text-[11px] italic text-slate-400 ml-1">(Không tính vào giá tự động)</span></label>
+                  <input type="text" name="moving_floors" placeholder="VD: Tầng 3 ➔ Tầng 1" class="w-full px-4 py-2 border rounded-lg outline-none">
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1">Ngày chuyển dự kiến *</label>
+                  <input type="date" name="moving_date" required class="w-full px-4 py-2 border rounded-lg outline-none">
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1">Khung giờ thực hiện *</label>
+                  <select id="moving-time-slot" name="moving_time_slot" required class="w-full px-4 py-2 border rounded-lg outline-none">
+                    <option value="">Chọn khung giờ</option>
                     <option value="ban_ngay">Ban ngày (08:00 - 18:00)</option>
                     <option value="buoi_toi">Buổi tối (18:00 - 22:00) : Có phụ phí</option>
                     <option value="ban_dem">Ban đêm (Sau 22:00) : Có phụ phí</option>
+                    <option value="flexible">Linh hoạt theo khảo sát</option>
                   </select>
                 </div>
                 <!-- Hidden weather field to mimic UI of API/backend inputs -->
-                <input type="hidden" id="moving-weather" value="binh_thuong">
+                <input type="hidden" id="moving-weather" name="weather" value="binh_thuong">
             </div>
 
           </div>
@@ -149,17 +135,16 @@
                 <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
                   <h4 class="font-semibold text-blue-800 text-sm mb-3">TỪ ĐỊA CHỈ:</h4>
                   <div class="relative mb-3">
-                     <input type="text" id="pickup-addr-moving" placeholder="Nhập địa chỉ, tên đường, phường, quận..." autocomplete="off" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 outline-none">
-                     <div id="pickup-sug-moving" class="absolute z-10 w-full bg-white border border-slate-200 shadow-xl rounded-lg max-h-60 overflow-y-auto hidden top-full mt-1"></div>
+                     <input type="text" id="pickup-addr-moving" name="pickup" placeholder="Nhập địa chỉ, tên đường, phường, quận..." autocomplete="off" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 outline-none">
                   </div>
                   
                   <!-- Address Notes (Stairs) -->
                   <div class="mt-2 flex space-x-4">
                     <label class="inline-flex items-center text-xs">
-                      <input type="checkbox" id="pickup-has-elevator" class="form-checkbox text-blue-500 rounded border-gray-300 mr-1"> Có thang máy
+                      <input type="checkbox" id="pickup-has-elevator" name="pickup_has_elevator" class="form-checkbox text-blue-500 rounded border-gray-300 mr-1"> Có thang máy <span class="text-[10px] text-slate-400 ml-1 italic">(Khảo sát)</span>
                     </label>
                     <label class="inline-flex items-center text-xs">
-                      <input type="checkbox" id="pickup-small-alley" class="form-checkbox text-blue-500 rounded border-gray-300 mr-1"> Hẻm nhỏ xe không vào
+                      <input type="checkbox" id="pickup-small-alley" name="pickup_small_alley" class="form-checkbox text-blue-500 rounded border-gray-300 mr-1"> Hẻm nhỏ <span class="text-[10px] text-slate-400 ml-1 italic">(Khảo sát)</span>
                     </label>
                   </div>
                 </div>
@@ -171,16 +156,23 @@
                 <div class="bg-green-50/50 p-4 rounded-xl border border-green-100">
                   <h4 class="font-semibold text-green-800 text-sm mb-3">ĐẾN ĐỊA CHỈ NƠI NHẬN:</h4>
                   <div class="relative mb-3">
-                     <input type="text" id="delivery-addr-moving" placeholder="Nhập địa chỉ, tên đường, phường, quận..." autocomplete="off" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 outline-none">
-                     <div id="delivery-sug-moving" class="absolute z-10 w-full bg-white border border-slate-200 shadow-xl rounded-lg max-h-60 overflow-y-auto hidden top-full mt-1"></div>
+                     <input
+              type="text"
+              id="delivery-addr-moving"
+              name="delivery"
+              autocomplete="off"
+              placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."
+              required
+              class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 outline-none"
+            />
                   </div>
                   
                   <div class="mt-2 flex space-x-4">
                     <label class="inline-flex items-center text-xs">
-                      <input type="checkbox" id="delivery-has-elevator" class="form-checkbox text-green-500 rounded border-gray-300 mr-1"> Có thang máy
+                      <input type="checkbox" id="delivery-has-elevator" name="delivery_has_elevator" class="form-checkbox text-green-500 rounded border-gray-300 mr-1"> Có thang máy <span class="text-[10px] text-slate-400 ml-1 italic">(Khảo sát)</span>
                     </label>
                     <label class="inline-flex items-center text-xs">
-                      <input type="checkbox" id="delivery-small-alley" class="form-checkbox text-green-500 rounded border-gray-300 mr-1"> Hẻm nhỏ xe không vào
+                      <input type="checkbox" id="delivery-small-alley" name="delivery_small_alley" class="form-checkbox text-green-500 rounded border-gray-300 mr-1"> Hẻm nhỏ <span class="text-[10px] text-slate-400 ml-1 italic">(Khảo sát)</span>
                     </label>
                   </div>
                 </div>
@@ -192,9 +184,221 @@
                  <div id="booking-map" class="w-full h-48 rounded-lg border border-slate-300 z-0 relative"></div>
               </div>
 
+          <!-- Dịch vụ bổ sung & Hình ảnh -->
+          <details class="mt-6 pt-6 border-t border-slate-200">
+            <summary class="text-lg font-bold text-slate-800 cursor-pointer">4. Dịch vụ &amp; Hình ảnh thực tế (tùy chọn)</summary>
+            
+            <div class="space-y-4 mt-4">
+              <!-- Box Chuyển Nhà -->
+              <div class="moving-detail detail-panel" data-moving-service="moving_house">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Loại nhà</label>
+                    <select name="moving_house_type" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-primary">
+                      <option>Căn hộ</option>
+                      <option>Nhà phố / hẻm</option>
+                      <option>Chung cư</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Tình trạng đi lại</label>
+                    <select name="moving_house_access" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-primary">
+                      <option>Có thang máy</option>
+                      <option>Thang bộ / hẻm nhỏ xe không vào tới</option>
+                      <option>Xe tải vào tận cổng</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Các dịch vụ đi kèm bạn cần:</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div class="p-3 bg-white border border-slate-200 rounded-xl hover:border-primary transition-all">
+                    <label class="flex items-center cursor-pointer mb-2">
+                      <input type="checkbox" name="services[]" value="Nhân công bốc xếp" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" onchange="this.closest('div').querySelector('.service-qty').style.display = this.checked ? 'flex' : 'none'; this.closest('div').querySelector('input[type=number]').disabled = !this.checked;">
+                      <span class="ml-2 text-sm text-slate-600 font-medium">Nhân công bốc xếp <span class="text-xs text-primary font-normal block mt-0.5">(300k/người)</span></span>
+                    </label>
+                    <div class="service-qty mt-2 pl-6" style="display: none;">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">Số lượng:</span>
+                        <input type="number" name="qty_Nhân công bốc xếp" min="1" value="1" disabled class="w-16 px-2 py-1 text-sm border border-slate-300 rounded outline-none focus:border-primary">
+                        <span class="text-xs text-slate-500">người</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-3 bg-white border border-slate-200 rounded-xl hover:border-primary transition-all">
+                    <label class="flex items-center cursor-pointer mb-2">
+                      <input type="checkbox" name="services[]" value="Đóng gói đồ đạc" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" onchange="this.closest('div').querySelector('.service-qty').style.display = this.checked ? 'flex' : 'none'; this.closest('div').querySelector('input[type=number]').disabled = !this.checked;">
+                      <span class="ml-2 text-sm text-slate-600 font-medium">Đóng gói đồ đạc <span class="text-xs text-primary font-normal block mt-0.5">(200k/gói)</span></span>
+                    </label>
+                    <div class="service-qty mt-2 pl-6" style="display: none;">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">Số lượng:</span>
+                        <input type="number" name="qty_Đóng gói đồ đạc" min="1" value="1" disabled class="w-16 px-2 py-1 text-sm border border-slate-300 rounded outline-none focus:border-primary">
+                        <span class="text-xs text-slate-500">gói</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-3 bg-white border border-slate-200 rounded-xl hover:border-primary transition-all">
+                    <label class="flex items-center cursor-pointer mb-2">
+                      <input type="checkbox" name="services[]" value="Tháo lắp thiết bị" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" onchange="this.closest('div').querySelector('.service-qty').style.display = this.checked ? 'flex' : 'none'; this.closest('div').querySelector('input[type=number]').disabled = !this.checked;">
+                      <span class="ml-2 text-sm text-slate-600 font-medium">Tháo lắp thiết bị <span class="text-xs text-primary font-normal block mt-0.5">(250k/bộ)</span></span>
+                    </label>
+                    <div class="service-qty mt-2 pl-6" style="display: none;">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">Số lượng:</span>
+                        <input type="number" name="qty_Tháo lắp thiết bị" min="1" value="1" disabled class="w-16 px-2 py-1 text-sm border border-slate-300 rounded outline-none focus:border-primary">
+                        <span class="text-xs text-slate-500">bộ</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Box Chuyển Văn Phòng -->
+              <div class="moving-detail detail-panel is-hidden" data-moving-service="moving_office" style="display: none;">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Số lượng nhân viên ước tính</label>
+                    <input type="number" name="moving_office_staff_count" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-primary" placeholder="VD: 30 người" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Di dời hệ thống chung</label>
+                    <select name="moving_office_it_scope" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-primary">
+                      <option>Có máy chủ/Server cồng kềnh</option>
+                      <option>Chỉ có máy trạm cá nhân</option>
+                      <option>Toàn bộ cơ sở hạ tầng mạng</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Các dịch vụ đi kèm bạn cần:</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div class="p-3 bg-white border border-slate-200 rounded-xl hover:border-primary transition-all">
+                    <label class="flex items-center cursor-pointer mb-2">
+                      <input type="checkbox" name="office_services[]" value="Đóng gói hồ sơ" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" onchange="this.closest('div').querySelector('.service-qty').style.display = this.checked ? 'flex' : 'none'; this.closest('div').querySelector('input[type=number]').disabled = !this.checked;">
+                      <span class="ml-2 text-sm text-slate-600 font-medium">Đóng gói hồ sơ <span class="text-xs text-primary font-normal block mt-0.5">(200k/thùng)</span></span>
+                    </label>
+                    <div class="service-qty mt-2 pl-6" style="display: none;">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">Số lượng:</span>
+                        <input type="number" name="qty_Đóng gói hồ sơ" min="1" value="1" disabled class="w-16 px-2 py-1 text-sm border border-slate-300 rounded outline-none focus:border-primary">
+                        <span class="text-xs text-slate-500">thùng</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-3 bg-white border border-slate-200 rounded-xl hover:border-primary transition-all">
+                    <label class="flex items-center cursor-pointer mb-2">
+                      <input type="checkbox" name="office_services[]" value="Bảo vệ thiết bị IT" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" onchange="this.closest('div').querySelector('.service-qty').style.display = this.checked ? 'flex' : 'none'; this.closest('div').querySelector('input[type=number]').disabled = !this.checked;">
+                      <span class="ml-2 text-sm text-slate-600 font-medium">Bảo vệ thiết bị IT <span class="text-xs text-primary font-normal block mt-0.5">(300k/máy)</span></span>
+                    </label>
+                    <div class="service-qty mt-2 pl-6" style="display: none;">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">Số lượng:</span>
+                        <input type="number" name="qty_Bảo vệ thiết bị IT" min="1" value="1" disabled class="w-16 px-2 py-1 text-sm border border-slate-300 rounded outline-none focus:border-primary">
+                        <span class="text-xs text-slate-500">máy</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-3 bg-white border border-slate-200 rounded-xl hover:border-primary transition-all">
+                    <label class="flex items-center cursor-pointer mb-2">
+                      <input type="checkbox" name="office_services[]" value="Tháo lắp nội thất VP" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" onchange="this.closest('div').querySelector('.service-qty').style.display = this.checked ? 'flex' : 'none'; this.closest('div').querySelector('input[type=number]').disabled = !this.checked;">
+                      <span class="ml-2 text-sm text-slate-600 font-medium">Tháo lắp nội thất <span class="text-xs text-primary font-normal block mt-0.5">(250k/món)</span></span>
+                    </label>
+                    <div class="service-qty mt-2 pl-6" style="display: none;">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">Số lượng:</span>
+                        <input type="number" name="qty_Tháo lắp nội thất VP" min="1" value="1" disabled class="w-16 px-2 py-1 text-sm border border-slate-300 rounded outline-none focus:border-primary">
+                        <span class="text-xs text-slate-500">món</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Box Chuyển Kho Bãi -->
+              <div class="moving-detail detail-panel is-hidden" data-moving-service="moving_warehouse" style="display: none;">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Loại hàng / Khối lượng</label>
+                    <input type="text" name="moving_warehouse_goods" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-primary" placeholder="VD: Hàng rời 5 tấn / Pallet..." />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Hỗ trợ xe cơ giới</label>
+                    <select name="moving_warehouse_support" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:border-primary">
+                      <option>Cần xe nâng hỗ trợ nâng hạ</option>
+                      <option>Cần xe cẩu tự hành</option>
+                      <option>Không cần, chỉ bốc xếp tay</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Các dịch vụ đi kèm bạn cần:</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div class="p-3 bg-white border border-slate-200 rounded-xl hover:border-primary transition-all">
+                    <label class="flex items-center cursor-pointer mb-2">
+                      <input type="checkbox" name="warehouse_services[]" value="Bốc xếp khối lượng lớn" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" onchange="this.closest('div').querySelector('.service-qty').style.display = this.checked ? 'flex' : 'none'; this.closest('div').querySelector('input[type=number]').disabled = !this.checked;">
+                      <span class="ml-2 text-sm text-slate-600 font-medium">Bốc xếp khối lượng lớn <span class="text-xs text-primary font-normal block mt-0.5">(450k/người)</span></span>
+                    </label>
+                    <div class="service-qty mt-2 pl-6" style="display: none;">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">Số lượng:</span>
+                        <input type="number" name="qty_Bốc xếp khối lượng lớn" min="1" value="1" disabled class="w-16 px-2 py-1 text-sm border border-slate-300 rounded outline-none focus:border-primary">
+                        <span class="text-xs text-slate-500">người</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-3 bg-white border border-slate-200 rounded-xl hover:border-primary transition-all">
+                    <label class="flex items-center cursor-pointer mb-2">
+                      <input type="checkbox" name="warehouse_services[]" value="Đóng màng co Pallet" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" onchange="this.closest('div').querySelector('.service-qty').style.display = this.checked ? 'flex' : 'none'; this.closest('div').querySelector('input[type=number]').disabled = !this.checked;">
+                      <span class="ml-2 text-sm text-slate-600 font-medium">Luân chuyển đóng Pallet <span class="text-xs text-primary font-normal block mt-0.5">(250k/pallet)</span></span>
+                    </label>
+                    <div class="service-qty mt-2 pl-6" style="display: none;">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">Số lượng:</span>
+                        <input type="number" name="qty_Đóng màng co Pallet" min="1" value="1" disabled class="w-16 px-2 py-1 text-sm border border-slate-300 rounded outline-none focus:border-primary">
+                        <span class="text-xs text-slate-500">pallet</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-3 bg-white border border-slate-200 rounded-xl hover:border-primary transition-all">
+                    <label class="flex items-center cursor-pointer mb-2">
+                      <input type="checkbox" name="warehouse_services[]" value="Thuê xe nâng/cẩu" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary" onchange="this.closest('div').querySelector('.service-qty').style.display = this.checked ? 'flex' : 'none'; this.closest('div').querySelector('input[type=number]').disabled = !this.checked;">
+                      <span class="ml-2 text-sm text-slate-600 font-medium">Thuê xe nâng/xe cẩu <span class="text-xs text-primary font-normal block mt-0.5">(2.5M/ca)</span></span>
+                    </label>
+                    <div class="service-qty mt-2 pl-6" style="display: none;">
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500">Số lượng:</span>
+                        <input type="number" name="qty_Thuê xe nâng/cẩu" min="1" value="1" disabled class="w-16 px-2 py-1 text-sm border border-slate-300 rounded outline-none focus:border-primary">
+                        <span class="text-xs text-slate-500">ca</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Upload Section (Dùng chung cho cả 3) -->
+              <div class="mt-4">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Hình ảnh / Video đồ đạc thực tế</label>
+                <div class="upload-zone group" onclick="this.querySelector('input').click()">
+                  <input type="file" name="files[]" accept="image/*,video/*" multiple class="hidden" onchange="window.handleFileSelect(this)">
+                  <div class="upload-content py-4">
+                    <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                      <i class="fas fa-camera-retro text-xl"></i>
+                    </div>
+                    <p class="text-sm font-medium text-slate-600">Nhấn để chụp hoặc chọn ảnh/video</p>
+                    <p class="text-xs text-slate-400 mt-1 text-center">Tải lên video sẽ giúp chúng tôi báo giá cực kỳ chính xác</p>
+                  </div>
+                  <div class="file-preview-grid mt-4"></div>
+                </div>
+              </div>
+
+              <!-- Ghi chú chung -->
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Ghi chú yêu cầu đặc biệt</label>
+                <textarea name="notes" rows="2" class="w-full px-4 py-2 text-sm rounded-lg border border-slate-300 focus:border-primary outline-none" placeholder="VD: Cần chuyển trong hẻm sâu, có đồ giá trị cao..."></textarea>
+              </div>
             </div>
-          </div>
-          
+          </details>
         </form>
       </div>
       
@@ -209,6 +413,57 @@
       </div>
       
       <div class="p-6 flex-1 overflow-y-auto">
+        <div class="mb-5 rounded-2xl border border-primary/15 bg-white shadow-sm overflow-hidden">
+          <div class="px-4 py-3 border-b border-slate-100 bg-gradient-to-r from-primary/5 to-accent/5">
+            <p class="text-xs font-bold uppercase tracking-[0.22em] text-primary">Gia cuoc minh bach</p>
+            <h4 class="mt-1 text-base font-bold text-slate-800">Nguoi dung thay ro cach tinh tong cuoc</h4>
+          </div>
+
+          <div class="p-4 space-y-3">
+            <div class="flex gap-3">
+              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">1</span>
+              <div>
+                <p class="text-sm font-semibold text-slate-800">Cuoc xe co ban theo loai xe</p>
+                <p class="text-xs text-slate-500">Gia mo dau thay doi theo xe 500kg, 1 tan, 1.5 tan, 2 tan...</p>
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">2</span>
+              <div>
+                <p class="text-sm font-semibold text-slate-800">Cong km vuot nguong co ban</p>
+                <p class="text-xs text-slate-500">Chi tinh them khi lo trinh vuot so km co san cua tung loai xe.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">3</span>
+              <div>
+                <p class="text-sm font-semibold text-slate-800">Cong phan khoi luong va the tich phat sinh</p>
+                <p class="text-xs text-slate-500">Ap dung cho phan vuot nguong mien phi trong bang gia tham khao.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">4</span>
+              <div>
+                <p class="text-sm font-semibold text-slate-800">Cong phu phi dieu kien thuc te</p>
+                <p class="text-xs text-slate-500">Gom khung gio, tinh chat do dac va cac dich vu bo sung ban chon.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-dashed border-slate-200 bg-slate-50 px-4 py-3">
+            <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Cong thuc tam tinh</p>
+            <p class="mt-1 text-sm font-semibold text-slate-700">
+              Tong cuoc = Cuoc xe co ban + Km phat sinh + Khoi luong/The tich phat sinh + Phu phi + Dich vu bo sung
+            </p>
+            <p class="mt-2 text-xs text-slate-500">
+              Cac truong nhu so tang, thang may, hem nho va khoang vac bo duoc dung de khao sat, co the dieu chinh sau khi nhan vien xac minh thuc te.
+            </p>
+          </div>
+        </div>
+
         <ul id="moving-price-breakdown" class="space-y-3 font-medium text-sm text-slate-700">
            <!-- Dynamic JS items -->
            <li class="flex justify-between items-center text-slate-400 italic">Nhập dữ liệu để xem cước</li>
@@ -227,7 +482,7 @@
       </div>
       
       <div class="p-4 border-t bg-white">
-        <button type="button" id="confirm-moving-booking-btn" class="w-full bg-accent hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow transition-all hover:-translate-y-0.5">
+        <button type="submit" form="moving-booking-form" id="confirm-moving-booking-btn" class="w-full bg-accent hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow transition-all hover:-translate-y-0.5">
           Gửi Yêu Cầu Chuyển Dọn
         </button>
       </div>
