@@ -6,152 +6,33 @@
     <title>Tra Cứu Hóa Đơn - Hệ Thống Quản Lý Dịch Vụ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        :root {
-            --lookup-primary: #007bff;
-            --lookup-primary-soft: #2e86fa;
-            --lookup-surface: #f7fbff;
-            --lookup-border: #a9cfff;
-        }
-
-        .lookup-detail-modal .modal-content {
-            border: 0;
-            background: linear-gradient(180deg, #2289f8 0%, #d7e9ff 100%);
-            box-shadow: 0 12px 32px rgba(0, 123, 255, .24);
-        }
-
-        .lookup-detail-modal .modal-header,
-        .lookup-detail-modal .modal-footer {
-            background: var(--lookup-primary-soft);
-        }
-
-        .lookup-detail-modal .modal-title {
-            color: var(--lookup-primary);
-        }
-
-        #lookupInvoiceDetailContent,
-        #lookupEmployeeDetailContent {
-            background: var(--lookup-surface);
-            border-radius: .75rem;
-            padding: .25rem;
-        }
-
-        .lookup-main-modal .modal-content {
-            border: 0;
-            border-radius: 1rem;
-            box-shadow: 0 14px 36px rgba(0, 123, 255, .26);
-            background: linear-gradient(180deg, #edf5ff 0%, #dcecff 100%);
-        }
-
-        .lookup-main-modal .modal-header,
-        .lookup-main-modal .modal-body,
-        .lookup-main-modal .modal-footer {
-            background: linear-gradient(135deg, #70a9eb 0%, #5f95db 55%, #2b7de0 100%);
-        }
-
-        .lookup-main-modal .lookup-title {
-            color: var(--lookup-primary);
-        }
-
-        .lookup-main-modal .lookup-card {
-            border-color: var(--lookup-border);
-        }
-
-        .lookup-main-modal .lookup-back-link {
-            color: var(--lookup-primary);
-        }
-
-        .lookup-main-modal .lookup-close-btn {
-            color: var(--lookup-primary);
-            border-color: var(--lookup-primary);
-        }
-
-        .lookup-main-modal .lookup-close-btn:hover {
-            color: #fff;
-            background: var(--lookup-primary);
-            border-color: var(--lookup-primary);
-        }
-
-        .lookup-employee-avatar {
-            width: 128px;
-            height: 128px;
-        }
-
-        .lookup-invoice-card .card-body,
-        .lookup-employee-summary-card .card-body {
-            font-size: 1rem;
-        }
-
-        .lookup-modal-dialog-employee {
-            margin: 1rem auto;
-        }
-
-        .lookup-modal-dialog-invoice {
-            margin: 1rem auto;
-        }
-
-        @media (max-width: 576px) {
-            .lookup-modal-dialog-employee,
-            .lookup-modal-dialog-invoice {
-                width: 94vw;
-                max-width: 94vw;
-                margin: .75rem auto;
-            }
-
-            #lookupEmployeeDetailContent,
-            #lookupInvoiceDetailContent {
-                max-height: 72vh;
-                overflow: auto;
-                padding: 0;
-            }
-
-            .lookup-employee-avatar {
-                width: 92px;
-                height: 92px;
-            }
-
-            .lookup-invoice-card .card-body,
-            .lookup-employee-summary-card .card-body {
-                font-size: .92rem;
-            }
-
-            .lookup-invoice-card .badge,
-            .lookup-employee-summary-card .badge,
-            #lookupEmployeeDetailContent .badge {
-                font-size: .75rem !important;
-            }
-
-            .lookup-invoice-card-header h6,
-            #lookupEmployeeDetailModal .card-header h6,
-            #lookupInvoiceDetailModal .card-header h6 {
-                font-size: .98rem;
-            }
-        }
-    </style>
 </head>
-<body style="background: linear-gradient(135deg, #b9d8ff 0%, #9fc8ff 50%, #b7d7ff 100%);">
-    <div class="modal fade lookup-main-modal" id="lookupModal" tabindex="-1" aria-labelledby="lookupModalLabel" aria-hidden="true">
+<body class="bg-body-tertiary">
+    <div class="modal fade" id="lookupModal" tabindex="-1" aria-labelledby="lookupModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
-            <div class="modal-content">
-                <div class="modal-header border-0 px-3 px-md-4 py-3">
-                    <div>
-                        <h4 class="mb-1 lookup-title" id="lookupModalLabel">Tra Cứu Hóa Đơn</h4>
+            <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+                <div class="modal-header border-0 bg-danger-subtle px-3 px-md-4 py-3">
+                    <div class="w-100 pe-2">
+                        <h4 class="mb-1 fw-bold text-danger-emphasis" id="lookupModalLabel">Tra Cứu Hóa Đơn</h4>
                         <p class="text-secondary small mb-0">Nhập số điện thoại để tra cứu thông tin hóa đơn</p>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="modal-body p-3 p-md-4">
-                    <div class="card lookup-card shadow-sm mb-3">
-                        <div class="card-body">
+                <div class="modal-body p-3 p-md-4 bg-danger-subtle">
+                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                        <div class="card-body p-3 p-md-4">
                             <form id="lookupForm">
                                 <div class="row g-3">
                                     <div class="col-md-8">
-                                        <input type="tel" class="form-control" id="phone" placeholder="Nhập số điện thoại (VD: 0123456789)" required>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-white border-end-0 text-danger"><i class="bi bi-telephone-fill"></i></span>
+                                            <input type="tel" class="form-control border-start-0" id="phone" placeholder="Nhập số điện thoại (VD: 0123456789)" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <button type="submit" class="btn btn-primary w-100">
-                                            <i class="bi bi-search me-2"></i>Tra cứu
+                                        <button type="submit" class="btn btn-danger btn-lg w-100 rounded-3 fw-semibold">
+                                            <i class="bi bi-search me-1"></i>Tra cứu
                                         </button>
                                     </div>
                                 </div>
@@ -161,11 +42,11 @@
 
                     <div id="resultContainer">
                         <div class="d-none d-md-block">
-                            <div class="card lookup-card shadow-sm">
+                            <div class="card border-0 shadow-sm rounded-4">
                                 <div class="card-body p-2 p-md-3">
                                     <div class="table-responsive">
-                                        <table class="table table-hover align-middle mb-0" style="font-size: 14px;">
-                                            <thead>
+                                        <table class="table table-hover align-middle mb-0 table-sm" style="font-size: 14px;">
+                                            <thead class="table-light">
                                                 <tr>
                                                     <th>Tên khách hàng</th>
                                                     <th>Gói dịch vụ</th>
@@ -186,7 +67,7 @@
                         </div>
 
                         <div class="d-md-none">
-                            <div class="card lookup-card shadow-sm">
+                            <div class="card border-0 shadow-sm rounded-4">
                                 <div class="card-body text-center text-muted py-4">
                                     Nhập số điện thoại để tra cứu hóa đơn
                                 </div>
@@ -195,11 +76,11 @@
                     </div>
                 </div>
 
-                <div class="modal-footer border-0 pt-0 px-3 px-md-4 pb-3 pb-md-4 justify-content-between">
-                    <!-- <a href="dshoadon.html" class="lookup-back-link text-decoration-none fw-semibold">
+                <div class="modal-footer border-0 pt-0 px-3 px-md-4 pb-3 pb-md-4 bg-danger-subtle justify-content-between">
+                    <!-- <a href="dshoadon.html" class="text-danger text-decoration-none fw-semibold">
                         <i class="bi bi-arrow-left me-1"></i>Quay lại trang chủ
                     </a> -->
-                    <button type="button" class="btn btn-outline-primary lookup-close-btn" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </div>
@@ -207,24 +88,24 @@
 
     <div class="modal fade lookup-detail-modal" id="lookupEmployeeDetailModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable lookup-modal-dialog-employee">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title"><i class="bi bi-person-badge-fill me-2"></i>Thông Tin Nhân Viên</h5>
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-header bg-danger-subtle border-0">
+                    <h5 class="modal-title text-danger-emphasis"><i class="bi bi-person-badge-fill me-2"></i>Thông Tin Nhân Viên</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="lookupEmployeeDetailContent"></div>
+                <div class="modal-body bg-body-tertiary" id="lookupEmployeeDetailContent"></div>
             </div>
         </div>
     </div>
 
     <div class="modal fade lookup-detail-modal" id="lookupInvoiceDetailModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable lookup-modal-dialog-invoice">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title"><i class="bi bi-file-text-fill me-2"></i>Chi Tiết Hóa Đơn</h5>
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-header bg-danger-subtle border-0">
+                    <h5 class="modal-title text-danger-emphasis"><i class="bi bi-file-text-fill me-2"></i>Chi Tiết Hóa Đơn</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="lookupInvoiceDetailContent"></div>
+                <div class="modal-body bg-body-tertiary" id="lookupInvoiceDetailContent"></div>
             </div>
         </div>
     </div>
