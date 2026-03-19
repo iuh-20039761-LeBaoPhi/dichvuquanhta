@@ -262,7 +262,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function initBookingModal() {
   const serviceSelect = document.getElementById("serviceContact");
-  const subServiceSelect = document.getElementById("subService");
+  const transportOptionSelect = document.getElementById("transportOption");
+  const workItemsList = document.getElementById("workItemsList");
+  const chemicalsList = document.getElementById("chemicalsList");
+  const workItemsGroup = workItemsList?.closest(".form-group");
+  const chemicalsGroup = chemicalsList?.closest(".form-group");
   const bookingModal = document.getElementById("bookingModal");
 
   const kgBox = document.getElementById("kgBox");
@@ -279,10 +283,45 @@ function initBookingModal() {
   // ❗ nếu chưa load xong modal thì thoát
   if (!serviceSelect) return;
 
-  const transportFee = 20000;
+  let transportFee = 0;
   shipInput.value = transportFee.toLocaleString("vi-VN");
 
   let services = [];
+
+  function toggleServiceOptionGroups(visible) {
+    if (workItemsGroup) {
+      workItemsGroup.style.display = visible ? "block" : "none";
+    }
+    if (chemicalsGroup) {
+      chemicalsGroup.style.display = visible ? "block" : "none";
+    }
+  }
+
+  toggleServiceOptionGroups(false);
+
+  function renderCheckboxList(container, items, name) {
+    if (!container) return;
+
+    if (!items || !items.length) {
+      container.innerHTML =
+        '<span class="text-muted small">Không có dữ liệu.</span>';
+      return;
+    }
+
+    let html = "";
+    items.forEach((item, index) => {
+      const value = String(item);
+      const inputId = `${name}_${index}`;
+      html += `
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="${inputId}" name="${name}" value="${value}" checked>
+          <label class="form-check-label" for="${inputId}">${value}</label>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
 
   function applyQuickServiceSelection(serviceId) {
     if (!serviceId || !serviceSelect) return false;
@@ -357,8 +396,11 @@ function initBookingModal() {
     const serviceId = Number(this.value);
 
     if (!serviceId) {
-      subServiceSelect.innerHTML =
-        '<option value="">Chọn loại dịch vụ</option>';
+      transportOptionSelect.innerHTML =
+        '<option value="">Chọn hình thức nhận / giao</option>';
+      renderCheckboxList(workItemsList, [], "work_items");
+      renderCheckboxList(chemicalsList, [], "support_chemicals");
+      toggleServiceOptionGroups(false);
 
       kgInput.value = "";
       pairInput.value = "";
@@ -367,25 +409,47 @@ function initBookingModal() {
       pairBox.style.display = "none";
 
       priceInput.value = "";
+      shipInput.value = "";
       totalInput.value = "";
       if (quantityInput) quantityInput.value = "1";
       return;
     }
 
-    subServiceSelect.innerHTML = '<option value="">Chọn loại dịch vụ</option>';
+    transportOptionSelect.innerHTML =
+      '<option value="">Chọn hình thức nhận / giao</option>';
 
     const service = services.find((s) => s.id === serviceId);
     if (!service) return;
 
-    service.sub_services.forEach((sub) => {
+    (service.transport_options || []).forEach((transportOption) => {
       const option = document.createElement("option");
-
-      option.value = sub.id;
-      option.textContent = sub.name;
-      option.dataset.price = sub.price;
-
-      subServiceSelect.appendChild(option);
+      option.value = transportOption.name;
+      option.textContent = `${transportOption.name} (${Number(
+        transportOption.price || 0,
+      ).toLocaleString("vi-VN")} VND)`;
+      option.dataset.price = Number(transportOption.price || 0);
+      transportOptionSelect.appendChild(option);
     });
+
+    if (transportOptionSelect.options.length > 1) {
+      transportOptionSelect.selectedIndex = 1;
+    }
+
+    transportFee = Number(
+      transportOptionSelect.options[transportOptionSelect.selectedIndex]
+        ?.dataset.price || 0,
+    );
+
+    const servicePrice = Number(service.price || 0);
+    priceInput.value = servicePrice.toLocaleString("vi-VN");
+    shipInput.value = transportFee.toLocaleString("vi-VN");
+    renderCheckboxList(workItemsList, service.work_items || [], "work_items");
+    renderCheckboxList(
+      chemicalsList,
+      service.support_chemicals || [],
+      "support_chemicals",
+    );
+    toggleServiceOptionGroups(true);
 
     const unit = service.price_unit;
 
@@ -408,29 +472,28 @@ function initBookingModal() {
     calculate();
   });
 
-  /* CHỌN SUB SERVICE */
-  subServiceSelect.addEventListener("change", function () {
+  /* CHỌN HÌNH THỨC NHẬN/GIAO */
+  transportOptionSelect.addEventListener("change", function () {
     const option = this.options[this.selectedIndex];
 
     if (!option.value) {
-      priceInput.value = "";
+      shipInput.value = "";
       totalInput.value = "";
       return;
     }
 
-    const price = Number(option.dataset.price);
-    priceInput.value = price.toLocaleString("vi-VN");
+    transportFee = Number(option.dataset.price || 0);
+    shipInput.value = transportFee.toLocaleString("vi-VN");
 
     calculate();
   });
 
   /* TÍNH TIỀN */
   function calculate() {
-    const subOption = subServiceSelect.options[subServiceSelect.selectedIndex];
+    const service = services.find((s) => String(s.id) === serviceSelect.value);
+    if (!service) return;
 
-    if (!subOption.dataset.price) return;
-
-    const price = Number(subOption.dataset.price);
+    const price = Number(service.price || 0);
 
     let quantity = 1;
 
@@ -488,7 +551,7 @@ function initBookingConfirmFlow() {
     const data = Object.fromEntries(formData.entries());
 
     const serviceSelect = document.getElementById("serviceContact");
-    const subServiceSelect = document.getElementById("subService");
+    const transportOptionSelect = document.getElementById("transportOption");
     const kgInput = document.getElementById("kg");
     const pairInput = document.getElementById("pair");
     const kgBox = document.getElementById("kgBox");
@@ -496,12 +559,19 @@ function initBookingConfirmFlow() {
 
     const serviceText =
       serviceSelect?.options[serviceSelect.selectedIndex]?.text;
-    const subServiceText =
-      subServiceSelect?.options[subServiceSelect.selectedIndex]?.text;
+    const transportOptionText =
+      transportOptionSelect?.options[transportOptionSelect.selectedIndex]?.text;
 
     const isKgVisible = kgBox && getComputedStyle(kgBox).display !== "none";
     const isPairVisible =
       pairBox && getComputedStyle(pairBox).display !== "none";
+
+    const selectedWorkItems = Array.from(
+      form.querySelectorAll('input[name="work_items"]:checked'),
+    ).map((el) => el.value);
+    const selectedChemicals = Array.from(
+      form.querySelectorAll('input[name="support_chemicals"]:checked'),
+    ).map((el) => el.value);
 
     let quantity = "";
     if (isKgVisible && kgInput?.value) quantity = `${kgInput.value} kg`;
@@ -510,13 +580,16 @@ function initBookingConfirmFlow() {
     data.service_name =
       serviceText && serviceText !== "Chọn dịch vụ" ? serviceText : "";
     data.sub_service =
-      subServiceText && subServiceText !== "Chọn loại dịch vụ"
-        ? subServiceText
+      transportOptionText &&
+      transportOptionText !== "Chọn hình thức nhận / giao"
+        ? transportOptionText
         : "";
     data.quantity = quantity;
     data.price = document.getElementById("priceContact")?.value || "";
     data.ship = document.getElementById("ship")?.value || "";
     data.total = document.getElementById("total")?.value || "";
+    data.work_items = selectedWorkItems.join(", ");
+    data.support_chemicals = selectedChemicals.join(", ");
 
     return {
       data,
@@ -530,6 +603,8 @@ function initBookingConfirmFlow() {
         price: data.price,
         ship: data.ship,
         total: data.total,
+        workItems: data.work_items,
+        chemicals: data.support_chemicals,
         message: data.message,
       },
     };
@@ -546,6 +621,8 @@ function initBookingConfirmFlow() {
       confirmPrice: preview.price,
       confirmShip: preview.ship,
       confirmTotal: preview.total,
+      confirmWorkItems: preview.workItems,
+      confirmChemicals: preview.chemicals,
       confirmMessage: preview.message,
     };
 
@@ -620,193 +697,3 @@ function mapPickerInit() {
     });
   }
 }
-
-function initBookingCombo() {
-  const form = document.querySelector(".contactFormCombo");
-  const comboModalEl = document.getElementById("myModal");
-  const comboConfirmModalEl = document.getElementById("comboConfirmModal");
-  const serviceSelect = document.getElementById("service");
-  const priceInput = document.getElementById("price");
-
-  if (
-    !form ||
-    !comboModalEl ||
-    !comboConfirmModalEl ||
-    !serviceSelect ||
-    !priceInput
-  )
-    return;
-
-  // Tránh bind trùng sự kiện nếu hàm bị gọi lại
-  if (serviceSelect.dataset.comboBound !== "true") {
-    serviceSelect.dataset.comboBound = "true";
-
-    serviceSelect.addEventListener("change", function () {
-      const selectedOption = this.options[this.selectedIndex];
-
-      if (!selectedOption || !selectedOption.value) {
-        priceInput.value = "";
-        return;
-      }
-
-      const selectedPrice = Number(selectedOption.dataset.price || 0);
-      priceInput.value = Number.isFinite(selectedPrice) ? selectedPrice : "";
-    });
-  }
-
-  // Xóa option cũ (giữ lại option mặc định) để tránh bị lặp
-  serviceSelect.innerHTML = '<option value="">Chọn gói dịch vụ</option>';
-  priceInput.value = "";
-
-  Promise.all([
-    fetch("public/services.json").then((res) => res.json()),
-    fetch("public/discount.json").then((res) => res.json()),
-  ])
-    .then(([servicesData, discounts]) => {
-      function isDiscountActive(discount) {
-        const today = new Date();
-        const start = new Date(discount.start_date);
-        const end = new Date(discount.end_date);
-        return today >= start && today <= end;
-      }
-
-      function getDiscount(serviceId) {
-        return discounts.find(
-          (d) => Number(d.service_id) === Number(serviceId),
-        );
-      }
-
-      // Lọc combo
-      const services = servicesData.filter(
-        (service) => service.price_unit === "combo",
-      );
-
-      services.forEach((service) => {
-        const price = service.sub_services[0].price;
-
-        // 🔥 lấy discount
-        const discount = getDiscount(service.id);
-
-        let finalPrice = price;
-        let label = "";
-
-        if (discount && isDiscountActive(discount)) {
-          finalPrice = price - (price * discount.discount_percent) / 100;
-          label = ` (${discount.label})`;
-        }
-
-        const option = document.createElement("option");
-
-        option.value = service.id;
-
-        // Hiển thị tên gói kèm nhãn khuyến mãi (nếu có)
-        option.textContent = service.service_name;
-
-        // Lưu giá cuối cùng để khi chọn option sẽ cập nhật đúng vào input giá
-        option.dataset.price = finalPrice;
-
-        option.dataset.originalPrice = price; // nếu cần
-        option.dataset.unit = service.price_unit;
-
-        serviceSelect.appendChild(option);
-      });
-
-      // Nếu có sẵn lựa chọn (ví dụ trình duyệt giữ state), đồng bộ lại giá
-      if (serviceSelect.value) {
-        serviceSelect.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-    })
-    .catch((err) => console.log(err));
-
-  initComboConfirmFlow(form, comboModalEl, comboConfirmModalEl);
-
-  const autoFillBtn = document.getElementById("autoFillBtnCombo");
-  if (autoFillBtn) {
-    autoFillBtn.addEventListener("click", function () {
-      const customer = this.dataset.customer;
-      const phone = this.dataset.phone;
-      const address = this.dataset.address;
-
-      document.getElementById("name").value = customer;
-      document.getElementById("phone").value = phone;
-      document.getElementById("address").value = address;
-    });
-  }
-}
-
-function initComboConfirmFlow(form, comboModalEl, comboConfirmModalEl) {
-  if (!form || !comboModalEl || !comboConfirmModalEl) return;
-  if (form.dataset.comboConfirmBound === "true") return;
-  form.dataset.comboConfirmBound = "true";
-
-  const nameInput = document.getElementById("name");
-  const phoneInput = document.getElementById("phone");
-  const addressInput = document.getElementById("address");
-  const serviceSelect = document.getElementById("service");
-  const priceInput = document.getElementById("price");
-  const quantityInput = document.getElementById("quantity");
-  const messageInput = document.getElementById("message");
-
-  const backBtn = document.getElementById("comboConfirmBackBtn");
-  const closeBtn = document.getElementById("comboConfirmCloseBtn");
-  const confirmBtn = document.getElementById("comboConfirmSubmitBtn");
-
-  function normalize(value) {
-    if (value == null) return "-";
-    const text = String(value).trim();
-    return text || "-";
-  }
-
-  function renderComboSummary() {
-    const selectedService =
-      serviceSelect?.options[serviceSelect.selectedIndex]?.textContent || "";
-
-    const summary = {
-      comboConfirmName: nameInput?.value,
-      comboConfirmPhone: phoneInput?.value,
-      comboConfirmAddress: addressInput?.value,
-      comboConfirmService: selectedService,
-      comboConfirmPrice: priceInput?.value
-        ? `${Number(priceInput.value).toLocaleString("vi-VN")} VNĐ`
-        : "",
-      comboConfirmQuantity: quantityInput?.value + " Gói",
-      comboConfirmMessage: messageInput?.value,
-    };
-
-    Object.entries(summary).forEach(([id, value]) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = normalize(value);
-    });
-  }
-
-  function backToComboForm() {
-    bootstrap.Modal.getOrCreateInstance(comboConfirmModalEl).hide();
-    bootstrap.Modal.getOrCreateInstance(comboModalEl).show();
-  }
-
-  form.addEventListener("submit", function (e) {
-    if (form.dataset.comboConfirmed === "true") {
-      form.dataset.comboConfirmed = "false";
-      return;
-    }
-
-    e.preventDefault();
-    renderComboSummary();
-
-    bootstrap.Modal.getOrCreateInstance(comboModalEl).hide();
-    bootstrap.Modal.getOrCreateInstance(comboConfirmModalEl).show();
-  });
-
-  if (backBtn) backBtn.addEventListener("click", backToComboForm);
-  if (closeBtn) closeBtn.addEventListener("click", backToComboForm);
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  fetch("public/component/booking_combo.html")
-    .then((res) => res.text())
-    .then((data) => {
-      document.getElementById("bookingCombo").innerHTML = data;
-
-      initBookingCombo();
-    });
-});

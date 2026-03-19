@@ -1,179 +1,47 @@
 [
   {
     "id": 1,
-    "service_name": "Dịch Vụ Giặt Sấy Nhanh",
-    "summary": "Dịch vụ Giặt sấy nhanh giúp các bạn học sinh, sinh viên, những người đi làm... không có thời gian giặt rũ quần áo có thể tiết kiệm được thời gian và công sức của mình, để tập trung hơn vào công việc, học hành.",
+    "service_name": "Giặt Áo Quần Thông Thường",
+    "summary": "Dịch vụ giặt áo quần thông thường theo đơn vị kg, phù hợp cho nhu cầu hằng ngày của cá nhân và gia đình. Đồ được phân loại theo màu và chất liệu trước khi giặt, xử lý sạch vết bẩn phổ biến, sau đó sấy khô và ủi phẳng gọn gàng. Quy trình tối ưu giúp quần áo sạch thơm, giữ độ bền sợi vải, tiết kiệm thời gian cho khách hàng bận rộn.",
+    "image": "public/asset/image/giat-ao-quan-thong-thuong.png",
+    "price": 15000,
     "price_unit": "kg",
-    "sub_services": [
-      {
-        "id": 1,
-        "name": "Giặt sấy quần áo thường",
-        "price": 30000
-      },
-      {
-        "id": 2,
-        "name": "Giặt sấy quần áo cao cấp",
-        "price": 40000
-      },
-      {
-        "id": 3,
-        "name": "Giặt sấy + nước xả cao cấp",
-        "price": 600000
-      }
-    ],
-    "created_at": "2026-01-27 20:21:07",
-    "updated_at": "2026-01-27 20:21:07"
+    "work_items": ["Giặt", "Sấy", "Ủi"],
+    "support_chemicals": ["Bột giặt", "Nước xả"],
+    "transport_options": [
+      { "name": "Đến nhận hàng", "price": 10000 },
+      { "name": "Giao hàng", "price": 10000 },
+      { "name": "Tự lấy", "price": 0 }
+    ]
   },
   {
     "id": 2,
-    "service_name": "Dịch Vụ Giặt Hấp Quần áo ",
-    "summary": "Dịch vụ Giặt hấp quần áo ( giặt khô ) là quá tình giặt quần áo mà không cần dùng nước hay dung môi để làm sạch vết bẩn, hóa chất sử dụng cũng là loại hóa chất giặt khô khácvới giặt thông thường, giúp giữ quần áo bền và đẹp hơn.",
+    "service_name": "Giặt Chăn Ra Gối Nệm",
+    "summary": "Dịch vụ giặt chăn, ra, gối, nệm theo đơn vị kg với quy trình làm sạch chuyên sâu dành cho đồ vải khổ lớn. Sản phẩm được kiểm tra tình trạng trước khi xử lý, giặt tách riêng để hạn chế lem màu, khử mùi ẩm mốc, sấy kỹ và ủi hoàn thiện. Giải pháp phù hợp cho hộ gia đình cần làm sạch định kỳ để đảm bảo không gian ngủ luôn vệ sinh, thoáng mát và an toàn cho sức khỏe.",
+    "image": "public/asset/image/giat-chan-goi-nem.png",
+    "price": 20000,
     "price_unit": "kg",
-    "sub_services": [
-      {
-        "id": 1,
-        "name": "Giặt hấp áo sơ mi",
-        "price": 40000
-      },
-      {
-        "id": 2,
-        "name": "Giặt hấp áo khoác",
-        "price": 40000
-      },
-      {
-        "id": 3,
-        "name": "Giặt hấp quần tây",
-        "price": 40000
-      }
-    ],
-    "created_at": "2026-01-27 20:21:07",
-    "updated_at": "2026-01-27 20:21:07"
+    "work_items": ["Giặt", "Sấy", "Ủi"],
+    "support_chemicals": ["Bột giặt", "Nước xả"],
+    "transport_options": [
+      { "name": "Đến nhận hàng", "price": 10000 },
+      { "name": "Giao hàng", "price": 10000 },
+      { "name": "Tự lấy", "price": 0 }
+    ]
   },
   {
     "id": 3,
-    "service_name": "Dịch Vụ Giặt Sấy Chăn Mền",
-    "summary": "Dịch vụ Giặt sấy chăn mền đảm bảo sự sạch sẽ cho chăn mền của quý khách ( khách sạn, nhà hàng, spa, trường học nội trú... ) sau khi giặt sấy, chúng tôi chuyên giặt sấy chăn mền, ga gối với đủ loại kích thước, khối lượng.",
+    "service_name": "Giặt Cho Khách Sạn / Spa (Chăn Ra Gối Nệm)",
+    "summary": "Dịch vụ giặt chăn, ra, gối, nệm theo đơn vị kg dành cho khách sạn và spa với nhu cầu số lượng lớn, yêu cầu cao về vệ sinh và tiến độ. Quy trình vận hành được chuẩn hóa từ khâu nhận hàng, phân loại, giặt, sấy, ủi đến đóng gói bàn giao để đảm bảo đồng đều chất lượng. Dịch vụ hỗ trợ duy trì hình ảnh chuyên nghiệp cho cơ sở kinh doanh, tối ưu chi phí vận hành và đảm bảo nguồn đồ vải sạch sẵn sàng phục vụ khách mỗi ngày.",
+    "image": "public/asset/image/giat-cho-khach-san-spa.png",
+    "price": 25000,
     "price_unit": "kg",
-    "sub_services": [
-      {
-        "id": 1,
-        "name": "Giặt chăn đơn",
-        "price": 100000
-      },
-      {
-        "id": 2,
-        "name": "Giặt chăn đôi",
-        "price": 150000
-      },
-      {
-        "id": 3,
-        "name": "Giặt ga giường",
-        "price": 80000
-      }
-    ],
-    "created_at": "2026-01-27 20:24:22",
-    "updated_at": "2026-01-27 20:24:22"
-  },
-  {
-    "id": 4,
-    "service_name": "Dịch Vụ Giặt Hấp Áo Vest, Váy Cưới",
-    "summary": "Dịch vụ Giặt hấp áo vest, váy cưới giúp làm sạch nhẹ nhàng trang phục cao cấp, giữ form dáng và chất liệu. Phù hợp áo vest, váy cưới, đầm dạ hội của quý khách.",
-    "price_unit": "kg",
-    "sub_services": [
-      {
-        "id": 1,
-        "name": "Giặt hấp áo vest",
-        "price": 100000
-      },
-      {
-        "id": 2,
-        "name": "Giặt váy cưới",
-        "price": 200000
-      },
-      {
-        "id": 3,
-        "name": "Giặt đầm dạ hội",
-        "price": 150000
-      }
-    ],
-    "created_at": "2026-01-27 20:24:22",
-    "updated_at": "2026-01-27 20:24:22"
-  },
-  {
-    "id": 5,
-    "service_name": "Dịch vụ Vệ Sinh Thảm",
-    "summary": "Dịch vụ vệ sinh thảm trải sàn giúp thảm trải sàn của quý khách được trở nên sạch sẽ, tăng độ bền, thẩm mỹ cho không gian của phòng khách gia đình, văn phòng công ty, khách sạn, showroom, cửa hàng thời trang, trung tâm hội nghị...",
-    "price_unit": "kg",
-    "sub_services": [
-      {
-        "id": 1,
-        "name": "Vệ sinh thảm nhỏ",
-        "price": 100000
-      },
-      {
-        "id": 2,
-        "name": "Vệ sinh thảm trung",
-        "price": 150000
-      },
-      {
-        "id": 3,
-        "name": "Vệ sinh thảm lớn",
-        "price": 200000
-      }
-    ],
-    "created_at": "2026-01-27 20:24:22",
-    "updated_at": "2026-01-27 20:24:22"
-  },
-  {
-    "id": 6,
-    "service_name": "Dịch Vụ Vệ Sinh Giày",
-    "summary": "Dịch vụ vệ sinh giày với quy trình kiểm soát chất lượng gắt gao, giúp giày của bạn được vệ sinh sạch sẽ và trở nên sạch đẹp như mới Làm sạch sâu, khử mùi và phục hồi form giày.",
-    "price_unit": "pair",
-    "sub_services": [
-      {
-        "id": 1,
-        "name": "Vệ sinh giày thể thao",
-        "price": 80000
-      },
-      {
-        "id": 2,
-        "name": "Vệ sinh giày sneaker",
-        "price": 100000
-      },
-      {
-        "id": 3,
-        "name": "Vệ sinh giày da",
-        "price": 150000
-      }
-    ],
-    "created_at": "2026-01-27 20:24:22",
-    "updated_at": "2026-01-27 20:24:22"
-  },
-  {
-    "id": 7,
-    "service_name": "Gói Gia Đình",
-    "summary": "Phù hợp cho gia đình nhỏ với khối lượng đồ giặt từ (3-5) kg\nGiặt sấy khô\nGấp gọn cơ bản\nGiao nhận trong ngày\nNước giặt thông thường\nTúi đựng miễn phí",
-    "price_unit": "combo",
-    "sub_services": [{ "id": 1, "name": "Combo 3-5 kg", "price": 150000 }],
-    "created_at": "2026-02-01 13:37:58",
-    "updated_at": "2026-02-01 13:37:58"
-  },
-  {
-    "id": 8,
-    "service_name": "Gói Cửa Hàng, SPA",
-    "summary": "Phù hợp cho cửa hàng và SPA với khối lượng đồ giặt từ (10-20) kg\nGiặt sấy cao cấp\nLà ủi phẳng phiu\nGiao nhận trong ngày\nNước giặt cao cấp, thơm lâu\nĐóng gói sang trọng\nTẩy vết bẩn nhẹ miễn phí",
-    "price_unit": "combo",
-    "sub_services": [{ "id": 1, "name": "Combo 10-20 kg", "price": 350000 }],
-    "created_at": "2026-02-01 13:37:58",
-    "updated_at": "2026-02-01 13:37:58"
-  },
-  {
-    "id": 9,
-    "service_name": "Gói Khách Sạn",
-    "summary": "Phù hợp cho khách sạn với khối lượng đồ giặt từ (30-50) kg\nGiặt khô chuyên nghiệp\nLà ủi hoàn hảo\nGiao nhận trong ngày\nHóa chất nhập khẩu\nĐóng gói siêu sang\nTẩy mọi vết bẩn\nBảo hành chất lượng",
-    "price_unit": "combo",
-    "sub_services": [{ "id": 1, "name": "Combo 30-50 kg", "price": 750000 }],
-    "created_at": "2026-02-01 13:37:58",
-    "updated_at": "2026-02-01 13:37:58"
+    "work_items": ["Giặt", "Sấy", "Ủi"],
+    "support_chemicals": ["Bột giặt", "Nước xả"],
+    "transport_options": [
+      { "name": "Đến nhận hàng", "price": 10000 },
+      { "name": "Giao hàng", "price": 10000 },
+      { "name": "Tự lấy", "price": 0 }
+    ]
   }
 ]
