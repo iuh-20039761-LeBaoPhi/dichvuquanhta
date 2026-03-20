@@ -84,7 +84,8 @@
 
   #bookingModal #priceContact,
   #bookingModal #ship,
-  #bookingModal #total {
+  #bookingModal #total,
+  #bookingModal #shippingSurcharge {
     font-weight: 700;
     color: #0f172a;
     background: #f1f5f9;
@@ -312,6 +313,19 @@
           </div>
 
           <div class="form-group">
+            <label>Phụ phí giao, nhận hàng (tạm tính)</label>
+            <input
+              type="number"
+              id="shippingSurcharge"
+              name="shipping_surcharge"
+              min="0"
+              step="1000"
+              value="0"
+              readonly
+            />
+          </div>
+
+          <div class="form-group">
             <label>Tổng tiền</label>
             <input type="text" id="total" readonly />
           </div>
@@ -422,8 +436,12 @@
                 <td id="confirmPrice">-</td>
               </tr>
               <tr>
-                <th scope="row">Phí vận chuyển</th>
+                <th scope="row">Phí di chuyển</th>
                 <td id="confirmShip">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Phụ phí giao, nhận hàng</th>
+                <td id="confirmShippingSurcharge">-</td>
               </tr>
               <tr>
                 <th scope="row">Tổng tiền</th>
