@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bài viết & Hướng dẫn | Giao Hàng Nhanh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="public/assets/images/favicon.ico" />
+    <link rel="stylesheet" href="public/assets/css/styles.css" />
+    <!-- FontAwesome 6.4.0 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      /* CSS riêng cho trang tin tức */
+      .news-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+      .news-card {
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+        border: 1px solid #eee;
+      }
+      .news-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+      .news-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background-color: #f0f0f0;
+      }
+      .news-content {
+        padding: 20px;
+      }
+      .news-date {
+        font-size: 0.85em;
+        color: #888;
+        margin-bottom: 10px;
+        display: block;
+      }
+      .news-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #0a2a66;
+        line-height: 1.4;
+      }
+      .news-desc {
+        font-size: 0.95em;
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 15px;
+      }
+      .news-link {
+        color: #ff7a00;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .news-link:hover {
+        text-decoration: underline;
+      }
+
+      /* New Filter Panel Styles */
+      .filter-panel {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        margin-top: 40px;
+      }
+      .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+        align-items: end;
+      }
+      .filter-control {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .filter-control label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+      }
+      /* Grid Column Span Utilities */
+      .col-span-12 {
+        grid-column: span 12 / span 12;
+      }
+      .col-span-6 {
+        grid-column: span 6 / span 6;
+      }
+
+      /* Responsive spans for medium screens and up */
+      @media (min-width: 768px) {
+        .md-col-span-6 {
+          grid-column: span 6 / span 6;
+        }
+      }
+
+      /* Responsive spans for large screens and up */
+      @media (min-width: 1024px) {
+        .lg-col-span-1 {
+          grid-column: span 1 / span 1;
+        }
+        .lg-col-span-2 {
+          grid-column: span 2 / span 2;
+        }
+        .lg-col-span-4 {
+          grid-column: span 4 / span 4;
+        }
+      }
+      .filter-control input,
+      .filter-control select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .filter-control input:focus,
+      .filter-control select:focus {
+        outline: none;
+        border-color: #0a2a66;
+        box-shadow: 0 0 0 3px rgba(10, 42, 102, 0.1);
+      }
+      .search-control {
+        position: relative;
+      }
+      .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        pointer-events: none;
+      }
+      .search-control input {
+        padding-left: 40px;
+      }
+      .filter-actions {
+        border-top: 1px solid #f3f4f6;
+        padding-top: 16px;
+        margin-top: 24px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      /* Pagination Styles */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .page-btn {
+        min-width: 40px;
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #374151;
+        cursor: pointer;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+      }
+      .page-btn:hover:not(:disabled) {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        color: #0a2a66;
+      }
+      .page-btn.active {
+        background: #0a2a66;
+        color: #fff;
+        border-color: #0a2a66;
+      }
+      .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f9fafb;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="container" style="padding-top: 100px; padding-bottom: 80px;">
+
+      <div class="text-center mb-5">
+        <h2 class="section-title">Bài viết & Hướng dẫn</h2>
+        <p class="section-desc">
+          Tổng hợp các hướng dẫn, kinh nghiệm đóng gói và gửi hàng hiệu quả.
+        </p>
+      </div>
+
+      <!-- New Filter Panel -->
+      <div class="filter-panel">
+        <form id="filter-form">
+          <div class="filter-grid">
+            <div class="filter-control col-span-12 lg-col-span-4">
+              <label for="search-input">Tìm kiếm</label>
+              <div class="search-control">
+                <svg
+                  class="search-icon"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+                <input
+                  type="search"
+                  id="search-input"
+                  placeholder="Nhập từ khóa..."
+                />
+              </div>
+            </div>
+            <div class="filter-control col-span-12 md-col-span-6 lg-col-span-2">
+              <label for="filter-category">Chuyên mục</label>
+              <select id="filter-category">
+                <option value="">Tất cả</option>
+              </select>
+            </div>
+            <div class="filter-control col-span-12 md-col-span-6 lg-col-span-2">
+              <label for="sort-order">Sắp xếp</label>
+              <select id="sort-order">
+                <option value="desc">Mới nhất trước</option>
+                <option value="asc">Cũ nhất trước</option>
+              </select>
+            </div>
+            <div class="filter-control col-span-6 lg-col-span-1">
+              <label for="filter-month">Tháng</label>
+              <select id="filter-month">
+                <option value="">Tất cả</option>
+              </select>
+            </div>
+            <div class="filter-control col-span-6 lg-col-span-1">
+              <label for="filter-year">Năm</label>
+              <select id="filter-year">
+                <option value="">Tất cả</option>
+              </select>
+            </div>
+            <div class="col-span-12 lg-col-span-2">
+              <button
+                type="button"
+                id="filter-button"
+                class="btn-primary"
+                style="width: 100%; height: 44px; justify-content: center"
+              >
+                Lọc
+              </button>
+            </div>
+          </div>
+          <div class="filter-actions">
+            <a
+              href="bai-viet.html"
+              id="clear-filter-button"
+              style="
+                display: none;
+                color: #6b7280;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                align-items: center;
+                gap: 4px;
+              "
+            >
+              <svg
+                class="w-4 h-4"
+                style="
+                  width: 16px;
+                  height: 16px;
+                  display: inline-block;
+                  vertical-align: middle;
+                "
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                ></path>
+              </svg>
+              Xóa bộ lọc
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <div class="news-grid">
+        <!-- Các bài viết sẽ được JS chèn vào đây -->
+      </div>
+
+      <div id="pagination-controls" class="pagination"></div>
+    </main>
+
+    <div id="site-footer"></div>
+    <script src="public/assets/js/shared-layout.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const newsGrid = document.querySelector(".news-grid");
+        const monthSelect = document.getElementById("filter-month");
+        const yearSelect = document.getElementById("filter-year");
+        const filterButton = document.getElementById("filter-button");
+        const clearFilterButton = document.getElementById(
+          "clear-filter-button",
+        );
+        const sortSelect = document.getElementById("sort-order");
+        const searchInput = document.getElementById("search-input");
+        const categorySelect = document.getElementById("filter-category");
+        const paginationControls = document.getElementById(
+          "pagination-controls",
+        );
+
+        let currentData = [];
+        let currentPage = 1;
+        const itemsPerPage = 9; // Hiển thị 9 bài viết mỗi trang
+
+        // --- Helper Functions ---
+        function parseDate(dateString) {
+          const parts = dateString.split("/");
+          if (parts.length === 3) {
+            // new Date(year, monthIndex, day)
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+          }
+          return new Date(0); // Invalid date for sorting purposes
+        }
+
+        function resolveArticleAssetPath(path) {
+          if (!path) return "";
+          if (/^(?:https?:)?\/\//i.test(path)) return path;
+          if (path.startsWith("public/")) return path;
+          if (path.startsWith("assets/")) return `public/${path}`;
+          return path;
+        }
+
+        function renderArticles(articles) {
+          if (articles.length === 0) {
+            newsGrid.innerHTML =
+              '<p style="text-align: center; color: #666; grid-column: 1 / -1;">Không tìm thấy bài viết nào phù hợp.</p>';
+            return;
+          }
+          const articlesHtml = articles
+            .map(
+              (article) => `
+            <article class="news-card">
+                <a href="bai-viet-chi-tiet.html?id=${article.id}">
+                  <img src="${resolveArticleAssetPath(article.img)}" alt="${article.title}" class="news-img" />
+                </a>
+                <div class="news-content">
+                    <span class="news-date">${article.date}</span>
+                    <h3 class="news-title">
+                      <a href="bai-viet-chi-tiet.html?id=${article.id}" style="color: inherit; text-decoration: none;">
+                        ${article.title}
+                      </a>
+                    </h3>
+                    <p class="news-desc">${article.description}</p>
+                    <a href="bai-viet-chi-tiet.html?id=${article.id}" class="news-link">Xem chi tiết →</a>
+                </div>
+            </article>
+        `,
+            )
+            .join("");
+          newsGrid.innerHTML = articlesHtml;
+        }
+
+        function populateFilters() {
+          const dates = new Set();
+          window.newsData.forEach((article) => {
+            const parts = article.date.split("/");
+            if (parts.length === 3) {
+              const month = parts[1];
+              const year = parts[2];
+              dates.add(`${month}-${year}`);
+            }
+          });
+
+          const uniqueMonths = new Set();
+          const uniqueYears = new Set();
+          const uniqueCategories = new Set();
+          dates.forEach((dateStr) => {
+            const [month, year] = dateStr.split("-");
+            uniqueMonths.add(month);
+            uniqueYears.add(year);
+          });
+
+          for (let i = 1; i <= 12; i++) {
+            const monthStr = String(i).padStart(2, "0");
+            if (uniqueMonths.has(monthStr)) {
+              const option = document.createElement("option");
+              option.value = i;
+              option.textContent = `Tháng ${i}`;
+              monthSelect.appendChild(option);
+            }
+          }
+
+          Array.from(uniqueYears)
+            .sort((a, b) => b - a)
+            .forEach((year) => {
+              const option = document.createElement("option");
+              option.value = year;
+              option.textContent = year;
+              yearSelect.appendChild(option);
+            });
+
+          window.newsData.forEach((article) => {
+            if (article.category) {
+              uniqueCategories.add(article.category);
+            }
+          });
+          Array.from(uniqueCategories)
+            .sort()
+            .forEach((category) => {
+              const option = document.createElement("option");
+              option.value = category;
+              option.textContent = category;
+              categorySelect.appendChild(option);
+            });
+        }
+
+        function renderPagination() {
+          const totalPages = Math.ceil(currentData.length / itemsPerPage);
+          paginationControls.innerHTML = "";
+
+          if (totalPages <= 1) return;
+
+          // Helper function to create buttons
+          const createBtn = (
+            text,
+            page,
+            isActive = false,
+            isDisabled = false,
+          ) => {
+            const btn = document.createElement("button");
+            btn.className = `page-btn ${isActive ? "active" : ""}`;
+            btn.innerHTML = text;
+            btn.disabled = isDisabled;
+            if (!isDisabled && !isActive) {
+              btn.addEventListener("click", () => {
+                currentPage = page;
+                renderPage();
+                newsGrid.scrollIntoView({ behavior: "smooth", block: "start" });
+              });
+            }
+            return btn;
+          };
+
+          paginationControls.appendChild(
+            createBtn("«", currentPage - 1, false, currentPage === 1),
+          );
+
+          for (let i = 1; i <= totalPages; i++) {
+            paginationControls.appendChild(
+              createBtn(i, i, i === currentPage, false),
+            );
+          }
+
+          paginationControls.appendChild(
+            createBtn("»", currentPage + 1, false, currentPage === totalPages),
+          );
+        }
+
+        function renderPage() {
+          const startIndex = (currentPage - 1) * itemsPerPage;
+          const endIndex = startIndex + itemsPerPage;
+          const pageItems = currentData.slice(startIndex, endIndex);
+
+          renderArticles(pageItems);
+          renderPagination();
+        }
+
+        function applyFilter() {
+          const searchTerm = searchInput.value.trim().toLowerCase();
+          const selectedCategory = categorySelect.value;
+          const selectedMonth = monthSelect.value;
+          const selectedYear = yearSelect.value;
+          const sortOrder = sortSelect.value;
+
+          const url = new URL(window.location);
+          searchTerm
+            ? url.searchParams.set("q", searchTerm)
+            : url.searchParams.delete("q");
+          selectedCategory
+            ? url.searchParams.set("category", selectedCategory)
+            : url.searchParams.delete("category");
+          selectedMonth
+            ? url.searchParams.set("month", selectedMonth)
+            : url.searchParams.delete("month");
+          selectedYear
+            ? url.searchParams.set("year", selectedYear)
+            : url.searchParams.delete("year");
+          sortOrder
+            ? url.searchParams.set("sort", sortOrder)
+            : url.searchParams.delete("sort");
+          // Sử dụng replaceState để không tạo entry mới trong lịch sử trình duyệt khi lọc
+          window.history.replaceState({}, "", url);
+
+          clearFilterButton.style.display =
+            searchTerm || selectedCategory || selectedMonth || selectedYear
+              ? "inline-block"
+              : "none";
+
+          let filteredArticles = window.newsData.filter((article) => {
+            const parts = article.date.split("/");
+            if (parts.length !== 3) return false;
+
+            // Lọc theo từ khóa
+            const searchMatch =
+              !searchTerm ||
+              article.title.toLowerCase().includes(searchTerm) ||
+              article.description.toLowerCase().includes(searchTerm) ||
+              (article.tags &&
+                article.tags.some((tag) =>
+                  tag.toLowerCase().includes(searchTerm),
+                ));
+
+            // Lọc theo chuyên mục
+            const categoryMatch =
+              !selectedCategory || article.category === selectedCategory;
+
+            // Lọc theo ngày tháng
+            const articleMonth = parseInt(parts[1], 10);
+            const articleYear = parseInt(parts[2], 10);
+            const monthMatch = !selectedMonth || articleMonth == selectedMonth;
+            const yearMatch = !selectedYear || articleYear == selectedYear;
+            return searchMatch && categoryMatch && monthMatch && yearMatch;
+          });
+
+          // Sắp xếp các bài viết đã lọc
+          filteredArticles.sort((a, b) => {
+            const dateA = parseDate(a.date);
+            const dateB = parseDate(b.date);
+            if (sortOrder === "asc") {
+              return dateA - dateB; // Cũ nhất trước
+            }
+            return dateB - dateA; // Mới nhất trước (mặc định)
+          });
+
+          currentData = filteredArticles;
+          currentPage = 1;
+          renderPage();
+        }
+
+        // --- Initialization: load from JSON ---
+        if (!newsGrid) return;
+
+        fetch("public/data/du-lieu-bai-viet.json")
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            window.newsData = data;
+
+            populateFilters();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialSearch = urlParams.get("q");
+            const initialCategory = urlParams.get("category");
+            const initialMonth = urlParams.get("month");
+            const initialYear = urlParams.get("year");
+            const initialSort = urlParams.get("sort");
+
+            if (initialSearch) searchInput.value = initialSearch;
+            if (initialCategory) categorySelect.value = initialCategory;
+            if (initialMonth) monthSelect.value = initialMonth;
+            if (initialYear) yearSelect.value = initialYear;
+            if (initialSort) sortSelect.value = initialSort;
+
+            applyFilter();
+
+            categorySelect.addEventListener("change", applyFilter);
+            searchInput.addEventListener("input", applyFilter);
+            filterButton.addEventListener("click", applyFilter);
+            sortSelect.addEventListener("change", applyFilter);
+          })
+          .catch(function(err) { console.error("Không thể tải dữ liệu bài viết:", err); });
+        // No need to add event listener for reset button, it's a link now.
+      });
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giao Hàng Nhanh - Đặt Lịch Giao Hàng</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="public/assets/css/styles.css" />
+  <link rel="stylesheet" href="public/assets/css/pages/dat-lich.css" />
+  </head>
+<body>
+  <div id="site-header"></div>
+
+  <div class="booking-container">
+    <!-- Step Indicator -->
+    <div class="step-indicator" id="step-indicator">
+      <div class="step-item active" id="ind-1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Liên hệ & Địa chỉ</div>
+      </div>
+      <div class="step-item" id="ind-2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Hàng hóa</div>
+      </div>
+      <div class="step-item" id="ind-3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Lịch trình & Gói cước</div>
+      </div>
+      <div class="step-item" id="ind-4">
+        <div class="step-circle">4</div>
+        <div class="step-label">Thanh toán</div>
+      </div>
+      <div class="step-item" id="ind-5">
+        <div class="step-circle">5</div>
+        <div class="step-label">Xác nhận</div>
+      </div>
+    </div>
+
+    <!-- ============== BƯỚC 1: Liên hệ & Địa chỉ ============== -->
+    <div class="booking-card active" id="step-1">
+      <div class="card-title"><i class="fas fa-address-card"></i> Bước 1: Thông tin Liên hệ & Địa chỉ</div>
+      <div class="step-error" id="error-step-1">
+        <i class="fas fa-exclamation-circle"></i> <span class="error-text"></span>
+      </div>
+
+      <div class="form-grid" style="margin-bottom: 24px;">
+        <div class="contact-box sender">
+          <div class="contact-box-title"><i class="fas fa-user-circle"></i> Người Gửi</div>
+          <div class="form-group"><label>Họ tên</label><input type="text" class="form-control" id="sender-name" placeholder="Nguyễn Văn A" /></div>
+          <div class="form-group" style="margin-bottom: 0;"><label>Số điện thoại</label><input type="tel" class="form-control" id="sender-phone" placeholder="09xxxxxxxx" /></div>
+        </div>
+        <div class="contact-box receiver">
+          <div class="contact-box-title"><i class="fas fa-user-check"></i> Người Nhận</div>
+          <div class="form-group"><label>Họ tên</label><input type="text" class="form-control" id="receiver-name" placeholder="Trần Thị B" /></div>
+          <div class="form-group" style="margin-bottom: 0;"><label>Số điện thoại</label><input type="tel" class="form-control" id="receiver-phone" placeholder="09xxxxxxxx" /></div>
+        </div>
+      </div>
+
+      <!-- Tìm kiếm địa chỉ -->
+      <div class="form-grid" style="margin-bottom: 12px;">
+        <div class="address-search-wrap">
+          <span class="address-search-label"><span class="address-tag tag-pickup">📍 Lấy hàng</span> Địa chỉ lấy hàng</span>
+          <input type="text" class="form-control" id="search-pickup" placeholder="Nhập địa chỉ, đường, quận..." autocomplete="off" />
+          <div class="suggestions-box" id="sug-pickup"></div>
+        </div>
+        <div class="address-search-wrap">
+          <span class="address-search-label"><span class="address-tag tag-delivery">🏁 Giao hàng</span> Địa chỉ giao hàng</span>
+          <input type="text" class="form-control" id="search-delivery" placeholder="Nhập địa chỉ, đường, quận..." autocomplete="off" />
+          <div class="suggestions-box" id="sug-delivery"></div>
+        </div>
+      </div>
+
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Hoặc kéo ghim trực tiếp trên bản đồ bên dưới.</p>
+      <div class="map-legend">
+        <div class="map-legend__item">
+          <span class="map-legend__dot map-legend__dot--pickup"></span>
+          <span>Ghim xanh: Điểm lấy hàng</span>
+        </div>
+        <div class="map-legend__item">
+          <span class="map-legend__dot map-legend__dot--delivery"></span>
+          <span>Ghim đỏ: Điểm giao hàng</span>
+        </div>
+      </div>
+      <div id="map"></div>
+      <div style="margin-top: 12px; margin-bottom: 24px;">
+        <span class="distance-badge" id="distance-badge" style="display: none;">
+          <i class="fas fa-route"></i> Khoảng cách: <span id="distance-km">0</span> km
+        </span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-next" id="btn-1-to-2">Tiếp theo: Hàng hóa <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- ============== BƯỚC 2: Hàng hóa ============== -->
+    <div class="booking-card" id="step-2">
+      <div class="card-title"><i class="fas fa-box-open"></i> Bước 2: Thông tin Hàng hóa</div>
+      <div class="step-error" id="error-step-2">
+        <i class="fas fa-exclamation-circle"></i> <span class="error-text"></span>
+      </div>
+
+      <div style="background: #f8fafc; border-radius: 12px; border: 1.5px solid #e2e8f0; padding: 20px;">
+        <div class="items-header">
+          <h3><i class="fas fa-boxes-stacked"></i> Danh sách hàng hóa</h3>
+          <button class="btn-add" id="btn-add-item"><i class="fas fa-plus"></i> Thêm món hàng</button>
+        </div>
+        <div id="items-list"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 2px solid #e2e8f0;">
+          <span style="font-size: 13px; color: #64748b;">Tổng trọng lượng tính cước:</span>
+          <span id="total-weight-display" style="font-size: 18px; font-weight: 800; color: #0a2a66;">0.0 kg</span>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top: 20px;">
+        <div class="form-group">
+          <label><i class="fas fa-hand-holding-dollar"></i> Giá trị thu hộ COD (₫)</label>
+          <input type="number" class="form-control" id="cod-value" value="0" placeholder="0" />
+          <span style="font-size: 11px; color: #64748b;">Phí COD > 1.000.000đ: 1.2%, tối thiểu 15.000đ</span>
+        </div>
+      </div>
+
+      <h3 style="font-size: 16px; font-weight: 800; color: #334155; margin-bottom: 12px;"><i class="fas fa-camera-retro"></i> Hình ảnh / Video gói hàng (Tùy chọn)</h3>
+      <div class="upload-split-grid">
+        <div class="upload-zone upload-zone--image" onclick="document.getElementById('image-upload').click()">
+          <i class="fas fa-camera" style="font-size: 36px; color: #94a3b8;"></i>
+          <p style="color: #64748b; margin: 8px 0 0;">Chụp hoặc gửi ảnh gói hàng</p>
+          <input type="file" accept="image/*" capture="environment" id="image-upload" style="display:none;" onchange="previewUpload('image')" />
+          <img id="preview-image" src="" alt="Xem trước ảnh gói hàng" />
+          <div class="upload-meta" id="image-upload-meta">Chưa có ảnh nào được chọn.</div>
+        </div>
+        <div class="upload-zone upload-zone--video" onclick="document.getElementById('video-upload').click()">
+          <i class="fas fa-video" style="font-size: 36px; color: #94a3b8;"></i>
+          <p style="color: #64748b; margin: 8px 0 0;">Gửi video quay gói hàng</p>
+          <input type="file" accept="video/*" capture="environment" id="video-upload" style="display:none;" onchange="previewUpload('video')" />
+          <video id="preview-video" controls preload="metadata"></video>
+          <div class="upload-meta" id="video-upload-meta">Chưa có video nào được chọn.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-note-sticky"></i> Ghi chú cho tài xế</label>
+        <textarea class="form-control" id="notes" placeholder="VD: Gọi trước khi đến, nhà cuối hẻm, hàng dễ vỡ..."></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-prev" onclick="goToStep(1)"><i class="fas fa-arrow-left"></i> Quay lại</button>
+        <button class="btn-next" id="btn-2-to-3">Tiếp theo: Lịch trình <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- ============== BƯỚC 3: Lịch trình ============== -->
+    <div class="booking-card" id="step-3">
+      <div class="card-title"><i class="fas fa-calendar-clock"></i> Bước 3: Lịch trình & Gói cước</div>
+      <div class="step-error" id="error-step-3">
+        <i class="fas fa-exclamation-circle"></i> <span class="error-text"></span>
+      </div>
+
+      <div class="delivery-mode-panel">
+        <div class="delivery-mode-panel__head">
+          <h3><i class="fas fa-sliders"></i> Chọn phương thức giao hàng</h3>
+          <p>Đặt lịch thường sẽ lọc gói theo thời gian bạn mong muốn. Giao Ngay Lập Tức sẽ chuyển sang chế độ điều phối realtime.</p>
+        </div>
+        <div class="option-group delivery-mode-group" id="delivery-mode-group">
+          <button type="button" class="option-btn active" data-mode="scheduled" id="delivery-mode-scheduled">
+            <i class="fas fa-calendar-check"></i>Đặt lịch thường
+          </button>
+          <button type="button" class="option-btn" data-mode="instant" id="delivery-mode-instant">
+            <i class="fas fa-bolt"></i>Giao Ngay Lập Tức
+          </button>
+        </div>
+        <input type="hidden" id="delivery-mode-val" value="scheduled" />
+      </div>
+
+      <div id="scheduled-flow">
+        <div class="form-grid">
+          <div class="form-group">
+            <label><i class="fas fa-calendar-day"></i> Ngày lấy hàng</label>
+            <input type="date" class="form-control" id="pickup-date" />
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-clock"></i> Khung giờ lấy hàng</label>
+            <select class="form-control" id="pickup-slot"></select>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top: 20px;">
+          <div class="form-group">
+            <label><i class="fas fa-calendar-check"></i> Ngày nhận mong muốn</label>
+            <input type="date" class="form-control" id="delivery-date" />
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-clock"></i> Khung giờ nhận mong muốn</label>
+            <select class="form-control" id="delivery-slot"></select>
+            <span id="delivery-target-hint" style="font-size: 11px; color: #64748b;">Đây là mốc người nhận muốn nhận hàng. Hệ thống dùng mốc này để đối chiếu thời gian giao dự kiến và ẩn các gói không kịp.</span>
+          </div>
+        </div>
+
+        <div class="eta-panel is-hidden" id="turnaround-panel">
+          <p style="font-size: 14px; font-weight: 700; color: #7c2d12; margin: 0 0 8px;">
+            <i class="fas fa-stopwatch"></i> Khoảng thời gian từ lấy đến giao:
+          </p>
+          <div id="turnaround-display" style="font-size: 22px; font-weight: 800; color: #9a3412;">
+            —
+          </div>
+          <p id="turnaround-hint" style="font-size: 12px; color: #64748b; margin: 6px 0 0;">
+            Hệ thống dùng khoảng này để kiểm tra gói nào giao kịp và gói nào phải vô hiệu hóa.
+          </p>
+        </div>
+
+        <div class="schedule-estimate is-hidden" id="storage-note-panel">
+          <strong><i class="fas fa-box-archive"></i> Gợi ý lưu kho:</strong>
+          <span id="storage-note-text">Nếu khách cần giao xa ngày lấy, hệ thống có thể lưu kho và giao đúng hẹn.</span>
+        </div>
+      </div>
+
+      <div class="instant-flow is-hidden" id="instant-flow">
+        <div class="instant-flow__hero">
+          <div>
+            <div class="instant-flow__eyebrow">Mode giao tức thời</div>
+            <h3>Đi lấy là đi giao ngay</h3>
+            <p>Hệ thống sẽ lấy thời điểm hiện tại làm mốc điều phối, tự cộng phụ phí giờ đêm nếu có và kiểm tra thời tiết tự động.</p>
+          </div>
+          <div class="instant-flow__status" id="instant-driver-status">
+            <i class="fas fa-satellite-dish"></i>
+            <span>Đang tìm tài xế gần nhất</span>
+          </div>
+        </div>
+
+        <div class="instant-flow__grid">
+          <div class="instant-flow__metric">
+            <span class="instant-flow__label">Lấy hàng</span>
+            <strong id="instant-pickup-status">Ngay bây giờ</strong>
+            <small id="instant-pickup-note">Hệ thống lấy mốc thời gian hiện tại để điều phối.</small>
+          </div>
+          <div class="instant-flow__metric">
+            <span class="instant-flow__label">Giao hàng</span>
+            <strong id="instant-delivery-status">Giao ngay sau khi lấy xong</strong>
+            <small id="instant-delivery-note">Thời gian giao dự kiến sẽ cập nhật theo tuyến đường và tải trọng.</small>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="vehicle-choice-panel is-hidden"
+        id="weather-surcharge-panel"
+        style="margin-top: 16px;"
+      >
+        <h3><i class="fas fa-cloud-rain"></i> Phụ phí thời tiết tự động</h3>
+        <p id="weather-surcharge-desc">
+          Hệ thống đang kiểm tra thời tiết tại điểm lấy hàng để áp dụng phụ phí phù hợp.
+        </p>
+        <div class="weather-surcharge-summary">
+          <span class="weather-surcharge-badge" id="weather-surcharge-badge">Đang kiểm tra</span>
+          <span class="weather-surcharge-meta" id="weather-surcharge-meta">OpenWeatherMap sẽ được dùng nếu đã cấu hình API key.</span>
+        </div>
+        <span
+          id="weather-surcharge-hint"
+          style="display: block; margin-top: 8px; font-size: 11px; color: #64748b;"
+        >
+          Khách hàng không cần chọn tay. Nếu hệ thống chưa lấy được dữ liệu thời tiết, điều phối sẽ xác nhận bổ sung khi cần. Mức đang hiển thị là giá tham khảo.
+        </span>
+      </div>
+
+      <div class="vehicle-choice-panel">
+        <h3><i class="fas fa-truck-ramp-box"></i> Phương tiện giao hàng</h3>
+        <p>
+          Hệ thống sẽ tự gợi ý theo cân nặng và kích thước. Bạn vẫn có thể đổi
+          lại phương tiện theo nhu cầu, giá cước sẽ cập nhật ngay.
+        </p>
+        <select class="form-control" id="vehicle-choice">
+          <option value="auto">Để hệ thống tự đề xuất</option>
+          <option value="xe_may">Xe máy</option>
+          <option value="xe_loi">Xe lôi / xe ba gác</option>
+          <option value="xe_ban_tai">Xe bán tải / xe van</option>
+          <option value="xe_tai">Xe tải nhẹ</option>
+        </select>
+      </div>
+
+      <div id="service-list">
+        <div class="quote-loading"><i class="fas fa-spinner fa-spin"></i> Đang tính cước phí...</div>
+      </div>
+
+      <div class="eta-panel is-hidden" id="eta-panel">
+        <p style="font-size: 14px; font-weight: 700; color: #0369a1; margin: 0 0 8px;">
+          <i class="fas fa-clock"></i> Thời gian giao dự kiến sau khi chọn gói:
+        </p>
+        <div id="eta-display" style="font-size: 22px; font-weight: 800; color: #0a2a66;">
+          —
+        </div>
+        <p style="font-size: 12px; color: #64748b; margin: 6px 0 0;">
+          Đây là thời gian dự kiến tính từ lúc tài xế bắt đầu lấy hàng. Hệ thống sẽ đối chiếu với mốc nhận mong muốn để báo mức phù hợp. Cước hiển thị ở bước này là giá tham khảo trước khi xác nhận đơn.
+        </p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-prev" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i> Quay lại</button>
+        <button class="btn-next" id="btn-3-to-4">Tiếp theo: Thanh toán <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- ============== BƯỚC 4: Thanh toán ============== -->
+    <div class="booking-card" id="step-4">
+      <div class="card-title"><i class="fas fa-wallet"></i> Bước 4: Thanh toán</div>
+      <div class="step-error" id="error-step-4">
+        <i class="fas fa-exclamation-circle"></i> <span class="error-text"></span>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #334155; margin-bottom: 12px;"><i class="fas fa-user-tag"></i> Người trả cước</h3>
+        <div class="option-group" id="payer-group">
+          <div class="option-btn active" data-val="gui" onclick="selectOption('payer-group', this)">
+            <i class="fas fa-paper-plane"></i>Người Gửi
+          </div>
+          <div class="option-btn" data-val="nhan" onclick="selectOption('payer-group', this)">
+            <i class="fas fa-hand-holding-box"></i>Người Nhận
+          </div>
+        </div>
+        <input type="hidden" id="payer-val" value="gui" />
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #334155; margin-bottom: 12px;"><i class="fas fa-wallet"></i> Phương thức thanh toán</h3>
+        <div class="option-group" id="payment-group">
+          <div class="option-btn active" data-val="tien_mat" onclick="selectOption('payment-group', this)">
+            <i class="fas fa-money-bill"></i>Tiền mặt
+          </div>
+          <div class="option-btn" data-val="chuyen_khoan" onclick="selectOption('payment-group', this)">
+            <i class="fas fa-qrcode"></i>Chuyển khoản
+          </div>
+        </div>
+        <input type="hidden" id="payment-val" value="tien_mat" />
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-prev" onclick="goToStep(3)"><i class="fas fa-arrow-left"></i> Quay lại</button>
+        <button class="btn-next orange" id="btn-4-to-5" disabled>Xem lại đơn hàng <i class="fas fa-check"></i></button>
+      </div>
+    </div>
+
+    <!-- ============== BƯỚC 5: Xác nhận ============== -->
+    <div class="booking-card" id="step-5">
+      <div class="card-title"><i class="fas fa-clipboard-check"></i> Bước 5: Xác nhận Đơn hàng</div>
+      <div class="step-error" id="error-step-5">
+        <i class="fas fa-exclamation-circle"></i> <span class="error-text"></span>
+      </div>
+      
+      <div class="review-section">
+        <h4><i class="fas fa-address-book"></i> Thông tin Liên hệ</h4>
+        <div class="rv-row"><span class="rv-label">Người gửi:</span><span class="rv-val" id="rv-sender"></span></div>
+        <div class="rv-row"><span class="rv-label">Người nhận:</span><span class="rv-val" id="rv-receiver"></span></div>
+        <div class="rv-row"><span class="rv-label">Lấy hàng tại:</span><span class="rv-val" id="rv-pickup-addr"></span></div>
+        <div class="rv-row"><span class="rv-label">Giao hàng đến:</span><span class="rv-val" id="rv-delivery-addr"></span></div>
+        <div class="rv-row"><span class="rv-label">Khoảng cách:</span><span class="rv-val" id="rv-distance"></span></div>
+      </div>
+
+      <div class="review-section">
+        <h4><i class="fas fa-boxes-stacked"></i> Hàng hóa & Đóng gói</h4>
+        <div id="rv-items-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;"></div>
+        <div class="rv-row" style="font-weight:700; border-top: 2px solid #e2e8f0; padding-top: 10px;">
+          <span class="rv-label">Giá trị thu hộ (COD):</span>
+          <span class="rv-val" id="rv-cod"></span>
+        </div>
+        <div class="rv-row"><span class="rv-label">Ghi chú vận chuyển:</span><span class="rv-val" id="rv-notes"></span></div>
+      </div>
+
+      <div class="review-section">
+        <h4><i class="fas fa-photo-film"></i> Media đính kèm</h4>
+        <p class="review-upload-empty" id="rv-upload-empty">Chưa có ảnh hoặc video nào được chọn.</p>
+        <div class="review-upload-grid" id="rv-upload-list"></div>
+      </div>
+
+      <div class="review-section">
+        <h4><i class="fas fa-calendar-check"></i> Lịch trình</h4>
+        <div class="rv-row"><span class="rv-label">Lấy hàng:</span><span class="rv-val" id="rv-pickup-time"></span></div>
+        <div class="rv-row"><span class="rv-label">Mốc nhận mong muốn:</span><span class="rv-val" id="rv-delivery-deadline"></span></div>
+        <div class="rv-row"><span class="rv-label">Thời gian giao dự kiến:</span><span class="rv-val" id="rv-eta"></span></div>
+      </div>
+
+      <div class="review-section">
+        <h4><i class="fas fa-receipt"></i> Chi phí</h4>
+        <div id="rv-price-breakdown"></div>
+      </div>
+
+      <div class="rv-total-row" id="rv-total-row">
+        <span>Tổng thanh toán</span>
+        <span id="rv-total" style="font-size: 22px;"></span>
+      </div>
+      <p style="margin-top: 10px; font-size: 12px; color: #64748b;">
+        Tổng trên là giá tham khảo theo dữ liệu hiện có. Điều phối sẽ đối chiếu lại thời tiết, thời gian thực tế và phương tiện trước khi chốt đơn.
+      </p>
+
+      <div class="btn-row">
+        <button class="btn-prev" onclick="goToStep(4)"><i class="fas fa-arrow-left"></i> Quay lại</button>
+        <button class="btn-next orange" id="btn-submit-order" style="font-size: 17px; padding: 14px 36px;" onclick="submitOrder()">
+          <i class="fas fa-paper-plane"></i> Đặt Đơn Ngay!
+        </button>
+      </div>
+    </div>
+  </div><!-- end booking-container -->
+
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="public/assets/js/pricing-data.js"></script>
+  <script src="public/assets/js/shared-layout.js"></script>
+  <script src="public/assets/js/main-core.js"></script>
+  <script src="public/assets/js/dat-lich.js"></script>
+</body>
+</html>
+

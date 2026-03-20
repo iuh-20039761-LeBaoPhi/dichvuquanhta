@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <link rel="icon" type="image/x-icon" href="public/assets/images/favicon.ico" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tra đơn hàng | Giao Hàng Nhanh</title>
+    <meta
+      name="description"
+      content="Tra cứu trạng thái đơn hàng và theo dõi hành trình vận chuyển với công cụ tra đơn hàng của Giao Hàng Nhanh."
+    />
+    <link rel="stylesheet" href="public/assets/css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div id="site-header"></div>
+
+    <section class="subpage-hero subpage-hero--tracking">
+      <div class="container">
+        <div class="subpage-hero__content">
+          <p class="subpage-hero__badge">Tra đơn hàng</p>
+          <h1 class="subpage-hero__title">
+            Theo dõi hành trình đơn hàng trên một trang riêng
+          </h1>
+          <p class="subpage-hero__desc">
+            Nhập mã vận đơn để xem trạng thái hiện tại, các mốc xử lý và chủ
+            động kiểm tra khi đơn có phát sinh.
+          </p>
+          <div class="subpage-hero__actions">
+            <a href="#home-tracking" class="btn-primary">Tra đơn ngay</a>
+            <a href="huong-dan-dat-hang.html#theo-doi" class="btn-secondary"
+              >Xem hướng dẫn theo dõi</a
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="home-tracking">
+      <div class="container">
+        <h2 class="section-title">Tra cứu hành trình đơn hàng</h2>
+        <p class="section-desc">
+          Nhập mã vận đơn để theo dõi tình trạng đơn hàng của bạn
+        </p>
+
+        <form class="tracking-form" onsubmit="trackOrder(event, 'standard')">
+          <input
+            type="text"
+            id="standard-code"
+            placeholder="Nhập mã đơn hàng..."
+            required
+          />
+          <button type="submit" class="btn-primary">Tra cứu</button>
+        </form>
+        <div id="loading-spinner-standard" class="spinner"></div>
+        <div id="result-standard"></div>
+      </div>
+    </section>
+
+    <section class="process-section">
+      <div class="container">
+        <h2 class="section-title">Cần chuẩn bị gì trước khi tra đơn?</h2>
+        <div class="service-grid">
+          <article class="service-card">
+            <div class="service-card-head">
+              <div class="service-card-icon">1</div>
+              <h3>Lấy đúng mã đơn</h3>
+            </div>
+            <p class="service-card-slogan">
+              Mã vận đơn thường nằm trong xác nhận đơn hoặc lịch sử đặt hàng.
+            </p>
+            <ul class="service-card-details">
+              <li><strong>Người gửi:</strong> Xem tại tài khoản hoặc phiếu gửi.</li>
+              <li><strong>Người nhận:</strong> Xem trong SMS/Zalo hoặc tin nhắn từ shop.</li>
+              <li><strong>Lưu ý:</strong> Kiểm tra kỹ số 0, chữ O, số 1 và chữ I.</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <div class="service-card-head">
+              <div class="service-card-icon">2</div>
+              <h3>Hiểu các trạng thái chính</h3>
+            </div>
+            <p class="service-card-slogan">
+              Đọc đúng trạng thái sẽ giúp bạn xử lý nhanh hơn khi đơn bị chậm.
+            </p>
+            <ul class="service-card-details">
+              <li><strong>Chờ xử lý:</strong> Đơn mới tạo, chưa lấy hàng.</li>
+              <li><strong>Đang luân chuyển:</strong> Hàng đang đi giữa các điểm trung chuyển.</li>
+              <li><strong>Đang giao:</strong> Đơn đang ở chặng cuối đến người nhận.</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <div class="service-card-head">
+              <div class="service-card-icon">3</div>
+              <h3>Khi nào cần liên hệ hỗ trợ?</h3>
+            </div>
+            <p class="service-card-slogan">
+              Chủ động liên hệ khi đơn đứng lâu bất thường hoặc cần đổi kế hoạch.
+            </p>
+            <ul class="service-card-details">
+              <li><strong>Đơn đứng lâu:</strong> Không đổi trạng thái trong thời gian dài.</li>
+              <li><strong>Sai thông tin:</strong> Cần kiểm tra lại địa chỉ hoặc số điện thoại.</li>
+              <li><strong>Đơn chờ xử lý:</strong> Có thể hủy sớm trước khi lấy hàng.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="section-title">Muốn xem chi tiết hơn trong tài khoản?</h2>
+      <p class="section-desc">
+        Đăng nhập để theo dõi thêm lịch sử đơn, COD và các thông tin xử lý liên
+        quan đến đơn hàng của bạn.
+      </p>
+      <div class="hero-btns centered-btns">
+        <a href="dang-nhap.html" class="btn-primary">Đăng nhập</a>
+        <a href="huong-dan-dat-hang.html" class="btn-secondary"
+          >Xem hướng dẫn người dùng</a
+        >
+      </div>
+    </section>
+
+    <div id="site-footer"></div>
+
+    <script src="public/assets/js/shared-layout.js"></script>
+    <script>
+      window.isLoggedIn = false;
+      window.apiBasePath = "";
+    </script>
+    <script src="public/assets/js/main.js" defer></script>
+  </body>
+</html>
+

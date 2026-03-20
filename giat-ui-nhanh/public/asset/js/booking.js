@@ -278,6 +278,7 @@ function initBookingModal() {
 
   const priceInput = document.getElementById("priceContact");
   const shipInput = document.getElementById("ship");
+  const shippingSurchargeInput = document.getElementById("shippingSurcharge");
   const totalInput = document.getElementById("total");
 
   // ❗ nếu chưa load xong modal thì thoát
@@ -285,6 +286,10 @@ function initBookingModal() {
 
   let transportFee = 0;
   shipInput.value = transportFee.toLocaleString("vi-VN");
+  if (shippingSurchargeInput) {
+    shippingSurchargeInput.readOnly = true;
+    shippingSurchargeInput.value = "0";
+  }
 
   let services = [];
 
@@ -411,6 +416,9 @@ function initBookingModal() {
       priceInput.value = "";
       shipInput.value = "";
       totalInput.value = "";
+      if (shippingSurchargeInput) {
+        shippingSurchargeInput.value = "0";
+      }
       if (quantityInput) quantityInput.value = "1";
       return;
     }
@@ -442,7 +450,6 @@ function initBookingModal() {
 
     const servicePrice = Number(service.price || 0);
     priceInput.value = servicePrice.toLocaleString("vi-VN");
-    shipInput.value = transportFee.toLocaleString("vi-VN");
     renderCheckboxList(workItemsList, service.work_items || [], "work_items");
     renderCheckboxList(
       chemicalsList,
@@ -479,11 +486,13 @@ function initBookingModal() {
     if (!option.value) {
       shipInput.value = "";
       totalInput.value = "";
+      if (shippingSurchargeInput) {
+        shippingSurchargeInput.value = "0";
+      }
       return;
     }
 
     transportFee = Number(option.dataset.price || 0);
-    shipInput.value = transportFee.toLocaleString("vi-VN");
 
     calculate();
   });
@@ -506,7 +515,37 @@ function initBookingModal() {
       quantityInput.value = String(normalizedQuantity);
     }
 
-    const total = price * quantity + transportFee;
+    const totalWeight =
+      Number.isFinite(quantity) && quantity > 0 ? quantity : 0;
+    const isKgUnit = kgBox.style.display === "block";
+    const serviceAmount = isKgUnit
+      ? price + Math.max(0, totalWeight - 1) * 10000
+      : price * totalWeight;
+
+    priceInput.value = Math.round(serviceAmount).toLocaleString("vi-VN");
+    const distanceKm = 1;
+    const selectedTransportName = String(
+      transportOptionSelect.options[transportOptionSelect.selectedIndex]
+        ?.value || "",
+    )
+      .toLowerCase()
+      .trim();
+    const extraTransportFee =
+      totalWeight >= 50 && selectedTransportName !== "tự lấy" ? 5000 : 0;
+    const effectiveTransportFee = transportFee + extraTransportFee;
+    const shippingSurcharge =
+      (distanceKm * effectiveTransportFee * (totalWeight / 20)) / 4;
+    const normalizedShippingSurcharge = Math.round(shippingSurcharge);
+
+    shipInput.value = effectiveTransportFee.toLocaleString("vi-VN");
+    if (shippingSurchargeInput) {
+      shippingSurchargeInput.value = String(normalizedShippingSurcharge);
+    }
+
+    const total =
+      Math.round(serviceAmount) +
+      effectiveTransportFee +
+      normalizedShippingSurcharge;
     totalInput.value = total.toLocaleString("vi-VN");
   }
 
@@ -587,6 +626,8 @@ function initBookingConfirmFlow() {
     data.quantity = quantity;
     data.price = document.getElementById("priceContact")?.value || "";
     data.ship = document.getElementById("ship")?.value || "";
+    data.shipping_surcharge =
+      document.getElementById("shippingSurcharge")?.value || "0";
     data.total = document.getElementById("total")?.value || "";
     data.work_items = selectedWorkItems.join(", ");
     data.support_chemicals = selectedChemicals.join(", ");
@@ -602,6 +643,9 @@ function initBookingConfirmFlow() {
         quantity: data.quantity,
         price: data.price,
         ship: data.ship,
+        shippingSurcharge: Number(data.shipping_surcharge || 0).toLocaleString(
+          "vi-VN",
+        ),
         total: data.total,
         workItems: data.work_items,
         chemicals: data.support_chemicals,
@@ -620,6 +664,7 @@ function initBookingConfirmFlow() {
       confirmQuantity: preview.quantity,
       confirmPrice: preview.price,
       confirmShip: preview.ship,
+      confirmShippingSurcharge: preview.shippingSurcharge,
       confirmTotal: preview.total,
       confirmWorkItems: preview.workItems,
       confirmChemicals: preview.chemicals,

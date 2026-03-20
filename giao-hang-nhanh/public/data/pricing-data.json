@@ -1,0 +1,328 @@
+{
+  "BANGGIA": {
+    "cungtinh": {
+      "tieuchuan": {
+        "coban": 22000,
+        "tieptheo": 3000,
+        "thoigian": "6h-12h"
+      },
+      "nhanh": {
+        "coban": 28000,
+        "tieptheo": 4000,
+        "thoigian": "3h-6h"
+      },
+      "hoatoc": {
+        "coban": 35000,
+        "tieptheo": 5000,
+        "thoigian": "2h"
+      }
+    },
+    "lientinh": {
+      "tieuchuan": {
+        "coban": 35000,
+        "tieptheo": 8000,
+        "thoigian": "2-3 ngày"
+      },
+      "nhanh": {
+        "coban": 45000,
+        "tieptheo": 10000,
+        "thoigian": "1-2 ngày"
+      },
+      "hoatoc": {
+        "coban": 55000,
+        "tieptheo": 12000,
+        "thoigian": "1-2 ngày"
+      }
+    },
+    "phuthu": {
+      "thuho": {
+        "nguong": 1000000,
+        "kieu": 0.012,
+        "toithieu": 15000
+      },
+      "baohiem": {
+        "nguong": 1000000,
+        "kieu": 0.005,
+        "toithieu": 5000
+      }
+    }
+  },
+  "BAOGIACHITIET": {
+    "thanhpho": {
+      "TP. Hồ Chí Minh": [
+        "Quận 1",
+        "Quận 3",
+        "Quận 4",
+        "Quận 5",
+        "Quận 6",
+        "Quận 7",
+        "Quận 8",
+        "Quận 10",
+        "Quận 11",
+        "Quận 12",
+        "Bình Thạnh",
+        "Tân Bình",
+        "Tân Phú",
+        "Gò Vấp",
+        "Phú Nhuận",
+        "Bình Tân",
+        "TP. Thủ Đức",
+        "Hóc Môn",
+        "Bình Chánh",
+        "Nhà Bè",
+        "Cần Giờ",
+        "Củ Chi"
+      ],
+      "Hà Nội": [
+        "Ba Đình",
+        "Hoàn Kiếm",
+        "Hai Bà Trưng",
+        "Đống Đa",
+        "Cầu Giấy",
+        "Thanh Xuân",
+        "Hoàng Mai",
+        "Long Biên",
+        "Nam Từ Liêm",
+        "Bắc Từ Liêm",
+        "Hà Đông",
+        "Tây Hồ",
+        "Sóc Sơn",
+        "Đông Anh",
+        "Gia Lâm",
+        "Thanh Trì",
+        "Hoài Đức",
+        "Thường Tín",
+        "Quốc Oai",
+        "Phúc Thọ"
+      ],
+      "Đà Nẵng": [
+        "Hải Châu",
+        "Thanh Khê",
+        "Sơn Trà",
+        "Ngũ Hành Sơn",
+        "Liên Chiểu",
+        "Cẩm Lệ",
+        "Hòa Vang",
+        "Hoàng Sa"
+      ],
+      "Hải Phòng": [
+        "Hồng Bàng",
+        "Lê Chân",
+        "Ngô Quyền",
+        "Kiến An",
+        "Hải An",
+        "Đồ Sơn",
+        "Dương Kinh",
+        "An Dương",
+        "An Lão",
+        "Kiến Thụy",
+        "Thủy Nguyên",
+        "Tiên Lãng",
+        "Vĩnh Bảo",
+        "Cát Hải",
+        "Bạch Long Vĩ"
+      ],
+      "Cần Thơ": [
+        "Ninh Kiều",
+        "Bình Thủy",
+        "Cái Răng",
+        "Ô Môn",
+        "Thốt Nốt",
+        "Phong Điền",
+        "Cờ Đỏ",
+        "Vĩnh Thạnh",
+        "Thới Lai"
+      ]
+    },
+    "noidia": {
+      "danhsachthanhpho": [
+        "TP. Hồ Chí Minh",
+        "Hà Nội",
+        "Đà Nẵng",
+        "Hải Phòng",
+        "Cần Thơ"
+      ],
+      "tenvung": {
+        "cung_quan": "Nội quận/huyện",
+        "noi_thanh": "Nội thành",
+        "lien_tinh": "Liên tỉnh"
+      },
+      "dichvu": {
+        "tieuchuan": {
+          "ten": "Tiêu Chuẩn",
+          "thoigian": {
+            "cung_quan": "4-6 giờ",
+            "noi_thanh": "8-12 giờ",
+            "lien_tinh": "1-3 ngày"
+          },
+          "coban": {
+            "cungquan": 18000,
+            "khacquan": 26000,
+            "lientinh": 39000
+          },
+          "buoctiep": 3500,
+          "heso_dichvu": 1,
+          "ap_dung_phi_dich_vu": false
+        },
+        "nhanh": {
+          "ten": "Giao Nhanh",
+          "thoigian": {
+            "cung_quan": "2-3 giờ",
+            "noi_thanh": "4-8 giờ",
+            "lien_tinh": "18-30 giờ"
+          },
+          "coban": {
+            "cungquan": 24000,
+            "khacquan": 34000,
+            "lientinh": 49000
+          },
+          "buoctiep": 4500,
+          "heso_dichvu": 1.25,
+          "ap_dung_phi_dich_vu": false
+        },
+        "hoatoc": {
+          "ten": "Hỏa Tốc",
+          "thoigian": {
+            "cung_quan": "1-2 giờ",
+            "noi_thanh": "2-4 giờ",
+            "lien_tinh": "12-24 giờ"
+          },
+          "coban": {
+            "cungquan": 32000,
+            "khacquan": 45000,
+            "lientinh": 65000
+          },
+          "buoctiep": 6000,
+          "heso_dichvu": 1.5,
+          "ap_dung_phi_dich_vu": false
+        },
+        "laptuc": {
+          "ten": "Giao Ngay Lập Tức",
+          "thoigian": {
+            "cung_quan": "30-60 phút",
+            "noi_thanh": "60-120 phút",
+            "lien_tinh": "2-6 giờ"
+          },
+          "coban": {
+            "cungquan": 42000,
+            "khacquan": 58000,
+            "lientinh": 82000
+          },
+          "buoctiep": 8000,
+          "heso_dichvu": 1.85,
+          "ap_dung_phi_dich_vu": true
+        }
+      },
+      "phidichvu": {
+        "giaongaylaptuc": {
+          "ghichu": "Phụ phí Giao Ngay Lập Tức là giá tham khảo. Hệ thống tách riêng phụ phí thời gian và phụ phí thời tiết để khách dễ theo dõi.",
+          "thoigian": {
+            "sang_08_10": {
+              "ten": "Khung bình thường 08:00 - 10:00",
+              "batdau": "08:00",
+              "ketthuc": "10:00",
+              "phicodinh": 0,
+              "heso": 1
+            },
+            "sang_10_12": {
+              "ten": "Khung bình thường 10:00 - 12:00",
+              "batdau": "10:00",
+              "ketthuc": "12:00",
+              "phicodinh": 0,
+              "heso": 1
+            },
+            "trua_12_14": {
+              "ten": "Khung giờ bận 12:00 - 14:00",
+              "batdau": "12:00",
+              "ketthuc": "14:00",
+              "phicodinh": 5000,
+              "heso": 1
+            },
+            "chieu_14_16": {
+              "ten": "Khung bình thường 14:00 - 16:00",
+              "batdau": "14:00",
+              "ketthuc": "16:00",
+              "phicodinh": 0,
+              "heso": 1
+            },
+            "chieu_16_18": {
+              "ten": "Khung giờ bận 16:00 - 18:00",
+              "batdau": "16:00",
+              "ketthuc": "18:00",
+              "phicodinh": 5000,
+              "heso": 1
+            },
+            "toi_18_20": {
+              "ten": "Giờ cao điểm 18:00 - 20:00",
+              "batdau": "18:00",
+              "ketthuc": "20:00",
+              "phicodinh": 15000,
+              "heso": 1.08
+            },
+            "dem_20_22": {
+              "ten": "Tối muộn 20:00 - 22:00",
+              "batdau": "20:00",
+              "ketthuc": "22:00",
+              "phicodinh": 25000,
+              "heso": 1.15
+            },
+            "dem_22_06": {
+              "ten": "Đêm khuya 22:00 - 06:00",
+              "batdau": "22:00",
+              "ketthuc": "06:00",
+              "phicodinh": 30000,
+              "heso": 1.18
+            }
+          },
+          "thoitiet": {
+            "macdinh": {
+              "ten": "Điều kiện bình thường",
+              "phicodinh": 0,
+              "heso": 1
+            },
+            "muanhe": {
+              "ten": "Mưa nhẹ / đường đông",
+              "phicodinh": 10000,
+              "heso": 1.03
+            },
+            "muato": {
+              "ten": "Mưa lớn / thời tiết xấu",
+              "phicodinh": 20000,
+              "heso": 1.08
+            }
+          }
+        }
+      },
+      "philoaihang": {
+        "thuong": 0,
+        "giatricao": 15000,
+        "devo": 9000,
+        "muihoi": 5000,
+        "chatlong": 0,
+        "pinlithium": 14000,
+        "donglanh": 13000,
+        "congkenh": 18000
+      },
+      "motaloaihang": {
+        "thuong": "Hàng thông thường, không phụ phí đặc biệt.",
+        "giatricao": "Cần bảo vệ đặc biệt, theo dõi chặt chẽ, quy trình bàn giao nghiêm ngặt.",
+        "devo": "Đóng gói cẩn thận bằng mút/bọt xốp, xử lý nhẹ nhàng trong suốt hành trình.",
+        "muihoi": "Cách ly riêng biệt để không ảnh hưởng hàng xung quanh, bao kín đặc biệt.",
+        "chatlong": "Hộp chịu lực, lớp chống rò rỉ, tăng 10% phí do yêu cầu xử lý riêng.",
+        "pinlithium": "Tuân thủ quy định an toàn vận chuyển pin (phân loại, báo cáo theo tiêu chuẩn).",
+        "donglanh": "Xe lạnh chuyên dụng, duy trì nhiệt độ bảo quản suốt hành trình.",
+        "congkenh": "Phương tiện đặc biệt chịu tải, quy trình bốc xếp riêng."
+      },
+      "cauhinh_khoangcach": {
+        "km_coban": 3,
+        "gia_coban": 20000,
+        "gia_tiep_theo_km": 5000,
+        "nguong_xa": 50,
+        "gia_xa": 3500,
+        "can_mien_phi": 2.0,
+        "he_so_the_tich": 6000,
+        "da_gom_vat": true
+      }
+    }
+  }
+}

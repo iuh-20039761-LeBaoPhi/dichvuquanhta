@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <link rel="icon" type="image/x-icon" href="public/assets/images/favicon.ico" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hướng dẫn đặt đơn chuyên nghiệp | Giao Hàng Nhanh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="public/assets/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #0a2a66;
+      --secondary: #f97316;
+      --accent: #0ea5e9;
+      --bg-glass: rgba(255, 255, 255, 0.85);
+      --border-glass: rgba(255, 255, 255, 0.3);
+    }
+
+    body {
+      background: linear-gradient(135deg, #f0f4f8 0%, #e5e7eb 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .guide-container {
+      max-width: 1000px;
+      margin: 120px auto 60px;
+      padding: 0 20px;
+    }
+
+    .hero-section {
+      text-align: center;
+      margin-bottom: 50px;
+      padding: 40px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      border: 1px solid var(--border-glass);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    .hero-section h1 {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+
+    .step-nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 25px;
+    }
+
+    .step-nav-item {
+      padding: 10px 20px;
+      background: white;
+      border-radius: 50px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .step-nav-item:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .guide-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 40px;
+      border: 1px solid var(--border-glass);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .section-number {
+      width: 45px;
+      height: 45px;
+      background: var(--primary);
+      color: white;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .logic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .logic-item {
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      border-left: 4px solid var(--accent);
+      transition: all 0.3s ease;
+    }
+
+    .logic-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .logic-item i {
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+
+    .logic-item h4 {
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #1e293b;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .feature-list li {
+      margin-bottom: 12px;
+      padding-left: 30px;
+      position: relative;
+    }
+
+    .feature-list li::before {
+      content: '\f058';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      color: #10b981;
+    }
+
+    .pro-tip {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+      padding: 25px;
+      border-radius: 16px;
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .pro-tip i {
+      font-size: 32px;
+      color: #fbbf24;
+    }
+
+    .service-badge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .s-badge {
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .s-badge.std { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    .s-badge.fast { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .s-badge.express { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .s-badge.instant { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+
+    @media (max-width: 768px) {
+      .hero-section { padding: 30px 20px; }
+      .hero-section h1 { font-size: 28px; }
+      .guide-card { padding: 25px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <div class="guide-container">
+    <header class="hero-section">
+      <h1>Hướng dẫn sử dụng Dịch vụ Vận chuyển</h1>
+      <p>Hệ thống đặt đơn thông minh, tính cước minh bạch và theo dõi hành trình thời gian thực dành cho khách hàng cá nhân.</p>
+      
+      <nav class="step-nav">
+        <a href="#quy-trinh" class="step-nav-item">Quy trình 5 Bước</a>
+        <a href="#nghiep-vu" class="step-nav-item">Nghiệp vụ tính cước</a>
+        <a href="#goi-cuoc" class="step-nav-item">Các gói dịch vụ</a>
+        <a href="#luu-y" class="step-nav-item">Lưu ý an toàn</a>
+      </nav>
+    </header>
+
+    <!-- QUY TRÌNH 5 BƯỚC -->
+    <section id="quy-trinh" class="guide-card">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <h2 class="section-title">Luồng đặt đơn 5 bước thông minh</h2>
+      </div>
+      <p>Giao diện đặt đơn được tối ưu giúp bạn hoàn tất yêu cầu chỉ trong vài phút:</p>
+      
+      <div class="logic-grid">
+        <div class="logic-item">
+          <i class="fas fa-map-location-dot"></i>
+          <h4>B1: Liên hệ & Địa chỉ</h4>
+          <p>Nhập địa chỉ gửi/nhận hoặc <strong>ghim trực tiếp trên bản đồ</strong>. Hệ thống tự động tính khoảng cách chính xác theo lộ trình thực tế (Km).</p>
+        </div>
+        <div class="logic-item">
+          <i class="fas fa-box-open"></i>
+          <h4>B2: Thông tin hàng hóa</h4>
+          <p>Thêm danh sách kiện hàng. Nhập kích thước để hệ thống tính <strong>Trọng lượng quy đổi</strong> và gợi ý loại xe (Xe máy, Bán tải, Xe tải).</p>
+        </div>
+        <div class="logic-item">
+          <i class="fas fa-clock"></i>
+          <h4>B3: Lịch trình & Gói cước</h4>
+          <p>Chọn thời gian lấy hàng và gói cước tương ứng. Đối chiếu ETA (thời gian dự kiến) để đảm bảo hàng đến kịp mốc mong muốn.</p>
+        </div>
+        <div class="logic-item">
+          <i class="fas fa-wallet"></i>
+          <h4>B4: Thanh toán</h4>
+          <p>Lựa chọn người trả cước (Người gửi/Người nhận) và phương thức thanh toán linh hoạt (Tiền mặt/Chuyển khoản).</p>
+        </div>
+        <div class="logic-item">
+          <i class="fas fa-clipboard-check"></i>
+          <h4>B5: Xác nhận</h4>
+          <p>Kiểm tra bảng phân tích giá chi tiết (Phí cơ bản, phí quá cân, phụ phí loại hàng) trước khi nhấn <strong>Đặt Đơn Ngay</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- NGHIỆP VỤ TÍNH CƯỚC -->
+    <section id="nghiep-vu" class="guide-card">
+      <div class="section-header">
+        <div class="section-number">2</div>
+        <h2 class="section-title">Nghiệp vụ & Công thức tính cước</h2>
+      </div>
+      <p>Để đảm bảo minh bạch, chúng tôi áp dụng các quy tắc nghiệp vụ chuẩn của ngành vận tải:</p>
+
+      <div class="logic-grid">
+        <div class="logic-item" style="border-left-color: #f97316;">
+          <i class="fas fa-weight-hanging" style="color:#f97316;"></i>
+          <h4>Trọng lượng tính cước</h4>
+          <p>Bằng giá trị lớn hơn giữa <strong>Cân nặng thực tế</strong> và <strong>Cân nặng quy đổi</strong>.</p>
+          <div style="background:#fff7ed; padding:10px; border-radius:8px; font-size:13px; font-family:monospace;">
+            Quy đổi = (Dài x Rộng x Cao) / 6000
+          </div>
+        </div>
+
+        <div class="logic-item" style="border-left-color: #f97316;">
+          <i class="fas fa-hand-holding-dollar" style="color:#f97316;"></i>
+          <h4>Dịch vụ GTGT</h4>
+          <ul class="feature-list" style="font-size:14px;">
+            <li><strong>Phí thu hộ (COD):</strong> 1.2% giá trị (tối thiểu 15k) nếu trên 1.000.000đ.</li>
+            <li><strong>Bảo hiểm:</strong> 0.5% giá trị khai báo (tối thiểu 5k) để bảo vệ hàng hóa giá trị cao.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pro-tip">
+        <i class="fas fa-lightbulb"></i>
+        <div>
+          <strong>Mẹo đặt đơn:</strong> Với hàng hóa có kích thước một cạnh trên 50cm hoặc tổng trọng lượng trên 20kg, hệ thống sẽ tự động gợi ý <strong>Xe lôi hoặc Xe bán tải</strong> để đảm bảo an toàn vận chuyển.
+        </div>
+      </div>
+    </section>
+
+    <!-- CÁC GÓI DỊCH VỤ -->
+    <section id="goi-cuoc" class="guide-card">
+      <div class="section-header">
+        <div class="section-number">3</div>
+        <h2 class="section-title">Các gói dịch vụ vận chuyển</h2>
+      </div>
+      
+      <div class="service-badge-grid">
+        <div class="s-badge std">
+          <i class="fas fa-shipping-fast"></i><br>Tiêu chuẩn<br><small>Tiết kiệm - 1-3 ngày</small>
+        </div>
+        <div class="s-badge fast">
+          <i class="fas fa-bolt"></i><br>Giao Nhanh<br><small>Tối ưu - 18-30 giờ</small>
+        </div>
+        <div class="s-badge express">
+          <i class="fas fa-fire"></i><br>Hỏa Tốc<br><small>Ưu tiên - 12-24 giờ</small>
+        </div>
+        <div class="s-badge instant">
+          <i class="fas fa-rocket"></i><br>Giao Ngay<br><small>Tức thì - 30-120 phút</small>
+        </div>
+      </div>
+
+      <div style="margin-top:25px; padding:20px; background:#f8fafc; border-radius:16px;">
+        <h4 style="margin-bottom:10px;"><i class="fas fa-circle-info"></i> Lưu ý về Giao Ngay Lập Tức:</h4>
+        <p style="font-size:14px;">Gói dịch vụ này sẽ tính thời gian từ lúc tài xế lấy hàng đến lúc giao xong. Phụ phí có thể phát sinh nếu đơn hàng được đặt vào: <strong>Đêm khuya (22h-06h)</strong> hoặc <strong>Thời tiết xấu (Mưa lớn)</strong>.</p>
+      </div>
+    </section>
+
+    <!-- LƯU Ý AN TOÀN -->
+    <section id="luu-y" class="guide-card" style="border-left: 6px solid #ef4444;">
+      <div class="section-header">
+        <div class="section-number" style="background:#ef4444;">4</div>
+        <h2 class="section-title">Lưu ý quan trọng cho khách hàng</h2>
+      </div>
+      <ul class="feature-list">
+        <li><strong>Đóng gói:</strong> Khách hàng có trách nhiệm đóng gói hàng hóa đúng tiêu chuẩn (quấn mút xốp cho hàng dễ vỡ, thùng carton cứng).</li>
+        <li><strong>Khai báo hàng hóa:</strong> Phải khai báo đúng loại hàng (Chất lỏng, Pin Lithium, Hàng đông lạnh...) để tránh bị từ chối vận chuyển hoặc phạt vi phạm an toàn.</li>
+        <li><strong>Hủy đơn:</strong> Bạn có thể tự hủy đơn trên hệ thống khi đơn đang ở trạng thái <strong>Chờ xử lý</strong>. Nếu tài xế đã lấy hàng, vui lòng liên hệ tổng đài.</li>
+        <li><strong>Đối soát:</strong> Tiền COD sẽ được đối soát và chuyển khoản vào tài khoản của bạn sau khi đơn hàng giao thành công.</li>
+      </ul>
+    </section>
+  </div>
+
+  <div id="site-footer"></div>
+
+  <script src="public/assets/js/shared-layout.js"></script>
+  <script src="public/assets/js/main.js" defer></script>
+</body>
+</html>

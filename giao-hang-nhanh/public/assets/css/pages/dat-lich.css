@@ -111,6 +111,194 @@
   display: none;
 }
 
+.is-hidden {
+  display: none !important;
+}
+
+.delivery-mode-panel {
+  margin-bottom: 20px;
+  padding: 18px 20px;
+  border: 1.5px solid #dbe7ff;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+}
+
+.delivery-mode-panel__head h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 800;
+  color: #0a2a66;
+}
+
+.delivery-mode-panel__head p {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: #52627f;
+  line-height: 1.6;
+}
+
+.delivery-mode-group .option-btn {
+  justify-content: center;
+}
+
+.instant-flow {
+  margin: 18px 0 20px;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1.5px solid #fed7aa;
+  background: linear-gradient(145deg, #fff7ed 0%, #fffbeb 100%);
+}
+
+.instant-flow__hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.instant-flow__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(249, 115, 22, 0.12);
+  color: #c2410c;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.instant-flow__hero h3 {
+  margin: 10px 0 6px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #7c2d12;
+}
+
+.instant-flow__hero p {
+  margin: 0;
+  font-size: 13px;
+  color: #7c4a2a;
+  line-height: 1.6;
+}
+
+.instant-flow__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 220px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #fdba74;
+  color: #c2410c;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.08);
+}
+
+.instant-flow__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.instant-flow__metric {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #fed7aa;
+}
+
+.instant-flow__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #9a3412;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.instant-flow__metric strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  color: #7c2d12;
+}
+
+.instant-flow__metric small {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8c5a33;
+}
+
+.weather-surcharge-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.weather-surcharge-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.weather-surcharge-badge.is-warning {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.weather-surcharge-badge.is-danger {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.weather-surcharge-badge.is-muted {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.weather-surcharge-meta {
+  font-size: 12px;
+  color: #52627f;
+  line-height: 1.5;
+}
+
+.service-mode-summary {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #dbe7ff;
+  background: #f8fbff;
+}
+
+.service-mode-summary strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #0a2a66;
+  font-size: 14px;
+}
+
+.service-mode-summary span {
+  color: #52627f;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 /* --- Error Styling --- */
 .step-error {
   display: none;
@@ -316,6 +504,69 @@ textarea.form-control {
   z-index: 1;
 }
 
+.map-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.map-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.map-legend__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.map-legend__dot--pickup {
+  background: #2563eb;
+}
+
+.map-legend__dot--delivery {
+  background: #dc2626;
+}
+
+.map-marker-tooltip {
+  border: none;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+  border-radius: 999px;
+  padding: 0;
+  background: transparent;
+}
+
+.map-marker-tooltip::before {
+  display: none;
+}
+
+.map-marker-tooltip div {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.map-marker-tooltip--pickup div {
+  background: #2563eb;
+}
+
+.map-marker-tooltip--delivery div {
+  background: #dc2626;
+}
+
 .distance-badge {
   display: inline-flex;
   align-items: center;
@@ -395,6 +646,19 @@ textarea.form-control {
   box-shadow: 0 0 0 2px #0a2a66 inset;
 }
 
+.service-card.is-disabled {
+  cursor: not-allowed;
+  border-style: dashed;
+  border-color: #d7deea;
+  background: #f8fafc;
+  opacity: 0.72;
+}
+
+.service-card.is-disabled:hover {
+  border-color: #d7deea;
+  background: #f8fafc;
+}
+
 .service-deadline-badge {
   display: inline-flex;
   align-items: center;
@@ -446,6 +710,13 @@ textarea.form-control {
 }
 .service-card.selected .service-breakdown {
   display: block;
+}
+
+.service-card-note {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #52627f;
 }
 
 .breakdown-row {
@@ -665,6 +936,50 @@ textarea.form-control {
   font-size: 16px;
 }
 
+.review-upload-empty {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.review-upload-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.review-upload-card {
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid #dbe4f2;
+  background: #fff;
+}
+
+.review-upload-thumb {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: #0f172a;
+}
+
+.review-upload-meta {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+}
+
+.review-upload-meta strong {
+  color: #0a2a66;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.review-upload-meta span {
+  color: #64748b;
+  font-size: 12px;
+}
+
 .quote-loading {
   text-align: center;
   color: #64748b;
@@ -690,6 +1005,14 @@ textarea.form-control {
   .upload-split-grid {
     grid-template-columns: 1fr;
   }
+  .instant-flow__hero,
+  .instant-flow__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .instant-flow__status {
+    min-width: 0;
+  }
   .service-card-top,
   .rv-row {
     flex-direction: column;
@@ -698,5 +1021,8 @@ textarea.form-control {
   }
   .rv-val {
     text-align: left;
+  }
+  .review-upload-grid {
+    grid-template-columns: 1fr;
   }
 }

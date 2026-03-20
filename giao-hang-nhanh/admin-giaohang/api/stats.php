@@ -60,6 +60,7 @@ $serviceMap = [
     'standard' => 'Tiêu chuẩn',
     'fast' => 'Nhanh',
     'express' => 'Hỏa tốc',
+    'instant' => 'Ngay lập tức',
     'bulk' => 'Số lượng lớn',
 ];
 $serviceBreakdown = [];

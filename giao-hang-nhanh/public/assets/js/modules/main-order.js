@@ -49,8 +49,8 @@
   function renderAuthRequiredMessage(msgDiv, serviceType) {
     if (!msgDiv) return;
     const returnPath = buildBookingReturnPath(serviceType);
-    const loginUrl = `${core.toApiUrl("login.html")}?redirect=${encodeURIComponent(returnPath)}`;
-    const registerUrl = `${core.toApiUrl("register.html")}?redirect=${encodeURIComponent(returnPath)}`;
+    const loginUrl = `${core.toApiUrl("dang-nhap.html")}?redirect=${encodeURIComponent(returnPath)}`;
+    const registerUrl = `${core.toApiUrl("dang-ky.html")}?redirect=${encodeURIComponent(returnPath)}`;
 
     msgDiv.style.display = "block";
     msgDiv.className = "";

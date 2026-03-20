@@ -73,7 +73,7 @@
       pricing: pricingLink,
       contact: `${rootPath}index.html#contact`,
       booking: `${rootPath}index.html#contact`,
-      policy: `${rootPath}public/policy.html`,
+      policy: `${rootPath}public/chinh-sach-va-dieu-khoan.html`,
       "moving-house": `${rootPath}public/chuyen-nha.html`,
       "moving-warehouse": `${rootPath}public/chuyen-kho-bai.html`,
       "moving-office": `${rootPath}public/chuyen-van-phong.html`,

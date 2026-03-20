@@ -4,19 +4,64 @@
   const inPublicDir = window.location.pathname
     .toLowerCase()
     .includes("/public/");
+
+  function resolveProjectBasePath() {
+    const path = String(window.location.pathname || "").replace(/\\/g, "/");
+    const marker = "/giao-hang-nhanh/";
+    const markerIndex = path.toLowerCase().lastIndexOf(marker);
+    if (markerIndex !== -1) {
+      return path.slice(0, markerIndex + marker.length);
+    }
+
+    const publicIndex = path.toLowerCase().lastIndexOf("/public/");
+    if (publicIndex !== -1) {
+      return path.slice(0, publicIndex + 1);
+    }
+
+    const lastSlash = path.lastIndexOf("/");
+    return lastSlash >= 0 ? path.slice(0, lastSlash + 1) : "./";
+  }
+
+  const projectBasePath = resolveProjectBasePath();
+  const publicBasePath = `${projectBasePath}public/`;
+  const routeOverrides = {
+    "dang-nhap.html": `${projectBasePath}dang-nhap.html`,
+    "dang-ky.html": `${projectBasePath}dang-ky.html`,
+    "tra-cuu-gia.html": `${projectBasePath}tra-cuu-gia.html`,
+    "tra-don-hang.html": `${projectBasePath}tra-don-hang.html`,
+    "dat-lich-giao-hang-nhanh.html": `${projectBasePath}dat-lich-giao-hang-nhanh.html`,
+    "bai-viet.html": `${projectBasePath}bai-viet.html`,
+    "bai-viet-chi-tiet.html": `${projectBasePath}bai-viet-chi-tiet.html`,
+    "huong-dan-dat-hang.html": `${projectBasePath}huong-dan-dat-hang.html`,
+    "chinh-sach-bao-mat.html": `${projectBasePath}chinh-sach-bao-mat.html`,
+    "chinh-sach-van-chuyen.html": `${projectBasePath}chinh-sach-van-chuyen.html`,
+    "dieu-khoan-su-dung.html": `${projectBasePath}dieu-khoan-su-dung.html`,
+    "dashboard.php": `${publicBasePath}khach-hang/dashboard.html`,
+    "order_history.php": `${publicBasePath}khach-hang/lich-su-don-hang.html`,
+    "order_detail.php": `${publicBasePath}khach-hang/chi-tiet-don-hang.html`,
+    "customer_order_detail.php": `${publicBasePath}khach-hang/chi-tiet-don-hang.html`,
+    "profile.php": `${publicBasePath}khach-hang/ho-so.html`,
+    "print_invoice.php": `${publicBasePath}khach-hang/print_invoice.php`,
+    "shipper_dashboard.php": `${publicBasePath}nha-cung-cap/shipper_dashboard.php`,
+    "admin_stats.php": `${publicBasePath}admin-giaohang/admin_stats.php`,
+    "cancel_order_ajax.php": `${projectBasePath}khach-hang-giaohang/api/cancel_order_ajax.php`,
+    "get_notifications_ajax.php": `${projectBasePath}khach-hang-giaohang/api/get_notifications_ajax.php`,
+  };
   const apiBasePath =
     typeof window.apiBasePath === "string"
       ? window.apiBasePath
-      : inPublicDir
-        ? ""
-        : "public/";
+      : publicBasePath;
 
   let orderShippingBound = false;
 
   function toApiUrl(path) {
     if (!path) return path;
     if (/^(?:[a-z]+:)?\/\//i.test(path)) return path;
-    return `${apiBasePath}${path}`;
+    const normalized = String(path).replace(/^\.?\//, "");
+    if (routeOverrides[normalized]) {
+      return routeOverrides[normalized];
+    }
+    return `${publicBasePath}${normalized}`;
   }
 
   function showToast(message, type = "info") {
@@ -90,11 +135,11 @@
     const normalized = String(serviceType || "")
       .trim()
       .toLowerCase();
-    if (normalized === "slow") return "slow";
     if (normalized === "standard") return "standard";
     if (normalized === "fast") return "fast";
     if (normalized === "express") return "express";
-    if (normalized === "bulk") return "slow";
+    if (normalized === "instant") return "instant";
+    if (normalized === "bulk") return "standard";
     return null;
   }
 
@@ -322,10 +367,10 @@
         basePrice = parseFloat(service.base_price);
       }
     } else {
-      if (normalizedServiceType === "slow") basePrice = 20000;
-      else if (normalizedServiceType === "standard") basePrice = 30000;
+      if (normalizedServiceType === "standard") basePrice = 30000;
       else if (normalizedServiceType === "fast") basePrice = 40000;
       else if (normalizedServiceType === "express") basePrice = 50000;
+      else if (normalizedServiceType === "instant") basePrice = 65000;
       else if (normalizedServiceType === "intl_economy")
         serviceName = "Tiêu chuẩn quốc tế";
       else if (normalizedServiceType === "intl_express")
@@ -622,6 +667,8 @@
   window.GiaoHangNhanhCore = {
     inPublicDir,
     apiBasePath,
+    projectBasePath,
+    publicBasePath,
     toApiUrl,
     resolveDomesticArea,
     mapServiceLevelByArea,

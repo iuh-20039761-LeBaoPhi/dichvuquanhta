@@ -1,0 +1,275 @@
+<!-- Modal Đặt Lịch — dùng cho service-detail.html (selectedService readonly) -->
+<div class="modal fade" id="bookingModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-calendar-check me-2" style="color:var(--primary);"></i>
+                    Đặt Lịch Dịch Vụ
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="bookingAuthBanner" class="mb-3" style="display:none;"></div>
+
+                <form id="bookingForm">
+                    <div class="row g-3">
+
+                        <!-- Thông tin cá nhân -->
+                        <div class="col-6">
+                            <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" placeholder="Nguyễn Văn A" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="phone" placeholder="0xxx xxx xxx" required>
+                        </div>
+
+                        <!-- NAV MODE: dropdown chọn dịch vụ (hiện khi mở từ nút Đặt Lịch trên nav) -->
+                        <div id="sdNavMode" style="display:none;" class="col-12">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Loại dịch vụ <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="sdMainService">
+                                        <option value="">-- Chọn loại dịch vụ --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Dịch vụ cụ thể <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="sdSubService" disabled>
+                                        <option value="">-- Chọn dịch vụ chi tiết --</option>
+                                    </select>
+                                </div>
+                                <div class="col-12" id="sdBrandSelectorWrap" style="display:none;">
+                                    <label class="form-label">
+                                        <i class="fas fa-tag me-1" style="color:var(--primary);"></i>Chọn hãng
+                                    </label>
+                                    <div id="sdBrandOptionsContainer" class="brand-options"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DETAIL MODE: readonly dịch vụ pre-filled (hiện khi mở từ nút đặt lịch trên card) -->
+                        <div id="sdDetailMode" class="col-12">
+                            <label class="form-label">Dịch vụ đã chọn <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="selectedService" readonly>
+                        </div>
+
+                        <!-- Giá dịch vụ: dùng chung cả 2 mode -->
+                        <div class="col-12">
+                            <label class="form-label">Giá dịch vụ (tham khảo)</label>
+                            <input type="text" class="form-control" id="servicePrice" readonly>
+                        </div>
+
+                        <!-- Ước tính chi phí (hiện khi có phí di chuyển/khảo sát) -->
+                        <div class="col-12" id="pricingBreakdownWrap" style="display:none;">
+                            <div class="pricing-box">
+                                <div class="pricing-box-title">
+                                    <i class="fas fa-receipt me-1"></i>Ước tính chi phí
+                                    <small class="fw-normal text-muted">(nếu đồng ý sửa)</small>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="text-muted">Giá dịch vụ:</span>
+                                    <span id="bd-service" class="fw-semibold"></span>
+                                </div>
+                                <div id="bd-travel-row" class="d-flex justify-content-between mb-1" style="display:none!important;">
+                                    <span class="text-muted">
+                                        <i class="fas fa-motorcycle me-1" style="font-size:0.75rem;"></i>Phí di chuyển:
+                                    </span>
+                                    <span id="bd-travel"></span>
+                                </div>
+                                <hr class="my-2">
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-semibold">Tổng tạm tính:</span>
+                                    <span id="bd-total" class="fw-bold" style="color:var(--primary);"></span>
+                                </div>
+
+                                <!-- Lưu ý phí khảo sát -->
+                                <div id="bd-survey-notice" style="display:none;">
+                                    <div class="survey-notice-content">
+                                        <div>✅ <strong>Nếu đồng ý sửa:</strong> phí khảo sát được <strong>miễn</strong>, chỉ thanh toán tổng tạm tính trên.</div>
+                                        <div class="mt-1">❌ <strong>Nếu không đồng ý sửa</strong> sau khi thợ đến khảo sát, bạn cần thanh toán:</div>
+                                        <div class="survey-breakdown-box">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span><i class="fas fa-motorcycle me-1" style="font-size:0.75rem;"></i>Phí di chuyển:</span>
+                                                <span id="bd-survey-travel" class="fw-semibold"></span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span><i class="fas fa-clipboard-check me-1" style="font-size:0.75rem;"></i>Phí khảo sát:</span>
+                                                <span id="bd-survey-amount" class="fw-semibold"></span>
+                                            </div>
+                                            <div class="survey-breakdown-sep"></div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="fw-semibold">Tổng cần trả:</span>
+                                                <span id="bd-survey-no-repair" class="fw-bold survey-no-repair-total"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-muted mb-0 mt-2" style="font-size:0.77rem;">
+                                    <i class="fas fa-info-circle me-1"></i>Giá chính xác xác nhận sau khi thợ khảo sát thực tế
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Địa chỉ + bản đồ -->
+                        <div class="col-12">
+                            <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="address" rows="2" placeholder="Số nhà, đường, phường, quận..." required></textarea>
+                            <div class="d-flex gap-2 mt-2 flex-wrap">
+                                <button type="button" class="btn-map" id="toggleMapBtn" onclick="mapPicker.toggle()">
+                                    <i class="fas fa-map-marker-alt"></i> Chọn trên bản đồ
+                                </button>
+                                <button type="button" class="btn-gps" onclick="mapPicker.gps()">
+                                    <i class="fas fa-location-arrow"></i> Vị trí hiện tại
+                                </button>
+                            </div>
+                            <div id="mapPickerBox" style="display:none; margin-top:10px;">
+                                <div id="mapPickerEl"></div>
+                                <p class="text-muted small mt-1 mb-0">
+                                    <i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Ghi chú -->
+                        <div class="col-12">
+                            <label class="form-label">Ghi chú thêm</label>
+                            <textarea class="form-control" id="note" rows="2" placeholder="Mô tả thêm về tình trạng hư hỏng..."></textarea>
+                        </div>
+
+                        <!-- Đính kèm hình ảnh / video -->
+                        <div class="col-12">
+                            <label class="form-label">
+                                Đính kèm hình ảnh / video <small class="text-muted">(tùy chọn)</small>
+                            </label>
+                            <div class="d-flex gap-2 flex-wrap mb-2">
+                                <button type="button" id="photoCaptureBtn" class="btn-capture-photo">
+                                    <i class="fas fa-camera"></i> Chụp hình
+                                </button>
+                                <button type="button" id="videoCaptureBtn" class="btn-capture-video">
+                                    <i class="fas fa-video"></i> Quay video
+                                </button>
+                            </div>
+                            <input type="file" id="mediaPhotoInput" accept="image/*" multiple style="display:none">
+                            <input type="file" id="mediaVideoInput" accept="video/*" style="display:none">
+                            <div id="mediaPreviewBox" class="media-preview-box" style="display:none;">
+                                <div class="media-preview-label"><i class="fas fa-images me-1"></i>Ảnh / video đã chọn:</div>
+                                <div id="mediaPreviewContainer" class="media-preview-grid"></div>
+                            </div>
+                        </div>
+
+                    </div><!-- /row -->
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-gradient w-100 btn-booking-submit">
+                            <i class="fas fa-check-circle me-2"></i> Xác nhận đặt lịch
+                        </button>
+                    </div>
+                </form>
+
+                <!-- ===== BẢNG XÁC NHẬN THÔNG TIN ===== -->
+                <div id="bookingConfirm" style="display:none;">
+
+                    <!-- Header -->
+                    <div class="cfm-header">
+                        <div class="cfm-header-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div>
+                            <div class="cfm-header-title">Xác nhận thông tin đặt lịch</div>
+                            <div class="cfm-header-sub">Vui lòng kiểm tra lại trước khi gửi</div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin khách hàng -->
+                    <div class="cfm-section">
+                        <div class="cfm-section-label"><i class="fas fa-user me-1"></i>Khách hàng</div>
+                        <div class="cfm-info-grid">
+                            <div class="cfm-info-item">
+                                <div class="cfm-info-icon cfm-icon--person"><i class="fas fa-user-circle"></i></div>
+                                <div>
+                                    <div class="cfm-info-sub">Họ và tên</div>
+                                    <div id="cf-name" class="cfm-info-val"></div>
+                                </div>
+                            </div>
+                            <div class="cfm-info-item">
+                                <div class="cfm-info-icon cfm-icon--phone"><i class="fas fa-phone"></i></div>
+                                <div>
+                                    <div class="cfm-info-sub">Số điện thoại</div>
+                                    <div id="cf-phone" class="cfm-info-val"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cfm-info-item cfm-info-item--full">
+                            <div class="cfm-info-icon cfm-icon--location"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <div class="cfm-info-sub">Địa chỉ</div>
+                                <div id="cf-address" class="cfm-info-val"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dịch vụ -->
+                    <div class="cfm-section">
+                        <div class="cfm-section-label"><i class="fas fa-tools me-1"></i>Dịch vụ đã chọn</div>
+                        <div class="cfm-service-block">
+                            <div class="cfm-service-icon"><i class="fas fa-wrench"></i></div>
+                            <div id="cf-service" class="cfm-service-name"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chi phí -->
+                    <div class="cfm-section" id="cf-cost-section" style="display:none;">
+                        <div class="cfm-section-label"><i class="fas fa-receipt me-1"></i>Chi phí tạm tính</div>
+                        <div class="cfm-cost-box">
+                            <div class="cfm-cost-row" id="cf-cost-base-row">
+                                <span class="cfm-cost-label">Giá dịch vụ</span>
+                                <span id="cf-cost-base" class="cfm-cost-val"></span>
+                            </div>
+                            <div class="cfm-cost-row" id="cf-cost-travel-row" style="display:none;">
+                                <span class="cfm-cost-label"><i class="fas fa-motorcycle me-1" style="color:#64748b;"></i>Phí di chuyển</span>
+                                <span id="cf-cost-travel" class="cfm-cost-val"></span>
+                            </div>
+                            <div class="cfm-cost-row" id="cf-cost-survey-row" style="display:none;">
+                                <span class="cfm-cost-label"><i class="fas fa-clipboard-check me-1" style="color:#b45309;"></i>Phí khảo sát</span>
+                                <span id="cf-cost-survey" class="cfm-cost-val" style="color:#b45309;"></span>
+                            </div>
+                            <div class="cfm-cost-total-row">
+                                <span class="cfm-cost-total-label">Tổng tạm tính</span>
+                                <span id="cf-cost-total" class="cfm-cost-total-val"></span>
+                            </div>
+                            <div id="cf-cost-note" class="cfm-cost-note" style="display:none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Ghi chú -->
+                    <div class="cfm-section cfm-note-section" id="cf-note-row" style="display:none;">
+                        <div class="cfm-section-label"><i class="fas fa-comment-dots me-1"></i>Ghi chú</div>
+                        <div id="cf-note" class="cfm-note-text"></div>
+                    </div>
+
+                    <!-- Đính kèm -->
+                    <div class="cfm-section" id="cf-media-row" style="display:none;">
+                        <div class="cfm-section-label"><i class="fas fa-paperclip me-1"></i>Đính kèm</div>
+                        <div id="cf-media" class="cfm-media-val"></div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="cfm-actions">
+                        <button type="button" id="confirmBackBtn" class="cfm-btn-back">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại chỉnh sửa
+                        </button>
+                        <button type="button" id="confirmSubmitBtn" class="cfm-btn-submit">
+                            <i class="fas fa-paper-plane me-2"></i>Gửi đặt lịch
+                        </button>
+                    </div>
+
+                </div>
+
+            </div><!-- /modal-body -->
+        </div>
+    </div>
+</div>

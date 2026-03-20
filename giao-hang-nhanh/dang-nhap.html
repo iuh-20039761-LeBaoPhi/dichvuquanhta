@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập | Giao Hàng Nhanh</title>
+    <meta
+      name="description"
+      content="Đăng nhập tài khoản Giao Hàng Nhanh để tạo đơn, theo dõi vận đơn và quản lý lịch sử giao hàng."
+    />
+    <link rel="stylesheet" href="public/assets/css/styles.css" />
+    <link rel="stylesheet" href="public/assets/css/pages/auth.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .auth-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(320px, 420px);
+        gap: 28px;
+        width: min(1040px, 100%);
+        align-items: stretch;
+      }
+
+      .auth-panel {
+        background:
+          radial-gradient(circle at top right, rgba(255, 122, 0, 0.14), transparent 35%),
+          linear-gradient(145deg, #0a2a66, #10398c 70%, #1d4ed8);
+        color: #fff;
+        border-radius: 18px;
+        padding: 36px;
+        box-shadow: 0 14px 36px rgba(10, 42, 102, 0.18);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .auth-panel h1 {
+        font-size: clamp(30px, 4vw, 42px);
+        line-height: 1.12;
+        margin: 0 0 16px;
+        color: #fff;
+      }
+
+      .auth-panel p {
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 16px;
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      .auth-points {
+        display: grid;
+        gap: 14px;
+        margin-top: 28px;
+      }
+
+      .auth-point {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 14px;
+        padding: 14px 16px;
+      }
+
+      .auth-point i {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 34px;
+      }
+
+      .auth-point strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .auth-card {
+        max-width: none;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      }
+
+      .auth-subtitle {
+        text-align: center;
+        color: #64748b;
+        margin: -8px 0 20px;
+      }
+
+      .auth-note {
+        margin-top: 18px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: #fff7ed;
+        color: #9a3412;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .msg-box {
+        margin-bottom: 16px;
+      }
+
+      @media (max-width: 900px) {
+        .auth-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .auth-panel {
+          order: 2;
+        }
+      }
+    </style>
+  </head>
+  <body class="auth-page">
+    <div id="site-header"></div>
+
+    <main class="auth-container">
+      <div class="auth-shell">
+        <section class="auth-panel">
+          <div>
+            <span class="subpage-hero__badge" style="display: inline-flex; margin-bottom: 18px;">Khách hàng quay lại</span>
+            <h1>Quản lý đơn giao hàng trên một tài khoản duy nhất.</h1>
+            <p>
+              Đăng nhập để tạo đơn mới, theo dõi trạng thái giao hàng và kiểm tra
+              lịch sử vận đơn, COD, phản hồi xử lý trong cùng một nơi.
+            </p>
+            <div class="auth-points">
+              <div class="auth-point">
+                <i class="fa-solid fa-route"></i>
+                <div>
+                  <strong>Theo dõi vận đơn rõ ràng</strong>
+                  Xem trạng thái đơn, mốc luân chuyển và thông tin giao nhận.
+                </div>
+              </div>
+              <div class="auth-point">
+                <i class="fa-solid fa-box-open"></i>
+                <div>
+                  <strong>Tạo đơn nhanh hơn</strong>
+                  Tự động lưu thông tin liên hệ để thao tác ít bước hơn.
+                </div>
+              </div>
+              <div class="auth-point">
+                <i class="fa-solid fa-shield-heart"></i>
+                <div>
+                  <strong>Quản lý tập trung</strong>
+                  Dùng một tài khoản cho đặt đơn, tra đơn và lịch sử hoạt động.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="auth-card">
+          <h2 class="auth-title">Đăng nhập</h2>
+          <p class="auth-subtitle">Nhập tài khoản để tiếp tục sử dụng dịch vụ.</p>
+
+          <div id="form-message" class="msg-box" style="display: none;"></div>
+
+          <form id="login-form" novalidate>
+            <div class="form-group">
+              <label for="username">Tên đăng nhập</label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autocomplete="username"
+                required
+                placeholder="Nhập tên đăng nhập"
+              />
+            </div>
+            <div class="form-group">
+              <label for="password">Mật khẩu</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                placeholder="Nhập mật khẩu"
+              />
+            </div>
+            <button id="submit-btn" type="submit" class="btn-primary" style="width: 100%;">
+              Đăng nhập
+            </button>
+          </form>
+
+          <div class="auth-note">
+           Nếu bạn đang đặt đơn từ trang đặt lịch giao hàng, hệ thống sẽ đưa bạn quay lại đúng
+            bước đang thao tác sau khi đăng nhập thành công.
+          </div>
+          <div class="auth-link">
+            Chưa có tài khoản? <a id="register-link" href="dang-ky.html">Đăng ký ngay</a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="public/assets/js/shared-layout.js"></script>
+    <script>
+      window.isLoggedIn = false;
+      window.apiBasePath = "";
+    </script>
+    <script src="public/assets/js/main.js" defer></script>
+    <script>
+      (function () {
+        const form = document.getElementById("login-form");
+        const submitBtn = document.getElementById("submit-btn");
+        const msgBox = document.getElementById("form-message");
+        const registerLink = document.getElementById("register-link");
+        const params = new URLSearchParams(window.location.search);
+        const redirectValue = params.get("redirect") || "";
+
+        function normalizeRedirect(target) {
+          if (!target) return "";
+          if (/^(?:[a-z]+:)?\/\//i.test(target)) return "";
+          if (/[\r\n]/.test(target)) return "";
+          return target;
+        }
+
+        function showMessage(message, type) {
+          msgBox.textContent = message;
+          msgBox.className = "msg-box " + type;
+          msgBox.style.display = "block";
+        }
+
+        function resolveDefaultPath(role) {
+          if (role === "admin") return "public/admin-giaohang/admin_stats.php";
+          if (role === "shipper") return "public/nha-cung-cap/shipper_dashboard.php";
+          return "public/khach-hang/dashboard.html";
+        }
+
+        if (redirectValue) {
+          registerLink.href = "dang-ky.html?redirect=" + encodeURIComponent(redirectValue);
+        }
+
+        form.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const formData = new FormData(form);
+          const username = String(formData.get("username") || "").trim();
+          const password = String(formData.get("password") || "");
+
+          if (!username || !password) {
+            showMessage("Vui lòng nhập tên đăng nhập và mật khẩu.", "error");
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Đang đăng nhập...";
+          msgBox.style.display = "none";
+
+          try {
+            const response = await fetch("public/login_ajax.php", {
+              method: "POST",
+              body: formData,
+              credentials: "same-origin",
+            });
+            const data = await response.json();
+
+            if (!response.ok || data.status !== "success") {
+              showMessage(data.message || "Đăng nhập thất bại.", "error");
+              return;
+            }
+
+            showMessage("Đăng nhập thành công, đang chuyển trang...", "success");
+            const safeRedirect = normalizeRedirect(redirectValue);
+            const userRole = data.user && data.user.role ? data.user.role : "";
+            window.location.href = safeRedirect || resolveDefaultPath(userRole);
+          } catch (error) {
+            showMessage("Không thể kết nối đến máy chủ. Vui lòng thử lại.", "error");
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Đăng nhập";
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
+

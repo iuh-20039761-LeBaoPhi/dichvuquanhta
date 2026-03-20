@@ -270,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function initBookingModal() {
   // ===== ELEMENT =====
   const serviceSelect = document.getElementById("serviceSelect");
-  const subServiceSelect = document.getElementById("subServiceSelect");
+  const vehicleType = document.getElementById("vehicleType");
   const brandSelect = document.getElementById("brandSelect");
   const itemSelect = document.getElementById("itemSelect");
 
@@ -328,7 +328,17 @@ function initBookingModal() {
   // ===== PHÍ =====
   const minTransport = 40000;
   const maxTransport = 60000;
-  const surveyFee = 30000;
+  let vehicleTypesData = [];
+
+  function getSurveyFeeByVehicleType(type) {
+    const vehicleType = vehicleTypesData.find((v) => v.type === type);
+    return vehicleType?.survey_fees || 0;
+  }
+
+  function getCurrentSurveyFee() {
+    if (!vehicleType || !vehicleType.value) return 0;
+    return getSurveyFeeByVehicleType(vehicleType.value);
+  }
 
   // ===== INIT HIỂN THỊ =====
   if (transportInput) {
@@ -338,15 +348,12 @@ function initBookingModal() {
       maxTransport.toLocaleString("vi-VN");
   }
 
-  if (surveyInput) {
-    surveyInput.value = surveyFee.toLocaleString("vi-VN");
-  }
-
   // ===== LOAD DATA =====
   fetch("public/services.json")
     .then((res) => res.json())
     .then((data) => {
       servicesData = data.services || [];
+      vehicleTypesData = data.vehicles || [];
 
       if (!serviceSelect) return;
 
@@ -367,39 +374,42 @@ function initBookingModal() {
   // ===== SERVICE =====
   if (serviceSelect) {
     serviceSelect.addEventListener("change", function () {
-      resetSelect(subServiceSelect, "Chọn dịch vụ");
+      resetSelect(vehicleType, "Chọn loại xe");
       resetSelect(brandSelect, "Chọn hãng");
       resetSelect(itemSelect, "Chọn phụ tùng / sửa chữa");
-
       clearPrice();
 
-      const service = servicesData.find((s) => s.id == this.value);
-      if (!service) return;
+      // Hiển thị danh sách loại xe từ vehicleTypesData
+      if (!vehicleType) return;
 
-      service.sub_services.forEach((sub) => {
+      vehicleTypesData.forEach((vehicle) => {
         const option = document.createElement("option");
-        option.value = sub.id;
-        option.textContent = sub.name;
-        subServiceSelect.appendChild(option);
+        option.value = vehicle.type;
+        option.textContent = vehicle.type;
+        vehicleType.appendChild(option);
       });
     });
   }
 
-  // ===== SUB =====
-  if (subServiceSelect) {
-    subServiceSelect.addEventListener("change", function () {
+  // ===== VEHICLE TYPE =====
+  if (vehicleType) {
+    vehicleType.addEventListener("change", function () {
       resetSelect(brandSelect, "Chọn hãng");
       resetSelect(itemSelect, "Chọn phụ tùng / sửa chữa");
-
       clearPrice();
 
-      const service = servicesData.find((s) => s.id == serviceSelect.value);
-      const sub = service?.sub_services.find((s) => s.id == this.value);
+      // Cập nhật survey fee
+      if (surveyInput) {
+        surveyInput.value = getCurrentSurveyFee().toLocaleString("vi-VN");
+      }
 
-      if (!sub) return;
+      // Hiển thị danh sách hãng xe của loại xe được chọn
+      const selectedVehicleType = vehicleTypesData.find(
+        (v) => v.type === this.value,
+      );
+      if (!selectedVehicleType) return;
 
-      const brands = sub.vehicles?.[0]?.brands || [];
-
+      const brands = selectedVehicleType.brands || [];
       brands.forEach((brand) => {
         const option = document.createElement("option");
         option.value = brand.name;
@@ -413,27 +423,26 @@ function initBookingModal() {
   if (brandSelect) {
     brandSelect.addEventListener("change", function () {
       resetSelect(itemSelect, "Chọn phụ tùng / sửa chữa");
-
       clearPrice();
 
-      const service = servicesData.find((s) => s.id == serviceSelect.value);
-      const sub = service?.sub_services.find(
-        (s) => s.id == subServiceSelect.value,
+      // Tìm loại xe được chọn
+      const selectedVehicleType = vehicleTypesData.find(
+        (v) => v.type === (vehicleType && vehicleType.value),
       );
+      if (!selectedVehicleType) return;
 
-      if (!sub) return;
-
-      const brand = sub.vehicles?.[0]?.brands.find(
+      // Tìm hãng được chọn
+      const selectedBrand = selectedVehicleType.brands.find(
         (b) => b.name === this.value,
       );
+      if (!selectedBrand) return;
 
-      if (!brand) return;
-
-      brand.items.forEach((item) => {
+      // Hiển thị danh sách mẫu xe của hãng được chọn
+      const models = selectedBrand.models || [];
+      models.forEach((model) => {
         const option = document.createElement("option");
-        option.value = item.id;
-        option.textContent = item.name;
-        option.dataset.price = item.price;
+        option.value = model.id;
+        option.textContent = model.vehicle_name || model.name;
         itemSelect.appendChild(option);
       });
     });
@@ -449,13 +458,19 @@ function initBookingModal() {
         return;
       }
 
-      const price = Number(option.dataset.price || 0);
+      const service = servicesData.find((s) => s.id == serviceSelect.value);
+      const servicePrice = Number(service?.service_price || 0);
+      const surveyFee = getCurrentSurveyFee();
 
-      const totalMin = price + minTransport + surveyFee;
-      const totalMax = price + maxTransport + surveyFee;
+      const totalMin = servicePrice + minTransport + surveyFee;
+      const totalMax = servicePrice + maxTransport + surveyFee;
 
       if (priceInput) {
-        priceInput.value = price.toLocaleString("vi-VN");
+        priceInput.value = servicePrice.toLocaleString("vi-VN");
+      }
+
+      if (surveyInput) {
+        surveyInput.value = surveyFee.toLocaleString("vi-VN");
       }
 
       if (totalInput) {
@@ -506,7 +521,6 @@ function initBookingConfirmFlow() {
   form.dataset.confirmFlowBound = "true";
 
   const serviceSelect = document.getElementById("serviceSelect");
-  const subServiceSelect = document.getElementById("subServiceSelect");
   const vehicleType = document.getElementById("vehicleType");
   const brandSelect = document.getElementById("brandSelect");
   const itemSelect = document.getElementById("itemSelect");
@@ -540,7 +554,6 @@ function initBookingConfirmFlow() {
       confirmName: document.getElementById("nameCustomer")?.value,
       confirmPhone: document.getElementById("phoneCustomer")?.value,
       confirmService: selectedText(serviceSelect),
-      confirmSubService: selectedText(subServiceSelect),
       confirmVehicleType: selectedText(vehicleType),
       confirmBrand: selectedText(brandSelect),
       confirmItem: selectedText(itemSelect),

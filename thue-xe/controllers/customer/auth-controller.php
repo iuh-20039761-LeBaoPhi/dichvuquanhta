@@ -1,30 +1,44 @@
 <?php
+/**
+ * Customer Auth Controller — v3
+ * Bảng `users` → `nguoidung`, cột tiếng Việt không dấu.
+ * API contract (session keys, JSON output) giữ nguyên.
+ */
+
 require_once dirname(__DIR__) . '/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once '../../config/database.php';
 
 $action = $_GET['action'] ?? '';
 
+// ─── CHECK LOGIN ──────────────────────────────────────────────────
 if ($action === 'checkLogin') {
     if (isset($_SESSION['user_id']) && $_SESSION['user_role'] === 'customer') {
-        echo json_encode(['success' => true, 'id' => $_SESSION['user_id'], 'name' => $_SESSION['user_name'], 'email' => $_SESSION['user_email']]);
+        echo json_encode([
+            'success' => true,
+            'id'      => $_SESSION['user_id'],
+            'name'    => $_SESSION['user_name'],
+            'email'   => $_SESSION['user_email'],
+        ]);
     } else {
         echo json_encode(['success' => false]);
     }
     exit;
 }
 
+// ─── LOGOUT ───────────────────────────────────────────────────────
 if ($action === 'logout') {
     unset($_SESSION['user_id'], $_SESSION['user_name'], $_SESSION['user_email'], $_SESSION['user_role']);
     echo json_encode(['success' => true]);
     exit;
 }
 
+// ─── REGISTER ─────────────────────────────────────────────────────
 if ($action === 'register') {
     $full_name = trim($_POST['full_name'] ?? '');
     $email     = strtolower(trim($_POST['email'] ?? ''));
-    $phone     = trim($_POST['phone'] ?? '');
-    $password  = $_POST['password'] ?? '';
+    $phone     = trim($_POST['phone']     ?? '');
+    $password  = $_POST['password']       ?? '';
 
     if (!$full_name || !$email || !$phone || !$password) {
         echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ thông tin']); exit;
@@ -65,15 +79,19 @@ if ($action === 'register') {
         $db   = new Database();
         $conn = $db->getConnection();
 
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+        // Kiểm tra email tồn tại trong nguoidung
+        $stmt = $conn->prepare("SELECT id FROM nguoidung WHERE email = ? LIMIT 1");
         $stmt->execute([$email]);
         if ($stmt->fetch()) {
             echo json_encode(['success' => false, 'message' => 'Email này đã được đăng ký']); exit;
         }
 
         $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+        // INSERT vào nguoidung với tên cột mới
         $stmt = $conn->prepare(
-            "INSERT INTO users (full_name, email, phone, password, role, status, avatar, cccd_front, cccd_back)
+            "INSERT INTO nguoidung
+                (hoten, email, sodienthoai, matkhau, vaitro, trangthai, avatar, cccdmatruoc, cccdmatsau)
              VALUES (?, ?, ?, ?, 'customer', 'active', ?, ?, ?)"
         );
         $stmt->execute([$full_name, $email, $phone, $hashed, $avatar_path, $cccd_front_path, $cccd_back_path]);
@@ -91,10 +109,11 @@ if ($action === 'register') {
     exit;
 }
 
+// ─── LOGIN ────────────────────────────────────────────────────────
 if ($action === 'login') {
     $data     = json_decode(file_get_contents('php://input'), true);
     $phone    = trim($data['identifier'] ?? '');
-    $password = $data['password'] ?? '';
+    $password = $data['password']        ?? '';
 
     if (!$phone || !$password) {
         echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ thông tin']); exit;
@@ -104,8 +123,11 @@ if ($action === 'login') {
         $db   = new Database();
         $conn = $db->getConnection();
 
+        // nguoidung: sodienthoai + vaitro='customer', alias để đọc quen thuộc
         $stmt = $conn->prepare(
-            "SELECT * FROM users WHERE phone = ? AND role = 'customer' LIMIT 1"
+            "SELECT id, hoten AS full_name, email, sodienthoai AS phone,
+                    matkhau AS password, trangthai AS status
+             FROM nguoidung WHERE sodienthoai = ? AND vaitro = 'customer' LIMIT 1"
         );
         $stmt->execute([$phone]);
         $user = $stmt->fetch();

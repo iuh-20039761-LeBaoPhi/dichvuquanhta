@@ -6,22 +6,22 @@
         label: "Giao hàng",
         rank: 1,
         notes: "Nhóm giao hàng cho khách lẻ",
-        serviceTypes: ["slow", "standard", "fast", "express"],
+        serviceTypes: ["standard", "fast", "express", "instant"],
         matrix: [
           {
             area: "inner_city",
             areaLabel: "Nội thành",
-            packages: ["slow", "standard", "fast", "express"],
+            packages: ["standard", "fast", "express", "instant"],
           },
           {
             area: "outer_city",
             areaLabel: "Ngoại thành",
-            packages: ["slow", "standard", "fast", "express"],
+            packages: ["standard", "fast", "express", "instant"],
           },
           {
             area: "inter_province",
             areaLabel: "Liên tỉnh",
-            packages: ["slow", "standard", "fast", "express"],
+            packages: ["standard", "fast", "express", "instant"],
           },
         ],
       },
@@ -41,11 +41,6 @@
       },
     ],
     serviceTypes: {
-      slow: {
-        label: "Giao chậm",
-        mainGroup: "delivery",
-        speed: "slow",
-      },
       standard: {
         label: "Giao tiêu chuẩn",
         mainGroup: "delivery",
@@ -61,8 +56,13 @@
         mainGroup: "delivery",
         speed: "express",
       },
+      instant: {
+        label: "Giao Ngay Lập Tức",
+        mainGroup: "delivery",
+        speed: "instant",
+      },
     },
-    defaultDeliveryTypeOrder: ["slow", "standard", "fast", "express"],
+    defaultDeliveryTypeOrder: ["standard", "fast", "express", "instant"],
   };
 
   function getServiceMeta(typeKey) {

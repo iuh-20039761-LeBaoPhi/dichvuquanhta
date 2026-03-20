@@ -27,7 +27,7 @@ Vanchuyen/
     ├── chuyen-nha.html         # Trang dịch vụ chuyển nhà
     ├── chuyen-van-phong.html   # Trang dịch vụ chuyển văn phòng
     ├── chuyen-kho-bai.html     # Trang dịch vụ chuyển kho bãi
-    ├── policy.html             # Trang chính sách
+    ├── chinh-sach-va-dieu-khoan.html # Trang chính sách
     └── assets/
         ├── css/
         │   ├── styles.css              # Entry point CSS (import các module)
@@ -73,7 +73,7 @@ Vanchuyen/
 | `chuyen-nha.html` | Dịch vụ chuyển nhà: 6 hạng mục dịch vụ có ảnh, quy trình 4 bước, lưu ý báo giá |
 | `chuyen-van-phong.html` | Dịch vụ chuyển văn phòng: 6 hạng mục, lưu ý về IT & tầng cao |
 | `chuyen-kho-bai.html` | Dịch vụ chuyển kho bãi: 6 hạng mục, lưu ý xe nâng & kiểm kê |
-| `policy.html` | Chính sách dịch vụ, điều khoản sử dụng |
+| `chinh-sach-va-dieu-khoan.html` | Chính sách dịch vụ, điều khoản sử dụng |
 
 ---
 

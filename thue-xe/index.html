@@ -398,21 +398,26 @@ loadHeader();
 <script>
 STATIC_DATA_PROMISE.then(STATIC_DATA => {
 const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
-
-// Count available physical cars for a given type
-function availCount(typeId) {
-    return (STATIC_DATA.cars || []).filter(c => c.type_id === typeId && c.status === 'available').length;
-}
+const DEFAULT_VISIBLE_LIMIT = 6;
+const availableCars = (STATIC_DATA.cars || []).filter(c => c.status === 'available');
+const availableCountByType = availableCars.reduce((acc, car) => {
+  const typeId = Number(car.type_id);
+  acc[typeId] = (acc[typeId] || 0) + 1;
+  return acc;
+}, {});
+const availableTypes = (STATIC_DATA.car_types || []).filter(type => (availableCountByType[type.id] || 0) > 0);
+const showAllBtn = document.getElementById('showAllBtn');
+let currentTypes = [...availableTypes];
+let showingAll = false;
 
 function renderCarTypes(carTypes) {
+  if (!carTypes.length) {
+    renderNoResults();
+    return;
+  }
+
     document.getElementById('carList').innerHTML = carTypes.map(type => {
-        const avail = availCount(type.id);
-        const badge = avail > 0
-            ? `<span class="badge badge-status badge-available">Còn ${avail} xe</span>`
-            : `<span class="badge badge-status" style="background:linear-gradient(135deg,#6c757d,#495057);">Hết xe</span>`;
-        const action = avail > 0
-            ? `<a href="car-detail.html?type_id=${type.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>`
-            : `<button class="btn btn-secondary btn-sm" disabled>Hết xe</button>`;
+    const avail = availableCountByType[type.id] || 0;
         return `
         <div class="col-lg-4 col-md-6">
             <div class="card car-card h-100">
@@ -421,19 +426,95 @@ function renderCarTypes(carTypes) {
                          class="card-img-top car-card-img"
                          alt="${type.name}"
                          onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
-                    ${badge}
+          <span class="badge badge-status badge-available">Còn ${avail} xe</span>
                 </div>
                 <div class="card-body">
                     <h5 class="fw-bold mb-1">${type.name}</h5>
                     <p class="text-muted small mb-2">${type.brand} · ${type.seats} chỗ · ${type.transmission} · ${type.fuel_type}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="car-price">${fmt(type.price_per_day)}đ/ngày</span>
-                        ${action}
+            <a href="views/pages/public/chi-tiet-xe.html?type_id=${type.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>
                     </div>
                 </div>
             </div>
         </div>`;
     }).join('');
+}
+
+function renderNoResults() {
+  document.getElementById('carList').innerHTML = `
+    <div class="col-12 text-center py-5">
+      <i class="fas fa-search fa-3x text-muted mb-3"></i>
+      <h5>Hiện không có xe phù hợp</h5>
+    </div>`;
+}
+
+function updateShowAllButton() {
+  if (!showAllBtn) return;
+
+  if (!currentTypes.length || currentTypes.length <= DEFAULT_VISIBLE_LIMIT) {
+    showAllBtn.style.display = 'none';
+    return;
+  }
+
+  showAllBtn.style.display = 'inline-block';
+  showAllBtn.innerHTML = showingAll
+    ? '<i class="fas fa-chevron-up me-2"></i>Thu gọn'
+    : '<i class="fas fa-search me-2"></i>Xem tất cả xe';
+}
+
+function applyFilters() {
+  const brand = document.getElementById('searchBrand').value;
+  const seats = document.getElementById('searchSeats').value;
+  const price = document.getElementById('searchPrice').value;
+  const hasFilter = Boolean(brand || seats || price);
+
+  if (!hasFilter) {
+    currentTypes = [...availableTypes];
+    showingAll = false;
+    renderCarTypes(currentTypes.slice(0, DEFAULT_VISIBLE_LIMIT));
+    updateShowAllButton();
+    return;
+  }
+
+  let filtered = [...availableTypes];
+
+  if (brand) {
+    const selectedBrand = brand.trim().toLowerCase();
+    filtered = filtered.filter(t => String(t.brand || '').trim().toLowerCase() === selectedBrand);
+  }
+
+  if (seats) {
+    const selectedSeats = Number(seats);
+    filtered = Number.isFinite(selectedSeats)
+      ? filtered.filter(t => Number(t.seats) === selectedSeats)
+      : [];
+  }
+
+  if (price) {
+    if (price.includes('-')) {
+      const [min, max] = price.split('-').map(Number);
+      filtered = (Number.isFinite(min) && Number.isFinite(max))
+        ? filtered.filter(t => {
+          const carPrice = Number(t.price_per_day);
+          return Number.isFinite(carPrice) && carPrice >= min && carPrice <= max;
+        })
+        : [];
+    } else {
+      const min = Number(price);
+      filtered = Number.isFinite(min)
+        ? filtered.filter(t => {
+          const carPrice = Number(t.price_per_day);
+          return Number.isFinite(carPrice) && carPrice >= min;
+        })
+        : [];
+    }
+  }
+
+  currentTypes = filtered;
+  showingAll = true;
+  renderCarTypes(currentTypes);
+  updateShowAllButton();
 }
 
 function renderServices(services) {
@@ -461,45 +542,28 @@ function renderServices(services) {
     `).join('');
 }
 
-let showingAll = false;
-
 document.getElementById('searchForm').addEventListener('submit', e => {
     e.preventDefault();
-    const brand = document.getElementById('searchBrand').value;
-    const seats = document.getElementById('searchSeats').value;
-    const price = document.getElementById('searchPrice').value;
-
-    let types = [...STATIC_DATA.car_types];
-    if (brand) types = types.filter(t => t.brand === brand);
-    if (seats) types = types.filter(t => t.seats === parseInt(seats));
-    if (price) {
-        if (price.includes('-')) {
-            const [min, max] = price.split('-').map(Number);
-            types = types.filter(t => t.price_per_day >= min && t.price_per_day <= max);
-        } else {
-            types = types.filter(t => t.price_per_day >= parseInt(price));
-        }
-    }
-
-    renderCarTypes(types.length ? types : STATIC_DATA.car_types);
-    showingAll = true;
-    document.getElementById('showAllBtn').textContent = 'Thu gọn';
+  applyFilters();
     document.getElementById('cars').scrollIntoView({ behavior: 'smooth' });
 });
 
-document.getElementById('showAllBtn').addEventListener('click', () => {
+showAllBtn.addEventListener('click', () => {
+  if (!currentTypes.length || currentTypes.length <= DEFAULT_VISIBLE_LIMIT) return;
+
     if (showingAll) {
-        renderCarTypes(STATIC_DATA.car_types.slice(0, 6));
-        document.getElementById('showAllBtn').innerHTML = '<i class="fas fa-search me-2"></i>Xem tất cả xe';
+    renderCarTypes(currentTypes.slice(0, DEFAULT_VISIBLE_LIMIT));
         showingAll = false;
     } else {
-        renderCarTypes(STATIC_DATA.car_types);
-        document.getElementById('showAllBtn').innerHTML = '<i class="fas fa-chevron-up me-2"></i>Thu gọn';
+    renderCarTypes(currentTypes);
         showingAll = true;
     }
+
+  updateShowAllButton();
 });
 
-renderCarTypes(STATIC_DATA.car_types.slice(0, 6));
+renderCarTypes(availableTypes.slice(0, DEFAULT_VISIBLE_LIMIT));
+updateShowAllButton();
 renderServices(STATIC_DATA.services);
 setTimeout(() => {
     document.getElementById('cars').scrollIntoView({ behavior: 'smooth' });

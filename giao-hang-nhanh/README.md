@@ -9,6 +9,17 @@ Nền tảng logistics và giao nhận hàng hóa xây dựng với kiến trúc
 ```
 giao-hang-nhanh/
 ├── index.html                        # Trang chủ (Landing page)
+├── dang-nhap.html                    # Trang đăng nhập khách hàng
+├── dang-ky.html                      # Trang đăng ký khách hàng
+├── tra-cuu-gia.html                  # Trang tra cứu bảng giá
+├── tra-don-hang.html                 # Trang tra cứu đơn hàng
+├── dat-lich-giao-hang-nhanh.html     # Trang đặt lịch giao hàng
+├── bai-viet.html                     # Danh sách bài viết
+├── bai-viet-chi-tiet.html            # Chi tiết bài viết
+├── huong-dan-dat-hang.html           # Hướng dẫn đặt hàng
+├── chinh-sach-van-chuyen.html        # Chính sách vận chuyển
+├── chinh-sach-bao-mat.html           # Chính sách bảo mật
+├── dieu-khoan-su-dung.html           # Điều khoản sử dụng
 ├── README.md
 ├── config/
 │   ├── db.php                        # Kết nối CSDL (dùng chung)
@@ -30,7 +41,27 @@ giao-hang-nhanh/
 │   │   └── contacts.php             # API hòm thư liên hệ
 │   ├── config/db.php                # DB config riêng cho admin module
 │   └── database/giaohang.sql        # Schema CSDL
+├── khach-hang-giaohang/
+│   └── api/
+│       ├── customer_portal.php      # API JSON cho portal khách hàng
+│       ├── cancel_order_ajax.php    # API hủy đơn khách hàng
+│       └── get_notifications_ajax.php # API thông báo khách hàng
+├── nha-cung-cap-giaohang/
+│   └── api/                         # Backend nha cung cap (se tach them theo tung buoc)
 └── public/
+    ├── admin-giaohang/
+    │   ├── admin_stats.php          # Dashboard admin
+    │   ├── orders_manage.php        # Quản lý đơn hàng
+    │   ├── order_detail.php         # Chi tiết đơn hàng admin
+    │   ├── users_manage.php         # Quản lý người dùng
+    │   ├── user_form.php            # Form chỉnh sửa người dùng
+    │   ├── user_history.php         # Lịch sử hoạt động người dùng
+    │   ├── contact_manage.php       # Quản lý liên hệ
+    │   ├── admin_settings.php       # Cài đặt hệ thống
+    │   ├── admin_profile.php        # Hồ sơ admin
+    │   ├── admin_pricing_guide.php  # Hướng dẫn giá nội bộ
+    │   ├── admin_shipper_detail.php # Chi tiết shipper
+    │   └── admin_refund_report.php  # Báo cáo hoàn tiền
     ├── assets/
     │   ├── css/
     │   │   ├── styles.css            # Entry point CSS (dùng @import)
@@ -56,29 +87,38 @@ giao-hang-nhanh/
     │   │       ├── main-landing.js      # Logic form tính cước trang chủ
     │   │       ├── main-order.js        # Xử lý submit đơn hàng
     │   │       └── main-tracking.js     # Tra cứu & hủy đơn hàng
-    │   ├── data/
-    │   │   └── pricing-data.json     # Dữ liệu giá JSON tĩnh
     │   ├── images/
     │   └── partials/
     │       └── shared-modals.html    # HTML modal dùng chung
-    ├── dat-lich-giao-hang-nhanh.html # Trang đặt lịch (Leaflet map)
-    ├── tra-don-hang.html             # Trang tra cứu đơn hàng
-    ├── tra-cuu-gia.html              # Trang tra cứu & tính cước phí
-    ├── bai-viet.html                 # Danh sách bài viết
-    ├── bai-viet-chi-tiet.html        # Chi tiết bài viết
-    ├── huong-dan-dat-hang.html       # Hướng dẫn đặt hàng
-    ├── chinh-sach-van-chuyen.html    # Chính sách vận chuyển
-    ├── chinh-sach-bao-mat.html       # Chính sách bảo mật
-    ├── dieu-khoan-su-dung.html       # Điều khoản sử dụng
-    ├── login.html / register.html    # Đăng nhập / Đăng ký
-    ├── dashboard.php                 # Dashboard khách hàng
-    ├── order.php / order_detail.php  # Tạo & chi tiết đơn hàng
-    ├── order_history.php             # Lịch sử đơn hàng
-    ├── tracking.php                  # Tra cứu đơn (server-side)
+    ├── data/
+    │   ├── pricing-data.json        # Dữ liệu bảng giá
+    │   ├── form-dat-hang.json       # Cấu hình form đặt đơn
+    │   └── du-lieu-bai-viet.json    # Dữ liệu bài viết
+    ├── khach-hang/
+    │   ├── dashboard.html           # Dashboard khách hàng (HTML + JS + API)
+    │   ├── lich-su-don-hang.html    # Lịch sử đơn hàng khách
+    │   ├── chi-tiet-don-hang.html   # Chi tiết đơn hàng khách theo 3 tab
+    │   ├── ho-so.html               # Hồ sơ khách hàng
+    │   ├── address_book.php         # Sổ địa chỉ
+    │   └── print_invoice.php        # In hóa đơn
+    ├── nha-cung-cap/
+    │   ├── shipper_dashboard.php    # Dashboard shipper
+    │   ├── shipper_order_detail.php # Chi tiết đơn của shipper
+    │   └── shipper_profile.php      # Hồ sơ shipper
+    ├── cancel_order.php             # Xử lý hủy đơn
     ├── dat-lich-ajax.php            # API xử lý đặt lịch giao hàng
-    ├── shipper_dashboard.php         # Dashboard Shipper
-    ├── shipper_order_detail.php      # Chi tiết đơn của Shipper
-    ├── print_invoice.php             # In hóa đơn
+    ├── forgot_password_ajax.php     # API quên mật khẩu
+    ├── inquiry_ajax.php             # API liên hệ
+    ├── landing_data_ajax.php        # API dữ liệu landing
+    ├── login.php                    # Xử lý đăng nhập server-side
+    ├── login_ajax.php               # API đăng nhập
+    ├── logout.php                   # Đăng xuất
+    ├── notifications.php            # Trang thông báo
+    ├── order.php                    # Xử lý tạo đơn
+    ├── register.php                 # Xử lý đăng ký server-side
+    ├── register_ajax.php            # API đăng ký
+    ├── tracking.php                 # Tra cứu đơn (server-side)
+    ├── tracking_ajax.php            # API tra cứu đơn
     └── webhook_payment.php           # Webhook thanh toán ngân hàng
 ```
 
@@ -94,12 +134,13 @@ giao-hang-nhanh/
 
 ### 🛒 Khách hàng (Customer)
 - Đăng nhập → tạo đơn tại `dat-lich-giao-hang-nhanh.html`
-- Quản lý đơn: `order_history.php`, `order_detail.php`
+- Dashboard: `public/khach-hang/dashboard.html`
+- Quản lý đơn: `public/khach-hang/lich-su-don-hang.html`, `public/khach-hang/chi-tiet-don-hang.html`
 - Hủy đơn, in hóa đơn, cập nhật hồ sơ
 
 ### 🚴 Shipper
-- Dashboard riêng: `shipper_dashboard.php`
-- Nhận & cập nhật trạng thái đơn: `shipper_order_detail.php`
+- Dashboard riêng: `public/nha-cung-cap/shipper_dashboard.php`
+- Nhận & cập nhật trạng thái đơn: `public/nha-cung-cap/shipper_order_detail.php`
 - Upload POD (hình ảnh bằng chứng giao hàng)
 
 ### 🔧 Admin
@@ -141,9 +182,7 @@ Phí = Phí cơ bản + Phí cân nặng + Phụ phí loại hàng + Phí COD + 
 | `login_ajax.php` | Đăng nhập, tạo session |
 | `register_ajax.php` | Đăng ký tài khoản |
 | `tracking_ajax.php` | Tra cứu hành trình đơn hàng |
-| `cancel_order_ajax.php` | Hủy đơn (chỉ trạng thái pending) |
 | `inquiry_ajax.php` | Gửi thắc mắc liên hệ |
-| `get_notifications_ajax.php` | Lấy danh sách thông báo |
 | `landing_data_ajax.php` | Dữ liệu động cho landing page |
 | `forgot_password_ajax.php` | Đặt lại mật khẩu |
 | `webhook_payment.php` | Webhook nhận thông báo thanh toán tự động |

@@ -95,6 +95,135 @@ body {
     border-radius: 2px;
 }
 
+.header-gradient .thuexe-navbar {
+    padding: 0.6rem 0;
+}
+
+.header-gradient .thuexe-nav-list {
+    align-items: center;
+    justify-content: center;
+    margin-right: auto;
+}
+
+.header-gradient .thuexe-nav-list .nav-link {
+    text-align: center;
+}
+
+.header-gradient .thuexe-navbar-toggler {
+    border: 1.5px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 0.36rem 0.5rem;
+}
+
+.header-gradient .thuexe-navbar-toggler:focus {
+    box-shadow: 0 0 0 0.22rem rgba(59, 130, 246, 0.25);
+}
+
+@media (max-width: 991.98px) {
+    .header-gradient .thuexe-navbar {
+        padding: 0.5rem 0;
+    }
+
+    .header-gradient .nav-brand-wrap {
+        min-width: 0;
+        gap: 0.45rem !important;
+    }
+
+    .header-gradient .globalcare-logo {
+        height: 44px !important;
+    }
+
+    .header-gradient .thuexe-logo {
+        height: 44px !important;
+        width: 58px !important;
+    }
+
+    .header-gradient .thuexe-title {
+        font-size: 1.05rem !important;
+    }
+
+    .header-gradient .thuexe-navbar-collapse {
+        margin-top: 0.65rem;
+        padding: 0.6rem;
+        border: 1px solid #dbeafe;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 10px 26px rgba(30, 64, 175, 0.12);
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+    }
+
+    .header-gradient .thuexe-nav-list {
+        gap: 0.12rem;
+        width: 100%;
+    }
+
+    .header-gradient .thuexe-nav-list .nav-item {
+        width: 100%;
+    }
+
+    .header-gradient .thuexe-nav-list .nav-link {
+        margin: 0;
+        width: 100%;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        padding: 0.65rem 0.8rem;
+        line-height: 1.25;
+    }
+
+    .header-gradient .thuexe-nav-list .nav-link:hover,
+    .header-gradient .thuexe-nav-list .nav-link.active {
+        transform: none;
+        opacity: 1;
+        background: #eff6ff;
+    }
+
+    .header-gradient .thuexe-nav-list .nav-link.active::after {
+        display: none;
+    }
+
+    .header-gradient .thuexe-nav-list .auth-nav-item {
+        margin-left: 0 !important;
+        margin-top: 0.35rem;
+        padding-top: 0.45rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .header-gradient .thuexe-nav-list #auth-loading {
+        padding: 0.45rem 0.25rem !important;
+    }
+
+    .header-gradient .thuexe-nav-list #auth-guest > button,
+    .header-gradient .thuexe-nav-list #auth-user > button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .header-gradient .globalcare-logo {
+        height: 40px !important;
+    }
+
+    .header-gradient .thuexe-logo {
+        height: 40px !important;
+        width: 50px !important;
+    }
+
+    .header-gradient .thuexe-title {
+        font-size: 0.97rem !important;
+        letter-spacing: 0.2px !important;
+    }
+
+    .header-gradient .thuexe-navbar-collapse {
+        margin-top: 0.55rem;
+        padding: 0.5rem;
+    }
+}
+
 /* Hero Section */
 .hero-section {
     background: var(--gradient-primary);
@@ -378,6 +507,225 @@ body {
 .modal-header .btn-close {
     filter: brightness(0) invert(1);
 }
+
+/* ===== Booking Modal (mobile-first) ===== */
+#bookingModal .modal-dialog {
+    max-width: 760px;
+}
+
+#bookingModal .booking-modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+#bookingModal .booking-modal-header {
+    padding: 0.9rem 1rem;
+}
+
+#bookingModal .booking-modal-header .modal-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+}
+
+#bookingModal .booking-modal-header .btn-close {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+#bookingModal .booking-modal-body {
+    padding: 1rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+#bookingModal .booking-form .form-label {
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+#bookingModal .booking-form .form-control,
+#bookingModal .booking-form .form-select {
+    border-radius: 10px;
+    min-height: 44px;
+}
+
+#bookingModal .booking-form textarea.form-control {
+    min-height: 92px;
+}
+
+#bookingModal .booking-touch-btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#bookingModal .booking-map-actions {
+    gap: 0.55rem;
+}
+
+#bookingModal .booking-map-actions .btn-map-picker {
+    border-radius: 999px;
+    padding: 0 14px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+#bookingModal .booking-map-actions .btn-map-gps {
+    border: 1px solid transparent;
+    background: var(--gradient-primary);
+    color: var(--color-white);
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.28);
+}
+
+#bookingModal .booking-map-actions .btn-map-gps:hover {
+    color: var(--color-white);
+    background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary-dark) 100%);
+    border-color: transparent;
+}
+
+#bookingModal .booking-map-actions .btn-map-gps:focus-visible {
+    color: var(--color-white);
+    background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary-dark) 100%);
+    outline: 3px solid rgba(59, 130, 246, 0.25);
+    outline-offset: 2px;
+}
+
+#bookingModal .booking-submit-wrap {
+    position: sticky;
+    bottom: -1px;
+    padding-top: 0.8rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 38%);
+    z-index: 2;
+}
+
+#bookingModal .booking-submit-btn {
+    min-height: 46px;
+    font-size: 0.96rem;
+}
+
+#bookingModal .tx-confirm-actions .btn {
+    min-height: 44px;
+}
+
+/* ===== Addon service cards ===== */
+.addon-service-grid {
+    margin-top: 2px;
+}
+
+.addon-service-card {
+    display: block;
+    width: 100%;
+    margin: 0;
+    position: relative;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.addon-service-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    pointer-events: none;
+}
+
+.addon-service-shell {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-height: 86px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #cbd5e1;
+    background: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, transform 0.12s ease;
+}
+
+.addon-service-check {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    border: 2px solid #64748b;
+    background: #fff;
+    color: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 0.76rem;
+}
+
+.addon-service-main {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+.addon-service-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.addon-service-name {
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.35;
+}
+
+.addon-service-price {
+    flex-shrink: 0;
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.86rem;
+    white-space: nowrap;
+}
+
+.addon-service-desc {
+    display: block;
+    margin-top: 4px;
+    color: #475569;
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+
+.addon-service-card:hover .addon-service-shell {
+    border-color: var(--color-primary);
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.16);
+}
+
+.addon-service-card:active .addon-service-shell {
+    transform: translateY(1px);
+}
+
+.addon-service-input:focus-visible + .addon-service-shell {
+    outline: 3px solid rgba(59, 130, 246, 0.28);
+    outline-offset: 2px;
+}
+
+.addon-service-input:checked + .addon-service-shell {
+    border-color: var(--color-primary);
+    background: #eff6ff;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.18);
+}
+
+.addon-service-input:checked + .addon-service-shell .addon-service-check {
+    border-color: transparent;
+    background: var(--gradient-primary);
+    color: #fff;
+}
+
+.addon-service-input:checked + .addon-service-shell .addon-service-name,
+.addon-service-input:checked + .addon-service-shell .addon-service-price {
+    color: #1e3a8a;
+}
+
 header.sticky-top {
     z-index: 1030; /* Dưới Bootstrap modal (1055) để modal không bị che */
 }
@@ -440,6 +788,38 @@ header.sticky-top {
     
     .car-detail-img {
         height: 250px;
+    }
+
+    #bookingModal .booking-modal-body {
+        padding: 0.9rem;
+    }
+
+    #bookingModal .booking-form-grid {
+        row-gap: 0.85rem !important;
+    }
+
+    #bookingModal .booking-map-actions .booking-touch-btn {
+        flex: 1 1 100%;
+        width: 100%;
+        justify-content: center;
+    }
+
+    #bookingModal .booking-submit-wrap {
+        padding-top: 0.65rem;
+    }
+
+    .addon-service-shell {
+        min-height: 80px;
+        padding: 10px;
+    }
+
+    .addon-service-top {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .addon-service-price {
+        font-size: 0.84rem;
     }
 }
 

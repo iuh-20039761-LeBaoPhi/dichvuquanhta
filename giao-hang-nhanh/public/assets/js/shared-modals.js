@@ -1,13 +1,15 @@
 (function () {
-  const inPublicDir = window.location.pathname
-    .toLowerCase()
-    .includes("/public/");
+  const path = String(window.location.pathname || "").replace(/\\/g, "/");
+  const marker = "/giao-hang-nhanh/";
+  const markerIndex = path.toLowerCase().lastIndexOf(marker);
+  const projectBasePath =
+    markerIndex !== -1
+      ? path.slice(0, markerIndex + marker.length)
+      : "/";
   const basePath =
     typeof window.apiBasePath === "string"
       ? window.apiBasePath
-      : inPublicDir
-        ? ""
-        : "public/";
+      : `${projectBasePath}public/`;
 
   if (typeof window.apiBasePath !== "string") {
     window.apiBasePath = basePath;
@@ -17,15 +19,20 @@
   }
   if (!Array.isArray(window.servicesData)) {
     window.servicesData = [
-      { id: 1, name: "Giao chậm", type_key: "slow", base_price: 20000.0 },
       {
-        id: 2,
+        id: 1,
         name: "Giao tiêu chuẩn",
         type_key: "standard",
         base_price: 30000.0,
       },
-      { id: 3, name: "Giao nhanh", type_key: "fast", base_price: 40000.0 },
-      { id: 4, name: "Giao hỏa tốc", type_key: "express", base_price: 50000.0 },
+      { id: 2, name: "Giao nhanh", type_key: "fast", base_price: 40000.0 },
+      { id: 3, name: "Giao hỏa tốc", type_key: "express", base_price: 50000.0 },
+      {
+        id: 4,
+        name: "Giao Ngay Lập Tức",
+        type_key: "instant",
+        base_price: 65000.0,
+      },
     ];
   }
   if (!window.pricingConfig || typeof window.pricingConfig !== "object") {
@@ -99,7 +106,7 @@
     const value = String(typeKey || "")
       .trim()
       .toLowerCase();
-    return ["slow", "standard", "fast", "express"].includes(value);
+    return ["standard", "fast", "express", "instant"].includes(value);
   }
 
   function ensureModalStyles() {

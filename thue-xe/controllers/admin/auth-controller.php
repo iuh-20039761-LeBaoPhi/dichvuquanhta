@@ -1,19 +1,26 @@
 <?php
+/**
+ * Admin Auth Controller — v3
+ * Bảng `users` → `nguoidung`, cột tiếng Việt không dấu.
+ * Sửa bug cũ: changePassword từng query `admins` (không tồn tại) → nay dùng `nguoidung`.
+ */
+
 require_once dirname(__DIR__) . '/session.php';
 header('Content-Type: application/json');
 require_once '../../config/database.php';
 
 $action = $_GET['action'] ?? '';
 
+// ─── CHANGE PASSWORD ─────────────────────────────────────────────
 if ($action === 'changePassword') {
     if (!isset($_SESSION['admin_id'])) {
         echo json_encode(['success' => false, 'message' => 'Unauthorized']);
         exit;
     }
-    $data           = json_decode(file_get_contents('php://input'), true);
-    $currentPwd     = $data['current_password'] ?? '';
-    $newPwd         = $data['new_password'] ?? '';
-    $confirmPwd     = $data['confirm_password'] ?? '';
+    $data       = json_decode(file_get_contents('php://input'), true);
+    $currentPwd = $data['current_password'] ?? '';
+    $newPwd     = $data['new_password']     ?? '';
+    $confirmPwd = $data['confirm_password'] ?? '';
 
     if (empty($currentPwd) || empty($newPwd) || empty($confirmPwd)) {
         echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ các trường']);
@@ -31,17 +38,23 @@ if ($action === 'changePassword') {
     try {
         $db   = new Database();
         $conn = $db->getConnection();
-        $stmt = $conn->prepare("SELECT password FROM admins WHERE id = ? LIMIT 1");
+
+        // nguoidung, cột matkhau, vaitro
+        $stmt = $conn->prepare(
+            "SELECT matkhau FROM nguoidung WHERE id = ? AND vaitro = 'admin' LIMIT 1"
+        );
         $stmt->execute([$_SESSION['admin_id']]);
         $admin = $stmt->fetch();
 
-        if (!$admin || !password_verify($currentPwd, $admin['password'])) {
+        if (!$admin || !password_verify($currentPwd, $admin['matkhau'])) {
             echo json_encode(['success' => false, 'message' => 'Mật khẩu hiện tại không đúng']);
             exit;
         }
 
         $hashed = password_hash($newPwd, PASSWORD_DEFAULT);
-        $upd    = $conn->prepare("UPDATE admins SET password = ? WHERE id = ?");
+        $upd    = $conn->prepare(
+            "UPDATE nguoidung SET matkhau = ? WHERE id = ? AND vaitro = 'admin'"
+        );
         $upd->execute([$hashed, $_SESSION['admin_id']]);
         echo json_encode(['success' => true, 'message' => 'Đổi mật khẩu thành công!']);
     } catch (PDOException $e) {
@@ -50,10 +63,11 @@ if ($action === 'changePassword') {
     exit;
 }
 
+// ─── LOGIN ───────────────────────────────────────────────────────
 if ($action === 'login') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    $data     = json_decode(file_get_contents('php://input'), true);
     $username = trim($data['username'] ?? '');
-    $password = $data['password'] ?? '';
+    $password = $data['password']      ?? '';
 
     if (empty($username) || empty($password)) {
         echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ thông tin!']);
@@ -61,14 +75,19 @@ if ($action === 'login') {
     }
 
     try {
-        $db = new Database();
+        $db   = new Database();
         $conn = $db->getConnection();
-        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND role = 'admin' LIMIT 1");
+
+        // nguoidung: vaitro='admin', alias để đọc field name quen thuộc
+        $stmt = $conn->prepare(
+            "SELECT id, hoten AS full_name, matkhau AS password
+             FROM nguoidung WHERE email = ? AND vaitro = 'admin' LIMIT 1"
+        );
         $stmt->execute([$username]);
         $admin = $stmt->fetch();
 
         if ($admin && password_verify($password, $admin['password'])) {
-            $_SESSION['admin_id'] = $admin['id'];
+            $_SESSION['admin_id']   = $admin['id'];
             $_SESSION['admin_name'] = $admin['full_name'];
             echo json_encode(['success' => true]);
         } else {

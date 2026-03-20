@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_id'] = $insert_stmt->insert_id;
                 $_SESSION['username'] = $username;
                 $_SESSION['role'] = $role;
-                header("Location: dashboard.php");
+                header("Location: khach-hang/dashboard.html");
                 exit;
             } else {
                 error_log("Register Error: " . $conn->error);

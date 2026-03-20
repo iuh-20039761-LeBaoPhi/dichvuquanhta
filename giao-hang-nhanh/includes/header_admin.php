@@ -12,7 +12,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
         $res_lock = $stmt_lock->get_result();
         if ($res_lock && $row_lock = $res_lock->fetch_assoc()) {
             if ($row_lock['is_locked'] == 1) {
-                echo '<script>alert("Tài khoản của bạn đã bị khóa."); window.location.href="logout.php";</script>';
+                echo '<script>alert("Tài khoản của bạn đã bị khóa."); window.location.href="../logout.php";</script>';
                 exit;
             }
         }
@@ -25,7 +25,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!-- FontAwesome 6.4.0 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="../assets/css/admin.css?v=<?php echo time(); ?>">
 
 <header id="header" class="header-admin">
     <nav class="navbar">
@@ -101,7 +101,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <div class="header-dropdown notification-dropdown" id="admin-notification-dropdown">
                     <div class="dropdown-header">
                         <span>Thông báo</span>
-                        <a href="notifications.php">Xem tất cả</a>
+                        <a href="../notifications.php">Xem tất cả</a>
                     </div>
                     <div class="dropdown-body">
                         <div class="empty-state">Không có thông báo mới</div>
@@ -111,7 +111,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
             <!-- View Site -->
             <div class="header-action-item">
-                <a href="index.php" target="_blank" class="btn-view-site-pill" title="Xem trang chủ">
+                <a href="../../index.html" target="_blank" class="btn-view-site-pill" title="Xem trang chủ">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 </a>
             </div>
@@ -131,7 +131,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a href="logout.php" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+                        <a href="../logout.php" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
                     </li>
                 </ul>
             </div>
@@ -139,5 +139,5 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </nav>
 </header>
 <!-- Core & Navigation Scripts -->
-<script src="assets/js/main-core.js?v=<?php echo time(); ?>"></script>
-<script src="assets/js/modules/main-navigation.js?v=<?php echo time(); ?>"></script>
+<script src="../assets/js/main-core.js?v=<?php echo time(); ?>"></script>
+<script src="../assets/js/modules/main-navigation.js?v=<?php echo time(); ?>"></script>

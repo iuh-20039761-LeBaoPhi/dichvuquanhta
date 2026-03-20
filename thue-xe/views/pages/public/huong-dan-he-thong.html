@@ -1,0 +1,1552 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../../../">
+    <title>Hướng Dẫn Cài Đặt & Sử Dụng CarRental – Website Cho Thuê Xe PHP + MySQL</title>
+    <meta name="description" content="Tài liệu hướng dẫn cài đặt và sử dụng hệ thống website cho thuê xe CarRental: cài đặt XAMPP, import database MySQL, cấu hình và khởi chạy ứng dụng PHP." />
+    <meta name="keywords" content="cài đặt website thuê xe, CarRental PHP MySQL, hướng dẫn cài đặt XAMPP, source code thuê xe, tài liệu CarRental" />
+    <meta name="author" content="CarRental Việt Nam" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="vi" />
+    <meta name="geo.region" content="VN-SG" />
+    <meta name="geo.placename" content="Việt Nam" />
+
+    <link rel="canonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/public/huong-dan-he-thong.html" />
+    <link rel="icon" type="image/png" href="assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/public/huong-dan-he-thong.html" />
+    <meta property="og:title" content="Hướng Dẫn Cài Đặt & Sử Dụng CarRental – PHP + MySQL" />
+    <meta property="og:description" content="Tài liệu hướng dẫn cài đặt hệ thống website cho thuê xe CarRental: XAMPP, MySQL, PHP. Bao gồm 5 bước cài đặt và 8+ tính năng chính." />
+    <meta property="og:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/thue-xe-xe-toyota-camry-2023.jpg" />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:site_name" content="CarRental" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hướng Dẫn Cài Đặt CarRental – PHP + MySQL" />
+    <meta name="twitter:description" content="Tài liệu cài đặt website cho thuê xe CarRental. 5 bước cài đặt, 8+ tính năng, PHP + MySQL + XAMPP." />
+    <meta name="twitter:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/thue-xe-xe-toyota-camry-2023.jpg" />
+
+    <!-- Schema.org FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Hướng Dẫn Cài Đặt & Sử Dụng CarRental – Website Cho Thuê Xe PHP + MySQL",
+      "description": "Tài liệu hướng dẫn cài đặt và sử dụng hệ thống website cho thuê xe CarRental xây dựng bằng PHP + MySQL + XAMPP.",
+      "author": { "@type": "Organization", "name": "CarRental" },
+      "inLanguage": "vi",
+                "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/public/huong-dan-he-thong.html"
+    }
+    </script>
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a6fd6;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --dark: #1a1a2e;
+            --text-muted: #6c757d;
+            --bg-light: #f8f9ff;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 20px rgba(102,126,234,0.15);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: #333;
+            line-height: 1.7;
+        }
+
+        /* ===== HEADER ===== */
+        .guide-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 60px 0 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .guide-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+        .guide-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+        .guide-header .badge-version {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.3);
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        .guide-header h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        .guide-header p {
+            font-size: 1.05rem;
+            opacity: 0.88;
+            max-width: 600px;
+        }
+        .header-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .header-stat {
+            text-align: center;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 14px 24px;
+        }
+        .header-stat .num {
+            font-size: 1.6rem;
+            font-weight: 700;
+            display: block;
+        }
+        .header-stat .lbl {
+            font-size: 0.78rem;
+            opacity: 0.8;
+        }
+
+        /* ===== SIDEBAR TOC ===== */
+        .toc-sidebar {
+            position: sticky;
+            top: 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        .toc-sidebar h6 {
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.75rem;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+        .toc-sidebar .nav-link {
+            color: #555;
+            font-size: 0.85rem;
+            padding: 5px 0 5px 12px;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+            display: block;
+        }
+        .toc-sidebar .nav-link:hover,
+        .toc-sidebar .nav-link.active {
+            color: var(--primary);
+            border-left-color: var(--primary);
+            background: rgba(102,126,234,0.05);
+            border-radius: 0 6px 6px 0;
+            padding-left: 16px;
+        }
+        .toc-sidebar .nav-link i {
+            width: 16px;
+            margin-right: 6px;
+            font-size: 0.78rem;
+        }
+        .toc-sub {
+            padding-left: 20px;
+        }
+        .toc-sub .nav-link {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        /* ===== SECTION CARDS ===== */
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 36px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title .icon-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .icon-badge.install  { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .icon-badge.usage    { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
+        .icon-badge.admin    { background: linear-gradient(135deg, #f7971e, #ffd200); color: white; }
+        .icon-badge.db       { background: linear-gradient(135deg, #ee0979, #ff6a00); color: white; }
+        .icon-badge.config   { background: linear-gradient(135deg, #0575e6, #021b79); color: white; }
+        .icon-badge.faq      { background: linear-gradient(135deg, #8e2de2, #4a00e0); color: white; }
+        .icon-badge.user-guide { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border: none;
+            margin: 16px 0 24px;
+            border-radius: 2px;
+        }
+
+        /* ===== STEP LIST ===== */
+        .step-list { list-style: none; padding: 0; margin: 0; }
+        .step-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            align-items: flex-start;
+        }
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+            box-shadow: 0 3px 10px rgba(102,126,234,0.35);
+        }
+        .step-content h6 {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+        .step-content p {
+            color: #666;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        /* ===== CODE BLOCK ===== */
+        .code-block {
+            background: #1e1e3f;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        .code-block .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .code-block .lang-badge {
+            background: rgba(102,126,234,0.3);
+            color: #a5b4fc;
+            font-size: 0.72rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-family: monospace;
+        }
+        .code-block .copy-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #ccc;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .code-block .copy-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+        .code-block code {
+            color: #a8ff78;
+            font-size: 0.88rem;
+            font-family: 'Courier New', monospace;
+            display: block;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .code-block code .comment { color: #6b7eb8; }
+        .code-block code .keyword { color: #c792ea; }
+        .code-block code .string  { color: #c3e88d; }
+
+        /* ===== IMAGE PLACEHOLDER ===== */
+        .img-placeholder {
+            border: 2px dashed #c7d2fe;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f0f4ff, #faf5ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+            margin: 20px 0;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .img-placeholder:hover {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #e8edff, #f5eeff);
+        }
+        .img-placeholder .ph-icon {
+            font-size: 2.5rem;
+            color: #c7d2fe;
+            margin-bottom: 10px;
+        }
+        .img-placeholder .ph-title {
+            font-weight: 600;
+            color: #7c83d6;
+            font-size: 0.92rem;
+            margin-bottom: 4px;
+        }
+        .img-placeholder .ph-hint {
+            font-size: 0.78rem;
+            color: #9ca3af;
+        }
+        .img-placeholder .ph-size {
+            background: rgba(102,126,234,0.1);
+            color: var(--primary);
+            font-size: 0.72rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-top: 8px;
+            font-family: monospace;
+        }
+        /* Real image styles */
+        .guide-img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            display: block;
+            margin: 20px 0;
+        }
+        .img-caption {
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: -10px;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        /* ===== ALERT BOXES ===== */
+        .alert-guide {
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.88rem;
+        }
+        .alert-guide i { margin-top: 2px; flex-shrink: 0; }
+        .alert-tip    { background: #ecfdf5; border: 1px solid #6ee7b7; color: #065f46; }
+        .alert-warn   { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
+        .alert-info   { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
+        .alert-danger { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
+
+        /* ===== FEATURE GRID ===== */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: #f8f9ff;
+            border: 1px solid #e0e7ff;
+            border-radius: 12px;
+            padding: 18px;
+            transition: all 0.25s;
+        }
+        .feature-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.15);
+            transform: translateY(-2px);
+        }
+        .feature-card .fc-icon {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+        .feature-card h6 {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        .feature-card p {
+            font-size: 0.8rem;
+            color: #777;
+            margin: 0;
+        }
+
+        /* ===== TABLE ===== */
+        .guide-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.87rem;
+        }
+        .guide-table thead tr th {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 0.83rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .guide-table thead tr th:first-child { border-radius: 10px 0 0 0; }
+        .guide-table thead tr th:last-child  { border-radius: 0 10px 0 0; }
+        .guide-table tbody tr td {
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        .guide-table tbody tr:last-child td { border-bottom: none; }
+        .guide-table tbody tr:hover td { background: #f8f9ff; }
+        .guide-table-wrap {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* ===== BADGES ===== */
+        .badge-req {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .badge-required { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
+        .badge-optional { background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; }
+        .badge-path     { background: #f0f4ff; color: var(--primary); border: 1px solid #c7d2fe; font-family: monospace; }
+
+        /* ===== TIMELINE ===== */
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 28px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.3);
+        }
+        .timeline-item h6 {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.92rem;
+            margin-bottom: 4px;
+        }
+        .timeline-item p {
+            font-size: 0.84rem;
+            color: #666;
+            margin: 0;
+        }
+
+        /* ===== FAQ ===== */
+        .faq-item {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .faq-question {
+            background: #f8f9ff;
+            padding: 14px 18px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: background 0.2s;
+        }
+        .faq-question:hover { background: #eff2ff; }
+        .faq-question i { color: var(--primary); transition: transform 0.3s; font-size: 0.85rem; }
+        .faq-answer {
+            display: none;
+            padding: 14px 18px;
+            font-size: 0.87rem;
+            color: #555;
+            border-top: 1px solid var(--border-color);
+            background: white;
+        }
+        .faq-item.open .faq-question { background: #eff2ff; }
+        .faq-item.open .faq-question i { transform: rotate(180deg); }
+        .faq-item.open .faq-answer { display: block; }
+
+        /* ===== BACK TO TOP ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            transition: all 0.3s;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+            text-decoration: none;
+        }
+        .back-to-top.visible { opacity: 1; pointer-events: all; }
+        .back-to-top:hover { transform: translateY(-3px); color: white; }
+
+        /* ===== PROGRESS BAR (decorative) ===== */
+        .progress-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+        .progress-step .label { min-width: 160px; color: #555; }
+        .progress-step .bar {
+            flex: 1;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .progress-step .bar span {
+            display: block;
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        .progress-step .pct { min-width: 38px; text-align: right; font-weight: 600; color: var(--primary); }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+        /* ===== FOOTER ===== */
+        .guide-footer {
+            background: var(--dark);
+            color: #aaa;
+            text-align: center;
+            padding: 30px;
+            font-size: 0.85rem;
+            margin-top: 40px;
+        }
+        .guide-footer strong { color: white; }
+
+        @media (max-width: 991px) {
+            .toc-sidebar { position: relative; top: 0; margin-bottom: 20px; }
+            .guide-header h1 { font-size: 1.9rem; }
+            .section-card { padding: 24px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<div class="guide-header">
+    <div class="container position-relative">
+        <div class="badge-version"><i class="fas fa-tag me-1"></i> Phiên bản 1.0</div>
+        <h1><i class="fas fa-book-open me-3"></i>Hướng Dẫn Sử Dụng<br>& Cài Đặt Website</h1>
+        <p>Tài liệu đầy đủ hướng dẫn cài đặt, cấu hình và sử dụng hệ thống quản lý cho thuê xe <strong>CarRental</strong>.</p>
+        <div class="header-stats">
+            <div class="header-stat"><span class="num">5</span><span class="lbl">Bước cài đặt</span></div>
+            <div class="header-stat"><span class="num">8+</span><span class="lbl">Tính năng chính</span></div>
+            <div class="header-stat"><span class="num">PHP</span><span class="lbl">Ngôn ngữ</span></div>
+            <div class="header-stat"><span class="num">MySQL</span><span class="lbl">Cơ sở dữ liệu</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MAIN CONTENT ===================== -->
+<div class="container py-4">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="toc-sidebar">
+                <h6><i class="fas fa-list-ul me-2"></i>Mục lục</h6>
+                <a href="#yeu-cau" class="nav-link"><i class="fas fa-check-circle"></i>Yêu cầu hệ thống</a>
+                <a href="#cai-dat" class="nav-link"><i class="fas fa-download"></i>Hướng dẫn cài đặt</a>
+                <div class="toc-sub">
+                    <a href="#buoc1" class="nav-link"><i class="fas fa-arrow-right"></i>Bước 1: Cài XAMPP</a>
+                    <a href="#buoc2" class="nav-link"><i class="fas fa-arrow-right"></i>Bước 2: Copy file</a>
+                    <a href="#buoc3" class="nav-link"><i class="fas fa-arrow-right"></i>Bước 3: Import DB</a>
+                    <a href="#buoc4" class="nav-link"><i class="fas fa-arrow-right"></i>Bước 4: Cấu hình</a>
+                    <a href="#buoc5" class="nav-link"><i class="fas fa-arrow-right"></i>Bước 5: Chạy web</a>
+                </div>
+                <a href="#cau-truc" class="nav-link"><i class="fas fa-folder-tree"></i>Cấu trúc thư mục</a>
+                <a href="#hdsd-khach" class="nav-link"><i class="fas fa-user"></i>Hướng dẫn khách hàng</a>
+                <div class="toc-sub">
+                    <a href="#trang-chu" class="nav-link"><i class="fas fa-arrow-right"></i>Trang chủ</a>
+                    <a href="#xem-xe" class="nav-link"><i class="fas fa-arrow-right"></i>Xem danh sách xe</a>
+                    <a href="#dat-xe" class="nav-link"><i class="fas fa-arrow-right"></i>Đặt xe</a>
+                    <a href="#theo-doi" class="nav-link"><i class="fas fa-arrow-right"></i>Theo dõi đơn</a>
+                </div>
+                <a href="#hdsd-admin" class="nav-link"><i class="fas fa-shield-alt"></i>Hướng dẫn Admin</a>
+                <div class="toc-sub">
+                    <a href="#admin-login" class="nav-link"><i class="fas fa-arrow-right"></i>Đăng nhập Admin</a>
+                    <a href="#quan-ly-xe" class="nav-link"><i class="fas fa-arrow-right"></i>Quản lý xe</a>
+                    <a href="#quan-ly-don" class="nav-link"><i class="fas fa-arrow-right"></i>Quản lý đơn</a>
+                </div>
+                <a href="#cau-hinh" class="nav-link"><i class="fas fa-cog"></i>Cấu hình nâng cao</a>
+                <a href="#faq" class="nav-link"><i class="fas fa-question-circle"></i>Câu hỏi thường gặp</a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="col-lg-9">
+
+            <!-- ========== 1. YÊU CẦU HỆ THỐNG ========== -->
+            <div class="section-card" id="yeu-cau">
+                <div class="section-title">
+                    <div class="icon-badge install"><i class="fas fa-server"></i></div>
+                    1. Yêu Cầu Hệ Thống
+                </div>
+                <hr class="section-divider">
+
+                <div class="guide-table-wrap mb-4">
+                    <table class="guide-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-cube me-2"></i>Thành phần</th>
+                                <th>Phiên bản tối thiểu</th>
+                                <th>Khuyến nghị</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fab fa-php text-primary me-2"></i><strong>PHP</strong></td>
+                                <td>7.4+</td>
+                                <td>8.0 trở lên</td>
+                                <td><span class="badge-req badge-required">Bắt buộc</span></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-database text-warning me-2"></i><strong>MySQL</strong></td>
+                                <td>5.7+</td>
+                                <td>8.0 trở lên</td>
+                                <td><span class="badge-req badge-required">Bắt buộc</span></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-globe text-success me-2"></i><strong>Apache Web Server</strong></td>
+                                <td>2.4+</td>
+                                <td>Mới nhất</td>
+                                <td><span class="badge-req badge-required">Bắt buộc</span></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-tools text-info me-2"></i><strong>XAMPP</strong></td>
+                                <td>7.4+</td>
+                                <td>8.2+</td>
+                                <td><span class="badge-req badge-required">Bắt buộc</span></td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-globe text-secondary me-2"></i><strong>Trình duyệt</strong></td>
+                                <td>Chrome 80+</td>
+                                <td>Chrome / Firefox / Edge mới nhất</td>
+                                <td><span class="badge-req badge-optional">Tùy chọn</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert-guide alert-info">
+                    <i class="fas fa-info-circle fa-lg"></i>
+                    <div>Website sử dụng kiến trúc <strong>MVC thuần PHP</strong>, không cần framework bổ sung. Chỉ cần XAMPP là đủ để chạy hoàn chỉnh trên máy local.</div>
+                </div>
+
+                <h6 class="fw-600 mb-3 mt-4">Tính năng PHP Extensions cần có:</h6>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="fc-icon">🔌</div>
+                            <h6>pdo_mysql</h6>
+                            <p>Kết nối cơ sở dữ liệu MySQL</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="fc-icon">🖼️</div>
+                            <h6>gd / imagick</h6>
+                            <p>Xử lý hình ảnh upload</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="fc-icon">📝</div>
+                            <h6>mbstring</h6>
+                            <p>Hỗ trợ Unicode / tiếng Việt</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== 2. HƯỚNG DẪN CÀI ĐẶT ========== -->
+            <div class="section-card" id="cai-dat">
+                <div class="section-title">
+                    <div class="icon-badge install"><i class="fas fa-download"></i></div>
+                    2. Hướng Dẫn Cài Đặt
+                </div>
+                <hr class="section-divider">
+
+                <!-- BƯỚC 1 -->
+                <div class="mb-4" id="buoc1">
+                    <h5 class="fw-700 text-primary"><span class="badge bg-primary me-2">01</span>Tải và cài đặt XAMPP</h5>
+                    <p class="text-muted" style="font-size:0.9rem;">Tải XAMPP từ trang chủ Apache Friends và cài đặt trên máy tính.</p>
+
+                    <!-- Placeholder ảnh -->
+                    <!-- Để dùng ảnh thật, thay div trên bằng: -->
+                    <img src="assets/images/guide/thue-xe-docs-setup-xampp-download.png" alt="Tải XAMPP" class="guide-img">
+                    <p class="img-caption">Hình 1: Trang tải XAMPP tại apachefriends.org</p>
+
+                    <ol class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h6>Truy cập trang chủ XAMPP</h6>
+                                <p>Vào <code>https://www.apachefriends.org</code> → Chọn phiên bản PHP 8.x → Nhấn <strong>Download</strong></p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h6>Chạy file cài đặt</h6>
+                                <p>Nhấp đúp file <code>xampp-installer.exe</code> → Chọn thư mục cài đặt (mặc định <code>C:\xampp</code>) → Nhấn Next đến khi hoàn tất.</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h6>Khởi động Apache và MySQL</h6>
+                                <p>Mở <strong>XAMPP Control Panel</strong> → Nhấn <strong>Start</strong> bên cạnh <em>Apache</em> và <em>MySQL</em> → Đảm bảo cả hai đều chuyển sang màu xanh.</p>
+                            </div>
+                        </li>
+                    </ol>
+
+                    <!-- Placeholder ảnh XAMPP Control Panel -->
+                    <img src="assets/images/guide/thue-xe-docs-setup-xampp-control-panel.png" alt="Tải XAMPP" class="guide-img">
+                    <div class="alert-guide alert-tip">
+                        <i class="fas fa-lightbulb fa-lg"></i>
+                        <div><strong>Lưu ý cổng:</strong> Apache mặc định cổng <strong>80</strong>, MySQL cổng <strong>3306</strong>. Nếu bị xung đột, vào <em>Config → httpd.conf</em> để đổi cổng.</div>
+                    </div>
+                </div>
+
+                <hr style="border-color:#e9ecef; margin: 28px 0;">
+
+                <!-- BƯỚC 2 -->
+                <div class="mb-4" id="buoc2">
+                    <h5 class="fw-700 text-primary"><span class="badge bg-primary me-2">02</span>Copy source code vào htdocs</h5>
+                    <p class="text-muted" style="font-size:0.9rem;">Giải nén và đặt thư mục dự án vào đúng vị trí để Apache nhận diện.</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="lang-badge">Terminal / File Explorer</span>
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy me-1"></i>Sao chép</button>
+                        </div>
+                        <code><span class="comment"># Đường dẫn đích cần đặt dự án:</span>
+C:\xampp\htdocs\<span class="string">carrental_test</span>\
+
+<span class="comment"># Cấu trúc sau khi copy:</span>
+C:\xampp\htdocs\
+└── carrental_test\
+    ├── index.php
+    ├── database.sql
+    ├── assets\
+    ├── config\
+    ├── controllers\
+    ├── models\
+    ├── views\
+    └── admin\</code>
+                    </div>
+
+                    <div class="alert-guide alert-warn">
+                        <i class="fas fa-exclamation-triangle fa-lg"></i>
+                        <div><strong>Quan trọng:</strong> Tên thư mục phải là <code>carrental_test</code> (viết thường, không dấu cách). URL sẽ là <code>http://localhost/carrental_test/</code></div>
+                    </div>
+
+                    <!-- Placeholder ảnh cấu trúc thư mục -->
+                    <img src="assets/images/guide/thue-xe-docs-setup-cau-truc-du-an.png" alt="Tải XAMPP" class="guide-img">
+                    <p class="img-caption">Hình 1: Trang tải XAMPP tại apachefriends.org</p>
+                </div>
+
+                <hr style="border-color:#e9ecef; margin: 28px 0;">
+
+                <!-- BƯỚC 3 -->
+                <div class="mb-4" id="buoc3">
+                    <h5 class="fw-700 text-primary"><span class="badge bg-primary me-2">03</span>Import cơ sở dữ liệu</h5>
+                    <p class="text-muted" style="font-size:0.9rem;">Tạo database và import file SQL vào phpMyAdmin.</p>
+
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h6>Mở phpMyAdmin</h6>
+                            <p>Truy cập <code>http://localhost/phpmyadmin</code> trên trình duyệt.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6>Tạo Database mới</h6>
+                            <p>Nhấn <strong>New</strong> (cột trái) → Đặt tên <code>car_rental</code> → Chọn Collation <code>utf8mb4_unicode_ci</code> → Nhấn <strong>Create</strong>.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6>Import file SQL</h6>
+                            <p>Chọn database <code>car_rental</code> → Tab <strong>Import</strong> → Nhấn <strong>Choose File</strong> → Chọn file <code>database.sql</code> trong thư mục dự án → Nhấn <strong>Go</strong>.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6>Kiểm tra kết quả</h6>
+                            <p>Sau khi import thành công, bạn sẽ thấy các bảng: <code>cars</code>, <code>car_images</code>, <code>bookings</code>, <code>services</code>, <code>admins</code>.</p>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder ảnh phpMyAdmin -->
+                    <img src="assets/images/guide/thue-xe-docs-setup-import-database.png" alt="Tải XAMPP" class="guide-img">
+                </div>
+
+                <hr style="border-color:#e9ecef; margin: 28px 0;">
+
+                <!-- BƯỚC 4 -->
+                <div class="mb-4" id="buoc4">
+                    <h5 class="fw-700 text-primary"><span class="badge bg-primary me-2">04</span>Cấu hình kết nối database</h5>
+                    <p class="text-muted" style="font-size:0.9rem;">Chỉnh sửa file cấu hình để kết nối với MySQL.</p>
+
+                    <p style="font-size:0.88rem;">Mở file <span class="badge-req badge-path">config/database.php</span> và cập nhật các thông số:</p>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="lang-badge">PHP — config/database.php</span>
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy me-1"></i>Sao chép</button>
+                        </div>
+                        <code><span class="keyword">define</span>(<span class="string">'DB_HOST'</span>,     <span class="string">'localhost'</span>);   <span class="comment">// Địa chỉ MySQL</span>
+<span class="keyword">define</span>(<span class="string">'DB_PORT'</span>,     <span class="string">'3306'</span>);        <span class="comment">// Cổng MySQL (mặc định 3306)</span>
+<span class="keyword">define</span>(<span class="string">'DB_NAME'</span>,     <span class="string">'car_rental'</span>);   <span class="comment">// Tên database</span>
+<span class="keyword">define</span>(<span class="string">'DB_USER'</span>,     <span class="string">'root'</span>);         <span class="comment">// Tên người dùng MySQL</span>
+<span class="keyword">define</span>(<span class="string">'DB_PASSWORD'</span>, <span class="string">''</span>);             <span class="comment">// Mật khẩu (để trống nếu dùng XAMPP mặc định)</span></code>
+                    </div>
+
+                    <div class="alert-guide alert-info">
+                        <i class="fas fa-info-circle fa-lg"></i>
+                        <div>XAMPP mặc định MySQL username là <strong>root</strong>, password để <strong>trống</strong>. Nếu bạn đã đặt mật khẩu, điền vào trường <code>DB_PASSWORD</code>.</div>
+                    </div>
+                </div>
+
+                <hr style="border-color:#e9ecef; margin: 28px 0;">
+
+                <!-- BƯỚC 5 -->
+                <div class="mb-4" id="buoc5">
+                    <h5 class="fw-700 text-primary"><span class="badge bg-primary me-2">05</span>Chạy website</h5>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="lang-badge">URL trình duyệt</span>
+                        </div>
+                        <code><span class="comment"># Trang chính (dành cho khách hàng)</span>
+http://localhost/carrental_test/
+
+<span class="comment"># Trang quản trị (dành cho Admin)</span>
+http://localhost/carrental_test/admin/</code>
+                    </div>
+
+                    <div class="alert-guide alert-tip">
+                        <i class="fas fa-check-circle fa-lg"></i>
+                        <div><strong>Thành công!</strong> Nếu trang chủ hiển thị đúng giao diện CarRental thì quá trình cài đặt đã hoàn tất. Chúc mừng! 🎉</div>
+                    </div>
+
+                    <!-- Placeholder ảnh trang chủ sau cài đặt -->
+                    <img src="assets/images/guide/thue-xe-docs-giao-dien-trang-chu.png" alt="Tải XAMPP" class="guide-img">
+                </div>
+            </div>
+
+            <!-- ========== 3. CẤU TRÚC THƯ MỤC ========== -->
+            <div class="section-card" id="cau-truc">
+                <div class="section-title">
+                    <div class="icon-badge config"><i class="fas fa-folder-tree"></i></div>
+                    3. Cấu Trúc Thư Mục Dự Án
+                </div>
+                <hr class="section-divider">
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="lang-badge">Cấu trúc MVC</span>
+                    </div>
+                    <code>carrental_test/
+├── <span class="string">index.php</span>              <span class="comment"># Entry point (điểm vào chính)</span>
+├── <span class="string">database.sql</span>           <span class="comment"># File cấu trúc & dữ liệu mẫu</span>
+│
+├── <span class="keyword">config/</span>                <span class="comment"># Cấu hình hệ thống</span>
+│   └── database.php       <span class="comment"># Thông số kết nối MySQL</span>
+│
+├── <span class="keyword">controllers/</span>           <span class="comment"># Xử lý logic (Controller)</span>
+│   ├── HomeController.php
+│   ├── CarController.php
+│   ├── BookingController.php
+│   └── ...
+│
+├── <span class="keyword">models/</span>                <span class="comment"># Tương tác database (Model)</span>
+│   ├── Car.php
+│   ├── Booking.php
+│   └── ...
+│
+├── <span class="keyword">views/</span>                 <span class="comment"># Giao diện (View)</span>
+│   ├── layouts/           <span class="comment"># Header, Footer chung</span>
+│   └── pages/             <span class="comment"># Các trang: home, cars, booking...</span>
+│
+├── <span class="keyword">assets/</span>                <span class="comment"># File tĩnh (CSS, JS, hình ảnh)</span>
+│   ├── css/style.css
+│   ├── js/main.js
+│   └── images/
+│
+└── <span class="keyword">admin/</span>                 <span class="comment"># Khu vực quản trị</span>
+    └── index.php</code>
+                </div>
+
+                <div class="guide-table-wrap mt-3">
+                    <table class="guide-table">
+                        <thead>
+                            <tr>
+                                <th>Thư mục / File</th>
+                                <th>Vai trò</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>index.php</code></td>
+                                <td>Router chính, điều hướng request</td>
+                                <td>Không chỉnh sửa trừ khi cần</td>
+                            </tr>
+                            <tr>
+                                <td><code>config/</code></td>
+                                <td>Cấu hình hệ thống</td>
+                                <td>Cần chỉnh database.php</td>
+                            </tr>
+                            <tr>
+                                <td><code>controllers/</code></td>
+                                <td>Xử lý nghiệp vụ</td>
+                                <td>Logic chính ở đây</td>
+                            </tr>
+                            <tr>
+                                <td><code>models/</code></td>
+                                <td>Truy vấn database</td>
+                                <td>PDO / raw SQL</td>
+                            </tr>
+                            <tr>
+                                <td><code>views/</code></td>
+                                <td>Giao diện HTML/CSS</td>
+                                <td>Bootstrap 5</td>
+                            </tr>
+                            <tr>
+                                <td><code>assets/</code></td>
+                                <td>CSS, JS, hình ảnh tĩnh</td>
+                                <td>Upload ảnh xe vào images/</td>
+                            </tr>
+                            <tr>
+                                <td><code>admin/</code></td>
+                                <td>Panel quản trị</td>
+                                <td>Bảo vệ bằng session</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ========== 4. HƯỚNG DẪN KHÁCH HÀNG ========== -->
+            <div class="section-card" id="hdsd-khach">
+                <div class="section-title">
+                    <div class="icon-badge user-guide"><i class="fas fa-user"></i></div>
+                    4. Hướng Dẫn Sử Dụng — Dành Cho Khách Hàng
+                </div>
+                <hr class="section-divider">
+
+                <!-- 4.1 Trang chủ -->
+                <div class="mb-5" id="trang-chu">
+                    <h5 class="fw-700 mb-3"><i class="fas fa-home text-primary me-2"></i>4.1 Trang Chủ</h5>
+                    <p style="font-size:0.9rem;color:#555;">Trang chủ hiển thị các thông tin tổng quan: banner chào hàng, tính năng nổi bật, danh sách xe được đề xuất và lý do chọn CarRental.</p>
+
+                    <img src="assets/images/guide/thue-xe-docs-giao-dien-trang-chu.png" alt="Tải XAMPP" class="guide-img">
+
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="fc-icon">🔍</div>
+                            <h6>Tìm kiếm xe</h6>
+                            <p>Thanh tìm kiếm nhanh ngay trên banner</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="fc-icon">⭐</div>
+                            <h6>Xe nổi bật</h6>
+                            <p>Danh sách xe được đề xuất</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="fc-icon">📋</div>
+                            <h6>Dịch vụ</h6>
+                            <p>Các gói dịch vụ đi kèm</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="fc-icon">📞</div>
+                            <h6>Liên hệ nhanh</h6>
+                            <p>Số hotline & form liên hệ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4.2 Xem danh sách xe -->
+                <div class="mb-5" id="xem-xe">
+                    <h5 class="fw-700 mb-3"><i class="fas fa-car text-primary me-2"></i>4.2 Xem Danh Sách Xe</h5>
+                    <p style="font-size:0.9rem;color:#555;">Khách hàng có thể duyệt danh sách xe với đầy đủ thông tin: hình ảnh, thương hiệu, năm sản xuất, số ghế, loại hộp số và giá thuê mỗi ngày.</p>
+
+                    <img src="assets/images/guide/thue-xe-docs-giao-dien-danh-sach-xe.png" alt="Tải XAMPP" class="guide-img">
+
+                    <ul class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h6>Truy cập trang xe</h6>
+                                <p>Nhấn <strong>Xe Cho Thuê</strong> trên thanh menu điều hướng hoặc nhấn <strong>Xem tất cả xe</strong> từ trang chủ.</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h6>Lọc và tìm kiếm</h6>
+                                <p>Sử dụng thanh tìm kiếm để lọc xe theo tên, thương hiệu hoặc loại xe.</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h6>Xem chi tiết xe</h6>
+                                <p>Nhấn vào card xe để xem đầy đủ thông tin: ảnh chi tiết, tính năng, mô tả và giá thuê.</p>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <!-- Placeholder ảnh chi tiết xe -->
+                    <img src="assets/images/guide/thue-xe-docs-giao-dien-chi-tiet-xe.png" alt="Tải XAMPP" class="guide-img">
+                </div>
+
+                <!-- 4.3 Đặt xe -->
+                <div class="mb-5" id="dat-xe">
+                    <h5 class="fw-700 mb-3"><i class="fas fa-calendar-check text-primary me-2"></i>4.3 Đặt Xe</h5>
+                    <p style="font-size:0.9rem;color:#555;">Quy trình đặt xe đơn giản, nhanh chóng chỉ với vài bước.</p>
+
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h6>Chọn xe muốn thuê</h6>
+                            <p>Từ trang danh sách hoặc chi tiết xe, nhấn nút <strong>"Đặt xe ngay"</strong>.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6>Điền thông tin đặt xe</h6>
+                            <p>Nhập họ tên, số điện thoại, email, ngày nhận xe, ngày trả xe và địa điểm nhận xe.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6>Xem tóm tắt & tổng tiền</h6>
+                            <p>Hệ thống tự động tính tổng tiền dựa trên số ngày thuê × giá thuê/ngày.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h6>Xác nhận đặt xe</h6>
+                            <p>Nhấn <strong>"Xác nhận đặt xe"</strong>. Hệ thống tạo mã đơn hàng và gửi thông tin xác nhận.</p>
+                        </div>
+                    </div>
+
+                    <img src="assets/images/guide/thue-xe-docs-giao-dien-dat-xe-form.png" alt="Tải XAMPP" class="guide-img">
+                    <img src="assets/images/guide/thue-xe-docs-giao-dien-dat-xe-thanh-cong.png" alt="Tải XAMPP" class="guide-img">
+                    <div class="alert-guide alert-tip">
+                        <i class="fas fa-lightbulb fa-lg"></i>
+                        <div><strong>Lưu ý:</strong> Ghi lại <strong>Mã đơn hàng</strong> sau khi đặt xe thành công. Bạn sẽ cần mã này để theo dõi trạng thái đơn hàng.</div>
+                    </div>
+                </div>
+
+                <!-- 4.4 Theo dõi đơn hàng -->
+                <div class="mb-4" id="theo-doi">
+                    <h5 class="fw-700 mb-3"><i class="fas fa-search-location text-primary me-2"></i>4.4 Theo Dõi Đơn Hàng</h5>
+                    <p style="font-size:0.9rem;color:#555;">Khách hàng có thể tra cứu trạng thái đơn hàng bất kỳ lúc nào bằng mã đơn.</p>
+
+                    <ul class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h6>Vào trang "Tra cứu đơn hàng"</h6>
+                                <p>Nhấn <strong>Theo dõi đơn</strong> trên menu hoặc truy cập <code>?page=track-order</code>.</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h6>Nhập mã đơn hàng</h6>
+                                <p>Điền mã đơn đã nhận vào ô tra cứu → Nhấn <strong>Tra cứu</strong>.</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h6>Xem trạng thái đơn</h6>
+                                <p>Hệ thống hiển thị: thông tin xe, ngày thuê, tổng tiền và trạng thái hiện tại (<em>Chờ xác nhận / Đã xác nhận / Đang thuê / Đã trả xe</em>).</p>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <!-- Placeholder ảnh tra cứu đơn -->
+                    <img src="assets/images/guide/thue-xe-docs-giao-dien-tra-cuu-don.png" alt="Tải XAMPP" class="guide-img">
+                </div>
+            </div>
+
+            <!-- ========== 5. HƯỚNG DẪN ADMIN ========== -->
+            <div class="section-card" id="hdsd-admin">
+                <div class="section-title">
+                    <div class="icon-badge admin"><i class="fas fa-shield-alt"></i></div>
+                    5. Hướng Dẫn Sử Dụng — Dành Cho Admin
+                </div>
+                <hr class="section-divider">
+
+                <!-- 5.1 Đăng nhập Admin -->
+                <div class="mb-5" id="admin-login">
+                    <h5 class="fw-700 mb-3"><i class="fas fa-sign-in-alt text-warning me-2"></i>5.1 Đăng Nhập Trang Quản Trị</h5>
+
+                    <div class="code-block">
+                        <div class="code-header"><span class="lang-badge">URL trình duyệt</span></div>
+                        <code>http://localhost/carrental_test/admin/</code>
+                    </div>
+
+                    <div class="guide-table-wrap mt-3 mb-4" style="max-width:500px;">
+                        <table class="guide-table">
+                            <thead>
+                                <tr><th>Thông tin</th><th>Giá trị mặc định</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><i class="fas fa-user me-2 text-muted"></i>Tên đăng nhập</td>
+                                    <td><code>admin</code></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-key me-2 text-muted"></i>Mật khẩu</td>
+                                    <td><code>admin123</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert-guide alert-danger">
+                        <i class="fas fa-exclamation-circle fa-lg"></i>
+                        <div><strong>Bảo mật:</strong> Thay đổi mật khẩu Admin ngay sau khi cài đặt xong. Không dùng mật khẩu mặc định trên môi trường production!</div>
+                    </div>
+
+                    <!-- Placeholder ảnh trang đăng nhập admin -->
+                    <img src="assets/images/guide/thue-xe-docs-giao-dien-dang-nhap-admin.png" alt="Tải XAMPP" class="guide-img">
+                </div>
+
+                <!-- 5.2 Dashboard -->
+                <div class="mb-5">
+                    <h5 class="fw-700 mb-3"><i class="fas fa-tachometer-alt text-warning me-2"></i>5.2 Dashboard Tổng Quan</h5>
+                    <p style="font-size:0.9rem;color:#555;">Màn hình chính của Admin hiển thị thống kê tổng hợp và các thao tác quản lý nhanh.</p>
+
+                    <!-- Placeholder ảnh dashboard -->
+                    <img src="assets/images/guide/thue-xe-docs-giao-dien-doi-mat-khau.png" alt="Tải XAMPP" class="guide-img">
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="fc-icon">📊</div>
+                            <h6>Thống kê tổng quan</h6>
+                            <p>Tổng xe, đơn hàng, doanh thu theo ngày/tháng</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="fc-icon">🚗</div>
+                            <h6>Quản lý xe</h6>
+                            <p>Thêm, sửa, xóa, cập nhật trạng thái xe</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="fc-icon">📋</div>
+                            <h6>Quản lý đơn</h6>
+                            <p>Duyệt, từ chối, xác nhận đơn thuê xe</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="fc-icon">🛠️</div>
+                            <h6>Quản lý dịch vụ</h6>
+                            <p>Thêm/sửa các gói dịch vụ đi kèm</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5.3 Quản lý xe -->
+                <div class="mb-5" id="quan-ly-xe">
+                    <h5 class="fw-700 mb-3"><i class="fas fa-car text-warning me-2"></i>5.3 Quản Lý Xe</h5>
+
+                    <ul class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">+</div>
+                            <div class="step-content">
+                                <h6>Thêm xe mới</h6>
+                                <p>Nhấn <strong>"Thêm xe mới"</strong> → Điền thông tin (tên, thương hiệu, giá, số ghế, hộp số...) → Upload hình ảnh → Nhấn <strong>Lưu</strong>.</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number"><i class="fas fa-pen" style="font-size:0.8rem"></i></div>
+                            <div class="step-content">
+                                <h6>Chỉnh sửa thông tin xe</h6>
+                                <p>Nhấn biểu tượng <strong>✏️ Sửa</strong> bên cạnh xe → Cập nhật thông tin → Nhấn <strong>Lưu thay đổi</strong>.</p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number"><i class="fas fa-toggle-on" style="font-size:0.8rem"></i></div>
+                            <div class="step-content">
+                                <h6>Đổi trạng thái xe</h6>
+                                <p>Trạng thái gồm: <span class="badge bg-success">Có sẵn</span> <span class="badge bg-warning text-dark">Đang thuê</span> <span class="badge bg-secondary">Bảo dưỡng</span></p>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number"><i class="fas fa-trash" style="font-size:0.8rem"></i></div>
+                            <div class="step-content">
+                                <h6>Xóa xe</h6>
+                                <p>Nhấn biểu tượng <strong>🗑️ Xóa</strong> → Xác nhận xóa. <em>Lưu ý: xóa xe sẽ xóa toàn bộ hình ảnh liên quan.</em></p>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <!-- Placeholder ảnh quản lý xe -->
+                    <img src="assets/images/guide/thue-xe-docs-admin-quan-ly-xe.png" alt="Tải XAMPP" class="guide-img">
+                </div>
+
+                <!-- 5.4 Quản lý đơn hàng -->
+                <div class="mb-4" id="quan-ly-don">
+                    <h5 class="fw-700 mb-3"><i class="fas fa-clipboard-list text-warning me-2"></i>5.4 Quản Lý Đơn Hàng</h5>
+
+                    <div class="guide-table-wrap mb-4">
+                        <table class="guide-table">
+                            <thead>
+                                <tr><th>Trạng thái đơn</th><th>Ý nghĩa</th><th>Hành động Admin</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-warning text-dark">Chờ xác nhận</span></td>
+                                    <td>Khách vừa đặt xe, chờ Admin duyệt</td>
+                                    <td>Xác nhận hoặc Từ chối</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-info">Đã xác nhận</span></td>
+                                    <td>Admin đã duyệt, chờ khách nhận xe</td>
+                                    <td>Chuyển sang "Đang thuê"</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-primary">Đang thuê</span></td>
+                                    <td>Xe đã được bàn giao cho khách</td>
+                                    <td>Chuyển sang "Đã trả xe"</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-success">Đã trả xe</span></td>
+                                    <td>Kết thúc hợp đồng thuê xe</td>
+                                    <td>Xem / Lưu trữ</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-danger">Đã hủy</span></td>
+                                    <td>Đơn bị từ chối hoặc hủy</td>
+                                    <td>Xem lý do</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Placeholder ảnh quản lý đơn hàng -->
+                    <img src="assets/images/guide/thue-xe-docs-admin-quan-ly-don-hang.png" alt="Tải XAMPP" class="guide-img">
+                </div>
+            </div>
+
+            <!-- ========== 6. CẤU HÌNH NÂNG CAO ========== -->
+            <div class="section-card" id="cau-hinh">
+                <div class="section-title">
+                    <div class="icon-badge config"><i class="fas fa-cog"></i></div>
+                    6. Cấu Hình Nâng Cao
+                </div>
+                <hr class="section-divider">
+
+                <h6 class="fw-600 mb-3">Đổi tên website & thông tin hiển thị</h6>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="lang-badge">PHP — config/app.php (nếu có)</span>
+                    </div>
+                    <code><span class="keyword">define</span>(<span class="string">'APP_NAME'</span>,    <span class="string">'CarRental'</span>);
+<span class="keyword">define</span>(<span class="string">'APP_URL'</span>,     <span class="string">'http://localhost/carrental_test'</span>);
+<span class="keyword">define</span>(<span class="string">'APP_VERSION'</span>, <span class="string">'1.0.0'</span>);
+<span class="keyword">define</span>(<span class="string">'PHONE'</span>,       <span class="string">'0900 123 456'</span>);
+<span class="keyword">define</span>(<span class="string">'EMAIL'</span>,       <span class="string">'info@carrental.vn'</span>);</code>
+                </div>
+
+                <h6 class="fw-600 mb-3 mt-4">Upload hình ảnh xe</h6>
+                <div class="alert-guide alert-info">
+                    <i class="fas fa-info-circle fa-lg"></i>
+                    <div>
+                        Hình ảnh xe được lưu tại: <code>assets/images/cars/</code><br>
+                        <strong>Định dạng:</strong> JPG, PNG, WebP &nbsp;|&nbsp; <strong>Kích thước đề xuất:</strong> 800×500px &nbsp;|&nbsp; <strong>Dung lượng tối đa:</strong> 2MB
+                    </div>
+                </div>
+
+                <h6 class="fw-600 mb-3 mt-4">Tốc độ tải trang — Đề xuất tối ưu</h6>
+                <div class="progress-step"><div class="label">Nén ảnh xe (WebP)</div><div class="bar"><span style="width:90%"></span></div><div class="pct">+90%</div></div>
+                <div class="progress-step"><div class="label">Bật PHP OPcache</div><div class="bar"><span style="width:70%"></span></div><div class="pct">+70%</div></div>
+                <div class="progress-step"><div class="label">Bật MySQL Query Cache</div><div class="bar"><span style="width:55%"></span></div><div class="pct">+55%</div></div>
+                <div class="progress-step"><div class="label">Minify CSS/JS</div><div class="bar"><span style="width:40%"></span></div><div class="pct">+40%</div></div>
+            </div>
+
+            <!-- ========== 7. FAQ ========== -->
+            <div class="section-card" id="faq">
+                <div class="section-title">
+                    <div class="icon-badge faq"><i class="fas fa-question-circle"></i></div>
+                    7. Câu Hỏi Thường Gặp (FAQ)
+                </div>
+                <hr class="section-divider">
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span><i class="fas fa-question-circle text-primary me-2"></i>Mở web chỉ thấy trang trắng / lỗi 500?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Kiểm tra: <br>
+                        1. PHP đã bật extension <code>pdo_mysql</code> chưa (trong <code>php.ini</code>)<br>
+                        2. Database <code>car_rental</code> đã được tạo và import SQL chưa<br>
+                        3. Thông tin kết nối trong <code>config/database.php</code> có đúng không<br>
+                        4. Xem log lỗi tại <code>C:\xampp\php\logs\php_error_log</code>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span><i class="fas fa-question-circle text-primary me-2"></i>Không upload được ảnh xe?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Kiểm tra: <br>
+                        1. Thư mục <code>assets/images/cars/</code> phải có quyền ghi (writable)<br>
+                        2. Trong <code>php.ini</code> kiểm tra <code>upload_max_filesize</code> và <code>post_max_size</code> (tăng lên 10M nếu cần)<br>
+                        3. Extension <code>gd</code> đã được bật chưa
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span><i class="fas fa-question-circle text-primary me-2"></i>Apache báo lỗi "Port 80 in use"?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Cổng 80 đang bị chiếm (thường do Skype hoặc IIS). Giải pháp:<br>
+                        1. Mở XAMPP Control Panel → Apache → <strong>Config</strong> → <strong>httpd.conf</strong><br>
+                        2. Tìm dòng <code>Listen 80</code> → đổi thành <code>Listen 8080</code><br>
+                        3. Khởi động lại Apache → Truy cập <code>http://localhost:8080/carrental_test/</code>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span><i class="fas fa-question-circle text-primary me-2"></i>Quên mật khẩu Admin?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Vào phpMyAdmin → Database <code>car_rental</code> → Bảng <code>admins</code> → Sửa trực tiếp trường <code>password</code>.<br>
+                        Lưu ý: mật khẩu có thể được mã hóa <code>MD5</code> hoặc <code>password_hash()</code>, cần tạo hash tương ứng.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span><i class="fas fa-question-circle text-primary me-2"></i>Tiếng Việt bị hiển thị sai ký tự (lỗi encoding)?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        1. Đảm bảo database dùng charset <code>utf8mb4_unicode_ci</code><br>
+                        2. Trong file PHP kết nối: thêm <code>$pdo->exec("SET NAMES utf8mb4")</code><br>
+                        3. Kiểm tra file PHP được lưu ở định dạng <strong>UTF-8 without BOM</strong>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span><i class="fas fa-question-circle text-primary me-2"></i>Deploy lên hosting/server thật cần làm gì?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        1. Upload toàn bộ source lên hosting qua FTP hoặc cPanel File Manager<br>
+                        2. Tạo database MySQL trên hosting và import file <code>database.sql</code><br>
+                        3. Cập nhật <code>config/database.php</code> với thông tin database trên hosting<br>
+                        4. Cập nhật <code>APP_URL</code> thành tên miền thực<br>
+                        5. Đặt quyền thư mục <code>assets/images/</code> thành <code>755</code> hoặc <code>777</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== FOOTER CARD ========== -->
+            <div class="section-card text-center" style="background: linear-gradient(135deg, #f0f4ff, #faf5ff);">
+                <div style="font-size:2.5rem; margin-bottom:12px;">🚗</div>
+                <h5 class="fw-700">CarRental — Hệ Thống Quản Lý Cho Thuê Xe</h5>
+                <p class="text-muted" style="font-size:0.88rem;">Tài liệu này bao gồm toàn bộ hướng dẫn cài đặt và vận hành hệ thống.</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
+                    <a href="index.php" class="btn btn-primary btn-sm px-4" style="border-radius:20px;">
+                        <i class="fas fa-home me-2"></i>Về trang chủ
+                    </a>
+                    <a href="admin/index.php" class="btn btn-warning btn-sm px-4" style="border-radius:20px;">
+                        <i class="fas fa-shield-alt me-2"></i>Trang Admin
+                    </a>
+                    <a href="database.sql" class="btn btn-outline-secondary btn-sm px-4" style="border-radius:20px;" download>
+                        <i class="fas fa-database me-2"></i>Tải database.sql
+                    </a>
+                </div>
+            </div>
+
+        </div><!-- /col-lg-9 -->
+    </div><!-- /row -->
+</div><!-- /container -->
+
+<!-- FOOTER -->
+<div class="guide-footer">
+    <strong>CarRental</strong> &copy; 2025 &nbsp;|&nbsp; Tài liệu hướng dẫn cài đặt và sử dụng &nbsp;|&nbsp;
+    Phiên bản 1.0
+</div>
+
+<!-- BACK TO TOP -->
+<a href="#" class="back-to-top" id="backToTop"><i class="fas fa-chevron-up"></i></a>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ===== BACK TO TOP =====
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        backToTop.classList.toggle('visible', window.scrollY > 300);
+    });
+
+    // ===== FAQ TOGGLE =====
+    function toggleFaq(btn) {
+        const item = btn.closest('.faq-item');
+        item.classList.toggle('open');
+    }
+
+    // ===== COPY CODE =====
+    function copyCode(btn) {
+        const code = btn.closest('.code-block').querySelector('code');
+        const text = code.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Đã sao chép!';
+            btn.style.color = '#6ee7b7';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-copy me-1"></i>Sao chép';
+                btn.style.color = '';
+            }, 2000);
+        });
+    }
+
+    // ===== ACTIVE TOC ON SCROLL =====
+    const sections = document.querySelectorAll('[id]');
+    const navLinks = document.querySelectorAll('.toc-sidebar .nav-link');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                const active = document.querySelector(`.toc-sidebar a[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+
+    // ===== SMOOTH SCROLL =====
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            const target = document.querySelector(a.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,6 +1,25 @@
 // true khi chạy trên localhost/XAMPP, false khi chạy web tĩnh
 const IS_LOCAL = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
 
+async function getMergedStaticCars() {
+    const sd = await STATIC_DATA_PROMISE;
+    const carTypes = Array.isArray(sd?.car_types) ? sd.car_types : [];
+    const cars = Array.isArray(sd?.cars) ? sd.cars : [];
+    const carTypeMap = new Map(carTypes.map(type => [Number(type.id), type]));
+
+    return cars.map(car => {
+        const carType = carTypeMap.get(Number(car.type_id)) || {};
+        const imageSet = car.images || carType.images || {};
+        const fallbackMain = 'thue-xe-xe-anh-mac-dinh-fallback.jpg';
+
+        return {
+            ...carType,
+            ...car,
+            main_image: car.main_image || imageSet.front || carType.main_image || fallbackMain
+        };
+    });
+}
+
 const API = {
     baseURL: 'controllers/',
 
@@ -64,38 +83,74 @@ const API = {
         },
         search: async (params) => {
             try {
-                const query = new URLSearchParams(params).toString();
-                const res = await fetch(`${API.baseURL}car-controller.php?action=search&${query}`);
-                if (!res.ok) throw new Error();
-                const result = await res.json();
-                if (!result.success) throw new Error();
-                return result;
-            } catch {
-                const sd = await STATIC_DATA_PROMISE;
-                let cars = [...sd.cars];
-                if (params.brand) cars = cars.filter(c => c.brand === params.brand);
-                if (params.seats) cars = cars.filter(c => c.seats === parseInt(params.seats));
-                if (params.price) {
-                    if (params.price.includes('-')) {
-                        const [min, max] = params.price.split('-').map(Number);
-                        cars = cars.filter(c => c.price_per_day >= min && c.price_per_day <= max);
+                let cars = (await getMergedStaticCars()).filter(c => c.status === 'available');
+
+                const brand = (params?.brand || '').trim().toLowerCase();
+                const seats = params?.seats;
+                const price = (params?.price || '').trim();
+
+                if (brand) {
+                    cars = cars.filter(c => String(c.brand || '').trim().toLowerCase() === brand);
+                }
+
+                if (seats !== undefined && seats !== null && seats !== '') {
+                    const seatNum = Number(seats);
+                    cars = Number.isFinite(seatNum)
+                        ? cars.filter(c => Number(c.seats) === seatNum)
+                        : [];
+                }
+
+                if (price) {
+                    if (price.includes('-')) {
+                        const [min, max] = price.split('-').map(Number);
+                        cars = (Number.isFinite(min) && Number.isFinite(max))
+                            ? cars.filter(c => {
+                                const carPrice = Number(c.price_per_day);
+                                return Number.isFinite(carPrice) && carPrice >= min && carPrice <= max;
+                            })
+                            : [];
                     } else {
-                        cars = cars.filter(c => c.price_per_day >= parseInt(params.price));
+                        const min = Number(price);
+                        cars = Number.isFinite(min)
+                            ? cars.filter(c => {
+                                const carPrice = Number(c.price_per_day);
+                                return Number.isFinite(carPrice) && carPrice >= min;
+                            })
+                            : [];
                     }
                 }
+
                 return { success: true, data: cars };
+            } catch {
+                return { success: false, message: 'Không tải được dữ liệu xe từ file JSON' };
             }
         },
         getFilterOptions: async () => {
             try {
-                const res = await fetch(`${API.baseURL}car-controller.php?action=getFilterOptions`);
-                if (!res.ok) throw new Error();
-                const result = await res.json();
-                if (!result.success) throw new Error();
-                return result;
+                const cars = (await getMergedStaticCars()).filter(c => c.status === 'available');
+                const brands = [...new Set(
+                    cars.map(c => String(c.brand || '').trim()).filter(Boolean)
+                )].sort((a, b) => a.localeCompare(b, 'vi'));
+
+                const seats = [...new Set(
+                    cars.map(c => Number(c.seats)).filter(Number.isFinite)
+                )].sort((a, b) => a - b);
+
+                const prices = cars
+                    .map(c => Number(c.price_per_day))
+                    .filter(Number.isFinite);
+
+                return {
+                    success: true,
+                    brands,
+                    seats,
+                    prices: {
+                        min: prices.length ? Math.min(...prices) : 0,
+                        max: prices.length ? Math.max(...prices) : 0
+                    }
+                };
             } catch {
-                const sd = await STATIC_DATA_PROMISE;
-                return { success: true, ...sd.filterOptions };
+                return { success: false, message: 'Không tải được bộ lọc từ file JSON' };
             }
         }
     },

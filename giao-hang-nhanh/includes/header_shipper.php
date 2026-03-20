@@ -11,7 +11,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
     $res_lock = $stmt_lock->get_result();
     if ($res_lock && $row_lock = $res_lock->fetch_assoc()) {
         if ($row_lock['is_locked'] == 1) {
-            echo '<script>alert("Tài khoản của bạn đã bị khóa."); window.location.href="logout.php";</script>';
+            echo '<script>alert("Tài khoản của bạn đã bị khóa."); window.location.href="../logout.php";</script>';
             exit;
         }
     }
@@ -38,7 +38,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
 ?>
 <!-- FontAwesome 6.4.0 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="../assets/css/admin.css?v=<?php echo time(); ?>">
 <header id="header">
     <nav class="navbar container">
         <div class="logo">
@@ -68,7 +68,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
                     <div
                         style="padding: 10px 15px; font-weight: bold; border-bottom: 1px solid #eee; color: #333; display: flex; justify-content: space-between; align-items: center;">
                         Thông báo
-                        <a href="notifications.php" style="font-size: 12px; color: #0a2a66; font-weight: normal;">Xem
+                        <a href="../notifications.php" style="font-size: 12px; color: #0a2a66; font-weight: normal;">Xem
                             tất cả</a>
                     </div>
                     <div id="notification-list">
@@ -85,7 +85,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
                     <li class="<?php echo ($current_page === 'shipper_profile.php' || $current_page === 'profile.php') ? 'active' : ''; ?>">
                         <a href="shipper_profile.php">Hồ sơ</a>
                     </li>
-                    <li><a href="logout.php">Đăng xuất</a></li>
+                    <li><a href="../logout.php">Đăng xuất</a></li>
                 </ul>
             </li>
         </ul>
@@ -94,5 +94,5 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
     </nav>
 </header>
 <!-- Core & Navigation Scripts -->
-<script src="assets/js/main-core.js?v=<?php echo time(); ?>"></script>
-<script src="assets/js/modules/main-navigation.js?v=<?php echo time(); ?>"></script>
+<script src="../assets/js/main-core.js?v=<?php echo time(); ?>"></script>
+<script src="../assets/js/modules/main-navigation.js?v=<?php echo time(); ?>"></script>

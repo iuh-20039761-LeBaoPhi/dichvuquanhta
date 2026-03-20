@@ -2,11 +2,17 @@
   if (window.__giaoHangNhanhSharedLayoutLoaded) return;
   window.__giaoHangNhanhSharedLayoutLoaded = true;
 
-  const currentPath = window.location.pathname.toLowerCase();
-  const inPublicDir = currentPath.includes("/public/");
-  const currentPage = currentPath.split("/").pop() || "index.html";
-  const includesBase = inPublicDir ? "../includes/" : "includes/";
-  const rootPath = inPublicDir ? "../" : "./";
+  const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
+  const currentPathLower = currentPath.toLowerCase();
+  const inPublicDir = currentPathLower.includes("/public/");
+  const currentPage = currentPathLower.split("/").pop() || "index.html";
+  const projectMarker = "/giao-hang-nhanh/";
+  const projectMarkerIndex = currentPathLower.lastIndexOf(projectMarker);
+  const projectBase = projectMarkerIndex !== -1
+    ? currentPath.slice(0, projectMarkerIndex + projectMarker.length)
+    : "./";
+  const parentBase = projectBase.replace(/giao-hang-nhanh\/?$/i, "");
+  const includesBase = `${projectBase}includes/`;
 
   function loadPartial(url) {
     try {
@@ -30,51 +36,43 @@
     let html = loadPartial(`${includesBase}${fileName}`);
     if (!html) return null;
 
-    if (inPublicDir) {
-      html = html.replace(/(src=['"])(?:\.\/)?public\//g, "$1");
-    }
-
     host.innerHTML = html;
     return host;
   }
 
   function buildLinkMap() {
-    const pricingLink = `${rootPath}public/tra-cuu-gia.html`;
-    const trackingLink = `${rootPath}public/tra-don-hang.html`;
-    const externalServicePrefix = inPublicDir ? '../../' : '../';
-
     return {
-      mainSite: `${externalServicePrefix}index.html`,
-      brand: `${rootPath}index.html`,
-      mainLogo: `${externalServicePrefix}public/asset/image/logo.png`,
-      brandLogo: `${rootPath}public/assets/images/favicon.png`,
+      mainSite: `${parentBase}index.html`,
+      brand: `${projectBase}index.html`,
+      mainLogo: `${parentBase}public/asset/image/logo.png`,
+      brandLogo: `${projectBase}public/assets/images/favicon.png`,
 
-      home: `${rootPath}index.html#hero`,
-      about: `${rootPath}index.html#hero`,
-      services: `${rootPath}index.html#services`,
-      pricing: pricingLink,
-      contact: `${rootPath}index.html#contact`,
-      booking: `${rootPath}public/dat-lich-giao-hang-nhanh.html`,
-      tracking: trackingLink,
-      guide: `${rootPath}public/huong-dan-dat-hang.html`,
-      login: `${rootPath}public/login.html`,
-      register: `${rootPath}public/register.html`,
-      "shipping-policy": `${rootPath}public/chinh-sach-van-chuyen.html`,
-      privacy: `${rootPath}public/chinh-sach-bao-mat.html`,
-      terms: `${rootPath}public/dieu-khoan-su-dung.html`,
-      articles: `${rootPath}public/bai-viet.html`,
+      home: `${projectBase}index.html#hero`,
+      about: `${projectBase}index.html#hero`,
+      services: `${projectBase}index.html#services`,
+      pricing: `${projectBase}tra-cuu-gia.html`,
+      contact: `${projectBase}index.html#contact`,
+      booking: `${projectBase}dat-lich-giao-hang-nhanh.html`,
+      tracking: `${projectBase}tra-don-hang.html`,
+      guide: `${projectBase}huong-dan-dat-hang.html`,
+      login: `${projectBase}dang-nhap.html`,
+      register: `${projectBase}dang-ky.html`,
+      "shipping-policy": `${projectBase}chinh-sach-van-chuyen.html`,
+      privacy: `${projectBase}chinh-sach-bao-mat.html`,
+      terms: `${projectBase}dieu-khoan-su-dung.html`,
+      articles: `${projectBase}bai-viet.html`,
 
-      "svc-giao-hang-nhanh": `${externalServicePrefix}giao-hang-nhanh/`,
-      "svc-dich-vu-chuyen-don": `${externalServicePrefix}dich-vu-chuyen-don/`,
-      "svc-lau-don-ve-sinh": `${externalServicePrefix}dich-vu-don-ve-sinh/demo/`,
-      "svc-cham-soc-me-be": `${externalServicePrefix}cham-soc-me-va-be/`,
-      "svc-cham-soc-vuon": `${externalServicePrefix}cham-soc-vuon-nha/`,
-      "svc-giat-ui": `${externalServicePrefix}giat-ui-nhanh/`,
-      "svc-tho-nha": `${externalServicePrefix}tho-nha/`,
-      "svc-cham-soc-nguoi-gia": `${externalServicePrefix}cham-soc-nguoi-gia/`,
-      "svc-cham-soc-nguoi-benh": `${externalServicePrefix}cham-soc-nguoi-benh/`,
-      "svc-thue-xe": `${externalServicePrefix}thue-xe/`,
-      "svc-sua-xe": `${externalServicePrefix}sua-xe-luu-dong/`,
+      "svc-giao-hang-nhanh": `${parentBase}giao-hang-nhanh/`,
+      "svc-dich-vu-chuyen-don": `${parentBase}dich-vu-chuyen-don/`,
+      "svc-lau-don-ve-sinh": `${parentBase}dich-vu-don-ve-sinh/demo/`,
+      "svc-cham-soc-me-be": `${parentBase}cham-soc-me-va-be/`,
+      "svc-cham-soc-vuon": `${parentBase}cham-soc-vuon-nha/`,
+      "svc-giat-ui": `${parentBase}giat-ui-nhanh/`,
+      "svc-tho-nha": `${parentBase}tho-nha/`,
+      "svc-cham-soc-nguoi-gia": `${parentBase}cham-soc-nguoi-gia/`,
+      "svc-cham-soc-nguoi-benh": `${parentBase}cham-soc-nguoi-benh/`,
+      "svc-thue-xe": `${parentBase}thue-xe/`,
+      "svc-sua-xe": `${parentBase}sua-xe-luu-dong/`,
     };
   }
 
@@ -142,9 +140,7 @@
   }
 
   function applyFavicon() {
-    const faviconPath = inPublicDir
-      ? "assets/images/favicon.ico"
-      : "public/assets/images/favicon.ico";
+    const faviconPath = `${projectBase}public/assets/images/favicon.ico`;
 
     let faviconLink = document.querySelector("link[rel='icon']");
     if (faviconLink) {

@@ -1,27 +1,44 @@
 <?php
+/**
+ * Provider Auth Controller — v3
+ * Bảng `users` → `nguoidung`, cột tiếng Việt không dấu.
+ * API contract (session keys, JSON output) giữ nguyên.
+ */
+
 require_once dirname(__DIR__) . '/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once '../../config/database.php';
 
 $action = $_GET['action'] ?? '';
 
+// ─── CHECK LOGIN ──────────────────────────────────────────────────
 if ($action === 'checkLogin') {
     if (isset($_SESSION['user_id']) && $_SESSION['user_role'] === 'provider') {
-        echo json_encode(['success' => true, 'id' => $_SESSION['user_id'], 'name' => $_SESSION['user_name'], 'email' => $_SESSION['user_email'], 'company' => $_SESSION['user_company']]);
+        echo json_encode([
+            'success' => true,
+            'id'      => $_SESSION['user_id'],
+            'name'    => $_SESSION['user_name'],
+            'email'   => $_SESSION['user_email'],
+            'company' => $_SESSION['user_company'],
+        ]);
     } else {
         echo json_encode(['success' => false]);
     }
     exit;
 }
 
+// ─── LOGOUT ───────────────────────────────────────────────────────
 if ($action === 'logout') {
-    unset($_SESSION['user_id'], $_SESSION['user_name'], $_SESSION['user_email'], $_SESSION['user_role'], $_SESSION['user_company']);
+    unset(
+        $_SESSION['user_id'], $_SESSION['user_name'], $_SESSION['user_email'],
+        $_SESSION['user_role'], $_SESSION['user_company']
+    );
     echo json_encode(['success' => true]);
     exit;
 }
 
+// ─── REGISTER ─────────────────────────────────────────────────────
 if ($action === 'register') {
-    // Nhận multipart/form-data
     $full_name      = trim($_POST['full_name']      ?? '');
     $email          = strtolower(trim($_POST['email'] ?? ''));
     $phone          = trim($_POST['phone']           ?? '');
@@ -70,18 +87,27 @@ if ($action === 'register') {
         $db   = new Database();
         $conn = $db->getConnection();
 
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+        // Kiểm tra email tồn tại
+        $stmt = $conn->prepare("SELECT id FROM nguoidung WHERE email = ? LIMIT 1");
         $stmt->execute([$email]);
         if ($stmt->fetch()) {
             echo json_encode(['success' => false, 'message' => 'Email này đã được đăng ký']); exit;
         }
 
         $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+        // INSERT vào nguoidung với tên cột mới
         $stmt = $conn->prepare(
-            "INSERT INTO users (full_name, email, phone, password, role, status, company_name, license_number, address, description, avatar, cccd_front, cccd_back)
+            "INSERT INTO nguoidung
+                (hoten, email, sodienthoai, matkhau, vaitro, trangthai,
+                 tencongty, sogiayphep, diachi, mota, avatar, cccdmatruoc, cccdmatsau)
              VALUES (?, ?, ?, ?, 'provider', 'pending', ?, ?, ?, ?, ?, ?, ?)"
         );
-        $stmt->execute([$full_name, $email, $phone, $hashed, $company_name, $license_number, $address, $description, $avatar_path, $cccd_front_path, $cccd_back_path]);
+        $stmt->execute([
+            $full_name, $email, $phone, $hashed,
+            $company_name, $license_number, $address, $description,
+            $avatar_path, $cccd_front_path, $cccd_back_path,
+        ]);
 
         echo json_encode(['success' => true, 'message' => 'Đăng ký thành công! Vui lòng chờ admin xét duyệt tài khoản.']);
     } catch (PDOException $e) {
@@ -90,10 +116,11 @@ if ($action === 'register') {
     exit;
 }
 
+// ─── LOGIN ────────────────────────────────────────────────────────
 if ($action === 'login') {
     $data     = json_decode(file_get_contents('php://input'), true);
     $phone    = trim($data['phone'] ?? '');
-    $password = $data['password'] ?? '';
+    $password = $data['password']   ?? '';
 
     if (!$phone || !$password) {
         echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ thông tin']); exit;
@@ -103,7 +130,13 @@ if ($action === 'login') {
         $db   = new Database();
         $conn = $db->getConnection();
 
-        $stmt = $conn->prepare("SELECT * FROM users WHERE phone = ? AND role = 'provider' LIMIT 1");
+        // nguoidung: sodienthoai + vaitro='provider', alias để đọc quen thuộc
+        $stmt = $conn->prepare(
+            "SELECT id, hoten AS full_name, email, sodienthoai AS phone,
+                    matkhau AS password, trangthai AS status,
+                    tencongty AS company_name
+             FROM nguoidung WHERE sodienthoai = ? AND vaitro = 'provider' LIMIT 1"
+        );
         $stmt->execute([$phone]);
         $user = $stmt->fetch();
 
@@ -126,7 +159,11 @@ if ($action === 'login') {
         $_SESSION['user_role']    = 'provider';
         $_SESSION['user_company'] = $user['company_name'];
 
-        echo json_encode(['success' => true, 'name' => $user['full_name'], 'company' => $user['company_name']]);
+        echo json_encode([
+            'success' => true,
+            'name'    => $user['full_name'],
+            'company' => $user['company_name'],
+        ]);
     } catch (PDOException $e) {
         echo json_encode(['success' => false, 'message' => 'Lỗi hệ thống!']);
     }

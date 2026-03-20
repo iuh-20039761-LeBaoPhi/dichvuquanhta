@@ -1,4 +1,10 @@
 <?php
+/**
+ * Customer Bookings Controller — v3
+ * Bảng `bookings` → `datxe`, `users` → `nguoidung`.
+ * AS alias để output JSON giữ nguyên field name cũ.
+ */
+
 require_once dirname(__DIR__) . '/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once '../../config/database.php';
@@ -17,21 +23,28 @@ try {
     $conn = $db->getConnection();
 
     if ($action === 'getMyBookings') {
-        // JOIN với users để lấy thông tin nhà cung cấp thực hiện đơn
+        // JOIN datxe với nguoidung (nhà cung cấp)
         $stmt = $conn->prepare(
             "SELECT
-                b.id, b.car_id, b.car_name,
-                b.pickup_date, b.return_date, b.total_days,
-                b.total_price, b.addon_total, b.pickup_location,
-                b.status, b.created_at,
-                p.id            AS provider_id,
-                p.full_name     AS provider_name,
-                p.phone         AS provider_phone,
-                p.company_name  AS provider_company
-             FROM bookings b
-             LEFT JOIN users p ON p.id = b.provider_id AND p.role = 'provider'
-             WHERE b.user_id = ?
-             ORDER BY b.created_at DESC"
+                b.id,
+                b.idxe               AS car_id,
+                b.tenxe              AS car_name,
+                b.ngaynhan           AS pickup_date,
+                b.ngaytra            AS return_date,
+                b.songay             AS total_days,
+                b.tongtien           AS total_price,
+                b.tiendichvuthem     AS addon_total,
+                b.diachinhan         AS pickup_location,
+                b.trangthai          AS status,
+                b.ngaytao            AS created_at,
+                p.id                 AS provider_id,
+                p.hoten              AS provider_name,
+                p.sodienthoai        AS provider_phone,
+                p.tencongty          AS provider_company
+             FROM datxe b
+             LEFT JOIN nguoidung p ON p.id = b.idnhacungcap AND p.vaitro = 'provider'
+             WHERE b.idkhachhang = ?
+             ORDER BY b.ngaytao DESC"
         );
         $stmt->execute([$user_id]);
         echo json_encode(['success' => true, 'data' => $stmt->fetchAll()]);

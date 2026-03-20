@@ -15,7 +15,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
     $res_lock = $stmt_lock->get_result();
     if ($res_lock && $row_lock = $res_lock->fetch_assoc()) {
         if ($row_lock['is_locked'] == 1) {
-            echo '<script>alert("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin."); window.location.href="logout.php";</script>';
+            echo '<script>alert("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin."); window.location.href="../logout.php";</script>';
             exit;
         }
     }
@@ -36,7 +36,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
 <header id="header">
     <nav class="navbar container">
         <div class="logo">
-            <a href="index.php" style="text-decoration: none;">
+            <a href="../../index.html" style="text-decoration: none;">
                 <h1>Giao Hàng Nhanh</h1>
             </a>
         </div>
@@ -44,14 +44,14 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
             <li class="<?php echo ($current_page === 'dashboard.php') ? 'active' : ''; ?>">
                 <a href="dashboard.php">Dashboard</a>
             </li>
-            <li class="<?php echo ($current_page === 'dat-lich-giao-hang-nhanh.html') ? 'active' : ''; ?>">
-                <a href="dat-lich-giao-hang-nhanh.html">Tạo đơn hàng</a>
+            <li>
+                <a href="../../dat-lich-giao-hang-nhanh.html">Tạo đơn hàng</a>
             </li>
             <li class="<?php echo ($current_page === 'order_history.php') ? 'active' : ''; ?>">
                 <a href="order_history.php">Lịch sử đơn</a>
             </li>
             <!-- Notification Bell (MỚI) -->
-            <li class="dropdown <?php echo ($current_page === 'notifications.php') ? 'active' : ''; ?>"
+            <li class="dropdown"
                 id="notification-bell">
                 <a href="#" style="font-size: 20px; color: white; padding: 0 10px; position: relative;">
                     🔔
@@ -64,7 +64,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
                     <div
                         style="padding: 10px 15px; font-weight: bold; border-bottom: 1px solid #eee; color: #333; display: flex; justify-content: space-between; align-items: center;">
                         Thông báo
-                        <a href="notifications.php" style="font-size: 12px; color: #0a2a66; font-weight: normal;">Xem
+                        <a href="../notifications.php" style="font-size: 12px; color: #0a2a66; font-weight: normal;">Xem
                             tất cả</a>
                     </div>
                     <div id="notification-list">
@@ -79,7 +79,7 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
                 <ul class="dropdown-menu">
                     <li><a href="address_book.php">Sổ địa chỉ</a></li>
                     <li><a href="profile.php">Hồ sơ</a></li>
-                    <li><a href="logout.php">Đăng xuất</a></li>
+                    <li><a href="../logout.php">Đăng xuất</a></li>
                 </ul>
             </li>
         </ul>

@@ -71,7 +71,7 @@ $stmt->bind_param($typesWithPage, ...$paramsWithPage);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$serviceMap = ['slow' => 'Chậm', 'standard' => 'Tiêu chuẩn', 'fast' => 'Nhanh', 'express' => 'Hỏa tốc', 'bulk' => 'Số lượng lớn'];
+$serviceMap = ['slow' => 'Chậm', 'standard' => 'Tiêu chuẩn', 'fast' => 'Nhanh', 'express' => 'Hỏa tốc', 'instant' => 'Ngay lập tức', 'bulk' => 'Số lượng lớn'];
 $statusMap = ['pending' => 'Chờ lấy', 'shipping' => 'Đang giao', 'completed' => 'Hoàn tất', 'cancelled' => 'Đã hủy'];
 
 $orders = [];

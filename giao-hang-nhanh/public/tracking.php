@@ -13,7 +13,7 @@
     <?php include __DIR__ . '/../includes/header.php'; ?>
 
     <!-- MAIN TRACKING -->
-    <main>
+    <main class="tracking-page-main">
         <h1 style="text-align: center; margin-bottom: 32px; color: #0a2a66">Tracking đơn hàng Giao Hàng Nhanh</h1>
 
         <ul class="internal-dropdown">

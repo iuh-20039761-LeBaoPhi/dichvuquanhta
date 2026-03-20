@@ -54,11 +54,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['role'] = $user['role'];
 
                 // Phân quyền chuyển hướng mặc định
-                $default_redirect = "dashboard.php";
+                $default_redirect = "khach-hang/dashboard.html";
                 if ($user['role'] === 'admin') {
-                    $default_redirect = "admin_stats.php";
+                    $default_redirect = "admin-giaohang/admin_stats.php";
                 } elseif ($user['role'] === 'shipper') {
-                    $default_redirect = "shipper_dashboard.php";
+                    $default_redirect = "nha-cung-cap/shipper_dashboard.php";
                 }
 
                 // Nếu có redirect hợp lệ từ request thì ưu tiên.

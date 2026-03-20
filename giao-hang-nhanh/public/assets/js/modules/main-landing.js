@@ -126,13 +126,19 @@
       "thua thien hue": ["hue"],
     };
     function resolveOrderFormConfigUrl() {
-      if (typeof window === "undefined") return "assets/data/form-dat-hang.json";
-      const path = window.location.pathname || "";
-      const publicIndex = path.indexOf("/public/");
-      if (publicIndex === -1) return "assets/data/form-dat-hang.json";
-      const basePath = path.slice(0, publicIndex + "/public/".length);
-      return `${basePath}assets/data/form-dat-hang.json`;
-    }
+      if (typeof window === "undefined") return "public/data/form-dat-hang.json";
+      if (window.GiaoHangNhanhCore?.publicBasePath) {
+        return `${window.GiaoHangNhanhCore.publicBasePath}data/form-dat-hang.json`;
+      }
+      const path = String(window.location.pathname || "").replace(/\\/g, "/");
+      const marker = "/giao-hang-nhanh/";
+      const markerIndex = path.toLowerCase().lastIndexOf(marker);
+      const projectBasePath =
+        markerIndex !== -1
+          ? path.slice(0, markerIndex + marker.length)
+          : "/";
+        return `${projectBasePath}public/data/form-dat-hang.json`;
+      }
 
     function applyOrderFormConfig(config) {
       if (!config || typeof config !== "object") return;
@@ -257,15 +263,20 @@
       const cardsHtml = services
         .map((service, index) => {
           const breakdown = service.breakdown || {};
+          const weightSizeFee =
+            (breakdown.overweightFee || 0) + (breakdown.volumeFee || 0);
+          const goodsGroupFee =
+            (breakdown.goodsFee || 0) + (breakdown.insuranceFee || 0);
+          const serviceGroupFee =
+            (breakdown.timeFee || 0) +
+            (breakdown.conditionFee || 0) +
+            (breakdown.codFee || 0);
           const domesticFeeList = `
             <li>① Cước cơ bản: <strong>${formatVnd(breakdown.basePrice || 0)}</strong></li>
-            <li>② Phí trọng lượng vượt mức: <strong>${formatVnd(breakdown.overweightFee || 0)}</strong></li>
-            <li>③ Phí thể tích: <strong>${formatVnd(breakdown.volumeFee || 0)}</strong></li>
-            ${breakdown.goodsFee > 0 ? `<li>④ Phụ phí loại hàng: <strong>${formatVnd(breakdown.goodsFee)}</strong></li>` : ""}
-            ${breakdown.timeFee > 0 ? `<li>⑤ Phụ phí khung giờ: <strong>${formatVnd(breakdown.timeFee)}</strong></li>` : ""}
-            ${breakdown.vehicleFee > 0 ? `<li>⑥ Điều chỉnh theo xe: <strong>${formatVnd(breakdown.vehicleFee)}</strong></li>` : ""}
-            ${breakdown.codFee > 0 ? `<li>⑦ Phí thu hộ COD: <strong>${formatVnd(breakdown.codFee)}</strong></li>` : ""}
-            ${breakdown.insuranceFee > 0 ? `<li>⑧ Phí bảo hiểm: <strong>${formatVnd(breakdown.insuranceFee)}</strong></li>` : ""}
+            <li>② Phí trọng lượng & kích thước: <strong>${formatVnd(weightSizeFee)}</strong></li>
+            <li>③ Phụ phí hàng hóa: <strong>${formatVnd(goodsGroupFee)}</strong></li>
+            <li>④ Phụ phí dịch vụ: <strong>${formatVnd(serviceGroupFee)}</strong></li>
+            <li>⑤ Phí phương tiện: <strong>${formatVnd(breakdown.vehicleFee || 0)}</strong></li>
           `;
 
           return `
@@ -275,9 +286,8 @@
                 ${index === 0 ? '<span class="quote-badge">Giá tốt nhất</span>' : ""}
               </div>
               <p class="quote-service-eta">⏱ Thời gian dự kiến: <strong>${escapeHtml(service.estimate || "Đang cập nhật")}</strong></p>
-              <p class="quote-service-eta">🚚 Phương tiện đề xuất: <strong>${escapeHtml(service.vehicleSuggestion || "Đang cập nhật")}</strong></p>
-              <p class="quote-service-eta">🛻 Xe áp giá mặc định: <strong>${escapeHtml(service.selectedVehicleLabel || service.vehicleSuggestion || "Đang cập nhật")}</strong>${service.vehicleMultiplier > 1 ? ` (x${escapeHtml(service.vehicleMultiplier)})` : ""}</p>
-              <p class="quote-breakdown-title">Chi tiết tính cước:</p>
+              <p class="quote-service-eta">🚚 Phương tiện gợi ý khi đặt đơn: <strong>${escapeHtml(service.vehicleSuggestion || "Đang cập nhật")}</strong></p>
+              <p class="quote-breakdown-title">Chi tiết tính cước tham khảo:</p>
               <ul class="quote-breakdown-list">
                 ${domesticFeeList}
               </ul>
@@ -687,10 +697,16 @@
         return;
       }
 
-      const result = window.calculateDomesticQuote(payload);
+      const result = window.calculateDomesticQuote(payload, {
+        includeTimeFee: false,
+        includeVehicleFee: false,
+      });
       const domesticCheapestService = result && Array.isArray(result.services) ? result.services[0] : null;
       const pricingExplanation = (typeof window.buildDomesticPricingExplanation === "function")
-        ? window.buildDomesticPricingExplanation(payload, result)
+        ? window.buildDomesticPricingExplanation(payload, result, {
+          includeTimeFee: false,
+          includeVehicleFee: false,
+        })
         : [];
 
       const summaryMetrics = [
@@ -721,13 +737,8 @@
         },
         {
           icon: "🚚",
-          label: "Xe đề xuất",
+          label: "Xe gợi ý",
           value: (domesticCheapestService && domesticCheapestService.vehicleSuggestion) || "Đang cập nhật",
-        },
-        {
-          icon: "🛻",
-          label: "Xe đang tính giá",
-          value: (domesticCheapestService && domesticCheapestService.selectedVehicleLabel) || "Đang cập nhật",
         },
       ];
       renderQuoteCards(
@@ -735,7 +746,7 @@
         `Bảng giá vận chuyển nội địa — ${result.zoneLabel || ""}`,
         summaryMetrics,
         result.services,
-        `Giá tham khảo nhanh = cước cơ bản theo km và gói dịch vụ + vượt cân + thể tích + phụ phí loại hàng + COD + bảo hiểm. Hệ thống đang lấy max(${result.actualWeight || 0}kg thực, ${result.volumetricWeight || 0}kg thể tích). Giá cuối ở bước đặt đơn có thể thay đổi nếu bạn chọn khung giờ lấy hàng ngoài giờ hoặc đổi phương tiện.`,
+        `Giá tham khảo nhanh đang bám theo 5 nhóm phí: phí cơ bản + phí trọng lượng & kích thước + phụ phí hàng hóa + phụ phí dịch vụ + phí phương tiện. Với Tiêu chuẩn, Nhanh và Hỏa tốc hệ thống không cộng phí thời gian; riêng Giao Ngay Lập Tức mới tách riêng phụ phí thời gian và phụ phí thời tiết. Khi sang bước đặt lịch, hệ thống sẽ tự xác định các khoản này và đối chiếu lại trước khi tạo đơn.`,
         pricingExplanation,
       );
     });
