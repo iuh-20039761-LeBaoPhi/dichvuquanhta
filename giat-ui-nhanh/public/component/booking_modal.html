@@ -1,3 +1,159 @@
+<style>
+  #bookingModal .modal-dialog,
+  #bookingConfirmModal .modal-dialog {
+    max-width: 560px;
+  }
+
+  #bookingModal .modal-content,
+  #bookingConfirmModal .modal-content {
+    border: 0;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.22);
+  }
+
+  #bookingModal .modal-header,
+  #bookingConfirmModal .modal-header {
+    background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    border-bottom: 0;
+    padding: 16px 18px;
+  }
+
+  #bookingModal .modal-title,
+  #bookingConfirmModal .modal-title {
+    color: #ffffff;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  #bookingModal .btn-close,
+  #bookingConfirmModal .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+  }
+
+  #bookingModal .modal-body,
+  #bookingConfirmModal .modal-body {
+    padding: 16px 18px 12px;
+    background: #f8fafc;
+  }
+
+  #bookingModal .modal-footer,
+  #bookingConfirmModal .modal-footer {
+    border-top: 1px solid #e2e8f0;
+    padding: 12px 18px 16px;
+    background: #ffffff;
+  }
+
+  #bookingModal .form-group {
+    margin-bottom: 14px;
+  }
+
+  #bookingModal .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #334155;
+    text-transform: uppercase;
+  }
+
+  #bookingModal .form-group input:not([type="checkbox"]):not([type="radio"]),
+  #bookingModal .form-group select,
+  #bookingModal .form-group textarea {
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    padding: 12px 14px;
+    font-size: 15px;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  #bookingModal
+    .form-group
+    input:not([type="checkbox"]):not([type="radio"]):focus,
+  #bookingModal .form-group select:focus,
+  #bookingModal .form-group textarea:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    outline: none;
+  }
+
+  #bookingModal #priceContact,
+  #bookingModal #ship,
+  #bookingModal #total {
+    font-weight: 700;
+    color: #0f172a;
+    background: #f1f5f9;
+  }
+
+  #bookingModal #total {
+    color: #0f766e;
+  }
+
+  #bookingModal .form-check {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 8px 10px;
+  }
+
+  #bookingModal .form-check-input {
+    margin-top: 0.2em;
+  }
+
+  #bookingConfirmModal .table {
+    margin-bottom: 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  #bookingConfirmModal .table th {
+    width: 38%;
+    white-space: nowrap;
+    color: #334155;
+    font-weight: 700;
+  }
+
+  #bookingConfirmModal .table td {
+    color: #0f172a;
+  }
+
+  @media (max-width: 768px) {
+    #bookingModal .modal-dialog,
+    #bookingConfirmModal .modal-dialog {
+      margin: 0;
+      max-width: 100%;
+      min-height: 100vh;
+    }
+
+    #bookingModal .modal-content,
+    #bookingConfirmModal .modal-content {
+      min-height: 100vh;
+      border-radius: 18px 18px 0 0;
+    }
+
+    #bookingModal .modal-body,
+    #bookingConfirmModal .modal-body {
+      max-height: calc(100vh - 130px);
+      overflow-y: auto;
+    }
+
+    #bookingModal .row {
+      --bs-gutter-x: 10px;
+    }
+
+    #bookingModal .form-group input:not([type="checkbox"]):not([type="radio"]),
+    #bookingModal .form-group select,
+    #bookingModal .form-group textarea {
+      font-size: 16px;
+    }
+  }
+</style>
+
 <div
   class="modal fade"
   id="bookingModal"
@@ -91,10 +247,33 @@
 
             <div class="col-sm-6">
               <div class="form-group">
-                <label>Dịch vụ cụ thể</label>
-                <select id="subService">
-                  <option value="">Chọn loại dịch vụ</option>
+                <label>Hình thức nhận / giao</label>
+                <select id="transportOption" name="transport_option">
+                  <option value="">Chọn hình thức nhận / giao</option>
                 </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Công việc thực hiện</label>
+                <div id="workItemsList" class="d-flex flex-column gap-2">
+                  <span class="text-muted small"
+                    >Chọn dịch vụ để hiển thị.</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Hóa chất hỗ trợ</label>
+                <div id="chemicalsList" class="d-flex flex-column gap-2">
+                  <span class="text-muted small"
+                    >Chọn dịch vụ để hiển thị.</span
+                  >
+                </div>
               </div>
             </div>
           </div>
@@ -128,7 +307,7 @@
           </div>
 
           <div class="form-group">
-            <label>Phí vận chuyển</label>
+            <label>Tiền di chuyển</label>
             <input type="text" id="ship" readonly />
           </div>
 
@@ -223,8 +402,16 @@
                 <td id="confirmService">-</td>
               </tr>
               <tr>
-                <th scope="row">Dịch vụ cụ thể</th>
+                <th scope="row">Hình thức nhận / giao</th>
                 <td id="confirmSubService">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Công việc thực hiện</th>
+                <td id="confirmWorkItems">-</td>
+              </tr>
+              <tr>
+                <th scope="row">Hóa chất hỗ trợ</th>
+                <td id="confirmChemicals">-</td>
               </tr>
               <tr>
                 <th scope="row">Số lượng</th>

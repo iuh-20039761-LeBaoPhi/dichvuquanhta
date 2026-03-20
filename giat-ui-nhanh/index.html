@@ -50,20 +50,19 @@
         </a>
         <ul class="nav-menu" id="navMenu">
           <li><a href="index.html" class="nav-link">Trang chủ</a></li>
-          <li><a href="#about" class="nav-link">Giới thiệu</a></li>
-          <li><a href="#services" class="nav-link">Dịch vụ</a></li>
-          <li><a href="#process" class="nav-link">Quy trình</a></li>
-          <li><a href="blog.html" class="nav-link" >Bài viết</a></li>
-          <li><a href="booking_order.html" class="nav-link" >Đơn đặt</a></li>
-          <li><a class="nav-link" data-bs-toggle="modal"data-bs-target="#bookingModal">Đặt dịch vụ</a></li>
-          <!-- <li>
+          <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
+          <li><a href="services.html" class="nav-link">Dịch vụ</a></li>
+          <li><a href="index.html#process" class="nav-link">Quy trình</a></li>
+          <li><a href="blog.html" class="nav-link">Bài viết</a></li>
+          <li><a href="booking_order.html" class="nav-link">Đơn đặt</a></li>
+          <li>
             <a
               class="nav-link"
               data-bs-toggle="modal"
-              data-bs-target="#searchModal"
-              ><i class="fas fa-search"></i> Tra cứu đơn đặt</a
+              data-bs-target="#bookingModal"
+              >Đặt dịch vụ</a
             >
-          </li> -->
+          </li>
         </ul>
         <button class="menu-toggle" id="menuToggle" aria-label="Menu">
           <svg
@@ -526,119 +525,6 @@
       </div>
     </section>
 
-    <!-- Services Section -->
-    <section id="services">
-      <div class="container">
-        <div class="section-header">
-          <div class="section-badge">
-            <span>DỊCH VỤ CỦA CHÚNG TÔI</span>
-          </div>
-          <h2>
-            Giải Pháp Giặt Ủi<br />
-            <span class="gradient-text">Toàn Diện</span>
-          </h2>
-          <p>
-            Từ quần áo hàng ngày đến đồ cao cấp, chúng tôi có giải pháp cho mọi
-            nhu cầu của bạn
-          </p>
-        </div>
-
-        <div class="services-grid" id="servicesGrid">
-          <script>
-            document.addEventListener("DOMContentLoaded", function () {
-              const servicesGrid = document.getElementById("servicesGrid");
-
-              fetch("public/services.json")
-                .then(function (response) {
-                  if (!response.ok) {
-                    throw new Error("Không thể load file JSON");
-                  }
-                  return response.json();
-                })
-                .then(function (data) {
-                  // Lọc bỏ combo
-                  const filteredServices = data.filter(function (service) {
-                    return service.price_unit !== "combo";
-                  });
-
-                  // Lấy giá thấp nhất của từng service
-                  filteredServices.forEach(function (service) {
-                    const prices = service.sub_services.map(function (sub) {
-                      return sub.price;
-                    });
-
-                    service.min_price = Math.min(...prices);
-                  });
-
-                  const icons = [
-                    { img: "public/asset/image/dich-vu-giat-minh-hoa.png", style: "" },
-                    {
-                      img: "public/asset/image/dich-vu-giat-ui-minh-hoa.png",
-                      style:
-                        "background: linear-gradient(135deg, #8b5cf6, #ec4899)",
-                    },
-                    {
-                      img: "public/asset/image/dich-vu-say-minh-hoa.png",
-                      style:
-                        "background: linear-gradient(135deg, #f97316, #dc2626)",
-                    },
-                    {
-                      img: "public/asset/image/dich-vu-giat-minh-hoa.png",
-                      style:
-                        "background: linear-gradient(135deg, #10b981, #14b8a6)",
-                    },
-                    {
-                      img: "public/asset/image/dich-vu-giat-ui-minh-hoa.png",
-                      style:
-                        "background: linear-gradient(135deg, #6366f1, #8b5cf6)",
-                    },
-                    {
-                      img: "public/asset/image/dich-vu-say-minh-hoa.png",
-                      style:
-                        "background: linear-gradient(135deg, #fbbf24, #f97316)",
-                    },
-                  ];
-
-                  let html = "";
-
-                  filteredServices.forEach(function (service, index) {
-                    const icon = icons[index % icons.length];
-                    const unit = service.price_unit === "kg" ? "Kg" : "Đôi";
-
-                    html += `
-            <div class="service-card">
-              <div class="service-icon" style="${icon.style}">
-                <img src="${icon.img}" class="icon-white" alt="">
-              </div>
-
-              <h3>${service.service_name}</h3>
-
-              <p>${service.summary}</p>
-
-              <p>
-                <b>Giá từ:</b> 
-                ${service.min_price.toLocaleString("vi-VN")} VNĐ / ${unit}
-              </p>
-              <button class="btn btn-info" data-service-id="${service.id}" data-bs-toggle="modal"data-bs-target="#bookingModal">
-                <span>Đặt dịch vụ</span>
-              </button> 
-            </div>
-            `;
-                  });
-
-                  servicesGrid.innerHTML = html;
-                })
-                .catch(function (error) {
-                  console.error("Lỗi:", error);
-                  servicesGrid.innerHTML =
-                    "<p>Không thể tải dữ liệu dịch vụ.</p>";
-                });
-            });
-          </script>
-        </div>
-      </div>
-    </section>
-
     <!-- Process Section -->
     <section id="process">
       <div class="container">
@@ -780,7 +666,7 @@
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing">
+    <!-- <section id="pricing">
       <div class="container">
         <div class="section-header">
           <div
@@ -810,15 +696,13 @@
         <script>
           document.addEventListener("DOMContentLoaded", function () {
             const pricingGrid = document.getElementById("pricingGrid");
-
-            // Load cả services và discount cùng lúc
             Promise.all([
               fetch("public/services.json").then(res => res.json()),
               fetch("public/discount.json").then(res => res.json())
             ])
             .then(([services, discounts]) => {
 
-              // Hàm check còn khuyến mãi không
+         
               function isDiscountActive(discount) {
                 const today = new Date();
                 const start = new Date(discount.start_date);
@@ -826,7 +710,6 @@
                 return today >= start && today <= end;
               }
 
-              // Lấy discount theo service_id
               function getDiscount(serviceId) {
                 return discounts.find(d => d.service_id === serviceId);
               }
@@ -848,9 +731,9 @@
                 const styleGradient =
                   styleGradients[index % styleGradients.length];
 
-                const price = service.sub_services[0].price;
+                const price = Number(service.price || 0);
 
-                // 🔥 LẤY DISCOUNT
+            
                 const discount = getDiscount(service.id);
                 let finalPrice = price;
                 let discountLabel = "";
@@ -955,416 +838,8 @@
             });
           });
         </script>
-        <!-- The Modal -->
+    
         <div id="bookingCombo"></div>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <!-- <section id="contact">
-      <div class="container">
-        <div class="section-header">
-          <div class="section-badge">
-            <span>LIÊN HỆ CHÚNG TÔI</span>
-          </div>
-          <h2>
-            Đặt Dịch Vụ
-            <span
-              style="
-                background: linear-gradient(to right, #3b82f6, #8b5cf6);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-              "
-              >Ngay Hôm Nay</span
-            >
-          </h2>
-          <p>Liên hệ ngay để được tư vấn và nhận ưu đãi đặc biệt</p>
-        </div>
-
-        <div class="contact-grid">
-          <div class="contact-info">
-            <h3>Thông Tin Liên Hệ</h3>
-
-            <div class="contact-item">
-              <div class="contact-item-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  class="bi bi-pin-map-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M3.1 11.2a.5.5 0 0 1 .4-.2H6a.5.5 0 0 1 0 1H3.75L1.5 15h13l-2.25-3H10a.5.5 0 0 1 0-1h2.5a.5.5 0 0 1 .4.2l3 4a.5.5 0 0 1-.4.8H.5a.5.5 0 0 1-.4-.8z"
-                  />
-                  <path
-                    fill-rule="evenodd"
-                    d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h4>Địa chỉ</h4>
-                <p>
-                  Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang
-                  Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh,
-                  Việt Nam
-                </p>
-              </div>
-            </div>
-
-            <div class="contact-item">
-              <div class="contact-item-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  class="bi bi-telephone-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h4>Hotline</h4>
-                <p>0775 472 347</p>
-              </div>
-            </div>
-
-            <div class="contact-item">
-              <div class="contact-item-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  class="bi bi-envelope-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h4>Email</h4>
-                <p>dichvuquanhta.vn@gmail.com</p>
-              </div>
-            </div>
-
-            <div class="contact-item">
-              <div class="contact-item-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  class="bi bi-clock-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h4>Giờ làm việc</h4>
-                <p>Thứ 2 - Chủ nhật: 6:00 - 22:00</p>
-                <p>Nhận giao 24/7</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="contact-form">
-            <h3>Gửi Thông Tin Cho Chúng Tôi</h3>
-            <form id="contactForm" class="contactForm">
-              <div class="form-group">
-                <label for="name">Họ và tên *</label>
-                <input type="text" id="name" name="name" required />
-              </div>
-
-              <div class="form-group">
-                <label for="phone">Số điện thoại *</label>
-                <input type="number" id="phone" name="phone" required />
-              </div>
-
-              <div class="form-group">
-                <label for="addressInput">Địa chỉ</label>
-                <div class="input-group">
-                  <input
-                    type="text"
-                    id="addressInput"
-                    name="address"
-                    placeholder="Nhập địa chỉ của bạn"
-                  />
-                </div>
-              </div>
-              <div class="form-group">
-                <button class="btn btn-info" type="button" id="locateBtn">
-                  <i class="fas fa-location-arrow"></i> Vị trí hiện tại
-                </button>
-              </div>
-              <script>
-                // button to get user's location and reverse geocode using OSM Nominatim (no key required)
-                document.addEventListener("DOMContentLoaded", function () {
-                  const locateBtn = document.getElementById("locateBtn");
-                  const addressInput = document.getElementById("addressInput");
-                  if (locateBtn) {
-                    locateBtn.addEventListener("click", function () {
-                      if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(
-                          function (position) {
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
-                            // use Nominatim reverse geocoding
-                            fetch(
-                              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
-                            )
-                              .then((res) => res.json())
-                              .then((data) => {
-                                if (data && data.display_name) {
-                                  addressInput.value = data.display_name;
-                                } else {
-                                  alert("Không thể xác định địa chỉ");
-                                }
-                              })
-                              .catch((e) => console.error(e));
-                          },
-                          function (err) {
-                            alert("Không thể lấy vị trí: " + err.message);
-                          },
-                        );
-                      } else {
-                        alert("Trình duyệt không hỗ trợ định vị");
-                      }
-                    });
-                  }
-                });
-              </script>
-              <div class="row">
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label for="serviceContact">Dịch vụ quan tâm</label>
-                    <select
-                      id="serviceContact"
-                      class="service-contact"
-                      name="service"
-                    >
-                      <option value="">Chọn dịch vụ</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="col-sm-6">
-                  <div class="form-group">
-                    <label>Dịch vụ cụ thể</label>
-                    <select id="subService">
-                      <option value="">Chọn loại dịch vụ</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label>Giá dịch vụ</label>
-                    <input type="text" id="priceContact" readonly />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <div id="kgBox">
-                      <label>Trọng lượng (kg)</label>
-                      <input type="number" id="kg" min="1" />
-                    </div>
-
-                    <div id="pairBox" style="display: none">
-                      <label>Đôi</label>
-                      <input type="number" id="pair" min="1" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label>Phí vận chuyển</label>
-                <input type="text" id="ship" readonly />
-              </div>
-
-              <div class="form-group">
-                <label>Tổng tiền</label>
-                <input type="text" id="total" readonly />
-              </div>
-
-              <div class="form-group">
-                <label for="message">Ghi chú</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  placeholder="Nội dung cần tư vấn..."
-                ></textarea>
-              </div>
-
-              <button
-                type="submit"
-                class="btn btn-primary"
-                style="width: 100%; justify-content: center"
-              >
-                <span>Đặt dịch vụ</span>
-              </button>
-              <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                  const serviceSelect =
-                    document.getElementById("serviceContact");
-                  const subServiceSelect =
-                    document.getElementById("subService");
-
-                  const kgBox = document.getElementById("kgBox");
-                  const pairBox = document.getElementById("pairBox");
-
-                  const kgInput = document.getElementById("kg");
-                  const pairInput = document.getElementById("pair");
-
-                  const priceInput = document.getElementById("priceContact");
-                  const shipInput = document.getElementById("ship");
-                  const totalInput = document.getElementById("total");
-
-                  const transportFee = 20000;
-
-                  shipInput.value = transportFee.toLocaleString("vi-VN");
-
-                  let services = [];
-
-                  /* LOAD JSON */
-
-                  fetch("public/services.json")
-                    .then((res) => res.json())
-                    .then((data) => {
-                      services = data.filter((s) => s.price_unit !== "combo");
-
-                      services.forEach((service) => {
-                        const option = document.createElement("option");
-
-                        option.value = service.id;
-                        option.textContent = service.service_name;
-                        option.dataset.unit = service.price_unit;
-
-                        serviceSelect.appendChild(option);
-                      });
-                    });
-
-                  /* CHỌN SERVICE */
-
-                  serviceSelect.addEventListener("change", function () {
-                    const serviceId = Number(this.value);
-
-                    if (!serviceId) {
-                      subServiceSelect.innerHTML =
-                        '<option value="">Chọn loại dịch vụ</option>';
-
-                      // reset số lượng
-                      kgInput.value = "";
-                      pairInput.value = "";
-
-                      // ẩn các box
-                      kgBox.style.display = "block";
-                      pairBox.style.display = "none";
-
-                      // reset giá
-                      priceInput.value = "";
-                      totalInput.value = "";
-
-                      return;
-                    }
-
-                    subServiceSelect.innerHTML =
-                      '<option value="">Chọn loại dịch vụ</option>';
-
-                    const service = services.find((s) => s.id === serviceId);
-
-                    if (!service) return;
-
-                    service.sub_services.forEach((sub) => {
-                      const option = document.createElement("option");
-
-                      option.value = sub.id;
-                      option.textContent = sub.name;
-                      option.dataset.price = sub.price;
-
-                      subServiceSelect.appendChild(option);
-                    });
-
-                    const unit = service.price_unit;
-
-                    // reset
-                    kgInput.value = 1;
-                    pairInput.value = 1;
-
-                    kgBox.style.display = "none";
-                    pairBox.style.display = "none";
-
-                    if (unit === "kg") kgBox.style.display = "block";
-                    if (unit === "pair") pairBox.style.display = "block";
-
-                    calculate();
-                  });
-
-                  /* CHỌN SUB SERVICE */
-
-                  subServiceSelect.addEventListener("change", function () {
-                    const option = this.options[this.selectedIndex];
-                    if (!option.value) {
-                      priceInput.value = "";
-                      totalInput.value = "";
-                      return;
-                    }
-
-                    const price = Number(option.dataset.price);
-
-                    priceInput.value = price.toLocaleString("vi-VN");
-
-                    calculate();
-                  });
-
-                  /* TÍNH TIỀN */
-
-                  function calculate() {
-                    const subOption =
-                      subServiceSelect.options[subServiceSelect.selectedIndex];
-
-                    if (!subOption.dataset.price) return;
-
-                    const price = Number(subOption.dataset.price);
-
-                    let quantity = 1;
-
-                    if (kgBox.style.display === "block")
-                      quantity = Number(kgInput.value);
-                    if (pairBox.style.display === "block")
-                      quantity = Number(pairInput.value);
-
-                    const total = price * quantity + transportFee;
-
-                    totalInput.value = total.toLocaleString("vi-VN");
-                  }
-
-                  /* CHANGE QUANTITY */
-
-                  kgInput.addEventListener("input", calculate);
-                  pairInput.addEventListener("input", calculate);
-                });
-              </script>
-            </form>
-          </div>
-        </div>
       </div>
     </section> -->
 

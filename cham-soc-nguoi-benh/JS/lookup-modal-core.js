@@ -16,15 +16,25 @@
     var style = document.createElement('style');
     style.id = 'lookupModalRuntimeStyles';
     style.textContent =
-      '#lookupModal .lookup-mobile-list .card{border:1px solid rgba(0,123,255,.25);box-shadow:0 4px 14px rgba(0,123,255,.12);}' +
+      '#lookupModal .lookup-mobile-list .card{border:1px solid rgba(220,53,69,.2);box-shadow:0 4px 14px rgba(220,53,69,.08);}' +
       '#lookupModal .lookup-mobile-row{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;padding:.35rem 0;border-bottom:1px dashed rgba(108,117,125,.25);}' +
       '#lookupModal .lookup-mobile-row:last-child{border-bottom:0;}' +
       '#lookupModal .lookup-mobile-label{font-weight:600;color:#6c757d;min-width:84px;flex:0 0 auto;}' +
       '#lookupModal .lookup-mobile-value{text-align:right;min-width:0;word-break:break-word;}' +
       '#lookupModal .lookup-mobile-actions{display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap;}' +
+      '#lookupInvoiceDetailContent .lookup-info-item{display:grid;grid-template-columns:130px minmax(0,1fr);gap:.5rem;align-items:center;margin-bottom:.45rem;}' +
+      '#lookupInvoiceDetailContent .lookup-info-label{font-weight:700;color:#7a1f1f;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+      '#lookupInvoiceDetailContent .lookup-info-value{line-height:1.3;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+      '#lookupInvoiceDetailContent .lookup-info-value .badge{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:inline-block;vertical-align:middle;}' +
+      '#lookupInvoiceDetailContent .lookup-invoice-card .lookup-info-label{white-space:normal;overflow:visible;text-overflow:clip;}' +
+      '#lookupInvoiceDetailContent .lookup-invoice-card .lookup-info-value{white-space:normal;overflow:visible;text-overflow:clip;word-break:break-word;}' +
+      '#lookupInvoiceDetailContent .lookup-work-list{list-style:none;padding-left:0;margin:0;display:flex;flex-direction:column;gap:.45rem;}' +
+      '#lookupInvoiceDetailContent .lookup-work-item{display:flex;align-items:flex-start;gap:.55rem;}' +
+      '#lookupInvoiceDetailContent .lookup-work-index{width:24px;height:24px;border-radius:50%;background:#0d6efd;color:#fff;font-weight:700;font-size:.78rem;display:inline-flex;align-items:center;justify-content:center;flex:0 0 24px;line-height:1;}' +
       '@media (max-width:767.98px){' +
       '  #lookupModal .lookup-mobile-list .card-body{padding:.75rem;}' +
       '  #lookupModal .lookup-mobile-row{font-size:.92rem;}' +
+      '  #lookupInvoiceDetailContent .lookup-info-item{grid-template-columns:112px minmax(0,1fr);}' +
       '}';
 
     document.head.appendChild(style);
@@ -137,6 +147,25 @@
       .join('');
   }
 
+  function getEmployeeMedia(media, nhanVien, invoice) {
+    if (!Array.isArray(media) || media.length === 0) return [];
+
+    var employeeId = nhanVien && nhanVien.id ? Number(nhanVien.id) : Number(invoice && invoice.nhan_vien_id);
+    var employeeName = (nhanVien && nhanVien.ten) || (invoice && invoice.employee_name) || '';
+
+    return media.filter(function (m) {
+      var uploaderId = Number((m && (m.nguoi_dung_id || m.uploader_id)) || 0);
+      var uploaderRole = String((m && m.uploader_role) || '').toLowerCase();
+      var uploaderName = String((m && m.uploader_name) || '');
+
+      if (employeeId && uploaderId && uploaderId === employeeId) return true;
+      if (uploaderRole.indexOf('nhan_vien') !== -1 || uploaderRole.indexOf('nhân viên') !== -1) return true;
+      if (employeeName && uploaderName && uploaderName === employeeName) return true;
+
+      return false;
+    });
+  }
+
   function hasDisplayValue(value) {
     return !(value === null || value === undefined || (typeof value === 'string' && value.trim() === ''));
   }
@@ -158,9 +187,9 @@
     }
 
     lines.push(
-      '<div class="d-flex align-items-start gap-2 mb-2">' +
-      '<span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis">' + label + '</span>' +
-      '<span>' + formattedValue + '</span>' +
+      '<div class="lookup-info-item">' +
+      '<span class="lookup-info-label">' + label + '</span>' +
+      '<span class="lookup-info-value">' + formattedValue + '</span>' +
       '</div>'
     );
   }
@@ -179,9 +208,9 @@
     }
 
     lines.push(
-      '<div class="d-flex align-items-start gap-2 mb-2">' +
-      '<span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis">' + label + '</span>' +
-      '<span>' + formattedValue + '</span>' +
+      '<div class="lookup-info-item">' +
+      '<span class="lookup-info-label">' + label + '</span>' +
+      '<span class="lookup-info-value">' + formattedValue + '</span>' +
       '</div>'
     );
   }
@@ -190,7 +219,7 @@
     var leftInfoLines = [];
     var rightInfoLines = [];
 
-    addInvoiceField(leftInfoLines, 'Mã hóa đơn', invoice.id);
+    // Chỉ hiển thị các trường được yêu cầu; trường rỗng sẽ tự ẩn bởi addInvoiceField.
     addInvoiceField(leftInfoLines, 'Tên khách hàng', invoice.ten_khach_hang || invoice.ten);
     addInvoiceField(leftInfoLines, 'Số điện thoại', invoice.dien_thoai);
     addInvoiceField(leftInfoLines, 'Dịch vụ', invoice.dich_vu);
@@ -202,68 +231,89 @@
     addInvoiceField(rightInfoLines, 'Ngày kết thúc', invoice.ngay_ket_thuc);
     addInvoiceField(rightInfoLines, 'Giờ bắt đầu', invoice.gio_bat_dau);
     addInvoiceField(rightInfoLines, 'Giờ kết thúc', invoice.gio_ket_thuc);
-    addInvoiceField(rightInfoLines, 'Tổng giờ', invoice.tong_gio);
     addInvoiceField(rightInfoLines, 'Tổng ngày', invoice.tong_ngay);
-    addInvoiceField(rightInfoLines, 'Đơn vị thời gian', invoice.don_vi_thoi_gian);
-    addInvoiceField(rightInfoLines, 'Số lượng thời gian', invoice.so_luong_thoi_gian);
     addInvoiceField(rightInfoLines, 'Giá tiền', invoice.gia_tien, { money: true });
-    addInvoiceField(rightInfoLines, 'Tổng tiền', invoice.tong_tien, { money: true });
     addInvoiceField(rightInfoLines, 'Trạng thái', invoice.trang_thai, { badge: true });
-    addInvoiceField(rightInfoLines, 'ID nhân viên', invoice.nhan_vien_id);
-    addInvoiceField(rightInfoLines, 'Ngày tạo', invoice.ngay_tao);
-    addInvoiceField(rightInfoLines, 'Ngày cập nhật', invoice.ngay_cap_nhat || invoice.updated_at);
 
     var hasWork = hasDisplayValue(invoice.cong_viec);
+    var workItems = hasWork
+      ? String(invoice.cong_viec)
+          .split(/\r?\n|,|;/)
+          .map(function (item) { return item.trim(); })
+          .filter(Boolean)
+      : [];
     var employeeAvatar = (nhanVien && nhanVien.anh_dai_dien) || invoice.employee_avatar || '';
+    var employeeName = (nhanVien && nhanVien.ten) || invoice.employee_name;
+    var employeePhone = (nhanVien && nhanVien.dien_thoai) || invoice.employee_phone;
+    var employeeEmail = (nhanVien && nhanVien.email) || invoice.employee_email;
+    var employeeRating = (nhanVien && nhanVien.danh_gia) || invoice.employee_rating;
+    var employeeExp = (nhanVien && nhanVien.kinh_nghiem) || invoice.employee_kinh_nghiem;
+    var hasEmployee = hasDisplayValue(employeeName) || hasDisplayValue(employeePhone) || hasDisplayValue(employeeEmail);
+    var employeeInfoLines = [];
+    var employeeMedia = getEmployeeMedia(media, nhanVien, invoice);
+
+    addEmployeeField(employeeInfoLines, 'Họ tên', employeeName);
+    addEmployeeField(employeeInfoLines, 'Số điện thoại', employeePhone, { phone: true });
+    addEmployeeField(employeeInfoLines, 'Email', employeeEmail);
+    addEmployeeField(employeeInfoLines, 'Đánh giá', employeeRating, { rating: true });
+    addEmployeeField(employeeInfoLines, 'Kinh nghiệm', employeeExp);
 
     content.innerHTML =
       '<div class="row g-3 lookup-invoice-layout">' +
-      '  <div class="col-12 col-lg-7">' +
+      '  <div class="col-12 col-lg-8">' +
       '    <div class="card border-0 shadow-sm h-100 lookup-invoice-card">' +
-      '      <div class="card-header text-white lookup-invoice-card-header" style="background: linear-gradient(135deg, #007bff, #46a0ff);">' +
+      '      <div class="card-header text-white lookup-invoice-card-header" style="background: linear-gradient(135deg, #d32f2f, #ff7043);">' +
       '        <h6 class="mb-0"><i class="bi bi-receipt-cutoff me-2"></i>Chi Tiết Hóa Đơn #' + (invoice.id || 'N/A') + '</h6>' +
       '      </div>' +
       '      <div class="card-body">' +
       (leftInfoLines.length > 0 || rightInfoLines.length > 0
         ? ('<div class="row g-2">' +
-            '<div class="col-12 col-md-6">' + leftInfoLines.join('') + '</div>' +
-            '<div class="col-12 col-md-6">' + rightInfoLines.join('') + '</div>' +
+            '<div class="col-12 col-xl-6">' + leftInfoLines.join('') + '</div>' +
+            '<div class="col-12 col-xl-6">' + rightInfoLines.join('') + '</div>' +
            '</div>')
         : '<p class="mb-0 text-muted">Không có dữ liệu hóa đơn để hiển thị.</p>') +
       (hasWork
-        ? ('<div class="alert alert-primary-subtle border-primary mt-3 mb-0">' +
-            '<div class="fw-semibold text-primary-emphasis mb-1"><i class="bi bi-list-check me-2"></i>Công việc</div>' +
-            '<div>' + invoice.cong_viec + '</div>' +
+        ? ('<div class="alert alert-warning-subtle border-warning mt-3 mb-0">' +
+            '<div class="fw-semibold text-warning-emphasis mb-1"><i class="bi bi-list-check me-2"></i>Công việc</div>' +
+            '<ol class="lookup-work-list">' +
+              workItems.map(function (item, index) {
+                return '<li class="lookup-work-item"><span class="lookup-work-index">' + (index + 1) + '</span><span>' + item + '</span></li>';
+              }).join('') +
+            '</ol>' +
            '</div>')
         : '') +
       '      </div>' +
       '    </div>' +
       '  </div>' +
-      '  <div class="col-12 col-lg-5">' +
+      '  <div class="col-12 col-lg-4">' +
       '    <div class="card border-0 shadow-sm h-100 lookup-employee-summary-card">' +
-      '      <div class="card-header bg-primary-subtle">' +
-      '        <h6 class="mb-0 text-primary-emphasis"><i class="bi bi-person-vcard-fill me-2"></i>Nhân Viên Thực Hiện</h6>' +
+      '      <div class="card-header bg-warning-subtle">' +
+      '        <h6 class="mb-0 text-warning-emphasis"><i class="bi bi-person-vcard-fill me-2"></i>Nhân Viên Thực Hiện</h6>' +
       '      </div>' +
-      '      <div class="card-body text-center lookup-employee-summary-body">' +
-      (nhanVien && nhanVien.ten
-        ? (hasDisplayValue(employeeAvatar)
-            ? '<img src="' + assetUrl(employeeAvatar) + '" class="rounded-circle border mb-3 lookup-employee-avatar" style="width:104px;height:104px;max-width:104px;object-fit:cover;">'
-            : '<div class="rounded-circle border d-inline-flex align-items-center justify-content-center mb-3 bg-light lookup-employee-avatar" style="width:104px;height:104px;"><i class="bi bi-person fs-3 text-secondary"></i></div>') +
-          '<h5 class="mb-1">' + nhanVien.ten + '</h5>' +
-          (hasDisplayValue(nhanVien.dien_thoai || invoice.employee_phone)
-            ? '<div class="mb-2"><span class="badge text-bg-primary fs-6">SĐT: ' + (nhanVien.dien_thoai || invoice.employee_phone) + '</span></div>'
-            : '') +
-          (hasDisplayValue(nhanVien.danh_gia)
-            ? '<span class="badge text-bg-primary fs-6"><i class="bi bi-star-fill me-1"></i>' + nhanVien.danh_gia + '/5.0</span>'
-            : '')
+      '      <div class="card-body lookup-employee-summary-body">' +
+      (hasEmployee
+        ? '<div class="text-center mb-3">' +
+            (hasDisplayValue(employeeAvatar)
+              ? '<img src="' + assetUrl(employeeAvatar) + '" class="rounded-circle border lookup-employee-avatar" style="width:104px;height:104px;max-width:104px;object-fit:cover;">'
+              : '<div class="rounded-circle border d-inline-flex align-items-center justify-content-center bg-light lookup-employee-avatar" style="width:104px;height:104px;"><i class="bi bi-person fs-3 text-secondary"></i></div>') +
+          '</div>' +
+          (employeeInfoLines.length > 0 ? employeeInfoLines.join('') : '<p class="text-muted mb-0">Không có thông tin nhân viên.</p>') +
+          '<div class="mt-3 pt-2 border-top">' +
+            '<h6 class="mb-2 text-warning-emphasis"><i class="bi bi-camera-video-fill me-2"></i>Media Của Nhân Viên</h6>' +
+            '<div class="row g-2">' +
+              (employeeMedia.length > 0
+                ? getMediaHtml(employeeMedia)
+                : '<p class="text-muted mb-0">Chưa có media của nhân viên.</p>') +
+            '</div>' +
+          '</div>'
         : '<p class="text-muted mb-0">Chưa có nhân viên</p>') +
       '      </div>' +
       '    </div>' +
       '  </div>' +
       '</div>' +
       '<div class="card border-0 shadow-sm mt-3">' +
-      '  <div class="card-header bg-primary-subtle">' +
-      '    <h6 class="mb-0 text-primary-emphasis"><i class="bi bi-camera-video-fill me-2"></i>Hình Ảnh & Video Công Việc</h6>' +
+      '  <div class="card-header bg-danger-subtle">' +
+      '    <h6 class="mb-0 text-danger-emphasis"><i class="bi bi-camera-video-fill me-2"></i>Hình Ảnh & Video Công Việc</h6>' +
       '  </div>' +
       '  <div class="card-body"><div class="row g-3">' +
       getMediaHtml(media) +
@@ -283,7 +333,7 @@
       '<div class="row g-3">' +
       '  <div class="col-md-4">' +
       '    <div class="card border-0 shadow-sm h-100">' +
-      '      <div class="card-header text-white" style="background: linear-gradient(135deg, #007bff, #46a0ff);">' +
+      '      <div class="card-header text-white" style="background: linear-gradient(135deg, #e53935, #fb8c00);">' +
       '        <h6 class="mb-0"><i class="bi bi-person-badge-fill me-2"></i>Hồ Sơ Nhân Viên</h6>' +
       '      </div>' +
       '      <div class="card-body text-center">' +
@@ -296,8 +346,8 @@
       '  </div>' +
       '  <div class="col-md-8">' +
       '    <div class="card border-0 shadow-sm mb-3">' +
-      '      <div class="card-header bg-primary-subtle">' +
-      '        <h6 class="mb-0 text-primary-emphasis"><i class="bi bi-info-circle-fill me-2"></i>Thông Tin Chi Tiết</h6>' +
+      '      <div class="card-header bg-danger-subtle">' +
+      '        <h6 class="mb-0 text-danger-emphasis"><i class="bi bi-info-circle-fill me-2"></i>Thông Tin Chi Tiết</h6>' +
       '      </div>' +
       '      <div class="card-body">' +
       (infoLines.length > 0
@@ -306,8 +356,8 @@
       '      </div>' +
       '    </div>' +
       '    <div class="card border-0 shadow-sm">' +
-      '      <div class="card-header bg-primary-subtle">' +
-      '        <h6 class="mb-0 text-primary-emphasis"><i class="bi bi-camera-video-fill me-2"></i>Media Liên Quan Hóa Đơn</h6>' +
+      '      <div class="card-header bg-warning-subtle">' +
+      '        <h6 class="mb-0 text-warning-emphasis"><i class="bi bi-camera-video-fill me-2"></i>Media Liên Quan Hóa Đơn</h6>' +
       '      </div>' +
       '      <div class="card-body">' +
       '        <div class="row g-2">' +
@@ -333,7 +383,7 @@
   function renderInvoicesTable(resultContainer, invoices) {
     var desktopTableHtml =
       '<div class="d-none d-md-block">' +
-      '<div class="card border-primary-subtle shadow-sm">' +
+      '<div class="card border-danger-subtle shadow-sm">' +
       '  <div class="card-body p-2 p-md-3">' +
       '    <div class="table-responsive">' +
       '      <table class="table table-hover align-middle mb-0" style="font-size: 14px;">' +
@@ -360,7 +410,7 @@
 
     resultContainer.innerHTML =
       '<div class="d-flex align-items-center justify-content-between mb-2">' +
-      '<h6 class="mb-0 text-primary-emphasis">Tìm thấy ' + invoices.length + ' hóa đơn</h6>' +
+      '<h6 class="mb-0 text-danger-emphasis">Tìm thấy ' + invoices.length + ' hóa đơn</h6>' +
       '</div>' +
       desktopTableHtml +
       mobileCardsHtml;
@@ -376,16 +426,10 @@
           var servicePackage = invoice.goi_dich_vu || invoice.dich_vu || 'N/A';
           var totalPrice = formatMoney(invoice.tong_tien || invoice.gia_tien || 0);
 
-          var employeeCell = invoice.employee_name
-            ?
-              '<div>' +
-              invoice.employee_name +
-              ' <button class="btn btn-sm btn-outline-info ms-2" onclick="lookupViewEmployeeDetail(' + invoice.nhan_vien_id + ', ' + invoice.id + ')">' +
-              '<i class="fa fa-eye"></i><span class="d-none d-md-inline ms-1"></span></button></div>'
-            : '<span class="text-muted">Chưa có</span>';
+          var employeeCell = invoice.employee_name || '<span class="text-muted">Chưa có</span>';
 
           var actionButtons =
-            '<button class="btn btn-sm btn-outline-primary mb-1" onclick="lookupViewInvoiceDetail(' + invoice.id + ')">' +
+            '<button class="btn btn-sm btn-outline-danger mb-1" onclick="lookupViewInvoiceDetail(' + invoice.id + ')">' +
             '<i class="fa fa-eye"></i><span class="d-none d-md-inline ms-1"></span></button>';
 
           return (
@@ -410,9 +454,6 @@
         var servicePackage = invoice.goi_dich_vu || invoice.dich_vu || 'N/A';
         var totalPrice = formatMoney(invoice.tong_tien || invoice.gia_tien || 0);
         var employeeName = invoice.employee_name || 'Chưa có';
-        var employeeBtn = invoice.employee_name
-          ? '<button class="btn btn-sm btn-outline-info" onclick="lookupViewEmployeeDetail(' + invoice.nhan_vien_id + ', ' + invoice.id + ')"><i class="bi bi-person-badge me-1"></i>Nhân viên</button>'
-          : '';
 
         return (
           '<div class="card mb-2">' +
@@ -420,12 +461,11 @@
           '    <div class="lookup-mobile-row"><span class="lookup-mobile-label">Khách hàng</span><span class="lookup-mobile-value fw-semibold">' + customerName + '</span></div>' +
           '    <div class="lookup-mobile-row"><span class="lookup-mobile-label">Gói dịch vụ</span><span class="lookup-mobile-value">' + servicePackage + '</span></div>' +
           '    <div class="lookup-mobile-row"><span class="lookup-mobile-label">Ngày bắt đầu</span><span class="lookup-mobile-value">' + (invoice.ngay_bat_dau || 'N/A') + '</span></div>' +
-          '    <div class="lookup-mobile-row"><span class="lookup-mobile-label">Tổng tiền</span><span class="lookup-mobile-value fw-semibold text-primary-emphasis">' + totalPrice + '</span></div>' +
+          '    <div class="lookup-mobile-row"><span class="lookup-mobile-label">Tổng tiền</span><span class="lookup-mobile-value fw-semibold text-danger-emphasis">' + totalPrice + '</span></div>' +
           '    <div class="lookup-mobile-row"><span class="lookup-mobile-label">Trạng thái</span><span class="lookup-mobile-value">' + getStatusBadge(invoice.trang_thai) + '</span></div>' +
           '    <div class="lookup-mobile-row"><span class="lookup-mobile-label">Nhân viên</span><span class="lookup-mobile-value">' + employeeName + '</span></div>' +
           '    <div class="lookup-mobile-actions mt-2">' +
-          employeeBtn +
-          '      <button class="btn btn-sm btn-outline-primary" onclick="lookupViewInvoiceDetail(' + invoice.id + ')"><i class="bi bi-eye me-1"></i>Chi tiết</button>' +
+          '      <button class="btn btn-sm btn-outline-danger" onclick="lookupViewInvoiceDetail(' + invoice.id + ')"><i class="fa fa-eye me-1"></i>Chi tiết</button>' +
           '    </div>' +
           '  </div>' +
           '</div>'
@@ -440,33 +480,73 @@
     if (!content) return;
 
     var localInvoice = getLookupInvoice(invoiceId);
-    if (localInvoice) {
-      var localEmployee = localInvoice.employee_name
-        ? {
-          ten: localInvoice.employee_name,
-          dien_thoai: localInvoice.employee_phone,
-          anh_dai_dien: localInvoice.employee_avatar
-        }
-        : null;
-
-      renderInvoiceDetailContent(content, localInvoice, localEmployee, localInvoice.media || []);
-      openChildModal('lookupInvoiceDetailModal', true);
-      return;
+    var detailUrl = apiUrl('get_invoice_detail.php') + '?hoa_don_id=' + invoiceId;
+    if (localInvoice && localInvoice.dien_thoai) {
+      detailUrl += '&dien_thoai=' + encodeURIComponent(localInvoice.dien_thoai);
     }
 
     try {
-      var response = await fetch(apiUrl('get_invoice_detail.php') + '?hoa_don_id=' + invoiceId);
+      var response = await fetch(detailUrl);
       var data = await response.json();
 
       if (data.success) {
-        renderInvoiceDetailContent(content, data.invoice || {}, data.nhan_vien || null, data.media || []);
+        var serverInvoice = data.invoice || {};
+        var mergedInvoice = localInvoice ? Object.assign({}, localInvoice, serverInvoice) : serverInvoice;
+        var serverEmployee = data.nhan_vien || null;
+        var fallbackEmployee = localInvoice && localInvoice.employee_name
+          ? {
+            id: localInvoice.nhan_vien_id,
+            ten: localInvoice.employee_name,
+            dien_thoai: localInvoice.employee_phone,
+            email: localInvoice.employee_email,
+            danh_gia: localInvoice.employee_rating,
+            kinh_nghiem: localInvoice.employee_kinh_nghiem,
+            anh_dai_dien: localInvoice.employee_avatar
+          }
+          : null;
+        var mergedEmployee = serverEmployee || fallbackEmployee;
+        var resolvedMedia = Array.isArray(data.media) && data.media.length > 0
+          ? data.media
+          : ((localInvoice && localInvoice.media) || []);
+
+        renderInvoiceDetailContent(content, mergedInvoice, mergedEmployee, resolvedMedia);
       } else {
-        content.innerHTML = '<div class="alert alert-warning mb-0">' + (data.message || 'Không thể tải chi tiết hóa đơn') + '</div>';
+        if (localInvoice) {
+          var localEmployee = localInvoice.employee_name
+            ? {
+              id: localInvoice.nhan_vien_id,
+              ten: localInvoice.employee_name,
+              dien_thoai: localInvoice.employee_phone,
+              email: localInvoice.employee_email,
+              danh_gia: localInvoice.employee_rating,
+              kinh_nghiem: localInvoice.employee_kinh_nghiem,
+              anh_dai_dien: localInvoice.employee_avatar
+            }
+            : null;
+          renderInvoiceDetailContent(content, localInvoice, localEmployee, localInvoice.media || []);
+        } else {
+          content.innerHTML = '<div class="alert alert-warning mb-0">' + (data.message || 'Không thể tải chi tiết hóa đơn') + '</div>';
+        }
       }
 
       openChildModal('lookupInvoiceDetailModal', true);
     } catch (error) {
-      content.innerHTML = '<div class="alert alert-danger mb-0">Không thể tải chi tiết hóa đơn. Vui lòng thử lại.</div>';
+      if (localInvoice) {
+        var localEmployee2 = localInvoice.employee_name
+          ? {
+            id: localInvoice.nhan_vien_id,
+            ten: localInvoice.employee_name,
+            dien_thoai: localInvoice.employee_phone,
+            email: localInvoice.employee_email,
+            danh_gia: localInvoice.employee_rating,
+            kinh_nghiem: localInvoice.employee_kinh_nghiem,
+            anh_dai_dien: localInvoice.employee_avatar
+          }
+          : null;
+        renderInvoiceDetailContent(content, localInvoice, localEmployee2, localInvoice.media || []);
+      } else {
+        content.innerHTML = '<div class="alert alert-danger mb-0">Không thể tải chi tiết hóa đơn. Vui lòng thử lại.</div>';
+      }
       openChildModal('lookupInvoiceDetailModal', true);
     }
   };
@@ -524,7 +604,7 @@
       e.preventDefault();
 
       var phone = (root.querySelector('#phone').value || '').trim();
-      resultContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+      resultContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-danger"></div></div>';
 
       try {
         var response = await fetch(apiUrl('get_invoice_by_phone.php') + '?dien_thoai=' + encodeURIComponent(phone));

@@ -8,17 +8,21 @@ $validPages = ['home', 'search', 'car-detail', 'about', 'services', 'guide', 'co
 
 if (!in_array($page, $validPages)) $page = 'home';
 
-// Các trang dùng file HTML ở root (dùng chung với web tĩnh GitHub Pages)
-$rootPageMap = [
-    'home'  => 'index.html',  // trang chủ là index.html, không phải home.html
-    'terms' => 'terms.html',
+// Ánh xạ route sang cấu trúc mới
+$pageMap = [
+    'home'            => 'index.html',
+    'search'          => 'pages/public/tim-kiem.html',
+    'car-detail'      => 'pages/public/chi-tiet-xe.html',
+    'about'           => 'pages/public/gioi-thieu.html',
+    'services'        => 'pages/public/dich-vu.html',
+    'guide'           => 'pages/public/huong-dan-thue-xe.html',
+    'contact'         => 'pages/public/lien-he.html',
+    'booking-success' => 'pages/public/dat-lich-thanh-cong.html',
+    'track-order'     => 'pages/public/tra-cuu-don.html',
+    'terms'           => 'pages/public/dieu-khoan.html',
 ];
 
-if (isset($rootPageMap[$page])) {
-    $viewFile = BASE_PATH . '/' . $rootPageMap[$page];
-} else {
-    $viewFile = BASE_PATH . '/views/pages/' . $page . '.html';
-}
+$viewFile = BASE_PATH . '/' . ($pageMap[$page] ?? 'index.html');
 
 if (file_exists($viewFile)) {
     readfile($viewFile);

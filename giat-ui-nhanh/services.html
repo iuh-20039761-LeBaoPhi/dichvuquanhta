@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đặt dịch vụ - Giặt Ủi Nhanh</title>
+    <meta
+      name="description"
+      content="Cập nhật tin tức và mẹo giặt ủi, xu hướng dịch vụ Giặt Ủi Nhanh"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="public/asset/image/thuong-hieu-favicon-giat-ui-nhanh.png"
+    />
+    <link rel="stylesheet" href="public/asset/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="public/asset/css/styles.css" />
+    <link rel="stylesheet" href="public/asset/css/services.css" />
+    <style>
+      .hero .hero-text h1 {
+        font-size: 3.5rem;
+        line-height: 1.3;
+        text-align: center;
+      }
+
+      .hero .hero-text h1 span {
+        font-size: 24px;
+      }
+
+      .hero {
+        min-height: 260px;
+        padding: 96px 0 48px;
+      }
+
+      .hero .hero-content {
+        justify-content: center;
+        text-align: center;
+        display: block;
+      }
+      .hero h1 span a {
+        text-decoration: none;
+        color: #fff;
+        transition: ease-in-out 0.3s;
+      }
+      .hero h1 span a:hover {
+        background: linear-gradient(to right, #fbbf24, #f97316);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      @media (max-width: 767px) {
+        .hero .hero-text h1 {
+          font-size: 1.45rem;
+          line-height: 1.35;
+        }
+        .hero .hero-text h1 span {
+          font-size: 0.82rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-container">
+        <a href="../index.html" class="logo">
+          <img
+            src="public/asset/image/thuong-hieu-logo-giat-ui-nhanh.png"
+            alt=""
+          />
+          <span>Giặt Ủi Nhanh</span>
+          <img src="public/asset/image/thuong-hieu-khung-logo.png" alt="" />
+        </a>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Trang chủ</a></li>
+          <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
+          <li><a href="services.html" class="nav-link">Dịch vụ</a></li>
+          <li><a href="index.html#process" class="nav-link">Quy trình</a></li>
+          <li><a href="blog.html" class="nav-link">Bài viết</a></li>
+          <li><a href="booking_order.html" class="nav-link">Đơn đặt</a></li>
+          <li>
+            <a
+              class="nav-link"
+              data-bs-toggle="modal"
+              data-bs-target="#bookingModal"
+              >Đặt dịch vụ</a
+            >
+          </li>
+        </ul>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            fill="currentColor"
+            class="bi bi-list"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
+            />
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1>
+              Đặt Dịch Vụ Giặt Ủi <br />
+              <span
+                ><a href="index.html">Trang chủ</a> /
+                <a class="gradient-text">Đặt dịch vụ</a></span
+              >
+            </h1>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="services" class="laundry-services-new">
+      <div class="container">
+        <div class="svc-heading">
+          <div class="section-badge">
+            <span>DỊCH VỤ CỦA CHÚNG TÔI</span>
+          </div>
+          <h2>
+            Giải Pháp Giặt Ủi <span class="gradient-text">Toàn Diện</span>
+          </h2>
+          <p>
+            Dữ liệu dịch vụ được đồng bộ trực tiếp từ hệ thống, hiển thị rõ ảnh,
+            mô tả, giá và nút đặt dịch vụ cho từng hạng mục.
+          </p>
+        </div>
+
+        <div class="svc-list" id="servicesGrid"></div>
+      </div>
+    </section>
+    <!-- Footer placeholder -->
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-about">
+            <h3>Giặt Ủi Nhanh</h3>
+            <p>
+              Dịch vụ giặt ủi chuyên nghiệp hàng đầu Việt Nam. Cam kết chất
+              lượng uy tín, giá cả hợp lý, giao nhận tận nơi.
+            </p>
+            <p>CÔNG TY TNHH DỊCH VỤ QUANH TA KERI. <br />MST: 0315609853</p>
+            <ul class="footer-links">
+              <li>
+                <p>
+                  <i
+                    class="fas fa-map-marker-alt"
+                    style="margin-right: 10px"
+                  ></i>
+                  Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang
+                  Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh,
+                  Việt Nam
+                </p>
+              </li>
+              <li>
+                <p>
+                  <i class="fas fa-phone" style="margin-right: 10px"> </i>
+                  0775 472 347
+                </p>
+              </li>
+              <li>
+                <p>
+                  <i class="fas fa-envelope" style="margin-right: 10px"></i>
+                  dichvuquanhta.vn@gmail.com
+                </p>
+              </li>
+            </ul>
+            <div class="social-links">
+              <a href="#" class="social-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-facebook"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-instagram"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-twitter-x"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"
+                  />
+                </svg>
+              </a>
+              <a href="#" class="social-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-youtube"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="footer-section">
+            <h4>Dịch Vụ</h4>
+            <ul class="footer-links">
+              <li>
+                <a href="../vesinhcare/demo/">Lau Dọn Vệ Sinh</a>
+              </li>
+              <li><a href="../csmvb/">Chăm Sóc Mẹ & Bé</a></li>
+              <li>
+                <a href="../web-cham-soc-vuon-nha/">Chăm Sóc Vườn & Rẫy</a>
+              </li>
+              <li>
+                <a href="../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a>
+              </li>
+              <li>
+                <a href="../tho-nha/">Thợ Nhà & Sửa Chữa</a>
+              </li>
+              <li><a href="../csng/">Chăm Sóc Người Già</a></li>
+              <li><a href="../csbn/">Chăm Sóc Bệnh Nhân</a></li>
+              <li>
+                <a href="../he-thong-giao-hang-chuyen-don/">Giao Hàng Nhanh</a>
+              </li>
+              <li>
+                <a href="../thue-xe/">Thuê Xe</a>
+              </li>
+              <li>
+                <a href="../sua-xe-luu-dong/">Sửa xe lưu động</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h4>Hỗ trợ</h4>
+            <ul class="footer-links">
+              <li><a href="terms.html">Điều khoản sử dụng</a></li>
+            </ul>
+            <h5 class="h6 my-3">Tải Ứng Dụng</h5>
+            <div class="d-flex gap-2">
+              <a
+                href="#"
+                class="btn btn-primary d-flex align-items-center p-2 rounded-3 text-decoration-none"
+                style="flex: 1"
+              >
+                <i
+                  class="fab fa-apple me-2"
+                  style="width: 24px; height: 24px; font-size: 24px"
+                ></i>
+                <div class="text-start lh-1">
+                  <small class="d-block text-white-50" style="font-size: 10px"
+                    >Download on</small
+                  >
+                  <span class="fw-bold text-white" style="font-size: 12px"
+                    >App Store</span
+                  >
+                </div>
+              </a>
+              <a
+                href="#"
+                class="btn btn-info d-flex align-items-center p-2 rounded-3 text-decoration-none"
+                style="flex: 1"
+              >
+                <i
+                  class="fab fa-google-play me-2"
+                  style="width: 24px; height: 24px; font-size: 24px"
+                ></i>
+                <div class="text-start lh-1">
+                  <small class="d-block text-white-50" style="font-size: 10px"
+                    >Get it on</small
+                  >
+                  <span class="fw-bold text-white" style="font-size: 12px"
+                    >Google Play</span
+                  >
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            © 2026 Giặt Ủi Nhanh. Đã đăng ký Bản quyền. Sản xuất tại ❤️ Việt Nam
+          </p>
+        </div>
+      </div>
+    </footer>
+    <div id="modalContainer"></div>
+    <button
+      class="scroll-to-top"
+      id="scrollToTop"
+      aria-label="Scroll to top"
+      title="Trở Lại Đầu Trang"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        fill="currentColor"
+        class="bi bi-arrow-up"
+        viewBox="0 0 16 16"
+        style="margin-bottom: 5px"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"
+        />
+      </svg>
+    </button>
+    <script
+      type="text/javascript"
+      src="public/asset/js/bootstrap.bundle.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="public/asset/js/jquery-3.7.1.min.js"
+    ></script>
+    <script type="text/javascript" src="public/asset/js/database.js"></script>
+    <script type="text/javascript" src="public/asset/js/script.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const servicesGrid = document.getElementById("servicesGrid");
+        if (!servicesGrid) return;
+
+        fetch("public/services.json")
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error("Không thể tải dữ liệu dịch vụ");
+            }
+            return response.json();
+          })
+          .then(function (data) {
+            let html = "";
+
+            data.forEach(function (service, index) {
+              const unit =
+                service.price_unit === "kg" ? "kg" : service.price_unit;
+              const reverseClass = index % 2 !== 0 ? " is-reverse" : "";
+              const servicePrice = Number(service.price || 0).toLocaleString(
+                "vi-VN",
+              );
+
+              html += `
+                <article class="svc-card${reverseClass}">
+                  <div class="svc-media">
+                    <img src="${service.image}" alt="${service.service_name}">
+                  </div>
+
+                  <div class="svc-body">
+                    <h3 class="svc-title">${service.service_name}</h3>
+                    <p class="svc-desc">${service.summary}</p>
+                    <p class="svc-price">Gia tu: <strong>${servicePrice} VND</strong> / ${unit}</p>
+                    <a class="btn btn-info svc-action" data-service-id="${service.id}" data-bs-toggle="modal"data-bs-target="#bookingModal">Đặt dịch vụ</a>
+                  </div>
+                </article>
+              `;
+            });
+
+            servicesGrid.innerHTML = html;
+          })
+          .catch(function () {
+            servicesGrid.innerHTML =
+              '<p style="text-align:center;color:#dc2626;">Khong the tai du lieu dich vu. Vui long thu lai.</p>';
+          });
+      });
+    </script>
+
+    <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
+    <script type="text/javascript" src="public/asset/js/booking.js"></script>
+    <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+      WebFont.load({
+        google: {
+          families: ["Public Sans:300,400,500,600,700"],
+        },
+        custom: {
+          families: [
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+            "simple-line-icons",
+          ],
+          urls: ["public/asset/css/fonts.min.css"],
+        },
+        active: function () {
+          sessionStorage.fonts = true;
+        },
+      });
+    </script>
+  </body>
+</html>

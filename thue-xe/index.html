@@ -411,7 +411,7 @@ function renderCarTypes(carTypes) {
             ? `<span class="badge badge-status badge-available">Còn ${avail} xe</span>`
             : `<span class="badge badge-status" style="background:linear-gradient(135deg,#6c757d,#495057);">Hết xe</span>`;
         const action = avail > 0
-            ? `<a href="car-detail.html?type_id=${type.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>`
+          ? `<a href="pages/public/chi-tiet-xe.html?type_id=${type.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>`
             : `<button class="btn btn-secondary btn-sm" disabled>Hết xe</button>`;
         return `
         <div class="col-lg-4 col-md-6">

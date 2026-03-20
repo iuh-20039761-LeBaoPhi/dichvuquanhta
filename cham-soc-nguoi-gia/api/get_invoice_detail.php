@@ -1,16 +1,11 @@
 <?php
 session_start();
 require_once 'db.php';
-
-// Check if user is logged in
-if (!isset($_SESSION['nguoi_dung_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
-
-$userId = $_SESSION['nguoi_dung_id'];
-$userRole = $_SESSION['vai_tro'];
+$isLoggedIn = isset($_SESSION['nguoi_dung_id']);
+$userId = $isLoggedIn ? intval($_SESSION['nguoi_dung_id']) : 0;
+$userRole = $isLoggedIn ? $_SESSION['vai_tro'] : '';
 $invoiceId = isset($_GET['hoa_don_id']) ? intval($_GET['hoa_don_id']) : 0;
+$lookupPhone = isset($_GET['dien_thoai']) ? sanitize($_GET['dien_thoai']) : '';
 
 if ($invoiceId === 0) {
     echo json_encode(['success' => false, 'message' => 'Invalid invoice ID']);
@@ -32,16 +27,24 @@ if ($invoiceResult->num_rows === 0) {
 $invoice = $invoiceResult->fetch_assoc();
 
 // Check permissions
-if ($userRole === 'khach_hang') {
-    // Customer can only view their own invoices
-    if ($invoice['khach_hang_id'] != $userId) {
-        echo json_encode(['success' => false, 'message' => 'Bạn không có quyền xem hóa đơn này']);
-        exit;
+if ($isLoggedIn) {
+    if ($userRole === 'khach_hang') {
+        // Customer can only view their own invoices
+        if ($invoice['khach_hang_id'] != $userId) {
+            echo json_encode(['success' => false, 'message' => 'Bạn không có quyền xem hóa đơn này']);
+            exit;
+        }
+    } else if ($userRole === 'nhan_vien') {
+        // Employee can only view invoices assigned to them
+        if ($invoice['nhan_vien_id'] != $userId) {
+            echo json_encode(['success' => false, 'message' => 'Bạn không có quyền xem hóa đơn này']);
+            exit;
+        }
     }
-} else if ($userRole === 'nhan_vien') {
-    // Employee can only view invoices assigned to them
-    if ($invoice['nhan_vien_id'] != $userId) {
-        echo json_encode(['success' => false, 'message' => 'Bạn không có quyền xem hóa đơn này']);
+} else {
+    // Public lookup flow: allow only when phone matches invoice phone.
+    if (empty($lookupPhone) || $lookupPhone !== $invoice['dien_thoai']) {
+        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
         exit;
     }
 }

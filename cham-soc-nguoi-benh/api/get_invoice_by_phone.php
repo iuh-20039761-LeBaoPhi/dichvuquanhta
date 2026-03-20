@@ -13,12 +13,19 @@ if (!isValidPhone($dien_thoai)) {
     exit;
 }
 
-// Get invoices by dien_thoai
-$sql = "SELECT i.*, u.ten as employee_name, u.dien_thoai as employee_phone, u.anh_dai_dien as employee_avatar 
-        FROM hoa_don i 
-        LEFT JOIN nguoi_dung u ON i.nhan_vien_id = u.id 
-        WHERE i.dien_thoai = ? 
-        ORDER BY i.ngay_tao DESC";
+// Get invoices by dien_thoai, include full employee snapshot fields for lookup detail fallback.
+$sql = "SELECT i.*, 
+           u.ten as employee_name, 
+           u.dien_thoai as employee_phone, 
+           u.email as employee_email,
+           u.anh_dai_dien as employee_avatar,
+           ep.danh_gia as employee_rating,
+           ep.kinh_nghiem as employee_kinh_nghiem
+    FROM hoa_don i 
+    LEFT JOIN nguoi_dung u ON i.nhan_vien_id = u.id 
+    LEFT JOIN ho_so_nhan_vien ep ON u.id = ep.nguoi_dung_id
+    WHERE i.dien_thoai = ? 
+    ORDER BY i.ngay_tao DESC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('s', $dien_thoai);
 $stmt->execute();
