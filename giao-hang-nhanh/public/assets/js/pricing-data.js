@@ -379,8 +379,10 @@ function estimateDistance(fromCity, fromProv, toCity, toProv) {
   return 200 + ((c1.length * c2.length * 15) % 1300);
 }
 
-function calculateDomesticQuote(payload) {
+function calculateDomesticQuote(payload, options = {}) {
   const config = QUOTE_SHIPPING_DATA.domestic;
+  const includeTimeFee = options.includeTimeFee !== false;
+  const includeVehicleFee = options.includeVehicleFee !== false;
   
   // Hỗ trợ tên trường mới (tiếng Việt không dấu) lẫn tên cũ (tiếng Anh)
   const norm = {
@@ -511,11 +513,15 @@ function calculateDomesticQuote(payload) {
       const transportSubtotal = basePrice + weightFee + goodsFee;
       const pickupSlotMultiplier = norm.pickupSlotMultiplier || 1;
       const pickupSlotFixedFee = norm.pickupSlotFixedFee;
-      const timeFee =
+      const rawTimeFee =
         transportSubtotal * Math.max(pickupSlotMultiplier - 1, 0) + pickupSlotFixedFee;
+      const timeFee = includeTimeFee ? rawTimeFee : 0;
       const transportWithTime = transportSubtotal + timeFee;
-      const vehicleAdjustedTransport = transportWithTime * selectedVehicle.multiplier;
-      const vehicleFee = vehicleAdjustedTransport - transportWithTime;
+      const appliedVehicleMultiplier = includeVehicleFee ? selectedVehicle.multiplier : 1;
+      const vehicleAdjustedTransport = transportWithTime * appliedVehicleMultiplier;
+      const vehicleFee = includeVehicleFee
+        ? vehicleAdjustedTransport - transportWithTime
+        : 0;
       const total = roundCurrency(
         vehicleAdjustedTransport + codFee + insuranceFee,
       );
@@ -542,7 +548,8 @@ function calculateDomesticQuote(payload) {
         suggestedVehicleKey: serviceVehicleSuggestion.key,
         selectedVehicleKey: selectedVehicle.key,
         selectedVehicleLabel: selectedVehicle.label,
-        vehicleMultiplier: selectedVehicle.multiplier,
+        vehicleMultiplier: appliedVehicleMultiplier,
+        configuredVehicleMultiplier: selectedVehicle.multiplier,
         pickupSlotLabel: norm.pickupSlotLabel,
         total,
         breakdown: {
@@ -559,6 +566,8 @@ function calculateDomesticQuote(payload) {
           volumetricWeight: Number((volumetricWeightPerPackage * quantity).toFixed(2)),
           billableWeight: Number(billableWeight.toFixed(2)),
           billableWeightPerPackage: Number(billableWeightPerPackage.toFixed(2)),
+          includesTimeFee: includeTimeFee,
+          includesVehicleFee: includeVehicleFee,
         },
       };
     },
@@ -581,6 +590,8 @@ function calculateDomesticQuote(payload) {
     suggestedVehicleKey: vehicleSuggestion.key,
     suggestedVehicleLabel: vehicleSuggestion.label,
     pickupSlotLabel: norm.pickupSlotLabel,
+    includesTimeFee: includeTimeFee,
+    includesVehicleFee: includeVehicleFee,
     services,
   };
 }
@@ -613,8 +624,10 @@ function getDomesticGoodsTypeInfo(itemTypeKey) {
  * Xây dựng chuỗi giải thích công thức tính cước nội địa bằng ngôn ngữ đơn giản.
  * Trả về mảng các bước tính để hiển thị trên UI.
  */
-function buildDomesticPricingExplanation(payload, result) {
+function buildDomesticPricingExplanation(payload, result, options = {}) {
   if (!result || !Array.isArray(result.services) || !result.services.length) return [];
+  const includeTimeFee = options.includeTimeFee !== false && result.includesTimeFee !== false;
+  const includeVehicleFee = options.includeVehicleFee !== false && result.includesVehicleFee !== false;
 
   const config = QUOTE_SHIPPING_DATA.domestic || {};
   const dc = config.distanceConfig || {};
@@ -788,7 +801,14 @@ function buildDomesticPricingExplanation(payload, result) {
     });
   }
 
-  if (result.pickupSlotLabel) {
+  if (!includeTimeFee) {
+    steps.push({
+      step: 7,
+      title: "Phụ phí khung giờ",
+      detail: "Báo giá nhanh chưa cộng phụ phí khung giờ. Nếu bạn chọn lấy hàng ngoài giờ tiêu chuẩn ở bước đặt đơn, hệ thống sẽ cộng riêng khoản này trước khi xác nhận.",
+      formula: null,
+    });
+  } else if (result.pickupSlotLabel) {
     const cheapestServiceWithTime = result.services[0] || null;
     const timeFee = ((cheapestServiceWithTime || {}).breakdown || {}).timeFee || 0;
     steps.push({
@@ -802,7 +822,14 @@ function buildDomesticPricingExplanation(payload, result) {
   }
 
   const cheapestService = result.services[0] || null;
-  if (cheapestService && cheapestService.vehicleMultiplier > 1) {
+  if (!includeVehicleFee) {
+    steps.push({
+      step: 8,
+      title: "Điều chỉnh theo phương tiện",
+      detail: `Báo giá nhanh chưa cộng phụ phí phương tiện. Hệ thống hiện chỉ gợi ý <strong>${(cheapestService && cheapestService.vehicleSuggestion) || "xe phù hợp"}</strong>; giá cuối sẽ chốt theo loại xe bạn chọn ở bước đặt đơn.`,
+      formula: null,
+    });
+  } else if (cheapestService && cheapestService.vehicleMultiplier > 1) {
     steps.push({
       step: 8,
       title: "Điều chỉnh theo phương tiện",
