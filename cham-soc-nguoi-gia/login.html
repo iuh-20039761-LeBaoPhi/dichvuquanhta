@@ -5,43 +5,284 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập - Hệ Thống Quản Lý Dịch Vụ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background:
+                radial-gradient(circle at 20% 15%, rgba(190, 238, 186, 0.34), transparent 38%),
+                radial-gradient(circle at 75% 10%, rgba(120, 205, 132, 0.3), transparent 42%),
+                linear-gradient(145deg, #0f5132 0%, #1e7146 35%, #2f8f59 65%, #4caf50 100%);
+            font-family: "Quicksand", "Segoe UI", sans-serif;
+        }
+
+        .modal-backdrop.show {
+            opacity: 0.45;
+        }
+
+        .modal-dialog.login-dialog {
+            max-width: 460px;
+        }
+
+        .modal-content.login-content {
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .login-shell {
+            border-radius: 18px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.26);
+            box-shadow: 0 24px 55px rgba(20, 0, 46, 0.48);
+            backdrop-filter: blur(2px);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+        }
+
+        .login-header {
+            background: linear-gradient(90deg, #98e26f 0%, #4caf50 45%, #2e7d32 100%);
+            padding: 18px 22px;
+        }
+
+        .login-title {
+            margin: 0;
+            color: #ffffff;
+            letter-spacing: 1px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: clamp(1.7rem, 4.2vw, 2.35rem);
+            text-align: center;
+            text-shadow: 0 3px 10px rgba(19, 72, 33, 0.52);
+        }
+
+        .login-body {
+            background: linear-gradient(180deg, rgba(63, 141, 79, 0.9) 0%, rgba(38, 120, 61, 0.92) 100%);
+            padding: 24px 24px 22px;
+            color: #ecfff0;
+        }
+
+        .login-body .btn-close {
+            filter: invert(1);
+            opacity: 0.9;
+        }
+
+        .login-body .text-secondary,
+        .login-body .form-label,
+        .login-body .form-text,
+        .login-body .mb-0 {
+            color: rgba(240, 255, 244, 0.98) !important;
+            text-shadow: 0 1px 3px rgba(17, 70, 34, 0.45);
+            font-size: 1.02rem;
+            font-weight: 600;
+        }
+
+        .login-body .form-label {
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .login-body .form-control {
+            border: 2px solid rgba(171, 230, 181, 0.78);
+            min-height: 48px;
+            border-radius: 14px;
+            background: #f4fff6;
+            color: #27422d;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px rgba(15, 82, 35, 0.16);
+            font-size: 1.02rem;
+            font-weight: 600;
+        }
+
+        .login-body .form-control::placeholder {
+            color: #6d8c72;
+            font-weight: 500;
+        }
+
+        .login-body .form-control:focus {
+            border-color: #7ed18c;
+            box-shadow: 0 0 0 0.2rem rgba(98, 189, 113, 0.3), 0 6px 14px rgba(15, 88, 39, 0.2);
+            background: #ffffff;
+        }
+
+        .btn-login {
+            background: linear-gradient(90deg, #66bb6a 0%, #2e7d32 100%);
+            border: 0;
+            color: #ffffff;
+            border-radius: 999px;
+            min-height: 48px;
+            font-size: 1.08rem;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            text-shadow: 0 1px 2px rgba(11, 63, 26, 0.45);
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.04);
+            color: #ffffff;
+        }
+
+        .login-body .link-warning {
+            color: #d6ffe0 !important;
+            font-size: 1.15rem;
+            font-weight: 900 !important;
+            letter-spacing: 0.2px;
+            text-shadow: 0 2px 6px rgba(11, 68, 28, 0.52);
+        }
+
+        .login-body .link-warning:hover {
+            color: #a7f0b4 !important;
+        }
+    </style>
 </head>
 <body>
-    <div class="container-fluid min-vh-100 bg-danger-subtle"></div>
+    <div class="container-fluid min-vh-100"></div>
 
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 rounded-4 overflow-hidden">
-                <div class="row g-0">
-                    <div class="col-12 col-md-5 position-relative">
-                        <img src="assets/cham-be.png" class="img-fluid w-100 h-100 object-fit-cover" alt="Hình ảnh chăm sóc mẹ và bé">
-                        <div class="position-absolute top-0 start-0 m-3 p-2 bg-white rounded-circle shadow-sm">
-                            <img src="assets/logomvb.png" alt="Logo Chăm Sóc Mẹ và Bé" width="52" height="52" class="rounded-circle">
-                        </div>
+        <style>
+            #loginModal .modal-dialog.login-dialog {
+                max-width: 460px;
+            }
+
+            #loginModal .modal-content.login-content {
+                background: transparent;
+                border: 0;
+                box-shadow: none;
+            }
+
+            #loginModal .login-shell {
+                border-radius: 18px;
+                overflow: hidden;
+                border: 2px solid rgba(255, 255, 255, 0.26);
+                box-shadow: 0 24px 55px rgba(20, 0, 46, 0.48);
+                backdrop-filter: blur(2px);
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+            }
+
+            #loginModal .login-header {
+                background: linear-gradient(90deg, #98e26f 0%, #4caf50 45%, #2e7d32 100%);
+                padding: 18px 22px;
+            }
+
+            #loginModal .login-title {
+                margin: 0;
+                color: #ffffff;
+                letter-spacing: 1px;
+                font-weight: 900;
+                text-transform: uppercase;
+                font-size: clamp(1.7rem, 4.2vw, 2.35rem);
+                text-align: center;
+                text-shadow: 0 3px 10px rgba(19, 72, 33, 0.52);
+            }
+
+            #loginModal .login-body {
+                background: linear-gradient(180deg, rgba(63, 141, 79, 0.9) 0%, rgba(38, 120, 61, 0.92) 100%);
+                padding: 24px 24px 22px;
+                color: #ecfff0;
+            }
+
+            #loginModal .login-body .btn-close {
+                filter: invert(1);
+                opacity: 0.9;
+            }
+
+            #loginModal .login-body .text-secondary,
+            #loginModal .login-body .form-label,
+            #loginModal .login-body .form-text,
+            #loginModal .login-body .mb-0 {
+                color: rgba(240, 255, 244, 0.98) !important;
+                text-shadow: 0 1px 3px rgba(17, 70, 34, 0.45);
+                font-size: 1.02rem;
+                font-weight: 600;
+            }
+
+            #loginModal .login-body .form-label {
+                font-weight: 700;
+                letter-spacing: 0.2px;
+            }
+
+            #loginModal .login-body .form-control {
+                border: 2px solid rgba(171, 230, 181, 0.78);
+                min-height: 48px;
+                border-radius: 14px;
+                background: #f4fff6;
+                color: #27422d;
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px rgba(15, 82, 35, 0.16);
+                font-size: 1.02rem;
+                font-weight: 600;
+            }
+
+            #loginModal .login-body .form-control::placeholder {
+                color: #6d8c72;
+                font-weight: 500;
+            }
+
+            #loginModal .login-body .form-control:focus {
+                border-color: #7ed18c;
+                box-shadow: 0 0 0 0.2rem rgba(98, 189, 113, 0.3), 0 6px 14px rgba(15, 88, 39, 0.2);
+                background: #ffffff;
+            }
+
+            #loginModal .btn-login {
+                background: linear-gradient(90deg, #66bb6a 0%, #2e7d32 100%);
+                border: 0;
+                color: #ffffff;
+                border-radius: 999px;
+                min-height: 48px;
+                font-size: 1.08rem;
+                font-weight: 800;
+                letter-spacing: 0.4px;
+                text-shadow: 0 1px 2px rgba(11, 63, 26, 0.45);
+                transition: transform 0.2s ease, filter 0.2s ease;
+            }
+
+            #loginModal .btn-login:hover {
+                transform: translateY(-1px);
+                filter: brightness(1.04);
+                color: #ffffff;
+            }
+
+            #loginModal .login-body .link-warning {
+                color: #d6ffe0 !important;
+                font-size: 1.15rem;
+                font-weight: 900 !important;
+                letter-spacing: 0.2px;
+                text-shadow: 0 2px 6px rgba(11, 68, 28, 0.52);
+            }
+
+            #loginModal .login-body .link-warning:hover {
+                color: #a7f0b4 !important;
+            }
+        </style>
+        <div class="modal-dialog modal-dialog-centered login-dialog">
+            <div class="modal-content login-content">
+                <div class="login-shell">
+                    <div class="login-header">
+                        <h3 class="login-title" id="loginModalLabel">Đăng Nhập</h3>
                     </div>
-                    <div class="col-12 col-md-7 bg-danger-subtle p-4 p-md-5">
-                        <div class="d-flex align-items-start justify-content-between mb-2">
-                            <h3 class="h4 fw-bold text-danger-emphasis mb-0" id="loginModalLabel">Đăng Nhập</h3>
+                    <div class="login-body">
+                        <div class="d-flex justify-content-end mb-2">
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <p class="text-secondary mb-4">Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.</p>
+
+                        <p class="text-secondary mb-3">Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.</p>
 
                         <div id="alertContainer"></div>
 
                         <form id="loginForm">
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Tên đăng nhập</label>
-                                <input type="text" class="form-control form-control-lg border-danger-subtle" id="username" required>
+                                <input type="text" class="form-control form-control-lg" id="username" required>
                             </div>
                             <div class="mb-4">
                                 <label class="form-label fw-semibold">Mật khẩu</label>
-                                <input type="password" class="form-control form-control-lg border-danger-subtle" id="password" required>
+                                <input type="password" class="form-control form-control-lg" id="password" required>
                             </div>
-                            <button type="submit" class="btn btn-danger btn-lg w-100">Đăng Nhập</button>
+                            <button type="submit" class="btn btn-login btn-lg w-100">Đăng Nhập</button>
                         </form>
 
                         <div class="text-center mt-4">
-                            <p class="mb-0 text-secondary">Chưa có tài khoản? <a href="register.html" class="link-danger fw-semibold text-decoration-none">Đăng ký ngay</a></p>
+                            <p class="mb-0 text-secondary">Chưa có tài khoản? <a href="register.html" class="link-warning fw-semibold text-decoration-none">Đăng ký ngay</a></p>
                         </div>
                     </div>
                 </div>

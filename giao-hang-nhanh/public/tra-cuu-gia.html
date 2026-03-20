@@ -28,7 +28,8 @@
           </h1>
           <p class="subpage-hero__desc">
             Xem rõ công thức tính cước, mức phụ phí, COD, bảo hiểm và dùng công
-            cụ tra cước để chọn gói phù hợp trước khi tạo đơn.
+            cụ tra cước để lấy giá tham khảo nhanh trước khi tạo đơn. Phụ phí
+            khung giờ và phương tiện sẽ được chốt riêng ở bước đặt lịch.
           </p>
           <div class="subpage-hero__actions">
             <a href="#bang-gia" class="btn-primary">Xem bảng giá</a>
@@ -50,7 +51,7 @@
         <div class="pricing-formula-banner">
           <div class="pricing-formula-inner">
             <span class="formula-icon">📊</span>
-            <p class="formula-title">Công thức tính cước</p>
+            <p class="formula-title">Công thức giá cuối khi đặt đơn</p>
             <div class="formula-equation">
             <span class="formula-term primary">Phí cơ bản</span>
             <span class="formula-op">+</span>
@@ -62,14 +63,16 @@
             <span class="formula-op">+</span>
             <span class="formula-term">Phí khung giờ</span>
             <span class="formula-op">+</span>
+            <span class="formula-term">Phí xe</span>
+            <span class="formula-op">+</span>
             <span class="formula-term">Phí COD</span>
             <span class="formula-op">+</span>
             <span class="formula-term">Phí Bảo hiểm</span>
           </div>
           <p class="formula-caption">
-            Báo giá nhanh bên dưới mặc định tính theo khung giờ tiêu chuẩn và
-            xe hệ thống tự đề xuất. Khi sang bước đặt lịch, giá cuối có thể
-            tăng thêm nếu bạn chọn giờ lấy hàng ngoài giờ hoặc đổi sang xe lớn.
+            Báo giá nhanh bên dưới chỉ cộng các khoản cốt lõi để bạn so sánh
+            nhanh. Phụ phí khung giờ lấy hàng và phụ phí phương tiện chưa được
+            cộng ở đây, và sẽ hiển thị minh bạch khi bạn sang bước đặt lịch.
           </p>
         </div>
       </div>
@@ -96,6 +99,12 @@
         <div class="pricing-tabs" id="pricing-tabs">
           <button class="pricing-tab-btn active" data-tab="tab-base">
             Phí cơ bản
+          </button>
+          <button class="pricing-tab-btn" data-tab="tab-time">
+            Phí khung giờ
+          </button>
+          <button class="pricing-tab-btn" data-tab="tab-vehicle">
+            Phí xe
           </button>
           <button class="pricing-tab-btn" data-tab="tab-surcharge">
             Phụ phí hàng hóa
@@ -157,6 +166,161 @@
             <p>
               <strong>Thời gian:</strong> Ước tính dựa trên tốc độ di chuyển
               trung bình từng loại dịch vụ.
+            </p>
+          </div>
+        </div>
+
+        <div class="pricing-tab-panel" id="tab-time">
+          <p class="tab-desc">
+            Phí khung giờ chỉ áp dụng khi bạn chọn giờ lấy hàng ở bước đặt đơn.
+            Công thức đang dùng là:
+            <strong
+              >Phụ phí khung giờ = phí cố định + (phần vận chuyển sau phụ phí
+              hàng hóa × hệ số khung giờ bổ sung)</strong
+            >.
+          </p>
+          <div class="pricing-table-wrapper">
+            <table class="pricing-table">
+              <thead>
+                <tr>
+                  <th>Khung giờ lấy hàng</th>
+                  <th>Phí cố định</th>
+                  <th>Hệ số áp thêm</th>
+                  <th>Ghi chú</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>08:00 - 10:00</td>
+                  <td><strong class="price-zero">0đ</strong></td>
+                  <td><strong>×1.00</strong></td>
+                  <td>Khung giờ tiêu chuẩn</td>
+                </tr>
+                <tr>
+                  <td>10:00 - 12:00</td>
+                  <td><strong class="price-zero">0đ</strong></td>
+                  <td><strong>×1.00</strong></td>
+                  <td>Khung giờ tiêu chuẩn</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td>12:00 - 14:00</td>
+                  <td><strong>+5.000đ</strong></td>
+                  <td><strong>×1.00</strong></td>
+                  <td>Giờ nghỉ trưa</td>
+                </tr>
+                <tr>
+                  <td>14:00 - 16:00</td>
+                  <td><strong class="price-zero">0đ</strong></td>
+                  <td><strong>×1.00</strong></td>
+                  <td>Khung giờ tiêu chuẩn</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td>16:00 - 18:00</td>
+                  <td><strong>+5.000đ</strong></td>
+                  <td><strong>×1.00</strong></td>
+                  <td>Giờ cao điểm</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td>18:00 - 20:00</td>
+                  <td><strong>+15.000đ</strong></td>
+                  <td><strong>×1.08</strong></td>
+                  <td>Ngoài giờ hành chính</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td>20:00 - 22:00</td>
+                  <td><strong>+25.000đ</strong></td>
+                  <td><strong>×1.15</strong></td>
+                  <td>Khung ban đêm</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pricing-note">
+            <p>
+              <strong>Cách áp dụng:</strong> hệ thống lấy phần vận chuyển đang
+              có sau cước cơ bản, vượt cân, thể tích và phụ phí loại hàng; sau
+              đó cộng phí cố định của khung giờ và nhân thêm hệ số nếu khung đó
+              có quy định.
+            </p>
+            <p>
+              <strong>Ví dụ:</strong> phần vận chuyển trước khung giờ là
+              100.000đ, chọn slot 18:00 - 20:00 thì phụ phí thời gian =
+              15.000đ + 8% × 100.000đ = <strong>23.000đ</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="pricing-tab-panel" id="tab-vehicle">
+          <p class="tab-desc">
+            Phí xe được chốt ở bước đặt đơn. Hệ thống sẽ gợi ý xe phù hợp theo
+            khối lượng, kích thước và loại hàng; nếu bạn đổi sang xe lớn hơn,
+            phần vận chuyển sẽ được nhân theo hệ số tương ứng.
+          </p>
+          <div class="pricing-table-wrapper">
+            <table class="pricing-table">
+              <thead>
+                <tr>
+                  <th>Loại xe</th>
+                  <th>Hệ số</th>
+                  <th>Cách tính</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Xe máy</td>
+                  <td><strong>×1.00</strong></td>
+                  <td>Mức chuẩn, không cộng thêm</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td>Xe lôi / xe ba gác</td>
+                  <td><strong>×2.00</strong></td>
+                  <td>Phần vận chuyển tăng gấp 2 lần</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td>Xe bán tải / xe van</td>
+                  <td><strong>×2.80</strong></td>
+                  <td>Phần vận chuyển nhân 2,8 lần</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td>Xe tải nhẹ</td>
+                  <td><strong>×4.00</strong></td>
+                  <td>Phần vận chuyển nhân 4 lần</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pricing-card-grid">
+            <div class="pricing-info-card">
+              <div class="pricing-info-card-head">
+                <span>🛵</span>
+                <h4>Khi nào hệ thống gợi ý xe lớn?</h4>
+              </div>
+              <ul class="pricing-info-list">
+                <li>Hàng cồng kềnh hoặc kích thước dài nhất quá lớn.</li>
+                <li>Khối lượng tính cước vượt mức xe máy phù hợp.</li>
+                <li>Hàng cần không gian hoặc tải trọng chuyên dụng hơn.</li>
+              </ul>
+            </div>
+            <div class="pricing-info-card">
+              <div class="pricing-info-card-head">
+                <span>🧮</span>
+                <h4>Ví dụ tính phí xe</h4>
+              </div>
+              <div class="pricing-example">
+                Nếu phần vận chuyển sau khi cộng khung giờ là
+                <strong>120.000đ</strong> và bạn chọn
+                <strong>xe bán tải / xe van</strong>, thì phí xe =
+                120.000đ × (2,8 - 1) = <strong>216.000đ</strong>.<br />
+                Tổng phần vận chuyển mới = <strong>336.000đ</strong>.
+              </div>
+            </div>
+          </div>
+          <div class="pricing-note">
+            <p>
+              <strong>Lưu ý:</strong> báo giá nhanh ở bên dưới chỉ hiển thị
+              <strong>xe gợi ý</strong> để bạn tham khảo, chưa cộng khoản nhân
+              theo xe. Giá cuối sẽ hiện rõ sau khi bạn chọn phương tiện ở trang
+              đặt đơn.
             </p>
           </div>
         </div>
@@ -450,9 +614,10 @@
             </div>
             <div class="quote-span-2">
               <p class="quote-note">
-                Công cụ này chỉ báo giá nhanh theo điều kiện tiêu chuẩn. Khi tạo
-                đơn, bạn sẽ chọn thêm khung giờ lấy hàng, xe mong muốn và mốc
-                nhận hàng để hệ thống chốt giá cuối cùng.
+                Công cụ này chỉ báo giá nhanh theo điều kiện tiêu chuẩn. Báo
+                giá tham khảo chưa gồm phụ phí khung giờ lấy hàng và điều chỉnh
+                theo phương tiện; hai khoản này sẽ được hiển thị rõ ở bước đặt
+                đơn để bạn xác nhận giá cuối cùng.
               </p>
             </div>
           </div>

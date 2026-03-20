@@ -262,8 +262,8 @@
             <li>② Phí trọng lượng vượt mức: <strong>${formatVnd(breakdown.overweightFee || 0)}</strong></li>
             <li>③ Phí thể tích: <strong>${formatVnd(breakdown.volumeFee || 0)}</strong></li>
             ${breakdown.goodsFee > 0 ? `<li>④ Phụ phí loại hàng: <strong>${formatVnd(breakdown.goodsFee)}</strong></li>` : ""}
-            ${breakdown.timeFee > 0 ? `<li>⑤ Phụ phí khung giờ: <strong>${formatVnd(breakdown.timeFee)}</strong></li>` : ""}
-            ${breakdown.vehicleFee > 0 ? `<li>⑥ Điều chỉnh theo xe: <strong>${formatVnd(breakdown.vehicleFee)}</strong></li>` : ""}
+            ${breakdown.includesTimeFee && breakdown.timeFee > 0 ? `<li>⑤ Phụ phí khung giờ: <strong>${formatVnd(breakdown.timeFee)}</strong></li>` : ""}
+            ${breakdown.includesVehicleFee && breakdown.vehicleFee > 0 ? `<li>⑥ Điều chỉnh theo xe: <strong>${formatVnd(breakdown.vehicleFee)}</strong></li>` : ""}
             ${breakdown.codFee > 0 ? `<li>⑦ Phí thu hộ COD: <strong>${formatVnd(breakdown.codFee)}</strong></li>` : ""}
             ${breakdown.insuranceFee > 0 ? `<li>⑧ Phí bảo hiểm: <strong>${formatVnd(breakdown.insuranceFee)}</strong></li>` : ""}
           `;
@@ -275,9 +275,8 @@
                 ${index === 0 ? '<span class="quote-badge">Giá tốt nhất</span>' : ""}
               </div>
               <p class="quote-service-eta">⏱ Thời gian dự kiến: <strong>${escapeHtml(service.estimate || "Đang cập nhật")}</strong></p>
-              <p class="quote-service-eta">🚚 Phương tiện đề xuất: <strong>${escapeHtml(service.vehicleSuggestion || "Đang cập nhật")}</strong></p>
-              <p class="quote-service-eta">🛻 Xe áp giá mặc định: <strong>${escapeHtml(service.selectedVehicleLabel || service.vehicleSuggestion || "Đang cập nhật")}</strong>${service.vehicleMultiplier > 1 ? ` (x${escapeHtml(service.vehicleMultiplier)})` : ""}</p>
-              <p class="quote-breakdown-title">Chi tiết tính cước:</p>
+              <p class="quote-service-eta">🚚 Phương tiện gợi ý khi đặt đơn: <strong>${escapeHtml(service.vehicleSuggestion || "Đang cập nhật")}</strong></p>
+              <p class="quote-breakdown-title">Chi tiết tính cước tham khảo:</p>
               <ul class="quote-breakdown-list">
                 ${domesticFeeList}
               </ul>
@@ -687,10 +686,16 @@
         return;
       }
 
-      const result = window.calculateDomesticQuote(payload);
+      const result = window.calculateDomesticQuote(payload, {
+        includeTimeFee: false,
+        includeVehicleFee: false,
+      });
       const domesticCheapestService = result && Array.isArray(result.services) ? result.services[0] : null;
       const pricingExplanation = (typeof window.buildDomesticPricingExplanation === "function")
-        ? window.buildDomesticPricingExplanation(payload, result)
+        ? window.buildDomesticPricingExplanation(payload, result, {
+          includeTimeFee: false,
+          includeVehicleFee: false,
+        })
         : [];
 
       const summaryMetrics = [
@@ -721,13 +726,8 @@
         },
         {
           icon: "🚚",
-          label: "Xe đề xuất",
+          label: "Xe gợi ý",
           value: (domesticCheapestService && domesticCheapestService.vehicleSuggestion) || "Đang cập nhật",
-        },
-        {
-          icon: "🛻",
-          label: "Xe đang tính giá",
-          value: (domesticCheapestService && domesticCheapestService.selectedVehicleLabel) || "Đang cập nhật",
         },
       ];
       renderQuoteCards(
@@ -735,7 +735,7 @@
         `Bảng giá vận chuyển nội địa — ${result.zoneLabel || ""}`,
         summaryMetrics,
         result.services,
-        `Giá tham khảo nhanh = cước cơ bản theo km và gói dịch vụ + vượt cân + thể tích + phụ phí loại hàng + COD + bảo hiểm. Hệ thống đang lấy max(${result.actualWeight || 0}kg thực, ${result.volumetricWeight || 0}kg thể tích). Giá cuối ở bước đặt đơn có thể thay đổi nếu bạn chọn khung giờ lấy hàng ngoài giờ hoặc đổi phương tiện.`,
+        `Giá tham khảo nhanh = cước cơ bản theo km và gói dịch vụ + vượt cân + thể tích + phụ phí loại hàng + COD + bảo hiểm. Hệ thống đang lấy max(${result.actualWeight || 0}kg thực, ${result.volumetricWeight || 0}kg thể tích). Báo giá này chưa cộng phụ phí khung giờ lấy hàng và phụ phí phương tiện; hai khoản đó sẽ được hiển thị rõ ở bước đặt đơn.`,
         pricingExplanation,
       );
     });
