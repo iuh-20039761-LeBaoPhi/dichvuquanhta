@@ -1,23 +1,21 @@
 <?php
 /**
- * Booking Controller — v2
+ * Booking Controller — v3
  *
- * P0 fixes:
- *  - Server tự đọc price_per_day / addon prices từ DB, bỏ qua giá client gửi.
- *  - Kiểm tra trùng lịch xe (status pending/confirmed) trước khi insert.
- *  - Gắn user_id từ session khi khách đăng nhập.
- *  - Gắn provider_id từ cars.provider_id.
+ * Thay đổi so với v2:
+ *  - Bảng `bookings` → `datxe`
+ *  - Tên cột dùng tên tiếng Việt không dấu trong SQL
+ *  - SELECT dùng AS alias để output JSON giữ nguyên field name cũ
+ *  - Bỏ fallback schema cũ (migration đã chạy)
  *
- * P1 additions:
- *  - Hỗ trợ pickup_time / return_time (giờ nhận/trả).
- *  - Lưu subtotal, tax_amount, deposit_amount, weekend_surcharge_amount, final_total.
- *  - Fallback tương thích schema cũ (khi migration_v2.sql chưa chạy).
+ * Giữ nguyên:
+ *  - Logic nghiệp vụ (server-side price calc, overlap check, session)
+ *  - API contract (input fields, output JSON)
  */
 
 ini_set('display_errors', 0);
 error_reporting(0);
 
-// session phải khởi tạo trước khi gửi bất kỳ header nào
 require_once __DIR__ . '/session.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -49,11 +47,10 @@ class BookingController {
             ) ? (int)$_SESSION['user_id'] : null;
 
             /* ── 2. Validate input bắt buộc ── */
-            $car_id      = (int)($data['car_id']      ?? 0);
-            $pickup_date = trim($data['pickup_date']   ?? '');
-            $return_date = trim($data['return_date']   ?? '');
+            $car_id      = (int)($data['car_id']     ?? 0);
+            $pickup_date = trim($data['pickup_date'] ?? '');
+            $return_date = trim($data['return_date'] ?? '');
 
-            // Giờ nhận/trả: "HH:MM"; mặc định 08:00
             $pickup_time = preg_match('/^\d{2}:\d{2}$/', $data['pickup_time'] ?? '')
                                ? $data['pickup_time'] : '08:00';
             $return_time = preg_match('/^\d{2}:\d{2}$/', $data['return_time'] ?? '')
@@ -84,8 +81,15 @@ class BookingController {
             $diff       = $pickupDT->diff($returnDT);
             $total_days = max(1, (int)$diff->days);
 
-            /* ── 4. Lấy xe từ DB — KHÔNG tin giá từ client ── */
-            $carStmt = $this->conn->prepare('SELECT * FROM `cars` WHERE `id` = :id LIMIT 1');
+            /* ── 4. Lấy xe từ bảng `xe` — KHÔNG tin giá từ client ── */
+            $carStmt = $this->conn->prepare(
+                'SELECT id, ten AS name, trangthai AS status,
+                        giathue AS price_per_day,
+                        tilephicuoituan AS weekend_surcharge_rate,
+                        tiledatcoc AS deposit_rate,
+                        idnhacungcap AS provider_id
+                 FROM `xe` WHERE `id` = :id LIMIT 1'
+            );
             $carStmt->execute([':id' => $car_id]);
             $car = $carStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -99,20 +103,17 @@ class BookingController {
             }
 
             $price_per_day = (float)$car['price_per_day'];
-            // Fallback về default nếu migration chưa chạy
-            $weekend_rate  = array_key_exists('weekend_surcharge_rate', $car)
-                                 ? (float)$car['weekend_surcharge_rate'] : 0.10;
-            $deposit_rate  = array_key_exists('deposit_rate', $car)
-                                 ? (float)$car['deposit_rate'] : 0.30;
+            $weekend_rate  = (float)($car['weekend_surcharge_rate'] ?? 0.10);
+            $deposit_rate  = (float)($car['deposit_rate']           ?? 0.30);
             $provider_id   = $car['provider_id'] ?? null;
 
-            /* ── 5. Kiểm tra trùng lịch xe ── */
+            /* ── 5. Kiểm tra trùng lịch xe trong `datxe` ── */
             $overlapStmt = $this->conn->prepare(
-                "SELECT COUNT(*) FROM `bookings`
-                 WHERE `car_id`      = :car_id
-                   AND `status`      IN ('pending', 'confirmed')
-                   AND `pickup_date` < :return_date
-                   AND `return_date` > :pickup_date"
+                "SELECT COUNT(*) FROM `datxe`
+                 WHERE `idxe`     = :car_id
+                   AND `trangthai` IN ('pending', 'confirmed')
+                   AND `ngaynhan`  < :return_date
+                   AND `ngaytra`   > :pickup_date"
             );
             $overlapStmt->execute([
                 ':car_id'      => $car_id,
@@ -133,14 +134,12 @@ class BookingController {
             $cur  = new DateTime($pickup_date);
             $endD = new DateTime($return_date);
             while ($cur < $endD) {
-                if ((int)$cur->format('N') >= 6) { // 6=Thứ Bảy, 7=Chủ Nhật
-                    $weekend_days++;
-                }
+                if ((int)$cur->format('N') >= 6) $weekend_days++;
                 $cur->modify('+1 day');
             }
             $weekend_surcharge_amount = (int)round($weekend_days * $price_per_day * $weekend_rate);
 
-            /* ── 7. Tính addon từ DB — KHÔNG tin addon_total từ client ── */
+            /* ── 7. Tính addon từ bảng `dichvu` — KHÔNG tin addon_total từ client ── */
             $addon_services_names = array_values(
                 array_filter((array)($data['addon_services'] ?? []), 'is_string')
             );
@@ -149,149 +148,88 @@ class BookingController {
             if (!empty($addon_services_names)) {
                 $ph      = implode(',', array_fill(0, count($addon_services_names), '?'));
                 $svcStmt = $this->conn->prepare(
-                    "SELECT `name`, `price`, `unit` FROM `services`
-                     WHERE `name` IN ($ph) AND `status` = 1"
+                    "SELECT ten AS name, gia AS price, donvi AS unit
+                     FROM `dichvu`
+                     WHERE `ten` IN ($ph) AND `trangthai` = 1"
                 );
                 $svcStmt->execute($addon_services_names);
                 foreach ($svcStmt->fetchAll(PDO::FETCH_ASSOC) as $svc) {
-                    $unit = $svc['unit'] ?? 'chuyến'; // fallback trước khi migration chạy
+                    $unit = $svc['unit'] ?? 'chuyến';
                     $addon_total_float += ($unit === 'ngày')
                         ? (float)$svc['price'] * $total_days
                         : (float)$svc['price'];
                 }
             }
 
-            /* ── 8. Công thức tính tiền server-side ──
-             *
-             *   subtotal                = total_days × price_per_day
-             *   weekend_surcharge       = weekend_days × price_per_day × weekend_rate
-             *   addon_total             = Σ service.price (×days nếu unit='ngày')
-             *   tax_base                = subtotal + weekend_surcharge + addon_total
-             *   tax_amount              = ROUND(tax_base × 0.10)
-             *   deposit_amount          = ROUND(subtotal × deposit_rate)   [chỉ thông tin]
-             *   final_total             = subtotal + weekend_surcharge + addon_total
-             *                            + tax_amount − discount_amount
-             *   total_price             = final_total  (backward compat)
-             */
+            /* ── 8. Công thức tính tiền server-side ── */
             $subtotal         = (int)round($total_days * $price_per_day);
             $addon_total      = (int)round($addon_total_float);
             $tax_base         = $subtotal + $weekend_surcharge_amount + $addon_total;
             $tax_amount       = (int)round($tax_base * 0.10);
             $deposit_amount   = (int)round($subtotal * $deposit_rate);
             $discount_amount  = 0;
-            $surcharge_amount = 0; // phụ phí trả trễ, cập nhật sau khi trả xe
+            $surcharge_amount = 0;
             $final_total      = $subtotal + $weekend_surcharge_amount + $addon_total
                               + $tax_amount - $discount_amount;
 
             $addon_json = json_encode($addon_services_names, JSON_UNESCAPED_UNICODE);
 
-            /* ── 9. INSERT ──
-             * Thử với schema v2 (đầy đủ cột mới).
-             * Nếu cột chưa tồn tại (migration chưa chạy) → fallback schema cũ.
-             */
-            $booking_id = null;
+            /* ── 9. INSERT vào bảng `datxe` ── */
+            $sql = "INSERT INTO `datxe` (
+                        `idkhachhang`, `idnhacungcap`, `idxe`, `tenxe`,
+                        `tenkhachhang`, `emailkhachhang`, `dienthoaikhachhang`, `diachikhachhang`,
+                        `socccd`, `ngaynhan`, `ngaytra`, `gionhan`, `gioratra`,
+                        `diachinhan`, `ghichu`,
+                        `songay`, `tongtien`, `dichvuthem`, `tiendichvuthem`,
+                        `tamtinh`, `tiengiamgia`, `tienvat`, `tiendatcoc`,
+                        `phuphi`, `phicuoituan`, `tongcuoi`,
+                        `trangthai`
+                    ) VALUES (
+                        :user_id, :provider_id, :car_id, :car_name,
+                        :name, :email, :phone, :address,
+                        :id_number, :pickup, :return, :pickup_time, :return_time,
+                        :location, :notes,
+                        :days, :total_price, :addon_services, :addon_total,
+                        :subtotal, :discount, :tax, :deposit,
+                        :surcharge, :weekend_surcharge, :final_total,
+                        'pending'
+                    )";
 
-            try {
-                $sql = "INSERT INTO `bookings` (
-                            `user_id`, `provider_id`, `car_id`, `car_name`,
-                            `customer_name`, `customer_email`, `customer_phone`, `customer_address`,
-                            `id_number`, `pickup_date`, `return_date`, `pickup_time`, `return_time`,
-                            `pickup_location`, `notes`,
-                            `total_days`, `total_price`, `addon_services`, `addon_total`,
-                            `subtotal`, `discount_amount`, `tax_amount`, `deposit_amount`,
-                            `surcharge_amount`, `weekend_surcharge_amount`, `final_total`,
-                            `status`
-                        ) VALUES (
-                            :user_id, :provider_id, :car_id, :car_name,
-                            :name, :email, :phone, :address,
-                            :id_number, :pickup, :return, :pickup_time, :return_time,
-                            :location, :notes,
-                            :days, :total_price, :addon_services, :addon_total,
-                            :subtotal, :discount, :tax, :deposit,
-                            :surcharge, :weekend_surcharge, :final_total,
-                            'pending'
-                        )";
-                $stmt = $this->conn->prepare($sql);
-                $stmt->execute([
-                    ':user_id'           => $user_id,
-                    ':provider_id'       => $provider_id,
-                    ':car_id'            => $car_id,
-                    ':car_name'          => $car['name'] ?? ($data['car_name'] ?? ''),
-                    ':name'              => $data['customer_name']    ?? '',
-                    ':email'             => $data['customer_email']   ?? '',
-                    ':phone'             => $data['customer_phone']   ?? '',
-                    ':address'           => $data['customer_address'] ?? '',
-                    ':id_number'         => $data['id_number']        ?? '',
-                    ':pickup'            => $pickup_date,
-                    ':return'            => $return_date,
-                    ':pickup_time'       => $pickup_time . ':00',
-                    ':return_time'       => $return_time . ':00',
-                    ':location'          => $data['pickup_location']  ?? '',
-                    ':notes'             => $data['notes']            ?? '',
-                    ':days'              => $total_days,
-                    ':total_price'       => $final_total,   // backward compat
-                    ':addon_services'    => $addon_json,
-                    ':addon_total'       => $addon_total,
-                    ':subtotal'          => $subtotal,
-                    ':discount'          => $discount_amount,
-                    ':tax'               => $tax_amount,
-                    ':deposit'           => $deposit_amount,
-                    ':surcharge'         => $surcharge_amount,
-                    ':weekend_surcharge' => $weekend_surcharge_amount,
-                    ':final_total'       => $final_total,
-                ]);
-                $booking_id = (int)$this->conn->lastInsertId();
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([
+                ':user_id'           => $user_id,
+                ':provider_id'       => $provider_id,
+                ':car_id'            => $car_id,
+                ':car_name'          => $car['name'] ?? ($data['car_name'] ?? ''),
+                ':name'              => $data['customer_name']    ?? '',
+                ':email'             => $data['customer_email']   ?? '',
+                ':phone'             => $data['customer_phone']   ?? '',
+                ':address'           => $data['customer_address'] ?? '',
+                ':id_number'         => $data['id_number']        ?? '',
+                ':pickup'            => $pickup_date,
+                ':return'            => $return_date,
+                ':pickup_time'       => $pickup_time . ':00',
+                ':return_time'       => $return_time . ':00',
+                ':location'          => $data['pickup_location']  ?? '',
+                ':notes'             => $data['notes']            ?? '',
+                ':days'              => $total_days,
+                ':total_price'       => $final_total,
+                ':addon_services'    => $addon_json,
+                ':addon_total'       => $addon_total,
+                ':subtotal'          => $subtotal,
+                ':discount'          => $discount_amount,
+                ':tax'               => $tax_amount,
+                ':deposit'           => $deposit_amount,
+                ':surcharge'         => $surcharge_amount,
+                ':weekend_surcharge' => $weekend_surcharge_amount,
+                ':final_total'       => $final_total,
+            ]);
 
-            } catch (PDOException $insertErr) {
-                // migration_v2.sql chưa chạy → fallback schema cũ
-                $msg = $insertErr->getMessage();
-                if (stripos($msg, 'Unknown column') !== false
-                    || stripos($msg, "doesn't exist") !== false) {
-                    $sql_fb = "INSERT INTO `bookings` (
-                                    `user_id`, `provider_id`, `car_id`, `car_name`,
-                                    `customer_name`, `customer_email`, `customer_phone`, `customer_address`,
-                                    `id_number`, `pickup_date`, `return_date`,
-                                    `pickup_location`, `notes`,
-                                    `total_days`, `total_price`, `addon_services`, `addon_total`,
-                                    `status`
-                               ) VALUES (
-                                    :user_id, :provider_id, :car_id, :car_name,
-                                    :name, :email, :phone, :address,
-                                    :id_number, :pickup, :return,
-                                    :location, :notes,
-                                    :days, :total_price, :addon_services, :addon_total,
-                                    'pending'
-                               )";
-                    $stmt2 = $this->conn->prepare($sql_fb);
-                    $stmt2->execute([
-                        ':user_id'        => $user_id,
-                        ':provider_id'    => $provider_id,
-                        ':car_id'         => $car_id,
-                        ':car_name'       => $car['name'] ?? ($data['car_name'] ?? ''),
-                        ':name'           => $data['customer_name']    ?? '',
-                        ':email'          => $data['customer_email']   ?? '',
-                        ':phone'          => $data['customer_phone']   ?? '',
-                        ':address'        => $data['customer_address'] ?? '',
-                        ':id_number'      => $data['id_number']        ?? '',
-                        ':pickup'         => $pickup_date,
-                        ':return'         => $return_date,
-                        ':location'       => $data['pickup_location']  ?? '',
-                        ':notes'          => $data['notes']            ?? '',
-                        ':days'           => $total_days,
-                        ':total_price'    => $final_total,
-                        ':addon_services' => $addon_json,
-                        ':addon_total'    => $addon_total,
-                    ]);
-                    $booking_id = (int)$this->conn->lastInsertId();
-                } else {
-                    throw $insertErr;
-                }
-            }
+            $booking_id = (int)$this->conn->lastInsertId();
 
             echo json_encode([
                 'success'                  => true,
                 'booking_id'               => $booking_id,
-                // Trả giá server-tính về client để hiển thị ngay trên trang success
                 'total_days'               => $total_days,
                 'subtotal'                 => $subtotal,
                 'addon_total'              => $addon_total,
@@ -316,9 +254,45 @@ class BookingController {
                 echo json_encode(['success' => false, 'message' => 'ID không hợp lệ']);
                 return;
             }
-            $stmt = $this->conn->prepare('SELECT * FROM `bookings` WHERE `id` = :id');
+
+            // SELECT với alias để output JSON giữ nguyên field name cũ
+            $stmt = $this->conn->prepare(
+                "SELECT
+                    id,
+                    idkhachhang           AS user_id,
+                    idnhacungcap          AS provider_id,
+                    idxe                  AS car_id,
+                    tenxe                 AS car_name,
+                    tenkhachhang          AS customer_name,
+                    emailkhachhang        AS customer_email,
+                    dienthoaikhachhang    AS customer_phone,
+                    diachikhachhang       AS customer_address,
+                    socccd                AS id_number,
+                    ngaynhan              AS pickup_date,
+                    gionhan               AS pickup_time,
+                    ngaytra               AS return_date,
+                    gioratra              AS return_time,
+                    diachinhan            AS pickup_location,
+                    ghichu                AS notes,
+                    songay                AS total_days,
+                    tongtien              AS total_price,
+                    dichvuthem            AS addon_services,
+                    tiendichvuthem        AS addon_total,
+                    tamtinh               AS subtotal,
+                    tiengiamgia           AS discount_amount,
+                    tienvat               AS tax_amount,
+                    tiendatcoc            AS deposit_amount,
+                    phuphi                AS surcharge_amount,
+                    phicuoituan           AS weekend_surcharge_amount,
+                    tongcuoi              AS final_total,
+                    gioratre              AS late_return_hours,
+                    trangthai             AS status,
+                    ngaytao               AS created_at
+                 FROM `datxe` WHERE `id` = :id"
+            );
             $stmt->execute([':id' => $id]);
             $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+
             if ($booking) {
                 echo json_encode(['success' => true, 'data' => $booking]);
             } else {
@@ -339,11 +313,39 @@ class BookingController {
                 echo json_encode(['success' => false, 'message' => 'Vui lòng nhập số điện thoại']);
                 return;
             }
+
             $stmt = $this->conn->prepare(
-                'SELECT * FROM `bookings` WHERE `customer_phone` = :phone ORDER BY `created_at` DESC'
+                "SELECT
+                    id,
+                    idxe               AS car_id,
+                    tenxe              AS car_name,
+                    tenkhachhang       AS customer_name,
+                    emailkhachhang     AS customer_email,
+                    dienthoaikhachhang AS customer_phone,
+                    socccd             AS id_number,
+                    ngaynhan           AS pickup_date,
+                    gionhan            AS pickup_time,
+                    ngaytra            AS return_date,
+                    gioratra           AS return_time,
+                    diachinhan         AS pickup_location,
+                    ghichu             AS notes,
+                    songay             AS total_days,
+                    tongtien           AS total_price,
+                    tiendichvuthem     AS addon_total,
+                    tamtinh            AS subtotal,
+                    tienvat            AS tax_amount,
+                    tiendatcoc         AS deposit_amount,
+                    phicuoituan        AS weekend_surcharge_amount,
+                    tongcuoi           AS final_total,
+                    trangthai          AS status,
+                    ngaytao            AS created_at
+                 FROM `datxe`
+                 WHERE `dienthoaikhachhang` = :phone
+                 ORDER BY `ngaytao` DESC"
             );
             $stmt->execute([':phone' => $phone]);
             echo json_encode(['success' => true, 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+
         } catch (PDOException $e) {
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }

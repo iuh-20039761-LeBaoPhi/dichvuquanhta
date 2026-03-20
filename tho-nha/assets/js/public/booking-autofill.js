@@ -10,7 +10,7 @@
     var _session = null;
 
     function fetchSession(cb) {
-        fetch('../../api/public/check-session.php')
+        fetch((window.BD_BASE || '../../') + 'api/public/check-session.php')
             .then(function (r) { return r.json(); })
             .then(function (data) { _session = data; cb(data); })
             .catch(function () { _session = { logged_in: false }; cb(_session); });
@@ -47,7 +47,7 @@
                 showBanner(
                     '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 14px;font-size:0.82rem;color:#92400e;">' +
                         '<i class="fas fa-exclamation-circle me-2"></i>' +
-                        'Bạn chưa đăng nhập. <a href="../../pages/customer/dang-nhap.html" style="color:#d97706;font-weight:600;">Đăng nhập ngay</a> để tự điền thông tin.' +
+                        'Bạn chưa đăng nhập. <a href="' + (window.BD_BASE || '../../') + 'pages/customer/dang-nhap.html" style="color:#d97706;font-weight:600;">Đăng nhập ngay</a> để tự điền thông tin.' +
                     '</div>',
                     false
                 );

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Admin Providers — Manage
+ * Bảng users → nguoidung, cột tiếng Việt không dấu.
+ * AS alias giữ nguyên API contract.
+ */
 require_once __DIR__ . '/../../../config/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../../../config/database.php';
@@ -13,23 +18,39 @@ $action = $_GET['action'] ?? '';
 
 // ─── LIST ────────────────────────────────────────────────────────────────────
 if ($action === 'list') {
-    $filter_status = $_GET['status'] ?? '';
+    $filter_status   = $_GET['status'] ?? '';
     $allowed_statuses = ['pending', 'active', 'rejected', 'blocked'];
 
     if ($filter_status && in_array($filter_status, $allowed_statuses)) {
         $stmt = $conn->prepare(
-            "SELECT id, full_name, email, phone, company_name, address, description,
-                    status, rejection_reason, created_at
-             FROM users WHERE role = 'provider' AND status = ?
-             ORDER BY created_at DESC"
+            "SELECT id,
+                    hoten        AS full_name,
+                    email,
+                    sodienthoai  AS phone,
+                    tencongty    AS company_name,
+                    diachi       AS address,
+                    mota         AS description,
+                    trangthai    AS status,
+                    lydotuchoi   AS rejection_reason,
+                    ngaytao      AS created_at
+             FROM nguoidung WHERE vaitro = 'provider' AND trangthai = ?
+             ORDER BY ngaytao DESC"
         );
         $stmt->bind_param("s", $filter_status);
     } else {
         $stmt = $conn->prepare(
-            "SELECT id, full_name, email, phone, company_name, address, description,
-                    status, rejection_reason, created_at
-             FROM users WHERE role = 'provider'
-             ORDER BY FIELD(status,'pending','active','blocked','rejected'), created_at DESC"
+            "SELECT id,
+                    hoten        AS full_name,
+                    email,
+                    sodienthoai  AS phone,
+                    tencongty    AS company_name,
+                    diachi       AS address,
+                    mota         AS description,
+                    trangthai    AS status,
+                    lydotuchoi   AS rejection_reason,
+                    ngaytao      AS created_at
+             FROM nguoidung WHERE vaitro = 'provider'
+             ORDER BY FIELD(trangthai,'pending','active','blocked','rejected'), ngaytao DESC"
         );
     }
     $stmt->execute();
@@ -46,7 +67,7 @@ if ($action === 'list') {
 // ─── COUNTS ──────────────────────────────────────────────────────────────────
 if ($action === 'counts') {
     $stmt = $conn->prepare(
-        "SELECT status, COUNT(*) as cnt FROM users WHERE role = 'provider' GROUP BY status"
+        "SELECT trangthai AS status, COUNT(*) AS cnt FROM nguoidung WHERE vaitro = 'provider' GROUP BY trangthai"
     );
     $stmt->execute();
     $result = $stmt->get_result();
@@ -62,7 +83,7 @@ if ($action === 'counts') {
 
 // ─── APPROVE / REJECT / BLOCK / UNBLOCK ──────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $body = json_decode(file_get_contents('php://input'), true);
+    $body             = json_decode(file_get_contents('php://input'), true);
     $provider_id      = (int)($body['provider_id'] ?? 0);
     $rejection_reason = trim($body['reason'] ?? '');
 
@@ -71,8 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Verify provider exists
-    $stmt = $conn->prepare("SELECT id, status FROM users WHERE id = ? AND role = 'provider' LIMIT 1");
+    $stmt = $conn->prepare(
+        "SELECT id, trangthai AS status FROM nguoidung WHERE id = ? AND vaitro = 'provider' LIMIT 1"
+    );
     $stmt->bind_param("i", $provider_id);
     $stmt->execute();
     $provider = $stmt->get_result()->fetch_assoc();
@@ -86,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     switch ($action) {
         case 'approve':
-            $new_status = 'active';
+            $new_status       = 'active';
             $rejection_reason = null;
             break;
         case 'reject':
@@ -97,13 +119,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $new_status = 'rejected';
             break;
         case 'block':
-            if (!$rejection_reason) {
-                $rejection_reason = 'Vi phạm điều khoản dịch vụ';
-            }
+            if (!$rejection_reason) $rejection_reason = 'Vi phạm điều khoản dịch vụ';
             $new_status = 'blocked';
             break;
         case 'unblock':
-            $new_status = 'active';
+            $new_status       = 'active';
             $rejection_reason = null;
             break;
         default:
@@ -112,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt = $conn->prepare(
-        "UPDATE users SET status = ?, rejection_reason = ? WHERE id = ? AND role = 'provider'"
+        "UPDATE nguoidung SET trangthai = ?, lydotuchoi = ? WHERE id = ? AND vaitro = 'provider'"
     );
     $stmt->bind_param("ssi", $new_status, $rejection_reason, $provider_id);
 

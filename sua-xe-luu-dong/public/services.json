@@ -1,418 +1,188 @@
-{
+﻿{
   "services": [
     {
       "id": 1,
-      "name": "Sửa xe máy lưu động",
+      "name": "Sửa xe",
+      "image": "public/asset/image/dich-vu-sua-xe-luu-dong.png",
       "summary": "Sửa chữa mọi hư hỏng của xe tại chỗ, tiết kiệm thời gian và chi phí kéo xe.",
-      "sub_services": [
-        {
-          "id": 101,
-          "name": "Sửa xe chết máy",
-          "vehicles": [
-            {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    {
-                      "id": 1011,
-                      "name": "Xử lý ngập nước/súc bình xăng con",
-                      "price": 150000
-                    },
-                    {
-                      "id": 1012,
-                      "name": "Thông ống dẫn xăng/kim phun FI",
-                      "price": 250000
-                    }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    {
-                      "id": 1013,
-                      "name": "Vệ sinh kim phun điện tử",
-                      "price": 220000
-                    },
-                    {
-                      "id": 1014,
-                      "name": "Kiểm tra hệ thống đánh lửa",
-                      "price": 100000
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": 102,
-          "name": "Sửa xe không đề được",
-          "vehicles": [
-            {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    {
-                      "id": 1021,
-                      "name": "Thay chổi than củ đề",
-                      "price": 180000
-                    },
-                    {
-                      "id": 1022,
-                      "name": "Sửa rơ-le đề (Cóc đề)",
-                      "price": 120000
-                    }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    {
-                      "id": 1023,
-                      "name": "Bảo dưỡng củ đề Exciter/NVX",
-                      "price": 200000
-                    },
-                    {
-                      "id": 1024,
-                      "name": "Thay nút đề chính hãng",
-                      "price": 85000
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "service_price": 85000
     },
     {
       "id": 2,
       "name": "Vá lốp - Thay lốp",
+      "image": "public/asset/image/dich-vu-va-lop-thay-lop.png",
       "summary": "Dịch vụ vá lốp và thay lốp tại chỗ với đầy đủ thiết bị chuyên dụng.",
-      "sub_services": [
-        {
-          "id": 201,
-          "name": "Vá trong",
-          "vehicles": [
-            {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    {
-                      "id": 2011,
-                      "name": "Lốp không ruột (Vision, Air Blade, Lead)",
-                      "price": 60000
-                    }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    {
-                      "id": 2012,
-                      "name": "Lốp không ruột (NVX, Grande, Janus, Latte, FreeGo)",
-                      "price": 50000
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": 202,
-          "name": "Thay lốp xe",
-          "vehicles": [
-            {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    {
-                      "id": 2021,
-                      "name": "Lốp IRC Vision (Trước/Sau)",
-                      "price": 450000
-                    },
-                    {
-                      "id": 2022,
-                      "name": "Lốp Chengshin Wave",
-                      "price": 280000
-                    }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    {
-                      "id": 2023,
-                      "name": "Lốp Maxxis Exciter 150",
-                      "price": 550000
-                    },
-                    {
-                      "id": 2024,
-                      "name": "Lốp Michelin City Grip Pro",
-                      "price": 850000
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "service_price": 50000
     },
     {
       "id": 3,
       "name": "Dịch vụ ắc quy",
+      "image": "public/asset/image/dich-vu-ac-quy.png",
       "summary": "Kiểm tra, sửa chữa và thay thế ắc quy mọi loại xe.",
-      "sub_services": [
-        {
-          "id": 301,
-          "name": "Thay ắc quy mới",
-          "vehicles": [
-            {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    {
-                      "id": 3011,
-                      "name": "Ắc quy GS GTZ5V (Vision, AirBlade)",
-                      "price": 380000
-                    },
-                    {
-                      "id": 3012,
-                      "name": "Ắc quy Globe WTZ6V (SH Mode, Lead)",
-                      "price": 420000
-                    }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    {
-                      "id": 3013,
-                      "name": "Ắc quy GS GTZ7V (NVX, Exciter 155)",
-                      "price": 480000
-                    },
-                    {
-                      "id": 3014,
-                      "name": "Ắc quy Globe WTZ5S (Sirius, Janus)",
-                      "price": 350000
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "service_price": 120000
     },
     {
       "id": 4,
       "name": "Tiếp nhiên liệu khẩn cấp",
+      "image": "public/asset/image/dich-vu-tiep-nhien-lieu-khuan-cap.png",
       "summary": "Giao xăng, dầu tận nơi khi xe bạn hết nhiên liệu giữa đường.",
-      "sub_services": [
-        {
-          "id": 401,
-          "name": "Tiếp xăng tận nơi",
-          "vehicles": [
-            {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    { "id": 4011, "name": "Xăng RON 95-V", "price": 100000 },
-                    { "id": 4012, "name": "Xăng RON 95-III", "price": 100000 },
-                    {
-                      "id": 4013,
-                      "name": "Xăng E10 RON 95-III",
-                      "price": 100000
-                    },
-                    { "id": 4014, "name": "Xăng E5 RON 92-II", "price": 100000 }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    { "id": 4015, "name": "Xăng RON 95-V", "price": 100000 },
-                    { "id": 4016, "name": "Xăng RON 95-III", "price": 100000 },
-                    {
-                      "id": 4017,
-                      "name": "Xăng E10 RON 95-III",
-                      "price": 100000
-                    },
-                    { "id": 4018, "name": "Xăng E5 RON 92-II", "price": 100000 }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "service_price": 100000
     },
     {
       "id": 5,
       "name": "Bảo dưỡng xe tại nhà",
+      "image": "public/asset/image/dich-vu-bao-duong-xe-tai-nha.png",
       "summary": "Dịch vụ bảo dưỡng định kỳ ngay tại nhà, văn phòng của bạn.",
-      "sub_services": [
+      "service_price": 60000
+    },
+    {
+      "id": 6,
+      "name": "Thay thế phụ tùng",
+      "image": "public/asset/image/dich-vu-thay-the-phu-tung.png",
+      "summary": "Cung cấp và thay thế phụ tùng chính hãng, giá cạnh tranh.",
+      "service_price": 80000
+    }
+  ],
+  "vehicles": [
+    {
+      "type": "Xe 4 bánh",
+      "survey_fees": 100000,
+      "brands": [
         {
-          "id": 501,
-          "name": "Thay nhớt xe",
-          "vehicles": [
+          "name": "Toyota",
+          "models": [
             {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    {
-                      "id": 5011,
-                      "name": "Nhớt Honda Scooter (Xe ga)",
-                      "price": 150000
-                    },
-                    {
-                      "id": 5012,
-                      "name": "Nhớt Honda Gear (Nhớt lap)",
-                      "price": 60000
-                    }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    {
-                      "id": 5013,
-                      "name": "Nhớt Yamalube Full Synthetic",
-                      "price": 280000
-                    },
-                    {
-                      "id": 5014,
-                      "name": "Nhớt Yamalube Eco cho xe số",
-                      "price": 120000
-                    }
-                  ]
-                }
-              ]
+              "id": 10103,
+              "vehicle_name": "Toyota Fortuner 2.8 Legender"
+            },
+            {
+              "id": 10203,
+              "vehicle_name": "Toyota Fortuner 2.8 Legender"
+            }
+          ]
+        },
+        {
+          "name": "Hyundai",
+          "models": [
+            {
+              "id": 10104,
+              "vehicle_name": "Hyundai Creta 1.5 Premium"
+            },
+            {
+              "id": 10204,
+              "vehicle_name": "Hyundai Creta 1.5 Premium"
             }
           ]
         }
       ]
     },
     {
-      "id": 6,
-      "name": "Thay thế phụ tùng",
-      "summary": "Cung cấp và thay thế phụ tùng chính hãng, giá cạnh tranh.",
-      "sub_services": [
+      "type": "Xe máy",
+      "survey_fees": 20000,
+      "brands": [
         {
-          "id": 601,
-          "name": "Thay bugi",
-          "vehicles": [
+          "name": "Honda",
+          "models": [
             {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    { "id": 6011, "name": "Bugi NGK CPR6EA-9", "price": 90000 },
-                    { "id": 6012, "name": "Bugi Denso U20EPR9", "price": 85000 }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    { "id": 6013, "name": "Bugi NGK CR6HSA", "price": 80000 },
-                    { "id": 6014, "name": "Bugi Denso U22FS-U", "price": 85000 }
-                  ]
-                }
-              ]
+              "id": 1011,
+              "vehicle_name": "Honda Wave Alpha 110"
+            },
+            {
+              "id": 1012,
+              "vehicle_name": "Honda Vision 110"
+            },
+            {
+              "id": 1021,
+              "vehicle_name": "Honda Air Blade 160"
+            },
+            {
+              "id": 1022,
+              "vehicle_name": "Honda Winner X 150"
             }
           ]
         },
         {
-          "id": 602,
-          "name": "Thay lọc gió",
-          "vehicles": [
+          "name": "Yamaha",
+          "models": [
             {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    {
-                      "id": 6021,
-                      "name": "Lọc gió Honda Air Blade",
-                      "price": 120000
-                    },
-                    { "id": 6022, "name": "Lọc gió Honda Wave", "price": 80000 }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    {
-                      "id": 6023,
-                      "name": "Lọc gió Yamaha Exciter",
-                      "price": 130000
-                    },
-                    {
-                      "id": 6024,
-                      "name": "Lọc gió Yamaha Sirius",
-                      "price": 90000
-                    }
-                  ]
-                }
-              ]
+              "id": 1013,
+              "vehicle_name": "Yamaha Sirius FI"
+            },
+            {
+              "id": 1014,
+              "vehicle_name": "Yamaha Janus 125"
+            },
+            {
+              "id": 1023,
+              "vehicle_name": "Yamaha Exciter 155 VVA"
+            },
+            {
+              "id": 1024,
+              "vehicle_name": "Yamaha NVX 155 VVA"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Xe đạp",
+      "survey_fees": 10000,
+      "brands": [
+        {
+          "name": "Trek",
+          "models": [
+            {
+              "id": 10102,
+              "vehicle_name": "Trek Domane AL 2"
+            },
+            {
+              "id": 10202,
+              "vehicle_name": "Trek Domane AL 2"
             }
           ]
         },
         {
-          "id": 603,
-          "name": "Thay má phanh",
-          "vehicles": [
+          "name": "Giant",
+          "models": [
             {
-              "type": "Xe máy",
-              "brands": [
-                {
-                  "name": "Honda",
-                  "items": [
-                    {
-                      "id": 6031,
-                      "name": "Má phanh trước Honda Air Blade",
-                      "price": 150000
-                    },
-                    {
-                      "id": 6032,
-                      "name": "Má phanh sau Honda Wave",
-                      "price": 120000
-                    }
-                  ]
-                },
-                {
-                  "name": "Yamaha",
-                  "items": [
-                    {
-                      "id": 6033,
-                      "name": "Má phanh trước Yamaha Exciter",
-                      "price": 160000
-                    },
-                    {
-                      "id": 6034,
-                      "name": "Má phanh sau Yamaha Sirius",
-                      "price": 130000
-                    }
-                  ]
-                }
-              ]
+              "id": 10101,
+              "vehicle_name": "Giant Talon 3"
+            },
+            {
+              "id": 10201,
+              "vehicle_name": "Giant Talon 3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Xe 4 bánh lớn",
+      "survey_fees": 200000,
+      "brands": [
+        {
+          "name": "Isuzu",
+          "models": [
+            {
+              "id": 10105,
+              "vehicle_name": "Isuzu mu-X Premium"
+            },
+            {
+              "id": 10205,
+              "vehicle_name": "Isuzu mu-X Premium"
+            }
+          ]
+        },
+        {
+          "name": "Hino",
+          "models": [
+            {
+              "id": 10106,
+              "vehicle_name": "Hino FL8JTSA tai nang"
+            },
+            {
+              "id": 10206,
+              "vehicle_name": "Hino FL8JTSA tai nang"
             }
           ]
         }

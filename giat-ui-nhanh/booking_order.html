@@ -493,10 +493,19 @@
                     <b>Mã đơn:</b> <span id="modalOrderId">-</span>
                   </div>
                   <div class="info-item">
-                    <b>Loại dịch vụ:</b> <span id="modalServiceType">-</span>
+                    <b>Dịch vụ cụ thể:</b> <span id="modalServiceName">-</span>
                   </div>
                   <div class="info-item">
-                    <b>Dịch vụ cụ thể:</b> <span id="modalServiceName">-</span>
+                    <b>Công việc thực hiện:</b>
+                    <span id="modalWorkItems">-</span>
+                  </div>
+                  <div class="info-item">
+                    <b>Hóa chất hỗ trợ:</b>
+                    <span id="modalSupportChemicals">-</span>
+                  </div>
+                  <div class="info-item">
+                    <b>Hình thức giao nhận:</b>
+                    <span id="modalTransportOptions">-</span>
                   </div>
                   <div class="info-item">
                     <b>Số lượng:</b> <span id="modalQuantity">-</span>
@@ -885,6 +894,20 @@
           return number.toLocaleString("vi-VN") + "đ";
         }
 
+        function getShippingFee(order) {
+          if (order && order.shippingFee != null) {
+            return Number(order.shippingFee || 0);
+          }
+
+          const transportFee = Number(
+            order && order.transportFee ? order.transportFee : 0,
+          );
+          const shippingSurcharge = Number(
+            order && order.shippingSurcharge ? order.shippingSurcharge : 0,
+          );
+          return transportFee + shippingSurcharge;
+        }
+
         function setText(id, value) {
           const element = document.getElementById(id);
           if (element) {
@@ -917,8 +940,10 @@
           const pendingOrder = isPendingOrder(order);
 
           setText("modalOrderId", order.id);
-          setText("modalServiceType", order.serviceTypeName);
           setText("modalServiceName", order.serviceName);
+          setText("modalWorkItems", order.work_items);
+          setText("modalSupportChemicals", order.support_chemicals);
+          setText("modalTransportOptions", order.transport_options);
           setText("modalQuantity", String(order.quantity || "-"));
           setText("modalOrderDate", formatDate(order.orderDate));
           setText("modalOrderStatus", orderStatusText(order.order_status));
@@ -928,7 +953,7 @@
           if (transactionStatusEl) {
             transactionStatusEl.innerHTML = `<span class="payment-status-badge ${transactionStatusClass(order.transaction_status)}">${transactionStatusText(order.transaction_status)}</span>`;
           }
-          setText("modalShippingFee", formatCurrency(order.shippingFee));
+          setText("modalShippingFee", formatCurrency(getShippingFee(order)));
           setText("modalTotalPrice", formatCurrency(order.totalPrice));
           setText("modalNote", order.note || "Không có ghi chú.");
 
@@ -985,8 +1010,8 @@
               return `
                 <tr>
                   <td>${index + 1}</td>
-                  <td>${order.serviceTypeName || "-"}</td>
                   <td>${order.serviceName || "-"}</td>
+                  <td>${order.transport_options || "-"}</td>
                   <td>${formatDate(order.orderDate)}</td>
                   <td><span class="status-badge ${statusClass}">${statusText(normalizedStatus)}</span></td>
                   <td>${isPendingOrder(order) ? "Chưa có" : (order.provider && order.provider.name) || "-"}</td>

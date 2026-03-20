@@ -130,7 +130,13 @@ async function loadBookingModalPartial() {
     try {
         const res = await fetch('../../partials/dat-lich.html');
         if (!res.ok) throw new Error();
-        document.body.insertAdjacentHTML('beforeend', await res.text());
+        // Dùng DOMParser để chỉ lấy #bookingModal
+        // (dat-lich.html là trang đầy đủ, không inject cả <html> vào body)
+        const parser = new DOMParser();
+        const doc    = parser.parseFromString(await res.text(), 'text/html');
+        const modal  = doc.getElementById('bookingModal');
+        if (modal) document.body.appendChild(modal);
+        else throw new Error('no #bookingModal');
     } catch {
         // Fallback: inject trực tiếp nếu fetch thất bại
         document.body.insertAdjacentHTML('beforeend', buildBookingModalFallback());

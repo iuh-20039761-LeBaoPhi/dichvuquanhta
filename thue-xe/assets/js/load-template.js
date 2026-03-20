@@ -15,7 +15,7 @@
     }
 
     injectBaseSEO();
-    fetch('partials/header.html')
+    fetch('views/partials/header.html')
         .then(r => r.text())
         .then(html => {
             // Chỉ extract phần <header> thay vì inject cả file HTML
@@ -52,8 +52,8 @@ function initAuthNav() {
                 if (avatarEl) avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
 
                 const dashMap = {
-                    customer: 'pages/customer/bang-dieu-khien.html',
-                    provider: 'pages/provider/bang-dieu-khien.html',
+                    customer: 'views/pages/customer/bang-dieu-khien.html',
+                    provider: 'views/pages/provider/bang-dieu-khien.html',
                     admin:    'admin/index.php'
                 };
                 const logoutMap = {
@@ -62,20 +62,20 @@ function initAuthNav() {
                     admin:    'admin/index.php?action=logout'
                 };
                 const loginMap = {
-                    customer: 'pages/customer/dang-nhap.html',
-                    provider: 'pages/provider/dang-nhap.html',
+                    customer: 'views/pages/customer/dang-nhap.html',
+                    provider: 'views/pages/provider/dang-nhap.html',
                     admin:    'admin/index.php'
                 };
 
                 const dashLink = document.getElementById('auth-dashboard-link');
-                if (dashLink) dashLink.href = dashMap[data.role] || 'pages/customer/bang-dieu-khien.html';
+                if (dashLink) dashLink.href = dashMap[data.role] || 'views/pages/customer/bang-dieu-khien.html';
 
                 const logoutLink = document.getElementById('auth-logout-link');
                 if (logoutLink) {
                     logoutLink.addEventListener('click', function(e) {
                         e.preventDefault();
                         fetch(logoutMap[data.role] || 'controllers/customer/auth-controller.php?action=logout')
-                            .then(() => { window.location.href = loginMap[data.role] || 'pages/customer/dang-nhap.html'; });
+                            .then(() => { window.location.href = loginMap[data.role] || 'views/pages/customer/dang-nhap.html'; });
                     });
                 }
             } else {
@@ -160,7 +160,7 @@ function loadFooter() {
         document.head.appendChild(s);
     }
 
-    fetch('partials/footer.html')
+    fetch('views/partials/footer.html')
         .then(r => r.text())
         .then(html => {
             const parser = new DOMParser();
@@ -190,19 +190,21 @@ function highlightActiveNav() {
         services: 'services',
         guide: 'guide',
         contact: 'contact',
-        blog: 'blog',
+        blog: 'cam-nang',
+        'cam-nang': 'cam-nang',
         terms: 'terms',
         search: 'home',
         'car-detail': 'home',
         'booking-success': 'home',
         'track-order': 'home',
-        'blog-detail': 'blog',
+        'blog-detail': 'cam-nang',
+        'chi-tiet-cam-nang': 'cam-nang',
         'gioi-thieu': 'about',
         'dich-vu': 'services',
         'huong-dan-thue-xe': 'guide',
         'lien-he': 'contact',
-        'bai-viet': 'blog',
-        'chi-tiet-bai-viet': 'blog',
+        'bai-viet': 'cam-nang',
+        'chi-tiet-bai-viet': 'cam-nang',
         'dieu-khoan': 'terms',
         'tim-kiem': 'home',
         'chi-tiet-xe': 'home',
@@ -223,7 +225,7 @@ function injectBackBar() {
         if (!m) m = window.location.pathname.match(/\/([^/.]+)\.html$/);
         page = m ? m[1] : 'home';
     }
-    if (page === 'home' || !page) return;
+    if (!page || page === 'home' || page === 'index') return;
 
     const PAGE_LABELS = {
         search:            'Tìm xe',
@@ -235,27 +237,31 @@ function injectBackBar() {
         'booking-success': 'Đặt xe thành công',
         'track-order':     'Theo dõi đơn',
         terms:             'Điều khoản',
-        blog:              'Blog',
-        'blog-detail':     'Bài viết',
+        blog:              'Cẩm nang',
+        'cam-nang':        'Cẩm nang',
+        'blog-detail':     'Chi tiết cẩm nang',
+        'chi-tiet-cam-nang': 'Chi tiết cẩm nang',
         'gioi-thieu':      'Giới thiệu',
         'dich-vu':         'Dịch vụ',
         'huong-dan-thue-xe': 'Hướng dẫn',
         'lien-he':         'Liên hệ',
-        'bai-viet':        'Blog',
-        'chi-tiet-bai-viet': 'Bài viết',
+        'bai-viet':        'Cẩm nang',
+        'chi-tiet-bai-viet': 'Chi tiết cẩm nang',
         'dieu-khoan':      'Điều khoản',
         'tim-kiem':        'Tìm xe',
         'chi-tiet-xe':     'Chi tiết xe',
         'dat-lich-thanh-cong': 'Đặt xe thành công',
         'tra-cuu-don':     'Theo dõi đơn',
-        'huong-dan-he-thong': 'Hướng dẫn hệ thống'
+        'huong-dan-he-thong': 'Hướng dẫn hệ thống',
+        'dat-lich-modal':  'Đặt lịch'
     };
 
     const PARENT = {
-        'car-detail':      'pages/public/tim-kiem.html',
-        'chi-tiet-xe':     'pages/public/tim-kiem.html',
-        'blog-detail':     'pages/public/bai-viet.html',
-        'chi-tiet-bai-viet': 'pages/public/bai-viet.html',
+        'car-detail':      'views/pages/public/tim-kiem.html',
+        'chi-tiet-xe':     'views/pages/public/tim-kiem.html',
+        'blog-detail':     'views/pages/public/cam-nang.html',
+        'chi-tiet-bai-viet': 'views/pages/public/cam-nang.html',
+        'chi-tiet-cam-nang': 'views/pages/public/cam-nang.html',
         'booking-success': 'index.html',
         'dat-lich-thanh-cong': 'index.html'
     };

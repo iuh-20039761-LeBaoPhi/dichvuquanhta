@@ -1,4 +1,8 @@
 <?php
+/**
+ * Customer Auth — Register
+ * Bảng users → nguoidung, cột tiếng Việt không dấu.
+ */
 require_once __DIR__ . '/../../../config/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../../../config/database.php';
@@ -6,8 +10,8 @@ require_once __DIR__ . '/../../../config/database.php';
 $data      = json_decode(file_get_contents('php://input'), true);
 $full_name = trim($data['full_name'] ?? '');
 $email     = strtolower(trim($data['email'] ?? ''));
-$phone     = trim($data['phone'] ?? '');
-$password  = $data['password'] ?? '';
+$phone     = trim($data['phone']     ?? '');
+$password  = $data['password']       ?? '';
 
 if (!$full_name || !$email || !$phone || !$password) {
     echo json_encode(['status' => 'error', 'message' => 'Vui lòng điền đầy đủ thông tin']);
@@ -22,7 +26,7 @@ if (strlen($password) < 6) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+$stmt = $conn->prepare("SELECT id FROM nguoidung WHERE email = ? LIMIT 1");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 if ($stmt->get_result()->num_rows > 0) {
@@ -33,7 +37,9 @@ if ($stmt->get_result()->num_rows > 0) {
 $hashed = password_hash($password, PASSWORD_DEFAULT);
 $role   = 'customer';
 $status = 'active';
-$stmt = $conn->prepare("INSERT INTO users (full_name, email, phone, password, role, status) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt = $conn->prepare(
+    "INSERT INTO nguoidung (hoten, email, sodienthoai, matkhau, vaitro, trangthai) VALUES (?, ?, ?, ?, ?, ?)"
+);
 $stmt->bind_param("ssssss", $full_name, $email, $phone, $hashed, $role, $status);
 
 if ($stmt->execute()) {

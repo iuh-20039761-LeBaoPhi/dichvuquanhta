@@ -1,19 +1,24 @@
 <?php
+/**
+ * Public — Get Home Services (categories + services overview)
+ * Bảng service_categories → danhmuc, services → dichvu.
+ * AS alias giữ nguyên API contract.
+ */
 require_once __DIR__ . '/../../config/database.php';
 
 header("Content-Type: application/json; charset=utf-8");
 
 $sql = "
 SELECT
-    c.id AS category_id,
-    c.name AS category_name,
-    s.id AS service_id,
-    s.name AS service_name,
-    s.price
-FROM service_categories c
-LEFT JOIN services s ON s.category_id = c.id
-WHERE c.is_active = 1 AND s.is_active = 1
-ORDER BY c.id, s.id
+    dc.id   AS category_id,
+    dc.ten  AS category_name,
+    dv.id   AS service_id,
+    dv.ten  AS service_name,
+    dv.gia  AS price
+FROM danhmuc dc
+LEFT JOIN dichvu dv ON dv.iddanhmuc = dc.id
+WHERE dc.hoatdong = 1 AND dv.hoatdong = 1
+ORDER BY dc.id, dv.id
 ";
 
 $stmt = $conn->query($sql);
@@ -29,13 +34,13 @@ while ($row = $stmt->fetch_assoc()) {
 
     if (!isset($result[$cid])) {
         $result[$cid] = [
-            "name" => $row['category_name'],
+            "name"     => $row['category_name'],
             "services" => []
         ];
     }
 
     $result[$cid]['services'][] = [
-        "name" => $row['service_name'],
+        "name"  => $row['service_name'],
         "price" => $row['price']
     ];
 }

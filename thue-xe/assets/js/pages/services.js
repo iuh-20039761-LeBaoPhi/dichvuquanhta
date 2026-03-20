@@ -61,7 +61,7 @@ function displayRentalCars(carTypes, availableByType) {
                         <p class="text-muted small mb-3">${car.brand} · ${car.seats} chỗ · ${car.transmission}</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="car-price">${Utils.formatPrice(car.price_per_day)}đ/ngày</span>
-                            <a href="pages/public/chi-tiet-xe.html?type_id=${car.id}" class="btn btn-gradient-secondary btn-sm">
+                            <a href="views/pages/public/chi-tiet-xe.html?type_id=${car.id}" class="btn btn-gradient-secondary btn-sm">
                                 Chi tiết
                             </a>
                         </div>

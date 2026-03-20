@@ -7,11 +7,6 @@
                     <i class="fas fa-calendar-check me-2" style="color:var(--primary);"></i>
                     Đặt Lịch Dịch Vụ
                 </h5>
-                <div class="modal-header-actions">
-                    <button type="button" id="autofillBtn" onclick="bookingAutoFill()" class="btn-autofill">
-                        <i class="fas fa-magic"></i> Tự điền
-                    </button>
-                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
@@ -90,35 +85,24 @@
                                     <span id="bd-total" class="fw-bold" style="color:var(--primary);"></span>
                                 </div>
 
-                                <!-- Lưu ý phí khảo sát — toggle, mặc định thu gọn -->
+                                <!-- Lưu ý phí khảo sát -->
                                 <div id="bd-survey-notice" style="display:none;">
-                                    <button type="button" class="survey-toggle-btn"
-                                            data-bs-toggle="collapse" data-bs-target="#surveyContent"
-                                            aria-expanded="false" aria-controls="surveyContent">
-                                        <span>
-                                            <i class="fas fa-triangle-exclamation me-1"></i>
-                                            Xem lưu ý phí khảo sát
-                                        </span>
-                                        <i class="fas fa-chevron-down survey-chevron"></i>
-                                    </button>
-                                    <div class="collapse" id="surveyContent">
-                                        <div class="survey-notice-content">
-                                            <div>✅ <strong>Nếu đồng ý sửa:</strong> phí khảo sát được <strong>miễn</strong>, chỉ thanh toán tổng tạm tính trên.</div>
-                                            <div class="mt-1">❌ <strong>Nếu không đồng ý sửa</strong> sau khi thợ đến khảo sát, bạn cần thanh toán:</div>
-                                            <div class="survey-breakdown-box">
-                                                <div class="d-flex justify-content-between mb-1">
-                                                    <span><i class="fas fa-motorcycle me-1" style="font-size:0.75rem;"></i>Phí di chuyển:</span>
-                                                    <span id="bd-survey-travel" class="fw-semibold"></span>
-                                                </div>
-                                                <div class="d-flex justify-content-between mb-1">
-                                                    <span><i class="fas fa-clipboard-check me-1" style="font-size:0.75rem;"></i>Phí khảo sát:</span>
-                                                    <span id="bd-survey-amount" class="fw-semibold"></span>
-                                                </div>
-                                                <div class="survey-breakdown-sep"></div>
-                                                <div class="d-flex justify-content-between">
-                                                    <span class="fw-semibold">Tổng cần trả:</span>
-                                                    <span id="bd-survey-no-repair" class="fw-bold survey-no-repair-total"></span>
-                                                </div>
+                                    <div class="survey-notice-content">
+                                        <div>✅ <strong>Nếu đồng ý sửa:</strong> phí khảo sát được <strong>miễn</strong>, chỉ thanh toán tổng tạm tính trên.</div>
+                                        <div class="mt-1">❌ <strong>Nếu không đồng ý sửa</strong> sau khi thợ đến khảo sát, bạn cần thanh toán:</div>
+                                        <div class="survey-breakdown-box">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span><i class="fas fa-motorcycle me-1" style="font-size:0.75rem;"></i>Phí di chuyển:</span>
+                                                <span id="bd-survey-travel" class="fw-semibold"></span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span><i class="fas fa-clipboard-check me-1" style="font-size:0.75rem;"></i>Phí khảo sát:</span>
+                                                <span id="bd-survey-amount" class="fw-semibold"></span>
+                                            </div>
+                                            <div class="survey-breakdown-sep"></div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="fw-semibold">Tổng cần trả:</span>
+                                                <span id="bd-survey-no-repair" class="fw-bold survey-no-repair-total"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -171,7 +155,10 @@
                             </div>
                             <input type="file" id="mediaPhotoInput" accept="image/*" multiple style="display:none">
                             <input type="file" id="mediaVideoInput" accept="video/*" style="display:none">
-                            <div id="mediaPreviewContainer" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                            <div id="mediaPreviewBox" class="media-preview-box" style="display:none;">
+                                <div class="media-preview-label"><i class="fas fa-images me-1"></i>Ảnh / video đã chọn:</div>
+                                <div id="mediaPreviewContainer" class="media-preview-grid"></div>
+                            </div>
                         </div>
 
                     </div><!-- /row -->
@@ -185,31 +172,101 @@
 
                 <!-- ===== BẢNG XÁC NHẬN THÔNG TIN ===== -->
                 <div id="bookingConfirm" style="display:none;">
-                    <div class="text-center mb-4">
-                        <div class="booking-confirm-icon">
-                            <i class="fas fa-clipboard-check text-white" style="font-size:1.6rem;"></i>
+
+                    <!-- Header -->
+                    <div class="cfm-header">
+                        <div class="cfm-header-icon">
+                            <i class="fas fa-clipboard-check"></i>
                         </div>
-                        <h6 class="fw-bold mb-1" style="font-size:1.05rem;">Xác nhận thông tin đặt lịch</h6>
-                        <p class="text-muted small mb-0">Vui lòng kiểm tra lại trước khi gửi</p>
+                        <div>
+                            <div class="cfm-header-title">Xác nhận thông tin đặt lịch</div>
+                            <div class="cfm-header-sub">Vui lòng kiểm tra lại trước khi gửi</div>
+                        </div>
                     </div>
-                    <div class="booking-confirm-box">
-                        <div class="cf-row"><span class="cf-label">Họ và tên</span><span id="cf-name" class="cf-val"></span></div>
-                        <div class="cf-row"><span class="cf-label">Số điện thoại</span><span id="cf-phone" class="cf-val"></span></div>
-                        <div class="cf-row"><span class="cf-label">Dịch vụ</span><span id="cf-service" class="cf-val"></span></div>
-                        <div class="cf-row" id="cf-price-row"><span class="cf-label">Giá tham khảo</span><span id="cf-price" class="cf-val" style="color:var(--primary);font-weight:700;"></span></div>
-                        <!-- cf-label text được set động bởi JS: "Tổng tạm tính" hoặc "Giá tham khảo" -->
-                        <div class="cf-row"><span class="cf-label">Địa chỉ</span><span id="cf-address" class="cf-val"></span></div>
-                        <div class="cf-row" id="cf-note-row"><span class="cf-label">Ghi chú</span><span id="cf-note" class="cf-val"></span></div>
-                        <div class="cf-row" id="cf-media-row"><span class="cf-label">Đính kèm</span><span id="cf-media" class="cf-val"></span></div>
+
+                    <!-- Thông tin khách hàng -->
+                    <div class="cfm-section">
+                        <div class="cfm-section-label"><i class="fas fa-user me-1"></i>Khách hàng</div>
+                        <div class="cfm-info-grid">
+                            <div class="cfm-info-item">
+                                <div class="cfm-info-icon cfm-icon--person"><i class="fas fa-user-circle"></i></div>
+                                <div>
+                                    <div class="cfm-info-sub">Họ và tên</div>
+                                    <div id="cf-name" class="cfm-info-val"></div>
+                                </div>
+                            </div>
+                            <div class="cfm-info-item">
+                                <div class="cfm-info-icon cfm-icon--phone"><i class="fas fa-phone"></i></div>
+                                <div>
+                                    <div class="cfm-info-sub">Số điện thoại</div>
+                                    <div id="cf-phone" class="cfm-info-val"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cfm-info-item cfm-info-item--full">
+                            <div class="cfm-info-icon cfm-icon--location"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <div class="cfm-info-sub">Địa chỉ</div>
+                                <div id="cf-address" class="cfm-info-val"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="d-flex gap-3">
-                        <button type="button" id="confirmBackBtn" class="btn btn-outline-secondary w-50 btn-booking-confirm">
-                            <i class="fas fa-arrow-left me-2"></i> Quay lại
+
+                    <!-- Dịch vụ -->
+                    <div class="cfm-section">
+                        <div class="cfm-section-label"><i class="fas fa-tools me-1"></i>Dịch vụ đã chọn</div>
+                        <div class="cfm-service-block">
+                            <div class="cfm-service-icon"><i class="fas fa-wrench"></i></div>
+                            <div id="cf-service" class="cfm-service-name"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chi phí -->
+                    <div class="cfm-section" id="cf-cost-section" style="display:none;">
+                        <div class="cfm-section-label"><i class="fas fa-receipt me-1"></i>Chi phí tạm tính</div>
+                        <div class="cfm-cost-box">
+                            <div class="cfm-cost-row" id="cf-cost-base-row">
+                                <span class="cfm-cost-label">Giá dịch vụ</span>
+                                <span id="cf-cost-base" class="cfm-cost-val"></span>
+                            </div>
+                            <div class="cfm-cost-row" id="cf-cost-travel-row" style="display:none;">
+                                <span class="cfm-cost-label"><i class="fas fa-motorcycle me-1" style="color:#64748b;"></i>Phí di chuyển</span>
+                                <span id="cf-cost-travel" class="cfm-cost-val"></span>
+                            </div>
+                            <div class="cfm-cost-row" id="cf-cost-survey-row" style="display:none;">
+                                <span class="cfm-cost-label"><i class="fas fa-clipboard-check me-1" style="color:#b45309;"></i>Phí khảo sát</span>
+                                <span id="cf-cost-survey" class="cfm-cost-val" style="color:#b45309;"></span>
+                            </div>
+                            <div class="cfm-cost-total-row">
+                                <span class="cfm-cost-total-label">Tổng tạm tính</span>
+                                <span id="cf-cost-total" class="cfm-cost-total-val"></span>
+                            </div>
+                            <div id="cf-cost-note" class="cfm-cost-note" style="display:none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Ghi chú -->
+                    <div class="cfm-section cfm-note-section" id="cf-note-row" style="display:none;">
+                        <div class="cfm-section-label"><i class="fas fa-comment-dots me-1"></i>Ghi chú</div>
+                        <div id="cf-note" class="cfm-note-text"></div>
+                    </div>
+
+                    <!-- Đính kèm -->
+                    <div class="cfm-section" id="cf-media-row" style="display:none;">
+                        <div class="cfm-section-label"><i class="fas fa-paperclip me-1"></i>Đính kèm</div>
+                        <div id="cf-media" class="cfm-media-val"></div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="cfm-actions">
+                        <button type="button" id="confirmBackBtn" class="cfm-btn-back">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại chỉnh sửa
                         </button>
-                        <button type="button" id="confirmSubmitBtn" class="btn btn-gradient w-50 btn-booking-confirm">
-                            <i class="fas fa-check-circle me-2"></i> Xác nhận
+                        <button type="button" id="confirmSubmitBtn" class="cfm-btn-submit">
+                            <i class="fas fa-paper-plane me-2"></i>Gửi đặt lịch
                         </button>
                     </div>
+
                 </div>
 
             </div><!-- /modal-body -->

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Provider Bookings Controller — v3
+ * Bảng `bookings` → `datxe`, cột tiếng Việt không dấu.
+ * AS alias để output JSON giữ nguyên field name cũ.
+ */
+
 require_once dirname(__DIR__) . '/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once '../../config/database.php';
@@ -18,20 +24,29 @@ try {
 
     if ($action === 'getMyBookings') {
         $stmt = $conn->prepare(
-            "SELECT id, car_id, car_name, customer_name, customer_phone,
-                    pickup_date, return_date, total_days, total_price, status, created_at
-             FROM bookings WHERE provider_id = ? ORDER BY created_at DESC"
+            "SELECT
+                id,
+                idxe                 AS car_id,
+                tenxe                AS car_name,
+                tenkhachhang         AS customer_name,
+                dienthoaikhachhang   AS customer_phone,
+                ngaynhan             AS pickup_date,
+                ngaytra              AS return_date,
+                songay               AS total_days,
+                tongtien             AS total_price,
+                trangthai            AS status,
+                ngaytao              AS created_at
+             FROM datxe WHERE idnhacungcap = ? ORDER BY ngaytao DESC"
         );
         $stmt->execute([$provider_id]);
-        $data = $stmt->fetchAll();
-        echo json_encode(['success' => true, 'data' => $data]);
+        echo json_encode(['success' => true, 'data' => $stmt->fetchAll()]);
         exit;
     }
 
     if ($action === 'updateStatus') {
         $body       = json_decode(file_get_contents('php://input'), true);
         $booking_id = (int)($body['booking_id'] ?? 0);
-        $new_status = $body['status'] ?? '';
+        $new_status = $body['status']            ?? '';
 
         $allowed = ['confirmed', 'completed'];
         if (!$booking_id || !in_array($new_status, $allowed)) {
@@ -39,8 +54,10 @@ try {
             exit;
         }
 
-        // Chỉ được cập nhật đơn của mình
-        $stmt = $conn->prepare("SELECT id, status FROM bookings WHERE id = ? AND provider_id = ?");
+        // Chỉ được cập nhật đơn của provider mình — idnhacungcap
+        $stmt = $conn->prepare(
+            "SELECT id, trangthai AS status FROM datxe WHERE id = ? AND idnhacungcap = ?"
+        );
         $stmt->execute([$booking_id, $provider_id]);
         $booking = $stmt->fetch();
 
@@ -55,7 +72,8 @@ try {
             exit;
         }
 
-        $stmt = $conn->prepare("UPDATE bookings SET status = ? WHERE id = ?");
+        // UPDATE datxe: cột trangthai
+        $stmt = $conn->prepare("UPDATE datxe SET trangthai = ? WHERE id = ?");
         $stmt->execute([$new_status, $booking_id]);
         echo json_encode(['success' => true]);
         exit;

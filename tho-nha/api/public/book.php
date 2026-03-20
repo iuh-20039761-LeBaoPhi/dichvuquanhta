@@ -1,5 +1,8 @@
 <?php
-// File: api/book.php
+/**
+ * Public — Book Service
+ * Bảng bookings → datlich, cột tiếng Việt không dấu.
+ */
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
@@ -23,16 +26,16 @@ if (!$data) {
     exit;
 }
 
-$name            = trim($data['name'] ?? '');
-$phone           = trim($data['phone'] ?? '');
-$service_name    = trim($data['service_id'] ?? ''); // field vẫn là service_id từ frontend
-$address         = trim($data['address'] ?? '');
-$note            = trim($data['note'] ?? '');
-$selected_brand  = trim($data['selected_brand']  ?? '') ?: null;
+$name            = trim($data['name']           ?? '');
+$phone           = trim($data['phone']          ?? '');
+$service_name    = trim($data['service_id']     ?? ''); // field vẫn là service_id từ frontend
+$address         = trim($data['address']        ?? '');
+$note            = trim($data['note']           ?? '');
+$selected_brand  = trim($data['selected_brand'] ?? '') ?: null;
 $estimated_price = isset($data['estimated_price']) && $data['estimated_price'] > 0
     ? (int)$data['estimated_price'] : null;
 
-// Nếu khách đã đăng nhập thì gắn user_id, không bắt buộc (guest vẫn đặt được)
+// Nếu khách đã đăng nhập thì gắn idkhachhang, không bắt buộc
 $user_id = (isset($_SESSION['user_id']) && $_SESSION['user_role'] === 'customer')
     ? (int)$_SESSION['user_id']
     : null;
@@ -51,7 +54,7 @@ if (!preg_match('/^(0|\+84)[0-9]{9}$/', $phone)) {
 
 // Tạo mã đơn hàng
 $order_code = "TN" . rand(100000, 999999);
-$check_stmt = $conn->prepare("SELECT id FROM bookings WHERE order_code = ?");
+$check_stmt = $conn->prepare("SELECT id FROM datlich WHERE madondatlich = ?");
 $check_stmt->bind_param("s", $order_code);
 $check_stmt->execute();
 if ($check_stmt->get_result()->num_rows > 0) {
@@ -59,25 +62,11 @@ if ($check_stmt->get_result()->num_rows > 0) {
 }
 $check_stmt->close();
 
-// Lưu selected_brand + estimated_price nếu cột tồn tại trong DB (migration an toàn)
-// Dùng INSERT với các cột tùy chọn — nếu cột chưa có, fallback về INSERT cơ bản
-$has_new_cols = false;
-$col_check = $conn->query("SHOW COLUMNS FROM `bookings` LIKE 'estimated_price'");
-if ($col_check && $col_check->num_rows > 0) $has_new_cols = true;
-
-if ($has_new_cols) {
-    $stmt = $conn->prepare(
-        "INSERT INTO bookings (order_code, customer_name, phone, service_name, address, note, status, selected_brand, estimated_price, user_id, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, ?, NOW())"
-    );
-    $stmt->bind_param("sssssssii", $order_code, $name, $phone, $service_name, $address, $note, $selected_brand, $estimated_price, $user_id);
-} else {
-    $stmt = $conn->prepare(
-        "INSERT INTO bookings (order_code, customer_name, phone, service_name, address, note, status, user_id, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, 'new', ?, NOW())"
-    );
-    $stmt->bind_param("ssssssi", $order_code, $name, $phone, $service_name, $address, $note, $user_id);
-}
+$stmt = $conn->prepare(
+    "INSERT INTO datlich (madondatlich, tenkhachhang, sodienthoai, tendichvu, diachi, ghichu, trangthai, thuonghieuchon, giauoctinh, idkhachhang, ngaytao)
+     VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, ?, NOW())"
+);
+$stmt->bind_param("sssssssii", $order_code, $name, $phone, $service_name, $address, $note, $selected_brand, $estimated_price, $user_id);
 
 if ($stmt->execute()) {
     echo json_encode([
@@ -93,4 +82,3 @@ if ($stmt->execute()) {
 
 $stmt->close();
 $conn->close();
-?>

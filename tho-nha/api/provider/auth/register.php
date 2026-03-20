@@ -1,9 +1,12 @@
 <?php
+/**
+ * Provider Auth — Register
+ * Bảng users → nguoidung, cột tiếng Việt không dấu.
+ */
 require_once __DIR__ . '/../../../config/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../../../config/database.php';
 
-// Đọc từ $_POST (multipart/form-data)
 $full_name    = trim($_POST['full_name']    ?? '');
 $email        = strtolower(trim($_POST['email'] ?? ''));
 $phone        = trim($_POST['phone']        ?? '');
@@ -30,7 +33,7 @@ if (empty($_FILES['cccd_front']['tmp_name']) || empty($_FILES['cccd_back']['tmp_
 }
 
 // Kiểm tra email trùng
-$stmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+$stmt = $conn->prepare("SELECT id FROM nguoidung WHERE email = ? LIMIT 1");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 if ($stmt->get_result()->num_rows > 0) {
@@ -38,11 +41,10 @@ if ($stmt->get_result()->num_rows > 0) {
     exit;
 }
 
-// --- Hàm upload ảnh ---
 function uploadImage($file, $prefix) {
     $allowed = ['image/jpeg', 'image/png', 'image/webp'];
     if (!in_array($file['type'], $allowed)) return null;
-    if ($file['size'] > 5 * 1024 * 1024) return null; // 5MB
+    if ($file['size'] > 5 * 1024 * 1024) return null;
 
     $ext      = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = $prefix . '_' . uniqid() . '.' . strtolower($ext);
@@ -68,7 +70,7 @@ $role   = 'provider';
 $status = 'pending';
 
 $stmt = $conn->prepare(
-    "INSERT INTO users (full_name, email, phone, password, role, status, company_name, address, description, avatar, cccd_front, cccd_back)
+    "INSERT INTO nguoidung (hoten, email, sodienthoai, matkhau, vaitro, trangthai, tencongty, diachi, mota, avatar, cccdmatruoc, cccdmatsau)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
 $stmt->bind_param("ssssssssssss",

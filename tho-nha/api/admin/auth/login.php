@@ -1,4 +1,8 @@
 <?php
+/**
+ * Admin Auth — Login
+ * Bảng users → nguoidung, cột tiếng Việt không dấu.
+ */
 require_once __DIR__ . '/../../../config/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../../../config/database.php';
@@ -12,7 +16,10 @@ if (!$email || !$password) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND role = 'admin' LIMIT 1");
+$stmt = $conn->prepare(
+    "SELECT id, hoten AS full_name, matkhau AS password, trangthai AS status
+     FROM nguoidung WHERE email = ? AND vaitro = 'admin' LIMIT 1"
+);
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
@@ -27,7 +34,7 @@ if ($user['status'] === 'blocked') {
 }
 
 $_SESSION['admin_id']       = $user['id'];
-$_SESSION['admin_username'] = $user['full_name']; // Giữ key cũ để tương thích admin panel
+$_SESSION['admin_username'] = $user['full_name'];
 
 echo json_encode([
     'status'   => 'success',

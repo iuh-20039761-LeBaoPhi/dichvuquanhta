@@ -73,7 +73,8 @@ async function performSearch() {
     const result = await API.cars.search(searchParams);
 
     if(result.success) {
-        displaySearchResults(result.data, searchParams);
+        const matchedCars = filterCarsBySearchParams(result.data, searchParams);
+        displaySearchResults(matchedCars, searchParams);
     } else {
         document.getElementById('searchResults').innerHTML = `
             <div class="col-12 text-center py-5">
@@ -82,6 +83,39 @@ async function performSearch() {
                 <p class="text-muted">${result.message}</p>
             </div>`;
     }
+}
+
+function filterCarsBySearchParams(cars, searchParams) {
+    const selectedBrand = (searchParams.brand || '').trim().toLowerCase();
+    const selectedSeats = searchParams.seats ? Number(searchParams.seats) : null;
+    const selectedPrice = (searchParams.price || '').trim();
+
+    return (cars || []).filter(car => {
+        if (selectedBrand && String(car.brand || '').trim().toLowerCase() !== selectedBrand) {
+            return false;
+        }
+
+        if (selectedSeats !== null && Number(car.seats) !== selectedSeats) {
+            return false;
+        }
+
+        if (selectedPrice) {
+            const carPrice = Number(car.price_per_day);
+            if (!Number.isFinite(carPrice)) return false;
+
+            if (selectedPrice.includes('-')) {
+                const [minPrice, maxPrice] = selectedPrice.split('-').map(Number);
+                if (!Number.isFinite(minPrice) || !Number.isFinite(maxPrice)) return false;
+                if (carPrice < minPrice || carPrice > maxPrice) return false;
+            } else {
+                const minPrice = Number(selectedPrice);
+                if (!Number.isFinite(minPrice)) return false;
+                if (carPrice < minPrice) return false;
+            }
+        }
+
+        return true;
+    });
 }
 
 function displaySearchResults(cars, searchParams) {
@@ -108,7 +142,7 @@ function displaySearchResults(cars, searchParams) {
         container.innerHTML = `
             <div class="col-12 text-center py-5">
                 <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <h5>Không tìm thấy xe phù hợp</h5>
+                <h5>Hiện không có xe phù hợp</h5>
                 <p class="text-muted">${searchInfo}</p>
                 <a href="index.php?page=search" class="btn btn-gradient mt-3">
                     <i class="fas fa-redo me-2"></i>Xem tất cả
@@ -199,6 +233,12 @@ function setupFilterForm() {
         const brand = document.getElementById('filterBrand').value;
         const seats = document.getElementById('filterSeats').value;
         const price = document.getElementById('filterPrice').value;
-        window.location.href = `index.php?page=search&brand=${brand}&seats=${seats}&price=${price}`;
+
+        const query = new URLSearchParams({ page: 'search' });
+        if (brand) query.set('brand', brand);
+        if (seats) query.set('seats', seats);
+        if (price) query.set('price', price);
+
+        window.location.href = `index.php?${query.toString()}`;
     });
 }

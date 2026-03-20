@@ -302,62 +302,8 @@
             if (first) first.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Preload modal partial ngay khi script chạy
-        const bookingModalPromise = fetch('../../partials/dat-lich-chi-tiet.html')
-            .then(r => { if (!r.ok) throw new Error(); return r.text(); })
-            .then(html => { document.body.insertAdjacentHTML('beforeend', html); })
-            .catch(() => {
-                // Fallback inline nếu fetch thất bại
-                document.body.insertAdjacentHTML('beforeend', `
-                <div class="modal fade" id="bookingModal" tabindex="-1">
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title fw-bold">
-                                    <i class="fas fa-calendar-check me-2" style="color:var(--primary);"></i>
-                                    Đặt Lịch Dịch Vụ
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="bookingForm">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="name" placeholder="Nguyễn Văn A" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                            <input type="tel" class="form-control" id="phone" placeholder="0xxx xxx xxx" required>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Dịch vụ đã chọn <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="selectedService" readonly>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Giá dịch vụ (tham khảo)</label>
-                                            <input type="text" class="form-control" id="servicePrice" readonly>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
-                                            <textarea class="form-control" id="address" rows="2" placeholder="Số nhà, đường, phường, quận..." required></textarea>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Ghi chú thêm</label>
-                                            <textarea class="form-control" id="note" rows="2" placeholder="Mô tả thêm..."></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="mt-4">
-                                        <button type="submit" class="btn btn-gradient w-100" style="padding:14px; font-size:1rem;">
-                                            <i class="fas fa-check-circle me-2"></i> Xác nhận đặt lịch
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>`);
-            });
+        // booking-modal-container: booking-detail.js sẽ lazy-load modal vào đây khi click
+        // (không preload để tránh conflict)
 
         fetch('../../data/services.json')
             .then(r => r.json())
@@ -439,48 +385,34 @@
         // ==================== PRICING HELPERS ====================
         const fmt = n => n ? Number(n).toLocaleString('vi-VN') : null;
 
-        // Assumption: không có distance thực tế → dùng fixedAmount hoặc min/max
-        function calcPricing(basePrice, travelFee, surveyFee) {
-            const travelMin = travelFee ? (travelFee.min ?? travelFee.fixedAmount ?? 0) : 0;
-            const travelMax = travelFee ? (travelFee.max ?? travelFee.fixedAmount ?? 0) : 0;
-            const survey    = (surveyFee && surveyFee.required) ? (surveyFee.amount || 0) : 0;
-            return { travelMin, travelMax, survey,
-                // Tổng khi đồng ý sửa: phí khảo sát được MIỄN
-                totalMin: basePrice + travelMin,
-                totalMax: basePrice + travelMax,
-                // Tổng khi KHÔNG đồng ý sửa: phí di chuyển + phí khảo sát
-                noRepairMin: travelMin + survey,
-                noRepairMax: travelMax + survey,
-                hasFees: travelMax > 0 || survey > 0 };
-        }
-
         function buildFeeBreakdown(laborCost, materialCost, travelFee, surveyFee, basePrice) {
             let html = '';
             if (laborCost || materialCost) {
-                const lp = laborCost    ? `<span class="sic-breakdown-item sic-bd-labor"><i class="fas fa-hammer"></i> Công: ${fmt(laborCost)}đ</span>` : '';
+                const lp  = laborCost    ? `<span class="sic-breakdown-item sic-bd-labor"><i class="fas fa-hammer"></i> Công: ${fmt(laborCost)}đ</span>` : '';
                 const sep = (laborCost && materialCost) ? `<span class="sic-breakdown-sep">+</span>` : '';
-                const mp = materialCost ? `<span class="sic-breakdown-item sic-bd-material"><i class="fas fa-box"></i> Vật liệu: ${fmt(materialCost)}đ</span>` : '';
+                const mp  = materialCost ? `<span class="sic-breakdown-item sic-bd-material"><i class="fas fa-box"></i> Vật liệu: ${fmt(materialCost)}đ</span>` : '';
                 html += `<div class="sic-price-breakdown">${lp}${sep}${mp}</div>`;
             }
             if (!basePrice) return html;
-            const p = calcPricing(basePrice, travelFee, surveyFee);
-            if (!p.hasFees) return html;
-            const travelLabel = p.travelMax > 0
-                ? (p.travelMin === p.travelMax
-                    ? `${fmt(p.travelMin)}đ`
-                    : `${fmt(p.travelMin)}đ – ${fmt(p.travelMax)}đ`)
-                : null;
-            const travelRow = travelLabel
-                ? `<div class="sic-fee-row"><span><i class="fas fa-motorcycle me-1"></i>Phí di chuyển</span><span>${travelLabel}</span></div>` : '';
-            const surveyRow = p.survey > 0
-                ? `<div class="sic-fee-row sic-fee-survey"><span><i class="fas fa-clipboard-check me-1"></i>Phí khảo sát (bắt buộc)</span><span>${fmt(p.survey)}đ</span></div>` : '';
-            const totalRange = p.totalMin === p.totalMax
-                ? `${fmt(p.totalMin)}đ`
-                : `${fmt(p.totalMin)}đ – ${fmt(p.totalMax)}đ`;
+            const isPerKm  = travelFee && travelFee.mode === 'per_km';
+            const survey   = (surveyFee && surveyFee.required) ? (surveyFee.amount || 0) : 0;
+            const tMin     = isPerKm ? 0 : (travelFee ? (travelFee.min ?? travelFee.fixedAmount ?? 0) : 0);
+            const tMax     = isPerKm ? 0 : (travelFee ? (travelFee.max ?? travelFee.fixedAmount ?? 0) : 0);
+            const hasFees  = isPerKm || tMax > 0 || survey > 0;
+            if (!hasFees) return html;
+
+            const travelRow = isPerKm
+                ? `<div class="sic-fee-row"><span><i class="fas fa-motorcycle me-1"></i>Phí di chuyển</span><span style="color:#94a3b8;font-size:0.8rem;">theo km (tính khi đặt)</span></div>`
+                : (tMax > 0 ? `<div class="sic-fee-row"><span><i class="fas fa-motorcycle me-1"></i>Phí di chuyển</span><span>${tMin === tMax ? fmt(tMin)+'đ' : fmt(tMin)+'đ – '+fmt(tMax)+'đ'}</span></div>` : '');
+            const surveyRow = survey > 0
+                ? `<div class="sic-fee-row sic-fee-survey"><span><i class="fas fa-clipboard-check me-1"></i>Phí khảo sát (bắt buộc)</span><span>${fmt(survey)}đ</span></div>` : '';
+            const totalText = isPerKm
+                ? `${fmt(basePrice)}đ <span style="color:#94a3b8;font-size:0.8rem;">+ phí di chuyển</span>`
+                : (tMin === tMax ? fmt(basePrice + tMin)+'đ' : `${fmt(basePrice + tMin)}đ – ${fmt(basePrice + tMax)}đ`);
             html += `
                 <div class="sic-fee-breakdown">
                     ${travelRow}${surveyRow}
-                    <div class="sic-fee-total"><span>Tổng tạm tính:</span><span>${totalRange}</span></div>
+                    <div class="sic-fee-total"><span>Tổng tạm tính:</span><span>${totalText}</span></div>
                 </div>`;
             return html;
         }
@@ -497,14 +429,19 @@
         // Hiển thị phí di chuyển trong sidebar nếu có
         if (svc.travelFee) {
             const tf = svc.travelFee;
-            const tMin = tf.min ?? tf.fixedAmount ?? 0;
-            const tMax = tf.max ?? tf.fixedAmount ?? 0;
-            const label = tMin === tMax ? `${tMin.toLocaleString('vi-VN')}đ` : `${tMin.toLocaleString('vi-VN')}đ – ${tMax.toLocaleString('vi-VN')}đ`;
+            const isPerKm = tf.mode === 'per_km';
+            const label = isPerKm
+                ? `<strong>${tf.pricePerKm ? tf.pricePerKm.toLocaleString('vi-VN')+'đ/km' : 'theo km'}</strong>`
+                : (() => {
+                    const tMin = tf.min ?? tf.fixedAmount ?? 0;
+                    const tMax = tf.max ?? tf.fixedAmount ?? 0;
+                    return `<strong>${tMin === tMax ? tMin.toLocaleString('vi-VN')+'đ' : tMin.toLocaleString('vi-VN')+'đ – '+tMax.toLocaleString('vi-VN')+'đ'}</strong>`;
+                })();
             const priceCardEl = document.getElementById('priceRange').closest('.price-card');
             if (priceCardEl) {
                 priceCardEl.insertAdjacentHTML('afterbegin',
                     `<div style="font-size:0.82rem;color:rgba(255,255,255,0.85);margin-bottom:8px;">
-                        <i class="fas fa-motorcycle me-1"></i>Phí di chuyển: <strong>${label}</strong>
+                        <i class="fas fa-motorcycle me-1"></i>Phí di chuyển: ${label}
                     </div>`);
             }
         }
@@ -577,7 +514,9 @@
                         </div>
                         <button class="btn btn-gradient btn-sm booking-btn"
                             data-service-name="${item.name}"
-                            data-service-price="${initPrice}">
+                            data-service-price="${initPrice}"
+                            data-travel-fee='${JSON.stringify(item.travelFee || svc.travelFee || null)}'
+                            data-survey-fee='${JSON.stringify(item.surveyFee || null)}'>
                             <i class="fas fa-calendar-check me-1"></i> Đặt lịch
                         </button>
                     </div>
@@ -599,24 +538,27 @@
             const laborCost = parseInt(btn.dataset.laborCost)    || 0;
             let travelFee   = null;
             let surveyFee   = null;
-            try { travelFee = btn.dataset.travelFee ? JSON.parse(btn.dataset.travelFee) : null; } catch(e) {}
-            try { surveyFee = btn.dataset.surveyFee ? JSON.parse(btn.dataset.surveyFee) : null; } catch(e) {}
+            try { travelFee = btn.dataset.travelFee ? JSON.parse(btn.dataset.travelFee) : null; } catch(_) {}
+            try { surveyFee = btn.dataset.surveyFee ? JSON.parse(btn.dataset.surveyFee) : null; } catch(_) {}
 
             card.querySelector('.sic-total-price').textContent = fmt(price) + 'đ';
 
-            // Rebuild fee breakdown
+            // Rebuild fee breakdown trong card
             const existingBreakdown = card.querySelector('.sic-price-breakdown');
             const existingFee = card.querySelector('.sic-fee-breakdown');
             const newBreakdown = buildFeeBreakdown(laborCost || null, matCost || null, travelFee, surveyFee, price);
             const priceBlock = card.querySelector('.sic-price-block');
-
             if (existingBreakdown) existingBreakdown.remove();
             if (existingFee) existingFee.remove();
-            if (newBreakdown && priceBlock) {
-                priceBlock.insertAdjacentHTML('beforeend', newBreakdown);
-            }
+            if (newBreakdown && priceBlock) priceBlock.insertAdjacentHTML('beforeend', newBreakdown);
 
-            card.querySelector('.booking-btn').dataset.servicePrice = price;
+            // Cập nhật data trên booking-btn để booking-detail.js đọc đúng khi click
+            const bookBtn = card.querySelector('.booking-btn');
+            if (bookBtn) {
+                bookBtn.dataset.servicePrice = price;
+                bookBtn.dataset.travelFee = JSON.stringify(travelFee);
+                bookBtn.dataset.surveyFee = JSON.stringify(surveyFee);
+            }
         });
 
         // Render gallery
@@ -669,17 +611,7 @@
                     });
                 });
 
-                // Intercept nút "Đặt Lịch" trên nav → mở modal ở nav mode (dropdown)
-                const navBtn = document.querySelector('#header-container [data-bs-target="#bookingModal"]');
-                if (navBtn) {
-                    navBtn.removeAttribute('data-bs-toggle');
-                    navBtn.removeAttribute('data-bs-target');
-                    navBtn.addEventListener('click', () => {
-                        _sdIsNavMode   = true;
-                        _sdCurrentItem = null;
-                        new bootstrap.Modal(document.getElementById('bookingModal')).show();
-                    });
-                }
+                // nav booking btn: booking-detail.js tự xử lý qua click delegation
             })
             .catch(() => {});
 
@@ -693,270 +625,13 @@
             if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
         });
 
-        // ==================== BOOKING ====================
-        // Đảm bảo modal đã có trong DOM trước khi gắn event listeners
-        await bookingModalPromise;
-
-        // ==================== BOOKING ====================
-        let _sdCurrentItem = null;
-        let _sdIsNavMode   = false;
-        const bModal       = document.getElementById('bookingModal');
-        const servicePriceEl = document.getElementById('servicePrice');
-
-        // ---------- Shared helper: cập nhật pricing breakdown trong modal ----------
-        const fmtM     = n => n.toLocaleString('vi-VN') + 'đ';
-        const fmtRange = (mn, mx) => mn === mx ? fmtM(mn) : `${fmtM(mn)} – ${fmtM(mx)}`;
-
-        function updateModalPricing(price, tf, sf) {
-            const wrap = document.getElementById('pricingBreakdownWrap');
-            if (!wrap) return;
-            const p = calcPricing(price, tf, sf);
-            if (!p.hasFees) { wrap.style.display = 'none'; return; }
-
-            const bdSvc = document.getElementById('bd-service');
-            if (bdSvc) bdSvc.textContent = fmtM(price);
-
-            const tRow = document.getElementById('bd-travel-row');
-            const tEl  = document.getElementById('bd-travel');
-            if (p.travelMax > 0 && tRow && tEl) {
-                tRow.style.removeProperty('display');
-                tEl.textContent = fmtRange(p.travelMin, p.travelMax);
-            } else if (tRow) tRow.style.setProperty('display','none','important');
-
-            const tot = document.getElementById('bd-total');
-            if (tot) tot.textContent = fmtRange(p.totalMin, p.totalMax);
-
-            const surveyNotice   = document.getElementById('bd-survey-notice');
-            const surveyTravel   = document.getElementById('bd-survey-travel');
-            const surveyAmount   = document.getElementById('bd-survey-amount');
-            const surveyNoRepair = document.getElementById('bd-survey-no-repair');
-            if (p.survey > 0 && surveyNotice) {
-                if (surveyTravel)   surveyTravel.textContent   = fmtRange(p.travelMin, p.travelMax);
-                if (surveyAmount)   surveyAmount.textContent   = fmtM(p.survey);
-                if (surveyNoRepair) surveyNoRepair.textContent = fmtRange(p.noRepairMin, p.noRepairMax);
-                surveyNotice.style.display = '';
-            } else if (surveyNotice) {
-                surveyNotice.style.display = 'none';
-            }
-            wrap.style.display = '';
-        }
-
-        function hidePricingBreakdownModal() {
-            const w = document.getElementById('pricingBreakdownWrap');
-            if (w) w.style.display = 'none';
-        }
-
-        // ---------- Mode switching ----------
-        function switchToNavMode() {
-            document.getElementById('sdNavMode').style.display    = '';
-            document.getElementById('sdDetailMode').style.display = 'none';
-            if (servicePriceEl) servicePriceEl.value = '';
-            hidePricingBreakdownModal();
-            // Pre-select category của trang hiện tại
-            const sdMain = document.getElementById('sdMainService');
-            if (sdMain && svc) {
-                sdMain.value = svc.id;
-                sdMain.dispatchEvent(new Event('change'));
-            }
-        }
-
-        function switchToDetailMode() {
-            document.getElementById('sdNavMode').style.display    = 'none';
-            document.getElementById('sdDetailMode').style.display = '';
-        }
-
-        // ---------- Nút đặt lịch trên card (detail mode) ----------
-        document.addEventListener('click', function (e) {
-            const btn = e.target.closest('.booking-btn');
-            if (!btn) return;
-
-            const card        = btn.closest('.service-item-card');
-            const activeBrand = card ? card.querySelector('.brand-option.active') : null;
-            const baseName    = btn.getAttribute('data-service-name');
-            const displayName = activeBrand ? `${baseName} (${activeBrand.dataset.brand})` : baseName;
-            const price       = Number(btn.getAttribute('data-service-price'));
-            const itemIdx     = card ? parseInt(card.dataset.itemIdx) : -1;
-
-            _sdIsNavMode   = false;
-            _sdCurrentItem = (itemIdx >= 0 && svc.items[itemIdx]) ? svc.items[itemIdx] : null;
-
-            switchToDetailMode();
-            document.getElementById('selectedService').value = displayName;
-            if (servicePriceEl) servicePriceEl.value = fmtM(price);
-
-            if (_sdCurrentItem) {
-                updateModalPricing(price,
-                    _sdCurrentItem.travelFee || svc.travelFee || null,
-                    _sdCurrentItem.surveyFee || null);
-            } else {
-                hidePricingBreakdownModal();
-            }
-
-            new bootstrap.Modal(bModal).show();
-        });
-
-        // ---------- Nav mode: khởi tạo dropdown ----------
-        const sdMainService       = document.getElementById('sdMainService');
-        const sdSubService        = document.getElementById('sdSubService');
-        const sdBrandSelectorWrap = document.getElementById('sdBrandSelectorWrap');
-        const sdBrandOptions      = document.getElementById('sdBrandOptionsContainer');
-
-        if (sdMainService) {
-            SERVICES_DATA.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat.id; opt.textContent = cat.name;
-                sdMainService.appendChild(opt);
-            });
-
-            sdMainService.addEventListener('change', () => {
-                sdSubService.innerHTML = '<option value="">-- Chọn dịch vụ chi tiết --</option>';
-                sdSubService.disabled  = true;
-                sdBrandSelectorWrap.style.display = 'none';
-                sdBrandOptions.innerHTML = '';
-                _sdCurrentItem = null;
-                hidePricingBreakdownModal();
-                if (servicePriceEl) servicePriceEl.value = '';
-                if (!sdMainService.value) return;
-                const cat = SERVICES_DATA.find(c => c.id == sdMainService.value);
-                if (!cat) return;
-                cat.items.forEach(item => {
-                    const opt = document.createElement('option');
-                    opt.value = item.name; opt.textContent = item.name;
-                    sdSubService.appendChild(opt);
-                });
-                sdSubService.disabled = false;
-            });
-
-            sdSubService.addEventListener('change', function () {
-                const cat  = SERVICES_DATA.find(c => c.id == sdMainService.value);
-                const item = cat ? cat.items.find(i => i.name === this.value) : null;
-                _sdCurrentItem = item || null;
-                sdBrandSelectorWrap.style.display = 'none';
-                sdBrandOptions.innerHTML = '';
-                if (!item) { hidePricingBreakdownModal(); if (servicePriceEl) servicePriceEl.value = ''; return; }
-
-                const tf = item.travelFee || cat.travelFee || null;
-                const sf = item.surveyFee || null;
-                let basePrice = item.price;
-
-                if (item.brandPrices && item.brandPrices.length > 1) {
-                    item.brandPrices.forEach((bp, i) => {
-                        const b = document.createElement('button');
-                        b.type = 'button';
-                        b.className = 'brand-option' + (i === 0 ? ' active' : '');
-                        b.textContent = bp.name;
-                        b.dataset.brand = bp.name;
-                        b.dataset.price = bp.price;
-                        b.addEventListener('click', function () {
-                            sdBrandOptions.querySelectorAll('.brand-option').forEach(x => x.classList.remove('active'));
-                            this.classList.add('active');
-                            const p = Number(this.dataset.price);
-                            if (servicePriceEl) servicePriceEl.value = fmtM(p);
-                            updateModalPricing(p, tf, sf);
-                        });
-                        sdBrandOptions.appendChild(b);
-                    });
-                    sdBrandSelectorWrap.style.display = '';
-                    basePrice = item.brandPrices[0].price;
-                }
-
-                if (servicePriceEl) servicePriceEl.value = fmtM(basePrice);
-                updateModalPricing(basePrice, tf, sf);
-            });
-        }
-
-        // ---------- Modal events ----------
-        bModal.addEventListener('show.bs.modal', function () {
-            if (_sdIsNavMode) switchToNavMode();
-            else switchToDetailMode();
-        });
-
-        bModal.addEventListener('hidden.bs.modal', function () {
-            _sdCurrentItem = null;
-            _sdIsNavMode   = false;
-            switchToDetailMode();
-            if (sdSubService) {
-                sdSubService.innerHTML = '<option value="">-- Chọn dịch vụ chi tiết --</option>';
-                sdSubService.disabled  = true;
-            }
-            if (sdBrandSelectorWrap) sdBrandSelectorWrap.style.display = 'none';
-            if (sdBrandOptions)      sdBrandOptions.innerHTML = '';
-            if (servicePriceEl)      servicePriceEl.value = '';
-            hidePricingBreakdownModal();
-        });
-
-        // ---------- Form submit (xử lý cả 2 mode) ----------
-        document.getElementById('bookingForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const name    = document.getElementById('name').value.trim();
-            const phone   = document.getElementById('phone').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const note    = document.getElementById('note').value.trim();
-
-            let serviceName, selectedBrand;
-            if (_sdIsNavMode) {
-                if (!sdSubService || !sdSubService.value) {
-                    alert('Vui lòng chọn dịch vụ cụ thể!'); return;
-                }
-                const activeB = sdBrandOptions ? sdBrandOptions.querySelector('.brand-option.active') : null;
-                selectedBrand = activeB ? activeB.dataset.brand : null;
-                serviceName   = sdSubService.value + (selectedBrand ? ` (${selectedBrand})` : '');
-            } else {
-                serviceName   = document.getElementById('selectedService').value.trim();
-                selectedBrand = null;
-            }
-
-            if (!name || !phone || !serviceName || !address) {
-                alert('Vui lòng điền đầy đủ thông tin bắt buộc!'); return;
-            }
-            if (!/^(0|\+84)[0-9]{9}$/.test(phone)) {
-                alert('Số điện thoại không hợp lệ!'); return;
-            }
-
-            const priceRaw     = Number((servicePriceEl?.value || '').replace(/[^\d]/g, '')) || 0;
-            let estimatedPrice = priceRaw;
-            if (_sdCurrentItem) {
-                const tf = _sdCurrentItem.travelFee || svc.travelFee || null;
-                const sf = _sdCurrentItem.surveyFee || null;
-                estimatedPrice = calcPricing(priceRaw, tf, sf).totalMin;
-            }
-
-            const submitBtn = this.querySelector('button[type="submit"]');
-            submitBtn.disabled  = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
-
-            const done = () => {
-                submitBtn.disabled  = false;
-                submitBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Xác nhận đặt lịch';
-                bootstrap.Modal.getInstance(bModal)?.hide();
-                this.reset();
-            };
-
-            try {
-                const res  = await fetch('../../api/public/book.php', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name, phone, service_id: serviceName, address, note,
-                        selected_brand: selectedBrand, estimated_price: estimatedPrice
-                    })
-                });
-                const data = await res.json();
-                alert(data.status === 'success'
-                    ? '✅ Đặt lịch thành công! Mã đơn: ' + data.order_code
-                    : '✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại trong thời gian sớm nhất.');
-            } catch {
-                alert('✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại trong thời gian sớm nhất.\n\n📞 Hotline: 0775 472 347');
-            } finally {
-                done();
-            }
-        });
-
         }); // end fetch .then(SERVICES_DATA => {...})
     </script>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="../../assets/js/public/map-picker.js"></script>
+    <script>window.BD_BASE = '../../';</script>
+    <script src="../../assets/js/public/booking-detail.js"></script>
     <script src="../../assets/js/public/order-tracking.js"></script>
     <script src="../../assets/js/shared/auth-nav.js"></script>
     <script src="../../assets/js/public/booking-autofill.js"></script>

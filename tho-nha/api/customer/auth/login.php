@@ -1,11 +1,15 @@
 <?php
+/**
+ * Customer Auth — Login
+ * Bảng users → nguoidung, cột tiếng Việt không dấu.
+ */
 require_once __DIR__ . '/../../../config/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../../../config/database.php';
 
 $data     = json_decode(file_get_contents('php://input'), true);
 $phone    = trim($data['identifier'] ?? '');
-$password = $data['password'] ?? '';
+$password = $data['password']        ?? '';
 
 if (!$phone || !$password) {
     echo json_encode(['status' => 'error', 'message' => 'Vui lòng điền đầy đủ thông tin']);
@@ -13,7 +17,9 @@ if (!$phone || !$password) {
 }
 
 $stmt = $conn->prepare(
-    "SELECT * FROM users WHERE phone = ? AND role = 'customer' LIMIT 1"
+    "SELECT id, hoten AS full_name, email, sodienthoai AS phone,
+            matkhau AS password, trangthai AS status
+     FROM nguoidung WHERE sodienthoai = ? AND vaitro = 'customer' LIMIT 1"
 );
 $stmt->bind_param("s", $phone);
 $stmt->execute();

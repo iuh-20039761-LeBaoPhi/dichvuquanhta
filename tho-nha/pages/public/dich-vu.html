@@ -23,27 +23,6 @@
     <!-- Leaflet Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-    <style>
-        .page-hero {
-            background: var(--gradient);
-            padding: 120px 0 60px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .page-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        .page-hero h1 { color: #fff; font-weight: 800; font-size: 2.5rem; position: relative; }
-        .page-hero p  { color: rgba(255,255,255,0.85); font-size: 1.05rem; position: relative; }
-        .page-hero .breadcrumb { background: none; justify-content: center; position: relative; }
-        .page-hero .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
-        .page-hero .breadcrumb-item.active { color: #fff; }
-        .page-hero .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
-    </style>
 </head>
 <body>
 
@@ -330,7 +309,7 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="../../assets/js/public/map-picker.js"></script>
-    <script src="../../assets/js/public/booking.js"></script>
+    <script src="../../assets/js/public/booking-detail.js"></script>
     <script src="../../assets/js/public/order-tracking.js"></script>
     <script src="../../assets/js/shared/auth-nav.js"></script>
     <script src="../../assets/js/public/booking-autofill.js"></script>
@@ -373,33 +352,7 @@
                     window.location.href = 'chi-tiet-dich-vu.html?id=' + serviceId;
                 });
             });
-
-            // Booking button: open booking modal with service name autofill
-            document.querySelectorAll('.booking-btn').forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    const serviceName = this.getAttribute('data-service-name');
-                    // Autofill service select if available
-                    const serviceSelect = document.getElementById('bookingService');
-                    if (serviceSelect && serviceName) {
-                        for (let opt of serviceSelect.options) {
-                            if (opt.text.toLowerCase().includes(serviceName.toLowerCase()) ||
-                                serviceName.toLowerCase().includes(opt.text.toLowerCase())) {
-                                opt.selected = true;
-                                break;
-                            }
-                        }
-                    }
-                    // Store for autofill script
-                    window._pendingServiceName = serviceName;
-                    // Open booking modal
-                    const modal = document.getElementById('bookingModal');
-                    if (modal) {
-                        const bsModal = new bootstrap.Modal(modal);
-                        bsModal.show();
-                    }
-                });
-            });
+            // .booking-btn được xử lý bởi booking-detail.js (nav mode)
         });
     </script>
 </body>

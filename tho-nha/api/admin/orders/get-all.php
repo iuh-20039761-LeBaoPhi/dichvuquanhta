@@ -1,4 +1,9 @@
 <?php
+/**
+ * Admin Orders — Get All
+ * Bảng bookings → datlich, cột tiếng Việt không dấu.
+ * AS alias giữ nguyên API contract.
+ */
 require_once __DIR__ . '/../../../config/session.php';
 header('Content-Type: application/json; charset=utf-8');
 
@@ -13,16 +18,16 @@ if (!isset($_SESSION['admin_id'])) {
 $sql = "
     SELECT
         id,
-        order_code,
-        customer_name,
-        phone,
-        service_name AS service_names,
-        address,
-        note,
-        status,
-        created_at
-    FROM bookings
-    ORDER BY created_at DESC
+        madondatlich   AS order_code,
+        tenkhachhang   AS customer_name,
+        sodienthoai    AS phone,
+        tendichvu      AS service_names,
+        diachi         AS address,
+        ghichu         AS note,
+        trangthai      AS status,
+        ngaytao        AS created_at
+    FROM datlich
+    ORDER BY ngaytao DESC
 ";
 
 $result = $conn->query($sql);

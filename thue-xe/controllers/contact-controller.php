@@ -1,4 +1,10 @@
 <?php
+/**
+ * Contact Controller — v3
+ * Bảng `contacts` → `lienhe`, cột dùng tên tiếng Việt không dấu.
+ * API contract (input/output JSON) giữ nguyên.
+ */
+
 header('Content-Type: application/json');
 require_once '../config/database.php';
 
@@ -12,7 +18,6 @@ if ($action === 'submit') {
     $subject = trim($data['subject'] ?? '');
     $message = trim($data['message'] ?? '');
 
-    // Validate bắt buộc
     if (empty($name) || empty($phone) || empty($message)) {
         echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ họ tên, số điện thoại và nội dung.']);
         exit;
@@ -25,7 +30,6 @@ if ($action === 'submit') {
         echo json_encode(['success' => false, 'message' => 'Địa chỉ email không hợp lệ.']);
         exit;
     }
-    // Giới hạn độ dài để tránh spam
     if (mb_strlen($message) > 2000) {
         echo json_encode(['success' => false, 'message' => 'Nội dung quá dài (tối đa 2000 ký tự).']);
         exit;
@@ -34,13 +38,15 @@ if ($action === 'submit') {
     try {
         $db   = new Database();
         $conn = $db->getConnection();
+
+        // INSERT vào bảng `lienhe` với tên cột mới
         $stmt = $conn->prepare(
-            "INSERT INTO contacts (name, phone, email, subject, message) VALUES (?, ?, ?, ?, ?)"
+            "INSERT INTO lienhe (ten, sodienthoai, email, chude, noidung)
+             VALUES (?, ?, ?, ?, ?)"
         );
         $stmt->execute([$name, $phone, $email, $subject, $message]);
         echo json_encode(['success' => true, 'message' => 'Gửi tin nhắn thành công! Chúng tôi sẽ phản hồi sớm nhất.']);
     } catch (PDOException $e) {
-        // Không lộ lỗi DB cho người dùng, vẫn trả về thành công về phía UX
         error_log('Contact form DB error: ' . $e->getMessage());
         echo json_encode(['success' => true, 'message' => 'Gửi tin nhắn thành công! Chúng tôi sẽ phản hồi sớm nhất.']);
     }

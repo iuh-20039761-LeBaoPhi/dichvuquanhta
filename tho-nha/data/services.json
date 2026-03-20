@@ -1,288 +1,788 @@
-﻿[
-  {
-    "id": 1, "name": "Sửa Máy Lạnh", "icon": "fa-wind", "image": "image/tho-nha-dich-vu-sua-may-lanh-gia-dinh.jpg",
-    "desc": "Sửa chữa, vệ sinh, bảo dưỡng máy lạnh các loại. Thay linh kiện chính hãng, nạp gas R32/R410A.",
-    "travelFee": { "mode": "fixed", "fixedAmount": 30000, "min": 20000, "max": 50000 },
-    "items": [
-      {
-        "name": "Vệ sinh máy lạnh", "price": 300000, "laborCost": 200000, "materialCost": 100000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Vệ sinh toàn bộ dàn lạnh và dàn nóng, làm sạch bụi bẩn, giúp máy lạnh hoạt động hiệu quả và tiết kiệm điện.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Nạp gas máy lạnh", "price": 430000, "laborCost": 150000, "materialCost": 280000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Nạp gas đúng loại và đúng áp suất, xử lý thiếu gas giúp máy lạnh làm mát nhanh và ổn định.",
-        "priceRange": { "min": 430000, "max": 470000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "R32",   "materialCost": 280000, "price": 430000 },
-          { "name": "R410A", "materialCost": 320000, "price": 470000 }
+[
+    {
+        "id": 1,
+        "name": "Sửa Máy Lạnh",
+        "icon": "fa-wind",
+        "image": "image/tho-nha-dich-vu-sua-may-lanh-gia-dinh.jpg",
+        "desc": "Sửa chữa, vệ sinh, bảo dưỡng máy lạnh các loại. Thay linh kiện chính hãng, nạp gas R32/R410A.",
+        "travelFee": {
+            "mode": "per_km",
+            "providerAddress": "181 Nguyễn Thị Thập, Tân Phú, Quận 7, TP.HCM",
+            "providerLat": 10.7326,
+            "providerLng": 106.7218,
+            "pricePerKm": 5000,
+            "minFee": 15000,
+            "maxFee": 120000
+        },
+        "items": [
+            {
+                "name": "Vệ sinh máy lạnh",
+                "price": 300000,
+                "laborCost": 200000,
+                "materialCost": 100000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Vệ sinh toàn bộ dàn lạnh và dàn nóng, làm sạch bụi bẩn, giúp máy lạnh hoạt động hiệu quả và tiết kiệm điện.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Nạp gas máy lạnh",
+                "price": 430000,
+                "laborCost": 150000,
+                "materialCost": 280000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Nạp gas đúng loại và đúng áp suất, xử lý thiếu gas giúp máy lạnh làm mát nhanh và ổn định.",
+                "priceRange": {
+                    "min": 430000,
+                    "max": 470000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "R32",
+                        "materialCost": 280000,
+                        "price": 430000
+                    },
+                    {
+                        "name": "R410A",
+                        "materialCost": 320000,
+                        "price": 470000
+                    }
+                ]
+            },
+            {
+                "name": "Thay block máy lạnh",
+                "price": 1200000,
+                "laborCost": 300000,
+                "materialCost": 900000,
+                "warranty": "12 tháng",
+                "duration": "2–3 giờ",
+                "desc": "Thay block (máy nén) mới cho máy lạnh khi block cũ bị hư, kém lạnh hoặc không hoạt động.",
+                "priceRange": {
+                    "min": 1150000,
+                    "max": 1300000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Daikin",
+                        "materialCost": 1000000,
+                        "price": 1300000
+                    },
+                    {
+                        "name": "Toshiba",
+                        "materialCost": 900000,
+                        "price": 1200000
+                    },
+                    {
+                        "name": "LG",
+                        "materialCost": 850000,
+                        "price": 1150000
+                    }
+                ]
+            },
+            {
+                "name": "Di dời máy lạnh",
+                "price": 500000,
+                "laborCost": 500000,
+                "materialCost": null,
+                "warranty": "3 tháng",
+                "duration": "2–4 giờ",
+                "desc": "Tháo lắp, di chuyển máy lạnh sang vị trí mới an toàn, đảm bảo kỹ thuật và thẩm mỹ.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            }
         ]
-      },
-      {
-        "name": "Thay block máy lạnh", "price": 1200000, "laborCost": 300000, "materialCost": 900000,
-        "warranty": "12 tháng", "duration": "2–3 giờ",
-        "desc": "Thay block (máy nén) mới cho máy lạnh khi block cũ bị hư, kém lạnh hoặc không hoạt động.",
-        "priceRange": { "min": 1150000, "max": 1300000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Daikin",  "materialCost": 1000000, "price": 1300000 },
-          { "name": "Toshiba", "materialCost":  900000, "price": 1200000 },
-          { "name": "LG",      "materialCost":  850000, "price": 1150000 }
+    },
+    {
+        "id": 2,
+        "name": "Sửa Máy Giặt",
+        "icon": "fa-tshirt",
+        "image": "image/tho-nha-dich-vu-sua-may-giat-chuyen-nghiep.jpg",
+        "desc": "Sửa máy giặt cửa trên, cửa ngang, máy giặt sấy. Thay motor, board mạch, cảm biến chính hãng.",
+        "travelFee": {
+            "mode": "per_km",
+            "providerAddress": "36 Phạm Thế Hiển, Phường 7, Quận 8, TP.HCM",
+            "providerLat": 10.7477,
+            "providerLng": 106.6605,
+            "pricePerKm": 5000,
+            "minFee": 15000,
+            "maxFee": 120000
+        },
+        "items": [
+            {
+                "name": "Sửa máy giặt không vắt",
+                "price": 280000,
+                "laborCost": 200000,
+                "materialCost": 80000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Khắc phục tình trạng máy giặt không vắt, vắt yếu do lỗi motor, dây curoa hoặc bo mạch.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Thay motor máy giặt",
+                "price": 900000,
+                "laborCost": 200000,
+                "materialCost": 700000,
+                "warranty": "6 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Thay motor máy giặt chính hãng, giúp máy giặt hoạt động mạnh mẽ và ổn định trở lại.",
+                "priceRange": {
+                    "min": 850000,
+                    "max": 1000000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Samsung",
+                        "materialCost": 700000,
+                        "price": 900000
+                    },
+                    {
+                        "name": "LG",
+                        "materialCost": 650000,
+                        "price": 850000
+                    },
+                    {
+                        "name": "Electrolux",
+                        "materialCost": 800000,
+                        "price": 1000000
+                    },
+                    {
+                        "name": "Daikin",
+                        "materialCost": 750000,
+                        "price": 950000
+                    }
+                ]
+            },
+            {
+                "name": "Vệ sinh máy giặt",
+                "price": 350000,
+                "laborCost": 250000,
+                "materialCost": 100000,
+                "warranty": "1 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Vệ sinh lồng giặt, loại bỏ cặn bẩn, vi khuẩn và mùi hôi, bảo vệ sức khỏe gia đình.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            }
         ]
-      },
-      {
-        "name": "Di dời máy lạnh", "price": 500000, "laborCost": 500000, "materialCost": null,
-        "warranty": "3 tháng", "duration": "2–4 giờ",
-        "desc": "Tháo lắp, di chuyển máy lạnh sang vị trí mới an toàn, đảm bảo kỹ thuật và thẩm mỹ.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      }
-    ]
-  },
-  {
-    "id": 2, "name": "Sửa Máy Giặt", "icon": "fa-tshirt", "image": "image/tho-nha-dich-vu-sua-may-giat-chuyen-nghiep.jpg",
-    "desc": "Sửa máy giặt cửa trên, cửa ngang, máy giặt sấy. Thay motor, board mạch, cảm biến chính hãng.",
-    "travelFee": { "mode": "fixed", "fixedAmount": 30000, "min": 20000, "max": 50000 },
-    "items": [
-      {
-        "name": "Sửa máy giặt không vắt", "price": 280000, "laborCost": 200000, "materialCost": 80000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Khắc phục tình trạng máy giặt không vắt, vắt yếu do lỗi motor, dây curoa hoặc bo mạch.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Thay motor máy giặt", "price": 900000, "laborCost": 200000, "materialCost": 700000,
-        "warranty": "6 tháng", "duration": "1–2 giờ",
-        "desc": "Thay motor máy giặt chính hãng, giúp máy giặt hoạt động mạnh mẽ và ổn định trở lại.",
-        "priceRange": { "min": 850000, "max": 1000000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Samsung",    "materialCost": 700000, "price":  900000 },
-          { "name": "LG",         "materialCost": 650000, "price":  850000 },
-          { "name": "Electrolux", "materialCost": 800000, "price": 1000000 },
-          { "name": "Daikin",     "materialCost": 750000, "price":  950000 }
+    },
+    {
+        "id": 3,
+        "name": "Nhà Vệ Sinh",
+        "icon": "fa-droplet",
+        "image": "image/tho-nha-dich-vu-nha-ve-sinh-thong-tac-chong-tham.jpg",
+        "desc": "Thông tắc bồn cầu, sửa rò nước, chống thấm nhà vệ sinh hiệu quả.",
+        "travelFee": {
+            "mode": "per_km",
+            "providerAddress": "56 Hoàng Diệu, Phường 12, Quận 4, TP.HCM",
+            "providerLat": 10.7561,
+            "providerLng": 106.701,
+            "pricePerKm": 5000,
+            "minFee": 15000,
+            "maxFee": 120000
+        },
+        "items": [
+            {
+                "name": "Thông tắc bồn cầu",
+                "price": 200000,
+                "laborCost": 200000,
+                "materialCost": null,
+                "warranty": "1 tháng",
+                "duration": "30–60 phút",
+                "desc": "Xử lý nhanh tình trạng bồn cầu bị nghẹt, thoát nước kém bằng thiết bị chuyên dụng.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Sửa bồn cầu rò nước",
+                "price": 250000,
+                "laborCost": 150000,
+                "materialCost": 100000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Sửa chữa bồn cầu bị rò rỉ nước, chảy nước liên tục gây lãng phí và mất vệ sinh.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Chống thấm nhà vệ sinh",
+                "price": 1500000,
+                "laborCost": 500000,
+                "materialCost": 1000000,
+                "warranty": "12 tháng",
+                "duration": "1–2 ngày",
+                "desc": "Chống thấm triệt để nhà vệ sinh, ngăn thấm nước, ẩm mốc và hư hỏng kết cấu.",
+                "priceRange": {
+                    "min": 1300000,
+                    "max": 1500000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 150000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Sika",
+                        "materialCost": 1000000,
+                        "price": 1500000
+                    },
+                    {
+                        "name": "Kova",
+                        "materialCost": 800000,
+                        "price": 1300000
+                    }
+                ]
+            }
         ]
-      },
-      {
-        "name": "Vệ sinh máy giặt", "price": 350000, "laborCost": 250000, "materialCost": 100000,
-        "warranty": "1 tháng", "duration": "1–2 giờ",
-        "desc": "Vệ sinh lồng giặt, loại bỏ cặn bẩn, vi khuẩn và mùi hôi, bảo vệ sức khỏe gia đình.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      }
-    ]
-  },
-  {
-    "id": 3, "name": "Nhà Vệ Sinh", "icon": "fa-droplet", "image": "image/tho-nha-dich-vu-nha-ve-sinh-thong-tac-chong-tham.jpg",
-    "desc": "Thông tắc bồn cầu, sửa rò nước, chống thấm nhà vệ sinh hiệu quả.",
-    "travelFee": { "mode": "fixed", "fixedAmount": 30000, "min": 20000, "max": 50000 },
-    "items": [
-      {
-        "name": "Thông tắc bồn cầu", "price": 200000, "laborCost": 200000, "materialCost": null,
-        "warranty": "1 tháng", "duration": "30–60 phút",
-        "desc": "Xử lý nhanh tình trạng bồn cầu bị nghẹt, thoát nước kém bằng thiết bị chuyên dụng.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Sửa bồn cầu rò nước", "price": 250000, "laborCost": 150000, "materialCost": 100000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Sửa chữa bồn cầu bị rò rỉ nước, chảy nước liên tục gây lãng phí và mất vệ sinh.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Chống thấm nhà vệ sinh", "price": 1500000, "laborCost": 500000, "materialCost": 1000000,
-        "warranty": "12 tháng", "duration": "1–2 ngày",
-        "desc": "Chống thấm triệt để nhà vệ sinh, ngăn thấm nước, ẩm mốc và hư hỏng kết cấu.",
-        "priceRange": { "min": 1300000, "max": 1500000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 150000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Sika", "materialCost": 1000000, "price": 1500000 },
-          { "name": "Kova", "materialCost":  800000, "price": 1300000 }
+    },
+    {
+        "id": 4,
+        "name": "Điện Nước",
+        "icon": "fa-bolt",
+        "image": "image/tho-nha-dich-vu-sua-dien-nuoc-gia-dinh.jpg",
+        "desc": "Sửa chữa hệ thống điện nước trong nhà. Xử lý nhanh sự cố chập điện, rò rỉ nước, thay ống.",
+        "travelFee": {
+            "mode": "per_km",
+            "providerAddress": "285 Trần Hưng Đạo, Phường 4, Quận 5, TP.HCM",
+            "providerLat": 10.7581,
+            "providerLng": 106.662,
+            "pricePerKm": 5000,
+            "minFee": 15000,
+            "maxFee": 120000
+        },
+        "items": [
+            {
+                "name": "Sửa chập điện",
+                "price": 180000,
+                "laborCost": 180000,
+                "materialCost": null,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Sửa chữa sự cố chập điện, mất điện cục bộ, đảm bảo an toàn cho hệ thống điện gia đình.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Sửa rò rỉ nước",
+                "price": 200000,
+                "laborCost": 200000,
+                "materialCost": null,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Xử lý rò rỉ nước âm tường, đường ống nước bị bể, xì nước nhanh chóng và hiệu quả.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Thay đường ống nước",
+                "price": 400000,
+                "laborCost": 200000,
+                "materialCost": 200000,
+                "warranty": "12 tháng",
+                "duration": "2–4 giờ",
+                "desc": "Thay mới đường ống nước cũ, hư hỏng, đảm bảo nguồn nước sạch và ổn định.",
+                "priceRange": {
+                    "min": 380000,
+                    "max": 400000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Tiền Phong",
+                        "materialCost": 200000,
+                        "price": 400000
+                    },
+                    {
+                        "name": "Bình Minh",
+                        "materialCost": 180000,
+                        "price": 380000
+                    }
+                ]
+            }
         ]
-      }
-    ]
-  },
-  {
-    "id": 4, "name": "Điện Nước", "icon": "fa-bolt", "image": "image/tho-nha-dich-vu-sua-dien-nuoc-gia-dinh.jpg",
-    "desc": "Sửa chữa hệ thống điện nước trong nhà. Xử lý nhanh sự cố chập điện, rò rỉ nước, thay ống.",
-    "travelFee": { "mode": "fixed", "fixedAmount": 30000, "min": 20000, "max": 50000 },
-    "items": [
-      {
-        "name": "Sửa chập điện", "price": 180000, "laborCost": 180000, "materialCost": null,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Sửa chữa sự cố chập điện, mất điện cục bộ, đảm bảo an toàn cho hệ thống điện gia đình.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Sửa rò rỉ nước", "price": 200000, "laborCost": 200000, "materialCost": null,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Xử lý rò rỉ nước âm tường, đường ống nước bị bể, xì nước nhanh chóng và hiệu quả.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Thay đường ống nước", "price": 400000, "laborCost": 200000, "materialCost": 200000,
-        "warranty": "12 tháng", "duration": "2–4 giờ",
-        "desc": "Thay mới đường ống nước cũ, hư hỏng, đảm bảo nguồn nước sạch và ổn định.",
-        "priceRange": { "min": 380000, "max": 400000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Tiền Phong", "materialCost": 200000, "price": 400000 },
-          { "name": "Bình Minh",  "materialCost": 180000, "price": 380000 }
+    },
+    {
+        "id": 5,
+        "name": "Sửa Tủ Lạnh",
+        "icon": "fa-snowflake",
+        "image": "image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
+        "desc": "Sửa chữa tủ lạnh các hãng. Xử lý không lạnh, rò gas, thay linh kiện, vệ sinh dàn lạnh chuyên sâu.",
+        "travelFee": {
+            "mode": "per_km",
+            "providerAddress": "150 Đinh Tiên Hoàng, Phường 3, Bình Thạnh, TP.HCM",
+            "providerLat": 10.8017,
+            "providerLng": 106.7034,
+            "pricePerKm": 5000,
+            "minFee": 15000,
+            "maxFee": 120000
+        },
+        "items": [
+            {
+                "name": "Sửa tủ lạnh không lạnh",
+                "price": 300000,
+                "laborCost": 200000,
+                "materialCost": 100000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Chẩn đoán và khắc phục tủ lạnh không lạnh do lỗi board mạch, quạt dàn lạnh hoặc cảm biến nhiệt.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Vệ sinh tủ lạnh",
+                "price": 200000,
+                "laborCost": 150000,
+                "materialCost": 50000,
+                "warranty": "1 tháng",
+                "duration": "30–60 phút",
+                "desc": "Vệ sinh dàn lạnh, khay nước, ngăn chứa, loại bỏ vi khuẩn và mùi hôi, đảm bảo vệ sinh thực phẩm.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Thay ron cửa tủ lạnh",
+                "price": 350000,
+                "laborCost": 150000,
+                "materialCost": 200000,
+                "warranty": "6 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Thay ron cao su cửa tủ lạnh bị hở, giúp giữ nhiệt tốt, tiết kiệm điện và bảo quản thực phẩm lâu hơn.",
+                "priceRange": {
+                    "min": 330000,
+                    "max": 370000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Samsung",
+                        "materialCost": 200000,
+                        "price": 350000
+                    },
+                    {
+                        "name": "LG",
+                        "materialCost": 180000,
+                        "price": 330000
+                    },
+                    {
+                        "name": "Electrolux",
+                        "materialCost": 220000,
+                        "price": 370000
+                    }
+                ]
+            },
+            {
+                "name": "Nạp gas tủ lạnh",
+                "price": 450000,
+                "laborCost": 200000,
+                "materialCost": 250000,
+                "warranty": "6 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Nạp lại gas tủ lạnh bị thiếu hoặc rò rỉ, đảm bảo tủ lạnh làm lạnh đúng nhiệt độ và ổn định.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            }
         ]
-      }
-    ]
-  },
-  {
-    "id": 5, "name": "Sửa Tủ Lạnh", "icon": "fa-snowflake", "image": "image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
-    "desc": "Sửa chữa tủ lạnh các hãng. Xử lý không lạnh, rò gas, thay linh kiện, vệ sinh dàn lạnh chuyên sâu.",
-    "travelFee": { "mode": "fixed", "fixedAmount": 30000, "min": 20000, "max": 50000 },
-    "items": [
-      {
-        "name": "Sửa tủ lạnh không lạnh", "price": 300000, "laborCost": 200000, "materialCost": 100000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Chẩn đoán và khắc phục tủ lạnh không lạnh do lỗi board mạch, quạt dàn lạnh hoặc cảm biến nhiệt.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Vệ sinh tủ lạnh", "price": 200000, "laborCost": 150000, "materialCost": 50000,
-        "warranty": "1 tháng", "duration": "30–60 phút",
-        "desc": "Vệ sinh dàn lạnh, khay nước, ngăn chứa, loại bỏ vi khuẩn và mùi hôi, đảm bảo vệ sinh thực phẩm.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Thay ron cửa tủ lạnh", "price": 350000, "laborCost": 150000, "materialCost": 200000,
-        "warranty": "6 tháng", "duration": "1–2 giờ",
-        "desc": "Thay ron cao su cửa tủ lạnh bị hở, giúp giữ nhiệt tốt, tiết kiệm điện và bảo quản thực phẩm lâu hơn.",
-        "priceRange": { "min": 330000, "max": 370000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Samsung",    "materialCost": 200000, "price": 350000 },
-          { "name": "LG",         "materialCost": 180000, "price": 330000 },
-          { "name": "Electrolux", "materialCost": 220000, "price": 370000 }
+    },
+    {
+        "id": 6,
+        "name": "Sửa Tivi",
+        "icon": "fa-tv",
+        "image": "image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
+        "desc": "Sửa chữa tivi LED, LCD, OLED các hãng. Khắc phục mất hình, mất tiếng, không nguồn, hỏng màn hình.",
+        "travelFee": {
+            "mode": "per_km",
+            "providerAddress": "72 Lê Thánh Tôn, Bến Nghé, Quận 1, TP.HCM",
+            "providerLat": 10.7756,
+            "providerLng": 106.702,
+            "pricePerKm": 5000,
+            "minFee": 15000,
+            "maxFee": 120000
+        },
+        "items": [
+            {
+                "name": "Sửa tivi không lên nguồn",
+                "price": 280000,
+                "laborCost": 200000,
+                "materialCost": 80000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Kiểm tra và sửa chữa nguồn điện, bo mạch tivi khi tivi không lên nguồn hoặc tự tắt bật.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Sửa tivi mất hình",
+                "price": 300000,
+                "laborCost": 250000,
+                "materialCost": 50000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Xử lý tivi không có hình, màn hình đen, sọc dọc/ngang do lỗi mạch cao áp hoặc dây tín hiệu.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Sửa tivi mất tiếng",
+                "price": 250000,
+                "laborCost": 200000,
+                "materialCost": 50000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Khắc phục tivi không có âm thanh, âm thanh bị rè, nhiễu do lỗi bo âm thanh hoặc loa.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Thay màn hình tivi",
+                "price": 1500000,
+                "laborCost": 300000,
+                "materialCost": 1200000,
+                "warranty": "6 tháng",
+                "duration": "2–4 giờ",
+                "desc": "Thay thế màn hình tivi bị vỡ, bể, đốm sáng bằng màn hình chính hãng tương thích.",
+                "priceRange": {
+                    "min": 1400000,
+                    "max": 1600000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Samsung",
+                        "materialCost": 1200000,
+                        "price": 1500000
+                    },
+                    {
+                        "name": "LG",
+                        "materialCost": 1100000,
+                        "price": 1400000
+                    },
+                    {
+                        "name": "Sony",
+                        "materialCost": 1300000,
+                        "price": 1600000
+                    }
+                ]
+            }
         ]
-      },
-      {
-        "name": "Nạp gas tủ lạnh", "price": 450000, "laborCost": 200000, "materialCost": 250000,
-        "warranty": "6 tháng", "duration": "1–2 giờ",
-        "desc": "Nạp lại gas tủ lạnh bị thiếu hoặc rò rỉ, đảm bảo tủ lạnh làm lạnh đúng nhiệt độ và ổn định.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      }
-    ]
-  },
-  {
-    "id": 6, "name": "Sửa Tivi", "icon": "fa-tv", "image": "image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
-    "desc": "Sửa chữa tivi LED, LCD, OLED các hãng. Khắc phục mất hình, mất tiếng, không nguồn, hỏng màn hình.",
-    "travelFee": { "mode": "fixed", "fixedAmount": 30000, "min": 20000, "max": 50000 },
-    "items": [
-      {
-        "name": "Sửa tivi không lên nguồn", "price": 280000, "laborCost": 200000, "materialCost": 80000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Kiểm tra và sửa chữa nguồn điện, bo mạch tivi khi tivi không lên nguồn hoặc tự tắt bật.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Sửa tivi mất hình", "price": 300000, "laborCost": 250000, "materialCost": 50000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Xử lý tivi không có hình, màn hình đen, sọc dọc/ngang do lỗi mạch cao áp hoặc dây tín hiệu.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Sửa tivi mất tiếng", "price": 250000, "laborCost": 200000, "materialCost": 50000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Khắc phục tivi không có âm thanh, âm thanh bị rè, nhiễu do lỗi bo âm thanh hoặc loa.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Thay màn hình tivi", "price": 1500000, "laborCost": 300000, "materialCost": 1200000,
-        "warranty": "6 tháng", "duration": "2–4 giờ",
-        "desc": "Thay thế màn hình tivi bị vỡ, bể, đốm sáng bằng màn hình chính hãng tương thích.",
-        "priceRange": { "min": 1400000, "max": 1600000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Samsung", "materialCost": 1200000, "price": 1500000 },
-          { "name": "LG",      "materialCost": 1100000, "price": 1400000 },
-          { "name": "Sony",    "materialCost": 1300000, "price": 1600000 }
+    },
+    {
+        "id": 7,
+        "name": "Sửa Bếp Từ",
+        "icon": "fa-fire",
+        "image": "image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
+        "desc": "Sửa chữa bếp từ, bếp điện từ, bếp gas các hãng. Xử lý không nóng, báo lỗi, không nhận nồi.",
+        "travelFee": {
+            "mode": "per_km",
+            "providerAddress": "29 Sư Vạn Hạnh, Phường 12, Quận 10, TP.HCM",
+            "providerLat": 10.7733,
+            "providerLng": 106.6683,
+            "pricePerKm": 5000,
+            "minFee": 15000,
+            "maxFee": 120000
+        },
+        "items": [
+            {
+                "name": "Sửa bếp từ không nóng",
+                "price": 350000,
+                "laborCost": 250000,
+                "materialCost": 100000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Chẩn đoán và sửa chữa bếp từ không tạo nhiệt do lỗi IGBT, cảm biến nhiệt hoặc bo mạch điều khiển.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Sửa bếp từ báo lỗi",
+                "price": 280000,
+                "laborCost": 200000,
+                "materialCost": 80000,
+                "warranty": "3 tháng",
+                "duration": "1–2 giờ",
+                "desc": "Xử lý các mã lỗi E0–E8 trên bếp từ, reset và sửa chữa linh kiện liên quan để bếp hoạt động bình thường.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            },
+            {
+                "name": "Thay mặt kính bếp từ",
+                "price": 800000,
+                "laborCost": 200000,
+                "materialCost": 600000,
+                "warranty": "6 tháng",
+                "duration": "2–3 giờ",
+                "desc": "Thay thế mặt kính bếp từ bị nứt, vỡ bằng kính ceramic chịu nhiệt chính hãng, đảm bảo an toàn.",
+                "priceRange": {
+                    "min": 650000,
+                    "max": 900000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Bosch",
+                        "materialCost": 700000,
+                        "price": 900000
+                    },
+                    {
+                        "name": "Teka",
+                        "materialCost": 600000,
+                        "price": 800000
+                    },
+                    {
+                        "name": "Sunhouse",
+                        "materialCost": 450000,
+                        "price": 650000
+                    }
+                ]
+            },
+            {
+                "name": "Sửa bếp gas",
+                "price": 200000,
+                "laborCost": 150000,
+                "materialCost": 50000,
+                "warranty": "3 tháng",
+                "duration": "30–60 phút",
+                "desc": "Sửa bếp gas không bật lửa, lửa yếu, rò gas, thay van gas và làm sạch đầu đốt đảm bảo an toàn.",
+                "surveyFee": {
+                    "amount": 50000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                }
+            }
         ]
-      }
-    ]
-  },
-  {
-    "id": 7, "name": "Sửa Bếp Từ", "icon": "fa-fire", "image": "image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
-    "desc": "Sửa chữa bếp từ, bếp điện từ, bếp gas các hãng. Xử lý không nóng, báo lỗi, không nhận nồi.",
-    "travelFee": { "mode": "fixed", "fixedAmount": 30000, "min": 20000, "max": 50000 },
-    "items": [
-      {
-        "name": "Sửa bếp từ không nóng", "price": 350000, "laborCost": 250000, "materialCost": 100000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Chẩn đoán và sửa chữa bếp từ không tạo nhiệt do lỗi IGBT, cảm biến nhiệt hoặc bo mạch điều khiển.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Sửa bếp từ báo lỗi", "price": 280000, "laborCost": 200000, "materialCost": 80000,
-        "warranty": "3 tháng", "duration": "1–2 giờ",
-        "desc": "Xử lý các mã lỗi E0–E8 trên bếp từ, reset và sửa chữa linh kiện liên quan để bếp hoạt động bình thường.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      },
-      {
-        "name": "Thay mặt kính bếp từ", "price": 800000, "laborCost": 200000, "materialCost": 600000,
-        "warranty": "6 tháng", "duration": "2–3 giờ",
-        "desc": "Thay thế mặt kính bếp từ bị nứt, vỡ bằng kính ceramic chịu nhiệt chính hãng, đảm bảo an toàn.",
-        "priceRange": { "min": 650000, "max": 900000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Bosch",    "materialCost": 700000, "price": 900000 },
-          { "name": "Teka",     "materialCost": 600000, "price": 800000 },
-          { "name": "Sunhouse", "materialCost": 450000, "price": 650000 }
+    },
+    {
+        "id": 8,
+        "name": "Cải Tạo Nhà",
+        "icon": "fa-hammer",
+        "image": "image/tho-nha-dich-vu-sua-bep-tu-dien-tu.jpg",
+        "desc": "Thi công cải tạo nhà cửa: sơn nhà, trần thạch cao, lát nền. Tư vấn miễn phí.",
+        "travelFee": {
+            "mode": "per_km",
+            "providerAddress": "155 Nam Kỳ Khởi Nghĩa, Phường 7, Quận 3, TP.HCM",
+            "providerLat": 10.7852,
+            "providerLng": 106.6874,
+            "pricePerKm": 5000,
+            "minFee": 15000,
+            "maxFee": 120000
+        },
+        "items": [
+            {
+                "name": "Sơn nhà",
+                "price": 5000000,
+                "laborCost": 2000000,
+                "materialCost": 3000000,
+                "warranty": "12 tháng",
+                "duration": "2–5 ngày",
+                "desc": "Sơn mới hoặc sơn lại nhà ở, căn hộ với vật liệu chất lượng cao, bền đẹp theo thời gian.",
+                "priceRange": {
+                    "min": 4500000,
+                    "max": 5500000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 200000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Dulux",
+                        "materialCost": 3000000,
+                        "price": 5000000
+                    },
+                    {
+                        "name": "Jotun",
+                        "materialCost": 3500000,
+                        "price": 5500000
+                    },
+                    {
+                        "name": "Kova",
+                        "materialCost": 2500000,
+                        "price": 4500000
+                    }
+                ]
+            },
+            {
+                "name": "Trần thạch cao",
+                "price": 7000000,
+                "laborCost": 3000000,
+                "materialCost": 4000000,
+                "warranty": "12 tháng",
+                "duration": "3–5 ngày",
+                "desc": "Thi công trần thạch cao thẩm mỹ, cách âm, cách nhiệt, phù hợp nhà ở và văn phòng.",
+                "priceRange": {
+                    "min": 7000000,
+                    "max": 7500000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 200000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Gyproc",
+                        "materialCost": 4000000,
+                        "price": 7000000
+                    },
+                    {
+                        "name": "USG",
+                        "materialCost": 4500000,
+                        "price": 7500000
+                    }
+                ]
+            },
+            {
+                "name": "Lát nền gạch",
+                "price": 6000000,
+                "laborCost": 2500000,
+                "materialCost": 3500000,
+                "warranty": "12 tháng",
+                "duration": "3–5 ngày",
+                "desc": "Lát nền gạch chuyên nghiệp, thẳng đẹp, bền chắc cho nhà ở và công trình.",
+                "priceRange": {
+                    "min": 6000000,
+                    "max": 6500000,
+                    "currency": "VNĐ"
+                },
+                "surveyFee": {
+                    "amount": 200000,
+                    "required": true,
+                    "waiveIfBooked": true,
+                    "deductToFinal": true
+                },
+                "brandPrices": [
+                    {
+                        "name": "Đồng Tâm",
+                        "materialCost": 3500000,
+                        "price": 6000000
+                    },
+                    {
+                        "name": "Viglacera",
+                        "materialCost": 4000000,
+                        "price": 6500000
+                    }
+                ]
+            }
         ]
-      },
-      {
-        "name": "Sửa bếp gas", "price": 200000, "laborCost": 150000, "materialCost": 50000,
-        "warranty": "3 tháng", "duration": "30–60 phút",
-        "desc": "Sửa bếp gas không bật lửa, lửa yếu, rò gas, thay van gas và làm sạch đầu đốt đảm bảo an toàn.",
-        "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
-      }
-    ]
-  },
-  {
-    "id": 8, "name": "Cải Tạo Nhà", "icon": "fa-hammer", "image": "image/tho-nha-dich-vu-sua-bep-tu-dien-tu.jpg",
-    "desc": "Thi công cải tạo nhà cửa: sơn nhà, trần thạch cao, lát nền. Tư vấn miễn phí.",
-    "travelFee": { "mode": "fixed", "fixedAmount": 50000, "min": 30000, "max": 100000 },
-    "items": [
-      {
-        "name": "Sơn nhà", "price": 5000000, "laborCost": 2000000, "materialCost": 3000000,
-        "warranty": "12 tháng", "duration": "2–5 ngày",
-        "desc": "Sơn mới hoặc sơn lại nhà ở, căn hộ với vật liệu chất lượng cao, bền đẹp theo thời gian.",
-        "priceRange": { "min": 4500000, "max": 5500000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 200000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Dulux", "materialCost": 3000000, "price": 5000000 },
-          { "name": "Jotun", "materialCost": 3500000, "price": 5500000 },
-          { "name": "Kova",  "materialCost": 2500000, "price": 4500000 }
-        ]
-      },
-      {
-        "name": "Trần thạch cao", "price": 7000000, "laborCost": 3000000, "materialCost": 4000000,
-        "warranty": "12 tháng", "duration": "3–5 ngày",
-        "desc": "Thi công trần thạch cao thẩm mỹ, cách âm, cách nhiệt, phù hợp nhà ở và văn phòng.",
-        "priceRange": { "min": 7000000, "max": 7500000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 200000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Gyproc", "materialCost": 4000000, "price": 7000000 },
-          { "name": "USG",    "materialCost": 4500000, "price": 7500000 }
-        ]
-      },
-      {
-        "name": "Lát nền gạch", "price": 6000000, "laborCost": 2500000, "materialCost": 3500000,
-        "warranty": "12 tháng", "duration": "3–5 ngày",
-        "desc": "Lát nền gạch chuyên nghiệp, thẳng đẹp, bền chắc cho nhà ở và công trình.",
-        "priceRange": { "min": 6000000, "max": 6500000, "currency": "VNĐ" },
-        "surveyFee": { "amount": 200000, "required": true, "waiveIfBooked": true, "deductToFinal": true },
-        "brandPrices": [
-          { "name": "Đồng Tâm",  "materialCost": 3500000, "price": 6000000 },
-          { "name": "Viglacera", "materialCost": 4000000, "price": 6500000 }
-        ]
-      }
-    ]
-  }
+    }
 ]

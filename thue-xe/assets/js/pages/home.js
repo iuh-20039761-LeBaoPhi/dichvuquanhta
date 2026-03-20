@@ -121,6 +121,12 @@ function setupSearchForm() {
         const brand = document.getElementById('searchBrand').value;
         const seats = document.getElementById('searchSeats').value;
         const price = document.getElementById('searchPrice').value;
-        window.location.href = `index.php?page=search&brand=${brand}&seats=${seats}&price=${price}`;
+
+        const query = new URLSearchParams({ page: 'search' });
+        if (brand) query.set('brand', brand);
+        if (seats) query.set('seats', seats);
+        if (price) query.set('price', price);
+
+        window.location.href = `index.php?${query.toString()}`;
     });
 }

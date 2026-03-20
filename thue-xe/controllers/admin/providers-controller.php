@@ -1,4 +1,10 @@
 <?php
+/**
+ * Providers Admin Controller — v3
+ * Bảng `users` → `nguoidung`, cột tiếng Việt không dấu.
+ * AS alias để output JSON giữ nguyên field name cũ.
+ */
+
 require_once dirname(__DIR__) . '/session.php';
 header('Content-Type: application/json; charset=utf-8');
 
@@ -16,23 +22,30 @@ $conn   = $db->getConnection();
 
 // ─── LIST ─────────────────────────────────────────────────────────────────────
 if ($action === 'list') {
-    $filter_status  = $_GET['status'] ?? '';
-    $allowed        = ['pending', 'active', 'rejected', 'blocked'];
+    $filter_status = $_GET['status'] ?? '';
+    $allowed       = ['pending', 'active', 'rejected', 'blocked'];
+
+    // alias: tên cột tiếng Anh cũ để frontend không đổi
+    $select = "SELECT
+        id,
+        hoten          AS full_name,
+        email,
+        sodienthoai    AS phone,
+        tencongty      AS company_name,
+        sogiayphep     AS license_number,
+        diachi         AS address,
+        mota           AS description,
+        trangthai      AS status,
+        lydotuchoi     AS rejection_reason,
+        ngaytao        AS created_at
+    FROM nguoidung WHERE vaitro = 'provider'";
 
     if ($filter_status && in_array($filter_status, $allowed)) {
-        $stmt = $conn->prepare(
-            "SELECT id, full_name, email, phone, company_name, license_number, address,
-                    description, status, rejection_reason, created_at
-             FROM users WHERE role = 'provider' AND status = ?
-             ORDER BY created_at DESC"
-        );
+        $stmt = $conn->prepare($select . " AND trangthai = ? ORDER BY ngaytao DESC");
         $stmt->execute([$filter_status]);
     } else {
         $stmt = $conn->prepare(
-            "SELECT id, full_name, email, phone, company_name, license_number, address,
-                    description, status, rejection_reason, created_at
-             FROM users WHERE role = 'provider'
-             ORDER BY FIELD(status,'pending','active','blocked','rejected'), created_at DESC"
+            $select . " ORDER BY FIELD(trangthai,'pending','active','blocked','rejected'), ngaytao DESC"
         );
         $stmt->execute();
     }
@@ -43,7 +56,8 @@ if ($action === 'list') {
 // ─── COUNTS ───────────────────────────────────────────────────────────────────
 if ($action === 'counts') {
     $stmt = $conn->prepare(
-        "SELECT status, COUNT(*) as cnt FROM users WHERE role = 'provider' GROUP BY status"
+        "SELECT trangthai AS status, COUNT(*) AS cnt
+         FROM nguoidung WHERE vaitro = 'provider' GROUP BY trangthai"
     );
     $stmt->execute();
     $counts = ['pending' => 0, 'active' => 0, 'rejected' => 0, 'blocked' => 0];
@@ -67,8 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Verify provider exists
-    $stmt = $conn->prepare("SELECT id, status FROM users WHERE id = ? AND role = 'provider' LIMIT 1");
+    // Verify provider exists — nguoidung với vaitro='provider'
+    $stmt = $conn->prepare(
+        "SELECT id, trangthai AS status FROM nguoidung WHERE id = ? AND vaitro = 'provider' LIMIT 1"
+    );
     $stmt->execute([$provider_id]);
     $provider = $stmt->fetch();
 
@@ -104,8 +120,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
     }
 
+    // UPDATE nguoidung: trangthai + lydotuchoi
     $stmt = $conn->prepare(
-        "UPDATE users SET status = ?, rejection_reason = ? WHERE id = ? AND role = 'provider'"
+        "UPDATE nguoidung SET trangthai = ?, lydotuchoi = ?
+         WHERE id = ? AND vaitro = 'provider'"
     );
     $stmt->execute([$new_status, $reason, $provider_id]);
 

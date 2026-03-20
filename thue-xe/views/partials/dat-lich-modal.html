@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <base href="../../" />
+  <title>Đặt Xe – Thuê Xe Toàn Quốc</title>
+  <meta name="description" content="Đặt xe trực tuyến tại Thuê Xe Toàn Quốc. Hotline: 0775 472 347." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+<script src="assets/js/load-template.js"></script>
+<script>
+window.PAGE_SEO = {
+    title:   'Đặt Xe – Thuê Xe Toàn Quốc',
+    desc:    'Đặt xe trực tuyến tại Thuê Xe Toàn Quốc. Hotline hỗ trợ 24/7: 0775 472 347.',
+    keys:    'đặt xe thuê, car rental booking, thuê xe toàn quốc',
+    url:     'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/partials/dat-lich-modal.html',
+    navPage: ''
+};
+loadHeader();
+</script>
+
+<!-- ===== STANDALONE PAGE CONTENT ===== -->
+<!-- Phần này chỉ hiển thị khi truy cập trực tiếp URL.
+     Khi chi-tiet-xe.html fetch file này, chỉ #bookingFormContent được trích xuất. -->
+<section class="py-5" id="standaloneBookingPage">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <!-- ===== CHỌN XE THUÊ ===== -->
+        <div class="card border-0 shadow-sm mb-4" id="standaloneCarSelector">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h6 class="fw-bold mb-0"><i class="fas fa-car text-primary me-2"></i>Chọn xe thuê</h6>
+              <span class="badge bg-secondary" id="standaloneCarCount"></span>
+            </div>
+            <!-- Xe đã chọn (hiện khi đã chọn) -->
+            <div id="standaloneCarSelected" style="display:none;" class="mb-3">
+              <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:var(--gradient-primary);color:white;">
+                <img id="standaloneCarImg" src="" alt="" style="width:72px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;"
+                     onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
+                <div class="flex-grow-1">
+                  <div class="fw-bold" id="standaloneCarName">—</div>
+                  <div class="small opacity-75" id="standaloneCarMeta">—</div>
+                  <div class="fw-semibold" id="standaloneCarPrice">—</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-light" onclick="standaloneShowCarList()" title="Đổi xe">
+                  <i class="fas fa-exchange-alt me-1"></i>Đổi xe
+                </button>
+              </div>
+            </div>
+            <!-- Danh sách xe (ẩn khi đã chọn) -->
+            <div id="standaloneCarList">
+              <div class="text-center text-muted py-3"><div class="spinner-border spinner-border-sm me-2"></div>Đang tải danh sách xe...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date picker (standalone-only; IDs pickupDate/returnDate used by booking logic) -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3"><i class="fas fa-calendar-alt text-primary me-2"></i>Thời gian thuê xe</h6>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Ngày nhận xe *</label>
+                <div class="row g-1">
+                  <div class="col-7">
+                    <input type="date" class="form-control" id="pickupDate" required />
+                  </div>
+                  <div class="col-5">
+                    <input type="time" class="form-control" id="pickupTime" value="08:00" title="Giờ nhận xe" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ngày trả xe *</label>
+                <div class="row g-1">
+                  <div class="col-7">
+                    <input type="date" class="form-control" id="returnDate" required />
+                  </div>
+                  <div class="col-5">
+                    <input type="time" class="form-control" id="returnTime" value="08:00" title="Giờ trả xe" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="standalonePriceCalc" class="mt-3 p-3 bg-light rounded" style="display:none;">
+              <div class="d-flex justify-content-between mb-1">
+                <span>Số ngày:</span><strong id="standaloneTotalDays">0</strong>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Tiền thuê xe:</span><strong class="text-primary" id="standaloneTotalPrice">0đ</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking form card -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-header booking-modal-header" style="background:var(--gradient-primary);border-radius:8px 8px 0 0;">
+            <h5 class="mb-0 text-white"><i class="fas fa-clipboard-list me-2"></i>Thông Tin Đặt Xe</h5>
+          </div>
+          <!-- ====================================================
+               #bookingFormContent — được chi-tiet-xe trích xuất
+               Không đặt script bên trong div này.
+               ==================================================== -->
+          <div class="card-body booking-modal-body" id="bookingFormContent">
+            <div id="bookingAlert"></div>
+            <div id="bookingAuthBanner" class="mb-3"></div>
+            <form id="bookingFormFull" class="booking-form">
+              <div class="row g-3 booking-form-grid">
+                <div class="col-12 col-md-6">
+                  <label class="form-label">Họ và tên *</label>
+                  <input type="text" class="form-control" name="customer_name" required>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label">Số điện thoại *</label>
+                  <input type="tel" class="form-control" name="customer_phone" required
+                         pattern="^0[3-9][0-9]{8}$"
+                         title="Số điện thoại VN hợp lệ gồm 10 chữ số"
+                         placeholder="0901234567">
+                  <div class="invalid-feedback">Số điện thoại phải gồm 10 chữ số, bắt đầu bằng 03x / 05x / 07x / 08x / 09x</div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label">Email *</label>
+                  <input type="email" class="form-control" name="customer_email" required placeholder="example@email.com">
+                  <div class="invalid-feedback">Email không hợp lệ</div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label">CMND/CCCD</label>
+                  <input type="text" class="form-control" name="id_number"
+                         pattern="^[0-9]{9}$|^[0-9]{12}$"
+                         placeholder="9 hoặc 12 chữ số" maxlength="12">
+                  <div class="invalid-feedback">CMND gồm 9 số hoặc CCCD gồm 12 số</div>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label">Địa chỉ *</label>
+                  <textarea class="form-control" id="customerAddress" name="customer_address" rows="2" required
+                            placeholder="Số nhà, đường, phường, quận..."></textarea>
+                  <div class="d-flex gap-2 mt-2 flex-wrap booking-map-actions">
+                    <button type="button" class="btn-map-picker booking-touch-btn" id="mapBtnAddr" onclick="CarMapPicker.toggle('addr')">
+                      <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                    </button>
+                    <button type="button" class="btn-map-picker btn-map-gps booking-touch-btn" onclick="CarMapPicker.gps('addr')">
+                      <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
+                    </button>
+                  </div>
+                  <div id="mapBoxAddr" class="map-picker-box" style="display:none; margin-top:10px;">
+                    <div id="mapElAddr" class="map-el"></div>
+                    <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền</p>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label">Ghi chú</label>
+                  <textarea class="form-control" name="notes" rows="2"></textarea>
+                </div>
+                <!-- Đính kèm hình ảnh / video -->
+                <div class="col-md-12">
+                  <label class="form-label">Đính kèm hình ảnh / video <small class="text-muted">(tùy chọn)</small></label>
+                  <div class="d-flex gap-2 flex-wrap mb-2">
+                    <button type="button" id="txPhotoCaptureBtn" class="booking-touch-btn"
+                        style="background:var(--gradient-primary);color:white;border:none;padding:8px 18px;border-radius:50px;font-size:0.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                      <i class="fas fa-camera"></i> Chụp hình
+                    </button>
+                    <button type="button" id="txVideoCaptureBtn" class="booking-touch-btn"
+                        style="background:linear-gradient(135deg,#0f172a,#1e3a5f);color:white;border:none;padding:8px 18px;border-radius:50px;font-size:0.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                      <i class="fas fa-video"></i> Quay video
+                    </button>
+                  </div>
+                  <input type="file" id="txMediaPhotoInput" accept="image/*" multiple style="display:none">
+                  <input type="file" id="txMediaVideoInput" accept="video/*" style="display:none">
+                  <div id="txMediaPreviewContainer" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Dịch vụ đi kèm <span class="text-muted fw-normal">(không bắt buộc)</span></label>
+                  <p class="text-muted small mb-2">Nhấn vào toàn bộ thẻ để chọn dịch vụ phù hợp.</p>
+                  <div class="row g-2 addon-service-grid" id="addonServiceList">
+                    <!-- Được inject động bởi JS -->
+                  </div>
+                </div>
+              </div>
+
+              <div id="addonSummary" class="mt-3 p-3 bg-light rounded" style="display:none;">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="text-muted">Tiền xe:</span>
+                  <span id="summaryCarPrice">0đ</span>
+                </div>
+                <div id="summaryAddonList"></div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between fw-bold">
+                  <span>Tổng cộng:</span>
+                  <span class="text-primary" id="summaryTotal">0đ</span>
+                </div>
+                <small class="text-muted">* Giá có thể thay đổi tuỳ thực tế</small>
+              </div>
+
+              <div class="mt-3 booking-submit-wrap">
+                <button type="submit" class="btn btn-gradient w-100 booking-submit-btn booking-touch-btn">
+                  <i class="fas fa-check me-2"></i>Xác nhận đặt xe
+                </button>
+              </div>
+            </form>
+
+            <!-- BẢNG XÁC NHẬN THÔNG TIN -->
+            <div id="txBookingConfirm" style="display:none;">
+              <div style="text-align:center;margin-bottom:20px;">
+                <div style="width:64px;height:64px;background:var(--gradient-primary);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                  <i class="fas fa-clipboard-check" style="color:white;font-size:1.6rem;"></i>
+                </div>
+                <h6 class="fw-bold mb-1" style="font-size:1.05rem;">Xác nhận thông tin đặt xe</h6>
+                <p class="text-muted small mb-0">Vui lòng kiểm tra lại trước khi gửi</p>
+              </div>
+              <div style="background:#eff6ff;border:1px solid rgba(59,130,246,0.25);border-radius:12px;padding:4px 16px;margin-bottom:20px;">
+                <div class="tx-cf-row" id="tx-cf-car-front-row" style="display:none;">
+                  <span class="tx-cf-label">Ảnh phía trước</span>
+                  <span class="tx-cf-val">
+                    <img id="tx-cf-car-front-img" src="" alt="Ảnh phía trước xe"
+                         style="width:180px;height:110px;object-fit:cover;border-radius:10px;display:block;">
+                  </span>
+                </div>
+                <div class="tx-cf-row"><span class="tx-cf-label">Họ và tên</span><span id="tx-cf-name" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row"><span class="tx-cf-label">Số điện thoại</span><span id="tx-cf-phone" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row"><span class="tx-cf-label">Email</span><span id="tx-cf-email" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row" id="tx-cf-id-row"><span class="tx-cf-label">CMND/CCCD</span><span id="tx-cf-id" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row" id="tx-cf-address-row"><span class="tx-cf-label">Địa chỉ</span><span id="tx-cf-address" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row"><span class="tx-cf-label">Ngày nhận xe</span><span id="tx-cf-pickup" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row"><span class="tx-cf-label">Ngày trả xe</span><span id="tx-cf-return" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row"><span class="tx-cf-label">Số ngày thuê</span><span id="tx-cf-days" class="tx-cf-val" style="color:var(--color-primary);font-weight:700;"></span></div>
+                <div class="tx-cf-row"><span class="tx-cf-label">Giá thuê/ngày</span><span id="tx-cf-price-day" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row"><span class="tx-cf-label">Chi phí thuê xe</span><span id="tx-cf-rental-cost" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row" id="tx-cf-addon-cost-row"><span class="tx-cf-label">Chi phí dịch vụ</span><span id="tx-cf-addon-cost" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row" id="tx-cf-summary-row"><span class="tx-cf-label">Diễn giải chi phí</span><span id="tx-cf-summary" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row" id="tx-cf-addon-row"><span class="tx-cf-label">Dịch vụ kèm</span><span id="tx-cf-addon" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row" id="tx-cf-total-row"><span class="tx-cf-label">Tổng ước tính</span><span id="tx-cf-total" class="tx-cf-val" style="color:var(--color-primary);font-weight:700;"></span></div>
+                <div class="tx-cf-row" id="tx-cf-note-row"><span class="tx-cf-label">Ghi chú</span><span id="tx-cf-note" class="tx-cf-val"></span></div>
+                <div class="tx-cf-row" id="tx-cf-media-row"><span class="tx-cf-label">Đính kèm</span><span id="tx-cf-media" class="tx-cf-val"></span></div>
+              </div>
+              <div class="d-flex gap-2 flex-column flex-sm-row tx-confirm-actions">
+                <button type="button" id="txConfirmBackBtn" class="btn btn-outline-secondary w-100 booking-touch-btn flex-fill" style="padding:12px;">
+                  <i class="fas fa-arrow-left me-2"></i> Quay lại
+                </button>
+                <button type="button" id="txConfirmSubmitBtn" class="btn btn-gradient w-100 booking-touch-btn flex-fill" style="padding:12px;font-size:1rem;">
+                  <i class="fas fa-check me-2"></i> Xác nhận đặt xe
+                </button>
+              </div>
+            </div>
+          </div><!-- end #bookingFormContent -->
+        </div><!-- end .card -->
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>loadFooter();</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/static-data.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/map-picker.js"></script>
+
+<!-- ===== STANDALONE BOOKING LOGIC =====
+     Chỉ chạy khi truy cập trực tiếp (không phải khi được fetch bởi chi-tiet-xe).
+     chi-tiet-xe chỉ extract innerHTML của #bookingFormContent — scripts bên ngoài không bị inject.
+-->
+<script>
+(function () {
+    'use strict';
+    const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
+    const today = () => new Date().toISOString().split('T')[0];
+
+    // Set min dates
+    const pickupEl = document.getElementById('pickupDate');
+    const returnEl = document.getElementById('returnDate');
+    if (!pickupEl || !returnEl) return; // guard: không chạy nếu bị inject vào modal
+
+    pickupEl.min = today();
+    returnEl.min = today();
+
+    // Đọc URL params
+    const params    = new URLSearchParams(window.location.search);
+    const typeId    = parseInt(params.get('type_id')) || 0;
+    const pickupP   = params.get('pickup')  || '';
+    const returnP   = params.get('return')  || '';
+    if (pickupP) pickupEl.value = pickupP;
+    if (returnP) returnEl.value = returnP;
+
+    let _standaloneCarType = null;
+    let _standalonePending = null;
+    let _standaloneAddonPrices = {};
+    let _standaloneMediaFiles  = [];
+    let _standaloneSession = null;
+
+    // ===== Media capture =====
+    const photoInput = document.getElementById('txMediaPhotoInput');
+    const videoInput = document.getElementById('txMediaVideoInput');
+    const photoBtn   = document.getElementById('txPhotoCaptureBtn');
+    const videoBtn   = document.getElementById('txVideoCaptureBtn');
+    const previewBox = document.getElementById('txMediaPreviewContainer');
+    if (photoBtn) photoBtn.addEventListener('click', () => photoInput && photoInput.click());
+    if (videoBtn) videoBtn.addEventListener('click', () => videoInput && videoInput.click());
+    if (photoInput) photoInput.addEventListener('change', function () {
+        Array.from(this.files).forEach(f => addMediaPreview(f));
+        this.value = '';
+    });
+    if (videoInput) videoInput.addEventListener('change', function () {
+        Array.from(this.files).forEach(f => addMediaPreview(f));
+        this.value = '';
+    });
+    function addMediaPreview(file) {
+        const id = Date.now() + Math.random();
+        _standaloneMediaFiles.push({ id, file });
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:2px solid rgba(59,130,246,0.4);';
+        wrap.dataset.mediaId = id;
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button'; removeBtn.innerHTML = '&times;';
+        removeBtn.style.cssText = 'position:absolute;top:2px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:16px;cursor:pointer;padding:0;z-index:1;';
+        removeBtn.addEventListener('click', () => { _standaloneMediaFiles = _standaloneMediaFiles.filter(m => m.id !== id); wrap.remove(); });
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+            img.src = URL.createObjectURL(file);
+            wrap.appendChild(img);
+        } else {
+            const icon = document.createElement('div');
+            icon.style.cssText = 'width:100%;height:100%;background:#0f172a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;';
+            icon.innerHTML = '<i class="fas fa-video" style="color:#3B82F6;font-size:1.4rem;"></i><span style="color:#ccc;font-size:0.6rem;text-align:center;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%;">' + file.name + '</span>';
+            wrap.appendChild(icon);
+        }
+        wrap.appendChild(removeBtn);
+        if (previewBox) previewBox.appendChild(wrap);
+    }
+
+    // ===== Price calc for standalone date inputs =====
+    function calcStandalonePrice() {
+        if (!_standaloneCarType) return;
+        if (pickupEl.value && returnEl.value && returnEl.value > pickupEl.value) {
+            const d = Math.max(1, Math.round((new Date(returnEl.value) - new Date(pickupEl.value)) / 86400000));
+            const el = document.getElementById('standaloneTotalDays');
+            const tp = document.getElementById('standaloneTotalPrice');
+            if (el) el.textContent = d + ' ngày';
+            if (tp) tp.textContent = fmt(d * _standaloneCarType.price_per_day) + 'đ';
+            const pc = document.getElementById('standalonePriceCalc');
+            if (pc) pc.style.display = 'block';
+            returnEl.min = pickupEl.value;
+        }
+        recalcAddonSummary();
+    }
+    pickupEl.addEventListener('change', calcStandalonePrice);
+    returnEl.addEventListener('change', calcStandalonePrice);
+
+    // ===== Addon recalc =====
+    function recalcAddonSummary() {
+        const pickup = pickupEl.value;
+        const ret    = returnEl.value;
+        const days   = (pickup && ret && ret > pickup)
+            ? Math.max(1, Math.round((new Date(ret) - new Date(pickup)) / 86400000)) : 0;
+        const checked   = [...document.querySelectorAll('input[name="addon_services"]:checked')];
+        const summaryEl = document.getElementById('addonSummary');
+        if (!summaryEl) return;
+        if (!days && !checked.length) { summaryEl.style.display = 'none'; return; }
+        const pricePerDay = _standaloneCarType ? _standaloneCarType.price_per_day : 0;
+        const carTotal    = days * pricePerDay;
+        let addonTotal = 0, addonLines = '';
+        checked.forEach(cb => {
+            const info = _standaloneAddonPrices[cb.value];
+            if (!info) return;
+            const cost = info.unit === 'ngày' ? info.price * days : info.price;
+            addonTotal += cost;
+            addonLines += `<div class="d-flex justify-content-between mb-1"><span class="text-muted">${cb.value}:</span><span>+${fmt(cost)}đ</span></div>`;
+        });
+        document.getElementById('summaryCarPrice').textContent = fmt(carTotal) + 'đ';
+        document.getElementById('summaryAddonList').innerHTML  = addonLines;
+        document.getElementById('summaryTotal').textContent    = fmt(carTotal + addonTotal) + 'đ';
+        summaryEl.style.display = 'block';
+    }
+
+    // ===== Show alert =====
+    function showAlert(msg, type) {
+        const el = document.getElementById('bookingAlert');
+        if (!el) return;
+        el.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show">${msg}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ===== Session autofill =====
+    function bookingAutoFill() {
+        _standaloneSession = null;
+        fetch('controllers/check-session.php')
+            .then(r => r.json())
+            .then(data => {
+                _standaloneSession = data;
+                const banner = document.getElementById('bookingAuthBanner');
+                if (!banner) return;
+                if (data.logged_in && data.role === 'customer') {
+                    const form = document.getElementById('bookingFormFull');
+                    if (form) {
+                        const f = name => form.querySelector(`[name="${name}"]`);
+                        if (data.name  && f('customer_name'))  f('customer_name').value  = data.name;
+                        if (data.phone && f('customer_phone')) f('customer_phone').value = data.phone;
+                        if (data.email && f('customer_email')) f('customer_email').value = data.email;
+                    }
+                    banner.innerHTML = `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;"><span style="font-size:0.83rem;color:#1e40af;"><i class="fas fa-user-check me-2"></i>Đã đăng nhập: <strong>${data.name || ''}</strong></span><button type="button" onclick="standaloneAutoFillClick()" style="background:linear-gradient(135deg,#3B82F6,#1E40AF);color:white;border:none;padding:5px 14px;border-radius:50px;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;"><i class="fas fa-magic me-1"></i>Tự điền thông tin</button></div>`;
+                } else {
+                    banner.innerHTML = `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:0.83rem;color:#92400e;margin-bottom:4px;"><i class="fas fa-info-circle me-2"></i><a href="views/pages/customer/dang-nhap.html" style="color:#d97706;font-weight:600;text-decoration:none;">Đăng nhập</a> để tự động điền tên, số điện thoại và email.</div>`;
+                }
+            })
+            .catch(() => {});
+    }
+    window.standaloneAutoFillClick = function () {
+        if (!_standaloneSession?.logged_in) return;
+        const form = document.getElementById('bookingFormFull');
+        if (!form) return;
+        const f = name => form.querySelector(`[name="${name}"]`);
+        if (_standaloneSession.name  && f('customer_name'))  f('customer_name').value  = _standaloneSession.name;
+        if (_standaloneSession.phone && f('customer_phone')) f('customer_phone').value = _standaloneSession.phone;
+        if (_standaloneSession.email && f('customer_email')) f('customer_email').value = _standaloneSession.email;
+    };
+
+    // ===== Render addon services =====
+    function renderAddonServices(services) {
+        const UNIT_LABELS = { 'ngày': '/ngày', 'chuyến': '/chuyến' };
+        const container = document.getElementById('addonServiceList');
+        if (!container) return;
+        if (!services.length) {
+            container.innerHTML = '<div class="col-12 text-muted small">Không có dịch vụ đi kèm</div>';
+            return;
+        }
+        container.innerHTML = services.map(svc => `
+            <div class="col-12 col-md-6">
+                <label class="addon-service-card" for="svc_${svc.id}">
+                    <input class="addon-service-input" type="checkbox" name="addon_services" value="${svc.name}" id="svc_${svc.id}">
+                    <span class="addon-service-shell">
+                        <span class="addon-service-check" aria-hidden="true"><i class="fas fa-check"></i></span>
+                        <span class="addon-service-main">
+                            <span class="addon-service-top">
+                                <span class="addon-service-name"><i class="fas fa-${svc.icon || 'circle-check'} text-primary me-1"></i>${svc.name}</span>
+                                <span class="addon-service-price">+${fmt(svc.price)}đ${UNIT_LABELS[svc.unit] || ''}</span>
+                            </span>
+                            <small class="addon-service-desc">${svc.description || 'Dịch vụ bổ sung cho chuyến đi'}</small>
+                        </span>
+                    </span>
+                </label>
+            </div>`).join('');
+        container.querySelectorAll('input[name="addon_services"]').forEach(cb => {
+            cb.addEventListener('change', recalcAddonSummary);
+        });
+    }
+
+    // ===== Init with STATIC_DATA =====
+    STATIC_DATA_PROMISE.then(function (STATIC_DATA) {
+        // Build addon prices
+        (STATIC_DATA.services || []).forEach(svc => {
+            _standaloneAddonPrices[svc.name] = { price: Number(svc.price), unit: svc.unit || 'chuyến' };
+        });
+
+        // Render addon services
+        renderAddonServices(STATIC_DATA.services || []);
+
+        // ===== CAR SELECTOR =====
+        const carTypes = STATIC_DATA.car_types || [];
+        const cars     = STATIC_DATA.cars || [];
+
+        function getAvailCount(ctId) {
+            return cars.filter(c => c.type_id === ctId && c.status === 'available').length;
+        }
+
+        function selectCarType(ct) {
+            _standaloneCarType = ct;
+            // Cập nhật UI "đã chọn"
+            const imgEl   = document.getElementById('standaloneCarImg');
+            const nameEl  = document.getElementById('standaloneCarName');
+            const metaEl  = document.getElementById('standaloneCarMeta');
+            const priceEl = document.getElementById('standaloneCarPrice');
+            if (imgEl)   { imgEl.src = 'assets/images/cars/' + ct.main_image; imgEl.alt = ct.name; }
+            if (nameEl)  nameEl.textContent  = ct.name;
+            if (metaEl)  metaEl.textContent  = ct.brand + ' · ' + ct.seats + ' chỗ · ' + ct.transmission;
+            if (priceEl) priceEl.textContent = fmt(ct.price_per_day) + 'đ/ngày';
+            document.getElementById('standaloneCarSelected').style.display = '';
+            document.getElementById('standaloneCarList').style.display = 'none';
+            // Recalc giá nếu đã chọn ngày
+            if (pickupEl.value && returnEl.value) calcStandalonePrice();
+            recalcAddonSummary();
+        }
+
+        window.standaloneShowCarList = function () {
+            document.getElementById('standaloneCarSelected').style.display = 'none';
+            const listEl = document.getElementById('standaloneCarList');
+            listEl.style.display = '';
+            // Refresh grid khi quay lại danh sách
+            const gridEl = document.getElementById('scCarGrid');
+            if (gridEl) gridEl.innerHTML = renderCarGrid(getFilteredCars(), _showAll);
+        };
+
+        // Bộ lọc hiện tại
+        const _carFilters = { carType: '', seats: '', price: '' };
+        const getShowLimit = () => window.innerWidth >= 576 ? 4 : 3;
+        let _showAll = false;
+
+        // Lấy các giá trị duy nhất từ data để build filter options
+        const uniqueCarTypes = [...new Set(carTypes.map(ct => ct.car_type).filter(Boolean))].sort();
+        const uniqueSeats    = [...new Set(carTypes.map(ct => String(ct.seats)).filter(Boolean))].sort((a,b) => Number(a)-Number(b));
+        const PRICE_RANGES   = [
+            { label: 'Dưới 500k',       min: 0,      max: 500000 },
+            { label: '500k – 800k',     min: 500000, max: 800000 },
+            { label: '800k – 1.2 triệu',min: 800000, max: 1200000 },
+            { label: 'Trên 1.2 triệu',  min: 1200000,max: Infinity },
+        ];
+
+        function buildFilterHTML() {
+            const typeOpts = uniqueCarTypes.map(t =>
+                `<option value="${t}">${t}</option>`).join('');
+            const seatsOpts = uniqueSeats.map(s =>
+                `<option value="${s}">${s} chỗ</option>`).join('');
+            const priceOpts = PRICE_RANGES.map((r,i) =>
+                `<option value="${i}">${r.label}</option>`).join('');
+            return `
+            <div class="row g-2 mb-3">
+                <div class="col-4">
+                    <select class="form-select form-select-sm" id="scFilterType" onchange="standaloneApplyFilter()">
+                        <option value="">Loại xe</option>${typeOpts}
+                    </select>
+                </div>
+                <div class="col-4">
+                    <select class="form-select form-select-sm" id="scFilterSeats" onchange="standaloneApplyFilter()">
+                        <option value="">Số chỗ</option>${seatsOpts}
+                    </select>
+                </div>
+                <div class="col-4">
+                    <select class="form-select form-select-sm" id="scFilterPrice" onchange="standaloneApplyFilter()">
+                        <option value="">Khoảng giá</option>${priceOpts}
+                    </select>
+                </div>
+            </div>`;
+        }
+
+        function getFilteredCars() {
+            const fType  = _carFilters.carType;
+            const fSeats = _carFilters.seats;
+            const fPrice = _carFilters.price !== '' ? PRICE_RANGES[Number(_carFilters.price)] : null;
+            let list = carTypes.filter(ct => {
+                if (fType  && ct.car_type  !== fType)              return false;
+                if (fSeats && String(ct.seats) !== fSeats)         return false;
+                if (fPrice && (ct.price_per_day < fPrice.min || ct.price_per_day >= fPrice.max)) return false;
+                return true;
+            });
+            // Xe có sẵn lên đầu
+            list.sort((a,b) => getAvailCount(b.id) - getAvailCount(a.id));
+            return list;
+        }
+
+        function renderCarGrid(list, showAll) {
+            const limit   = getShowLimit();
+            const visible = showAll ? list : list.slice(0, limit);
+            const hidden  = list.length - visible.length;
+            let html = '<div class="row g-2">' + visible.map(ct => {
+                const avail    = getAvailCount(ct.id);
+                const disabled = avail === 0;
+                return `<div class="col-12 col-sm-6">
+                    <div class="border rounded-3 p-2 h-100 d-flex align-items-center gap-2
+                                ${disabled ? 'opacity-50' : 'standalone-car-item'}"
+                         style="cursor:${disabled ? 'not-allowed' : 'pointer'};"
+                         ${disabled ? '' : 'onclick="standaloneSelectCarById(' + ct.id + ')"'}>
+                        <img src="assets/images/cars/${ct.main_image}" alt="${ct.name}"
+                             style="width:68px;height:50px;object-fit:cover;border-radius:6px;flex-shrink:0;"
+                             onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="fw-semibold text-truncate" style="font-size:0.88rem;">${ct.name}</div>
+                            <div class="text-muted" style="font-size:0.75rem;">${ct.car_type || ct.brand} · ${ct.seats} chỗ</div>
+                            <div class="text-primary fw-bold" style="font-size:0.82rem;">${fmt(ct.price_per_day)}đ/ngày</div>
+                        </div>
+                        <span class="badge ${avail > 0 ? 'bg-success' : 'bg-secondary'} flex-shrink-0" style="font-size:0.7rem;">
+                            ${avail > 0 ? 'Còn ' + avail : 'Hết xe'}
+                        </span>
+                    </div>
+                </div>`;
+            }).join('') + '</div>';
+
+            if (!list.length) {
+                html = '<p class="text-muted text-center py-3 mb-0"><i class="fas fa-search me-2"></i>Không có xe phù hợp với bộ lọc.</p>';
+            } else if (hidden > 0) {
+                html += `<button type="button" class="btn btn-outline-primary btn-sm w-100 mt-2" onclick="standaloneShowMoreCars()">
+                    <i class="fas fa-chevron-down me-1"></i>Xem thêm ${hidden} xe
+                </button>`;
+            } else if (showAll && list.length > limit) {
+                html += `<button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2" onclick="standaloneCollapseCars()">
+                    <i class="fas fa-chevron-up me-1"></i>Thu gọn
+                </button>`;
+            }
+            return html;
+        }
+
+        function renderCarList() {
+            const listEl  = document.getElementById('standaloneCarList');
+            const countEl = document.getElementById('standaloneCarCount');
+            if (!listEl) return;
+
+            const filtered   = getFilteredCars();
+            const availTotal = carTypes.filter(ct => getAvailCount(ct.id) > 0).length;
+            if (countEl) countEl.textContent = availTotal + ' xe khả dụng';
+
+            // Build filter UI lần đầu
+            if (!listEl.dataset.filterBuilt) {
+                listEl.innerHTML = buildFilterHTML() + '<div id="scCarGrid"></div>';
+                listEl.dataset.filterBuilt = '1';
+                // Restore filter selects nếu đang lọc
+                if (_carFilters.carType) document.getElementById('scFilterType').value  = _carFilters.carType;
+                if (_carFilters.seats)   document.getElementById('scFilterSeats').value = _carFilters.seats;
+                if (_carFilters.price !== '') document.getElementById('scFilterPrice').value = _carFilters.price;
+            }
+
+            const gridEl = document.getElementById('scCarGrid');
+            if (gridEl) gridEl.innerHTML = renderCarGrid(filtered, _showAll);
+        }
+
+        window.standaloneApplyFilter = function () {
+            _carFilters.carType = document.getElementById('scFilterType')?.value  || '';
+            _carFilters.seats   = document.getElementById('scFilterSeats')?.value || '';
+            _carFilters.price   = document.getElementById('scFilterPrice')?.value ?? '';
+            _showAll = false;
+            const gridEl = document.getElementById('scCarGrid');
+            if (gridEl) gridEl.innerHTML = renderCarGrid(getFilteredCars(), false);
+        };
+
+        window.standaloneShowMoreCars = function () {
+            _showAll = true;
+            const gridEl = document.getElementById('scCarGrid');
+            if (gridEl) gridEl.innerHTML = renderCarGrid(getFilteredCars(), true);
+        };
+
+        window.standaloneCollapseCars = function () {
+            _showAll = false;
+            const gridEl = document.getElementById('scCarGrid');
+            if (gridEl) gridEl.innerHTML = renderCarGrid(getFilteredCars(), false);
+        };
+
+        window.standaloneSelectCarById = function (id) {
+            const ct = carTypes.find(t => t.id === id);
+            if (ct) selectCarType(ct);
+        };
+
+        renderCarList();
+
+        // Pre-select từ URL param type_id
+        if (typeId) {
+            const carType = carTypes.find(t => t.id === typeId);
+            if (carType && getAvailCount(carType.id) > 0) {
+                selectCarType(carType);
+            }
+        }
+
+        // Autofill session
+        bookingAutoFill();
+
+        // ===== FORM SUBMIT → xác nhận =====
+        const bookingFormEl = document.getElementById('bookingFormFull');
+        if (bookingFormEl) bookingFormEl.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!_standaloneCarType) {
+                showAlert('Vui lòng chọn xe thuê!', 'danger');
+                document.getElementById('standaloneCarSelector')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
+            if (!pickupEl.value || !returnEl.value) {
+                showAlert('Vui lòng chọn ngày nhận và trả xe!', 'danger'); return;
+            }
+            if (returnEl.value < pickupEl.value) {
+                showAlert('Thời gian trả xe phải sau thời gian nhận xe!', 'danger'); return;
+            }
+            const form      = e.target;
+            const phone     = form.querySelector('[name="customer_phone"]').value.trim();
+            const email     = form.querySelector('[name="customer_email"]').value.trim();
+            const idNumber  = form.querySelector('[name="id_number"]').value.trim();
+            const pickupTime = document.getElementById('pickupTime')?.value || '08:00';
+            const returnTime = document.getElementById('returnTime')?.value || '08:00';
+            if (returnEl.value === pickupEl.value && returnTime <= pickupTime) {
+                showAlert('Thời gian trả xe phải sau thời gian nhận xe!', 'danger'); return;
+            }
+            if (!/^0[3-9][0-9]{8}$/.test(phone)) {
+                showAlert('Số điện thoại không hợp lệ! Phải gồm 10 chữ số bắt đầu bằng 03x / 05x / 07x / 08x / 09x.', 'danger'); return;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showAlert('Email không hợp lệ!', 'danger'); return;
+            }
+            if (idNumber && !/^[0-9]{9}$|^[0-9]{12}$/.test(idNumber)) {
+                showAlert('CMND/CCCD không hợp lệ! Phải gồm 9 hoặc 12 chữ số.', 'danger'); return;
+            }
+
+            const days = Math.max(1, Math.round((new Date(returnEl.value) - new Date(pickupEl.value)) / 86400000));
+            const addonServices = [...document.querySelectorAll('input[name="addon_services"]:checked')].map(cb => cb.value);
+            const addonTotal = addonServices.reduce((sum, name) => {
+                const info = _standaloneAddonPrices[name];
+                if (!info) return sum;
+                return sum + (info.unit === 'ngày' ? info.price * days : info.price);
+            }, 0);
+            const pricePerDay  = _standaloneCarType ? _standaloneCarType.price_per_day : 0;
+            const rentalCost   = days * pricePerDay;
+            const totalPrice   = rentalCost + addonTotal;
+
+            // Build notes with media count
+            let notes = form.querySelector('[name="notes"]')?.value.trim() || '';
+            if (_standaloneMediaFiles.length > 0) {
+                const imgs = _standaloneMediaFiles.filter(m => m.file.type.startsWith('image/')).length;
+                const vids = _standaloneMediaFiles.filter(m => m.file.type.startsWith('video/')).length;
+                const parts = [];
+                if (imgs > 0) parts.push(imgs + ' ảnh');
+                if (vids > 0) parts.push(vids + ' video');
+                notes = (notes ? notes + '\n' : '') + '[Đính kèm: ' + parts.join(', ') + ']';
+            }
+
+            _standalonePending = {
+                car_id:           _standaloneCarType ? (STATIC_DATA.cars || []).find(c => c.type_id === typeId && c.status === 'available')?.id || null : null,
+                type_id:          typeId || null,
+                car_name:         _standaloneCarType ? _standaloneCarType.name : 'Chưa chọn xe',
+                customer_name:    form.querySelector('[name="customer_name"]').value.trim(),
+                customer_phone:   phone, customer_email: email, id_number: idNumber,
+                customer_address: form.querySelector('[name="customer_address"]')?.value.trim() || '',
+                pickup_date: pickupEl.value, return_date: returnEl.value,
+                pickup_time: pickupTime,     return_time: returnTime,
+                notes, addon_services: addonServices, addon_total: addonTotal,
+                price_per_day: pricePerDay,
+                _days: days, _totalPrice: totalPrice,
+            };
+
+            // Điền bảng xác nhận
+            document.getElementById('tx-cf-name').textContent  = _standalonePending.customer_name;
+            document.getElementById('tx-cf-phone').textContent = phone;
+            document.getElementById('tx-cf-email').textContent = email;
+            const idRow = document.getElementById('tx-cf-id-row');
+            if (idNumber) { document.getElementById('tx-cf-id').textContent = idNumber; idRow.style.display = ''; } else idRow.style.display = 'none';
+            const addressRow = document.getElementById('tx-cf-address-row');
+            const addressEl2 = document.getElementById('tx-cf-address');
+            if (addressRow && addressEl2) {
+                if (_standalonePending.customer_address) { addressEl2.textContent = _standalonePending.customer_address; addressRow.style.display = ''; }
+                else addressRow.style.display = 'none';
+            }
+            const carFrontRow = document.getElementById('tx-cf-car-front-row');
+            if (_standaloneCarType && carFrontRow) {
+                const img = document.getElementById('tx-cf-car-front-img');
+                if (img) { img.src = 'assets/images/cars/' + _standaloneCarType.main_image; img.alt = _standaloneCarType.name; img.onerror = () => { img.src = 'assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'; }; }
+                carFrontRow.style.display = '';
+            } else if (carFrontRow) carFrontRow.style.display = 'none';
+
+            document.getElementById('tx-cf-pickup').textContent      = pickupEl.value.split('-').reverse().join('/') + ' ' + pickupTime;
+            document.getElementById('tx-cf-return').textContent      = returnEl.value.split('-').reverse().join('/') + ' ' + returnTime;
+            document.getElementById('tx-cf-days').textContent        = days + ' ngày';
+            document.getElementById('tx-cf-price-day').textContent   = pricePerDay ? fmt(pricePerDay) + 'đ/ngày' : '—';
+            document.getElementById('tx-cf-rental-cost').textContent = fmt(rentalCost) + 'đ';
+            const addonCostRow = document.getElementById('tx-cf-addon-cost-row');
+            const addonCostEl2 = document.getElementById('tx-cf-addon-cost');
+            if (addonCostRow && addonCostEl2) { addonCostEl2.textContent = '+' + fmt(addonTotal) + 'đ'; addonCostRow.style.display = ''; }
+            const summaryRow2 = document.getElementById('tx-cf-summary-row');
+            const summaryEl2  = document.getElementById('tx-cf-summary');
+            if (summaryRow2 && summaryEl2) {
+                summaryEl2.innerHTML = `<div style="text-align:right;line-height:1.45;"><div>Giá thuê xe ${days} ngày (${pricePerDay ? fmt(pricePerDay) + 'đ/ngày' : '—'})</div><div>Dịch vụ: ${addonServices.length ? addonServices.join(', ') : 'Không có'}</div></div>`;
+                summaryRow2.style.display = '';
+            }
+            const addonRow2 = document.getElementById('tx-cf-addon-row');
+            if (addonServices.length) {
+                document.getElementById('tx-cf-addon').innerHTML = addonServices.map(name => {
+                    const info = _standaloneAddonPrices[name]; if (!info) return '';
+                    const itemCost = info.unit === 'ngày' ? info.price * days : info.price;
+                    return `<div style="margin-bottom:4px;"><strong>${name}</strong><br><small class="text-muted">${info.unit === 'ngày' ? fmt(info.price) + 'đ/ngày × ' + days + ' ngày' : fmt(info.price) + 'đ/chuyến'}</small> <span style="font-weight:700;">(+${fmt(itemCost)}đ)</span></div>`;
+                }).join('');
+                addonRow2.style.display = '';
+            } else addonRow2.style.display = 'none';
+            document.getElementById('tx-cf-total').innerHTML = fmt(totalPrice) + `đ<small class="d-block text-muted" style="font-weight:500;">= ${fmt(rentalCost)}đ + ${fmt(addonTotal)}đ</small>`;
+            document.getElementById('tx-cf-total-row').style.display = '';
+            const noteRow2 = document.getElementById('tx-cf-note-row');
+            const rawNote = form.querySelector('[name="notes"]')?.value.trim() || '';
+            if (rawNote) { document.getElementById('tx-cf-note').textContent = rawNote; noteRow2.style.display = ''; } else noteRow2.style.display = 'none';
+            const mediaRow = document.getElementById('tx-cf-media-row');
+            if (_standaloneMediaFiles.length) {
+                const imgs2 = _standaloneMediaFiles.filter(m => m.file.type.startsWith('image/')).length;
+                const vids2 = _standaloneMediaFiles.filter(m => m.file.type.startsWith('video/')).length;
+                const parts2 = []; if (imgs2) parts2.push(imgs2 + ' ảnh'); if (vids2) parts2.push(vids2 + ' video');
+                document.getElementById('tx-cf-media').textContent = parts2.join(', ');
+                mediaRow.style.display = '';
+            } else mediaRow.style.display = 'none';
+
+            document.getElementById('bookingFormFull').style.display  = 'none';
+            document.getElementById('addonSummary').style.display     = 'none';
+            document.getElementById('txBookingConfirm').style.display = '';
+            document.getElementById('txBookingConfirm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // ===== QUAY LẠI =====
+        const backBtn = document.getElementById('txConfirmBackBtn');
+        if (backBtn) backBtn.addEventListener('click', () => {
+            document.getElementById('txBookingConfirm').style.display = 'none';
+            document.getElementById('bookingFormFull').style.display  = '';
+            _standalonePending = null;
+        });
+
+        // ===== XÁC NHẬN → GỬI API =====
+        const confirmBtn = document.getElementById('txConfirmSubmitBtn');
+        if (confirmBtn) confirmBtn.addEventListener('click', async () => {
+            if (!_standalonePending) return;
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+            const resetBtn = () => { confirmBtn.disabled = false; confirmBtn.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe'; };
+            const { _days: days, _totalPrice: totalPrice, ...bookingData } = _standalonePending;
+            const addonLines = bookingData.addon_services.length ? '<br><strong>Dịch vụ đi kèm:</strong> ' + bookingData.addon_services.join(', ') : '';
+            const IS_LOCAL = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+
+            if (IS_LOCAL) {
+                try {
+                    const res    = await fetch('controllers/booking-controller.php?action=create', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(bookingData)
+                    });
+                    const result = await res.json();
+                    document.getElementById('txBookingConfirm').style.display = 'none';
+                    document.getElementById('bookingFormFull').style.display  = '';
+                    if (result.success) {
+                        showAlert(`<i class="fas fa-check-circle me-2"></i><strong>Đặt xe thành công!</strong><br>Mã đơn: <strong>#${result.booking_id}</strong> – Xe: <strong>${bookingData.car_name}</strong>.${addonLines}<br><strong>Tổng tiền: ${fmt(totalPrice)}đ</strong><br>Chúng tôi sẽ liên hệ xác nhận sớm nhất.`, 'success');
+                        document.getElementById('bookingFormFull').reset();
+                        _standaloneMediaFiles = []; if (document.getElementById('txMediaPreviewContainer')) document.getElementById('txMediaPreviewContainer').innerHTML = '';
+                    } else {
+                        showAlert(`<i class="fas fa-times-circle me-2"></i><strong>Lỗi:</strong> ${result.message || 'Gửi đặt xe thất bại. Vui lòng thử lại!'}`, 'danger');
+                    }
+                } catch {
+                    document.getElementById('txBookingConfirm').style.display = 'none';
+                    document.getElementById('bookingFormFull').style.display  = '';
+                    showAlert('<i class="fas fa-times-circle me-2"></i>Không thể kết nối server. Vui lòng kiểm tra XAMPP và thử lại.', 'danger');
+                }
+            } else {
+                await new Promise(r => setTimeout(r, 600));
+                document.getElementById('txBookingConfirm').style.display = 'none';
+                document.getElementById('bookingFormFull').style.display  = '';
+                showAlert(`<i class="fas fa-check-circle me-2"></i><strong>Đặt xe thành công! (Demo)</strong><br>Cảm ơn bạn đã quan tâm đến <strong>${bookingData.car_name}</strong>.${addonLines}<br><strong>Tổng tiền ước tính: ${fmt(totalPrice)}đ</strong><br>Để hoàn tất, vui lòng gọi hotline <strong>0775 472 347</strong> – hỗ trợ 24/7.`, 'success');
+            }
+            _standalonePending = null;
+            resetBtn();
+        });
+    });
+})();
+</script>
+</body>
+</html>

@@ -57,7 +57,7 @@
               <a class="nav-link" href="index.html">Trang chủ</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#services">Dịch vụ</a>
+              <a class="nav-link" href="services.html">Dịch vụ</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#about">Về Chúng Tôi</a>
@@ -122,98 +122,7 @@
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-5">
-      <div class="container py-5">
-        <div class="text-center mb-5">
-          <h2 class="section-title">Dịch Vụ Của Chúng Tôi</h2>
-          <p class="section-subtitle">
-            Giải pháp toàn diện cho mọi vấn đề của xe bạn
-          </p>
-        </div>
 
-        <div class="row g-4" id="serviceContainer">
-          <script>
-            document.addEventListener("DOMContentLoaded", function () {
-              const container = document.getElementById("serviceContainer");
-
-              fetch("public/services.json")
-                .then((res) => {
-                  if (!res.ok) {
-                    throw new Error("Không thể load file JSON");
-                  }
-                  return res.json();
-                })
-                .then((data) => {
-                  const icons = [
-                    "fas fa-tools",
-                    "fas fa-motorcycle",
-                    "fas fa-car-battery",
-                    "fas fa-gas-pump",
-                    "fas fa-oil-can",
-                    "fas fa-cogs",
-                    "fas fa-calendar-alt",
-                  ];
-
-                  let html = "";
-
-                  function getMinServicePrice(service) {
-                    if (!service?.sub_services?.length) return null;
-
-                    const prices = [];
-
-                    service.sub_services.forEach((sub) => {
-                      (sub.vehicles || []).forEach((vehicle) => {
-                        (vehicle.brands || []).forEach((brand) => {
-                          (brand.items || []).forEach((item) => {
-                            const price = Number(item.price);
-                            if (Number.isFinite(price) && price > 0) {
-                              prices.push(price);
-                            }
-                          });
-                        });
-                      });
-                    });
-
-                    if (!prices.length) return null;
-                    return Math.min(...prices);
-                  }
-
-                  data.services.forEach((service, index) => {
-                    const icon = icons[index % icons.length];
-                    let minPriceText = "";
-
-                    const minPrice = getMinServicePrice(service);
-                    if (minPrice !== null) {
-                      minPriceText = `<b>Giá từ:</b> ${minPrice.toLocaleString("vi-VN")} VND`;
-                    }
-
-                    html += `
-                    <div class="col-lg-3 col-md-6">
-                      <div class="service-card">
-                        <div class="service-icon">
-                          <i class="${icon}"></i>
-                        </div>
-                        <h5>${service.name}</h5>
-                        <p>${service.summary}</p>
-                        ${minPriceText ? `<p class="service-price">${minPriceText}</p>` : ""}
-                        <div class="col-12 text-center">
-                          <button type="button" data-id="${service.id}" data-booking-service-btn="true" class="btn btn-primary-custom px-5 py-3">
-                            Đặt dịch vụ
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  `;
-                  });
-
-                  container.innerHTML = html;
-                })
-                .catch((err) => console.log(err));
-            });
-          </script>
-        </div>
-      </div>
-    </section>
 
     <!-- About Section -->
     <section id="about" class="about-section">

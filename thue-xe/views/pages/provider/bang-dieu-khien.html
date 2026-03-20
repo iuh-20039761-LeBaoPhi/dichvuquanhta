@@ -1,0 +1,349 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../../../">
+    <title>Dashboard Nhà Cung Cấp - Thuê Xe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #f59e0b; --primary-dark: #d97706; --sidebar-w: 260px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #f1f5f9; display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: var(--sidebar-w); min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 100;
+            background: linear-gradient(180deg, #0c0a09 0%, #1c1917 60%, #292524 100%);
+            display: flex; flex-direction: column;
+        }
+        .sidebar-brand { padding: 1.4rem 1.5rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-brand img { width: 36px; height: 36px; border-radius: 10px; }
+        .sidebar-brand span { font-size: 1.1rem; font-weight: 800; background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .sidebar-user { padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-user .avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; margin-bottom: 8px; }
+        .sidebar-user .user-name { font-size: 0.9rem; font-weight: 600; color: #fff; }
+        .sidebar-user .user-company { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+        .sidebar-user .user-role { font-size: 0.72rem; color: #fbbf24; margin-top: 2px; }
+        .sidebar-nav { flex: 1; padding: 1rem 0; }
+        .nav-link-item { display: flex; align-items: center; gap: 10px; padding: 0.75rem 1.5rem; color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.9rem; font-weight: 500; border-radius: 8px; margin: 2px 10px; transition: all 0.2s; }
+        .nav-link-item:hover, .nav-link-item.active { color: #fff; background: rgba(245,158,11,0.2); }
+        .nav-link-item.active { border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; }
+        .nav-link-item i { width: 18px; text-align: center; }
+        .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); }
+        .btn-logout { display: flex; align-items: center; gap: 8px; width: 100%; padding: 0.65rem 1rem; background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .btn-logout:hover { background: rgba(239,68,68,0.3); color: #fca5a5; }
+
+        .main-content { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+        .topbar { background: white; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50; }
+        .topbar h5 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0; }
+        .page-content { padding: 2rem; flex: 1; }
+
+        .welcome-card { background: linear-gradient(135deg, #d97706 0%, #b45309 50%, #92400e 100%); border-radius: 16px; padding: 1.75rem 2rem; color: white; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+        .welcome-card h4 { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+        .welcome-card p { font-size: 0.88rem; opacity: 0.85; margin: 0; }
+        .welcome-card .icon { font-size: 3rem; opacity: 0.25; }
+
+        .stat-card { background: white; border-radius: 14px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid #e2e8f0; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .stat-icon.amber  { background: #fef3c7; color: #d97706; }
+        .stat-icon.blue   { background: #dbeafe; color: #2563eb; }
+        .stat-icon.orange { background: #ffedd5; color: #ea580c; }
+        .stat-icon.green  { background: #dcfce7; color: #15803d; }
+        .stat-value { font-size: 1.6rem; font-weight: 800; color: #1e293b; line-height: 1; }
+        .stat-label { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
+
+        .section-card { background: white; border-radius: 14px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .section-header { padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 8px; }
+        .section-header h6 { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0; }
+        .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+        .filter-tab { padding: 5px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; border: 1px solid #e2e8f0; background: white; cursor: pointer; color: #64748b; transition: all 0.2s; font-family: 'Poppins', sans-serif; }
+        .filter-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .table { margin: 0; }
+        .table th { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 0.85rem 1rem; }
+        .table td { font-size: 0.88rem; color: #334155; padding: 0.9rem 1rem; vertical-align: middle; border-color: #f1f5f9; }
+        .table tbody tr:hover { background: #fffbeb; }
+
+        .badge-status { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; }
+        .badge-pending   { background: #dbeafe; color: #1d4ed8; }
+        .badge-confirmed { background: #fef3c7; color: #d97706; }
+        .badge-completed { background: #dcfce7; color: #15803d; }
+        .badge-cancelled { background: #fee2e2; color: #dc2626; }
+
+        .btn-action { padding: 4px 14px; border-radius: 50px; font-size: 0.78rem; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; font-family: 'Poppins', sans-serif; }
+        .btn-confirm  { background: #fef3c7; color: #d97706; }
+        .btn-confirm:hover  { background: #d97706; color: white; }
+        .btn-complete { background: #dcfce7; color: #15803d; }
+        .btn-complete:hover { background: #15803d; color: white; }
+        .btn-detail   { padding: 4px 12px; border-radius: 50px; font-size: 0.78rem; font-weight: 600; border: 1px solid #e2e8f0; background: white; cursor: pointer; color: #475569; transition: all 0.2s; font-family: 'Poppins', sans-serif; }
+        .btn-detail:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .empty-state { padding: 3rem 1rem; text-align: center; color: #94a3b8; }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 12px; }
+        .spinner-wrap { padding: 3rem; text-align: center; }
+
+        /* MODAL */
+        .modal-detail-header { background: linear-gradient(135deg, #d97706, #b45309); color: white; padding: 1.25rem 1.5rem; border-radius: 12px 12px 0 0; }
+        .modal-detail-header h5 { margin: 0; font-size: 1rem; font-weight: 700; }
+        .modal-detail-header .order-sub { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+        .detail-section { padding: 1.25rem 1.5rem; }
+        .detail-section + .detail-section { border-top: 1px solid #f1f5f9; }
+        .detail-section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #94a3b8; margin-bottom: 0.85rem; }
+        .detail-row { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-size: 0.88rem; }
+        .detail-row .label { color: #64748b; white-space: nowrap; }
+        .detail-row .value { color: #1e293b; font-weight: 600; text-align: right; }
+        .customer-info-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 1rem 1.25rem; }
+        .customer-info-box .cname { font-size: 0.95rem; font-weight: 700; color: #92400e; }
+        .customer-info-box .cdetail { font-size: 0.83rem; color: #475569; margin-top: 3px; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <img src="assets/images/thue-xe-logo-thuong-hieu.png" alt="Thuê Xe" onerror="this.style.display='none'">
+        <span>Thuê Xe</span>
+    </div>
+    <div class="sidebar-user">
+        <div class="avatar" id="sidebarAvatar">P</div>
+        <div class="user-name" id="sidebarName">Nhà cung cấp</div>
+        <div class="user-company" id="sidebarCompany"></div>
+        <div class="user-role"><i class="fas fa-circle me-1" style="font-size:8px;color:#fbbf24;"></i>Nhà cung cấp xe</div>
+    </div>
+    <nav class="sidebar-nav">
+        <ul class="p-0">
+            <li><a href="#" class="nav-link-item active"><i class="fas fa-clipboard-list"></i> Đơn được giao</a></li>
+            <li><a href="index.php" class="nav-link-item"><i class="fas fa-home"></i> Trang chủ</a></li>
+        </ul>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="#" class="btn-logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+        </a>
+    </div>
+</aside>
+
+<div class="main-content">
+    <div class="topbar">
+        <h5><i class="fas fa-clipboard-list me-2" style="color:var(--primary)"></i>Đơn thuê xe được giao</h5>
+    </div>
+
+    <div class="page-content">
+        <div class="welcome-card">
+            <div>
+                <h4>Xin chào, <span id="welcomeName">bạn</span>!</h4>
+                <p id="welcomeCompany">Quản lý và xác nhận các đơn thuê xe được giao cho bạn.</p>
+            </div>
+            <i class="fas fa-car icon"></i>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card"><div class="stat-icon amber"><i class="fas fa-receipt"></i></div><div><div class="stat-value" id="statTotal">—</div><div class="stat-label">Tổng đơn</div></div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-clock"></i></div><div><div class="stat-value" id="statPending">—</div><div class="stat-label">Chờ xác nhận</div></div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card"><div class="stat-icon orange"><i class="fas fa-car-side"></i></div><div><div class="stat-value" id="statConfirmed">—</div><div class="stat-label">Đã xác nhận</div></div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card"><div class="stat-icon green"><i class="fas fa-check-circle"></i></div><div><div class="stat-value" id="statCompleted">—</div><div class="stat-label">Hoàn thành</div></div></div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <h6><i class="fas fa-list me-2"></i>Danh sách đơn hàng</h6>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterBookings('all',this)">Tất cả</button>
+                    <button class="filter-tab" onclick="filterBookings('pending',this)">Chờ xác nhận</button>
+                    <button class="filter-tab" onclick="filterBookings('confirmed',this)">Đã xác nhận</button>
+                    <button class="filter-tab" onclick="filterBookings('completed',this)">Hoàn thành</button>
+                </div>
+            </div>
+            <div id="tableWrap"><div class="spinner-wrap"><div class="spinner-border" style="color:var(--primary)"></div></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="border-radius:12px;overflow:hidden;">
+            <div class="modal-detail-header">
+                <h5 id="modalTitle">Chi tiết đơn thuê</h5>
+                <div class="order-sub" id="modalSub"></div>
+            </div>
+            <div id="modalBody" style="max-height:70vh;overflow-y:auto;"></div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;gap:8px;">
+                <button type="button" id="modalActionBtn" class="btn btn-sm btn-warning fw-semibold" style="display:none;border-radius:50px;font-size:0.85rem;"></button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const STATUS_MAP = {
+    pending:   { label: 'Chờ xác nhận', cls: 'badge-pending' },
+    confirmed: { label: 'Đã xác nhận',  cls: 'badge-confirmed' },
+    completed: { label: 'Hoàn thành',   cls: 'badge-completed' },
+    cancelled: { label: 'Đã hủy',       cls: 'badge-cancelled' }
+};
+let allBookings = [];
+
+function fmtDate(d) {
+    if (!d) return '—';
+    const dt = new Date(d);
+    return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
+}
+function fmtPrice(n) { return Number(n).toLocaleString('vi-VN') + ' đ'; }
+
+fetch('controllers/provider/auth-controller.php?action=checkLogin')
+    .then(r => r.json())
+    .then(res => {
+        if (!res.success) { window.location.href = 'views/pages/provider/dang-nhap.html'; return; }
+        document.getElementById('welcomeName').textContent   = res.name;
+        document.getElementById('sidebarName').textContent   = res.name;
+        document.getElementById('sidebarAvatar').textContent = res.name.charAt(0).toUpperCase();
+        if (res.company) {
+            document.getElementById('sidebarCompany').textContent = res.company;
+            document.getElementById('welcomeCompany').textContent = `${res.company} — Xác nhận và hoàn thành các đơn thuê xe được giao.`;
+        }
+        loadBookings();
+    })
+    .catch(() => { window.location.href = 'views/pages/provider/dang-nhap.html'; });
+
+function loadBookings() {
+    fetch('controllers/provider/bookings-controller.php?action=getMyBookings')
+        .then(r => r.json())
+        .then(res => {
+            allBookings = res.data || [];
+            document.getElementById('statTotal').textContent     = allBookings.length;
+            document.getElementById('statPending').textContent   = allBookings.filter(b => b.status === 'pending').length;
+            document.getElementById('statConfirmed').textContent = allBookings.filter(b => b.status === 'confirmed').length;
+            document.getElementById('statCompleted').textContent = allBookings.filter(b => b.status === 'completed').length;
+            renderTable(allBookings);
+        })
+        .catch(() => {
+            document.getElementById('tableWrap').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle d-block"></i><p>Không tải được dữ liệu</p></div>';
+        });
+}
+
+function filterBookings(status, btn) {
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtered = status === 'all' ? allBookings : allBookings.filter(b => b.status === status);
+    renderTable(filtered);
+}
+
+function renderTable(bookings) {
+    if (bookings.length === 0) {
+        document.getElementById('tableWrap').innerHTML = '<div class="empty-state"><i class="fas fa-inbox d-block"></i><p>Không có đơn nào</p></div>';
+        return;
+    }
+    const rows = bookings.map(b => {
+        const s = STATUS_MAP[b.status] || { label: b.status, cls: 'badge-pending' };
+        let actionBtn = '';
+        if (b.status === 'pending')   actionBtn = `<button class="btn-action btn-confirm"  onclick="updateStatus(${b.id},'confirmed',this)"><i class="fas fa-check"></i>Xác nhận</button>`;
+        if (b.status === 'confirmed') actionBtn = `<button class="btn-action btn-complete" onclick="updateStatus(${b.id},'completed',this)"><i class="fas fa-flag-checkered"></i>Hoàn thành</button>`;
+        return `<tr>
+            <td style="font-weight:600;">${b.car_name}</td>
+            <td><div style="font-weight:600;">${b.customer_name || '—'}</div><div style="font-size:0.8rem;color:#64748b;">${b.customer_phone || ''}</div></td>
+            <td>${fmtDate(b.pickup_date)}</td>
+            <td>${fmtDate(b.return_date)}</td>
+            <td>${b.total_days} ngày</td>
+            <td><strong>${fmtPrice(b.total_price)}</strong></td>
+            <td><span class="badge-status ${s.cls}">${s.label}</span></td>
+            <td style="white-space:nowrap;">${actionBtn} <button class="btn-detail" onclick='showDetail(${JSON.stringify(b).replace(/'/g,"&#39;")})'>Chi tiết</button></td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('tableWrap').innerHTML = `
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th>Xe</th><th>Khách hàng</th><th>Ngày nhận</th><th>Ngày trả</th>
+                    <th>Số ngày</th><th>Tổng tiền</th><th>Trạng thái</th><th>Hành động</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>`;
+}
+
+function showDetail(b) {
+    const s = STATUS_MAP[b.status] || { label: b.status, cls: 'badge-pending' };
+    document.getElementById('modalTitle').textContent = b.car_name;
+    document.getElementById('modalSub').textContent   = `${fmtDate(b.pickup_date)} → ${fmtDate(b.return_date)} · ${b.total_days} ngày`;
+
+    document.getElementById('modalBody').innerHTML = `
+        <div class="detail-section">
+            <div class="detail-section-title"><i class="fas fa-user me-1"></i>Thông tin khách đặt</div>
+            <div class="customer-info-box">
+                <div class="cname"><i class="fas fa-user-circle me-2"></i>${b.customer_name || '—'}</div>
+                ${b.customer_phone ? `<div class="cdetail"><i class="fas fa-phone me-2 text-muted"></i>${b.customer_phone}</div>` : ''}
+            </div>
+        </div>
+        <div class="detail-section">
+            <div class="detail-section-title"><i class="fas fa-car me-1"></i>Thông tin chuyến thuê</div>
+            <div class="detail-row"><span class="label">Xe</span><span class="value">${b.car_name}</span></div>
+            <div class="detail-row"><span class="label">Ngày nhận xe</span><span class="value">${fmtDate(b.pickup_date)}</span></div>
+            <div class="detail-row"><span class="label">Ngày trả xe</span><span class="value">${fmtDate(b.return_date)}</span></div>
+            <div class="detail-row"><span class="label">Số ngày thuê</span><span class="value">${b.total_days} ngày</span></div>
+            <div class="detail-row"><span class="label">Tổng tiền</span><span class="value" style="color:#d97706;font-size:1rem;">${fmtPrice(b.total_price)}</span></div>
+            <div class="detail-row"><span class="label">Trạng thái</span><span class="value"><span class="badge-status ${s.cls}">${s.label}</span></span></div>
+            <div class="detail-row"><span class="label">Ngày đặt</span><span class="value">${fmtDate(b.created_at)}</span></div>
+        </div>
+    `;
+
+    const actionBtn = document.getElementById('modalActionBtn');
+    if (b.status === 'pending') {
+        actionBtn.style.display = '';
+        actionBtn.textContent = '✓ Xác nhận đơn';
+        actionBtn.onclick = () => { bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide(); updateStatusDirect(b.id, 'confirmed'); };
+    } else if (b.status === 'confirmed') {
+        actionBtn.style.display = '';
+        actionBtn.textContent = '🏁 Đánh dấu hoàn thành';
+        actionBtn.onclick = () => { bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide(); updateStatusDirect(b.id, 'completed'); };
+    } else {
+        actionBtn.style.display = 'none';
+    }
+
+    new bootstrap.Modal(document.getElementById('detailModal')).show();
+}
+
+function updateStatus(id, status, btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    callUpdate(id, status, () => loadBookings(), () => { btn.disabled = false; });
+}
+
+function updateStatusDirect(id, status) {
+    callUpdate(id, status, () => loadBookings(), null);
+}
+
+function callUpdate(id, status, onSuccess, onError) {
+    fetch('controllers/provider/bookings-controller.php?action=updateStatus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ booking_id: id, status })
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success) { onSuccess && onSuccess(); }
+        else { alert(res.message || 'Cập nhật thất bại'); onError && onError(); }
+    })
+    .catch(() => { alert('Lỗi kết nối'); onError && onError(); });
+}
+
+function logout() {
+    fetch('controllers/provider/auth-controller.php?action=logout')
+    .then(() => { window.location.href = 'views/pages/provider/dang-nhap.html'; });
+}
+</script>
+</body>
+</html>

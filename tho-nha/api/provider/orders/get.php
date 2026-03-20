@@ -1,4 +1,9 @@
 <?php
+/**
+ * Provider Orders — Get My Orders
+ * Bảng bookings → datlich, cột tiếng Việt không dấu.
+ * AS alias giữ nguyên API contract.
+ */
 require_once __DIR__ . '/../../../config/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../../../config/database.php';
@@ -11,8 +16,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'provider') {
 
 $provider_id = (int)$_SESSION['user_id'];
 $stmt = $conn->prepare(
-    "SELECT id, order_code, customer_name, phone, service_name, address, note, status, created_at
-     FROM bookings WHERE provider_id = ? ORDER BY created_at DESC"
+    "SELECT id,
+            madondatlich AS order_code,
+            tenkhachhang AS customer_name,
+            sodienthoai  AS phone,
+            tendichvu    AS service_name,
+            diachi       AS address,
+            ghichu       AS note,
+            trangthai    AS status,
+            ngaytao      AS created_at
+     FROM datlich WHERE idnhacungcap = ? ORDER BY ngaytao DESC"
 );
 $stmt->bind_param("i", $provider_id);
 $stmt->execute();

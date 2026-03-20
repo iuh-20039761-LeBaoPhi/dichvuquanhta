@@ -48,11 +48,16 @@ const mapPicker = (() => {
                     a.city || a.town || a.village || a.county
                 ].filter(Boolean);
                 addr.value = parts.join(', ');
+                // Tính phí di chuyển ngay — dùng tọa độ có sẵn, không geocode lại
+                if (typeof _bdTravelFromCoords === 'function') _bdTravelFromCoords(lat, lng);
+                else addr.dispatchEvent(new Event('input'));
                 if (addr.value) marker.bindPopup(`<small>${addr.value}</small>`).openPopup();
             })
             .catch(() => {
                 addr.placeholder = 'Số nhà, đường, phường, quận...';
                 addr.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                if (typeof _bdTravelFromCoords === 'function') _bdTravelFromCoords(lat, lng);
+                else addr.dispatchEvent(new Event('input'));
             });
     }
 

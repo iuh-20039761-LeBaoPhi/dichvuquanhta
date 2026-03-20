@@ -27,8 +27,8 @@ thue-xe/
 ├── index.php                   # Router chính — đọc ?page= và readfile view tương ứng
 ├── index.html                  # Trang chủ standalone (GitHub Pages, không cần PHP)
 ├── car-detail.html             # Chi tiết xe standalone (GitHub Pages)
-├── blog.html                   # Trang blog
-├── blog-detail.html            # Chi tiết bài viết
+├── cam-nang.html               # Trang cẩm nang
+├── chi-tiet-cam-nang.html      # Chi tiết cẩm nang
 ├── terms.html                  # Điều khoản sử dụng
 ├── huong-dan.html              # Hướng dẫn sử dụng
 ├── database.sql                # Schema đầy đủ — import để tạo mới DB
@@ -105,11 +105,11 @@ thue-xe/
 │   │   ├── logo.png
 │   │   ├── about.png
 │   │   ├── cars/               # Ảnh xe: camry, city, crv, cx5, mazda3, ...
-│   │   ├── blogs/              # Ảnh bài viết blog (1.jpg → 30.jpg)
+│   │   ├── cam-nang/           # Ảnh cẩm nang (1.jpg → 30.jpg)
 │   │   └── guide/              # Ảnh hướng dẫn sử dụng
 │   └── data/
 │       ├── static-data.json    # Dữ liệu xe/dịch vụ dạng JSON (dự phòng)
-│       └── blog-data.json      # Dữ liệu bài viết blog
+│       └── cam-nang-data.json  # Dữ liệu cẩm nang
 ```
 
 ---

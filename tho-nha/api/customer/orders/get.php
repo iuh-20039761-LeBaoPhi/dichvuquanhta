@@ -1,4 +1,9 @@
 <?php
+/**
+ * Customer Orders — Get My Orders
+ * Bảng bookings → datlich, users → nguoidung.
+ * AS alias giữ nguyên API contract.
+ */
 require_once __DIR__ . '/../../../config/session.php';
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../../../config/database.php';
@@ -11,20 +16,25 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'customer') {
 
 $user_id = (int)$_SESSION['user_id'];
 
-// JOIN với bảng users để lấy thông tin nhà cung cấp đang thực hiện đơn
 $stmt = $conn->prepare(
     "SELECT
-        b.id, b.order_code, b.service_name, b.address, b.note,
-        b.selected_brand, b.estimated_price,
-        b.status, b.created_at,
-        p.id          AS provider_id,
-        p.full_name   AS provider_name,
-        p.phone       AS provider_phone,
-        p.company_name AS provider_company
-     FROM bookings b
-     LEFT JOIN users p ON p.id = b.provider_id AND p.role = 'provider'
-     WHERE b.user_id = ?
-     ORDER BY b.created_at DESC"
+        b.id,
+        b.madondatlich   AS order_code,
+        b.tendichvu      AS service_name,
+        b.diachi         AS address,
+        b.ghichu         AS note,
+        b.thuonghieuchon AS selected_brand,
+        b.giauoctinh     AS estimated_price,
+        b.trangthai      AS status,
+        b.ngaytao        AS created_at,
+        p.id             AS provider_id,
+        p.hoten          AS provider_name,
+        p.sodienthoai    AS provider_phone,
+        p.tencongty      AS provider_company
+     FROM datlich b
+     LEFT JOIN nguoidung p ON p.id = b.idnhacungcap AND p.vaitro = 'provider'
+     WHERE b.idkhachhang = ?
+     ORDER BY b.ngaytao DESC"
 );
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
