@@ -3,6 +3,7 @@
     "id": 1,
     "name": "Chăm Sóc Bé Tại Nhà",
     "image": "assets/ru-be-ngu.png",
+    "alt": "Dich vu cham soc be tai nha voi bao mau ru ngu cho be",
     "description": "Đồng hành cùng mẹ trong từng nếp sinh hoạt của bé, giúp bé sạch sẽ, bú ngoan, ngủ sâu và an tâm phát triển mỗi ngày.",
     "includes": [
       "Tắm bé, thay tã và vệ sinh hằng ngày nhẹ nhàng, đúng nhịp sinh hoạt của bé",
@@ -32,6 +33,7 @@
     "id": 2,
     "name": "Hỗ Trợ Mẹ Bầu Nhẹ Nhàng",
     "image": "assets/cham-be.png",
+    "alt": "Dich vu ho tro me bau nhe nhang tai nha",
     "description": "Giảm bớt áp lực việc nhà để mẹ bầu được nghỉ ngơi đúng cách, ăn uống đủ chất và giữ tinh thần thoải mái trước ngày sinh.",
     "includes": [
       "Hỗ trợ mẹ vận động nhẹ, đi lại an toàn trong sinh hoạt hằng ngày",
@@ -61,6 +63,7 @@
     "id": 3,
     "name": "Chăm Mẹ Sau Sinh Phục Hồi Sinh Hoạt",
     "image": "assets/cho-be-bu.png",
+    "alt": "Dich vu cham me sau sinh phuc hoi sinh hoat tai nha",
     "description": "Hỗ trợ mẹ sau sinh ổn định nhịp sống, có thêm thời gian nghỉ ngơi, ăn uống điều độ và lấy lại sức trong giai đoạn đầu nhiều bỡ ngỡ.",
     "includes": [
       "Nấu các bữa ăn đủ chất, hỗ trợ mẹ duy trì năng lượng và thuận tiện chăm con",
@@ -90,6 +93,7 @@
     "id": 4,
     "name": "Đồng Hành Cùng Cả Mẹ Và Bé",
     "image": "assets/cham-soc-me-be.png",
+    "alt": "dich vu dong hanh cham soc ca me va be tai nha",
     "description": "Giải pháp trọn gói cho gia đình cần thêm một người tin cậy để quán xuyến việc chăm mẹ và bé mỗi ngày, nhất là khi không có người thân bên cạnh.",
     "includes": [
       "Chăm bé hằng ngày: tắm bé, vệ sinh, cho bú bình, ru ngủ và chơi cùng bé theo nếp sinh hoạt",

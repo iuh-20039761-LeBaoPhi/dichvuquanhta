@@ -654,12 +654,13 @@ body {
                 homepageServices.forEach(service => {
                     const col = document.createElement("div");
                     col.className = "col-md-6 col-lg-3";
+                  const imageAlt = (service.alt || service.name || "Dich vu cham soc me va be").replace(/"/g, "&quot;");
 
                     col.innerHTML = `
                         <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden hover-lift">
                             <img src="${service.image}" 
                                 class="card-img-top" 
-                                alt="${service.name}" 
+                        alt="${imageAlt}" 
                                 style="height: 200px; object-fit: cover;">
                             <div class="card-body p-4 text-center">
                                 <h3 class="h5 fw-bold">${service.name}</h3>
