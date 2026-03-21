@@ -692,6 +692,7 @@ body {
       -------------------------------------------------- */
       SERVICES.forEach(function(service, index) {
         var reverse = index % 2 ? "flex-lg-row-reverse" : "";
+        var serviceAlt = (service.alt || service.name || "Dich vu cham soc nguoi benh").replace(/"/g, "&quot;");
         var includesHTML = service.includes.map(function(i) {
           return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:#007bff"></i>' + i + '</li>';
         }).join("");
@@ -699,7 +700,7 @@ body {
         $("#servicesContainer").append(
           '<div class="row align-items-center mb-5 g-5 ' + reverse + '">' +
             '<div class="col-lg-6">' +
-              '<img src="' + service.image + '" class="img-fluid rounded-4 shadow-lg">' +
+              '<img src="' + service.image + '" alt="' + serviceAlt + '" class="img-fluid rounded-4 shadow-lg">' +
             '</div>' +
             '<div class="col-lg-6">' +
               '<h2 class="fw-bold display-6 mb-3" style="color:#007bff">' + service.name + '</h2>' +
