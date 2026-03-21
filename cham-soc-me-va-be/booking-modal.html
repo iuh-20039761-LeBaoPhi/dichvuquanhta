@@ -6,17 +6,17 @@
         }
 
         #bookingModal .modal-title {
-          color: #2e7d32 !important;
+          color: #d63384 !important;
           font-size: 1.35rem;
           font-weight: 800 !important;
         }
 
         #bookingModal .customer-info-box {
-          border: 2px solid #6bbf83;
+          border: 2px solid #f29ac2;
           border-radius: 16px;
           padding: 12px;
           margin-bottom: 16px;
-          background: #f8fffa;
+          background: #fff4fa;
         }
 
         #bookingModal .customer-info-box .form-label,
@@ -32,58 +32,58 @@
 
         #bookingModal .customer-info-box .form-control,
         #bookingModal .customer-info-box .input-group-text {
-          border-color: #a8cdb2;
-          background: #f7f9f7;
+          border-color: #f3bfd8;
+          background: #fff8fc;
         }
 
         #bookingModal .customer-info-box .form-control:focus {
-          border-color: #7cc190;
-          box-shadow: 0 0 0 0.2rem rgba(89, 170, 114, 0.15);
+          border-color: #e56aa5;
+          box-shadow: 0 0 0 0.2rem rgba(214, 51, 132, 0.2);
         }
 
         #bookingModal .service-work-box {
-          border: 2px solid #4f9ddb;
+          border: 2px solid #e885b3;
           border-radius: 10px;
           padding: 10px;
           margin-bottom: 16px;
-          background: #fafdff;
+          background: #fff7fc;
         }
 
         #bookingModal #serviceJobs .job-check {
           width: 16px;
           height: 16px;
           border-radius: 3px;
-          border-color: #2e86d1;
-          accent-color: #2e86d1;
+          border-color: #d63384;
+          accent-color: #d63384;
           /* margin-left: 10px; */
         }
 
         #bookingModal .schedule-box {
-          border: 2px solid #2f93df;
+          border: 2px solid #e775ab;
           border-radius: 16px;
-          background: #dceeff;
+          background: #ffe8f3;
           padding: 12px;
           margin-bottom: 10px;
         }
 
         #bookingModal .schedule-box .form-control,
         #bookingModal .schedule-box .form-select {
-          background: #f4f4f4;
-          border-color: #8ca2b5;
+          background: #fff9fd;
+          border-color: #deb0c7;
           color: #111;
           font-weight: 700;
         }
 
         #bookingModal #autoEndDateRow {
-          border: 2px solid #58b56b;
+          border: 2px solid #de5f9e;
           border-radius: 12px;
-          background: #dff5e4;
-          color: #1f4f2a;
+          background: #ffe4f1;
+          color: #8d1f59;
         }
 
         #bookingModal .extra-request-box #extraRequest,
         #bookingModal .note-box #customerNote {
-          border: 2px solid #012b55;
+          border: 2px solid #d1609c;
           border-radius: 12px;
           min-height: 56px;
           padding: 10px 14px;
@@ -93,9 +93,9 @@
         }
 
         #bookingModal .price-detail-box {
-          border: 2px solid #2e7d32 !important;
+          border: 2px solid #d63384 !important;
           border-radius: 12px;
-          background: #e8f6eb !important;
+          background: #ffeaf4 !important;
         }
 
         #bookingModal .price-detail-title {
@@ -104,11 +104,11 @@
         }
 
         #bookingModal .quick-attach-box .form-label {
-          color: #2e7d32 !important;
+          color: #d63384 !important;
         }
 
         #bookingModal .attachment-preview-box {
-          border: 2px solid #9bd3a4;
+          border: 2px solid #ef9ec5;
           border-radius: 12px;
           background: #fff;
           padding: 10px;
@@ -147,12 +147,12 @@
         }
 
         #bookingModal .action-submit-btn {
-          background-color: #2e7d32;
+          background-color: #d63384;
           border: none;
         }
 
         #bookingModal .action-submit-btn:hover {
-          background-color: #1b5e20;
+          background-color: #b8256d;
         }
       </style>
       <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
@@ -160,7 +160,7 @@
 
           <!-- Header -->
           <div class="modal-header border-0 pb-0">
-            <h5 class="modal-title fw-bold" id="bookingModalLabel" style="color:#2e7d32">
+            <h5 class="modal-title fw-bold" id="bookingModalLabel" style="color:#d63384">
               <i class="fas fa-calendar-plus me-2"></i>Đặt Lịch Dịch Vụ
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -171,7 +171,7 @@
             <form id="bookingForm">
               <!-- ===== THÔNG TIN KHÁCH HÀNG ===== -->
               <div class="customer-info-box">
-                <p class="fw-bold small mb-2 mt-0" style="color:#2e7d32">
+                <p class="fw-bold small mb-2 mt-0" style="color:#d63384">
                   <i class="fas fa-user me-1"></i>Thông tin khách hàng
                 </p>
 
@@ -194,10 +194,10 @@
                   <label class="form-label fw-bold">Địa chỉ của bạn:</label>
                   <input type="text" id="customerAddress" placeholder="Bấm 'Lấy vị trí của tôi'" readonly class="form-control bg-light">
                   <div class="d-flex gap-2 mt-2">
-                    <button type="button" onclick="getLocation()" class="btn btn-success btn-sm flex-fill">
+                    <button type="button" onclick="getLocation()" class="btn btn-sm flex-fill" style="background:#d63384;color:#fff;border-color:#d63384">
                       <i class="fas fa-location-dot me-1"></i>Lấy vị trí
                     </button>
-                    <button type="button" id="toggleMapBtn" onclick="toggleMapPicker()" class="btn btn-warning btn-sm flex-fill">
+                    <button type="button" id="toggleMapBtn" onclick="toggleMapPicker()" class="btn btn-sm flex-fill" style="background:#f08ab8;color:#7a1e4e;border-color:#f08ab8">
                       <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
                     </button>
                     <!-- <a id="mapLink" target="_blank" class="btn btn-primary btn-sm flex-fill text-white text-decoration-none">
@@ -205,7 +205,7 @@
                     </a> -->
                   </div>
                   <div id="mapPickerBox" class="mt-2 d-none">
-                    <div id="mapPickerEl" style="height:260px;border-radius:12px;border:1px solid #9bd3a4"></div>
+                    <div id="mapPickerEl" style="height:260px;border-radius:12px;border:1px solid #ef9ec5"></div>
                     <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
                   </div>
                 </div>
@@ -217,7 +217,7 @@
               
               <!-- ===== CHỌN CÔNG VIỆC ===== -->
               <div class="mb-0">
-                <label class="form-label fw-bold" style="color:#2e7d32">
+                <label class="form-label fw-bold" style="color:#d63384">
                   <i class="fas fa-tasks me-1"></i>Chọn công việc cần làm
                 </label>
                 <div id="serviceJobs"></div>
@@ -225,7 +225,7 @@
               </div>
               <!-- ===== CHỌN CA ===== -->
               <div class="mb-3 schedule-box">
-                <label class="form-label fw-bold" style="color:#2e7d32">
+                <label class="form-label fw-bold" style="color:#d63384">
                   <i class="fas fa-clock me-1"></i>Chọn khung giờ
                 </label>
                 <div id="servicePackages"></div>
@@ -299,7 +299,7 @@
               <!-- ===== CHI TIẾT GIÁ ===== -->
               <div class="card bg-light border-0 mb-3 price-detail-box">
                 <div class="card-body py-2 px-3">
-                  <p class="fw-bold small mb-2 price-detail-title" style="color:#2e7d32">
+                  <p class="fw-bold small mb-2 price-detail-title" style="color:#d63384">
                     <i class="fas fa-receipt me-1"></i>Chi tiết tính tiền
                   </p>
                   <div class="d-flex justify-content-between small mb-1">
@@ -330,7 +330,7 @@
                 <label class="form-label fw-bold">Tổng tiền:</label>
                 <input type="text" id="totalPrice" readonly value="0 đ"
                   class="form-control fw-bold text-center fs-5"
-                  style="border-color:#2e7d32;background:#edf8ef;color:#1b5e20">
+                  style="border-color:#d63384;background:#fff0f7;color:#8f1e59">
               </div>
 
               
@@ -341,17 +341,17 @@
                   placeholder="Thời gian mong muốn, yêu cầu đặc biệt..."></textarea>
               </div>
               <div class="mb-3 quick-attach-box">
-                <label class="form-label fw-bold" style="color:#2e7d32">
+                <label class="form-label fw-bold" style="color:#d63384">
                   <i class="fas fa-camera-retro me-1"></i>Tệp đính kèm nhanh
                 </label>
                 <div class="d-flex gap-2">
                   <button type="button" id="btnQuickPhoto" class="btn flex-fill fw-bold rounded-pill"
-                    style="background:linear-gradient(135deg,#dff3e4,#cdebd5);color:#1b5e20;border:1px solid #9bd3a4"
+                    style="background:linear-gradient(135deg,#ffe1ef,#ffcfe5);color:#8f1e59;border:1px solid #ef9ec5"
                     title="Chọn hoặc chụp ảnh">
                     <i class="fas fa-camera me-1"></i>Chụp ảnh
                   </button>
                   <button type="button" id="btnQuickVideo" class="btn flex-fill fw-bold rounded-pill"
-                    style="background:linear-gradient(135deg,#e3f2fd,#d6ecff);color:#1565c0;border:1px solid #bbdefb"
+                    style="background:linear-gradient(135deg,#fff0f7,#ffe3f1);color:#b52d72;border:1px solid #f3bfd8"
                     title="Chọn hoặc quay video">
                     <i class="fas fa-video me-1"></i>Quay hình
                   </button>
