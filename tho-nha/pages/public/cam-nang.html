@@ -1,21 +1,29 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FHV0Y0778D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-FHV0Y0778D");
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO Meta Tags -->
-    <title>Cẩm Nang Kiến Thức Sửa Chữa Nhà | Thợ Nhà TP.HCM</title>
-    <meta name="description" content="Khám phá 30 cẩm nang hướng dẫn sửa chữa nhà cửa, bảo dưỡng thiết bị điện gia dụng, cải tạo nhà từ các chuyên gia Thợ Nhà TP.HCM.">
+    <title>Dịch Vụ Quanh Ta - Thợ Nhà - Cẩm Nang</title>
+    <meta name="description" content="Khám phá 30 cẩm nang hướng dẫn sửa chữa, bảo dưỡng thiết bị gia dụng và cải tạo nhà từ chuyên gia Dịch Vụ Quanh Ta TP.HCM. Cập nhật thường xuyên.">
     <meta name="keywords" content="cẩm nang sửa chữa nhà, kiến thức thợ nhà, hướng dẫn sửa máy lạnh, sửa điện nước, cải tạo nhà tphcm">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/cam-nang.html">
-    <link rel="icon" type="image/png" href="../../assets/images/tho-nha-logo-thuong-hieu.png">
+    <link rel="icon" type="image/jpeg" href="../../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Cẩm Nang Kiến Thức Sửa Chữa Nhà | Thợ Nhà">
-    <meta property="og:description" content="30 cẩm nang chuyên sâu về sửa chữa, bảo dưỡng thiết bị gia đình từ chuyên gia Thợ Nhà TP.HCM.">
+    <meta property="og:title" content="Dịch Vụ Quanh Ta - Thợ Nhà - Cẩm Nang">
+    <meta property="og:description" content="30 cẩm nang chuyên sâu về sửa chữa, bảo dưỡng thiết bị gia dụng và cải tạo nhà từ đội ngũ Dịch Vụ Quanh Ta TP.HCM.">
     <meta property="og:image" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/image/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg">
     <meta property="og:locale" content="vi_VN">
 
@@ -405,7 +413,7 @@
     <div class="container">
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="trang-chu.html"><i class="fas fa-home me-1"></i>Trang Chủ</a></li>
+                <li class="breadcrumb-item"><a href="../../index.html"><i class="fas fa-home me-1"></i>Trang Chủ</a></li>
                 <li class="breadcrumb-item active">Cẩm Nang</li>
             </ol>
         </nav>
@@ -531,10 +539,10 @@ function patchNavForBlogPages() {
     if (!header) return;
 
     const sectionLinkMap = {
-        '#home': 'trang-chu.html#home',
-        '#services': 'trang-chu.html#services',
-        '#about': 'trang-chu.html#about',
-        '#contact': 'trang-chu.html#contact'
+        '#home': '../../index.html#home',
+        '#services': '../../index.html#services',
+        '#about': '../../index.html#about',
+        '#contact': '../../index.html#contact'
     };
 
     header.querySelectorAll('.nav-link[href^="#"]').forEach(link => {
@@ -546,14 +554,14 @@ function patchNavForBlogPages() {
 
     const logoHome = header.querySelector('.navbar-brand > a[href="../index.html"]');
     if (logoHome) {
-        logoHome.setAttribute('href', 'trang-chu.html');
+        logoHome.setAttribute('href', '../../index.html');
     }
 
     const orderLink = header.querySelector('.nav-link[data-bs-target="#viewOrderModal"]');
     if (orderLink) {
         orderLink.removeAttribute('data-bs-toggle');
         orderLink.removeAttribute('data-bs-target');
-        orderLink.setAttribute('href', 'trang-chu.html#contact');
+        orderLink.setAttribute('href', '../../index.html#contact');
     }
 
     // #bookingModal: giữ nguyên để mở modal tại trang này
@@ -852,3 +860,4 @@ function toggleSidebar() {
 
 </body>
 </html>
+

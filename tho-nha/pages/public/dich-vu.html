@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FHV0Y0778D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-FHV0Y0778D");
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dịch Vụ Sửa Chữa | Thợ Nhà</title>
-    <meta name="description" content="Danh sách dịch vụ sửa chữa nhà uy tín tại TP.HCM: sửa máy lạnh, máy giặt, điện nước, nhà vệ sinh, đồ gia dụng, cải tạo nhà.">
-    <link rel="icon" type="image/png" href="../../assets/images/tho-nha-logo-thuong-hieu.png">
+    <title>Dịch Vụ Quanh Ta - Thợ Nhà - Dịch Vụ</title>
+    <meta name="description" content="Dịch Vụ Quanh Ta cung cấp đa dạng dịch vụ sửa chữa nhà uy tín tại TP.HCM: máy lạnh, máy giặt, điện nước, vệ sinh, đồ gia dụng, cải tạo nội thất.">
+    <meta property="og:description" content="Dịch Vụ Quanh Ta cung cấp đa dạng dịch vụ sửa chữa nhà uy tín tại TP.HCM: máy lạnh, máy giặt, điện nước, vệ sinh, đồ gia dụng, cải tạo nội thất.">
+    <link rel="icon" type="image/png" href="../../assets/images/tho-nha-logo-thuong-hieu-cropped.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,18 +32,42 @@
     <!-- Leaflet Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
+    <style>
+        /* ===== Dịch Vụ Hero ===== */
+        .dich-vu-hero {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 120px 0 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .dich-vu-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .dich-vu-hero h1 { color: #fff; font-weight: 800; font-size: 2.5rem; position: relative; }
+        .dich-vu-hero p { color: rgba(255,255,255,0.85); font-size: 1.1rem; position: relative; }
+        .dich-vu-hero .breadcrumb { background: none; justify-content: center; }
+        .dich-vu-hero .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+        .dich-vu-hero .breadcrumb-item.active { color: #fff; }
+        .dich-vu-hero .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+        @media (max-width: 768px) { .dich-vu-hero h1 { font-size: 1.8rem; } }
+    </style>
+
 </head>
 <body>
 
     <!-- Header -->
     <div id="header-container"></div>
 
-    <!-- Breadcrumb -->
-    <section class="page-hero">
+    <!-- Hero -->
+    <section class="dich-vu-hero">
         <div class="container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-2">
-                    <li class="breadcrumb-item"><a href="trang-chu.html">Trang Chủ</a></li>
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../index.html"><i class="fas fa-home me-1"></i>Trang Chủ</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Dịch Vụ</li>
                 </ol>
             </nav>

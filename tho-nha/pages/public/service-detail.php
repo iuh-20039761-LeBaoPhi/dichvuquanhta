@@ -14,7 +14,7 @@ $category = $category_result->fetch_assoc();
 
 // Nếu không tìm thấy category, chuyển về trang chủ
 if (!$category) {
-    header('Location: trang-chu.html');
+    header('Location: ../../index.html');
     exit;
 }
 
@@ -92,7 +92,7 @@ foreach ($services as $s) {
 // SEO variables
 $svc_name  = htmlspecialchars($category['name']);
 $svc_lower = strtolower($svc_name);
-$seo_title = $svc_name . ' Chuyên Nghiệp TP.HCM | Thợ Nhà';
+$seo_title = 'Dịch Vụ Quanh Ta - Thợ Nhà - ' . $svc_name;
 $seo_desc  = 'Dịch vụ ' . $svc_lower . ' uy tín tại TP.HCM – Thợ Nhà. Bảo hành 6-12 tháng, có mặt trong 30 phút. Linh kiện chính hãng, giá minh bạch. Hotline 24/7: 0775 472 347.';
 $seo_keys  = $svc_lower . ', thợ ' . $svc_lower . ', ' . $svc_lower . ' tphcm, thợ nhà, sửa chữa nhà, dịch vụ sửa nhà tphcm';
 $seo_url   = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/service-detail.php?id=' . $category_id;
@@ -160,8 +160,8 @@ $schema = [
     <meta name="geo.region"    content="VN-SG">
     <meta name="geo.placename" content="Thành phố Hồ Chí Minh">
     <link rel="canonical"    href="<?= $seo_url ?>">
-    <link rel="icon"          type="image/png" href="image/tho-nha-logo-thuong-hieu.png">
-    <link rel="apple-touch-icon" href="image/tho-nha-logo-thuong-hieu.png">
+    <link rel="icon"          type="image/jpeg" href="image/tho-nha-logo-thuong-hieu-cropped.jpg">
+    <link rel="apple-touch-icon" href="image/tho-nha-logo-thuong-hieu-cropped.jpg">
 
     <!-- ===== Open Graph / Facebook ===== -->
     <meta property="og:type"        content="website">
@@ -212,8 +212,8 @@ $schema = [
         <div class="container">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="trang-chu.html">Trang chủ</a></li>
-                    <li class="breadcrumb-item"><a href="trang-chu.html#services">Dịch vụ</a></li>
+                    <li class="breadcrumb-item"><a href="../../index.html">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="../../index.html#services">Dịch vụ</a></li>
                     <li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($category['name']) ?></li>
                 </ol>
             </nav>
@@ -652,7 +652,7 @@ $schema = [
                             e.preventDefault();
                             target.scrollIntoView({ behavior: 'smooth' });
                         } else {
-                            window.location.href = 'trang-chu.html' + this.getAttribute('href');
+                            window.location.href = '../../index.html' + this.getAttribute('href');
                         }
                     });
                 });
@@ -682,3 +682,4 @@ $schema = [
     <script src="../../assets/js/public/booking-autofill.js"></script>
 </body>
 </html>
+

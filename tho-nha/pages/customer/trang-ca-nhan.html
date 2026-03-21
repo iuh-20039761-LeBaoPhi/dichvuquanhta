@@ -1,9 +1,17 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FHV0Y0778D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-FHV0Y0778D");
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang cá nhân - Thợ Nhà</title>
+    <title>Dịch Vụ Quanh Ta - Thợ Nhà - Trang Cá Nhân</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -162,7 +170,7 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-brand">
-        <img src="../../assets/images/tho-nha-logo-thuong-hieu.png" alt="Thợ Nhà">
+        <img src="../../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg" alt="Thợ Nhà">
         <span>Thợ Nhà</span>
     </div>
     <div class="sidebar-user">
@@ -173,7 +181,7 @@
     <nav class="sidebar-nav">
         <ul class="p-0">
             <li><a href="#" class="nav-link-item active"><i class="fas fa-list-alt"></i> Đơn của tôi</a></li>
-            <li><a href="../../pages/public/trang-chu.html" class="nav-link-item"><i class="fas fa-home"></i> Trang chủ</a></li>
+            <li><a href="../../index.html" class="nav-link-item"><i class="fas fa-home"></i> Trang chủ</a></li>
         </ul>
     </nav>
     <div class="sidebar-footer">
@@ -188,7 +196,7 @@
     <div class="topbar">
         <h5><i class="fas fa-list-alt me-2 text-success"></i>Đơn của tôi</h5>
         <div class="topbar-actions">
-            <a href="../../pages/public/trang-chu.html" class="btn-new-booking">
+            <a href="../../index.html" class="btn-new-booking">
                 <i class="fas fa-plus"></i> Đặt lịch mới
             </a>
         </div>
@@ -353,7 +361,7 @@ function renderTable(orders) {
             <div class="empty-state">
                 <i class="fas fa-inbox d-block"></i>
                 <p class="mb-3">Không có đơn hàng nào</p>
-                <a href="../../pages/public/trang-chu.html" class="btn-new-booking" style="text-decoration:none;padding:10px 24px;">
+                <a href="../../index.html" class="btn-new-booking" style="text-decoration:none;padding:10px 24px;">
                     <i class="fas fa-plus me-1"></i>Đặt lịch ngay
                 </a>
             </div>`;
@@ -457,3 +465,4 @@ function logout() {
 </script>
 </body>
 </html>
+

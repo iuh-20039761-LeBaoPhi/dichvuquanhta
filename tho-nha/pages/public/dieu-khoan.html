@@ -1,13 +1,22 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FHV0Y0778D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-FHV0Y0778D");
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Điều Khoản Sử Dụng | Thợ Nhà – GlobalCare</title>
-    <meta name="description" content="Điều khoản sử dụng dịch vụ Thợ Nhà – Quy định trách nhiệm các bên, trách nhiệm thuế và pháp luật áp dụng.">
+    <title>Dịch Vụ Quanh Ta - Thợ Nhà - Điều Khoản</title>
+    <meta name="description" content="Điều khoản sử dụng Dịch Vụ Quanh Ta - Thợ Nhà: quy định trách nhiệm các bên, nghĩa vụ thuế và pháp lý áp dụng.">
+    <meta property="og:description" content="Điều khoản sử dụng Dịch Vụ Quanh Ta - Thợ Nhà: quy định trách nhiệm các bên, nghĩa vụ thuế và pháp lý áp dụng.">
     <meta name="robots" content="index, follow">
-    <link rel="icon" type="image/png" href="../../assets/images/tho-nha-logo-thuong-hieu.png">
-    <link rel="apple-touch-icon" href="../../assets/images/tho-nha-logo-thuong-hieu.png">
+    <link rel="icon" type="image/jpeg" href="../../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg">
+    <link rel="apple-touch-icon" href="../../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,14 +34,25 @@
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             padding: 120px 0 60px;
             color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .terms-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         .terms-hero .breadcrumb {
             margin-bottom: 14px;
             background: transparent;
             padding: 0;
+            justify-content: center;
+            position: relative;
         }
         .terms-hero .breadcrumb-item a {
-            color: rgba(255,255,255,0.85);
+            color: rgba(255,255,255,0.8);
             text-decoration: none;
         }
         .terms-hero .breadcrumb-item.active { color: #fff; }
@@ -43,11 +63,15 @@
             font-size: 2.4rem;
             font-weight: 800;
             margin-bottom: 12px;
+            position: relative;
         }
         .terms-hero p {
             font-size: 1.05rem;
             opacity: 0.9;
+            position: relative;
         }
+        .terms-hero .section-label { position: relative; }
+        @media (max-width: 768px) { .terms-hero h1 { font-size: 1.8rem; } }
         .terms-meta {
             display: flex;
             gap: 24px;
@@ -301,24 +325,20 @@
         <div class="container">
             <nav aria-label="breadcrumb" class="mb-2">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="trang-chu.html"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="../../index.html"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
                     <li class="breadcrumb-item active">Điều khoản sử dụng</li>
                 </ol>
             </nav>
-            <div class="row align-items-center">
-                <div class="col-lg-9">
-                    <span class="section-label mb-3 d-inline-block"
-                          style="background:rgba(255,255,255,0.2); color:white;">
-                        Văn bản pháp lý
-                    </span>
-                    <h1><i class="fas fa-file-contract me-3"></i>Điều Khoản Sử Dụng</h1>
-                    <p>Vui lòng đọc kỹ các điều khoản này trước khi sử dụng nền tảng Thợ Nhà. Việc sử dụng dịch vụ đồng nghĩa với việc bạn chấp nhận toàn bộ điều khoản dưới đây.</p>
-                    <div class="terms-meta">
-                        <span><i class="fas fa-calendar-alt"></i> Có hiệu lực từ: 01/01/2026</span>
-                        <span><i class="fas fa-sync-alt"></i> Cập nhật lần cuối: 01/03/2026</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Áp dụng tại: Việt Nam</span>
-                    </div>
-                </div>
+            <span class="section-label mb-3 d-inline-block"
+                  style="background:rgba(255,255,255,0.2); color:white;">
+                Văn bản pháp lý
+            </span>
+            <h1><i class="fas fa-file-contract me-3"></i>Điều Khoản Sử Dụng</h1>
+            <p>Vui lòng đọc kỹ các điều khoản này trước khi sử dụng nền tảng Thợ Nhà. Việc sử dụng dịch vụ đồng nghĩa với việc bạn chấp nhận toàn bộ điều khoản dưới đây.</p>
+            <div class="terms-meta justify-content-center">
+                <span><i class="fas fa-calendar-alt"></i> Có hiệu lực từ: 01/01/2026</span>
+                <span><i class="fas fa-sync-alt"></i> Cập nhật lần cuối: 01/03/2026</span>
+                <span><i class="fas fa-map-marker-alt"></i> Áp dụng tại: Việt Nam</span>
             </div>
         </div>
     </section>
@@ -759,11 +779,11 @@
                 if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
             });
 
-            // Fix nav links: rewrite anchor-only hrefs to trang-chu.html#anchor
+            // Fix nav links: rewrite anchor-only hrefs to ../../index.html#anchor
             document.querySelectorAll('#header-container .nav-link').forEach(link => {
                 const href = link.getAttribute('href');
                 if (href && href.startsWith('#') && href.length > 1) {
-                    link.setAttribute('href', 'trang-chu.html' + href);
+                    link.setAttribute('href', '../../index.html' + href);
                     link.removeAttribute('data-bs-toggle');
                     link.removeAttribute('data-bs-target');
                 }
@@ -771,7 +791,7 @@
                 if (href === '#' && link.hasAttribute('data-bs-toggle')) {
                     const target = link.getAttribute('data-bs-target');
                     if (target === '#viewOrderModal') {
-                        link.setAttribute('href', 'trang-chu.html');
+                        link.setAttribute('href', '../../index.html');
                         link.removeAttribute('data-bs-toggle');
                         link.removeAttribute('data-bs-target');
                     }
@@ -817,3 +837,4 @@
     <script src="../../assets/js/shared/auth-nav.js"></script>
 </body>
 </html>
+

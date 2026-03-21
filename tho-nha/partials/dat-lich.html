@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FHV0Y0778D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-FHV0Y0778D");
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt Lịch Dịch Vụ | Thợ Nhà</title>
     <meta name="description" content="Đặt lịch dịch vụ sửa chữa nhà tại TP.HCM – Thợ Nhà. Sửa máy lạnh, điện nước, máy giặt, nhà vệ sinh. Thợ chuyên nghiệp, có mặt trong 30 phút. Hotline: 0775 472 347.">
     <meta name="robots" content="index, follow">
-    <link rel="icon" type="image/png" href="../assets/images/tho-nha-logo-thuong-hieu.png">
+    <link rel="icon" type="image/png" href="../assets/images/tho-nha-logo-thuong-hieu-cropped.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +56,7 @@
         <div class="container">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-3">
-                    <li class="breadcrumb-item"><a href="../pages/public/trang-chu.html">Trang Chủ</a></li>
+                    <li class="breadcrumb-item"><a href="../index.html">Trang Chủ</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Đặt Lịch</li>
                 </ol>
             </nav>
@@ -69,12 +77,19 @@
                     <div class="modal fade" id="bookingModal" tabindex="-1">
                         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                             <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title fw-bold">
-                                        <i class="fas fa-calendar-check me-2" style="color:var(--primary);"></i>
-                                        Đặt Lịch Dịch Vụ
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                <div class="modal-header bk-modal-header">
+                                    <div class="bk-header-spacer"></div>
+                                    <div class="bk-header-center">
+                                        <img src="../assets/images/logo-dich-vu-quanh-ta.jpg"
+                                             alt="Dịch Vụ Quanh Ta" class="bk-header-logo">
+                                        <h5 class="modal-title fw-bold mb-0">
+                                            <i class="fas fa-calendar-check me-1" style="color:var(--primary);"></i>
+                                            Đặt Lịch Dịch Vụ
+                                        </h5>
+                                        <img src="../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg"
+                                             alt="Thợ Nhà" class="bk-header-logo">
+                                    </div>
+                                    <button type="button" class="btn-close bk-header-close" data-bs-dismiss="modal"></button>
                                 </div>
 
                                 <div class="modal-body">
@@ -84,11 +99,11 @@
                                         <div class="row g-3">
 
                                             <!-- Thông tin cá nhân -->
-                                            <div class="col-6">
+                                            <div class="col-12 col-sm-6">
                                                 <label for="name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="name" placeholder="Nguyễn Văn A" required>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-12 col-sm-6">
                                                 <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                                                 <input type="tel" class="form-control" id="phone" placeholder="0xxx xxx xxx" required>
                                             </div>
@@ -110,10 +125,9 @@
                                                 </label>
                                                 <div id="subServiceBtns" class="sub-service-options"></div>
                                                 <p class="sub-service-hint">
-                                                    <i class="fas fa-hand-pointer me-1"></i>Chọn dịch vụ để xem giá
+                                                    <i class="fas fa-hand-pointer me-1"></i>Có thể chọn nhiều dịch vụ cùng lúc
                                                 </p>
-                                                <!-- Hidden select — giữ giá trị cho JS, không hiển thị -->
-                                                <select id="subService" style="display:none;"></select>
+                                                <input type="hidden" id="subService" value="">
                                             </div>
 
                                             <div class="col-12" id="brandSelectorWrap" style="display:none;">
@@ -196,7 +210,7 @@
                                             <div class="col-12">
                                                 <label for="address" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
                                                 <textarea class="form-control" id="address" rows="2" placeholder="Số nhà, đường, phường, quận..." required></textarea>
-                                                <div class="d-flex gap-2 mt-2 flex-wrap">
+                                                <div class="bk-map-btns mt-2">
                                                     <button type="button" class="btn-map" id="toggleMapBtn" onclick="mapPicker.toggle()">
                                                         <i class="fas fa-map-marker-alt"></i> Chọn trên bản đồ
                                                     </button>
@@ -223,7 +237,7 @@
                                                 <label class="form-label">
                                                     Đính kèm hình ảnh / video <small class="text-muted">(tùy chọn)</small>
                                                 </label>
-                                                <div class="d-flex gap-2 flex-wrap mb-2">
+                                                <div class="bk-capture-btns mb-2">
                                                     <button type="button" id="photoCaptureBtn" class="btn-capture-photo">
                                                         <i class="fas fa-camera"></i> Chụp hình
                                                     </button>
@@ -233,17 +247,16 @@
                                                 </div>
                                                 <input type="file" id="mediaPhotoInput" accept="image/*" multiple style="display:none">
                                                 <input type="file" id="mediaVideoInput" accept="video/*" style="display:none">
-                                                <div id="mediaPreviewBox" class="media-preview-box" style="display:none;">
-                                                    <div class="media-preview-label"><i class="fas fa-images me-1"></i>Ảnh / video đã chọn:</div>
+                                                <div id="mediaPreviewBox" class="media-preview-box">
                                                     <div id="mediaPreviewContainer" class="media-preview-grid"></div>
                                                 </div>
                                             </div>
 
                                         </div><!-- /row -->
 
-                                        <div class="mt-4">
-                                            <button type="submit" class="btn btn-gradient w-100 btn-booking-submit">
-                                                <i class="fas fa-check-circle me-2"></i> Xác nhận đặt lịch
+                                        <div class="bk-submit-wrap">
+                                            <button type="submit" class="btn btn-gradient btn-booking-submit">
+                                                <i class="fas fa-check-circle me-2"></i> Đặt lịch
                                             </button>
                                         </div>
                                     </form>

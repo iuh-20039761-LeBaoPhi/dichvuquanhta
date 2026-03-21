@@ -1,4 +1,4 @@
-<!-- Auth nav styles -->
+﻿<!-- Auth nav styles -->
 <style>
 .btn-auth-login {
     background: linear-gradient(135deg, #11998e, #38ef7d);
@@ -33,7 +33,7 @@
 .auth-dropdown .dropdown-header { font-size: 0.72rem; color: #94a3b8; padding: 6px 14px 2px; }
 #auth-loading { display: flex; align-items: center; padding: 4px 8px; }
 
-/* ── Mobile auth section in collapsed nav ── */
+/* Mobile auth section in collapsed nav */
 .mobile-nav-divider {
     border-top: 1px solid rgba(0,0,0,0.07);
     margin: 8px 0;
@@ -77,17 +77,16 @@
 
     <!-- Brand -->
     <div class="navbar-brand d-flex align-items-center gap-2">
-      <!-- Logo GlobalCare -->
-      <a href="../../../index.html" class="d-flex">
-        <div class="brand-logo">
-          <img src="../../../public/asset/image/logo.png" alt="Dịch Vụ Quanh Ta" />
-        </div>
+      <!-- Logo DVQT (trái) -->
+      <a href="../../../index.html" class="d-flex align-items-center" title="Dịch Vụ Quanh Ta">
+        <img src="../../assets/images/logo-dich-vu-quanh-ta.jpg" alt="Dịch Vụ Quanh Ta"
+             style="height:44px;width:auto;object-fit:contain;" />
       </a>
-      <a href="../../index.html" class="brand-text text-decoration-none">Thợ Nhà</a>
-      <a href="../../index.html">
-        <div class="brand-logo">
-          <img src="../../assets/images/tho-nha-logo-thuong-hieu.png" alt="Thợ Nhà" />
-        </div>
+      <!-- Logo Thợ Nhà (phải) -->
+      <a href="../../index.html" class="d-flex align-items-center gap-2 text-decoration-none" title="Thợ Nhà">
+        <span class="brand-text">Thợ Nhà</span>
+        <img src="../../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg" alt="Thợ Nhà"
+             style="height:44px;width:auto;object-fit:contain;" />
       </a>
     </div>
 
@@ -112,31 +111,28 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
         <li class="nav-item">
-          <a class="nav-link" href="trang-chu.html">Trang Chủ</a>
+          <a class="nav-link" href="../../index.html"><i class="fas fa-home me-1"></i> Trang Chủ</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="dich-vu.html">Dịch Vụ</a>
+          <a class="nav-link" href="../../pages/public/dich-vu.html"><i class="fas fa-wrench me-1"></i> Dịch Vụ</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="ve-chung-toi.html">Về Chúng Tôi</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="cam-nang.html">
+<li class="nav-item">
+          <a class="nav-link" href="../../pages/public/cam-nang.html">
             <i class="fas fa-book-open me-1"></i> Cẩm Nang
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="dieu-khoan.html">
+          <a class="nav-link" href="../../pages/public/dieu-khoan.html">
             <i class="fas fa-file-contract me-1"></i> Điều khoản
           </a>
         </li>
         <li class="nav-item ms-lg-2">
-          <a class="nav-link nav-btn" href="#" data-bs-toggle="modal" data-bs-target="#bookingModal">
+          <button class="nav-link nav-btn booking-btn" style="background:none;border:none;padding:0;cursor:pointer;">
             <i class="fas fa-calendar-check me-1"></i> Đặt Lịch
-          </a>
+          </button>
         </li>
 
-        <!-- ── AUTH BUTTON – Desktop only ── -->
+        <!-- AUTH BUTTON - Desktop only -->
         <li class="nav-item ms-lg-2 d-none d-lg-flex align-items-center">
           <span id="auth-loading"><span class="spinner-border spinner-border-sm text-secondary" style="width:18px;height:18px;border-width:2px;"></span></span>
 
@@ -148,18 +144,18 @@
             <ul class="dropdown-menu dropdown-menu-end auth-dropdown">
               <li><h6 class="dropdown-header">Đăng nhập với vai trò</h6></li>
               <li>
-                <a class="dropdown-item" href="../customer/dang-nhap.html">
+                <a class="dropdown-item" href="../../pages/customer/dang-nhap.html">
                   <i class="fas fa-user me-2" style="color:#11998e;"></i>Khách hàng
                 </a>
               </li>
               <li>
-                <a class="dropdown-item" href="../provider/dang-nhap.html">
+                <a class="dropdown-item" href="../../pages/provider/dang-nhap.html">
                   <i class="fas fa-tools me-2" style="color:#7c3aed;"></i>Nhà cung cấp
                 </a>
               </li>
               <li><hr class="dropdown-divider my-1"></li>
               <li>
-                <a class="dropdown-item" href="../admin/dang-nhap.html">
+                <a class="dropdown-item" href="../../pages/admin/dang-nhap.html">
                   <i class="fas fa-shield-alt me-2" style="color:#64748b;"></i>Quản trị viên
                 </a>
               </li>
@@ -174,7 +170,7 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end auth-dropdown">
               <li>
-                <a class="dropdown-item fw-600" id="auth-dashboard-link" href="../customer/trang-ca-nhan.html">
+                <a class="dropdown-item fw-600" id="auth-dashboard-link" href="../../pages/customer/trang-ca-nhan.html">
                   <i class="fas fa-th-large me-2" style="color:#11998e;"></i>Dashboard
                 </a>
               </li>
@@ -189,22 +185,22 @@
         </li>
         <!-- /AUTH Desktop -->
 
-        <!-- ── AUTH MOBILE – hiện trong menu, ẩn trên desktop ── -->
+        <!-- AUTH MOBILE - hiện trong menu, ẩn trên desktop -->
         <li class="nav-item d-lg-none">
           <div class="mobile-nav-divider"></div>
 
           <!-- Guest mobile -->
           <div id="mobile-auth-guest" style="display:none;">
             <div class="mobile-auth-label">Đăng nhập</div>
-            <a class="mobile-auth-link --customer" href="../customer/dang-nhap.html">
+            <a class="mobile-auth-link --customer" href="../../pages/customer/dang-nhap.html">
               <span class="icon-wrap"><i class="fas fa-user"></i></span>
               Khách hàng
             </a>
-            <a class="mobile-auth-link --provider" href="../provider/dang-nhap.html">
+            <a class="mobile-auth-link --provider" href="../../pages/provider/dang-nhap.html">
               <span class="icon-wrap"><i class="fas fa-tools"></i></span>
               Nhà cung cấp
             </a>
-            <a class="mobile-auth-link --admin" href="../admin/dang-nhap.html">
+            <a class="mobile-auth-link --admin" href="../../pages/admin/dang-nhap.html">
               <span class="icon-wrap"><i class="fas fa-shield-alt"></i></span>
               Quản trị viên
             </a>
@@ -216,7 +212,7 @@
               <span class="auth-avatar" id="mobile-auth-avatar-inner">K</span>
               <span class="user-name" id="mobile-auth-name"></span>
             </div>
-            <a class="mobile-auth-link --dashboard" id="mobile-auth-dashboard-link" href="../customer/trang-ca-nhan.html">
+            <a class="mobile-auth-link --dashboard" id="mobile-auth-dashboard-link" href="../../pages/customer/trang-ca-nhan.html">
               <span class="icon-wrap"><i class="fas fa-th-large"></i></span>
               Trang cá nhân
             </a>
@@ -231,3 +227,4 @@
     </div>
   </div>
 </nav>
+
