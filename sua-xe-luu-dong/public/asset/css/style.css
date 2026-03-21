@@ -25,6 +25,16 @@ html {
   z-index: 1000;
 }
 
+/* Keep booking modals above the fixed navbar on all pages. */
+#bookingModal.modal.show,
+#bookingConfirmModal.modal.show {
+  z-index: 2005 !important;
+}
+
+.modal-backdrop.show {
+  z-index: 2000 !important;
+}
+
 .navbar-brand {
   display: flex;
   align-items: center;

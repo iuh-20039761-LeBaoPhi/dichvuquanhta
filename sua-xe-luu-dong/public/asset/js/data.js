@@ -1,3 +1,163 @@
+const BOOKING_MODAL_SOURCE = "booking_modal.html";
+const BOOKING_MODAL_STYLE_ID = "bookingModalInlineStyles";
+const BOOKING_MODAL_EMBED_FIX_STYLE_ID = "bookingModalEmbedFixStyles";
+let bookingModalLoadPromise = null;
+
+function injectBookingModalStyles(doc) {
+  if (document.getElementById(BOOKING_MODAL_STYLE_ID)) {
+    return;
+  }
+
+  const styleNodes = Array.from(doc.querySelectorAll("style")).filter((node) =>
+    /#bookingModal|#bookingConfirmModal/.test(node.textContent || ""),
+  );
+
+  if (!styleNodes.length) {
+    return;
+  }
+
+  const styleTag = document.createElement("style");
+  styleTag.id = BOOKING_MODAL_STYLE_ID;
+  styleTag.textContent = styleNodes
+    .map((node) => node.textContent || "")
+    .join("\n");
+
+  document.head.appendChild(styleTag);
+}
+
+function injectBookingModalEmbedFixStyles() {
+  if (document.getElementById(BOOKING_MODAL_EMBED_FIX_STYLE_ID)) {
+    return;
+  }
+
+  const styleTag = document.createElement("style");
+  styleTag.id = BOOKING_MODAL_EMBED_FIX_STYLE_ID;
+  styleTag.textContent = `
+    #modalContainer #bookingModal.modal {
+      display: none !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 2005 !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      background: transparent !important;
+    }
+
+    #modalContainer #bookingModal.modal.show {
+      display: block !important;
+    }
+
+    #modalContainer #bookingModal.fade {
+      opacity: 0 !important;
+    }
+
+    #modalContainer #bookingModal.fade.show {
+      opacity: 1 !important;
+    }
+  `;
+
+  document.head.appendChild(styleTag);
+}
+
+function extractBookingModalMarkup(rawHtml) {
+  const parser = new DOMParser();
+  const parsedDoc = parser.parseFromString(rawHtml, "text/html");
+
+  const bookingModal = parsedDoc.getElementById("bookingModal");
+  const bookingConfirmModal = parsedDoc.getElementById("bookingConfirmModal");
+
+  if (!bookingModal) {
+    return { html: rawHtml, doc: parsedDoc };
+  }
+
+  const html = [bookingModal.outerHTML, bookingConfirmModal?.outerHTML || ""]
+    .join("\n")
+    .trim();
+
+  return { html, doc: parsedDoc };
+}
+
+function ensureBookingModalLoaded(container = null) {
+  if (document.getElementById("bookingModal")) {
+    initBookingModal();
+    return Promise.resolve();
+  }
+
+  if (bookingModalLoadPromise) {
+    return bookingModalLoadPromise;
+  }
+
+  bookingModalLoadPromise = fetch(BOOKING_MODAL_SOURCE)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Không thể tải nội dung modal đặt dịch vụ");
+      }
+
+      return res.text();
+    })
+    .then((rawHtml) => {
+      const { html, doc } = extractBookingModalMarkup(rawHtml);
+      injectBookingModalStyles(doc);
+      injectBookingModalEmbedFixStyles();
+
+      const target =
+        container ||
+        document.getElementById("modalContainer") ||
+        document.body.appendChild(document.createElement("div"));
+
+      if (!target.id) {
+        target.id = "modalContainer";
+      }
+
+      target.innerHTML = html;
+      initBookingModal();
+    })
+    .catch((error) => {
+      bookingModalLoadPromise = null;
+      throw error;
+    });
+
+  return bookingModalLoadPromise;
+}
+
+window.BookingModalManager = window.BookingModalManager || {};
+window.BookingModalManager.mount = function (
+  containerSelector = "#modalContainer",
+) {
+  const container =
+    typeof containerSelector === "string"
+      ? document.querySelector(containerSelector)
+      : containerSelector;
+
+  return ensureBookingModalLoaded(container || null);
+};
+
+window.BookingModalManager.open = function (serviceId = null) {
+  return ensureBookingModalLoaded().then(() => {
+    const bookingModal = document.getElementById("bookingModal");
+    if (!bookingModal) return;
+
+    bootstrap.Modal.getOrCreateInstance(bookingModal).show();
+
+    if (serviceId != null) {
+      const serviceSelect = document.getElementById("serviceSelect");
+      if (serviceSelect) {
+        const normalized = String(serviceId);
+        const hasOption = Array.from(serviceSelect.options).some(
+          (opt) => String(opt.value) === normalized,
+        );
+
+        if (hasOption) {
+          serviceSelect.value = normalized;
+          serviceSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        } else {
+          bookingModal.dataset.pendingServiceId = normalized;
+        }
+      }
+    }
+  });
+};
+
 const mapPicker = (() => {
   const HCM = [10.7769, 106.7009];
   let map = null;
@@ -122,11 +282,11 @@ const mapPicker = (() => {
   }
 
   function pick(lat, lng) {
-    if (!map) return;
-
-    if (marker) map.removeLayer(marker);
-    marker = L.marker([lat, lng]).addTo(map);
-    map.panTo([lat, lng]);
+    if (map) {
+      if (marker) map.removeLayer(marker);
+      marker = L.marker([lat, lng]).addTo(map);
+      map.panTo([lat, lng]);
+    }
 
     const addr = getAddressInput();
     if (!addr) return;
@@ -146,17 +306,20 @@ const mapPicker = (() => {
 
         if (!data || !data.address) {
           addr.value = (data && data.display_name) || "";
+          addr.dispatchEvent(new Event("change", { bubbles: true }));
           return;
         }
 
         addr.value = buildDetailedAddress(data.address, data.display_name);
-        if (addr.value) {
+        addr.dispatchEvent(new Event("change", { bubbles: true }));
+        if (addr.value && marker) {
           marker.bindPopup(`<small>${addr.value}</small>`).openPopup();
         }
       })
       .catch(() => {
         addr.placeholder = "Số nhà, đường, phường/xã, quận/huyện...";
         addr.value = `Vĩ độ ${lat.toFixed(6)}, Kinh độ ${lng.toFixed(6)}`;
+        addr.dispatchEvent(new Event("change", { bubbles: true }));
       });
   }
 
@@ -208,8 +371,9 @@ const mapPicker = (() => {
           () => {
             if (!map) {
               init().then(() => {
-                if (!map) return;
-                map.setView([lat, lng], 16);
+                if (map) {
+                  map.setView([lat, lng], 16);
+                }
                 pick(lat, lng);
               });
               return;
@@ -250,24 +414,34 @@ const mapPicker = (() => {
 
 document.addEventListener("DOMContentLoaded", function () {
   const modalContainer = document.getElementById("modalContainer");
+  const bookingModal = document.getElementById("bookingModal");
 
-  if (!modalContainer) {
+  if (bookingModal) {
     initBookingModal();
     return;
   }
 
-  fetch("public/component/booking_modal.html")
-    .then((res) => res.text())
-    .then((data) => {
-      modalContainer.innerHTML = data;
-      initBookingModal();
-    })
-    .catch(() => {
+  if (modalContainer) {
+    ensureBookingModalLoaded(modalContainer).catch((err) => {
+      console.error(err);
       initBookingModal();
     });
+    return;
+  }
+
+  initBookingModal();
 });
 
 function initBookingModal() {
+  const bookingModal = document.getElementById("bookingModal");
+  if (bookingModal && bookingModal.dataset.bookingInitDone === "true") {
+    return;
+  }
+
+  if (bookingModal) {
+    bookingModal.dataset.bookingInitDone = "true";
+  }
+
   // ===== ELEMENT =====
   const serviceSelect = document.getElementById("serviceSelect");
   const vehicleType = document.getElementById("vehicleType");
@@ -278,12 +452,30 @@ function initBookingModal() {
   const transportInput = document.getElementById("transport-fee");
   const surveyInput = document.getElementById("survey-fee");
   const totalInput = document.getElementById("total-price");
-
-  // const locateBtn = document.getElementById("locateBtn");
-  // const addressInput = document.getElementById("addressInput");
+  const addressInput = document.getElementById("addressInput");
+  const estimateServicePrice = document.getElementById("estimateServicePrice");
+  const estimateTransportFee = document.getElementById("estimateTransportFee");
+  const estimateTempTotal = document.getElementById("estimateTempTotal");
+  const estimateTransportOnly = document.getElementById(
+    "estimateTransportOnly",
+  );
+  const estimateSurveyOnly = document.getElementById("estimateSurveyOnly");
+  const estimateNoFixTotal = document.getElementById("estimateNoFixTotal");
+  const estimateSummaryBlock = document.getElementById("estimateSummaryBlock");
 
   let servicesData = [];
-  let pendingServiceId = null;
+  let providerLocation = null;
+  let transportPerKm = 0;
+  let transportMinFee = 0;
+  let transportMaxFee = 0;
+  let latestDistanceKm = null;
+  let transportFeeValue = 0;
+  let transportCalcToken = 0;
+  let addressCalcTimer = null;
+  let pendingServiceId = bookingModal?.dataset.pendingServiceId || null;
+  if (bookingModal && bookingModal.dataset.pendingServiceId) {
+    delete bookingModal.dataset.pendingServiceId;
+  }
 
   function applyServiceSelection(serviceId) {
     if (!serviceSelect || !serviceId) return false;
@@ -321,14 +513,269 @@ function initBookingModal() {
       const applied = applyServiceSelection(serviceId);
       if (!applied) {
         pendingServiceId = serviceId;
+        if (bookingModal) {
+          bookingModal.dataset.pendingServiceId = String(serviceId);
+        }
       }
     });
   }
 
   // ===== PHÍ =====
-  const minTransport = 40000;
-  const maxTransport = 60000;
   let vehicleTypesData = [];
+
+  function getSelectedServicePrice() {
+    if (!serviceSelect || !serviceSelect.value) return 0;
+    const service = servicesData.find(
+      (s) => String(s.id) === serviceSelect.value,
+    );
+    return Number(service?.service_price || 0);
+  }
+
+  function getDistanceThresholdKm() {
+    return Number(transportPerKm || 0);
+  }
+
+  function getTransportMinFee() {
+    return Number(transportMinFee || 0);
+  }
+
+  function getTransportMaxFee() {
+    return Number(transportMaxFee || 0);
+  }
+
+  function formatCurrency(value) {
+    return Number(value || 0).toLocaleString("vi-VN");
+  }
+
+  function formatCurrencyVND(value) {
+    return `${formatCurrency(value)}đ`;
+  }
+
+  function calculateTransportFeeByThreshold(distanceKm) {
+    const thresholdKm = getDistanceThresholdKm();
+    const minFee = getTransportMinFee();
+    const maxFee = getTransportMaxFee();
+    const perKmIncrease = 5000;
+    const billableKm = Math.max(0, Math.ceil(Number(distanceKm || 0)));
+
+    if (!Number.isFinite(distanceKm)) {
+      return minFee;
+    }
+
+    if (thresholdKm > 0 && distanceKm < thresholdKm) {
+      return minFee + billableKm * perKmIncrease;
+    }
+
+    const baseFee = maxFee > 0 ? maxFee : minFee;
+    return baseFee + billableKm * perKmIncrease;
+  }
+
+  function updateTotalPrice() {
+    const servicePrice = getSelectedServicePrice();
+    const surveyFee = getCurrentSurveyFee();
+    const transportFee = Number(transportFeeValue || 0);
+    const total = servicePrice + surveyFee + transportFee;
+    const noFixTotal = surveyFee + transportFee;
+
+    if (priceInput) {
+      priceInput.value = servicePrice > 0 ? formatCurrency(servicePrice) : "";
+    }
+
+    if (surveyInput) {
+      surveyInput.value = surveyFee > 0 ? formatCurrency(surveyFee) : "";
+    }
+
+    if (totalInput) {
+      totalInput.value = total > 0 ? formatCurrency(total) : "";
+    }
+
+    if (estimateServicePrice) {
+      estimateServicePrice.textContent =
+        servicePrice > 0 ? formatCurrencyVND(servicePrice) : "-";
+    }
+
+    if (estimateTransportOnly) {
+      estimateTransportOnly.textContent =
+        transportFee > 0 ? formatCurrencyVND(transportFee) : "-";
+    }
+
+    if (estimateSurveyOnly) {
+      estimateSurveyOnly.textContent =
+        surveyFee > 0 ? formatCurrencyVND(surveyFee) : "-";
+    }
+
+    if (estimateNoFixTotal) {
+      estimateNoFixTotal.textContent =
+        noFixTotal > 0 ? formatCurrencyVND(noFixTotal) : "-";
+    }
+
+    if (estimateTempTotal) {
+      estimateTempTotal.textContent =
+        total > 0 ? formatCurrencyVND(total) : "-";
+    }
+  }
+
+  function updateEstimateVisibility() {
+    if (!estimateSummaryBlock || !serviceSelect) return;
+
+    if (String(serviceSelect.value || "").trim()) {
+      estimateSummaryBlock.classList.remove("d-none");
+    } else {
+      estimateSummaryBlock.classList.add("d-none");
+    }
+  }
+
+  function setTransportFeeDisplay(value, opts = {}) {
+    const { pending = false, suffix = "", displayText = "" } = opts;
+
+    if (!transportInput) return;
+
+    if (pending) {
+      transportInput.value = "Đang tính...";
+      if (estimateTransportFee) {
+        estimateTransportFee.textContent = "Đang tính...";
+      }
+      return;
+    }
+
+    if (displayText) {
+      transportInput.value = displayText;
+      if (estimateTransportFee) {
+        estimateTransportFee.textContent = displayText;
+      }
+      return;
+    }
+
+    if (value == null || Number.isNaN(Number(value))) {
+      transportInput.value = "";
+      return;
+    }
+
+    const rendered = `${formatCurrency(value)}${suffix ? ` (${suffix})` : ""}`;
+    transportInput.value = rendered;
+
+    if (estimateTransportFee) {
+      let suffixText = "";
+      if (suffix) {
+        suffixText = /km$/i.test(suffix.trim())
+          ? ` (~${suffix.trim()})`
+          : ` (${suffix.trim()})`;
+      }
+
+      estimateTransportFee.textContent =
+        value > 0 ? `${formatCurrencyVND(value)}${suffixText}` : "-";
+    }
+  }
+
+  function isValidCoordinate(value) {
+    return typeof value === "number" && Number.isFinite(value);
+  }
+
+  async function geocodeAddress(address) {
+    const endpoint = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=vn&q=${encodeURIComponent(address)}`;
+    const res = await fetch(endpoint, {
+      headers: { "Accept-Language": "vi" },
+    });
+
+    if (!res.ok) {
+      throw new Error("Không thể geocode địa chỉ khách hàng");
+    }
+
+    const data = await res.json();
+    const first = data && data[0];
+    if (!first) {
+      throw new Error("Không tìm thấy tọa độ từ địa chỉ đã nhập");
+    }
+
+    return {
+      lat: Number(first.lat),
+      lng: Number(first.lon),
+    };
+  }
+
+  async function getRoadDistanceKm(from, to) {
+    const endpoint = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=false&alternatives=false&steps=false`;
+    const res = await fetch(endpoint);
+
+    if (!res.ok) {
+      throw new Error("Không thể lấy quãng đường thực tế");
+    }
+
+    const data = await res.json();
+    const route = data?.routes?.[0];
+    if (!route || typeof route.distance !== "number") {
+      throw new Error("Không có dữ liệu tuyến đường");
+    }
+
+    return route.distance / 1000;
+  }
+
+  async function recalculateTransportFee(force = false) {
+    const addressText = (addressInput?.value || "").trim();
+
+    const minFee = getTransportMinFee();
+
+    if (!addressText) {
+      latestDistanceKm = null;
+      transportFeeValue = minFee;
+      setTransportFeeDisplay(null, { displayText: "Nhập địa chỉ để tính giá" });
+      updateTotalPrice();
+      return;
+    }
+
+    const token = ++transportCalcToken;
+    setTransportFeeDisplay(null, { pending: true });
+
+    try {
+      if (
+        !providerLocation ||
+        !isValidCoordinate(providerLocation.lat) ||
+        !isValidCoordinate(providerLocation.lng)
+      ) {
+        throw new Error("Thiếu tọa độ nhà cung cấp");
+      }
+
+      const customerCoords = await geocodeAddress(addressText);
+      const distanceKm = await getRoadDistanceKm(
+        providerLocation,
+        customerCoords,
+      );
+
+      if (token !== transportCalcToken && !force) {
+        return;
+      }
+
+      latestDistanceKm = distanceKm;
+      const calculated = calculateTransportFeeByThreshold(distanceKm);
+      transportFeeValue = calculated;
+      setTransportFeeDisplay(calculated, {
+        suffix: `${distanceKm.toFixed(1)} km`,
+      });
+    } catch (error) {
+      if (token !== transportCalcToken && !force) {
+        return;
+      }
+
+      latestDistanceKm = null;
+      transportFeeValue = minFee;
+      setTransportFeeDisplay(minFee, { suffix: "ước tính" });
+      console.error(error);
+    } finally {
+      if (token === transportCalcToken || force) {
+        updateTotalPrice();
+      }
+    }
+  }
+
+  function scheduleRecalculateTransportFee(delay = 700) {
+    if (addressCalcTimer) {
+      clearTimeout(addressCalcTimer);
+    }
+
+    addressCalcTimer = setTimeout(() => {
+      recalculateTransportFee();
+    }, delay);
+  }
 
   function getSurveyFeeByVehicleType(type) {
     const vehicleType = vehicleTypesData.find((v) => v.type === type);
@@ -341,12 +788,8 @@ function initBookingModal() {
   }
 
   // ===== INIT HIỂN THỊ =====
-  if (transportInput) {
-    transportInput.value =
-      minTransport.toLocaleString("vi-VN") +
-      " - " +
-      maxTransport.toLocaleString("vi-VN");
-  }
+  setTransportFeeDisplay(null);
+  updateEstimateVisibility();
 
   // ===== LOAD DATA =====
   fetch("public/services.json")
@@ -354,6 +797,14 @@ function initBookingModal() {
     .then((data) => {
       servicesData = data.services || [];
       vehicleTypesData = data.vehicles || [];
+      providerLocation = {
+        lat: Number(data.provider?.lat),
+        lng: Number(data.provider?.lng),
+        address: data.provider?.address || "",
+      };
+      transportPerKm = Number(data.provider?.per_km || 0);
+      transportMinFee = Number(data.provider?.min_fee || 0);
+      transportMaxFee = Number(data.provider?.max_fee || 0);
 
       if (!serviceSelect) return;
 
@@ -367,17 +818,24 @@ function initBookingModal() {
       if (pendingServiceId) {
         applyServiceSelection(pendingServiceId);
         pendingServiceId = null;
+        if (bookingModal) {
+          delete bookingModal.dataset.pendingServiceId;
+        }
       }
+
+      recalculateTransportFee(true);
     })
     .catch((err) => console.error("Lỗi load JSON:", err));
 
   // ===== SERVICE =====
   if (serviceSelect) {
     serviceSelect.addEventListener("change", function () {
+      updateEstimateVisibility();
       resetSelect(vehicleType, "Chọn loại xe");
       resetSelect(brandSelect, "Chọn hãng");
       resetSelect(itemSelect, "Chọn phụ tùng / sửa chữa");
       clearPrice();
+      recalculateTransportFee();
 
       // Hiển thị danh sách loại xe từ vehicleTypesData
       if (!vehicleType) return;
@@ -402,6 +860,8 @@ function initBookingModal() {
       if (surveyInput) {
         surveyInput.value = getCurrentSurveyFee().toLocaleString("vi-VN");
       }
+
+      recalculateTransportFee();
 
       // Hiển thị danh sách hãng xe của loại xe được chọn
       const selectedVehicleType = vehicleTypesData.find(
@@ -458,27 +918,17 @@ function initBookingModal() {
         return;
       }
 
-      const service = servicesData.find((s) => s.id == serviceSelect.value);
-      const servicePrice = Number(service?.service_price || 0);
-      const surveyFee = getCurrentSurveyFee();
+      updateTotalPrice();
+    });
+  }
 
-      const totalMin = servicePrice + minTransport + surveyFee;
-      const totalMax = servicePrice + maxTransport + surveyFee;
+  if (addressInput) {
+    addressInput.addEventListener("input", function () {
+      scheduleRecalculateTransportFee();
+    });
 
-      if (priceInput) {
-        priceInput.value = servicePrice.toLocaleString("vi-VN");
-      }
-
-      if (surveyInput) {
-        surveyInput.value = surveyFee.toLocaleString("vi-VN");
-      }
-
-      if (totalInput) {
-        totalInput.value =
-          totalMin.toLocaleString("vi-VN") +
-          " - " +
-          totalMax.toLocaleString("vi-VN");
-      }
+    addressInput.addEventListener("change", function () {
+      scheduleRecalculateTransportFee(150);
     });
   }
 
@@ -503,6 +953,7 @@ function initBookingModal() {
       document.getElementById("nameCustomer").value = customer;
       document.getElementById("phoneCustomer").value = phone;
       document.getElementById("addressInput").value = address;
+      scheduleRecalculateTransportFee(150);
     });
   }
 
@@ -533,6 +984,29 @@ function initBookingConfirmFlow() {
 
   const datetimeInput = form.querySelector('input[type="datetime-local"]');
   const noteInput = form.querySelector("textarea");
+  const isEmbeddedMode = Boolean(bookingModalEl.closest("#modalContainer"));
+
+  function showBookingStep() {
+    if (isEmbeddedMode) {
+      bootstrap.Modal.getOrCreateInstance(bookingModalEl).show();
+      return;
+    }
+
+    bookingModalEl.style.display = "block";
+    bookingModalEl.classList.add("show");
+    bookingModalEl.setAttribute("aria-hidden", "false");
+  }
+
+  function hideBookingStep() {
+    if (isEmbeddedMode) {
+      bootstrap.Modal.getOrCreateInstance(bookingModalEl).hide();
+      return;
+    }
+
+    bookingModalEl.style.display = "none";
+    bookingModalEl.classList.remove("show");
+    bookingModalEl.setAttribute("aria-hidden", "true");
+  }
 
   function normalizeValue(value) {
     if (value == null) return "-";
@@ -574,14 +1048,14 @@ function initBookingConfirmFlow() {
 
   function backToBookingModal() {
     bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
-    bootstrap.Modal.getOrCreateInstance(bookingModalEl).show();
+    showBookingStep();
   }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     renderSummary();
 
-    bootstrap.Modal.getOrCreateInstance(bookingModalEl).hide();
+    hideBookingStep();
     bootstrap.Modal.getOrCreateInstance(confirmModalEl).show();
   });
 
@@ -600,13 +1074,17 @@ function initBookingConfirmFlow() {
   if (confirmBtn) {
     confirmBtn.addEventListener("click", function () {
       bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
-      bootstrap.Modal.getOrCreateInstance(bookingModalEl).hide();
+      hideBookingStep();
 
       alert(
         "Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
       );
 
       form.reset();
+
+      if (!isEmbeddedMode) {
+        showBookingStep();
+      }
     });
   }
 }
@@ -649,37 +1127,3 @@ function mapPickerInit() {
     });
   }
 }
-// document.addEventListener("DOMContentLoaded", function () {
-//   const locateBtn = document.getElementById("locateBtn");
-//   const addressInput = document.getElementById("addressInput");
-//   if (locateBtn) {
-//     locateBtn.addEventListener("click", function () {
-//       if (navigator.geolocation) {
-//         navigator.geolocation.getCurrentPosition(
-//           function (position) {
-//             const lat = position.coords.latitude;
-//             const lng = position.coords.longitude;
-//             // use Nominatim reverse geocoding
-//             fetch(
-//               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
-//             )
-//               .then((res) => res.json())
-//               .then((data) => {
-//                 if (data && data.display_name) {
-//                   addressInput.value = data.display_name;
-//                 } else {
-//                   alert("Không thể xác định địa chỉ");
-//                 }
-//               })
-//               .catch((e) => console.error(e));
-//           },
-//           function (err) {
-//             alert("Không thể lấy vị trí: " + err.message);
-//           },
-//         );
-//       } else {
-//         alert("Trình duyệt không hỗ trợ định vị");
-//       }
-//     });
-//   }
-// });

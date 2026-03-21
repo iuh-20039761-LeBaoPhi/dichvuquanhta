@@ -188,5 +188,13 @@
         }
       ]
     }
-  ]
+  ],
+  "provider": {
+    "address": "Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh, Việt Nam",
+    "lat": 10.862743,
+    "lng": 106.628899,
+    "per_km": 5,
+    "min_fee": 40000,
+    "max_fee": 60000
+  }
 }
