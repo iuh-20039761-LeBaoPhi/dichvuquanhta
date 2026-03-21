@@ -20,7 +20,7 @@ Nền tảng trung gian dịch vụ sửa chữa nhà tại TP.HCM: khách hàng
 C:\xampp\htdocs\GlobalCare\tho-nha\
 
 # 2. Import database
-phpMyAdmin → Import → database/thonha_db.sql
+phpMyAdmin → Import → database/thonha_db_new.sql
 
 # 3. Tạo file .env từ template
 cp .env.example .env
@@ -162,7 +162,7 @@ tho-nha/
 │   └── providers/                ← Avatar, CCCD nhà cung cấp
 │
 ├── database/
-│   └── thonha_db.sql
+│   └── thonha_db_new.sql
 │
 └── docs/
     └── huongdan.html

@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         try {
-            const res = await fetch(`../../api/public/get-orders.php?phone=${encodeURIComponent(phone)}`);
+            const res = await fetch(`${window.BD_BASE || '../../'}api/public/get-orders.php?phone=${encodeURIComponent(phone)}`);
             const data = await res.json();
 
             console.log('API:', data);
@@ -120,7 +120,7 @@ window.requestCancelOrder = async function(orderId, orderCode) {
     if (!confirm) return;
 
     try {
-        const res = await fetch('../../api/customer/orders/request-cancel.php', {
+        const res = await fetch(`${window.BD_BASE || '../../'}api/customer/orders/request-cancel.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

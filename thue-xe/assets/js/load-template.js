@@ -147,9 +147,9 @@ function injectBaseSEO() {
         favicon = document.createElement('link');
         favicon.rel = 'icon';
         favicon.type = 'image/png';
-        favicon.href = 'assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg';
         document.head.appendChild(favicon);
     }
+    favicon.href = 'assets/images/thue-xe-logo-header-navigation.jpg';
 }
 
 function loadFooter() {

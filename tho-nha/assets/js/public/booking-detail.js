@@ -187,7 +187,7 @@ function _bdUpdateBreakdown(price, travelFee, surveyFee) {
     const bdTravel    = document.getElementById('bd-travel');
     const bdTotal     = document.getElementById('bd-total');
 
-    if (bdService) bdService.textContent = _bdFmt(price);
+    if (bdService) bdService.textContent = price > 0 ? _bdFmt(price) : 'Miễn phí';
 
     // Hàng phí di chuyển
     if (isPerKm) {
@@ -217,7 +217,8 @@ function _bdUpdateBreakdown(price, travelFee, surveyFee) {
     // Tổng
     if (bdTotal) {
         if (isPerKm && _bdTravelStatus !== 'ok') {
-            bdTotal.innerHTML = `${_bdFmt(price)} <span style="color:#94a3b8;font-size:0.82rem;">+ phí di chuyển</span>`;
+            const priceLabel = price > 0 ? _bdFmt(price) : 'Miễn phí';
+            bdTotal.innerHTML = `${priceLabel} <span style="color:#94a3b8;font-size:0.82rem;">+ phí di chuyển</span>`;
         } else {
             bdTotal.textContent = _bdFmt(p.total);
         }
@@ -301,19 +302,13 @@ function _bdAddMedia(file, previewBox) {
         wrap.appendChild(icon);
     }
     wrap.appendChild(removeBtn);
-    if (previewBox) {
-        previewBox.appendChild(wrap);
-        const box = document.getElementById('mediaPreviewBox');
-        if (box) box.style.display = 'block';
-    }
+    if (previewBox) previewBox.appendChild(wrap);
 }
 
 function _bdClearMedia() {
     _bdMediaFiles = [];
     const grid = document.getElementById('mediaPreviewContainer');
     if (grid) grid.innerHTML = '';
-    const box = document.getElementById('mediaPreviewBox');
-    if (box) box.style.display = 'none';
 }
 
 // ===================================================================
@@ -350,7 +345,7 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
         costSection.style.display = '';
 
         // Giá dịch vụ
-        if (costBase) costBase.textContent = _bdFmt(basePrice);
+        if (costBase) costBase.textContent = basePrice > 0 ? _bdFmt(basePrice) : 'Miễn phí';
 
         // Phí di chuyển
         if (costTravelRow && costTravel) {
@@ -516,7 +511,88 @@ let _bdOpenMode     = 'detail'; // 'detail' | 'nav'
 let _bdPrefill      = null;     // { name, price, travelFee, surveyFee }
 let _bdPendingData  = null;
 
-// Load services.json cho nav mode dropdown
+// ===================================================================
+// SHARED: BUILD MULTI-SELECT SUB-SERVICE BUTTONS
+// container   — DOM element để render buttons vào
+// hiddenEl    — input[type=hidden] lưu giá trị đã chọn (joined bởi " + ")
+// items       — mảng items từ services.json
+// catData     — category object (để lấy travelFee fallback)
+// countEl     — (tuỳ chọn) badge hiển thị số lượng đã chọn
+// priceEl     — (tuỳ chọn) input hiển thị giá tham khảo
+// ===================================================================
+function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) {
+    container.innerHTML = '';
+    if (hiddenEl) hiddenEl.value = '';
+    if (countEl)  { countEl.textContent = ''; countEl.style.display = 'none'; }
+    if (priceEl)  priceEl.value = '';
+    _bdHideBreakdown();
+
+    let selectedItems = [];
+
+    function _sync() {
+        // Cập nhật hidden input
+        if (hiddenEl) hiddenEl.value = selectedItems.map(i => i.name).join(' + ');
+
+        // Cập nhật badge đếm
+        if (countEl) {
+            if (selectedItems.length > 0) {
+                countEl.textContent = selectedItems.length + ' đã chọn';
+                countEl.style.display = '';
+            } else {
+                countEl.style.display = 'none';
+            }
+        }
+
+        // Cập nhật giá + breakdown
+        if (selectedItems.length === 0) {
+            if (priceEl) priceEl.value = '';
+            _bdHideBreakdown();
+            return;
+        }
+
+        const totalPrice = selectedItems.reduce((s, i) => s + (i.price || 0), 0);
+        if (priceEl) {
+            if (totalPrice === 0) {
+                priceEl.value = 'Miễn phí dịch vụ (chỉ tính phí di chuyển)';
+            } else {
+                priceEl.value = Number(totalPrice).toLocaleString('vi-VN') + 'đ';
+            }
+        }
+        const travelFee  = selectedItems[0].travelFee || catData.travelFee || null;
+        const surveyItem = selectedItems.find(i => i.surveyFee);
+        const surveyFee  = surveyItem ? surveyItem.surveyFee : null;
+        _bdSetBreakdown(totalPrice, travelFee, surveyFee);
+    }
+
+    items.forEach(item => {
+        const isSurvey = !!item.isSurveyOnly;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sub-service-btn' + (isSurvey ? ' sub-service-btn--survey' : '');
+        btn.dataset.itemName = item.name;
+
+        if (isSurvey) {
+            btn.innerHTML = `<i class="fas fa-search me-1"></i>${item.name} <small style="opacity:0.75;font-size:0.78em;">(phí di chuyển + khảo sát)</small>`;
+        } else {
+            btn.textContent = item.name + (item.price ? ` – ${Number(item.price).toLocaleString('vi-VN')}đ` : '');
+        }
+
+        btn.addEventListener('click', () => {
+            if (selectedItems.includes(item)) {
+                selectedItems = selectedItems.filter(i => i !== item);
+                btn.classList.remove('active');
+            } else {
+                selectedItems.push(item);
+                btn.classList.add('active');
+            }
+            _sync();
+        });
+
+        container.appendChild(btn);
+    });
+}
+
+// Load services.json cho nav mode (modal)
 let _bdNavServices  = null;
 async function _bdLoadNavServices() {
     const mainSel = document.getElementById('sdMainService');
@@ -532,35 +608,24 @@ async function _bdLoadNavServices() {
         opt.value = cat.id; opt.textContent = cat.name;
         mainSel.appendChild(opt);
     });
+
+    const subBtnsEl  = document.getElementById('sdSubServiceBtns');
+    const subHidden  = document.getElementById('sdSubService');
+    const subWrap    = document.getElementById('sdSubServiceWrap');
+    const subCountEl = document.getElementById('sdSubServiceCount');
+    const priceEl    = document.getElementById('servicePrice');
+
     mainSel.addEventListener('change', () => {
-        const subSel = document.getElementById('sdSubService');
-        if (!subSel) return;
-        subSel.innerHTML = '<option value="">-- Chọn dịch vụ chi tiết --</option>';
-        const cat = _bdNavServices.find(c => c.id == mainSel.value); // loose ==
-        if (!cat) { subSel.disabled = true; _bdHideBreakdown(); return; }
-        cat.items.forEach(item => {
-            const opt = document.createElement('option');
-            opt.value = item.name;
-            opt.textContent = item.name + (item.price ? ` – ${Number(item.price).toLocaleString('vi-VN')}đ` : '');
-            subSel.appendChild(opt);
-        });
-        subSel.disabled = false;
+        const cat = _bdNavServices.find(c => c.id == mainSel.value);
+        if (!cat || !subBtnsEl) {
+            if (subWrap) subWrap.style.display = 'none';
+            _bdHideBreakdown();
+            return;
+        }
+        _bdBuildSubBtns(subBtnsEl, subHidden, cat.items, cat, subCountEl, priceEl);
+        if (subWrap) subWrap.style.display = '';
         _bdHideBreakdown();
     });
-
-    // Hiển thị giá + tính phí di chuyển khi chọn dịch vụ cụ thể
-    const _subSel = document.getElementById('sdSubService');
-    if (_subSel) {
-        _subSel.addEventListener('change', function () {
-            const cat = _bdNavServices.find(c => c.id == mainSel.value);
-            if (!cat) { _bdHideBreakdown(); return; }
-            const item = cat.items.find(i => i.name === this.value);
-            if (!item) { _bdHideBreakdown(); return; }
-            const priceEl = document.getElementById('servicePrice');
-            if (priceEl) priceEl.value = item.price > 0 ? Number(item.price).toLocaleString('vi-VN') + 'đ' : '';
-            _bdSetBreakdown(item.price || 0, item.travelFee || cat.travelFee || null, item.surveyFee || null);
-        });
-    }
 }
 
 // Gắn tất cả event handlers sau khi modal HTML có trong DOM
@@ -622,6 +687,16 @@ function _bdInitModalHandlers() {
         form.style.display = '';
         const confirm = document.getElementById('bookingConfirm');
         if (confirm) confirm.style.display = 'none';
+        // Reset sub-service buttons
+        document.querySelectorAll('#bookingModal .sub-service-btn').forEach(b => b.classList.remove('active'));
+        const sdSubHidden = document.getElementById('sdSubService');
+        if (sdSubHidden) sdSubHidden.value = '';
+        const sdSubWrap = document.getElementById('sdSubServiceWrap');
+        if (sdSubWrap) sdSubWrap.style.display = 'none';
+        const sdMainSel = document.getElementById('sdMainService');
+        if (sdMainSel) sdMainSel.value = '';
+        const sdCount = document.getElementById('sdSubServiceCount');
+        if (sdCount) { sdCount.textContent = ''; sdCount.style.display = 'none'; }
         _bdHideBreakdown(true); // full reset — clear pending coords too
         _bdClearMedia();
         _bdPendingData = null;
@@ -640,6 +715,11 @@ async function _bdLoadModal() {
             const container = document.getElementById('booking-modal-container');
             if (container) container.innerHTML = await res.text();
             else document.body.insertAdjacentHTML('beforeend', await res.text());
+            // Fix logo paths relative to current page (not partial file location)
+            const modalLogoThoNha = document.getElementById('modalLogoThoNha');
+            if (modalLogoThoNha) modalLogoThoNha.src = _BD_BASE + 'assets/images/tho-nha-logo-thuong-hieu-cropped.jpg';
+            const modalLogoDVQT = document.getElementById('modalLogoDVQT');
+            if (modalLogoDVQT) modalLogoDVQT.src = _BD_BASE + 'assets/images/logo-dich-vu-quanh-ta.jpg';
         } catch (err) {
             console.error('[booking-detail] Không thể tải modal đặt lịch:', err);
             return;
@@ -869,30 +949,13 @@ async function _bdLoadStandaloneServices() {
 
     // Detect UI style: button-group (partials/dat-lich.html) vs regular select
     const useButtons = !!subBtns;
+    const subCountEl = document.getElementById('subServiceCount');
+    const priceEl    = document.getElementById('servicePrice');
 
     function _renderSubBtns(items, catData) {
-        subBtns.innerHTML = '';
-        items.forEach(item => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'sub-service-btn';
-            btn.textContent = item.name + (item.price ? ` – ${Number(item.price).toLocaleString('vi-VN')}đ` : '');
-            btn.addEventListener('click', () => {
-                // Single-select trong standalone mode
-                subBtns.querySelectorAll('.sub-service-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                if (subSel) subSel.value = item.name;
-                const priceEl = document.getElementById('servicePrice');
-                const price = item.price || 0;
-                if (priceEl) priceEl.value = price > 0 ? Number(price).toLocaleString('vi-VN') + 'đ' : '';
-                _bdSetBreakdown(price, item.travelFee || catData.travelFee || null, item.surveyFee || catData.surveyFee || null);
-            });
-            subBtns.appendChild(btn);
-        });
+        _bdBuildSubBtns(subBtns, subSel, items, catData, subCountEl, priceEl);
         if (subWrap) subWrap.style.display = '';
         if (subPh)   subPh.classList.add('d-none');
-        if (subSel)  { subSel.value = ''; }
-        _bdHideBreakdown();
     }
 
     function _hideSubBtns() {

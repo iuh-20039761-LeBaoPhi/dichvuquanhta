@@ -1,11 +1,19 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FHV0Y0778D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-FHV0Y0778D");
+    </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="../../../" />
-  <title id="pageTitle">Chi Tiết Xe – Thuê Xe Toàn Quốc</title>
-  <meta name="description" id="metaDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe trên toàn quốc. Đặt xe trực tuyến. Hotline: 0775 472 347." />
+  <title id="pageTitle">Dịch Vụ Quanh Ta - Thuê Xe - Chi Tiết Xe</title>
+  <meta name="description" id="metaDesc" content="Thông tin chi tiết phương tiện cho thuê tại Dịch Vụ Quanh Ta. Đặt trực tuyến nhanh chóng. Hotline: 0775 472 347." />
   <meta name="keywords" id="metaKeys" content="thuê xe toàn quốc, car rental nationwide, chi tiết xe cho thuê" />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Thuê Xe Toàn Quốc" />
@@ -13,20 +21,20 @@
   <meta name="geo.placename" content="Việt Nam" />
   <meta name="theme-color" content="#667eea" />
     <link rel="canonical" id="metaCanonical" href="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/public/chi-tiet-xe.html" />
-  <link rel="icon" type="image/png" href="assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg" />
+    <link rel="icon" type="image/jpeg" href="assets/images/thue-xe-logo-header-navigation.jpg" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="product" />
     <meta property="og:url" id="ogUrl" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/public/chi-tiet-xe.html" />
-  <meta property="og:title" id="ogTitle" content="Chi Tiết Xe – Thuê Xe Toàn Quốc" />
-  <meta property="og:description" id="ogDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe trên toàn quốc. Đặt xe trực tuyến." />
+  <meta property="og:title" id="ogTitle" content="Dịch Vụ Quanh Ta - Thuê Xe - Chi Tiết Xe" />
+  <meta property="og:description" id="ogDesc" content="Thông tin chi tiết phương tiện cho thuê tại Dịch Vụ Quanh Ta. Đặt trực tuyến nhanh chóng. Hotline: 0775 472 347." />
   <meta property="og:image" id="ogImage" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/thue-xe-xe-toyota-camry-2023.jpg" />
   <meta property="og:locale" content="vi_VN" />
   <meta property="og:site_name" content="Thuê Xe" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" id="twTitle" content="Chi Tiết Xe – Thuê Xe Toàn Quốc" />
+  <meta name="twitter:title" id="twTitle" content="Dịch Vụ Quanh Ta - Thuê Xe - Chi Tiết Xe" />
   <meta name="twitter:description" id="twDesc" content="Xem thông tin chi tiết xe cho thuê tại Thuê Xe trên toàn quốc." />
   <meta name="twitter:image" id="twImage" content="https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/cars/thue-xe-xe-toyota-camry-2023.jpg" />
 
@@ -176,14 +184,25 @@
 <script src="assets/js/load-template.js"></script>
 <script>
 window.PAGE_SEO = {
-    title:   'Chi Tiết Xe – Thuê Xe Toàn Quốc',
+    title:   'Dịch Vụ Quanh Ta - Thuê Xe - Chi Tiết Xe',
     desc:    'Xem thông tin chi tiết xe cho thuê tại Thuê Xe trên toàn quốc. Đặt xe trực tuyến. Hotline: 0775 472 347.',
     keys:    'thuê xe toàn quốc, car rental nationwide, chi tiết xe cho thuê',
     url:     'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/public/chi-tiet-xe.html',
-    navPage: 'car-detail'
+        navPage: 'services'
 };
 loadHeader();
 </script>
+
+<section class="hero-section" style="padding: 80px 0;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-12 text-center hero-content">
+                <h1>Chi Tiết Xe</h1>
+                <p>Thông tin đầy đủ về dòng xe, tình trạng sẵn sàng và tùy chọn đặt xe nhanh</p>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- ===== MAIN CONTENT ===== -->
 <section class="py-5">
@@ -857,8 +876,15 @@ function renderCarDetail(carType, availableCars) {
                 modal.innerHTML = `
                     <div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-centered modal-dialog-scrollable">
                         <div class="modal-content booking-modal-content">
-                            <div class="modal-header booking-modal-header">
-                                <h5 class="modal-title">Thông Tin Đặt Xe</h5>
+                            <div class="modal-header booking-modal-header" style="padding:10px 14px;">
+                                <div class="tx-bk-spacer"></div>
+                                <div class="tx-bk-center">
+                                    <img src="assets/images/logo-dich-vu-quanh-ta.jpg" alt="Dịch Vụ Quanh Ta" class="tx-bk-logo">
+                                    <h5 class="modal-title mb-0 fw-bold" style="color:#1e293b;">
+                                        <i class="fas fa-clipboard-list me-1" style="color:var(--color-primary);"></i>Thông Tin Đặt Xe
+                                    </h5>
+                                    <img src="assets/images/thue-xe-logo-header-navigation.jpg" alt="Thuê Xe" class="tx-bk-logo">
+                                </div>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body booking-modal-body">

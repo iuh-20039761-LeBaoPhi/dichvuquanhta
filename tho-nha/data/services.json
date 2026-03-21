@@ -16,6 +16,14 @@
         },
         "items": [
             {
+                "name": "Kiểm tra lỗi",
+                "isSurveyOnly": true,
+                "price": 0,
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "duration": "30–60 phút",
+                "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
+            },
+            {
                 "name": "Vệ sinh máy lạnh",
                 "price": 300000,
                 "laborCost": 200000,
@@ -133,6 +141,14 @@
         },
         "items": [
             {
+                "name": "Kiểm tra lỗi",
+                "isSurveyOnly": true,
+                "price": 0,
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "duration": "30–60 phút",
+                "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
+            },
+            {
                 "name": "Sửa máy giặt không vắt",
                 "price": 280000,
                 "laborCost": 200000,
@@ -223,6 +239,14 @@
         },
         "items": [
             {
+                "name": "Kiểm tra lỗi",
+                "isSurveyOnly": true,
+                "price": 0,
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "duration": "30–60 phút",
+                "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
+            },
+            {
                 "name": "Thông tắc bồn cầu",
                 "price": 200000,
                 "laborCost": 200000,
@@ -303,6 +327,14 @@
         },
         "items": [
             {
+                "name": "Kiểm tra lỗi",
+                "isSurveyOnly": true,
+                "price": 0,
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "duration": "30–60 phút",
+                "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
+            },
+            {
                 "name": "Sửa chập điện",
                 "price": 180000,
                 "laborCost": 180000,
@@ -382,6 +414,14 @@
             "maxFee": 120000
         },
         "items": [
+            {
+                "name": "Kiểm tra lỗi",
+                "isSurveyOnly": true,
+                "price": 0,
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "duration": "30–60 phút",
+                "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
+            },
             {
                 "name": "Sửa tủ lạnh không lạnh",
                 "price": 300000,
@@ -483,6 +523,14 @@
         },
         "items": [
             {
+                "name": "Kiểm tra lỗi",
+                "isSurveyOnly": true,
+                "price": 0,
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "duration": "30–60 phút",
+                "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
+            },
+            {
                 "name": "Sửa tivi không lên nguồn",
                 "price": 280000,
                 "laborCost": 200000,
@@ -583,6 +631,14 @@
         },
         "items": [
             {
+                "name": "Kiểm tra lỗi",
+                "isSurveyOnly": true,
+                "price": 0,
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán nguyên nhân hư hỏng và tư vấn phương án sửa chữa tốt nhất. Phí khảo sát được miễn nếu đồng ý sửa.",
+                "duration": "30–60 phút",
+                "surveyFee": { "amount": 50000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
+            },
+            {
                 "name": "Sửa bếp từ không nóng",
                 "price": 350000,
                 "laborCost": 250000,
@@ -682,6 +738,14 @@
             "maxFee": 120000
         },
         "items": [
+            {
+                "name": "Kiểm tra lỗi",
+                "isSurveyOnly": true,
+                "price": 0,
+                "desc": "Thợ đến tận nơi kiểm tra, chẩn đoán tình trạng công trình và tư vấn phương án cải tạo phù hợp. Phí khảo sát được miễn nếu ký hợp đồng sửa chữa.",
+                "duration": "1–2 giờ",
+                "surveyFee": { "amount": 200000, "required": true, "waiveIfBooked": true, "deductToFinal": true }
+            },
             {
                 "name": "Sơn nhà",
                 "price": 5000000,

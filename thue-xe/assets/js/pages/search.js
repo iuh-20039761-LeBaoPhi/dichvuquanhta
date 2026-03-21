@@ -144,7 +144,7 @@ function displaySearchResults(cars, searchParams) {
                 <i class="fas fa-search fa-3x text-muted mb-3"></i>
                 <h5>Hiện không có xe phù hợp</h5>
                 <p class="text-muted">${searchInfo}</p>
-                <a href="index.php?page=search" class="btn btn-gradient mt-3">
+                <a href="views/pages/public/tim-kiem.html" class="btn btn-gradient mt-3">
                     <i class="fas fa-redo me-2"></i>Xem tất cả
                 </a>
             </div>`;
@@ -194,7 +194,7 @@ function displaySearchResults(cars, searchParams) {
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="car-price">${Utils.formatPrice(car.price_per_day)}đ/ngày</span>
-                            <a href="index.php?page=car-detail&id=${car.id}" class="btn btn-gradient-secondary btn-sm">
+                            <a href="views/pages/public/chi-tiet-xe.html?type_id=${car.type_id || car.id}" class="btn btn-gradient-secondary btn-sm">
                                 Xem chi tiết
                             </a>
                         </div>
@@ -234,11 +234,11 @@ function setupFilterForm() {
         const seats = document.getElementById('filterSeats').value;
         const price = document.getElementById('filterPrice').value;
 
-        const query = new URLSearchParams({ page: 'search' });
+        const query = new URLSearchParams();
         if (brand) query.set('brand', brand);
         if (seats) query.set('seats', seats);
         if (price) query.set('price', price);
 
-        window.location.href = `index.php?${query.toString()}`;
+        window.location.href = `views/pages/public/tim-kiem.html${query.toString() ? `?${query.toString()}` : ''}`;
     });
 }

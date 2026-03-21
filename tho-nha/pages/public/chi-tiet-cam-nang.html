@@ -1,16 +1,24 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FHV0Y0778D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-FHV0Y0778D");
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Dynamic SEO - injected by JS -->
-    <title>Cẩm Nang | Thợ Nhà TP.HCM</title>
+    <title>Dịch Vụ Quanh Ta - Thợ Nhà - Cẩm Nang</title>
     <meta name="description" content="">
     <meta name="keywords" content="thợ nhà, sửa chữa nhà, kiến thức sửa chữa">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="" id="canonicalUrl">
-    <link rel="icon" type="image/png" href="../../assets/images/tho-nha-logo-thuong-hieu.png">
+    <link rel="icon" type="image/jpeg" href="../../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg">
 
     <!-- Open Graph -->
     <meta property="og:type" content="article" id="ogType">
@@ -349,7 +357,7 @@
         <a href="cam-nang.html" class="btn-back"><i class="fas fa-arrow-left"></i> Quay Lại Cẩm Nang</a>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-3">
-                <li class="breadcrumb-item"><a href="trang-chu.html"><i class="fas fa-home me-1"></i>Trang Chủ</a></li>
+                <li class="breadcrumb-item"><a href="../../index.html"><i class="fas fa-home me-1"></i>Trang Chủ</a></li>
                 <li class="breadcrumb-item"><a href="cam-nang.html">Cẩm Nang</a></li>
                 <li class="breadcrumb-item active" id="breadcrumbCat">Cẩm Nang</li>
             </ol>
@@ -452,10 +460,10 @@ function patchNavForBlogPages() {
     if (!header) return;
 
     const sectionLinkMap = {
-        '#home': 'trang-chu.html#home',
-        '#services': 'trang-chu.html#services',
-        '#about': 'trang-chu.html#about',
-        '#contact': 'trang-chu.html#contact'
+        '#home': '../../index.html#home',
+        '#services': '../../index.html#services',
+        '#about': '../../index.html#about',
+        '#contact': '../../index.html#contact'
     };
 
     header.querySelectorAll('.nav-link[href^="#"]').forEach(link => {
@@ -467,14 +475,14 @@ function patchNavForBlogPages() {
 
     const logoHome = header.querySelector('.navbar-brand > a[href="../index.html"]');
     if (logoHome) {
-        logoHome.setAttribute('href', 'trang-chu.html');
+        logoHome.setAttribute('href', '../../index.html');
     }
 
     const orderLink = header.querySelector('.nav-link[data-bs-target="#viewOrderModal"]');
     if (orderLink) {
         orderLink.removeAttribute('data-bs-toggle');
         orderLink.removeAttribute('data-bs-target');
-        orderLink.setAttribute('href', 'trang-chu.html#contact');
+        orderLink.setAttribute('href', '../../index.html#contact');
     }
 
     // #bookingModal: giữ nguyên để mở modal tại trang này
@@ -541,7 +549,7 @@ async function initBlogDetailPage() {
 
 function loadArticle(a) {
     // SEO
-    document.title = a.title + ' | Thợ Nhà TP.HCM';
+    document.title = 'Dịch Vụ Quanh Ta - Thợ Nhà - ' + a.title;
     document.querySelector('meta[name="description"]').content = a.description;
     document.querySelector('meta[name="keywords"]').content = (a.tags || []).join(', ') + ', thợ nhà, sửa chữa nhà tphcm';
     document.getElementById('canonicalUrl').href = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/chi-tiet-cam-nang.html?slug=' + a.slug;
@@ -561,7 +569,7 @@ function loadArticle(a) {
         "publisher": {
             "@type": "Organization",
             "name": "Thợ Nhà – GlobalCare",
-            "logo": { "@type": "ImageObject", "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/image/tho-nha-logo-thuong-hieu.png" }
+            "logo": { "@type": "ImageObject", "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha/image/tho-nha-logo-thuong-hieu-cropped.jpg" }
         }
     };
     const schemaEl = document.createElement('script');
@@ -686,3 +694,4 @@ function copyLink() {
 
 </body>
 </html>
+

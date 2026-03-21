@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <base href="../../" />
-  <title>Đặt Xe – Thuê Xe Toàn Quốc</title>
-  <meta name="description" content="Đặt xe trực tuyến tại Thuê Xe Toàn Quốc. Hotline: 0775 472 347." />
+  <title>Dịch Vụ Quanh Ta - Thuê Xe - Đặt Lịch</title>
+  <meta name="description" content="Đặt lịch thuê xe trực tuyến tại Dịch Vụ Quanh Ta. Hotline: 0775 472 347." />
   <meta name="robots" content="noindex" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,14 +16,15 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
+<script src="assets/js/static-data.js"></script>
 <script src="assets/js/load-template.js"></script>
 <script>
 window.PAGE_SEO = {
-    title:   'Đặt Xe – Thuê Xe Toàn Quốc',
+    title:   'Dịch Vụ Quanh Ta - Thuê Xe - Đặt Lịch',
     desc:    'Đặt xe trực tuyến tại Thuê Xe Toàn Quốc. Hotline hỗ trợ 24/7: 0775 472 347.',
     keys:    'đặt xe thuê, car rental booking, thuê xe toàn quốc',
     url:     'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/partials/dat-lich-modal.html',
-    navPage: ''
+    navPage: 'dat-lich-modal'
 };
 loadHeader();
 </script>
@@ -31,7 +32,18 @@ loadHeader();
 <!-- ===== STANDALONE PAGE CONTENT ===== -->
 <!-- Phần này chỉ hiển thị khi truy cập trực tiếp URL.
      Khi chi-tiet-xe.html fetch file này, chỉ #bookingFormContent được trích xuất. -->
-<section class="py-5" id="standaloneBookingPage">
+<section class="hero-section" style="padding: 80px 0;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-12 text-center hero-content">
+        <h1>Đặt Lịch Thuê Xe</h1>
+        <p>Chọn xe, thời gian và điền thông tin để hoàn tất đặt lịch</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5" id="standaloneBookingPage" style="min-height:70vh; background:#f1f5f9;">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8">
@@ -106,8 +118,16 @@ loadHeader();
 
         <!-- Booking form card -->
         <div class="card border-0 shadow-sm">
-          <div class="card-header booking-modal-header" style="background:var(--gradient-primary);border-radius:8px 8px 0 0;">
-            <h5 class="mb-0 text-white"><i class="fas fa-clipboard-list me-2"></i>Thông Tin Đặt Xe</h5>
+          <div class="card-header booking-modal-header">
+            <div class="tx-bk-spacer"></div>
+            <div class="tx-bk-center">
+              <img src="assets/images/logo-dich-vu-quanh-ta.jpg" alt="Dịch Vụ Quanh Ta" class="tx-bk-logo">
+              <h5 class="mb-0 text-white fw-bold">
+                <i class="fas fa-clipboard-list me-1"></i>Thông Tin Đặt Xe
+              </h5>
+              <img src="assets/images/thue-xe-logo-header-navigation.jpg" alt="Thuê Xe" class="tx-bk-logo">
+            </div>
+            <div class="tx-bk-spacer"></div>
           </div>
           <!-- ====================================================
                #bookingFormContent — được chi-tiet-xe trích xuất
@@ -146,7 +166,7 @@ loadHeader();
                   <label class="form-label">Địa chỉ *</label>
                   <textarea class="form-control" id="customerAddress" name="customer_address" rows="2" required
                             placeholder="Số nhà, đường, phường, quận..."></textarea>
-                  <div class="d-flex gap-2 mt-2 flex-wrap booking-map-actions">
+                  <div class="mt-2 booking-map-actions">
                     <button type="button" class="btn-map-picker booking-touch-btn" id="mapBtnAddr" onclick="CarMapPicker.toggle('addr')">
                       <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
                     </button>
@@ -166,19 +186,19 @@ loadHeader();
                 <!-- Đính kèm hình ảnh / video -->
                 <div class="col-md-12">
                   <label class="form-label">Đính kèm hình ảnh / video <small class="text-muted">(tùy chọn)</small></label>
-                  <div class="d-flex gap-2 flex-wrap mb-2">
-                    <button type="button" id="txPhotoCaptureBtn" class="booking-touch-btn"
-                        style="background:var(--gradient-primary);color:white;border:none;padding:8px 18px;border-radius:50px;font-size:0.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                  <div class="tx-capture-btns mb-2">
+                    <button type="button" id="txPhotoCaptureBtn" class="tx-capture-photo booking-touch-btn">
                       <i class="fas fa-camera"></i> Chụp hình
                     </button>
-                    <button type="button" id="txVideoCaptureBtn" class="booking-touch-btn"
-                        style="background:linear-gradient(135deg,#0f172a,#1e3a5f);color:white;border:none;padding:8px 18px;border-radius:50px;font-size:0.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                    <button type="button" id="txVideoCaptureBtn" class="tx-capture-video booking-touch-btn">
                       <i class="fas fa-video"></i> Quay video
                     </button>
                   </div>
                   <input type="file" id="txMediaPhotoInput" accept="image/*" multiple style="display:none">
                   <input type="file" id="txMediaVideoInput" accept="video/*" style="display:none">
-                  <div id="txMediaPreviewContainer" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                  <div class="tx-media-preview-box">
+                    <div id="txMediaPreviewContainer" class="tx-media-preview-grid"></div>
+                  </div>
                 </div>
                 <div class="col-12">
                   <label class="form-label fw-semibold">Dịch vụ đi kèm <span class="text-muted fw-normal">(không bắt buộc)</span></label>
@@ -204,8 +224,8 @@ loadHeader();
               </div>
 
               <div class="mt-3 booking-submit-wrap">
-                <button type="submit" class="btn btn-gradient w-100 booking-submit-btn booking-touch-btn">
-                  <i class="fas fa-check me-2"></i>Xác nhận đặt xe
+                <button type="submit" class="btn btn-gradient booking-submit-btn booking-touch-btn">
+                  <i class="fas fa-check me-2"></i>Đặt xe
                 </button>
               </div>
             </form>

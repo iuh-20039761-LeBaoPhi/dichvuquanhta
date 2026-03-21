@@ -518,18 +518,41 @@ body {
     overflow: hidden;
 }
 
+/* ===== Booking modal header — logo + title centered ===== */
+.booking-modal-header {
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    gap: 8px;
+}
+.tx-bk-spacer { width: 32px; flex-shrink: 0; }
+.tx-bk-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+.tx-bk-center h5 { white-space: nowrap; font-size: 1rem; color: #1e293b; }
+.tx-bk-logo {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 6px;
+    padding: 0;
+}
+
 #bookingModal .booking-modal-header {
-    padding: 0.9rem 1rem;
+    border-radius: 0;
 }
-
-#bookingModal .booking-modal-header .modal-title {
-    font-size: 1.02rem;
-    font-weight: 700;
-}
-
 #bookingModal .booking-modal-header .btn-close {
-    width: 1.1rem;
-    height: 1.1rem;
+    filter: none;
 }
 
 #bookingModal .booking-modal-body {
@@ -592,16 +615,92 @@ body {
 }
 
 #bookingModal .booking-submit-wrap {
-    position: sticky;
-    bottom: -1px;
     padding-top: 0.8rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 38%);
-    z-index: 2;
 }
 
-#bookingModal .booking-submit-btn {
+/* Submit button — căn giữa, không full-width */
+.booking-submit-wrap {
+    text-align: center;
+    margin-top: 16px;
+}
+.booking-submit-btn {
     min-height: 46px;
     font-size: 0.96rem;
+    min-width: 160px;
+    padding: 12px 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Capture buttons — luôn cùng hàng, chia đôi đều */
+.tx-capture-btns {
+    display: flex;
+    gap: 10px;
+}
+.tx-capture-photo,
+.tx-capture-video {
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 0;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+    transition: opacity 0.2s;
+}
+.tx-capture-photo { background: var(--gradient-primary); color: white; }
+.tx-capture-video { background: linear-gradient(135deg, #0f172a, #1e3a5f); color: white; }
+.tx-capture-photo:hover,
+.tx-capture-video:hover { opacity: 0.88; }
+
+/* Map action buttons — luôn cùng hàng */
+.booking-map-actions {
+    display: flex;
+    gap: 8px;
+}
+.booking-map-actions .btn-map-picker {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Media preview box — luôn hiện */
+.tx-media-preview-box {
+    margin-top: 10px;
+    background: #f8fafc;
+    border: 1px dashed rgba(59,130,246,0.35);
+    border-radius: 10px;
+    padding: 10px 12px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+}
+.tx-media-preview-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+}
+.tx-media-preview-grid:empty::before {
+    content: 'Chưa có ảnh / video';
+    font-size: 0.8rem;
+    color: #94a3b8;
 }
 
 #bookingModal .tx-confirm-actions .btn {

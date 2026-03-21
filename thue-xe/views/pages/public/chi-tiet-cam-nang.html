@@ -1,14 +1,22 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FHV0Y0778D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-FHV0Y0778D");
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../../../">
-    <title>Chi Tiết Cẩm Nang | Thuê Xe TP.HCM</title>
+    <title>Dịch Vụ Quanh Ta - Thuê Xe - Chi Tiết Cẩm Nang</title>
     <meta name="description" content="">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="" id="canonicalUrl">
-    <link rel="icon" type="image/png" href="assets/images/thue-xe-logo-thuong-hieu.png">
+    <link rel="icon" type="image/jpeg" href="assets/images/thue-xe-logo-header-navigation.jpg">
     <meta property="og:type" content="article">
     <meta property="og:locale" content="vi_VN">
 
@@ -435,7 +443,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 function loadArticle(a) {
     // SEO via PAGE_SEO + loadHeader
     window.PAGE_SEO = {
-        title: a.title + ' | Thuê Xe TP.HCM',
+        title: 'Dịch Vụ Quanh Ta - Thuê Xe - ' + a.title,
         desc: a.description,
         keys: (a.tags||[]).join(', ') + ', thuê xe, cho thuê xe tphcm',
         url: 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/public/chi-tiet-cam-nang.html?slug=' + a.slug,
@@ -457,7 +465,7 @@ function loadArticle(a) {
         "publisher": {
             "@type": "Organization",
             "name": "Thuê Xe – GlobalCare",
-            "logo": { "@type": "ImageObject", "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/thue-xe-logo-thuong-hieu.png" }
+            "logo": { "@type": "ImageObject", "url": "https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/assets/images/thue-xe-logo-header-navigation.jpg" }
         }
     };
     const s = document.createElement('script');
@@ -497,7 +505,7 @@ function loadArticle(a) {
 }
 
 function showNotFound() {
-    window.PAGE_SEO = { title: 'Cẩm nang không tìm thấy | Thuê Xe', navPage: 'chi-tiet-cam-nang' };
+    window.PAGE_SEO = { title: 'Dịch Vụ Quanh Ta - Thuê Xe - Không Tìm Thấy', navPage: 'chi-tiet-cam-nang' };
     loadHeader();
     loadFooter();
     document.getElementById('artBox').style.display = 'none';
