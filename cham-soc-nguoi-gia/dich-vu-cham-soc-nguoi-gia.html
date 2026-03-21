@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Dịch vụ chăm sóc mẹ và bé toàn diện tại Chăm sóc Mẹ và Bé: khám thai, chăm sóc sau sinh, tiêm chủng, tư vấn nuôi dạy con khoa học và an toàn.">
-    <meta name="keywords" content="chăm sóc mẹ và bé, khám thai, chăm sóc sau sinh, tiêm chủng trẻ em, tư vấn nuôi dạy con">
-    <title>Dịch Vụ - Chăm Sóc Mẹ và Bé</title>
+    <meta name="description" content="Dịch vụ chăm sóc người già tại nhà chuyên nghiệp: điều dưỡng tận tâm, theo dõi sức khỏe định kỳ, hỗ trợ sinh hoạt và phục hồi chức năng cho người cao tuổi.">
+    <meta name="keywords" content="chăm sóc người già, chăm sóc người cao tuổi tại nhà, điều dưỡng tại nhà, chăm sóc sức khỏe người già, phục hồi chức năng người cao tuổi">
+    <title>Dịch Vụ - Chăm Sóc Người Cao Tuổi</title>
     <link
       rel="shortcut icon"
       type="image/x-icon"
-      href="assets/logomvb.png"
+      href="assets/logong.png"
     />
     <!-- Bootstrap 5 CSS -->
     <link
@@ -45,7 +45,6 @@ body {
   align-items: center;
   min-width: 0;
 }
-
 /* Khóa mờ các ca còn lại khi đã chọn 1 ca */
 .package-locked {
   opacity: 0.45;
@@ -118,6 +117,12 @@ body {
     width: 80%;
     margin-top: 10px;
   }
+
+  .hero-section img {
+    width: 100% !important;
+    max-width: 340px;
+    height: auto !important;
+  }
 }
 </style>
   </head>
@@ -131,7 +136,7 @@ body {
         <a
           class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
           href="../index.html"
-          style="color: #f06292"
+          style="color: #2e7d32"
         >
           <img
             style="width: 80px; height: 60px"
@@ -139,16 +144,16 @@ body {
             alt="cham-soc-me-va-be"
           />
         </a>
-        <span>Chăm Sóc Mẹ và Bé</span>
+        <span>Chăm Sóc Người Cao Tuổi</span>
         <a
             class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
             href="index.html"
-            style="color: #f06292"
+            style="color: #2e7d32"
           >
-          <img
+            <img
             style="width: 80px; height: 60px"
-            src="assets/logomvb.png"
-            alt="cham-soc-me-va-be"
+            src="assets/logong.png"
+            alt="cham-soc-nguoi-gia"
           />
           </a>
         <button
@@ -174,28 +179,20 @@ body {
             <li class="nav-item">
               <a
                 class="nav-link fw-bold px-3 active"
-                style="color: #f06292; font-size: larger"
-                href="services.html"
+                style="color: #2e7d32; font-size: larger"
+                href="dich-vu-cham-soc-nguoi-gia.html"
                 >Dịch Vụ</a
               >
             </li>
-            <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="html/terms.html"
-                  >Điều Khoản</a
-                >
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="html/baiviet.html"
-                  >Bài Viết</a
-                >
-            </li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/terms.html">Điều Khoản</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/baiviet.html">Bài Viết</a></li>
             <li class="nav-item">
               <a class="nav-link fw-bold px-3" href="html/contact.html">Liên Hệ</a>
             </li>
             <li class="nav-item">
                 <a
                   class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-                  style="background: linear-gradient(135deg, #f06292, #ec407a);"
+                  style="background: linear-gradient(135deg, #2e7d32, #2e7d32);"
                   href="khach_hang/lookup.html"
                   data-lookup-modal
                   data-lookup-modal-src="khach_hang/lookup.html"
@@ -204,7 +201,7 @@ body {
                     this.style.transform = 'scale(1.05)';
                   "
                   onmouseout="
-                    this.style.background = 'linear-gradient(135deg, #f06292, #ec407a)';
+                    this.style.background = 'linear-gradient(135deg, #2e7d32, #2e7d32)';
                     this.style.transform = 'scale(1)';
                   "
                 >Tra cứu đơn hàng</a>
@@ -215,13 +212,13 @@ body {
                 data-login-modal
                 data-login-modal-src="login.html"
                 class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-                style="background-color: #f06292"
+                style="background-color: #2e7d32"
                 onmouseover="
                   this.style.backgroundColor = '#d84374';
                   this.style.transform = 'scale(1.05)';
                 "
                 onmouseout="
-                  this.style.backgroundColor = '#F06292';
+                  this.style.backgroundColor = '#2e7d32';
                   this.style.transform = 'scale(1)';
                 "
                 >Đăng Nhập</a
@@ -257,16 +254,14 @@ body {
         </div>
       </div>
     </nav>
-
-    <!-- Services Hero Banner -->
     <section
       class="py-5"
       style="
         background: linear-gradient(
           135deg,
-          #ffe1ec 0%,
+          #f1f8e9 0%,
           #ffffff 50%,
-          #f7e0f4 100%
+          #e3f2fd 100%
         );
       "
     >
@@ -274,24 +269,24 @@ body {
         <h1 class="display-3 fw-bold mb-3">
           Các Dịch Vụ Của Chúng Tôi <br>
           <span
-            style="color: #f06292; font-family: &quot;Pacifico&quot;, cursive"
-            >Chăm Sóc Mẹ và Bé</span
+            style="color: #2e7d32; font-family: &quot;Pacifico&quot;, cursive"
+            >Chăm Sóc Người Cao Tuổi</span
           >
         </h1>
         <p class="lead text-muted mb-4">
-          Dịch vụ chăm sóc sức khỏe mẹ và bé toàn diện, chuyên nghiệp và tận tâm
+          Dịch vụ chăm sóc sức khỏe Người cao tuổi toàn diện, chuyên nghiệp và
+          tận tâm
         </p>
         <div
           style="
             width: 60px;
             height: 3px;
-            background-color: #f06292;
+            background-color: #2e7d32;
             margin: 0 auto;
           "
         ></div>
       </div>
     </section>
-
     <!-- Services Detail -->
     <section class="py-5">
         <div class="container py-lg-5">
@@ -300,16 +295,16 @@ body {
     </section>
 
     <!-- Booking Section -->
-    <section class="py-5" style="background-color: #fff3f7">
+    <section class="py-5" style="background-color: #f3faff">
       <div class="container py-5 text-center">
-        <h2 class="fw-bold display-5 mb-3"> 📞 Liên Hệ Tư Vấn Ngay</h2>
+        <h2 class="fw-bold display-5 mb-3">Sẵn Sàng Đặt Lịch?</h2>
         <p class="lead text-muted mb-4">
           Hãy liên hệ với chúng tôi để đặt lịch khám và tư vấn miễn phí
         </p>
         <button
           class="btn text-white rounded-pill px-5 py-3 shadow-sm"
           style="
-            background-color: #f06292;
+            background-color: #2e7d32;
             border: none;
             font-weight: 700;
             cursor: pointer;
@@ -317,27 +312,27 @@ body {
           "
           onclick="window.location.href = 'html/contact.html'"
           onmouseover="
-            this.style.backgroundColor = '#d84374';
+            this.style.backgroundColor = '#0056b3';
             this.style.transform = 'scale(1.05)';
           "
           onmouseout="
-            this.style.backgroundColor = '#F06292';
+            this.style.backgroundColor = '#2e7d32';
             this.style.transform = 'scale(1)';
           "
         >
-          Đặt Lịch Ngay
+           📞 Liên Hệ Tư Vấn Ngay
         </button>
       </div>
     </section>
-
     <!-- Footer -->
     <footer class="bg-dark text-white pt-5 pb-3">
       <div class="container">
         <div class="row g-4 mb-4">
-          <div class="col-12 col-md-6 col-lg-4 px-lg-3">
-            <h3 class="h4 fw-bold mb-3" style="color: #f06292">Chăm Sóc Mẹ và Bé</h3>
+          <div class="col-lg-4">
+            <h3 class="h4 fw-bold mb-3" style="color: #2e7d32">Chăm Sóc Người Cao Tuổi</h3>
             <p class="opacity-75">
-              Cung cấp dịch vụ chăm sóc sức khỏe mẹ và bé chuyên nghiệp
+              Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng
+              đầu tại Việt Nam.
             </p>
             <p class="opacity-75">
                 CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853
@@ -355,26 +350,26 @@ body {
               </p>
               
           </div>
-          <div class="col-12 col-md-6 col-lg-4 px-lg-3">
-            <h4 class="h5 fw-bold mb-3">Liên Kết Nhanh</h4>
+          <div class="col-lg-2">
+            <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
             <ul class="list-unstyled">
               <li class="mb-2">
                 <a
-                  href="about.html"
+                  href="html/about.html"
                   class="text-white text-decoration-none opacity-75"
                   >Giới Thiệu</a
                 >
               </li>
               <li class="mb-2">
                 <a
-                  href="services.html"
+                  href="dich-vu-cham-soc-nguoi-gia.html"
                   class="text-white text-decoration-none opacity-75"
                   >Dịch Vụ</a
                 >
               </li>
               <li class="mb-2">
                 <a
-                  href="contact.html"
+                  href="html/contact.html"
                   class="text-white text-decoration-none opacity-75"
                   >Liên Hệ</a
                 >
@@ -445,89 +440,47 @@ body {
               </li>
             </ul>
           </div>
-          <div class="col-12 col-md-6 col-lg-4 px-lg-3">
-            <h4 class="h5 fw-bold mb-3">Mạng Xã Hội</h4>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
             <div class="d-flex gap-3">
-              <a
-                href="#"
-                class="btn btn-outline-light rounded-circle shadow-sm"
-                style="
-                  width: 40px;
-                  height: 40px;
-                  padding: 0;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                "
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
                 ><i class="fab fa-facebook-f"></i
               ></a>
-              <a
-                href="#"
-                class="btn btn-outline-light rounded-circle shadow-sm"
-                style="
-                  width: 40px;
-                  height: 40px;
-                  padding: 0;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                "
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
                 ><i class="fab fa-instagram"></i
               ></a>
-              <a
-                href="#"
-                class="btn btn-outline-light rounded-circle shadow-sm"
-                style="
-                  width: 40px;
-                  height: 40px;
-                  padding: 0;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                "
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
                 ><i class="fab fa-youtube"></i
               ></a>
-              <a
-                href="#"
-                class="btn btn-outline-light rounded-circle shadow-sm"
-                style="
-                  width: 40px;
-                  height: 40px;
-                  padding: 0;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                "
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
                 ><i class="fab fa-tiktok"></i
               ></a>
             </div>
             <div class="mt-4">
-                <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
-                <div class="d-flex gap-2" style="max-width: 300px;">
-                  <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                    <i data-lucide="apple" class="me-2" style="width: 20px; height: 20px;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
-                      <span class="fw-bold" style="font-size: 11px;">App Store</span>
-                    </div>
-                  </a>
-                  <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                    <i data-lucide="play" class="me-2" style="width: 20px; height: 20px; fill: white;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
-                      <span class="fw-bold" style="font-size: 11px;">Google Play</span>
-                    </div>
-                  </a>
-                </div>
+              <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
+              <div class="d-flex gap-2" style="max-width: 300px;">
+                <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
+                  <i data-lucide="apple" class="me-2" style="width: 20px; height: 20px;"></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
+                    <span class="fw-bold" style="font-size: 11px;">App Store</span>
+                  </div>
+                </a>
+                <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill">
+                  <i data-lucide="play" class="me-2" style="width: 20px; height: 20px; fill: white;"></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
+                    <span class="fw-bold" style="font-size: 11px;">Google Play</span>
+                  </div>
+                </a>
               </div>
+            </div>
           </div>
         </div>
         <hr class="opacity-25" />
-        <div class="text-center">
-          <p class="small opacity-50 mb-0">
-            &copy; 2026 Chăm Sóc Mẹ và Bé. Tất cả quyền được bảo lưu.
-          </p>
-        </div>
+        <p class="text-center small opacity-50">
+          &copy; 2026 Chăm Sóc Người Cao Tuổi. Đồng hành cùng sức khỏe Việt.
+        </p>
       </div>
     </footer>
 
@@ -554,7 +507,7 @@ body {
           });
       });
       // Thay vì dùng $('.modal').modal('hide') - cách này cũ
-// Hãy dùng cách này trong file services.html của bạn:
+// Hãy dùng cách này trong file dich-vu-cham-soc-nguoi-gia.html của bạn:
 
       $(document).on('hidden.bs.modal', '#bookingModal', function () {
           // 1. Loại bỏ lớp làm mờ (nếu còn sót lại)
@@ -735,7 +688,7 @@ body {
       SERVICES.forEach(function(service, index) {
         var reverse = index % 2 ? "flex-lg-row-reverse" : "";
         var includesHTML = service.includes.map(function(i) {
-          return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:#F06292"></i>' + i + '</li>';
+          return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:#2e7d32"></i>' + i + '</li>';
         }).join("");
 
         $("#servicesContainer").append(
@@ -744,11 +697,11 @@ body {
               '<img src="' + service.image + '" class="img-fluid rounded-4 shadow-lg">' +
             '</div>' +
             '<div class="col-lg-6">' +
-              '<h2 class="fw-bold display-6 mb-3" style="color:#F06292">' + service.name + '</h2>' +
+              '<h2 class="fw-bold display-6 mb-3" style="color:#2e7d32">' + service.name + '</h2>' +
               '<p class="text-secondary lh-lg mb-4">' + service.description + '</p>' +
               '<h4 class="fw-bold mb-3">Bao gồm</h4>' +
               '<ul class="list-unstyled mb-4">' + includesHTML + '</ul>' +
-              '<button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" style="background:#F06292;border:none" data-id="' + service.id + '">' +
+              '<button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" style="background:#2e7d32;border:none" data-id="' + service.id + '">' +
                 '<i class="fas fa-calendar-check me-1"></i>Đặt Lịch Ngay' +
               '</button>' +
             '</div>' +
