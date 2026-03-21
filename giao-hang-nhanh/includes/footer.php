@@ -1,3 +1,30 @@
+<?php
+$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+$projectMarker = '/giao-hang-nhanh/';
+$projectPos = stripos($scriptName, $projectMarker);
+$projectBase = $projectPos !== false
+    ? substr($scriptName, 0, $projectPos + strlen($projectMarker))
+    : '/giao-hang-nhanh/';
+$parentBase = preg_replace('#giao-hang-nhanh/?$#i', '', $projectBase);
+
+$footerLinks = [
+    'about' => $projectBase . 'index.html#hero',
+    'services' => $projectBase . 'index.html#services',
+    'contact' => $projectBase . 'index.html#contact',
+    'terms' => $projectBase . 'dieu-khoan-su-dung.html',
+    'privacy' => $projectBase . 'chinh-sach-bao-mat.html',
+    'shipping_policy' => $projectBase . 'chinh-sach-van-chuyen.html',
+    'svc_lau_don_ve_sinh' => $parentBase . 'dich-vu-don-ve-sinh/demo/',
+    'svc_cham_soc_me_be' => $parentBase . 'cham-soc-me-va-be/',
+    'svc_cham_soc_vuon' => $parentBase . 'cham-soc-vuon-nha/',
+    'svc_giat_ui' => $parentBase . 'giat-ui-nhanh/',
+    'svc_tho_nha' => $parentBase . 'tho-nha/',
+    'svc_cham_soc_nguoi_gia' => $parentBase . 'cham-soc-nguoi-gia/',
+    'svc_cham_soc_nguoi_benh' => $parentBase . 'cham-soc-nguoi-benh/',
+    'svc_dich_vu_chuyen_don' => $parentBase . 'dich-vu-chuyen-don/',
+    'svc_giao_hang_nhanh' => $projectBase,
+];
+?>
 <footer>
   <div class="footer-container">
     <div class="footer-grid">
@@ -52,45 +79,54 @@
       <div class="footer-col links-col">
         <h3>Liên Kết</h3>
         <ul class="footer-links">
-          <li><a data-layout-link="about" href="#hero">Giới Thiệu</a></li>
-          <li><a data-layout-link="services" href="#services">Dịch Vụ</a></li>
-          <li><a data-layout-link="contact" href="#contact">Liên Hệ</a></li>
+          <li><a href="<?php echo htmlspecialchars($footerLinks['about']); ?>">Giới Thiệu</a></li>
+          <li><a href="<?php echo htmlspecialchars($footerLinks['services']); ?>">Dịch Vụ</a></li>
+          <li><a href="<?php echo htmlspecialchars($footerLinks['contact']); ?>">Liên Hệ</a></li>
           <li>
-            <a data-layout-link="svc-lau-don-ve-sinh" href="#">Lau Dọn Vệ Sinh</a>
+            <a href="<?php echo htmlspecialchars($footerLinks['terms']); ?>">Điều khoản sử dụng</a>
           </li>
           <li>
-            <a data-layout-link="svc-cham-soc-me-be" href="#">Chăm Sóc Mẹ & Bé</a>
+            <a href="<?php echo htmlspecialchars($footerLinks['privacy']); ?>">Chính sách bảo mật</a>
           </li>
           <li>
-            <a data-layout-link="svc-cham-soc-vuon" href="#"
+            <a href="<?php echo htmlspecialchars($footerLinks['shipping_policy']); ?>">Chính sách vận chuyển</a>
+          </li>
+          <li>
+            <a href="<?php echo htmlspecialchars($footerLinks['svc_lau_don_ve_sinh']); ?>">Lau Dọn Vệ Sinh</a>
+          </li>
+          <li>
+            <a href="<?php echo htmlspecialchars($footerLinks['svc_cham_soc_me_be']); ?>">Chăm Sóc Mẹ & Bé</a>
+          </li>
+          <li>
+            <a href="<?php echo htmlspecialchars($footerLinks['svc_cham_soc_vuon']); ?>"
               >Chăm Sóc Vườn & Rẫy</a
             >
           </li>
           <li>
-            <a data-layout-link="svc-giat-ui" href="#">Giặt Ủi Cao Cấp</a>
+            <a href="<?php echo htmlspecialchars($footerLinks['svc_giat_ui']); ?>">Giặt Ủi Cao Cấp</a>
           </li>
           <li>
-            <a data-layout-link="svc-tho-nha" href="#"
+            <a href="<?php echo htmlspecialchars($footerLinks['svc_tho_nha']); ?>"
               >Thợ Nhà & Sửa Chữa</a
             >
           </li>
           <li>
-            <a data-layout-link="svc-cham-soc-nguoi-gia" href="#"
+            <a href="<?php echo htmlspecialchars($footerLinks['svc_cham_soc_nguoi_gia']); ?>"
               >Chăm Sóc Người Già</a
             >
           </li>
           <li>
-            <a data-layout-link="svc-cham-soc-nguoi-benh" href="#"
+            <a href="<?php echo htmlspecialchars($footerLinks['svc_cham_soc_nguoi_benh']); ?>"
               >Chăm Sóc Bệnh Nhân</a
             >
           </li>
           <li>
-            <a data-layout-link="svc-dich-vu-chuyen-don" href="#"
+            <a href="<?php echo htmlspecialchars($footerLinks['svc_dich_vu_chuyen_don']); ?>"
               >Dịch vụ Chuyển Dọn</a
             >
           </li>
           <li>
-            <a data-layout-link="svc-giao-hang-nhanh" href="#"
+            <a href="<?php echo htmlspecialchars($footerLinks['svc_giao_hang_nhanh']); ?>"
               >Giao Hàng Nhanh</a
             >
           </li>

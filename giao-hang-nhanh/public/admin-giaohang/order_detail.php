@@ -2,767 +2,609 @@
 session_start();
 require_once __DIR__ . '/../../config/db.php';
 
-// Kiểm tra quyền Admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../../index.html");
+function base_path(): string
+{
+    $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+    $marker = '/public/';
+    $pos = stripos($scriptName, $marker);
+    return $pos !== false ? substr($scriptName, 0, $pos + strlen($marker)) : '/giao-hang-nhanh/public/';
+}
+
+function upload_root(): string
+{
+    return dirname(__DIR__) . '/uploads';
+}
+
+function decode_json_safe(?string $json): array
+{
+    if (!$json) {
+        return [];
+    }
+    $decoded = json_decode($json, true);
+    return is_array($decoded) ? $decoded : [];
+}
+
+function collect_files(string $absoluteDir, string $publicPrefix): array
+{
+    if (!is_dir($absoluteDir)) {
+        return [];
+    }
+    $entries = array_diff(scandir($absoluteDir) ?: [], ['.', '..']);
+    $items = [];
+    foreach ($entries as $entry) {
+        $path = $absoluteDir . DIRECTORY_SEPARATOR . $entry;
+        if (!is_file($path)) {
+            continue;
+        }
+        $items[] = [
+            'name' => $entry,
+            'extension' => strtolower(pathinfo($entry, PATHINFO_EXTENSION)),
+            'url' => rtrim($publicPrefix, '/') . '/' . rawurlencode($entry),
+        ];
+    }
+    usort($items, static fn(array $a, array $b): int => strcmp($a['name'], $b['name']));
+    return $items;
+}
+
+function media_kind_of(string $extension): string
+{
+    if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'], true)) {
+        return 'image';
+    }
+    if (in_array($extension, ['mp4', 'mov', 'avi', 'webm', 'mkv', 'm4v'], true)) {
+        return 'video';
+    }
+    return 'file';
+}
+
+function money_vnd($value): string
+{
+    return number_format((float) $value, 0, ',', '.') . 'đ';
+}
+
+function dt_vi(?string $value, string $fallback = 'Chưa cập nhật'): string
+{
+    $text = trim((string) $value);
+    if ($text === '') {
+        return $fallback;
+    }
+    $timestamp = strtotime($text);
+    return $timestamp === false ? htmlspecialchars($text) : date('d/m/Y H:i', $timestamp);
+}
+
+function text_or_dash(?string $value, string $fallback = 'Chưa cập nhật'): string
+{
+    $text = trim((string) $value);
+    return $text !== '' ? htmlspecialchars($text) : $fallback;
+}
+
+function status_text(string $status): string
+{
+    $map = ['pending' => 'Chờ xử lý', 'shipping' => 'Đang giao', 'completed' => 'Hoàn tất', 'cancelled' => 'Đã hủy'];
+    return $map[$status] ?? $status;
+}
+
+function service_text(string $serviceType): string
+{
+    $map = ['slow' => 'Chậm', 'standard' => 'Tiêu chuẩn', 'fast' => 'Nhanh', 'express' => 'Hỏa tốc', 'instant' => 'Ngay lập tức', 'intl_economy' => 'Tiêu chuẩn quốc tế', 'intl_express' => 'Hỏa tốc quốc tế'];
+    return $map[$serviceType] ?? $serviceType;
+}
+
+function payment_method_text(string $paymentMethod): string
+{
+    $normalized = strtolower(trim($paymentMethod));
+    return in_array($normalized, ['bank', 'bank_transfer', 'transfer', 'chuyen_khoan'], true) ? 'Chuyển khoản' : 'Tiền mặt/COD';
+}
+
+function clean_customer_note(?string $note): string
+{
+    $clean = (string) $note;
+    $clean = preg_replace('/--- CHI TIẾT HÀNG HÓA ---\n(.*?)(?=\n---|\n💎|\n Người trả cước|$)/us', '', $clean);
+    $clean = preg_replace('/💎 Bảo hiểm hàng hóa: .*/u', '', $clean);
+    $clean = preg_replace('/Người trả cước: .*/u', '', $clean);
+    $clean = preg_replace('/Tệp đính kèm: .*/u', '', $clean);
+    $clean = str_replace(['--- CHI TIẾT HÀNG HÓA ---', '---'], '', $clean);
+    return trim($clean);
+}
+
+if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
+    header('Location: ../../index.html');
     exit;
 }
 
-$id = $_GET['id'] ?? 0;
-$msg = "";
-$error = "";
-
-// Xử lý phân công Shipper
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_shipper'])) {
-    $shipper_id = intval($_POST['shipper_id']);
-    $stmt = $conn->prepare("UPDATE orders SET shipper_id = ? WHERE id = ?");
-    $stmt->bind_param("ii", $shipper_id, $id);
-    if ($stmt->execute()) {
-        $msg = "Đã phân công shipper thành công!";
-        header("Refresh:0");
-    } else {
-        $error = "Lỗi: " . $conn->error;
-    }
+$id = (int) ($_GET['id'] ?? 0);
+if ($id <= 0) {
+    http_response_code(400);
+    exit('Thiếu ID đơn hàng hợp lệ.');
 }
 
-// Xử lý Cập nhật trạng thái thanh toán
+$msg = '';
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_admin_note'])) {
+    $adminNote = trim((string) ($_POST['admin_note'] ?? ''));
+    $stmt = $conn->prepare('UPDATE orders SET admin_note = ? WHERE id = ?');
+    $stmt->bind_param('si', $adminNote, $id);
+    $msg = $stmt->execute() ? 'Đã lưu ghi chú nội bộ.' : '';
+    $error = $msg === '' ? 'Không thể lưu ghi chú admin.' : '';
+    $stmt->close();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_payment_status'])) {
-    $new_payment_status = $_POST['payment_status'];
-    $stmt = $conn->prepare("UPDATE orders SET payment_status = ? WHERE id = ?");
-    $stmt->bind_param("si", $new_payment_status, $id);
-    if ($stmt->execute()) {
-        $msg = "Cập nhật trạng thái thanh toán thành công!";
+    $paymentStatus = trim((string) ($_POST['payment_status'] ?? ''));
+    $stmt = $conn->prepare('UPDATE orders SET payment_status = ? WHERE id = ?');
+    $stmt->bind_param('si', $paymentStatus, $id);
+    $msg = $stmt->execute() ? 'Đã cập nhật trạng thái thanh toán.' : $msg;
+    $error = !$stmt->affected_rows && $msg === '' ? 'Không thể cập nhật thanh toán.' : $error;
+    $stmt->close();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_shipper'])) {
+    $shipperId = (int) ($_POST['shipper_id'] ?? 0);
+    if ($shipperId > 0) {
+        $stmt = $conn->prepare('UPDATE orders SET shipper_id = ? WHERE id = ?');
+        $stmt->bind_param('ii', $shipperId, $id);
     } else {
-        $error = "Lỗi khi cập nhật thanh toán: " . $conn->error;
+        $stmt = $conn->prepare('UPDATE orders SET shipper_id = NULL WHERE id = ?');
+        $stmt->bind_param('i', $id);
+    }
+    if ($stmt && $stmt->execute()) {
+        $msg = $shipperId > 0 ? 'Đã phân công shipper.' : 'Đã hủy phân công shipper.';
+    } else {
+        $error = 'Không thể cập nhật shipper.';
+    }
+    if ($stmt) {
+        $stmt->close();
     }
 }
 
-// Xử lý Cập nhật trạng thái đơn hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
-    $new_status = $_POST['status'];
+    $newStatus = trim((string) ($_POST['status'] ?? ''));
     $override = isset($_POST['override_status']);
 
-    $check_stmt = $conn->prepare("SELECT status FROM orders WHERE id = ?");
-    $check_stmt->bind_param("i", $id);
-    $check_stmt->execute();
-    $curr = $check_stmt->get_result()->fetch_assoc();
-    $old_status = $curr['status'];
-    $check_stmt->close();
+    $checkStmt = $conn->prepare('SELECT status FROM orders WHERE id = ?');
+    $checkStmt->bind_param('i', $id);
+    $checkStmt->execute();
+    $current = $checkStmt->get_result()->fetch_assoc();
+    $checkStmt->close();
 
-    $allowed = ($override || $old_status === $new_status) ? true : false;
+    $oldStatus = (string) ($current['status'] ?? '');
+    $allowed = ($override || $oldStatus === $newStatus);
     if (!$allowed) {
-        if ($old_status === 'pending' && in_array($new_status, ['shipping', 'cancelled'])) $allowed = true;
-        elseif ($old_status === 'shipping' && in_array($new_status, ['completed', 'cancelled'])) $allowed = true;
+        if ($oldStatus === 'pending' && in_array($newStatus, ['shipping', 'cancelled'], true)) {
+            $allowed = true;
+        } elseif ($oldStatus === 'shipping' && in_array($newStatus, ['completed', 'cancelled'], true)) {
+            $allowed = true;
+        }
     }
 
-    if ($allowed) {
-        $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
-        $stmt->bind_param("si", $new_status, $id);
+    if (!$allowed) {
+        $error = "Chuyển trạng thái không hợp lệ. Hãy tick 'Cho phép sửa bất kỳ'.";
+    } else {
+        $stmt = $conn->prepare('UPDATE orders SET status = ? WHERE id = ?');
+        $stmt->bind_param('si', $newStatus, $id);
         if ($stmt->execute()) {
-            $msg = "Cập nhật trạng thái thành công!";
-            $admin_id = $_SESSION['user_id'];
-            $log_stmt = $conn->prepare("INSERT INTO order_logs (order_id, user_id, old_status, new_status) VALUES (?, ?, ?, ?)");
-            $log_stmt->bind_param("iiss", $id, $admin_id, $old_status, $new_status);
-            $log_stmt->execute();
-            $log_stmt->close();
-            
-            // Thông báo khách hàng
-            $stmt_info = $conn->prepare("SELECT user_id, order_code FROM orders WHERE id = ?");
-            $stmt_info->bind_param("i", $id);
-            $stmt_info->execute();
-            $order_info = $stmt_info->get_result()->fetch_assoc();
-            $stmt_info->close();
-            if ($order_info && $order_info['user_id']) {
-                $status_map_vn = ['shipping' => 'đang được giao', 'completed' => 'đã hoàn tất', 'cancelled' => 'đã bị hủy'];
-                $status_text = $status_map_vn[$new_status] ?? 'đã được cập nhật';
-                $notif_msg = "Đơn hàng #{$order_info['order_code']} của bạn {$status_text}.";
-                $notif_link = "customer_order_detail.php?id={$id}";
-                $notif_stmt = $conn->prepare("INSERT INTO notifications (user_id, order_id, message, link) VALUES (?, ?, ?, ?)");
-                if ($notif_stmt) {
-                    $notif_stmt->bind_param("iiss", $order_info['user_id'], $id, $notif_msg, $notif_link);
-                    $notif_stmt->execute();
-                    $notif_stmt->close();
+            $msg = 'Đã cập nhật trạng thái đơn.';
+            $adminId = (int) $_SESSION['user_id'];
+            $logStmt = $conn->prepare('INSERT INTO order_logs (order_id, user_id, old_status, new_status) VALUES (?, ?, ?, ?)');
+            if ($logStmt) {
+                $logStmt->bind_param('iiss', $id, $adminId, $oldStatus, $newStatus);
+                $logStmt->execute();
+                $logStmt->close();
+            }
+
+            $infoStmt = $conn->prepare('SELECT user_id, order_code FROM orders WHERE id = ?');
+            $infoStmt->bind_param('i', $id);
+            $infoStmt->execute();
+            $orderInfo = $infoStmt->get_result()->fetch_assoc();
+            $infoStmt->close();
+
+            if ($orderInfo && !empty($orderInfo['user_id'])) {
+                $statusMap = [
+                    'shipping' => 'đang được giao',
+                    'completed' => 'đã hoàn tất',
+                    'cancelled' => 'đã bị hủy',
+                    'pending' => 'đã được cập nhật',
+                ];
+                $notifMessage = "Đơn hàng #{$orderInfo['order_code']} của bạn " . ($statusMap[$newStatus] ?? 'đã được cập nhật') . '.';
+                $notifLink = base_path() . "khach-hang/chi-tiet-don-hang.html?id={$id}";
+                $notifStmt = $conn->prepare('INSERT INTO notifications (user_id, order_id, message, link) VALUES (?, ?, ?, ?)');
+                if ($notifStmt) {
+                    $notifStmt->bind_param('iiss', $orderInfo['user_id'], $id, $notifMessage, $notifLink);
+                    $notifStmt->execute();
+                    $notifStmt->close();
                 }
             }
+        } else {
+            $error = 'Không thể cập nhật trạng thái đơn.';
         }
-    } else {
-        $error = "Chuyển trạng thái không hợp lệ. Hãy tick 'Cho phép sửa bất kỳ' để bỏ qua kiểm tra.";
+        $stmt->close();
     }
 }
 
-// Lấy thông tin đơn hàng
-$stmt = $conn->prepare("SELECT o.*, u.fullname as customer_name, s.fullname as shipper_name, s.phone as shipper_phone 
-                        FROM orders o 
-                        LEFT JOIN users u ON o.user_id = u.id 
-                        LEFT JOIN users s ON o.shipper_id = s.id 
-                        WHERE o.id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$order = $stmt->get_result()->fetch_assoc();
-if (!$order) die("Đơn hàng không tồn tại.");
+$orderStmt = $conn->prepare(
+    "SELECT
+        o.*,
+        u.username AS customer_username,
+        u.fullname AS customer_fullname,
+        u.phone AS customer_phone,
+        u.email AS customer_email,
+        s.fullname AS shipper_name,
+        s.phone AS shipper_phone,
+        s.email AS shipper_email,
+        s.vehicle_type AS shipper_vehicle
+    FROM orders o
+    LEFT JOIN users u ON o.user_id = u.id
+    LEFT JOIN users s ON o.shipper_id = s.id
+    WHERE o.id = ?
+    LIMIT 1"
+);
+$orderStmt->bind_param('i', $id);
+$orderStmt->execute();
+$order = $orderStmt->get_result()->fetch_assoc();
+$orderStmt->close();
 
-$pkg_map = ['document' => 'Tài liệu', 'food' => 'Đồ ăn', 'clothes' => 'Quần áo', 'electronic' => 'Điện tử', 'other' => 'Khác'];
-$svc_map = [
-    'slow' => 'Chậm', 
-    'standard' => 'Tiêu chuẩn', 
-    'fast' => 'Nhanh', 
-    'express' => 'Hỏa tốc',
-    'instant' => 'Ngay lập tức',
-    'intl_economy' => 'Tiêu chuẩn quốc tế',
-    'intl_express' => 'Hỏa tốc quốc tế'
-];
+if (!$order) {
+    http_response_code(404);
+    exit('Đơn hàng không tồn tại.');
+}
+
+$serviceMeta = decode_json_safe($order['service_meta_json'] ?? null);
+$feeBreakdown = decode_json_safe($order['pricing_breakdown_json'] ?? null);
+$payload = decode_json_safe($order['booking_payload_json'] ?? null);
+$items = [];
+$itemStmt = $conn->prepare('SELECT item_name, quantity, weight, length, width, height, declared_value FROM order_items WHERE order_id = ? ORDER BY id ASC');
+if ($itemStmt) {
+    $itemStmt->bind_param('i', $id);
+    $itemStmt->execute();
+    $res = $itemStmt->get_result();
+    while ($row = $res->fetch_assoc()) {
+        $items[] = $row;
+    }
+    $itemStmt->close();
+}
+
+$attachments = collect_files(upload_root() . '/order_attachments/' . $order['order_code'], '../uploads/order_attachments/' . rawurlencode((string) $order['order_code']));
+$shipperReports = collect_files(upload_root() . '/shipper_reports/' . $order['order_code'], '../uploads/shipper_reports/' . rawurlencode((string) $order['order_code']));
+$customerFeedbackMedia = collect_files(upload_root() . '/customer-feedback/' . $order['order_code'], '../uploads/customer-feedback/' . rawurlencode((string) $order['order_code']));
+$podImage = !empty($order['pod_image']) ? '../uploads/' . ltrim((string) $order['pod_image'], '/') : '';
+$customerNote = clean_customer_note($order['note'] ?? '');
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Chi tiết #<?php echo $order['order_code']; ?> | Admin</title>
+    <title>Chi tiết #<?php echo htmlspecialchars((string) $order['order_code']); ?> | Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/admin.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .admin-timeline {
-            position: relative;
-            padding: 20px 0;
-            list-style: none;
-        }
-        .admin-timeline::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 31px;
-            width: 2px;
-            background: #e2e8f0;
-        }
-        .timeline-item {
-            position: relative;
-            margin-bottom: 25px;
-            padding-left: 70px;
-        }
-        .timeline-item .timeline-marker {
-            position: absolute;
-            left: 20px;
-            top: 0;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #fff;
-            border: 2px solid #cbd5e1;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #64748b;
-        }
-        .timeline-item.active .timeline-marker {
-            background: #0a2a66;
-            border-color: #0a2a66;
-            color: #fff;
-            box-shadow: 0 0 0 4px rgba(10,42,102,0.1);
-        }
-        .timeline-content {
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #edf2f7;
-            position: relative;
-        }
-        .timeline-content::before {
-            content: '';
-            position: absolute;
-            left: -8px;
-            top: 12px;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-right: 8px solid #edf2f7;
-        }
-        .timeline-time {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        .timeline-user {
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 8px;
-        }
-        .timeline-status-change {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .status-pending { background: #fff7ed; color: #c2410c; }
-        .status-shipping { background: #eff6ff; color: #1d4ed8; }
-        .status-completed { background: #f0fdf4; color: #15803d; }
-        .status-cancelled { background: #fef2f2; color: #b91c1c; }
-        
-        .admin-card-body-header {
-            padding: 30px; 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 40px; 
-            position: relative;
-        }
-        .connector-line {
-            position: absolute; 
-            left: 50%; 
-            top: 50px; 
-            bottom: 50px; 
-            border-left: 2px dashed #edf2f7;
-        }
-        .info-section-label {
-            font-size: 14px; 
-            text-transform: uppercase; 
-            color: #64748b; 
-            margin-bottom: 15px;
-        }
-        .info-highlight-box {
-            background: #f8f9fa; 
-            padding: 12px; 
-            border-radius: 10px; 
-            font-size: 14px; 
-            line-height: 1.5; 
-            margin-bottom: 10px;
-        }
-        .payment-summary-box {
-            padding: 20px; 
-            background: #f8f9fa; 
-            border-radius: 15px; 
-            border: 1px solid #edf2f7;
-        }
-        .total-price-label {
-            font-weight: 700; 
-            color: #0a2a66; 
-            font-size: 14px;
-        }
-        .total-price-value {
-            font-size: 24px; 
-            font-weight: 800; 
-            color: #0a2a66;
-        }
+        .detail-layout { display:grid; grid-template-columns:minmax(0,2fr) 340px; gap:24px; }
+        .detail-hero,.detail-card,.side-card,.timeline-card { background:#fff; border:1px solid #dbe7ff; border-radius:22px; box-shadow:0 12px 24px rgba(15,23,42,.05); }
+        .detail-hero { padding:24px; background:linear-gradient(135deg,#08214f,#0a2a66 60%,#123b87); color:#fff; }
+        .detail-hero h1 { margin:0 0 12px; font-size:32px; }
+        .hero-meta,.tab-buttons { display:flex; flex-wrap:wrap; gap:10px; }
+        .pill,.tab-btn { padding:10px 14px; border-radius:999px; font-weight:800; }
+        .pill { background:rgba(255,255,255,.14); display:inline-flex; align-items:center; gap:8px; }
+        .hero-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:18px; }
+        .hero-stat { padding:14px; border-radius:16px; background:rgba(255,255,255,.12); }
+        .hero-stat small { display:block; margin-bottom:6px; color:rgba(255,255,255,.72); font-weight:800; text-transform:uppercase; }
+        .hero-stat strong { font-size:20px; }
+        .detail-card { padding:18px; margin-top:24px; }
+        .tab-btn { border:1px solid #d9e5ff; background:#f8fbff; color:#355086; cursor:pointer; }
+        .tab-btn.is-active { background:#0a2a66; border-color:#0a2a66; color:#fff; }
+        .tab-panel { display:none; margin-top:18px; }
+        .tab-panel.is-active { display:block; }
+        .block { padding:18px; border-radius:18px; background:linear-gradient(180deg,#fff,#f8fbff); border:1px solid #e4ecfb; margin-bottom:16px; }
+        .block h3 { margin:0 0 14px; color:#0a2a66; font-size:18px; }
+        .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+        .item { padding:14px 16px; border-radius:14px; background:#fff; border:1px solid #e5edf8; }
+        .item small { display:block; margin-bottom:6px; color:#8aa0c5; font-weight:800; text-transform:uppercase; }
+        .table-wrap { overflow:auto; border:1px solid #e5edf8; border-radius:16px; background:#fff; }
+        .table-wrap table { width:100%; border-collapse:collapse; min-width:680px; }
+        .table-wrap th,.table-wrap td { padding:14px 16px; text-align:left; border-bottom:1px solid #eef3fb; }
+        .table-wrap th { background:#f8fbff; color:#446092; font-size:12px; text-transform:uppercase; }
+        .media-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+        .media-card { padding:12px; border-radius:16px; background:#fff; border:1px solid #e5edf8; }
+        .media-frame { aspect-ratio:4/3; background:#eef3fb; border-radius:12px; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+        .media-frame img,.media-frame video { width:100%; height:100%; object-fit:cover; display:block; }
+        .media-card span { display:block; margin-top:10px; font-size:12px; color:#64748b; word-break:break-word; }
+        .empty,.note { padding:16px; border-radius:16px; background:#fff; border:1px solid #e5edf8; }
+        .empty { border-style:dashed; color:#64748b; text-align:center; font-weight:600; }
+        .note { line-height:1.7; font-style:italic; }
+        .side-stack { position:sticky; top:96px; display:flex; flex-direction:column; gap:18px; }
+        .side-card { padding:18px; }
+        .side-card h3,.timeline-card h3 { margin:0 0 14px; color:#0a2a66; }
+        .timeline-card { padding:20px; margin-top:24px; }
+        .timeline-item { padding:14px 16px; border-radius:16px; background:#f8fbff; border:1px solid #e5edf8; margin-bottom:12px; }
+        .notice-success,.notice-error { padding:16px 18px; border-radius:16px; margin-bottom:18px; font-weight:800; }
+        .notice-success { background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; } .notice-error { background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; }
+        @media (max-width:1100px) { .detail-layout { grid-template-columns:1fr; } .side-stack { position:static; } }
+        @media (max-width:760px) { .hero-stats,.grid { grid-template-columns:1fr; } .detail-hero h1 { font-size:28px; } }
     </style>
 </head>
 <body>
     <?php include __DIR__ . '/../../includes/header_admin.php'; ?>
     <main class="admin-container">
         <div class="page-header">
-            <h2 class="page-title">
-                Chi tiết đơn hàng <span style="color:#64748b;">#<?php echo $order['order_code']; ?></span>
-            </h2>
+            <h2 class="page-title">Chi tiết đơn hàng</h2>
             <a href="orders_manage.php" class="back-link"><i class="fa-solid fa-arrow-left"></i> Quay lại danh sách</a>
         </div>
 
-        <?php if ($msg): ?>
-            <div class="status-badge status-active" style="width: 100%; margin-bottom: 25px; padding: 15px; border-radius: 12px;">
-                <i class="fa-solid fa-circle-check"></i> <?php echo $msg; ?>
-            </div>
-        <?php endif; ?>
-        <?php if ($error): ?>
-            <div class="status-badge status-cancelled" style="width: 100%; margin-bottom: 25px; padding: 15px; border-radius: 12px;">
-                <i class="fa-solid fa-triangle-exclamation"></i> <?php echo $error; ?>
-            </div>
-        <?php endif; ?>
+        <?php if ($msg !== ''): ?><div class="notice-success"><i class="fa-solid fa-circle-check"></i> <?php echo htmlspecialchars($msg); ?></div><?php endif; ?>
+        <?php if ($error !== ''): ?><div class="notice-error"><i class="fa-solid fa-triangle-exclamation"></i> <?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
-        <div class="dashboard-layout" style="grid-template-columns: 2fr 1fr; gap: 30px;">
-            <div style="display: flex; flex-direction: column; gap: 30px;">
-                
-                <!-- Section 1: Thông tin người gửi & người nhận -->
-                    <div class="admin-card-body-header grid-responsive">
-                        <!-- Connector line (Visible on Desktop only) -->
-                        <div class="connector-line"></div>
-                        
-                        <div>
-                            <h4 class="info-section-label">Người gửi</h4>
-                            <div style="font-weight: 700; font-size: 16px; margin-bottom: 5px;"><?php echo htmlspecialchars($order['name']); ?></div>
-                            <div style="color: #64748b; font-size: 14px; margin-bottom: 15px;"><i class="fa-solid fa-phone" style="width: 20px;"></i> <?php echo htmlspecialchars($order['phone']); ?></div>
-                            <div class="info-highlight-box">
-                                <i class="fa-solid fa-location-dot" style="color: #0a2a66; margin-right: 5px;"></i>
-                                <?php echo htmlspecialchars($order['pickup_address']); ?>
+        <section class="detail-hero">
+            <h1>#<?php echo htmlspecialchars((string) $order['order_code']); ?></h1>
+            <div class="hero-meta">
+                <span class="pill"><i class="fa-solid fa-bolt"></i> <?php echo htmlspecialchars(service_text((string) ($order['service_type'] ?? ''))); ?></span>
+                <span class="pill"><i class="fa-solid fa-circle"></i> <?php echo htmlspecialchars(status_text((string) ($order['status'] ?? ''))); ?></span>
+                <span class="pill"><i class="fa-regular fa-clock"></i> <?php echo dt_vi((string) ($order['created_at'] ?? '')); ?></span>
+                <?php if (!empty($order['client_order_code'])): ?><span class="pill"><i class="fa-solid fa-hashtag"></i> Ref: <?php echo htmlspecialchars((string) $order['client_order_code']); ?></span><?php endif; ?>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat"><small>Tổng giá trị</small><strong><?php echo money_vnd((float) ($order['shipping_fee'] ?? 0) + (float) ($feeBreakdown['insurance_fee'] ?? 0) + (float) ($order['cod_amount'] ?? 0)); ?></strong></div>
+                <div class="hero-stat"><small>Phí vận chuyển</small><strong><?php echo money_vnd((float) ($order['shipping_fee'] ?? 0)); ?></strong></div>
+                <div class="hero-stat"><small>COD</small><strong><?php echo money_vnd((float) ($order['cod_amount'] ?? 0)); ?></strong></div>
+                <div class="hero-stat"><small>Người trả cước</small><strong><?php echo htmlspecialchars(payer_label($order, $payload)); ?></strong></div>
+            </div>
+        </section>
+
+        <div class="detail-layout">
+            <div>
+                <section class="detail-card">
+                    <div class="tab-buttons">
+                        <button type="button" class="tab-btn is-active" data-tab-target="service">Thông tin đặt dịch vụ</button>
+                        <button type="button" class="tab-btn" data-tab-target="provider">Thông tin nhà cung cấp</button>
+                        <button type="button" class="tab-btn" data-tab-target="customer">Thông tin khách hàng</button>
+                    </div>
+
+                    <div class="tab-panel is-active" data-tab-panel="service">
+                        <div class="block">
+                            <h3>Thông tin đặt dịch vụ</h3>
+                            <div class="grid">
+                                <div class="item"><small>Ngày lấy hàng</small><div><?php echo text_or_dash($serviceMeta['pickup_date'] ?? ''); ?></div></div>
+                                <div class="item"><small>Khung giờ lấy hàng</small><div><?php echo text_or_dash($serviceMeta['pickup_slot_label'] ?? $serviceMeta['pickup_slot'] ?? ''); ?></div></div>
+                                <div class="item"><small>Ngày nhận mong muốn</small><div><?php echo text_or_dash($serviceMeta['delivery_date'] ?? ''); ?></div></div>
+                                <div class="item"><small>Khung giờ nhận mong muốn</small><div><?php echo text_or_dash($serviceMeta['delivery_slot_label'] ?? $serviceMeta['delivery_slot'] ?? ''); ?></div></div>
+                                <div class="item"><small>Thời gian giao dự kiến</small><div><?php echo text_or_dash($serviceMeta['estimated_eta'] ?? ($order['estimated_delivery'] ?? '')); ?></div></div>
+                                <div class="item"><small>Từ lấy đến giao</small><div><?php echo text_or_dash($serviceMeta['turnaround_label'] ?? 'Điều phối realtime'); ?></div></div>
+                                <div class="item"><small>Phương tiện tính giá</small><div><?php echo text_or_dash($serviceMeta['vehicle_label'] ?? ($order['vehicle_type'] ?? '')); ?></div></div>
+                                <div class="item"><small>Phương tiện gợi ý</small><div><?php echo text_or_dash($serviceMeta['vehicle_suggestion'] ?? ''); ?></div></div>
+                                <div class="item"><small>Điều kiện áp giá</small><div><?php echo text_or_dash($serviceMeta['service_condition_label'] ?? ''); ?></div></div>
+                                <div class="item"><small>Nguồn thời tiết</small><div><?php echo text_or_dash($serviceMeta['weather_source'] ?? ($order['weather_source'] ?? '')); ?></div></div>
+                                <div class="item"><small>Khoảng cách tuyến</small><div><?php echo !empty($payload['khoang_cach_km']) ? htmlspecialchars(number_format((float) $payload['khoang_cach_km'], 2, ',', '.')) . ' km' : 'Chưa cập nhật'; ?></div></div>
+                                <div class="item"><small>Thanh toán</small><div><?php echo htmlspecialchars(payment_method_text((string) ($order['payment_method'] ?? ''))); ?></div></div>
                             </div>
-                            <?php if ($order['pickup_time']): ?>
-                                <div style="font-size: 13px; color: #d9534f; font-weight: 700;">
-                                    <i class="fa-regular fa-calendar-check"></i> Hẹn lấy hàng: <?php echo date('d/m/Y', strtotime($order['pickup_time'])); ?>
+                        </div>
+
+                        <div class="block">
+                            <h3>Hành trình giao nhận</h3>
+                            <div class="grid">
+                                <div class="item"><small>Điểm lấy hàng</small><div><?php echo text_or_dash($order['pickup_address'] ?? ''); ?></div></div>
+                                <div class="item"><small>Điểm giao hàng</small><div><?php echo text_or_dash($order['delivery_address'] ?? ''); ?></div></div>
+                                <div class="item"><small>Người gửi</small><div><?php echo text_or_dash($order['name'] ?? ''); ?> - <?php echo text_or_dash($order['phone'] ?? ''); ?></div></div>
+                                <div class="item"><small>Người nhận</small><div><?php echo text_or_dash($order['receiver_name'] ?? ''); ?> - <?php echo text_or_dash($order['receiver_phone'] ?? ''); ?></div></div>
+                            </div>
+                        </div>
+
+                        <div class="block">
+                            <h3>Hàng hóa</h3>
+                            <?php if (!empty($items)): ?>
+                                <div class="table-wrap">
+                                    <table>
+                                        <thead><tr><th>Tên hàng</th><th>Số lượng</th><th>Cân nặng</th><th>Kích thước</th><th>Khai giá</th></tr></thead>
+                                        <tbody>
+                                            <?php foreach ($items as $item): ?>
+                                                <tr>
+                                                    <td><?php echo text_or_dash($item['item_name'] ?? ''); ?></td>
+                                                    <td><?php echo (int) ($item['quantity'] ?? 0); ?></td>
+                                                    <td><?php echo htmlspecialchars((string) ($item['weight'] ?? 0)); ?> kg</td>
+                                                    <td><?php echo htmlspecialchars((string) ($item['length'] ?? 0)) . ' x ' . htmlspecialchars((string) ($item['width'] ?? 0)) . ' x ' . htmlspecialchars((string) ($item['height'] ?? 0)) . ' cm'; ?></td>
+                                                    <td><?php echo money_vnd((float) ($item['declared_value'] ?? 0)); ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
                                 </div>
+                            <?php else: ?>
+                                <div class="empty">Đơn hàng chưa có dữ liệu món hàng chi tiết.</div>
                             <?php endif; ?>
                         </div>
-                        
-                        <div>
-                            <h4 class="info-section-label">Người nhận</h4>
-                            <div style="font-weight: 700; font-size: 16px; margin-bottom: 5px;"><?php echo htmlspecialchars($order['receiver_name']); ?></div>
-                            <div style="color: #64748b; font-size: 14px; margin-bottom: 15px;"><i class="fa-solid fa-phone" style="width: 20px;"></i> <?php echo htmlspecialchars($order['receiver_phone']); ?></div>
-                            <div class="info-highlight-box" style="background: #fff8f1;">
-                                <i class="fa-solid fa-location-arrow" style="color: #ff7a00; margin-right: 5px;"></i>
-                                <?php echo htmlspecialchars($order['delivery_address']); ?>
-                                <?php if (!empty($order['intl_province']) || !empty($order['intl_country'])): ?>
-                                    <br><strong><?php echo htmlspecialchars($order['intl_province']); ?>, <?php echo htmlspecialchars($order['intl_country']); ?></strong>
-                                <?php endif; ?>
-                            </div>
+                    </div>
+
+                    <div class="tab-panel" data-tab-panel="provider">
+                        <div class="block">
+                            <h3>Thông tin nhà cung cấp</h3>
+                            <?php if (!empty($order['shipper_id'])): ?>
+                                <div class="grid">
+                                    <div class="item"><small>Họ tên</small><div><?php echo text_or_dash($order['shipper_name'] ?? ''); ?></div></div>
+                                    <div class="item"><small>Số điện thoại</small><div><?php echo text_or_dash($order['shipper_phone'] ?? ''); ?></div></div>
+                                    <div class="item"><small>Email</small><div><?php echo text_or_dash($order['shipper_email'] ?? ''); ?></div></div>
+                                    <div class="item"><small>Phương tiện</small><div><?php echo text_or_dash($order['shipper_vehicle'] ?? ''); ?></div></div>
+                                </div>
+                            <?php else: ?>
+                                <div class="empty">Đơn hàng chưa được phân công cho nhà cung cấp nào.</div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="block">
+                            <h3>Báo cáo công việc và POD</h3>
+                            <?php if (!empty($order['shipper_note'])): ?><div class="note" style="margin-bottom:16px;">"<?php echo nl2br(htmlspecialchars((string) $order['shipper_note'])); ?>"</div><?php endif; ?>
+                            <?php if (!empty($shipperReports) || $podImage !== ''): ?>
+                                <div class="media-grid">
+                                    <?php foreach ($shipperReports as $file): ?>
+                                        <?php $kind = media_kind_of($file['extension']); ?>
+                                        <article class="media-card">
+                                            <div class="media-frame">
+                                                <?php if ($kind === 'image'): ?>
+                                                    <a href="<?php echo htmlspecialchars($file['url']); ?>" target="_blank" rel="noopener noreferrer"><img src="<?php echo htmlspecialchars($file['url']); ?>" alt="<?php echo htmlspecialchars($file['name']); ?>"></a>
+                                                <?php elseif ($kind === 'video'): ?>
+                                                    <video controls preload="metadata"><source src="<?php echo htmlspecialchars($file['url']); ?>"></video>
+                                                <?php else: ?>
+                                                    <a href="<?php echo htmlspecialchars($file['url']); ?>" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-file-lines"></i> Xem tệp</a>
+                                                <?php endif; ?>
+                                            </div>
+                                            <span><?php echo htmlspecialchars($file['name']); ?></span>
+                                        </article>
+                                    <?php endforeach; ?>
+                                    <?php if ($podImage !== ''): ?>
+                                        <article class="media-card">
+                                            <div class="media-frame"><a href="<?php echo htmlspecialchars($podImage); ?>" target="_blank" rel="noopener noreferrer"><img src="<?php echo htmlspecialchars($podImage); ?>" alt="POD"></a></div>
+                                            <span>POD - Bằng chứng giao hàng</span>
+                                        </article>
+                                    <?php endif; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="empty">Nhà cung cấp chưa tải lên media báo cáo hoặc POD.</div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
-                <!-- Section: Thông tin Hóa đơn Doanh nghiệp -->
-                <?php if ($order['is_corporate']): ?>
-                <div class="admin-card" style="border-left: 5px solid #28a745; background: #f0fff4;">
-                    <div class="admin-card-header">
-                        <h3 style="color: #28a745;"><i class="fa-solid fa-file-invoice-dollar"></i> Yêu cầu Xuất hóa đơn Doanh nghiệp</h3>
-                    </div>
-                    <div class="form-grid" style="grid-template-columns: 1fr 1.5fr;">
-                        <div>
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase;">Tên công ty / Đơn vị</div>
-                            <div style="font-weight: 700; color: #0a2a66; margin-bottom: 15px;"><?php echo htmlspecialchars($order['company_name']); ?></div>
-                            
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase;">Mã số thuế</div>
-                            <div style="font-weight: 700; color: #0a2a66; margin-bottom: 15px;"><?php echo htmlspecialchars($order['company_tax_code']); ?></div>
-                            
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase;">Email nhận hóa đơn</div>
-                            <div style="font-weight: 700; color: #0a2a66;"><?php echo htmlspecialchars($order['company_email']); ?></div>
+                    <div class="tab-panel" data-tab-panel="customer">
+                        <div class="block">
+                            <h3>Thông tin khách hàng</h3>
+                            <div class="grid">
+                                <div class="item"><small>Khách hàng</small><div><?php echo text_or_dash($order['customer_fullname'] ?? $order['name'] ?? ''); ?></div></div>
+                                <div class="item"><small>Username</small><div><?php echo text_or_dash($order['customer_username'] ?? ''); ?></div></div>
+                                <div class="item"><small>Số điện thoại</small><div><?php echo text_or_dash($order['customer_phone'] ?? $order['phone'] ?? ''); ?></div></div>
+                                <div class="item"><small>Email</small><div><?php echo text_or_dash($order['customer_email'] ?? ''); ?></div></div>
+                            </div>
                         </div>
-                        <div>
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase;">Địa chỉ trụ sở</div>
-                            <div style="font-weight: 600; color: #475569; margin-bottom: 15px;"><?php echo htmlspecialchars($order['company_address']); ?></div>
-                            
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase;">Thông tin tài khoản ngân hàng</div>
-                            <div style="font-weight: 600; color: #475569;"><?php echo nl2br(htmlspecialchars($order['company_bank_info'])); ?></div>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
 
-                <!-- Section: Thông tin Quốc tế (Nếu có) -->
-                <?php if (strpos($order['service_type'], 'intl_') === 0): ?>
-                <div class="admin-card" style="border-left: 5px solid #3b82f6; background: #eff6ff;">
-                    <div class="admin-card-header">
-                        <h3 style="color: #3b82f6;"><i class="fa-solid fa-earth-americas"></i> Thông tin Vận chuyển Quốc tế</h3>
-                    </div>
-                    <div class="grid-responsive">
-                        <div>
-                            <div class="form-group">
-                                <label>CCCD / Passport Người nhận</label>
-                                <div style="font-weight: 700; color: #0a2a66;"><?php echo htmlspecialchars($order['receiver_id_number'] ?: 'N/A'); ?></div>
-                            </div>
-                            <div class="form-group">
-                                <label>Mã bưu chính (Postal Code)</label>
-                                <div style="font-weight: 700; color: #0a2a66;"><?php echo htmlspecialchars($order['intl_postal_code'] ?: 'N/A'); ?></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="form-group">
-                                <label>Mã HS / Mục đích gửi</label>
-                                <div style="font-weight: 700; color: #0a2a66;">
-                                    <?php 
-                                    $hs = $order['intl_hs_code'] ?: '';
-                                    $purpose = $order['intl_purpose'] ?: '';
-                                    echo ($hs ? "HS: $hs" : "") . ($hs && $purpose ? " | " : "") . ($purpose ?: "");
-                                    if (!$hs && !$purpose) echo "Chưa cập nhật";
-                                    ?>
+                        <?php if ((int) ($order['is_corporate'] ?? 0) === 1): ?>
+                            <div class="block">
+                                <h3>Thông tin xuất hóa đơn</h3>
+                                <div class="grid">
+                                    <div class="item"><small>Tên công ty</small><div><?php echo text_or_dash($order['company_name'] ?? ''); ?></div></div>
+                                    <div class="item"><small>Email nhận hóa đơn</small><div><?php echo text_or_dash($order['company_email'] ?? ''); ?></div></div>
+                                    <div class="item"><small>Mã số thuế</small><div><?php echo text_or_dash($order['company_tax_code'] ?? ''); ?></div></div>
+                                    <div class="item"><small>Địa chỉ công ty</small><div><?php echo text_or_dash($order['company_address'] ?? ''); ?></div></div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>Dịch vụ quốc tế</label>
-                                <div style="font-weight: 700; color: #3b82f6; text-transform: uppercase;"><i class="fa-solid fa-plane-up"></i> <?php echo $order['service_type']; ?></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-                <?php if ($order['vehicle_type']): ?>
-                    <div style="margin-top: 20px; display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255,122,0,0.05); border: 1px dashed #ff7a00; border-radius: 12px;">
-                        <div style="width: 45px; height: 45px; background: #ff7a00; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px;">
-                            <i class="fa-solid <?php echo strpos(strtolower($order['vehicle_type']), 'tải') !== false ? 'fa-truck' : 'fa-motorcycle'; ?>"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600;">Phương tiện yêu cầu</div>
-                            <div style="font-size: 18px; font-weight: 800; color: #ff7a00;"><?php echo strtoupper($order['vehicle_type']); ?></div>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Section 3: Thanh toán (Tiếp tục code cũ) -->
-
-                <!-- Section 2: Hàng hóa & Dịch vụ -->
-                <div class="admin-card">
-                    <div class="admin-card-header">
-                        <h3><i class="fa-solid fa-box-open"></i> Thông tin hàng hóa & Dịch vụ</h3>
-                    </div>
-                    <div class="grid-responsive-3">
-                        <div class="form-group">
-                            <label>Loại bưu kiện</label>
-                            <div style="font-weight: 600; color: #0a2a66;"><?php echo $pkg_map[$order['package_type']] ?? $order['package_type']; ?></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Khối lượng</label>
-                            <div style="font-weight: 600; color: #0a2a66;"><?php echo $order['weight']; ?> kg</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Gói dịch vụ</label>
-                            <div style="font-weight: 700; color: #ff7a00; text-transform: uppercase;">
-                                <i class="fa-solid fa-bolt"></i> <?php echo $svc_map[$order['service_type']] ?? $order['service_type']; ?>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- CHI TIẾT DANH MỤC HÀNG HÓA (Quy trình mới) -->
-                    <!-- CHI TIẾT DANH MỤC HÀNG HÓA (Quy trình mới) -->
-                    <div style="margin-top: 20px; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
-                        <div style="background: #f8fafc; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; font-weight: 700; font-size: 13px; color: #475569; display: flex; justify-content: space-between;">
-                            <span>DANH SÁCH MÓN HÀNG CHI TIẾT</span>
-                            <span style="color: #64748b; font-weight: normal;">Dữ liệu từ bảng order_items</span>
-                        </div>
-                        <div class="table-responsive">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                                <thead>
-                                    <tr style="background: #f1f5f9; text-align: left;">
-                                        <th style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Tên món hàng</th>
-                                        <th style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">SL</th>
-                                        <th style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">Khối lượng</th>
-                                        <th style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">Kích thước</th>
-                                        <th style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">Khai giá</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php 
-                                    $stmt_items = $conn->prepare("SELECT * FROM order_items WHERE order_id = ?");
-                                    $stmt_items->bind_param("i", $order['id']);
-                                    $stmt_items->execute();
-                                    $items_res = $stmt_items->get_result();
-                                    if ($items_res && $items_res->num_rows > 0):
-                                        while ($item = $items_res->fetch_assoc()):
-                                    ?>
-                                        <tr>
-                                            <td style="padding: 10px; border-bottom: 1px solid #f1f5f9; font-weight: 600;"><?php echo htmlspecialchars($item['item_name']); ?></td>
-                                            <td style="padding: 10px; border-bottom: 1px solid #f1f5f9; text-align: center;"><?php echo $item['quantity']; ?></td>
-                                            <td style="padding: 10px; border-bottom: 1px solid #f1f5f9; text-align: center;"><?php echo $item['weight']; ?>kg</td>
-                                            <td style="padding: 10px; border-bottom: 1px solid #f1f5f9; text-align: center; color: #64748b;">
-                                                <?php echo ($item['length'] > 0 || $item['width'] > 0 || $item['height'] > 0) ? "{$item['length']}x{$item['width']}x{$item['height']}" : '-'; ?>
-                                            </td>
-                                            <td style="padding: 10px; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 600;"><?php echo number_format($item['declared_value']); ?>đ</td>
-                                        </tr>
-                                    <?php 
-                                        endwhile;
-                                    else:
-                                        // Dự phòng Regex cho đơn cũ
-                                        if (preg_match('/--- CHI TIẾT HÀNG HÓA ---\n(.*?)(?=\n---|\n💎|\n Người trả cước|$)/s', $order['note'], $matches)):
-                                    ?>
-                                        <tr>
-                                            <td colspan="5" style="padding: 15px; font-family: monospace; line-height: 1.6; background: #fff;">
-                                                <div style="color: #64748b; font-size: 11px; margin-bottom: 5px;">(Dữ liệu từ đơn hàng cũ - Text format)</div>
-                                                <?php echo nl2br(trim($matches[1])); ?>
-                                            </td>
-                                        </tr>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="5" style="padding: 20px; text-align: center; color: #94a3b8;">Chưa có dữ liệu món hàng chi tiết.</td>
-                                        </tr>
-                                    <?php endif; endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <?php if (preg_match('/💎 Bảo hiểm hàng hóa: (.*)/', $order['note'], $matches)): ?>
-                        <div style="background: #fffbeb; padding: 10px 15px; border-top: 1px solid #fef3c7; color: #92400e; font-weight: 700; font-size: 14px;">
-                            <i class="fa-solid fa-shield-halved"></i> <?php echo $matches[0]; ?>
-                        </div>
                         <?php endif; ?>
-                    </div>
 
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label>Ghi chú tổng quát của khách</label>
-                        <div class="info-highlight-box" style="background: #f1f5f9; font-style: italic; color: #475569;">
-                            "<?php 
-                            $clean_note = $order['note'];
-                            $clean_note = preg_replace('/--- CHI TIẾT HÀNG HÓA ---\n(.*?)(?=\n---|\n💎|\n Người trả cước|$)/s', '', $clean_note);
-                            $clean_note = preg_replace('/💎 Bảo hiểm hàng hóa: .*/', '', $clean_note);
-                            $clean_note = preg_replace('/Người trả cước: .*/', '', $clean_note);
-                            $clean_note = preg_replace('/Tệp đính kèm: .*/', '', $clean_note);
-                            $clean_note = str_replace(['--- CHI TIẾT HÀNG HÓA ---', '---'], '', $clean_note);
-                            echo !empty(trim($clean_note)) ? nl2br(htmlspecialchars(trim($clean_note))) : 'Không có ghi chú thêm.'; 
-                            ?>"
+                        <div class="block">
+                            <h3>Phản hồi và media từ khách hàng</h3>
+                            <?php if ($customerNote !== ''): ?><div class="note" style="margin-bottom:16px;">"<?php echo nl2br(htmlspecialchars($customerNote)); ?>"</div><?php endif; ?>
+                            <?php if (!empty($order['feedback'])): ?><div class="note" style="margin-bottom:16px;">"<?php echo nl2br(htmlspecialchars((string) $order['feedback'])); ?>"</div><?php endif; ?>
+                            <?php if ($order['rating'] !== null && (int) $order['rating'] > 0): ?><div style="margin-bottom:16px;"><span class="pill" style="background:#fff6eb; color:#9a5200;"><i class="fa-solid fa-star"></i> <?php echo (int) $order['rating']; ?>/5 sao</span></div><?php endif; ?>
+                            <?php if (!empty($customerFeedbackMedia)): ?>
+                                <div class="media-grid">
+                                    <?php foreach ($customerFeedbackMedia as $file): ?>
+                                        <?php $kind = media_kind_of($file['extension']); ?>
+                                        <article class="media-card">
+                                            <div class="media-frame">
+                                                <?php if ($kind === 'image'): ?>
+                                                    <a href="<?php echo htmlspecialchars($file['url']); ?>" target="_blank" rel="noopener noreferrer"><img src="<?php echo htmlspecialchars($file['url']); ?>" alt="<?php echo htmlspecialchars($file['name']); ?>"></a>
+                                                <?php elseif ($kind === 'video'): ?>
+                                                    <video controls preload="metadata"><source src="<?php echo htmlspecialchars($file['url']); ?>"></video>
+                                                <?php else: ?>
+                                                    <a href="<?php echo htmlspecialchars($file['url']); ?>" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-file-lines"></i> Xem tệp</a>
+                                                <?php endif; ?>
+                                            </div>
+                                            <span><?php echo htmlspecialchars($file['name']); ?></span>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="empty">Khách hàng chưa tải ảnh hoặc video phản hồi.</div>
+                            <?php endif; ?>
                         </div>
                     </div>
+                </section>
 
-                    <!-- Ghi chú từ Shipper -->
-                    <?php if (!empty($order['shipper_note'])): ?>
-                    <div class="form-group" style="margin-top: 15px;">
-                        <label style="color: #ff7a00;"><i class="fa-solid fa-comment-dots"></i> Phản hồi từ tài xế (Shipper Note)</label>
-                        <div style="background: #fff8f1; padding: 15px; border-radius: 10px; font-weight: 600; color: #9a5200; border: 1px solid #ffd8a8;">
-                            <?php echo nl2br(htmlspecialchars($order['shipper_note'])); ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-
-                    <!-- Lý do hủy -->
-                    <?php if ($order['status'] === 'cancelled' && !empty($order['cancel_reason'])): ?>
-                    <div class="form-group" style="margin-top: 15px;">
-                        <label style="color: #dc3545;"><i class="fa-solid fa-circle-xmark"></i> Lý do hủy đơn</label>
-                        <div style="background: #fff5f5; padding: 15px; border-radius: 10px; font-weight: 700; color: #dc3545; border: 1px solid #ffcccc;">
-                            <?php echo htmlspecialchars($order['cancel_reason']); ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Section: Tệp đính kèm (Ảnh/Chứng từ) -->
-                <?php 
-                $attachment_dir = "../uploads/order_attachments/" . $order['order_code'] . "/";
-                $files = [];
-                if (is_dir($attachment_dir)) {
-                    $files = array_diff(scandir($attachment_dir), array('.', '..'));
-                }
-                
-                if (!empty($files)):
-                ?>
-                <div class="admin-card">
-                    <div class="admin-card-header">
-                        <h3><i class="fa-solid fa-paperclip"></i> Tệp đính kèm & Hình ảnh</h3>
-                    </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                        <?php foreach($files as $file): 
-                            $file_ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-                            $is_img = in_array($file_ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                            $file_path = $attachment_dir . $file;
-                        ?>
-                            <div style="width: 120px; text-align: center;">
-                                <?php if ($is_img): ?>
-                                    <a href="<?php echo $file_path; ?>" target="_blank">
-                                        <img src="<?php echo $file_path; ?>" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
-                                    </a>
-                                <?php else: ?>
-                                    <a href="<?php echo $file_path; ?>" target="_blank" style="display: block; width: 100%; height: 100px; background: #f1f5f9; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; border: 1px dashed #cbd5e1; color: #475569;">
-                                        <i class="fa-solid <?php echo strpos($file_ext, 'pdf') !== false ? 'fa-file-pdf' : 'fa-file-lines'; ?>" style="font-size: 24px; color: #d9534f; margin-bottom: 5px;"></i>
-                                        <span style="font-size: 10px; word-break: break-all; padding: 0 5px;"><?php echo htmlspecialchars($file); ?></span>
-                                    </a>
-                                <?php endif; ?>
+                <section class="timeline-card">
+                    <h3>Nhật ký xử lý đơn</h3>
+                    <?php if (!empty($logs)): ?>
+                        <?php foreach ($logs as $log): ?>
+                            <div class="timeline-item">
+                                <small><?php echo dt_vi((string) ($log['created_at'] ?? '')); ?> - <?php echo text_or_dash($log['fullname'] ?? 'Hệ thống'); ?></small>
+                                <div>
+                                    <span class="pill" style="background:#f8fbff; color:#355086;"><?php echo htmlspecialchars(status_text((string) ($log['old_status'] ?? 'pending'))); ?></span>
+                                    <i class="fa-solid fa-arrow-right-long" style="color:#94a3b8; margin:0 8px;"></i>
+                                    <span class="pill" style="background:#0a2a66; color:#fff;"><?php echo htmlspecialchars(status_text((string) ($log['new_status'] ?? 'pending'))); ?></span>
+                                </div>
+                                <?php if (!empty($log['note'])): ?><div style="margin-top:8px; color:#64748b;"><?php echo nl2br(htmlspecialchars((string) $log['note'])); ?></div><?php endif; ?>
                             </div>
                         <?php endforeach; ?>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-                <!-- Section 3: Thanh toán -->
-                <div class="admin-card">
-                    <div class="admin-card-header">
-                        <h3><i class="fa-solid fa-money-bill-wave"></i> Chi tiết thanh toán</h3>
-                    </div>
-                    <div class="grid-responsive" style="align-items: center;">
-                        <div class="payment-summary-box">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                <span style="color: #64748b;">Phí vận chuyển:</span>
-                                <span style="font-weight: 600;"><?php echo number_format($order['shipping_fee']); ?>đ</span>
-                            </div>
-                            
-                            <?php 
-                            $insurance_fee = 0;
-                            if (preg_match('/💎 Bảo hiểm hàng hóa: ([\d\.,]+)/', $order['note'], $matches)) {
-                                $insurance_fee = (float)str_replace(['.', ','], '', $matches[1]);
-                            ?>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #d97706;">
-                                <span style="color: #64748b;"><i class="fa-solid fa-shield-halved"></i> Phí bảo hiểm:</span>
-                                <span style="font-weight: 600;"><?php echo number_format($insurance_fee); ?>đ</span>
-                            </div>
-                            <?php } ?>
-
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #edf2f7;">
-                                <span style="color: #64748b;">Thu hộ (COD):</span>
-                                <span style="font-weight: 700; color: #d9534f;"><?php echo number_format($order['cod_amount']); ?>đ</span>
-                            </div>
-
-                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
-                                <span class="total-price-label">TỔNG GIÁ TRỊ:</span>
-                                <span class="total-price-value"><?php echo number_format($order['shipping_fee'] + $insurance_fee + $order['cod_amount']); ?>đ</span>
-                            </div>
-
-                            <div style="background: #fff8f1; padding: 10px; border-radius: 8px; font-size: 13px; color: #9a5200; border: 1px solid #ffd8a8;">
-                                <i class="fa-solid fa-circle-info"></i> <strong>Người trả cước:</strong> 
-                                <?php 
-                                if (preg_match('/Người trả cước: (.*)/', $order['note'], $matches)) {
-                                    echo htmlspecialchars($matches[1]);
-                                } else {
-                                    echo 'Người gửi (Mặc định)';
-                                }
-                                ?>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="form-group">
-                                <label>Hình thức thanh toán</label>
-                                <div style="font-weight: 700; color: #0a2a66; font-size: 16px; margin-bottom: 15px;">
-                                    <?php echo ($order['payment_method'] == 'bank_transfer') ? '<i class="fa-solid fa-credit-card"></i> Chuyển khoản' : '<i class="fa-solid fa-wallet"></i> Tiền mặt (COD)'; ?>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Trạng thái thanh toán</label>
-                                <form method="POST" action="?id=<?php echo $id; ?>" style="display: flex; gap: 10px;">
-                                    <select name="payment_status" class="admin-select" style="flex: 1;">
-                                        <option value="unpaid" <?php echo $order['payment_status'] == 'unpaid' ? 'selected' : ''; ?>>Chưa thanh toán</option>
-                                        <option value="paid" <?php echo $order['payment_status'] == 'paid' ? 'selected' : ''; ?>>Đã thanh toán</option>
-                                        <option value="refunded" <?php echo $order['payment_status'] == 'refunded' ? 'selected' : ''; ?>>Đã hoàn tiền</option>
-                                    </select>
-                                    <button type="submit" name="update_payment_status" class="btn-primary" style="padding: 10px 15px;">Lưu</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <?php else: ?>
+                        <div class="empty">Chưa có lịch sử thay đổi trạng thái nào.</div>
+                    <?php endif; ?>
+                </section>
             </div>
 
-            <aside>
-                <!-- Card: Trạng thái & Phân công -->
-                <div class="admin-card" style="border-top: 5px solid #0a2a66;">
-                    <div class="admin-card-header">
-                        <h3><i class="fa-solid fa-gears"></i> Quản lý vận hành</h3>
-                    </div>
-                    
-                    <div class="sidebar-action-group">
-                        <!-- Nhóm 1: Trạng thái -->
-                        <form method="POST" action="?id=<?php echo $id; ?>">
-                            <span class="sidebar-section-title">Trạng thái đơn hàng</span>
-                            <div class="form-group" style="margin-bottom: 12px;">
-                                <select name="status" class="admin-select" style="font-weight: 700; color: #0a2a66;">
-                                    <option value="pending" <?php echo $order['status'] == 'pending' ? 'selected' : ''; ?>>⏳ Chờ lấy hàng</option>
-                                    <option value="shipping" <?php echo $order['status'] == 'shipping' ? 'selected' : ''; ?>>🚚 Đang giao hàng</option>
-                                    <option value="completed" <?php echo $order['status'] == 'completed' ? 'selected' : ''; ?>>✅ Giao thành công</option>
-                                    <option value="cancelled" <?php echo $order['status'] == 'cancelled' ? 'selected' : ''; ?>>❌ Đã hủy đơn</option>
-                                </select>
-                            </div>
-                            
-                            <div class="admin-danger-zone" style="display: flex; align-items: center; justify-content: space-between;">
-                                <div style="display: flex; flex-direction: column;">
-                                    <span style="font-size: 13px; font-weight: 700; color: #ef4444;">Ghi đè quy trình</span>
-                                    <span style="font-size: 11px; color: #991b1b; opacity: 0.8;">Bỏ qua kiểm tra logic</span>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" name="override_status">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <button type="submit" name="update_status" class="btn-primary" style="justify-content: center; width: 100%; margin-top: 15px;">
-                                <i class="fa-solid fa-rotate"></i> Cập nhật trạng thái
-                            </button>
-                        </form>
-
-                        <hr style="border: 0; border-top: 1px dashed #e2e8f0; margin: 5px 0;">
-
-                        <!-- Nhóm 2: Shipper -->
-                        <form method="POST" action="?id=<?php echo $id; ?>">
-                            <span class="sidebar-section-title">Điều phối vận chuyển</span>
-
-                            <!-- Xe yêu cầu của đơn -->
-                            <?php if (!empty($order['vehicle_type'])): ?>
-                            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #1e40af; margin-bottom: 10px;">
-                                <i class="fa-solid fa-truck-fast"></i> Đơn yêu cầu phương tiện: <strong><?php echo htmlspecialchars($order['vehicle_type']); ?></strong>
-                            </div>
-                            <?php endif; ?>
-
-                            <div class="form-group" style="margin-bottom: 12px;">
-                                <select name="shipper_id" class="admin-select">
-                                    <option value="0">-- Chưa phân công --</option>
-                                    <?php 
-                                    $sh_res = $conn->query("SELECT id, fullname, vehicle_type FROM users WHERE role = 'shipper' AND is_approved = 1 AND is_locked = 0 ORDER BY fullname ASC");
-                                    while($sh = $sh_res->fetch_assoc()) {
-                                        $is_selected = ($order['shipper_id'] == $sh['id']);
-                                        $vehicle = !empty($sh['vehicle_type']) ? $sh['vehicle_type'] : 'Chưa cập nhật xe';
-                                        $is_match = (!empty($sh['vehicle_type']) && $sh['vehicle_type'] === $order['vehicle_type']);
-                                        $match_tag = $is_match ? ' ✅ Phù hợp' : '';
-                                        echo "<option value='{$sh['id']}' " . ($is_selected ? 'selected' : '') . ">{$sh['fullname']} | 🛵 {$vehicle}{$match_tag}</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                            <button type="submit" name="assign_shipper" style="background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; padding: 10px 24px; border-radius: 10px; font-weight: 600; border: none; box-shadow: 0 4px 15px rgba(22,163,74,0.25); cursor: pointer; justify-content: center; width: 100%; display: flex; align-items: center; gap: 8px; transition: all 0.2s ease;">
-                                <i class="fa-solid fa-user-check"></i> Phân công Shipper
-                            </button>
-                        </form>
-                    </div>
-
-                    <?php if ($order['status'] === 'completed' && $order['pod_image']): ?>
-                    <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #edf2f7;">
-                        <span class="sidebar-section-title">📸 Bằng chứng giao hàng (POD)</span>
-                        <a href="../uploads/<?php echo htmlspecialchars($order['pod_image']); ?>" target="_blank" style="display: block; position: relative; overflow: hidden; border-radius: 12px;">
-                            <img src="../uploads/<?php echo htmlspecialchars($order['pod_image']); ?>" style="width: 100%; transition: transform 0.3s ease;">
-                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); color: white; padding: 5px; text-align: center; font-size: 11px;">Nhấn để xem ảnh lớn</div>
-                        </a>
-                    </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Card: Ghi chú nội bộ -->
-                <div class="admin-card" style="margin-top: 20px; background: #fffde7; border-color: #fff176;">
-                    <div class="admin-card-header">
-                        <h3><i class="fa-solid fa-user-shield"></i> Ghi chú Admin</h3>
-                    </div>
+            <aside class="side-stack">
+                <section class="side-card">
+                    <h3>Điều phối vận hành</h3>
                     <form method="POST" action="?id=<?php echo $id; ?>">
-                        <textarea name="admin_note" class="admin-input" rows="4" placeholder="Chỉ Admin có thể xem được nội dung này..."><?php echo htmlspecialchars($order['admin_note'] ?? ''); ?></textarea>
-                        <button type="submit" name="save_admin_note" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 15px; background: #f57c00;">Lưu ghi chú</button>
+                        <label style="display:block; margin-bottom:8px; font-size:12px; font-weight:800; text-transform:uppercase; color:#8aa0c5;">Trạng thái đơn hàng</label>
+                        <select name="status" class="admin-select" style="width:100%; margin-bottom:14px;">
+                            <option value="pending" <?php echo ($order['status'] ?? '') === 'pending' ? 'selected' : ''; ?>>Chờ lấy hàng</option>
+                            <option value="shipping" <?php echo ($order['status'] ?? '') === 'shipping' ? 'selected' : ''; ?>>Đang giao hàng</option>
+                            <option value="completed" <?php echo ($order['status'] ?? '') === 'completed' ? 'selected' : ''; ?>>Giao thành công</option>
+                            <option value="cancelled" <?php echo ($order['status'] ?? '') === 'cancelled' ? 'selected' : ''; ?>>Đã hủy đơn</option>
+                        </select>
+                        <label style="display:flex; align-items:center; gap:8px; margin-bottom:14px; font-size:13px; color:#b91c1c;"><input type="checkbox" name="override_status"> Cho phép sửa bất kỳ</label>
+                        <button type="submit" name="update_status" class="btn-primary" style="width:100%; justify-content:center;">Cập nhật trạng thái</button>
                     </form>
-                </div>
+
+                    <hr style="border:0; border-top:1px dashed #dbe7ff; margin:16px 0;">
+
+                    <form method="POST" action="?id=<?php echo $id; ?>">
+                        <label style="display:block; margin-bottom:8px; font-size:12px; font-weight:800; text-transform:uppercase; color:#8aa0c5;">Phân công nhà cung cấp</label>
+                        <select name="shipper_id" class="admin-select" style="width:100%; margin-bottom:14px;">
+                            <option value="0">-- Chưa phân công --</option>
+                            <?php foreach ($availableShippers as $shipper): ?>
+                                <option value="<?php echo (int) $shipper['id']; ?>" <?php echo (int) ($order['shipper_id'] ?? 0) === (int) ($shipper['id'] ?? 0) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars((string) $shipper['fullname']); ?><?php if (!empty($shipper['vehicle_type'])): ?> | <?php echo htmlspecialchars((string) $shipper['vehicle_type']); ?><?php endif; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <button type="submit" name="assign_shipper" class="btn-primary" style="width:100%; justify-content:center; background:linear-gradient(135deg,#16a34a,#15803d); border:none;">Lưu phân công</button>
+                    </form>
+                </section>
+
+                <section class="side-card">
+                    <h3>Thanh toán</h3>
+                    <div class="item" style="margin-bottom:14px;"><small>Hình thức thanh toán</small><div><?php echo htmlspecialchars(payment_method_text((string) ($order['payment_method'] ?? ''))); ?></div></div>
+                    <div class="item" style="margin-bottom:14px;"><small>Người trả cước</small><div><?php echo htmlspecialchars(payer_label($order, $payload)); ?></div></div>
+                    <form method="POST" action="?id=<?php echo $id; ?>">
+                        <label style="display:block; margin-bottom:8px; font-size:12px; font-weight:800; text-transform:uppercase; color:#8aa0c5;">Trạng thái thanh toán</label>
+                        <select name="payment_status" class="admin-select" style="width:100%; margin-bottom:14px;">
+                            <option value="unpaid" <?php echo ($order['payment_status'] ?? '') === 'unpaid' ? 'selected' : ''; ?>>Chưa thanh toán</option>
+                            <option value="paid" <?php echo ($order['payment_status'] ?? '') === 'paid' ? 'selected' : ''; ?>>Đã thanh toán</option>
+                            <option value="refunded" <?php echo ($order['payment_status'] ?? '') === 'refunded' ? 'selected' : ''; ?>>Đã hoàn tiền</option>
+                        </select>
+                        <button type="submit" name="update_payment_status" class="btn-primary" style="width:100%; justify-content:center;">Lưu thanh toán</button>
+                    </form>
+                </section>
+
+                <section class="side-card" style="background:#fffde8; border-color:#f7e38e;">
+                    <h3>Ghi chú nội bộ</h3>
+                    <form method="POST" action="?id=<?php echo $id; ?>">
+                        <textarea name="admin_note" class="admin-input" rows="5" placeholder="Chỉ Admin có thể xem nội dung này..."><?php echo htmlspecialchars((string) ($order['admin_note'] ?? '')); ?></textarea>
+                        <button type="submit" name="save_admin_note" class="btn-primary" style="width:100%; justify-content:center; margin-top:14px; background:#f57c00; border:none;">Lưu ghi chú</button>
+                    </form>
+                </section>
             </aside>
         </div>
-
-        <!-- Lịch sử Log (Full Width) -->
-        <div class="admin-card" style="margin-top: 30px;">
-            <div class="admin-card-header">
-                <h3><i class="fa-solid fa-clock-rotate-left"></i> Nhật ký hành trình & Thay đổi trạng thái</h3>
-            </div>
-            <div class="admin-timeline">
-                <?php 
-                $stmt_log = $conn->prepare("SELECT l.*, u.fullname FROM order_logs l LEFT JOIN users u ON l.user_id = u.id WHERE l.order_id = ? ORDER BY l.created_at DESC");
-                $stmt_log->bind_param("i", $id);
-                $stmt_log->execute();
-                $log_r = $stmt_log->get_result();
-                $first = true;
-                if ($log_r && $log_r->num_rows > 0) {
-                    while($log = $log_r->fetch_assoc()) {
-                        $old_st = htmlspecialchars($log['old_status']);
-                        $new_st = htmlspecialchars($log['new_status']);
-                        $icon = $first ? 'fa-circle-check' : 'fa-circle';
-                        $active_class = $first ? 'active' : '';
-                        ?>
-                        <div class="timeline-item <?php echo $active_class; ?>">
-                            <div class="timeline-marker"><i class="fa-solid <?php echo $icon; ?>"></i></div>
-                            <div class="timeline-content">
-                                <div class="timeline-time"><?php echo date('d/m/Y H:i', strtotime($log['created_at'])); ?></div>
-                                <div class="timeline-user"><i class="fa-solid fa-user-circle"></i> <?php echo htmlspecialchars($log['fullname']); ?></div>
-                                <div class="timeline-status-change">
-                                    <span class="status-badge status-<?php echo $old_st; ?>"><?php echo $old_st; ?></span>
-                                    <i class="fa-solid fa-arrow-right-long" style="color: #cbd5e1;"></i>
-                                    <span class="status-badge status-<?php echo $new_st; ?>"><?php echo $new_st; ?></span>
-                                </div>
-                            </div>
-                        </div>
-                        <?php
-                        $first = false;
-                    }
-                } else {
-                    echo "<div style='padding: 30px; text-align: center; color: #94a3b8;'>Chưa có bản ghi hoạt động nào.</div>";
-                }
-                $stmt_log->close();
-                ?>
-                
-                <!-- Điểm khởi tạo đơn -->
-                <div class="timeline-item">
-                    <div class="timeline-marker"><i class="fa-solid fa-star"></i></div>
-                    <div class="timeline-content">
-                        <div class="timeline-time"><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></div>
-                        <div class="timeline-user">Hệ thống</div>
-                        <div style="font-weight: 600; color: #64748b;">Đơn hàng đã được tạo thành công</div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
+
     <?php include __DIR__ . '/../../includes/footer.php'; ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const buttons = Array.from(document.querySelectorAll('[data-tab-target]'));
+            const panels = Array.from(document.querySelectorAll('[data-tab-panel]'));
+            buttons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    const target = button.dataset.tabTarget;
+                    buttons.forEach((item) => item.classList.toggle('is-active', item === button));
+                    panels.forEach((panel) => panel.classList.toggle('is-active', panel.dataset.tabPanel === target));
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-

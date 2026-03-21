@@ -348,7 +348,7 @@
         ${paymentContent}
         <div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
           <button type="button" onclick="resetOrderForm('${config.id}')" class="btn-primary">Tạo đơn mới</button>
-          <a href="${core.toApiUrl("order_history.php")}" class="btn-secondary" style="color:#0a2a66; border-color:#0a2a66; text-decoration:none; display:inline-block; padding:12px 20px;">Xem lịch sử</a>
+          <a href="${core.toApiUrl("khach-hang/lich-su-don-hang.html")}" class="btn-secondary" style="color:#0a2a66; border-color:#0a2a66; text-decoration:none; display:inline-block; padding:12px 20px;">Xem lịch sử</a>
         </div>
       </div>`;
   }

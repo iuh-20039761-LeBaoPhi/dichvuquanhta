@@ -1,87 +1,304 @@
 <?php
 session_start();
-require_once __DIR__ . '/../../config/db.php';
 
-// Kiểm tra quyền Admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../../index.html");
+if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
+    header('Location: ../../index.html');
     exit;
 }
-
-$msg = "";
-
-// Xử lý Khóa/Mở khóa nhanh
-if (isset($_GET['action']) && isset($_GET['id'])) {
-    $action = $_GET['action'];
-    $uid = intval($_GET['id']);
-
-    // Không cho phép tự khóa chính mình
-    if ($uid == $_SESSION['user_id']) {
-        $msg = "Không thể khóa tài khoản đang đăng nhập.";
-    } else {
-        if ($action === 'approve') {
-            $conn->query("UPDATE users SET is_approved = 1 WHERE id = $uid AND role = 'shipper'");
-            $msg = "Đã duyệt tài khoản shipper ID $uid.";
-        }
-        if ($action === 'lock') {
-            $reason = isset($_GET['reason']) ? trim($_GET['reason']) : 'Vi phạm chính sách';
-            $stmt = $conn->prepare("UPDATE users SET is_locked = 1, lock_reason = ? WHERE id = ?");
-            $stmt->bind_param("si", $reason, $uid);
-            $stmt->execute();
-            $msg = "Đã khóa tài khoản ID $uid.";
-        } elseif ($action === 'unlock') {
-            $conn->query("UPDATE users SET is_locked = 0, lock_reason = NULL WHERE id = $uid");
-            $msg = "Đã mở khóa tài khoản ID $uid.";
-        } elseif ($action === 'delete') {
-            $del = $conn->query("DELETE FROM users WHERE id = $uid");
-            if ($del)
-                $msg = "Đã xóa tài khoản ID $uid.";
-            else
-                $msg = "Không thể xóa (User này đã có dữ liệu đơn hàng). Hãy dùng chức năng Khóa.";
-        }
-    }
-}
-
-// Bộ lọc & Phân trang
-$search = trim($_GET['search'] ?? '');
-$role = $_GET['role'] ?? '';
-$approval_status = $_GET['approval_status'] ?? '';
-$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-$limit = 10;
-$offset = ($page - 1) * $limit;
-if ($page < 1)
-    $page = 1;
-
-$where = "WHERE 1=1";
-if ($search)
-    $where .= " AND (username LIKE '%$search%' OR fullname LIKE '%$search%' OR email LIKE '%$search%' OR phone LIKE '%$search%')";
-if ($role)
-    $where .= " AND role = '$role'";
-if ($approval_status === 'pending')
-    $where .= " AND is_approved = 0 AND role = 'shipper'";
-
-// Đếm tổng
-$total_res = $conn->query("SELECT COUNT(*) as total FROM users $where");
-$total_records = $total_res->fetch_assoc()['total'];
-$total_pages = ceil($total_records / $limit);
-
-// Lấy dữ liệu
-$sql = "SELECT * FROM users $where ORDER BY id DESC LIMIT $offset, $limit";
-$result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <title>Quản lý người dùng | Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/admin.css?v=<?php echo time(); ?>">
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .users-shell {
+            display: grid;
+            grid-template-columns: minmax(0, 1.9fr) 320px;
+            gap: 24px;
+            align-items: start;
+        }
 
+        .users-hero {
+            padding: 24px;
+            border-radius: 24px;
+            color: #fff;
+            background:
+                radial-gradient(circle at top right, rgba(255, 122, 0, 0.15), transparent 24%),
+                linear-gradient(135deg, #08214f 0%, #0a2a66 60%, #123b87 100%);
+            box-shadow: 0 18px 40px rgba(10, 42, 102, 0.16);
+        }
+
+        .users-hero h3 {
+            margin: 0 0 10px;
+            font-size: 30px;
+            line-height: 1.12;
+        }
+
+        .users-hero p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .users-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .users-stat-card {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .users-stat-card small {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: rgba(255, 255, 255, 0.72);
+            font-weight: 800;
+        }
+
+        .users-stat-card strong {
+            font-size: 26px;
+            line-height: 1;
+        }
+
+        .users-table-card {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .users-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px 22px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .users-card-header h3 {
+            margin: 0;
+            color: #0a2a66;
+            font-size: 18px;
+        }
+
+        .users-card-header p {
+            margin: 4px 0 0;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .users-toolbar-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: #f8fbff;
+            border: 1px solid #d9e5ff;
+            color: #355086;
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .users-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a2a66, #1e3a8a);
+            color: #fff;
+            font-weight: 800;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .role-badge-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .role-badge-inline.is-admin {
+            background: rgba(10, 42, 102, 0.12);
+            color: #0a2a66;
+        }
+
+        .role-badge-inline.is-customer {
+            background: rgba(255, 122, 0, 0.12);
+            color: #c26000;
+        }
+
+        .role-badge-inline.is-shipper {
+            background: rgba(46, 125, 50, 0.12);
+            color: #2e7d32;
+        }
+
+        .users-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .users-status-pill.is-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .users-status-pill.is-pending {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffe0b2;
+        }
+
+        .users-status-pill.is-locked {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .users-loading,
+        .users-empty {
+            padding: 32px 24px;
+            text-align: center;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .users-pagination {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 22px 24px;
+            border-top: 1px solid #edf2f7;
+        }
+
+        .users-page-btn {
+            min-width: 38px;
+            height: 38px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            border: 1px solid #d9e5ff;
+            background: #f8fbff;
+            color: #355086;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .users-page-btn.is-active {
+            background: #0a2a66;
+            border-color: #0a2a66;
+            color: #fff;
+        }
+
+        .users-page-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .users-filter-card {
+            position: sticky;
+            top: 100px;
+        }
+
+        .users-filter-actions {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .users-inline-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .users-toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 9999;
+            min-width: 280px;
+            max-width: 420px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+            font-weight: 700;
+            display: none;
+        }
+
+        .users-toast.is-success {
+            display: block;
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .users-toast.is-error {
+            display: block;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        @media (max-width: 1200px) {
+            .users-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .users-filter-card {
+                position: static;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .users-stat-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .users-stat-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .users-hero h3 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
 <body>
     <?php include __DIR__ . '/../../includes/header_admin.php'; ?>
-
     <main class="admin-container">
         <div class="page-header">
             <h2 class="page-title">Quản lý người dùng</h2>
@@ -90,167 +307,416 @@ $result = $conn->query($sql);
             </a>
         </div>
 
-        <?php if ($msg): ?>
-            <div class="status-badge status-active" style="width: 100%; margin-bottom: 20px; padding: 15px;">
-                <i class="fa-solid fa-circle-check"></i> <?php echo $msg; ?>
+        <section class="users-hero">
+            <h3>Quản lý khách hàng, shipper và tài khoản quản trị</h3>
+            <p>Màn này đọc trực tiếp từ API quản trị để lọc người dùng, duyệt shipper, khóa tài khoản và theo dõi tình trạng vận hành nhân sự.</p>
+            <div class="users-stat-grid">
+                <div class="users-stat-card">
+                    <small>Tổng người dùng</small>
+                    <strong id="users-stat-total">0</strong>
+                </div>
+                <div class="users-stat-card">
+                    <small>Khách hàng</small>
+                    <strong id="users-stat-customers">0</strong>
+                </div>
+                <div class="users-stat-card">
+                    <small>Shipper</small>
+                    <strong id="users-stat-shippers">0</strong>
+                </div>
+                <div class="users-stat-card">
+                    <small>Chờ duyệt shipper</small>
+                    <strong id="users-stat-pending-shippers">0</strong>
+                </div>
             </div>
-        <?php endif; ?>
+        </section>
 
-        <!-- Filter Card -->
-        <div class="admin-card" style="padding: 20px; margin-bottom: 30px;">
-            <form method="GET" class="grid-responsive-3" style="align-items: end; gap: 15px;">
-                <div class="form-group">
-                    <label><i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm</label>
-                    <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tên, Email, SĐT..." class="admin-input">
+        <div class="users-shell" style="margin-top: 24px;">
+            <section class="admin-card users-table-card">
+                <div class="users-card-header">
+                    <div>
+                        <h3>Danh sách người dùng</h3>
+                        <p id="users-summary">Đang tải dữ liệu người dùng từ API...</p>
+                    </div>
+                    <div class="users-toolbar-badge">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span>API Driven</span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label><i class="fa-solid fa-user-tag"></i> Vai trò</label>
-                    <select name="role" class="admin-select">
-                        <option value="">-- Tất cả vai trò --</option>
-                        <option value="customer" <?php if ($role == 'customer') echo 'selected'; ?>>Khách hàng</option>
-                        <option value="shipper" <?php if ($role == 'shipper') echo 'selected'; ?>>Shipper</option>
-                        <option value="admin" <?php if ($role == 'admin') echo 'selected'; ?>>Admin</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label><i class="fa-solid fa-clock-rotate-left"></i> Xét duyệt</label>
-                    <select name="approval_status" class="admin-select">
-                        <option value="">-- Trạng thái duyệt --</option>
-                        <option value="pending" <?php if ($approval_status == 'pending') echo 'selected'; ?>>Chờ duyệt</option>
-                    </select>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button type="submit" class="btn-primary" style="flex: 1; justify-content: center;">Lọc</button>
-                    <a href="users_manage.php" class="btn-secondary" style="flex: 1; justify-content: center;">Đặt lại</a>
-                </div>
-            </form>
-        </div>
 
-        <!-- Table Card -->
-        <div class="admin-card" style="padding: 0; overflow: hidden;">
-            <div class="table-responsive">
-                <table class="order-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tài khoản</th>
-                            <th>Thông tin liên hệ</th>
-                            <th>Vai trò</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày tham gia</th>
-                            <th style="text-align: right;">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($result->num_rows > 0): ?>
-                            <?php while ($row = $result->fetch_assoc()): ?>
-                                <tr>
-                                    <td><span style="font-weight: 700; color: #64748b;">#<?php echo $row['id']; ?></span></td>
-                                    <td>
-                                        <div style="display: flex; align-items: center; gap: 10px;">
-                                            <div class="profile-avatar" style="width: 35px; height: 35px; font-size: 14px;">
-                                                <?php echo strtoupper(substr($row['username'], 0, 1)); ?>
-                                            </div>
-                                            <strong><?php echo htmlspecialchars($row['username']); ?></strong>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="line-height: 1.4;">
-                                            <div style="font-weight: 600;"><?php echo htmlspecialchars($row['fullname']); ?></div>
-                                            <div style="font-size: 12px; color: #64748b;">
-                                                <i class="fa-regular fa-envelope" style="width: 14px;"></i> <?php echo $row['email']; ?><br>
-                                                <i class="fa-solid fa-phone" style="width: 14px;"></i> <?php echo $row['phone']; ?>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="role-badge role-<?php echo $row['role']; ?>">
-                                            <?php 
-                                                $labels = ['admin' => 'Admin', 'customer' => 'Khách hàng', 'shipper' => 'Shipper'];
-                                                echo $labels[$row['role']] ?? ucfirst($row['role']);
-                                            ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php if ($row['role'] === 'shipper' && !$row['is_approved']): ?>
-                                            <span class="status-badge status-pending">Chờ duyệt</span>
-                                        <?php elseif ($row['is_locked']): ?>
-                                            <span class="status-badge status-locked">Đã khóa</span>
-                                        <?php else: ?>
-                                            <span class="status-badge status-active">Hoạt động</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><span style="color: #64748b; font-size: 13px;"><?php echo date('d/m/Y', strtotime($row['created_at'])); ?></span></td>
-                                    <td style="text-align: right;">
-                                        <div style="display: flex; justify-content: flex-end; gap: 5px;">
-                                            <a href="user_history.php?id=<?php echo $row['id']; ?>" class="btn-sm btn-view-site-pill" title="Lịch sử hoạt động" style="color: #0a2a66; background: rgba(10,42,102,0.1);">
-                                                <i class="fa-solid fa-clock-rotate-left"></i>
-                                            </a>
-                                            <a href="user_form.php?id=<?php echo $row['id']; ?>" class="btn-sm btn-view-site-pill" title="Sửa" style="color: #ff7a00; background: rgba(255,122,0,0.1);">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </a>
-                                            <?php if ($row['role'] === 'shipper'): ?>
-                                                <a href="admin_shipper_detail.php?id=<?php echo $row['id']; ?>" class="btn-sm btn-view-site-pill" title="Hiệu suất Shipper" style="color: #6610f2; background: rgba(102,16,242,0.1);">
-                                                    <i class="fa-solid fa-chart-line"></i>
-                                                </a>
-                                            <?php endif; ?>
-                                            <?php if ($row['role'] === 'shipper' && !$row['is_approved']): ?>
-                                                <a href="?action=approve&id=<?php echo $row['id']; ?>" class="btn-sm btn-view-site-pill" onclick="return confirm('Duyệt tài khoản shipper này?')" title="Duyệt" style="color: #2e7d32; background: rgba(46,125,50,0.1);">
-                                                    <i class="fa-solid fa-check"></i>
-                                                </a>
-                                            <?php endif; ?>
-                                            <?php if ($row['id'] != $_SESSION['user_id']): ?>
-                                                <?php if ($row['is_locked']): ?>
-                                                    <a href="?action=unlock&id=<?php echo $row['id']; ?>" class="btn-sm btn-view-site-pill" onclick="return confirm('Mở khóa tài khoản này?')" title="Mở khóa" style="color: #2e7d32; background: rgba(46,125,50,0.1);">
-                                                        <i class="fa-solid fa-lock-open"></i>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <a href="#" class="btn-sm btn-view-site-pill" onclick="lockUser(<?php echo $row['id']; ?>); return false;" title="Khóa" style="color: #d9534f; background: rgba(217,83,79,0.1);">
-                                                        <i class="fa-solid fa-lock"></i>
-                                                    </a>
-                                                <?php endif; ?>
-                                                <a href="?action=delete&id=<?php echo $row['id']; ?>" class="btn-sm btn-view-site-pill" onclick="return confirm('Xóa tài khoản này?')" title="Xóa" style="color: #1a1a1a; background: rgba(0,0,0,0.05);">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                </a>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
+                <div class="table-responsive">
+                    <table class="order-table">
+                        <thead>
                             <tr>
-                                <td colspan="7" style="text-align:center; padding:40px; color: #64748b;">Không tìm thấy người dùng nào.</td>
+                                <th>ID</th>
+                                <th>Tài khoản</th>
+                                <th>Thông tin liên hệ</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tham gia</th>
+                                <th style="text-align: right;">Hành động</th>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr>
+                                <td colspan="7" class="users-loading">Đang tải danh sách người dùng...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        <!-- Pagination -->
-        <?php if ($total_pages > 1): ?>
-            <div style="margin-top:30px; display: flex; justify-content: center; gap: 8px;">
-                <?php for ($i = 1; $i <= $total_pages; $i++):
-                    $page_query = http_build_query(array_merge($_GET, ['page' => $i])); ?>
-                    <a href="?<?php echo $page_query; ?>" class="btn-sm"
-                        style="min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-weight: 600; <?php echo ($i == $page) ? 'background:#0a2a66; color:#fff;' : 'background:#fff; color:#64748b; border: 1px solid #e0e6ed;'; ?>">
-                        <?php echo $i; ?>
-                    </a>
-                <?php endfor; ?>
-            </div>
-        <?php endif; ?>
+                <div id="users-pagination" class="users-pagination" hidden></div>
+            </section>
+
+            <aside class="admin-card users-filter-card">
+                <h3 style="font-size: 16px; margin-bottom: 20px; color: #0a2a66; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-filter"></i> Bộ lọc người dùng
+                </h3>
+                <form id="users-filter-form" class="form-grid" style="grid-template-columns: 1fr;">
+                    <div class="form-group">
+                        <label for="users-search">Tìm kiếm</label>
+                        <input id="users-search" type="text" name="search" placeholder="Tên, Email, SĐT..." class="admin-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="users-role">Vai trò</label>
+                        <select id="users-role" name="role" class="admin-select">
+                            <option value="">-- Tất cả vai trò --</option>
+                            <option value="customer">Khách hàng</option>
+                            <option value="shipper">Shipper</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="users-approval-status">Xét duyệt</label>
+                        <select id="users-approval-status" name="approval_status" class="admin-select">
+                            <option value="">-- Trạng thái duyệt --</option>
+                            <option value="pending">Chờ duyệt</option>
+                        </select>
+                    </div>
+                    <div class="users-filter-actions">
+                        <button type="submit" class="btn-primary" style="justify-content: center;">
+                            <i class="fa-solid fa-magnifying-glass"></i> Áp dụng lọc
+                        </button>
+                        <button type="button" id="users-reset-btn" class="btn-secondary" style="justify-content: center;">
+                            <i class="fa-solid fa-rotate-left"></i> Xóa bộ lọc
+                        </button>
+                    </div>
+                </form>
+            </aside>
+        </div>
     </main>
 
     <?php include __DIR__ . '/../../includes/footer.php'; ?>
+
+    <div id="users-toast" class="users-toast"></div>
+
     <script>
-        function lockUser(id) {
-            let reason = prompt("Nhập lý do khóa tài khoản này:", "Vi phạm quy định");
-            if (reason !== null) {
-                window.location.href = "?action=lock&id=" + id + "&reason=" + encodeURIComponent(reason);
+        (function () {
+            const apiUrl = "../../admin-giaohang/api/users.php";
+            const currentAdminId = <?php echo (int) $_SESSION['user_id']; ?>;
+            const tbody = document.getElementById("users-table-body");
+            const summary = document.getElementById("users-summary");
+            const pagination = document.getElementById("users-pagination");
+            const form = document.getElementById("users-filter-form");
+            const resetBtn = document.getElementById("users-reset-btn");
+            const toast = document.getElementById("users-toast");
+            const statTotal = document.getElementById("users-stat-total");
+            const statCustomers = document.getElementById("users-stat-customers");
+            const statShippers = document.getElementById("users-stat-shippers");
+            const statPendingShippers = document.getElementById("users-stat-pending-shippers");
+            let lastParams = null;
+
+            function escapeHtml(value) {
+                return String(value ?? "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/\"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
             }
-        }
+
+            function formatDate(value) {
+                if (!value) return "N/A";
+                const date = new Date(value);
+                if (Number.isNaN(date.getTime())) return escapeHtml(value);
+                return date.toLocaleDateString("vi-VN");
+            }
+
+            function showToast(message, type) {
+                toast.textContent = message;
+                toast.className = `users-toast is-${type}`;
+                window.clearTimeout(showToast._timer);
+                showToast._timer = window.setTimeout(() => {
+                    toast.className = "users-toast";
+                }, 3200);
+            }
+
+            function getRoleBadge(user) {
+                const role = user.role || "";
+                const roleMap = {
+                    admin: { label: "Admin", className: "is-admin" },
+                    customer: { label: "Khách hàng", className: "is-customer" },
+                    shipper: { label: "Shipper", className: "is-shipper" },
+                };
+                const meta = roleMap[role] || { label: role, className: "is-customer" };
+                return `<span class="role-badge-inline ${meta.className}">${escapeHtml(meta.label)}</span>`;
+            }
+
+            function getStatusBadge(user) {
+                if (user.role === "shipper" && !user.is_approved) {
+                    return '<span class="users-status-pill is-pending">Chờ duyệt</span>';
+                }
+                if (user.is_locked) {
+                    return '<span class="users-status-pill is-locked">Đã khóa</span>';
+                }
+                return '<span class="users-status-pill is-active">Hoạt động</span>';
+            }
+
+            function updateStats(users) {
+                const list = Array.isArray(users) ? users : [];
+                const total = list.length;
+                const customers = list.filter((user) => user.role === "customer").length;
+                const shippers = list.filter((user) => user.role === "shipper").length;
+                const pendingShippers = list.filter((user) => user.role === "shipper" && !user.is_approved).length;
+
+                statTotal.textContent = total.toLocaleString("vi-VN");
+                statCustomers.textContent = customers.toLocaleString("vi-VN");
+                statShippers.textContent = shippers.toLocaleString("vi-VN");
+                statPendingShippers.textContent = pendingShippers.toLocaleString("vi-VN");
+            }
+
+            function getParamsFromLocation() {
+                const params = new URLSearchParams(window.location.search);
+                return {
+                    search: params.get("search") || "",
+                    role: params.get("role") || "",
+                    approval_status: params.get("approval_status") || "",
+                    page: Math.max(1, Number.parseInt(params.get("page") || "1", 10) || 1),
+                };
+            }
+
+            function syncForm(params) {
+                form.search.value = params.search;
+                form.role.value = params.role;
+                form.approval_status.value = params.approval_status;
+            }
+
+            function updateUrl(params) {
+                const url = new URL(window.location.href);
+                url.searchParams.set("page", String(params.page || 1));
+                if (params.search) url.searchParams.set("search", params.search);
+                else url.searchParams.delete("search");
+                if (params.role) url.searchParams.set("role", params.role);
+                else url.searchParams.delete("role");
+                if (params.approval_status) url.searchParams.set("approval_status", params.approval_status);
+                else url.searchParams.delete("approval_status");
+                window.history.replaceState({}, "", url.toString());
+            }
+
+            function renderUsers(users) {
+                if (!Array.isArray(users) || !users.length) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="users-empty">Không tìm thấy người dùng nào.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = users.map((user) => {
+                    const canMutate = Number(user.id) !== currentAdminId;
+                    const avatar = escapeHtml((user.username || "U").charAt(0).toUpperCase());
+                    const historyUrl = `user_history.php?id=${encodeURIComponent(user.id)}`;
+                    const editUrl = `user_form.php?id=${encodeURIComponent(user.id)}`;
+                    const shipperUrl = `admin_shipper_detail.php?id=${encodeURIComponent(user.id)}`;
+
+                    const actionButtons = [
+                        `<a href="${historyUrl}" class="btn-sm btn-view-site-pill" title="Lịch sử hoạt động" style="color:#0a2a66; background:rgba(10,42,102,0.1);"><i class="fa-solid fa-clock-rotate-left"></i></a>`,
+                        `<a href="${editUrl}" class="btn-sm btn-view-site-pill" title="Sửa" style="color:#ff7a00; background:rgba(255,122,0,0.1);"><i class="fa-solid fa-pen-to-square"></i></a>`,
+                    ];
+
+                    if (user.role === "shipper") {
+                        actionButtons.push(`<a href="${shipperUrl}" class="btn-sm btn-view-site-pill" title="Hiệu suất Shipper" style="color:#6610f2; background:rgba(102,16,242,0.1);"><i class="fa-solid fa-chart-line"></i></a>`);
+                    }
+
+                    if (user.role === "shipper" && !user.is_approved) {
+                        actionButtons.push(`<button type="button" class="btn-sm btn-view-site-pill" data-user-action="approve" data-user-id="${user.id}" title="Duyệt" style="color:#2e7d32; background:rgba(46,125,50,0.1);"><i class="fa-solid fa-check"></i></button>`);
+                    }
+
+                    if (canMutate) {
+                        if (user.is_locked) {
+                            actionButtons.push(`<button type="button" class="btn-sm btn-view-site-pill" data-user-action="unlock" data-user-id="${user.id}" title="Mở khóa" style="color:#2e7d32; background:rgba(46,125,50,0.1);"><i class="fa-solid fa-lock-open"></i></button>`);
+                        } else {
+                            actionButtons.push(`<button type="button" class="btn-sm btn-view-site-pill" data-user-action="lock" data-user-id="${user.id}" title="Khóa" style="color:#d9534f; background:rgba(217,83,79,0.1);"><i class="fa-solid fa-lock"></i></button>`);
+                        }
+                        actionButtons.push(`<button type="button" class="btn-sm btn-view-site-pill" data-user-action="delete" data-user-id="${user.id}" title="Xóa" style="color:#1a1a1a; background:rgba(0,0,0,0.05);"><i class="fa-solid fa-trash-can"></i></button>`);
+                    }
+
+                    return `
+                        <tr>
+                            <td data-label="ID"><span style="font-weight:700; color:#64748b;">#${Number(user.id || 0).toLocaleString("vi-VN")}</span></td>
+                            <td data-label="Tài khoản">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div class="users-avatar">${avatar}</div>
+                                    <strong>${escapeHtml(user.username)}</strong>
+                                </div>
+                            </td>
+                            <td data-label="Thông tin liên hệ">
+                                <div style="line-height:1.4;">
+                                    <div style="font-weight:600;">${escapeHtml(user.fullname)}</div>
+                                    <div style="font-size:12px; color:#64748b;">
+                                        <i class="fa-regular fa-envelope" style="width:14px;"></i> ${escapeHtml(user.email)}<br>
+                                        <i class="fa-solid fa-phone" style="width:14px;"></i> ${escapeHtml(user.phone)}
+                                        ${user.vehicle_type ? `<br><i class="fa-solid fa-motorcycle" style="width:14px;"></i> ${escapeHtml(user.vehicle_type)}` : ""}
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-label="Vai trò">${getRoleBadge(user)}</td>
+                            <td data-label="Trạng thái">${getStatusBadge(user)}</td>
+                            <td data-label="Ngày tham gia"><span style="color:#64748b; font-size:13px;">${formatDate(user.created_at)}</span></td>
+                            <td data-label="Hành động" style="text-align:right;">
+                                <div class="users-inline-actions">${actionButtons.join("")}</div>
+                            </td>
+                        </tr>
+                    `;
+                }).join("");
+            }
+
+            function renderPagination(meta, currentParams) {
+                pagination.innerHTML = "";
+                const totalPages = Number(meta.total_pages || 0);
+                if (totalPages <= 1) {
+                    pagination.hidden = true;
+                    return;
+                }
+
+                pagination.hidden = false;
+                const currentPage = Number(meta.page || 1);
+                const start = Math.max(1, currentPage - 2);
+                const end = Math.min(totalPages, currentPage + 2);
+
+                function createButton(label, page, active, disabled) {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = `users-page-btn${active ? " is-active" : ""}`;
+                    button.textContent = label;
+                    button.disabled = !!disabled || active;
+                    if (!button.disabled) {
+                        button.addEventListener("click", () => loadUsers({ ...currentParams, page }));
+                    }
+                    return button;
+                }
+
+                pagination.appendChild(createButton("‹", Math.max(1, currentPage - 1), false, currentPage === 1));
+                for (let page = start; page <= end; page += 1) {
+                    pagination.appendChild(createButton(String(page), page, page === currentPage, false));
+                }
+                pagination.appendChild(createButton("›", Math.min(totalPages, currentPage + 1), false, currentPage === totalPages));
+            }
+
+            async function sendAction(action, userId) {
+                let reason = "";
+                if (action === "lock") {
+                    const promptValue = window.prompt("Nhập lý do khóa tài khoản này:", "Vi phạm quy định");
+                    if (promptValue === null) return;
+                    reason = promptValue.trim() || "Vi phạm quy định";
+                }
+
+                const confirmMessages = {
+                    approve: "Duyệt tài khoản shipper này?",
+                    unlock: "Mở khóa tài khoản này?",
+                    delete: "Xóa tài khoản này?",
+                };
+
+                if (confirmMessages[action] && !window.confirm(confirmMessages[action])) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            action,
+                            id: userId,
+                            reason,
+                        }),
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || "Không thể cập nhật người dùng.");
+                    }
+
+                    showToast(result.message || "Thao tác thành công.", "success");
+                    if (lastParams) {
+                        loadUsers(lastParams);
+                    }
+                } catch (error) {
+                    showToast(error.message || "Không thể cập nhật người dùng.", "error");
+                }
+            }
+
+            async function loadUsers(params) {
+                lastParams = { ...params };
+                syncForm(params);
+                updateUrl(params);
+                summary.textContent = "Đang tải dữ liệu người dùng từ API...";
+                tbody.innerHTML = '<tr><td colspan="7" class="users-loading">Đang tải danh sách người dùng...</td></tr>';
+                pagination.hidden = true;
+
+                const query = new URLSearchParams();
+                query.set("page", String(params.page || 1));
+                if (params.search) query.set("search", params.search);
+                if (params.role) query.set("role", params.role);
+                if (params.approval_status) query.set("approval_status", params.approval_status);
+
+                try {
+                    const response = await fetch(`${apiUrl}?${query.toString()}`, {
+                        credentials: "same-origin",
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || "Không thể tải dữ liệu người dùng.");
+                    }
+
+                    const data = result.data || {};
+                    const users = Array.isArray(data.users) ? data.users : [];
+                    renderUsers(users);
+                    renderPagination(data.pagination || {}, params);
+                    updateStats(users);
+
+                    const totalRecords = Number((data.pagination && data.pagination.total_records) || 0);
+                    const currentPage = Number((data.pagination && data.pagination.page) || 1);
+                    const totalPages = Number((data.pagination && data.pagination.total_pages) || 1);
+                    summary.textContent = `Hiển thị ${users.length} người dùng trên tổng ${totalRecords.toLocaleString("vi-VN")} bản ghi. Trang ${currentPage}/${totalPages}.`;
+                } catch (error) {
+                    summary.textContent = "Không tải được dữ liệu.";
+                    tbody.innerHTML = `<tr><td colspan="7" class="users-empty">${escapeHtml(error.message || "Không thể tải dữ liệu người dùng.")}</td></tr>`;
+                    pagination.hidden = true;
+                    updateStats([]);
+                }
+            }
+
+            form.addEventListener("submit", (event) => {
+                event.preventDefault();
+                loadUsers({
+                    search: form.search.value.trim(),
+                    role: form.role.value,
+                    approval_status: form.approval_status.value,
+                    page: 1,
+                });
+            });
+
+            resetBtn.addEventListener("click", () => {
+                loadUsers({ search: "", role: "", approval_status: "", page: 1 });
+            });
+
+            tbody.addEventListener("click", (event) => {
+                const button = event.target.closest("[data-user-action]");
+                if (!button) return;
+                sendAction(button.dataset.userAction, Number(button.dataset.userId));
+            });
+
+            loadUsers(getParamsFromLocation());
+        })();
     </script>
 </body>
-
 </html>
-

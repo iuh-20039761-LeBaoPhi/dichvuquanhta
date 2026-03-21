@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($user['role'] === 'admin') {
                     $default_redirect = "admin-giaohang/admin_stats.php";
                 } elseif ($user['role'] === 'shipper') {
-                    $default_redirect = "nha-cung-cap/shipper_dashboard.php";
+                    $default_redirect = "nha-cung-cap/dashboard.html";
                 }
 
                 // Nếu có redirect hợp lệ từ request thì ưu tiên.

@@ -210,19 +210,13 @@ function get_public_upload_root(): string
     return dirname(__DIR__, 2) . '/public/uploads';
 }
 
-function get_unread_notification_count(mysqli $conn, int $userId): int
+function get_feedback_media_for_order(string $orderCode): array
 {
-    $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM notifications WHERE user_id = ? AND is_read = 0");
-    if (!$stmt) {
-        return 0;
-    }
-
-    $stmt->bind_param('i', $userId);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-
-    return (int) ($row['total'] ?? 0);
+    $feedbackDir = get_public_upload_root() . '/customer-feedback/' . $orderCode;
+    return collect_public_files(
+        $feedbackDir,
+        '../uploads/customer-feedback/' . rawurlencode($orderCode)
+    );
 }
 
 function get_customer_kpis(mysqli $conn, int $userId): array
@@ -234,8 +228,6 @@ function get_customer_kpis(mysqli $conn, int $userId): array
         'completed' => 0,
         'cancelled' => 0,
         'unpaid' => 0,
-        'saved_addresses' => 0,
-        'unread_notifications' => 0,
     ];
 
     $statsSql = "SELECT
@@ -263,17 +255,6 @@ function get_customer_kpis(mysqli $conn, int $userId): array
         $stats['unpaid'] = (int) ($row['unpaid_orders'] ?? 0);
     }
 
-    $addressStmt = $conn->prepare("SELECT COUNT(*) AS total FROM saved_addresses WHERE user_id = ?");
-    if ($addressStmt) {
-        $addressStmt->bind_param('i', $userId);
-        $addressStmt->execute();
-        $addressRow = $addressStmt->get_result()->fetch_assoc();
-        $addressStmt->close();
-        $stats['saved_addresses'] = (int) ($addressRow['total'] ?? 0);
-    }
-
-    $stats['unread_notifications'] = get_unread_notification_count($conn, $userId);
-
     return $stats;
 }
 
@@ -296,7 +277,6 @@ function handle_session(mysqli $conn): void
             'company_address' => $user['company_address'],
         ],
         'meta' => [
-            'unread_notifications' => $stats['unread_notifications'],
             'order_total' => $stats['total'],
         ],
     ]);
@@ -355,48 +335,6 @@ function handle_dashboard(mysqli $conn): void
     }
     $stmt->close();
 
-    $todoItems = [];
-    if ($stats['pending'] > 0) {
-        $todoItems[] = [
-            'type' => 'warning',
-            'message' => "Bạn có {$stats['pending']} đơn đang chờ xử lý.",
-            'cta' => 'Xem đơn chờ',
-            'href' => 'lich-su-don-hang.html?status=pending',
-        ];
-    }
-    if ($stats['shipping'] > 0) {
-        $todoItems[] = [
-            'type' => 'info',
-            'message' => "Có {$stats['shipping']} đơn đang được giao.",
-            'cta' => 'Theo dõi đơn',
-            'href' => 'lich-su-don-hang.html?status=shipping',
-        ];
-    }
-    if ($stats['unpaid'] > 0) {
-        $todoItems[] = [
-            'type' => 'warning',
-            'message' => "Có {$stats['unpaid']} đơn chưa thanh toán.",
-            'cta' => 'Mở lịch sử đơn',
-            'href' => 'lich-su-don-hang.html',
-        ];
-    }
-    if ($stats['saved_addresses'] === 0) {
-        $todoItems[] = [
-            'type' => 'neutral',
-            'message' => 'Bạn chưa có địa chỉ lưu sẵn. Có thể thêm sau khi hoàn thiện API sổ địa chỉ.',
-            'cta' => 'Mở hồ sơ',
-            'href' => 'ho-so.html',
-        ];
-    }
-    if (empty($todoItems)) {
-        $todoItems[] = [
-            'type' => 'success',
-            'message' => 'Mọi thứ đang ổn. Bạn có thể tạo đơn mới bất cứ lúc nào.',
-            'cta' => 'Tạo đơn ngay',
-            'href' => '../../dat-lich-giao-hang-nhanh.html',
-        ];
-    }
-
     respond([
         'status' => 'success',
         'filters' => [
@@ -404,7 +342,6 @@ function handle_dashboard(mysqli $conn): void
         ],
         'stats' => $stats,
         'recent_orders' => $recentOrders,
-        'todo_items' => $todoItems,
     ]);
 }
 
@@ -600,16 +537,16 @@ function handle_order_detail(mysqli $conn): void
     $feeBreakdown = get_order_fee_breakdown($order);
     $insuranceFee = (float) ($feeBreakdown['insurance_fee'] ?? extract_insurance_fee($order['note'] ?? ''));
     $attachmentDir = get_public_upload_root() . '/order_attachments/' . $order['order_code'];
-    $feedbackDir = get_public_upload_root() . '/customer-feedback/' . $order['order_code'];
 
     $attachments = collect_public_files(
         $attachmentDir,
         '../uploads/order_attachments/' . rawurlencode($order['order_code'])
     );
-    $feedbackMedia = collect_public_files(
-        $feedbackDir,
-        '../uploads/customer-feedback/' . rawurlencode($order['order_code'])
+    $shipperReports = collect_public_files(
+        get_public_upload_root() . '/shipper_reports/' . $order['order_code'],
+        '../uploads/shipper_reports/' . rawurlencode($order['order_code'])
     );
+    $feedbackMedia = get_feedback_media_for_order((string) $order['order_code']);
 
     respond([
         'status' => 'success',
@@ -648,7 +585,6 @@ function handle_order_detail(mysqli $conn): void
             'rating' => $order['rating'] !== null ? (int) $order['rating'] : null,
             'feedback' => $order['feedback'],
             'pod_image' => $order['pod_image'] ? '../uploads/' . ltrim((string) $order['pod_image'], '/') : '',
-            'print_invoice_url' => 'print_invoice.php?id=' . (int) $order['id'],
         ],
         'provider' => [
             'shipper_id' => $order['shipper_id'] ? (int) $order['shipper_id'] : null,
@@ -656,6 +592,7 @@ function handle_order_detail(mysqli $conn): void
             'shipper_phone' => $order['shipper_phone'],
             'shipper_vehicle' => $order['shipper_vehicle'],
             'attachments' => $attachments,
+            'shipper_reports' => $shipperReports,
             'feedback_media' => $feedbackMedia,
         ],
         'customer' => [
@@ -750,58 +687,6 @@ function handle_update_profile(mysqli $conn): void
     respond(['status' => 'success', 'message' => 'Đã cập nhật thông tin cá nhân.']);
 }
 
-function handle_change_password(mysqli $conn): void
-{
-    require_customer($conn);
-    $userId = (int) $_SESSION['user_id'];
-
-    $oldPass = (string) ($_POST['old_pass'] ?? '');
-    $newPass = (string) ($_POST['new_pass'] ?? '');
-    $confirmPass = (string) ($_POST['confirm_pass'] ?? '');
-
-    if ($oldPass === '' || $newPass === '' || $confirmPass === '') {
-        respond(['status' => 'error', 'message' => 'Vui lòng nhập đủ 3 trường mật khẩu.'], 422);
-    }
-
-    if ($newPass !== $confirmPass) {
-        respond(['status' => 'error', 'message' => 'Mật khẩu xác nhận không khớp.'], 422);
-    }
-
-    if (strlen($newPass) < 8 || !preg_match('/[A-Z]/', $newPass) || !preg_match('/[a-z]/', $newPass) || !preg_match('/[0-9]/', $newPass) || !preg_match('/[\W_]/', $newPass)) {
-        respond(['status' => 'error', 'message' => 'Mật khẩu mới chưa đủ mạnh.'], 422);
-    }
-
-    $stmt = $conn->prepare("SELECT password FROM users WHERE id = ? LIMIT 1");
-    if (!$stmt) {
-        respond(['status' => 'error', 'message' => 'Không thể xác minh mật khẩu cũ.'], 500);
-    }
-
-    $stmt->bind_param('i', $userId);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-
-    if (!$row || !password_verify($oldPass, (string) $row['password'])) {
-        respond(['status' => 'error', 'message' => 'Mật khẩu cũ không chính xác.'], 422);
-    }
-
-    $hashed = password_hash($newPass, PASSWORD_DEFAULT);
-    $updateStmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
-    if (!$updateStmt) {
-        respond(['status' => 'error', 'message' => 'Không thể đổi mật khẩu.'], 500);
-    }
-
-    $updateStmt->bind_param('si', $hashed, $userId);
-    $success = $updateStmt->execute();
-    $updateStmt->close();
-
-    if (!$success) {
-        respond(['status' => 'error', 'message' => 'Đổi mật khẩu thất bại.'], 500);
-    }
-
-    respond(['status' => 'success', 'message' => 'Đã đổi mật khẩu thành công.']);
-}
-
 function handle_submit_feedback(mysqli $conn): void
 {
     require_customer($conn);
@@ -886,8 +771,9 @@ function handle_submit_feedback(mysqli $conn): void
 
     respond([
         'status' => 'success',
-        'message' => 'Đã gửi đánh giá và phản hồi dịch vụ.',
+        'message' => 'Đã gửi phản hồi dịch vụ.',
         'files' => $savedFiles,
+        'feedback_media' => get_feedback_media_for_order((string) $order['order_code']),
     ]);
 }
 
@@ -935,13 +821,6 @@ switch ($action) {
             respond(['status' => 'error', 'message' => 'Phương thức không hợp lệ.'], 405);
         }
         handle_update_profile($conn);
-        break;
-
-    case 'change-password':
-        if ($method !== 'POST') {
-            respond(['status' => 'error', 'message' => 'Phương thức không hợp lệ.'], 405);
-        }
-        handle_change_password($conn);
         break;
 
     case 'submit-feedback':

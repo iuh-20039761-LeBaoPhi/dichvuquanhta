@@ -7,11 +7,11 @@
       href="public/assets/images/favicon.ico"
     />
     <meta charset="UTF-8" />
-    <title>Giao Hàng Nhanh - Giải pháp giao hàng chuyên nghiệp</title>
+    <title>Dịch Vụ Quanh Ta - Giao Hàng Nhanh</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Giao Hàng Nhanh cung cấp dịch vụ shipper nội thành & toàn quốc, giao COD uy tín tại TP.HCM. Tra cứu đơn hàng online, lấy hàng tận nơi 24/7. Đặt đơn ngay!"
+      content="Dịch Vụ Quanh Ta - Giao Hàng Nhanh cung cấp giải pháp giao hàng nội thành và liên tỉnh, hỗ trợ COD, theo dõi đơn trực tuyến và lấy hàng tận nơi nhanh chóng."
     />
     <meta
       name="keywords"
@@ -21,11 +21,11 @@
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
-      content="Giao Hàng Nhanh - Giải pháp giao hàng chuyên nghiệp"
+      content="Dịch Vụ Quanh Ta - Giao Hàng Nhanh"
     />
     <meta
       property="og:description"
-      content="Giao Hàng Nhanh cung cấp dịch vụ shipper nội thành & toàn quốc, giao COD uy tín tại TP.HCM. Tra cứu đơn hàng online, lấy hàng tận nơi 24/7. Đặt đơn ngay!"
+      content="Dịch Vụ Quanh Ta - Giao Hàng Nhanh cung cấp giải pháp giao hàng nội thành và liên tỉnh, hỗ trợ COD, theo dõi đơn trực tuyến và lấy hàng tận nơi nhanh chóng."
     />
     <meta
       property="og:image"
@@ -528,8 +528,6 @@
           const routeMap = {
             "dang-nhap.html": "dang-nhap.html",
             "dang-ky.html": "dang-ky.html",
-            "dashboard.php": "public/khach-hang/dashboard.html",
-            "shipper_dashboard.php": "public/nha-cung-cap/shipper_dashboard.php",
             "admin_stats.php": "public/admin-giaohang/admin_stats.php",
           };
           return routeMap[normalized] || `public/${normalized}`;
@@ -537,7 +535,7 @@
 
         function getDashboardPath(role) {
           if (role === "admin") return "public/admin-giaohang/admin_stats.php";
-          if (role === "shipper") return "public/nha-cung-cap/shipper_dashboard.php";
+          if (role === "shipper") return "public/nha-cung-cap/dashboard.html";
           return "public/khach-hang/dashboard.html";
         }
 

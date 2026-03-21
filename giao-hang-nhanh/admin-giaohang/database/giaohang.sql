@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 17, 2026 lúc 04:26 AM
+-- Thời gian đã tạo: Th3 21, 2026 lúc 10:30 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -34,11 +34,19 @@ CREATE TABLE `orders` (
   `user_id` int(11) DEFAULT NULL,
   `shipper_id` int(11) DEFAULT NULL,
   `pickup_address` text DEFAULT NULL,
+  `pickup_lat` decimal(10,8) DEFAULT NULL,
+  `pickup_lng` decimal(11,8) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
   `phone` varchar(20) DEFAULT NULL,
   `receiver_name` varchar(100) NOT NULL,
   `receiver_phone` varchar(20) NOT NULL,
   `delivery_address` text NOT NULL,
+  `delivery_lat` decimal(10,8) DEFAULT NULL,
+  `delivery_lng` decimal(11,8) DEFAULT NULL,
+  `intl_country` varchar(100) DEFAULT NULL,
+  `intl_province` varchar(100) DEFAULT NULL,
+  `intl_postal_code` varchar(20) DEFAULT NULL,
+  `receiver_id_number` varchar(50) DEFAULT NULL,
   `is_corporate` tinyint(1) DEFAULT 0,
   `company_name` varchar(255) DEFAULT NULL,
   `company_email` varchar(100) DEFAULT NULL,
@@ -47,14 +55,22 @@ CREATE TABLE `orders` (
   `company_bank_info` text DEFAULT NULL,
   `cancel_reason` text DEFAULT NULL,
   `package_type` varchar(50) DEFAULT 'other',
+  `intl_purpose` varchar(50) DEFAULT NULL,
+  `intl_hs_code` varchar(50) DEFAULT NULL,
   `service_type` varchar(50) NOT NULL DEFAULT 'standard',
+  `service_condition_key` varchar(50) DEFAULT NULL,
   `vehicle_type` varchar(50) DEFAULT NULL,
+  `khoang_cach_km` decimal(10,2) DEFAULT 0.00,
   `weight` decimal(10,2) DEFAULT 0.00,
   `cod_amount` decimal(15,2) DEFAULT 0.00,
   `shipping_fee` decimal(15,2) DEFAULT 0.00,
   `pickup_time` datetime DEFAULT NULL,
+  `requested_delivery_time` datetime DEFAULT NULL,
+  `estimated_delivery` datetime DEFAULT NULL,
   `note` text DEFAULT NULL,
   `service_meta_json` longtext DEFAULT NULL,
+  `weather_source` varchar(100) DEFAULT NULL,
+  `weather_note` text DEFAULT NULL,
   `pricing_breakdown_json` longtext DEFAULT NULL,
   `booking_payload_json` longtext DEFAULT NULL,
   `payment_method` varchar(50) NOT NULL DEFAULT 'cod',
@@ -65,14 +81,30 @@ CREATE TABLE `orders` (
   `status` enum('pending','shipping','completed','cancelled') DEFAULT 'pending',
   `rating` int(11) DEFAULT NULL,
   `feedback` text DEFAULT NULL,
-  `intl_country` varchar(100) DEFAULT NULL,
-  `intl_province` varchar(100) DEFAULT NULL,
-  `intl_postal_code` varchar(20) DEFAULT NULL,
-  `receiver_id_number` varchar(50) DEFAULT NULL,
-  `intl_purpose` varchar(50) DEFAULT NULL,
-  `intl_hs_code` varchar(50) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `orders`
+--
+
+INSERT INTO `orders` (
+  `id`, `order_code`, `client_order_code`, `user_id`, `shipper_id`,
+  `pickup_address`, `pickup_lat`, `pickup_lng`, `name`, `phone`,
+  `receiver_name`, `receiver_phone`, `delivery_address`, `delivery_lat`, `delivery_lng`,
+  `intl_country`, `intl_province`, `intl_postal_code`, `receiver_id_number`,
+  `is_corporate`, `company_name`, `company_email`, `company_tax_code`, `company_address`,
+  `company_bank_info`, `cancel_reason`, `package_type`, `intl_purpose`, `intl_hs_code`,
+  `service_type`, `service_condition_key`, `vehicle_type`, `khoang_cach_km`, `weight`,
+  `cod_amount`, `shipping_fee`, `pickup_time`, `requested_delivery_time`, `estimated_delivery`,
+  `note`, `service_meta_json`, `weather_source`, `weather_note`, `pricing_breakdown_json`,
+  `booking_payload_json`, `payment_method`, `payment_status`, `shipper_note`, `admin_note`,
+  `pod_image`, `status`, `rating`, `feedback`, `created_at`
+) VALUES
+(1, 'DOM-PERS-001', NULL, 3, NULL, '123 Đường Láng, Hà Nội', NULL, NULL, 'Lê Thị Khách', '0911222333', 'Nguyễn Văn Nhận', '0901234567', '456 Phố Huế, Hà Nội', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'clothes', NULL, NULL, 'standard', 'macdinh', NULL, 7.41, 1.50, 500000.00, 22000.00, '2026-03-20 20:00:00', '2026-03-20 22:00:00', '2026-03-20 22:00:00', 'Giao trong giờ hành chính, gọi trước 15p.', NULL, 'fallback', NULL, NULL, NULL, 'cod', 'unpaid', NULL, NULL, NULL, 'pending', NULL, NULL, '2026-03-16 12:04:12'),
+(2, 'DOM-CORP-002', NULL, 3, NULL, '10 Mai Chí Thọ, Quận 2, TP.HCM', NULL, NULL, 'Lê Thị Khách', '0911222333', 'Kế toán ABC', '0988000111', '20 Hàm Nghi, Quận 1, TP.HCM', NULL, NULL, NULL, NULL, NULL, NULL, 1, 'CÔNG TY TNHH GIẢI PHÁP SỐ', 'billing@solutions.vn', '0312678999', 'Tòa nhà Landmark 81, TP.HCM', NULL, NULL, 'electronic', NULL, NULL, 'express', 'macdinh', 'Xe máy', 5.20, 2.00, 0.00, 50000.00, '2026-03-19 10:00:00', '2026-03-19 14:00:00', '2026-03-19 14:00:00', 'Xuất hóa đơn VAT đầy đủ.', NULL, 'fallback', NULL, NULL, NULL, 'bank_transfer', 'paid', NULL, NULL, NULL, 'shipping', NULL, NULL, '2026-03-16 12:04:12'),
+(3, 'INTL-PERS-003', NULL, 3, NULL, NULL, NULL, NULL, 'Lê Thị Khách', '0911222333', 'John Doe', '+1-555-0199', '123 Main St, Los Angeles', NULL, NULL, 'USA', 'California', '90001', 'PP12345678', 0, NULL, NULL, NULL, NULL, NULL, NULL, 'clothes', 'gift', '6104.43', 'intl_express', NULL, NULL, 0.00, 3.00, 0.00, 1500000.00, NULL, NULL, NULL, 'Hàng quà tặng gia đình.', NULL, NULL, NULL, NULL, NULL, 'bank_transfer', 'unpaid', NULL, NULL, NULL, 'shipping', NULL, NULL, '2026-03-16 12:04:12'),
+(4, 'DOM-BULK-004', NULL, 3, NULL, 'KCN Sóng Thần, Bình Dương', NULL, NULL, 'Lê Thị Khách', '0911222333', 'Nội Thất Xinh', '0933444555', '789 Trần Hưng Đạo, Quận 5, TP.HCM', NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'other', NULL, NULL, 'bulk', 'macdinh', 'Xe tải 500kg', 22.40, 150.00, 0.00, 800000.00, '2026-03-21 08:00:00', '2026-03-21 15:00:00', '2026-03-21 15:00:00', 'Hàng nội thất gỗ, cần xe nâng hỗ trợ.', NULL, 'fallback', NULL, NULL, NULL, 'cod', 'unpaid', NULL, NULL, NULL, 'pending', NULL, NULL, '2026-03-16 12:04:12');
 
 -- --------------------------------------------------------
 
@@ -94,29 +126,18 @@ CREATE TABLE `order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `orders`
---
-
-INSERT INTO `orders` (`id`, `order_code`, `client_order_code`, `user_id`, `shipper_id`, `pickup_address`, `name`, `phone`, `receiver_name`, `receiver_phone`, `delivery_address`, `is_corporate`, `company_name`, `company_email`, `company_tax_code`, `company_address`, `company_bank_info`, `cancel_reason`, `package_type`, `service_type`, `vehicle_type`, `weight`, `cod_amount`, `shipping_fee`, `pickup_time`, `note`, `payment_method`, `payment_status`, `shipper_note`, `admin_note`, `pod_image`, `status`, `rating`, `feedback`, `created_at`) VALUES
-INSERT INTO `orders` (`id`, `order_code`, `client_order_code`, `user_id`, `shipper_id`, `pickup_address`, `name`, `phone`, `receiver_name`, `receiver_phone`, `delivery_address`, `is_corporate`, `company_name`, `company_email`, `company_tax_code`, `company_address`, `company_bank_info`, `cancel_reason`, `package_type`, `service_type`, `vehicle_type`, `weight`, `cod_amount`, `shipping_fee`, `pickup_time`, `note`, `payment_method`, `payment_status`, `shipper_note`, `admin_note`, `pod_image`, `status`, `rating`, `feedback`, `intl_country`, `intl_province`, `intl_postal_code`, `receiver_id_number`, `intl_purpose`, `intl_hs_code`, `created_at`) VALUES
-(1, 'DOM-PERS-001', NULL, 3, NULL, '123 Đường Láng, Hà Nội', 'Lê Thị Khách', '0911222333', 'Nguyễn Văn Nhận', '0901234567', '456 Phố Huế, Hà Nội', 0, NULL, NULL, NULL, NULL, NULL, NULL, 'clothes', 'standard', NULL, 1.50, 500000.00, 22000.00, NULL, 'Giao trong giờ hành chính, gọi trước 15p.', 'cod', 'unpaid', NULL, NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NOW()),
-(2, 'DOM-CORP-002', NULL, 3, NULL, '10 Mai Chí Thọ, Quận 2, TP.HCM', 'Lê Thị Khách', '0911222333', 'Kế toán ABC', '0988000111', '20 Hàm Nghi, Quận 1, TP.HCM', 1, 'CÔNG TY TNHH GIẢI PHÁP SỐ', 'billing@solutions.vn', '0312678999', 'Tòa nhà Landmark 81, TP.HCM', NULL, NULL, 'electronic', 'express', 'Xe máy', 2.00, 0.00, 50000.00, NULL, 'Xuất hóa đơn VAT đầy đủ.', 'cod', 'unpaid', NULL, NULL, NULL, 'shipping', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NOW()),
-(3, 'INTL-PERS-003', NULL, 3, NULL, NULL, 'Lê Thị Khách', '0911222333', 'John Doe', '+1-555-0199', '123 Main St, Los Angeles', 0, NULL, NULL, NULL, NULL, NULL, NULL, 'clothes', 'intl_express', NULL, 3.00, 0.00, 1500000.00, NULL, 'Hàng quà tặng gia đình.', 'bank_transfer', 'unpaid', NULL, NULL, NULL, 'shipping', NULL, NULL, 'USA', 'California', '90001', 'PP12345678', 'gift', '6104.43', NOW()),
-(4, 'DOM-BULK-004', NULL, 3, NULL, 'KCN Sóng Thần, Bình Dương', 'Lê Thị Khách', '0911222333', 'Nội Thất Xinh', '0933444555', '789 Trần Hưng Đạo, Quận 5, TP.HCM', 0, NULL, NULL, NULL, NULL, NULL, NULL, 'other', 'bulk', 'Xe tải 500kg', 150.00, 0.00, 800000.00, NULL, 'Hàng nội thất gỗ, cần xe nâng hỗ trợ.', 'cod', 'unpaid', NULL, NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NOW());
-
---
 -- Đang đổ dữ liệu cho bảng `order_items`
 --
 
-INSERT INTO `order_items` (`order_id`, `item_name`, `quantity`, `weight`, `length`, `width`, `height`, `declared_value`) VALUES
-(1, 'Áo sơ mi nam', 2, 0.40, 0.00, 0.00, 0.00, 400000.00),
-(1, 'Quần tây công sở', 1, 0.70, 0.00, 0.00, 0.00, 300000.00),
-(2, 'Ổ cứng SSD 500GB', 2, 0.20, 10.00, 8.00, 1.00, 3000000.00),
-(2, 'Chuột không dây Logitech', 1, 0.10, 12.00, 6.00, 4.00, 800000.00),
-(3, 'Áo dài truyền thống tơ tằm', 2, 0.60, 0.00, 0.00, 0.00, 5000000.00),
-(3, 'Đặc sản hạt điều (Hộp 500g)', 4, 0.50, 0.00, 0.00, 0.00, 1200000.00),
-(4, 'Bàn làm việc gỗ sồi', 1, 80.00, 160.00, 80.00, 75.00, 8000000.00),
-(4, 'Ghế xoay văn phòng', 2, 35.00, 60.00, 60.00, 110.00, 4000000.00);
+INSERT INTO `order_items` (`id`, `order_id`, `item_name`, `quantity`, `weight`, `length`, `width`, `height`, `declared_value`, `created_at`) VALUES
+(1, 1, 'Áo sơ mi nam', 2, 0.40, 0.00, 0.00, 0.00, 400000.00, '2026-03-16 12:04:12'),
+(2, 1, 'Quần tây công sở', 1, 0.70, 0.00, 0.00, 0.00, 300000.00, '2026-03-16 12:04:12'),
+(3, 2, 'Ổ cứng SSD 500GB', 2, 0.20, 10.00, 8.00, 1.00, 3000000.00, '2026-03-16 12:04:12'),
+(4, 2, 'Chuột không dây Logitech', 1, 0.10, 12.00, 6.00, 4.00, 800000.00, '2026-03-16 12:04:12'),
+(5, 3, 'Áo dài truyền thống tơ tằm', 2, 0.60, 0.00, 0.00, 0.00, 5000000.00, '2026-03-16 12:04:12'),
+(6, 3, 'Đặc sản hạt điều (Hộp 500g)', 4, 0.50, 0.00, 0.00, 0.00, 1200000.00, '2026-03-16 12:04:12'),
+(7, 4, 'Bàn làm việc gỗ sồi', 1, 80.00, 160.00, 80.00, 75.00, 8000000.00, '2026-03-16 12:04:12'),
+(8, 4, 'Ghế xoay văn phòng', 2, 35.00, 60.00, 60.00, 110.00, 4000000.00, '2026-03-16 12:04:12');
 
 -- --------------------------------------------------------
 
@@ -141,6 +162,22 @@ CREATE TABLE `order_logs` (
 INSERT INTO `order_logs` (`id`, `order_id`, `user_id`, `old_status`, `new_status`, `note`, `created_at`) VALUES
 (1, 1, 1, 'pending', 'shipping', 'Admin đã phân phối đơn cho shipper01', '2026-03-16 12:04:12'),
 (2, 3, 2, 'shipping', 'completed', 'Shipper đã giao hàng thành công', '2026-03-16 12:04:12');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `order_id` int(11) DEFAULT NULL,
+  `message` text NOT NULL,
+  `link` varchar(255) DEFAULT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -194,36 +231,30 @@ INSERT INTO `users` (`id`, `username`, `fullname`, `phone`, `password`, `role`, 
 -- Chỉ mục cho các bảng đã đổ
 --
 
---
--- Chỉ mục cho bảng `orders`
---
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `order_code` (`order_code`);
+  ADD KEY `order_code` (`order_code`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `shipper_id` (`shipper_id`);
 
---
--- Chỉ mục cho bảng `order_logs`
---
-ALTER TABLE `order_logs`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`);
-
---
--- Chỉ mục cho bảng `order_items`
---
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `order_id` (`order_id`);
 
---
--- Chỉ mục cho bảng `saved_addresses`
---
-ALTER TABLE `saved_addresses`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `order_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `user_id` (`user_id`);
 
---
--- Chỉ mục cho bảng `users`
---
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `order_id` (`order_id`);
+
+ALTER TABLE `saved_addresses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`),
@@ -233,35 +264,24 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
 
---
--- AUTO_INCREMENT cho bảng `orders`
---
 ALTER TABLE `orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
---
--- AUTO_INCREMENT cho bảng `order_logs`
---
+ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
 ALTER TABLE `order_logs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
---
--- AUTO_INCREMENT cho bảng `order_items`
---
-ALTER TABLE `order_items`
+ALTER TABLE `notifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT cho bảng `saved_addresses`
---
 ALTER TABLE `saved_addresses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT cho bảng `users`
---
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

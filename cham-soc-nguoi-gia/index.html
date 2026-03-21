@@ -167,19 +167,19 @@ body {
                 >
               </li>
               <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="html/about.html"
+                <a class="nav-link fw-bold px-3" href="html/gioi-thieu.html"
                   >Giới Thiệu</a
                 >
               </li>
               <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="services.html"
+                <a class="nav-link fw-bold px-3" href="dich-vu-cham-soc-nguoi-gia.html"
                   >Dịch Vụ</a
                 >
               </li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/terms.html">Điều Khoản</a></li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/baiviet.html">Bài Viết</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/dieu-khoan.html">Điều Khoản</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/baiviet.html">Cẩm Nang</a></li>
               <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="html/contact.html"
+                <a class="nav-link fw-bold px-3" href="html/lien-he.html"
                   >Liên Hệ</a
                 >
               </li>
@@ -286,7 +286,7 @@ body {
                   this.style.backgroundColor = '#2e7d32';
                   this.style.transform = 'scale(1)';
                 "
-                onclick="window.location.href = 'html/contact.html'"
+                onclick="window.location.href = 'html/lien-he.html'"
               >
                  📞 Liên Hệ Tư Vấn Ngay
               </button>
@@ -378,7 +378,7 @@ body {
           </div>
           <div class="text-center">
             <a
-              href="services.html"
+              href="dich-vu-cham-soc-nguoi-gia.html"
               class="btn btn-outline-secondary px-5 rounded-pill fw-bold"
               style="border-color: #2e7d32; color: #2e7d32"
               >Xem Tất Cả Dịch Vụ</a
@@ -452,7 +452,7 @@ body {
           <div class="mt-4">
             <button
               class="btn btn-light btn-lg px-5 rounded-pill shadow fw-bold"
-              onclick="window.location.href = 'html/contact.html'"
+              onclick="window.location.href = 'html/lien-he.html'"
             >
               📞 Liên Hệ Tư Vấn Ngay
             </button>
@@ -494,21 +494,21 @@ body {
               <ul class="list-unstyled">
                 <li class="mb-2">
                   <a
-                    href="html/about.html"
+                    href="html/gioi-thieu.html"
                     class="text-white text-decoration-none opacity-75"
                     >Giới Thiệu</a
                   >
                 </li>
                 <li class="mb-2">
                   <a
-                    href="html/services.html"
+                    href="dich-vu-cham-soc-nguoi-gia.html"
                     class="text-white text-decoration-none opacity-75"
                     >Dịch Vụ</a
                   >
                 </li>
                 <li class="mb-2">
                   <a
-                    href="html/contact.html"
+                    href="html/lien-he.html"
                     class="text-white text-decoration-none opacity-75"
                     >Liên Hệ</a
                   >
@@ -646,12 +646,13 @@ body {
                 homepageServices.forEach(service => {
                     const col = document.createElement("div");
                     col.className = "col-md-6 col-lg-3";
+                  const imageAlt = (service.alt || service.name || "Dich vu cham soc nguoi gia").replace(/"/g, "&quot;");
 
                     col.innerHTML = `
                         <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden hover-lift">
                             <img src="${service.image}" 
                                 class="card-img-top" 
-                                alt="${service.name}" 
+                        alt="${imageAlt}" 
                                 style="height: 200px; object-fit: cover;">
                             <div class="card-body p-4 text-center">
                                 <h3 class="h5 fw-bold">${service.name}</h3>

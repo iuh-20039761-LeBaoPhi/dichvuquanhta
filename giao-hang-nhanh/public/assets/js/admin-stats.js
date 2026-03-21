@@ -3,107 +3,144 @@
  * Uses Chart.js and chartjs-plugin-datalabels
  */
 
-document.addEventListener('DOMContentLoaded', function() {
-    if (!window.chartData) {
-        console.error('Chart data not found.');
-        return;
+(function (window, document) {
+    const chartRefs = {
+        revenue: null,
+        service: null,
+        package: null,
+    };
+
+    function destroyCharts() {
+        Object.keys(chartRefs).forEach((key) => {
+            if (chartRefs[key]) {
+                chartRefs[key].destroy();
+                chartRefs[key] = null;
+            }
+        });
     }
 
-    // 1. Revenue & Orders Chart (7 Days)
-    const revenueCtx = document.getElementById('revenueChart');
-    if (revenueCtx) {
-        new Chart(revenueCtx, {
-            type: 'line',
+    function buildRevenueChart(chartData) {
+        const revenueCtx = document.getElementById("revenueChart");
+        if (!revenueCtx) return;
+
+        chartRefs.revenue = new Chart(revenueCtx, {
+            type: "line",
             data: {
-                labels: window.chartData.revenue.labels,
+                labels: chartData.revenue.labels,
                 datasets: [
                     {
-                        label: 'Doanh thu (VNĐ)',
-                        data: window.chartData.revenue.revenue,
-                        borderColor: '#ff7a00',
-                        backgroundColor: 'rgba(255, 122, 0, 0.1)',
+                        label: "Doanh thu (VNĐ)",
+                        data: chartData.revenue.revenue,
+                        borderColor: "#ff7a00",
+                        backgroundColor: "rgba(255, 122, 0, 0.1)",
                         borderWidth: 3,
                         tension: 0.3,
                         fill: true,
-                        yAxisID: 'y'
+                        yAxisID: "y",
                     },
                     {
-                        label: 'Số đơn hàng',
-                        data: window.chartData.revenue.orders,
-                        borderColor: '#0a2a66',
-                        backgroundColor: '#0a2a66',
+                        label: "Số đơn hàng",
+                        data: chartData.revenue.orders,
+                        borderColor: "#0a2a66",
+                        backgroundColor: "#0a2a66",
                         borderWidth: 2,
-                        type: 'bar',
-                        yAxisID: 'y1'
-                    }
-                ]
+                        type: "bar",
+                        yAxisID: "y1",
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
                     y: {
-                        type: 'linear',
+                        type: "linear",
                         display: true,
-                        position: 'left',
-                        title: { display: true, text: 'Doanh thu (đ)' }
+                        position: "left",
+                        title: { display: true, text: "Doanh thu (đ)" },
                     },
                     y1: {
-                        type: 'linear',
+                        type: "linear",
                         display: true,
-                        position: 'right',
+                        position: "right",
                         grid: { drawOnChartArea: false },
-                        title: { display: true, text: 'Số đơn' }
-                    }
+                        title: { display: true, text: "Số đơn" },
+                    },
                 },
                 plugins: {
-                    legend: { position: 'top' }
-                }
-            }
+                    legend: { position: "top" },
+                },
+            },
         });
     }
 
-    // 2. Service Distribution Chart
-    const serviceCtx = document.getElementById('serviceChart');
-    if (serviceCtx) {
-        new Chart(serviceCtx, {
-            type: 'doughnut',
+    function buildServiceChart(chartData) {
+        const serviceCtx = document.getElementById("serviceChart");
+        if (!serviceCtx) return;
+
+        chartRefs.service = new Chart(serviceCtx, {
+            type: "doughnut",
             data: {
-                labels: window.chartData.service.labels,
-                datasets: [{
-                    data: window.chartData.service.data,
-                    backgroundColor: ['#ff7a00', '#0a2a66', '#28a745', '#17a2b8', '#6c757d']
-                }]
+                labels: chartData.service.labels,
+                datasets: [
+                    {
+                        data: chartData.service.data,
+                        backgroundColor: ["#ff7a00", "#0a2a66", "#28a745", "#17a2b8", "#6c757d"],
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
+                    legend: { position: "bottom" },
+                },
+            },
         });
     }
 
-    // 3. Package Type Distribution Chart
-    const packageCtx = document.getElementById('packageChart');
-    if (packageCtx) {
-        new Chart(packageCtx, {
-            type: 'pie',
+    function buildPackageChart(chartData) {
+        const packageCtx = document.getElementById("packageChart");
+        if (!packageCtx) return;
+
+        chartRefs.package = new Chart(packageCtx, {
+            type: "pie",
             data: {
-                labels: window.chartData.package.labels,
-                datasets: [{
-                    data: window.chartData.package.data,
-                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b']
-                }]
+                labels: chartData.package.labels,
+                datasets: [
+                    {
+                        data: chartData.package.data,
+                        backgroundColor: ["#4e73df", "#1cc88a", "#36b9cc", "#f6c23e", "#e74a3b"],
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
+                    legend: { position: "bottom" },
+                },
+            },
         });
     }
-});
+
+    function renderAdminStatsCharts(chartData) {
+        if (!chartData || !chartData.revenue || !chartData.service || !chartData.package) {
+            console.error("Chart data not found.");
+            return;
+        }
+
+        destroyCharts();
+        buildRevenueChart(chartData);
+        buildServiceChart(chartData);
+        buildPackageChart(chartData);
+    }
+
+    window.renderAdminStatsCharts = renderAdminStatsCharts;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.chartData) {
+            renderAdminStatsCharts(window.chartData);
+        }
+    });
+})(window, document);

@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Dịch vụ chăm sóc bệnh nhân tại nhà an toàn và chuyên nghiệp: theo dõi y tế, hỗ trợ sinh hoạt, chăm sóc sau phẫu thuật và phục hồi sức khỏe toàn diện.">
-    <meta name="keywords" content="chăm sóc bệnh nhân, chăm sóc bệnh nhân tại nhà, điều dưỡng tại nhà, chăm sóc sau phẫu thuật, chăm sóc người bệnh dài ngày">
-    <title>Dịch Vụ - Chăm Sóc Bệnh Nhân</title>
+    <meta name="description" content="Dịch vụ chăm sóc mẹ và bé toàn diện tại Chăm sóc Mẹ và Bé: khám thai, chăm sóc sau sinh, tiêm chủng, tư vấn nuôi dạy con khoa học và an toàn.">
+    <meta name="keywords" content="chăm sóc mẹ và bé, khám thai, chăm sóc sau sinh, tiêm chủng trẻ em, tư vấn nuôi dạy con">
+    <title>Dịch Vụ - Chăm Sóc Mẹ và Bé</title>
     <link
       rel="shortcut icon"
       type="image/x-icon"
-      href="assets/logo-cham-soc-benh-nhan.png"
+      href="assets/logomvb.png"
     />
     <!-- Bootstrap 5 CSS -->
     <link
@@ -45,6 +45,7 @@ body {
   align-items: center;
   min-width: 0;
 }
+
 /* Khóa mờ các ca còn lại khi đã chọn 1 ca */
 .package-locked {
   opacity: 0.45;
@@ -117,12 +118,6 @@ body {
     width: 80%;
     margin-top: 10px;
   }
-
-  .hero-section img {
-    width: 100% !important;
-    max-width: 340px;
-    height: auto !important;
-  }
 }
 </style>
   </head>
@@ -136,23 +131,23 @@ body {
         <a
           class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
           href="../index.html"
-          style="color: #007bff"
+          style="color: #f06292"
         >
           <img
             style="width: 80px; height: 60px"
-            src="assets/logo-he-thong.png"
+            src="assets/logo.png"
             alt="cham-soc-me-va-be"
           />
         </a>
-        <span>Chăm Sóc Bệnh Nhân</span>
+        <span>Chăm Sóc Mẹ và Bé</span>
         <a
             class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
             href="index.html"
-            style="color: #007bff"
+            style="color: #f06292"
           >
-            <img
+          <img
             style="width: 80px; height: 60px"
-            src="assets/logo-cham-soc-benh-nhan.png"
+            src="assets/logomvb.png"
             alt="cham-soc-me-va-be"
           />
           </a>
@@ -174,33 +169,33 @@ body {
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link fw-bold px-3" href="html/about.html">Giới Thiệu</a>
+              <a class="nav-link fw-bold px-3" href="html/gioi-thieu.html">Giới Thiệu</a>
             </li>
             <li class="nav-item">
               <a
                 class="nav-link fw-bold px-3 active"
-                style="color: #007bff; font-size: larger"
-                href="services.html"
+                style="color: #f06292; font-size: larger"
+                href="dich-vu-cham-soc-me-be.html"
                 >Dịch Vụ</a
               >
             </li>
             <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="html/terms.html"
+                <a class="nav-link fw-bold px-3" href="html/dieu-khoan.html"
                   >Điều Khoản</a
                 >
-              </li>
-              <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="html/baiviet.html"
-                  >Bài Viết</a
-                >
-              </li>
+            </li>
             <li class="nav-item">
-              <a class="nav-link fw-bold px-3" href="html/contact.html">Liên Hệ</a>
+                <a class="nav-link fw-bold px-3" href="html/baiviet.html"
+                  >Cẩm Nang</a
+                >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3" href="html/lien-he.html">Liên Hệ</a>
             </li>
             <li class="nav-item">
                 <a
                   class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-                  style="background: linear-gradient(135deg, #629bf0, #407cec);"
+                  style="background: linear-gradient(135deg, #f06292, #ec407a);"
                   href="khach_hang/lookup.html"
                   data-lookup-modal
                   data-lookup-modal-src="khach_hang/lookup.html"
@@ -209,7 +204,7 @@ body {
                     this.style.transform = 'scale(1.05)';
                   "
                   onmouseout="
-                    this.style.background = 'linear-gradient(135deg, #629bf0, #407cec)';
+                    this.style.background = 'linear-gradient(135deg, #f06292, #ec407a)';
                     this.style.transform = 'scale(1)';
                   "
                 >Tra cứu đơn hàng</a>
@@ -220,13 +215,13 @@ body {
                 data-login-modal
                 data-login-modal-src="login.html"
                 class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-                style="background-color: #007bff"
+                style="background-color: #f06292"
                 onmouseover="
                   this.style.backgroundColor = '#d84374';
                   this.style.transform = 'scale(1.05)';
                 "
                 onmouseout="
-                  this.style.backgroundColor = '#007bff';
+                  this.style.backgroundColor = '#F06292';
                   this.style.transform = 'scale(1)';
                 "
                 >Đăng Nhập</a
@@ -242,7 +237,7 @@ body {
                 >
                   <img
                     id="navAvatar"
-                    src="assets/logo-cham-soc-benh-nhan.png"
+                    src="assets/logomvb.png"
                     alt="avatar"
                     width="32"
                     height="32"
@@ -264,64 +259,69 @@ body {
     </nav>
 
     <!-- Services Hero Banner -->
-    <section class="py-5" style="background-color: #f3faff">
-      <div class="container py-5 text-center">
-        <h2 class="fw-bold display-5 mb-3">Sẵn Sàng Đặt Lịch?</h2>
+    <section
+      class="py-5"
+      style="
+        background: linear-gradient(
+          135deg,
+          #ffe1ec 0%,
+          #ffffff 50%,
+          #f7e0f4 100%
+        );
+      "
+    >
+      <div class="container py-lg-5 text-center">
+        <h1 class="display-3 fw-bold mb-3">
+          Các Dịch Vụ Của Chúng Tôi <br>
+          <span
+            style="color: #f06292; font-family: &quot;Pacifico&quot;, cursive"
+            >Chăm Sóc Mẹ và Bé</span
+          >
+        </h1>
         <p class="lead text-muted mb-4">
-          Hãy liên hệ với chúng tôi để đặt lịch khám và tư vấn miễn phí
+          Dịch vụ chăm sóc sức khỏe mẹ và bé toàn diện, chuyên nghiệp và tận tâm
         </p>
-        <button
-          class="btn text-white rounded-pill px-5 py-3 shadow-sm"
+        <div
           style="
-            background-color: #007bff;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
+            width: 60px;
+            height: 3px;
+            background-color: #f06292;
+            margin: 0 auto;
           "
-          onclick="window.location.href = 'html/contact.html'"
-          onmouseover="
-            this.style.backgroundColor = '#0056b3';
-            this.style.transform = 'scale(1.05)';
-          "
-          onmouseout="
-            this.style.backgroundColor = '#007bff';
-            this.style.transform = 'scale(1)';
-          "
-        >
-           📞 Liên Hệ Tư Vấn Ngay
-        </button>
+        ></div>
       </div>
     </section>
+
     <!-- Services Detail -->
     <section class="py-5">
         <div class="container py-lg-5">
             <div id="servicesContainer"></div>
         </div>
     </section>
+
     <!-- Booking Section -->
-    <section class="py-5" style="background-color: #f3faff">
+    <section class="py-5" style="background-color: #fff3f7">
       <div class="container py-5 text-center">
-        <h2 class="fw-bold display-5 mb-3">Sẵn Sàng Đặt Lịch?</h2>
+        <h2 class="fw-bold display-5 mb-3"> 📞 Liên Hệ Tư Vấn Ngay</h2>
         <p class="lead text-muted mb-4">
           Hãy liên hệ với chúng tôi để đặt lịch khám và tư vấn miễn phí
         </p>
         <button
           class="btn text-white rounded-pill px-5 py-3 shadow-sm"
           style="
-            background-color: #007bff;
+            background-color: #f06292;
             border: none;
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
           "
-          onclick="window.location.href = 'html/contact.html'"
+          onclick="window.location.href = 'html/lien-he.html'"
           onmouseover="
-            this.style.backgroundColor = '#0056b3';
+            this.style.backgroundColor = '#d84374';
             this.style.transform = 'scale(1.05)';
           "
           onmouseout="
-            this.style.backgroundColor = '#007bff';
+            this.style.backgroundColor = '#F06292';
             this.style.transform = 'scale(1)';
           "
         >
@@ -329,15 +329,15 @@ body {
         </button>
       </div>
     </section>
+
     <!-- Footer -->
     <footer class="bg-dark text-white pt-5 pb-3">
       <div class="container">
         <div class="row g-4 mb-4">
-          <div class="col-lg-4">
-            <h3 class="h4 fw-bold mb-3" style="color: #007bff">Chăm Sóc Bệnh Nhân</h3>
+          <div class="col-12 col-md-6 col-lg-4 px-lg-3">
+            <h3 class="h4 fw-bold mb-3" style="color: #f06292">Chăm Sóc Mẹ và Bé</h3>
             <p class="opacity-75">
-              Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng
-              đầu tại Việt Nam.
+              Cung cấp dịch vụ chăm sóc sức khỏe mẹ và bé chuyên nghiệp
             </p>
             <p class="opacity-75">
                 CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853
@@ -355,26 +355,26 @@ body {
               </p>
               
           </div>
-          <div class="col-lg-2">
-            <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+          <div class="col-12 col-md-6 col-lg-4 px-lg-3">
+            <h4 class="h5 fw-bold mb-3">Liên Kết Nhanh</h4>
             <ul class="list-unstyled">
               <li class="mb-2">
                 <a
-                  href="about.html"
+                  href="html/gioi-thieu.html"
                   class="text-white text-decoration-none opacity-75"
                   >Giới Thiệu</a
                 >
               </li>
               <li class="mb-2">
                 <a
-                  href="services.html"
+                  href="dich-vu-cham-soc-me-be.html"
                   class="text-white text-decoration-none opacity-75"
                   >Dịch Vụ</a
                 >
               </li>
               <li class="mb-2">
                 <a
-                  href="contact.html"
+                  href="html/lien-he.html"
                   class="text-white text-decoration-none opacity-75"
                   >Liên Hệ</a
                 >
@@ -445,19 +445,59 @@ body {
               </li>
             </ul>
           </div>
-          <div class="col-lg-3">
-            <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+          <div class="col-12 col-md-6 col-lg-4 px-lg-3">
+            <h4 class="h5 fw-bold mb-3">Mạng Xã Hội</h4>
             <div class="d-flex gap-3">
-              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+              <a
+                href="#"
+                class="btn btn-outline-light rounded-circle shadow-sm"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  padding: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
                 ><i class="fab fa-facebook-f"></i
               ></a>
-              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+              <a
+                href="#"
+                class="btn btn-outline-light rounded-circle shadow-sm"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  padding: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
                 ><i class="fab fa-instagram"></i
               ></a>
-              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+              <a
+                href="#"
+                class="btn btn-outline-light rounded-circle shadow-sm"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  padding: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
                 ><i class="fab fa-youtube"></i
               ></a>
-              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
+              <a
+                href="#"
+                class="btn btn-outline-light rounded-circle shadow-sm"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  padding: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
                 ><i class="fab fa-tiktok"></i
               ></a>
             </div>
@@ -483,9 +523,11 @@ body {
           </div>
         </div>
         <hr class="opacity-25" />
-        <p class="text-center small opacity-50">
-          &copy; 2026 Chăm Sóc Bệnh Nhân. Đồng hành cùng sức khỏe Việt.
-        </p>
+        <div class="text-center">
+          <p class="small opacity-50 mb-0">
+            &copy; 2026 Chăm Sóc Mẹ và Bé. Tất cả quyền được bảo lưu.
+          </p>
+        </div>
       </div>
     </footer>
 
@@ -512,7 +554,7 @@ body {
           });
       });
       // Thay vì dùng $('.modal').modal('hide') - cách này cũ
-// Hãy dùng cách này trong file services.html của bạn:
+// Hãy dùng cách này trong file dich-vu-cham-soc-me-be.html của bạn:
 
       $(document).on('hidden.bs.modal', '#bookingModal', function () {
           // 1. Loại bỏ lớp làm mờ (nếu còn sót lại)
@@ -692,21 +734,22 @@ body {
       -------------------------------------------------- */
       SERVICES.forEach(function(service, index) {
         var reverse = index % 2 ? "flex-lg-row-reverse" : "";
+        var serviceAlt = (service.alt || service.name || "Dich vu cham soc me va be").replace(/"/g, "&quot;");
         var includesHTML = service.includes.map(function(i) {
-          return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:#007bff"></i>' + i + '</li>';
+          return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:#F06292"></i>' + i + '</li>';
         }).join("");
 
         $("#servicesContainer").append(
           '<div class="row align-items-center mb-5 g-5 ' + reverse + '">' +
             '<div class="col-lg-6">' +
-              '<img src="' + service.image + '" class="img-fluid rounded-4 shadow-lg">' +
+              '<img src="' + service.image + '" alt="' + serviceAlt + '" class="img-fluid rounded-4 shadow-lg">' +
             '</div>' +
             '<div class="col-lg-6">' +
-              '<h2 class="fw-bold display-6 mb-3" style="color:#007bff">' + service.name + '</h2>' +
+              '<h2 class="fw-bold display-6 mb-3" style="color:#F06292">' + service.name + '</h2>' +
               '<p class="text-secondary lh-lg mb-4">' + service.description + '</p>' +
               '<h4 class="fw-bold mb-3">Bao gồm</h4>' +
               '<ul class="list-unstyled mb-4">' + includesHTML + '</ul>' +
-              '<button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" style="background:#007bff;border:none" data-id="' + service.id + '">' +
+              '<button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" style="background:#F06292;border:none" data-id="' + service.id + '">' +
                 '<i class="fas fa-calendar-check me-1"></i>Đặt Lịch Ngay' +
               '</button>' +
             '</div>' +
@@ -799,9 +842,9 @@ body {
         $("#endTimeHint").text("");
         $("#shiftInfoBox").addClass("d-none").html("");
         $("#timeError").addClass("d-none").text("");
-        $("#durationUnit").val("");
+        $("#durationUnit").val("day");
         $("#durationAmount").val(1);
-        $("#endDateRow").addClass("d-none");
+        $("#endDateRow").removeClass("d-none");
         $("#durationAmountRow").addClass("d-none");
         $("#autoEndDateRow").addClass("d-none");
         $("#startDate").val("");
@@ -1006,7 +1049,7 @@ body {
          CALCULATE DAYS
       -------------------------------------------------- */
       function getDays() {
-        var startVal = $("#startDate").val(), unit = $("#durationUnit").val();
+        var startVal = $("#startDate").val(), unit = $("#durationUnit").val() || "day";
         if (!startVal || !unit) return 0;
         if (unit === "day") {
           var endVal = $("#endDate").val();
@@ -1034,7 +1077,7 @@ body {
          COMPUTE END DATE
       -------------------------------------------------- */
       function computeEndDate() {
-        var startVal = $("#startDate").val(), unit = $("#durationUnit").val();
+        var startVal = $("#startDate").val(), unit = $("#durationUnit").val() || "day";
         if (!startVal || !unit || unit === "day") return null;
         var e = new Date(startVal);
         if (unit === "week") {
@@ -1064,7 +1107,7 @@ body {
         var selectedPackage = $(".package-check:checked");
         var selectedPackageLabel = $(".package-check:checked").data("label") || "Không chọn gói";
         var selectedJobs = $(".job-check:checked").map(function(){ return $(this).val(); }).get();
-        var unit = $("#durationUnit").val();
+        var unit = $("#durationUnit").val() || "day";
         var endDateValue = "";
 
         if (unit === "day") {
@@ -1135,7 +1178,7 @@ body {
           });
         }
 
-        $("#durationUnit").val(data.durationUnit || "");
+        $("#durationUnit").val(data.durationUnit || "day");
         updateDurationUI();
         if (data.durationAmount) {
           $("#durationAmount").val(data.durationAmount);
@@ -1294,7 +1337,7 @@ body {
          UPDATE DURATION UI
       -------------------------------------------------- */
       function updateDurationUI() {
-        var unit = $("#durationUnit").val();
+        var unit = $("#durationUnit").val() || "day";
         $("#endDateRow, #durationAmountRow, #autoEndDateRow").addClass("d-none");
         if (!unit) return;
         if (unit === "day") {
@@ -1308,7 +1351,7 @@ body {
       }
 
       function updateAutoEndDate() {
-        var unit = $("#durationUnit").val();
+        var unit = $("#durationUnit").val() || "day";
         if (unit === "day" || !unit) return;
         var e = computeEndDate(), days = getDays();
         if (e) {

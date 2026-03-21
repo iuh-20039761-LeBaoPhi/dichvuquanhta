@@ -9,8 +9,6 @@
     orders: "lich-su-don-hang.html",
     detail: "chi-tiet-don-hang.html",
     profile: "ho-so.html",
-    createOrder: "../../dat-lich-giao-hang-nhanh.html",
-    pricing: "../../tra-cuu-gia.html",
     logout:
       typeof core.toApiUrl === "function"
         ? core.toApiUrl("logout.php")
@@ -154,12 +152,11 @@
             <p class="customer-portal-eyebrow">Khu vực khách hàng</p>
             <h1 class="customer-portal-title">Xin chào, ${escapeHtml(firstName)}</h1>
             <p class="customer-portal-subtitle">
-              Quản lý đơn hàng, cập nhật hồ sơ và phản hồi chất lượng dịch vụ
+              Quản lý lịch sử đơn hàng và cập nhật hồ sơ cá nhân
               ngay trên giao diện website.
             </p>
           </div>
           <div class="customer-portal-top-actions">
-            <a href="${routes.createOrder}" class="customer-btn customer-btn-primary">Tạo đơn mới</a>
             <a href="${routes.logout}" class="customer-btn customer-btn-ghost">Đăng xuất</a>
           </div>
         </section>
@@ -515,7 +512,6 @@
     const { content } = getPageRoot();
     const stats = data.stats || {};
     const recentOrders = Array.isArray(data.recent_orders) ? data.recent_orders : [];
-    const todoItems = Array.isArray(data.todo_items) ? data.todo_items : [];
     const recentStatusLabels = {
       all: "Tất cả",
       pending: "Chờ xử lý",
@@ -539,7 +535,6 @@
           <article class="customer-kpi-card"><span>Đang giao</span><strong>${formatNumber(stats.shipping || 0)}</strong></article>
           <article class="customer-kpi-card"><span>Hoàn tất</span><strong>${formatNumber(stats.completed || 0)}</strong></article>
           <article class="customer-kpi-card"><span>Chưa thanh toán</span><strong>${formatNumber(stats.unpaid || 0)}</strong></article>
-          <article class="customer-kpi-card"><span>Thông báo mới</span><strong>${formatNumber(stats.unread_notifications || 0)}</strong></article>
         </div>
       </section>
       <section class="customer-grid-two customer-grid-dashboard">
@@ -581,7 +576,6 @@
                   </div>
                   <div class="customer-order-actions">
                     <a class="customer-btn customer-btn-primary" href="${routes.detail}?id=${order.id}">Chi tiết đơn</a>
-                    <a class="customer-btn customer-btn-ghost" href="${routes.createOrder}?reorder_id=${order.id}">Đặt lại</a>
                   </div>
                 </article>`,
                     )
@@ -594,19 +588,18 @@
           <div class="customer-panel-head">
             <div>
               <p class="customer-section-kicker">Menu quản lý cá nhân</p>
-              <h2>Việc cần làm</h2>
+              <h2>Truy cập nhanh</h2>
             </div>
           </div>
           <div class="customer-todo-list">
-            ${todoItems
-              .map(
-                (item) => `
-              <article class="customer-todo ${escapeHtml(item.type)}">
-                <p>${escapeHtml(item.message)}</p>
-                <a href="${escapeHtml(item.href)}">${escapeHtml(item.cta)}</a>
-              </article>`,
-              )
-              .join("")}
+            <article class="customer-todo neutral">
+              <p>Xem lại toàn bộ đơn đã tạo, lọc theo trạng thái và mở chi tiết từng đơn.</p>
+              <a href="${routes.orders}">Mở lịch sử đơn</a>
+            </article>
+            <article class="customer-todo info">
+              <p>Cập nhật họ tên, số điện thoại, công ty và địa chỉ ngay trên hồ sơ cá nhân.</p>
+              <a href="${routes.profile}">Mở hồ sơ cá nhân</a>
+            </article>
           </div>
         </aside>
       </section>
@@ -635,9 +628,8 @@
         <div class="customer-panel-head">
           <div>
             <p class="customer-section-kicker">Lịch sử đơn hàng</p>
-            <h2>Tra cứu và lọc đơn theo trạng thái</h2>
+            <h2>Tra cứu và xem lại đơn theo trạng thái</h2>
           </div>
-          <a href="${routes.createOrder}" class="customer-btn customer-btn-primary">Tạo đơn mới</a>
         </div>
 
         <form id="customer-order-filter" class="customer-filter-form">
@@ -691,7 +683,6 @@
                 </div>
                 <div class="customer-order-actions">
                   <a class="customer-btn customer-btn-primary" href="${routes.detail}?id=${order.id}">Chi tiết đơn</a>
-                  <a class="customer-btn customer-btn-ghost" href="${routes.createOrder}?reorder_id=${order.id}">Đặt lại</a>
                 </div>
               </article>`,
                   )
@@ -750,7 +741,6 @@
           <div class="customer-inline-actions">
             ${createStatusBadge(order.status, order.status_label)}
             <a class="customer-btn customer-btn-ghost" href="${routes.orders}">Về lịch sử đơn</a>
-            <a class="customer-btn customer-btn-primary" target="_blank" href="${escapeHtml(order.print_invoice_url)}">In hóa đơn</a>
           </div>
         </div>
 
@@ -792,14 +782,16 @@
               <h3>Tệp và bằng chứng</h3>
               <h4 class="customer-subheading">Tệp đính kèm của đơn hàng</h4>
               ${renderFiles(provider.attachments)}
+              <h4 class="customer-subheading">Báo cáo quá trình làm việc</h4>
+              ${renderAttachmentPreview(provider.shipper_reports)}
               <h4 class="customer-subheading">Media phản hồi đã gửi</h4>
               ${renderFiles(provider.feedback_media)}
             </article>
           </div>
 
           <article class="customer-info-card">
-            <h3>Đánh giá và phản hồi chất lượng dịch vụ</h3>
-            <form id="customer-feedback-form" class="customer-feedback-form">
+            <h3>Phản hồi dịch vụ</h3>
+            <form id="customer-feedback-form" class="customer-form-stack">
               <input type="hidden" name="order_id" value="${order.id}" />
               <div class="customer-form-grid">
                 <label>
@@ -816,7 +808,7 @@
                 </label>
                 <label class="customer-form-full">
                   <span>Nội dung phản hồi</span>
-                  <textarea name="feedback" rows="5" placeholder="Đánh giá trải nghiệm giao hàng, tốc độ, thái độ phục vụ và chất lượng xử lý.">${escapeHtml(order.feedback || "")}</textarea>
+                  <textarea name="feedback" rows="5" placeholder="Mô tả chất lượng phục vụ hoặc báo cáo vấn đề cho quản lý.">${escapeHtml(order.feedback || "")}</textarea>
                 </label>
               </div>
               <div class="customer-media-actions">
@@ -826,14 +818,14 @@
                 </label>
                 <label class="customer-btn customer-btn-ghost">
                   Quay video
-                  <input type="file" id="feedback-capture-video" accept="video/*" capture hidden />
+                  <input type="file" id="feedback-capture-video" accept="video/*" capture="environment" hidden />
                 </label>
                 <label class="customer-btn customer-btn-ghost">
-                  Tải tệp lên
+                  Tải ảnh/video
                   <input type="file" id="feedback-upload" accept="image/*,video/*" multiple hidden />
                 </label>
               </div>
-              <div class="customer-selected-files" id="customer-selected-files">Chưa chọn tệp media nào.</div>
+              <div class="customer-selected-files" id="customer-selected-files">Chưa chọn ảnh hoặc video phản hồi.</div>
               <div class="customer-inline-actions">
                 <button class="customer-btn customer-btn-primary" type="submit">Gửi phản hồi</button>
               </div>
@@ -892,6 +884,8 @@
     const feedbackForm = document.getElementById("customer-feedback-form");
 
     function refreshSelectedFiles() {
+      if (!selectedFilesHost) return;
+
       const files = [];
       [captureImage, captureVideo, uploadInput].forEach((input) => {
         if (input && input.files) {
@@ -901,7 +895,7 @@
 
       selectedFilesHost.textContent = files.length
         ? `Đã chọn: ${files.join(", ")}`
-        : "Chưa chọn tệp media nào.";
+        : "Chưa chọn ảnh hoặc video phản hồi.";
     }
 
     [captureImage, captureVideo, uploadInput].forEach((input) => {
@@ -925,13 +919,14 @@
             method: "POST",
             body: formData,
           });
-          showToast("Đã gửi đánh giá và media phản hồi.", "success");
+          showToast("Đã gửi phản hồi và media thành công.", "success");
           window.location.reload();
         } catch (error) {
           showToast(error.message, "error");
         }
       });
     }
+
   }
 
   async function initProfile() {
@@ -952,9 +947,9 @@
         </div>
         <div class="customer-detail-summary">
           <article><span>Tổng đơn</span><strong>${formatNumber(stats.total || 0)}</strong></article>
+          <article><span>Chờ xử lý</span><strong>${formatNumber(stats.pending || 0)}</strong></article>
           <article><span>Đang giao</span><strong>${formatNumber(stats.shipping || 0)}</strong></article>
-          <article><span>Thông báo mới</span><strong>${formatNumber(stats.unread_notifications || 0)}</strong></article>
-          <article><span>Địa chỉ đã lưu</span><strong>${formatNumber(stats.saved_addresses || 0)}</strong></article>
+          <article><span>Hoàn tất</span><strong>${formatNumber(stats.completed || 0)}</strong></article>
         </div>
         <div class="customer-detail-grid">
           <article class="customer-info-card">
@@ -970,19 +965,6 @@
               <button class="customer-btn customer-btn-primary" type="submit">Lưu thông tin</button>
             </form>
           </article>
-          <article class="customer-info-card">
-            <h3>Đổi mật khẩu</h3>
-            <form id="customer-password-form" class="customer-form-stack">
-              <label><span>Mật khẩu cũ</span><input type="password" name="old_pass" required /></label>
-              <label><span>Mật khẩu mới</span><input type="password" name="new_pass" required /></label>
-              <label><span>Nhập lại mật khẩu mới</span><input type="password" name="confirm_pass" required /></label>
-              <button class="customer-btn customer-btn-primary" type="submit">Cập nhật mật khẩu</button>
-            </form>
-            <div class="customer-hint-box">
-              Mật khẩu mới cần có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số
-              và ký tự đặc biệt.
-            </div>
-          </article>
         </div>
       </section>
     `;
@@ -997,23 +979,6 @@
             body: new FormData(profileForm),
           });
           showToast("Đã cập nhật hồ sơ cá nhân.", "success");
-        } catch (error) {
-          showToast(error.message, "error");
-        }
-      });
-    }
-
-    const passwordForm = document.getElementById("customer-password-form");
-    if (passwordForm) {
-      passwordForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        try {
-          await apiRequest("change-password", {
-            method: "POST",
-            body: new FormData(passwordForm),
-          });
-          passwordForm.reset();
-          showToast("Đã đổi mật khẩu thành công.", "success");
         } catch (error) {
           showToast(error.message, "error");
         }

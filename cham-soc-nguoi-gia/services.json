@@ -3,6 +3,7 @@
     "id": 1,
     "name": "Đồng Hành Sinh Hoạt Hằng Ngày",
     "image": "assets/bai-viet-ve-sinh-ca-nhan-cho-nguoi-gia-dung-cach.png",
+    "alt": "Dich vu dong hanh sinh hoat hang ngay cho nguoi cao tuoi tai nha",
     "description": "Phù hợp cho người cao tuổi còn tự chủ một phần, cần thêm người hỗ trợ để sinh hoạt đều đặn, an toàn và đỡ vất vả khi không có con cháu bên cạnh.",
     "includes": [
       "Chuẩn bị bữa ăn hằng ngày, nhắc giờ ăn uống và dọn dẹp sau bữa",
@@ -31,6 +32,7 @@
     "id": 2,
     "name": "Hỗ Trợ Người Già Khó Đi Lại",
     "image": "assets/bai-viet-tam-ly-nguoi-cao-tuoi-khong-the-tu-cham-soc.png",
+    "alt": "Dich vu ho tro nguoi gia kho di lai an toan tai nha",
     "description": "Dành cho người cao tuổi đi lại chậm, đau khớp hoặc dễ mất thăng bằng, cần người kề bên để hỗ trợ an toàn trong các việc cá nhân hằng ngày.",
     "includes": [
       "Dìu đỡ khi đứng lên ngồi xuống, đi lại trong nhà và lên xuống cầu thang",
@@ -60,6 +62,7 @@
     "id": 3,
     "name": "Hỗ Trợ Người Già Suy Yếu Nhiều",
     "image": "assets/bai-viet-nguyen-tac-dinh-duong-cho-nguoi-gia-nam-liet.png",
+    "alt": "Dich vu ho tro nguoi gia suy yeu nhieu can cham soc thuong xuyen",
     "description": "Phù hợp cho người cao tuổi suy yếu, ăn ngủ thất thường hoặc cần hỗ trợ gần như cả ngày để duy trì nếp sinh hoạt ổn định và sạch sẽ.",
     "includes": [
       "Hỗ trợ ăn uống tại giường hoặc tại ghế, chuẩn bị phần ăn nhỏ dễ dùng",
@@ -89,6 +92,7 @@
     "id": 4,
     "name": "Hỗ Trợ Chăm Sóc 24/7 Cho Người Già Phụ Thuộc Hoàn Toàn",
     "image": "assets/bai-viet-cach-phong-ngua-loet-ti-de-o-nguoi-gia.png",
+    "alt": "Dich vu cham soc nguoi gia phu thuoc hoan toan 24 7",
     "description": "Giải pháp cho người cao tuổi cần người túc trực liên tục ngày đêm vì không thể tự sinh hoạt, giúp gia đình yên tâm khi không thể chăm trực tiếp.",
     "includes": [
       "Túc trực theo ca 24/7, hỗ trợ toàn bộ ăn uống, vệ sinh và thay đồ đúng thời điểm",

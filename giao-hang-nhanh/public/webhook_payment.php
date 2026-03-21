@@ -9,6 +9,16 @@ define('WEBHOOK_SECRET_KEY', 'YOUR_ACTUAL_SECRET_KEY_FROM_PROVIDER');
 
 // --- XỬ LÝ WEBHOOK ---
 
+function get_public_base_path(): string
+{
+    $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+    $marker = '/public/';
+    $pos = stripos($scriptName, $marker);
+    return $pos !== false
+        ? substr($scriptName, 0, $pos + strlen($marker))
+        : '/giao-hang-nhanh/public/';
+}
+
 // 1. Lấy dữ liệu thô và chữ ký từ header
 $payload = file_get_contents('php://input');
 // Tên header có thể khác nhau tùy nhà cung cấp, VD: 'X-Webhook-Signature', 'X-Signature'.
@@ -101,7 +111,7 @@ try {
     // Gửi thông báo cho khách hàng
     if ($order['user_id']) {
         $msg = "Thanh toán cho đơn hàng #{$order_code} đã được xác nhận thành công.";
-        $link = "customer_order_detail.php?id={$order['id']}";
+        $link = get_public_base_path() . "khach-hang/chi-tiet-don-hang.html?id={$order['id']}";
         $conn->query("INSERT INTO notifications (user_id, order_id, message, link) VALUES ({$order['user_id']}, {$order['id']}, '$msg', '$link')");
         // Cân nhắc sử dụng prepared statement ở đây nếu có thể
     }

@@ -174,20 +174,20 @@ body {
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link fw-bold px-3" href="html/about.html">Giới Thiệu</a>
+              <a class="nav-link fw-bold px-3" href="html/gioi-thieu.html">Giới Thiệu</a>
             </li>
             <li class="nav-item">
               <a
                 class="nav-link fw-bold px-3 active"
                 style="color: #2e7d32; font-size: larger"
-                href="services.html"
+                href="dich-vu-cham-soc-nguoi-gia.html"
                 >Dịch Vụ</a
               >
             </li>
-            <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/terms.html">Điều Khoản</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/baiviet.html">Bài Viết</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/dieu-khoan.html">Điều Khoản</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/baiviet.html">Cẩm Nang</a></li>
             <li class="nav-item">
-              <a class="nav-link fw-bold px-3" href="html/contact.html">Liên Hệ</a>
+              <a class="nav-link fw-bold px-3" href="html/lien-he.html">Liên Hệ</a>
             </li>
             <li class="nav-item">
                 <a
@@ -310,7 +310,7 @@ body {
             cursor: pointer;
             transition: 0.3s;
           "
-          onclick="window.location.href = 'html/contact.html'"
+          onclick="window.location.href = 'html/lien-he.html'"
           onmouseover="
             this.style.backgroundColor = '#0056b3';
             this.style.transform = 'scale(1.05)';
@@ -355,21 +355,21 @@ body {
             <ul class="list-unstyled">
               <li class="mb-2">
                 <a
-                  href="html/about.html"
+                  href="html/gioi-thieu.html"
                   class="text-white text-decoration-none opacity-75"
                   >Giới Thiệu</a
                 >
               </li>
               <li class="mb-2">
                 <a
-                  href="services.html"
+                  href="dich-vu-cham-soc-nguoi-gia.html"
                   class="text-white text-decoration-none opacity-75"
                   >Dịch Vụ</a
                 >
               </li>
               <li class="mb-2">
                 <a
-                  href="html/contact.html"
+                  href="html/lien-he.html"
                   class="text-white text-decoration-none opacity-75"
                   >Liên Hệ</a
                 >
@@ -507,7 +507,7 @@ body {
           });
       });
       // Thay vì dùng $('.modal').modal('hide') - cách này cũ
-// Hãy dùng cách này trong file services.html của bạn:
+// Hãy dùng cách này trong file dich-vu-cham-soc-nguoi-gia.html của bạn:
 
       $(document).on('hidden.bs.modal', '#bookingModal', function () {
           // 1. Loại bỏ lớp làm mờ (nếu còn sót lại)
@@ -687,6 +687,7 @@ body {
       -------------------------------------------------- */
       SERVICES.forEach(function(service, index) {
         var reverse = index % 2 ? "flex-lg-row-reverse" : "";
+        var serviceAlt = (service.alt || service.name || "Dich vu cham soc nguoi gia").replace(/"/g, "&quot;");
         var includesHTML = service.includes.map(function(i) {
           return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:#2e7d32"></i>' + i + '</li>';
         }).join("");
@@ -694,7 +695,7 @@ body {
         $("#servicesContainer").append(
           '<div class="row align-items-center mb-5 g-5 ' + reverse + '">' +
             '<div class="col-lg-6">' +
-              '<img src="' + service.image + '" class="img-fluid rounded-4 shadow-lg">' +
+              '<img src="' + service.image + '" alt="' + serviceAlt + '" class="img-fluid rounded-4 shadow-lg">' +
             '</div>' +
             '<div class="col-lg-6">' +
               '<h2 class="fw-bold display-6 mb-3" style="color:#2e7d32">' + service.name + '</h2>' +
@@ -794,9 +795,9 @@ body {
         $("#endTimeHint").text("");
         $("#shiftInfoBox").addClass("d-none").html("");
         $("#timeError").addClass("d-none").text("");
-        $("#durationUnit").val("");
+        $("#durationUnit").val("day");
         $("#durationAmount").val(1);
-        $("#endDateRow").addClass("d-none");
+        $("#endDateRow").removeClass("d-none");
         $("#durationAmountRow").addClass("d-none");
         $("#autoEndDateRow").addClass("d-none");
         $("#startDate").val("");
@@ -1001,7 +1002,7 @@ body {
          CALCULATE DAYS
       -------------------------------------------------- */
       function getDays() {
-        var startVal = $("#startDate").val(), unit = $("#durationUnit").val();
+        var startVal = $("#startDate").val(), unit = $("#durationUnit").val() || "day";
         if (!startVal || !unit) return 0;
         if (unit === "day") {
           var endVal = $("#endDate").val();
@@ -1029,7 +1030,7 @@ body {
          COMPUTE END DATE
       -------------------------------------------------- */
       function computeEndDate() {
-        var startVal = $("#startDate").val(), unit = $("#durationUnit").val();
+        var startVal = $("#startDate").val(), unit = $("#durationUnit").val() || "day";
         if (!startVal || !unit || unit === "day") return null;
         var e = new Date(startVal);
         if (unit === "week") {
@@ -1059,7 +1060,7 @@ body {
         var selectedPackage = $(".package-check:checked");
         var selectedPackageLabel = $(".package-check:checked").data("label") || "Không chọn gói";
         var selectedJobs = $(".job-check:checked").map(function(){ return $(this).val(); }).get();
-        var unit = $("#durationUnit").val();
+        var unit = $("#durationUnit").val() || "day";
         var endDateValue = "";
 
         if (unit === "day") {
@@ -1130,7 +1131,7 @@ body {
           });
         }
 
-        $("#durationUnit").val(data.durationUnit || "");
+        $("#durationUnit").val(data.durationUnit || "day");
         updateDurationUI();
         if (data.durationAmount) {
           $("#durationAmount").val(data.durationAmount);
@@ -1289,7 +1290,7 @@ body {
          UPDATE DURATION UI
       -------------------------------------------------- */
       function updateDurationUI() {
-        var unit = $("#durationUnit").val();
+        var unit = $("#durationUnit").val() || "day";
         $("#endDateRow, #durationAmountRow, #autoEndDateRow").addClass("d-none");
         if (!unit) return;
         if (unit === "day") {
@@ -1303,7 +1304,7 @@ body {
       }
 
       function updateAutoEndDate() {
-        var unit = $("#durationUnit").val();
+        var unit = $("#durationUnit").val() || "day";
         if (unit === "day" || !unit) return;
         var e = computeEndDate(), days = getDays();
         if (e) {

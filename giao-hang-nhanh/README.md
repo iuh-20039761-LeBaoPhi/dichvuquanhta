@@ -28,8 +28,6 @@ giao-hang-nhanh/
 │   ├── header.html                   # Header dùng chung (load qua shared-layout.js)
 │   ├── footer.html                   # Footer dùng chung (load qua shared-layout.js)
 │   ├── header_admin.php              # Header dành cho Admin
-│   ├── header_user.php               # Header dành cho Customer
-│   └── header_shipper.php            # Header dành cho Shipper
 ├── admin-giaohang/
 │   ├── api/
 │   │   ├── save_order.php           # API lưu đơn hàng (từ admin)
@@ -98,13 +96,12 @@ giao-hang-nhanh/
     │   ├── dashboard.html           # Dashboard khách hàng (HTML + JS + API)
     │   ├── lich-su-don-hang.html    # Lịch sử đơn hàng khách
     │   ├── chi-tiet-don-hang.html   # Chi tiết đơn hàng khách theo 3 tab
-    │   ├── ho-so.html               # Hồ sơ khách hàng
-    │   ├── address_book.php         # Sổ địa chỉ
-    │   └── print_invoice.php        # In hóa đơn
+    │   └── ho-so.html               # Hồ sơ khách hàng
     ├── nha-cung-cap/
-    │   ├── shipper_dashboard.php    # Dashboard shipper
-    │   ├── shipper_order_detail.php # Chi tiết đơn của shipper
-    │   └── shipper_profile.php      # Hồ sơ shipper
+    │   ├── dashboard.html           # Dashboard nhà cung cấp
+    │   ├── don-hang.html            # Danh sách đơn của nhà cung cấp
+    │   ├── chi-tiet-don-hang.html   # Chi tiết đơn của nhà cung cấp theo 3 tab
+    │   └── ho-so.html               # Hồ sơ nhà cung cấp
     ├── cancel_order.php             # Xử lý hủy đơn
     ├── dat-lich-ajax.php            # API xử lý đặt lịch giao hàng
     ├── forgot_password_ajax.php     # API quên mật khẩu
@@ -136,12 +133,15 @@ giao-hang-nhanh/
 - Đăng nhập → tạo đơn tại `dat-lich-giao-hang-nhanh.html`
 - Dashboard: `public/khach-hang/dashboard.html`
 - Quản lý đơn: `public/khach-hang/lich-su-don-hang.html`, `public/khach-hang/chi-tiet-don-hang.html`
-- Hủy đơn, in hóa đơn, cập nhật hồ sơ
+- Cập nhật hồ sơ tại `public/khach-hang/ho-so.html`
+- Màn chi tiết đơn hiển thị theo 3 tab: thông tin đặt dịch vụ, thông tin nhà cung cấp, thông tin khách hàng
 
 ### 🚴 Shipper
-- Dashboard riêng: `public/nha-cung-cap/shipper_dashboard.php`
-- Nhận & cập nhật trạng thái đơn: `public/nha-cung-cap/shipper_order_detail.php`
-- Upload POD (hình ảnh bằng chứng giao hàng)
+- Dashboard riêng: `public/nha-cung-cap/dashboard.html`
+- Quản lý đơn: `public/nha-cung-cap/don-hang.html`, `public/nha-cung-cap/chi-tiet-don-hang.html`
+- Cập nhật hồ sơ: `public/nha-cung-cap/ho-so.html`
+- Chi tiết đơn hiển thị theo 3 tab: thông tin đặt dịch vụ, thông tin khách hàng, thông tin của chính nhà cung cấp
+- Upload ảnh/video báo cáo công việc trực tiếp từ giao diện website
 
 ### 🔧 Admin
 - Thống kê tổng quan: `admin-giaohang/api/stats.php`

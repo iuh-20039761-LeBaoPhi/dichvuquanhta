@@ -13,6 +13,8 @@ let deliveryMode = "scheduled";
 let reorderContext = null;
 let weatherQuoteState = null;
 let reviewUploadObjectUrls = [];
+const BOOKING_DRAFT_STORAGE_KEY = "ghn_booking_login_resume_v1";
+const BOOKING_DRAFT_TTL_MS = 6 * 60 * 60 * 1000;
 let orderItems = [
   {
     loai_hang: "",
@@ -56,6 +58,129 @@ function resolveBookingApiUrl(path = "dat-lich-ajax.php") {
   }
 
   return new URL(normalized, window.location.href).toString();
+}
+
+function getProjectBasePath() {
+  if (typeof window === "undefined") return "/";
+  const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
+  const marker = "/giao-hang-nhanh/";
+  const markerIndex = currentPath.toLowerCase().lastIndexOf(marker);
+  return markerIndex !== -1 ? currentPath.slice(0, markerIndex + marker.length) : "/";
+}
+
+function resolveProjectHtmlUrl(path) {
+  if (typeof window === "undefined") return String(path || "");
+  const normalized = String(path || "").replace(/^\.?\//, "");
+  return new URL(normalized, `${window.location.origin}${getProjectBasePath()}`).toString();
+}
+
+function getProjectRelativeCurrentUrl() {
+  if (typeof window === "undefined") return "";
+  const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
+  const marker = "/giao-hang-nhanh/";
+  const markerIndex = currentPath.toLowerCase().lastIndexOf(marker);
+  const relativePath =
+    markerIndex !== -1
+      ? currentPath.slice(markerIndex + marker.length)
+      : currentPath.replace(/^\/+/, "");
+  return `${relativePath}${window.location.search || ""}${window.location.hash || ""}`;
+}
+
+function canUseSessionStorage() {
+  if (typeof window === "undefined" || !window.sessionStorage) return false;
+  try {
+    const probeKey = "__ghn_booking_draft_probe__";
+    window.sessionStorage.setItem(probeKey, "1");
+    window.sessionStorage.removeItem(probeKey);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function savePendingBookingDraft(payload = buildPayload()) {
+  if (!canUseSessionStorage()) return false;
+  try {
+    const draft = {
+      saved_at: Date.now(),
+      current_step: getCurrentStep(),
+      payload,
+      had_uploads: getSelectedUploadFiles().length > 0,
+    };
+    window.sessionStorage.setItem(
+      BOOKING_DRAFT_STORAGE_KEY,
+      JSON.stringify(draft),
+    );
+    return true;
+  } catch (error) {
+    console.warn("Không thể lưu nháp đơn hàng để tiếp tục sau đăng nhập:", error);
+    return false;
+  }
+}
+
+function loadPendingBookingDraft() {
+  if (!canUseSessionStorage()) return null;
+  try {
+    const raw = window.sessionStorage.getItem(BOOKING_DRAFT_STORAGE_KEY);
+    if (!raw) return null;
+    const draft = JSON.parse(raw);
+    if (!draft || typeof draft !== "object" || !draft.payload) {
+      window.sessionStorage.removeItem(BOOKING_DRAFT_STORAGE_KEY);
+      return null;
+    }
+    const savedAt = Number(draft.saved_at || 0);
+    if (
+      !savedAt ||
+      Date.now() - savedAt > BOOKING_DRAFT_TTL_MS
+    ) {
+      window.sessionStorage.removeItem(BOOKING_DRAFT_STORAGE_KEY);
+      return null;
+    }
+    return draft;
+  } catch (error) {
+    console.warn("Không thể đọc nháp đơn hàng đã lưu:", error);
+    try {
+      window.sessionStorage.removeItem(BOOKING_DRAFT_STORAGE_KEY);
+    } catch (removeError) {
+      console.warn("Không thể xóa nháp đơn hỏng:", removeError);
+    }
+    return null;
+  }
+}
+
+function clearPendingBookingDraft() {
+  if (!canUseSessionStorage()) return;
+  try {
+    window.sessionStorage.removeItem(BOOKING_DRAFT_STORAGE_KEY);
+  } catch (error) {
+    console.warn("Không thể xóa nháp đơn hàng:", error);
+  }
+}
+
+function showBookingStatusNotice(message, tone = "info") {
+  const container = document.querySelector(".booking-container");
+  if (!container) return;
+
+  const oldNotice = document.getElementById("booking-status-notice");
+  if (oldNotice) oldNotice.remove();
+
+  const notice = document.createElement("div");
+  notice.id = "booking-status-notice";
+  const palette =
+    tone === "warn"
+      ? {
+          background: "#fff7ed",
+          border: "#fdba74",
+          color: "#9a3412",
+        }
+      : {
+          background: "#eff6ff",
+          border: "#bfdbfe",
+          color: "#1d4ed8",
+        };
+  notice.style.cssText = `margin-bottom:18px;padding:14px 16px;border-radius:14px;background:${palette.background};border:1px solid ${palette.border};color:${palette.color};font-weight:700;`;
+  notice.innerHTML = `<i class="fas fa-circle-info"></i> ${escapeHtml(message)}`;
+  container.insertBefore(notice, container.firstChild);
 }
 
 function formatMoneyVnd(value) {
@@ -242,6 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
   (async () => {
     await initCustomerPrefill();
     await initReorderPrefill();
+    await restorePendingBookingDraft();
   })();
   setDeliveryMode("scheduled", { render: false });
 });
@@ -1133,6 +1259,165 @@ function markReorderMode(orderCode) {
     "margin-bottom:18px;padding:14px 16px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-weight:700;";
   banner.innerHTML = `<i class="fas fa-rotate-right"></i> Đang đặt lại từ đơn <strong>${escapeHtml(orderCode || "")}</strong>. Bạn có thể chỉnh lại trước khi gửi.`;
   container.insertBefore(banner, container.firstChild);
+}
+
+function resetUploadsAfterDraftRestore(hadUploads) {
+  const imageInput = document.getElementById("image-upload");
+  const videoInput = document.getElementById("video-upload");
+  const imageMeta = document.getElementById("image-upload-meta");
+  const videoMeta = document.getElementById("video-upload-meta");
+  const imagePreview = document.getElementById("preview-image");
+  const videoPreview = document.getElementById("preview-video");
+  const restoreMessage = hadUploads
+    ? "Media cũ không thể tự khôi phục sau khi đăng nhập. Vui lòng chọn lại."
+    : "Chưa có tệp nào được chọn.";
+
+  if (imageInput) imageInput.value = "";
+  if (videoInput) videoInput.value = "";
+  if (imageMeta) imageMeta.textContent = restoreMessage;
+  if (videoMeta) videoMeta.textContent = restoreMessage;
+  if (imagePreview) {
+    imagePreview.src = "";
+    imagePreview.style.display = "none";
+  }
+  if (videoPreview) {
+    videoPreview.removeAttribute("src");
+    videoPreview.load();
+    videoPreview.style.display = "none";
+  }
+  renderReviewUploads();
+}
+
+async function applyStoredDraftMarkers(payload) {
+  const pickupLat = Number(payload.pickup_lat || 0);
+  const pickupLng = Number(payload.pickup_lng || 0);
+  const deliveryLat = Number(payload.delivery_lat || 0);
+  const deliveryLng = Number(payload.delivery_lng || 0);
+  const hasPickupPoint = pickupLat && pickupLng;
+  const hasDeliveryPoint = deliveryLat && deliveryLng;
+
+  if (hasPickupPoint) {
+    markerPickup.setLatLng([pickupLat, pickupLng]);
+  }
+  if (hasDeliveryPoint) {
+    markerDelivery.setLatLng([deliveryLat, deliveryLng]);
+  }
+
+  if (hasPickupPoint && hasDeliveryPoint) {
+    map.fitBounds(
+      [
+        [pickupLat, pickupLng],
+        [deliveryLat, deliveryLng],
+      ],
+      { padding: [40, 40] },
+    );
+    await recalculateDistance();
+    return;
+  }
+
+  const pickupAddress = String(payload.search_pickup || "").trim();
+  const deliveryAddress = String(payload.search_delivery || "").trim();
+  if (pickupAddress && deliveryAddress) {
+    await applyReorderAddresses({
+      pickup_address: pickupAddress,
+      delivery_address: deliveryAddress,
+    });
+  }
+}
+
+async function restorePendingBookingDraft() {
+  const draft = loadPendingBookingDraft();
+  if (!draft || !draft.payload) return false;
+
+  const payload = draft.payload;
+  document.getElementById("sender-name").value = payload.sender_name || "";
+  document.getElementById("sender-phone").value = payload.sender_phone || "";
+  document.getElementById("receiver-name").value = payload.receiver_name || "";
+  document.getElementById("receiver-phone").value = payload.receiver_phone || "";
+  document.getElementById("search-pickup").value = payload.search_pickup || "";
+  document.getElementById("search-delivery").value =
+    payload.search_delivery || "";
+  document.getElementById("notes").value = payload.notes || "";
+  document.getElementById("cod-value").value =
+    parseFloat(payload.cod_value) || 0;
+
+  setOptionGroupValue("payer-group", payload.fee_payer || "gui");
+  setOptionGroupValue(
+    "payment-group",
+    payload.payment_method || "tien_mat",
+  );
+
+  orderItems = normalizeReorderItems(payload.items);
+  renderItems();
+
+  const preferredMode =
+    payload.delivery_mode ||
+    (payload.service === "instant" ? "instant" : "scheduled");
+  setDeliveryMode(preferredMode, { render: false });
+
+  const pickupDateInput = document.getElementById("pickup-date");
+  const pickupSlotSelect = document.getElementById("pickup-slot");
+  const deliveryDateInput = document.getElementById("delivery-date");
+  const deliverySlotSelect = document.getElementById("delivery-slot");
+  const vehicleSelect = document.getElementById("vehicle-choice");
+
+  if (pickupDateInput && payload.pickup_date) {
+    pickupDateInput.value = payload.pickup_date;
+  }
+  if (pickupSlotSelect && payload.pickup_slot) {
+    pickupSlotSelect.value = payload.pickup_slot;
+  }
+  if (deliveryDateInput && payload.delivery_date) {
+    deliveryDateInput.value = payload.delivery_date;
+  }
+  if (deliverySlotSelect && payload.delivery_slot) {
+    deliverySlotSelect.value = payload.delivery_slot;
+  }
+  if (vehicleSelect && payload.vehicle) {
+    vehicleSelect.value = Array.from(vehicleSelect.options).some(
+      (option) => option.value === payload.vehicle,
+    )
+      ? payload.vehicle
+      : "auto";
+  }
+
+  await applyStoredDraftMarkers(payload);
+
+  selectedService = payload.service ? { serviceType: payload.service } : null;
+  if (payload.service) {
+    renderServiceCards();
+  }
+
+  const requestedStep = Math.max(
+    1,
+    Math.min(5, parseInt(draft.current_step, 10) || 5),
+  );
+  let targetStep = requestedStep;
+  if (requestedStep >= 4 && !selectedService) {
+    targetStep = 3;
+  }
+
+  if (targetStep >= 5 && selectedService) {
+    prepareReview();
+    goToStep(5);
+  } else if (targetStep >= 4) {
+    goToStep(4);
+  } else if (targetStep >= 3) {
+    goToStep(3);
+  } else if (targetStep >= 2) {
+    goToStep(2);
+  } else {
+    goToStep(1);
+  }
+
+  resetUploadsAfterDraftRestore(draft.had_uploads);
+  showBookingStatusNotice(
+    draft.had_uploads
+      ? "Đã khôi phục lại thông tin đơn hàng sau khi đăng nhập. Ảnh/video cần chọn lại trước khi xác nhận."
+      : "Đã khôi phục lại thông tin đơn hàng sau khi đăng nhập. Bạn có thể kiểm tra và xác nhận tiếp.",
+    draft.had_uploads ? "warn" : "info",
+  );
+  return true;
 }
 
 async function applyReorderAddresses(data) {
@@ -2242,6 +2527,7 @@ async function submitOrder() {
 
     const result = await readJsonResponseSafe(response);
     if (result.success) {
+      clearPendingBookingDraft();
       // Thành công: Hiển thị thông báo ngay trên form và chuyển hướng sau 2s
       const container = document.getElementById("step-5");
       container.innerHTML = `
@@ -2257,10 +2543,23 @@ async function submitOrder() {
         const nextUrl =
           window.GiaoHangNhanhCore &&
           typeof window.GiaoHangNhanhCore.toApiUrl === "function"
-            ? window.GiaoHangNhanhCore.toApiUrl("dashboard.php")
+            ? window.GiaoHangNhanhCore.toApiUrl("khach-hang/dashboard.html")
             : "../khach-hang/dashboard.html";
         window.location.href = nextUrl;
       }, 2500);
+    } else if (response.status === 401) {
+      savePendingBookingDraft(payload);
+      showError(
+        5,
+        "Bạn cần đăng nhập để hoàn tất đặt đơn. Hệ thống đang chuyển sang trang đăng nhập và sẽ giữ lại thông tin bạn vừa nhập.",
+      );
+      setTimeout(() => {
+        const redirectTarget = getProjectRelativeCurrentUrl();
+        const loginUrl = resolveProjectHtmlUrl(
+          `dang-nhap.html?redirect=${encodeURIComponent(redirectTarget)}`,
+        );
+        window.location.href = loginUrl;
+      }, 500);
     } else {
       showError(5, "Lỗi: " + result.message);
       btn.disabled = false;

@@ -3,6 +3,7 @@
     "id": 201,
     "name": "Hỗ Trợ Sinh Hoạt Mức Nhẹ",
     "image": "assets/dich-vu-cham-soc-toan-dien.png",
+    "alt": "Dich vu ho tro sinh hoat muc nhe cho nguoi benh tai nha",
     "description": "Phù hợp cho người bệnh vẫn tự chủ một phần, cần thêm người đồng hành để sinh hoạt hằng ngày đều đặn, an toàn và bớt mệt mỏi.",
     "includes": [
       "Chuẩn bị bữa ăn hằng ngày, hỗ trợ ăn uống đúng giờ và dọn dẹp sau bữa",
@@ -31,6 +32,7 @@
     "id": 202,
     "name": "Hỗ Trợ Sinh Hoạt Mức Trung Bình",
     "image": "assets/dich-vu-theo-doi-y-te-thuoc-men.png",
+    "alt": "Dich vu ho tro sinh hoat muc trung binh cho nguoi benh",
     "description": "Dành cho người bệnh suy yếu rõ rệt, cần người kề bên nhiều thời điểm trong ngày để hỗ trợ các việc cá nhân và việc nhà cơ bản.",
     "includes": [
       "Hỗ trợ ăn uống tại giường hoặc tại bàn khi người bệnh khó tự phục vụ",
@@ -60,6 +62,7 @@
     "id": 203,
     "name": "Hỗ Trợ Sinh Hoạt Mức Nặng",
     "image": "assets/dich-vu-dinh-duong-che-do-an-uong.png",
+    "alt": "Dich vu ho tro sinh hoat muc nang cho nguoi benh phu thuoc",
     "description": "Phù hợp cho người bệnh gần như không tự sinh hoạt, cần hỗ trợ gần như trọn thời gian để đảm bảo sạch sẽ, thoải mái và ổn định nhịp sống tại nhà.",
     "includes": [
       "Hỗ trợ toàn bộ việc ăn uống, uống nước và vệ sinh sau ăn cho người bệnh",
@@ -89,6 +92,7 @@
     "id": 204,
     "name": "Hỗ Trợ Đồng Hành 24/7 Cho Người Phụ Thuộc Hoàn Toàn",
     "image": "assets/dich-vu-ve-sinh-tien-ich-ca-nhan.png",
+    "alt": "Dich vu dong hanh 24 7 cho nguoi benh phu thuoc hoan toan",
     "description": "Giải pháp cho người bệnh cần người túc trực thường xuyên cả ngày lẫn đêm, đặc biệt khi gia đình bận rộn hoặc không thể ở cạnh liên tục.",
     "includes": [
       "Túc trực hỗ trợ sinh hoạt liên tục theo ca: ăn uống, vệ sinh, thay đồ, nghỉ ngơi",
