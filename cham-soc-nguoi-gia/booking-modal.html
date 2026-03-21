@@ -256,21 +256,10 @@
                   <input type="date" id="startDate" class="form-control">
                 </div>
 
-                <!-- ===== LOẠI THỜI HẠN ===== -->
-                <div class="mb-3">
-                  <label class="form-label fw-bold">Thuê theo:</label>
-                  <select id="durationUnit" class="form-select">
-                    <option value="">-- Chọn loại thời hạn --</option>
-                    <option value="day">Theo ngày</option>
-                    <option value="week">Theo tuần</option>
-                    <option value="month">Theo tháng</option>
-                    <option value="year">Theo năm</option>
-                  </select>
-                </div>
-
-                <!-- Ngày kết thúc (chỉ khi chọn "ngày") -->
-                <div id="endDateRow" class="mb-3 d-none">
-                  <label class="form-label fw-bold">Đến ngày:</label>
+                <!-- ===== NGÀY KẾT THÚC ===== -->
+                <input type="hidden" id="durationUnit" value="day">
+                <div id="endDateRow" class="mb-3">
+                  <label class="form-label fw-bold">Ngày kết thúc:</label>
                   <input type="date" id="endDate" class="form-control">
                 </div>
 
