@@ -44,12 +44,12 @@
     return {
       mainSite: `${parentBase}index.html`,
       brand: `${projectBase}index.html`,
-      mainLogo: `${parentBase}public/asset/image/logo.png`,
+      mainLogo: `${projectBase}public/assets/images/logo-dich-vu-quanh-ta.png`,
       brandLogo: `${projectBase}public/assets/images/favicon.png`,
 
       home: `${projectBase}index.html#hero`,
       about: `${projectBase}index.html#hero`,
-      services: `${projectBase}index.html#services`,
+      services: `${projectBase}dich-vu-giao-hang.html`,
       pricing: `${projectBase}tra-cuu-gia.html`,
       contact: `${projectBase}index.html#contact`,
       booking: `${projectBase}dat-lich-giao-hang-nhanh.html`,

@@ -301,6 +301,45 @@
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
+/* Featured Service Card (Giao Ngay Lập Tức) */
+#services .service-card.service-card--featured {
+  background: linear-gradient(135deg, #0a2a66 0%, #1e3a8a 100%);
+  border: 2px solid #ff7a00;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(10, 42, 102, 0.2);
+}
+
+#services .service-card.service-card--featured .service-card-head h3 {
+  color: #ffffff;
+}
+
+#services .service-card.service-card--featured .service-card-icon {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#services .service-card.service-card--featured .service-card-slogan {
+  color: rgba(255, 255, 255, 0.9);
+  border-left-color: #ff7a00;
+}
+
+#services .service-card.service-card--featured .service-card-details li {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+#services .service-card.service-card--featured .service-card-details li strong {
+  color: #ffffff;
+}
+
+#services .service-card.service-card--featured .service-card-details li::before {
+  color: #ff7a00; /* Orange checkmarks for featured */
+}
+
+#services .service-card.service-card--featured .service-action-btn.service-action-primary {
+  background: #ff7a00;
+  box-shadow: 0 4px 12px rgba(255, 122, 0, 0.4);
+}
+
 /* Header của Card */
 #services .service-card-head {
   display: flex;
@@ -583,6 +622,22 @@
 .service-link-list a:hover {
   border-color: #d9e3f3;
   background: #eef4fd;
+}
+
+.service-card-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+  align-items: stretch;
+}
+
+.service-card-actions .service-action-btn {
+  flex: 1;
+  margin-top: 0;
+  padding: 10px 5px;
+  min-height: 46px;
+  font-size: 13px;
+  text-align: center;
 }
 
 .service-action-btn {

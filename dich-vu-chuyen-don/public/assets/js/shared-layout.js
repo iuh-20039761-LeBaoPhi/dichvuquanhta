@@ -66,7 +66,7 @@
     return {
       mainSite: `${externalServicePrefix}index.html`,
       brand: `${rootPath}index.html`,
-      mainLogo: `${externalServicePrefix}public/asset/image/logo.png`,
+      mainLogo: `${rootPath}public/assets/images/logo-dich-vu-quanh-ta.png`,
       home: `${rootPath}index.html#hero`,
       about: `${rootPath}index.html#hero`, // Giả sử 'about' trỏ về mục hero ở trang chủ
       services: servicesLink,
