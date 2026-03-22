@@ -5,7 +5,7 @@
     "slug": "sua-xe-luu-dong-la-gi-loi-ich",
     "date": "2026-03-15",
     "description": "Khám phá xu hướng sửa xe máy tận nơi - giải pháp cứu cánh cho người bận rộn và những tình huống hỏng xe bất ngờ trên đường.",
-    "img": "public/asset/image/bai-viet-sua-xe-luu-dong-la-gi.png",
+    "img": "public/asset/image/upload/bai-viet-sua-xe-luu-dong-la-gi.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "sửa xe lưu động",
@@ -21,7 +21,7 @@
     "slug": "dau-hieu-can-goi-cuu-ho-xe-may",
     "date": "2026-03-16",
     "description": "Đừng cố di chuyển khi xe gặp 5 tình trạng này nếu bạn không muốn tốn thêm hàng triệu đồng chi phí sửa chữa nặng.",
-    "img": "public/asset/image/bai-viet-dau-hieu-cuu-ho-xe-may.png",
+    "img": "public/asset/image/upload/bai-viet-dau-hieu-cuu-ho-xe-may.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "cứu hộ xe máy",
@@ -37,7 +37,7 @@
     "slug": "cach-xu-ly-xe-thung-lop-giua-duong",
     "date": "2026-03-17",
     "description": "Hướng dẫn cách xử lý tạm thời khi dính đinh và tại sao bạn nên chọn dịch vụ vá xe lưu động thay vì dắt bộ.",
-    "img": "public/asset/image/bai-viet-cach-xu-ly-thung-lop.png",
+    "img": "public/asset/image/upload/bai-viet-cach-xu-ly-thung-lop.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "vá xe lưu động",
@@ -53,7 +53,7 @@
     "slug": "tai-sao-nen-bao-duong-xe-may-tai-nha",
     "date": "2026-03-18",
     "description": "Bảo dưỡng xe máy tại nhà không chỉ là xu hướng mà còn giúp bạn tiết kiệm thời gian, giám sát chất lượng và kéo dài tuổi thọ cho 'xế cưng'.",
-    "img": "public/asset/image/bai-viet-bao-duong-xe-tai-nha.png",
+    "img": "public/asset/image/upload/bai-viet-bao-duong-xe-tai-nha.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "bảo dưỡng xe máy tại nhà",
@@ -69,7 +69,7 @@
     "slug": "huong-dan-kich-binh-ac-quy-xe-may",
     "date": "2026-03-19",
     "description": "Xe máy không lên điện, tiếng đề yếu hoặc kêu tạch tạch? Hướng dẫn cách kích bình và xử lý nhanh sự cố ắc quy tại nhà.",
-    "img": "public/asset/image/bai-viet-kich-binh-ac-quy.png",
+    "img": "public/asset/image/upload/bai-viet-kich-binh-ac-quy.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "kích bình xe máy",
@@ -85,7 +85,7 @@
     "slug": "cach-xu-ly-xe-may-ngap-nuoc-tphcm",
     "date": "2026-03-20",
     "description": "Mưa lớn gây ngập lụt khiến xe chết máy? Xem ngay hướng dẫn sơ cứu xe ngập nước để tránh hỏng động cơ và tiết kiệm chi phí sửa chữa.",
-    "img": "public/asset/image/bai-viet-xe-ngap-nuoc.png",
+    "img": "public/asset/image/upload/bai-viet-xe-ngap-nuoc.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "xe máy ngập nước",
@@ -101,7 +101,7 @@
     "slug": "mat-chia-khoa-xe-may-goi-ai",
     "date": "2026-03-21",
     "description": "Đứng trước tình huống mất chìa khóa xe, việc lựa chọn đúng dịch vụ hỗ trợ sẽ giúp bạn tiết kiệm thời gian và bảo vệ hệ thống điện của xe.",
-    "img": "public/asset/image/bai-viet-mat-chia-khoa-xe.png",
+    "img": "public/asset/image/upload/bai-viet-mat-chia-khoa-xe.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "mất chìa khóa xe máy",
@@ -117,7 +117,7 @@
     "slug": "day-curoa-xe-tay-ga-bi-dut",
     "date": "2026-03-22",
     "description": "Dây curoa là bộ phận truyền lực chính của xe tay ga. Hiểu rõ dấu hiệu hư hỏng giúp bạn tránh tình trạng xe nằm đường bất thình lình.",
-    "img": "public/asset/image/bai-viet-day-curoa-xe-tay-ga.png",
+    "img": "public/asset/image/upload/bai-viet-day-curoa-xe-tay-ga.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "dây curoa xe máy",
@@ -133,7 +133,7 @@
     "slug": "xe-may-bi-hut-ga-chet-may-doc-duong",
     "date": "2026-03-23",
     "description": "Tình trạng xe đang chạy bỗng nhiên hụt ga, lịm máy không chỉ gây khó chịu mà còn tiềm ẩn nguy cơ tai nạn. Khám phá ngay nguyên nhân và cách xử lý.",
-    "img": "public/asset/image/bai-viet-hut-ga-xe-may.png",
+    "img": "public/asset/image/upload/bai-viet-hut-ga-xe-may.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "xe máy bị hụt ga",
@@ -149,7 +149,7 @@
     "slug": "kinh-nghiem-goi-sua-xe-ban-dem-an-toan",
     "date": "2026-03-24",
     "description": "Hỏng xe đêm khuya là nỗi lo lớn về cả an ninh lẫn giá cả. Bỏ túi ngay những kinh nghiệm vàng để gọi dịch vụ cứu hộ uy tín tại TP.HCM.",
-    "img": "public/asset/image/bai-viet-sua-xe-ban-dem.png",
+    "img": "public/asset/image/upload/bai-viet-sua-xe-ban-dem.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "sửa xe đêm khuya",
@@ -165,7 +165,7 @@
     "slug": "khi-nao-can-thay-nhot-xe-may",
     "date": "2026-03-25",
     "description": "Thay nhớt đúng định kỳ là cách rẻ nhất để bảo vệ động cơ. Tìm hiểu ngay các dấu hiệu cần thay nhớt và cách chọn loại nhớt tối ưu cho xe của bạn.",
-    "img": "public/asset/image/bai-viet-thay-nhot-xe-may.png",
+    "img": "public/asset/image/upload/bai-viet-thay-nhot-xe-may.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "thay nhớt xe máy",
@@ -181,7 +181,7 @@
     "slug": "phan-biet-cac-loai-lop-xe-may",
     "date": "2026-03-26",
     "description": "Lốp xe là bộ phận duy nhất tiếp xúc với mặt đường. Hiểu rõ sự khác biệt giữa các loại lốp giúp bạn lái xe an toàn và bền bỉ hơn.",
-    "img": "public/asset/image/bai-viet-phan-biet-lop-xe.png",
+    "img": "public/asset/image/upload/bai-viet-phan-biet-lop-xe.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "lốp không săm",
@@ -197,7 +197,7 @@
     "slug": "dau-hieu-ma-phanh-bi-mon",
     "date": "2026-03-27",
     "description": "Phanh xe là hệ thống an toàn quan trọng nhất. Nhận biết sớm dấu hiệu mòn má phanh giúp bạn tránh được những tai nạn đáng tiếc.",
-    "img": "public/asset/image/bai-viet-ma-phanh-bi-mon.png",
+    "img": "public/asset/image/upload/bai-viet-ma-phanh-bi-mon.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "thay má phanh xe máy",
@@ -213,7 +213,7 @@
     "slug": "ve-sinh-kim-phun-xang-fi",
     "date": "2026-03-28",
     "description": "Xe chạy ì, hụt ga, hao xăng? Vệ sinh kim phun FI là giải pháp hàng đầu để phục hồi sức mạnh động cơ.",
-    "img": "public/asset/image/bai-viet-ve-sinh-kim-phun.png",
+    "img": "public/asset/image/upload/bai-viet-ve-sinh-kim-phun.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "vệ sinh kim phun FI",
@@ -229,7 +229,7 @@
     "slug": "thay-ac-quy-xe-may-tai-nha-loai-nao-tot",
     "date": "2026-03-29",
     "description": "Ắc quy bị hỏng khiến xe không thể khởi động. Tìm hiểu các thương hiệu ắc quy uy tín và dịch vụ thay thế tận nhà lấy ngay.",
-    "img": "public/asset/image/bai-viet-thay-ac-quy-xe.png",
+    "img": "public/asset/image/upload/bai-viet-thay-ac-quy-xe.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "thay ắc quy xe máy",
@@ -245,8 +245,8 @@
     "slug": "meo-chay-xe-tay-ga-tiet-kiem-xang",
     "date": "2026-03-30",
     "description": "Giá xăng tăng cao khiến chi phí đi lại trở thành gánh nặng. Áp dụng ngay 5 mẹo vận hành xe tay ga cực đơn giản để tiết kiệm đến 20% nhiên liệu.",
-    "img": "public/asset/image/bai-viet-tiet-kiem-xang-xe.png",
-    "category": "Mẹo sử xe",
+    "img": "public/asset/image/upload/bai-viet-tiet-kiem-xang-xe.jpg",
+    "category": "Mẹo tiết kiệm nhiên liệu",
     "tags": ["tiết kiệm xăng", "xe tay ga", "mẹo chạy xe", "bảo dưỡng xe"],
     "content": "<p>Xe tay ga vốn nổi tiếng là \"ngốn\" xăng hơn xe số. Tuy nhiên, nếu biết cách vận hành và bảo dưỡng đúng kỹ thuật, bạn hoàn toàn có thể tối ưu hóa lượng nhiên liệu tiêu thụ mỗi ngày.</p><h2><span style=\"color:hsl(30, 75%, 60%);\">1. Giữ ga đều, tránh tăng giảm đột ngột</span></h2><p>Việc thốc ga rồi phanh gấp là kẻ thù số 1 của tiết kiệm xăng. Hãy cố gắng giữ tay ga ở mức ổn định và quan sát từ xa để chủ động giảm ga trước khi dừng đèn đỏ thay vì đợi đến gần mới bóp phanh.</p><h2><span style=\"color:hsl(30, 75%, 60%);\">2. Không vừa bóp phanh vừa vít ga</span></h2><p>Thói quen này thường gặp ở phụ nữ khi đi chậm hoặc tắc đường. Điều này không chỉ làm cháy chuông nồi, mòn má phanh mà còn khiến động cơ phải làm việc gấp đôi công suất, cực kỳ hao xăng.</p><h2><span style=\"color:hsl(30, 75%, 60%);\">3. Kiểm tra áp suất lốp thường xuyên</span></h2><p>Lốp xe quá mềm làm tăng diện tích tiếp xúc với mặt đường, gây nặng máy. Hãy đảm bảo lốp xe luôn căng đúng tiêu chuẩn (thường là 2.2kg đến 2.5kg tùy dòng xe).</p><h2><span style=\"color:hsl(30, 75%, 60%);\">4. Tận dụng tính năng Idling Stop</span></h2><p>Nếu xe của bạn có tính năng ngắt động cơ tạm thời, hãy bật nó lên. Việc tắt máy khi dừng đèn đỏ trên 10 giây giúp giảm đáng kể lượng xăng thừa lãng phí.</p><h2><span style=\"color:hsl(30, 75%, 60%);\">5. Bảo dưỡng định kỳ hệ thống phun xăng</span></h2><p>Lọc gió bẩn hoặc kim phun nghẹt là nguyên nhân chính khiến xe \"uống\" xăng như nước. Đừng quên gọi dịch vụ bảo dưỡng lưu động định kỳ để vệ sinh hệ thống này nhé!</p>"
   },
@@ -256,7 +256,7 @@
     "slug": "bao-quan-xe-may-khong-su-dung",
     "date": "2026-03-31",
     "description": "Làm thế nào để xe vẫn nổ máy dễ dàng sau một thời gian dài cất trong kho? Lưu lại ngay quy trình bảo quản xe chuẩn xác nhất.",
-    "img": "public/asset/image/bai-viet-bao-quan-xe-khong-dung.png",
+    "img": "public/asset/image/upload/bai-viet-bao-quan-xe-khong-dung.jpg",
     "category": "Mẹo sửa xe",
     "tags": ["bảo quản xe máy", "xe để lâu không đi", "chăm sóc xe máy"],
     "content": "<p>Nhiều khách hàng gặp tình trạng xe để lâu không đi khi dắt ra thì lốp bẹp dí, bình ắc quy chết hoặc chuột cắn nát dây điện. Hãy thực hiện 3 bước sau trước khi cất xe:</p><h2><span style=\"color:hsl(30, 75%, 60%);\">1. Đổ đầy bình xăng</span></h2><p>Để bình xăng trống sẽ tạo điều kiện cho hơi ẩm ngưng tụ, gây gỉ sét bình xăng lớn và làm hỏng chất lượng xăng. Đổ đầy bình sẽ hạn chế tối đa không khí tiếp xúc với bề mặt kim loại bên trong.</p><h2><span style=\"color:hsl(30, 75%, 60%);\">2. Ngắt kết nối ắc quy</span></h2><p>Dù không bật khóa, xe vẫn tiêu thụ một lượng điện nhỏ cho đồng hồ hoặc hệ thống chống trộm. Hãy tháo cọc âm (-) của ắc quy để giữ điện được lâu hơn.</p><h2><span style=\"color:hsl(30, 75%, 60%);\">3. Vệ sinh sạch sẽ và chống chuột</span></h2><p>Rửa sạch xe để tránh rỉ sét do bùn đất bám lâu ngày. Sử dụng tinh dầu sủi hoặc bình xịt chống chuột vào các khu vực kín trong máy để tránh bị \"nhân viên gặm nhấm\" phá hoại hệ thống điện.</p>"
@@ -267,7 +267,7 @@
     "slug": "sai-lam-khi-rua-xe-may-bang-xa-phong-giat",
     "date": "2026-04-01",
     "description": "Tiện tay dùng xà phòng giặt hay nước rửa chén để rửa xe là cách nhanh nhất để làm hỏng lớp sơn và rỉ sét linh kiện kim loại.",
-    "img": "public/asset/image/bai-viet-sai-lam-rua-xe.png",
+    "img": "public/asset/image/upload/bai-viet-sai-lam-rua-xe.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "rửa xe máy đúng cách",
@@ -283,7 +283,7 @@
     "slug": "giu-dan-ao-xe-luon-moi-dep",
     "date": "2026-04-02",
     "description": "Bí quyết giúp lớp sơn xe máy luôn bóng bẩy, bền màu và không vết trầy xước dù đã sử dụng nhiều năm.",
-    "img": "public/asset/image/bai-viet-chon-soc-dan-ao.png",
+    "img": "public/asset/image/upload/bai-viet-chon-soc-dan-ao.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "đánh bóng xe máy",
@@ -299,7 +299,7 @@
     "slug": "cach-kiem-tra-xe-may-cu-truoc-khi-mua",
     "date": "2026-04-03",
     "description": "Đừng để vẻ ngoài bóng loáng đánh lừa! Học ngay cách kiểm tra động cơ và giấy tờ xe cũ để tránh mua phải xe 'nát' hoặc xe không chính chủ.",
-    "img": "public/asset/image/bai-viet-kiem-tra-xe-cu.png",
+    "img": "public/asset/image/upload/bai-viet-kiem-tra-xe-cu.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "mua xe máy cũ",
@@ -315,7 +315,7 @@
     "slug": "tieu-chi-chon-sua-xe-luu-dong-uy-tin",
     "date": "2026-03-30",
     "description": "Giữa hàng trăm lời quảng cáo trên mạng, làm sao để chọn đúng đội ngũ cứu hộ xe máy chuyên nghiệp? Lưu ngay 5 tiêu chí vàng sau đây.",
-    "img": "public/asset/image/bai-viet-tieu-chi-chon-sua-xe-uy-tin.png",
+    "img": "public/asset/image/upload/bai-viet-tieu-chi-chon-sua-xe-uy-tin.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "sửa xe lưu động uy tín",
@@ -331,7 +331,7 @@
     "slug": "bang-gia-sua-xe-luu-dong-2026",
     "date": "2026-03-31",
     "description": "Cập nhật chi tiết bảng giá cứu hộ xe máy và sửa chữa tận nơi mới nhất năm 2026. Minh bạch - Công khai - Không phụ phí ẩn.",
-    "img": "public/asset/image/bai-viet-bang-gia-sua-xe-2026.png",
+    "img": "public/asset/image/upload/bai-viet-bang-gia-sua-xe-2026.jpg",
     "category": "Dịch vụ",
     "tags": [
       "báo giá sửa xe máy",
@@ -347,7 +347,7 @@
     "slug": "quy-trinh-sua-xe-tan-nha-chuyen-nghiep",
     "date": "2026-04-04",
     "description": "Khám phá quy trình làm việc khoa học, minh bạch giúp khách hàng hoàn toàn an tâm khi giao phó 'xế cưng' cho đội ngũ của chúng tôi.",
-    "img": "public/asset/image/bai-viet-quy-trinh-sua-xe-tan-nha.png",
+    "img": "public/asset/image/upload/bai-viet-quy-trinh-sua-xe-tan-nha.jpg",
     "category": "Dịch vụ",
     "tags": [
       "quy trình sửa xe",
@@ -363,7 +363,7 @@
     "slug": "phan-hoi-khach-hang-sua-xe-luu-dong",
     "date": "2026-04-05",
     "description": "Hàng ngàn khách hàng tại TP.HCM đã tin dùng và hài lòng. Cùng lắng nghe những câu chuyện cứu hộ thực tế của họ.",
-    "img": "public/asset/image/bai-viet-phan-hoi-khach-hang-sua-xe.png",
+    "img": "public/asset/image/upload/bai-viet-phan-hoi-khach-hang-sua-xe.jpg",
     "category": "Khách hàng",
     "tags": [
       "đánh giá dịch vụ",
@@ -378,7 +378,7 @@
     "slug": "tai-sao-chon-dich-vu-quanh-ta",
     "date": "2026-04-06",
     "description": "Không chỉ là một đội thợ sửa xe, chúng tôi là giải pháp chăm sóc phương tiện toàn diện, hiện đại và tin cậy nhất tại TP.HCM.",
-    "img": "public/asset/image/bai-viet-tai-sao-chon-dich-vu-quanh-ta.png",
+    "img": "public/asset/image/upload/bai-viet-tai-sao-chon-dich-vu-quanh-ta.jpg",
     "category": "Dịch vụ",
     "tags": [
       "cứu hộ xe máy 24/7",
@@ -393,7 +393,7 @@
     "slug": "so-sanh-va-dui-va-va-nam-lop-khong-sam",
     "date": "2026-04-07",
     "description": "Lốp không săm bị dính đinh nên vá dùi hay vá nấm? Tìm hiểu sự khác biệt về độ bền và an toàn giữa hai phương pháp vá lốp phổ biến nhất hiện nay.",
-    "img": "public/asset/image/bai-viet-so-sanh-va-dui-va-nam.png",
+    "img": "public/asset/image/upload/bai-viet-so-sanh-va-dui-va-nam.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "vá nấm lốp không săm",
@@ -409,7 +409,7 @@
     "slug": "noi-xe-tay-ga-bi-keu-cach-khac-phuc",
     "date": "2026-04-08",
     "description": "Tiếng kêu lạch cạch, gào thét ở bộ nồi không chỉ khó chịu mà còn gây hao xăng, xe yếu. Tìm hiểu nguyên nhân và quy trình vệ sinh nồi chuyên nghiệp.",
-    "img": "public/asset/image/bai-viet-noi-xe-tay-ga-bi-keu.png",
+    "img": "public/asset/image/upload/bai-viet-noi-xe-tay-ga-bi-keu.jpg",
     "category": "Mẹo sửa xe",
     "tags": [
       "vệ sinh nồi xe tay ga",
@@ -425,7 +425,7 @@
     "slug": "so-sanh-phanh-abs-va-cbs",
     "date": "2026-04-09",
     "description": "Bạn đang sở hữu xe có phanh ABS hay CBS? Hiểu rõ sự khác biệt giữa hai hệ thống này là chìa khóa để xử lý tình huống khẩn cấp an toàn.",
-    "img": "public/asset/image/bai-viet-so-sanh-phanh-abs-cbs.png",
+    "img": "public/asset/image/upload/bai-viet-so-sanh-phanh-abs-cbs.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "phanh ABS là gì",
@@ -441,7 +441,7 @@
     "slug": "cau-tao-bo-truyen-dong-xe-may",
     "date": "2026-04-10",
     "description": "Tại sao xe máy cần bôi trơn định kỳ? Khám phá cấu tạo bộ truyền động và cách kéo dài tuổi thọ cho 'hệ cơ bắp' của chiếc xe.",
-    "img": "public/asset/image/bai-viet-cau-tao-bo-truyen-dong-xe.png",
+    "img": "public/asset/image/upload/bai-viet-cau-tao-bo-truyen-dong-xe.jpg",
     "category": "Kiến thức xe",
     "tags": [
       "nhông sên dĩa",
@@ -457,7 +457,7 @@
     "slug": "hotline-cuu-ho-xe-may-tphcm",
     "date": "2026-04-11",
     "description": "Bạn đang bị hỏng xe? Đừng lo lắng! Lưu ngay danh sách số điện thoại cứu hộ xe máy 24/7 phủ khắp 22 quận huyện và TP. Thủ Đức.",
-    "img": "public/asset/image/bai-viet-hotline-cuu-ho-xe-may-tphcm.png",
+    "img": "public/asset/image/upload/bai-viet-hotline-cuu-ho-xe-may-tphcm.jpg",
     "category": "Dịch vụ",
     "tags": [
       "hotline sửa xe máy",

@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Chi tiết bài viết tư vấn sửa xe lưu động với hướng dẫn thực tế, dấu hiệu hư hỏng thường gặp và giải pháp khắc phục nhanh, an toàn ngay tại chỗ."
+    />
+    <meta
+      name="keywords"
+      content="chi tiết bài viết sửa xe, hướng dẫn sửa xe máy, xử lý sự cố trên đường, kinh nghiệm cứu hộ xe, dấu hiệu xe cần sửa, mẹo bảo dưỡng xe, thông tin phụ tùng xe máy, kiến thức vận hành xe, an toàn giao thông xe máy, dịch vụ sửa xe tận nơi, hotline cứu hộ xe, Dịch Vụ Quanh Ta"
+    />
+    <title>Dịch Vụ Quanh Ta - Sửa Xe Lưu Động</title>
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="public/asset/image/logo-sua-xe-luu-dong.png"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link href="public/asset/css/style.css" rel="stylesheet" />
+    <link href="public/asset/css/blog_detail.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="../index.html">
+          <img
+            class="logo-icon"
+            src="public/asset/image/logo-dich-vu-quanh-ta.png"
+            alt="Logo Dịch Vụ Quanh Ta"
+          />
+          <span>Sửa Xe Lưu Động</span>
+          <img
+            class="logo-icon"
+            src="public/asset/image/logo-sua-xe-luu-dong.png"
+            alt="Logo Sửa Xe Lưu Động"
+          />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Trang chủ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="dich-vu.html">Dịch vụ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#about">Về Chúng Tôi</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="cam-nang.html">Cẩm nang</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#contact">Liên hệ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="don-dat.html">Đơn đặt</a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                data-bs-toggle="modal"
+                data-bs-target="#bookingModal"
+                >Đặt dịch vụ</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="container">
+        <div class="page-header-content">
+          <h1 id="postTitle">10 Mẹo Bảo Dưỡng Xe Ô Tô Tại Nhà</h1>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" id="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="index.html">Trang chủ</a>
+              </li>
+              <li class="breadcrumb-item"><a href="cam-nang.html">Blog</a></li>
+              <li class="breadcrumb-item active">Bảo dưỡng xe</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get("slug");
+
+      fetch("public/news.json")
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (posts) {
+          const post = posts.find(function (p) {
+            return p.slug === slug;
+          });
+
+          if (!post) return;
+
+          // thay tiêu đề
+          document.getElementById("postTitle").childNodes[0].nodeValue =
+            post.title + " ";
+
+          // breadcrumb
+          document.getElementById("breadcrumb").innerHTML =
+            ' <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>' +
+            '<li class="breadcrumb-item"><a href="cam-nang.html">Cẩm nang</a></li>' +
+            '<li class="breadcrumb-item active">' +
+            post.slug +
+            "</li>";
+        })
+        .catch(function (err) {
+          console.error("Không tải được news.json", err);
+        });
+    </script>
+
+    <!-- Main Content -->
+    <section class="blog-content">
+      <div class="container">
+        <div class="row">
+          <!-- Article Content -->
+          <div class="col-lg-8">
+            <article class="article">
+              <div class="article-meta">
+                <div class="article-meta-item">
+                  <i class="far fa-calendar-alt"></i>
+                  <span>15/03/2026</span>
+                </div>
+                <div class="article-meta-item">
+                  <i class="far fa-folder"></i>
+                  <span>Bảo dưỡng xe</span>
+                </div>
+              </div>
+
+              <img
+                src="https://images.unsplash.com/photo-1770656505784-3fad3cd41fcf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYXIlMjBtYWludGVuYW5jZSUyMHRpcHN8ZW58MXx8fHwxNzczNTgyOTU0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                alt="Bảo dưỡng xe"
+                class="article-featured-image"
+              />
+
+              <p>
+                Bảo dưỡng xe ô tô định kỳ là điều cực kỳ quan trọng để đảm bảo
+                xe của bạn luôn hoạt động tốt và kéo dài tuổi thọ. Tuy nhiên,
+                không phải ai cũng có thời gian để đưa xe đến garage thường
+                xuyên. Dưới đây là 10 mẹo bảo dưỡng xe tại nhà mà bạn có thể tự
+                làm để tiết kiệm chi phí và thời gian.
+              </p>
+
+              <h2 id="check-oil">1. Kiểm tra và thay dầu động cơ định kỳ</h2>
+              <p>
+                Dầu động cơ là "máu" của xe, giúp bôi trơn các bộ phận chuyển
+                động bên trong động cơ. Việc kiểm tra và thay dầu định kỳ giúp
+                động cơ hoạt động trơn tru và kéo dài tuổi thọ.
+              </p>
+
+              <h3>Cách kiểm tra dầu động cơ:</h3>
+              <ul>
+                <li>
+                  <strong>Đỗ xe trên mặt phẳng:</strong> Đảm bảo xe đang ở trên
+                  mặt phẳng và động cơ đã nguội
+                </li>
+                <li>
+                  <strong>Rút que thăm dầu:</strong> Lau sạch, nhúng lại vào và
+                  rút ra để kiểm tra mức dầu
+                </li>
+                <li>
+                  <strong>Kiểm tra màu sắc:</strong> Dầu mới có màu vàng trong,
+                  dầu cũ sẽ đen và đặc hơn
+                </li>
+                <li>
+                  <strong>Thay dầu:</strong> Nên thay dầu sau mỗi 5,000 - 10,000
+                  km tùy loại dầu
+                </li>
+              </ul>
+
+              <div class="highlight-box">
+                <p>
+                  <i class="fas fa-lightbulb"></i> <strong>Mẹo:</strong> Luôn sử
+                  dụng loại dầu động cơ phù hợp với xe của bạn theo khuyến cáo
+                  của nhà sản xuất.
+                </p>
+              </div>
+
+              <h2 id="tire-pressure">2. Kiểm tra áp suất lốp xe</h2>
+              <p>
+                Áp suất lốp không đúng có thể gây ra hao mòn không đều, tăng
+                tiêu hao nhiên liệu và ảnh hưởng đến độ an toàn khi lái xe.
+              </p>
+
+              <ul>
+                <li>
+                  <strong>Kiểm tra thường xuyên:</strong> Nên kiểm tra áp suất
+                  lốp ít nhất 1 lần/tháng
+                </li>
+                <li>
+                  <strong>Kiểm tra khi lốp nguội:</strong> Áp suất chính xác
+                  nhất khi lốp chưa chạy
+                </li>
+                <li>
+                  <strong>Bơm đủ áp suất:</strong> Theo khuyến cáo của nhà sản
+                  xuất (thường 30-35 PSI)
+                </li>
+                <li>
+                  <strong>Đừng quên lốp dự phòng:</strong> Lốp dự phòng cũng cần
+                  được kiểm tra
+                </li>
+              </ul>
+
+              <h2 id="battery">3. Bảo dưỡng ắc quy</h2>
+              <p>
+                Ắc quy là nguồn cung cấp điện cho toàn bộ hệ thống điện của xe.
+                Một ắc quy yếu có thể khiến xe không nổ máy được.
+              </p>
+
+              <h3>Cách bảo dưỡng ắc quy:</h3>
+              <ul>
+                <li>
+                  <strong>Vệ sinh cực ắc quy:</strong> Làm sạch cực dương và cực
+                  âm, loại bỏ gỉ sét
+                </li>
+                <li>
+                  <strong>Kiểm tra mức nước:</strong> Với ắc quy khô, kiểm tra
+                  và bổ sung nước cất khi cần
+                </li>
+                <li>
+                  <strong>Kiểm tra điện áp:</strong> Điện áp bình thường khoảng
+                  12.6V khi không nổ máy
+                </li>
+                <li>
+                  <strong>Thay ắc quy:</strong> Tuổi thọ trung bình 2-4 năm tùy
+                  điều kiện sử dụng
+                </li>
+              </ul>
+
+              <h2 id="brake-fluid">4. Kiểm tra dầu phanh</h2>
+              <p>
+                Dầu phanh đóng vai trò quan trọng trong hệ thống phanh của xe.
+                Mức dầu phanh thấp có thể khiến phanh kém hiệu quả.
+              </p>
+
+              <ul>
+                <li>
+                  Kiểm tra bình chứa dầu phanh (thường có ký hiệu MIN và MAX)
+                </li>
+                <li>
+                  Dầu phanh có màu vàng nhạt khi mới, sẽ sẫm dần theo thời gian
+                </li>
+                <li>
+                  Nếu mức dầu giảm nhanh, cần kiểm tra hệ thống phanh có rò rỉ
+                  không
+                </li>
+                <li>Thay dầu phanh theo khuyến cáo, thường 2-3 năm/lần</li>
+              </ul>
+
+              <h2 id="air-filter">
+                5. Thay lọc gió động cơ và lọc gió điều hòa
+              </h2>
+              <p>
+                Lọc gió giúp ngăn bụi bẩn và tạp chất xâm nhập vào động cơ và
+                cabin xe.
+              </p>
+
+              <h3>Lọc gió động cơ:</h3>
+              <ul>
+                <li>Thay mỗi 15,000 - 30,000 km</li>
+                <li>
+                  Lọc gió bẩn làm giảm hiệu suất động cơ và tăng tiêu hao nhiên
+                  liệu
+                </li>
+                <li>Có thể tự tháo và thay thế dễ dàng</li>
+              </ul>
+
+              <h3>Lọc gió điều hòa:</h3>
+              <ul>
+                <li>Thay mỗi 10,000 - 15,000 km</li>
+                <li>Giúp không khí trong cabin sạch hơn, bảo vệ sức khỏe</li>
+                <li>Lọc gió bẩn có thể gây mùi hôi trong xe</li>
+              </ul>
+
+              <h2 id="wiper">6. Kiểm tra và thay gạt nước</h2>
+              <p>
+                Gạt nước kém chất lượng có thể làm mờ tầm nhìn khi trời mưa, gây
+                nguy hiểm cho người lái.
+              </p>
+
+              <ul>
+                <li>
+                  <strong>Kiểm tra định kỳ:</strong> Quan sát xem gạt nước có
+                  gạt sạch không
+                </li>
+                <li>
+                  <strong>Thay khi cần:</strong> Nếu gạt để lại vệt nước hoặc
+                  kêu cọt kẹt
+                </li>
+                <li>
+                  <strong>Tuổi thọ:</strong> Thường 6-12 tháng tùy điều kiện sử
+                  dụng
+                </li>
+                <li>
+                  <strong>Vệ sinh:</strong> Lau sạch cao su gạt nước thường
+                  xuyên
+                </li>
+              </ul>
+
+              <h2 id="lights">7. Kiểm tra hệ thống đèn</h2>
+              <p>
+                Hệ thống đèn hoạt động tốt rất quan trọng cho an toàn giao
+                thông, đặc biệt khi lái xe vào ban đêm.
+              </p>
+
+              <ul>
+                <li>
+                  Kiểm tra đèn pha, đèn cos, đèn xi nhan, đèn phanh, đèn lùi
+                </li>
+                <li>Thay bóng đèn ngay khi hỏng</li>
+                <li>Vệ sinh kính đèn để tăng độ sáng</li>
+                <li>Điều chỉnh góc chiếu đèn pha cho phù hợp</li>
+              </ul>
+
+              <h2 id="coolant">8. Kiểm tra nước làm mát</h2>
+              <p>
+                Nước làm mát giúp điều hòa nhiệt độ động cơ, ngăn động cơ quá
+                nóng hoặc quá lạnh.
+              </p>
+
+              <ul>
+                <li>
+                  <strong>Kiểm tra mức nước:</strong> Khi động cơ nguội, mức
+                  nước nên ở giữa MIN và MAX
+                </li>
+                <li>
+                  <strong>Kiểm tra màu sắc:</strong> Nước làm mát có màu xanh,
+                  đỏ hoặc cam tùy loại
+                </li>
+                <li>
+                  <strong>Thay định kỳ:</strong> Nên thay mỗi 2-3 năm hoặc
+                  40,000 - 60,000 km
+                </li>
+                <li>
+                  <strong>Lưu ý:</strong> Không mở nắp két nước khi động cơ còn
+                  nóng
+                </li>
+              </ul>
+
+              <h2 id="wash">9. Rửa xe và vệ sinh nội thất thường xuyên</h2>
+              <p>
+                Vệ sinh xe không chỉ giúp xe đẹp hơn mà còn bảo vệ lớp sơn và
+                nội thất khỏi bị hư hại.
+              </p>
+
+              <h3>Vệ sinh ngoại thất:</h3>
+              <ul>
+                <li>Rửa xe ít nhất 2 tuần/lần</li>
+                <li>Sử dụng dung dịch rửa xe chuyên dụng</li>
+                <li>Đánh bóng và phủ ceramic định kỳ để bảo vệ sơn</li>
+                <li>Vệ sinh gầm xe, khu vực lốp để tránh gỉ sét</li>
+              </ul>
+
+              <h3>Vệ sinh nội thất:</h3>
+              <ul>
+                <li>Hút bụi cabin thường xuyên</li>
+                <li>Lau chùi taplo, vô lăng, ghế ngồi</li>
+                <li>Vệ sinh thảm sàn</li>
+                <li>Khử mùi và làm sạch hệ thống điều hòa</li>
+              </ul>
+
+              <h2 id="drive">10. Thói quen lái xe tốt</h2>
+              <p>
+                Cách bạn lái xe cũng ảnh hưởng lớn đến tuổi thọ và tình trạng
+                của xe.
+              </p>
+
+              <ul>
+                <li>
+                  <strong>Khởi động nhẹ nhàng:</strong> Cho xe chạy nhàn 1-2
+                  phút trước khi tăng tốc
+                </li>
+                <li>
+                  <strong>Tránh tăng tốc đột ngột:</strong> Vừa hao nhiên liệu
+                  vừa mài mòn động cơ
+                </li>
+                <li>
+                  <strong>Phanh đều:</strong> Không phanh gấp nếu không cần
+                  thiết
+                </li>
+                <li>
+                  <strong>Chuyển số đúng cách:</strong> Với xe số sàn, chuyển số
+                  đúng thời điểm
+                </li>
+                <li>
+                  <strong>Tránh quá tải:</strong> Không chở quá trọng tải cho
+                  phép
+                </li>
+              </ul>
+
+              <div class="highlight-box">
+                <p>
+                  <i class="fas fa-info-circle"></i> <strong>Lưu ý:</strong> Nếu
+                  bạn không tự tin tự làm hoặc phát hiện vấn đề nghiêm trọng,
+                  hãy liên hệ ngay với AutoCare 24/7 - Dịch vụ sửa chữa xe lưu
+                  động chuyên nghiệp, đến tận nơi trong 15 phút!
+                </p>
+              </div>
+
+              <h2>Kết luận</h2>
+              <p>
+                Bảo dưỡng xe thường xuyên không chỉ giúp xe hoạt động tốt hơn mà
+                còn giúp bạn tiết kiệm chi phí sửa chữa lớn trong tương lai. Hầu
+                hết các công việc bảo dưỡng cơ bản đều có thể tự làm tại nhà với
+                chút kiến thức và công cụ phù hợp.
+              </p>
+
+              <p>
+                Tuy nhiên, với những vấn đề phức tạp hoặc khi bạn không có thời
+                gian, đừng ngần ngại liên hệ với dịch vụ sửa chữa xe lưu động
+                chuyên nghiệp của AutoCare 24/7. Chúng tôi luôn sẵn sàng đến tận
+                nơi để hỗ trợ bạn!
+              </p>
+
+              <!-- Tags -->
+              <div class="mt-4 pt-4" style="border-top: 2px solid #f3f4f6">
+                <h5 class="mb-3">
+                  <i class="fas fa-tags me-2" style="color: #f97316"></i>Từ
+                  khóa:
+                </h5>
+                <div class="tags-list">
+                  <a href="#" class="tag">Bảo dưỡng xe</a>
+                  <a href="#" class="tag">Sửa chữa xe</a>
+                  <a href="#" class="tag">Mẹo ô tô</a>
+                  <a href="#" class="tag">Kiểm tra xe</a>
+                  <a href="#" class="tag">Bảo trì xe</a>
+                  <a href="#" class="tag">Tự bảo dưỡng</a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="col-lg-4">
+            <aside class="sidebar">
+              <!-- Table of Contents -->
+              <div class="sidebar-widget">
+                <h3><i class="fas fa-list-ul me-2"></i>Mục lục</h3>
+                <ul class="toc-list">
+                  <li>
+                    <a href="#check-oil"
+                      ><i class="fas fa-chevron-right"></i>Kiểm tra và thay dầu
+                      động cơ</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#tire-pressure"
+                      ><i class="fas fa-chevron-right"></i>Kiểm tra áp suất lốp
+                      xe</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#battery"
+                      ><i class="fas fa-chevron-right"></i>Bảo dưỡng ắc quy</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#brake-fluid"
+                      ><i class="fas fa-chevron-right"></i>Kiểm tra dầu phanh</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#air-filter"
+                      ><i class="fas fa-chevron-right"></i>Thay lọc gió động cơ
+                      và điều hòa</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#wiper"
+                      ><i class="fas fa-chevron-right"></i>Kiểm tra và thay gạt
+                      nước</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#lights"
+                      ><i class="fas fa-chevron-right"></i>Kiểm tra hệ thống
+                      đèn</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#coolant"
+                      ><i class="fas fa-chevron-right"></i>Kiểm tra nước làm
+                      mát</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#wash"
+                      ><i class="fas fa-chevron-right"></i>Rửa xe và vệ sinh nội
+                      thất</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#drive"
+                      ><i class="fas fa-chevron-right"></i>Thói quen lái xe
+                      tốt</a
+                    >
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Recent Posts -->
+              <div class="sidebar-widget">
+                <h3><i class="fas fa-newspaper me-2"></i>Bài liên quan</h3>
+
+                <div class="recent-post">
+                  <img
+                    src="https://images.unsplash.com/photo-1761231558088-99b391ad4052?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjYXIlMjBlbmdpbmUlMjBjaGVja3xlbnwxfHx8fDE3NzM1ODI5NTV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                    alt="Post"
+                    class="recent-post-image"
+                  />
+                  <div class="recent-post-content">
+                    <h4>
+                      <a href="#">7 Dấu hiệu cảnh báo động cơ xe có vấn đề</a>
+                    </h4>
+                    <div class="recent-post-date">
+                      <i class="far fa-calendar"></i>
+                      <span>12/03/2026</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="recent-post">
+                  <img
+                    src="https://images.unsplash.com/photo-1559674697-7ebabb38c369?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0aXJlJTIwcHJlc3N1cmUlMjBjaGVja3xlbnwxfHx8fDE3NzM1ODI5NTZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                    alt="Post"
+                    class="recent-post-image"
+                  />
+                  <div class="recent-post-content">
+                    <h4>
+                      <a href="#"
+                        >Cách kiểm tra lốp xe trước khi đi đường dài</a
+                      >
+                    </h4>
+                    <div class="recent-post-date">
+                      <i class="far fa-calendar"></i>
+                      <span>10/03/2026</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="recent-post">
+                  <img
+                    src="https://images.unsplash.com/photo-1770656505767-32ed52b1a8ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWNoYW5pYyUyMGZpeGluZyUyMGNhciUyMGVuZ2luZXxlbnwxfHx8fDE3NzI3ODA0NDl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                    alt="Post"
+                    class="recent-post-image"
+                  />
+                  <div class="recent-post-content">
+                    <h4>
+                      <a href="#">Những sự cố xe thường gặp và cách xử lý</a>
+                    </h4>
+                    <div class="recent-post-date">
+                      <i class="far fa-calendar"></i>
+                      <span>08/03/2026</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="recent-post">
+                  <img
+                    src="https://images.unsplash.com/photo-1727413434026-0f8314c037d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhdXRvJTIwcmVwYWlyJTIwd29ya3Nob3AlMjB0b29sc3xlbnwxfHx8fDE3NzI3ODA0NDh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                    alt="Post"
+                    class="recent-post-image"
+                  />
+                  <div class="recent-post-content">
+                    <h4>
+                      <a href="#">Tại sao nên chọn dịch vụ sửa xe lưu động?</a>
+                    </h4>
+                    <div class="recent-post-date">
+                      <i class="far fa-calendar"></i>
+                      <span>05/03/2026</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="recent-post">
+                  <img
+                    src="https://images.unsplash.com/photo-1763377278900-0ce8242c5005?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjBtZWNoYW5pYyUyMHZhbnxlbnwxfHx8fDE3NzI3ODA0NDl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                    alt="Post"
+                    class="recent-post-image"
+                  />
+                  <div class="recent-post-content">
+                    <h4>
+                      <a href="#">Hướng dẫn thay ắc quy xe ô tô tại nhà</a>
+                    </h4>
+                    <div class="recent-post-date">
+                      <i class="far fa-calendar"></i>
+                      <span>02/03/2026</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <div class="d-flex align-items-center mb-3">
+              <img
+                class="logo-icon"
+                src="public/asset/image/logo.png"
+                alt="logo dịch vụ quanh ta"
+              />
+              <h5 class="mb-0 ms-2">Sửa Xe Lưu Động</h5>
+              <img
+                class="logo-icon"
+                src="public/asset/image/logo-sua-xe-luu-dong.png"
+                alt="logo sửa xe lưu động"
+              />
+            </div>
+            <p class="mb-3">
+              Dịch vụ sửa chữa xe lưu động hàng đầu Việt Nam. Chúng tôi luôn sẵn
+              sàng phục vụ bạn 24/7.
+            </p>
+            <p>
+              CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br />
+              MST: 0315609853
+            </p>
+            <p>
+              <i class="fas fa-map-marker-alt me-2"></i> Tòa Nhà Sbi, Lô 6b,
+              Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp,
+              Quận 12, Thành Phố Hồ Chí Minh, Việt Nam
+            </p>
+            <p><i class="fas fa-phone me-2"></i> 0775 472 347</p>
+            <p>
+              <i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com
+            </p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <h6>Dịch vụ</h6>
+            <ul>
+              <li>
+                <a href="../cham-soc-me-va-be/dich-vu-cham-soc-me-be.html"
+                  >Chăm Sóc Mẹ & Bé</a
+                >
+              </li>
+              <li>
+                <a href="../cham-soc-nguoi-gia/dich-vu-cham-soc-nguoi-gia.html"
+                  >Chăm Sóc Người Già</a
+                >
+              </li>
+              <li>
+                <a href="../cham-soc-nguoi-benh/dich-vu-cham-soc-nguoi-benh.html"
+                  >Chăm Sóc Bệnh Nhân</a
+                >
+              </li>
+              <li>
+                <a href="../dich-vu-don-ve-sinh/demo/services.html"
+                  >Dịch vụ Vệ Sinh</a
+                >
+              </li>
+              <li>
+                <a href="../cham-soc-vuon-nha/dichvu.html">Chăm Sóc Vườn Nhà</a>
+              </li>
+              <li>
+                <a href="../giat-ui-nhanh/services.html">Giặt Ủi Nhanh</a>
+              </li>
+              <li>
+                <a href="../giao-hang-nhanh/">Giao Hàng Nhanh</a>
+              </li>
+              <li>
+                <a href="../dich-vu-chuyen-don/">Dịch Vụ Chuyển Dọn</a>
+              </li>
+              <li>
+                <a href="../thue-xe/views/pages/public/dich-vu.html">Thuê Xe</a>
+              </li>
+              <li>
+                <a href="../sua-xe-luu-dong/dich-vu.html">Sửa xe lưu động</a>
+              </li>
+              <li>
+                <a href="../tho-nha/pages/public/dich-vu.html">Thợ Nhà</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-lg-4 col-md-6">
+              <h6>Hỗ trợ</h6>
+              <ul>
+                <li><a href="dieu-khoan.html">Điều khoản sử dụng</a></li>
+              </ul>
+              <h5 class="h6 my-3">Tải Ứng Dụng</h5>
+              <div class="d-flex gap-2">
+                <a
+                  href="#"
+                  class="btn btn-primary d-flex align-items-center p-2 rounded-3 text-decoration-none"
+                  style="flex: 1"
+                >
+                  <i
+                    class="	fab fa-apple me-2"
+                    style="width: 24px; height: 24px; font-size: 24px;"
+                  ></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block text-white-50" style="font-size: 10px"
+                      >Download on</small
+                    >
+                    <span class="fw-bold text-white" style="font-size: 12px"
+                      >App Store</span
+                    >
+                  </div>
+                </a>
+                <a
+                  href="#"
+                  class="btn btn-success d-flex align-items-center p-2 rounded-3 text-decoration-none"
+                  style="flex: 1"
+                >
+                  <i
+                    class="	fab fa-google-play me-2"
+                    style="width: 24px; height: 24px; font-size: 24px;"
+                  ></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block text-white-50" style="font-size: 10px"
+                      >Get it on</small
+                    >
+                    <span class="fw-bold text-white" style="font-size: 12px"
+                      >Google Play</span
+                    >
+                  </div>
+                </a>
+            </div>
+          </div>
+
+        <div class="copyright">
+          <p class="mb-0">
+            &copy; 2026 Sửa Xe Lưu Động. Đã đăng ký Bản quyền. Sản xuất tại
+            <i class="fas fa-heart text-danger"></i> Việt Nam
+          </p>
+        </div>
+      </div>
+    </footer>
+    <button
+      onclick="history.back()"
+      class="btn rounded-circle d-md-none position-fixed text-danger"
+      style="top: 130px; right: 350px; z-index: 900"
+    >
+      <i class="fas fa-arrow-left" style="font-size: 30px"></i>
+    </button>
+    <div id="modalContainer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="public/asset/js/setting.js"></script>
+    <script src="public/asset/js/data.js"></script>
+    <script>
+      // Smooth scroll for TOC links
+      document.querySelectorAll(".toc-list a").forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            const offset = 100;
+            const targetPosition =
+              target.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({
+              top: targetPosition,
+              behavior: "smooth",
+            });
+          }
+        });
+      });
+
+      // Highlight active TOC item on scroll
+      window.addEventListener("scroll", function () {
+        const sections = document.querySelectorAll("h2[id]");
+        const scrollPos = window.scrollY + 150;
+
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.offsetHeight;
+          const sectionId = section.getAttribute("id");
+
+          if (
+            scrollPos >= sectionTop &&
+            scrollPos < sectionTop + sectionHeight
+          ) {
+            document.querySelectorAll(".toc-list a").forEach((link) => {
+              link.style.background = "";
+              link.style.color = "#4B5563";
+              link.style.paddingLeft = "0.5rem";
+            });
+            const activeLink = document.querySelector(
+              `.toc-list a[href="#${sectionId}"]`,
+            );
+            if (activeLink) {
+              activeLink.style.background =
+                "linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)";
+              activeLink.style.color = "#DC2626";
+              activeLink.style.paddingLeft = "1rem";
+            }
+          }
+        });
+      });
+    </script>
+    <script>
+      let articles = [];
+
+      fetch("public/news.json")
+        .then((res) => res.json())
+        .then((data) => {
+          articles = data;
+
+          const article = articles.find((a) => a.slug === slug);
+
+          if (!article) return;
+
+          renderArticle(article);
+          generateTOC();
+          renderRelated(article);
+          renderTags(article);
+        })
+        .catch((err) => console.error(err));
+
+      function renderArticle(article) {
+        const container = document.querySelector(".article");
+
+        container.innerHTML = `
+  
+        <div class="article-meta">
+          <div class="article-meta-item">
+            <i class="far fa-calendar-alt"></i>
+            <span>${formatDate(article.date)}</span>
+          </div>
+          <div class="article-meta-item">
+            <i class="far fa-folder"></i>
+            <span>${article.category}</span>
+          </div>
+        </div>
+
+        <img src="${article.img}" class="article-featured-image">
+
+        ${article.content}
+
+        <div class="mt-4 pt-4" style="border-top:2px solid #f3f4f6">
+          <h5 class="mb-3">
+            <i class="fas fa-tags me-2" style="color:#f97316"></i>Từ khóa
+          </h5>
+          <div class="tags-list"></div>
+        </div>
+
+        `;
+      }
+      function generateTOC() {
+        const headings = document.querySelectorAll(".article h2");
+        const toc = document.querySelector(".toc-list");
+
+        toc.innerHTML = "";
+
+        headings.forEach((h2, index) => {
+          const id = "section-" + index;
+
+          h2.id = id;
+
+          toc.insertAdjacentHTML(
+            "beforeend",
+            `
+
+            <li>
+              <a href="#${id}">
+                <i class="fas fa-chevron-right"></i>
+                ${h2.textContent}
+              </a>
+            </li>
+
+          `,
+          );
+        });
+      }
+      function renderRelated(article) {
+        const container = document.querySelector(
+          ".sidebar-widget .recent-post",
+        ).parentElement;
+
+        const related = articles
+          .filter(
+            (a) => a.category === article.category && a.slug !== article.slug,
+          )
+          .slice(0, 5);
+
+        container.innerHTML = "";
+
+        related.forEach((post) => {
+          container.insertAdjacentHTML(
+            "beforeend",
+            `
+
+            <div class="recent-post">
+
+              <img src="${post.img}" class="recent-post-image">
+
+              <div class="recent-post-content">
+                <h4>
+                  <a href="noi-dung-cam-nang.html?slug=${post.slug}">
+                    ${post.title}
+                  </a>
+                </h4>
+
+                <div class="recent-post-date">
+                  <i class="far fa-calendar"></i>
+                  <span>${formatDate(post.date)}</span>
+                </div>
+
+              </div>
+
+            </div>
+
+          `,
+          );
+        });
+      }
+      function renderTags(article) {
+        const container = document.querySelector(".tags-list");
+
+        container.innerHTML = "";
+
+        article.tags.forEach((tag) => {
+          container.insertAdjacentHTML(
+            "beforeend",
+            `
+
+      <a href="cam-nang.html?tag=${tag}" class="tag">${tag}</a>
+
+    `,
+          );
+        });
+      }
+      function formatDate(date) {
+        const d = new Date(date);
+
+        return d.toLocaleDateString("vi-VN");
+      }
+    </script>
+  </body>
+</html>
