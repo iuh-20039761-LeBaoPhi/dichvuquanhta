@@ -1,35 +1,33 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="/ga.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Header Chuẩn</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Dịch vụ quanh ta | Chăm sóc vườn nhà</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Playfair+Display:wght@600;700&family=Montserrat:wght@500;600;700&family=Raleway:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
-}
-
-/* ===== HEADER ===== */
-.header{
+.site-header{
 position:sticky;
 top:0;
-background:#fff;
+background:#ffffff;
 height:95px;
 display:flex;
 align-items:center;
-border-bottom:1px solid #eee;
 z-index:1000;
+transition:all 0.3s ease;
 }
 
-.container{
+/* shrink khi scroll */
+.site-header.shrink{
+height:70px;
+box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+.site-container{
 max-width:1300px;
 margin:auto;
 padding:0 20px;
@@ -39,86 +37,99 @@ justify-content:space-between;
 width:100%;
 }
 
-/* ===== LOGO ===== */
-.logo{
+.site-logo{
 display:flex;
 align-items:center;
-gap:10px;
+gap:12px;
 text-decoration:none;
 }
 
-.logo img{
-height:50px;
+.site-logo img{
+height:48px;
+border-radius:6px;
 }
 
-.logo span{
-font-size:24px;
+.site-logo span{
+font-size:28px;
 font-weight:700;
-color:#111;
+color:#1b5e20;
+font-family:'Playfair Display',serif;
+letter-spacing:0.6px;
 }
 
-/* ===== MENU ===== */
-.nav{
+.site-nav{
 display:flex;
 align-items:center;
-gap:5px;
+gap:2px;
+white-space:nowrap;
 }
 
-.nav a{
+.site-nav a{
 text-decoration:none;
-color:#222;
-padding:10px 16px;
+color:#111;
+padding:8px 12px;
 font-size:16px;
-font-weight:500;
+font-weight:700;
 position:relative;
+font-family:'Raleway',sans-serif;
+letter-spacing:0.3px;
 }
 
-/* hover */
-.nav a:hover{
-color:#2e7d32;
-}
+.site-nav a:hover{color:#2e7d32;}
+.site-nav a.active{color:#2e7d32;font-weight:800;}
 
-/* active đẹp */
-.nav a.active{
-color:#2e7d32;
-font-weight:600;
-}
-
-.nav a.active::after{
+.site-nav a::after{
 content:"";
 position:absolute;
-bottom:-5px;
-left:0;
-width:100%;
+bottom:0;
+left:50%;
+width:0;
 height:3px;
 background:#2e7d32;
 border-radius:10px;
+transition:0.3s;
+transform:translateX(-50%);
 }
 
-/* Trang chủ nổi bật */
-.nav a.home{
-color:#2e7d32;
-font-weight:700;
+.site-nav a:hover::after,
+.site-nav a.active::after{
+width:70%;
 }
 
-/* ===== LOGIN ===== */
-.login-box{
-position:relative;
+.site-nav a.active::after{
+width:100%;
 }
 
-.login-btn{
+.site-nav a.home.active::after{
+display:none;
+}
+
+.site-nav a.home{
+color:#1b5e20;
+}
+
+.site-login-box{position:relative;}
+
+.site-login-btn{
 background:#2e7d32;
 color:#fff;
 border:none;
-padding:10px 22px;
+padding:10px 24px;
 border-radius:25px;
-font-weight:600;
+font-weight:700;
 cursor:pointer;
 font-size:15px;
+box-shadow:0 4px 10px rgba(46,125,50,0.3);
+transition:0.3s;
 }
 
-/* dropdown */
-.login-menu{
+.site-login-btn:hover{
+background:#1b5e20;
+transform:translateY(-2px);
+box-shadow:0 6px 15px rgba(46,125,50,0.4);
+}
+
+.site-login-menu{
 position:absolute;
 top:55px;
 right:0;
@@ -131,41 +142,39 @@ flex-direction:column;
 overflow:hidden;
 }
 
-.login-menu.show{
-display:flex;
-}
+.site-login-menu.show{display:flex;}
 
-.login-menu a{
+.site-login-menu a{
 padding:12px 18px;
 text-decoration:none;
 color:#333;
 font-size:14px;
 }
 
-.login-menu a:hover{
+.site-login-menu a:hover{
 background:#f2f7f3;
 color:#2e7d32;
 }
 
-/* ===== MOBILE ===== */
-.menu-btn{
+.site-menu-btn{
 display:none;
 flex-direction:column;
 gap:5px;
 cursor:pointer;
 }
 
-.menu-btn span{
+.site-menu-btn span{
 width:25px;
 height:3px;
 background:#111;
 }
 
-/* mobile menu */
-.mobile-menu{
+/* MOBILE MENU */
+.site-mobile-menu{
 position:fixed;
 top:0;
-left:-100%;
+left:0;
+transform:translateX(-100%);
 width:260px;
 height:100%;
 background:#fff;
@@ -175,115 +184,195 @@ transition:0.3s;
 z-index:2000;
 }
 
-.mobile-menu.show{
-left:0;
+.site-mobile-menu.show{
+transform:translateX(0);
 }
 
-.mobile-menu a{
+/* overlay */
+.site-overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.3);
+opacity:0;
+pointer-events:none;
+transition:0.3s;
+z-index:1500;
+}
+
+.site-overlay.show{
+opacity:1;
+pointer-events:auto;
+}
+
+.site-mobile-menu a{
 display:block;
 padding:12px 0;
 text-decoration:none;
 color:#222;
-font-weight:500;
+font-weight:800;
 border-bottom:1px solid #eee;
 }
 
-/* responsive */
+/* RESPONSIVE */
 @media(max-width:992px){
-
-.nav{
-display:none;
+.site-nav{display:none;}
+.site-menu-btn{display:flex;}
 }
 
-.menu-btn{
-display:flex;
+@media(max-width:600px){
+.site-logo span{font-size:20px;}
+.site-logo img{height:36px;}
 }
-
-}
-
 </style>
 </head>
 
 <body>
 
-<header class="header">
-<div class="container">
+<header class="site-header">
+<div class="site-container">
 
-<!-- LOGO -->
-<a href="../index.html" class="logo">
+<a href="../index.html" class="site-logo">
 <img src="assets/images/logo1.jpg">
 <span>Chăm Sóc Vườn</span>
 <img src="assets/images/logo2.jpg">
 </a>
 
-<!-- MENU -->
-<nav class="nav">
-<a href="indexs.html" class="home active">Trang chủ</a>
+<nav class="site-nav">
+<a href="trangchu.html" class="home">Trang chủ</a>
 <a href="gioithieu.html">Giới thiệu</a>
 <a href="dichvu.html">Dịch vụ</a>
-<a href="tintuc.html">Tin tức</a>
+<a href="tintuc.html">Bài viết</a>
+<a href="dieukhoan.html">Điều khoản</a>
+<a href="lienhe.html">Hỗ trợ và Liên hệ</a>
 <a href="datlich.html">Đặt lịch</a>
-<a href="lienhe.html">Liên hệ</a>
 </nav>
 
-<!-- RIGHT -->
 <div style="display:flex;align-items:center;gap:15px;">
 
-<!-- LOGIN -->
-<div class="login-box">
-<button class="login-btn" id="loginBtn">Đăng nhập</button>
+<div class="site-login-box">
+<button class="site-login-btn" id="loginBtn">Đăng nhập</button>
 
-<div class="login-menu" id="loginMenu">
-<a href="login_customer.html">👤 Khách hàng</a>
-<a href="admin/login_admin.html">🛡 Quản trị viên</a>
+<div class="site-login-menu" id="loginMenu">
+<a href="#">👤 Khách hàng</a>
+<a href="#">🛡 Quản trị viên</a>
 </div>
 </div>
 
-<!-- MENU BUTTON -->
-<div class="menu-btn" id="menuBtn">
-<span></span>
-<span></span>
-<span></span>
+<div class="site-menu-btn" id="menuBtn">
+<span></span><span></span><span></span>
 </div>
 
 </div>
-
 </div>
 </header>
 
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-<a href="indexs.html">Trang chủ</a>
+<div class="site-overlay" id="overlay"></div>
+
+<div class="site-mobile-menu" id="mobileMenu">
+<a href="trangchu.html">Trang chủ</a>
 <a href="gioithieu.html">Giới thiệu</a>
 <a href="dichvu.html">Dịch vụ</a>
-<a href="tintuc.html">Tin tức</a>
+<a href="tintuc.html">Bài viết</a>
+<a href="dieukhoan.html">Điều khoản</a>
+<a href="lienhe.html">Hỗ trợ và Liên hệ</a>
 <a href="datlich.html">Đặt lịch</a>
-<a href="lienhe.html">Liên hệ</a>
 </div>
 
 <script>
+// LOGIN DROPDOWN
+const loginBtn=document.getElementById("loginBtn");
+const loginMenu=document.getElementById("loginMenu");
 
-/* LOGIN DROPDOWN */
-const loginBtn = document.getElementById("loginBtn");
-const loginMenu = document.getElementById("loginMenu");
-
-loginBtn.onclick = (e)=>{
-e.stopPropagation();
-loginMenu.classList.toggle("show");
+loginBtn.onclick=(e)=>{
+  e.stopPropagation();
+  loginMenu.classList.toggle("show");
 };
 
-document.onclick = ()=>{
-loginMenu.classList.remove("show");
+document.onclick=()=>{
+  loginMenu.classList.remove("show");
 };
 
-/* MOBILE MENU */
-const menuBtn = document.getElementById("menuBtn");
-const mobileMenu = document.getElementById("mobileMenu");
+// MOBILE MENU
+const menuBtn=document.getElementById("menuBtn");
+const mobileMenu=document.getElementById("mobileMenu");
+const overlay=document.getElementById("overlay");
 
-menuBtn.onclick = ()=>{
-mobileMenu.classList.toggle("show");
+menuBtn.onclick=()=>{
+  mobileMenu.classList.toggle("show");
+  overlay.classList.toggle("show");
+
+  document.body.style.overflow =
+    mobileMenu.classList.contains("show") ? "hidden" : "";
 };
 
+overlay.onclick=()=>{
+  mobileMenu.classList.remove("show");
+  overlay.classList.remove("show");
+  loginMenu.classList.remove("show");
+  document.body.style.overflow="";
+};
+
+// AUTO ACTIVE MENU
+const links=document.querySelectorAll(".site-nav a");
+const mobileLinks=document.querySelectorAll(".site-mobile-menu a");
+const current=window.location.pathname.split("/").pop();
+
+links.forEach(link=>{
+  const href=link.getAttribute("href");
+
+  if(href===current){
+    link.classList.add("active");
+  }
+
+  if(current==="" && href.includes("trangchu")){
+    link.classList.add("active");
+  }
+});
+
+mobileLinks.forEach(link=>{
+  const href=link.getAttribute("href");
+
+  if(href===current){
+    link.style.color="#2e7d32";
+  }
+
+  if(current==="" && href.includes("trangchu")){
+    link.style.color="#2e7d32";
+  }
+});
+
+// HEADER SHRINK
+const header=document.querySelector(".site-header");
+
+window.addEventListener("scroll",()=>{
+  if(window.scrollY>50){
+    header.classList.add("shrink");
+  }else{
+    header.classList.remove("shrink");
+  }
+});
+
+// HOVER EFFECT
+links.forEach(link=>{
+  link.addEventListener("mouseenter",()=>{
+    link.style.opacity="0.7";
+  });
+  link.addEventListener("mouseleave",()=>{
+    link.style.opacity="1";
+  });
+});
+
+// CLOSE MOBILE WHEN CLICK LINK
+mobileLinks.forEach(link=>{
+  link.onclick=()=>{
+    mobileMenu.classList.remove("show");
+    overlay.classList.remove("show");
+    document.body.style.overflow="";
+  };
+});
 </script>
 
 </body>

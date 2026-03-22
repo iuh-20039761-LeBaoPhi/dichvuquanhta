@@ -1,269 +1,224 @@
-<footer class="footer">
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <script src="/ga.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<div class="footer-container">
-
-<!-- CỘT GIỚI THIỆU -->
-
-<div class="footer-col about">
-
-<h2 class="footer-logo">
-🌿 Chăm Sóc Vườn Nhà
-</h2>
-
-<p class="footer-desc">
-Dịch vụ chăm sóc vườn chuyên nghiệp giúp không gian sống xanh sạch,
-thẩm mỹ và gần gũi với thiên nhiên hơn mỗi ngày.
-</p>
-
-<div class="company-info">
-
-<strong>CÔNG TY TNHH DỊCH VỤ QUANH TA KERI</strong>
-
-<p><i class="fa-solid fa-file-lines"></i> MST: 0315609853</p>
-
-<p>
-<i class="fa-solid fa-location-dot"></i>
-Tòa nhà SBI, Lô 6B, Đường số 3<br>
-Công viên phần mềm Quang Trung<br>
-Quận 12, TP. Hồ Chí Minh
-</p>
-
-<p><i class="fa-solid fa-phone"></i> 0775 472 347</p>
-
-<p><i class="fa-solid fa-envelope"></i> dichvuquanhta.vn@gmail.com</p>
-
-</div>
-
-</div>
-
-
-<!-- CỘT LIÊN KẾT -->
-
-<div class="footer-col">
-
-<h3>Liên Kết Nhanh</h3>
-
-<ul class="footer-links">
-
-<li><a href="indexs.html">Trang chủ</a></li>
-<li><a href="services.html">Dịch vụ</a></li>
-<li><a href="booking.html">Đặt lịch</a></li>
-<li><a href="lookup.html">Tra cứu lịch</a></li>
-<li><a href="news.html">Tin tức</a></li>
-<li><a href="contact.html">Liên hệ</a></li>
-<li><a href="terms.html">Điều khoản</a></li>
-
-</ul>
-
-</div>
-
-
-<!-- CỘT MẠNG XÃ HỘI -->
-
-<div class="footer-col">
-
-<h3>Kết Nối Với Chúng Tôi</h3>
-
-<p class="social-text">
-Theo dõi chúng tôi để nhận mẹo chăm sóc vườn và các chương trình ưu đãi mới.
-</p>
-
-<div class="social-icons">
-
-<a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-
-<a href="#"><i class="fa-brands fa-instagram"></i></a>
-
-<a href="#"><i class="fa-brands fa-youtube"></i></a>
-
-<a href="#"><i class="fa-brands fa-tiktok"></i></a>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="footer-bottom">
-
-<p>
-© 2026 <strong>Chăm Sóc Vườn Nhà</strong> |
-Công Ty TNHH Dịch Vụ Quanh Ta Keri
-</p>
-
-</div>
-
-</footer>
-
-
-
-<!-- FLOATING CONTACT -->
-
-<div class="floating-contact">
-
-<a href="https://zalo.me/0775472347" target="_blank" class="zalo-btn">
-<img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg">
-</a>
-
-<a href="tel:0775472347" class="phone-btn">
-<i class="fa-solid fa-phone"></i>
-</a>
-
-</div>
-
-
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 
 <style>
-
-/* FOOTER */
-
-.footer{
-background:linear-gradient(135deg,#1f6f43,#14532d);
-color:#e8f5ea;
-padding:80px 60px 30px;
+/* Thêm Reset margin cho body để mất khoảng trắng */
+body {
+    margin: 0;
+    padding: 0;
 }
 
-/* GRID */
+.keri-footer{
+background:linear-gradient(135deg,#6fbf95,#5aa882);
+color:#0b5d3b;
+padding:64px 26px 26px;
+font-weight:600;
+font-family:'Be Vietnam Pro', sans-serif;
+}
 
-.footer-container{
-max-width:1300px;
+.keri-footer-container{
+max-width:1000px;
 margin:auto;
 display:grid;
 grid-template-columns:2fr 1fr 1fr;
-gap:70px;
+gap:40px;
 }
 
-/* LOGO */
-
-.footer-logo{
-font-size:26px;
-color:#ffd54f;
-margin-bottom:15px;
+.keri-footer-logo{
+font-size:30px;
+color:#0b3d2e;
+margin-bottom:14px;
+font-weight:800;
+white-space:nowrap;
+font-family:'Playfair Display', serif;
+letter-spacing:0.5px;
+transition:0.3s ease;
 }
 
-/* DESCRIPTION */
-
-.footer-desc{
-max-width:350px;
-line-height:1.7;
-font-size:15px;
+.keri-footer-logo:hover{
+transform:translateY(-2px);
 opacity:0.9;
 }
 
-/* COMPANY INFO */
-
-.company-info{
-margin-top:20px;
-line-height:1.8;
+.keri-footer-desc{
+max-width:340px;
+line-height:1.75;
 font-size:14px;
+color:#000;
+margin-bottom:18px;
+text-align:justify;
+word-spacing:1px;
 }
 
-.company-info i{
+.keri-company-info{
+margin-top:10px;
+line-height:1.5;
+font-size:14px;
+color:#000;
+font-weight:600;
+max-width:340px;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.keri-company-info p{margin:0;}
+
+.keri-company-info i{
 margin-right:8px;
-color:#ffd54f;
+color:#0b5d3b;
 }
 
-/* TITLES */
-
-.footer-col h3{
-margin-bottom:20px;
-font-size:18px;
-color:white;
+.keri-footer-col{
+position:relative;
+padding-right:20px;
 }
 
-/* LINKS */
+.keri-footer-col:not(:last-child)::after{
+content:"";
+position:absolute;
+right:0;
+top:10px;
+width:1px;
+height:80%;
+background:rgba(0,0,0,0.1);
+}
 
-.footer-links{
+.keri-footer-col h3{
+margin-bottom:14px;
+font-size:20px;
+color:#083c2a;
+font-weight:800;
+white-space:nowrap;
+font-family:'Playfair Display', serif;
+letter-spacing:0.4px;
+transition:0.3s ease;
+}
+
+.keri-footer-col h3:hover{
+color:#1f6f43;
+transform:translateY(-2px);
+}
+
+.keri-footer-links{
 list-style:none;
 padding:0;
 }
 
-.footer-links li{
-margin-bottom:12px;
-}
+.keri-footer-links li{margin-bottom:12px;}
 
-.footer-links a{
-color:#e8f5ea;
+.keri-footer-links a{
+color:#0b5d3b;
 text-decoration:none;
-transition:0.3s;
-}
-
-.footer-links a:hover{
-color:#ffd54f;
-padding-left:5px;
-}
-
-/* SOCIAL */
-
-.social-text{
 font-size:14px;
-line-height:1.7;
+}
+
+.keri-social-text{
+font-size:14px;
+line-height:1.75;
 margin-bottom:18px;
 max-width:260px;
+text-align:justify;
+word-spacing:1px;
 }
 
-.social-icons{
+.keri-social-icons{
 display:flex;
-gap:14px;
+gap:12px;
 }
 
-.social-icons a{
-width:42px;
-height:42px;
+.keri-social-icons a{
+width:38px;
+height:38px;
 background:white;
 border-radius:50%;
 display:flex;
 align-items:center;
 justify-content:center;
 color:#1f6f43;
-font-size:18px;
-transition:0.3s;
-box-shadow:0 4px 10px rgba(0,0,0,0.2);
+font-size:16px;
+box-shadow:0 3px 8px rgba(0,0,0,0.15);
 }
 
-.social-icons a:hover{
-background:#ffd54f;
-transform:translateY(-4px);
-}
-
-/* FOOTER BOTTOM */
-
-.footer-bottom{
+.keri-footer-bottom{
 border-top:1px solid rgba(255,255,255,0.2);
-margin-top:50px;
-padding-top:18px;
+margin-top:42px;
+padding-top:12px;
 text-align:center;
 font-size:14px;
-opacity:0.9;
 }
 
-/* FLOATING CONTACT */
+/* Fix lỗi p đẩy lề dưới */
+.keri-footer-bottom p {
+margin: 0;
+}
 
-.floating-contact{
-position:fixed;
-right:20px;
-bottom:30px;
+.keri-app-download{margin-top:12px;}
+
+.keri-app-title{
+font-size:14px;
+font-weight:700;
+margin-bottom:6px;
+}
+
+.keri-app-buttons{
 display:flex;
-flex-direction:column;
-gap:14px;
-z-index:999;
+gap:8px;
 }
 
-/* ZALO */
+.keri-app-btn{
+display:flex;
+align-items:center;
+gap:6px;
+padding:8px 12px;
+background:white;
+border-radius:8px;
+font-size:14px;
+text-decoration:none;
+color:#0b5d3b;
+box-shadow:0 3px 8px rgba(0,0,0,0.12);
+}
 
-.zalo-btn img{
+/* Chỉnh cụm liên hệ nằm bên phải màn hình */
+.keri-floating-contact {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 999;
+}
+
+@media(max-width:768px){
+.keri-floating-contact{
+right:12px;
+bottom:20px;
+}
+
+.keri-zalo-btn img,
+.keri-phone-btn{
+width:48px;
+height:48px;
+}
+}
+
+.keri-zalo-btn img{
 width:55px;
 height:55px;
 border-radius:50%;
-box-shadow:0 6px 14px rgba(0,0,0,0.3);
+display: block;
 }
 
-/* PHONE */
-
-.phone-btn{
+.keri-phone-btn{
 width:55px;
 height:55px;
 background:#1f6f43;
@@ -274,33 +229,105 @@ border-radius:50%;
 color:white;
 font-size:20px;
 text-decoration:none;
-box-shadow:0 6px 14px rgba(0,0,0,0.3);
-transition:0.3s;
+box-shadow:0 3px 8px rgba(0,0,0,0.15);
 }
-
-.phone-btn:hover{
-background:#2ea15f;
-transform:scale(1.05);
-}
-
-/* MOBILE */
 
 @media(max-width:900px){
+.keri-footer-col::after{display:none;}
+.keri-footer-container{grid-template-columns:1fr;text-align:center;}
+.keri-footer-logo{white-space:normal;}
+.keri-company-info{align-items:center;}
+.keri-social-icons{justify-content:center;}
+.keri-app-buttons{justify-content:center;}
+}
 
-.footer-container{
-grid-template-columns:1fr;
+@media(max-width:600px){
+.keri-footer-desc,
+.keri-social-text{
 text-align:center;
-gap:45px;
+}
 }
 
-.footer-desc{
-margin:auto;
+@media(max-width:600px){
+.keri-footer-desc,
+.keri-social-text{
+text-align:left;
 }
-
-.social-icons{
-justify-content:center;
 }
-
-}
-
 </style>
+</head>
+<body>
+
+<footer class="keri-footer">
+
+<div class="keri-footer-container">
+
+<div class="keri-footer-col">
+<h2 class="keri-footer-logo">Chăm Sóc Vườn Nhà</h2>
+<p class="keri-footer-desc">Dịch vụ chăm sóc vườn chuyên nghiệp giúp không gian sống xanh sạch, thẩm mỹ và gần gũi với thiên nhiên hơn mỗi ngày.</p>
+
+<div class="keri-company-info">
+<strong>CÔNG TY TNHH DỊCH VỤ QUANH TA KERI</strong>
+<p><i class="fa-solid fa-file-lines"></i> MST: 0315609853</p>
+<p><i class="fa-solid fa-location-dot"></i>
+Tòa nhà SBI, Lô 6B, Đường số 3 – CVPM Quang Trung, Quận 12, TP. Hồ Chí Minh
+</p>
+<p><i class="fa-solid fa-phone"></i> 0775 472 347</p>
+<p><i class="fa-solid fa-envelope"></i> dichvuquanhta.vn@gmail.com</p>
+</div>
+
+<div class="keri-app-download">
+<div class="keri-app-title">Tải ứng dụng</div>
+<div class="keri-app-buttons">
+<a href="#" class="keri-app-btn"><i class="fa-brands fa-google-play"></i> Google Play</a>
+<a href="#" class="keri-app-btn"><i class="fa-brands fa-apple"></i> App Store</a>
+</div>
+</div>
+</div>
+
+<div class="keri-footer-col">
+<h3>Dịch vụ</h3>
+<ul class="keri-footer-links">
+<li><a href="../cham-soc-me-va-be/index.html">Chăm sóc mẹ và bé</a></li>
+<li><a href="../cham-soc-nguoi-gia/index.html">Chăm sóc người già</a></li>
+<li><a href="../cham-soc-nguoi-benh/index.html">Chăm sóc bệnh nhân</a></li>
+<li><a href="trangchu.html">Chăm sóc vườn nhà, rẫy</a></li>
+<li><a href="../giat-ui-nhanh/index.html">Giặt ủi cao cấp</a></li>
+<li><a href="../dich-vu-don-ve-sinh/demo/index.html">Lau dọn vệ sinh</a></li>
+<li><a href="../tho-nha/index.html">Thợ nhà và sửa chữa</a></li>
+<li><a href="../giao-hang-nhanh/index.html">Giao hàng nhanh</a></li>
+<li><a href="../thue-xe/index.html">Thuê xe</a></li>
+<li><a href="../sua-xe-luu-dong/index.html">Sửa xe lưu động</a></li>
+</ul>
+</div>
+
+<div class="keri-footer-col">
+<h3>Kết Nối Với Chúng Tôi</h3>
+<p class="keri-social-text">Theo dõi chúng tôi ngay hôm nay để không bỏ lỡ những mẹo chăm sóc vườn hiệu quả, hữu ích cùng hàng loạt chương trình ưu đãi hấp dẫn dành riêng cho bạn!</p>
+<div class="keri-social-icons">
+<a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+<a href="#"><i class="fa-brands fa-instagram"></i></a>
+<a href="#"><i class="fa-brands fa-youtube"></i></a>
+<a href="#"><i class="fa-brands fa-tiktok"></i></a>
+</div>
+</div>
+
+</div>
+
+<div class="keri-footer-bottom">
+<p>© 2026 <strong>Chăm Sóc Vườn Nhà</strong> | Công Ty TNHH Dịch Vụ Quanh Ta Keri</p>
+</div>
+
+</footer>
+
+<div class="keri-floating-contact">
+<a href="https://zalo.me/0775472347" target="_blank" class="keri-zalo-btn">
+<img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg">
+</a>
+<a href="tel:0775472347" class="keri-phone-btn">
+<i class="fa-solid fa-phone"></i>
+</a>
+</div>
+
+</body>
+</html>

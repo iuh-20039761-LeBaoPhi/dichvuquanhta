@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-
+<script src="/ga.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dịch vụ | Chăm Sóc Vườn</title>
+<title>Dịch vụ quanh ta | Chăm sóc vườn nhà</title>
 <link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
 
 <style>
@@ -202,6 +202,15 @@ font-size:26px;
 
 }
 
+.service-meta svg{
+  transition:0.2s;
+}
+
+.service-meta:hover svg{
+  transform:scale(1.1);
+  stroke:#16a34a;
+}
+
 </style>
 
 </head>
@@ -281,7 +290,7 @@ card.className="service-card";
 
 card.innerHTML=`
 <div class="service-image">
-<img src="assets/images/${service.image}">
+<img src="assets/images/${service.image}" alt="${service.name}">
 </div>
 
 <div class="service-content">
@@ -290,13 +299,17 @@ card.innerHTML=`
 
 <p>${service.description.substring(0,110)}...</p>
 
-<div class="service-meta">
-📍 ${service.service_area || "Đang cập nhật"}
+<div class="service-meta" style="display:flex;align-items:center;gap:6px;">
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#374151" stroke-width="1.6">
+    <path d="M12 21s-6-5-6-10a6 6 0 1112 0c0 5-6 10-6 10z"/>
+    <circle cx="12" cy="11" r="2.2"/>
+  </svg>
+  <span>${service.service_area || "Đang cập nhật"}</span>
 </div>
 
 <div class="service-price">${price}</div>
 
-<a href="service_detail.html?id=${service.id}" class="service-btn">
+<a href="chitiet_dichvu.html?id=${service.id}" class="service-btn">
 Xem chi tiết
 </a>
 
@@ -310,7 +323,7 @@ container.appendChild(card);
 }
 
 /* LOAD DATA */
-fetch("services.json?v="+Date.now())
+fetch("dichvu.json?v="+Date.now())
 .then(res=>res.json())
 .then(data=>{
 allServices=data.services;
@@ -336,18 +349,32 @@ renderServices(allServices.filter(s=>s.category===category));
 });
 
 /* SEARCH */
+let timeout;
 document.getElementById("searchInput").addEventListener("keyup",function(){
 
-const keyword=this.value.toLowerCase();
+clearTimeout(timeout);
 
-const filtered=allServices.filter(s=>
-s.name.toLowerCase().includes(keyword)
-);
+timeout = setTimeout(()=>{
+  const keyword=this.value.toLowerCase();
 
-renderServices(filtered);
+  const filtered=allServices.filter(s=>
+    s.name.toLowerCase().includes(keyword)
+  );
+
+  renderServices(filtered);
+},300);
 
 });
 
+document.querySelector(".search-box button").onclick = function(){
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
+
+  const filtered = allServices.filter(s =>
+    s.name.toLowerCase().includes(keyword)
+  );
+
+  renderServices(filtered);
+};
 </script>
 
 </body>

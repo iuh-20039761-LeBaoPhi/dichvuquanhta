@@ -1,226 +1,501 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="/ga.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Liên hệ</title>
+  <title>Dịch vụ quanh ta | Chăm sóc vườn nhà</title>
+  <link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
+    /* ===== CONTACT (ISOLATED - ORIGINAL UI) ===== */
+.keri-contact-page {
+  font-family: Arial, sans-serif;
+  background: #f4f6f5;
+}
 
-    body {
-      background: #eef7f0;
-      color: #333;
-    }
+/* BANNER */
+.keri-contact-page .keri-contact-banner {
+  box-shadow: inset 0 -40px 80px rgba(0,0,0,0.15);
 
-    /* Banner */
-    .banner {
-      background: linear-gradient(135deg, #2ecc71, #27ae60);
-      color: white;
-      text-align: center;
-      padding: 60px 20px;
-      border-bottom-left-radius: 30px;
-      border-bottom-right-radius: 30px;
-    }
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.06), transparent 40%),
+    linear-gradient(135deg, #0b5d3b, #0f7a4f);
+  color: #fff;
+  padding: 80px 20px 110px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
 
-    .banner h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
+.keri-contact-page .keri-contact-banner h1 {
+  margin: 0;
+  font-size: 46px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  position: relative;
+  z-index: 2;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* font mới đẹp hơn */
+}
 
-    .banner p {
-      opacity: 0.9;
-    }
+/* thêm icon nhỏ bên trái */
+.keri-contact-page .keri-contact-banner h1::before {
+  content: "";
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  vertical-align: middle;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.37 1.78.72 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.24a2 2 0 0 1 2.11-.45c.82.35 1.7.6 2.6.72A2 2 0 0 1 22 16.92z"/></svg>') no-repeat center;
+  background-size: contain;
+}
 
-    /* Layout */
-    .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 20px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 25px;
-    }
+/* FIX pseudo bị đè */
+.keri-contact-page .keri-contact-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
 
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      transition: 0.3s;
-    }
+.keri-contact-page .keri-contact-banner::after {
+  content: "";
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 80px;
+  background: #0b5d3b;
+  border-radius: 50%;
+}
 
-    .card:hover {
-      transform: translateY(-5px);
-    }
+.keri-contact-page .keri-banner-sub {
+  margin-top: 12px;
+  font-size: 15px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
 
-    h2 {
-      margin-bottom: 20px;
-      color: #27ae60;
-    }
+/* CONTAINER */
+.keri-contact-page .keri-contact-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 15px;
+}
 
-    /* Form */
-    .form-group {
-      margin-bottom: 15px;
-    }
+.keri-contact-page .keri-contact-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  padding: 30px;
+}
 
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
+.keri-contact-page .keri-contact-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 35px;
+}
 
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      transition: 0.3s;
-    }
+/* FORM */
+.keri-contact-page .keri-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000; /* đổi sang màu đen */
+  margin-bottom: 20px;
+}
 
-    input:focus, textarea:focus {
-      border-color: #27ae60;
-      outline: none;
-      box-shadow: 0 0 6px rgba(39, 174, 96, 0.3);
-    }
+.keri-contact-page .keri-form-group {
+  margin-bottom: 15px;
+}
 
-    textarea {
-      height: 120px;
-      resize: none;
-    }
+.keri-contact-page .keri-form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
 
-    button {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #2ecc71, #27ae60);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+.keri-contact-page .keri-contact-form input,
+.keri-contact-page .keri-contact-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
 
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-    }
+.keri-contact-page .keri-contact-form textarea {
+  min-height: 130px;
+}
 
-    /* Info */
-    .info div {
-      background: #ecf9f1;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
+.keri-contact-page .keri-contact-form button {
+  margin-top: 10px;
+  background: #0b5d3b;
+  color: #fff;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-    /* Map */
-    .map-container {
-      width: 100%;
-      height: 350px;
-      border-radius: 15px;
-      overflow: hidden;
-    }
+/* INFO */
+.keri-contact-page .keri-contact-info {
+  background: #f9fbfa;
+  padding: 22px 22px 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px; /* gọn hơn */
+}
 
-    .map-container iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+/* chia block rõ ràng hơn */
+.keri-contact-page .keri-contact-info > * {
+  margin: 0;
+}
 
-    /* Mobile */
-    @media (max-width: 768px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
+.keri-contact-page .keri-contact-info .keri-section-title {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
 
-      .banner h1 {
-        font-size: 2rem;
-      }
-    }
-  </style>
+.keri-contact-page .keri-hotline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e6f2ec;
+}
+
+.keri-contact-page .keri-contact-item {
+  display: flex;
+  align-items: center; /* FIX: thẳng hàng icon + chữ */
+  gap: 10px;
+  line-height: 1.6;
+  padding: 6px 0;
+}
+
+.keri-contact-page .keri-contact-item svg {
+  display: block;
+}
+
+.keri-contact-page .keri-contact-item span:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.keri-contact-page .keri-contact-item span:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.keri-contact-page .keri-contact-item span:last-child {
+  flex: 1;
+  color: #0b5d3b;
+  font-weight: 600;
+  max-width: 320px; /* canh giống mô tả */
+}
+
+.keri-contact-page .keri-address {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+.keri-contact-page .keri-contact-map {
+  margin-top: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.keri-contact-page .keri-company-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b5d3b;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.keri-contact-page .keri-hotline {
+  font-size: 22px;
+  font-weight: bold;
+  color: #0b5d3b;
+}
+
+.keri-contact-page .keri-hotline-sub {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.keri-contact-page .keri-contact-item {
+  display: flex;
+  gap: 12px;
+  line-height: 1.7;
+}
+
+/* MAP */
+.keri-contact-page .keri-contact-map {
+  margin-top: 30px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.keri-contact-page .keri-contact-map iframe {
+  width: 100%;
+  height: 230px;
+  border: 0;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .keri-contact-page .keri-contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .keri-contact-page .keri-company-name {
+    white-space: normal;
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .keri-contact-page .keri-contact-form button {
+    width: 100%;
+  }
+}
+
+/* LOADER - scope riêng tránh đè footer */
+.keri-contact-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 0;
+}
+
+.keri-contact-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #ddd;
+  border-top: 3px solid #0b5d3b;
+  border-radius: 50%;
+  animation: keriSpin 0.8s linear infinite;
+}
+
+@keyframes keriSpin {
+  to { transform: rotate(360deg); }
+}
+
+  
+
+/* ===== VALIDATE UI (Shopee style) ===== */
+.keri-contact-page .keri-error {
+  color: #d0011b;
+  font-size: 13px;
+  margin-top: 4px;
+  display: none;
+}
+
+.keri-contact-page .keri-input-error {
+  border-color: #d0011b !important;
+  background: #fff6f7;
+}
+
+.keri-contact-page .keri-input-success {
+  border-color: #0b5d3b !important;
+}
+
+</style>
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <div id="header"></div>
+<div id="header"><div class="loader"><div class="spinner"></div></div></div>
 
-  <!-- BANNER -->
-  <div class="banner">
-    <h1>Liên hệ với chúng tôi</h1>
-    <p>Hỗ trợ nhanh chóng - Phản hồi trong 24h</p>
+<div class="keri-contact-page">
+
+  <div class="keri-contact-banner">
+    <h1>Hỗ trợ và Liên hệ</h1>
+    <p class="keri-banner-sub">Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn mọi lúc, mọi nơi</p>
   </div>
 
-  <!-- CONTENT -->
-  <div class="container">
+  <div class="keri-contact-container">
+    <div class="keri-contact-card">
 
-    <!-- FORM -->
-    <div class="card">
-      <h2>Gửi tin nhắn</h2>
+      <div class="keri-contact-grid">
 
-      <form>
-        <div class="form-group">
-          <label>Họ và tên</label>
-          <input type="text" placeholder="Nhập tên của bạn" required>
+        <div class="keri-contact-form">
+          <div class="keri-section-title">Thông tin liên hệ</div>
+
+          <div class="keri-form-group">
+            <label>Tên của bạn *</label>
+            <input type="text" required minlength="2" placeholder="Nhập tên của bạn">
+          </div>
+
+          <div class="keri-form-group">
+            <label>Số điện thoại *</label>
+            <input type="text" required pattern="[0-9]{9,11}" placeholder="Nhập số điện thoại">
+          </div>
+
+          <div class="keri-form-group">
+            <label>Email *</label>
+            <input type="email" required>
+          </div>
+
+          <div class="keri-form-group">
+            <label>Tiêu đề</label>
+            <input type="text" required>
+          </div>
+
+          <div class="keri-form-group">
+            <label>Nội dung</label>
+            <textarea required></textarea>
+          </div>
+
+          <button onclick="keriSubmitForm(event)">Gửi thông tin</button>
         </div>
 
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" placeholder="example@email.com" required>
+        <div class="keri-contact-info">
+          <div class="keri-company-name">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI</div>
+
+          <div class="keri-hotline">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0b5d3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.37 1.78.72 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.24a2 2 0 0 1 2.11-.45c.82.35 1.7.6 2.6.72A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span>0775 472 347</span>
+            </div>
+            <div class="keri-hotline-sub">Hotline liên hệ</div>
+          </div>
+
+          <div class="keri-section-title">Thông tin liên hệ</div>
+
+          <div class="keri-contact-item">
+            <span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0b5d3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2"/>
+                <polyline points="3,7 12,13 21,7"/>
+              </svg>
+            </span>
+            <span>dichvuquanhta.vn@gmail.com</span>
+          </div>
+
+          <div class="keri-contact-item">
+            <span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0b5d3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </span>
+            <span>
+              Tòa nhà SBI, Lô 6B, Đường số 3<br>
+              Công viên phần mềm Quang Trung, Quận 12, TP. Hồ Chí Minh
+            </span>
+          </div>
+
+          <div class="keri-contact-map">
+            <iframe src="https://www.google.com/maps?q=Quang+Trung+Software+Park&output=embed"></iframe>
+          </div>
+
         </div>
 
-        <div class="form-group">
-          <label>Nội dung</label>
-          <textarea placeholder="Nhập nội dung..." required></textarea>
-        </div>
-
-        <button type="submit">Gửi liên hệ</button>
-      </form>
-
-      <div class="info" style="margin-top:20px;">
-        <div>📞 0775 472 347</div>
-        <div>📧 dichvuquanhta.vn@gmail.com</div>
-        <div>
-          📍 Tòa nhà SBI, Lô 6B, Đường số 3<br>
-          Công viên phần mềm Quang Trung<br>
-          Quận 12, TP. Hồ Chí Minh
-        </div>
       </div>
-    </div>
 
-    <!-- MAP -->
-    <div class="card">
-      <h2>Bản đồ</h2>
-      <div class="map-container">
-        <iframe src="https://www.google.com/maps?q=Công+viên+phần+mềm+Quang+Trung+Quận+12&output=embed"></iframe>
-      </div>
     </div>
-
   </div>
 
-  <!-- FOOTER -->
-  <div id="footer"></div>
+</div>
 
-  <!-- LOAD HEADER + FOOTER -->
-  <script>
-    fetch("header.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("header").innerHTML = data;
-      });
+<div style="margin-top:50px;"></div>
 
-    fetch("footer.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("footer").innerHTML = data;
-      });
-  </script>
+<div id="footer"><div class="loader"><div class="spinner"></div></div></div>
 
+<script>
+fetch('header.html')
+  .then(res => res.text())
+  .then(data => document.getElementById('header').innerHTML = data)
+  .catch(() => document.getElementById('header').innerHTML = '');
+
+fetch('footer.html')
+  .then(res => res.text())
+  .then(data => document.getElementById('footer').innerHTML = data)
+  .catch(() => document.getElementById('footer').innerHTML = '');
+</script>
+
+<script>
+function showError(input, message) {
+  let error = input.parentElement.querySelector('.keri-error');
+  if (!error) {
+    error = document.createElement('div');
+    error.className = 'keri-error';
+    input.parentElement.appendChild(error);
+  }
+  error.innerText = message;
+  error.style.display = 'block';
+  input.classList.add('keri-input-error');
+  input.classList.remove('keri-input-success');
+}
+
+function clearError(input) {
+  const error = input.parentElement.querySelector('.keri-error');
+  if (error) error.style.display = 'none';
+  input.classList.remove('keri-input-error');
+  input.classList.add('keri-input-success');
+}
+
+function validateInput(input) {
+  const value = input.value.trim();
+
+  if (input.type === 'text' && input.placeholder.includes('tên')) {
+    if (value.length < 2) return showError(input, 'Tên phải từ 2 ký tự trở lên');
+  }
+
+  if (input.placeholder.includes('điện thoại')) {
+    if (!/^0[0-9]{9}$/.test(value)) return showError(input, 'Số điện thoại không hợp lệ');
+  }
+
+  if (input.type === 'email') {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return showError(input, 'Email không hợp lệ');
+  }
+
+  if (value === '') return showError(input, 'Vui lòng nhập trường này');
+
+  clearError(input);
+  return true;
+}
+
+function keriSubmitForm(e) {
+  e.preventDefault();
+
+  const inputs = document.querySelectorAll('.keri-contact-form input, .keri-contact-form textarea');
+  let valid = true;
+
+  inputs.forEach(input => {
+    if (!validateInput(input)) valid = false;
+  });
+
+  if (valid) {
+    alert('Gửi thành công!');
+  }
+}
+
+const inputs = document.querySelectorAll('.keri-contact-form input, .keri-contact-form textarea');
+inputs.forEach(input => {
+  input.addEventListener('blur', () => validateInput(input));
+});
+</script>
 </body>
 </html>

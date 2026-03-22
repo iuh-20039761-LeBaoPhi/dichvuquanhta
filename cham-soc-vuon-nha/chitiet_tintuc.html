@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <script src="/ga.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dịch vụ quanh ta | Chăm sóc vườn nhà</title>
+<link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
+<style>
+.news-detail *{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+.news-detail{
+  background:#f5f7fb;
+  padding-bottom:40px;
+}
+
+html{ scroll-behavior:smooth; }
+body{ -webkit-tap-highlight-color: transparent; }
+
+/* ===== HERO ===== */
+.nd-hero{
+  height:180px;
+  background:linear-gradient(135deg,#2e7d32,#14532d);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  text-align:center;
+}
+
+.nd-hero h1{
+  font-size:28px;
+  font-weight:700;
+}
+
+/* ===== CONTAINER ===== */
+.nd-container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px 16px;
+}
+
+/* ===== LAYOUT ===== */
+.nd-layout{
+  display:grid;
+  grid-template-columns: 3fr 1.2fr;
+  gap:24px;
+}
+
+/* ===== ARTICLE ===== */
+.nd-article{
+  background:#fff;
+  border-radius:14px;
+  padding:28px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.05);
+}
+
+.nd-title{
+  font-size:26px;
+  font-weight:700;
+  color:#1f6f43;
+  margin-bottom:10px;
+}
+
+.nd-meta{
+  font-size:13px;
+  color:#777;
+  margin-bottom:18px;
+}
+
+.nd-thumb{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+  border-radius:10px;
+  margin-bottom:18px;
+}
+
+.nd-content{
+  font-size:15px;
+  line-height:1.8;
+  color:#444;
+}
+
+.nd-content h3{
+  margin:18px 0 8px;
+  color:#1f6f43;
+}
+
+.nd-content p{
+  margin-bottom:10px;
+}
+
+/* ===== TAGS ===== */
+.nd-tags{
+  margin-top:20px;
+  padding-top:15px;
+  border-top:1px solid #eee;
+}
+
+.nd-tag{
+  display:inline-block;
+  background:#e8f5ef;
+  color:#1f6f43;
+  padding:5px 12px;
+  border-radius:20px;
+  font-size:12px;
+  margin:3px;
+}
+
+/* ===== SHARE ===== */
+.nd-share{
+  margin-top:15px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.nd-share button{
+  border:none;
+  padding:6px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  color:white;
+}
+
+.nd-fb{background:#1877f2;}
+.nd-tw{background:#1da1f2;}
+.nd-copy{background:#16a085;}
+
+/* ===== CTA ===== */
+.nd-cta{
+  margin-top:25px;
+  background:linear-gradient(90deg,#1f6f43,#38b46b);
+  color:white;
+  padding:20px;
+  border-radius:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.nd-phone{
+  background:white;
+  color:#1f6f43;
+  padding:10px 16px;
+  border-radius:40px;
+  font-weight:700;
+}
+
+/* ===== SIDEBAR ===== */
+.nd-sidebar{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+@media(min-width:900px){
+  .nd-sidebar{
+    position:sticky;
+    top:100px;
+  }
+}
+
+.nd-card{
+  background:#fff;
+  border-radius:12px;
+  padding:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.05);
+}
+
+.nd-card h3{
+  margin-bottom:10px;
+  color:#1f6f43;
+}
+
+/* ===== TOC ===== */
+.nd-toc{
+  max-height:250px;
+  overflow-y:auto;
+}
+
+.nd-toc li{
+  margin-bottom:6px;
+  cursor:pointer;
+}
+
+.nd-toc li:hover{
+  color:#1f6f43;
+}
+
+/* ===== LATEST ===== */
+.nd-latest{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.nd-latest img{
+  width:60px;
+  height:45px;
+  object-fit:cover;
+  border-radius:6px;
+}
+
+.nd-latest a{
+  text-decoration:none;
+  color:#222;
+  font-size:13px;
+  font-weight:600;
+}
+
+/* ===== RELATED ===== */
+.nd-related{
+  margin-top:40px;
+}
+
+.nd-related h3{
+  margin-bottom:16px;
+}
+
+.nd-related-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+}
+
+.nd-related-card{
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  transition:0.25s;
+}
+
+.nd-related-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 14px 30px rgba(0,0,0,0.12);
+}
+
+.nd-related-card a{
+  text-decoration:none;
+  color:#1f6f43;
+}
+
+.nd-related-card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+}
+
+.nd-related-card h4{
+  padding:12px;
+  font-size:14px;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+  .nd-layout{grid-template-columns:1fr;}
+  .nd-title{font-size:20px;}
+  .nd-thumb{height:200px;}
+  .nd-cta{flex-direction:column;text-align:center;gap:10px;}
+  .nd-phone{width:100%;}
+}
+
+.nd-meta{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.nd-meta-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.nd-meta svg{
+  width:16px;
+  height:16px;
+  stroke:#1f6f43;
+  fill:none;
+  stroke-width:1.8;
+}
+
+.nd-btn{
+  background:transparent;
+  border:1.5px solid #1f6f43;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.nd-btn svg{
+  width:16px;
+  height:16px;
+  stroke:#1f6f43;
+  fill:none;
+  stroke-width:2;
+}
+
+.nd-btn:hover{
+  background:#1f6f43;
+}
+
+.nd-btn:hover svg{
+  stroke:white;
+}
+
+.nd-icon{
+  width:18px;
+  height:18px;
+  stroke:white;
+  fill:none;
+  stroke-width:2;
+  margin-right:6px;
+  vertical-align:middle;
+}
+
+.nd-action-box{
+  margin-top:20px;
+  border-top:1px solid #eee;
+  padding-top:15px;
+
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.nd-share-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.nd-heading{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#1f6f43;
+  font-size:16px;
+}
+
+.nd-heading-icon{
+  width:18px;
+  height:18px;
+  stroke:#1f6f43;
+  fill:none;
+  stroke-width:2;
+}
+
+.nd-latest-info{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.nd-latest-meta{
+  display:flex;
+  gap:10px;
+  font-size:11px;
+  color:#888;
+}
+
+.nd-latest-meta span{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.nd-latest-meta svg{
+  width:12px;
+  height:12px;
+  stroke:#1f6f43;
+  fill:none;
+  stroke-width:2;
+}
+
+.nd-related-content{
+  padding:12px;
+}
+
+.nd-related-meta{
+  display:flex;
+  gap:10px;
+  font-size:11px;
+  color:#888;
+  margin-top:6px;
+}
+
+.nd-related-meta span{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.nd-related-meta svg{
+  width:12px;
+  height:12px;
+  stroke:#1f6f43;
+  fill:none;
+  stroke-width:2;
+}
+
+.nd-back-wrap{
+  margin-bottom:12px;
+}
+
+.nd-back{
+  width:36px;
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:10px;
+  background:#f1f5f3;
+  border:1px solid #e5e7eb;
+
+  transition:all 0.2s ease;
+}
+
+.nd-back svg{
+  width:18px;
+  height:18px;
+  stroke:#1f6f43;
+  fill:none;
+  stroke-width:2;
+}
+
+.nd-back:hover{
+  background:#1f6f43;
+  transform:translateX(-2px);
+}
+
+.nd-back:hover svg{
+  stroke:white;
+}
+</style>
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<div class="news-detail">
+
+  <!-- HERO -->
+  <div class="nd-hero">
+    <h1>Tin Tức Làm Vườn</h1>
+  </div>
+
+  <div class="nd-container">
+
+    <div class="nd-layout">
+
+      <div class="nd-article" id="article"></div>
+
+      <div class="nd-sidebar">
+
+        <div class="nd-card">
+          <h3 class="nd-heading">
+  <svg viewBox="0 0 24 24" class="nd-heading-icon">
+    <path d="M4 4h16v16H4z"/>
+    <path d="M8 8h8M8 12h8M8 16h5"/>
+  </svg>
+  Bài viết mới
+</h3>
+          <div id="latest"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="nd-related">
+      <h3>Bài viết liên quan</h3>
+      <div class="nd-related-grid" id="related"></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="footer"></div>
+
+<script>
+
+/* ===== FIX DOM ===== */
+const header = document.getElementById("header");
+const footer = document.getElementById("footer");
+const article = document.getElementById("article");
+const latest = document.getElementById("latest");
+const related = document.getElementById("related");
+const toc = document.getElementById("toc");
+
+/* ===== LOAD HEADER FOOTER ===== */
+fetch("header.html").then(r=>r.text()).then(d=>{ if(header) header.innerHTML=d });
+fetch("footer.html").then(r=>r.text()).then(d=>{ if(footer) footer.innerHTML=d });
+
+const slug=new URLSearchParams(location.search).get("slug");
+
+/* ===== LOAD DATA ===== */
+fetch("tintuc.json").then(r=>r.json()).then(data=>{
+
+  const news=data.news || [];
+  if(news.length===0){
+    article.innerHTML="<p>Không có dữ liệu</p>";
+    return;
+  }
+
+  const post=news.find(n=>n.slug===slug)||news[0];
+
+  let html="";
+  const lines=(post.content||"").split("\n");
+
+  lines.forEach((line,i)=>{
+    if(line.startsWith("##")){
+      const id="sec"+i;
+      html+=`<h3 id="${id}">${line.replace("##","")}</h3>`;
+    }else{
+      html+=`<p>${line}</p>`;
+    }
+  });
+
+  /* ===== SEO FIX ===== */
+  document.title = post.title + " | Tin tức làm vườn";
+
+  let metaDesc = document.querySelector("meta[name='description']");
+  if(!metaDesc){
+    metaDesc = document.createElement("meta");
+    metaDesc.name = "description";
+    document.head.appendChild(metaDesc);
+  }
+  metaDesc.content = (post.content || "").slice(0,150);
+
+  let metaImg = document.querySelector("meta[property='og:image']");
+  if(!metaImg){
+    metaImg = document.createElement("meta");
+    metaImg.setAttribute("property","og:image");
+    document.head.appendChild(metaImg);
+  }
+  metaImg.content = "assets/images/"+post.image;
+
+  /* ===== RENDER ===== */
+  article.innerHTML=`
+ <div class="nd-back-wrap">
+  <a href="tintuc.html" class="nd-back">
+    <svg viewBox="0 0 24 24">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  </a>
+</div>
+
+<div class="nd-title">${post.title}</div>
+
+<div class="nd-meta">
+  <span class="nd-meta-item">
+    <svg viewBox="0 0 24 24"><path d="M7 2v2M17 2v2M3 8h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+    ${post.date}
+  </span>
+
+  <span class="nd-meta-item">
+    <svg viewBox="0 0 24 24"><path d="M12 6v6l4 2M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/></svg>
+    ${post.readingTime} phút
+  </span>
+
+  <span class="nd-meta-item">
+    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    ${post.views}
+  </span>
+</div>
+
+<img class="nd-thumb" src="assets/images/${post.image}">
+
+<div class="nd-content">${html}</div>
+
+<div class="nd-tags">
+  ${[post.category,"chăm sóc cây","làm vườn"].map(t=>`<span class="nd-tag">${t}</span>`).join("")}
+</div>
+
+<div class="nd-action-box">
+
+  <!-- SHARE -->
+  <div class="nd-share-box">
+    <span>Chia sẻ:</span>
+
+    <button class="nd-btn">
+      <svg viewBox="0 0 24 24">
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+      </svg>
+    </button>
+
+    <button class="nd-btn">
+      <svg viewBox="0 0 24 24">
+        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 12 8v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+      </svg>
+    </button>
+
+    <button class="nd-btn" onclick="copyLink()">
+      <svg viewBox="0 0 24 24">
+        <path d="M10 14L21 3M21 3h-6M21 3v6M3 10v11h11"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- CTA -->
+  <div class="nd-cta">
+    <div>
+      <b>
+        <svg class="nd-icon" viewBox="0 0 24 24">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.86 19.86 0 0 1 3 5.18 2 2 0 0 1 5.09 3h3a2 2 0 0 1 2 1.72c.12.9.32 1.77.6 2.6a2 2 0 0 1-.45 2L9 10a16 16 0 0 0 5 5l.68-.68a2 2 0 0 1 2-.45c.83.28 1.7.48 2.6.6A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        Cần chăm sóc vườn?
+      </b><br>
+      Hỗ trợ tận nơi
+    </div>
+
+    <div class="nd-phone">0775 472 347</div>
+  </div>
+
+</div>
+`;
+
+  /* ===== TOC ===== */
+  if(toc){
+    toc.innerHTML="";
+    document.querySelectorAll(".nd-content h3").forEach(h=>{
+      toc.innerHTML+=`<li onclick="scrollToId('${h.id}')">${h.innerText}</li>`;
+    });
+  }
+
+  /* ===== LATEST ===== */
+  latest.innerHTML="";
+  news.slice(0,5).forEach(n=>{
+    latest.innerHTML+=`
+    <div class="nd-latest">
+      <img src="assets/images/${n.image}">
+      <div class="nd-latest-info">
+        <a href="?slug=${n.slug}">${n.title}</a>
+      </div>
+    </div>
+    `;
+  });
+
+  /* ===== RELATED ===== */
+  related.innerHTML="";
+  news.filter(n=>n.slug!==post.slug).slice(0,3).forEach(n=>{
+    related.innerHTML+=`
+    <div class="nd-related-card">
+      <a href="?slug=${n.slug}">
+        <img src="assets/images/${n.image}">
+        <div class="nd-related-content">
+          <h4>${n.title}</h4>
+        </div>
+      </a>
+    </div>
+    `;
+  });
+
+});
+
+/* ===== FUNCTIONS ===== */
+function scrollToId(id){
+  const el=document.getElementById(id);
+  if(el){
+    el.scrollIntoView({behavior:"smooth", block:"center"});
+  }
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(location.href);
+  alert("Đã copy!");
+}
+
+</script>
+
+</body>
+</html>

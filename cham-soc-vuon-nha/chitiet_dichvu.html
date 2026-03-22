@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <script src="/ga.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title id="seoTitle">Dịch vụ quanh ta | Chăm sóc vườn nhà</title>
+<link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
+
+<style>
+.service-page{
+  --green:#1f6f43;
+  --green2:#2e8b57;
+  --light:#f5f7f6;
+  --border:#e5e7eb;
+
+  font-family:'Segoe UI',sans-serif;
+  background:var(--light);
+}
+
+.service-page .container{
+  max-width:1300px;
+  margin:auto;
+  padding:30px 20px;
+}
+
+.service-page .hero{
+  height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  background:linear-gradient(135deg,#1f6f43,#2e8b57);
+}
+
+.service-page .hero h1{
+  font-size:24px;
+}
+
+.service-page .layout{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:35px;
+  margin-top:-60px;
+}
+
+.service-page .box{
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.service-page .img img{
+  width:100%;
+  height:300px;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+.service-page h2{
+  color:var(--green);
+  margin-bottom:10px;
+}
+
+.service-page .desc{
+  color:#555;
+  margin-bottom:15px;
+  line-height:1.6;
+}
+
+.service-page .price{
+  font-weight:bold;
+  color:#e63946;
+  margin-bottom:15px;
+}
+
+.service-page .calc{
+  background:#f1f8f4;
+  padding:15px;
+  border-radius:10px;
+}
+
+.service-page input{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border:1px solid var(--border);
+  border-radius:8px;
+}
+
+.service-page .result{
+  margin-top:10px;
+  font-weight:bold;
+  color:#e63946;
+}
+
+.service-page .btn{
+  margin-top:12px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:var(--green);
+  color:#fff;
+  cursor:pointer;
+}
+
+.service-page .btn:hover{
+  background:var(--green2);
+}
+
+.service-page .sidebar{
+  background:#fff;
+  padding:15px;
+  border-radius:12px;
+  height:fit-content;
+  box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+.service-page .sidebar h3{
+  color:var(--green);
+  margin-bottom:10px;
+}
+
+.service-page .card{
+  margin-bottom:15px;
+  background:#fff;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  transition:.2s;
+}
+
+.service-page .card:hover{
+  transform:translateY(-4px);
+}
+
+.service-page .card img{
+  width:100%;
+  height:130px;
+  object-fit:cover;
+}
+
+.service-page .card h4{
+  padding:10px;
+  font-size:15px;
+}
+
+.service-page .card p{
+  padding:0 10px;
+  color:#e63946;
+  font-weight:bold;
+}
+
+.service-page .card a{
+  display:block;
+  margin:10px;
+  padding:8px;
+  background:var(--green);
+  color:#fff;
+  text-align:center;
+  border-radius:6px;
+  text-decoration:none;
+}
+
+/* ===== MOBILE FIX (THÊM NHẸ) ===== */
+@media(max-width:900px){
+  .service-page .layout{
+    grid-template-columns:1fr;
+  }
+
+  .service-page .box{
+    grid-template-columns:1fr;
+  }
+
+  .service-page .hero{
+    height:180px;
+  }
+}
+
+/* 👇 thêm cho mobile mượt hơn */
+@media(max-width:600px){
+  .service-page .img img{
+    height:220px;
+  }
+
+  .service-page .btn{
+    padding:14px;
+    font-size:16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<div class="service-page">
+
+<div class="hero">
+  <h1 id="heroTitle"></h1>
+</div>
+
+<div class="container">
+<div class="layout">
+
+<div class="main">
+  <div class="box">
+
+    <div class="img">
+      <img id="serviceImage">
+    </div>
+
+    <div>
+      <h2 id="serviceName"></h2>
+      <p class="desc" id="serviceDescription"></p>
+      <p class="price" id="servicePrice"></p>
+
+      <div class="calc">
+        <label>Nhập diện tích (m²)</label>
+        <input type="number" id="area">
+
+        <p class="result" id="total"></p>
+
+        <button class="btn" id="bookBtn">
+          Đặt lịch dịch vụ
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="sidebar">
+  <h3>Dịch vụ liên quan</h3>
+  <div id="related"></div>
+</div>
+
+</div>
+</div>
+</div>
+
+<div id="footer"></div>
+
+<script>
+// ===== DOM =====
+const heroTitle = document.getElementById("heroTitle");
+const serviceName = document.getElementById("serviceName");
+const serviceDescription = document.getElementById("serviceDescription");
+const servicePrice = document.getElementById("servicePrice");
+const serviceImage = document.getElementById("serviceImage");
+const related = document.getElementById("related");
+const area = document.getElementById("area");
+const total = document.getElementById("total");
+const bookBtn = document.getElementById("bookBtn");
+
+// ===== CONFIG =====
+const IMAGE_PATH = "assets/images/";
+const DEFAULT_IMAGE = IMAGE_PATH + "default.jpg";
+
+// ===== LOAD HEADER / FOOTER =====
+function loadComponent(id, file) {
+  fetch(file)
+    .then(r => r.text())
+    .then(data => {
+      document.getElementById(id).innerHTML = data;
+    })
+    .catch(() => console.warn("Không load được:", file));
+}
+
+loadComponent("header", "header.html");
+loadComponent("footer", "footer.html");
+
+// ===== LẤY ID =====
+const params = new URLSearchParams(location.search);
+const id = parseInt(params.get("id"));
+
+if (!id) {
+  document.body.innerHTML = "<h2>Thiếu ID dịch vụ</h2>";
+  throw new Error("Missing ID");
+}
+
+// ===== LOAD DATA =====
+let services = [];
+let service = null;
+
+fetch("dichvu.json")
+  .then(r => r.json())
+  .then(data => {
+
+    services = data.services || [];
+    service = services.find(s => s.id === id);
+
+    if (!service) {
+      document.body.innerHTML = "<h2>Không tìm thấy dịch vụ</h2>";
+      return;
+    }
+
+    // ===== HIỂN THỊ =====
+    heroTitle.innerText = service.name;
+    serviceName.innerText = service.name;
+    serviceDescription.innerText = service.description || "Chưa có mô tả";
+
+    servicePrice.innerText =
+      (service.price_m2_min || 0).toLocaleString("vi-VN") +
+      " VNĐ / " + (service.area_unit || "m²");
+
+    // ===== ẢNH (FIX TRẮNG) =====
+    serviceImage.src = service.image
+      ? IMAGE_PATH + service.image
+      : DEFAULT_IMAGE;
+
+    serviceImage.onerror = function () {
+      this.src = DEFAULT_IMAGE;
+    };
+
+    // ===== RELATED =====
+    related.innerHTML = "";
+
+    (service.related_services || []).forEach(i => {
+      let s = services.find(x => x.id === i);
+      if (!s) return;
+
+      let div = document.createElement("div");
+      div.className = "card";
+
+      div.innerHTML = `
+        <img src="${IMAGE_PATH + s.image}" onerror="this.src='${DEFAULT_IMAGE}'">
+        <h4>${s.name}</h4>
+        <p>${(s.price_m2_min || 0).toLocaleString("vi-VN")} VNĐ</p>
+        <a href="chitiet_dichvu.html?id=${s.id}">Xem</a>
+      `;
+
+      related.appendChild(div);
+    });
+
+  })
+  .catch(err => {
+    console.error(err);
+    document.body.innerHTML = "<h2>Lỗi tải dữ liệu</h2>";
+  });
+
+// ===== TÍNH TIỀN =====
+area.oninput = function () {
+
+  if (!service) return;
+
+  let a = parseFloat(this.value);
+
+  if (!a || a <= 0) {
+    total.innerText = "";
+    return;
+  }
+
+  let cost = a * service.price_m2_min;
+  let fee = cost * 0.1;
+  let final = cost + fee;
+
+  total.innerText =
+    "Tổng: " + final.toLocaleString("vi-VN") + " VNĐ";
+
+  // MOBILE UX
+  if (window.innerWidth < 768) {
+    total.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+};
+
+// ===== ĐẶT LỊCH =====
+bookBtn.onclick = function () {
+
+  if (!service) {
+    alert("Chưa load xong dữ liệu");
+    return;
+  }
+
+  if (!area.value || area.value <= 0) {
+    alert("Nhập diện tích hợp lệ");
+    return;
+  }
+
+  location.href =
+    "datlich.html?service=" + service.id +
+    "&area=" + area.value;
+};
+</script>
+</body>
+</html>

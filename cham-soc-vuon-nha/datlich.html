@@ -1,406 +1,688 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="/ga.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Đặt lịch dịch vụ</title>
+<title>Dịch vụ quanh ta | Chăm sóc vườn nhà</title>
 <link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
 <style>
-body{
-  font-family:'Segoe UI',sans-serif;
-  background:#f4f7f6;
-}
-
-/* container */
-.container{
-  max-width:1000px;
-  margin:40px auto;
-  background:#fff;
-  padding:30px;
-  border-radius:18px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-}
-
-h2{color:#1f6f43;margin-bottom:20px;}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:18px;
-}
-
-.form-group{display:flex;flex-direction:column;}
-
-label{font-weight:600;margin-bottom:5px;}
-
-input,select{
-  padding:12px;
-  border:1px solid #ddd;
-  border-radius:8px;
-}
-
-/* preview */
-#preview{
-  display:none;
-  width:100%;
-  border-radius:10px;
-  margin-top:10px;
-}
-
-/* price */
-.price{
+body{font-family:'Segoe UI',sans-serif;background:#eef1f5;}
+.container{max-width:900px;margin:20px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);} 
+.header-wrapper{display:none;} 
+.header{background:linear-gradient(90deg,#16a34a,#4ade80);color:#fff;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;} 
+.header img{width:60px;height:60px;object-fit:cover;border-radius:12px;background:#fff;padding:5px;} 
+.header-title{font-size:22px;font-weight:800;}  
+.form{padding:20px;} 
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;} 
+.form-group{display:flex;flex-direction:column;} 
+label{font-weight:600;margin-bottom:5px;} 
+input,textarea,select{padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;transition:all 0.2s ease;}
+input:focus, textarea:focus, select:focus{outline:none;border-color:#16a34a;box-shadow:0 0 0 3px rgba(34,197,94,0.2);}  
+select{cursor:pointer;} 
+textarea{resize:none;height:90px;} 
+.full{grid-column:span 2;} 
+.price-box{
   margin-top:20px;
-  background:#f7faf8;
-  padding:15px;
-  border-radius:10px;
+  background:linear-gradient(135deg,#f0fdf4,#ffffff);
+  padding:18px;
+  border-radius:14px;
+  border:1px solid #bbf7d0;
+  box-shadow:0 6px 20px rgba(34,197,94,0.08);
 }
 
 .price-row{
   display:flex;
   justify-content:space-between;
+  padding:8px 0;
+  font-size:16px;
+  color:#166534;
 }
 
 .total{
-  font-weight:700;
-  color:#e63946;
+  margin-top:8px;
+  padding-top:10px;
+  border-top:1px dashed #86efac;
+  font-weight:800;
+  font-size:20px;
+  color:#15803d;
+} 
+.price-row{display:flex;justify-content:space-between;margin-bottom:8px;} 
+.price-total{font-weight:800;color:#15803d;font-size:20px;} 
+.submit{margin:20px;width:calc(100% - 40px);padding:14px;border:none;border-radius:30px;background:linear-gradient(90deg,#16a34a,#4ade80);color:#fff;font-weight:700;cursor:pointer;}  
+@media(max-width:768px){.grid{grid-template-columns:1fr;}}
+
+#serviceDisplay:focus{
+  box-shadow:0 0 0 2px rgba(34,197,94,0.15);
 }
 
-/* button */
-.actions{
-  margin-top:20px;
-  display:flex;
-  gap:10px;
-}
-
-button{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-.submit{background:#1f6f43;color:#fff;}
-.back{background:#ccc;}
-
-/* ===== FIX QUAN TRỌNG: MODAL ===== */
-.modal{
-  position:fixed;
-  top:0;
-  left:0;
+#serviceDropdown{
   width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.5);
-
-  display:none;
-  align-items:center;
-  justify-content:center;
-
-  z-index:9999;
-  padding:15px;
+  box-sizing:border-box;
 }
 
-.modal-box{
-  background:#fff;
-  border-radius:20px;
-  width:100%;
-  max-width:700px;
-  padding:25px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.2);
-  animation:fadeIn .3s ease;
-
-  max-height:90vh;
-  overflow-y:auto;
-}
-
-@keyframes fadeIn{
-  from{transform:translateY(20px);opacity:0;}
-  to{transform:translateY(0);opacity:1;}
-}
-
-.modal-header{
-  font-size:22px;
-  font-weight:700;
-  color:#1f6f43;
-}
-
-.section{margin-top:15px;}
-
-.section-title{
-  font-weight:700;
-  color:#1f6f43;
-  margin-bottom:8px;
-}
-
-.info-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.info-item{
-  background:#f7faf8;
-  padding:10px;
-  border-radius:10px;
-}
-
-.label{
-  font-size:12px;
-  color:#666;
-}
-
-.value{
-  font-weight:600;
-}
-
-.full{
-  grid-column: span 2;
-}
-
-.modal-total{
-  margin-top:15px;
-  font-size:24px;
-  font-weight:700;
-  color:#e63946;
-  text-align:right;
-}
-
-.modal img{
-  width:100%;
-  border-radius:12px;
-  margin-top:10px;
-}
-
-.modal-actions{
-  display:flex;
-  gap:10px;
-  margin-top:20px;
-}
-
-.cancel{background:#ddd;}
-.confirm{background:#1f6f43;color:#fff;}
-
-/* mobile */
-@media(max-width:768px){
-  .grid{grid-template-columns:1fr;}
-  .info-grid{grid-template-columns:1fr;}
+#confirmModal {
+  overflow:auto;
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
-<h2>Đặt lịch dịch vụ</h2>
 
-<form id="form">
+<div class="header" style="padding:16px 20px;text-align:center;">
 
+  <!-- DÒNG LOGO + TEXT -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px;">
+    <img src="assets/images/logo3.jpg" style="width:40px;height:40px;border-radius:10px;background:#fff;padding:4px;">
+    
+    <div style="font-weight:700;font-size:22px;font-family:'Times New Roman', serif;letter-spacing:0.5px;">
+  Chăm Sóc Vườn
+</div>
+
+    <img src="assets/images/logo4.jpg" style="width:40px;height:40px;border-radius:10px;background:#fff;padding:4px;">
+  </div>
+
+  <!-- TIÊU ĐỀ -->
+  <div class="header-title" style="font-size:24px;">Đặt lịch dịch vụ</div>
+
+</div>
+
+<div class="form">
 <div class="grid">
 
-<div class="form-group">
-<label>Tên</label>
-<input type="text" id="name">
-</div>
+<div class="form-group"><label>Họ và tên *</label><input type="text" id="name"></div>
+<div class="form-group"><label>Số điện thoại *</label><input type="tel"></div>
 
-<div class="form-group">
-<label>SĐT</label>
-<input type="tel" id="phone" required>
-</div>
-
-<div class="form-group">
-<label>Email</label>
-<input type="email" id="email" required>
-</div>
+<div class="form-group"><label>Email *</label><input type="email"></div>
 
 <div class="form-group">
 <label>Dịch vụ</label>
-<select id="service" required></select>
+<div style="position:relative;">
+  <input type="text" id="serviceDisplay" readonly placeholder="-- Chọn dịch vụ --" style="cursor:pointer;">
+  <div id="serviceDropdown" style="display:none;position:absolute;top:100%;left:0;width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:12px;max-height:200px;overflow:auto;z-index:10;padding:10px;"></div>
+</div>
+<div id="serviceInfo" style="margin-top:8px;font-size:13px;color:#475569"></div>
 </div>
 
 <div class="form-group">
-<label>Diện tích</label>
-<input type="number" id="area" required>
+<label>Diện tích (m²)</label>
+<input type="number" id="area">
 </div>
 
 <div class="form-group">
-<label>Ngày</label>
-<input type="date" id="date" required>
+<label>Ngày hẹn làm</label>
+<input type="date">
 </div>
 
 <div class="form-group">
-<label>Giờ</label>
-<input type="time" id="time" required>
+<label>Giờ hẹn làm</label>
+<input type="time">
 </div>
 
-<div class="form-group">
+<div class="form-group full">
 <label>Địa chỉ</label>
-<input type="text" id="address" required>
-<button type="button" onclick="getLocation()">📍 Lấy vị trí</button>
+<textarea id="address"></textarea>
+
+<div class="actions-row" style="margin-top:10px;display:flex;gap:10px;">
+<button type="button" class="btn-map" onclick="getLocation()" style="padding:10px 14px;border:none;border-radius:20px;background:linear-gradient(135deg,#bbf7d0,#ffffff);color:#166534;border:1px solid #86efac;box-shadow:0 4px 10px rgba(34,197,94,0.15);cursor:pointer;"><span style="display:inline-flex;align-items:center;gap:6px;">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M12 21s-6-4.35-6-10a6 6 0 1112 0c0 5.65-6 10-6 10z"/><circle cx="12" cy="11" r="2.5" stroke-width="2"/></svg>
+Vị trí của tôi</span></button>
+<button type="button" class="btn-map" onclick="openMap()" style="padding:10px 14px;border:none;border-radius:20px;background:linear-gradient(135deg,#16a34a,#bbf7d0,#ffffff);color:#166534;border:1px solid #bbf7d0;cursor:pointer;"><span style="display:inline-flex;align-items:center;gap:6px;">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path stroke-width="2" d="M9 4v13M15 7v13"/></svg>
+Chọn trên bản đồ</span></button>
 </div>
 
-<div class="form-group">
-<label>Ảnh</label>
-<input type="file" id="imageUpload">
-<img id="preview">
 </div>
+<div class="form-group full"><label>Ghi chú</label><textarea></textarea></div>
+
+<div class="form-group full">
+<label>Thêm hình ảnh đính kèm</label>
+
+<input type="file" id="imageUpload" hidden>
+<label for="imageUpload" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2px dashed #86efac;border-radius:12px;cursor:pointer;background:#f0fdf4;color:#166534;font-weight:600;">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M4 16l4-4a3 3 0 014 0l4 4m-4-4l2-2a3 3 0 014 0l2 2M4 20h16a2 2 0 002-2V6a2 2 0 00-2-2H8l-2 2H4a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+Chọn ảnh từ thiết bị
+</label>
+
+<div id="previewList" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
+
+<div style="display:flex;gap:10px;margin-top:10px;">
+<button type="button" onclick="openCameraImage()" style="padding:10px 14px;border:none;border-radius:20px;background:linear-gradient(135deg,#16a34a,#4ade80);color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M3 7h4l2-2h6l2 2h4v12H3V7z"/><circle cx="12" cy="13" r="3" stroke-width="2"/></svg>
+Chụp hình</button>
+<button type="button" onclick="openCameraVideo()" style="padding:10px 14px;border:none;border-radius:20px;background:linear-gradient(135deg,#065f46,#10b981);color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14m-9 4h8a2 2 0 002-2V8a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+Quay video</button>
+</div>
+
+<input type="file" id="cameraImage" accept="image/*" capture="environment" style="display:none;">
+<input type="file" id="cameraVideo" accept="video/*" capture style="display:none;">
 
 </div>
 
-<div class="price">
-<div class="price-row"><span>Dịch vụ</span><span id="servicePrice">0</span></div>
-<div class="price-row"><span>Hoa hồng</span><span id="commission">0</span></div>
-<div class="price-row total"><span>Tổng</span><span id="total">0</span></div>
 </div>
 
-<div class="actions">
-<button type="button" class="back" onclick="history.back()">Quay lại</button>
-<button type="submit" class="submit">Đặt lịch</button>
+<div class="price-box">
+<div class="price-row"><span>Giá tham khảo</span><span id="price">0 VNĐ</span></div>
+<div class="price-row"><span>Hoa hồng (10%)</span><span id="commission">0 VNĐ</span></div>
+<div class="price-row price-total"><span>Tổng tiền</span><span id="total">0 VNĐ</span></div>
 </div>
 
-</form>
-</div>
+<div style="display:flex;gap:10px;margin:20px;">
+  <button type="button" class="submit" onclick="openConfirmModal()" style="flex:1;margin:0;">✔ Đặt lịch</button>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-box" id="info"></div>
+  <button type="button" onclick="goHome()"
+    style="flex:1;padding:14px;border:none;border-radius:30px;
+    background:#e2e8f0;color:#1e293b;font-weight:700;cursor:pointer;">
+    ⬅ Quay lại
+  </button>
+</div>
 </div>
 
 <script>
-const serviceSelect=document.getElementById("service");
-const areaInput=document.getElementById("area");
+document.addEventListener("DOMContentLoaded", function(){
 
-const servicePriceBox=document.getElementById("servicePrice");
-const commissionBox=document.getElementById("commission");
-const totalBox=document.getElementById("total");
+const serviceDisplay = document.getElementById('serviceDisplay');
+const serviceDropdown = document.getElementById('serviceDropdown');
+const areaInput = document.getElementById('area');
+const priceBox = document.getElementById('price');
+const commissionBox = document.getElementById('commission');
+const totalBox = document.getElementById('total');
+const serviceInfo = document.getElementById('serviceInfo');
+const submitBtn = document.querySelector('.submit');
 
-const preview=document.getElementById("preview");
-const modal=document.getElementById("modal");
-const info=document.getElementById("info");
+let services = [];
+let selectedServices = [];
 
-let services=[];
-let uploadedImage="";
+// ===== DISABLE BUTTON BAN ĐẦU =====
+submitBtn.disabled = true;
+submitBtn.style.opacity = 0.5;
 
-// LOAD
-fetch("services.json")
-.then(r=>r.json())
-.then(data=>{
-  services=data.services;
+// ===== LOAD SERVICES =====
+fetch('dichvu.json')
+.then(res => res.json())
+.then(data => {
+  services = data.services || data;
 
-  serviceSelect.innerHTML="<option value=''>Chọn dịch vụ</option>";
+  services.forEach(s => {
+    const item = document.createElement('label');
+    item.style.display = 'flex';
+    item.style.alignItems = 'center';
+    item.style.gap = '8px';
+    item.style.marginBottom = '6px';
 
-  services.forEach(s=>{
-    serviceSelect.innerHTML+=`<option value="${s.id}">${s.name}</option>`;
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+
+    checkbox.onchange = () => {
+      if(checkbox.checked){
+        selectedServices.push(s);
+      } else {
+        selectedServices = selectedServices.filter(x => x.id !== s.id);
+      }
+
+      updateServiceDisplay();
+      showServiceInfo();
+      calc();
+      checkForm();
+    };
+
+    item.appendChild(checkbox);
+    item.appendChild(document.createTextNode(s.name));
+
+    serviceDropdown.appendChild(item);
   });
-
-  // 🔥 QUAN TRỌNG
-  autoFill();
+})
+.catch(err => {
+  console.error(err);
+  alert('Không tải được dịch vụ');
 });
 
-// CALC
-function calc(){
-  let s=services.find(x=>x.id==serviceSelect.value);
-  let area=Number(areaInput.value);
+// ===== UI SELECT =====
+serviceDisplay.onclick = () => {
+  serviceDropdown.style.display =
+    serviceDropdown.style.display === 'none' ? 'block' : 'none';
+};
 
-  if(!s||!area){
-    servicePriceBox.innerText=0;
-    commissionBox.innerText=0;
-    totalBox.innerText=0;
+document.addEventListener('click', (e)=>{
+  if(!serviceDisplay.contains(e.target) && !serviceDropdown.contains(e.target)){
+    serviceDropdown.style.display = 'none';
+  }
+});
+
+// ===== HIỂN THỊ TEXT =====
+function updateServiceDisplay(){
+  serviceDisplay.value = selectedServices.length
+    ? selectedServices.map(s => s.name).join(', ')
+    : '';
+}
+
+// ===== HIỂN THỊ INFO =====
+function showServiceInfo(){
+  serviceInfo.innerHTML = selectedServices.length
+    ? selectedServices.map(s => "• " + (s.description || "")).join("<br>")
+    : '';
+}
+
+// ===== ANIMATION =====
+function animateValue(el, start, end, duration = 300){
+  let t0 = null;
+
+  function step(t){
+    if(!t0) t0 = t;
+    const p = Math.min((t - t0)/duration, 1);
+    const v = Math.floor(start + (end - start)*p);
+
+    el.innerText = v.toLocaleString() + ' VNĐ';
+
+    if(p < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+}
+
+function highlightTotal(){
+  totalBox.style.transform = 'scale(1.06)';
+  totalBox.style.color = '#16a34a';
+
+  setTimeout(()=>{
+    totalBox.style.transform = 'scale(1)';
+    totalBox.style.color = '#15803d';
+  },250);
+}
+
+// ===== CALC =====
+function calc(){
+  const area = parseFloat(areaInput.value);
+
+  if(selectedServices.length === 0){
+    priceBox.innerText = '0 VNĐ';
+    commissionBox.innerText = '0 VNĐ';
+    totalBox.innerText = '0 VNĐ';
     return;
   }
 
-  let dv=s.price_m2_min*area;
-  let hh=dv*0.1;
+  if(!area || area <= 0){
+    let min = selectedServices.reduce((sum, s)=> sum + s.price_m2_min, 0);
 
-  servicePriceBox.innerText=dv.toLocaleString()+" VNĐ";
-  commissionBox.innerText=hh.toLocaleString()+" VNĐ";
-  totalBox.innerText=(dv+hh).toLocaleString()+" VNĐ";
+    priceBox.innerText = '~ ' + min.toLocaleString() + ' VNĐ/m²';
+    commissionBox.innerText = '~ 10%';
+    totalBox.innerText = '~ ước tính';
+    return;
+  }
+
+  let price = selectedServices.reduce((sum, s)=>{
+    return sum + (s.price_m2_min * area);
+  },0);
+
+  const commission = price * 0.1;
+  const total = price + commission;
+
+  const current = parseInt(totalBox.innerText.replace(/\D/g,'')) || 0;
+
+  animateValue(priceBox, 0, price);
+  animateValue(commissionBox, 0, commission);
+  animateValue(totalBox, current, total);
+
+  highlightTotal();
 }
 
-serviceSelect.onchange=calc;
-areaInput.oninput=calc;
+areaInput.oninput = () => {
+  calc();
+  checkForm();
+};
 
-// GPS
+// ===== LOCATION =====
 function getLocation(){
+  if(!navigator.geolocation){
+    alert('Trình duyệt không hỗ trợ GPS');
+    return;
+  }
+
   navigator.geolocation.getCurrentPosition(pos=>{
-    address.value=`Lat: ${pos.coords.latitude.toFixed(5)}, Lng: ${pos.coords.longitude.toFixed(5)}`;
+    const lat = pos.coords.latitude.toFixed(6);
+    const lng = pos.coords.longitude.toFixed(6);
+    document.getElementById('address').value = `Lat: ${lat}, Lng: ${lng}`;
+    checkForm();
+  },()=>{
+    alert('Không lấy được vị trí');
   });
 }
 
-// UPLOAD
-imageUpload.onchange=e=>{
-  const file=e.target.files[0];
-  if(!file)return;
-
-  const reader=new FileReader();
-  reader.onload=x=>{
-    uploadedImage=x.target.result;
-    preview.src=uploadedImage;
-    preview.style.display="block";
-  };
-  reader.readAsDataURL(file);
-};
-
-// SUBMIT
-form.onsubmit=e=>{
-  e.preventDefault();
-
-  let s=services.find(x=>x.id==serviceSelect.value);
-
-  info.innerHTML=`
-    <div class="modal-header">${s.name}</div>
-
-    <div class="section">
-      <div class="section-title">Thông tin</div>
-      <div class="info-grid">
-        <div class="info-item"><div class="label">Tên</div><div class="value">${document.getElementById("name").value.trim() || "Chưa nhập"}</div></div>
-        <div class="info-item"><div class="label">SĐT</div><div class="value">${phone.value}</div></div>
-        <div class="info-item"><div class="label">Email</div><div class="value">${email.value}</div></div>
-        <div class="info-item"><div class="label">Địa chỉ</div><div class="value">${address.value}</div></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">Chi tiết</div>
-      <div class="info-grid">
-        <div class="info-item"><div class="label">Diện tích</div><div class="value">${area.value} m²</div></div>
-        <div class="info-item"><div class="label">Ngày</div><div class="value">${date.value}</div></div>
-        <div class="info-item full"><div class="label">Giờ</div><div class="value">${time.value}</div></div>
-      </div>
-    </div>
-
-    ${uploadedImage ? `<img src="${uploadedImage}">` : ""}
-
-    <div class="modal-total">${totalBox.innerText}</div>
-
-    <div class="modal-actions">
-      <button class="cancel" onclick="modal.style.display='none'">Hủy</button>
-      <button class="confirm" onclick="alert('Đặt thành công!')">Xác nhận</button>
-    </div>
-  `;
-
-  modal.style.display="flex";
-};
-
-function autoFill(){
-  const params = new URLSearchParams(window.location.search);
-
-  const serviceId = params.get("service");
-  const area = params.get("area");
-
-  // set dịch vụ
-  if(serviceId){
-    serviceSelect.value = serviceId;
-  }
-
-  // set diện tích
-  if(area){
-    areaInput.value = area;
-  }
-
-  // 🔥 QUAN TRỌNG: phải gọi lại tính tiền
-  calc();
+function openMap(){
+  window.open('https://www.google.com/maps', '_blank');
 }
-</script>
 
+// ===== IMAGE =====
+const imageUpload = document.getElementById('imageUpload');
+const previewList = document.getElementById('previewList');
+
+imageUpload.onchange = (e)=>{
+  [...e.target.files].forEach(file=>{
+    const reader = new FileReader();
+
+    reader.onload = ev=>{
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'relative';
+
+      const img = document.createElement('img');
+      img.src = ev.target.result;
+      img.style.width = '80px';
+      img.style.borderRadius = '10px';
+
+      const del = document.createElement('span');
+      del.innerText = '✕';
+      del.style.position = 'absolute';
+      del.style.top = '-5px';
+      del.style.right = '-5px';
+      del.style.background = '#ef4444';
+      del.style.color = '#fff';
+      del.style.borderRadius = '50%';
+      del.style.padding = '2px 6px';
+      del.style.cursor = 'pointer';
+
+      del.onclick = ()=> wrapper.remove();
+
+      wrapper.appendChild(img);
+      wrapper.appendChild(del);
+      previewList.appendChild(wrapper);
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  imageUpload.value = ""; // FIX MOBILE
+};
+
+// ===== CAMERA =====
+const cameraImage = document.getElementById('cameraImage');
+const cameraVideo = document.getElementById('cameraVideo');
+
+function openCameraImage(){ cameraImage.click(); }
+function openCameraVideo(){ cameraVideo.click(); }
+
+cameraVideo.onchange = (e)=>{
+  const file = e.target.files[0];
+
+  if(file){
+    const url = URL.createObjectURL(file);
+
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'relative';
+
+    const video = document.createElement('video');
+    video.src = url;
+    video.controls = true;
+    video.style.width = '120px';
+    video.style.borderRadius = '10px';
+
+    const del = document.createElement('span');
+    del.innerText = '✕';
+    del.onclick = ()=> wrapper.remove();
+
+    wrapper.appendChild(video);
+    wrapper.appendChild(del);
+    previewList.appendChild(wrapper);
+  }
+};
+
+// ===== MODAL =====
+function openConfirmModal(){
+  const name = document.getElementById('name').value.trim();
+  const phone = document.querySelector('input[type="tel"]').value.trim();
+  const email = document.querySelector('input[type="email"]').value.trim();
+  const date = document.querySelector('input[type="date"]').value;
+  const time = document.querySelector('input[type="time"]').value;
+  const address = document.getElementById('address').value.trim();
+  const area = parseFloat(areaInput.value);
+
+  if(!name || !phone || !email || !date || !time || !address || area <= 0 || selectedServices.length === 0){
+    alert('Vui lòng điền đầy đủ thông tin');
+    return;
+  }
+
+  document.getElementById('modalContent_user').innerHTML =
+    `<b>${name}</b><br>${phone}<br>${email}`;
+
+  document.getElementById('modalContent_service').innerHTML =
+    `${selectedServices.map(s => '• ' + s.name).join('<br>')}<br>Diện tích: ${area} m²`;
+
+  document.getElementById('modalContent_time').innerHTML =
+    `${date} - ${time}<br>${address}`;
+
+  document.getElementById('modal_price').innerText = priceBox.innerText;
+  document.getElementById('modal_commission').innerText = commissionBox.innerText;
+  document.getElementById('modal_total').innerText = totalBox.innerText;
+
+  document.getElementById('confirmModal').style.display = 'flex';
+}
+
+function closeModal(){
+  document.getElementById('confirmModal').style.display = 'none';
+}
+
+// FIX CLICK OUTSIDE MODAL
+const modal = document.getElementById('confirmModal');
+if(modal){
+  modal.onclick = (e)=>{
+    if(e.target === modal){
+      closeModal();
+    }
+  };
+}
+
+// ===== CONFIRM =====
+function confirmBooking(){
+  closeModal();
+
+  const success = document.createElement('div');
+
+  success.innerHTML = "Đặt lịch thành công";
+  
+  success.style.position = "fixed";
+  success.style.top = "50%";
+  success.style.left = "50%";
+  success.style.transform = "translate(-50%, -50%)";
+  success.style.background = "#16a34a";
+  success.style.color = "#fff";
+  success.style.padding = "16px 24px";
+  success.style.borderRadius = "12px";
+  success.style.fontSize = "18px";
+  success.style.fontWeight = "600";
+  success.style.boxShadow = "0 10px 30px rgba(0,0,0,0.2)";
+  success.style.zIndex = "9999";
+
+  document.body.appendChild(success);
+
+  setTimeout(()=>{
+    window.location.href = 'trangchu.html';
+  },3000); // tăng thời gian để nhìn thấy
+}
+
+// ===== CHECK FORM =====
+function checkForm(){
+  const name = document.getElementById('name').value.trim();
+  const phone = document.querySelector('input[type="tel"]').value.trim();
+  const email = document.querySelector('input[type="email"]').value.trim();
+  const date = document.querySelector('input[type="date"]').value;
+  const time = document.querySelector('input[type="time"]').value;
+  const address = document.getElementById('address').value.trim();
+  const area = parseFloat(areaInput.value);
+
+  if(name && phone && email && date && time && address && area > 0 && selectedServices.length > 0){
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = 1;
+  } else {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = 0.5;
+  }
+}
+
+// ===== LISTENER =====
+document.querySelectorAll('input, textarea').forEach(el=>{
+  el.addEventListener('input', checkForm);
+});
+
+// ===== GO HOME =====
+function goHome(){
+  window.location.href = 'trangchu.html';
+}
+
+window.openConfirmModal = openConfirmModal;
+window.closeModal = closeModal;
+window.confirmBooking = confirmBooking;
+window.goHome = goHome;
+});
+</script>
+<!-- MODAL XÁC NHẬN -->
+<div id="confirmModal" style="
+display:none;
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,0.5);
+backdrop-filter:blur(6px);
+justify-content:center;
+align-items:center;
+z-index:999;
+">
+
+  <div style="
+  width:92%;
+  max-width:520px;
+  background:#ffffff;
+  border-radius:20px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.25);
+  overflow:hidden;
+  animation:fadeIn 0.25s ease;
+  ">
+
+    <!-- HEADER -->
+    <div style="
+      padding:18px;
+      text-align:center;
+      font-size:20px;
+      font-weight:600;
+      border-bottom:1px solid #e5e7eb;
+    ">
+      Xác nhận đặt lịch
+    </div>
+
+    <!-- BODY -->
+    <div style="padding:20px;">
+
+      <!-- KHÁCH HÀNG -->
+      <div style="margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:6px;font-weight:600;margin-bottom:6px;">
+          
+          <svg width="16" height="16" fill="none" stroke="#334155" stroke-width="1.8" viewBox="0 0 24 24">
+            <path d="M20 21a8 8 0 10-16 0"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+
+          Thông tin khách hàng
+        </div>
+
+        <div id="modalContent_user" style="font-size:14px;color:#475569;line-height:1.6;"></div>
+      </div>
+
+      <!-- DỊCH VỤ -->
+      <div style="margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:6px;font-weight:600;margin-bottom:6px;">
+          
+          <svg width="16" height="16" fill="none" stroke="#334155" stroke-width="1.8" viewBox="0 0 24 24">
+            <path d="M14.7 6.3l3 3-8.4 8.4-3-3z"/>
+            <path d="M16 3l5 5"/>
+          </svg>
+
+          Dịch vụ
+        </div>
+
+        <div id="modalContent_service" style="font-size:14px;color:#475569;"></div>
+      </div>
+
+      <!-- THỜI GIAN -->
+      <div style="margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:6px;font-weight:600;margin-bottom:6px;">
+          
+          <svg width="16" height="16" fill="none" stroke="#334155" stroke-width="1.8" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+
+          Thời gian & địa điểm
+        </div>
+
+        <div id="modalContent_time" style="font-size:14px;color:#475569;"></div>
+      </div>
+
+      <!-- GIÁ -->
+      <div style="
+        border-top:1px solid #e5e7eb;
+        padding-top:12px;
+        margin-top:10px;
+      ">
+        <div style="display:flex;justify-content:space-between;color:#64748b;">
+          <span>Giá</span><span id="modal_price"></span>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;color:#64748b;margin-top:4px;">
+          <span>Hoa hồng</span><span id="modal_commission"></span>
+        </div>
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          margin-top:8px;
+          font-weight:700;
+          font-size:18px;
+          color:#0f172a;
+        ">
+          <span>Tổng</span><span id="modal_total"></span>
+        </div>
+      </div>
+
+      <!-- BUTTON -->
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        
+        <button onclick="confirmBooking()" style="
+          flex:1;
+          padding:12px;
+          border-radius:30px;
+          border:none;
+          background:#0f172a;
+          color:#fff;
+          font-weight:600;
+          cursor:pointer;
+        ">
+          Xác nhận
+        </button>
+
+        <button onclick="closeModal()" style="
+          flex:1;
+          padding:12px;
+          border-radius:30px;
+          border:1px solid #e5e7eb;
+          background:#fff;
+          color:#0f172a;
+          font-weight:500;
+          cursor:pointer;
+        ">
+          Hủy
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+</style>
 </body>
 </html>
