@@ -3,42 +3,42 @@
     {
       "id": 1,
       "name": "Sửa xe",
-      "image": "public/asset/image/dich-vu-sua-xe-luu-dong.png",
+      "image": "public/asset/image/dich-vu-sua-xe-luu-dong.jpg",
       "summary": "Sửa chữa mọi hư hỏng của xe tại chỗ, tiết kiệm thời gian và chi phí kéo xe.",
       "service_price": 85000
     },
     {
       "id": 2,
       "name": "Vá lốp - Thay lốp",
-      "image": "public/asset/image/dich-vu-va-lop-thay-lop.png",
+      "image": "public/asset/image/dich-vu-va-lop-thay-lop.jpg",
       "summary": "Dịch vụ vá lốp và thay lốp tại chỗ với đầy đủ thiết bị chuyên dụng.",
       "service_price": 50000
     },
     {
       "id": 3,
       "name": "Dịch vụ ắc quy",
-      "image": "public/asset/image/dich-vu-ac-quy.png",
+      "image": "public/asset/image/dich-vu-ac-quy.jpg",
       "summary": "Kiểm tra, sửa chữa và thay thế ắc quy mọi loại xe.",
       "service_price": 120000
     },
     {
       "id": 4,
       "name": "Tiếp nhiên liệu khẩn cấp",
-      "image": "public/asset/image/dich-vu-tiep-nhien-lieu-khuan-cap.png",
+      "image": "public/asset/image/dich-vu-tiep-nhien-lieu-khuan-cap.jpg",
       "summary": "Giao xăng, dầu tận nơi khi xe bạn hết nhiên liệu giữa đường.",
       "service_price": 100000
     },
     {
       "id": 5,
       "name": "Bảo dưỡng xe tại nhà",
-      "image": "public/asset/image/dich-vu-bao-duong-xe-tai-nha.png",
+      "image": "public/asset/image/dich-vu-bao-duong-xe-tai-nha.jpg",
       "summary": "Dịch vụ bảo dưỡng định kỳ ngay tại nhà, văn phòng của bạn.",
       "service_price": 60000
     },
     {
       "id": 6,
       "name": "Thay thế phụ tùng",
-      "image": "public/asset/image/dich-vu-thay-the-phu-tung.png",
+      "image": "public/asset/image/dich-vu-thay-the-phu-tung.jpg",
       "summary": "Cung cấp và thay thế phụ tùng chính hãng, giá cạnh tranh.",
       "service_price": 80000
     }

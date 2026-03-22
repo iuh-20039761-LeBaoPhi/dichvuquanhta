@@ -87,7 +87,7 @@ html {
       rgba(31, 41, 55, 0.95) 0%,
       rgba(55, 65, 81, 0.95) 100%
     ),
-    url("../image/hero-banner-sua-xe-luu-dong.png");
+    url("../image/hero-banner-sua-xe-luu-dong.jpg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -506,7 +506,7 @@ footer ul li a:hover {
       rgba(31, 41, 55, 0.95) 0%,
       rgba(55, 65, 81, 0.95) 100%
     ),
-    url("../image/hero-banner-sua-xe-luu-dong.png");
+    url("../image/hero-banner-sua-xe-luu-dong.jpg");
   background-size: cover;
   background-position: center;
   padding: 120px 0 80px;
