@@ -3,7 +3,7 @@
         "id": 1,
         "name": "Sửa Máy Lạnh",
         "icon": "fa-wind",
-        "image": "image/tho-nha-dich-vu-sua-may-lanh-gia-dinh.jpg",
+        "image": "../../assets/images/tho-nha-dich-vu-sua-may-lanh-gia-dinh.jpg",
         "desc": "Sửa chữa, vệ sinh, bảo dưỡng máy lạnh các loại. Thay linh kiện chính hãng, nạp gas R32/R410A.",
         "travelFee": {
             "mode": "per_km",
@@ -128,7 +128,7 @@
         "id": 2,
         "name": "Sửa Máy Giặt",
         "icon": "fa-tshirt",
-        "image": "image/tho-nha-dich-vu-sua-may-giat-chuyen-nghiep.jpg",
+        "image": "../../assets/images/tho-nha-dich-vu-sua-may-giat-chuyen-nghiep.jpg",
         "desc": "Sửa máy giặt cửa trên, cửa ngang, máy giặt sấy. Thay motor, board mạch, cảm biến chính hãng.",
         "travelFee": {
             "mode": "per_km",
@@ -226,7 +226,7 @@
         "id": 3,
         "name": "Nhà Vệ Sinh",
         "icon": "fa-droplet",
-        "image": "image/tho-nha-dich-vu-nha-ve-sinh-thong-tac-chong-tham.jpg",
+        "image": "../../assets/images/tho-nha-dich-vu-nha-ve-sinh-thong-tac-chong-tham.jpg",
         "desc": "Thông tắc bồn cầu, sửa rò nước, chống thấm nhà vệ sinh hiệu quả.",
         "travelFee": {
             "mode": "per_km",
@@ -314,7 +314,7 @@
         "id": 4,
         "name": "Điện Nước",
         "icon": "fa-bolt",
-        "image": "image/tho-nha-dich-vu-sua-dien-nuoc-gia-dinh.jpg",
+        "image": "../../assets/images/tho-nha-dich-vu-sua-dien-nuoc-gia-dinh.jpg",
         "desc": "Sửa chữa hệ thống điện nước trong nhà. Xử lý nhanh sự cố chập điện, rò rỉ nước, thay ống.",
         "travelFee": {
             "mode": "per_km",
@@ -402,7 +402,7 @@
         "id": 5,
         "name": "Sửa Tủ Lạnh",
         "icon": "fa-snowflake",
-        "image": "image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
+        "image": "../../assets/images/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
         "desc": "Sửa chữa tủ lạnh các hãng. Xử lý không lạnh, rò gas, thay linh kiện, vệ sinh dàn lạnh chuyên sâu.",
         "travelFee": {
             "mode": "per_km",
@@ -510,7 +510,7 @@
         "id": 6,
         "name": "Sửa Tivi",
         "icon": "fa-tv",
-        "image": "image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
+        "image": "../../assets/images/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
         "desc": "Sửa chữa tivi LED, LCD, OLED các hãng. Khắc phục mất hình, mất tiếng, không nguồn, hỏng màn hình.",
         "travelFee": {
             "mode": "per_km",
@@ -618,7 +618,7 @@
         "id": 7,
         "name": "Sửa Bếp Từ",
         "icon": "fa-fire",
-        "image": "image/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
+        "image": "../../assets/images/tho-nha-dich-vu-sua-tu-lanh-gia-dinh.jpg",
         "desc": "Sửa chữa bếp từ, bếp điện từ, bếp gas các hãng. Xử lý không nóng, báo lỗi, không nhận nồi.",
         "travelFee": {
             "mode": "per_km",
@@ -726,7 +726,7 @@
         "id": 8,
         "name": "Cải Tạo Nhà",
         "icon": "fa-hammer",
-        "image": "image/tho-nha-dich-vu-sua-bep-tu-dien-tu.jpg",
+        "image": "../../assets/images/tho-nha-dich-vu-sua-bep-tu-dien-tu.jpg",
         "desc": "Thi công cải tạo nhà cửa: sơn nhà, trần thạch cao, lát nền. Tư vấn miễn phí.",
         "travelFee": {
             "mode": "per_km",
