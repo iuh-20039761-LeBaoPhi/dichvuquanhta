@@ -685,22 +685,23 @@ function getTodayDate() {
 
 // ===== MEDIA CAPTURE =====
 function setupTxMediaCapture() {
-    const photoInput = document.getElementById('txMediaPhotoInput');
-    const videoInput = document.getElementById('txMediaVideoInput');
-    const photoBtn   = document.getElementById('txPhotoCaptureBtn');
-    const videoBtn   = document.getElementById('txVideoCaptureBtn');
-    const previewBox = document.getElementById('txMediaPreviewContainer');
+    const photoInput   = document.getElementById('txMediaPhotoInput');
+    const videoInput   = document.getElementById('txMediaVideoInput');
+    const photoBtn     = document.getElementById('txPhotoCaptureBtn');
+    const videoBtn     = document.getElementById('txVideoCaptureBtn');
+    const photoPreview = document.getElementById('txMediaPhotoPreviewContainer');
+    const videoPreview = document.getElementById('txMediaVideoPreviewContainer');
     if (!photoInput || !videoInput) return;
 
     photoBtn.addEventListener('click', () => photoInput.click());
     videoBtn.addEventListener('click', () => videoInput.click());
 
     photoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addTxMediaFile(f, previewBox));
+        Array.from(this.files).forEach(f => addTxMediaFile(f, photoPreview));
         this.value = '';
     });
     videoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addTxMediaFile(f, previewBox));
+        Array.from(this.files).forEach(f => addTxMediaFile(f, videoPreview));
         this.value = '';
     });
 }
@@ -739,8 +740,10 @@ function addTxMediaFile(file, previewBox) {
 
 function clearTxMediaFiles() {
     _txMediaFiles = [];
-    const previewBox = document.getElementById('txMediaPreviewContainer');
-    if (previewBox) previewBox.innerHTML = '';
+    const pg = document.getElementById('txMediaPhotoPreviewContainer');
+    const vg = document.getElementById('txMediaVideoPreviewContainer');
+    if (pg) pg.innerHTML = '';
+    if (vg) vg.innerHTML = '';
 }
 
 // Export functions

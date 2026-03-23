@@ -1204,7 +1204,42 @@ body {
     justify-content: center;
 }
 
-.modal-body { padding: 20px 22px; }
+.modal-body { padding: 20px 5px; overflow-x: hidden; }
+
+/* ===== BOOKING FORM SECTIONS ===== */
+.bk-section {
+    background: #fff;
+    border: 1.5px solid rgba(17,153,142,0.18);
+    border-radius: 14px;
+    padding: 16px 14px 12px;
+    margin-bottom: 12px;
+}
+.bk-section-title {
+    color: var(--primary);
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.bk-section .form-control,
+.bk-section .form-select {
+    background-color: rgba(17,153,142,0.05);
+    border-color: rgba(17,153,142,0.18);
+}
+.bk-section .form-control:focus,
+.bk-section .form-select:focus {
+    background-color: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(17,153,142,0.12);
+}
+.bk-section .form-label {
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.875rem;
+    margin-bottom: 6px;
+}
 
 /* ============================================
    FLOATING HOTLINE BUTTON
@@ -1380,7 +1415,7 @@ body {
     .testimonial-card { padding: 20px; }
 
     /* Modal */
-    .modal-body   { padding: 16px 18px; }
+    .modal-body   { padding: 16px 5px; overflow-x: hidden; }
     .modal-header { padding: 16px 20px 12px; }
 
     /* Floating hotline */
@@ -2199,7 +2234,7 @@ body {
 /* Service block */
 .cfm-service-block {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     background: linear-gradient(135deg, #f0fdfb, #e8f8f5);
     border-radius: 10px;
@@ -2215,8 +2250,8 @@ body {
     flex-shrink: 0;
 }
 .cfm-service-name {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 0.9rem;
+    font-weight: 600;
     color: #0f766e;
     line-height: 1.4;
 }
@@ -2230,13 +2265,45 @@ body {
 .cfm-cost-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 9px 14px;
     font-size: 0.85rem;
     border-bottom: 1px solid rgba(17,153,142,0.09);
 }
 .cfm-cost-label { color: #64748b; }
-.cfm-cost-val   { font-weight: 600; color: #1a1a2e; }
+.cfm-cost-val   { font-weight: 600; color: #1a1a2e; text-align: right; }
+.cfm-cost-sub   { display: block; font-size: 0.75rem; font-weight: 400; color: #94a3b8; margin-top: 1px; }
+/* Danh sách dịch vụ đánh số */
+.cfm-service-list {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.cfm-service-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0f766e;
+    line-height: 1.4;
+}
+.cfm-service-list li .cfm-svc-num {
+    min-width: 20px;
+    height: 20px;
+    background: var(--gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
 .cfm-cost-total-row {
     display: flex;
     justify-content: space-between;
@@ -2369,6 +2436,12 @@ body {
 /* Placeholder khi chưa có ảnh/video */
 .media-preview-grid:empty::before {
     content: 'Chưa có ảnh / video';
+}
+.media-preview-grid.photo-grid:empty::before {
+    content: 'Chưa có ảnh';
+}
+.media-preview-grid.video-grid:empty::before {
+    content: 'Chưa có video';
     font-size: 0.8rem;
     color: #94a3b8;
 }
@@ -2481,9 +2554,10 @@ body {
     }
     #bookingModal .modal-body {
         overflow-y: auto;
+        overflow-x: hidden;
         max-height: calc(95vh - 62px);
         -webkit-overflow-scrolling: touch;
-        padding: 16px;
+        padding: 16px 5px;
     }
     .bk-modal-header {
         padding: 12px 16px;

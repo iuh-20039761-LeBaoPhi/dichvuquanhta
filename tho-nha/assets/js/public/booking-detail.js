@@ -196,7 +196,7 @@ function _bdUpdateBreakdown(price, travelFee, surveyFee) {
             if (_bdTravelStatus === 'loading') {
                 bdTravel.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width:11px;height:11px;border-width:2px;vertical-align:middle;"></span><em class="text-muted" style="font-size:0.82rem;">Đang tính...</em>';
             } else if (_bdTravelStatus === 'ok') {
-                bdTravel.textContent = `${_bdFmt(_bdTravelAmt)} (~${_bdTravelDistKm.toFixed(1)} km)`;
+                bdTravel.innerHTML = `${_bdFmt(_bdTravelAmt)} <small class="text-muted">(~${_bdTravelDistKm.toFixed(1)} km)</small>`;
             } else if (_bdTravelStatus === 'error') {
                 bdTravel.innerHTML = '<span style="color:#ef4444;font-size:0.82rem;">Không tính được — thử lại sau</span>';
             } else { // idle
@@ -259,22 +259,23 @@ function _bdHideBreakdown(clearCoords) {
 let _bdMediaFiles = [];
 
 function _bdSetupMedia() {
-    const photoInput = document.getElementById('mediaPhotoInput');
-    const videoInput = document.getElementById('mediaVideoInput');
-    const photoBtn   = document.getElementById('photoCaptureBtn');
-    const videoBtn   = document.getElementById('videoCaptureBtn');
-    const previewBox = document.getElementById('mediaPreviewContainer');
+    const photoInput    = document.getElementById('mediaPhotoInput');
+    const videoInput    = document.getElementById('mediaVideoInput');
+    const photoBtn      = document.getElementById('photoCaptureBtn');
+    const videoBtn      = document.getElementById('videoCaptureBtn');
+    const photoPreview  = document.getElementById('mediaPhotoPreviewContainer');
+    const videoPreview  = document.getElementById('mediaVideoPreviewContainer');
     if (!photoInput || !videoInput) return;
 
     photoBtn && photoBtn.addEventListener('click', () => photoInput.click());
     videoBtn && videoBtn.addEventListener('click', () => videoInput.click());
 
     photoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => _bdAddMedia(f, previewBox));
+        Array.from(this.files).forEach(f => _bdAddMedia(f, photoPreview));
         this.value = '';
     });
     videoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => _bdAddMedia(f, previewBox));
+        Array.from(this.files).forEach(f => _bdAddMedia(f, videoPreview));
         this.value = '';
     });
 }
@@ -307,8 +308,10 @@ function _bdAddMedia(file, previewBox) {
 
 function _bdClearMedia() {
     _bdMediaFiles = [];
-    const grid = document.getElementById('mediaPreviewContainer');
-    if (grid) grid.innerHTML = '';
+    const pg = document.getElementById('mediaPhotoPreviewContainer');
+    const vg = document.getElementById('mediaVideoPreviewContainer');
+    if (pg) pg.innerHTML = '';
+    if (vg) vg.innerHTML = '';
 }
 
 // ===================================================================
@@ -323,7 +326,17 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
     if (cfName)  cfName.textContent  = name;
     if (cfPhone) cfPhone.textContent = phone;
     if (cfAddr)  cfAddr.textContent  = address;
-    if (cfSvc)   cfSvc.textContent   = service;
+    if (cfSvc) {
+        const parts = service ? service.split(' + ').map(s => s.trim()).filter(Boolean) : [];
+        if (parts.length <= 1) {
+            cfSvc.textContent = service;
+        } else {
+            cfSvc.innerHTML = '<ul class="cfm-service-list">' +
+                parts.map((s, i) =>
+                    `<li><span class="cfm-svc-num">${i + 1}</span><span>${s}</span></li>`
+                ).join('') + '</ul>';
+        }
+    }
 
     // Chi phí
     const costSection     = document.getElementById('cf-cost-section');
@@ -352,7 +365,7 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
             if (isPerKm) {
                 costTravelRow.style.display = '';
                 if (travelOk) {
-                    costTravel.textContent = `${_bdFmt(_bdTravelAmt)} (~${_bdTravelDistKm.toFixed(1)} km)`;
+                    costTravel.innerHTML = `${_bdFmt(_bdTravelAmt)}<span class="cfm-cost-sub">~${_bdTravelDistKm.toFixed(1)} km</span>`;
                 } else if (_bdTravelStatus === 'loading') {
                     costTravel.innerHTML = '<em style="color:#94a3b8;font-size:0.82rem;">Đang tính...</em>';
                 } else {
@@ -367,7 +380,7 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
         if (costSurveyRow && costSurvey) {
             if (survey > 0) {
                 costSurveyRow.style.display = '';
-                costSurvey.textContent = _bdFmt(survey) + ' (nếu không sửa)';
+                costSurvey.innerHTML = `${_bdFmt(survey)}<span class="cfm-cost-sub">nếu không sửa</span>`;
             } else {
                 costSurveyRow.style.display = 'none';
             }

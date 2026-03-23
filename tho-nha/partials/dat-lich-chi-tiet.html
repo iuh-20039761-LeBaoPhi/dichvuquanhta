@@ -25,21 +25,29 @@
                 <div id="bookingAuthBanner" class="mb-3" style="display:none;"></div>
 
                 <form id="bookingForm">
-                    <div class="row g-3">
 
-                        <!-- Thông tin cá nhân -->
-                        <div class="col-12 col-sm-6">
-                            <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="name" placeholder="Nguyễn Văn A" required>
+                    <!-- SECTION 1: Thông tin cá nhân -->
+                    <div class="bk-section">
+                        <div class="bk-section-title"><i class="fas fa-user"></i> Thông tin cá nhân</div>
+                        <div class="row g-3">
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
                         </div>
-                        <div class="col-12 col-sm-6">
-                            <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control" id="phone" placeholder="0xxx xxx xxx" required>
-                        </div>
+                    </div>
+
+                    <!-- SECTION 2: Dịch vụ -->
+                    <div class="bk-section">
+                        <div class="bk-section-title"><i class="fas fa-tools"></i> Dịch vụ</div>
 
                         <!-- NAV MODE: dropdown chọn dịch vụ (hiện khi mở từ nút Đặt Lịch trên nav) -->
-                        <div id="sdNavMode" style="display:none;" class="col-12">
-                            <div class="row g-2">
+                        <div id="sdNavMode" style="display:none;">
+                            <div class="row g-2 mb-3">
                                 <div class="col-12">
                                     <label class="form-label">Loại dịch vụ <span class="text-danger">*</span></label>
                                     <select class="form-select" id="sdMainService">
@@ -61,19 +69,19 @@
                         </div>
 
                         <!-- DETAIL MODE: readonly dịch vụ pre-filled (hiện khi mở từ nút đặt lịch trên card) -->
-                        <div id="sdDetailMode" class="col-12">
+                        <div id="sdDetailMode" class="mb-3">
                             <label class="form-label">Dịch vụ đã chọn <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="selectedService" readonly>
                         </div>
 
                         <!-- Giá dịch vụ: dùng chung cả 2 mode -->
-                        <div class="col-12">
+                        <div>
                             <label class="form-label">Giá dịch vụ (tham khảo)</label>
                             <input type="text" class="form-control" id="servicePrice" readonly>
                         </div>
 
                         <!-- Ước tính chi phí (hiện khi có phí di chuyển/khảo sát) -->
-                        <div class="col-12" id="pricingBreakdownWrap" style="display:none;">
+                        <div id="pricingBreakdownWrap" style="display:none;" class="mt-3">
                             <div class="pricing-box">
                                 <div class="pricing-box-title">
                                     <i class="fas fa-receipt me-1"></i>Ước tính chi phí
@@ -123,54 +131,60 @@
                                 </p>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Địa chỉ + bản đồ -->
-                        <div class="col-12">
-                            <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="address" rows="2" placeholder="Số nhà, đường, phường, quận..." required></textarea>
-                            <div class="bk-map-btns mt-2">
-                                <button type="button" class="btn-map" id="toggleMapBtn" onclick="mapPicker.toggle()">
-                                    <i class="fas fa-map-marker-alt"></i> Chọn trên bản đồ
-                                </button>
-                                <button type="button" class="btn-gps" onclick="mapPicker.gps()">
-                                    <i class="fas fa-location-arrow"></i> Vị trí hiện tại
-                                </button>
-                            </div>
-                            <div id="mapPickerBox" style="display:none; margin-top:10px;">
-                                <div id="mapPickerEl"></div>
-                                <p class="text-muted small mt-1 mb-0">
-                                    <i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền
-                                </p>
-                            </div>
+                    <!-- SECTION 3: Địa chỉ -->
+                    <div class="bk-section">
+                        <div class="bk-section-title"><i class="fas fa-map-marker-alt"></i> Địa chỉ</div>
+                        <label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="address" rows="2" required></textarea>
+                        <div class="bk-map-btns mt-2">
+                            <button type="button" class="btn-map" id="toggleMapBtn" onclick="mapPicker.toggle()">
+                                <i class="fas fa-map-marker-alt"></i> Chọn trên bản đồ
+                            </button>
+                            <button type="button" class="btn-gps" onclick="mapPicker.gps()">
+                                <i class="fas fa-location-arrow"></i> Vị trí hiện tại
+                            </button>
                         </div>
+                        <div id="mapPickerBox" style="display:none; margin-top:10px;">
+                            <div id="mapPickerEl"></div>
+                            <p class="text-muted small mt-1 mb-0">
+                                <i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền
+                            </p>
+                        </div>
+                    </div>
 
-                        <!-- Ghi chú -->
-                        <div class="col-12">
+                    <!-- SECTION 4: Ghi chú & Đính kèm -->
+                    <div class="bk-section">
+                        <div class="bk-section-title"><i class="fas fa-comment-dots"></i> Ghi chú & Đính kèm <small class="text-muted fw-normal">(tùy chọn)</small></div>
+                        <div class="mb-3">
                             <label class="form-label">Ghi chú thêm</label>
-                            <textarea class="form-control" id="note" rows="2" placeholder="Mô tả thêm về tình trạng hư hỏng..."></textarea>
+                            <textarea class="form-control" id="note" rows="2"></textarea>
                         </div>
-
-                        <!-- Đính kèm hình ảnh / video -->
-                        <div class="col-12">
-                            <label class="form-label">
-                                Đính kèm hình ảnh / video <small class="text-muted">(tùy chọn)</small>
-                            </label>
-                            <div class="bk-capture-btns mb-2">
-                                <button type="button" id="photoCaptureBtn" class="btn-capture-photo">
-                                    <i class="fas fa-camera"></i> Chụp hình
-                                </button>
-                                <button type="button" id="videoCaptureBtn" class="btn-capture-video">
-                                    <i class="fas fa-video"></i> Quay video
-                                </button>
-                            </div>
-                            <input type="file" id="mediaPhotoInput" accept="image/*" multiple style="display:none">
-                            <input type="file" id="mediaVideoInput" accept="video/*" style="display:none">
-                            <div id="mediaPreviewBox" class="media-preview-box">
-                                <div id="mediaPreviewContainer" class="media-preview-grid"></div>
+                        <div>
+                            <label class="form-label">Đính kèm hình ảnh / video</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <button type="button" id="photoCaptureBtn" class="btn-capture-photo w-100">
+                                        <i class="fas fa-camera"></i> Chụp hình
+                                    </button>
+                                    <input type="file" id="mediaPhotoInput" accept="image/*" multiple style="display:none">
+                                    <div class="media-preview-box mt-2">
+                                        <div id="mediaPhotoPreviewContainer" class="media-preview-grid photo-grid"></div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <button type="button" id="videoCaptureBtn" class="btn-capture-video w-100">
+                                        <i class="fas fa-video"></i> Quay video
+                                    </button>
+                                    <input type="file" id="mediaVideoInput" accept="video/*" style="display:none">
+                                    <div class="media-preview-box mt-2">
+                                        <div id="mediaVideoPreviewContainer" class="media-preview-grid video-grid"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                    </div><!-- /row -->
+                    </div>
 
                     <div class="bk-submit-wrap">
                         <button type="submit" class="btn btn-gradient btn-booking-submit">
@@ -225,7 +239,6 @@
                     <div class="cfm-section">
                         <div class="cfm-section-label"><i class="fas fa-tools me-1"></i>Dịch vụ đã chọn</div>
                         <div class="cfm-service-block">
-                            <div class="cfm-service-icon"><i class="fas fa-wrench"></i></div>
                             <div id="cf-service" class="cfm-service-name"></div>
                         </div>
                     </div>
