@@ -14,7 +14,7 @@
     align-items:center;
     justify-content:space-between;
     padding:14px 20px;
-      flex-wrap:nowrap;
+    flex-wrap:nowrap;
 }
 
 .site-logo{
@@ -39,8 +39,9 @@
     display:flex;
     align-items:center;
     gap:22px;
-      flex-shrink:0;
-      margin-left:40px;
+    flex-shrink:0;
+    margin-left:40px;
+    transition: all 0.3s ease;
 }
 
 .site-nav a{
@@ -49,21 +50,24 @@
     font-size:14px;
     font-weight:500;
     white-space:nowrap; 
-       transition: color 0.2s ease;
+    transition: color 0.2s ease;
 }
+
 .site-nav a.active{
     color:#1abc9c;
     font-weight:600;
 }
+
 .site-nav a:active{
     transform: scale(0.95);
 }
+
 .site-btn{
     background:#1abc9c;
     color:#fff;
     padding:6px 12px;
     border-radius:6px;
-     font-size:13px;
+    font-size:13px;
 }
 
 .logo-group{
@@ -77,6 +81,7 @@
     border-radius:8px;
     border:1px solid #eee;
 }
+
 .nav-user{
     font-size:14px;
     font-weight:500;
@@ -86,18 +91,21 @@
     overflow:hidden;
     text-overflow:ellipsis;
 }
+
 .site-user-area{
     display:flex;
     align-items:center;
     gap:10px;
     flex-shrink:0;
-     border-left:1px solid #eee;
+    border-left:1px solid #eee;
     padding-left:10px;
 }
+
 .site-user-area a{
     text-decoration:none;
     font-size:14px;
 }
+
 /* ===== MENU TOGGLE ===== */
 .menu-toggle{
     display:none;
@@ -106,75 +114,90 @@
     border:none;
     cursor:pointer;
 }
+
 .site-nav a:hover{
     color:#1abc9c;
 }
-.site-nav{
-    transition: all 0.3s ease;
-}
+
 /* ===== MOBILE ===== */
 @media (max-width: 768px){
 
-    /* hiện nút ☰ */
+    /* Header chính */
+    .site-header-content{
+        flex-direction: column;
+        align-items: flex-start;
+        gap:8px; /* giảm khoảng cách */
+        padding:10px 15px;
+    }
+
+    /* Logo chính + logo phụ */
+    .logo-group{
+        width:100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Toggle menu */
     .menu-toggle{
         display:block;
-        margin-left:auto;
+        margin:5px 0;
+        font-size:24px;
     }
 
-    /* ẨN MENU */
+    /* Menu */
     .site-nav{
         display:none;
-        flex-direction:column;
+        flex-direction: column;
         width:100%;
         background:#fff;
-        padding:10px 0;
+        padding:5px 0;
         border-top:1px solid #eee;
+        gap:5px; /* khoảng cách giữa menu items */
     }
 
-    /* Khi bấm thì hiện */
+    /* Khi toggle menu */
     .site-nav.active{
         display:flex;
     }
 
-    /* Menu item */
     .site-nav a{
-        padding:10px 20px;
+        padding:8px 15px; /* giảm padding */
+        font-size:13px;
         width:100%;
-        
     }
 
-    /* USER AREA xuống dưới */
+    /* User area */
     .site-user-area{
+         flex-direction: column;
+        align-items: flex-start;
         width:100%;
-        justify-content:space-between;
-        padding-top:10px;
+        padding:10px 15px;
+        border-top:1px solid #eee;
+        gap:6px;
     }
+
+     .site-user-area a{
+    display:inline-block;
+    width:auto;
 }
 
-@media (max-width: 768px){
-
-    .site-header-content{
-        flex-direction: column;
-        align-items: flex-start;
-        gap:10px;
-    }
-
-    .site-nav a{
-        font-size:13px;
-    }
-
-    .logo-group{
-        width:100%;
-        justify-content: space-between;
-    }
-
-    .site-user-area{
-        width:100%;
-        justify-content: space-between;
-    }
+   .site-btn{
+    display:inline-block;
+    width:auto;
+    padding:6px 12px;
+    font-size:13px;
+    border-radius:6px;
+}
 
     .nav-user{
         max-width:120px;
     }
-
+      .site-nav a:hover,
+.site-nav a.active{
+    color:#1abc9c;
+    font-weight:600;
+    background-color: #f0fdf8;
+    border-radius:6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
 }

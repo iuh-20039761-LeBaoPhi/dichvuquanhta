@@ -26,7 +26,9 @@
       }
       html,body {width: 100%;max-width: 100%;overflow-x: hidden; }
       body { font-family:"Quicksand",sans-serif; line-height:1.85; color:#444; background:#fafafa; }
-
+      .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
+    /* GIỮ header luôn 1 hàng */
+      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
       /* ── CATEGORY PILLS ─────────────────────────── */
       .cat-pill { font-size:.72rem; font-weight:700; letter-spacing:.4px; padding:3px 11px; border-radius:50px; display:inline-block; }
       .cat-0 { background:#fce4ec; color:#c2185b; }
@@ -80,6 +82,9 @@
 
 /* ================= MOBILE ONLY ================= */
       @media (max-width: 991.98px) {
+        body {
+    padding-top: 86px;
+  }
         .navbar { overflow-x: clip; }
         .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
         .navbar-brand img { width: 56px !important; height: 42px !important; }

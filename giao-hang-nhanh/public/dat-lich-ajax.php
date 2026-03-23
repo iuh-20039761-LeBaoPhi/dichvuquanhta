@@ -378,6 +378,82 @@ function get_openweather_api_key($conn) {
     return trim((string) getSetting($conn, 'openweather_api_key', ''));
 }
 
+function get_google_sheets_webhook_url($conn) {
+    $envUrl = getenv('GOOGLE_SHEETS_WEBHOOK_URL') ?: getenv('GOOGLE_APPS_SCRIPT_WEBHOOK_URL');
+    if ($envUrl) {
+        return trim((string) $envUrl);
+    }
+    return trim((string) getSetting($conn, 'google_sheets_webhook_url', ''));
+}
+
+function http_post_json($url, array $payload) {
+    $body = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if ($body === false) {
+        return ['ok' => false, 'message' => 'Không thể mã hóa dữ liệu đồng bộ Sheets.'];
+    }
+
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $body,
+            CURLOPT_HTTPHEADER => [
+                'Accept: application/json',
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($body),
+            ],
+        ]);
+        $responseBody = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($responseBody !== false && $httpCode >= 200 && $httpCode < 300) {
+            $decoded = json_decode((string) $responseBody, true);
+            return ['ok' => true, 'data' => is_array($decoded) ? $decoded : ['raw' => $responseBody]];
+        }
+
+        return ['ok' => false, 'message' => $error ?: 'HTTP ' . $httpCode];
+    }
+
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'timeout' => 15,
+            'header' => "Accept: application/json\r\nContent-Type: application/json\r\n",
+            'content' => $body,
+        ],
+    ]);
+    $responseBody = @file_get_contents($url, false, $context);
+    if ($responseBody === false) {
+        return ['ok' => false, 'message' => 'Không thể gửi dữ liệu đến Google Sheets.'];
+    }
+    $decoded = json_decode((string) $responseBody, true);
+    return ['ok' => true, 'data' => is_array($decoded) ? $decoded : ['raw' => $responseBody]];
+}
+
+function sync_order_to_google_sheets($conn, array $payload) {
+    $webhookUrl = get_google_sheets_webhook_url($conn);
+    if ($webhookUrl === '') {
+        return ['configured' => false, 'synced' => false];
+    }
+
+    $response = http_post_json($webhookUrl, $payload);
+    if (!$response['ok']) {
+        throw new Exception('Không thể đồng bộ Google Sheets: ' . ($response['message'] ?? 'Lỗi không xác định.'));
+    }
+
+    $data = $response['data'] ?? [];
+    if (is_array($data) && array_key_exists('success', $data) && !$data['success']) {
+        throw new Exception('Google Sheets từ chối dữ liệu: ' . trim((string) ($data['message'] ?? 'Lỗi không xác định.')));
+    }
+
+    return ['configured' => true, 'synced' => true];
+}
+
 function load_pricing_data_json() {
     static $cache = null;
     if ($cache !== null) {
@@ -979,12 +1055,42 @@ try {
         'mkv',
     ]);
 
+    $googleSheetsSync = sync_order_to_google_sheets($conn, [
+        'order_id' => $order_id,
+        'order_code' => $order_code,
+        'created_at' => date('Y-m-d H:i:s'),
+        'sender_name' => $name,
+        'sender_phone' => $phone,
+        'receiver_name' => $receiver_name,
+        'receiver_phone' => $receiver_phone,
+        'pickup_address' => $pickup_address,
+        'delivery_address' => $delivery_address,
+        'service_type' => $service_type,
+        'vehicle_type' => $vehicle_type,
+        'distance_km' => $distance_km,
+        'total_weight' => $total_weight,
+        'cod_amount' => $cod_amount,
+        'shipping_fee' => $shipping_fee,
+        'pickup_time' => $pickup_time_str,
+        'requested_delivery_time' => $requested_delivery_time,
+        'estimated_delivery' => $estimated_delivery,
+        'payment_method' => $payment_method,
+        'service_condition_key' => $service_condition_key,
+        'weather_source' => $weather_source,
+        'weather_note' => $weather_note,
+        'items' => $data['items'] ?? [],
+        'uploaded_files' => $uploadedMedia,
+        'booking_payload' => $data,
+    ]);
+
     $conn->commit();
     json_response([
         'success' => true, 
         'message' => 'Đặt đơn hàng thành công!',
         'order_code' => $order_code,
         'uploaded_files' => $uploadedMedia,
+        'google_sheets_synced' => (bool) ($googleSheetsSync['synced'] ?? false),
+        'google_sheets_configured' => (bool) ($googleSheetsSync['configured'] ?? false),
     ]);
 
 } catch (Exception $e) {

@@ -2239,10 +2239,12 @@
    ===================================================== */
 @media (max-width: 768px) {
   .pricing-table-section {
-    padding: 60px 16px;
+    padding: 48px 8px;
   }
   .pricing-formula-banner {
-    padding: 24px 16px;
+    padding: 18px 12px;
+    border-radius: 16px;
+    margin-bottom: 20px;
   }
   .formula-equation {
     gap: 6px;
@@ -2261,9 +2263,9 @@
   .pricing-decision-box,
   .pricing-final-example,
   .pricing-clarity-box {
-    padding: 18px;
-    margin-bottom: 22px;
-    border-radius: 18px;
+    padding: 14px 10px;
+    margin-bottom: 16px;
+    border-radius: 14px;
   }
   .pricing-decision-head,
   .pricing-final-example__head,
@@ -2290,19 +2292,42 @@
   }
   .pricing-table-wrapper {
     -webkit-overflow-scrolling: touch;
+    margin-left: -6px;
+    margin-right: -6px;
+    margin-bottom: 12px;
+    max-width: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(10, 42, 102, 0.06);
   }
   .pricing-table--comparison {
     min-width: 640px;
   }
   .pricing-table th,
   .pricing-table td {
-    padding: 10px 12px;
+    padding: 9px 10px;
   }
   .pricing-note,
   .pricing-example,
   .weight-threshold-box {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .pricing-transition {
+    padding: 8px 8px 0;
+  }
+  .pricing-transition__box {
+    padding: 16px 14px;
+    border-radius: 14px;
+  }
+  .pricing-card-grid {
+    gap: 12px;
+  }
+  .pricing-info-card {
+    padding: 16px 12px;
+    border-radius: 14px;
+  }
+  .weight-rule-item {
+    padding: 16px 12px;
   }
   .pricing-info-card-head {
     align-items: flex-start;
@@ -2313,6 +2338,7 @@
   }
   .weight-rule-box {
     flex-direction: column;
+    border-radius: 14px;
   }
   .weight-rule-item {
     width: 100%;
@@ -2324,7 +2350,7 @@
     grid-template-columns: 1fr;
   }
   #bang-gia {
-    padding: 60px 16px;
+    padding: 48px 8px;
   }
 }
 
@@ -2332,10 +2358,12 @@
   .pricing-decision-box,
   .pricing-final-example,
   .pricing-clarity-box {
-    padding: 16px;
+    padding: 10px 6px;
+    border-radius: 12px;
   }
   .pricing-formula-banner {
-    padding: 22px 14px;
+    padding: 14px 8px;
+    border-radius: 14px;
   }
   .formula-title {
     margin-bottom: 12px;
@@ -2357,6 +2385,16 @@
   .pricing-table--comparison {
     min-width: 600px;
   }
+  .pricing-table-wrapper {
+    margin-left: -2px;
+    margin-right: -2px;
+    border-radius: 10px;
+    box-shadow: 0 1px 8px rgba(10, 42, 102, 0.05);
+  }
+  .pricing-table th,
+  .pricing-table td {
+    padding: 8px 8px;
+  }
   .pricing-decision-head h3,
   .pricing-final-example__head h3,
   .pricing-clarity-box__head h3,
@@ -2367,14 +2405,29 @@
     font-size: 15px;
   }
   .pricing-transition {
-    padding: 8px 16px 0;
+    padding: 8px 4px 0;
   }
   .pricing-transition__box {
-    padding: 18px 16px;
-    border-radius: 16px;
+    padding: 14px 10px;
+    border-radius: 12px;
   }
   .pricing-transition__box .btn-primary {
     width: 100%;
     justify-content: center;
+  }
+  .pricing-note,
+  .pricing-example,
+  .weight-threshold-box,
+  .pricing-info-card {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .weight-threshold-box,
+  .weight-rule-box,
+  .pricing-info-card {
+    border-radius: 12px;
+  }
+  .weight-rule-item {
+    padding: 14px 10px;
   }
 }

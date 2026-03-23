@@ -16,6 +16,8 @@ let reviewUploadObjectUrls = [];
 let isResolvingPickupLocation = false;
 const BOOKING_DRAFT_STORAGE_KEY = "ghn_booking_login_resume_v1";
 const BOOKING_DRAFT_TTL_MS = 6 * 60 * 60 * 1000;
+const DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL =
+  "https://script.google.com/macros/s/AKfycbxhbxqyO8BMJipSMYi_TedfX0EFU1OqQqBW7Fa0R9_cF25EKYHoiMSL3XHBmSclSR0t/exec";
 let orderItems = [
   {
     loai_hang: "",
@@ -211,7 +213,7 @@ function loadOrderFormConfigSync() {
     khunggiolayhang: [],
     khunggionhanhang: [],
     huongdankhaibao:
-      "Hang co gia tri khai bao tren 1.000.000d se tinh phi bao hiem 0,5%, toi thieu 5.000d.",
+      "Hàng có giá trị khai báo trên 1.000.000đ sẽ tính phí bảo hiểm 0,5%, tối thiểu 5.000đ.",
   };
 
   if (typeof XMLHttpRequest === "undefined") return fallback;
@@ -246,9 +248,17 @@ const PICKUP_SLOT_OPTIONS = Array.isArray(ORDER_FORM_CONFIG.khunggiolayhang)
 const DELIVERY_SLOT_OPTIONS = Array.isArray(ORDER_FORM_CONFIG.khunggionhanhang)
   ? ORDER_FORM_CONFIG.khunggionhanhang
   : [];
+const DEFAULT_DECLARED_VALUE_HELP =
+  "Hàng có giá trị khai báo trên 1.000.000đ sẽ tính phí bảo hiểm 0,5%, tối thiểu 5.000đ.";
+const DECLARED_VALUE_HELP_SOURCE = String(
+  ORDER_FORM_CONFIG.huongdankhaibao || "",
+).trim();
 const DECLARED_VALUE_HELP =
-  ORDER_FORM_CONFIG.huongdankhaibao ||
-  "Hang co gia tri khai bao tren 1.000.000d se tinh phi bao hiem 0,5%, toi thieu 5.000d.";
+  /[ăâđêôơưáàảãạấầẩẫậắằẳẵặéèẻẽẹếềểễệíìỉĩịóòỏõọốồổỗộớờởỡợúùủũụứừửữựýỳỷỹỵ]/i.test(
+    DECLARED_VALUE_HELP_SOURCE,
+  )
+    ? DECLARED_VALUE_HELP_SOURCE
+    : DEFAULT_DECLARED_VALUE_HELP;
 const DEFAULT_URGENT_CONDITION = {
   key: "macdinh",
   label: "Bình thường",
@@ -258,8 +268,8 @@ const DEFAULT_URGENT_CONDITION = {
 document.addEventListener("DOMContentLoaded", () => {
   weatherQuoteState = createDefaultWeatherQuoteState();
   initMap();
-  initAddressSearch("search-pickup", "sug-pickup", "pickup");
-  initAddressSearch("search-delivery", "sug-delivery", "delivery");
+  initAddressSearch("dia_chi_lay_hang", "sug-pickup", "pickup");
+  initAddressSearch("dia_chi_giao_hang", "sug-delivery", "delivery");
   initGeolocationButton();
   initPickupSlotOptions();
   initUrgentConditionOptions();
@@ -267,27 +277,28 @@ document.addEventListener("DOMContentLoaded", () => {
   initPackageChoiceControls();
 
   renderItems();
+  bindInfoToggleInteractions();
   document.getElementById("btn-add-item").addEventListener("click", addItem);
-  document.getElementById("cod-value").addEventListener("input", () => {
+  document.getElementById("gia_tri_thu_ho_cod").addEventListener("input", () => {
     renderItems();
     if (getCurrentStep() >= 3) renderServiceCards();
   });
 
   // Default date = today
   const today = formatDateValue(getCurrentDateTime());
-  document.getElementById("pickup-date").value = today;
+  document.getElementById("ngay_lay_hang").value = today;
   syncDesiredDeliveryWindow();
   updateDesiredDeliveryHint();
   updateScheduleTimingPanel();
-  document.getElementById("vehicle-choice").addEventListener("change", () => {
+  document.getElementById("phuong_tien_giao_hang").addEventListener("change", () => {
     if (getCurrentStep() >= 3) renderServiceCards();
   });
-  document.getElementById("pickup-date").addEventListener("change", () => {
+  document.getElementById("ngay_lay_hang").addEventListener("change", () => {
     syncDesiredDeliveryWindow();
     updateScheduleTimingPanel();
     if (getCurrentStep() >= 3) renderServiceCards();
   });
-  document.getElementById("pickup-slot").addEventListener("change", () => {
+  document.getElementById("khung_gio_lay_hang").addEventListener("change", () => {
     syncDesiredDeliveryWindow();
     syncUrgentConditionVisibility(selectedService && selectedService.serviceType);
     updateScheduleTimingPanel();
@@ -380,7 +391,7 @@ function createDefaultWeatherQuoteState() {
     conditionLabel: "Chưa phát sinh phụ phí thời tiết",
     summary: "Hệ thống đang tạm tính theo thời tiết bình thường",
     note:
-      "OpenWeatherMap sẽ được dùng nếu đã cấu hình API key. Nếu chưa có dữ liệu, điều phối sẽ xác nhận khi cần.",
+      "Hệ thống sẽ tự kiểm tra thời tiết tại điểm lấy hàng để tính phụ phí nếu có. Nếu chưa lấy được dữ liệu, điều phối sẽ kiểm tra lại trước khi chốt đơn.",
     source: "fallback",
     checkedAt: "",
     effectiveAt: "",
@@ -388,12 +399,33 @@ function createDefaultWeatherQuoteState() {
   };
 }
 
+function getFriendlyWeatherFallbackNote() {
+  return "Hiện chưa lấy được dữ liệu thời tiết tự động. Hệ thống đang tạm tính phụ phí thời tiết theo mức bình thường; điều phối sẽ kiểm tra lại trước khi chốt đơn.";
+}
+
+function sanitizeWeatherUserNote(message) {
+  const raw = String(message || "").trim();
+  if (!raw) return getFriendlyWeatherFallbackNote();
+
+  const normalized = raw.toLowerCase();
+  const hasTechnicalDetail =
+    normalized.includes("html") ||
+    normalized.includes("json") ||
+    normalized.includes("endpoint") ||
+    normalized.includes("http") ||
+    normalized.includes("405") ||
+    normalized.includes("phương thức") ||
+    normalized.includes("máy chủ");
+
+  return hasTechnicalDetail ? getFriendlyWeatherFallbackNote() : raw;
+}
+
 function getDeliveryMode() {
   return deliveryMode || "scheduled";
 }
 
 function initPackageChoiceControls() {
-  const select = document.getElementById("package-choice");
+  const select = document.getElementById("goi_cuoc");
   if (!select) return;
   select.addEventListener("change", () => {
     const val = select.value;
@@ -543,8 +575,8 @@ function findDeliverySlotByMinuteTarget(targetMinutes) {
 
 function applyImmediateScheduleDefaults() {
   const now = getCurrentDateTime();
-  const pickupDateInput = document.getElementById("pickup-date");
-  const pickupSlotSelect = document.getElementById("pickup-slot");
+  const pickupDateInput = document.getElementById("ngay_lay_hang");
+  const pickupSlotSelect = document.getElementById("khung_gio_lay_hang");
   const deliveryDateInput = document.getElementById("delivery-date");
   const deliverySlotSelect = document.getElementById("delivery-slot");
   const instantWindow = getInstantPricingWindow(now);
@@ -574,7 +606,7 @@ function formatScheduleDuration(totalMinutes) {
 
 function getScheduleTimingInfo() {
   if (getDeliveryMode() !== "scheduled") return null;
-  const pickupDate = document.getElementById("pickup-date")?.value || "";
+  const pickupDate = document.getElementById("ngay_lay_hang")?.value || "";
   const deliveryDate = document.getElementById("delivery-date")?.value || "";
   const pickupSlot = getSelectedPickupSlot();
   const deliverySlot = getSelectedDeliverySlot();
@@ -627,7 +659,7 @@ function updateScheduleTimingPanel() {
 }
 
 function initPickupSlotOptions() {
-  const select = document.getElementById("pickup-slot");
+  const select = document.getElementById("khung_gio_lay_hang");
   if (!select) return;
   const options = getPickupSlotOptions();
   if (!options.length) return;
@@ -657,7 +689,7 @@ function initUrgentConditionOptions() {
 }
 
 function initVehicleOptions() {
-  const select = document.getElementById("vehicle-choice");
+  const select = document.getElementById("phuong_tien_giao_hang");
   if (!select || !VEHICLE_OPTIONS.length) return;
   select.innerHTML = VEHICLE_OPTIONS.map((option, index) => {
     const selectedAttr = index === 0 ? " selected" : "";
@@ -666,7 +698,7 @@ function initVehicleOptions() {
 }
 
 function getSelectedPickupSlot() {
-  const select = document.getElementById("pickup-slot");
+  const select = document.getElementById("khung_gio_lay_hang");
   if (!select) return null;
   const options = getPickupSlotOptions();
   const selected = options.find((slot) => slot.key === select.value);
@@ -682,7 +714,7 @@ function getSelectedDeliverySlot() {
 }
 
 function getPickupAtDateTime() {
-  const pickupDateValue = document.getElementById("pickup-date")?.value || "";
+  const pickupDateValue = document.getElementById("ngay_lay_hang")?.value || "";
   const pickupSlot = getSelectedPickupSlot();
 
   if (pickupDateValue && pickupSlot?.start) {
@@ -725,23 +757,23 @@ function updateWeatherSurchargePanel(serviceType) {
   const serviceLabel = serviceLabels[serviceType] || "gói đang chọn";
 
   if (weatherQuoteState?.isLoading) {
-    desc.textContent =
-      "Hệ thống đang kiểm tra thời tiết tại điểm lấy hàng theo ngày và khung giờ lấy hàng đã chọn.";
+    desc.textContent = "";
     badge.textContent = "Đang kiểm tra";
     badge.className = "weather-surcharge-badge";
-    meta.textContent =
-      "Đang lấy dữ liệu OpenWeatherMap để xác định phụ phí thời tiết.";
+    meta.textContent = "";
     hint.textContent =
-      "Khách hàng không cần chọn tay. Nếu chưa có kết quả, giá đang tạm tính theo điều kiện bình thường và chỉ mang tính tham khảo.";
+      "Hệ thống đang gọi API thời tiết theo điểm lấy hàng và khung giờ đã chọn để xác định phụ phí. Trong lúc chờ kết quả, mức hiển thị đang là tạm tính.";
     return;
   }
 
   const conditionLabel =
     weatherQuoteState?.conditionLabel || "Chưa phát sinh phụ phí thời tiết";
   const sourceLabel =
+    weatherQuoteState?.source === "openmeteo_hourly" ||
     weatherQuoteState?.source === "openweather_forecast"
       ? "Dữ liệu dự báo thời tiết"
-      : weatherQuoteState?.source === "openweather_current"
+      : weatherQuoteState?.source === "openmeteo_current" ||
+          weatherQuoteState?.source === "openweather_current"
         ? "Dữ liệu thời tiết hiện tại"
         : "Dữ liệu tạm tính nội bộ";
   const hasSurcharge =
@@ -750,27 +782,28 @@ function updateWeatherSurchargePanel(serviceType) {
     weatherQuoteState.conditionKey !== "macdinh";
   const isFallback = !!weatherQuoteState?.isFallback;
   const conditionFee = Number(selectedService?.breakdown?.conditionFee || 0);
+  const updatedAt = weatherQuoteState?.checkedAt
+    ? ` Cập nhật: ${weatherQuoteState.checkedAt}.`
+    : "";
+  const pickupAtText = pickupAt
+    ? ` Mốc lấy hàng: ${pickupAt.toLocaleString("vi-VN")}.`
+    : "";
 
-  desc.textContent =
-    serviceType
-      ? hasSurcharge
-        ? `${conditionLabel}. ${serviceLabel} đang cộng thêm ${formatMoneyVnd(conditionFee)} phụ phí điều kiện giao.`
-        : `${conditionLabel}. ${serviceLabel} hiện chưa phát sinh phụ phí điều kiện giao.`
-      : "Phụ phí điều kiện giao sẽ tự cập nhật theo gói bạn chọn.";
+  desc.textContent = "";
   badge.textContent = hasSurcharge
-    ? `+${formatMoneyVnd(conditionFee)}`
+    ? formatMoneyVnd(conditionFee)
     : formatMoneyVnd(0);
   badge.className = `weather-surcharge-badge${
     isFallback ? " is-muted" : hasSurcharge ? " is-warning" : ""
   }`;
-  meta.textContent = `${sourceLabel}${
-    weatherQuoteState?.checkedAt
-      ? ` | Cập nhật: ${weatherQuoteState.checkedAt}`
-      : ""
-  }${pickupAt ? ` | Mốc lấy hàng: ${pickupAt.toLocaleString("vi-VN")}` : ""}`;
+  meta.textContent = "";
   hint.textContent =
     weatherQuoteState?.note ||
-    "Khách hàng không cần chọn tay. Nếu hệ thống chưa lấy được dữ liệu, điều phối sẽ xác nhận khi cần. Giá hiện tại là giá tham khảo.";
+    (serviceType
+      ? hasSurcharge
+        ? `${sourceLabel} đã xác nhận ${conditionLabel.toLowerCase()}. ${serviceLabel} đang cộng ${formatMoneyVnd(conditionFee)} phụ phí thời tiết.${updatedAt}${pickupAtText}`
+        : `${sourceLabel} hiện chưa ghi nhận phụ phí thời tiết cho ${serviceLabel}. Mức đang áp dụng là ${formatMoneyVnd(0)}.${updatedAt}${pickupAtText}`
+      : `Phụ phí thời tiết sẽ tự cập nhật theo gói bạn chọn sau khi hệ thống kiểm tra dữ liệu thời tiết.${updatedAt}${pickupAtText}`);
 }
 
 function normalizeWeatherQuoteResponse(payload) {
@@ -785,7 +818,7 @@ function normalizeWeatherQuoteResponse(payload) {
     summary:
       response.summary || "Hệ thống đang tạm tính theo thời tiết bình thường",
     note:
-      response.note ||
+      sanitizeWeatherUserNote(response.note) ||
       "Khách hàng không cần chọn tay. Điều phối sẽ xác nhận khi điều kiện thực tế thay đổi.",
     source: response.source || "fallback",
     checkedAt: response.checked_at || "",
@@ -833,6 +866,125 @@ function buildWeatherRequestKey() {
   return `${pickupPoint.lat.toFixed(3)}:${pickupPoint.lng.toFixed(3)}:${formatDateValue(pickupAt)}:${pickupAt.getHours()}:${pickupAt.getMinutes()}`;
 }
 
+function getOpenMeteoForecastDays(pickupAt) {
+  const pickupTime = pickupAt instanceof Date ? pickupAt.getTime() : Date.now();
+  const now = Date.now();
+  const diffDays = Math.max(0, Math.ceil((pickupTime - now) / (24 * 60 * 60 * 1000)));
+  return Math.min(Math.max(diffDays + 2, 3), 16);
+}
+
+function findClosestOpenMeteoHourlyIndex(hourlyTimes, pickupAt) {
+  if (!Array.isArray(hourlyTimes) || !hourlyTimes.length || !(pickupAt instanceof Date)) {
+    return -1;
+  }
+
+  const pickupTime = pickupAt.getTime();
+  let closestIndex = -1;
+  let closestDiff = Number.POSITIVE_INFINITY;
+
+  hourlyTimes.forEach((timeText, index) => {
+    const rowTime = new Date(timeText);
+    if (Number.isNaN(rowTime.getTime())) return;
+    const diff = Math.abs(rowTime.getTime() - pickupTime);
+    if (diff < closestDiff) {
+      closestDiff = diff;
+      closestIndex = index;
+    }
+  });
+
+  return closestIndex;
+}
+
+function mapOpenMeteoWeatherCondition(bucket = {}) {
+  const weatherCode = Number(bucket.weather_code ?? 0);
+  const precipitation = Number(bucket.precipitation ?? 0);
+  const rain = Number(bucket.rain ?? 0);
+  const showers = Number(bucket.showers ?? 0);
+  const snowfall = Number(bucket.snowfall ?? 0);
+  const windSpeed = Number(bucket.wind_speed_10m ?? 0);
+  const thunderstormCodes = [95, 96, 99];
+  const heavyRainCodes = [65, 67, 82];
+  const lightRainCodes = [51, 53, 55, 56, 57, 61, 63, 66, 80, 81];
+  const snowCodes = [71, 73, 75, 77, 85, 86];
+
+  if (
+    thunderstormCodes.includes(weatherCode) ||
+    heavyRainCodes.includes(weatherCode) ||
+    snowCodes.includes(weatherCode) ||
+    precipitation >= 3 ||
+    rain >= 3 ||
+    showers >= 3 ||
+    snowfall >= 1 ||
+    windSpeed >= 36
+  ) {
+    return {
+      condition_key: "muato",
+      condition_label: "Mưa lớn / thời tiết xấu",
+      summary: "Đã cộng phụ phí thời tiết xấu",
+    };
+  }
+
+  if (
+    lightRainCodes.includes(weatherCode) ||
+    precipitation > 0 ||
+    rain > 0 ||
+    showers > 0
+  ) {
+    return {
+      condition_key: "muanhe",
+      condition_label: "Mưa nhẹ / đường đông",
+      summary: "Đã cộng phụ phí mưa nhẹ",
+    };
+  }
+
+  return {
+    condition_key: "macdinh",
+    condition_label: "Thời tiết bình thường",
+    summary: "Chưa phát sinh phụ phí thời tiết",
+  };
+}
+
+function normalizeOpenMeteoWeatherQuote(payload, pickupAt) {
+  const current = payload?.current || {};
+  const hourly = payload?.hourly || {};
+  const hourlyTimes = Array.isArray(hourly.time) ? hourly.time : [];
+  const hourlyIndex = findClosestOpenMeteoHourlyIndex(hourlyTimes, pickupAt);
+  const hasHourly = hourlyIndex >= 0;
+  const bucket = hasHourly
+    ? {
+        weather_code: hourly.weather_code?.[hourlyIndex],
+        precipitation: hourly.precipitation?.[hourlyIndex],
+        rain: hourly.rain?.[hourlyIndex],
+        showers: hourly.showers?.[hourlyIndex],
+        snowfall: hourly.snowfall?.[hourlyIndex],
+        wind_speed_10m: hourly.wind_speed_10m?.[hourlyIndex],
+      }
+    : current;
+  const mapped = mapOpenMeteoWeatherCondition(bucket);
+  const source = hasHourly ? "openmeteo_hourly" : "openmeteo_current";
+  const pickupText =
+    pickupAt instanceof Date && !Number.isNaN(pickupAt.getTime())
+      ? pickupAt.toLocaleString("vi-VN")
+      : "";
+
+  return {
+    status: "ready",
+    requestKey: weatherQuoteState?.requestKey || "",
+    isLoading: false,
+    conditionKey: mapped.condition_key,
+    conditionLabel: mapped.condition_label,
+    summary: mapped.summary,
+    note:
+      mapped.condition_key === "macdinh"
+        ? `Hệ thống đã kiểm tra thời tiết tại điểm lấy hàng. Hiện chưa cần cộng phụ phí thời tiết${pickupText ? ` cho mốc ${pickupText}` : ""}.`
+        : `Hệ thống đã kiểm tra thời tiết tại điểm lấy hàng và xác nhận ${mapped.condition_label.toLowerCase()}${pickupText ? ` cho mốc ${pickupText}` : ""}. Phụ phí thời tiết đã được cộng tự động.`,
+    source,
+    checkedAt: new Date().toLocaleString("vi-VN"),
+    effectiveAt: pickupText,
+    isFallback: false,
+  };
+}
+
 async function requestWeatherQuote(force = false) {
   const pickupPoint = markerPickup?.getLatLng?.();
   if (!pickupPoint) {
@@ -866,39 +1018,53 @@ async function requestWeatherQuote(force = false) {
   };
   updateWeatherSurchargePanel(selectedService && selectedService.serviceType);
 
-  const pickupAt = getPickupAtDateTime().toISOString();
-  const url = new URL(
-    resolveBookingApiUrl("dat-lich-ajax.php"),
-    window.location.href,
+  const pickupAt = getPickupAtDateTime();
+  const url = new URL("https://api.open-meteo.com/v1/forecast");
+  url.searchParams.set("latitude", pickupPoint.lat);
+  url.searchParams.set("longitude", pickupPoint.lng);
+  url.searchParams.set("timezone", "Asia/Bangkok");
+  url.searchParams.set("forecast_days", String(getOpenMeteoForecastDays(pickupAt)));
+  url.searchParams.set(
+    "current",
+    [
+      "weather_code",
+      "precipitation",
+      "rain",
+      "showers",
+      "wind_speed_10m",
+    ].join(","),
   );
-  url.searchParams.set("action", "weather_quote");
-  url.searchParams.set("lat", pickupPoint.lat);
-  url.searchParams.set("lng", pickupPoint.lng);
-  url.searchParams.set("mode", getDeliveryMode());
-  url.searchParams.set("pickup_at", pickupAt);
+  url.searchParams.set(
+    "hourly",
+    [
+      "weather_code",
+      "precipitation",
+      "rain",
+      "showers",
+      "snowfall",
+      "wind_speed_10m",
+    ].join(","),
+  );
 
   try {
-    const response = await fetch(url.toString(), {
-      headers: { Accept: "application/json" },
-    });
-    const result = await readJsonResponseSafe(response);
-    if (!response.ok || !result.success) {
-      throw new Error(result.message || "Không thể lấy dữ liệu thời tiết.");
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      throw new Error(`Không thể lấy dữ liệu thời tiết (HTTP ${response.status}).`);
     }
+    const result = await response.json();
     weatherQuoteState = {
-      ...normalizeWeatherQuoteResponse(result.data || {}),
+      ...normalizeOpenMeteoWeatherQuote(result, pickupAt),
       requestKey,
     };
   } catch (error) {
+    console.warn("Không lấy được dữ liệu thời tiết:", error);
     weatherQuoteState = {
       ...createDefaultWeatherQuoteState(),
       status: "ready",
       requestKey,
-      note:
-        error.message ||
-        "Không lấy được dữ liệu thời tiết. Hệ thống đang tạm tính theo điều kiện bình thường.",
+      note: sanitizeWeatherUserNote(error.message),
       conditionLabel: "Chưa phát sinh phụ phí thời tiết",
-      summary: "Hệ thống đang tạm tính theo thời tiết bình thường",
+      summary: "Hệ thống đang tạm tính phụ phí thời tiết theo mức bình thường",
       isFallback: true,
     };
   }
@@ -967,6 +1133,77 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function buildInfoToggleMarkup(content, label = "Xem chi tiết", extraClass = "") {
+  const classes = ["info-toggle", "info-toggle--inline", extraClass]
+    .filter(Boolean)
+    .join(" ");
+  return `
+    <details class="${classes}">
+      <summary class="info-toggle__button" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">i</summary>
+      <div class="info-toggle__content">${escapeHtml(content)}</div>
+    </details>
+  `;
+}
+
+function updateInfoTogglePlacement(toggle) {
+  if (!toggle || typeof window === "undefined") return;
+
+  const content = toggle.querySelector(".info-toggle__content");
+  if (!content) return;
+
+  if (window.innerWidth > 640) {
+    delete toggle.dataset.mobileAlign;
+    return;
+  }
+
+  toggle.dataset.mobileAlign = "center";
+
+  window.requestAnimationFrame(() => {
+    const rect = content.getBoundingClientRect();
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const safeEdge = 12;
+
+    if (rect.left < safeEdge) {
+      toggle.dataset.mobileAlign = "left";
+      return;
+    }
+
+    if (rect.right > viewportWidth - safeEdge) {
+      toggle.dataset.mobileAlign = "right";
+      return;
+    }
+
+    toggle.dataset.mobileAlign = "center";
+  });
+}
+
+function bindInfoToggleInteractions(root = document) {
+  if (!root || typeof root.querySelectorAll !== "function") return;
+  root.querySelectorAll(".info-toggle").forEach((toggle) => {
+    if (toggle.dataset.bound === "true") return;
+    toggle.dataset.bound = "true";
+
+    toggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    const summary = toggle.querySelector("summary");
+    if (summary) {
+      summary.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+    }
+
+    toggle.addEventListener("toggle", () => {
+      if (toggle.open) {
+        updateInfoTogglePlacement(toggle);
+        return;
+      }
+      delete toggle.dataset.mobileAlign;
+    });
+  });
+}
+
 // ========== MAP ==========
 function initMap() {
   map = L.map("map").setView([10.762622, 106.660172], 12);
@@ -1018,11 +1255,11 @@ function initMap() {
     });
 
   markerPickup.on("dragend", () => {
-    reverseGeocode(markerPickup.getLatLng(), "search-pickup");
+    reverseGeocode(markerPickup.getLatLng(), "dia_chi_lay_hang");
     recalculateDistance();
   });
   markerDelivery.on("dragend", () => {
-    reverseGeocode(markerDelivery.getLatLng(), "search-delivery");
+    reverseGeocode(markerDelivery.getLatLng(), "dia_chi_giao_hang");
     recalculateDistance();
   });
 
@@ -1077,7 +1314,7 @@ function requestPickupCurrentLocation(options = {}) {
         markerPickup.setLatLng([lat, lng]);
       }
       adjustMapBounds();
-      reverseGeocode({ lat, lng }, "search-pickup");
+      reverseGeocode({ lat, lng }, "dia_chi_lay_hang");
       recalculateDistance();
       isResolvingPickupLocation = false;
       setGeolocationButtonLoading(false);
@@ -1102,7 +1339,7 @@ function showErrorMessage(message) {
 
 function shouldAutoResolvePickupLocation() {
   if (getQueryParam("reorder_id")) return false;
-  const pickupInput = document.getElementById("search-pickup");
+  const pickupInput = document.getElementById("dia_chi_lay_hang");
   return !String(pickupInput?.value || "").trim();
 }
 
@@ -1183,7 +1420,7 @@ function fetchNominatim(query, sugBox, markerType) {
           <div><span class="s-main">${parts[0]}</span><span class="s-sub">${parts.slice(1).join(",").trim()}</span></div>`;
         div.addEventListener("click", () => {
           const inputId =
-            markerType === "pickup" ? "search-pickup" : "search-delivery";
+            markerType === "pickup" ? "dia_chi_lay_hang" : "dia_chi_giao_hang";
           document.getElementById(inputId).value = item.display_name;
           sugBox.style.display = "none";
           if (markerType === "pickup")
@@ -1282,8 +1519,8 @@ function markReorderMode(orderCode) {
 }
 
 function resetUploadsAfterDraftRestore(hadUploads) {
-  const imageInput = document.getElementById("image-upload");
-  const videoInput = document.getElementById("video-upload");
+  const imageInput = document.getElementById("hinh_anh_hang_hoa");
+  const videoInput = document.getElementById("video_hang_hoa");
   const imageMeta = document.getElementById("image-upload-meta");
   const videoMeta = document.getElementById("video-upload-meta");
   const imagePreview = document.getElementById("preview-image");
@@ -1350,15 +1587,15 @@ async function restorePendingBookingDraft() {
   if (!draft || !draft.payload) return false;
 
   const payload = draft.payload;
-  document.getElementById("sender-name").value = payload.sender_name || "";
-  document.getElementById("sender-phone").value = payload.sender_phone || "";
-  document.getElementById("receiver-name").value = payload.receiver_name || "";
-  document.getElementById("receiver-phone").value = payload.receiver_phone || "";
-  document.getElementById("search-pickup").value = payload.search_pickup || "";
-  document.getElementById("search-delivery").value =
+  document.getElementById("nguoi_gui_ho_ten").value = payload.sender_name || "";
+  document.getElementById("nguoi_gui_so_dien_thoai").value = payload.sender_phone || "";
+  document.getElementById("nguoi_nhan_ho_ten").value = payload.receiver_name || "";
+  document.getElementById("nguoi_nhan_so_dien_thoai").value = payload.receiver_phone || "";
+  document.getElementById("dia_chi_lay_hang").value = payload.search_pickup || "";
+  document.getElementById("dia_chi_giao_hang").value =
     payload.search_delivery || "";
-  document.getElementById("notes").value = payload.notes || "";
-  document.getElementById("cod-value").value =
+  document.getElementById("ghi_chu_tai_xe").value = payload.notes || "";
+  document.getElementById("gia_tri_thu_ho_cod").value =
     parseFloat(payload.cod_value) || 0;
 
   setOptionGroupValue("payer-group", payload.fee_payer || "gui");
@@ -1375,11 +1612,11 @@ async function restorePendingBookingDraft() {
     (payload.service === "instant" ? "instant" : "scheduled");
   setDeliveryMode(preferredMode, { render: false });
 
-  const pickupDateInput = document.getElementById("pickup-date");
-  const pickupSlotSelect = document.getElementById("pickup-slot");
+  const pickupDateInput = document.getElementById("ngay_lay_hang");
+  const pickupSlotSelect = document.getElementById("khung_gio_lay_hang");
   const deliveryDateInput = document.getElementById("delivery-date");
   const deliverySlotSelect = document.getElementById("delivery-slot");
-  const vehicleSelect = document.getElementById("vehicle-choice");
+  const vehicleSelect = document.getElementById("phuong_tien_giao_hang");
 
   if (pickupDateInput && payload.pickup_date) {
     pickupDateInput.value = payload.pickup_date;
@@ -1441,8 +1678,8 @@ async function restorePendingBookingDraft() {
 }
 
 async function applyReorderAddresses(data) {
-  document.getElementById("search-pickup").value = data.pickup_address || "";
-  document.getElementById("search-delivery").value =
+  document.getElementById("dia_chi_lay_hang").value = data.pickup_address || "";
+  document.getElementById("dia_chi_giao_hang").value =
     data.delivery_address || "";
 
   const [pickupPoint, deliveryPoint] = await Promise.all([
@@ -1479,14 +1716,14 @@ async function applyReorderPrefill(data) {
     source_order_code: data.source_order_code || "",
   };
 
-  document.getElementById("sender-name").value = data.sender_name || "";
-  document.getElementById("sender-phone").value = data.sender_phone || "";
-  document.getElementById("receiver-name").value = data.receiver_name || "";
-  document.getElementById("receiver-phone").value = data.receiver_phone || "";
-  document.getElementById("notes").value = data.notes || "";
-  document.getElementById("cod-value").value = parseFloat(data.cod_value) || 0;
+  document.getElementById("nguoi_gui_ho_ten").value = data.sender_name || "";
+  document.getElementById("nguoi_gui_so_dien_thoai").value = data.sender_phone || "";
+  document.getElementById("nguoi_nhan_ho_ten").value = data.receiver_name || "";
+  document.getElementById("nguoi_nhan_so_dien_thoai").value = data.receiver_phone || "";
+  document.getElementById("ghi_chu_tai_xe").value = data.notes || "";
+  document.getElementById("gia_tri_thu_ho_cod").value = parseFloat(data.cod_value) || 0;
 
-  const vehicleChoice = document.getElementById("vehicle-choice");
+  const vehicleChoice = document.getElementById("phuong_tien_giao_hang");
   if (vehicleChoice) {
     vehicleChoice.value = Array.from(vehicleChoice.options).some(
       (option) => option.value === data.vehicle,
@@ -1544,9 +1781,9 @@ async function initReorderPrefill() {
 function applyCustomerPrefill(data) {
   if (!data || typeof data !== "object") return;
 
-  const senderNameInput = document.getElementById("sender-name");
-  const senderPhoneInput = document.getElementById("sender-phone");
-  const pickupInput = document.getElementById("search-pickup");
+  const senderNameInput = document.getElementById("nguoi_gui_ho_ten");
+  const senderPhoneInput = document.getElementById("nguoi_gui_so_dien_thoai");
+  const pickupInput = document.getElementById("dia_chi_lay_hang");
 
   if (senderNameInput && !senderNameInput.value.trim() && data.sender_name) {
     senderNameInput.value = data.sender_name;
@@ -1648,20 +1885,21 @@ function renderItems() {
     const isTypeChosen = Boolean(item.loai_hang);
     const div = document.createElement("div");
     div.className = "item-row";
+    div.dataset.itemIndex = String(idx);
     div.innerHTML = `
       <div class="item-row-num">Món hàng #${idx + 1}</div>
       <button class="item-delete-btn" onclick="removeItem(${idx})" title="Xóa"><i class="fas fa-times"></i></button>
       <div class="form-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
           <label style="font-size:12px;">Loại hàng</label>
-          <select class="form-control" onchange="handleLoaiHangChange(${idx}, this.value)">
+          <select class="form-control loai_hang" name="mat_hang[${idx}][loai_hang]" onchange="handleLoaiHangChange(${idx}, this.value)">
             <option value="">Chọn loại hàng...</option>
             ${typeOptions}
           </select>
         </div>
         <div class="form-group" style="margin:0;">
           <label style="font-size:12px;">Tên hàng cụ thể</label>
-          <select class="form-control" onchange="updateItemField(${idx}, 'ten_hang', this.value)" ${isTypeChosen ? "" : "disabled"}>
+          <select class="form-control ten_hang" name="mat_hang[${idx}][ten_hang]" onchange="updateItemField(${idx}, 'ten_hang', this.value)" ${isTypeChosen ? "" : "disabled"}>
             <option value="">${isTypeChosen ? "Chọn tên hàng..." : "Chọn loại hàng trước"}</option>
             ${nameOpts}
           </select>
@@ -1671,40 +1909,42 @@ function renderItems() {
         <div class="form-group" style="margin:0;">
           <label style="font-size:12px;">
             Khai báo giá trị (₫)
-            <span class="field-help" tabindex="0" aria-label="${DECLARED_VALUE_HELP}">
-              i
-              <span class="field-help__tooltip">${DECLARED_VALUE_HELP}</span>
-            </span>
+            ${buildInfoToggleMarkup(
+              DECLARED_VALUE_HELP,
+              "Giải thích khai báo giá trị",
+              "field-help",
+            )}
           </label>
-          <input type="number" class="form-control" value="${item.gia_tri_khai_bao}" onchange="updateItemField(${idx},'gia_tri_khai_bao',this.value)" />
+          <input type="number" class="form-control gia_tri_khai_bao" name="mat_hang[${idx}][gia_tri_khai_bao]" value="${item.gia_tri_khai_bao}" onchange="updateItemField(${idx},'gia_tri_khai_bao',this.value)" />
         </div>
         <div class="form-group" style="margin:0;">
           <label style="font-size:12px;">Số lượng</label>
-          <input type="number" class="form-control" min="1" step="1" value="${item.so_luong || 1}" onchange="updateItemField(${idx},'so_luong',this.value)" />
+          <input type="number" class="form-control so_luong" name="mat_hang[${idx}][so_luong]" min="1" step="1" value="${item.so_luong || 1}" onchange="updateItemField(${idx},'so_luong',this.value)" />
         </div>
       </div>
       <div class="item-grid item-grid-4">
         <div class="form-group" style="margin:0;">
           <label style="font-size:11px;">Cân nặng / kiện (kg)</label>
-          <input type="number" class="form-control" step="0.1" value="${item.can_nang}" onchange="updateItemField(${idx},'can_nang',this.value)" />
+          <input type="number" class="form-control can_nang" name="mat_hang[${idx}][can_nang]" step="0.1" value="${item.can_nang}" onchange="updateItemField(${idx},'can_nang',this.value)" />
         </div>
         <div class="form-group" style="margin:0;">
           <label style="font-size:11px;">Dài (cm)</label>
-          <input type="number" class="form-control" value="${item.chieu_dai}" onchange="updateItemField(${idx},'chieu_dai',this.value)" />
+          <input type="number" class="form-control chieu_dai" name="mat_hang[${idx}][chieu_dai]" value="${item.chieu_dai}" onchange="updateItemField(${idx},'chieu_dai',this.value)" />
         </div>
         <div class="form-group" style="margin:0;">
           <label style="font-size:11px;">Rộng (cm)</label>
-          <input type="number" class="form-control" value="${item.chieu_rong}" onchange="updateItemField(${idx},'chieu_rong',this.value)" />
+          <input type="number" class="form-control chieu_rong" name="mat_hang[${idx}][chieu_rong]" value="${item.chieu_rong}" onchange="updateItemField(${idx},'chieu_rong',this.value)" />
         </div>
         <div class="form-group" style="margin:0;">
           <label style="font-size:11px;">Cao (cm)</label>
-          <input type="number" class="form-control" value="${item.chieu_cao}" onchange="updateItemField(${idx},'chieu_cao',this.value)" />
+          <input type="number" class="form-control chieu_cao" name="mat_hang[${idx}][chieu_cao]" value="${item.chieu_cao}" onchange="updateItemField(${idx},'chieu_cao',this.value)" />
         </div>
       </div>
     `;
     container.appendChild(div);
   });
   updateWeightDisplay();
+  bindInfoToggleInteractions(container);
 }
 
 function updateWeightDisplay() {
@@ -1769,7 +2009,7 @@ function buildQuotePayload() {
   const deliveryPoint = markerDelivery?.getLatLng?.() || null;
   const pickupDateValue = isInstantMode
     ? formatDateValue(currentDate)
-    : document.getElementById("pickup-date").value || "";
+    : document.getElementById("ngay_lay_hang").value || "";
   return {
     khoang_cach_km: khoang_cach_km,
     loai_hang: primaryItem.loai_hang,
@@ -1780,15 +2020,15 @@ function buildQuotePayload() {
     chieu_cao: tongCao,
     so_luong: tongSoLuong,
     gia_tri_khai_bao: totalKhaiGia,
-    phi_thu_ho: parseFloat(document.getElementById("cod-value").value) || 0,
-    loai_xe: document.getElementById("vehicle-choice").value || "auto",
+    phi_thu_ho: parseFloat(document.getElementById("gia_tri_thu_ho_cod").value) || 0,
+    loai_xe: document.getElementById("phuong_tien_giao_hang").value || "auto",
     che_do_giao_hang: getDeliveryMode(),
     pickup_lat: pickupPoint ? Number(pickupPoint.lat) : 0,
     pickup_lng: pickupPoint ? Number(pickupPoint.lng) : 0,
     delivery_lat: deliveryPoint ? Number(deliveryPoint.lat) : 0,
     delivery_lng: deliveryPoint ? Number(deliveryPoint.lng) : 0,
     ngay_lay_hang: pickupDateValue,
-    khung_gio_lay_hang: (pickupSlot && pickupSlot.key) || document.getElementById("pickup-slot").value || "",
+    khung_gio_lay_hang: (pickupSlot && pickupSlot.key) || document.getElementById("khung_gio_lay_hang").value || "",
     ten_khung_gio_lay_hang: (pickupSlot && pickupSlot.label) || "",
     gio_bat_dau_lay_hang: (pickupSlot && pickupSlot.start) || "",
     gio_ket_thuc_lay_hang: (pickupSlot && pickupSlot.end) || "",
@@ -1912,21 +2152,11 @@ function updateInstantRealtimePanel(service = selectedService) {
 }
 
 function getInstantTimeFeeLabel(service) {
-  const slotLabel =
-    service?.timeSurchargeLabel ||
-    service?.breakdown?.timeSurchargeLabel ||
-    getInstantPricingWindow(getCurrentDateTime())?.label ||
-    "Khung thời gian hiện tại";
-  return `Phụ phí thời gian (${slotLabel})`;
+  return "Phụ phí khung giờ";
 }
 
 function getInstantWeatherFeeLabel(service) {
-  const conditionLabel =
-    weatherQuoteState?.conditionLabel ||
-    service?.breakdown?.conditionSurchargeLabel ||
-    service?.serviceConditionLabel ||
-    "Điều kiện bình thường";
-  return `Phụ phí điều kiện giao (${conditionLabel})`;
+  return "Phụ phí thời tiết";
 }
 
 // ========== SERVICE CARDS ==========
@@ -1964,7 +2194,7 @@ function renderServiceCards(options = {}) {
   }
 
   // Lấy gói cước được chọn từ Select Box
-  const packageChoice = document.getElementById("package-choice");
+  const packageChoice = document.getElementById("goi_cuoc");
   const chosenType = packageChoice ? packageChoice.value : null;
 
   const filteredServices = result.services.filter((svc) =>
@@ -1988,7 +2218,7 @@ function renderServiceCards(options = {}) {
   syncUrgentConditionVisibility(selectedService && selectedService.serviceType);
   btn5.disabled = !selectedService;
   if (selectedService) {
-    const pDate = document.getElementById("pickup-date").value;
+    const pDate = document.getElementById("ngay_lay_hang").value;
     const pSlotObj = getSelectedPickupSlot();
     selectedService.estimate = calculateDynamicETA(
       pDate,
@@ -2022,14 +2252,13 @@ function renderServiceCards(options = {}) {
     const deadlineHint = isInstantMode
       ? `<div class="service-deadline-badge good"><i class="fas fa-signal"></i> Thời gian giao dự kiến sẽ cập nhật ngay khi hệ thống điều phối</div>`
       : getDesiredDeliveryStatus(svc.estimate);
-    const serviceNote = isInstantMode
-      ? weatherQuoteState?.summary ||
-        "Hệ thống đang tạm tính theo điều kiện thời tiết bình thường."
+    const serviceStatusText = isInstantMode
+      ? ""
       : isDisabled
-        ? assessment.reason
+        ? "Không kịp mốc giao hiện tại."
         : assessment.shouldStorageNote
-          ? "Khách nhận khá xa ngày lấy hàng. Gói này vẫn nhận đơn và có thể lưu kho để giao đúng hẹn."
-          : "Gói này có thể đáp ứng mốc thời gian hiện tại.";
+          ? "Có thể lưu kho để giao đúng hẹn."
+          : "Có thể đáp ứng mốc giao hiện tại.";
     const card = document.createElement("div");
     card.className =
       "service-card" +
@@ -2042,7 +2271,7 @@ function renderServiceCards(options = {}) {
         <div class="service-name"><i class="fas fa-truck-fast"></i> ${svc.serviceName}</div>
         <div class="service-price">${svc.total.toLocaleString()} ₫</div>
       </div>
-      <div style="display: flex; gap: 15px; margin-top: 8px; flex-wrap: wrap;">
+      <div class="service-card-meta">
         <div class="service-eta"><i class="far fa-clock"></i> Thời gian giao dự kiến: ${svc.estimate}</div>
         ${
           !isInstantMode && scheduleInfo
@@ -2050,25 +2279,26 @@ function renderServiceCards(options = {}) {
             : ""
         }
         <div class="service-eta" style="color: #16a34a; font-weight: 700;">
-          <i class="fas fa-shipping-fast"></i> Gợi ý: ${svc.vehicleSuggestion || "Xe máy"}
+          <i class="fas fa-shipping-fast"></i>
+          <span>Gợi ý: ${svc.vehicleSuggestion || "Xe máy"}</span>
         </div>
         <div class="service-eta" style="color: #0a2a66; font-weight: 700;">
           <i class="fas fa-truck-ramp-box"></i> Đang tính giá: ${svc.selectedVehicleLabel || svc.vehicleSuggestion || "Xe máy"}${svc.vehicleMultiplier > 1 ? ` (x${svc.vehicleMultiplier})` : ""}
         </div>
       </div>
       ${deadlineHint}
-      <div class="service-card-note">${serviceNote}</div>
+      ${serviceStatusText ? `<div class="service-card-note"><span>${serviceStatusText}</span></div>` : ""}
       <div class="service-breakdown">
         <div class="breakdown-row"><span>Phí vận chuyển</span><span>${(bd.basePrice || 0).toLocaleString()} ₫</span></div>
         <div class="breakdown-row"><span>Phí trọng lượng vượt mức</span><span>${(bd.overweightFee || 0).toLocaleString()} ₫</span></div>
         <div class="breakdown-row"><span>Phí thể tích</span><span>${(bd.volumeFee || 0).toLocaleString()} ₫</span></div>
         ${(bd.goodsFee || 0) > 0 ? `<div class="breakdown-row"><span>Phụ phí loại hàng</span><span>${bd.goodsFee.toLocaleString()} ₫</span></div>` : ""}
          <div class="breakdown-row">
-           <span>Phụ phí thời gian (${bd.timeSurchargeLabel || "Khung giờ thường"})</span>
+           <span>${getInstantTimeFeeLabel(svc)}</span>
            <span>${formatMoneyVnd(bd.timeFee || 0)}</span>
          </div>
          <div class="breakdown-row">
-           <span>Phụ phí điều kiện giao (${bd.conditionSurchargeLabel || "Điều kiện bình thường"})</span>
+           <span>${getInstantWeatherFeeLabel(svc)}</span>
            <span>${formatMoneyVnd(bd.conditionFee || 0)}</span>
          </div>
         ${(bd.vehicleFee || 0) > 0 ? `<div class="breakdown-row"><span>Điều chỉnh theo xe</span><span>${bd.vehicleFee.toLocaleString()} ₫</span></div>` : ""}
@@ -2105,6 +2335,7 @@ function renderServiceCards(options = {}) {
 
   btn5.disabled = !selectedService;
   updateInstantRealtimePanel(selectedService);
+  bindInfoToggleInteractions(container);
 }
 
 // ========== STEP NAVIGATION ==========
@@ -2113,7 +2344,8 @@ function selectOption(groupId, btn) {
     .querySelectorAll(`#${groupId} .option-btn`)
     .forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
-  const inputId = groupId === "payer-group" ? "payer-val" : "payment-val";
+  const inputId =
+    groupId === "payer-group" ? "nguoi_tra_cuoc" : "phuong_thuc_thanh_toan";
   document.getElementById(inputId).value = btn.dataset.val;
 }
 
@@ -2137,12 +2369,12 @@ function goToStep(step) {
 function validateStep1() {
   clearError(1);
   const fields = [
-    ["sender-name", "Họ tên người gửi"],
-    ["sender-phone", "Số điện thoại người gửi"],
-    ["receiver-name", "Họ tên người nhận"],
-    ["receiver-phone", "Số điện thoại người nhận"],
-    ["search-pickup", "Địa chỉ lấy hàng"],
-    ["search-delivery", "Địa chỉ giao hàng"],
+    ["nguoi_gui_ho_ten", "Họ tên người gửi"],
+    ["nguoi_gui_so_dien_thoai", "Số điện thoại người gửi"],
+    ["nguoi_nhan_ho_ten", "Họ tên người nhận"],
+    ["nguoi_nhan_so_dien_thoai", "Số điện thoại người nhận"],
+    ["dia_chi_lay_hang", "Địa chỉ lấy hàng"],
+    ["dia_chi_giao_hang", "Địa chỉ giao hàng"],
   ];
   for (const [id, label] of fields) {
     const val = document.getElementById(id).value.trim();
@@ -2168,8 +2400,8 @@ function validateStep1() {
     return false;
   }
   if (
-    document.getElementById("search-pickup").value ===
-    document.getElementById("search-delivery").value
+    document.getElementById("dia_chi_lay_hang").value ===
+    document.getElementById("dia_chi_giao_hang").value
   ) {
     showError(
       1,
@@ -2229,7 +2461,7 @@ function validateStep3() {
     return true;
   }
 
-  const pDateVal = document.getElementById("pickup-date").value;
+  const pDateVal = document.getElementById("ngay_lay_hang").value;
   if (!pDateVal) {
     showError(3, "Vui lòng chọn ngày lấy hàng.");
     return false;
@@ -2241,7 +2473,7 @@ function validateStep3() {
     return false;
   }
 
-  const pSlot = document.getElementById("pickup-slot").value;
+  const pSlot = document.getElementById("khung_gio_lay_hang").value;
   if (!pSlot) {
     showError(3, "Vui lòng chọn khung giờ lấy hàng.");
     return false;
@@ -2316,13 +2548,13 @@ function prepareReview() {
   const payload = buildPayload();
 
   document.getElementById("rv-sender").textContent =
-    `${document.getElementById("sender-name").value} — ${document.getElementById("sender-phone").value}`;
+    `${document.getElementById("nguoi_gui_ho_ten").value} — ${document.getElementById("nguoi_gui_so_dien_thoai").value}`;
   document.getElementById("rv-receiver").textContent =
-    `${document.getElementById("receiver-name").value} — ${document.getElementById("receiver-phone").value}`;
+    `${document.getElementById("nguoi_nhan_ho_ten").value} — ${document.getElementById("nguoi_nhan_so_dien_thoai").value}`;
   document.getElementById("rv-pickup-addr").textContent =
-    document.getElementById("search-pickup").value || "—";
+    document.getElementById("dia_chi_lay_hang").value || "—";
   document.getElementById("rv-delivery-addr").textContent =
-    document.getElementById("search-delivery").value || "—";
+    document.getElementById("dia_chi_giao_hang").value || "—";
   document.getElementById("rv-distance").textContent =
     `${khoang_cach_km.toFixed(2)} km`;
 
@@ -2354,11 +2586,11 @@ function prepareReview() {
     ? `${payload.phi_thu_ho.toLocaleString()} ₫`
     : "Không có";
   document.getElementById("rv-notes").textContent =
-    document.getElementById("notes").value || "Không có";
+    document.getElementById("ghi_chu_tai_xe").value || "Không có";
   renderReviewUploads();
 
   // Lịch trình (Phần 3: Thời gian và khoảng thời gian)
-  const pDate = document.getElementById("pickup-date").value;
+  const pDate = document.getElementById("ngay_lay_hang").value;
   const pSlot = getSelectedPickupSlot();
   const urgentCondition = getSelectedUrgentCondition();
   const scheduleInfo = getScheduleTimingInfo();
@@ -2380,15 +2612,15 @@ function prepareReview() {
     <div class="rv-row"><span class="rv-label">Phí trọng lượng vượt mức:</span><span class="rv-val">${(bd.overweightFee || 0).toLocaleString()} ₫</span></div>
     <div class="rv-row"><span class="rv-label">Phí thể tích:</span><span class="rv-val">${(bd.volumeFee || 0).toLocaleString()} ₫</span></div>
     ${(bd.goodsFee || 0) > 0 ? `<div class="rv-row"><span class="rv-label">Phụ phí loại hàng:</span><span class="rv-val">${bd.goodsFee.toLocaleString()} ₫</span></div>` : ""}
-    <div class="rv-row"><span class="rv-label">Phụ phí thời gian (${bd.timeSurchargeLabel || "Khung giờ thường"}):</span><span class="rv-val">${formatMoneyVnd(bd.timeFee || 0)}</span></div>
-    <div class="rv-row"><span class="rv-label">Phụ phí điều kiện giao (${bd.conditionSurchargeLabel || "Điều kiện bình thường"}):</span><span class="rv-val">${formatMoneyVnd(bd.conditionFee || 0)}</span></div>
+    <div class="rv-row"><span class="rv-label">Phụ phí khung giờ:</span><span class="rv-val">${formatMoneyVnd(bd.timeFee || 0)}</span></div>
+    <div class="rv-row"><span class="rv-label">Phụ phí thời tiết:</span><span class="rv-val">${formatMoneyVnd(bd.conditionFee || 0)}</span></div>
     ${(bd.vehicleFee || 0) > 0 ? `<div class="rv-row"><span class="rv-label">Điều chỉnh theo xe:</span><span class="rv-val">${bd.vehicleFee.toLocaleString()} ₫</span></div>` : ""}
     ${(bd.codFee || 0) > 0 ? `<div class="rv-row"><span class="rv-label">Phí COD:</span><span class="rv-val">${bd.codFee.toLocaleString()} ₫</span></div>` : ""}
     ${(bd.insuranceFee || 0) > 0 ? `<div class="rv-row"><span class="rv-label">Phí bảo hiểm:</span><span class="rv-val">${bd.insuranceFee.toLocaleString()} ₫</span></div>` : ""}
     <div class="rv-row" style="margin-top: 8px; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
-      <span class="rv-label">Người trả cước:</span><span class="rv-val">${document.getElementById("payer-val").value === "gui" ? "Người gửi" : "Người nhận"}</span>
+      <span class="rv-label">Người trả cước:</span><span class="rv-val">${document.getElementById("nguoi_tra_cuoc").value === "gui" ? "Người gửi" : "Người nhận"}</span>
     </div>
-    <div class="rv-row"><span class="rv-label">Thanh toán:</span><span class="rv-val">${document.getElementById("payment-val").value === "tien_mat" ? "Tiền mặt" : "Chuyển khoản"}</span></div>
+    <div class="rv-row"><span class="rv-label">Thanh toán:</span><span class="rv-val">${document.getElementById("phuong_thuc_thanh_toan").value === "tien_mat" ? "Tiền mặt" : "Chuyển khoản"}</span></div>
   `;
   document.getElementById("rv-total").textContent =
     `${selectedService.total.toLocaleString()} ₫`;
@@ -2399,11 +2631,11 @@ function getSelectedUploadFiles() {
   return [
     {
       type: "image",
-      file: document.getElementById("image-upload")?.files?.[0] || null,
+      file: document.getElementById("hinh_anh_hang_hoa")?.files?.[0] || null,
     },
     {
       type: "video",
-      file: document.getElementById("video-upload")?.files?.[0] || null,
+      file: document.getElementById("video_hang_hoa")?.files?.[0] || null,
     },
   ].filter((entry) => entry.file);
 }
@@ -2460,8 +2692,153 @@ function renderReviewUploads() {
   });
 }
 
+function resolveGoogleSheetsWebhookUrl() {
+  if (window.GiaoHangNhanhCore?.googleSheetsWebhookUrl) {
+    return String(window.GiaoHangNhanhCore.googleSheetsWebhookUrl).trim();
+  }
+
+  const metaTag = document.querySelector('meta[name="google-sheets-webhook-url"]');
+  if (metaTag?.content) {
+    return String(metaTag.content).trim();
+  }
+
+  try {
+    const stored = window.localStorage?.getItem("ghn_google_sheets_webhook_url");
+    if (stored) return String(stored).trim();
+  } catch (error) {
+    console.warn("Không thể đọc cấu hình Google Sheets webhook từ localStorage:", error);
+  }
+
+  return DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL;
+}
+
+function isDatabaseFallbackCandidate(errorMessage) {
+  const normalized = String(errorMessage || "").toLowerCase();
+  return (
+    normalized.includes("405") ||
+    normalized.includes("html") ||
+    normalized.includes("json") ||
+    normalized.includes("endpoint") ||
+    normalized.includes("php") ||
+    normalized.includes("method") ||
+    normalized.includes("máy chủ") ||
+    normalized.includes("không đọc được dữ liệu")
+  );
+}
+
+async function submitOrderToGoogleSheetsFallback(payload) {
+  const webhookUrl = resolveGoogleSheetsWebhookUrl();
+  if (!webhookUrl) {
+    throw new Error(
+      "Database không lưu được và chưa cấu hình Google Sheets webhook để nhận đơn dự phòng.",
+    );
+  }
+
+  const fallbackOrderCode = `GS-${Date.now()}`;
+  let response;
+  try {
+    response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        // Apps Script web app thường bị chặn preflight nếu gửi application/json.
+        // Gửi text/plain vẫn giữ nguyên JSON trong body nhưng tránh OPTIONS/CORS rắc rối hơn.
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+      body: JSON.stringify({
+        source: "frontend_google_sheets_fallback",
+        order_code: fallbackOrderCode,
+        created_at: new Date().toISOString(),
+        payload,
+      }),
+    });
+  } catch (error) {
+    throw new Error(
+      "Không gửi được dữ liệu sang Google Sheets. Hãy kiểm tra lại Apps Script đã triển khai dạng Web App, quyền truy cập là 'Anyone', và dùng đúng URL /exec.",
+    );
+  }
+
+  let result = {};
+  try {
+    result = await response.json();
+  } catch (error) {
+    result = {};
+  }
+
+  if (!response.ok || (result && result.success === false)) {
+    throw new Error(
+      result.message ||
+        `Google Sheets không nhận được dữ liệu dự phòng (HTTP ${response.status}).`,
+    );
+  }
+
+  return {
+    order_code: result.order_code || fallbackOrderCode,
+  };
+}
+
+function renderSubmitSuccessState(orderCode, messageHtml) {
+  clearPendingBookingDraft();
+  const isLoggedIn = !!window.isLoggedIn;
+  const secondaryAction = isLoggedIn
+    ? `
+      <a
+        href="${resolveProjectHtmlUrl("public/khach-hang/dashboard.html")}"
+        class="btn-secondary"
+        style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-width:180px;"
+      >Vào trang quản lý</a>
+    `
+    : `
+      <a
+        href="${resolveProjectHtmlUrl("tra-don-hang.html")}"
+        class="btn-secondary"
+        style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-width:180px;"
+      >Tra cứu đơn hàng</a>
+    `;
+
+  const container = document.getElementById("step-5");
+  container.innerHTML = `
+    <div style="text-align: center; padding: 40px 20px;">
+      <div style="width: 80px; height: 80px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 24px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 style="color: #1e293b; font-weight: 800; margin-bottom: 12px;">Đặt đơn hàng thành công!</h2>
+      <p style="color: #64748b; margin-bottom: 16px;">Mã đơn hàng: <strong style="color: #0a2a66;">${orderCode || "GHN-XXXX"}</strong>.</p>
+      <p style="color: #64748b; margin-bottom: 32px;">${messageHtml}</p>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <a
+          href="${resolveProjectHtmlUrl("dat-lich-giao-hang-nhanh.html")}"
+          class="btn-primary"
+          style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-width:180px;"
+        >Tạo đơn mới</a>
+        ${secondaryAction}
+      </div>
+    </div>
+  `;
+}
+
+function getServiceStorageValue(serviceType) {
+  return String(serviceType || "").toLowerCase() === "instant"
+    ? "giao_ngay_lap_tuc"
+    : "giao_dat_lich";
+}
+
+function getWeatherSourceStorageValue(source) {
+  const normalized = String(source || "").toLowerCase();
+  if (!normalized) return "";
+  if (normalized === "openmeteo_hourly") return "du_lieu_thoi_tiet_theo_gio";
+  if (normalized === "openmeteo_current") return "du_lieu_thoi_tiet_hien_tai";
+  if (normalized === "openweather_forecast") return "du_lieu_du_bao_thoi_tiet";
+  if (normalized === "openweather_current") return "du_lieu_thoi_tiet_hien_tai";
+  return normalized
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
 function previewUpload(type) {
-  const inputId = type === "video" ? "video-upload" : "image-upload";
+  const inputId = type === "video" ? "video_hang_hoa" : "hinh_anh_hang_hoa";
   const previewId = type === "video" ? "preview-video" : "preview-image";
   const metaId = type === "video" ? "video-upload-meta" : "image-upload-meta";
   const file = document.getElementById(inputId).files[0];
@@ -2513,55 +2890,60 @@ async function submitOrder() {
 
     const result = await readJsonResponseSafe(response);
     if (result.success) {
-      clearPendingBookingDraft();
-      const isLoggedIn = !!window.isLoggedIn;
-      const secondaryAction = isLoggedIn
-        ? `
-          <a
-            href="${resolveProjectHtmlUrl("public/khach-hang/dashboard.html")}"
-            class="btn-secondary"
-            style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-width:180px;"
-          >Vào trang quản lý</a>
-        `
-        : `
-          <a
-            href="${resolveProjectHtmlUrl("tra-don-hang.html")}"
-            class="btn-secondary"
-            style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-width:180px;"
-          >Tra cứu đơn hàng</a>
-        `;
-
-      const container = document.getElementById("step-5");
-      container.innerHTML = `
-        <div style="text-align: center; padding: 40px 20px;">
-          <div style="width: 80px; height: 80px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 24px;">
-            <i class="fas fa-check-circle"></i>
-          </div>
-          <h2 style="color: #1e293b; font-weight: 800; margin-bottom: 12px;">Đặt đơn hàng thành công!</h2>
-          <p style="color: #64748b; margin-bottom: 16px;">Mã đơn hàng: <strong style="color: #0a2a66;">${result.order_code || "GHN-XXXX"}</strong>.</p>
-          <p style="color: #64748b; margin-bottom: 32px;">${isLoggedIn ? "Bạn có thể theo dõi đơn trong trang quản lý khách hàng." : "Đơn đã được lưu thành công ngay cả khi chưa đăng nhập. Hãy lưu lại mã đơn để tra cứu sau."}</p>
-          <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-            <a
-              href="${resolveProjectHtmlUrl("dat-lich-giao-hang-nhanh.html")}"
-              class="btn-primary"
-              style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-width:180px;"
-            >Tạo đơn mới</a>
-            ${secondaryAction}
-          </div>
-        </div>
-      `;
+      renderSubmitSuccessState(
+        result.order_code || "GHN-XXXX",
+        result.google_sheets_configured && !result.google_sheets_synced
+          ? "Đơn đã lưu vào Database, nhưng chưa đồng bộ được sang Google Sheets."
+          : !!window.isLoggedIn
+            ? "Bạn có thể theo dõi đơn trong trang quản lý khách hàng."
+            : "Đơn đã được lưu thành công ngay cả khi chưa đăng nhập. Hãy lưu lại mã đơn để tra cứu sau.",
+      );
     } else if (response.status === 401) {
       showError(
         5,
         result.message || "Phiên đăng nhập đã hết hạn. Vui lòng thử lại.",
       );
     } else {
-      showError(5, "Lỗi: " + result.message);
-      btn.disabled = false;
-      btn.innerHTML = originalText;
+      try {
+        const sheetsResult = await submitOrderToGoogleSheetsFallback(payload);
+        renderSubmitSuccessState(
+          sheetsResult.order_code,
+          "Database hiện chưa lưu được đơn, nhưng hệ thống đã lưu đơn dự phòng vào Google Sheets. Bạn hãy giữ lại mã này để đối chiếu.",
+        );
+        return;
+      } catch (sheetsError) {
+        console.error(sheetsError);
+        showError(
+          5,
+          sheetsError.message || result.message || "Không lưu được đơn hàng.",
+        );
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
   } catch (error) {
     console.error(error);
+    if (isDatabaseFallbackCandidate(error.message)) {
+      try {
+        const sheetsResult = await submitOrderToGoogleSheetsFallback(payload);
+        renderSubmitSuccessState(
+          sheetsResult.order_code,
+          "Database hiện chưa lưu được đơn, nhưng hệ thống đã lưu đơn dự phòng vào Google Sheets. Bạn hãy giữ lại mã này để đối chiếu.",
+        );
+        return;
+      } catch (sheetsError) {
+        console.error(sheetsError);
+        showError(
+          5,
+          sheetsError.message ||
+            "Database chưa lưu được và Google Sheets cũng chưa nhận được dữ liệu.",
+        );
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        return;
+      }
+    }
+
     showError(
       5,
       error.message ||
@@ -2575,21 +2957,44 @@ async function submitOrder() {
 function buildPayload() {
   const scheduleInfo = getScheduleTimingInfo();
   const quotePayload = buildQuotePayload();
+  const serviceType = selectedService.serviceType;
+  const weatherSourceCode = weatherQuoteState?.source || "";
+  const nguoi_gui_ho_ten = document.getElementById("nguoi_gui_ho_ten").value;
+  const nguoi_gui_so_dien_thoai = document.getElementById("nguoi_gui_so_dien_thoai").value;
+  const nguoi_nhan_ho_ten = document.getElementById("nguoi_nhan_ho_ten").value;
+  const nguoi_nhan_so_dien_thoai = document.getElementById("nguoi_nhan_so_dien_thoai").value;
+  const dia_chi_lay_hang = document.getElementById("dia_chi_lay_hang").value;
+  const dia_chi_giao_hang = document.getElementById("dia_chi_giao_hang").value;
+  const ghi_chu_tai_xe = document.getElementById("ghi_chu_tai_xe").value;
+  const gia_tri_thu_ho_cod =
+    parseFloat(document.getElementById("gia_tri_thu_ho_cod").value) || 0;
+  const phuong_thuc_thanh_toan =
+    document.getElementById("phuong_thuc_thanh_toan").value;
+  const nguoi_tra_cuoc = document.getElementById("nguoi_tra_cuoc").value;
   return {
     reorder_id:
       reorderContext && reorderContext.source_order_id
         ? reorderContext.source_order_id
         : null,
-    sender_name: document.getElementById("sender-name").value,
-    sender_phone: document.getElementById("sender-phone").value,
-    receiver_name: document.getElementById("receiver-name").value,
-    receiver_phone: document.getElementById("receiver-phone").value,
+    sender_name: nguoi_gui_ho_ten,
+    sender_phone: nguoi_gui_so_dien_thoai,
+    receiver_name: nguoi_nhan_ho_ten,
+    receiver_phone: nguoi_nhan_so_dien_thoai,
+    nguoi_gui_ho_ten,
+    nguoi_gui_so_dien_thoai,
+    nguoi_nhan_ho_ten,
+    nguoi_nhan_so_dien_thoai,
     delivery_mode: getDeliveryMode(),
-    search_pickup: document.getElementById("search-pickup").value,
-    search_delivery: document.getElementById("search-delivery").value,
+    search_pickup: dia_chi_lay_hang,
+    search_delivery: dia_chi_giao_hang,
+    dia_chi_lay_hang,
+    dia_chi_giao_hang,
     pickup_date: quotePayload.ngay_lay_hang || "",
     pickup_slot: quotePayload.khung_gio_lay_hang || "",
     pickup_slot_label: quotePayload.ten_khung_gio_lay_hang || "",
+    ngay_lay_hang: quotePayload.ngay_lay_hang || "",
+    khung_gio_lay_hang: quotePayload.khung_gio_lay_hang || "",
+    ten_khung_gio_lay_hang: quotePayload.ten_khung_gio_lay_hang || "",
     delivery_date: quotePayload.ngay_nhan_mong_muon || "",
     delivery_slot: quotePayload.khung_gio_nhan_hang || "",
     delivery_slot_label: quotePayload.ten_khung_gio_nhan_hang || "",
@@ -2601,23 +3006,41 @@ function buildPayload() {
       getDeliveryMode() === "instant"
         ? "Điều phối realtime"
         : (scheduleInfo && scheduleInfo.durationText) || "",
-    notes: document.getElementById("notes").value,
-    cod_value: parseFloat(document.getElementById("cod-value").value) || 0,
-    payment_method: document.getElementById("payment-val").value,
-    fee_payer: document.getElementById("payer-val").value,
-    service: selectedService.serviceType,
+    notes: ghi_chu_tai_xe,
+    ghi_chu_tai_xe,
+    cod_value: gia_tri_thu_ho_cod,
+    gia_tri_thu_ho_cod,
+    payment_method: phuong_thuc_thanh_toan,
+    phuong_thuc_thanh_toan,
+    fee_payer: nguoi_tra_cuoc,
+    nguoi_tra_cuoc,
+    service: serviceType,
     service_name: selectedService.serviceName,
+    service_code: serviceType,
+    dich_vu: getServiceStorageValue(serviceType),
+    ten_dich_vu: selectedService.serviceName,
     estimated_eta: selectedService.estimate,
+    du_kien_giao_hang: selectedService.estimate,
     vehicle: selectedService.selectedVehicleKey || "",
     vehicle_label:
       selectedService.selectedVehicleLabel || selectedService.vehicleSuggestion,
     vehicle_suggestion: selectedService.vehicleSuggestion || "",
+    phuong_tien: selectedService.selectedVehicleKey || "",
+    ten_phuong_tien:
+      selectedService.selectedVehicleLabel || selectedService.vehicleSuggestion,
+    goi_y_phuong_tien: selectedService.vehicleSuggestion || "",
     total_fee: selectedService.total,
     pricing_breakdown: selectedService.breakdown || {},
+    tong_cuoc: selectedService.total,
+    chi_tiet_gia_cuoc: selectedService.breakdown || {},
     pickup_lat: quotePayload.pickup_lat || 0,
     pickup_lng: quotePayload.pickup_lng || 0,
     delivery_lat: quotePayload.delivery_lat || 0,
     delivery_lng: quotePayload.delivery_lng || 0,
+    vi_do_lay_hang: quotePayload.pickup_lat || 0,
+    kinh_do_lay_hang: quotePayload.pickup_lng || 0,
+    vi_do_giao_hang: quotePayload.delivery_lat || 0,
+    kinh_do_giao_hang: quotePayload.delivery_lng || 0,
     service_condition_key:
       selectedService.serviceConditionKey ||
       (getSelectedUrgentCondition() && getSelectedUrgentCondition().key) ||
@@ -2626,9 +3049,11 @@ function buildPayload() {
       selectedService.serviceConditionLabel ||
       (getSelectedUrgentCondition() && getSelectedUrgentCondition().label) ||
       "Bình thường",
-    weather_source: weatherQuoteState?.source || "",
+    weather_source: getWeatherSourceStorageValue(weatherSourceCode),
+    weather_source_code: weatherSourceCode,
     weather_note: weatherQuoteState?.note || "",
     khoang_cach_km: khoang_cach_km,
+    mat_hang: orderItems,
     items: orderItems,
   };
 }

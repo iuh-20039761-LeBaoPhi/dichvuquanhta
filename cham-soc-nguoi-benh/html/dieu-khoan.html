@@ -15,12 +15,16 @@
       <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
       <style>
       html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
-
+      body {padding-top: 96px;}
+      .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
       /* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
       .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
 
       /* ================= MOBILE ONLY ================= */
       @media (max-width: 991.98px) {
+        body {
+    padding-top: 86px;
+  }
         .navbar { overflow-x: clip; }
         .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
         .navbar-brand img { width: 56px !important; height: 42px !important; }

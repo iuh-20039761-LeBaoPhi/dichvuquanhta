@@ -12,449 +12,168 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-      html,
+      /* Base & Navbar */
+      html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
       body {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
+        padding-top: 96px;
       }
 
-      .navbar .container {
-        display: flex;
-        flex-wrap: nowrap !important;
-        align-items: center;
-        min-width: 0;
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050;
       }
+      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+      .package-locked { opacity: 0.45; filter: grayscale(0.2); cursor: not-allowed; }
 
-      .package-locked {
-        opacity: 0.45;
-        filter: grayscale(0.2);
-        cursor: not-allowed;
-      }
+      /* Review Section - General Layout */
+      .review-row { display: flex; align-items: flex-start; gap: 10px; }
+      .review-label { width: 120px; min-width: 120px; font-weight: 700; color: #333; }
+      .review-value { flex: 1; min-width: 0; text-align: left; word-break: break-word; }
+      .review-shell { background: #f7f7f8; border: 1px solid #ececee; }
+      .review-title { color: #de6e96 !important; font-size: 1.9rem; font-weight: 800 !important; }
+      .review-alert { background: #f6eac5; border: 1px solid #ecd9a4; color: #5e5430; border-radius: 8px; font-weight: 600; }
 
-      .review-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-      }
+      /* Review Panel Details */
+      .review-panel { background: #f5f5f6 !important; border: 2px solid #d98aaa !important; border-radius: 12px; }
+      .review-panel .card-body { color: #2a2f36; }
+      .review-section-title { color: #d46691 !important; font-size: 1.3rem; font-weight: 800 !important; }
+      .review-panel .review-label { color: #3a3a3a; font-weight: 700; }
+      .review-panel .review-value { color: #222; font-weight: 600; }
+      #reviewJobs { color: #222; font-weight: 600; }
 
-      .review-label {
-        width: 120px;
-        min-width: 120px;
-        font-weight: 700;
-        color: #333;
-      }
+      /* Review Total & Buttons */
+      .review-total-box { background: #f8f3f6 !important; border: 2px solid #d98aaa !important; border-radius: 10px; }
+      .review-total-box .card-body { padding-top: 12px; padding-bottom: 12px; }
+      .review-action-row { margin-top: 16px !important; }
+      .review-btn-edit { background: #7d8790; border: none; color: #fff; font-weight: 700; }
+      .review-btn-edit:hover { background: #6b747c; color: #fff; }
+      .review-btn-save { background: linear-gradient(135deg, #ef5f93, #e84d86) !important; border: none !important; color: #fff; font-weight: 800; }
+      .review-btn-save:hover { background: linear-gradient(135deg, #db4f82, #d84374) !important; }
 
-      .review-value {
-        flex: 1;
-        min-width: 0;
-        text-align: left;
-        word-break: break-word;
-      }
+      /* Customer Info Box */
+      .customer-info-box { border: 2px solid #6bbf83; border-radius: 16px; padding: 12px; margin-bottom: 16px; background: #f8fffa; }
+      .customer-info-title { color: #2e7d32; font-weight: 700; font-size: 1.35rem; line-height: 1; margin-bottom: 10px; }
+      .customer-info-box .form-label { font-weight: 700; color: #2f2f2f; margin-bottom: 4px; }
+      .customer-info-box .form-control, .customer-info-box .input-group-text { border-color: #a8cdb2; background: #f7f9f7; }
+      .customer-info-box .input-group-text { color: #7a8281; }
+      .customer-info-box .form-control:focus { border-color: #7cc190; box-shadow: 0 0 0 0.2rem rgba(89, 170, 114, 0.15); }
 
-      .review-shell {
-        background: #f7f7f8;
-        border: 1px solid #ececee;
-      }
+      /* Service & Jobs Box */
+      .service-work-box { border: 2px solid #4f9ddb; border-radius: 10px; padding: 10px; margin-bottom: 16px; background: #fafdff; }
+      .service-work-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
+      #serviceSelector { border-color: #b3c0ca; background: #f1f1f1; }
+      #serviceJobs .list-group { gap: 2px; }
+      #serviceJobs .list-group-item { border: 0; background: transparent; padding: 4px 0; border-radius: 0; }
+      #serviceJobs .list-group-item-action:hover, #serviceJobs .list-group-item-action:focus { background: transparent; }
+      #serviceJobs .job-check { width: 16px; height: 16px; border-radius: 3px; border-color: #2e86d1; accent-color: #2e86d1; margin-left: 10px; }
+      #serviceJobs .list-group-item span { color: #1f2a37; font-size: 1.05rem; line-height: 1.3; }
 
-      .review-title {
-        color: #de6e96 !important;
-        font-size: 1.9rem;
-        font-weight: 800 !important;
-      }
+      /* Schedule Box */
+      .schedule-box { border: 2px solid #2f93df; border-radius: 16px; background: #dceeff; padding: 12px; margin-bottom: 10px; }
+      .schedule-box .form-label { font-weight: 700; color: #1f2a37; margin-bottom: 4px; }
+      .schedule-box .form-control, .schedule-box .form-select { background: #f4f4f4; border-color: #8ca2b5; color: #111; font-weight: 700; }
+      .schedule-box .form-control::placeholder { color: #6b7280; font-weight: 500; }
+      .schedule-box #servicePackages .list-group-item { background: transparent; border-color: #8ab6db; color: #111; }
+      .schedule-box #servicePackages .list-group-item.active, .schedule-box #servicePackages .list-group-item-action:active { color: #111 !important; background: #cfe5f8; border-color: #5f9fce; }
+      .schedule-box #servicePackages .list-group-item span { color: #111; font-weight: 700; }
+      .schedule-box #servicePackages .list-group-item.active span { color: #111 !important; }
+      #autoEndDateRow { border: 2px solid #58b56b; border-radius: 12px; background: #dff5e4; color: #1f4f2a; }
 
-      .review-alert {
-        background: #f6eac5;
-        border: 1px solid #ecd9a4;
-        color: #5e5430;
-        border-radius: 8px;
-        font-weight: 600;
-      }
+      /* Extra Request & Note */
+      .extra-request-box .form-label, .note-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
+      .extra-request-box #extraRequest, .note-box #customerNote { border: 2px solid #012b55; border-radius: 12px; min-height: 56px; padding: 10px 14px; font-size: 1.05rem; color: #1f2a37; background: #fffefe; }
+      .extra-request-box #extraRequest::placeholder, .note-box #customerNote::placeholder { color: #050505; }
+      .extra-request-box #extraRequest:focus, .note-box #customerNote:focus { border-color: #140086; box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.15); }
 
-      .review-panel {
-        background: #f5f5f6 !important;
-        border: 2px solid #d98aaa !important;
-        border-radius: 12px;
-      }
+      /* Price Detail Box */
+      .price-detail-box { border: 2px solid #d81b60 !important; border-radius: 12px; background: #ffe4ef !important; }
+      .price-detail-box .card-body { color: #1f2a37; font-weight: 700; }
+      .price-detail-title { font-size: 1.2rem; font-weight: 800 !important; letter-spacing: 0.2px; }
+      .price-detail-box .text-muted { color: #4b5563 !important; font-weight: 600; }
+      .price-detail-box #basePrice, .price-detail-box #travelFee, .price-detail-box #nightFee, .price-detail-box #holidayFee { font-weight: 800; color: #111827; }
+      .price-detail-box hr { border-color: rgba(216, 27, 96, 0.35); }
 
-      .review-panel .card-body {
-        color: #2a2f36;
-      }
+      /* Attachment Previews */
+      .quick-attach-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
+      .attachment-preview-box { border: 2px solid #f8bbd0; border-radius: 12px; background: #fff; padding: 10px; }
+      .attachment-preview-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .attachment-pane { min-height: 128px; padding: 6px; border-radius: 10px; background: #fffafc; }
+      .attachment-pane + .attachment-pane { border-left: 1px dashed #f2b9cc; padding-left: 12px; }
+      .attachment-pane-title { font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+      .attachment-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+      .attachment-item { border: 1px solid #e3e3e3; border-radius: 10px; overflow: hidden; background: #fff; }
+      .attachment-item img, .attachment-item video { display: block; width: 100%; height: 90px; object-fit: cover; background: #f8f8f8; }
+      .attachment-item-name { padding: 6px 8px; font-size: 12px; font-weight: 600; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-      .review-section-title {
-        color: #d46691 !important;
-        font-size: 1.3rem;
-        font-weight: 800 !important;
-      }
-
-      .review-panel .review-label {
-        color: #3a3a3a;
-        font-weight: 700;
-      }
-
-      .review-panel .review-value {
-        color: #222;
-        font-weight: 600;
-      }
-
-      #reviewJobs {
-        color: #222;
-        font-weight: 600;
-      }
-
-      .review-total-box {
-        background: #f8f3f6 !important;
-        border: 2px solid #d98aaa !important;
-        border-radius: 10px;
-      }
-
-      .review-total-box .card-body {
-        padding-top: 12px;
-        padding-bottom: 12px;
-      }
-
-      .review-action-row {
-        margin-top: 16px !important;
-      }
-
-      .review-btn-edit {
-        background: #7d8790;
-        border: none;
-        color: #fff;
-        font-weight: 700;
-      }
-
-      .review-btn-edit:hover {
-        background: #6b747c;
-        color: #fff;
-      }
-
-      .review-btn-save {
-        background: linear-gradient(135deg, #ef5f93, #e84d86) !important;
-        border: none !important;
-        color: #fff;
-        font-weight: 800;
-      }
-
-      .review-btn-save:hover {
-        background: linear-gradient(135deg, #db4f82, #d84374) !important;
-      }
-
-      .customer-info-box {
-        border: 2px solid #6bbf83;
-        border-radius: 16px;
-        padding: 12px;
-        margin-bottom: 16px;
-        background: #f8fffa;
-      }
-
-      .customer-info-title {
-        color: #2e7d32;
-        font-weight: 700;
-        font-size: 1.35rem;
-        line-height: 1;
-        margin-bottom: 10px;
-      }
-
-      .customer-info-box .form-label {
-        font-weight: 700;
-        color: #2f2f2f;
-        margin-bottom: 4px;
-      }
-
-      .customer-info-box .form-control,
-      .customer-info-box .input-group-text {
-        border-color: #a8cdb2;
-        background: #f7f9f7;
-      }
-
-      .customer-info-box .input-group-text {
-        color: #7a8281;
-      }
-
-      .customer-info-box .form-control:focus {
-        border-color: #7cc190;
-        box-shadow: 0 0 0 0.2rem rgba(89, 170, 114, 0.15);
-      }
-
-      .service-work-box {
-        border: 2px solid #4f9ddb;
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 16px;
-        background: #fafdff;
-      }
-
-      .service-work-box .form-label {
-        color: #1f2a37;
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-
-      #serviceSelector {
-        border-color: #b3c0ca;
-        background: #f1f1f1;
-      }
-
-      #serviceJobs .list-group {
-        gap: 2px;
-      }
-
-      #serviceJobs .list-group-item {
-        border: 0;
-        background: transparent;
-        padding: 4px 0;
-        border-radius: 0;
-      }
-
-      #serviceJobs .list-group-item-action:hover,
-      #serviceJobs .list-group-item-action:focus {
-        background: transparent;
-      }
-
-      #serviceJobs .job-check {
-        width: 16px;
-        height: 16px;
-        border-radius: 3px;
-        border-color: #2e86d1;
-        accent-color: #2e86d1;
-        margin-left: 10px;
-      }
-
-      #serviceJobs .list-group-item span {
-        color: #1f2a37;
-        font-size: 1.05rem;
-        line-height: 1.3;
-      }
-
-      .schedule-box {
-        border: 2px solid #2f93df;
-        border-radius: 16px;
-        background: #dceeff;
-        padding: 12px;
-        margin-bottom: 10px;
-      }
-
-      .schedule-box .form-label {
-        font-weight: 700;
-        color: #1f2a37;
-        margin-bottom: 4px;
-      }
-
-      .schedule-box .form-control,
-      .schedule-box .form-select {
-        background: #f4f4f4;
-        border-color: #8ca2b5;
-        color: #111;
-        font-weight: 700;
-      }
-
-      .schedule-box .form-control::placeholder {
-        color: #6b7280;
-        font-weight: 500;
-      }
-
-      .schedule-box #servicePackages .list-group-item {
-        background: transparent;
-        border-color: #8ab6db;
-        color: #111;
-      }
-
-      .schedule-box #servicePackages .list-group-item.active,
-      .schedule-box #servicePackages .list-group-item-action:active {
-        color: #111 !important;
-        background: #cfe5f8;
-        border-color: #5f9fce;
-      }
-
-      .schedule-box #servicePackages .list-group-item span {
-        color: #111;
-        font-weight: 700;
-      }
-
-      .schedule-box #servicePackages .list-group-item.active span {
-        color: #111 !important;
-      }
-
-      #autoEndDateRow {
-        border: 2px solid #58b56b;
-        border-radius: 12px;
-        background: #dff5e4;
-        color: #1f4f2a;
-      }
-
-      .extra-request-box .form-label,
-      .note-box .form-label {
-        color: #1f2a37;
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-
-      .extra-request-box #extraRequest,
-      .note-box #customerNote {
-        border: 2px solid #012b55;
-        border-radius: 12px;
-        min-height: 56px;
-        padding: 10px 14px;
-        font-size: 1.05rem;
-        color: #1f2a37;
-        background: #fffefe;
-      }
-
-      .extra-request-box #extraRequest::placeholder,
-      .note-box #customerNote::placeholder {
-        color: #050505;
-      }
-
-      .extra-request-box #extraRequest:focus,
-      .note-box #customerNote:focus {
-        border-color: #140086;
-        box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.15);
-      }
-
-      .price-detail-box {
-        border: 2px solid #d81b60 !important;
-        border-radius: 12px;
-        background: #ffe4ef !important;
-      }
-
-      .price-detail-box .card-body {
-        color: #1f2a37;
-        font-weight: 700;
-      }
-
-      .price-detail-title {
-        font-size: 1.2rem;
-        font-weight: 800 !important;
-        letter-spacing: 0.2px;
-      }
-
-      .price-detail-box .text-muted {
-        color: #4b5563 !important;
-        font-weight: 600;
-      }
-
-      .price-detail-box #basePrice,
-      .price-detail-box #travelFee,
-      .price-detail-box #nightFee,
-      .price-detail-box #holidayFee {
-        font-weight: 800;
-        color: #111827;
-      }
-
-      .price-detail-box hr {
-        border-color: rgba(216, 27, 96, 0.35);
-      }
-
-      .quick-attach-box .form-label {
-        color: #1f2a37;
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-
-      .attachment-preview-box {
-        border: 2px solid #f8bbd0;
-        border-radius: 12px;
-        background: #fff;
-        padding: 10px;
-      }
-
-      .attachment-preview-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 10px;
-      }
-
-      .attachment-item {
-        border: 1px solid #e3e3e3;
-        border-radius: 10px;
-        overflow: hidden;
-        background: #fff;
-      }
-
-      .attachment-item img,
-      .attachment-item video {
-        display: block;
-        width: 100%;
-        height: 90px;
-        object-fit: cover;
-        background: #f8f8f8;
-      }
-
-      .attachment-item-name {
-        padding: 6px 8px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #444;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
+      /* Mobile Responsive */
       @media (max-width: 991.98px) {
-        .navbar {
-          overflow-x: clip;
+        body {
+          padding-top: 86px;
         }
-
-        .navbar .container > span {
-          max-width: 34vw;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          font-size: 0.95rem;
-        }
-
-        .navbar-brand img {
-          width: 56px !important;
-          height: 42px !important;
-        }
-
-        .navbar-collapse {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          width: auto;
-          background: #fff;
-          z-index: 999;
-          border-radius: 0 0 12px 12px;
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .navbar-collapse.show {
-          display: block;
-        }
-
-        .navbar-collapse .navbar-nav {
-          flex-direction: column !important;
-          align-items: center !important;
-          gap: 10px;
-          padding: 15px 0;
-        }
-
-        .navbar-collapse .nav-item {
-          width: 100%;
-          text-align: center;
-        }
-
-        .navbar-collapse .nav-link {
-          display: block;
-          width: 100%;
-          padding: 10px;
-          font-size: 16px;
-        }
-
-        .navbar-collapse .btn {
-          width: 80%;
-          margin-top: 10px;
-        }
+        .navbar { overflow-x: clip; }
+        .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
+        .navbar-brand img { width: 56px !important; height: 42px !important; }
+        .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); }
+        .navbar-collapse.show { display: block; }
+        .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
+        .navbar-collapse .nav-item { width: 100%; text-align: center; }
+        .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
+        .navbar-collapse .btn { width: 80%; margin-top: 10px; }
       }
 
       @media (max-width: 575.98px) {
-        .review-label {
-          width: 110px;
-          min-width: 110px;
+        .review-label { width: 110px; min-width: 110px; }
+
+        .attachment-preview-split { grid-template-columns: 1fr; }
+        .attachment-pane + .attachment-pane {
+          border-left: 0;
+          border-top: 1px dashed #f2b9cc;
+          padding-left: 6px;
+          padding-top: 10px;
         }
+
+        .schedule-box .time-range-row .form-label {
+          font-size: 0.95rem;
+          margin-bottom: 4px;
+        }
+
+        .schedule-box .time-range-row .form-control {
+          padding-left: 8px;
+          padding-right: 8px;
+          font-size: 1rem;
+        }
+      }
+
+      body.booking-embedded-mode nav,
+      body.booking-embedded-mode footer {
+        display: none !important;
+      }
+
+      body.booking-embedded-mode {
+        padding-top: 0 !important;
+      }
+
+      body.booking-embedded-mode section.py-5 {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        background: #fff !important;
+      }
+
+      body.booking-embedded-mode section.py-5 > .container {
+        max-width: 100%;
+        padding: 12px 12px 18px;
+      }
+
+      body.booking-embedded-mode #bookingPageSection,
+      body.booking-embedded-mode #reviewPageSection {
+        max-width: 100% !important;
+      }
+
+      body.booking-embedded-mode .booking-page-heading {
+        display: none !important;
       }
     </style>
 <script src="/ga.js"></script>
@@ -536,9 +255,8 @@
 
     <section class="py-5" style="background: linear-gradient(135deg, #ffe1ec 0%, #ffffff 50%, #f7e0f4 100%)">
       <div class="container py-lg-4">
-        <div class="text-center mb-4">
+        <div class="text-center mb-4 booking-page-heading">
           <h1 class="display-5 fw-bold mb-2">Đặt Lịch Dịch Vụ</h1>
-          <p class="lead text-muted mb-0">Nhập thông tin đặt lịch, xem lại chi tiết, sau đó đăng nhập để xác nhận lưu.</p>
         </div>
 
         <div id="bookingPageSection" class="mx-auto" style="max-width: 760px">
@@ -552,7 +270,7 @@
                     <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="far fa-user"></i></span>
-                      <input type="text" id="customerName" required placeholder="Họ tên" class="form-control" />
+                      <input type="text" id="customerName" required placeholder="" class="form-control" />
                     </div>
                   </div>
 
@@ -561,14 +279,14 @@
                       <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="tel" id="customerPhone" required placeholder="0377553588" pattern="[0-9]{10,11}" class="form-control" />
+                        <input type="tel" id="customerPhone" required placeholder="0775472347s" pattern="[0-9]{10,11}" class="form-control" />
                       </div>
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">Email</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="far fa-envelope"></i></span>
-                        <input type="email" id="customerEmail" placeholder="email@example.com" class="form-control" />
+                        <input type="email" id="customerEmail" placeholder="" class="form-control" />
                       </div>
                     </div>
                   </div>
@@ -605,7 +323,10 @@
                     <div id="serviceJobs"></div>
                   </div>
                 </div>
-
+                <div class="mb-3 extra-request-box">
+                  <label class="form-label fw-bold">Yêu cầu khác:</label>
+                  <textarea id="extraRequest" rows="2" class="form-control" placeholder="Ví dụ: cần người có kinh nghiệm chăm bé sinh non..."></textarea>
+                </div>
                 <div class="schedule-box">
                   <div class="mb-2">
                     <label class="form-label fw-bold" style="color: #1f2a37"><i class="fas fa-clock me-1" style="color: #2f93df"></i>Chọn khung giờ</label>
@@ -614,13 +335,13 @@
 
                   <div id="shiftInfoBox" class="alert alert-info py-2 px-3 small d-none"></div>
 
-                  <div class="row g-2 mb-2">
-                    <div class="col-md-6">
+                  <div class="row g-2 mb-2 time-range-row">
+                    <div class="col-6">
                       <label class="form-label fw-bold">Giờ bắt đầu</label>
                       <input type="time" id="startTime" class="form-control" />
                       <div id="startTimeHint" class="form-text text-muted small"></div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-6">
                       <label class="form-label fw-bold">Giờ kết thúc</label>
                       <input type="time" id="endTime" class="form-control" />
                       <div id="endTimeHint" class="form-text text-muted small"></div>
@@ -636,25 +357,12 @@
                     </div>
 
                     <div class="col-md-6 mb-2">
-                      <label class="form-label fw-bold">Thuê theo:</label>
-                      <select id="durationUnit" class="form-select">
-                        <option value="">-- Chọn loại thời hạn --</option>
-                        <option value="day">Theo ngày</option>
-                        <option value="week">Theo tuần</option>
-                        <option value="month">Theo tháng</option>
-                        <option value="year">Theo năm</option>
-                      </select>
-                    </div>
-
-                    <div id="endDateRow" class="col-md-6 mb-2 d-none">
-                      <label class="form-label fw-bold">Đến ngày:</label>
+                      <label class="form-label fw-bold">Ngày kết thúc:</label>
                       <input type="date" id="endDate" class="form-control" />
                     </div>
 
-                    <div id="durationAmountRow" class="col-md-6 mb-2 d-none">
-                      <label class="form-label fw-bold" id="durationAmountLabel">Số tuần:</label>
-                      <input type="number" id="durationAmount" min="1" value="1" class="form-control" />
-                    </div>
+                    <input type="hidden" id="durationUnit" value="day" />
+                    <input type="hidden" id="durationAmount" value="" />
                   </div>
                 </div>
 
@@ -665,10 +373,7 @@
                   <span id="totalDaysText" class="text-muted ms-2"></span>
                 </div>
 
-                <div class="mb-3 extra-request-box">
-                  <label class="form-label fw-bold">Yêu cầu khác:</label>
-                  <textarea id="extraRequest" rows="2" class="form-control" placeholder="Ví dụ: cần người có kinh nghiệm chăm bé sinh non..."></textarea>
-                </div>
+                
 
                 <div class="card border-0 mb-3 price-detail-box">
                   <div class="card-body py-2 px-3">
@@ -725,8 +430,18 @@
                   <input type="file" id="quickVideoInput" accept="video/*" capture="environment" class="d-none" />
 
                   <div id="attachmentPreviewArea" class="attachment-preview-box mt-2">
-                    <div id="attachmentPreviewEmpty" class="text-muted small">Chưa có ảnh/video được chọn.</div>
-                    <div id="attachmentPreviewGrid" class="attachment-preview-grid d-none"></div>
+                    <div class="attachment-preview-split">
+                      <div class="attachment-pane">
+                        <div class="attachment-pane-title">Hình ảnh</div>
+                        <div id="attachmentImageEmpty" class="text-muted small">Chưa có hình ảnh được chọn.</div>
+                        <div id="attachmentImageGrid" class="attachment-preview-grid d-none"></div>
+                      </div>
+                      <div class="attachment-pane">
+                        <div class="attachment-pane-title">Video</div>
+                        <div id="attachmentVideoEmpty" class="text-muted small">Chưa có video được chọn.</div>
+                        <div id="attachmentVideoGrid" class="attachment-preview-grid d-none"></div>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="form-text">Nút hiển thị để minh họa giao diện. Ảnh/video chỉ hiển thị tạm, chưa lưu vào hệ thống.</div>
@@ -788,8 +503,18 @@
                     <div class="col-12">
                       <strong>Tệp đính kèm:</strong>
                       <div id="reviewAttachmentArea" class="attachment-preview-box mt-1">
-                        <div id="reviewAttachmentEmpty" class="text-muted small">Không có ảnh/video tạm.</div>
-                        <div id="reviewAttachmentGrid" class="attachment-preview-grid d-none"></div>
+                        <div class="attachment-preview-split">
+                          <div class="attachment-pane">
+                            <div class="attachment-pane-title">Hình ảnh</div>
+                            <div id="reviewAttachmentImageEmpty" class="text-muted small">Không có hình ảnh tạm.</div>
+                            <div id="reviewAttachmentImageGrid" class="attachment-preview-grid d-none"></div>
+                          </div>
+                          <div class="attachment-pane">
+                            <div class="attachment-pane-title">Video</div>
+                            <div id="reviewAttachmentVideoEmpty" class="text-muted small">Không có video tạm.</div>
+                            <div id="reviewAttachmentVideoGrid" class="attachment-preview-grid d-none"></div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -889,6 +614,17 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+      var EMBEDDED_BOOKING_MODE = false;
+      var PRESELECT_SERVICE_ID = '';
+      (function () {
+        var params = new URLSearchParams(window.location.search || '');
+        EMBEDDED_BOOKING_MODE = params.get('embedded') === '1';
+        PRESELECT_SERVICE_ID = params.get('serviceId') || '';
+        if (EMBEDDED_BOOKING_MODE) {
+          document.body.classList.add('booking-embedded-mode');
+        }
+      })();
+
       var mapPickerMap = null;
       var mapPickerMarker = null;
 
@@ -1039,7 +775,7 @@
           $('#endTimeHint').text('');
           $('#shiftInfoBox').addClass('d-none').html('');
           $('#timeError').addClass('d-none').text('');
-          $('#durationUnit').val('');
+          $('#durationUnit').val('day');
           $('#durationAmount').val(1);
           $('#endDateRow').addClass('d-none');
           $('#durationAmountRow').addClass('d-none');
@@ -1180,33 +916,12 @@
 
         function getDays() {
           var startVal = $('#startDate').val();
-          var unit = $('#durationUnit').val();
+          var unit = $('#durationUnit').val() || 'day';
           if (!startVal || !unit) return 0;
-          if (unit === 'day') {
-            var endVal = $('#endDate').val();
-            if (!endVal) return 0;
-            var diff = Math.floor((new Date(endVal) - new Date(startVal)) / 86400000) + 1;
-            return diff > 0 ? diff : 0;
-          }
-          if (unit === 'week') {
-            var w = parseInt($('#durationAmount').val(), 10) || 0;
-            return w * 7;
-          }
-          if (unit === 'month') {
-            var m = parseInt($('#durationAmount').val(), 10) || 0;
-            var s2 = new Date(startVal);
-            var e2 = new Date(startVal);
-            e2.setMonth(e2.getMonth() + m);
-            return Math.floor((e2 - s2) / 86400000);
-          }
-          if (unit === 'year') {
-            var y = parseInt($('#durationAmount').val(), 10) || 0;
-            var s3 = new Date(startVal);
-            var e3 = new Date(startVal);
-            e3.setFullYear(e3.getFullYear() + y);
-            return Math.floor((e3 - s3) / 86400000);
-          }
-          return 0;
+          var endVal = $('#endDate').val();
+          if (!endVal) return 0;
+          var diff = Math.floor((new Date(endVal) - new Date(startVal)) / 86400000) + 1;
+          return diff > 0 ? diff : 0;
         }
 
         function computeEndDate() {
@@ -1238,31 +953,14 @@
         }
 
         function updateDurationUI() {
-          var unit = $('#durationUnit').val();
-          $('#endDateRow, #durationAmountRow, #autoEndDateRow').addClass('d-none');
-          if (!unit) return;
-          if (unit === 'day') {
-            $('#endDateRow').removeClass('d-none');
-          } else {
-            var labels = { week: 'Số tuần:', month: 'Số tháng:', year: 'Số năm:' };
-            $('#durationAmountLabel').text(labels[unit] || 'Số lượng:');
-            $('#durationAmountRow').removeClass('d-none');
-            updateAutoEndDate();
-          }
+          $('#durationUnit').val('day');
+          $('#endDateRow').addClass('d-none');
+          $('#durationAmountRow').addClass('d-none');
+          $('#autoEndDateRow').addClass('d-none');
         }
 
         function updateAutoEndDate() {
-          var unit = $('#durationUnit').val();
-          if (unit === 'day' || !unit) return;
-          var e = computeEndDate();
-          var days = getDays();
-          if (e) {
-            $('#autoEndDateText').text(formatDateVN(e));
-            $('#totalDaysText').text('(' + days + ' ngày)');
-            $('#autoEndDateRow').removeClass('d-none');
-          } else {
-            $('#autoEndDateRow').addClass('d-none');
-          }
+          $('#autoEndDateRow').addClass('d-none');
         }
 
         var HOLIDAYS = ['01-01', '30-04', '01-05', '02-09'];
@@ -1377,63 +1075,95 @@
         }
 
         function renderAttachmentPreview() {
-          var list = QUICK_ATTACHMENTS.images.concat(QUICK_ATTACHMENTS.videos);
-          var $empty = $('#attachmentPreviewEmpty');
-          var $grid = $('#attachmentPreviewGrid');
+          var images = QUICK_ATTACHMENTS.images;
+          var videos = QUICK_ATTACHMENTS.videos;
+          var $imageEmpty = $('#attachmentImageEmpty');
+          var $videoEmpty = $('#attachmentVideoEmpty');
+          var $imageGrid = $('#attachmentImageGrid');
+          var $videoGrid = $('#attachmentVideoGrid');
 
-          if (!list.length) {
-            $empty.removeClass('d-none');
-            $grid.addClass('d-none').empty();
-            return;
+          $imageGrid.empty();
+          $videoGrid.empty();
+
+          if (!images.length) {
+            $imageEmpty.removeClass('d-none');
+            $imageGrid.addClass('d-none');
+          } else {
+            $imageEmpty.addClass('d-none');
+            $imageGrid.removeClass('d-none');
+            images.forEach(function (item) {
+              var safeName = $('<div>').text(item.name).html();
+              $imageGrid.append(
+                '<div class="attachment-item">' +
+                  '<img src="' + item.url + '" alt="' + safeName + '">' +
+                  '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '</div>'
+              );
+            });
           }
 
-          $empty.addClass('d-none');
-          $grid.removeClass('d-none').empty();
-
-          list.forEach(function (item) {
-            var safeName = $('<div>').text(item.name).html();
-            var mediaHtml =
-              item.kind === 'image'
-                ? '<img src="' + item.url + '" alt="' + safeName + '">'
-                : '<video src="' + item.url + '" controls muted preload="metadata"></video>';
-
-            $grid.append(
-              '<div class="attachment-item">' +
-                mediaHtml +
-                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
-              '</div>'
-            );
-          });
+          if (!videos.length) {
+            $videoEmpty.removeClass('d-none');
+            $videoGrid.addClass('d-none');
+          } else {
+            $videoEmpty.addClass('d-none');
+            $videoGrid.removeClass('d-none');
+            videos.forEach(function (item) {
+              var safeName = $('<div>').text(item.name).html();
+              $videoGrid.append(
+                '<div class="attachment-item">' +
+                  '<video src="' + item.url + '" controls muted preload="metadata"></video>' +
+                  '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '</div>'
+              );
+            });
+          }
         }
 
         function renderReviewAttachmentPreview() {
-          var list = QUICK_ATTACHMENTS.images.concat(QUICK_ATTACHMENTS.videos);
-          var $empty = $('#reviewAttachmentEmpty');
-          var $grid = $('#reviewAttachmentGrid');
+          var images = QUICK_ATTACHMENTS.images;
+          var videos = QUICK_ATTACHMENTS.videos;
+          var $imageEmpty = $('#reviewAttachmentImageEmpty');
+          var $videoEmpty = $('#reviewAttachmentVideoEmpty');
+          var $imageGrid = $('#reviewAttachmentImageGrid');
+          var $videoGrid = $('#reviewAttachmentVideoGrid');
 
-          if (!list.length) {
-            $empty.removeClass('d-none');
-            $grid.addClass('d-none').empty();
-            return;
+          $imageGrid.empty();
+          $videoGrid.empty();
+
+          if (!images.length) {
+            $imageEmpty.removeClass('d-none');
+            $imageGrid.addClass('d-none');
+          } else {
+            $imageEmpty.addClass('d-none');
+            $imageGrid.removeClass('d-none');
+            images.forEach(function (item) {
+              var safeName = $('<div>').text(item.name).html();
+              $imageGrid.append(
+                '<div class="attachment-item">' +
+                  '<img src="' + item.url + '" alt="' + safeName + '">' +
+                  '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '</div>'
+              );
+            });
           }
 
-          $empty.addClass('d-none');
-          $grid.removeClass('d-none').empty();
-
-          list.forEach(function (item) {
-            var safeName = $('<div>').text(item.name).html();
-            var mediaHtml =
-              item.kind === 'image'
-                ? '<img src="' + item.url + '" alt="' + safeName + '">'
-                : '<video src="' + item.url + '" controls muted preload="metadata"></video>';
-
-            $grid.append(
-              '<div class="attachment-item">' +
-                mediaHtml +
-                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
-              '</div>'
-            );
-          });
+          if (!videos.length) {
+            $videoEmpty.removeClass('d-none');
+            $videoGrid.addClass('d-none');
+          } else {
+            $videoEmpty.addClass('d-none');
+            $videoGrid.removeClass('d-none');
+            videos.forEach(function (item) {
+              var safeName = $('<div>').text(item.name).html();
+              $videoGrid.append(
+                '<div class="attachment-item">' +
+                  '<video src="' + item.url + '" controls muted preload="metadata"></video>' +
+                  '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '</div>'
+              );
+            });
+          }
         }
 
         function appendQuickFiles(fileList, kind) {
@@ -1462,14 +1192,7 @@
               })
               .get() || [];
           var unit = $('#durationUnit').val();
-          var endDateValue = '';
-
-          if (unit === 'day') {
-            endDateValue = $('#endDate').val();
-          } else {
-            var autoEnd = computeEndDate();
-            endDateValue = autoEnd ? autoEnd.toISOString().split('T')[0] : '';
-          }
+          var endDateValue = $('#endDate').val();
 
           return {
             serviceId: $('#serviceSelector').val() || '',
@@ -1484,8 +1207,8 @@
             jobs: selectedJobs.join(', '),
             startDate: $('#startDate').val(),
             endDate: endDateValue,
-            durationUnit: unit,
-            durationAmount: unit !== 'day' ? $('#durationAmount').val() || '' : '',
+            durationUnit: unit || 'day',
+            durationAmount: '',
             totalDays: getDays(),
             startTime: $('#startTime').val(),
             endTime: $('#endTime').val(),
@@ -1534,16 +1257,11 @@
             });
           }
 
-          $('#durationUnit').val(data.durationUnit || '');
+          $('#durationUnit').val('day');
           updateDurationUI();
-          if (data.durationAmount) {
-            $('#durationAmount').val(data.durationAmount);
-          }
 
           $('#startDate').val(data.startDate || '');
-          if (data.durationUnit === 'day') {
-            $('#endDate').val(data.endDate || '');
-          }
+          $('#endDate').val(data.endDate || '');
           $('#startTime').val(data.startTime || '');
           $('#endTime').val(data.endTime || '');
 
@@ -1648,13 +1366,37 @@
         }
 
         function finishSuccessState() {
+          if (EMBEDDED_BOOKING_MODE) {
+            try {
+              window.parent.postMessage(
+                {
+                  type: 'booking:success',
+                  message: 'Đặt lịch thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.'
+                },
+                '*'
+              );
+            } catch (e) {
+              console.warn('Không thể gửi trạng thái thành công về trang cha:', e);
+            }
+
+            setTimeout(function () {
+              try {
+                window.parent.postMessage({ type: 'booking:close' }, '*');
+              } catch (e) {
+                console.warn('Không thể gửi trạng thái đóng modal về trang cha:', e);
+              }
+            }, 150);
+            return;
+          }
+
           $('#reviewPageSection').addClass('d-none');
           $('#bookingPageSection').removeClass('d-none');
-          $('#bookingForm').slideUp();
+          $('#bookingForm').addClass('d-none');
           $('#successMessage').removeClass('d-none');
           setTimeout(function () {
             $('html, body').animate({ scrollTop: $('#bookingPageSection').offset().top - 30 }, 300);
           }, 50);
+
           setTimeout(function () {
             window.location.href = 'dich-vu-cham-soc-me-be.html';
           }, 2000);
@@ -1668,7 +1410,10 @@
           saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...').prop('disabled', true);
           backBtn.prop('disabled', true);
 
-          fetch(SCRIPT_URL, {
+          var sheetError = null;
+          var dbError = null;
+
+          var sheetPromise = fetch(SCRIPT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(data)
@@ -1677,34 +1422,50 @@
               return res.json();
             })
             .then(function (result) {
-              if (result.result === 'success') {
-                saveBookingToDatabase(data)
-                  .then(function () {
-                    saveBtn.html(originalText).prop('disabled', false);
-                    backBtn.prop('disabled', false);
-                    PENDING_BOOKING_DATA = null;
-                    sessionStorage.removeItem(STORAGE_KEY);
-                    resetQuickAttachments();
-                    finishSuccessState();
-                  })
-                  .catch(function (err) {
-                    console.error('Lỗi khi lưu cơ sở dữ liệu:', err);
-                    saveBtn.html(originalText).prop('disabled', false);
-                    backBtn.prop('disabled', false);
-                    alert('Đã lưu Google Sheet nhưng lưu cơ sở dữ liệu thất bại. Vui lòng thử lại.\n' + err.message);
-                  });
-              } else {
-                saveBtn.html(originalText).prop('disabled', false);
-                backBtn.prop('disabled', false);
-                alert('Không thể lưu dữ liệu. Vui lòng thử lại.');
+              if (result && result.result === 'success') {
+                return result;
               }
+              throw new Error((result && result.message) || 'Lưu Google Sheet thất bại');
             })
             .catch(function (err) {
-              console.error('Lỗi khi gửi dữ liệu:', err);
-              saveBtn.html(originalText).prop('disabled', false);
-              backBtn.prop('disabled', false);
-              alert('Có lỗi xảy ra khi gửi. Vui lòng thử lại.');
+              sheetError = err;
+              console.error('Lỗi khi lưu Google Sheet:', err);
+              throw err;
             });
+
+          var dbPromise = saveBookingToDatabase(data).catch(function (err) {
+            dbError = err;
+            console.error('Lỗi khi lưu cơ sở dữ liệu:', err);
+            throw err;
+          });
+
+          Promise.allSettled([sheetPromise, dbPromise]).then(function (results) {
+            var sheetOk = results[0].status === 'fulfilled';
+            var dbOk = results[1].status === 'fulfilled';
+
+            saveBtn.html(originalText).prop('disabled', false);
+            backBtn.prop('disabled', false);
+
+            if (sheetOk || dbOk) {
+              PENDING_BOOKING_DATA = null;
+              sessionStorage.removeItem(STORAGE_KEY);
+              resetQuickAttachments();
+              finishSuccessState();
+
+              if (!sheetOk && dbOk) {
+                alert('Đặt lịch đã lưu thành công trong cơ sở dữ liệu, nhưng lưu Google Sheet thất bại.');
+              } else if (sheetOk && !dbOk) {
+                alert('Đặt lịch đã lưu thành công trên Google Sheet, nhưng lưu cơ sở dữ liệu thất bại.');
+              }
+              return;
+            }
+
+            alert(
+              'Không thể lưu dữ liệu ở cả Google Sheet và cơ sở dữ liệu. Vui lòng thử lại.\n' +
+                'Sheet: ' + ((sheetError && sheetError.message) || 'Lỗi không xác định') + '\n' +
+                'DB: ' + ((dbError && dbError.message) || 'Lỗi không xác định')
+            );
+          });
         }
 
         function showReviewStep() {
@@ -1717,7 +1478,7 @@
           $('#reviewPageSection').addClass('d-none');
           $('#bookingPageSection').removeClass('d-none');
           $('#successMessage').addClass('d-none');
-          $('#bookingForm').show();
+          $('#bookingForm').removeClass('d-none').show();
           $('html, body').animate({ scrollTop: $('#bookingPageSection').offset().top - 30 }, 300);
         }
 
@@ -1784,9 +1545,18 @@
           $('#serviceSelector').append('<option value="' + s.id + '">' + s.name + '</option>');
         });
 
-        var defaultService = SERVICES[0];
+        var defaultService = null;
+        if (PRESELECT_SERVICE_ID) {
+          defaultService = SERVICES.find(function (s) {
+            return String(s.id) === String(PRESELECT_SERVICE_ID);
+          }) || null;
+        }
+        if (!defaultService) {
+          defaultService = SERVICES[0];
+        }
         if (defaultService) {
           renderService(defaultService);
+          $('#serviceSelector').val(String(defaultService.id));
         }
 
         var today = new Date().toISOString().split('T')[0];

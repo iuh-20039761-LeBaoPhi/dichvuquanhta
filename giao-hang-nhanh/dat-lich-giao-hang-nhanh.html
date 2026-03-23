@@ -47,8 +47,7 @@
       <!-- ============== BƯỚC 1: Liên hệ & Địa chỉ ============== -->
       <div class="booking-card active" id="step-1">
         <div class="card-title">
-          <i class="fas fa-address-card"></i> Bước 1: Thông tin Liên hệ & Địa
-          chỉ
+          <i class="fas fa-address-card"></i> Bước 1: Liên hệ & địa chỉ
         </div>
         <div class="step-error" id="error-step-1">
           <i class="fas fa-exclamation-circle"></i>
@@ -65,7 +64,8 @@
               ><input
                 type="text"
                 class="form-control"
-                id="sender-name"
+                id="nguoi_gui_ho_ten"
+                name="nguoi_gui_ho_ten"
               />
             </div>
             <div class="form-group" style="margin-bottom: 0">
@@ -73,7 +73,8 @@
               ><input
                 type="tel"
                 class="form-control"
-                id="sender-phone"
+                id="nguoi_gui_so_dien_thoai"
+                name="nguoi_gui_so_dien_thoai"
               />
             </div>
           </div>
@@ -86,7 +87,8 @@
               ><input
                 type="text"
                 class="form-control"
-                id="receiver-name"
+                id="nguoi_nhan_ho_ten"
+                name="nguoi_nhan_ho_ten"
               />
             </div>
             <div class="form-group" style="margin-bottom: 0">
@@ -94,7 +96,8 @@
               ><input
                 type="tel"
                 class="form-control"
-                id="receiver-phone"
+                id="nguoi_nhan_so_dien_thoai"
+                name="nguoi_nhan_so_dien_thoai"
               />
             </div>
           </div>
@@ -135,7 +138,8 @@
             <input
               type="text"
               class="form-control"
-              id="search-pickup"
+              id="dia_chi_lay_hang"
+              name="dia_chi_lay_hang"
               autocomplete="off"
             />
             <div class="suggestions-box" id="sug-pickup"></div>
@@ -148,7 +152,8 @@
             <input
               type="text"
               class="form-control"
-              id="search-delivery"
+              id="dia_chi_giao_hang"
+              name="dia_chi_giao_hang"
               autocomplete="off"
             />
             <div class="suggestions-box" id="sug-delivery"></div>
@@ -198,14 +203,7 @@
           <span class="error-text"></span>
         </div>
 
-        <div
-          style="
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 1.5px solid #e2e8f0;
-            padding: 20px;
-          "
-        >
+        <div class="section-shell section-shell--items">
           <div class="items-header">
             <h3><i class="fas fa-boxes-stacked"></i> Danh sách hàng hóa</h3>
             <button type="button" class="btn-add" id="btn-add-item">
@@ -213,15 +211,7 @@
             </button>
           </div>
           <div id="items-list"></div>
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              padding-top: 12px;
-              border-top: 2px solid #e2e8f0;
-            "
-          >
+          <div class="items-summary">
             <span style="font-size: 13px; color: #64748b"
               >Tổng trọng lượng tính cước:</span
             >
@@ -235,19 +225,32 @@
 
         <div class="form-grid" style="margin-top: 20px">
           <div class="form-group">
-            <label
-              ><i class="fas fa-hand-holding-dollar"></i> Giá trị thu hộ COD
-              (₫)</label
-            >
+            <div class="label-with-help">
+              <label for="gia_tri_thu_ho_cod"
+                ><i class="fas fa-hand-holding-dollar"></i> Giá trị thu hộ COD
+                (₫)</label
+              >
+              <details class="info-toggle info-toggle--inline">
+                <summary
+                  class="info-toggle__button"
+                  aria-label="Giải thích phí COD"
+                  title="Giải thích phí COD"
+                >
+                  i
+                </summary>
+                <div class="info-toggle__content">
+                  Phí COD trên 1.000.000đ được tính 1.2% giá trị thu hộ, tối
+                  thiểu 15.000đ.
+                </div>
+              </details>
+            </div>
             <input
               type="number"
               class="form-control"
-              id="cod-value"
+              id="gia_tri_thu_ho_cod"
+              name="gia_tri_thu_ho_cod"
               value="0"
             />
-            <span style="font-size: 11px; color: #64748b"
-              >Phí COD > 1.000.000đ: 1.2%, tối thiểu 15.000đ</span
-            >
           </div>
         </div>
 
@@ -265,7 +268,7 @@
         <div class="upload-split-grid">
           <div
             class="upload-zone upload-zone--image"
-            onclick="document.getElementById('image-upload').click()"
+            onclick="document.getElementById('hinh_anh_hang_hoa').click()"
           >
             <i
               class="fas fa-camera"
@@ -278,7 +281,8 @@
               type="file"
               accept="image/*"
               capture="environment"
-              id="image-upload"
+              id="hinh_anh_hang_hoa"
+              name="hinh_anh_hang_hoa"
               style="display: none"
               onchange="previewUpload('image')"
             />
@@ -289,7 +293,7 @@
           </div>
           <div
             class="upload-zone upload-zone--video"
-            onclick="document.getElementById('video-upload').click()"
+            onclick="document.getElementById('video_hang_hoa').click()"
           >
             <i class="fas fa-video" style="font-size: 36px; color: #94a3b8"></i>
             <p style="color: #64748b; margin: 8px 0 0">
@@ -299,7 +303,8 @@
               type="file"
               accept="video/*"
               capture="environment"
-              id="video-upload"
+              id="video_hang_hoa"
+              name="video_hang_hoa"
               style="display: none"
               onchange="previewUpload('video')"
             />
@@ -314,7 +319,8 @@
           <label><i class="fas fa-note-sticky"></i> Ghi chú cho tài xế</label>
           <textarea
             class="form-control"
-            id="notes"
+            id="ghi_chu_tai_xe"
+            name="ghi_chu_tai_xe"
           ></textarea>
         </div>
 
@@ -343,7 +349,8 @@
           <h3><i class="fas fa-box"></i> Chọn gói cước</h3>
           <select
             class="form-control"
-            id="package-choice"
+            id="goi_cuoc"
+            name="goi_cuoc"
             style="font-weight: bold; color: #0a2a66; font-size: 16px"
           >
             <option value="instant">Giao ngay lập tức</option>
@@ -361,14 +368,14 @@
         </div>
 
         <div id="scheduled-flow">
-          <div class="form-grid">
+          <div class="form-grid schedule-grid">
             <div class="form-group">
               <label><i class="fas fa-calendar-day"></i> Ngày lấy hàng</label>
-              <input type="date" class="form-control" id="pickup-date" />
+              <input type="date" class="form-control" id="ngay_lay_hang" name="ngay_lay_hang" />
             </div>
             <div class="form-group">
               <label><i class="fas fa-clock"></i> Khung giờ lấy hàng</label>
-              <select class="form-control" id="pickup-slot"></select>
+              <select class="form-control" id="khung_gio_lay_hang" name="khung_gio_lay_hang"></select>
             </div>
           </div>
 
@@ -410,12 +417,28 @@
         </div>
 
         <div
-          class="vehicle-choice-panel is-hidden"
+          class="vehicle-choice-panel vehicle-choice-panel--compact is-hidden"
           id="weather-surcharge-panel"
           style="margin-top: 16px"
         >
-          <h3><i class="fas fa-cloud-rain"></i> Phụ phí thời tiết tự động</h3>
-          <p id="weather-surcharge-desc">
+          <div class="panel-heading">
+            <h3><i class="fas fa-cloud-rain"></i> Phụ phí thời tiết tự động</h3>
+            <details class="info-toggle info-toggle--inline">
+              <summary
+                class="info-toggle__button"
+                aria-label="Chi tiết phụ phí thời tiết"
+                title="Chi tiết phụ phí thời tiết"
+              >
+                i
+              </summary>
+              <div class="info-toggle__content" id="weather-surcharge-hint">
+                Khách hàng không cần chọn tay. Nếu hệ thống chưa lấy được dữ
+                liệu thời tiết, điều phối sẽ xác nhận bổ sung khi cần. Mức đang
+                hiển thị là giá tham khảo.
+              </div>
+            </details>
+          </div>
+          <p class="panel-summary" id="weather-surcharge-desc">
             Hệ thống đang kiểm tra thời tiết tại điểm lấy hàng để áp dụng phụ
             phí phù hợp.
           </p>
@@ -424,31 +447,32 @@
               >Đang kiểm tra</span
             >
             <span class="weather-surcharge-meta" id="weather-surcharge-meta"
-              >OpenWeatherMap sẽ được dùng nếu đã cấu hình API key.</span
+              >Hệ thống sẽ tự kiểm tra dữ liệu thời tiết để tính phụ phí nếu cần.</span
             >
           </div>
-          <span
-            id="weather-surcharge-hint"
-            style="
-              display: block;
-              margin-top: 8px;
-              font-size: 11px;
-              color: #64748b;
-            "
-          >
-            Khách hàng không cần chọn tay. Nếu hệ thống chưa lấy được dữ liệu
-            thời tiết, điều phối sẽ xác nhận bổ sung khi cần. Mức đang hiển thị
-            là giá tham khảo.
-          </span>
         </div>
 
-        <div class="vehicle-choice-panel">
-          <h3><i class="fas fa-truck-ramp-box"></i> Phương tiện giao hàng</h3>
-          <p>
-            Hệ thống sẽ tự gợi ý theo cân nặng và kích thước. Bạn vẫn có thể đổi
-            lại phương tiện theo nhu cầu, giá cước sẽ cập nhật ngay.
-          </p>
-          <select class="form-control" id="vehicle-choice">
+        <div class="vehicle-choice-panel vehicle-choice-panel--compact">
+          <div class="panel-heading">
+            <h3>
+              <i class="fas fa-truck-ramp-box"></i> Phương tiện giao thông đề
+              xuất
+            </h3>
+            <details class="info-toggle info-toggle--inline">
+              <summary
+                class="info-toggle__button"
+                aria-label="Giải thích gợi ý phương tiện"
+                title="Giải thích gợi ý phương tiện"
+              >
+                i
+              </summary>
+              <div class="info-toggle__content">
+                Hệ thống gợi ý phương tiện theo cân nặng, kích thước và quãng
+                đường. Bạn vẫn có thể đổi lại để so sánh mức giá ngay.
+              </div>
+            </details>
+          </div>
+          <select class="form-control" id="phuong_tien_giao_hang" name="phuong_tien_giao_hang">
             <option value="auto">Để hệ thống tự đề xuất</option>
             <option value="xe_may">Xe máy</option>
             <option value="xe_loi">Xe lôi / xe ba gác</option>
@@ -508,18 +532,11 @@
           <span class="error-text"></span>
         </div>
 
-        <div style="margin-top: 24px">
-          <h3
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #334155;
-              margin-bottom: 12px;
-            "
-          >
+        <div class="choice-section" style="margin-top: 24px">
+          <h3 class="choice-title">
             <i class="fas fa-user-tag"></i> Người trả cước
           </h3>
-          <div class="option-group" id="payer-group">
+          <div class="option-group option-group--compact" id="payer-group">
             <div
               class="option-btn active"
               data-val="gui"
@@ -535,21 +552,14 @@
               <i class="fas fa-hand-holding-box"></i>Người Nhận
             </div>
           </div>
-          <input type="hidden" id="payer-val" value="gui" />
+          <input type="hidden" id="nguoi_tra_cuoc" name="nguoi_tra_cuoc" value="gui" />
         </div>
 
-        <div style="margin-top: 20px">
-          <h3
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #334155;
-              margin-bottom: 12px;
-            "
-          >
+        <div class="choice-section" style="margin-top: 20px">
+          <h3 class="choice-title">
             <i class="fas fa-wallet"></i> Phương thức thanh toán
           </h3>
-          <div class="option-group" id="payment-group">
+          <div class="option-group option-group--compact" id="payment-group">
             <div
               class="option-btn active"
               data-val="tien_mat"
@@ -565,7 +575,7 @@
               <i class="fas fa-qrcode"></i>Chuyển khoản
             </div>
           </div>
-          <input type="hidden" id="payment-val" value="tien_mat" />
+          <input type="hidden" id="phuong_thuc_thanh_toan" name="phuong_thuc_thanh_toan" value="tien_mat" />
         </div>
 
         <div class="btn-row">

@@ -29,6 +29,8 @@
         max-width: 100%;
         overflow-x: hidden;
       }
+      body {padding-top: 96px;}
+      .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
       body { font-family:"Quicksand",sans-serif; line-height:1.85; color:#444; background:#fafafa; }
 
       /* ── CATEGORY PILLS ─────────────────────────── */
@@ -91,6 +93,9 @@
       /* ================= MOBILE ONLY ================= */
       /* ================= MOBILE ONLY ================= */
       @media (max-width: 991.98px) {
+        body {
+    padding-top: 86px;
+  }
         .navbar { overflow-x: clip; }
         .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
         .navbar-brand img { width: 56px !important; height: 42px !important; }

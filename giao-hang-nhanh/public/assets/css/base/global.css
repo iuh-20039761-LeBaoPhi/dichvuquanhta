@@ -139,3 +139,47 @@
 .h-auto {
   height: auto;
 }
+
+@media (max-width: 768px) {
+  .container,
+  .footer-container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  body > section,
+  body > main > section,
+  main > section {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  body > section > .container,
+  body > main > section > .container,
+  main > section > .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .container,
+  .footer-container {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  body > section,
+  body > main > section,
+  main > section {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+
+  body > section > .container,
+  body > main > section > .container,
+  main > section > .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

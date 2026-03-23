@@ -10,6 +10,7 @@
   max-width: 960px;
   margin: 0 auto;
   padding: 24px 20px 60px;
+  overflow-x: hidden;
 }
 
 /* --- Step Indicator --- */
@@ -358,6 +359,40 @@
   margin-bottom: 6px;
 }
 
+.label-with-help {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.label-with-help label {
+  margin-bottom: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.form-group label .info-toggle {
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.section-shell {
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  padding: 20px;
+}
+
+.items-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 2px solid #e2e8f0;
+}
+
 .item-grid {
   display: grid;
   gap: 12px;
@@ -626,6 +661,89 @@ textarea.form-control {
   justify-content: center;
 }
 
+.info-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  vertical-align: top;
+}
+
+.info-toggle summary {
+  list-style: none;
+}
+
+.info-toggle summary::-webkit-details-marker {
+  display: none;
+}
+
+.info-toggle__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #0a2a66;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.info-toggle[open] .info-toggle__button {
+  background: #0a2a66;
+  border-color: #0a2a66;
+  color: #fff;
+}
+
+.info-toggle__content {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: min(280px, calc(100vw - 24px));
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #f8fafc;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.5;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.24);
+  z-index: 1000;
+}
+
+.field-help .info-toggle__content {
+  left: 0;
+  right: auto;
+  transform: none;
+}
+
+.label-with-help .info-toggle__content,
+.panel-heading .info-toggle__content,
+.service-note-help .info-toggle__content {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.breakdown-label-with-help {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
 /* --- Service cards --- */
 .service-card {
   border: 2px solid #e2e8f0;
@@ -697,9 +815,20 @@ textarea.form-control {
   color: #ff7a00;
 }
 .service-eta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
+  line-height: 1.4;
   color: #64748b;
   margin-top: 6px;
+}
+
+.service-card-meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
 }
 
 .service-breakdown {
@@ -715,8 +844,12 @@ textarea.form-control {
 .service-card-note {
   margin-top: 10px;
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.5;
   color: #52627f;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .breakdown-row {
@@ -858,6 +991,34 @@ textarea.form-control {
   color: #64748b;
 }
 
+.vehicle-choice-panel--compact p,
+.panel-summary {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+.panel-heading h3 {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#weather-surcharge-panel .panel-summary,
+#weather-surcharge-panel .weather-surcharge-meta {
+  display: none;
+}
+
 /* --- Payment / Payer options --- */
 .option-group {
   display: flex;
@@ -893,6 +1054,43 @@ textarea.form-control {
   margin-bottom: 6px;
 }
 
+.choice-section {
+  margin-top: 18px;
+}
+
+.choice-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #334155;
+  margin: 0 0 12px;
+}
+
+.option-group--compact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.option-group--compact .option-btn {
+  min-width: 0;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.option-group--compact .option-btn i {
+  display: inline-block;
+  margin: 0;
+  font-size: 15px;
+}
+
 /* --- Review / Summary --- */
 .review-section {
   background: #f8fafc;
@@ -908,11 +1106,27 @@ textarea.form-control {
   margin: 0 0 10px;
 }
 
+#rv-price-breakdown .rv-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+}
+
+#rv-price-breakdown .rv-label {
+  min-width: 0;
+}
+
+#rv-price-breakdown .rv-val {
+  text-align: right;
+  white-space: nowrap;
+}
+
 .rv-row {
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  padding: 5px 0;
+  padding: 4px 0;
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -989,21 +1203,95 @@ textarea.form-control {
 
 /* --- Responsive --- */
 @media (max-width: 640px) {
+  .booking-container {
+    padding: 12px 4px 36px;
+  }
+
+  .step-indicator {
+    padding: 12px 10px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+  }
+
   .form-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .schedule-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
   .item-grid-2,
   .item-grid-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .booking-card {
-    padding: 20px 16px;
+    padding: 12px 10px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+  }
+  .card-title {
+    font-size: 20px;
+    gap: 8px;
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+  .form-group {
+    margin-bottom: 10px;
+  }
+  .contact-box,
+  .section-shell,
+  .item-row,
+  .service-card,
+  .vehicle-choice-panel,
+  .eta-panel,
+  .review-section,
+  .upload-zone {
+    padding: 12px;
   }
   .step-label {
     display: none;
   }
+  .section-shell--items {
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+  .address-search-wrap {
+    margin-bottom: 10px;
+  }
+  #map {
+    height: 300px;
+    border-width: 1px;
+    margin-bottom: 8px;
+  }
+  .map-legend {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .map-legend__item {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .distance-badge {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .items-header {
+    margin-bottom: 10px;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .items-summary {
+    padding-top: 8px;
+    border-top-width: 1px;
+  }
   .upload-split-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
   }
   .instant-flow__hero,
   .instant-flow__grid {
@@ -1017,12 +1305,132 @@ textarea.form-control {
   .rv-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: 2px;
+  }
+  #rv-price-breakdown .rv-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 8px;
+  }
+  .service-card {
+    border-width: 1px;
+    margin-bottom: 8px;
+  }
+  .service-card-meta {
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .service-name {
+    font-size: 15px;
+  }
+  .service-price {
+    font-size: 18px;
+  }
+  .service-eta {
+    margin-top: 0;
+    font-size: 12px;
+  }
+  .service-card-note {
+    margin-top: 6px;
+  }
+  .breakdown-row {
+    padding: 2px 0;
+  }
+  .vehicle-choice-panel {
+    margin-top: 12px;
+  }
+  .panel-heading {
+    gap: 8px;
+  }
+  .label-with-help,
+  .panel-heading,
+  .breakdown-label-with-help,
+  .service-card-note {
+    align-items: flex-start;
+  }
+  .label-with-help,
+  .breakdown-label-with-help {
+    flex-wrap: wrap;
+  }
+  .label-with-help .info-toggle,
+  .panel-heading .info-toggle,
+  .breakdown-label-with-help .info-toggle,
+  .service-card-note .info-toggle {
+    margin-top: 1px;
+  }
+  .weather-surcharge-summary {
+    gap: 8px;
+  }
+  .weather-surcharge-badge,
+  .weather-surcharge-meta {
+    font-size: 11px;
+  }
+  .choice-section {
+    margin-top: 12px;
+  }
+  .choice-title {
+    margin-bottom: 10px;
+  }
+  .option-group--compact {
+    gap: 8px;
+  }
+  .option-group--compact .option-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .option-group--compact .option-btn i {
+    font-size: 13px;
+  }
+  .btn-row {
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .btn-next,
+  .btn-prev {
+    padding: 10px 14px;
+    font-size: 14px;
   }
   .rv-val {
     text-align: left;
   }
+  #rv-price-breakdown .rv-val {
+    text-align: right;
+  }
+  .rv-total-row {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
   .review-upload-grid {
     grid-template-columns: 1fr;
+  }
+  .review-upload-thumb {
+    height: 160px;
+  }
+  .info-toggle__content {
+    position: absolute;
+    top: calc(100% + 8px);
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(220px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    z-index: 1200;
+  }
+  .info-toggle[data-mobile-align="left"] .info-toggle__content {
+    left: 0;
+    right: auto;
+    transform: none;
+  }
+  .info-toggle[data-mobile-align="right"] .info-toggle__content {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+  .info-toggle[data-mobile-align="center"] .info-toggle__content {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
   }
 }

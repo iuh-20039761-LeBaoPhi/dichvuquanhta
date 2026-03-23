@@ -24,7 +24,9 @@ body {
   max-width: 100%;
   overflow-x: hidden;
 }
-
+    .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
+    /* GIỮ header luôn 1 hàng */
+    .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
 /* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
 .navbar .container {
   display: flex;
@@ -35,7 +37,9 @@ body {
 
 /* ================= MOBILE ONLY ================= */
 @media (max-width: 991.98px) {
-
+body {
+    padding-top: 86px;
+  }
   .navbar {
     overflow-x: clip;
   }

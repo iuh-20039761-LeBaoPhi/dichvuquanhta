@@ -3,8 +3,39 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 24px;
   position: relative;
   z-index: 2001;
+}
+
+.logo {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.logo > div {
+  display: flex !important;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.logo > div > a {
+  flex: 0 0 auto;
+  margin: 0 !important;
+}
+
+.logo img {
+  display: block;
+}
+
+.logo-link {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ===== HAMBURGER MENU (Hidden by default) ===== */
@@ -155,14 +186,41 @@
 /* ===== RESPONSIVE NAVIGATION ===== */
 @media (max-width: 768px) {
   .navbar {
-    flex-wrap: wrap;
-    gap: 12px;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 0;
     position: relative;
     overflow: visible !important;
   }
 
+  .logo {
+    flex: 1 1 auto;
+    max-width: calc(100% - 42px);
+  }
+
+  .logo > div {
+    width: 100%;
+    justify-content: space-between;
+    gap: 4px !important;
+    font-size: 1rem !important;
+  }
+
+  .logo img {
+    width: 56px !important;
+    height: 42px !important;
+  }
+
+  .logo-link {
+    flex: 1 1 auto;
+    font-size: 14px;
+    text-align: center;
+  }
+
   .hamburger-menu {
     display: flex !important;
+    flex: 0 0 auto;
+    margin-left: 0;
+    padding: 4px 0 4px 6px;
   }
 
   .navbar .dropdown-menu {
@@ -186,7 +244,7 @@
   .nav-menu {
     display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 8px);
     left: 0;
     width: 100%;
     flex-direction: column;
@@ -194,6 +252,7 @@
     padding: 20px 0;
     background-color: #0a2a66;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0 0 12px 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     z-index: 999;
     justify-content: center;
@@ -236,10 +295,30 @@
     overflow: visible !important;
   }
 
+  .logo > div {
+    width: 100%;
+    justify-content: space-between;
+    gap: 3px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .logo img {
+    width: 46px !important;
+    height: 34px !important;
+  }
+
+  .logo-link {
+    flex: 1 1 auto;
+    font-size: 12px;
+    text-align: center;
+  }
+
   /* ===== HAMBURGER MENU - VISIBLE ON MOBILE ===== */
   .hamburger-menu {
     display: flex !important;
     order: 2;
+    margin-left: 0;
+    padding: 3px 0 3px 4px;
   }
 
   .nav-menu {

@@ -125,41 +125,41 @@ const SERVICES = [
 {
     category:"🏠 Vệ sinh theo loại công trình",
     items:[
-        {name:"Căn hộ chung cư", image:"../img/house-clean.jpg", desc:"Dọn dẹp căn hộ sạch sẽ toàn diện"},
-        {name:"Nhà phố / Biệt thự", image:"../img/house-clean.jpg", desc:"Vệ sinh kỹ lưỡng không gian sống"},
-        {name:"Sau xây dựng", image:"../img/xaydung.jpg", desc:"Làm sạch công trình mới"},
-        {name:"Nhà xưởng", image:"../img/office-clean.jpg", desc:"Vệ sinh khu sản xuất"},
-        {name:"Kho bãi", image:"../img/office-clean.jpg", desc:"Làm sạch kho hàng"},
-        {name:"Công trình công cộng", image:"../img/office-clean.jpg", desc:"Trường học, bệnh viện..."}
+        {name:"Căn hộ chung cư", image:"https://via.placeholder.com/400x300?text=Căn+hộ+chung+cư", desc:"Dọn dẹp căn hộ sạch sẽ toàn diện"},
+        {name:"Nhà phố / Biệt thự", image:"https://via.placeholder.com/400x300?text=Nhà+phố+%2F+Biệt+thự", desc:"Vệ sinh kỹ lưỡng không gian sống"},
+        {name:"Sau xây dựng", image:"https://via.placeholder.com/400x300?text=Sau+xây+dựng", desc:"Làm sạch công trình mới"},
+        {name:"Nhà xưởng", image:"https://via.placeholder.com/400x300?text=Nhà+xưởng", desc:"Vệ sinh khu sản xuất"},
+        {name:"Kho bãi", image:"https://via.placeholder.com/400x300?text=Kho+bãi", desc:"Làm sạch kho hàng"},
+        {name:"Công trình công cộng", image:"https://via.placeholder.com/400x300?text=Công+trình+công+cộng", desc:"Trường học, bệnh viện..."}
     ]
 },
 {
     category:"🧹 Vệ sinh chuyên sâu",
     items:[
-        {name:"Tổng vệ sinh", image:"../img/house-clean.jpg", desc:"Dọn dẹp sâu toàn bộ nhà"},
-        {name:"Lau kính mặt ngoài", image:"../img/office-clean.jpg", desc:"Lau kính cao tầng chuyên nghiệp"},
-        {name:"Giặt thảm", image:"../img/sofa.jpg", desc:"Làm sạch thảm chuyên dụng"},
-        {name:"Giặt sofa", image:"../img/sofa.jpg", desc:"Khử khuẩn ghế sofa"},
-        {name:"Giặt rèm cửa", image:"../img/sofa.jpg", desc:"Làm sạch rèm cửa tận nơi"}
+        {name:"Tổng vệ sinh", image:"https://via.placeholder.com/400x300?text=Tổng+vệ+sinh", desc:"Dọn dẹp sâu toàn bộ nhà"},
+        {name:"Lau kính mặt ngoài", image:"https://via.placeholder.com/400x300?text=Lau+kính+mặt+ngoài", desc:"Lau kính cao tầng chuyên nghiệp"},
+        {name:"Giặt thảm", image:"https://via.placeholder.com/400x300?text=Giặt+thảm", desc:"Làm sạch thảm chuyên dụng"},
+        {name:"Giặt sofa", image:"https://via.placeholder.com/400x300?text=Giặt+sofa", desc:"Khử khuẩn ghế sofa"},
+        {name:"Giặt rèm cửa", image:"https://via.placeholder.com/400x300?text=Giặt+rèm+cửa", desc:"Làm sạch rèm cửa tận nơi"}
     ]
 },
 {
     category:"🏢 Vệ sinh theo ngành",
     items:[
-        {name:"Nhà hàng / Quán ăn", image:"../img/office-clean.jpg", desc:"Đảm bảo vệ sinh an toàn thực phẩm"},
-        {name:"Khách sạn", image:"../img/office-clean.jpg", desc:"Tiêu chuẩn sạch cao cấp"},
-        {name:"Spa / Salon", image:"../img/office-clean.jpg", desc:"Không gian sạch thư giãn"},
-        {name:"Phòng gym", image:"../img/office-clean.jpg", desc:"Khử mùi & vi khuẩn"},
-        {name:"TTTM", image:"../img/office-clean.jpg", desc:"Vệ sinh trung tâm thương mại"},
-        {name:"Showroom", image:"../img/office-clean.jpg", desc:"Giữ hình ảnh chuyên nghiệp"}
+        {name:"Nhà hàng / Quán ăn", image:"https://via.placeholder.com/400x300?text=Nhà+hàng+%2F+Quán+ăn", desc:"Đảm bảo vệ sinh an toàn thực phẩm"},
+        {name:"Khách sạn", image:"https://via.placeholder.com/400x300?text=Khách+sạn", desc:"Tiêu chuẩn sạch cao cấp"},
+        {name:"Spa / Salon", image:"https://via.placeholder.com/400x300?text=Spa+%2F+Salon", desc:"Không gian sạch thư giãn"},
+        {name:"Phòng gym", image:"https://via.placeholder.com/400x300?text=Phòng+gym", desc:"Khử mùi & vi khuẩn"},
+        {name:"TTTM", image:"https://via.placeholder.com/400x300?text=TTTM", desc:"Vệ sinh trung tâm thương mại"},
+        {name:"Showroom", image:"https://via.placeholder.com/400x300?text=Showroom", desc:"Giữ hình ảnh chuyên nghiệp"}
     ]
 },
 {
     category:"🦠 Khử khuẩn & diệt côn trùng",
     items:[
-        {name:"Khử trùng", image:"../img/sofa.jpg", desc:"Diệt khuẩn toàn diện"},
-        {name:"Diệt côn trùng", image:"../img/sofa.jpg", desc:"Gián, muỗi, mối"},
-        {name:"Khử mùi", image:"../img/sofa.jpg", desc:"Xử lý mùi hôi khó chịu"}
+        {name:"Khử trùng", image:"https://via.placeholder.com/400x300?text=Khử+trùng", desc:"Diệt khuẩn toàn diện"},
+        {name:"Diệt côn trùng", image:"https://via.placeholder.com/400x300?text=Diệt+côn+trùng", desc:"Gián, muỗi, mối"},
+        {name:"Khử mùi", image:"https://via.placeholder.com/400x300?text=Khử+mùi", desc:"Xử lý mùi hôi khó chịu"}
     ]
 }
 ];
@@ -180,7 +180,7 @@ SERVICES.forEach(group => {
         groupHTML += `
         <div class="col-md-6 col-lg-3 mb-4">
             <div class="service-card h-100">
-                <img src="${s.image}" class="w-100">
+                <img src="${s.image}" class="w-100" alt="${s.name}">
                 <div class="p-3">
                     <h6 class="fw-bold">${s.name}</h6>
                     <p class="text-muted small">${s.desc}</p>

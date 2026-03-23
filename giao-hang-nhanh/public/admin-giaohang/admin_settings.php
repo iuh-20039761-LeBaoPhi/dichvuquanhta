@@ -147,6 +147,14 @@ if ($result) {
                                 placeholder="Dùng để tự động tính phụ phí thời tiết" class="admin-input">
                             <small style="color:#64748b; font-size:12px;">Ưu tiên đọc từ biến môi trường <code>OPENWEATHERMAP_API_KEY</code>, nếu không có sẽ lấy từ cài đặt này.</small>
                         </div>
+
+                        <div class="form-group">
+                            <label for="google_sheets_webhook_url">Google Sheets Webhook URL</label>
+                            <input type="text" id="google_sheets_webhook_url" name="settings[google_sheets_webhook_url]"
+                                value="<?php echo htmlspecialchars($settings['google_sheets_webhook_url']['setting_value'] ?? ''); ?>"
+                                placeholder="Dán URL Web App của Google Apps Script để đồng bộ đơn hàng" class="admin-input">
+                            <small style="color:#64748b; font-size:12px;">Nếu có cấu hình URL này, hệ thống sẽ gửi thêm dữ liệu đơn hàng sang Google Sheets ngay sau khi lưu Database.</small>
+                        </div>
                     </div>
                 </div>
 
