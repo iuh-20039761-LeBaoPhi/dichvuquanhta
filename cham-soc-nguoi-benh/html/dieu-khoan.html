@@ -1,607 +1,384 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Liên hệ dịch vụ chăm sóc người bệnh tại nhà để được tư vấn nhanh chóng. Hỗ trợ chăm sóc người già, bệnh nhân từ mức nhẹ đến 24/7, phục vụ tận nơi, an toàn và tận tâm.">
-    <meta name="keywords" content="liên hệ chăm sóc người bệnh tại nhà, tư vấn chăm người già, dịch vụ chăm bệnh nhân, hotline chăm sóc tại nhà, hỗ trợ chăm bệnh 24/7">
-    <title>Điều Khoản Sử Dụng</title>
-      <link
-        rel="shortcut icon"
-        type="image/x-icon"
-        href="../assets/logo-cham-soc-benh-nhan.png"
-    />
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-<style>
-html,
-body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Liên hệ dịch vụ chăm sóc người bệnh tại nhà để được tư vấn nhanh chóng. Hỗ trợ chăm sóc người già, bệnh nhân từ mức nhẹ đến 24/7, phục vụ tận nơi, an toàn và tận tâm.">
+      <meta name="keywords" content="liên hệ chăm sóc người bệnh tại nhà, tư vấn chăm người già, dịch vụ chăm bệnh nhân, hotline chăm sóc tại nhà, hỗ trợ chăm bệnh 24/7">
+      <title>Điều Khoản Sử Dụng</title>
+      <link rel="shortcut icon" type="image/x-icon" href="../assets/logo-cham-soc-benh-nhan.png"/>
+      <!-- Bootstrap 5 CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+      <!-- Font Awesome -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <!-- Google Fonts -->
+      <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+      <style>
+      html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
 
-/* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
-.navbar .container {
-  display: flex;
-  flex-wrap: nowrap !important;
-  align-items: center;
-  min-width: 0;
-}
+      /* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
+      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
 
-/* ================= MOBILE ONLY ================= */
-@media (max-width: 991.98px) {
+      /* ================= MOBILE ONLY ================= */
+      @media (max-width: 991.98px) {
+        .navbar { overflow-x: clip; }
+        .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
+        .navbar-brand img { width: 56px !important; height: 42px !important; }
 
-  .navbar {
-    overflow-x: clip;
-  }
+        /* ÉP menu xuống dưới navbar */
+        .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
 
-  .navbar .container > span {
-    max-width: 34vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.95rem;
-  }
+        /* Khi mở menu */
+        .navbar-collapse.show { display: block; }
 
-  .navbar-brand img {
-    width: 56px !important;
-    height: 42px !important;
-  }
+        /* UL dọc + căn giữa */
+        .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
 
-  /* ÉP menu xuống dưới navbar */
-  .navbar-collapse {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    width: auto;
-    background: #fff;
-    z-index: 999;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-  }
+        /* Item */
+        .navbar-collapse .nav-item { width: 100%; text-align: center; }
 
-  /* Khi mở menu */
-  .navbar-collapse.show {
-    display: block;
-  }
+        /* Link */
+        .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
 
-  /* UL dọc + căn giữa */
-  .navbar-collapse .navbar-nav {
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 10px;
-    padding: 15px 0;
-  }
+        /* Button */
+        .navbar-collapse .btn { width: 80%; margin-top: 10px; }
 
-  /* Item */
-  .navbar-collapse .nav-item {
-    width: 100%;
-    text-align: center;
-  }
+        .hero-section img { width: 100% !important; max-width: 340px; height: auto !important; }
+      }
+      </style>
+<script src="/ga.js"></script>
+  </head>
 
-  /* Link */
-  .navbar-collapse .nav-link {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-  }
+  <body style="font-family: 'Quicksand', sans-serif;">
 
-  /* Button */
-  .navbar-collapse .btn {
-    width: 80%;
-    margin-top: 10px;
-  }
-
-  .hero-section img {
-    width: 100% !important;
-    max-width: 340px;
-    height: auto !important;
-  }
-}
-</style>
-<script src="../../ga.js"></script>
-</head>
-
-<body style="font-family: 'Quicksand', sans-serif;">
-
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
-    <div class="container">
-        <a
-          class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
-          href="../../index.html"
-          style="color: #007bff"
-        >
-          <img
-            style="width: 80px; height: 60px"
-            src="../assets/logo-he-thong.png"
-            alt="cham-soc-me-va-be"
-          />
-        </a>
-        <span>Chăm Sóc Bệnh Nhân</span>
-        <a
-          class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
-          href="../index.html"
-          style="color: #007bff"
-        >
-          <img
-            style="width: 80px; height: 60px"
-            src="../assets/logo-cham-soc-benh-nhan.png"
-            alt="cham-soc-me-va-be"
-          />
-        </a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
-            <ul class="navbar-nav align-items-center gap-3">
-                <li class="nav-item"><a class="nav-link fw-bold px-3" href="../index.html">Trang Chủ</a></li>
-                <li class="nav-item"><a class="nav-link fw-bold px-3" href="gioi-thieu.html">Giới Thiệu</a></li>
-                <li class="nav-item"><a class="nav-link fw-bold px-3" href="../dich-vu-cham-soc-nguoi-benh.html">Dịch Vụ</a></li>
-                <li class="nav-item"><a class="nav-link fw-bold px-3 active" style="color:#007bff;" href="dieu-khoan.html">Điều Khoản</a></li>
-                <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="cam-nang.html"
-                  >Cẩm Nang</a
-                >
-            </li>
-                <li class="nav-item"><a class="nav-link fw-bold px-3" href="lien-he.html">Liên Hệ</a></li>
-                <li class="nav-item">
-                <a
-                  class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-                  style="background: linear-gradient(135deg, #629bf0, #407cec);"
-                  href="khach_hang/lookup.html"
-                  data-lookup-modal
-                  data-lookup-modal-src="khach_hang/lookup.html"
-                  onmouseover="
-                    this.style.background = 'linear-gradient(135deg, #d84374, #c2185b)';
-                    this.style.transform = 'scale(1.05)';
-                  "
-                  onmouseout="
-                    this.style.background = 'linear-gradient(135deg, #629bf0, #407cec)';
-                    this.style.transform = 'scale(1)';
-                  "
-                >Tra cứu đơn hàng</a>
-              </li>
-                <li class="nav-item ms-lg-3" id="loginNavItem">
-                    <a
-                    href="../login.html"
-                    data-login-modal
-                    data-login-modal-src="../login.html"
-                    class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-                    style="background-color: #007bff"
-                    onmouseover="
-                        this.style.backgroundColor = '#d84374';
-                        this.style.transform = 'scale(1.05)';
-                    "
-                    onmouseout="
-                        this.style.backgroundColor = '#007bff';
-                        this.style.transform = 'scale(1)';
-                    "
-                    >Đăng Nhập</a
-                    >
-                </li>
-                <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
-                  <div class="dropdown">
-                    <button
-                      class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-flex align-items-center gap-2"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <img
-                        id="navAvatar"
-                        src="../assets/logo-cham-soc-benh-nhan.png"
-                        alt="avatar"
-                        width="32"
-                        height="32"
-                        class="rounded-circle border"
-                      />
-                      <span id="navUserName" class="fw-semibold small">Tài khoản</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                      <li><a class="dropdown-item" href="khach_hang/profile.html" data-profile-modal data-profile-modal-src="khach_hang/profile.html">Sửa đổi thông tin</a></li>
-                      <!-- <li><a class="dropdown-item" href="khach_hang/dshoadon.html" data-dashboard-modal data-dashboard-modal-src="khach_hang/dshoadon.html">Danh sách hóa đơn đã đặt</a></li> -->
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item text-danger" href="../api/logout.php">Đăng xuất</a></li>
-                    </ul>
-                  </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<!-- Hero -->
-<section class="py-5" style="
-          background: linear-gradient(
-            135deg,
-            #e3f2fd 0%,
-            #ffffff 50%,
-            #e8f5e9 100%
-          );
-        ">
-    <div class="container text-center py-lg-5">
-        <h1 class="display-4 fw-bold mb-3">
-            Điều Khoản Sử Dụng Dịch Vụ
-        </h1>
-        <p class="lead text-muted">
-            Áp dụng cho các dịch vụ Chăm sóc Mẹ và Bé – Người Cao Tuổi – Người Bệnh
-        </p>
-        <div style="width:60px;height:3px;background:#007bff;margin:0 auto;"></div>
-    </div>
-</section>
-
-<!-- Nội dung -->
-<section class="py-5">
-<div class="container py-lg-4">
-
-    <!-- 1 -->
-    <h3 class="fw-bold mb-3">1. Phạm Vi Áp Dụng</h3>
-    <p class="text-muted">
-        Điều khoản này áp dụng cho toàn bộ khách hàng sử dụng dịch vụ chăm sóc tại nhà và tại cơ sở
-        do chúng tôi cung cấp. Khi đặt lịch hoặc ký hợp đồng, khách hàng được xem là đã đồng ý với
-        các điều khoản dưới đây.
-    </p>
-
-    <!-- 2 -->
-    <h3 class="fw-bold mt-5 mb-3">2. Quyền Lợi Của Khách Hàng</h3>
-    <ul class="text-muted">
-        <li>Được cung cấp thông tin rõ ràng về dịch vụ, chi phí và thời gian chăm sóc.</li>
-        <li>Được bố trí nhân viên phù hợp chuyên môn và kinh nghiệm.</li>
-        <li>Được bảo mật thông tin cá nhân và hồ sơ sức khỏe.</li>
-        <li>Được phản ánh, góp ý hoặc khiếu nại nếu có vấn đề phát sinh.</li>
-        <li>Được đổi nhân viên nếu không phù hợp (trong phạm vi hợp lý).</li>
-    </ul>
-
-    <!-- 3 -->
-    <h3 class="fw-bold mt-5 mb-3">3. Trách Nhiệm Của Khách Hàng</h3>
-    <ul class="text-muted">
-        <li>Cung cấp thông tin sức khỏe trung thực, đầy đủ.</li>
-        <li>Thanh toán đúng hạn theo thỏa thuận.</li>
-        <li>Tạo môi trường làm việc an toàn cho nhân viên.</li>
-        <li>Không yêu cầu nhân viên thực hiện các công việc ngoài phạm vi hợp đồng.</li>
-    </ul>
-
-        <!-- 4 -->
-    <h3 class="fw-bold mt-5 mb-3">4. Cơ Chế Hoạt Động Của Nền Tảng</h3>
-
-    <p class="text-muted">
-      Nền tảng đóng vai trò kết nối khách hàng với các nhà cung cấp dịch vụ chăm sóc tại nhà 
-      bao gồm: chăm sóc mẹ và bé, chăm sóc người cao tuổi, chăm sóc bệnh nhân và hỗ trợ sinh hoạt.
-    </p>
-
-    <p class="text-muted">
-      Nền tảng hỗ trợ khách hàng trong việc:
-    </p>
-
-    <ul class="text-muted">
-      <li>Tìm kiếm dịch vụ phù hợp</li>
-      <li>Đặt lịch chăm sóc</li>
-      <li>Quản lý đơn hàng</li>
-      <li>Thanh toán và hỗ trợ khách hàng</li>
-    </ul>
-
-    <p class="text-muted">
-      Nền tảng không trực tiếp thực hiện dịch vụ chăm sóc mà đóng vai trò trung gian
-      kết nối giữa khách hàng và nhà cung cấp dịch vụ.
-    </p>
-
-
-    <!-- 5 -->
-    <h3 class="fw-bold mt-5 mb-3">5. Phí Dịch Vụ Và Hoa Hồng</h3>
-
-    <p class="text-muted">
-      Nhà cung cấp dịch vụ đồng ý trả <strong>10% phí hoa hồng</strong> trên tổng giá trị
-      mỗi đơn hàng cho nền tảng khi sử dụng hệ thống để nhận khách hàng.
-    </p>
-
-    <p class="text-muted">
-      Khoản hoa hồng này sẽ được <strong>khấu trừ trực tiếp</strong> khi thanh toán đơn hàng.
-      Số tiền còn lại sẽ được chuyển vào
-      <strong>tài khoản của nhà cung cấp trên hệ thống hoặc ứng dụng</strong>.
-    </p>
-
-
-    <!-- 6 -->
-    <h3 class="fw-bold mt-5 mb-3">6. Thanh Toán</h3>
-
-    <p class="text-muted">
-      Khách hàng có thể thanh toán thông qua các hình thức được hỗ trợ trên nền tảng.
-      Sau khi dịch vụ hoàn thành, hệ thống sẽ tiến hành đối soát đơn hàng.
-    </p>
-
-    <ul class="text-muted">
-      <li>Nền tảng khấu trừ phí hoa hồng theo quy định.</li>
-      <li>Số tiền còn lại sẽ được chuyển cho nhà cung cấp dịch vụ.</li>
-      <li>Thời gian thanh toán phụ thuộc vào chính sách đối soát của hệ thống.</li>
-    </ul>
-
-
-    <!-- 7 -->
-    <h3 class="fw-bold mt-5 mb-3">7. Đồng Phục Và Tác Phong Làm Việc</h3>
-
-    <ul class="text-muted">
-      <li>Nhân viên chăm sóc cần mặc đồng phục theo quy định của nền tảng (nếu có).</li>
-      <li>Đeo thẻ nhận diện khi làm việc với khách hàng.</li>
-      <li>Giữ thái độ lịch sự, chuyên nghiệp và tôn trọng khách hàng.</li>
-      <li>Không có hành vi thiếu chuẩn mực hoặc gây ảnh hưởng đến uy tín dịch vụ.</li>
-    </ul>
-
-
-    <!-- 8 -->
-    <h3 class="fw-bold mt-5 mb-3">8. Hóa Đơn Và Nghĩa Vụ Thuế</h3>
-
-    <p class="text-muted">
-      Nhà cung cấp dịch vụ chịu trách nhiệm thực hiện đầy đủ nghĩa vụ thuế
-      theo quy định pháp luật.
-    </p>
-
-    <ul class="text-muted">
-      <li>Kê khai và nộp thuế đối với thu nhập từ dịch vụ.</li>
-      <li>Cung cấp hóa đơn hoặc chứng từ hợp lệ khi cần thiết.</li>
-      <li>Tuân thủ các quy định pháp luật liên quan đến hoạt động cung cấp dịch vụ.</li>
-    </ul>
-
-    <p class="text-muted">
-      Nền tảng không chịu trách nhiệm thay cho nhà cung cấp
-      về nghĩa vụ thuế cá nhân hoặc doanh nghiệp.
-    </p>
-
-
-    <!-- 9 -->
-    <h3 class="fw-bold mt-5 mb-3">9. Trách Nhiệm Của Các Bên</h3>
-
-    <p class="text-muted">
-      <strong>Khách hàng:</strong>
-    </p>
-
-    <ul class="text-muted">
-      <li>Cung cấp thông tin chính xác về tình trạng sức khỏe và nhu cầu chăm sóc.</li>
-      <li>Thanh toán đầy đủ chi phí dịch vụ.</li>
-      <li>Đảm bảo môi trường làm việc an toàn cho nhân viên chăm sóc.</li>
-    </ul>
-
-    <p class="text-muted">
-      <strong>Nhà cung cấp dịch vụ:</strong>
-    </p>
-
-    <ul class="text-muted">
-      <li>Thực hiện công việc đúng chuyên môn và quy trình chăm sóc.</li>
-      <li>Đảm bảo an toàn cho khách hàng.</li>
-      <li>Chịu trách nhiệm đối với hành vi vi phạm pháp luật hoặc sai chuyên môn.</li>
-    </ul>
-
-    <p class="text-muted">
-      <strong>Nền tảng:</strong>
-    </p>
-
-    <ul class="text-muted">
-      <li>Cung cấp hệ thống kết nối dịch vụ.</li>
-      <li>Hỗ trợ khách hàng và nhà cung cấp khi có tranh chấp.</li>
-      <li>Đảm bảo thông tin dịch vụ minh bạch.</li>
-    </ul>
-
-
-    <!-- 10 -->
-    <h3 class="fw-bold mt-5 mb-3">10. Trường Hợp Khẩn Cấp</h3>
-
-    <p class="text-muted">
-      Trong các trường hợp nguy hiểm đến sức khỏe hoặc tính mạng,
-      nhân viên chăm sóc cần nhanh chóng hỗ trợ sơ cứu cơ bản và thông báo
-      cho người thân hoặc cơ sở y tế gần nhất.
-    </p>
-
-    <p class="text-muted">
-      Dịch vụ chăm sóc tại nhà không thay thế hoàn toàn việc điều trị
-      tại cơ sở y tế chuyên môn.
-    </p>
-
-
-    <!-- 11 -->
-    <h3 class="fw-bold mt-5 mb-3">11. Bảo Mật Thông Tin</h3>
-
-    <p class="text-muted">
-      Chúng tôi cam kết bảo mật thông tin cá nhân và hồ sơ sức khỏe của khách hàng.
-      Mọi dữ liệu chỉ được sử dụng cho mục đích quản lý và cung cấp dịch vụ.
-    </p>
-
-
-    <!-- 12 -->
-    <h3 class="fw-bold mt-5 mb-3">12. Thay Đổi Điều Khoản</h3>
-
-    <p class="text-muted">
-      Nền tảng có quyền cập nhật hoặc thay đổi các điều khoản sử dụng khi cần thiết
-      để phù hợp với hoạt động dịch vụ và quy định pháp luật.
-    </p>
-
-    <p class="text-muted">
-      Các thay đổi sẽ được thông báo trên website hoặc ứng dụng.
-    </p>
-
-</div>
-</section>
-
-      <footer class="bg-dark text-white pt-5 pb-3">
+  <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
         <div class="container">
-          <div class="row g-4 mb-4">
-            <div class="col-lg-4">
-              <h3 class="h4 fw-bold mb-3" style="color: #007bff">Chăm Sóc Bệnh Nhân</h3>
-              <p class="opacity-75">
-                Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng
-                đầu tại Việt Nam.
-              </p>
-              <p class="opacity-75">
-                CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853
-              </p>
-              <p class="opacity-75">
-                Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh, Việt Nam
-              </p>
-              <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
+            <a href="../../index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
+                <img src="../assets/logo-he-thong.png" alt="cham-soc-me-va-be" style="width: 80px; height: 60px" />
+            </a>
+            <span>Chăm Sóc Bệnh Nhân</span>
+            <a href="../index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
+                <img src="../assets/logo-cham-soc-benh-nhan.png" alt="cham-soc-me-va-be" style="width: 80px; height: 60px" />
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-              <p class="mb-1 opacity-75 small">
-                <i class="fas fa-phone me-2"></i> 0775472347
-              </p>
-              <p class="mb-1 opacity-75 small">
-                <i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com
-              </p>
-              
+            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+                <ul class="navbar-nav align-items-center gap-3">
+                    <li class="nav-item"><a href="../index.html" class="nav-link fw-bold px-3">Trang Chủ</a></li>
+                    <li class="nav-item"><a href="gioi-thieu.html" class="nav-link fw-bold px-3">Giới Thiệu</a></li>
+                    <li class="nav-item"><a href="../dich-vu-cham-soc-nguoi-benh.html" class="nav-link fw-bold px-3">Dịch Vụ</a></li>
+                    <li class="nav-item"><a href="dieu-khoan.html" class="nav-link fw-bold px-3 active" style="color:#007bff;">Điều Khoản</a></li>
+                    <li class="nav-item"><a href="cam-nang.html" class="nav-link fw-bold px-3">Cẩm Nang</a></li>
+                    <li class="nav-item"><a href="lien-he.html" class="nav-link fw-bold px-3">Liên Hệ</a></li>
+                    <li class="nav-item">
+                        <a href="khach_hang/lookup.html" class="btn text-white rounded-pill px-4 py-2 shadow-sm" 
+                          style="background: linear-gradient(135deg, #629bf0, #407cec);" 
+                          data-lookup-modal data-lookup-modal-src="khach_hang/lookup.html"
+                          onmouseover="this.style.background = 'linear-gradient(135deg, #d84374, #c2185b)'; this.style.transform = 'scale(1.05)';"
+                          onmouseout="this.style.background = 'linear-gradient(135deg, #629bf0, #407cec)'; this.style.transform = 'scale(1)';"
+                        >Tra cứu đơn hàng</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" id="loginNavItem">
+                        <a href="../login.html" class="btn text-white rounded-pill px-4 py-2 shadow-sm" 
+                          style="background-color: #007bff" 
+                          data-login-modal data-login-modal-src="../login.html"
+                          onmouseover="this.style.backgroundColor = '#d84374'; this.style.transform = 'scale(1.05)';"
+                          onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)';"
+                        >Đăng Nhập</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
+                        <div class="dropdown">
+                            <button class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-flex align-items-center gap-2" 
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img id="navAvatar" src="../assets/logo-cham-soc-benh-nhan.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
+                                <span id="navUserName" class="fw-semibold small">Tài khoản</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                <li><a href="khach_hang/profile.html" class="dropdown-item" data-profile-modal data-profile-modal-src="khach_hang/profile.html">Sửa đổi thông tin</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a href="../api/logout.php" class="dropdown-item text-danger">Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
             </div>
-            <div class="col-lg-2">
-              <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
-              <ul class="list-unstyled">
-                <li class="mb-2">
-                  <a
-                    href="gioi-thieu.html"
-                    class="text-white text-decoration-none opacity-75"
-                    >Giới Thiệu</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    href="../dich-vu-cham-soc-nguoi-benh.html"
-                    class="text-white text-decoration-none opacity-75"
-                    >Dịch Vụ</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    href="lien-he.html"
-                    class="text-white text-decoration-none opacity-75"
-                    >Liên Hệ</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    class="text-white text-decoration-none opacity-75"
-                    target="_blank"
-                    href="../../dich-vu-don-ve-sinh/"
-                    >Lau Dọn Vệ Sinh</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    class="text-white text-decoration-none opacity-75"
-                    target="_blank"
-                    href="../../cham-soc-me-va-be/"
-                    >Chăm Sóc Mẹ & Bé</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    class="text-white text-decoration-none opacity-75"
-                    target="_blank"
-                    href="../../cham-soc-vuon-nha/"
-                    >Chăm Sóc Vườn & Rẫy</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    class="text-white text-decoration-none opacity-75"
-                    target="_blank"
-                    href="../../giat-ui-nhanh/"
-                    >Giặt Ủi Cao Cấp</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    class="text-white text-decoration-none opacity-75"
-                    target="_blank"
-                    href="../../tho-nha/"
-                    >Thợ Nhà & Sửa Chữa</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    class="text-white text-decoration-none opacity-75"
-                    target="_blank"
-                    href="../../cham-soc-nguoi-gia/"
-                    >Chăm Sóc Người Già</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    class="text-white text-decoration-none opacity-75"
-                    target="_blank"
-                    href="../../cham-soc-nguoi-benh/"
-                    >Chăm Sóc Bệnh Nhân</a
-                  >
-                </li>
-                <li class="mb-2">
-                  <a
-                    class="text-white text-decoration-none opacity-75"
-                    target="_blank"
-                    href="../../giao-hang-nhanh/"
-                    >Giao Hàng Nhanh</a
-                  >
-                </li>
-              </ul>
-            </div>
-            <div class="col-lg-3">
-              <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
-              <div class="d-flex gap-3">
-                <a
-                  href="#"
-                  class="btn btn-outline-light rounded-circle shadow-sm"
-                  ><i class="fab fa-facebook-f"></i
-                ></a>
-                <a
-                  href="#"
-                  class="btn btn-outline-light rounded-circle shadow-sm"
-                  ><i class="fab fa-instagram"></i
-                ></a>
-                <a
-                  href="#"
-                  class="btn btn-outline-light rounded-circle shadow-sm"
-                  ><i class="fab fa-youtube"></i
-                ></a>
-                <a
-                  href="#"
-                  class="btn btn-outline-light rounded-circle shadow-sm"
-                  ><i class="fab fa-tiktok"></i
-                ></a>
-              </div>
-              <div class="mt-4">
-                <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
-                <div class="d-flex gap-2" style="max-width: 300px;">
-                  <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                    <i data-lucide="apple" class="me-2" style="width: 20px; height: 20px;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
-                      <span class="fw-bold" style="font-size: 11px;">App Store</span>
-                    </div>
-                  </a>
-                  <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                    <i data-lucide="play" class="me-2" style="width: 20px; height: 20px; fill: white;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
-                      <span class="fw-bold" style="font-size: 11px;">Google Play</span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr class="opacity-25" />
-          <p class="text-center small opacity-50">
-            &copy; 2026 Chăm Sóc Bệnh Nhân. Đồng hành cùng sức khỏe Việt.
-          </p>
         </div>
-      </footer>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-      <script src="../JS/login-modal-core.js"></script>
+    </nav>
+
+    <!-- Hero -->
+    <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #e8f5e9 100%);">
+        <div class="container text-center py-lg-5">
+            <h1 class="display-4 fw-bold mb-3">Điều Khoản Sử Dụng Dịch Vụ</h1>
+            <p class="lead text-muted">
+                Áp dụng cho các dịch vụ Chăm sóc Mẹ và Bé – Người Cao Tuổi – Người Bệnh
+            </p>
+            <div style="width: 60px; height: 3px; background: #007bff; margin: 0 auto;"></div>
+        </div>
+    </section>
+
+    <!-- Nội dung -->
+    <section class="py-5">
+      <div class="container py-lg-4">
+
+          <!-- 1 -->
+          <h3 class="fw-bold mb-3">1. Phạm Vi Áp Dụng</h3>
+          <p class="text-muted">
+              Điều khoản này áp dụng cho toàn bộ khách hàng sử dụng dịch vụ chăm sóc tại nhà và tại cơ sở
+              do chúng tôi cung cấp. Khi đặt lịch hoặc ký hợp đồng, khách hàng được xem là đã đồng ý với
+              các điều khoản dưới đây.
+          </p>
+
+          <!-- 2 -->
+          <h3 class="fw-bold mt-5 mb-3">2. Quyền Lợi Của Khách Hàng</h3>
+          <ul class="text-muted">
+              <li>Được cung cấp thông tin rõ ràng về dịch vụ, chi phí và thời gian chăm sóc.</li>
+              <li>Được bố trí nhân viên phù hợp chuyên môn và kinh nghiệm.</li>
+              <li>Được bảo mật thông tin cá nhân và hồ sơ sức khỏe.</li>
+              <li>Được phản ánh, góp ý hoặc khiếu nại nếu có vấn đề phát sinh.</li>
+              <li>Được đổi nhân viên nếu không phù hợp (trong phạm vi hợp lý).</li>
+          </ul>
+
+          <!-- 3 -->
+          <h3 class="fw-bold mt-5 mb-3">3. Trách Nhiệm Của Khách Hàng</h3>
+          <ul class="text-muted">
+              <li>Cung cấp thông tin sức khỏe trung thực, đầy đủ.</li>
+              <li>Thanh toán đúng hạn theo thỏa thuận.</li>
+              <li>Tạo môi trường làm việc an toàn cho nhân viên.</li>
+              <li>Không yêu cầu nhân viên thực hiện các công việc ngoài phạm vi hợp đồng.</li>
+          </ul>
+
+              <!-- 4 -->
+          <h3 class="fw-bold mt-5 mb-3">4. Cơ Chế Hoạt Động Của Nền Tảng</h3>
+
+          <p class="text-muted">
+            Nền tảng đóng vai trò kết nối khách hàng với các nhà cung cấp dịch vụ chăm sóc tại nhà 
+            bao gồm: chăm sóc mẹ và bé, chăm sóc người cao tuổi, chăm sóc bệnh nhân và hỗ trợ sinh hoạt.
+          </p>
+
+          <p class="text-muted">
+            Nền tảng hỗ trợ khách hàng trong việc:
+          </p>
+
+          <ul class="text-muted">
+            <li>Tìm kiếm dịch vụ phù hợp</li>
+            <li>Đặt lịch chăm sóc</li>
+            <li>Quản lý đơn hàng</li>
+            <li>Thanh toán và hỗ trợ khách hàng</li>
+          </ul>
+
+          <p class="text-muted">
+            Nền tảng không trực tiếp thực hiện dịch vụ chăm sóc mà đóng vai trò trung gian
+            kết nối giữa khách hàng và nhà cung cấp dịch vụ.
+          </p>
+
+
+          <!-- 5 -->
+          <h3 class="fw-bold mt-5 mb-3">5. Phí Dịch Vụ Và Hoa Hồng</h3>
+
+          <p class="text-muted">
+            Nhà cung cấp dịch vụ đồng ý trả <strong>10% phí hoa hồng</strong> trên tổng giá trị
+            mỗi đơn hàng cho nền tảng khi sử dụng hệ thống để nhận khách hàng.
+          </p>
+
+          <p class="text-muted">
+            Khoản hoa hồng này sẽ được <strong>khấu trừ trực tiếp</strong> khi thanh toán đơn hàng.
+            Số tiền còn lại sẽ được chuyển vào
+            <strong>tài khoản của nhà cung cấp trên hệ thống hoặc ứng dụng</strong>.
+          </p>
+
+
+          <!-- 6 -->
+          <h3 class="fw-bold mt-5 mb-3">6. Thanh Toán</h3>
+
+          <p class="text-muted">
+            Khách hàng có thể thanh toán thông qua các hình thức được hỗ trợ trên nền tảng.
+            Sau khi dịch vụ hoàn thành, hệ thống sẽ tiến hành đối soát đơn hàng.
+          </p>
+
+          <ul class="text-muted">
+            <li>Nền tảng khấu trừ phí hoa hồng theo quy định.</li>
+            <li>Số tiền còn lại sẽ được chuyển cho nhà cung cấp dịch vụ.</li>
+            <li>Thời gian thanh toán phụ thuộc vào chính sách đối soát của hệ thống.</li>
+          </ul>
+
+
+          <!-- 7 -->
+          <h3 class="fw-bold mt-5 mb-3">7. Đồng Phục Và Tác Phong Làm Việc</h3>
+
+          <ul class="text-muted">
+            <li>Nhân viên chăm sóc cần mặc đồng phục theo quy định của nền tảng (nếu có).</li>
+            <li>Đeo thẻ nhận diện khi làm việc với khách hàng.</li>
+            <li>Giữ thái độ lịch sự, chuyên nghiệp và tôn trọng khách hàng.</li>
+            <li>Không có hành vi thiếu chuẩn mực hoặc gây ảnh hưởng đến uy tín dịch vụ.</li>
+          </ul>
+
+
+          <!-- 8 -->
+          <h3 class="fw-bold mt-5 mb-3">8. Hóa Đơn Và Nghĩa Vụ Thuế</h3>
+
+          <p class="text-muted">
+            Nhà cung cấp dịch vụ chịu trách nhiệm thực hiện đầy đủ nghĩa vụ thuế
+            theo quy định pháp luật.
+          </p>
+
+          <ul class="text-muted">
+            <li>Kê khai và nộp thuế đối với thu nhập từ dịch vụ.</li>
+            <li>Cung cấp hóa đơn hoặc chứng từ hợp lệ khi cần thiết.</li>
+            <li>Tuân thủ các quy định pháp luật liên quan đến hoạt động cung cấp dịch vụ.</li>
+          </ul>
+
+          <p class="text-muted">
+            Nền tảng không chịu trách nhiệm thay cho nhà cung cấp
+            về nghĩa vụ thuế cá nhân hoặc doanh nghiệp.
+          </p>
+
+
+          <!-- 9 -->
+          <h3 class="fw-bold mt-5 mb-3">9. Trách Nhiệm Của Các Bên</h3>
+
+          <p class="text-muted">
+            <strong>Khách hàng:</strong>
+          </p>
+
+          <ul class="text-muted">
+            <li>Cung cấp thông tin chính xác về tình trạng sức khỏe và nhu cầu chăm sóc.</li>
+            <li>Thanh toán đầy đủ chi phí dịch vụ.</li>
+            <li>Đảm bảo môi trường làm việc an toàn cho nhân viên chăm sóc.</li>
+          </ul>
+
+          <p class="text-muted">
+            <strong>Nhà cung cấp dịch vụ:</strong>
+          </p>
+
+          <ul class="text-muted">
+            <li>Thực hiện công việc đúng chuyên môn và quy trình chăm sóc.</li>
+            <li>Đảm bảo an toàn cho khách hàng.</li>
+            <li>Chịu trách nhiệm đối với hành vi vi phạm pháp luật hoặc sai chuyên môn.</li>
+          </ul>
+
+          <p class="text-muted">
+            <strong>Nền tảng:</strong>
+          </p>
+
+          <ul class="text-muted">
+            <li>Cung cấp hệ thống kết nối dịch vụ.</li>
+            <li>Hỗ trợ khách hàng và nhà cung cấp khi có tranh chấp.</li>
+            <li>Đảm bảo thông tin dịch vụ minh bạch.</li>
+          </ul>
+
+
+          <!-- 10 -->
+          <h3 class="fw-bold mt-5 mb-3">10. Trường Hợp Khẩn Cấp</h3>
+
+          <p class="text-muted">
+            Trong các trường hợp nguy hiểm đến sức khỏe hoặc tính mạng,
+            nhân viên chăm sóc cần nhanh chóng hỗ trợ sơ cứu cơ bản và thông báo
+            cho người thân hoặc cơ sở y tế gần nhất.
+          </p>
+
+          <p class="text-muted">
+            Dịch vụ chăm sóc tại nhà không thay thế hoàn toàn việc điều trị
+            tại cơ sở y tế chuyên môn.
+          </p>
+
+
+          <!-- 11 -->
+          <h3 class="fw-bold mt-5 mb-3">11. Bảo Mật Thông Tin</h3>
+
+          <p class="text-muted">
+            Chúng tôi cam kết bảo mật thông tin cá nhân và hồ sơ sức khỏe của khách hàng.
+            Mọi dữ liệu chỉ được sử dụng cho mục đích quản lý và cung cấp dịch vụ.
+          </p>
+
+
+          <!-- 12 -->
+          <h3 class="fw-bold mt-5 mb-3">12. Thay Đổi Điều Khoản</h3>
+
+          <p class="text-muted">
+            Nền tảng có quyền cập nhật hoặc thay đổi các điều khoản sử dụng khi cần thiết
+            để phù hợp với hoạt động dịch vụ và quy định pháp luật.
+          </p>
+
+          <p class="text-muted">
+            Các thay đổi sẽ được thông báo trên website hoặc ứng dụng.
+          </p>
+
+      </div>
+    </section>
+
+    <footer class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <h3 class="h4 fw-bold mb-3" style="color: #007bff">Chăm Sóc Bệnh Nhân</h3>
+                    <p class="opacity-75">Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng đầu tại Việt Nam.</p>
+                    <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
+                    <p class="opacity-75">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh, Việt Nam</p>
+                    
+                    <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
+                    <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
+                    <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
+                </div>
+                <div class="col-lg-2">
+                    <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
+                        <li class="mb-2"><a href="../dich-vu-cham-soc-nguoi-benh.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
+                        <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
+                        <li class="mb-2"><a href="../../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
+                        <li class="mb-2"><a href="../../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
+                        <li class="mb-2"><a href="../../cham-soc-vuon-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Vườn & Rẫy</a></li>
+                        <li class="mb-2"><a href="../../giat-ui-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giặt Ủi Cao Cấp</a></li>
+                        <li class="mb-2"><a href="../../tho-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Thợ Nhà & Sửa Chữa</a></li>
+                        <li class="mb-2"><a href="../../cham-soc-nguoi-gia/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Người Già</a></li>
+                        <li class="mb-2"><a href="../../cham-soc-nguoi-benh/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Bệnh Nhân</a></li>
+                        <li class="mb-2"><a href="../../giao-hang-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giao Hàng Nhanh</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-tiktok"></i></a>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
+                        <div class="d-flex gap-2" style="max-width: 300px;">
+                            <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
+                                <i data-lucide="apple" class="me-2" style="width: 20px; height: 20px;"></i>
+                                <div class="text-start lh-1">
+                                    <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
+                                    <span class="fw-bold" style="font-size: 11px;">App Store</span>
+                                </div>
+                            </a>
+                            <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill">
+                                <i data-lucide="play" class="me-2" style="width: 20px; height: 20px; fill: white;"></i>
+                                <div class="text-start lh-1">
+                                    <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
+                                    <span class="fw-bold" style="font-size: 11px;">Google Play</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="opacity-25" />
+            <p class="text-center small opacity-50">&copy; 2026 Chăm Sóc Bệnh Nhân. Đồng hành cùng sức khỏe Việt.</p>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../JS/login-modal-core.js"></script>
     <script src="../JS/user-nav-menu.js"></script>
     <script src="../JS/login-modal-loader.js"></script>
     <script src="../JS/lookup-modal-core.js"></script>
     <script src="../JS/lookup-modal-loader.js"></script>
     <script src="../JS/profile-modal-core.js"></script>
-  <script src="../JS/profile-modal-loader.js"></script>
-</body>
+    <script src="../JS/profile-modal-loader.js"></script>
+  </body>
 </html>

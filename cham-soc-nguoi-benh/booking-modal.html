@@ -1,206 +1,59 @@
 <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
       <style>
-        #bookingModal .modal-content {
-          border: 0;
-          background: #fff;
+        #bookingModal .modal-content { border: 0; background: #fff; }
+        #bookingModal .modal-title { color: #0b5ed7 !important; font-size: 1.35rem; font-weight: 800 !important; }
+
+        /* Các hộp thông tin chung */
+        #bookingModal .customer-info-box { border: 2px solid #6bbf83; border-radius: 16px; padding: 12px; margin-bottom: 16px; background: #f8fffa; }
+        #bookingModal .service-work-box { border: 2px solid #4f9ddb; border-radius: 10px; padding: 10px; margin-bottom: 16px; background: #fafdff; }
+        #bookingModal .schedule-box { border: 2px solid #2f93df; border-radius: 16px; background: #dceeff; padding: 12px; margin-bottom: 10px; }
+        #bookingModal #autoEndDateRow { border: 2px solid #58b56b; border-radius: 12px; background: #dff5e4; color: #1f4f2a; }
+
+        /* Định dạng Label và Input */
+        #bookingModal .customer-info-box .form-label, 
+        #bookingModal .service-work-box .form-label, 
+        #bookingModal .schedule-box .form-label, 
+        #bookingModal .extra-request-box .form-label, 
+        #bookingModal .note-box .form-label, 
+        #bookingModal .quick-attach-box .form-label { font-weight: 700; color: #1f2a37; margin-bottom: 6px; }
+
+        #bookingModal .customer-info-box .form-control, #bookingModal .customer-info-box .input-group-text { border-color: #a8cdb2; background: #f7f9f7; }
+        #bookingModal .customer-info-box .form-control:focus { border-color: #7cc190; box-shadow: 0 0 0 0.2rem rgba(89, 170, 114, 0.15); }
+
+        #bookingModal .schedule-box .form-control, #bookingModal .schedule-box .form-select { background: #f4f4f4; border-color: #8ca2b5; color: #111; font-weight: 700; }
+
+        #bookingModal #serviceJobs .job-check { width: 16px; height: 16px; border-radius: 3px; border-color: #2e86d1; accent-color: #2e86d1; }
+
+        #bookingModal .extra-request-box #extraRequest, #bookingModal .note-box #customerNote { 
+          border: 2px solid #012b55; border-radius: 12px; min-height: 56px; padding: 10px 14px; font-size: 1.05rem; color: #1f2a37; background: #fffefe; 
         }
 
-        #bookingModal .modal-title {
-          color: #0b5ed7 !important;
-          font-size: 1.35rem;
-          font-weight: 800 !important;
-        }
+        /* Chi tiết giá và đính kèm */
+        #bookingModal .price-detail-box { border: 2px solid #0d6efd !important; border-radius: 12px; background: #e8f3ff !important; }
+        #bookingModal .price-detail-title { font-size: 1.2rem; font-weight: 800 !important; }
+        #bookingModal .quick-attach-box .form-label { color: #0b5ed7 !important; }
 
-        #bookingModal .customer-info-box {
-          border: 2px solid #6bbf83;
-          border-radius: 16px;
-          padding: 12px;
-          margin-bottom: 16px;
-          background: #f8fffa;
-        }
+        #bookingModal .attachment-preview-box { border: 2px solid #9ec5fe; border-radius: 12px; background: #fff; padding: 10px; }
+        #bookingModal .attachment-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        #bookingModal .attachment-item { border: 1px solid #e3e3e3; border-radius: 10px; overflow: hidden; background: #fff; }
+        #bookingModal .attachment-item img, #bookingModal .attachment-item video { display: block; width: 100%; height: 90px; object-fit: cover; background: #f8f8f8; }
+        #bookingModal .attachment-item-name { padding: 6px 8px; font-size: 12px; font-weight: 600; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        #bookingModal .customer-info-box .form-label,
-        #bookingModal .service-work-box .form-label,
-        #bookingModal .schedule-box .form-label,
-        #bookingModal .extra-request-box .form-label,
-        #bookingModal .note-box .form-label,
-        #bookingModal .quick-attach-box .form-label {
-          font-weight: 700;
-          color: #1f2a37;
-          margin-bottom: 6px;
-        }
+        /* Nút bấm và Tiêu đề */
+        #bookingModal .action-submit-btn { background-color: #007bff; border: none; }
+        #bookingModal .action-submit-btn:hover { background-color: #0a58ca; }
 
-        #bookingModal .customer-info-box .form-control,
-        #bookingModal .customer-info-box .input-group-text {
-          border-color: #a8cdb2;
-          background: #f7f9f7;
-        }
+        #bookingModal .booking-modal-title { display: inline-flex; align-items: center; gap: 12px; }
+        #bookingModal .booking-modal-title-logo { object-fit: contain; flex-shrink: 0; background: #ffffff; border: 1px solid #c4d3f3; border-radius: 10px; padding: 3px; box-shadow: 0 2px 8px rgba(98, 143, 240, 0.2); }
+        #bookingModal .booking-modal-title-logo-left { width: 42px; height: 32px; }
+        #bookingModal .booking-modal-title-logo-right { width: 38px; height: 30px; }
+        #bookingModal .booking-modal-title-text { line-height: 1.2; letter-spacing: 0.2px; }
 
-        #bookingModal .customer-info-box .form-control:focus {
-          border-color: #7cc190;
-          box-shadow: 0 0 0 0.2rem rgba(89, 170, 114, 0.15);
-        }
-
-        #bookingModal .service-work-box {
-          border: 2px solid #4f9ddb;
-          border-radius: 10px;
-          padding: 10px;
-          margin-bottom: 16px;
-          background: #fafdff;
-        }
-
-        #bookingModal #serviceJobs .job-check {
-          width: 16px;
-          height: 16px;
-          border-radius: 3px;
-          border-color: #2e86d1;
-          accent-color: #2e86d1;
-          /* margin-left: 10px; */
-        }
-
-        #bookingModal .schedule-box {
-          border: 2px solid #2f93df;
-          border-radius: 16px;
-          background: #dceeff;
-          padding: 12px;
-          margin-bottom: 10px;
-        }
-
-        #bookingModal .schedule-box .form-control,
-        #bookingModal .schedule-box .form-select {
-          background: #f4f4f4;
-          border-color: #8ca2b5;
-          color: #111;
-          font-weight: 700;
-        }
-
-        #bookingModal #autoEndDateRow {
-          border: 2px solid #58b56b;
-          border-radius: 12px;
-          background: #dff5e4;
-          color: #1f4f2a;
-        }
-
-        #bookingModal .extra-request-box #extraRequest,
-        #bookingModal .note-box #customerNote {
-          border: 2px solid #012b55;
-          border-radius: 12px;
-          min-height: 56px;
-          padding: 10px 14px;
-          font-size: 1.05rem;
-          color: #1f2a37;
-          background: #fffefe;
-        }
-
-        #bookingModal .price-detail-box {
-          border: 2px solid #0d6efd !important;
-          border-radius: 12px;
-          background: #e8f3ff !important;
-        }
-
-        #bookingModal .price-detail-title {
-          font-size: 1.2rem;
-          font-weight: 800 !important;
-        }
-
-        #bookingModal .quick-attach-box .form-label {
-          color: #0b5ed7 !important;
-        }
-
-        #bookingModal .attachment-preview-box {
-          border: 2px solid #9ec5fe;
-          border-radius: 12px;
-          background: #fff;
-          padding: 10px;
-        }
-
-        #bookingModal .attachment-preview-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-          gap: 10px;
-        }
-
-        #bookingModal .attachment-item {
-          border: 1px solid #e3e3e3;
-          border-radius: 10px;
-          overflow: hidden;
-          background: #fff;
-        }
-
-        #bookingModal .attachment-item img,
-        #bookingModal .attachment-item video {
-          display: block;
-          width: 100%;
-          height: 90px;
-          object-fit: cover;
-          background: #f8f8f8;
-        }
-
-        #bookingModal .attachment-item-name {
-          padding: 6px 8px;
-          font-size: 12px;
-          font-weight: 600;
-          color: #444;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        #bookingModal .action-submit-btn {
-          background-color: #007bff;
-          border: none;
-        }
-
-        #bookingModal .action-submit-btn:hover {
-          background-color: #0a58ca;
-        }
-
-        #bookingModal .booking-modal-title {
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        #bookingModal .booking-modal-title-logo {
-          object-fit: contain;
-          flex-shrink: 0;
-          background: #ffffff;
-          border: 1px solid #c4d3f3;
-          border-radius: 10px;
-          padding: 3px;
-          box-shadow: 0 2px 8px rgba(98, 143, 240, 0.2);
-        }
-
-        #bookingModal .booking-modal-title-logo-left {
-          width: 42px;
-          height: 32px;
-        }
-
-        #bookingModal .booking-modal-title-logo-right {
-          width: 38px;
-          height: 30px;
-        }
-
-        #bookingModal .booking-modal-title-text {
-          line-height: 1.2;
-          letter-spacing: 0.2px;
-        }
-
+        /* Responsive */
         @media (max-width: 575.98px) {
-          #bookingModal .booking-modal-title-logo-left {
-            width: 36px;
-            height: 28px;
-          }
-
-          #bookingModal .booking-modal-title-logo-right {
-            width: 32px;
-            height: 25px;
-          }
-
-          #bookingModal .booking-modal-title-logo {
-            padding: 2px;
-            border-radius: 8px;
-          }
+          #bookingModal .booking-modal-title-logo-left { width: 36px; height: 28px; }
+          #bookingModal .booking-modal-title-logo-right { width: 32px; height: 25px; }
+          #bookingModal .booking-modal-title-logo { padding: 2px; border-radius: 8px; }
         }
       </style>
       <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
@@ -240,7 +93,7 @@
 
                 <div class="mb-3">
                   <label class="form-label fw-bold">Số điện thoại: <span class="text-danger">*</span></label>
-                  <input type="tel" id="customerPhone" required placeholder="0912345678" pattern="[0-9]{10,11}" class="form-control">
+                  <input type="tel" id="customerPhone" required placeholder="0775 472 347" pattern="[0-9]{10,11}" class="form-control">
                 </div>
 
                 <div class="mb-3">

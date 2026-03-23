@@ -9,7 +9,6 @@
     <meta property="og:type"  content="website" />
     <meta id="og-title"  property="og:title"       content="Cẩm Nang Chăm Sóc Người bệnh" />
     <meta id="og-desc"   property="og:description" content="Kiến thức chăm sóc người bệnh   toàn diện." />
-
     <link rel="shortcut icon" type="image/x-icon" href="../assets/logo-cham-soc-benh-nhan.png" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -90,73 +89,32 @@
       }
 
       /* ================= MOBILE ONLY ================= */
+      /* ================= MOBILE ONLY ================= */
       @media (max-width: 991.98px) {
-
-        .navbar {
-          overflow-x: clip;
-        }
-
-        .navbar .container > span {
-          max-width: 34vw;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          font-size: 0.95rem;
-        }
-
-        .navbar-brand img {
-          width: 56px !important;
-          height: 42px !important;
-        }
+        .navbar { overflow-x: clip; }
+        .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
+        .navbar-brand img { width: 56px !important; height: 42px !important; }
 
         /* ÉP menu xuống dưới navbar */
-        .navbar-collapse {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          width: auto;
-          background: #fff;
-          z-index: 999;
-          border-radius: 0 0 12px 12px;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
+        .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
 
         /* Khi mở menu */
-        .navbar-collapse.show {
-          display: block;
-        }
+        .navbar-collapse.show { display: block; }
 
         /* UL dọc + căn giữa */
-        .navbar-collapse .navbar-nav {
-          flex-direction: column !important;
-          align-items: center !important;
-          gap: 10px;
-          padding: 15px 0;
-        }
+        .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
 
         /* Item */
-        .navbar-collapse .nav-item {
-          width: 100%;
-          text-align: center;
-        }
+        .navbar-collapse .nav-item { width: 100%; text-align: center; }
 
         /* Link */
-        .navbar-collapse .nav-link {
-          display: block;
-          width: 100%;
-          padding: 10px;
-          font-size: 16px;
-        }
+        .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
 
         /* Button */
-        .navbar-collapse .btn {
-          width: 80%;
-          margin-top: 10px;
-        }
+        .navbar-collapse .btn { width: 80%; margin-top: 10px; }
       }
     </style>
-    <script src="../../ga.js"></script>
+<script src="/ga.js"></script>
   </head>
   <body>
 
@@ -488,24 +446,24 @@
             <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-tiktok"></i></a>
           </div>
           <div class="mt-4">
-                <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
-                <div class="d-flex gap-2" style="max-width: 300px;">
-                  <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                    <i data-lucide="apple" class="me-2" style="width: 20px; height: 20px;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
-                      <span class="fw-bold" style="font-size: 11px;">App Store</span>
-                    </div>
-                  </a>
-                  <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                    <i data-lucide="play" class="me-2" style="width: 20px; height: 20px; fill: white;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
-                      <span class="fw-bold" style="font-size: 11px;">Google Play</span>
-                    </div>
-                  </a>
+            <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
+            <div class="d-flex gap-2" style="max-width: 300px;">
+              <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
+                <i data-lucide="apple" class="me-2" style="width: 20px; height: 20px;"></i>
+                <div class="text-start lh-1">
+                  <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
+                  <span class="fw-bold" style="font-size: 11px;">App Store</span>
                 </div>
-              </div>
+              </a>
+              <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill">
+                <i data-lucide="play" class="me-2" style="width: 20px; height: 20px; fill: white;"></i>
+                <div class="text-start lh-1">
+                  <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
+                  <span class="fw-bold" style="font-size: 11px;">Google Play</span>
+                </div>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
       <hr class="opacity-25" />

@@ -6,419 +6,155 @@
     <meta name="description" content="Liên hệ dịch vụ chăm sóc người bệnh tại nhà để được tư vấn nhanh chóng. Hỗ trợ chăm sóc người già, bệnh nhân từ mức nhẹ đến 24/7, phục vụ tận nơi, an toàn và tận tâm.">
     <meta name="keywords" content="liên hệ chăm sóc người bệnh tại nhà, tư vấn chăm người già, dịch vụ chăm bệnh nhân, hotline chăm sóc tại nhà, hỗ trợ chăm bệnh 24/7">
     <title>Liên Hệ - Chăm Sóc Bệnh Nhân</title>
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="../assets/logo-cham-soc-benh-nhan.png"
-    />
-    <!-- Bootstrap 5 CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap"
-      rel="stylesheet"
-    />
-<style>
-html,
-body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/logo-cham-soc-benh-nhan.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
 
-/* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
-.navbar .container {
-  display: flex;
-  flex-wrap: nowrap !important;
-  align-items: center;
-  min-width: 0;
-}
+      /* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
+      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
 
-/* ================= MOBILE ONLY ================= */
-@media (max-width: 991.98px) {
+      /* ================= MOBILE ONLY ================= */
+      @media (max-width: 991.98px) {
+        .navbar { overflow-x: clip; }
+        .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
+        .navbar-brand img { width: 56px !important; height: 42px !important; }
 
-  .navbar {
-    overflow-x: clip;
-  }
+        /* ÉP menu xuống dưới navbar */
+        .navbar-collapse { 
+          position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; 
+          z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+        }
+        .navbar-collapse.show { display: block; }
+        .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
+        .navbar-collapse .nav-item { width: 100%; text-align: center; }
+        .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
+        .navbar-collapse .btn { width: 80%; margin-top: 10px; }
 
-  .navbar .container > span {
-    max-width: 34vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.95rem;
-  }
+        .hero-section img { width: 100% !important; max-width: 340px; height: auto !important; }
+      }
 
-  .navbar-brand img {
-    width: 56px !important;
-    height: 42px !important;
-  }
+      .service-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+      .service-list .btn { 
+        width: 100%; min-height: 48px; display: flex; align-items: center; 
+        justify-content: flex-start; text-align: left; line-height: 1.3; 
+      }
 
-  /* ÉP menu xuống dưới navbar */
-  .navbar-collapse {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    width: auto;
-    background: #fff;
-    z-index: 999;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-  }
+      .contact-info-panel { 
+        border: 2px solid #75c9f8; background: #eef8ff; border-radius: 18px; 
+        padding: 22px 20px; box-shadow: 0 10px 20px rgba(44, 123, 229, 0.14); 
+      }
+      .contact-info-title { color: #1f73d8; font-size: clamp(2rem, 3.8vw, 3.05rem); margin-bottom: 1.25rem; }
 
-  /* Khi mở menu */
-  .navbar-collapse.show {
-    display: block;
-  }
+      .contact-info-card { 
+        display: flex; align-items: flex-start; gap: 14px; background: #ffffff; 
+        border: 2px solid #a9d7f7; border-radius: 16px; padding: 14px 16px; box-shadow: 0 6px 12px rgba(37, 116, 205, 0.14); 
+      }
 
-  /* UL dọc + căn giữa */
-  .navbar-collapse .navbar-nav {
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 10px;
-    padding: 15px 0;
-  }
+      .contact-info-icon { 
+        width: 44px; height: 44px; border-radius: 999px; background: #1f7fe8; 
+        color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.25rem; 
+      }
 
-  /* Item */
-  .navbar-collapse .nav-item {
-    width: 100%;
-    text-align: center;
-  }
+      .contact-info-card h4 { margin: 0 0 4px; font-weight: 700; color: #2f2f2f; }
+      .contact-info-card p { margin: 0; color: #555; font-size: 0.95rem; }
+      .contact-info-card a { color: #1f73d8; text-decoration: none; }
+      .contact-info-hours p + p { margin-top: 4px; }
 
-  /* Link */
-  .navbar-collapse .nav-link {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-  }
+      .contact-form-card { 
+        background: linear-gradient(#f3f6ff, #f4f3ff) padding-box, linear-gradient(135deg, #188e62, #626bf0) border-box; 
+        border: 4px solid transparent; border-radius: 22px; box-shadow: 0 12px 28px rgba(20, 60, 45, 0.18); 
+      }
 
-  /* Button */
-  .navbar-collapse .btn {
-    width: 80%;
-    margin-top: 10px;
-  }
+      #bookingForm label { font-weight: 700 !important; color: #2f2f2f !important; }
+      #bookingForm input, #bookingForm textarea { border: 2px solid #188e62 !important; border-radius: 12px !important; box-shadow: none !important; }
+      #bookingForm input::placeholder, #bookingForm textarea::placeholder { color: #7b7b7b; }
 
-  .hero-section img {
-    width: 100% !important;
-    max-width: 340px;
-    height: auto !important;
-  }
-}
+      .service-list .btn.btn-outline-success { 
+        border: 2px solid #188e62; color: #2f2f2f; background-color: #ffffff; 
+        border-radius: 14px; box-shadow: 0 3px 8px rgba(24, 142, 98, 0.2); 
+      }
+      .service-list .btn-check:checked + .btn.btn-outline-success { background-color: #eaf7f0; border-color: #188e62; color: #14553c; }
+      .service-list .btn.btn-outline-success:hover { border-color: #147a54; color: #1d3e32; }
 
-.service-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
+      #bookingForm button[type="submit"] { background: linear-gradient(135deg, #6fa2f0, #557be4) !important; box-shadow: 0 8px 16px rgba(240, 98, 146, 0.35); }
+      #bookingForm button[type="submit"]:hover { filter: brightness(0.95); }
 
-.service-list .btn {
-  width: 100%;
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  text-align: left;
-  line-height: 1.3;
-}
-
-.contact-info-panel {
-  border: 2px solid #75c9f8;
-  background: #eef8ff;
-  border-radius: 18px;
-  padding: 22px 20px;
-  box-shadow: 0 10px 20px rgba(44, 123, 229, 0.14);
-}
-
-.contact-info-title {
-  color: #1f73d8;
-  font-size: clamp(2rem, 3.8vw, 3.05rem);
-  margin-bottom: 1.25rem;
-}
-
-.contact-info-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  background: #ffffff;
-  border: 2px solid #a9d7f7;
-  border-radius: 16px;
-  padding: 14px 16px;
-  box-shadow: 0 6px 12px rgba(37, 116, 205, 0.14);
-}
-
-.contact-info-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  background: #1f7fe8;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 1.25rem;
-}
-
-.contact-info-card h4 {
-  margin: 0 0 4px;
-  font-weight: 700;
-  color: #2f2f2f;
-}
-
-.contact-info-card p {
-  margin: 0;
-  color: #555;
-  font-size: 0.95rem;
-}
-
-.contact-info-card a {
-  color: #1f73d8;
-  text-decoration: none;
-}
-
-.contact-info-hours p + p {
-  margin-top: 4px;
-}
-
-.contact-form-card {
-  background: linear-gradient(#f3f6ff, #f4f3ff) padding-box,
-    linear-gradient(135deg, #188e62, #626bf0) border-box;
-  border: 4px solid transparent;
-  border-radius: 22px;
-  box-shadow: 0 12px 28px rgba(20, 60, 45, 0.18);
-}
-
-#bookingForm label {
-  font-weight: 700 !important;
-  color: #2f2f2f !important;
-}
-
-#bookingForm input,
-#bookingForm textarea {
-  border: 2px solid #188e62 !important;
-  border-radius: 12px !important;
-  box-shadow: none !important;
-}
-
-#bookingForm input::placeholder,
-#bookingForm textarea::placeholder {
-  color: #7b7b7b;
-}
-
-.service-list .btn.btn-outline-success {
-  border: 2px solid #188e62;
-  color: #2f2f2f;
-  background-color: #ffffff;
-  border-radius: 14px;
-  box-shadow: 0 3px 8px rgba(24, 142, 98, 0.2);
-}
-
-.service-list .btn-check:checked + .btn.btn-outline-success {
-  background-color: #eaf7f0;
-  border-color: #188e62;
-  color: #14553c;
-}
-
-.service-list .btn.btn-outline-success:hover {
-  border-color: #147a54;
-  color: #1d3e32;
-}
-
-#bookingForm button[type="submit"] {
-  background: linear-gradient(135deg, #6fa2f0, #557be4) !important;
-  box-shadow: 0 8px 16px rgba(240, 98, 146, 0.35);
-}
-
-#bookingForm button[type="submit"]:hover {
-  filter: brightness(0.95);
-}
-
-@media (max-width: 767.98px) {
-  .contact-form-card {
-    padding: 1.2rem !important;
-  }
-}
-</style>
-<script src="../../ga.js"></script>
+      @media (max-width: 767.98px) {
+        .contact-form-card { padding: 1.2rem !important; }
+      }
+    </style>
+<script src="/ga.js"></script>
   </head>
   <body style="font-family: &quot;Quicksand&quot;, sans-serif">
     <!-- Navigation -->
 
-    <nav
-      class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3"
-    >
-      <div class="container">
-        <a
-          class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
-          href="../../index.html"
-          style="color: #007bff"
-        >
-          <img
-            style="width: 80px; height: 60px"
-            src="../assets/logo-he-thong.png"
-            alt="cham-soc-me-va-be"
-          />
-        </a>
-        <span>Chăm Sóc Bệnh Nhân</span>
-        <a
-          class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3"
-          href="../index.html"
-          style="color: #007bff"
-        >
-          <img
-            style="width: 80px; height: 60px"
-            src="../assets/logo-cham-soc-benh-nhan.png"
-            alt="cham-soc-me-va-be"
-          />
-        </a>
-        <button
-          class="navbar-toggler border-0"
-          type="button"
-          id="menuToggle"
-          data-bs-toggle="collapse"
-          data-bs-target="#navMenu"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+        <div class="container">
+            <a href="../../index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
+                <img src="../assets/logo-he-thong.png" alt="cham-soc-me-va-be" style="width: 80px; height: 60px" />
+            </a>
+            <span>Chăm Sóc Bệnh Nhân</span>
+            <a href="../index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
+                <img src="../assets/logo-cham-soc-benh-nhan.png" alt="cham-soc-me-va-be" style="width: 80px; height: 60px" />
+            </a>
+            <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
-          <ul class="navbar-nav align-items-center gap-3">
-            <li class="nav-item">
-              <a class="nav-link fw-bold px-3" href="../index.html"
-                >Trang Chủ</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link fw-bold px-3" href="gioi-thieu.html">Giới Thiệu</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link fw-bold px-3" href="../dich-vu-cham-soc-nguoi-benh.html">Dịch Vụ</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="dieu-khoan.html"
-                  >Điều Khoản</a
-                >
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fw-bold px-3" href="cam-nang.html"
-                  >Cẩm Nang</a
-                >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link fw-bold px-3 active"
-                style="color: #007bff; font-size: larger"
-                href="lien-he.html"
-                >Liên Hệ</a
-              >
-            </li>
-            <li class="nav-item">
-                <a
-                  class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-                  style="background: linear-gradient(135deg, #629bf0, #407cec);"
-                  href="khach_hang/lookup.html"
-                  data-lookup-modal
-                  data-lookup-modal-src="khach_hang/lookup.html"
-                  onmouseover="
-                    this.style.background = 'linear-gradient(135deg, #d84374, #c2185b)';
-                    this.style.transform = 'scale(1.05)';
-                  "
-                  onmouseout="
-                    this.style.background = 'linear-gradient(135deg, #629bf0, #407cec)';
-                    this.style.transform = 'scale(1)';
-                  "
-                >Tra cứu đơn hàng</a>
-              </li>
-            <li class="nav-item ms-lg-3" id="loginNavItem">
-              <a
-                href="../login.html"
-                data-login-modal
-                data-login-modal-src="../login.html"
-                class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-                style="background-color: #007bff"
-                onmouseover="
-                  this.style.backgroundColor = '#d84374';
-                  this.style.transform = 'scale(1.05)';
-                "
-                onmouseout="
-                  this.style.backgroundColor = '#007bff';
-                  this.style.transform = 'scale(1)';
-                "
-                >Đăng Nhập</a
-              >
-            </li>
-            <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
-              <div class="dropdown">
-                <button
-                  class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-flex align-items-center gap-2"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <img
-                    id="navAvatar"
-                    src="../assets/logo-cham-soc-benh-nhan.png"
-                    alt="avatar"
-                    width="32"
-                    height="32"
-                    class="rounded-circle border"
-                  />
-                  <span id="navUserName" class="fw-semibold small">Tài khoản</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                  <li><a class="dropdown-item" href="khach_hang/profile.html" data-profile-modal data-profile-modal-src="khach_hang/profile.html">Sửa đổi thông tin</a></li>
-                  <!-- <li><a class="dropdown-item" href="khach_hang/dshoadon.html" data-dashboard-modal data-dashboard-modal-src="khach_hang/dshoadon.html">Danh sách hóa đơn đã đặt</a></li> -->
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item text-danger" href="../api/logout.php">Đăng xuất</a></li>
+            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+                <ul class="navbar-nav align-items-center gap-3">
+                    <li class="nav-item"><a href="../index.html" class="nav-link fw-bold px-3">Trang Chủ</a></li>
+                    <li class="nav-item"><a href="gioi-thieu.html" class="nav-link fw-bold px-3">Giới Thiệu</a></li>
+                    <li class="nav-item"><a href="../dich-vu-cham-soc-nguoi-benh.html" class="nav-link fw-bold px-3">Dịch Vụ</a></li>
+                    <li class="nav-item"><a href="dieu-khoan.html" class="nav-link fw-bold px-3">Điều Khoản</a></li>
+                    <li class="nav-item"><a href="cam-nang.html" class="nav-link fw-bold px-3">Cẩm Nang</a></li>
+                    <li class="nav-item">
+                        <a href="lien-he.html" class="nav-link fw-bold px-3 active" style="color: #007bff; font-size: larger">Liên Hệ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="khach_hang/lookup.html" class="btn text-white rounded-pill px-4 py-2 shadow-sm" 
+                          style="background: linear-gradient(135deg, #629bf0, #407cec);" data-lookup-modal data-lookup-modal-src="khach_hang/lookup.html"
+                          onmouseover="this.style.background = 'linear-gradient(135deg, #d84374, #c2185b)'; this.style.transform = 'scale(1.05)';"
+                          onmouseout="this.style.background = 'linear-gradient(135deg, #629bf0, #407cec)'; this.style.transform = 'scale(1)';"
+                        >Tra cứu đơn hàng</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" id="loginNavItem">
+                        <a href="../login.html" class="btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #007bff" 
+                          data-login-modal data-login-modal-src="../login.html"
+                          onmouseover="this.style.backgroundColor = '#d84374'; this.style.transform = 'scale(1.05)';"
+                          onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)';"
+                        >Đăng Nhập</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
+                        <div class="dropdown">
+                            <button class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img id="navAvatar" src="../assets/logo-cham-soc-benh-nhan.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
+                                <span id="navUserName" class="fw-semibold small">Tài khoản</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                <li><a href="khach_hang/profile.html" class="dropdown-item" data-profile-modal data-profile-modal-src="khach_hang/profile.html">Sửa đổi thông tin</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a href="../api/logout.php" class="dropdown-item text-danger">Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    </li>
                 </ul>
-              </div>
-            </li>
-          </ul>
+            </div>
         </div>
-      </div>
     </nav>
 
-    <section
-      class="py-5"
-      style="
-        background: linear-gradient(
-          135deg,
-          #e3f2fd 0%,
-          #ffffff 50%,
-          #e8f5e9 100%
-        );
-      "
-    >
-      <div class="container py-lg-5 text-center">
-        <h1 class="display-3 fw-bold mb-3">
-          Liên Hệ Với Chúng Tôi
-          <span
-            style="color: #007bff; font-family: &quot;Pacifico&quot;, cursive"
-            >Chăm Sóc Bệnh Nhân</span
-          >
-        </h1>
-        <p class="lead text-muted mb-4">
-          Chúng tôi sẵn sàng lắng nghe và trợ giúp bạn
-        </p>
-        <div
-          style="
-            width: 60px;
-            height: 3px;
-            background-color: #007bff;
-            margin: 0 auto;
-          "
-        ></div>
-      </div>
+    <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #e8f5e9 100%);">
+        <div class="container py-lg-5 text-center">
+            <h1 class="display-3 fw-bold mb-3">
+                Liên Hệ Với Chúng Tôi 
+                <span style="color: #007bff; font-family: 'Pacifico', cursive;">Chăm Sóc Bệnh Nhân</span>
+            </h1>
+            <p class="lead text-muted mb-4">Chúng tôi sẵn sàng lắng nghe và trợ giúp bạn</p>
+            <div style="width: 60px; height: 3px; background-color: #007bff; margin: 0 auto;"></div>
+        </div>
     </section>
     <!-- Contact Section -->
     <section class="py-5">
@@ -445,7 +181,7 @@ body {
                 </div>
                 <div>
                   <h4>Điện Thoại</h4>
-                  <p><a href="tel:0775472347">0775472347</a></p>
+                  <p><a href="tel:0775472347">0775 472 347</a></p>
                 </div>
               </div>
 
@@ -475,368 +211,136 @@ body {
 
           <!-- Contact Form -->
           <div class="col-lg-7">
-            <div class="p-5 contact-form-card">
-              <div>
-                <h2 class="fw-bold mb-4" style="color: #0454e9">
-                  <i class="fas fa-paper-plane me-2"></i>Gửi Tin Nhắn Cho Chúng
-                  Tôi
-                </h2>
+              <div class="p-5 contact-form-card">
+                  <div>
+                      <h2 class="fw-bold mb-4" style="color: #0454e9">
+                          <i class="fas fa-paper-plane me-2"></i>Gửi Tin Nhắn Cho Chúng Tôi
+                      </h2>
 
-                <form id="bookingForm" class="contact-form">
-                  <div class="mb-4">
-                    <label
-                      class="d-block mb-2"
-                      style="font-weight: 600; color: #333"
-                      >Dịch vụ quan tâm:</label
-                    >
-                    <div id="serviceList" class="service-list"></div>
-                    <input type="hidden" id="servicePrice" value="Liên hệ" />
-                  </div>
+                      <form id="bookingForm" class="contact-form">
+                          <div class="mb-4">
+                              <label class="d-block mb-2" style="font-weight: 600; color: #333">Dịch vụ quan tâm:</label>
+                              <div id="serviceList" class="service-list"></div>
+                              <input type="hidden" id="servicePrice" value="Liên hệ" />
+                          </div>
 
-                  <div class="mb-4">
-                    <label
-                      class="d-block mb-2"
-                      style="font-weight: 600; color: #333"
-                      >Họ và tên: <span style="color: #007bff">*</span></label
-                    >
-                    <input
-                      type="text"
-                      id="customerName"
-                      required
-                      placeholder="Nguyễn Văn A"
-                      style="
-                        width: 100%;
-                        padding: 12px;
-                        border: 1px solid #ddd;
-                        border-radius: 8px;
-                        font-family: &quot;Quicksand&quot;, sans-serif;
-                        font-size: 0.95rem;
-                        transition: 0.3s;
-                      "
-                      onfocus="
-                        this.style.borderColor = '#188e62';
-                        this.style.boxShadow =
-                          '0 0 10px rgba(24, 142, 98, 0.2)';
-                      "
-                      onblur="
-                        this.style.borderColor = '#188e62';
-                        this.style.boxShadow = 'none';
-                      "
-                    />
-                  </div>
+                          <div class="mb-4">
+                              <label class="d-block mb-2" style="font-weight: 600; color: #333">Họ và tên: <span style="color: #007bff">*</span></label>
+                              <input type="text" id="customerName" required placeholder="Nguyễn Văn A" 
+                                    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                                    onfocus="this.style.borderColor = '#188e62'; this.style.boxShadow = '0 0 10px rgba(24, 142, 98, 0.2)';"
+                                    onblur="this.style.borderColor = '#188e62'; this.style.boxShadow = 'none';" />
+                          </div>
 
-                  <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                      <div>
-                        <label
-                          class="d-block mb-2"
-                          style="font-weight: 600; color: #333"
-                          >Số điện thoại:
-                          <span style="color: #007bff">*</span></label
-                        >
-                        <input
-                          type="tel"
-                          id="customerPhone"
-                          required
-                          placeholder="0912345678"
-                          pattern="[0-9]{10,11}"
-                          style="
-                            width: 100%;
-                            padding: 12px;
-                            border: 1px solid #ddd;
-                            border-radius: 8px;
-                            font-family: &quot;Quicksand&quot;, sans-serif;
-                            font-size: 0.95rem;
-                            transition: 0.3s;
-                          "
-                          onfocus="
-                            this.style.borderColor = '#188e62';
-                            this.style.boxShadow =
-                              '0 0 10px rgba(24, 142, 98, 0.2)';
-                          "
-                          onblur="
-                            this.style.borderColor = '#188e62';
-                            this.style.boxShadow = 'none';
-                          "
-                        />
+                          <div class="row g-3 mb-4">
+                              <div class="col-md-6">
+                                  <label class="d-block mb-2" style="font-weight: 600; color: #333">Số điện thoại: <span style="color: #007bff">*</span></label>
+                                  <input type="tel" id="customerPhone" required placeholder="0775 472 347" pattern="[0-9]{10,11}"
+                                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                                        onfocus="this.style.borderColor = '#188e62'; this.style.boxShadow = '0 0 10px rgba(24, 142, 98, 0.2)';"
+                                        onblur="this.style.borderColor = '#188e62'; this.style.boxShadow = 'none';" />
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="d-block mb-2" style="font-weight: 600; color: #333">Email:</label>
+                                  <input type="email" id="customerEmail" placeholder="email@example.com"
+                                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                                        onfocus="this.style.borderColor = '#188e62'; this.style.boxShadow = '0 0 10px rgba(24, 142, 98, 0.2)';"
+                                        onblur="this.style.borderColor = '#188e62'; this.style.boxShadow = 'none';" />
+                              </div>
+                          </div>
+
+                          <div class="mb-4">
+                              <label class="d-block mb-2" style="font-weight: 600; color: #333">Ghi chú / Nội dung:</label>
+                              <textarea id="customerNote" rows="4" placeholder="Nhập nội dung tin nhắn của bạn..."
+                                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                                        onfocus="this.style.borderColor = '#188e62'; this.style.boxShadow = '0 0 10px rgba(24, 142, 98, 0.2)';"
+                                        onblur="this.style.borderColor = '#188e62'; this.style.boxShadow = 'none';"></textarea>
+                          </div>
+
+                          <div class="mb-4">
+                              <button type="submit" class="w-100 btn text-white rounded-pill" 
+                                      style="background-color: #007bff; border: none; padding: 12px 30px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s;"
+                                      onmouseover="this.style.backgroundColor = '#d84374'; this.style.transform = 'scale(1.02)'; this.style.boxShadow = '0 5px 15px rgba(240, 98, 146, 0.4)';"
+                                      onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)'; this.style.boxShadow = 'none';">
+                                  <i class="fas fa-check me-2"></i>Gửi Tin Nhắn
+                              </button>
+                          </div>
+                      </form>
+
+                      <div id="successMessage" style="display: none; text-align: center; padding: 20px">
+                          <i class="fas fa-check-circle" style="color: #28a745; font-size: 3rem"></i>
+                          <h3 class="mt-3 fw-bold" style="color: #333">Gửi thành công!</h3>
+                          <p style="color: #666">Cảm ơn bạn, chúng tôi sẽ phản hồi trong thời gian sớm nhất.</p>
                       </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <div>
-                        <label
-                          class="d-block mb-2"
-                          style="font-weight: 600; color: #333"
-                          >Email:</label
-                        >
-                        <input
-                          type="email"
-                          id="customerEmail"
-                          placeholder="email@example.com"
-                          style="
-                            width: 100%;
-                            padding: 12px;
-                            border: 1px solid #ddd;
-                            border-radius: 8px;
-                            font-family: &quot;Quicksand&quot;, sans-serif;
-                            font-size: 0.95rem;
-                            transition: 0.3s;
-                          "
-                          onfocus="
-                            this.style.borderColor = '#188e62';
-                            this.style.boxShadow =
-                              '0 0 10px rgba(24, 142, 98, 0.2)';
-                          "
-                          onblur="
-                            this.style.borderColor = '#188e62';
-                            this.style.boxShadow = 'none';
-                          "
-                        />
-                      </div>
-                    </div>
                   </div>
-
-                  <div class="mb-4">
-                    <label
-                      class="d-block mb-2"
-                      style="font-weight: 600; color: #333"
-                      >Ghi chú / Nội dung:</label
-                    >
-                    <textarea
-                      id="customerNote"
-                      rows="4"
-                      placeholder="Nhập nội dung tin nhắn của bạn..."
-                      style="
-                        width: 100%;
-                        padding: 12px;
-                        border: 1px solid #ddd;
-                        border-radius: 8px;
-                        font-family: &quot;Quicksand&quot;, sans-serif;
-                        font-size: 0.95rem;
-                        transition: 0.3s;
-                      "
-                      onfocus="
-                        this.style.borderColor = '#188e62';
-                        this.style.boxShadow =
-                          '0 0 10px rgba(24, 142, 98, 0.2)';
-                      "
-                      onblur="
-                        this.style.borderColor = '#188e62';
-                        this.style.boxShadow = 'none';
-                      "
-                    ></textarea>
-                  </div>
-
-                  <div class="mb-4">
-                    <button
-                      type="submit"
-                      class="w-100 btn text-white rounded-pill"
-                      style="
-                        background-color: #007bff;
-                        border: none;
-                        padding: 12px 30px;
-                        font-weight: 600;
-                        font-size: 1rem;
-                        cursor: pointer;
-                        transition: 0.3s;
-                      "
-                      onmouseover="
-                        this.style.backgroundColor = '#d84374';
-                        this.style.transform = 'scale(1.02)';
-                        this.style.boxShadow =
-                          '0 5px 15px rgba(240, 98, 146, 0.4)';
-                      "
-                      onmouseout="
-                        this.style.backgroundColor = '#f06f9d';
-                        this.style.transform = 'scale(1)';
-                        this.style.boxShadow = 'none';
-                      "
-                    >
-                      <i class="fas fa-check me-2"></i>Gửi Tin Nhắn
-                    </button>
-                  </div>
-                </form>
-
-                <div
-                  id="successMessage"
-                  style="display: none; text-align: center; padding: 20px"
-                >
-                  <i
-                    class="fas fa-check-circle"
-                    style="color: #28a745; font-size: 3rem"
-                  ></i>
-                  <h3 class="mt-3 fw-bold" style="color: #333">
-                    Gửi thành công!
-                  </h3>
-                  <p style="color: #666">
-                    Cảm ơn bạn, chúng tôi sẽ phản hồi trong thời gian sớm nhất.
-                  </p>
-                </div>
               </div>
-            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-dark text-white pt-5 pb-3">
-      <div class="container">
-        <div class="row g-4 mb-4">
-          <div class="col-lg-4">
-            <h3 class="h4 fw-bold mb-3" style="color: #007bff">Chăm Sóc Bệnh Nhân</h3>
-            <p class="opacity-75">
-              Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng
-              đầu tại Việt Nam.
-            </p>
-            <p class="opacity-75">
-                CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853
-              </p>
-              <p class="opacity-75">
-                Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh, Việt Nam
-              </p>
-              <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
-
-              <p class="mb-1 opacity-75 small">
-                <i class="fas fa-phone me-2"></i> 0775472347
-              </p>
-              <p class="mb-1 opacity-75 small">
-                <i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com
-              </p>
-              
-          </div>
-          <div class="col-lg-2">
-            <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
-            <ul class="list-unstyled">
-              <li class="mb-2">
-                <a
-                  href="gioi-thieu.html"
-                  class="text-white text-decoration-none opacity-75"
-                  >Giới Thiệu</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  href="../dich-vu-cham-soc-nguoi-benh.html"
-                  class="text-white text-decoration-none opacity-75"
-                  >Dịch Vụ</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  href="lien-he.html"
-                  class="text-white text-decoration-none opacity-75"
-                  >Liên Hệ</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  class="text-white text-decoration-none opacity-75"
-                  target="_blank"
-                    href="../../dich-vu-don-ve-sinh/"
-                  >Lau Dọn Vệ Sinh</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  class="text-white text-decoration-none opacity-75"
-                  target="_blank"
-                  href="../../cham-soc-me-va-be/"
-                  >Chăm Sóc Mẹ & Bé</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  class="text-white text-decoration-none opacity-75"
-                  target="_blank"
-                    href="../../cham-soc-vuon-nha/"
-                  >Chăm Sóc Vườn & Rẫy</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  class="text-white text-decoration-none opacity-75"
-                  target="_blank"
-                  href="../../giat-ui-nhanh/"
-                  >Giặt Ủi Cao Cấp</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  class="text-white text-decoration-none opacity-75"
-                  target="_blank"
-                  href="../../tho-nha/"
-                  >Thợ Nhà & Sửa Chữa</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  class="text-white text-decoration-none opacity-75"
-                  target="_blank"
-                  href="../../cham-soc-nguoi-gia/"
-                  >Chăm Sóc Người Già</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  class="text-white text-decoration-none opacity-75"
-                  target="_blank"
-                  href="../../cham-soc-nguoi-benh/"
-                  >Chăm Sóc Bệnh Nhân</a
-                >
-              </li>
-              <li class="mb-2">
-                <a
-                  class="text-white text-decoration-none opacity-75"
-                  target="_blank"
-                    href="../../giao-hang-nhanh/"
-                  >Giao Hàng Nhanh</a
-                >
-              </li>
-            </ul>
-          </div>
-          <div class="col-lg-3">
-            <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
-            <div class="d-flex gap-3">
-              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
-                ><i class="fab fa-facebook-f"></i
-              ></a>
-              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
-                ><i class="fab fa-instagram"></i
-              ></a>
-              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
-                ><i class="fab fa-youtube"></i
-              ></a>
-              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"
-                ><i class="fab fa-tiktok"></i
-              ></a>
-            </div>
-            <div class="mt-4">
-                <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
-                <div class="d-flex gap-2" style="max-width: 300px;">
-                  <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                    <i data-lucide="apple" class="me-2" style="width: 20px; height: 20px;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
-                      <span class="fw-bold" style="font-size: 11px;">App Store</span>
-                    </div>
-                  </a>
-                  <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                    <i data-lucide="play" class="me-2" style="width: 20px; height: 20px; fill: white;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
-                      <span class="fw-bold" style="font-size: 11px;">Google Play</span>
-                    </div>
-                  </a>
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <h3 class="h4 fw-bold mb-3" style="color: #007bff">Chăm Sóc Bệnh Nhân</h3>
+                    <p class="opacity-75">Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng đầu tại Việt Nam.</p>
+                    <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
+                    <p class="opacity-75">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh, Việt Nam</p>
+                    
+                    <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
+                    <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
+                    <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
                 </div>
-              </div>
-          </div>
+                <div class="col-lg-2">
+                    <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
+                        <li class="mb-2"><a href="../dich-vu-cham-soc-nguoi-benh.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
+                        <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
+                        <li class="mb-2"><a href="../../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
+                        <li class="mb-2"><a href="../../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
+                        <li class="mb-2"><a href="../../cham-soc-vuon-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Vườn & Rẫy</a></li>
+                        <li class="mb-2"><a href="../../giat-ui-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giặt Ủi Cao Cấp</a></li>
+                        <li class="mb-2"><a href="../../tho-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Thợ Nhà & Sửa Chữa</a></li>
+                        <li class="mb-2"><a href="../../cham-soc-nguoi-gia/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Người Già</a></li>
+                        <li class="mb-2"><a href="../../cham-soc-nguoi-benh/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Bệnh Nhân</a></li>
+                        <li class="mb-2"><a href="../../giao-hang-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giao Hàng Nhanh</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-tiktok"></i></a>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
+                        <div class="d-flex gap-2" style="max-width: 300px;">
+                            <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
+                                <i data-lucide="apple" class="me-2" style="width: 20px; height: 20px;"></i>
+                                <div class="text-start lh-1">
+                                    <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
+                                    <span class="fw-bold" style="font-size: 11px;">App Store</span>
+                                </div>
+                            </a>
+                            <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill">
+                                <i data-lucide="play" class="me-2" style="width: 20px; height: 20px; fill: white;"></i>
+                                <div class="text-start lh-1">
+                                    <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
+                                    <span class="fw-bold" style="font-size: 11px;">Google Play</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="opacity-25" />
+            <p class="text-center small opacity-50">&copy; 2026 Chăm Sóc Bệnh Nhân. Đồng hành cùng sức khỏe Việt.</p>
         </div>
-        <hr class="opacity-25" />
-        <p class="text-center small opacity-50">
-          &copy; 2026 Chăm Sóc Bệnh Nhân. Đồng hành cùng sức khỏe Việt.
-        </p>
-      </div>
     </footer>
 
     <!-- Bootstrap 5 JS -->
@@ -994,7 +498,7 @@ body {
     <script src="../JS/lookup-modal-core.js"></script>
     <script src="../JS/lookup-modal-loader.js"></script>
     <script src="../JS/profile-modal-core.js"></script>
-  <script src="../JS/profile-modal-loader.js"></script>
+    <script src="../JS/profile-modal-loader.js"></script>
   </body>
 </html>
 
