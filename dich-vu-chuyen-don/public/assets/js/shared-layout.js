@@ -14,8 +14,8 @@
     "chuyen-nha.html": "moving-house",
     "chuyen-kho-bai.html": "moving-warehouse",
     "chuyen-van-phong.html": "moving-office",
-    "tin-tuc.html": "news",
-    "chi-tiet-tin-tuc.html": "news",
+    "cam-nang.html": "news",
+    "cam-nang-chi-tiet.html": "news",
   };
 
   function loadPartial(url) {
@@ -77,7 +77,7 @@
       "moving-house": `${rootPath}public/chuyen-nha.html`,
       "moving-warehouse": `${rootPath}public/chuyen-kho-bai.html`,
       "moving-office": `${rootPath}public/chuyen-van-phong.html`,
-      "news": `${rootPath}public/tin-tuc.html`,
+      "news": `${rootPath}public/cam-nang.html`,
       "brandLogo": `${rootPath}public/assets/images/favicon.png`,
 
       // Các link đến dịch vụ khác trong footer

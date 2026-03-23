@@ -66,19 +66,19 @@
           (item) => `
         <article class="news-card">
           <div class="news-thumb">
-            <a href="chi-tiet-tin-tuc.html?id=${item.id}">
+            <a href="cam-nang-chi-tiet.html?id=${item.id}">
               <img src="${item.img}" alt="${item.title}" loading="lazy">
             </a>
           </div>
           <div class="news-content">
             <span class="news-date">📅 ${item.date}</span>
             <h3 class="news-title">
-              <a href="chi-tiet-tin-tuc.html?id=${item.id}" style="color: inherit; text-decoration: none;">
+              <a href="cam-nang-chi-tiet.html?id=${item.id}" style="color: inherit; text-decoration: none;">
                 ${item.title}
               </a>
             </h3>
             <p class="news-summary">${item.description}</p>
-            <a href="chi-tiet-tin-tuc.html?id=${item.id}" class="news-link">Xem chi tiết →</a>
+            <a href="cam-nang-chi-tiet.html?id=${item.id}" class="news-link">Xem chi tiết →</a>
           </div>
         </article>
       `,
@@ -161,7 +161,7 @@
                             <li class="related-item">
                                 <img src="${item.img}" alt="${item.title}" class="related-thumb">
                                 <div class="related-title">
-                                    <a href="chi-tiet-tin-tuc.html?id=${item.id}">${item.title}</a>
+                                    <a href="cam-nang-chi-tiet.html?id=${item.id}">${item.title}</a>
                                     <span class="related-date">${item.date}</span>
                                 </div>
                             </li>
@@ -205,13 +205,13 @@
                   .map(
                     (item) => `
                     <div class="bg-white border border-slate-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-300 flex flex-col">
-                        <a href="chi-tiet-tin-tuc.html?id=${item.id}" class="block h-48 overflow-hidden relative group">
+                        <a href="cam-nang-chi-tiet.html?id=${item.id}" class="block h-48 overflow-hidden relative group">
                             <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
                         </a>
                         <div class="p-4 flex flex-col flex-grow">
                             <div class="text-xs text-slate-500 mb-2">📅 ${item.date}</div>
                             <h4 class="font-bold text-slate-800 text-base mb-3 line-clamp-2 hover:text-primary transition-colors flex-grow">
-                                <a href="chi-tiet-tin-tuc.html?id=${item.id}">${item.title}</a>
+                                <a href="cam-nang-chi-tiet.html?id=${item.id}">${item.title}</a>
                             </h4>
                         </div>
                     </div>
@@ -229,7 +229,7 @@
           <div class="article-not-found">
             <h2>Không tìm thấy bài viết</h2>
             <p>Nội dung bạn đang tìm có thể đã bị thay đổi hoặc không còn tồn tại.</p>
-            <a href="tin-tuc.html" class="btn-primary">Quay lại trang tin tức</a>
+            <a href="cam-nang.html" class="btn-primary">Quay lại trang cẩm nang</a>
           </div>`;
         return;
       }
@@ -261,7 +261,7 @@
       if (canonicalLink) {
         // Tạo URL tuyệt đối dựa trên vị trí trang hiện tại để đảm bảo tính di động
         const absoluteUrl = new URL(
-          `chi-tiet-tin-tuc.html?id=${article.id}`,
+          `cam-nang-chi-tiet.html?id=${article.id}`,
           window.location.href,
         ).href;
         canonicalLink.setAttribute("href", absoluteUrl);
@@ -295,7 +295,7 @@
       const html = `
         <div class="article-detail-shell">
           <!-- Back button replacement for Breadcrumb -->
-          <a href="tin-tuc.html" class="inline-flex items-center text-sm text-slate-500 hover:text-primary mb-6 transition-colors group">
+          <a href="cam-nang.html" class="inline-flex items-center text-sm text-slate-500 hover:text-primary mb-6 transition-colors group">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -308,7 +308,7 @@
                     <header class="article-hero">
                         <img src="${article.img}" alt="${article.title}" class="article-hero-image">
                         <div class="article-hero-content">
-                            <span class="article-category-badge">${article.category || "Tin tức"}</span>
+                            <span class="article-category-badge">${article.category || "Cẩm nang"}</span>
                             <h1 class="article-title">${article.title}</h1>
                             <p class="article-summary">${article.description || ""}</p>
                             <div class="article-meta-panel">
@@ -323,9 +323,9 @@
                         </div>
 
                         <div class="article-footer-nav">
-                            <a href="tin-tuc.html" class="back-link">
+                            <a href="cam-nang.html" class="back-link">
                                 <span aria-hidden="true">←</span>
-                                <span>Quay lại danh sách tin tức</span>
+                                <span>Quay lại danh sách cẩm nang</span>
                             </a>
                         </div>
                     </div>
@@ -350,7 +350,7 @@
    * Quyết định khi nào và dữ liệu nào sẽ được hiển thị.
    */
   function initNewsModule() {
-    // Điều hướng cho trang danh sách tin tức
+    // Điều hướng cho trang danh sách cẩm nang
     const listContainer = document.getElementById("news-list-container");
     const detailContainer = document.getElementById("news-detail-container");
 

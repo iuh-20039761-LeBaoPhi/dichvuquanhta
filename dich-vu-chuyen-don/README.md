@@ -42,12 +42,12 @@ Vanchuyen/
         │   ├── shared-modals.js        # Modal đặt dịch vụ & tra cứu đơn
         │   ├── main.js                 # Khởi tạo chung, load modules
         │   ├── data/
-        │   │   └── news-data.json      # Dữ liệu cho trang tin tức
+        │   │   └── news-data.json      # Dữ liệu cho trang cẩm nang
         │   └── modules/                # Các module chức năng
         │       ├── main-landing.js     # Logic trang chủ
         │       ├── main-navigation.js  # Navigation & scroll behavior
         │       ├── main-order.js       # Logic tính phí & đặt đơn hàng
-        │       └── main-news.js        # Logic trang tin tức
+        │       └── main-news.js        # Logic trang cẩm nang
         ├── images/                     # Hình ảnh hero, dịch vụ, nhân sự
         └── partials/
             └── shared-modals.html      # Template HTML cho các modal
@@ -74,6 +74,8 @@ Vanchuyen/
 | `chuyen-van-phong.html` | Dịch vụ chuyển văn phòng: 6 hạng mục, lưu ý về IT & tầng cao |
 | `chuyen-kho-bai.html` | Dịch vụ chuyển kho bãi: 6 hạng mục, lưu ý xe nâng & kiểm kê |
 | `chinh-sach-va-dieu-khoan.html` | Chính sách dịch vụ, điều khoản sử dụng |
+| `public/cam-nang.html` | Trang cẩm nang: danh sách bài viết, bộ lọc, phân trang |
+| `public/cam-nang-chi-tiet.html` | Trang chi tiết cẩm nang |
 
 ---
 
