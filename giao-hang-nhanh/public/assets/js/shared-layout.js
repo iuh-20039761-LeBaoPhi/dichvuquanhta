@@ -62,17 +62,17 @@
       terms: `${projectBase}dieu-khoan-su-dung.html`,
       articles: `${projectBase}cam-nang.html`,
 
-      "svc-giao-hang-nhanh": `${parentBase}giao-hang-nhanh/`,
+      "svc-giao-hang-nhanh": `${projectBase}dich-vu-giao-hang.html`,
       "svc-dich-vu-chuyen-don": `${parentBase}dich-vu-chuyen-don/`,
-      "svc-lau-don-ve-sinh": `${parentBase}dich-vu-don-ve-sinh/demo/`,
-      "svc-cham-soc-me-be": `${parentBase}cham-soc-me-va-be/`,
-      "svc-cham-soc-vuon": `${parentBase}cham-soc-vuon-nha/`,
-      "svc-giat-ui": `${parentBase}giat-ui-nhanh/`,
-      "svc-tho-nha": `${parentBase}tho-nha/`,
-      "svc-cham-soc-nguoi-gia": `${parentBase}cham-soc-nguoi-gia/`,
-      "svc-cham-soc-nguoi-benh": `${parentBase}cham-soc-nguoi-benh/`,
-      "svc-thue-xe": `${parentBase}thue-xe/`,
-      "svc-sua-xe": `${parentBase}sua-xe-luu-dong/`,
+      "svc-lau-don-ve-sinh": `${parentBase}dich-vu-don-ve-sinh/demo/services.html`,
+      "svc-cham-soc-me-be": `${parentBase}cham-soc-me-va-be/dich-vu-cham-soc-me-be.html`,
+      "svc-cham-soc-vuon": `${parentBase}cham-soc-vuon-nha/dichvu.html`,
+      "svc-giat-ui": `${parentBase}giat-ui-nhanh/dich-vu.html`,
+      "svc-tho-nha": `${parentBase}tho-nha/pages/public/dich-vu.html`,
+      "svc-cham-soc-nguoi-gia": `${parentBase}cham-soc-nguoi-gia/dich-vu-cham-soc-nguoi-gia.html`,
+      "svc-cham-soc-nguoi-benh": `${parentBase}cham-soc-nguoi-benh/dich-vu-cham-soc-nguoi-benh.html`,
+      "svc-thue-xe": `${parentBase}thue-xe/views/pages/public/dich-vu.html`,
+      "svc-sua-xe": `${parentBase}sua-xe-luu-dong/dich-vu.html`,
     };
   }
 
