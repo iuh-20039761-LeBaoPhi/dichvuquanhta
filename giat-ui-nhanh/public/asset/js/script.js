@@ -3,20 +3,25 @@ const navbar = document.getElementById("navbar");
 const menuToggle = document.getElementById("menuToggle");
 const navMenu = document.getElementById("navMenu");
 const navLinks = document.querySelectorAll(".nav-link");
+const scrollToTopBtn = document.getElementById("scrollToTop");
 
 // Navbar scroll effect
 window.addEventListener("scroll", function () {
-  if (window.pageYOffset > 50) {
-    navbar.classList.add("scrolled");
-  } else {
-    navbar.classList.remove("scrolled");
+  if (navbar) {
+    if (window.pageYOffset > 50) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");
+    }
   }
 
   // Scroll to top button
-  if (window.pageYOffset > 300) {
-    scrollToTopBtn.classList.add("visible");
-  } else {
-    scrollToTopBtn.classList.remove("visible");
+  if (scrollToTopBtn) {
+    if (window.pageYOffset > 300) {
+      scrollToTopBtn.classList.add("visible");
+    } else {
+      scrollToTopBtn.classList.remove("visible");
+    }
   }
 
   // if (window.pageYOffset > 300) {
@@ -27,28 +32,32 @@ window.addEventListener("scroll", function () {
 });
 
 // Mobile menu toggle
-menuToggle.addEventListener("click", function () {
-  menuToggle.classList.toggle("active");
-  navMenu.classList.toggle("active");
-});
+if (menuToggle && navMenu) {
+  menuToggle.addEventListener("click", function () {
+    menuToggle.classList.toggle("active");
+    navMenu.classList.toggle("active");
+  });
+}
 
 // Close menu when clicking on a link
 document.querySelectorAll(".nav-link").forEach((link) => {
   link.addEventListener("click", function () {
-    menuToggle.classList.remove("active");
-    navMenu.classList.remove("active");
+    if (menuToggle && navMenu) {
+      menuToggle.classList.remove("active");
+      navMenu.classList.remove("active");
+    }
   });
 });
 
 // Scroll to Top Button
-const scrollToTopBtn = document.getElementById("scrollToTop");
-
-scrollToTopBtn.addEventListener("click", function () {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
+if (scrollToTopBtn) {
+  scrollToTopBtn.addEventListener("click", function () {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   });
-});
+}
 
 // const backToHomeBtn = document.getElementById("backToHome");
 
@@ -110,67 +119,3 @@ navLinks.forEach((link) => {
     link.classList.add("active");
   });
 });
-//choose service button in pricing section
-$(document).on("click", ".choose-service", function () {
-  const card = $(this).closest(".pricing-card");
-
-  // Lấy tên gói
-  const serviceName = card.find("h3").text().trim();
-
-  // Lấy giá
-  const price = card.find(".price-combo").data("price");
-
-  // chọn đúng option
-  $("#service option").each(function () {
-    if ($(this).text().trim() === serviceName) {
-      $(this).prop("selected", true);
-    }
-  });
-
-  // cập nhật select
-  $("#service").trigger("change");
-
-  // điền giá
-  $("#price").val(price);
-});
-$("#service").on("change", function () {
-  const selectedOption = $(this).find("option:selected");
-  const price = selectedOption.data("price");
-
-  if (price) {
-    $("#price").val(price);
-  } else {
-    $("#price").val("");
-  }
-});
-
-// $(document).on("click", ".booking-service", function () {
-//   const card = $(this).closest(".service-card");
-
-//   // Lấy tên gói
-//   const serviceName = card.find("h3").text().trim();
-
-//   // chọn đúng option
-//   $("#serviceContact option").each(function () {
-//     if ($(this).text().trim() === serviceName) {
-//       $(this).prop("selected", true);
-//     }
-//   });
-
-//   // cập nhật select
-//   $("#serviceContact").trigger("change");
-// });
-// Update price based on selected service in contact form
-// const serviceSelect = document.querySelector(".service-contact");
-// const priceInput = document.getElementById("price-contact");
-
-// serviceSelect.addEventListener("change", function () {
-//   const selectedOption = this.options[this.selectedIndex];
-//   const price = selectedOption.getAttribute("data-price");
-
-//   if (price) {
-//     priceInput.value = price;
-//   } else {
-//     priceInput.value = "";
-//   }
-// });

@@ -262,6 +262,13 @@ table th {
     overflow-x: auto;
     white-space: nowrap;
   }
+  .hero .hero-text h1 {
+    font-size: 1.45rem;
+    line-height: 1.35;
+  }
+  .hero .hero-text h1 span {
+    font-size: 0.82rem;
+  }
 }
 /* Pagination Styles */
 .pagination .page-link {
@@ -289,6 +296,7 @@ table th {
   background: #e3f2fd;
   color: #1565c0;
 } /* Responsive */
+
 @media (max-width: 768px) {
   .blog-container {
     flex-direction: column;
