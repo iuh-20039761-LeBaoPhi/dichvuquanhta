@@ -559,9 +559,43 @@ body {
     filter: none;
 }
 
-#bookingModal .booking-modal-body {
-    padding: 1rem;
+.booking-modal-body {
+    padding: 1.2rem 5px;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+}
+
+/* ===== BOOKING FORM SECTIONS ===== */
+.bk-tx-section {
+    background: #fff;
+    border: 1.5px solid rgba(14,165,233,0.18);
+    border-radius: 14px;
+    padding: 16px 14px 12px;
+    margin-bottom: 12px;
+}
+.bk-tx-section-title {
+    color: var(--color-primary);
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.bk-tx-section .form-control {
+    background-color: rgba(14,165,233,0.05);
+    border-color: rgba(14,165,233,0.18);
+}
+.bk-tx-section .form-control:focus {
+    background-color: #fff;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(14,165,233,0.12);
+}
+.bk-tx-section .form-label {
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.875rem;
+    margin-bottom: 6px;
 }
 
 #bookingModal .booking-form .form-label {
@@ -703,6 +737,12 @@ body {
 }
 .tx-media-preview-grid:empty::before {
     content: 'Chưa có ảnh / video';
+}
+.tx-media-preview-grid.photo-grid:empty::before {
+    content: 'Chưa có ảnh';
+}
+.tx-media-preview-grid.video-grid:empty::before {
+    content: 'Chưa có video';
     font-size: 0.8rem;
     color: #94a3b8;
 }
@@ -909,8 +949,8 @@ header.sticky-top {
         height: 250px;
     }
 
-    #bookingModal .booking-modal-body {
-        padding: 0.9rem;
+    .booking-modal-body {
+        padding: 0.9rem 5px;
     }
 
     #bookingModal .booking-form-grid {

@@ -14,6 +14,73 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    .sc-search-dropdown {
+      position: relative;
+      width: 100%;
+    }
+    .sc-search-dropdown-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      color: #212529;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s;
+    }
+    .sc-search-dropdown-btn:focus {
+      outline: none;
+      border-color: var(--color-primary, #3b82f6);
+      box-shadow: 0 0 0 0.2rem rgba(59,130,246,.25);
+    }
+    .sc-search-dropdown-arrow {
+      font-size: 0.75rem;
+      color: #6c757d;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .sc-search-dropdown.open .sc-search-dropdown-arrow {
+      transform: rotate(180deg);
+    }
+    .sc-search-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 0;
+      width: 100%;
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 0.375rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+      list-style: none;
+      margin: 0;
+      padding: 0.25rem 0;
+      z-index: 1050;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .sc-search-dropdown.open .sc-search-dropdown-menu {
+      display: block;
+    }
+    .sc-search-dropdown-menu li {
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      color: #212529;
+      font-size: 0.95rem;
+      transition: background 0.15s;
+    }
+    .sc-search-dropdown-menu li:hover,
+    .sc-search-dropdown-menu li.active {
+      background: #f0f6ff;
+      color: var(--color-primary, #3b82f6);
+    }
+  </style>
 </head>
 <body>
 <script src="assets/js/static-data.js"></script>
@@ -137,74 +204,93 @@ loadHeader();
             <div id="bookingAlert"></div>
             <div id="bookingAuthBanner" class="mb-3"></div>
             <form id="bookingFormFull" class="booking-form">
-              <div class="row g-3 booking-form-grid">
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Họ và tên *</label>
-                  <input type="text" class="form-control" name="customer_name" required>
-                </div>
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Số điện thoại *</label>
-                  <input type="tel" class="form-control" name="customer_phone" required
-                         pattern="^0[3-9][0-9]{8}$"
-                         title="Số điện thoại VN hợp lệ gồm 10 chữ số"
-                         placeholder="0901234567">
-                  <div class="invalid-feedback">Số điện thoại phải gồm 10 chữ số, bắt đầu bằng 03x / 05x / 07x / 08x / 09x</div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Email *</label>
-                  <input type="email" class="form-control" name="customer_email" required placeholder="example@email.com">
-                  <div class="invalid-feedback">Email không hợp lệ</div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <label class="form-label">CMND/CCCD</label>
-                  <input type="text" class="form-control" name="id_number"
-                         pattern="^[0-9]{9}$|^[0-9]{12}$"
-                         placeholder="9 hoặc 12 chữ số" maxlength="12">
-                  <div class="invalid-feedback">CMND gồm 9 số hoặc CCCD gồm 12 số</div>
-                </div>
-                <div class="col-md-12">
-                  <label class="form-label">Địa chỉ *</label>
-                  <textarea class="form-control" id="customerAddress" name="customer_address" rows="2" required
-                            placeholder="Số nhà, đường, phường, quận..."></textarea>
-                  <div class="mt-2 booking-map-actions">
-                    <button type="button" class="btn-map-picker booking-touch-btn" id="mapBtnAddr" onclick="CarMapPicker.toggle('addr')">
-                      <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
-                    </button>
-                    <button type="button" class="btn-map-picker btn-map-gps booking-touch-btn" onclick="CarMapPicker.gps('addr')">
-                      <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
-                    </button>
+
+              <!-- SECTION 1: Thông tin cá nhân -->
+              <div class="bk-tx-section">
+                <div class="bk-tx-section-title"><i class="fas fa-user"></i> Thông tin cá nhân</div>
+                <div class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Họ và tên *</label>
+                    <input type="text" class="form-control" name="customer_name" required>
                   </div>
-                  <div id="mapBoxAddr" class="map-picker-box" style="display:none; margin-top:10px;">
-                    <div id="mapElAddr" class="map-el"></div>
-                    <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền</p>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Số điện thoại *</label>
+                    <input type="tel" class="form-control" name="customer_phone" required
+                           pattern="^0[3-9][0-9]{8}$"
+                           title="Số điện thoại VN hợp lệ gồm 10 chữ số">
+                    <div class="invalid-feedback">Số điện thoại phải gồm 10 chữ số, bắt đầu bằng 03x / 05x / 07x / 08x / 09x</div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-control" name="customer_email" required>
+                    <div class="invalid-feedback">Email không hợp lệ</div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">CMND/CCCD</label>
+                    <input type="text" class="form-control" name="id_number"
+                           pattern="^[0-9]{9}$|^[0-9]{12}$"
+                           maxlength="12">
+                    <div class="invalid-feedback">CMND gồm 9 số hoặc CCCD gồm 12 số</div>
                   </div>
                 </div>
-                <div class="col-md-12">
+              </div>
+
+              <!-- SECTION 2: Địa chỉ -->
+              <div class="bk-tx-section">
+                <div class="bk-tx-section-title"><i class="fas fa-map-marker-alt"></i> Địa chỉ</div>
+                <label class="form-label">Địa chỉ *</label>
+                <textarea class="form-control" id="customerAddress" name="customer_address" rows="2" required></textarea>
+                <div class="mt-2 booking-map-actions">
+                  <button type="button" class="btn-map-picker booking-touch-btn" id="mapBtnAddr" onclick="CarMapPicker.toggle('addr')">
+                    <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                  </button>
+                  <button type="button" class="btn-map-picker btn-map-gps booking-touch-btn" onclick="CarMapPicker.gps('addr')">
+                    <i class="fas fa-location-arrow me-1"></i> Vị trí của tôi
+                  </button>
+                </div>
+                <div id="mapBoxAddr" class="map-picker-box" style="display:none; margin-top:10px;">
+                  <div id="mapElAddr" class="map-el"></div>
+                  <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền</p>
+                </div>
+              </div>
+
+              <!-- SECTION 3: Dịch vụ đi kèm -->
+              <div class="bk-tx-section">
+                <div class="bk-tx-section-title"><i class="fas fa-concierge-bell"></i> Dịch vụ đi kèm <small class="text-muted fw-normal">(không bắt buộc)</small></div>
+                <p class="text-muted small mb-2">Nhấn vào toàn bộ thẻ để chọn dịch vụ phù hợp.</p>
+                <div class="row g-2 addon-service-grid" id="addonServiceList">
+                  <!-- Được inject động bởi JS -->
+                </div>
+              </div>
+
+              <!-- SECTION 4: Ghi chú & Đính kèm -->
+              <div class="bk-tx-section">
+                <div class="bk-tx-section-title"><i class="fas fa-comment-dots"></i> Ghi chú & Đính kèm <small class="text-muted fw-normal">(tùy chọn)</small></div>
+                <div class="mb-3">
                   <label class="form-label">Ghi chú</label>
                   <textarea class="form-control" name="notes" rows="2"></textarea>
                 </div>
-                <!-- Đính kèm hình ảnh / video -->
-                <div class="col-md-12">
-                  <label class="form-label">Đính kèm hình ảnh / video <small class="text-muted">(tùy chọn)</small></label>
-                  <div class="tx-capture-btns mb-2">
-                    <button type="button" id="txPhotoCaptureBtn" class="tx-capture-photo booking-touch-btn">
-                      <i class="fas fa-camera"></i> Chụp hình
-                    </button>
-                    <button type="button" id="txVideoCaptureBtn" class="tx-capture-video booking-touch-btn">
-                      <i class="fas fa-video"></i> Quay video
-                    </button>
-                  </div>
-                  <input type="file" id="txMediaPhotoInput" accept="image/*" multiple style="display:none">
-                  <input type="file" id="txMediaVideoInput" accept="video/*" style="display:none">
-                  <div class="tx-media-preview-box">
-                    <div id="txMediaPreviewContainer" class="tx-media-preview-grid"></div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <label class="form-label fw-semibold">Dịch vụ đi kèm <span class="text-muted fw-normal">(không bắt buộc)</span></label>
-                  <p class="text-muted small mb-2">Nhấn vào toàn bộ thẻ để chọn dịch vụ phù hợp.</p>
-                  <div class="row g-2 addon-service-grid" id="addonServiceList">
-                    <!-- Được inject động bởi JS -->
+                <div>
+                  <label class="form-label">Đính kèm hình ảnh / video</label>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <button type="button" id="txPhotoCaptureBtn" class="tx-capture-photo booking-touch-btn w-100">
+                        <i class="fas fa-camera"></i> Chụp hình
+                      </button>
+                      <input type="file" id="txMediaPhotoInput" accept="image/*" multiple style="display:none">
+                      <div class="tx-media-preview-box mt-2">
+                        <div id="txMediaPhotoPreviewContainer" class="tx-media-preview-grid photo-grid"></div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <button type="button" id="txVideoCaptureBtn" class="tx-capture-video booking-touch-btn w-100">
+                        <i class="fas fa-video"></i> Quay video
+                      </button>
+                      <input type="file" id="txMediaVideoInput" accept="video/*" style="display:none">
+                      <div class="tx-media-preview-box mt-2">
+                        <div id="txMediaVideoPreviewContainer" class="tx-media-preview-grid video-grid"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -324,18 +410,19 @@ loadHeader();
     const videoInput = document.getElementById('txMediaVideoInput');
     const photoBtn   = document.getElementById('txPhotoCaptureBtn');
     const videoBtn   = document.getElementById('txVideoCaptureBtn');
-    const previewBox = document.getElementById('txMediaPreviewContainer');
+    const photoPreview = document.getElementById('txMediaPhotoPreviewContainer');
+    const videoPreview = document.getElementById('txMediaVideoPreviewContainer');
     if (photoBtn) photoBtn.addEventListener('click', () => photoInput && photoInput.click());
     if (videoBtn) videoBtn.addEventListener('click', () => videoInput && videoInput.click());
     if (photoInput) photoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addMediaPreview(f));
+        Array.from(this.files).forEach(f => addMediaPreview(f, photoPreview));
         this.value = '';
     });
     if (videoInput) videoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addMediaPreview(f));
+        Array.from(this.files).forEach(f => addMediaPreview(f, videoPreview));
         this.value = '';
     });
-    function addMediaPreview(file) {
+    function addMediaPreview(file, container) {
         const id = Date.now() + Math.random();
         _standaloneMediaFiles.push({ id, file });
         const wrap = document.createElement('div');
@@ -357,7 +444,7 @@ loadHeader();
             wrap.appendChild(icon);
         }
         wrap.appendChild(removeBtn);
-        if (previewBox) previewBox.appendChild(wrap);
+        if (container) container.appendChild(wrap);
     }
 
     // ===== Price calc for standalone date inputs =====
@@ -530,35 +617,128 @@ loadHeader();
         const uniqueCarTypes = [...new Set(carTypes.map(ct => ct.car_type).filter(Boolean))].sort();
         const uniqueSeats    = [...new Set(carTypes.map(ct => String(ct.seats)).filter(Boolean))].sort((a,b) => Number(a)-Number(b));
         const PRICE_RANGES   = [
-            { label: 'Dưới 500k',       min: 0,      max: 500000 },
-            { label: '500k – 800k',     min: 500000, max: 800000 },
-            { label: '800k – 1.2 triệu',min: 800000, max: 1200000 },
-            { label: 'Trên 1.2 triệu',  min: 1200000,max: Infinity },
+          { label: 'Dưới 500.000đ',          min: 0,       max: 500000 },
+          { label: '500.000 – 1.000.000đ',   min: 500000,  max: 1000000 },
+          { label: 'Trên 1.000.000đ',        min: 1000000, max: Infinity },
         ];
 
+        function initStandaloneSearchDropdown(wrapId, inputId) {
+          const wrap = document.getElementById(wrapId);
+          const input = document.getElementById(inputId);
+          if (!wrap || !input || wrap.dataset.bound === '1') return;
+          const btn = wrap.querySelector('.sc-search-dropdown-btn');
+          const label = wrap.querySelector('.sc-search-dropdown-label');
+          const menu = wrap.querySelector('.sc-search-dropdown-menu');
+          const items = menu ? menu.querySelectorAll('li') : [];
+          if (!btn || !label || !menu || !items.length) return;
+
+          btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            document.querySelectorAll('.sc-search-dropdown.open').forEach(function (d) {
+              if (d !== wrap) {
+                d.classList.remove('open');
+                d.querySelector('.sc-search-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+              }
+            });
+            const isOpen = wrap.classList.toggle('open');
+            btn.setAttribute('aria-expanded', String(isOpen));
+          });
+
+          items.forEach(function (li) {
+            li.addEventListener('click', function () {
+              items.forEach(function (x) { x.classList.remove('active'); });
+              li.classList.add('active');
+              label.textContent = li.textContent;
+              input.value = li.dataset.value || '';
+              wrap.classList.remove('open');
+              btn.setAttribute('aria-expanded', 'false');
+              window.standaloneApplyFilter?.();
+            });
+          });
+
+          wrap.dataset.bound = '1';
+        }
+
+        function syncStandaloneDropdownValue(wrapId, inputId, value, fallbackLabel) {
+          const wrap = document.getElementById(wrapId);
+          const input = document.getElementById(inputId);
+          if (!wrap || !input) return;
+          const label = wrap.querySelector('.sc-search-dropdown-label');
+          const items = wrap.querySelectorAll('.sc-search-dropdown-menu li');
+          let matched = null;
+          items.forEach(function (li) {
+            if ((li.dataset.value || '') === (value || '')) matched = li;
+            li.classList.remove('active');
+          });
+          if (matched) {
+            matched.classList.add('active');
+            input.value = matched.dataset.value || '';
+            if (label) label.textContent = matched.textContent;
+          } else {
+            input.value = value || '';
+            if (label) label.textContent = fallbackLabel;
+          }
+        }
+
+        if (!window.__standaloneFilterDropdownDocBound) {
+          document.addEventListener('click', function () {
+            document.querySelectorAll('.sc-search-dropdown.open').forEach(function (d) {
+              d.classList.remove('open');
+              d.querySelector('.sc-search-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+            });
+          });
+          window.__standaloneFilterDropdownDocBound = true;
+        }
+
         function buildFilterHTML() {
-            const typeOpts = uniqueCarTypes.map(t =>
-                `<option value="${t}">${t}</option>`).join('');
-            const seatsOpts = uniqueSeats.map(s =>
-                `<option value="${s}">${s} chỗ</option>`).join('');
-            const priceOpts = PRICE_RANGES.map((r,i) =>
-                `<option value="${i}">${r.label}</option>`).join('');
+          const typeOpts = uniqueCarTypes.map(t => `<li data-value="${t}">${t}</li>`).join('');
+          const seatsOpts = uniqueSeats.map(s => `<li data-value="${s}">${s} chỗ</li>`).join('');
+          const priceOpts = PRICE_RANGES.map((r, i) => `<li data-value="${i}">${r.label}</li>`).join('');
             return `
             <div class="row g-2 mb-3">
-                <div class="col-4">
-                    <select class="form-select form-select-sm" id="scFilterType" onchange="standaloneApplyFilter()">
-                        <option value="">Loại xe</option>${typeOpts}
-                    </select>
+            <div class="col-12 col-md-4">
+              <label class="form-label small fw-medium mb-1">Hãng xe</label>
+              <div class="sc-search-dropdown" id="scDropType">
+                <button type="button" class="sc-search-dropdown-btn" aria-expanded="false">
+                  <span class="sc-search-dropdown-label">Tất cả hãng</span>
+                  <i class="fas fa-chevron-down sc-search-dropdown-arrow"></i>
+                </button>
+                <ul class="sc-search-dropdown-menu">
+                  <li data-value="" class="active">Tất cả hãng</li>
+                  ${typeOpts}
+                </ul>
+                <input type="hidden" id="scFilterType" value="">
+              </div>
                 </div>
-                <div class="col-4">
-                    <select class="form-select form-select-sm" id="scFilterSeats" onchange="standaloneApplyFilter()">
-                        <option value="">Số chỗ</option>${seatsOpts}
-                    </select>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label small fw-medium mb-1">Số chỗ</label>
+              <div class="sc-search-dropdown" id="scDropSeats">
+                <button type="button" class="sc-search-dropdown-btn" aria-expanded="false">
+                  <span class="sc-search-dropdown-label">Tất cả</span>
+                  <i class="fas fa-chevron-down sc-search-dropdown-arrow"></i>
+                </button>
+                <ul class="sc-search-dropdown-menu">
+                  <li data-value="" class="active">Tất cả</li>
+                  ${seatsOpts}
+                </ul>
+                <input type="hidden" id="scFilterSeats" value="">
+              </div>
                 </div>
-                <div class="col-4">
-                    <select class="form-select form-select-sm" id="scFilterPrice" onchange="standaloneApplyFilter()">
-                        <option value="">Khoảng giá</option>${priceOpts}
-                    </select>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label small fw-medium mb-1">Khoảng giá</label>
+              <div class="sc-search-dropdown" id="scDropPrice">
+                <button type="button" class="sc-search-dropdown-btn" aria-expanded="false">
+                  <span class="sc-search-dropdown-label">Tất cả mức giá</span>
+                  <i class="fas fa-chevron-down sc-search-dropdown-arrow"></i>
+                </button>
+                <ul class="sc-search-dropdown-menu">
+                  <li data-value="" class="active">Tất cả mức giá</li>
+                  ${priceOpts}
+                </ul>
+                <input type="hidden" id="scFilterPrice" value="">
+              </div>
                 </div>
             </div>`;
         }
@@ -632,10 +812,14 @@ loadHeader();
             if (!listEl.dataset.filterBuilt) {
                 listEl.innerHTML = buildFilterHTML() + '<div id="scCarGrid"></div>';
                 listEl.dataset.filterBuilt = '1';
-                // Restore filter selects nếu đang lọc
-                if (_carFilters.carType) document.getElementById('scFilterType').value  = _carFilters.carType;
-                if (_carFilters.seats)   document.getElementById('scFilterSeats').value = _carFilters.seats;
-                if (_carFilters.price !== '') document.getElementById('scFilterPrice').value = _carFilters.price;
+
+              initStandaloneSearchDropdown('scDropType', 'scFilterType');
+              initStandaloneSearchDropdown('scDropSeats', 'scFilterSeats');
+              initStandaloneSearchDropdown('scDropPrice', 'scFilterPrice');
+
+              syncStandaloneDropdownValue('scDropType', 'scFilterType', _carFilters.carType, 'Tất cả hãng');
+              syncStandaloneDropdownValue('scDropSeats', 'scFilterSeats', _carFilters.seats, 'Tất cả');
+              syncStandaloneDropdownValue('scDropPrice', 'scFilterPrice', _carFilters.price, 'Tất cả mức giá');
             }
 
             const gridEl = document.getElementById('scCarGrid');
@@ -843,7 +1027,7 @@ loadHeader();
                     if (result.success) {
                         showAlert(`<i class="fas fa-check-circle me-2"></i><strong>Đặt xe thành công!</strong><br>Mã đơn: <strong>#${result.booking_id}</strong> – Xe: <strong>${bookingData.car_name}</strong>.${addonLines}<br><strong>Tổng tiền: ${fmt(totalPrice)}đ</strong><br>Chúng tôi sẽ liên hệ xác nhận sớm nhất.`, 'success');
                         document.getElementById('bookingFormFull').reset();
-                        _standaloneMediaFiles = []; if (document.getElementById('txMediaPreviewContainer')) document.getElementById('txMediaPreviewContainer').innerHTML = '';
+                        _standaloneMediaFiles = []; ['txMediaPhotoPreviewContainer','txMediaVideoPreviewContainer'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
                     } else {
                         showAlert(`<i class="fas fa-times-circle me-2"></i><strong>Lỗi:</strong> ${result.message || 'Gửi đặt xe thất bại. Vui lòng thử lại!'}`, 'danger');
                     }

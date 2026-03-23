@@ -1,14 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FHV0Y0778D"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag("js", new Date());
-      gtag("config", "G-FHV0Y0778D");
-    </script>
+<script src="/ga.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="../../../">
@@ -60,7 +53,7 @@
         /* Article Hero */
         .art-hero {
             background: var(--grad);
-            padding-top: 80px;
+            padding-top: 56px;
             position: relative;
             overflow: hidden;
         }
@@ -72,7 +65,7 @@
         }
         .art-hero-inner {
             position: relative;
-            padding: 24px 0 36px;
+            padding: 28px 0 40px;
         }
         .art-hero-inner .breadcrumb-item a { color: rgba(255,255,255,.8); text-decoration:none; }
         .art-hero-inner .breadcrumb-item.active { color: #fff; }
@@ -315,7 +308,13 @@
         .not-found { text-align: center; padding: 70px 20px; }
         .not-found i { font-size: 3.5rem; color: #bae6fd; margin-bottom: 16px; }
 
+        @media (max-width: 768px) {
+            .art-hero { padding-top: 40px; }
+            .art-hero-inner { padding: 20px 0 30px; }
+        }
         @media (max-width: 576px) {
+            .art-hero { padding-top: 28px; }
+            .art-hero-inner { padding: 16px 0 24px; }
             .art-hero-title { font-size: 1.35rem; }
             .art-content-box { padding: 22px 16px; }
             .art-hero-img { height: 210px; }
