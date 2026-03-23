@@ -1,3 +1,163 @@
+const BOOKING_MODAL_SOURCE = "dat-dich-vu.html";
+const BOOKING_MODAL_STYLE_ID = "bookingModalInlineStyles";
+const BOOKING_MODAL_EMBED_FIX_STYLE_ID = "bookingModalEmbedFixStyles";
+let bookingModalLoadPromise = null;
+
+function injectBookingModalStyles(doc) {
+  if (document.getElementById(BOOKING_MODAL_STYLE_ID)) {
+    return;
+  }
+
+  const styleNodes = Array.from(doc.querySelectorAll("style")).filter((node) =>
+    /#bookingModal|#bookingConfirmModal/.test(node.textContent || ""),
+  );
+
+  if (!styleNodes.length) {
+    return;
+  }
+
+  const styleTag = document.createElement("style");
+  styleTag.id = BOOKING_MODAL_STYLE_ID;
+  styleTag.textContent = styleNodes
+    .map((node) => node.textContent || "")
+    .join("\n");
+
+  document.head.appendChild(styleTag);
+}
+
+function injectBookingModalEmbedFixStyles() {
+  if (document.getElementById(BOOKING_MODAL_EMBED_FIX_STYLE_ID)) {
+    return;
+  }
+
+  const styleTag = document.createElement("style");
+  styleTag.id = BOOKING_MODAL_EMBED_FIX_STYLE_ID;
+  styleTag.textContent = `
+    #modalContainer #bookingModal.modal {
+      display: none !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 2005 !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      background: transparent !important;
+    }
+
+    #modalContainer #bookingModal.modal.show {
+      display: block !important;
+    }
+
+    #modalContainer #bookingModal.fade {
+      opacity: 0 !important;
+    }
+
+    #modalContainer #bookingModal.fade.show {
+      opacity: 1 !important;
+    }
+  `;
+
+  document.head.appendChild(styleTag);
+}
+
+function extractBookingModalMarkup(rawHtml) {
+  const parser = new DOMParser();
+  const parsedDoc = parser.parseFromString(rawHtml, "text/html");
+
+  const bookingModal = parsedDoc.getElementById("bookingModal");
+  const bookingConfirmModal = parsedDoc.getElementById("bookingConfirmModal");
+
+  if (!bookingModal) {
+    return { html: rawHtml, doc: parsedDoc };
+  }
+
+  const html = [bookingModal.outerHTML, bookingConfirmModal?.outerHTML || ""]
+    .join("\n")
+    .trim();
+
+  return { html, doc: parsedDoc };
+}
+
+function ensureBookingModalLoaded(container = null) {
+  if (document.getElementById("bookingModal")) {
+    initBookingModal();
+    return Promise.resolve();
+  }
+
+  if (bookingModalLoadPromise) {
+    return bookingModalLoadPromise;
+  }
+
+  bookingModalLoadPromise = fetch(BOOKING_MODAL_SOURCE)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Không thể tải nội dung modal đặt dịch vụ");
+      }
+
+      return res.text();
+    })
+    .then((rawHtml) => {
+      const { html, doc } = extractBookingModalMarkup(rawHtml);
+      injectBookingModalStyles(doc);
+      injectBookingModalEmbedFixStyles();
+
+      const target =
+        container ||
+        document.getElementById("modalContainer") ||
+        document.body.appendChild(document.createElement("div"));
+
+      if (!target.id) {
+        target.id = "modalContainer";
+      }
+
+      target.innerHTML = html;
+      initBookingModal();
+    })
+    .catch((error) => {
+      bookingModalLoadPromise = null;
+      throw error;
+    });
+
+  return bookingModalLoadPromise;
+}
+
+window.BookingModalManager = window.BookingModalManager || {};
+window.BookingModalManager.mount = function (
+  containerSelector = "#modalContainer",
+) {
+  const container =
+    typeof containerSelector === "string"
+      ? document.querySelector(containerSelector)
+      : containerSelector;
+
+  return ensureBookingModalLoaded(container || null);
+};
+
+window.BookingModalManager.open = function (serviceId = null) {
+  return ensureBookingModalLoaded().then(() => {
+    const bookingModal = document.getElementById("bookingModal");
+    if (!bookingModal) return;
+
+    bootstrap.Modal.getOrCreateInstance(bookingModal).show();
+
+    if (serviceId != null) {
+      const serviceSelect = document.getElementById("serviceContact");
+      if (serviceSelect) {
+        const normalized = String(serviceId);
+        const hasOption = Array.from(serviceSelect.options).some(
+          (opt) => String(opt.value) === normalized,
+        );
+
+        if (hasOption) {
+          serviceSelect.value = normalized;
+          serviceSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        } else {
+          bookingModal.dataset.pendingServiceId = normalized;
+        }
+      }
+    }
+  });
+};
+
 const mapPicker = (() => {
   const HCM = [10.7769, 106.7009];
   let map = null;
@@ -150,13 +310,24 @@ const mapPicker = (() => {
         }
 
         addr.value = buildDetailedAddress(data.address, data.display_name);
+        addr.dataset.lat = String(lat);
+        addr.dataset.lng = String(lng);
+        addr.dataset.coordAddress = addr.value;
         if (addr.value) {
           marker.bindPopup(`<small>${addr.value}</small>`).openPopup();
         }
+
+        addr.dispatchEvent(new Event("input", { bubbles: true }));
+        addr.dispatchEvent(new Event("change", { bubbles: true }));
       })
       .catch(() => {
         addr.placeholder = "Số nhà, đường, phường/xã, quận/huyện...";
         addr.value = `Vĩ độ ${lat.toFixed(6)}, Kinh độ ${lng.toFixed(6)}`;
+        addr.dataset.lat = String(lat);
+        addr.dataset.lng = String(lng);
+        addr.dataset.coordAddress = addr.value;
+        addr.dispatchEvent(new Event("input", { bubbles: true }));
+        addr.dispatchEvent(new Event("change", { bubbles: true }));
       });
   }
 
@@ -251,23 +422,48 @@ const mapPicker = (() => {
 let pendingQuickServiceId = null;
 
 document.addEventListener("DOMContentLoaded", function () {
-  fetch("public/component/booking_modal.html")
-    .then((res) => res.text())
-    .then((data) => {
-      document.getElementById("modalContainer").innerHTML = data;
+  const modalContainer = document.getElementById("modalContainer");
+  const bookingModal = document.getElementById("bookingModal");
 
+  if (bookingModal) {
+    initBookingModal();
+    return;
+  }
+
+  if (modalContainer) {
+    ensureBookingModalLoaded(modalContainer).catch((err) => {
+      console.error(err);
       initBookingModal();
     });
+    return;
+  }
+
+  initBookingModal();
 });
 
 function initBookingModal() {
+  const bookingModal = document.getElementById("bookingModal");
+  if (bookingModal && bookingModal.dataset.bookingInitDone === "true") {
+    return;
+  }
+
+  if (bookingModal) {
+    bookingModal.dataset.bookingInitDone = "true";
+    if (bookingModal.dataset.pendingServiceId && !pendingQuickServiceId) {
+      pendingQuickServiceId = bookingModal.dataset.pendingServiceId;
+    }
+    if (bookingModal.dataset.pendingServiceId) {
+      delete bookingModal.dataset.pendingServiceId;
+    }
+  }
+
   const serviceSelect = document.getElementById("serviceContact");
   const transportOptionSelect = document.getElementById("transportOption");
   const workItemsList = document.getElementById("workItemsList");
   const chemicalsList = document.getElementById("chemicalsList");
   const workItemsGroup = workItemsList?.closest(".form-group");
   const chemicalsGroup = chemicalsList?.closest(".form-group");
-  const bookingModal = document.getElementById("bookingModal");
+  const bookingModalEl = document.getElementById("bookingModal");
 
   const kgBox = document.getElementById("kgBox");
   const pairBox = document.getElementById("pairBox");
@@ -275,23 +471,222 @@ function initBookingModal() {
   const kgInput = document.getElementById("kg");
   const pairInput = document.getElementById("pair");
   const quantityInput = document.getElementById("quantityContact");
+  const bookingForm = document.getElementById("contactForm");
 
   const priceInput = document.getElementById("priceContact");
   const shipInput = document.getElementById("ship");
   const shippingSurchargeInput = document.getElementById("shippingSurcharge");
   const totalInput = document.getElementById("total");
+  const addressInput = document.getElementById("addressInput");
 
   // ❗ nếu chưa load xong modal thì thoát
   if (!serviceSelect) return;
 
   let transportFee = 0;
   shipInput.value = transportFee.toLocaleString("vi-VN");
-  if (shippingSurchargeInput) {
+
+  function parseIntegerLike(value) {
+    const normalized = String(value == null ? "" : value).replace(/\D/g, "");
+    return Number(normalized || 0);
+  }
+
+  function setShippingSurchargeDisplay(value) {
+    const rawValue = Math.max(0, Math.round(Number(value) || 0));
+    if (!shippingSurchargeInput) return;
+
+    shippingSurchargeInput.type = "text";
+    shippingSurchargeInput.inputMode = "numeric";
     shippingSurchargeInput.readOnly = true;
-    shippingSurchargeInput.value = "0";
+    shippingSurchargeInput.dataset.rawValue = String(rawValue);
+    shippingSurchargeInput.value = rawValue.toLocaleString("vi-VN");
+  }
+
+  if (shippingSurchargeInput) {
+    setShippingSurchargeDisplay(0);
   }
 
   let services = [];
+  let providerLocation = null;
+  let latestDistanceKm = null;
+  let latestDistanceSource = null;
+  let transportCalcToken = 0;
+  let addressCalcTimer = null;
+
+  function ensureShippingDistanceNoteElement() {
+    if (!shippingSurchargeInput) return null;
+
+    let noteEl = document.getElementById("shippingDistanceNote");
+    if (noteEl) return noteEl;
+
+    noteEl = document.createElement("small");
+    noteEl.id = "shippingDistanceNote";
+    noteEl.className = "text-muted d-block mt-1";
+    noteEl.textContent = "";
+
+    shippingSurchargeInput.insertAdjacentElement("afterend", noteEl);
+    return noteEl;
+  }
+
+  const shippingDistanceNoteEl = ensureShippingDistanceNoteElement();
+
+  function setShippingDistanceDisplay(distanceKm, source = null) {
+    if (!shippingDistanceNoteEl) return;
+
+    if (!Number.isFinite(distanceKm) || distanceKm <= 0) {
+      shippingDistanceNoteEl.textContent = "";
+      return;
+    }
+
+    const suffix =
+      source === "fallback"
+        ? " (ước tính theo tọa độ)"
+        : " (quãng đường thực tế)";
+
+    shippingDistanceNoteEl.textContent = `Quãng đường: ${distanceKm.toFixed(1)} km${suffix}`;
+  }
+
+  function isValidCoordinate(value) {
+    return typeof value === "number" && Number.isFinite(value);
+  }
+
+  function haversineDistanceKm(from, to) {
+    const R = 6371;
+    const toRad = (deg) => (Number(deg) * Math.PI) / 180;
+    const dLat = toRad(to.lat - from.lat);
+    const dLng = toRad(to.lng - from.lng);
+    const lat1 = toRad(from.lat);
+    const lat2 = toRad(to.lat);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  function getCachedCustomerCoords() {
+    if (!addressInput) return null;
+
+    const currentAddress = String(addressInput.value || "").trim();
+    const coordAddress = String(addressInput.dataset.coordAddress || "").trim();
+    const lat = Number(addressInput.dataset.lat);
+    const lng = Number(addressInput.dataset.lng);
+
+    if (!currentAddress || !coordAddress || currentAddress !== coordAddress) {
+      return null;
+    }
+
+    if (!isValidCoordinate(lat) || !isValidCoordinate(lng)) {
+      return null;
+    }
+
+    return { lat, lng };
+  }
+
+  async function geocodeAddress(address) {
+    const endpoint = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=vn&q=${encodeURIComponent(address)}`;
+    const res = await fetch(endpoint, {
+      headers: { "Accept-Language": "vi" },
+    });
+
+    if (!res.ok) {
+      throw new Error("Không thể geocode địa chỉ khách hàng");
+    }
+
+    const data = await res.json();
+    const first = data && data[0];
+
+    if (!first) {
+      throw new Error("Không tìm thấy tọa độ từ địa chỉ đã nhập");
+    }
+
+    return {
+      lat: Number(first.lat),
+      lng: Number(first.lon),
+    };
+  }
+
+  async function getRoadDistanceKm(from, to) {
+    const endpoint = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=false&alternatives=false&steps=false`;
+    const res = await fetch(endpoint);
+
+    if (!res.ok) {
+      throw new Error("Không thể lấy quãng đường thực tế");
+    }
+
+    const data = await res.json();
+    const route = data?.routes?.[0];
+
+    if (!route || typeof route.distance !== "number") {
+      throw new Error("Không có dữ liệu tuyến đường");
+    }
+
+    return route.distance / 1000;
+  }
+
+  async function recalculateRoadDistance(force = false) {
+    const addressText = (addressInput?.value || "").trim();
+
+    if (!addressText) {
+      latestDistanceKm = null;
+      latestDistanceSource = null;
+      calculate();
+      return;
+    }
+
+    const token = ++transportCalcToken;
+
+    try {
+      if (
+        !providerLocation ||
+        !isValidCoordinate(providerLocation.lat) ||
+        !isValidCoordinate(providerLocation.lng)
+      ) {
+        throw new Error("Thiếu tọa độ nhà cung cấp");
+      }
+
+      const customerCoords =
+        getCachedCustomerCoords() || (await geocodeAddress(addressText));
+      let distanceKm;
+
+      try {
+        distanceKm = await getRoadDistanceKm(providerLocation, customerCoords);
+        latestDistanceSource = "road";
+      } catch (_routeError) {
+        distanceKm = haversineDistanceKm(providerLocation, customerCoords);
+        latestDistanceSource = "fallback";
+      }
+
+      if (token !== transportCalcToken && !force) {
+        return;
+      }
+
+      latestDistanceKm = distanceKm;
+    } catch (error) {
+      if (token !== transportCalcToken && !force) {
+        return;
+      }
+
+      latestDistanceKm = null;
+      latestDistanceSource = null;
+      console.error(error);
+    } finally {
+      if (token === transportCalcToken || force) {
+        calculate();
+      }
+    }
+  }
+
+  function scheduleRecalculateRoadDistance(delay = 700) {
+    if (addressCalcTimer) {
+      clearTimeout(addressCalcTimer);
+    }
+
+    addressCalcTimer = setTimeout(() => {
+      recalculateRoadDistance();
+    }, delay);
+  }
 
   function toggleServiceOptionGroups(visible) {
     if (workItemsGroup) {
@@ -366,7 +761,21 @@ function initBookingModal() {
   fetch("public/services.json")
     .then((res) => res.json())
     .then((data) => {
-      services = data.filter((s) => s.price_unit !== "combo");
+      const servicesData = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.services)
+          ? data.services
+          : [];
+
+      if (data && !Array.isArray(data)) {
+        providerLocation = {
+          lat: Number(data?.provider?.lat),
+          lng: Number(data?.provider?.lng),
+          address: data?.provider?.address || "",
+        };
+      }
+
+      services = servicesData.filter((s) => s.price_unit !== "combo");
 
       services.forEach((service) => {
         const option = document.createElement("option");
@@ -383,11 +792,13 @@ function initBookingModal() {
           pendingQuickServiceId = null;
         }
       }
+
+      recalculateRoadDistance(true);
     });
 
-  if (bookingModal && !bookingModal.dataset.quickServiceSyncLoaded) {
-    bookingModal.dataset.quickServiceSyncLoaded = "true";
-    bookingModal.addEventListener("shown.bs.modal", function () {
+  if (bookingModalEl && !bookingModalEl.dataset.quickServiceSyncLoaded) {
+    bookingModalEl.dataset.quickServiceSyncLoaded = "true";
+    bookingModalEl.addEventListener("shown.bs.modal", function () {
       if (!pendingQuickServiceId) return;
 
       if (applyQuickServiceSelection(pendingQuickServiceId)) {
@@ -417,8 +828,9 @@ function initBookingModal() {
       shipInput.value = "";
       totalInput.value = "";
       if (shippingSurchargeInput) {
-        shippingSurchargeInput.value = "0";
+        setShippingSurchargeDisplay(0);
       }
+      setShippingDistanceDisplay(null);
       if (quantityInput) quantityInput.value = "1";
       return;
     }
@@ -487,7 +899,7 @@ function initBookingModal() {
       shipInput.value = "";
       totalInput.value = "";
       if (shippingSurchargeInput) {
-        shippingSurchargeInput.value = "0";
+        setShippingSurchargeDisplay(0);
       }
       return;
     }
@@ -517,13 +929,24 @@ function initBookingModal() {
 
     const totalWeight =
       Number.isFinite(quantity) && quantity > 0 ? quantity : 0;
+    const selectedWorkItemCount = bookingForm
+      ? bookingForm.querySelectorAll('input[name="work_items"]:checked').length
+      : 0;
+    const workItemMultiplier =
+      selectedWorkItemCount > 0 ? selectedWorkItemCount : 1;
+
     const isKgUnit = kgBox.style.display === "block";
-    const serviceAmount = isKgUnit
+    const baseServiceAmount = isKgUnit
       ? price + Math.max(0, totalWeight - 1) * 10000
       : price * totalWeight;
+    const serviceAmount = baseServiceAmount * workItemMultiplier;
 
     priceInput.value = Math.round(serviceAmount).toLocaleString("vi-VN");
-    const distanceKm = 1;
+    const distanceKm =
+      Number.isFinite(latestDistanceKm) && latestDistanceKm > 0
+        ? latestDistanceKm
+        : 0;
+    setShippingDistanceDisplay(distanceKm, latestDistanceSource);
     const selectedTransportName = String(
       transportOptionSelect.options[transportOptionSelect.selectedIndex]
         ?.value || "",
@@ -534,12 +957,14 @@ function initBookingModal() {
       totalWeight >= 50 && selectedTransportName !== "tự lấy" ? 5000 : 0;
     const effectiveTransportFee = transportFee + extraTransportFee;
     const shippingSurcharge =
-      (distanceKm * effectiveTransportFee * (totalWeight / 20)) / 4;
+      distanceKm > 0
+        ? (distanceKm * effectiveTransportFee * (totalWeight / 20)) / 4
+        : 0;
     const normalizedShippingSurcharge = Math.round(shippingSurcharge);
 
     shipInput.value = effectiveTransportFee.toLocaleString("vi-VN");
     if (shippingSurchargeInput) {
-      shippingSurchargeInput.value = String(normalizedShippingSurcharge);
+      setShippingSurchargeDisplay(normalizedShippingSurcharge);
     }
 
     const total =
@@ -552,20 +977,33 @@ function initBookingModal() {
   kgInput.addEventListener("input", calculate);
   pairInput.addEventListener("input", calculate);
 
-  mapPickerInit();
-
-  const autoFillBtn = document.getElementById("autoFillBtn");
-  if (autoFillBtn) {
-    autoFillBtn.addEventListener("click", function () {
-      const customer = this.dataset.customer;
-      const phone = this.dataset.phone;
-      const address = this.dataset.address;
-
-      document.getElementById("nameCustomer").value = customer;
-      document.getElementById("phoneCustomer").value = phone;
-      document.getElementById("addressInput").value = address;
+  if (workItemsList && !workItemsList.dataset.priceSyncBound) {
+    workItemsList.dataset.priceSyncBound = "true";
+    workItemsList.addEventListener("change", function (event) {
+      if (event.target && event.target.name === "work_items") {
+        calculate();
+      }
     });
   }
+
+  if (addressInput) {
+    addressInput.addEventListener("input", function () {
+      if (addressInput.dataset.coordAddress !== (addressInput.value || "")) {
+        delete addressInput.dataset.lat;
+        delete addressInput.dataset.lng;
+        delete addressInput.dataset.coordAddress;
+      }
+      scheduleRecalculateRoadDistance();
+    });
+    addressInput.addEventListener("change", function () {
+      scheduleRecalculateRoadDistance(200);
+    });
+    addressInput.addEventListener("blur", function () {
+      scheduleRecalculateRoadDistance(0);
+    });
+  }
+
+  mapPickerInit();
 
   initBookingConfirmFlow();
 }
@@ -575,9 +1013,37 @@ function initBookingConfirmFlow() {
   const bookingModalEl = document.getElementById("bookingModal");
   const confirmModalEl = document.getElementById("bookingConfirmModal");
 
+  function parseIntegerLike(value) {
+    const normalized = String(value == null ? "" : value).replace(/\D/g, "");
+    return Number(normalized || 0);
+  }
+
   if (!form || !bookingModalEl || !confirmModalEl) return;
   if (form.dataset.confirmFlowBound === "true") return;
   form.dataset.confirmFlowBound = "true";
+  const isEmbeddedMode = Boolean(bookingModalEl.closest("#modalContainer"));
+
+  function showBookingStep() {
+    if (isEmbeddedMode) {
+      bootstrap.Modal.getOrCreateInstance(bookingModalEl).show();
+      return;
+    }
+
+    bookingModalEl.style.display = "block";
+    bookingModalEl.classList.add("show");
+    bookingModalEl.setAttribute("aria-hidden", "false");
+  }
+
+  function hideBookingStep() {
+    if (isEmbeddedMode) {
+      bootstrap.Modal.getOrCreateInstance(bookingModalEl).hide();
+      return;
+    }
+
+    bookingModalEl.style.display = "none";
+    bookingModalEl.classList.remove("show");
+    bookingModalEl.setAttribute("aria-hidden", "true");
+  }
 
   function normalizeValue(value) {
     if (value == null) return "-";
@@ -626,8 +1092,13 @@ function initBookingConfirmFlow() {
     data.quantity = quantity;
     data.price = document.getElementById("priceContact")?.value || "";
     data.ship = document.getElementById("ship")?.value || "";
-    data.shipping_surcharge =
-      document.getElementById("shippingSurcharge")?.value || "0";
+    const shippingSurchargeEl = document.getElementById("shippingSurcharge");
+    const rawShippingSurcharge = parseIntegerLike(
+      shippingSurchargeEl?.dataset.rawValue ||
+        shippingSurchargeEl?.value ||
+        "0",
+    );
+    data.shipping_surcharge = String(rawShippingSurcharge);
     data.total = document.getElementById("total")?.value || "";
     data.work_items = selectedWorkItems.join(", ");
     data.support_chemicals = selectedChemicals.join(", ");
@@ -643,9 +1114,7 @@ function initBookingConfirmFlow() {
         quantity: data.quantity,
         price: data.price,
         ship: data.ship,
-        shippingSurcharge: Number(data.shipping_surcharge || 0).toLocaleString(
-          "vi-VN",
-        ),
+        shippingSurcharge: rawShippingSurcharge.toLocaleString("vi-VN"),
         total: data.total,
         workItems: data.work_items,
         chemicals: data.support_chemicals,
@@ -683,13 +1152,13 @@ function initBookingConfirmFlow() {
     const { preview } = collectBookingData();
     renderConfirmModal(preview);
 
-    bootstrap.Modal.getOrCreateInstance(bookingModalEl).hide();
+    hideBookingStep();
     bootstrap.Modal.getOrCreateInstance(confirmModalEl).show();
   });
 
   function backToBooking() {
     bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
-    bootstrap.Modal.getOrCreateInstance(bookingModalEl).show();
+    showBookingStep();
   }
 
   const backBtn = document.getElementById("confirmBackBtn");
@@ -701,6 +1170,23 @@ function initBookingConfirmFlow() {
   }
   if (closeBtn) {
     closeBtn.addEventListener("click", backToBooking);
+  }
+
+  if (confirmBtn) {
+    confirmBtn.addEventListener("click", function () {
+      bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
+      hideBookingStep();
+
+      alert(
+        "Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
+      );
+
+      form.reset();
+
+      if (!isEmbeddedMode) {
+        showBookingStep();
+      }
+    });
   }
 }
 

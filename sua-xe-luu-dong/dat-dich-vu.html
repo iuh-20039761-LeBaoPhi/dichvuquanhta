@@ -308,6 +308,34 @@
           font-size: 0.9rem;
           white-space: normal;
         }
+
+        /* Standalone page should scroll as normal content, not modal overlay behavior. */
+        body.booking-standalone #bookingModal .modal-content {
+          min-height: auto;
+          max-height: none;
+          border-radius: 18px;
+        }
+
+        body.booking-standalone #bookingModal .modal-header {
+          position: static;
+        }
+
+        body.booking-standalone #bookingModal .modal-body {
+          overflow: visible;
+          max-height: none;
+          padding-bottom: 0.85rem;
+        }
+
+        body.booking-standalone #bookingModal .modal-dialog-scrollable .modal-body {
+          max-height: none;
+        }
+
+        body.booking-standalone #bookingModal .modal-footer {
+          position: static;
+          bottom: auto;
+          box-shadow: none;
+          padding: 0.75rem 0.85rem 0.85rem;
+        }
       }
     </style>
   </head>
@@ -466,6 +494,14 @@
                     <select class="form-select" id="itemSelect" required>
                       <option value="">Chọn mẫu xe</option>
                     </select>
+                    <div class="mt-2 d-none" id="customItemInputWrapper">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="customItemInput"
+                        placeholder="Nhập mẫu xe khác"
+                      />
+                    </div>
                   </div>
                   <div class="col-md-12">
                     <label class="form-label"
@@ -763,7 +799,7 @@
             <div class="d-flex align-items-center mb-3">
               <img
                 class="logo-icon"
-                src="public/asset/image/logo.png"
+                src="public/asset/image/logo-dich-vu-quanh-ta.png"
                 alt="logo dịch vụ quanh ta"
               />
               <h5 class="mb-0 ms-2">Sửa Xe Lưu Động</h5>

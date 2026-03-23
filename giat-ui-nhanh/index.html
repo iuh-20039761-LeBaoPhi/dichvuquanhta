@@ -11,7 +11,8 @@
       name="keywords"
       content="giặt ủi, dịch vụ giặt ủi, giặt ủi nhanh, giặt ủi sạch, giặt đồ, giặt sấy, vệ sinh giày, giặt ủi TP.HCM, giặt ủi tại nhà, giặt ủi chuyên nghiệp"
     />
-    <title>Giặt Ủi Sạch Sẽ - Dịch Vụ Giặt Ủi Chuyên Nghiệp</title>
+        <title>Dịch Vụ Quanh Ta - Giặt Ủi Nhanh</title>
+
     <link
       rel="shortcut icon"
       type="image/x-icon"
@@ -44,17 +45,17 @@
     <nav class="navbar" id="navbar">
       <div class="nav-container">
         <a href="../index.html" class="logo">
-          <img src="public/asset/image/thuong-hieu-logo-giat-ui-nhanh.png" alt="" />
+          <img src="public/asset/image/logo-dich-vu-quanh-ta.png" alt="" />
           <span>Giặt Ủi Nhanh</span>
-          <img src="public/asset/image/thuong-hieu-khung-logo.png" alt="" />
+          <img src="public/asset/image/logo-giat-ui-nhanh.png" alt="" />
         </a>
         <ul class="nav-menu" id="navMenu">
           <li><a href="index.html" class="nav-link">Trang chủ</a></li>
           <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
-          <li><a href="services.html" class="nav-link">Dịch vụ</a></li>
+          <li><a href="dich-vu.html" class="nav-link">Dịch vụ</a></li>
           <li><a href="index.html#process" class="nav-link">Quy trình</a></li>
-          <li><a href="blog.html" class="nav-link">Bài viết</a></li>
-          <li><a href="booking_order.html" class="nav-link">Đơn đặt</a></li>
+          <li><a href="cam-nang.html" class="nav-link">Cẩm nang</a></li>
+          <li><a href="don-dat.html" class="nav-link">Đơn đặt</a></li>
           <li>
             <a
               class="nav-link"
@@ -700,7 +701,12 @@
               fetch("public/services.json").then(res => res.json()),
               fetch("public/discount.json").then(res => res.json())
             ])
-            .then(([services, discounts]) => {
+            .then(([servicesPayload, discounts]) => {
+              const services = Array.isArray(servicesPayload)
+                ? servicesPayload
+                : Array.isArray(servicesPayload && servicesPayload.services)
+                  ? servicesPayload.services
+                  : [];
 
          
               function isDiscountActive(discount) {
@@ -943,28 +949,45 @@
             <h4>Dịch Vụ</h4>
             <ul class="footer-links">
               <li>
-                <a href="../vesinhcare/demo/">Lau Dọn Vệ Sinh</a>
-              </li>
-              <li><a href="../csmvb/">Chăm Sóc Mẹ & Bé</a></li>
-              <li>
-                <a href="../web-cham-soc-vuon-nha/">Chăm Sóc Vườn & Rẫy</a>
+                <a href="../cham-soc-me-va-be/dich-vu-cham-soc-me-be.html"
+                  >Chăm Sóc Mẹ & Bé</a
+                >
               </li>
               <li>
-                <a href="../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a>
+                <a href="../cham-soc-nguoi-gia/dich-vu-cham-soc-nguoi-gia.html"
+                  >Chăm Sóc Người Già</a
+                >
               </li>
               <li>
-                <a href="../tho-nha/">Thợ Nhà & Sửa Chữa</a>
-              </li>
-              <li><a href="../csng/">Chăm Sóc Người Già</a></li>
-              <li><a href="../csbn/">Chăm Sóc Bệnh Nhân</a></li>
-              <li>
-                <a href="../he-thong-giao-hang-chuyen-don/">Giao Hàng Nhanh</a>
+                <a href="../cham-soc-nguoi-benh/dich-vu-cham-soc-nguoi-benh.html"
+                  >Chăm Sóc Bệnh Nhân</a
+                >
               </li>
               <li>
-                <a href="../thue-xe/">Thuê Xe</a>
+                <a href="../dich-vu-don-ve-sinh/demo/services.html"
+                  >Dịch vụ Vệ Sinh</a
+                >
               </li>
               <li>
-                <a href="../sua-xe-luu-dong/">Sửa xe lưu động</a>
+                <a href="../cham-soc-vuon-nha/dichvu.html">Chăm Sóc Vườn Nhà</a>
+              </li>
+              <li>
+                <a href="dich-vu.html">Giặt Ủi Nhanh</a>
+              </li>
+              <li>
+                <a href="../giao-hang-nhanh/">Giao Hàng Nhanh</a>
+              </li>
+              <li>
+                <a href="../dich-vu-chuyen-don/">Dịch Vụ Chuyển Dọn</a>
+              </li>
+              <li>
+                <a href="../thue-xe/views/pages/public/dich-vu.html">Thuê Xe</a>
+              </li>
+              <li>
+                <a href="../sua-xe-luu-dong/dich-vu.html">Sửa xe lưu động</a>
+              </li>
+              <li>
+                <a href="../tho-nha/pages/public/dich-vu.html">Thợ Nhà</a>
               </li>
             </ul>
           </div>
@@ -972,7 +995,7 @@
           <div class="footer-section">
             <h4>Hỗ trợ</h4>
             <ul class="footer-links">
-              <li><a href="terms.html">Điều khoản sử dụng</a></li>
+              <li><a href="dieu-khoan.html">Điều khoản sử dụng</a></li>
             </ul>
             <h5 class="h6 my-3">Tải Ứng Dụng</h5>
             <div class="d-flex gap-2">

@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tin tức - Giặt Ủi Nhanh</title>
+    <title>Dịch Vụ Quanh Ta - Giặt Ủi Nhanh</title>
+
     <meta
       name="description"
       content="Cập nhật tin tức và mẹo giặt ủi, xu hướng dịch vụ Giặt Ủi Nhanh"
@@ -23,20 +24,17 @@
     <nav class="navbar" id="navbar">
       <div class="nav-container">
         <a href="../index.html" class="logo">
-          <img
-            src="public/asset/image/thuong-hieu-logo-giat-ui-nhanh.png"
-            alt=""
-          />
+          <img src="public/asset/image/logo-dich-vu-quanh-ta.png" alt="" />
           <span>Giặt Ủi Nhanh</span>
-          <img src="public/asset/image/thuong-hieu-khung-logo.png" alt="" />
+          <img src="public/asset/image/logo-giat-ui-nhanh.png" alt="" />
         </a>
         <ul class="nav-menu" id="navMenu">
           <li><a href="index.html" class="nav-link">Trang chủ</a></li>
           <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
           <li><a href="index.html#services" class="nav-link">Dịch vụ</a></li>
           <li><a href="index.html#process" class="nav-link">Quy trình</a></li>
-          <li><a href="blog.html" class="nav-link">Bài viết</a></li>
-          <li><a href="booking_order.html" class="nav-link">Đơn đặt</a></li>
+          <li><a href="cam-nang.html" class="nav-link">Cẩm nang</a></li>
+          <li><a href="don-dat.html" class="nav-link">Đơn đặt</a></li>
           <li>
             <a
               class="nav-link"
@@ -74,7 +72,7 @@
               Giặt Ủi <br />
               <span id="breadcrumb"
                 ><a href="index.html">Trang chủ</a> /
-                <a class="gradient-text">Bài viết</a></span
+                <a class="gradient-text">Cẩm nang</a></span
               >
             </h1>
           </div>
@@ -103,7 +101,7 @@
           // breadcrumb
           document.getElementById("breadcrumb").innerHTML =
             '<a href="index.html">Trang chủ</a> / ' +
-            '<a href="blog.html">Bài viết</a> / ' +
+            '<a href="cam-nang.html">Cẩm nang</a> / ' +
             '<a class="gradient-text">' +
             post.slug +
             "</a>";
@@ -122,7 +120,7 @@
               <ul id="tocList"></ul>
             </nav>
             <div class="related-sidebar">
-              <h3>Bài viết liên quan</h3>
+              <h3>Cẩm nang liên quan</h3>
               <div id="relatedContainer" class="news-grid"></div>
             </div>
           </aside>
@@ -234,28 +232,46 @@
             <h4>Dịch Vụ</h4>
             <ul class="footer-links">
               <li>
-                <a href="../vesinhcare/demo/">Lau Dọn Vệ Sinh</a>
-              </li>
-              <li><a href="../csmvb/">Chăm Sóc Mẹ & Bé</a></li>
-              <li>
-                <a href="../web-cham-soc-vuon-nha/">Chăm Sóc Vườn & Rẫy</a>
+                <a href="../cham-soc-me-va-be/dich-vu-cham-soc-me-be.html"
+                  >Chăm Sóc Mẹ & Bé</a
+                >
               </li>
               <li>
-                <a href="../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a>
+                <a href="../cham-soc-nguoi-gia/dich-vu-cham-soc-nguoi-gia.html"
+                  >Chăm Sóc Người Già</a
+                >
               </li>
               <li>
-                <a href="../tho-nha/">Thợ Nhà & Sửa Chữa</a>
-              </li>
-              <li><a href="../csng/">Chăm Sóc Người Già</a></li>
-              <li><a href="../csbn/">Chăm Sóc Bệnh Nhân</a></li>
-              <li>
-                <a href="../he-thong-giao-hang-chuyen-don/">Giao Hàng Nhanh</a>
+                <a
+                  href="../cham-soc-nguoi-benh/dich-vu-cham-soc-nguoi-benh.html"
+                  >Chăm Sóc Bệnh Nhân</a
+                >
               </li>
               <li>
-                <a href="../thue-xe/">Thuê Xe</a>
+                <a href="../dich-vu-don-ve-sinh/demo/services.html"
+                  >Dịch vụ Vệ Sinh</a
+                >
               </li>
               <li>
-                <a href="../sua-xe-luu-dong/">Sửa xe lưu động</a>
+                <a href="../cham-soc-vuon-nha/dichvu.html">Chăm Sóc Vườn Nhà</a>
+              </li>
+              <li>
+                <a href="dich-vu.html">Giặt Ủi Nhanh</a>
+              </li>
+              <li>
+                <a href="../giao-hang-nhanh/">Giao Hàng Nhanh</a>
+              </li>
+              <li>
+                <a href="../dich-vu-chuyen-don/">Dịch Vụ Chuyển Dọn</a>
+              </li>
+              <li>
+                <a href="../thue-xe/views/pages/public/dich-vu.html">Thuê Xe</a>
+              </li>
+              <li>
+                <a href="../sua-xe-luu-dong/dich-vu.html">Sửa xe lưu động</a>
+              </li>
+              <li>
+                <a href="../tho-nha/pages/public/dich-vu.html">Thợ Nhà</a>
               </li>
             </ul>
           </div>
@@ -263,7 +279,7 @@
           <div class="footer-section">
             <h4>Hỗ trợ</h4>
             <ul class="footer-links">
-              <li><a href="terms.html">Điều khoản sử dụng</a></li>
+              <li><a href="dieu-khoan.html">Điều khoản sử dụng</a></li>
             </ul>
             <h5 class="h6 my-3">Tải Ứng Dụng</h5>
             <div class="d-flex gap-2">
@@ -416,7 +432,7 @@
 
             if (!article) {
               document.getElementById("articleContent").innerHTML =
-                "<p>Không tìm thấy bài viết</p>";
+                "<p>Không tìm thấy Cẩm nang</p>";
               return;
             }
 
@@ -447,7 +463,7 @@
             loadRelatedArticles(article.category, article.slug);
           })
           .catch((err) => {
-            console.error("Lỗi load bài viết:", err);
+            console.error("Lỗi load Cẩm nang:", err);
           });
       }
 
@@ -489,7 +505,7 @@
                   .map(
                     (a) => `
                   <li class="related-item">
-                    <a href="blog_detail.html?slug=${a.slug}">
+                    <a href="noi-dung-cam-nang.html?slug=${a.slug}">
                       <img src="${a.img}" alt="${a.title}" loading="lazy">
                       <div class="related-text">
                         <span class="related-title">${a.title}</span>
@@ -503,7 +519,7 @@
               </ul>
             `;
           })
-          .catch((err) => console.error("Lỗi load bài viết liên quan:", err));
+          .catch((err) => console.error("Lỗi load Cẩm nang liên quan:", err));
       }
 
       window.addEventListener("DOMContentLoaded", function () {

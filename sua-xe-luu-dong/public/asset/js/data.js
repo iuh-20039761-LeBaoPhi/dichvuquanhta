@@ -90,7 +90,7 @@ function ensureBookingModalLoaded(container = null) {
   bookingModalLoadPromise = fetch(BOOKING_MODAL_SOURCE)
     .then((res) => {
       if (!res.ok) {
-        throw new Error("KhÃ´ng thá»ƒ táº£i ná»™i dung modal Ä‘áº·t dá»‹ch vá»¥");
+        throw new Error("Không thể tải nội dung modal đặt dịch vụ");
       }
 
       return res.text();
@@ -228,7 +228,7 @@ const mapPicker = (() => {
         });
         existingScript.addEventListener(
           "error",
-          () => reject(new Error("KhÃ´ng táº£i Ä‘Æ°á»£c Leaflet")),
+          () => reject(new Error("Không tải được Leaflet")),
           { once: true },
         );
         return;
@@ -251,7 +251,7 @@ const mapPicker = (() => {
       script.async = true;
       script.setAttribute("data-map-picker", "leaflet");
       script.onload = () => resolve();
-      script.onerror = () => reject(new Error("KhÃ´ng táº£i Ä‘Æ°á»£c Leaflet"));
+      script.onerror = () => reject(new Error("Không tải được Leaflet"));
       document.head.appendChild(script);
     });
 
@@ -271,7 +271,7 @@ const mapPicker = (() => {
       map = L.map(mapEl).setView(HCM, 13);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
-          'Â© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors',
+          '© <a href="https://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors',
         maxZoom: 19,
       }).addTo(map);
 
@@ -291,7 +291,7 @@ const mapPicker = (() => {
     const addr = getAddressInput();
     if (!addr) return;
 
-    addr.placeholder = "Äang táº£i Ä‘á»‹a chá»‰...";
+    addr.placeholder = "Đang tải địa chỉ...";
     addr.value = "";
 
     fetch(
@@ -302,7 +302,7 @@ const mapPicker = (() => {
     )
       .then((r) => r.json())
       .then((data) => {
-        addr.placeholder = "Sá»‘ nhÃ , Ä‘Æ°á»ng, phÆ°á»ng/xÃ£, quáº­n/huyá»‡n...";
+        addr.placeholder = "Số nhà, đường, phường/xã, quận/huyện...";
 
         if (!data || !data.address) {
           addr.value = (data && data.display_name) || "";
@@ -317,8 +317,8 @@ const mapPicker = (() => {
         }
       })
       .catch(() => {
-        addr.placeholder = "Sá»‘ nhÃ , Ä‘Æ°á»ng, phÆ°á»ng/xÃ£, quáº­n/huyá»‡n...";
-        addr.value = `VÄ© Ä‘á»™ ${lat.toFixed(6)}, Kinh Ä‘á»™ ${lng.toFixed(6)}`;
+        addr.placeholder = "Số nhà, đường, phường/xã, quận/huyện...";
+        addr.value = `Vĩ độ ${lat.toFixed(6)}, Kinh độ ${lng.toFixed(6)}`;
         addr.dispatchEvent(new Event("change", { bubbles: true }));
       });
   }
@@ -332,7 +332,7 @@ const mapPicker = (() => {
     box.style.display = opening ? "block" : "none";
 
     if (opening) {
-      btn.innerHTML = '<i class="fas fa-times me-1"></i> ÄÃ³ng báº£n Ä‘á»“';
+      btn.innerHTML = '<i class="fas fa-times me-1"></i> Đóng bản đồ';
       btn.classList.add("active");
       setTimeout(() => {
         init().then(() => {
@@ -340,14 +340,14 @@ const mapPicker = (() => {
         });
       }, 50);
     } else {
-      btn.innerHTML = '<i class="fas fa-map-marker-alt me-1"></i> Má»Ÿ báº£n Ä‘á»“';
+      btn.innerHTML = '<i class="fas fa-map-marker-alt me-1"></i> Mở bản đồ';
       btn.classList.remove("active");
     }
   }
 
   function gps() {
     if (!navigator.geolocation) {
-      alert("TrÃ¬nh duyá»‡t cá»§a báº¡n khÃ´ng há»— trá»£ Ä‘á»‹nh vá»‹ GPS.");
+      alert("Trình duyệt của bạn không hỗ trợ định vị GPS.");
       return;
     }
 
@@ -355,7 +355,7 @@ const mapPicker = (() => {
     if (!addr) return;
 
     const origPlaceholder = addr.placeholder;
-    addr.placeholder = "Äang xÃ¡c Ä‘á»‹nh vá»‹ trÃ­...";
+    addr.placeholder = "Đang xác định vị trí...";
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -389,11 +389,11 @@ const mapPicker = (() => {
         addr.placeholder = origPlaceholder;
         if (err.code === 1) {
           alert(
-            "Vui lÃ²ng cho phÃ©p truy cáº­p vá»‹ trÃ­ trong trÃ¬nh duyá»‡t Ä‘á»ƒ sá»­ dá»¥ng tÃ­nh nÄƒng nÃ y.",
+            "Vui lòng cho phép truy cập vị trí trong trình duyệt để sử dụng tính năng này.",
           );
         } else {
           alert(
-            "KhÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh vá»‹ trÃ­. Vui lÃ²ng thá»­ láº¡i hoáº·c nháº­p Ä‘á»‹a chá»‰ thá»§ cÃ´ng.",
+            "Không thể xác định vị trí. Vui lòng thử lại hoặc nhập địa chỉ thủ công.",
           );
         }
       },
@@ -447,6 +447,10 @@ function initBookingModal() {
   const vehicleType = document.getElementById("vehicleType");
   const brandSelect = document.getElementById("brandSelect");
   const itemSelect = document.getElementById("itemSelect");
+  const customItemInputWrapper = document.getElementById(
+    "customItemInputWrapper",
+  );
+  const customItemInput = document.getElementById("customItemInput");
 
   const priceInput = document.getElementById("price-contact");
   const transportInput = document.getElementById("transport-fee");
@@ -520,7 +524,38 @@ function initBookingModal() {
     });
   }
 
-  // ===== PHÃ =====
+  function toggleCustomItemInput(force = null) {
+    if (!itemSelect || !customItemInputWrapper || !customItemInput) return;
+
+    const useCustom =
+      force == null
+        ? String(itemSelect.value || "") === "__other__"
+        : Boolean(force);
+
+    customItemInputWrapper.classList.toggle("d-none", !useCustom);
+    customItemInput.required = useCustom;
+
+    if (!useCustom) {
+      customItemInput.value = "";
+    }
+  }
+
+  function ensureOtherModelOption() {
+    if (!itemSelect) return;
+
+    const hasOtherOption = Array.from(itemSelect.options).some(
+      (option) => String(option.value) === "__other__",
+    );
+
+    if (hasOtherOption) return;
+
+    const otherOption = document.createElement("option");
+    otherOption.value = "__other__";
+    otherOption.textContent = "Khác (nhập mẫu xe)";
+    itemSelect.appendChild(otherOption);
+  }
+
+  // ===== PHÍ =====
   let vehicleTypesData = [];
 
   function getSelectedServicePrice() {
@@ -548,7 +583,7 @@ function initBookingModal() {
   }
 
   function formatCurrencyVND(value) {
-    return `${formatCurrency(value)}Ä‘`;
+    return `${formatCurrency(value)}đ`;
   }
 
   function calculateTransportFeeByThreshold(distanceKm) {
@@ -631,9 +666,9 @@ function initBookingModal() {
     if (!transportInput) return;
 
     if (pending) {
-      transportInput.value = "Äang tÃ­nh...";
+      transportInput.value = "Đang tính...";
       if (estimateTransportFee) {
-        estimateTransportFee.textContent = "Äang tÃ­nh...";
+        estimateTransportFee.textContent = "Đang tính...";
       }
       return;
     }
@@ -678,13 +713,13 @@ function initBookingModal() {
     });
 
     if (!res.ok) {
-      throw new Error("KhÃ´ng thá»ƒ geocode Ä‘á»‹a chá»‰ khÃ¡ch hÃ ng");
+      throw new Error("Không thể geocode địa chỉ khách hàng");
     }
 
     const data = await res.json();
     const first = data && data[0];
     if (!first) {
-      throw new Error("KhÃ´ng tÃ¬m tháº¥y tá»a Ä‘á»™ tá»« Ä‘á»‹a chá»‰ Ä‘Ã£ nháº­p");
+      throw new Error("Không tìm thấy tọa độ từ địa chỉ đã nhập");
     }
 
     return {
@@ -698,13 +733,13 @@ function initBookingModal() {
     const res = await fetch(endpoint);
 
     if (!res.ok) {
-      throw new Error("KhÃ´ng thá»ƒ láº¥y quÃ£ng Ä‘Æ°á»ng thá»±c táº¿");
+      throw new Error("Không thể lấy quãng đường thực tế");
     }
 
     const data = await res.json();
     const route = data?.routes?.[0];
     if (!route || typeof route.distance !== "number") {
-      throw new Error("KhÃ´ng cÃ³ dá»¯ liá»‡u tuyáº¿n Ä‘Æ°á»ng");
+      throw new Error("Không có dữ liệu tuyến đường");
     }
 
     return route.distance / 1000;
@@ -718,7 +753,9 @@ function initBookingModal() {
     if (!addressText) {
       latestDistanceKm = null;
       transportFeeValue = minFee;
-      setTransportFeeDisplay(null, { displayText: "Nháº­p Ä‘á»‹a chá»‰ Ä‘á»ƒ tÃ­nh giÃ¡" });
+      setTransportFeeDisplay(null, {
+        displayText: "Nhập địa chỉ để tính giá",
+      });
       updateTotalPrice();
       return;
     }
@@ -732,7 +769,7 @@ function initBookingModal() {
         !isValidCoordinate(providerLocation.lat) ||
         !isValidCoordinate(providerLocation.lng)
       ) {
-        throw new Error("Thiáº¿u tá»a Ä‘á»™ nhÃ  cung cáº¥p");
+        throw new Error("Thiếu tọa độ nhà cung cấp");
       }
 
       const customerCoords = await geocodeAddress(addressText);
@@ -758,7 +795,7 @@ function initBookingModal() {
 
       latestDistanceKm = null;
       transportFeeValue = minFee;
-      setTransportFeeDisplay(minFee, { suffix: "Æ°á»›c tÃ­nh" });
+      setTransportFeeDisplay(minFee, { suffix: "ước tính" });
       console.error(error);
     } finally {
       if (token === transportCalcToken || force) {
@@ -787,7 +824,7 @@ function initBookingModal() {
     return getSurveyFeeByVehicleType(vehicleType.value);
   }
 
-  // ===== INIT HIá»‚N THá»Š =====
+  // ===== INIT HIỂN THỊ =====
   setTransportFeeDisplay(null);
   updateEstimateVisibility();
 
@@ -825,19 +862,21 @@ function initBookingModal() {
 
       recalculateTransportFee(true);
     })
-    .catch((err) => console.error("Lá»—i load JSON:", err));
+    .catch((err) => console.error("Lỗi load JSON:", err));
 
   // ===== SERVICE =====
   if (serviceSelect) {
     serviceSelect.addEventListener("change", function () {
       updateEstimateVisibility();
-      resetSelect(vehicleType, "Chá»n loáº¡i xe");
-      resetSelect(brandSelect, "Chá»n hÃ£ng");
-      resetSelect(itemSelect, "Chá»n phá»¥ tÃ¹ng / sá»­a chá»¯a");
+      resetSelect(vehicleType, "Chọn loại xe");
+      resetSelect(brandSelect, "Chọn hãng");
+      resetSelect(itemSelect, "Chọn mẫu xe");
+      ensureOtherModelOption();
+      toggleCustomItemInput(false);
       clearPrice();
       recalculateTransportFee();
 
-      // Hiá»ƒn thá»‹ danh sÃ¡ch loáº¡i xe tá»« vehicleTypesData
+      // Hiển thị danh sách loại xe từ vehicleTypesData
       if (!vehicleType) return;
 
       vehicleTypesData.forEach((vehicle) => {
@@ -852,18 +891,20 @@ function initBookingModal() {
   // ===== VEHICLE TYPE =====
   if (vehicleType) {
     vehicleType.addEventListener("change", function () {
-      resetSelect(brandSelect, "Chá»n hÃ£ng");
-      resetSelect(itemSelect, "Chá»n phá»¥ tÃ¹ng / sá»­a chá»¯a");
+      resetSelect(brandSelect, "Chọn hãng");
+      resetSelect(itemSelect, "Chọn mẫu xe");
+      ensureOtherModelOption();
+      toggleCustomItemInput(false);
       clearPrice();
 
-      // Cáº­p nháº­t survey fee
+      // Cập nhật survey fee
       if (surveyInput) {
         surveyInput.value = getCurrentSurveyFee().toLocaleString("vi-VN");
       }
 
       recalculateTransportFee();
 
-      // Hiá»ƒn thá»‹ danh sÃ¡ch hÃ£ng xe cá»§a loáº¡i xe Ä‘Æ°á»£c chá»n
+      // Hiển thị danh sách hãng xe của loại xe được chọn
       const selectedVehicleType = vehicleTypesData.find(
         (v) => v.type === this.value,
       );
@@ -882,22 +923,23 @@ function initBookingModal() {
   // ===== BRAND =====
   if (brandSelect) {
     brandSelect.addEventListener("change", function () {
-      resetSelect(itemSelect, "Chá»n phá»¥ tÃ¹ng / sá»­a chá»¯a");
+      resetSelect(itemSelect, "Chọn mẫu xe");
+      toggleCustomItemInput(false);
       clearPrice();
 
-      // TÃ¬m loáº¡i xe Ä‘Æ°á»£c chá»n
+      // Tìm loại xe được chọn
       const selectedVehicleType = vehicleTypesData.find(
         (v) => v.type === (vehicleType && vehicleType.value),
       );
       if (!selectedVehicleType) return;
 
-      // TÃ¬m hÃ£ng Ä‘Æ°á»£c chá»n
+      // Tìm hãng được chọn
       const selectedBrand = selectedVehicleType.brands.find(
         (b) => b.name === this.value,
       );
       if (!selectedBrand) return;
 
-      // Hiá»ƒn thá»‹ danh sÃ¡ch máº«u xe cá»§a hÃ£ng Ä‘Æ°á»£c chá»n
+      // Hiển thị danh sách mẫu xe của hãng được chọn
       const models = selectedBrand.models || [];
       models.forEach((model) => {
         const option = document.createElement("option");
@@ -905,6 +947,8 @@ function initBookingModal() {
         option.textContent = model.vehicle_name || model.name;
         itemSelect.appendChild(option);
       });
+
+      ensureOtherModelOption();
     });
   }
 
@@ -913,11 +957,20 @@ function initBookingModal() {
     itemSelect.addEventListener("change", function () {
       const option = this.options[this.selectedIndex];
 
+      toggleCustomItemInput();
+
       if (!option || !option.value) {
         clearPrice();
         return;
       }
 
+      updateTotalPrice();
+    });
+  }
+
+  if (customItemInput) {
+    customItemInput.addEventListener("input", function () {
+      if (String(itemSelect?.value || "") !== "__other__") return;
       updateTotalPrice();
     });
   }
@@ -958,6 +1011,19 @@ function initBookingModal() {
   }
 
   bindQuickBookingButtons();
+  ensureOtherModelOption();
+  toggleCustomItemInput(false);
+
+  const bookingForm = document.getElementById("bookingForm");
+  if (bookingForm && bookingForm.dataset.customItemResetBound !== "true") {
+    bookingForm.dataset.customItemResetBound = "true";
+    bookingForm.addEventListener("reset", function () {
+      setTimeout(() => {
+        ensureOtherModelOption();
+        toggleCustomItemInput(false);
+      }, 0);
+    });
+  }
 
   initBookingConfirmFlow();
 }
@@ -975,6 +1041,7 @@ function initBookingConfirmFlow() {
   const vehicleType = document.getElementById("vehicleType");
   const brandSelect = document.getElementById("brandSelect");
   const itemSelect = document.getElementById("itemSelect");
+  const customItemInput = document.getElementById("customItemInput");
   const addressInput = document.getElementById("addressInput");
 
   const priceInput = document.getElementById("price-contact");
@@ -1023,6 +1090,17 @@ function initBookingConfirmFlow() {
     return option.textContent || "";
   }
 
+  function selectedItemText() {
+    const selectedValue = String(itemSelect?.value || "").trim();
+    if (!selectedValue) return "";
+
+    if (selectedValue === "__other__") {
+      return String(customItemInput?.value || "").trim();
+    }
+
+    return selectedText(itemSelect);
+  }
+
   function renderSummary() {
     const summary = {
       confirmName: document.getElementById("nameCustomer")?.value,
@@ -1030,7 +1108,7 @@ function initBookingConfirmFlow() {
       confirmService: selectedText(serviceSelect),
       confirmVehicleType: selectedText(vehicleType),
       confirmBrand: selectedText(brandSelect),
-      confirmItem: selectedText(itemSelect),
+      confirmItem: selectedItemText(),
       confirmDatetime: datetimeInput?.value,
       confirmAddress: addressInput?.value,
       confirmPrice: priceInput?.value,
@@ -1077,7 +1155,7 @@ function initBookingConfirmFlow() {
       hideBookingStep();
 
       alert(
-        "Cáº£m Æ¡n báº¡n Ä‘Ã£ Ä‘áº·t dá»‹ch vá»¥! ChÃºng tÃ´i sáº½ liÃªn há»‡ vá»›i báº¡n trong thá»i gian sá»›m nháº¥t.",
+        "Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
       );
 
       form.reset();
@@ -1099,7 +1177,7 @@ function mapPickerInit() {
 
     locateBtn.addEventListener("click", function () {
       locateBtn.disabled = true;
-      locateBtn.innerHTML = "Äang láº¥y vá»‹ trÃ­...";
+      locateBtn.innerHTML = "Đang lấy vị trí...";
 
       try {
         mapPicker.gps();
@@ -1107,7 +1185,7 @@ function mapPickerInit() {
         setTimeout(() => {
           locateBtn.disabled = false;
           locateBtn.innerHTML =
-            '<i class="fas fa-location-arrow"></i> Vá»‹ trÃ­ hiá»‡n táº¡i';
+            '<i class="fas fa-location-arrow"></i> Vị trí hiện tại';
         }, 500);
       }
     });

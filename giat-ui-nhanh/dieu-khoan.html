@@ -3,11 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đặt dịch vụ - Giặt Ủi Nhanh</title>
     <meta
       name="description"
-      content="Cập nhật tin tức và mẹo giặt ủi, xu hướng dịch vụ Giặt Ủi Nhanh"
+      content="Dịch vụ giặt ủi chuyên nghiệp, nhanh chóng và sạch sẽ tại Giặt Ủi Nhanh. Hỗ trợ đặt dịch vụ trực tuyến, tra cứu đơn hàng dễ dàng."
     />
+    <meta
+      name="keywords"
+      content="giặt ủi, dịch vụ giặt ủi, giặt ủi nhanh, giặt ủi sạch, giặt đồ, giặt sấy, vệ sinh giày, giặt ủi TP.HCM, giặt ủi tại nhà, giặt ủi chuyên nghiệp"
+    />
+    <title>Dịch Vụ Quanh Ta - Giặt Ủi Nhanh</title>
+
     <link
       rel="shortcut icon"
       type="image/x-icon"
@@ -15,70 +20,69 @@
     />
     <link rel="stylesheet" href="public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="public/asset/css/styles.css" />
-    <link rel="stylesheet" href="public/asset/css/services.css" />
     <style>
-      .hero .hero-text h1 {
-        font-size: 3.5rem;
-        line-height: 1.3;
+      /* header section */
+      .terms-header {
+        background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+        color: white;
+        /* padding: 60px 0; */
         text-align: center;
       }
 
-      .hero .hero-text h1 span {
-        font-size: 24px;
+      /* card container */
+      .terms-card {
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
       }
 
-      .hero {
-        min-height: 260px;
-        padding: 96px 0 48px;
+      h2 {
+        margin-top: 30px;
+        font-weight: 600;
+        color: #0d6efd;
+        border-bottom: 2px solid #0dcaf0;
+        padding-bottom: 8px;
       }
 
-      .hero .hero-content {
-        justify-content: center;
-        text-align: center;
-        display: block;
+      p {
+        line-height: 1.7;
+        margin-bottom: 1rem;
       }
-      .hero h1 span a {
-        text-decoration: none;
-        color: #fff;
-        transition: ease-in-out 0.3s;
+      .terms-header-content {
+        max-height: 200px;
+        padding-top: 60px;
       }
-      .hero h1 span a:hover {
-        background: linear-gradient(to right, #fbbf24, #f97316);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
+
+      /* responsive utility adjustments */
       @media (max-width: 767px) {
-        .hero .hero-text h1 {
-          font-size: 1.45rem;
-          line-height: 1.35;
+        .terms-card {
+          padding: 20px;
         }
-        .hero .hero-text h1 span {
-          font-size: 0.82rem;
+
+        .terms-header h1 {
+          font-size: 1.8rem;
         }
       }
     </style>
   </head>
-
   <body>
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
       <div class="nav-container">
         <a href="../index.html" class="logo">
-          <img
-            src="public/asset/image/thuong-hieu-logo-giat-ui-nhanh.png"
-            alt=""
-          />
+          <img src="public/asset/image/logo-dich-vu-quanh-ta.png" alt="" />
           <span>Giặt Ủi Nhanh</span>
-          <img src="public/asset/image/thuong-hieu-khung-logo.png" alt="" />
+          <img src="public/asset/image/logo-giat-ui-nhanh.png" alt="" />
         </a>
         <ul class="nav-menu" id="navMenu">
           <li><a href="index.html" class="nav-link">Trang chủ</a></li>
           <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
-          <li><a href="services.html" class="nav-link">Dịch vụ</a></li>
+          <li><a href="index.html#services" class="nav-link">Dịch vụ</a></li>
           <li><a href="index.html#process" class="nav-link">Quy trình</a></li>
-          <li><a href="blog.html" class="nav-link">Bài viết</a></li>
-          <li><a href="booking_order.html" class="nav-link">Đơn đặt</a></li>
+          <li><a href="cam-nang.html" class="nav-link">Cẩm nang</a></li>
+          <li><a href="don-dat.html" class="nav-link">Đơn đặt</a></li>
           <li>
             <a
               class="nav-link"
@@ -105,43 +109,128 @@
         </button>
       </div>
     </nav>
+    <!-- About Section -->
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-      <div class="hero-overlay"></div>
+    <!-- Services Section -->
+    <section class="terms-header">
       <div class="container">
-        <div class="hero-content">
-          <div class="hero-text">
-            <h1>
-              Đặt Dịch Vụ Giặt Ủi <br />
-              <span
-                ><a href="index.html">Trang chủ</a> /
-                <a class="gradient-text">Đặt dịch vụ</a></span
-              >
-            </h1>
-          </div>
+        <div class="terms-header-content">
+          <h1 class="fw-bold">Điều Khoản Sử Dụng</h1>
+          <p class="mb-0">Áp dụng cho Dịch Vụ Giặt Ủi Nhanh</p>
         </div>
       </div>
     </section>
-    <section id="services" class="laundry-services-new">
+    <section style="padding-top: 40px">
       <div class="container">
-        <div class="svc-heading">
-          <div class="section-badge">
-            <span>DỊCH VỤ CỦA CHÚNG TÔI</span>
-          </div>
-          <h2>
-            Giải Pháp Giặt Ủi <span class="gradient-text">Toàn Diện</span>
-          </h2>
+        <div class="terms-card">
+          <h2>1. Phạm Vi Áp Dụng</h2>
           <p>
-            Dữ liệu dịch vụ được đồng bộ trực tiếp từ hệ thống, hiển thị rõ ảnh,
-            mô tả, giá và nút đặt dịch vụ cho từng hạng mục.
+            Điều khoản này áp dụng cho toàn bộ khách hàng sử dụng dịch vụ giặt
+            ủi nhanh. Khi đặt lịch hoặc sử dụng dịch vụ, khách hàng được xem là
+            đã đồng ý và bị ràng buộc bởi các điều khoản sau.
+          </p>
+
+          <h2>2. Quyền Lợi Của Khách Hàng</h2>
+          <ul>
+            <li>
+              Được cung cấp thông tin rõ ràng về dịch vụ, giá cả và thời gian
+              hoàn thành.
+            </li>
+            <li>
+              Được bố trí nhân viên hoặc đối tác giặt ủi có chuyên môn phù hợp.
+            </li>
+            <li>Được bảo mật dữ liệu cá nhân và nội dung đồ giặt.</li>
+            <li>
+              Được phản ánh, góp ý hoặc khiếu nại nếu có vấn đề phát sinh.
+            </li>
+            <li>
+              Được yêu cầu đổi đơn vị giặt ủi nếu không hài lòng (trong phạm vi
+              hợp lý).
+            </li>
+          </ul>
+
+          <h2>3. Trách Nhiệm Của Khách Hàng</h2>
+          <ul>
+            <li>Cung cấp thông tin chính xác về số lượng và loại đồ giặt.</li>
+            <li>Thanh toán đúng hạn theo thỏa thuận và bảng giá công bố.</li>
+            <li>
+              Tách các vật dụng cá nhân, tiền bạc, giấy tờ hoặc đồ giá trị trước
+              khi giao.
+            </li>
+            <li>
+              Không yêu cầu xử lý những vết bẩn vượt quá phạm vi dịch vụ mà
+              không thỏa thuận thêm.
+            </li>
+          </ul>
+
+          <h2>4. Quyền Và Nghĩa Vụ Của Nhân Viên/Đối Tác</h2>
+          <ul>
+            <li>Thực hiện đúng quy trình giặt ủi, sử dụng hóa chất an toàn.</li>
+            <li>
+              Giữ thái độ tôn trọng, tận tâm và chuyên nghiệp với khách hàng.
+            </li>
+            <li>
+              Không nhận tiền hoặc quà ngoài hợp đồng nếu chưa được phép công
+              ty.
+            </li>
+            <li>
+              Có quyền từ chối nhận quần áo có chất liệu hoặc tình trạng quá đặc
+              biệt nếu không đảm bảo an toàn.
+            </li>
+          </ul>
+
+          <h2>5. Chính Sách Thanh Toán</h2>
+          <p>
+            Thanh toán có thể thực hiện theo đơn hàng, khối lượng (kg) hoặc theo
+            gói dịch vụ tùy thỏa thuận. Khách hàng có thể thanh toán trước hoặc
+            theo hợp đồng. Mọi chi phí phát sinh sẽ được thông báo trước khi
+            thực hiện.
+          </p>
+
+          <h2>6. Hủy Lịch &amp; Hoàn Phí</h2>
+          <ul>
+            <li>Hủy trước khi dịch vụ được xác nhận: miễn phí.</li>
+            <li>Hủy trước 2 giờ so với giờ lấy đồ: miễn phí.</li>
+            <li>
+              Hủy trong 2 giờ trước giờ lấy đồ: có thể áp dụng phí hủy lịch.
+            </li>
+            <li>
+              Hủy khi nhân viên đã di chuyển đến địa điểm: khách hàng cần thanh
+              toán phí hủy và chi phí di chuyển.
+            </li>
+            <li>Trường hợp bất khả kháng sẽ được xem xét linh hoạt.</li>
+          </ul>
+
+          <h2>7. Trường Hợp Khẩn Cấp</h2>
+          <p>
+            Trong tình huống phát hiện hỏa hoạn, rò rỉ hóa chất hoặc nguy hiểm
+            liên quan đến đơn hàng, nhân viên có trách nhiệm thông báo ngay cho
+            khách hàng và xử lý sơ cấp. Dịch vụ giặt ủi không chịu trách nhiệm
+            cho các thiệt hại do sự cố đã bắt đầu trước khi nhận đồ.
+          </p>
+
+          <h2>8. Bảo Mật Thông Tin</h2>
+          <p>
+            Chúng tôi cam kết bảo mật mọi thông tin cá nhân, nội dung đồ giặt và
+            dữ liệu liên quan. Thông tin chỉ được sử dụng cho mục đích giặt ủi
+            và quản lý dịch vụ.
+          </p>
+
+          <h2>9. Cam Kết Chất Lượng</h2>
+          <p>
+            Chúng tôi cam kết cung cấp dịch vụ với tinh thần tận tâm, chuyên
+            nghiệp và minh bạch. Mọi góp ý của khách hàng đều được ghi nhận và
+            xử lý nhanh chóng.
+          </p>
+
+          <p class="mb-0">
+            Nếu bạn cần thêm thông tin, vui lòng liên hệ với chúng tôi qua mục
           </p>
         </div>
-
-        <div class="svc-list" id="servicesGrid"></div>
       </div>
     </section>
-    <!-- Footer placeholder -->
+
+    <!-- Footer -->
     <footer>
       <div class="container">
         <div class="footer-grid">
@@ -241,28 +330,46 @@
             <h4>Dịch Vụ</h4>
             <ul class="footer-links">
               <li>
-                <a href="../vesinhcare/demo/">Lau Dọn Vệ Sinh</a>
-              </li>
-              <li><a href="../csmvb/">Chăm Sóc Mẹ & Bé</a></li>
-              <li>
-                <a href="../web-cham-soc-vuon-nha/">Chăm Sóc Vườn & Rẫy</a>
+                <a href="../cham-soc-me-va-be/dich-vu-cham-soc-me-be.html"
+                  >Chăm Sóc Mẹ & Bé</a
+                >
               </li>
               <li>
-                <a href="../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a>
+                <a href="../cham-soc-nguoi-gia/dich-vu-cham-soc-nguoi-gia.html"
+                  >Chăm Sóc Người Già</a
+                >
               </li>
               <li>
-                <a href="../tho-nha/">Thợ Nhà & Sửa Chữa</a>
-              </li>
-              <li><a href="../csng/">Chăm Sóc Người Già</a></li>
-              <li><a href="../csbn/">Chăm Sóc Bệnh Nhân</a></li>
-              <li>
-                <a href="../he-thong-giao-hang-chuyen-don/">Giao Hàng Nhanh</a>
+                <a
+                  href="../cham-soc-nguoi-benh/dich-vu-cham-soc-nguoi-benh.html"
+                  >Chăm Sóc Bệnh Nhân</a
+                >
               </li>
               <li>
-                <a href="../thue-xe/">Thuê Xe</a>
+                <a href="../dich-vu-don-ve-sinh/demo/services.html"
+                  >Dịch vụ Vệ Sinh</a
+                >
               </li>
               <li>
-                <a href="../sua-xe-luu-dong/">Sửa xe lưu động</a>
+                <a href="../cham-soc-vuon-nha/dichvu.html">Chăm Sóc Vườn Nhà</a>
+              </li>
+              <li>
+                <a href="dich-vu.html">Giặt Ủi Nhanh</a>
+              </li>
+              <li>
+                <a href="../giao-hang-nhanh/">Giao Hàng Nhanh</a>
+              </li>
+              <li>
+                <a href="../dich-vu-chuyen-don/">Dịch Vụ Chuyển Dọn</a>
+              </li>
+              <li>
+                <a href="../thue-xe/views/pages/public/dich-vu.html">Thuê Xe</a>
+              </li>
+              <li>
+                <a href="../sua-xe-luu-dong/dich-vu.html">Sửa xe lưu động</a>
+              </li>
+              <li>
+                <a href="../tho-nha/pages/public/dich-vu.html">Thợ Nhà</a>
               </li>
             </ul>
           </div>
@@ -270,7 +377,7 @@
           <div class="footer-section">
             <h4>Hỗ trợ</h4>
             <ul class="footer-links">
-              <li><a href="terms.html">Điều khoản sử dụng</a></li>
+              <li><a href="dieu-khoan.html">Điều khoản sử dụng</a></li>
             </ul>
             <h5 class="h6 my-3">Tải Ứng Dụng</h5>
             <div class="d-flex gap-2">
@@ -320,7 +427,8 @@
         </div>
       </div>
     </footer>
-    <div id="modalContainer"></div>
+
+    <!-- Scroll to Top Button -->
     <button
       class="scroll-to-top"
       id="scrollToTop"
@@ -342,6 +450,9 @@
         />
       </svg>
     </button>
+
+    <div id="modalContainer"></div>
+    <!-- Toast -->
     <script
       type="text/javascript"
       src="public/asset/js/bootstrap.bundle.min.js"
@@ -352,55 +463,6 @@
     ></script>
     <script type="text/javascript" src="public/asset/js/database.js"></script>
     <script type="text/javascript" src="public/asset/js/script.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const servicesGrid = document.getElementById("servicesGrid");
-        if (!servicesGrid) return;
-
-        fetch("public/services.json")
-          .then(function (response) {
-            if (!response.ok) {
-              throw new Error("Không thể tải dữ liệu dịch vụ");
-            }
-            return response.json();
-          })
-          .then(function (data) {
-            let html = "";
-
-            data.forEach(function (service, index) {
-              const unit =
-                service.price_unit === "kg" ? "kg" : service.price_unit;
-              const reverseClass = index % 2 !== 0 ? " is-reverse" : "";
-              const servicePrice = Number(service.price || 0).toLocaleString(
-                "vi-VN",
-              );
-
-              html += `
-                <article class="svc-card${reverseClass}">
-                  <div class="svc-media">
-                    <img src="${service.image}" alt="${service.service_name}">
-                  </div>
-
-                  <div class="svc-body">
-                    <h3 class="svc-title">${service.service_name}</h3>
-                    <p class="svc-desc">${service.summary}</p>
-                    <p class="svc-price">Gia tu: <strong>${servicePrice} VND</strong> / ${unit}</p>
-                    <a class="btn btn-info svc-action" data-service-id="${service.id}" data-bs-toggle="modal"data-bs-target="#bookingModal">Đặt dịch vụ</a>
-                  </div>
-                </article>
-              `;
-            });
-
-            servicesGrid.innerHTML = html;
-          })
-          .catch(function () {
-            servicesGrid.innerHTML =
-              '<p style="text-align:center;color:#dc2626;">Khong the tai du lieu dich vu. Vui long thu lai.</p>';
-          });
-      });
-    </script>
-
-    <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
     <script type="text/javascript" src="public/asset/js/booking.js"></script>
     <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
     <script>
