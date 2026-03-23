@@ -161,6 +161,101 @@
         min-width: auto;
       }
 
+      #bookingConfirmModal .confirm-media-list {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      #bookingConfirmModal .confirm-media-empty {
+        color: #64748b;
+      }
+
+      #bookingConfirmModal .confirm-media-item {
+        width: 86px;
+      }
+
+      #bookingConfirmModal .confirm-media-thumb {
+        width: 86px;
+        height: 86px;
+        border-radius: 10px;
+        border: 1px solid #dbe4ee;
+        object-fit: cover;
+        background: #ffffff;
+      }
+
+      #bookingConfirmModal .confirm-media-name {
+        margin-top: 4px;
+        font-size: 11px;
+        color: #475569;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      #bookingModal .media-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      #bookingModal .media-card {
+        min-height: 190px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        background: #f1f5f9;
+        padding: 14px;
+      }
+
+      #bookingModal .media-empty {
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #64748b;
+      }
+
+      #bookingModal .media-empty i {
+        font-size: 1.7rem;
+        margin-bottom: 8px;
+        color: #94a3b8;
+      }
+
+      #bookingModal .media-empty .media-subtitle {
+        font-size: 0.9rem;
+        margin-top: 8px;
+      }
+
+      #bookingModal .media-list {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      #bookingModal .media-item {
+        width: 88px;
+      }
+
+      #bookingModal .media-thumb {
+        width: 88px;
+        height: 88px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #dbe4ee;
+        background: #ffffff;
+      }
+
+      #bookingModal .media-name {
+        margin-top: 4px;
+        font-size: 11px;
+        color: #475569;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       .estimate-card {
         background: #eaf5f4;
         border: 1px solid #9ad3cd;
@@ -288,6 +383,10 @@
         #bookingModal .col-md-4,
         #bookingModal .col-md-6 {
           width: 100%;
+        }
+
+        #bookingModal .media-grid {
+          grid-template-columns: 1fr;
         }
 
         #bookingModal .modal-footer,
@@ -645,6 +744,22 @@
                   </div>
                   <div class="col-md-12">
                     <label>Hình ảnh và video</label>
+                    <input
+                      type="file"
+                      id="imageUploadInput"
+                      accept="image/*"
+                      capture="environment"
+                      multiple
+                      hidden
+                    />
+                    <input
+                      type="file"
+                      id="videoUploadInput"
+                      accept="video/*"
+                      capture="environment"
+                      multiple
+                      hidden
+                    />
                     <div class="d-flex gap-2 flex-wrap">
                       <button
                         type="button"
@@ -662,14 +777,25 @@
                       </button>
                     </div>
                   </div>
-                    <div class="col-md-12" id="mediaPreview">
-                      <label>Ảnh/Video đã chọn:</label>
-                      <div
-                        id="mediaPreviewContent"
-                        class="d-flex gap-2 flex-wrap"
-                        style="min-height: 80px; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 10px; background: #fff"
-                      ></div>
+                  <div class="col-md-12">
+                    <div class="media-grid">
+                      <div class="media-card">
+                        <div class="media-empty" id="imageEmptyState">
+                          <i class="fas fa-camera"></i>
+                          <div class="media-subtitle">Chưa có ảnh nào được chọn.</div>
+                        </div>
+                        <div id="imagePreviewList" class="media-list"></div>
+                      </div>
+
+                      <div class="media-card">
+                        <div class="media-empty" id="videoEmptyState">
+                          <i class="fas fa-video"></i>
+                          <div class="media-subtitle">Chưa có video nào được chọn.</div>
+                        </div>
+                        <div id="videoPreviewList" class="media-list"></div>
+                      </div>
                     </div>
+                  </div>
                   </div>
                 </div>
 
@@ -776,6 +902,22 @@
                     <th scope="row">Mô tả vấn đề</th>
                     <td id="confirmNote">-</td>
                   </tr>
+                  <tr>
+                    <th scope="row">Hình ảnh đính kèm</th>
+                    <td>
+                      <div id="confirmImages" class="confirm-media-list">
+                        <span class="confirm-media-empty">-</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Video đính kèm</th>
+                    <td>
+                      <div id="confirmVideos" class="confirm-media-list">
+                        <span class="confirm-media-empty">-</span>
+                      </div>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -862,10 +1004,10 @@
                 <a href="../cham-soc-vuon-nha/dichvu.html">Chăm Sóc Vườn Nhà</a>
               </li>
               <li>
-                <a href="../giat-ui-nhanh/services.html">Giặt Ủi Nhanh</a>
+                <a href="../giat-ui-nhanh/dich-vu.html">Giặt Ủi Nhanh</a>
               </li>
               <li>
-                <a href="../giao-hang-nhanh/">Giao Hàng Nhanh</a>
+                <a href="../giao-hang-nhanh/dich-vu-giao-hang.html">Giao Hàng Nhanh</a>
               </li>
               <li>
                 <a href="../dich-vu-chuyen-don/">Dịch Vụ Chuyển Dọn</a>

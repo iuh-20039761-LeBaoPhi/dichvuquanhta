@@ -451,6 +451,9 @@ function initBookingModal() {
     "customItemInputWrapper",
   );
   const customItemInput = document.getElementById("customItemInput");
+  const datetimeInput = document.querySelector(
+    '#bookingForm input[type="datetime-local"]',
+  );
 
   const priceInput = document.getElementById("price-contact");
   const transportInput = document.getElementById("transport-fee");
@@ -538,6 +541,21 @@ function initBookingModal() {
     if (!useCustom) {
       customItemInput.value = "";
     }
+  }
+
+  function getCurrentDateTimeLocalValue() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  function fillCurrentDateTime() {
+    if (!datetimeInput) return;
+    datetimeInput.value = getCurrentDateTimeLocalValue();
   }
 
   function ensureOtherModelOption() {
@@ -985,6 +1003,7 @@ function initBookingModal() {
     });
   }
 
+  initMediaUpload();
   mapPickerInit();
   // ===== HELPER =====
   function resetSelect(select, placeholder) {
@@ -1013,6 +1032,14 @@ function initBookingModal() {
   bindQuickBookingButtons();
   ensureOtherModelOption();
   toggleCustomItemInput(false);
+  fillCurrentDateTime();
+
+  if (bookingModal && bookingModal.dataset.dateTimeAutofillBound !== "true") {
+    bookingModal.dataset.dateTimeAutofillBound = "true";
+    bookingModal.addEventListener("shown.bs.modal", function () {
+      fillCurrentDateTime();
+    });
+  }
 
   const bookingForm = document.getElementById("bookingForm");
   if (bookingForm && bookingForm.dataset.customItemResetBound !== "true") {
@@ -1028,10 +1055,160 @@ function initBookingModal() {
   initBookingConfirmFlow();
 }
 
+function initMediaUpload() {
+  const form = document.getElementById("bookingForm");
+  const imageBtn = document.getElementById("capturePhotoBtn");
+  const videoBtn = document.getElementById("recordVideoBtn");
+  const imageInput = document.getElementById("imageUploadInput");
+  const videoInput = document.getElementById("videoUploadInput");
+  const imageList = document.getElementById("imagePreviewList");
+  const videoList = document.getElementById("videoPreviewList");
+  const imageEmpty = document.getElementById("imageEmptyState");
+  const videoEmpty = document.getElementById("videoEmptyState");
+
+  if (
+    !form ||
+    !imageBtn ||
+    !videoBtn ||
+    !imageInput ||
+    !videoInput ||
+    !imageList ||
+    !videoList ||
+    !imageEmpty ||
+    !videoEmpty
+  ) {
+    return;
+  }
+
+  if (form.dataset.mediaUploadBound === "true") {
+    return;
+  }
+  form.dataset.mediaUploadBound = "true";
+
+  const mediaState = {
+    imageUrls: [],
+    videoUrls: [],
+  };
+
+  function revokeUrls(type) {
+    const key = type === "image" ? "imageUrls" : "videoUrls";
+    mediaState[key].forEach((url) => URL.revokeObjectURL(url));
+    mediaState[key] = [];
+  }
+
+  function toggleEmptyState(type, isEmpty) {
+    const emptyEl = type === "image" ? imageEmpty : videoEmpty;
+    const listEl = type === "image" ? imageList : videoList;
+
+    emptyEl.style.display = isEmpty ? "flex" : "none";
+    listEl.style.display = isEmpty ? "none" : "flex";
+  }
+
+  function createItem(name, previewNode) {
+    const item = document.createElement("div");
+    item.className = "media-item";
+
+    const nameEl = document.createElement("div");
+    nameEl.className = "media-name";
+    nameEl.title = name;
+    nameEl.textContent = name;
+
+    item.appendChild(previewNode);
+    item.appendChild(nameEl);
+    return item;
+  }
+
+  function renderImages(fileList) {
+    revokeUrls("image");
+    imageList.innerHTML = "";
+
+    const files = Array.from(fileList || []);
+    if (!files.length) {
+      toggleEmptyState("image", true);
+      return;
+    }
+
+    files.forEach((file) => {
+      const url = URL.createObjectURL(file);
+      mediaState.imageUrls.push(url);
+
+      const img = document.createElement("img");
+      img.className = "media-thumb";
+      img.alt = file.name || "Ảnh đã chọn";
+      img.src = url;
+
+      imageList.appendChild(createItem(file.name || "image", img));
+    });
+
+    toggleEmptyState("image", false);
+  }
+
+  function renderVideos(fileList) {
+    revokeUrls("video");
+    videoList.innerHTML = "";
+
+    const files = Array.from(fileList || []);
+    if (!files.length) {
+      toggleEmptyState("video", true);
+      return;
+    }
+
+    files.forEach((file) => {
+      const url = URL.createObjectURL(file);
+      mediaState.videoUrls.push(url);
+
+      const video = document.createElement("video");
+      video.className = "media-thumb";
+      video.src = url;
+      video.controls = true;
+      video.preload = "metadata";
+
+      videoList.appendChild(createItem(file.name || "video", video));
+    });
+
+    toggleEmptyState("video", false);
+  }
+
+  imageBtn.addEventListener("click", function () {
+    imageInput.value = "";
+    imageInput.click();
+  });
+
+  videoBtn.addEventListener("click", function () {
+    videoInput.value = "";
+    videoInput.click();
+  });
+
+  imageInput.addEventListener("change", function () {
+    renderImages(imageInput.files);
+  });
+
+  videoInput.addEventListener("change", function () {
+    renderVideos(videoInput.files);
+  });
+
+  form.addEventListener("reset", function () {
+    revokeUrls("image");
+    revokeUrls("video");
+    imageList.innerHTML = "";
+    videoList.innerHTML = "";
+    toggleEmptyState("image", true);
+    toggleEmptyState("video", true);
+  });
+
+  toggleEmptyState("image", true);
+  toggleEmptyState("video", true);
+}
+
 function initBookingConfirmFlow() {
   const form = document.getElementById("bookingForm");
   const bookingModalEl = document.getElementById("bookingModal");
   const confirmModalEl = document.getElementById("bookingConfirmModal");
+  const imageInput = document.getElementById("imageUploadInput");
+  const videoInput = document.getElementById("videoUploadInput");
+  const confirmImages = document.getElementById("confirmImages");
+  const confirmVideos = document.getElementById("confirmVideos");
+  const confirmMediaUrls = [];
 
   if (!form || !bookingModalEl || !confirmModalEl) return;
   if (form.dataset.confirmFlowBound === "true") return;
@@ -1079,6 +1256,71 @@ function initBookingConfirmFlow() {
     if (value == null) return "-";
     const text = String(value).trim();
     return text || "-";
+  }
+
+  function clearConfirmMedia() {
+    confirmMediaUrls.forEach((url) => URL.revokeObjectURL(url));
+    confirmMediaUrls.length = 0;
+
+    if (confirmImages) {
+      confirmImages.innerHTML = '<span class="confirm-media-empty">-</span>';
+    }
+    if (confirmVideos) {
+      confirmVideos.innerHTML = '<span class="confirm-media-empty">-</span>';
+    }
+  }
+
+  function createConfirmMediaItem(fileName, previewNode) {
+    const item = document.createElement("div");
+    item.className = "confirm-media-item";
+
+    const nameEl = document.createElement("div");
+    nameEl.className = "confirm-media-name";
+    nameEl.title = fileName;
+    nameEl.textContent = fileName;
+
+    item.appendChild(previewNode);
+    item.appendChild(nameEl);
+    return item;
+  }
+
+  function renderConfirmFileList(container, files, type) {
+    if (!container) return;
+
+    container.innerHTML = "";
+    const list = Array.from(files || []);
+
+    if (!list.length) {
+      container.innerHTML = '<span class="confirm-media-empty">-</span>';
+      return;
+    }
+
+    list.forEach((file) => {
+      const url = URL.createObjectURL(file);
+      confirmMediaUrls.push(url);
+
+      let previewNode;
+      if (type === "image") {
+        previewNode = document.createElement("img");
+        previewNode.alt = file.name || "Ảnh";
+      } else {
+        previewNode = document.createElement("video");
+        previewNode.controls = true;
+        previewNode.preload = "metadata";
+      }
+
+      previewNode.className = "confirm-media-thumb";
+      previewNode.src = url;
+      container.appendChild(
+        createConfirmMediaItem(file.name || type, previewNode),
+      );
+    });
+  }
+
+  function renderConfirmMedia() {
+    clearConfirmMedia();
+    renderConfirmFileList(confirmImages, imageInput?.files, "image");
+    renderConfirmFileList(confirmVideos, videoInput?.files, "video");
   }
 
   function selectedText(select) {
@@ -1132,6 +1374,7 @@ function initBookingConfirmFlow() {
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     renderSummary();
+    renderConfirmMedia();
 
     hideBookingStep();
     bootstrap.Modal.getOrCreateInstance(confirmModalEl).show();
@@ -1159,10 +1402,18 @@ function initBookingConfirmFlow() {
       );
 
       form.reset();
+      clearConfirmMedia();
 
       if (!isEmbeddedMode) {
         showBookingStep();
       }
+    });
+  }
+
+  if (!confirmModalEl.dataset.mediaCleanupBound) {
+    confirmModalEl.dataset.mediaCleanupBound = "true";
+    confirmModalEl.addEventListener("hidden.bs.modal", function () {
+      clearConfirmMedia();
     });
   }
 }
