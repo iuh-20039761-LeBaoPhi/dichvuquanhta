@@ -20,7 +20,7 @@ $customer = $_SESSION['customer'] ?? null;
     align-items:center;
     justify-content:space-between;
     padding:14px 20px;
-      flex-wrap:nowrap;
+    flex-wrap:nowrap;
 }
 
 .site-logo{
@@ -45,8 +45,9 @@ $customer = $_SESSION['customer'] ?? null;
     display:flex;
     align-items:center;
     gap:22px;
-      flex-shrink:0;
-      margin-left:40px;
+    flex-shrink:0;
+    margin-left:40px;
+    transition: all 0.3s ease;
 }
 
 .site-nav a{
@@ -55,21 +56,24 @@ $customer = $_SESSION['customer'] ?? null;
     font-size:14px;
     font-weight:500;
     white-space:nowrap; 
-       transition: color 0.2s ease;
+    transition: color 0.2s ease;
 }
+
 .site-nav a.active{
     color:#1abc9c;
     font-weight:600;
 }
+
 .site-nav a:active{
     transform: scale(0.95);
 }
+
 .site-btn{
     background:#1abc9c;
     color:#fff;
     padding:6px 12px;
     border-radius:6px;
-     font-size:13px;
+    font-size:13px;
 }
 
 .logo-group{
@@ -83,6 +87,7 @@ $customer = $_SESSION['customer'] ?? null;
     border-radius:8px;
     border:1px solid #eee;
 }
+
 .nav-user{
     font-size:14px;
     font-weight:500;
@@ -92,18 +97,21 @@ $customer = $_SESSION['customer'] ?? null;
     overflow:hidden;
     text-overflow:ellipsis;
 }
+
 .site-user-area{
     display:flex;
     align-items:center;
     gap:10px;
     flex-shrink:0;
-     border-left:1px solid #eee;
+    border-left:1px solid #eee;
     padding-left:10px;
 }
+
 .site-user-area a{
     text-decoration:none;
     font-size:14px;
 }
+
 /* ===== MENU TOGGLE ===== */
 .menu-toggle{
     display:none;
@@ -112,131 +120,138 @@ $customer = $_SESSION['customer'] ?? null;
     border:none;
     cursor:pointer;
 }
+
 .site-nav a:hover{
     color:#1abc9c;
 }
-.site-nav{
-    transition: all 0.3s ease;
-}
+
 /* ===== MOBILE ===== */
 @media (max-width: 768px){
 
-    /* hiện nút ☰ */
+    /* Header chính */
+    .site-header-content{
+        flex-direction: column;
+        align-items: flex-start;
+        gap:8px; /* giảm khoảng cách */
+        padding:10px 15px;
+    }
+
+    /* Logo chính + logo phụ */
+    .logo-group{
+        width:100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Toggle menu */
     .menu-toggle{
         display:block;
-        margin-left:auto;
+        margin:5px 0;
+        font-size:24px;
     }
 
-    /* ẨN MENU */
+    /* Menu */
     .site-nav{
         display:none;
-        flex-direction:column;
+        flex-direction: column;
         width:100%;
         background:#fff;
-        padding:10px 0;
+        padding:5px 0;
         border-top:1px solid #eee;
+        gap:5px; /* khoảng cách giữa menu items */
     }
 
-    /* Khi bấm thì hiện */
+    /* Khi toggle menu */
     .site-nav.active{
         display:flex;
     }
 
-    /* Menu item */
     .site-nav a{
-        padding:10px 20px;
+        padding:8px 15px; /* giảm padding */
+        font-size:13px;
         width:100%;
-        
     }
 
-    /* USER AREA xuống dưới */
+    /* User area */
     .site-user-area{
+         flex-direction: column;
+        align-items: flex-start;
         width:100%;
-        justify-content:space-between;
-        padding-top:10px;
+        padding:10px 15px;
+        border-top:1px solid #eee;
+        gap:6px;
     }
+
+     .site-user-area a{
+    display:inline-block;
+    width:auto;
 }
 
-@media (max-width: 768px){
-
-    .site-header-content{
-        flex-direction: column;
-        align-items: flex-start;
-        gap:10px;
-    }
-
-    .site-nav a{
-        font-size:13px;
-    }
-
-    .logo-group{
-        width:100%;
-        justify-content: space-between;
-    }
-
-    .site-user-area{
-        width:100%;
-        justify-content: space-between;
-    }
+   .site-btn{
+    display:inline-block;
+    width:auto;
+    padding:6px 12px;
+    font-size:13px;
+    border-radius:6px;
+}
 
     .nav-user{
         max-width:120px;
     }
-
+      .site-nav a:hover,
+.site-nav a.active{
+    color:#1abc9c;
+    font-weight:600;
+    background-color: #f0fdf8;
+    border-radius:6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
 }
 </style>
+
 <header class="site-header">
   <div class="container site-header-content">
 
-   <div class="logo-group">
+    <div class="logo-group">
+      <!-- Logo chính -->
+      <a href="https://iuh-20039761-lebaophi.github.io/GlobalCare/index.html" class="site-logo">
+          <img src="../demo/img/dichvuquanhta.png" alt="logo">
+          <span class="logo-text">DỊCH VỤ VỆ SINH</span>
+      </a>
 
-    <!-- Logo chính -->
-    <a href="index.php" class="site-logo">
-        <img src="../img/ChatGPT Image 14_12_57 7 thg 3, 2026.png">
-        <span class="logo-text">DỊCH VỤ VỆ SINH</span>
-    </a>
-
-    <!-- Logo dịch vụ quanh ta -->
-    <a href="https://iuh-20039761-lebaophi.github.io/GlobalCare/index.html" target="_blank">
-        <img src="../demo/img/dichvuquanhta.png" class="logo-sub">
-    </a>
-
-</div>
-<button class="menu-toggle">☰</button>
-    <nav class="site-nav">
-     <?php $page = basename($_SERVER['PHP_SELF']); ?>
-
-<a href="index.php" class="<?= $page == 'index.php' ? 'active' : '' ?>">Trang chủ</a>
-<a href="about.php" class="<?= $page == 'about.php' ? 'active' : '' ?>">Giới thiệu</a>
-<a href="services.php" class="<?= $page == 'services.php' ? 'active' : '' ?>">Dịch vụ</a>
-<a href="booking.php" class="<?= $page == 'booking.php' ? 'active' : '' ?>">Đặt lịch</a>
-<a href="pricing.php" class="<?= $page == 'pricing.php' ? 'active' : '' ?>">Bảng giá</a>
-<a href="faq.php" class="<?= $page == 'faq.php' ? 'active' : '' ?>">FAQ</a>
-<a href="contact.php" class="<?= $page == 'contact.php' ? 'active' : '' ?>">Liên hệ</a>
-<a href="blog.php" class="<?= $page == 'blog.php' ? 'active' : '' ?>">Bài viết</a>
-<a href="terms.php" class="<?= $page == 'terms.php' ? 'active' : '' ?>">Điều khoản dịch vụ</a>
-
-    </nav>
-
-    <!-- USER AREA -->
-    <div class="site-user-area">
-
-      <?php if ($customer): ?>
-
-        <span class="nav-user">
-  👋 Hello <?= substr($customer['phone'], 0, 4) ?>****
-</span>
-
-       <a href="customer_dashboard.php" class="site-btn">Đơn hàng</a>
-        <a href="logout.php" class="site-btn">Đăng xuất</a>
-
-      <?php else: ?>
-
-        <a href="login_customer.php" class="site-btn">Đăng nhập</a>
-
-      <?php endif; ?>
-
+      <!-- Logo phụ -->
+      <a href="index.php" target="_blank">
+          <img src="../img/logo_main.png" class="logo-sub">
+      </a>
     </div>
+
+    <!-- Nút toggle menu -->
+    <button class="menu-toggle">☰</button>
+
+    <!-- Menu -->
+    <nav class="site-nav">
+  <?php $page = basename($_SERVER['PHP_SELF']); ?>
+  <a href="index.php" class="<?= $page == 'index.php' ? 'active' : '' ?>">Trang chủ</a>
+  <a href="about.php">Giới thiệu</a>
+  <a href="services.php">Dịch vụ</a>
+  <a href="booking.php">Đặt lịch</a>
+  <a href="pricing.php">Bảng giá</a>
+  <a href="faq.php">FAQ</a>
+  <a href="contact.php">Liên hệ</a>
+  <a href="blog.php">Bài viết</a>
+  <a href="terms.php">Điều khoản dịch vụ</a>
+
+  <!-- 👇 MOVE USER VÀO ĐÂY -->
+  <div class="site-user-area">
+    <?php if ($customer): ?>
+      <span class="nav-user">👋 Hello <?= substr($customer['phone'], 0, 4) ?>****</span>
+      <a href="customer_dashboard.php" class="site-btn">Đơn hàng</a>
+      <a href="logout.php" class="site-btn">Đăng xuất</a>
+    <?php else: ?>
+      <a href="login_customer.php" class="site-btn">Đăng nhập</a>
+    <?php endif; ?>
+  </div>
+</nav>
 
   </div>
 </header>

@@ -82,39 +82,37 @@ h3{
 <header class="site-header">
   <div class="container site-header-content">
 
-   <div class="logo-group">
-    <!-- Logo chính -->
-    <a href="index.html" class="site-logo">
-        <img src="img/ChatGPT Image 14_12_57 7 thg 3, 2026.png">
+    <div class="logo-group">
+      <!-- Logo chính -->
+      <a href="https://iuh-20039761-lebaophi.github.io/dichvuquanhta/" class="site-logo">
+        <img src="../demo/img/dichvuquanhta.png" alt="logo">
         <span class="logo-text">DỊCH VỤ VỆ SINH</span>
-    </a>
+      </a>
 
-    <!-- Logo dịch vụ quanh ta -->
-    <a href="https://iuh-20039761-lebaophi.github.io/GlobalCare/index.html" target="_blank">
-        <img src="img/dichvuquanhta.png" class="logo-sub">
-    </a>
-  </div>
+      <!-- Logo phụ -->
+      <a href="index.html" target="_blank">
+        <img src="../demo/img/ChatGPT Image 14_12_57 7 thg 3, 2026.png" class="logo-sub">
+      </a>
+    </div>
 
-  <button class="menu-toggle">☰</button>
+    <!-- Nút toggle menu -->
+    <button class="menu-toggle">☰</button>
 
-  <nav class="site-nav">
-    <!-- Active class tĩnh, bạn có thể thay đổi theo trang -->
-    <a href="index.html">Trang chủ</a>
-    <a href="about.html">Giới thiệu</a>
-    <a href="services.html">Dịch vụ</a>
-    <a href="booking.html">Đặt lịch</a>
-    <a href="pricing.html">Bảng giá</a>
-    <a href="faq.html">FAQ</a>
-    <a href="contact.html">Liên hệ</a>
-    <a href="blog.html">Bài viết</a>
-    <a href="terms.html">Điều khoản dịch vụ</a>
-  </nav>
+    <!-- Menu -->
+    <nav class="site-nav">
+      <a href="index.html">Trang chủ</a>
+      <a href="about.html">Giới thiệu</a>
+      <a href="services.html">Dịch vụ</a>
+      <a href="booking.html">Đặt lịch</a>
+      <a href="pricing.html">Bảng giá</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contact.html">Liên hệ</a>
+      <a href="blog.html">Bài viết</a>
+      <a href="terms.html">Điều khoản dịch vụ</a>
 
-  <!-- USER AREA -->
-  <div class="site-user-area">
-    <!-- Tạm để link đăng nhập -->
-    <a href="login_customer.html" class="site-btn">Đăng nhập</a>
-  </div>
+      <!-- USER AREA -->
+      <div class="site-user-area" id="userArea"></div>
+    </nav>
 
   </div>
 </header>
@@ -195,41 +193,36 @@ const SERVICES = [
 {
     category:"🏠 Vệ sinh theo loại công trình",
     items:[
-        {name:"Căn hộ chung cư", image:"../img/house-clean.jpg", desc:"Dọn dẹp căn hộ sạch sẽ toàn diện"},
-        {name:"Nhà phố / Biệt thự", image:"../img/house-clean.jpg", desc:"Vệ sinh kỹ lưỡng không gian sống"},
-        {name:"Sau xây dựng", image:"../img/xaydung.jpg", desc:"Làm sạch công trình mới"},
-        {name:"Nhà xưởng", image:"../img/office-clean.jpg", desc:"Vệ sinh khu sản xuất"},
-        {name:"Kho bãi", image:"../img/office-clean.jpg", desc:"Làm sạch kho hàng"},
-        {name:"Công trình công cộng", image:"../img/office-clean.jpg", desc:"Trường học, bệnh viện..."}
-    ]
-},
-{
-    category:"🧹 Vệ sinh chuyên sâu",
-    items:[
-        {name:"Tổng vệ sinh", image:"../img/house-clean.jpg", desc:"Dọn dẹp sâu toàn bộ nhà"},
-        {name:"Lau kính mặt ngoài", image:"../img/office-clean.jpg", desc:"Lau kính cao tầng chuyên nghiệp"},
-        {name:"Giặt thảm", image:"../img/sofa.jpg", desc:"Làm sạch thảm chuyên dụng"},
-        {name:"Giặt sofa", image:"../img/sofa.jpg", desc:"Khử khuẩn ghế sofa"},
-        {name:"Giặt rèm cửa", image:"../img/sofa.jpg", desc:"Làm sạch rèm cửa tận nơi"}
-    ]
-},
-{
-    category:"🏢 Vệ sinh theo ngành",
-    items:[
-        {name:"Nhà hàng / Quán ăn", image:"../img/office-clean.jpg", desc:"Đảm bảo vệ sinh an toàn thực phẩm"},
-        {name:"Khách sạn", image:"../img/office-clean.jpg", desc:"Tiêu chuẩn sạch cao cấp"},
-        {name:"Spa / Salon", image:"../img/office-clean.jpg", desc:"Không gian sạch thư giãn"},
-        {name:"Phòng gym", image:"../img/office-clean.jpg", desc:"Khử mùi & vi khuẩn"},
-        {name:"TTTM", image:"../img/office-clean.jpg", desc:"Vệ sinh trung tâm thương mại"},
-        {name:"Showroom", image:"../img/office-clean.jpg", desc:"Giữ hình ảnh chuyên nghiệp"}
-    ]
-},
-{
-    category:"🦠 Khử khuẩn & diệt côn trùng",
-    items:[
-        {name:"Khử trùng", image:"../img/sofa.jpg", desc:"Diệt khuẩn toàn diện"},
-        {name:"Diệt côn trùng", image:"../img/sofa.jpg", desc:"Gián, muỗi, mối"},
-        {name:"Khử mùi", image:"../img/sofa.jpg", desc:"Xử lý mùi hôi khó chịu"}
+        {
+            name:"Nhà ở (căn hộ, nhà phố)",
+            image:"../img/house-clean.jpg",
+            desc:"Dọn dẹp toàn diện cho không gian sống",
+            addons:["Giặt sofa","Giặt thảm","Lau kính","Khử mùi"]
+        },
+        {
+            name:"Văn phòng",
+            image:"../img/office-clean.jpg",
+            desc:"Giữ môi trường làm việc sạch sẽ chuyên nghiệp",
+            addons:["Lau kính","Khử khuẩn","Giặt thảm"]
+        },
+        {
+            name:"Sau xây dựng",
+            image:"../img/xaydung.jpg",
+            desc:"Xử lý bụi bẩn, xi măng, sơn",
+            addons:["Lau kính","Khử mùi"]
+        },
+        {
+            name:"Nhà xưởng / Kho bãi",
+            image:"../img/office-clean.jpg",
+            desc:"Vệ sinh khu sản xuất, kho hàng",
+            addons:["Khử khuẩn","Diệt côn trùng"]
+        },
+        {
+            name:"Công trình công cộng",
+            image:"../img/office-clean.jpg",
+            desc:"Trường học, bệnh viện, TTTM",
+            addons:["Khử khuẩn","Diệt côn trùng","Lau kính"]
+        }
     ]
 }
 ];
@@ -246,23 +239,39 @@ SERVICES.forEach(group => {
         <div class="row">
     `;
 
-    group.items.forEach(s=>{
-        groupHTML += `
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="service-card h-100">
-                <img src="${s.image}" class="w-100">
-                <div class="p-3">
-                    <h6 class="fw-bold">${s.name}</h6>
-                    <p class="text-muted small">${s.desc}</p>
-                    <a href="booking.html" class="btn btn-sm text-white"
-                       style="background:var(--main-color)">
-                       Đặt lịch
-                    </a>
-                </div>
-            </div>
+   group.items.forEach(s => {
+
+    let addonHTML = "";
+    if (s.addons) {
+        addonHTML = `
+        <div class="mt-2">
+            <small class="text-muted">+ Dịch vụ thêm:</small><br>
+          ${s.addons.map(a => `<span class="badge bg-secondary me-1">${a}</span>`).join("")}
         </div>
         `;
-    });
+    }
+
+    groupHTML += `
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="service-card h-100">
+            <img src="${s.image}" class="w-100">
+            <div class="p-3">
+                <h6 class="fw-bold">${s.name}</h6>
+                <p class="text-muted small">${s.desc}</p>
+               <p class="text-success small fw-bold">✔ Dịch vụ chính</p>
+
+                ${addonHTML}
+
+                <a href="booking.html?service=${encodeURIComponent(s.name)}&addons=${encodeURIComponent(s.addons.join(","))}"
+                   class="btn btn-sm text-white mt-2"
+                   style="background:var(--main-color)">
+                   Đặt lịch
+                </a>
+            </div>
+        </div>
+    </div>
+    `;
+});
 
     groupHTML += `</div></div>`;
 
@@ -270,12 +279,64 @@ SERVICES.forEach(group => {
 });
 </script>
 <script>
-const menuToggle = document.querySelector('.menu-toggle');
-const siteNav = document.querySelector('.site-nav');
+  // ===== MENU TOGGLE =====
+  const toggle = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('.site-nav');
 
-menuToggle.addEventListener('click', () => {
-    siteNav.classList.toggle('active');
-});
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+    });
+  }
+
+  // ===== SCROLL HEADER =====
+  window.addEventListener('scroll', () => {
+    const header = document.querySelector('.site-header');
+    if (window.scrollY > 10) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+
+  // ===== ACTIVE MENU =====
+  const links = document.querySelectorAll(".site-nav a");
+  const currentPage = window.location.pathname.split("/").pop();
+
+  links.forEach(link => {
+    if (link.getAttribute("href") === currentPage) {
+      link.classList.add("active");
+    }
+  });
+
+  // ===== USER LOGIN (FAKE FOR DEMO) =====
+  const customer = JSON.parse(localStorage.getItem("customer"));
+  const userArea = document.getElementById("userArea");
+
+  if (customer) {
+    const phoneHidden = customer.phone.slice(0, 4) + "****";
+
+    userArea.innerHTML = `
+      <span class="nav-user">👋 Hello ${phoneHidden}</span>
+      <a href="dashboard.html" class="site-btn">Đơn hàng</a>
+      <a href="#" class="site-btn" onclick="logout()">Đăng xuất</a>
+    `;
+  } else {
+    userArea.innerHTML = `
+      <a href="#" class="site-btn" onclick="fakeLogin()">Đăng nhập</a>
+    `;
+  }
+
+  function fakeLogin() {
+    const demoUser = { phone: "0901234567" };
+    localStorage.setItem("customer", JSON.stringify(demoUser));
+    location.reload();
+  }
+
+  function logout() {
+    localStorage.removeItem("customer");
+    location.reload();
+  }
 </script>
 </body>
 </html>

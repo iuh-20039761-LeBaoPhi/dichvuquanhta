@@ -16,39 +16,37 @@
 <header class="site-header">
   <div class="container site-header-content">
 
-   <div class="logo-group">
-    <!-- Logo chính -->
-    <a href="index.html" class="site-logo">
-        <img src="../img/ChatGPT Image 14_12_57 7 thg 3, 2026.png">
+    <div class="logo-group">
+      <!-- Logo chính -->
+      <a href="https://iuh-20039761-lebaophi.github.io/dichvuquanhta/" class="site-logo">
+        <img src="../demo/img/dichvuquanhta.png" alt="logo">
         <span class="logo-text">DỊCH VỤ VỆ SINH</span>
-    </a>
+      </a>
 
-    <!-- Logo dịch vụ quanh ta -->
-    <a href="https://iuh-20039761-lebaophi.github.io/GlobalCare/index.html" target="_blank">
-        <img src="../demo/img/dichvuquanhta.png" class="logo-sub">
-    </a>
-  </div>
+      <!-- Logo phụ -->
+      <a href="index.html" target="_blank">
+        <img src="../demo/img/ChatGPT Image 14_12_57 7 thg 3, 2026.png" class="logo-sub">
+      </a>
+    </div>
 
-  <button class="menu-toggle">☰</button>
+    <!-- Nút toggle menu -->
+    <button class="menu-toggle">☰</button>
 
-  <nav class="site-nav">
-    <!-- Active class tĩnh, bạn có thể thay đổi theo trang -->
-    <a href="index.html">Trang chủ</a>
-    <a href="about.html">Giới thiệu</a>
-    <a href="services.html">Dịch vụ</a>
-    <a href="booking.html">Đặt lịch</a>
-    <a href="pricing.html">Bảng giá</a>
-    <a href="faq.html">FAQ</a>
-    <a href="contact.html">Liên hệ</a>
-    <a href="blog.html">Bài viết</a>
-    <a href="terms.html">Điều khoản dịch vụ</a>
-  </nav>
+    <!-- Menu -->
+    <nav class="site-nav">
+      <a href="index.html">Trang chủ</a>
+      <a href="about.html">Giới thiệu</a>
+      <a href="services.html">Dịch vụ</a>
+      <a href="booking.html">Đặt lịch</a>
+      <a href="pricing.html">Bảng giá</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contact.html">Liên hệ</a>
+      <a href="blog.html">Bài viết</a>
+      <a href="terms.html">Điều khoản dịch vụ</a>
 
-  <!-- USER AREA -->
-  <div class="site-user-area">
-    <!-- Tạm để link đăng nhập -->
-    <a href="login.html" class="site-btn">Đăng nhập</a>
-  </div>
+      <!-- USER AREA -->
+      <div class="site-user-area" id="userArea"></div>
+    </nav>
 
   </div>
 </header>
@@ -409,12 +407,64 @@ serviceSelect.addEventListener("change", () => {
 });
 </script>
 <script>
-const menuToggle = document.querySelector('.menu-toggle');
-const siteNav = document.querySelector('.site-nav');
+  // ===== MENU TOGGLE =====
+  const toggle = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('.site-nav');
 
-menuToggle.addEventListener('click', () => {
-    siteNav.classList.toggle('active');
-});
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+    });
+  }
+
+  // ===== SCROLL HEADER =====
+  window.addEventListener('scroll', () => {
+    const header = document.querySelector('.site-header');
+    if (window.scrollY > 10) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+
+  // ===== ACTIVE MENU =====
+  const links = document.querySelectorAll(".site-nav a");
+  const currentPage = window.location.pathname.split("/").pop();
+
+  links.forEach(link => {
+    if (link.getAttribute("href") === currentPage) {
+      link.classList.add("active");
+    }
+  });
+
+  // ===== USER LOGIN (FAKE FOR DEMO) =====
+  const customer = JSON.parse(localStorage.getItem("customer"));
+  const userArea = document.getElementById("userArea");
+
+  if (customer) {
+    const phoneHidden = customer.phone.slice(0, 4) + "****";
+
+    userArea.innerHTML = `
+      <span class="nav-user">👋 Hello ${phoneHidden}</span>
+      <a href="dashboard.html" class="site-btn">Đơn hàng</a>
+      <a href="#" class="site-btn" onclick="logout()">Đăng xuất</a>
+    `;
+  } else {
+    userArea.innerHTML = `
+      <a href="#" class="site-btn" onclick="fakeLogin()">Đăng nhập</a>
+    `;
+  }
+
+  function fakeLogin() {
+    const demoUser = { phone: "0901234567" };
+    localStorage.setItem("customer", JSON.stringify(demoUser));
+    location.reload();
+  }
+
+  function logout() {
+    localStorage.removeItem("customer");
+    location.reload();
+  }
 </script>
 </body>
 </html>
