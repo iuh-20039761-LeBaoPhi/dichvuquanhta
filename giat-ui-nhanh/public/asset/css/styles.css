@@ -202,7 +202,7 @@ body {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: url("../image/dich-vu-giat-ui-tai-nha-03.png");
+  background: url("../image/dich-vu-giat-ui-tai-nha-03.jpg");
   mix-blend-mode: overlay;
   opacity: 0.2;
 }
