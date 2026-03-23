@@ -160,7 +160,7 @@
 
           <div class="hero-image" style="display: none">
             <img
-              src="public/asset/image/dich-vu-giat-ui-tai-nha-01.png"
+              src="public/asset/image/dich-vu-giat-ui-tai-nha-01.jpg"
               alt="Clean Towels"
             />
           </div>
@@ -343,7 +343,7 @@
                 "
               >
                 <img
-                  src="public/asset/image/dich-vu-giat-ui-tai-nha-02.png"
+                  src="public/asset/image/dich-vu-giat-ui-tai-nha-02.jpg"
                   alt="Đội ngũ chuyên nghiệp"
                 />
               </div>
@@ -614,189 +614,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Pricing Section -->
-    <!-- <section id="pricing">
-      <div class="container">
-        <div class="section-header">
-          <div
-            class="section-badge"
-            style="background: #dcfce7; color: #16a34a"
-          >
-            <span>GÓI DỊCH VỤ</span>
-          </div>
-          <h2>
-            Giá Cả
-            <span
-              style="
-                background: linear-gradient(to right, #16a34a, #14b8a6);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-              "
-              >Hợp Lý</span
-            >
-            Nhất
-          </h2>
-          <p>Chọn gói phù hợp với nhu cầu của bạn.</p>
-        </div>
-
-        <div class="pricing-grid" id="pricingGrid"></div>
-
-        <script>
-          document.addEventListener("DOMContentLoaded", function () {
-            const pricingGrid = document.getElementById("pricingGrid");
-            Promise.all([
-              fetch("public/services.json").then(res => res.json()),
-              fetch("public/discount.json").then(res => res.json())
-            ])
-            .then(([servicesPayload, discounts]) => {
-              const services = Array.isArray(servicesPayload)
-                ? servicesPayload
-                : Array.isArray(servicesPayload && servicesPayload.services)
-                  ? servicesPayload.services
-                  : [];
-
-         
-              function isDiscountActive(discount) {
-                const today = new Date();
-                const start = new Date(discount.start_date);
-                const end = new Date(discount.end_date);
-                return today >= start && today <= end;
-              }
-
-              function getDiscount(serviceId) {
-                return discounts.find(d => d.service_id === serviceId);
-              }
-
-              const packageServices = services.filter(
-                (service) => service.price_unit === "combo"
-              );
-
-              let html = "";
-
-              const styleGradients = [
-                { style: "background: linear-gradient(135deg, #f97316, #dc2626)" },
-                { style: "background: linear-gradient(135deg, #3b82f6, #8b5cf6)" },
-                { style: "background: linear-gradient(135deg, #10b981, #14b8a6)" },
-              ];
-
-              packageServices.forEach(function (service, index) {
-
-                const styleGradient =
-                  styleGradients[index % styleGradients.length];
-
-                const price = Number(service.price || 0);
-
-            
-                const discount = getDiscount(service.id);
-                let finalPrice = price;
-                let discountLabel = "";
-
-                if (discount && isDiscountActive(discount)) {
-                  finalPrice = price - (price * discount.discount_percent / 100);
-                  discountLabel = `
-                    <div class="discount-badge">
-                      ${discount.label}
-                    </div>
-                  `;
-                }
-
-                const popularBadge =
-                  index === 0
-                    ? `<div class="popular-badge">PHỔ BIẾN NHẤT</div>`
-                    : "";
-
-                const features = service.summary.split("\n");
-
-                let featureHTML = "";
-
-                features.forEach(function (item, i) {
-                  if (i !== 0) {
-                    featureHTML += `
-                    <li>
-                      <span class="check-icon" style="color:white">✓</span>
-                      <span>${item}</span>
-                    </li>
-                    `;
-                  }
-                });
-
-                html += `
-                <div class="pricing-card">
-
-                  ${popularBadge}
-                  ${discountLabel}
-
-                  <div class="pricing-header">
-
-                    <div class="pricing-icon" style="${styleGradient.style}">
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                        width="30"
-                        height="30"
-                        fill="currentColor"
-                        class="bi bi-star-fill"
-                        viewBox="0 0 16 16">
-                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
-                      </svg>
-                    </div>
-
-                    <h3>${service.service_name}</h3>
-
-                  </div>
-
-                  <div class="pricing-price">
-
-                    ${
-                      discount && isDiscountActive(discount)
-                        ? `<div class="old-price">${price.toLocaleString("vi-VN")} VNĐ</div>`
-                        : ""
-                    }
-
-                    <div class="price-amount"
-                      style="
-                      background:linear-gradient(to right,#f97316,#dc2626);
-                      -webkit-background-clip:text;
-                      -webkit-text-fill-color:transparent;
-                      ">
-                      ${Math.round(finalPrice).toLocaleString("vi-VN")} VNĐ
-                    </div>
-
-                    <input type="hidden"
-                      class="price-combo"
-                      data-price="${finalPrice}" />
-
-                  </div>
-
-                  <p class="description">${features[0]}</p>
-
-                  <ul class="pricing-features">
-                    ${featureHTML}
-                  </ul>
-
-                  <a class="btn btn-primary choose-service"
-                    data-bs-toggle="modal"
-                    data-bs-target="#myModal">
-                    Chọn gói này
-                  </a>
-
-                </div>
-                `;
-              });
-
-              pricingGrid.innerHTML = html;
-            })
-            .catch((err) => {
-              console.error(err);
-              pricingGrid.innerHTML =
-                "<p>Không thể tải dữ liệu gói dịch vụ.</p>";
-            });
-          });
-        </script>
-    
-        <div id="bookingCombo"></div>
-      </div>
-    </section> -->
 
     <!-- Footer -->
     <footer>
