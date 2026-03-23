@@ -48,6 +48,10 @@
     --gradient-orange:    linear-gradient(135deg, #f97316 0%, #fbbf24 100%);
 }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
@@ -877,14 +881,30 @@ header.sticky-top {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .hero-section {
+        padding: 70px 0 !important;
+    }
+
     .hero-section h1 {
         font-size: 2rem;
     }
-    
+
+    .hero-section p {
+        font-size: 1rem;
+    }
+
     .section-title h2 {
         font-size: 1.8rem;
     }
-    
+
+    .search-box {
+        padding: 20px;
+    }
+
+    .service-card {
+        padding: 20px;
+    }
+
     .car-detail-img {
         height: 250px;
     }
@@ -921,6 +941,31 @@ header.sticky-top {
         font-size: 0.84rem;
     }
 
+}
+
+/* ── Small Phone (≤576px) ── */
+@media (max-width: 576px) {
+    .hero-section     { padding: 60px 0 !important; }
+    .hero-section h1  { font-size: 1.7rem; }
+    .hero-section p   { font-size: 0.92rem; margin-bottom: 20px; }
+    .search-box       { padding: 14px; margin-top: 20px; }
+    .section-title h2 { font-size: 1.55rem; }
+    .section-title    { margin-bottom: 28px; }
+    .service-card     { padding: 18px; }
+    .car-card:hover   { transform: none; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+    .service-card:hover { transform: none; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+    .car-gallery-thumb { height: 80px; }
+    .car-detail-img   { height: 200px; }
+    .booking-sticky   { position: static !important; }
+}
+
+/* ── Very Small Phone (≤480px) ── */
+@media (max-width: 480px) {
+    .hero-section     { padding: 50px 0 !important; }
+    .hero-section h1  { font-size: 1.5rem; }
+    .section-title h2 { font-size: 1.4rem; }
+    .search-box       { padding: 12px; }
+    .service-icon     { width: 60px; height: 60px; font-size: 1.5rem; }
 }
 
 /* Loading Spinner */

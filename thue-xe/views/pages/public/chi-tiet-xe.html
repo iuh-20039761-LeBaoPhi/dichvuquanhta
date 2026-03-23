@@ -156,6 +156,15 @@
                 overflow-x: hidden;
             }
         }
+        @media (max-width: 768px) {
+            .gallery-main-img,
+            .gallery-main-video { height: 280px; }
+        }
+        @media (max-width: 576px) {
+            .gallery-main-img,
+            .gallery-main-video { height: min(56vw, 240px); }
+            .gallery-thumb { width: 66px; height: 52px; }
+        }
     .gallery-thumbs.is-hidden { display: none; }
     .gallery-thumb {
       position: relative; flex-shrink: 0;
