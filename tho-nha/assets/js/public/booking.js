@@ -189,22 +189,22 @@ function buildBookingModalFallback() {
                     <form id="bookingForm">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="name" placeholder="Nhập họ và tên" required>
+                                <label for="hoten" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="hoten" placeholder="Nhập họ và tên" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                <input type="tel" class="form-control" id="phone" placeholder="0xxx xxx xxx" required>
+                                <label for="sodienthoai" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="sodienthoai" placeholder="0xxx xxx xxx" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="mainService" class="form-label">Loại dịch vụ <span class="text-danger">*</span></label>
-                                <select class="form-select" id="mainService" required>
+                                <label for="loaidichvu" class="form-label">Loại dịch vụ <span class="text-danger">*</span></label>
+                                <select class="form-select" id="loaidichvu" required>
                                     <option value="">-- Chọn loại dịch vụ --</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="subService" class="form-label">Dịch vụ cụ thể <span class="text-danger">*</span></label>
-                                <select class="form-select" id="subService" disabled required>
+                                <label for="dichvucuthe" class="form-label">Dịch vụ cụ thể <span class="text-danger">*</span></label>
+                                <select class="form-select" id="dichvucuthe" disabled required>
                                     <option value="">-- Chọn dịch vụ chi tiết --</option>
                                 </select>
                             </div>
@@ -215,16 +215,16 @@ function buildBookingModalFallback() {
                                 <div id="brandOptionsContainer" class="brand-options"></div>
                             </div>
                             <div class="col-12">
-                                <label for="servicePrice" class="form-label">Giá dịch vụ (tham khảo)</label>
-                                <input type="text" class="form-control" id="servicePrice" readonly placeholder="Chọn dịch vụ để xem giá">
+                                <label for="giadichvu" class="form-label">Giá dịch vụ (tham khảo)</label>
+                                <input type="text" class="form-control" id="giadichvu" readonly placeholder="Chọn dịch vụ để xem giá">
                             </div>
                             <div class="col-12">
-                                <label for="address" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="address" rows="2" placeholder="Số nhà, đường, phường, quận..." required></textarea>
+                                <label for="diachi" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="diachi" rows="2" placeholder="Số nhà, đường, phường, quận..." required></textarea>
                             </div>
                             <div class="col-12">
-                                <label for="note" class="form-label">Ghi chú thêm</label>
-                                <textarea class="form-control" id="note" rows="2" placeholder="Mô tả thêm về tình trạng hư hỏng..."></textarea>
+                                <label for="ghichu" class="form-label">Ghi chú thêm</label>
+                                <textarea class="form-control" id="ghichu" rows="2" placeholder="Mô tả thêm về tình trạng hư hỏng..."></textarea>
                             </div>
                         </div>
                         <div class="mt-4">
@@ -245,9 +245,9 @@ async function initBooking() {
 
     // Khởi tạo refs sau khi modal đã có trong DOM
     bookingModal          = new bootstrap.Modal(document.getElementById('bookingModal'));
-    mainService           = document.getElementById('mainService');
-    subService            = document.getElementById('subService');
-    servicePrice          = document.getElementById('servicePrice');
+    mainService           = document.getElementById('loaidichvu') || document.getElementById('mainService');
+    subService            = document.getElementById('dichvucuthe') || document.getElementById('subService');
+    servicePrice          = document.getElementById('giadichvu') || document.getElementById('servicePrice');
     brandSelectorWrap     = document.getElementById('brandSelectorWrap');
     brandOptionsContainer = document.getElementById('brandOptionsContainer');
     pricingBreakdownWrap  = document.getElementById('pricingBreakdownWrap');
@@ -423,7 +423,7 @@ async function initBooking() {
             estimatedPrice = p.totalMin;
         }
 
-        let noteVal = document.getElementById('note').value.trim();
+        let noteVal = document.getElementById('ghichu').value.trim();
         if (_mediaFiles.length > 0) {
             const imgs = _mediaFiles.filter(m => m.file.type.startsWith('image/')).length;
             const vids = _mediaFiles.filter(m => m.file.type.startsWith('video/')).length;
@@ -434,10 +434,10 @@ async function initBooking() {
         }
 
         _pendingData = {
-            name:            document.getElementById('name').value.trim(),
-            phone:           document.getElementById('phone').value.trim(),
+            name:            document.getElementById('hoten').value.trim(),
+            phone:           document.getElementById('sodienthoai').value.trim(),
             service_id:      serviceName,
-            address:         document.getElementById('address').value.trim(),
+            address:         document.getElementById('diachi').value.trim(),
             note:            noteVal,
             selected_brand:  selectedBrand,
             estimated_price: estimatedPrice
@@ -458,7 +458,7 @@ async function initBooking() {
         document.getElementById('cf-name').textContent    = _pendingData.name;
         document.getElementById('cf-phone').textContent   = _pendingData.phone;
         document.getElementById('cf-service').textContent = _pendingData.service_id;
-        document.getElementById('cf-address').textContent = document.getElementById('address').value.trim();
+        document.getElementById('cf-address').textContent = document.getElementById('diachi').value.trim();
 
         // Ưu tiên hiện tổng tạm tính (bd-total) nếu có breakdown, fallback về giá base
         const bdTotal      = document.getElementById('bd-total');
@@ -475,7 +475,7 @@ async function initBooking() {
             priceRow.style.display = 'none';
         }
 
-        const rawNote = document.getElementById('note').value.trim();
+        const rawNote = document.getElementById('ghichu').value.trim();
         const noteRow = document.getElementById('cf-note-row');
         if (rawNote) {
             document.getElementById('cf-note').textContent = rawNote;

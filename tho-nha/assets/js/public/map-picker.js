@@ -7,6 +7,14 @@ const mapPicker = (() => {
     let map = null;
     let marker = null;
 
+    function getAddressEl() {
+        return document.getElementById('diachi') || document.getElementById('address');
+    }
+
+    function getToggleBtnEl() {
+        return document.getElementById('btnbando') || document.getElementById('toggleMapBtn');
+    }
+
     function init() {
         if (map) {
             map.invalidateSize();
@@ -25,7 +33,8 @@ const mapPicker = (() => {
         marker = L.marker([lat, lng]).addTo(map);
         map.panTo([lat, lng]);
 
-        const addr = document.getElementById('address');
+        const addr = getAddressEl();
+        if (!addr) return;
         addr.placeholder = 'Đang tải địa chỉ...';
         addr.value = '';
 
@@ -63,17 +72,21 @@ const mapPicker = (() => {
 
     function toggle() {
         const box = document.getElementById('mapPickerBox');
-        const btn = document.getElementById('toggleMapBtn');
+        const btn = getToggleBtnEl();
         const opening = box.style.display === 'none';
 
         box.style.display = opening ? 'block' : 'none';
         if (opening) {
-            btn.innerHTML = '<i class="fas fa-times me-1"></i> Đóng bản đồ';
-            btn.classList.add('active');
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-times me-1"></i> Đóng bản đồ';
+                btn.classList.add('active');
+            }
             setTimeout(init, 50);
         } else {
-            btn.innerHTML = '<i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ';
-            btn.classList.remove('active');
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ';
+                btn.classList.remove('active');
+            }
         }
     }
 
@@ -82,7 +95,8 @@ const mapPicker = (() => {
             alert('Trình duyệt của bạn không hỗ trợ định vị GPS.');
             return;
         }
-        const addr = document.getElementById('address');
+        const addr = getAddressEl();
+        if (!addr) return;
         const origPlaceholder = addr.placeholder;
         addr.placeholder = 'Đang xác định vị trí...';
 

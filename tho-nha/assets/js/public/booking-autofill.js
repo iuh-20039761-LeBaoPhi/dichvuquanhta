@@ -17,8 +17,8 @@
     }
 
     function fillFields(data) {
-        var nameEl  = document.getElementById('name');
-        var phoneEl = document.getElementById('phone');
+        var nameEl  = document.getElementById('hoten');
+        var phoneEl = document.getElementById('sodienthoai');
         if (nameEl  && data.name)  { nameEl.value  = data.name;  nameEl.dispatchEvent(new Event('input')); }
         if (phoneEl && data.phone) { phoneEl.value = data.phone; phoneEl.dispatchEvent(new Event('input')); }
     }

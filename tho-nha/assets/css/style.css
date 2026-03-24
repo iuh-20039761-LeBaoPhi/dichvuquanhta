@@ -2416,44 +2416,43 @@ body {
 }
 .btn-autofill:hover { opacity: 0.88; }
 
-/* Upload zone */
-.bk-upload-zone {
+/* Media preview box */
+.media-preview-box {
+    margin-top: 10px;
     background: #f8fafc;
-    border: 2px dashed rgba(17,153,142,0.30);
-    border-radius: 12px;
-    padding: 18px 14px 14px;
-    text-align: center;
-}
-.bk-upload-header {
+    border: 1px dashed rgba(17,153,142,0.35);
+    border-radius: 10px;
+    padding: 10px 12px;
+    min-height: 52px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 7px;
-    margin-bottom: 12px;
-    color: #94a3b8;
 }
-.bk-upload-icon { font-size: 1.25rem; color: rgba(17,153,142,0.55); }
-.bk-upload-hint { font-size: 0.82rem; }
-.bk-upload-btns {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-}
-.bk-media-grid {
+.media-preview-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    justify-content: center;
+    width: 100%;
 }
-.bk-media-grid:empty { display: none; }
+/* Placeholder khi chưa có ảnh/video */
+.media-preview-grid:empty::before {
+    content: 'Chưa có ảnh / video';
+}
+.media-preview-grid.photo-grid:empty::before {
+    content: 'Chưa có ảnh';
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+.media-preview-grid.video-grid:empty::before {
+    content: 'Chưa có video';
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
 
 /* Media capture buttons */
 .btn-capture-photo,
 .btn-capture-video {
     border: none;
-    padding: 8px 20px;
+    padding: 7px 16px;
     border-radius: 50px;
     font-size: 0.85rem;
     font-weight: 600;

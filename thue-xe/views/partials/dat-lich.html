@@ -251,22 +251,28 @@ loadHeader();
                   <label class="form-label">Ghi chú</label>
                   <textarea class="form-control" name="notes" rows="2"></textarea>
                 </div>
-                <div class="tx-upload-zone">
-                  <div class="tx-upload-header">
-                    <i class="fas fa-cloud-upload-alt tx-upload-icon"></i>
-                    <span class="tx-upload-hint">Thêm ảnh hoặc video về xe / yêu cầu</span>
+                <div>
+                  <label class="form-label">Đính kèm hình ảnh / video</label>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <button type="button" id="txPhotoCaptureBtn" class="tx-capture-photo booking-touch-btn w-100">
+                        <i class="fas fa-camera"></i> Chụp hình
+                      </button>
+                      <input type="file" id="txMediaPhotoInput" accept="image/*" multiple style="display:none">
+                      <div class="tx-media-preview-box mt-2">
+                        <div id="txMediaPhotoPreviewContainer" class="tx-media-preview-grid photo-grid"></div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <button type="button" id="txVideoCaptureBtn" class="tx-capture-video booking-touch-btn w-100">
+                        <i class="fas fa-video"></i> Quay video
+                      </button>
+                      <input type="file" id="txMediaVideoInput" accept="video/*" style="display:none">
+                      <div class="tx-media-preview-box mt-2">
+                        <div id="txMediaVideoPreviewContainer" class="tx-media-preview-grid video-grid"></div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="tx-upload-btns">
-                    <button type="button" id="txPhotoCaptureBtn" class="tx-capture-photo booking-touch-btn">
-                      <i class="fas fa-camera"></i> Chọn ảnh
-                    </button>
-                    <input type="file" id="txMediaPhotoInput" accept="image/*" multiple style="display:none">
-                    <button type="button" id="txVideoCaptureBtn" class="tx-capture-video booking-touch-btn">
-                      <i class="fas fa-video"></i> Chọn video
-                    </button>
-                    <input type="file" id="txMediaVideoInput" accept="video/*" style="display:none">
-                  </div>
-                  <div id="txMediaPreviewContainer" class="tx-media-grid"></div>
                 </div>
               </div>
 
@@ -404,15 +410,16 @@ loadHeader();
     const videoInput = document.getElementById('txMediaVideoInput');
     const photoBtn   = document.getElementById('txPhotoCaptureBtn');
     const videoBtn   = document.getElementById('txVideoCaptureBtn');
-    const previewGrid = document.getElementById('txMediaPreviewContainer');
+    const photoPreview = document.getElementById('txMediaPhotoPreviewContainer');
+    const videoPreview = document.getElementById('txMediaVideoPreviewContainer');
     if (photoBtn) photoBtn.addEventListener('click', () => photoInput && photoInput.click());
     if (videoBtn) videoBtn.addEventListener('click', () => videoInput && videoInput.click());
     if (photoInput) photoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addMediaPreview(f, previewGrid));
+        Array.from(this.files).forEach(f => addMediaPreview(f, photoPreview));
         this.value = '';
     });
     if (videoInput) videoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addMediaPreview(f, previewGrid));
+        Array.from(this.files).forEach(f => addMediaPreview(f, videoPreview));
         this.value = '';
     });
     function addMediaPreview(file, container) {
@@ -1020,7 +1027,7 @@ loadHeader();
                     if (result.success) {
                         showAlert(`<i class="fas fa-check-circle me-2"></i><strong>Đặt xe thành công!</strong><br>Mã đơn: <strong>#${result.booking_id}</strong> – Xe: <strong>${bookingData.car_name}</strong>.${addonLines}<br><strong>Tổng tiền: ${fmt(totalPrice)}đ</strong><br>Chúng tôi sẽ liên hệ xác nhận sớm nhất.`, 'success');
                         document.getElementById('bookingFormFull').reset();
-                        _standaloneMediaFiles = []; const _pg = document.getElementById('txMediaPreviewContainer'); if (_pg) _pg.innerHTML = '';
+                        _standaloneMediaFiles = []; ['txMediaPhotoPreviewContainer','txMediaVideoPreviewContainer'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
                     } else {
                         showAlert(`<i class="fas fa-times-circle me-2"></i><strong>Lỗi:</strong> ${result.message || 'Gửi đặt xe thất bại. Vui lòng thử lại!'}`, 'danger');
                     }

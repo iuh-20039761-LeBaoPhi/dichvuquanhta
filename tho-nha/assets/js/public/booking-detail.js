@@ -1,4 +1,4 @@
-/**
+﻿/**
  * booking-detail.js
  * Xử lý đặt lịch cho HAI chế độ — dùng chung một nguồn JS:
  *
@@ -124,7 +124,7 @@ function _bdRefreshBreakdown() {
 function _bdStartTravelCalc() {
     if (!_bdTravelCfg || _bdTravelCfg.mode !== 'per_km') return;
     clearTimeout(_bdTravelTimer);
-    const addr = document.getElementById('address')?.value?.trim();
+    const addr = document.getElementById('diachi')?.value?.trim();
     if (!addr) {
         _bdTravelStatus = 'idle'; _bdTravelAmt = 0; _bdTravelDistKm = 0;
         _bdRefreshBreakdown(); return;
@@ -136,7 +136,7 @@ function _bdStartTravelCalc() {
 
 async function _bdDoTravelCalc() {
     if (!_bdTravelCfg) return;
-    const addr = document.getElementById('address')?.value?.trim();
+    const addr = document.getElementById('diachi')?.value?.trim();
     if (!addr) { _bdTravelStatus = 'idle'; _bdRefreshBreakdown(); return; }
     try {
         const c = await _bdGeocode(addr);
@@ -187,14 +187,14 @@ function _bdSetBreakdown(price, travelFee, surveyFee) {
         _bdTravelFromCoords(_bdPendingCoords.lat, _bdPendingCoords.lng);
     } else {
         // Nếu đã có địa chỉ nhập tay → tính ngay
-        const addr = document.getElementById('address')?.value?.trim();
+        const addr = document.getElementById('diachi')?.value?.trim();
         if (isPerKm && addr) _bdStartTravelCalc();
     }
 }
 
 // Gắn listener địa chỉ — gọi 1 lần sau khi form có trong DOM
 function _bdSetupAddressListener() {
-    const addrEl = document.getElementById('address');
+    const addrEl = document.getElementById('diachi');
     if (!addrEl || addrEl._bdListened) return;
     addrEl._bdListened = true;
     addrEl.addEventListener('input', _bdStartTravelCalc);
@@ -297,22 +297,23 @@ function _bdHideBreakdown(clearCoords) {
 let _bdMediaFiles = [];
 
 function _bdSetupMedia() {
-    const photoInput    = document.getElementById('mediaPhotoInput');
-    const videoInput    = document.getElementById('mediaVideoInput');
-    const photoBtn      = document.getElementById('photoCaptureBtn');
-    const videoBtn      = document.getElementById('videoCaptureBtn');
-    const previewGrid   = document.getElementById('mediaPreviewContainer');
+    const photoInput    = document.getElementById('inputhinhanh');
+    const videoInput    = document.getElementById('inputvideo');
+    const photoBtn      = document.getElementById('btnchuphinh');
+    const videoBtn      = document.getElementById('btnquayvideo');
+    const photoPreview  = document.getElementById('mediaPhotoPreviewContainer');
+    const videoPreview  = document.getElementById('mediaVideoPreviewContainer');
     if (!photoInput || !videoInput) return;
 
     photoBtn && photoBtn.addEventListener('click', () => photoInput.click());
     videoBtn && videoBtn.addEventListener('click', () => videoInput.click());
 
     photoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => _bdAddMedia(f, previewGrid));
+        Array.from(this.files).forEach(f => _bdAddMedia(f, photoPreview));
         this.value = '';
     });
     videoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => _bdAddMedia(f, previewGrid));
+        Array.from(this.files).forEach(f => _bdAddMedia(f, videoPreview));
         this.value = '';
     });
 }
@@ -345,8 +346,10 @@ function _bdAddMedia(file, previewBox) {
 
 function _bdClearMedia() {
     _bdMediaFiles = [];
-    const grid = document.getElementById('mediaPreviewContainer');
-    if (grid) grid.innerHTML = '';
+    const pg = document.getElementById('mediaPhotoPreviewContainer');
+    const vg = document.getElementById('mediaVideoPreviewContainer');
+    if (pg) pg.innerHTML = '';
+    if (vg) vg.innerHTML = '';
 }
 
 // ===================================================================
@@ -515,7 +518,7 @@ async function _bdSubmitApi(pendingData, submitBtn, onSuccess) {
 // SHARED: BUILD PENDING DATA từ form
 // ===================================================================
 function _bdBuildPendingData(service) {
-    let noteVal = (document.getElementById('note')?.value || '').trim();
+    let noteVal = (document.getElementById('ghichu')?.value || '').trim();
     if (_bdMediaFiles.length > 0) {
         const imgs  = _bdMediaFiles.filter(m => m.file.type.startsWith('image/')).length;
         const vids  = _bdMediaFiles.filter(m => m.file.type.startsWith('video/')).length;
@@ -524,13 +527,13 @@ function _bdBuildPendingData(service) {
         if (vids > 0) parts.push(`${vids} video`);
         noteVal = (noteVal ? noteVal + '\n' : '') + `[Đính kèm: ${parts.join(', ')}]`;
     }
-    const priceRaw = Number((document.getElementById('servicePrice')?.value || '').replace(/[^\d]/g, '')) || 0;
+    const priceRaw = Number((document.getElementById('giadichvu')?.value || '').replace(/[^\d]/g, '')) || 0;
     const activeBrand  = document.querySelector('#bookingModal .brand-option.active, .booking-form-section .brand-option.active');
     return {
-        name:            (document.getElementById('name')?.value  || '').trim(),
-        phone:           (document.getElementById('phone')?.value || '').trim(),
+        name:            (document.getElementById('hoten')?.value  || '').trim(),
+        phone:           (document.getElementById('sodienthoai')?.value || '').trim(),
         service_id:      service,
-        address:         (document.getElementById('address')?.value || '').trim(),
+        address:         (document.getElementById('diachi')?.value || '').trim(),
         note:            noteVal,
         selected_brand:  activeBrand ? activeBrand.dataset.brand : null,
         estimated_price: priceRaw
@@ -645,7 +648,7 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
 // Load services.json cho nav mode (modal)
 let _bdNavServices  = null;
 async function _bdLoadNavServices() {
-    const mainSel = document.getElementById('sdMainService');
+    const mainSel = document.getElementById('loaidichvunav');
     if (!mainSel || mainSel.options.length > 1) return;
     if (!_bdNavServices) {
         try {
@@ -660,10 +663,10 @@ async function _bdLoadNavServices() {
     });
 
     const subBtnsEl  = document.getElementById('sdSubServiceBtns');
-    const subHidden  = document.getElementById('sdSubService');
+    const subHidden  = document.getElementById('dichvucuthenav');
     const subWrap    = document.getElementById('sdSubServiceWrap');
     const subCountEl = document.getElementById('sdSubServiceCount');
-    const priceEl    = document.getElementById('servicePrice');
+    const priceEl    = document.getElementById('giadichvu');
 
     mainSel.addEventListener('change', () => {
         const cat = _bdNavServices.find(c => c.id == mainSel.value);
@@ -693,35 +696,35 @@ function _bdInitModalHandlers() {
         // Lấy tên dịch vụ tuỳ theo mode
         let service = '';
         if (_bdOpenMode === 'nav') {
-            const sdMain = document.getElementById('sdMainService');
-            const sdSub  = document.getElementById('sdSubService');
+            const sdMain = document.getElementById('loaidichvunav');
+            const sdSub  = document.getElementById('dichvucuthenav');
             service = sdSub ? sdSub.value.trim() : '';
             if (!sdMain?.value || !service) {
                 alert('Vui lòng chọn loại dịch vụ và dịch vụ cụ thể!');
                 return;
             }
         } else {
-            service = (document.getElementById('selectedService')?.value || '').trim();
+            service = (document.getElementById('dichvudachon')?.value || '').trim();
         }
 
         const data = _bdBuildPendingData(service);
         if (!_bdValidateCommon(data)) return;
 
         _bdPendingData = data;
-        _bdFillConfirm(data.name, data.phone, data.service_id, data.address, (document.getElementById('note')?.value || '').trim());
+        _bdFillConfirm(data.name, data.phone, data.service_id, data.address, (document.getElementById('ghichu')?.value || '').trim());
         form.style.display = 'none';
         document.getElementById('bookingConfirm').style.display = '';
     });
 
     // Quay lại form
-    document.getElementById('confirmBackBtn')?.addEventListener('click', () => {
+    document.getElementById('btnquaylai')?.addEventListener('click', () => {
         document.getElementById('bookingConfirm').style.display = 'none';
         form.style.display = '';
         _bdPendingData = null;
     });
 
     // Xác nhận → gọi API
-    const confirmBtn = document.getElementById('confirmSubmitBtn');
+    const confirmBtn = document.getElementById('btnxacnhan');
     confirmBtn?.addEventListener('click', async function () {
         if (!_bdPendingData) return;
         await _bdSubmitApi(_bdPendingData, this, (orderCode) => {
@@ -739,11 +742,11 @@ function _bdInitModalHandlers() {
         if (confirm) confirm.style.display = 'none';
         // Reset sub-service buttons
         document.querySelectorAll('#bookingModal .sub-service-btn').forEach(b => b.classList.remove('active'));
-        const sdSubHidden = document.getElementById('sdSubService');
+        const sdSubHidden = document.getElementById('dichvucuthenav');
         if (sdSubHidden) sdSubHidden.value = '';
         const sdSubWrap = document.getElementById('sdSubServiceWrap');
         if (sdSubWrap) sdSubWrap.style.display = 'none';
-        const sdMainSel = document.getElementById('sdMainService');
+        const sdMainSel = document.getElementById('loaidichvunav');
         if (sdMainSel) sdMainSel.value = '';
         const sdCount = document.getElementById('sdSubServiceCount');
         if (sdCount) { sdCount.textContent = ''; sdCount.style.display = 'none'; }
@@ -800,8 +803,8 @@ async function _bdOpenModal(mode, prefill) {
         if (navModeEl)    navModeEl.style.display    = 'none';
         if (detailModeEl) detailModeEl.style.display = '';
         if (prefill) {
-            const selEl   = document.getElementById('selectedService');
-            const priceEl = document.getElementById('servicePrice');
+            const selEl   = document.getElementById('dichvudachon');
+            const priceEl = document.getElementById('giadichvu');
             if (selEl)   selEl.value   = prefill.name  || '';
             if (priceEl) priceEl.value = prefill.price ? Number(prefill.price).toLocaleString('vi-VN') + 'đ' : '';
             if (prefill.price) {
@@ -937,8 +940,8 @@ function _bdInitStandalone() {
     // Submit → validate → confirm
     form.addEventListener('submit', function (e) {
         e.preventDefault();
-        const mainSel = document.getElementById('mainService');
-        const subSel  = document.getElementById('subService');
+        const mainSel = document.getElementById('loaidichvu');
+        const subSel  = document.getElementById('dichvucuthe');
         const service = (subSel?.value || '').trim();
 
         if (!mainSel?.value) { alert('Vui lòng chọn loại dịch vụ!'); return; }
@@ -948,20 +951,20 @@ function _bdInitStandalone() {
         if (!_bdValidateCommon(data)) return;
 
         _stPendingData = data;
-        _bdFillConfirm(data.name, data.phone, data.service_id, data.address, (document.getElementById('note')?.value || '').trim());
+        _bdFillConfirm(data.name, data.phone, data.service_id, data.address, (document.getElementById('ghichu')?.value || '').trim());
         form.style.display = 'none';
         document.getElementById('bookingConfirm').style.display = '';
     });
 
     // Quay lại
-    document.getElementById('confirmBackBtn')?.addEventListener('click', () => {
+    document.getElementById('btnquaylai')?.addEventListener('click', () => {
         document.getElementById('bookingConfirm').style.display = 'none';
         form.style.display = '';
         _stPendingData = null;
     });
 
     // Xác nhận → API
-    const confirmBtn = document.getElementById('confirmSubmitBtn');
+    const confirmBtn = document.getElementById('btnxacnhan');
     confirmBtn?.addEventListener('click', async function () {
         if (!_stPendingData) return;
         await _bdSubmitApi(_stPendingData, this, (orderCode) => {
@@ -978,8 +981,8 @@ function _bdInitStandalone() {
 }
 
 async function _bdLoadStandaloneServices() {
-    const mainSel     = document.getElementById('mainService');
-    const subSel      = document.getElementById('subService');
+    const mainSel     = document.getElementById('loaidichvu');
+    const subSel      = document.getElementById('dichvucuthe');
     const subBtns     = document.getElementById('subServiceBtns');
     const subWrap     = document.getElementById('subServiceWrap');
     const subPh       = document.getElementById('subServicePlaceholder');
@@ -1000,7 +1003,7 @@ async function _bdLoadStandaloneServices() {
     // Detect UI style: button-group (partials/dat-lich.html) vs regular select
     const useButtons = !!subBtns;
     const subCountEl = document.getElementById('subServiceCount');
-    const priceEl    = document.getElementById('servicePrice');
+    const priceEl    = document.getElementById('giadichvu');
 
     function _renderSubBtns(items, catData) {
         _bdBuildSubBtns(subBtns, subSel, items, catData, subCountEl, priceEl);
@@ -1041,7 +1044,7 @@ async function _bdLoadStandaloneServices() {
             const mainCat = services.find(c => c.id == mainSel.value); // loose ==
             if (!mainCat) return;
             const item = mainCat.items.find(i => i.name === this.value);
-            const priceEl = document.getElementById('servicePrice');
+            const priceEl = document.getElementById('giadichvu');
             if (!item) { if (priceEl) priceEl.value = ''; _bdHideBreakdown(); return; }
             const price = item.price || 0;
             if (priceEl) priceEl.value = price > 0 ? Number(price).toLocaleString('vi-VN') + 'đ' : '';
