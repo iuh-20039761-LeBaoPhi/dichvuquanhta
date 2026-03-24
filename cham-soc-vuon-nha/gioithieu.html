@@ -1,311 +1,417 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <script src="/ga.js"></script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/ga.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dịch vụ quanh ta | Chăm Sóc Vườn Nhà</title>
+    <link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<title>Dịch vụ quanh ta | Chăm sóc vườn nhà</title>
+    <style>
+        :root {
+            --primary: #0b4635; /* Emerald Green */
+            --accent: #c5a059;  /* Gold */
+            --bg-soft: #fcfbf7;
+            --text-dark: #1a202c;
+            --text-muted: #64748b;
+            --white: #ffffff;
+            --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-<link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-soft);
+            margin: 0;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
 
-<style>
+        /* ===== PREMIUM HERO (ĐÃ THAY ẢNH BANNER MỚI) ===== */
+        .hero-story {
+            position: relative;
+            height: 85vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            /* 🔥 ẢNH BANNER MỚI: Rừng cổ thụ và ánh sáng nghệ thuật */
+            background: url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat fixed;
+        }
 
-.about-page{
-margin-top:0;
-font-family:'Poppins',sans-serif;
-}
+        .hero-story::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            /* Lớp phủ gradient sâu hơn để tăng độ sang trọng */
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(11, 70, 53, 0.9));
+        }
 
-/* HERO */
-.about-page .hero{
-  background:linear-gradient(135deg,#2e7d32,#1b5e20);
-  color:white;
-  text-align:center;
-  padding:100px 20px;
-}
+        .hero-inner {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            max-width: 1000px;
+            padding: 0 25px;
+        }
 
-@media(max-width:768px){
-  .about-page .hero{
-    padding:70px 15px;
-  }
+        .hero-inner span {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
 
-  .about-page .hero p{
-    font-size:14px;
-  }
-}
+        .hero-story h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            line-height: 1;
+            margin-bottom: 25px;
+        }
 
-/* 🔥 FIX RESPONSIVE CHUẨN */
-.about-page .hero h1{
-font-size:clamp(26px, 5vw, 42px);
-margin-bottom:10px;
-}
+        /* ===== OVERLAP CONTENT ===== */
+        .story-container {
+            max-width: 1200px;
+            margin: -100px auto 100px;
+            position: relative;
+            z-index: 10;
+            padding: 0 20px;
+        }
 
-.about-page .hero p{
-opacity:0.9;
-font-size:18px;
-}
+        .main-card {
+            background: var(--white);
+            padding: 80px;
+            border-radius: 20px;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.04);
+        }
 
-/* CONTAINER */
-.about-page .container{
-max-width:1200px;
-margin:auto;
-padding:60px 20px;
-}
+        .story-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            margin-bottom: 100px;
+        }
 
-/* ABOUT */
-.about-page .about{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:50px;
-align-items:center;
-}
+        .story-row.reverse { direction: rtl; }
+        .story-row.reverse .story-content { direction: ltr; }
 
-.about-page h2{
-color:#1b5e20;
-margin-bottom:15px;
-}
+        .story-content h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
 
-.about-page p{
-line-height:1.7;
-}
+        .story-content p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
 
-/* STATS */
-.about-page .stats{
-  display:flex;
-  gap:40px;
-  margin-top:20px;
-}
-@media(max-width:768px){
-  .about-page .stats{
-    flex-direction:column;
-    gap:10px;
-    align-items:flex-start;
-  }
-}
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 30px;
+        }
 
-.about-page .about img{
-  width:100%;
-  border-radius:15px;
-  object-fit:cover;
-}
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--primary);
+        }
 
-.about-page .stat{
-display:flex;
-align-items:center;
-gap:10px;
-font-weight:600;
-}
+        .feature-list li i { color: var(--accent); }
 
-/* TITLE */
-.about-page .title{
-text-align:center;
-margin:80px 0 30px;
-}
+        .story-image {
+            position: relative;
+        }
 
-.about-page .title h2{
-font-size:28px;
-}
+        .story-image img {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
 
-/* MISSION */
-.about-page .mission{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:30px;
-max-width:900px;
-margin:auto;
-}
+        .story-image::before {
+            content: '';
+            position: absolute;
+            top: -20px; left: -20px;
+            width: 100px; height: 100px;
+            border-top: 5px solid var(--accent);
+            border-left: 5px solid var(--accent);
+            z-index: -1;
+        }
 
-.about-page .mission-box{
-background:#f5f7fa;
-padding:30px;
-border-radius:12px;
-text-align:center;
-box-shadow:0 5px 15px rgba(0,0,0,0.05);
-}
+        /* ===== MISSION & VALUES ===== */
+        .values-section {
+            background: #f0f2ee;
+            padding: 120px 0;
+            text-align: center;
+        }
 
-.about-page .mission-box i{
-font-size:26px;
-color:#2e7d32;
-margin-bottom:10px;
-}
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 60px auto 0;
+            padding: 0 20px;
+        }
 
-/* FEATURES */
-.about-page .features{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-}
+        .value-card {
+            background: var(--white);
+            padding: 50px 35px;
+            border-radius: 15px;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
 
-.about-page .feature{
-background:white;
-padding:30px;
-border-radius:12px;
-text-align:center;
-box-shadow:0 8px 20px rgba(0,0,0,0.05);
-}
+        .value-card:hover {
+            transform: translateY(-15px);
+            border-color: var(--accent);
+            box-shadow: 0 30px 60px rgba(11, 70, 53, 0.1);
+        }
 
-/* CTA */
-.about-page .cta{
-background:linear-gradient(135deg,#66bb6a,#2e7d32);
-color:white;
-text-align:center;
-padding:70px 20px;
-margin-top:80px;
-}
+        .value-card i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+        }
 
-.about-page .cta a{
-display:inline-block;
-margin-top:20px;
-padding:14px 35px;
-background:white;
-color:#1b5e20;
-border-radius:30px;
-text-decoration:none;
-font-weight:600;
-}
+        .value-card h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
 
-/* MOBILE */
-@media(max-width:768px){
-.about-page .about{
-grid-template-columns:1fr;
-}
-.about-page .mission{
-grid-template-columns:1fr;
-}
-}
+        /* ===== TIMELINE ===== */
+        .timeline-section {
+            padding: 120px 20px;
+            max-width: 900px;
+            margin: auto;
+        }
 
-html, body {
-  height: 100%;
-  margin: 0;
-}
+        .timeline-item {
+            display: flex;
+            gap: 40px;
+            padding-bottom: 50px;
+            position: relative;
+        }
 
-body {
-  display: flex;
-  flex-direction: column;
-}
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 20px; top: 0; bottom: 0;
+            width: 2px; background: #e2e8f0;
+        }
 
-main {
-  flex: 1;
-}
+        .timeline-item:last-child::before { display: none; }
 
-</style>
+        .t-dot {
+            width: 42px; height: 42px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; z-index: 2; flex-shrink: 0;
+            box-shadow: 0 0 0 8px #fff;
+        }
+
+        .t-content h4 { font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--primary); margin-bottom: 10px; }
+
+        /* ===== FINAL CTA ===== */
+        .final-cta {
+            margin: 100px 20px;
+            padding: 100px 40px;
+            border-radius: 30px;
+            background: linear-gradient(rgba(11, 70, 53, 0.9), rgba(11, 70, 53, 0.9)), url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-attachment: fixed;
+            text-align: center;
+            color: #fff;
+        }
+
+        .final-cta h2 { font-family: 'Fraunces', serif; font-size: 3.5rem; margin-bottom: 25px; }
+        .btn-gold {
+            display: inline-block;
+            padding: 20px 50px;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: var(--transition);
+        }
+        .btn-gold:hover { transform: scale(1.05); background: #fff; color: var(--primary); }
+
+        /* RESPONSIVE */
+        @media (max-width: 992px) {
+            .story-row, .values-grid { grid-template-columns: 1fr; gap: 50px; }
+            .main-card { padding: 40px 25px; }
+            .hero-story { height: 60vh; }
+            .story-row.reverse { direction: ltr; }
+            .final-cta h2 { font-size: 2.5rem; }
+        }
+    </style>
 </head>
 
 <body>
 
 <div id="header"></div>
 
-<main class="about-page">
+<main>
+    <section class="hero-story">
+        <div class="hero-inner">
+            <h1>Hành Trình<br>Kiến Tạo Di Sản Xanh</h1>
+        </div>
+    </section>
 
-<section class="hero">
-<h1>Giới thiệu về Chăm Sóc Vườn</h1>
-<p>Kiến tạo không gian sống xanh – nâng tầm chất lượng cuộc sống</p>
-</section>
+    <div class="story-container">
+        <div class="main-card">
+            
+            <div class="story-row">
+                <div class="story-content">
+                    <h2>Khởi nguồn từ lòng trắc ẩn với đất</h2>
+                    <p>Chăm Sóc Vườn Nhà không bắt đầu từ một mô hình kinh doanh khô khan, mà bắt đầu từ những nghệ nhân trót đem lòng yêu vẻ đẹp bình yên của cỏ cây. Chúng tôi tin rằng, sau những bộn bề của phố thị, mỗi người đều xứng đáng có một "khoảng thở" riêng.</p>
+                    <p>Hơn một thập kỷ qua, chúng tôi đã không ngừng tìm kiếm những giải pháp sinh học tối ưu nhất để bảo tồn vẻ đẹp nguyên bản của thiên nhiên trong từng góc vườn nhỏ.</p>
+                    <ul class="feature-list">
+                        <li><i class="fa-solid fa-check-circle"></i> Am hiểu sâu sắc thổ nhưỡng Việt Nam</li>
+                        <li><i class="fa-solid fa-check-circle"></i> Đội ngũ nghệ nhân trên 10 năm kinh nghiệm</li>
+                        <li><i class="fa-solid fa-check-circle"></i> Công nghệ chăm sóc chuẩn Organic</li>
+                    </ul>
+                </div>
+                <div class="story-image">
+                    <img src="assets/images/trang-tri-vuon-nho.jpg" alt="The Beginning">
+                </div>
+            </div>
 
-<div class="container">
-<div class="about">
+            <div class="story-row reverse">
+                <div class="story-content">
+                    <h2>Khác biệt nằm ở sự tỉ mỉ</h2>
+                    <p>Chúng tôi không chỉ "cắt tỉa", chúng tôi "điêu khắc". Mỗi tán cây đều được tính toán để đón nắng tốt nhất, mỗi thảm cỏ được chăm sóc để giữ độ ẩm hoàn hảo cho đất.</p>
+                    <p>Tại Chăm Sóc Vườn Nhà, chúng tôi áp dụng hệ sinh thái bảo trì khép kín: Từ xử lý nguồn nước, dinh dưỡng hữu cơ đến kiểm soát sâu bệnh tự nhiên, đảm bảo khu vườn của bạn phát triển bền vững mà không cần hóa chất độc hại.</p>
+                </div>
+                <div class="story-image">
+                    <img src="assets/images/lam-phan-compost.jpg" alt="Detailing">
+                </div>
+            </div>
 
-<div>
-<h2>Về Chúng Tôi</h2>
+        </div>
+    </div>
 
-<p>Chăm Sóc Vườn là đơn vị chuyên cung cấp dịch vụ chăm sóc cây xanh, thiết kế và bảo dưỡng cảnh quan chuyên nghiệp tại Việt Nam. Với hơn 10 năm kinh nghiệm, chúng tôi đã đồng hành cùng hàng trăm khách hàng trong việc xây dựng không gian sống xanh.</p>
+    <section class="values-section">
+        <div class="container">
+            <span style="color:var(--accent); font-weight:700; letter-spacing:2px;">GIÁ TRỊ CỐT LÕI</span>
+            <h2 style="font-family:'Fraunces', serif; font-size:3.5rem; color:var(--primary); margin-top:10px;">Triết Lý Của Chúng Tôi</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <i class="fa-solid fa-leaf"></i>
+                    <h3>Bền Vững</h3>
+                    <p>Sử dụng 100% chế phẩm sinh học, bảo vệ sức khỏe gia đình và hệ sinh thái đất lâu dài.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                    <h3>Tận Tâm</h3>
+                    <p>Xem khu vườn của khách hàng như chính vườn nhà mình để nâng niu từng gốc cây, ngọn cỏ.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <h3>Thẩm Mỹ</h3>
+                    <p>Kết hợp giữa kiến trúc và nghệ thuật cây cảnh để tạo nên không gian sống đẳng cấp nhất.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<p>Chúng tôi tin rằng một khu vườn đẹp không chỉ mang lại giá trị thẩm mỹ mà còn giúp cải thiện sức khỏe, tinh thần và chất lượng cuộc sống.</p>
+    <section class="timeline-section">
+        <h2 style="font-family:'Fraunces', serif; text-align:center; margin-bottom:60px; font-size:3rem; color:var(--primary);">Quy Trình Chăm Sóc</h2>
+        
+        <div class="timeline-item">
+            <div class="t-dot">1</div>
+            <div class="t-content">
+                <h4>Khảo sát & Lắng nghe</h4>
+                <p>Chúng tôi đến tận nơi để cảm nhận địa thế, kiểm tra tình trạng sức khỏe của đất và cây, lắng nghe mong muốn của gia chủ.</p>
+            </div>
+        </div>
 
-<div class="stats">
-<div class="stat">
-<i class="fa-solid fa-tree"></i>
-1000+ Dự án
-</div>
+        <div class="timeline-item">
+            <div class="t-dot">2</div>
+            <div class="t-content">
+                <h4>Thiết kế liệu trình chuyên biệt</h4>
+                <p>Mỗi khu vườn có một "phác đồ" riêng về dinh dưỡng và cắt tỉa theo đúng chủng loại cây và điều kiện ánh sáng.</p>
+            </div>
+        </div>
 
-<div class="stat">
-<i class="fa-solid fa-users"></i>
-500+ Khách hàng
-</div>
-</div>
+        <div class="timeline-item">
+            <div class="t-dot">3</div>
+            <div class="t-content">
+                <h4>Thực thi bởi Nghệ nhân</h4>
+                <p>Đội ngũ chuyên gia trực tiếp chăm sóc, sử dụng máy móc hiện đại để đảm bảo độ chính xác và tính thẩm mỹ cao nhất.</p>
+            </div>
+        </div>
 
-</div>
+        <div class="timeline-item">
+            <div class="t-dot">4</div>
+            <div class="t-content">
+                <h4>Báo cáo & Đồng hành</h4>
+                <p>Gửi báo cáo định kỳ về sự phát triển của vườn và hướng dẫn gia chủ cách duy trì hơi ấm cho không gian xanh.</p>
+            </div>
+        </div>
+    </section>
 
-<div>
-<img src="assets/images/cattianghethuat.jpg">
-</div>
-
-</div>
-</div>
-
-<div class="container">
-
-<div class="title">
-<h2>Sứ mệnh và Tầm nhìn</h2>
-</div>
-
-<div class="mission">
-
-<div class="mission-box">
-<i class="fa-solid fa-bullseye"></i>
-<h3>Sứ mệnh</h3>
-<p>Mang đến giải pháp chăm sóc cây xanh chuyên nghiệp, giúp khách hàng sở hữu không gian sống xanh, sạch và gần gũi thiên nhiên.</p>
-</div>
-
-<div class="mission-box">
-<i class="fa-solid fa-eye"></i>
-<h3>Tầm nhìn</h3>
-<p>Trở thành thương hiệu hàng đầu trong lĩnh vực chăm sóc cảnh quan tại Việt Nam, hướng đến phát triển bền vững.</p>
-</div>
-
-</div>
-
-</div>
-
-<div class="container">
-
-<div class="title">
-<h2>Tại sao chọn chúng tôi?</h2>
-</div>
-
-<div class="features">
-
-<div class="feature">
-<i class="fa-solid fa-leaf"></i>
-<h3>Tận tâm</h3>
-<p>Chăm sóc từng chi tiết nhỏ trong khu vườn của bạn.</p>
-</div>
-
-<div class="feature">
-<i class="fa-solid fa-seedling"></i>
-<h3>Chuyên nghiệp</h3>
-<p>Đội ngũ giàu kinh nghiệm, quy trình rõ ràng.</p>
-</div>
-
-<div class="feature">
-<i class="fa-solid fa-earth-asia"></i>
-<h3>Bền vững</h3>
-<p>Giải pháp thân thiện môi trường và lâu dài.</p>
-</div>
-
-</div>
-
-</div>
-
-<section class="cta">
-<h2>Sẵn sàng nâng cấp khu vườn của bạn?</h2>
-<p>Liên hệ ngay để được tư vấn miễn phí</p>
-<a href="datlich.html">Đặt lịch ngay</a>
-</section>
-
+    <section class="final-cta">
+        <h2>Sẵn sàng để sở hữu một không gian xanh?</h2>
+        <p style="font-size:1.2rem; opacity:0.9; margin-bottom:40px;">Hãy để chúng tôi giúp bạn đánh thức tiềm năng xanh trong ngôi nhà mình.</p>
+        <a href="datlich.html" class="btn-gold">Liên hệ ngay</a>
+    </section>
 </main>
 
 <div id="footer"></div>
 
 <script>
-fetch("header.html").then(res=>res.text()).then(data=>{
-document.getElementById("header").innerHTML=data;
-});
-fetch("footer.html").then(res=>res.text()).then(data=>{
-document.getElementById("footer").innerHTML=data;
-});
+    /* GIỮ NGUYÊN LOGIC LOAD COMPONENT */
+    const loadComp = (id, file, callback) => {
+        fetch(file).then(res => res.text()).then(data => {
+            document.getElementById(id).innerHTML = data;
+            if(callback) callback();
+        });
+    };
+
+    loadComp("header", "header.html", initHeaderMenu);
+    loadComp("footer", "footer.html");
+
+    function initHeaderMenu() {
+        const menuBtn = document.getElementById("menuBtn");
+        const mobileMenu = document.getElementById("mobileMenu");
+        const overlay = document.getElementById("overlay");
+        if (menuBtn && mobileMenu && overlay) {
+            menuBtn.onclick = (e) => {
+                e.stopPropagation();
+                mobileMenu.classList.toggle("show");
+                overlay.classList.toggle("show");
+                menuBtn.classList.toggle("active");
+                document.body.style.overflow = mobileMenu.classList.contains("show") ? "hidden" : "";
+            };
+            overlay.onclick = () => {
+                mobileMenu.classList.remove("show");
+                overlay.classList.remove("show");
+                menuBtn.classList.remove("active");
+                document.body.style.overflow = "";
+            };
+        }
+    }
 </script>
 
 </body>

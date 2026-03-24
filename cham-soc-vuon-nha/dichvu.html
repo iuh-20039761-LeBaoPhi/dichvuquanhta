@@ -1,380 +1,371 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<script src="/ga.js"></script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/ga.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dịch vụ quanh ta | Chăm Sóc Vườn Nhà</title>
+    <link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
 
-<title>Dịch vụ quanh ta | Chăm sóc vườn nhà</title>
-<link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lexend:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<style>
+    <style>
+        :root {
+            --primary: #12372a;
+            --accent: #ad8b73;
+            --bg-light: #fbf9f1;
+            --text-main: #12372a;
+            --transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-/* ===== SCOPE RIÊNG ===== */
-#services-page{
-font-family:'Segoe UI',sans-serif;
-background:#f4fbf6;
-margin:0;
-}
+        * { box-sizing: border-box; transition: var(--transition); }
 
-/* ===== HERO (ĐỒNG NHẤT ABOUT) ===== */
-#services-page .hero{
-background:linear-gradient(135deg,#2e7d32,#1b5e20);
-color:white;
-text-align:center;
-padding:90px 20px 70px;
-}
+        body {
+            margin: 0;
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
 
-#services-page .hero h1{
-font-size:clamp(32px,5vw,46px);
-font-weight:700;
-margin-bottom:10px;
-}
+        /* ===== BANNER ===== */
+        .hero-wrap {
+            height: 90vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #12372a;
+        }
 
-#services-page .hero p{
-font-size:16px;
-opacity:.9;
-margin-bottom:25px;
-}
+        .hero-img {
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+            opacity: 0.6;
+            transform: scale(1.1);
+        }
 
-/* SEARCH */
-#services-page .search-box{
-max-width:520px;
-margin:auto;
-display:flex;
-background:white;
-border-radius:40px;
-overflow:hidden;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
-}
+        .hero-content {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            color: #fff;
+            padding: 0 20px;
+        }
 
-#services-page .search-box input{
-flex:1;
-border:none;
-padding:14px 18px;
-outline:none;
-font-size:14px;
-}
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            font-weight: 400;
+            margin: 0 0 30px;
+            line-height: 1.1;
+        }
 
-#services-page .search-box button{
-background:#1f6f43;
-color:white;
-border:none;
-padding:14px 22px;
-cursor:pointer;
-}
+        .hero-content p {
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
 
-/* ===== CATEGORY ===== */
-#services-page .category-bar{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:10px;
-padding:30px 15px 10px;
-}
+        /* SEARCH BOX */
+        .search-wrapper {
+            background: #fff;
+            padding: 5px;
+            border-radius: 100px;
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
 
-#services-page .category-btn{
-padding:10px 16px;
-border-radius:30px;
-border:1px solid #ddd;
-background:white;
-cursor:pointer;
-transition:.25s;
-font-size:14px;
-}
+        .search-wrapper input {
+            flex: 1;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 100px;
+            outline: none;
+            font-size: 1rem;
+        }
 
-#services-page .category-btn.active{
-background:#1f6f43;
-color:white;
-border:none;
-}
+        .search-wrapper button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 100px;
+            cursor: pointer;
+            font-weight: 600;
+        }
 
-/* ===== CONTAINER ===== */
-#services-page .wrap{
-max-width:1300px;
-margin:auto;
-padding:20px 15px 70px;
-}
+        /* ===== FILTER BAR ===== */
+        .filter-bar {
+            position: sticky;
+            top: 70px; /* Điều chỉnh tùy theo độ cao thực tế của header để không bị đè */
+            z-index: 100;
+            background: rgba(251, 249, 241, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(18, 55, 42, 0.1);
+        }
 
-/* ===== GRID ===== */
-#services-page .services-container{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:25px;
-}
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
 
-/* ===== CARD ===== */
-#services-page .service-card{
-background:white;
-border-radius:16px;
-overflow:hidden;
-box-shadow:0 8px 20px rgba(0,0,0,0.06);
-transition:.3s;
-display:flex;
-flex-direction:column;
-}
+        .filter-tab {
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #888;
+            padding: 10px 0;
+            position: relative;
+            white-space: nowrap;
+        }
 
-#services-page .service-card:hover{
-transform:translateY(-6px);
-box-shadow:0 18px 40px rgba(0,0,0,0.12);
-}
+        .filter-tab.active { color: var(--primary); }
+        .filter-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: var(--accent);
+        }
 
-/* IMAGE */
-#services-page .service-image{
-height:190px;
-overflow:hidden;
-}
+        /* ===== SERVICE LAYOUT ===== */
+        .content-container {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 40px;
+        }
 
-#services-page .service-image img{
-width:100%;
-height:100%;
-object-fit:cover;
-transition:.4s;
-}
+        .service-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 100px 60px;
+        }
 
-#services-page .service-card:hover img{
-transform:scale(1.07);
-}
+        .service-card {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
 
-/* CONTENT */
-#services-page .service-content{
-padding:18px;
-display:flex;
-flex-direction:column;
-flex:1;
-}
+        .service-card:nth-child(even) { transform: translateY(60px); }
 
-#services-page .service-content h3{
-color:#14532d;
-margin-bottom:8px;
-font-size:18px;
-}
+        .service-img-box {
+            position: relative;
+            height: 450px;
+            overflow: hidden;
+            border-radius: 2px;
+        }
 
-#services-page .service-content p{
-font-size:14px;
-color:#555;
-line-height:1.6;
-flex:1;
-}
+        .service-img-box img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s ease;
+        }
 
-/* META */
-#services-page .service-meta{
-margin-top:10px;
-font-size:13px;
-color:#777;
-}
+        .service-card:hover img { transform: scale(1.1); }
 
-/* PRICE */
-#services-page .service-price{
-margin-top:10px;
-font-size:18px;
-font-weight:bold;
-color:#e63946;
-}
+        .service-info h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin: 0 0 15px;
+            font-weight: 400;
+        }
 
-/* BUTTON */
-#services-page .service-btn{
-margin-top:15px;
-text-align:center;
-background:#1f6f43;
-color:white;
-padding:11px;
-border-radius:8px;
-text-decoration:none;
-font-size:14px;
-transition:.25s;
-}
+        .service-info p {
+            color: #555;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            max-width: 90%;
+        }
 
-#services-page .service-btn:hover{
-background:#14532d;
-}
+        .service-price-box {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
 
-/* ===== MOBILE ===== */
-@media(max-width:768px){
+        .price-tag {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
 
-#services-page .hero{
-padding:70px 15px 50px;
-}
+        .btn-detail {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid var(--primary);
+            padding-bottom: 5px;
+        }
 
-#services-page .hero h1{
-font-size:26px;
-}
+        .no-data {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 100px 0;
+            font-style: italic;
+            opacity: 0.5;
+        }
 
-}
-
-.service-meta svg{
-  transition:0.2s;
-}
-
-.service-meta:hover svg{
-  transform:scale(1.1);
-  stroke:#16a34a;
-}
-
-</style>
-
+        @media (max-width: 900px) {
+            .service-list { grid-template-columns: 1fr; gap: 60px; }
+            .service-card:nth-child(even) { transform: none; }
+            .service-img-box { height: 350px; }
+            .content-container { padding: 0 20px; }
+            .filter-tabs { justify-content: flex-start; padding: 0 20px; }
+        }
+    </style>
 </head>
-
 <body>
 
 <div id="header"></div>
 
-<main id="services-page">
+<main>
+    <section class="hero-wrap">
+        <div class="hero-img"></div>
+        <div class="hero-content">
+            <p>Kiến tạo hơi thở tự nhiên</p>
+            <h1>Nghệ Thuật Sống Xanh</h1>
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm dịch vụ quý khách cần...">
+                <button id="searchBtn">Khám Phá</button>
+            </div>
+        </div>
+    </section>
 
-<!-- HERO -->
-<section class="hero">
-<h1>Dịch vụ chăm sóc vườn chuyên nghiệp</h1>
-<p>Biến không gian xanh của bạn trở nên hoàn hảo – sạch – đẹp – bền vững</p>
+    <div class="filter-bar">
+        <nav class="filter-tabs">
+            <div class="filter-tab active" data-category="all">Tất cả dịch vụ</div>
+            <div class="filter-tab" data-category="coban">Chăm sóc cơ bản</div>
+            <div class="filter-tab" data-category="nangcao">Chăm sóc nâng cao</div>
+            <div class="filter-tab" data-category="thietke">Thiết kế cảnh quan</div>
+            <div class="filter-tab" data-category="ray">Chăm sóc rẫy</div>
+            <div class="filter-tab" data-category="vesinh">Vệ sinh và cải tạo</div>
+        </nav>
+    </div>
 
-<div class="search-box">
-<input type="text" id="searchInput" placeholder="Tìm dịch vụ...">
-<button>Tìm</button>
-</div>
-
-</section>
-
-<!-- CATEGORY -->
-<div class="category-bar">
-
-<button class="category-btn active" data-category="all">Tất cả</button>
-<button class="category-btn" data-category="coban">Cơ bản</button>
-<button class="category-btn" data-category="nangcao">Nâng cao</button>
-<button class="category-btn" data-category="thietke">Thiết kế</button>
-<button class="category-btn" data-category="ray">Rẫy</button>
-<button class="category-btn" data-category="vesinh">Vệ sinh</button>
-
-</div>
-
-<div class="wrap">
-<div class="services-container" id="servicesContainer"></div>
-</div>
-
+    <div class="content-container">
+        <div class="service-list" id="servicesContainer"></div>
+    </div>
 </main>
 
 <div id="footer"></div>
 
 <script>
+let allServices = [];
+const container = document.getElementById("servicesContainer");
 
-/* LOAD HEADER */
-fetch("header.html")
-.then(res=>res.text())
-.then(data=>{
-document.getElementById("header").innerHTML=data;
-});
-
-/* LOAD FOOTER */
-fetch("footer.html")
-.then(res=>res.text())
-.then(data=>{
-document.getElementById("footer").innerHTML=data;
-});
-
-let allServices=[];
-const container=document.getElementById("servicesContainer");
-
-/* RENDER */
-function renderServices(list){
-
-container.innerHTML="";
-
-list.forEach(service=>{
-
-let price="Liên hệ";
-
-if(service.price_m2_min){
-price = service.price_m2_min.toLocaleString('vi-VN') + " VNĐ";
+// --- 1. LOGIC HIỂN THỊ DỊCH VỤ ---
+function renderServices(list) {
+    container.innerHTML = "";
+    if (list.length === 0) {
+        container.innerHTML = `<div class="no-data">Hiện tại không có dịch vụ nào phù hợp với yêu cầu của quý khách.</div>`;
+        return;
+    }
+    list.forEach(service => {
+        let displayPrice = service.price_m2_min ? service.price_m2_min.toLocaleString('vi-VN') + "đ / m²" : "Liên hệ báo giá";
+        const card = document.createElement("div");
+        card.className = "service-card";
+        card.innerHTML = `
+            <div class="service-img-box">
+                <img src="assets/images/${service.image}" alt="${service.name}" onerror="this.src='https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=80&w=1000'">
+            </div>
+            <div class="service-info">
+                <h2>${service.name}</h2>
+                <p>${service.description.substring(0, 150)}...</p>
+                <div class="service-price-box">
+                    <span class="price-tag">${displayPrice}</span>
+                    <a href="chitiet_dichvu.html?id=${service.id}" class="btn-detail">Xem chi tiết</a>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
 }
 
-const card=document.createElement("div");
-card.className="service-card";
+// --- 2. FETCH DỮ LIỆU DỊCH VỤ ---
+fetch("dichvu.json?v=" + Date.now())
+    .then(res => res.json())
+    .then(data => {
+        allServices = data.services;
+        renderServices(allServices);
+    });
 
-card.innerHTML=`
-<div class="service-image">
-<img src="assets/images/${service.image}" alt="${service.name}">
-</div>
-
-<div class="service-content">
-
-<h3>${service.name}</h3>
-
-<p>${service.description.substring(0,110)}...</p>
-
-<div class="service-meta" style="display:flex;align-items:center;gap:6px;">
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#374151" stroke-width="1.6">
-    <path d="M12 21s-6-5-6-10a6 6 0 1112 0c0 5-6 10-6 10z"/>
-    <circle cx="12" cy="11" r="2.2"/>
-  </svg>
-  <span>${service.service_area || "Đang cập nhật"}</span>
-</div>
-
-<div class="service-price">${price}</div>
-
-<a href="chitiet_dichvu.html?id=${service.id}" class="service-btn">
-Xem chi tiết
-</a>
-
-</div>
-`;
-
-container.appendChild(card);
-
+// --- 3. BỘ LỌC VÀ TÌM KIẾM ---
+document.querySelectorAll(".filter-tab").forEach(tab => {
+    tab.onclick = function() {
+        document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
+        this.classList.add("active");
+        const cat = this.dataset.category;
+        renderServices(cat === "all" ? allServices : allServices.filter(s => s.category === cat));
+    };
 });
 
-}
-
-/* LOAD DATA */
-fetch("dichvu.json?v="+Date.now())
-.then(res=>res.json())
-.then(data=>{
-allServices=data.services;
-renderServices(allServices);
-});
-
-/* FILTER */
-document.querySelectorAll(".category-btn").forEach(btn=>{
-btn.onclick=function(){
-
-document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
-this.classList.add("active");
-
-const category=this.dataset.category;
-
-if(category==="all"){
-renderServices(allServices);
-}else{
-renderServices(allServices.filter(s=>s.category===category));
-}
-
+const handleSearch = () => {
+    const key = document.getElementById("searchInput").value.toLowerCase();
+    renderServices(allServices.filter(s => s.name.toLowerCase().includes(key)));
 };
-});
+document.getElementById("searchBtn").onclick = handleSearch;
+document.getElementById("searchInput").onkeyup = (e) => { if(e.key === "Enter") handleSearch(); };
 
-/* SEARCH */
-let timeout;
-document.getElementById("searchInput").addEventListener("keyup",function(){
+// --- 4. KẾT NỐI COMPONENT & KÍCH HOẠT MOBILE MENU ---
+const loadComp = (id, file) => {
+    fetch(file)
+        .then(r => r.text())
+        .then(html => {
+            const wrapper = document.getElementById(id);
+            wrapper.innerHTML = html;
 
-clearTimeout(timeout);
+            if (id === 'header') {
+                // Khởi tạo các sự kiện cho Menu ngay sau khi HTML được nạp
+                const menuBtn = document.getElementById('menuBtn');
+                const mobileMenu = document.getElementById('mobileMenu');
+                const overlay = document.getElementById('overlay');
+                const loginBtn = document.getElementById('loginBtn');
+                const loginMenu = document.getElementById('loginMenu');
 
-timeout = setTimeout(()=>{
-  const keyword=this.value.toLowerCase();
+                // Toggle Mobile Menu
+                if (menuBtn && mobileMenu && overlay) {
+                    menuBtn.onclick = () => {
+                        menuBtn.classList.toggle('active');
+                        mobileMenu.classList.toggle('show');
+                        overlay.classList.toggle('show');
+                    };
 
-  const filtered=allServices.filter(s=>
-    s.name.toLowerCase().includes(keyword)
-  );
+                    overlay.onclick = () => {
+                        menuBtn.classList.remove('active');
+                        mobileMenu.classList.remove('show');
+                        overlay.classList.remove('show');
+                    };
+                }
 
-  renderServices(filtered);
-},300);
-
-});
-
-document.querySelector(".search-box button").onclick = function(){
-  const keyword = document.getElementById("searchInput").value.toLowerCase();
-
-  const filtered = allServices.filter(s =>
-    s.name.toLowerCase().includes(keyword)
-  );
-
-  renderServices(filtered);
+                // Toggle Login Menu
+                if (loginBtn && loginMenu) {
+                    loginBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        loginMenu.classList.toggle('show');
+                    };
+                    document.addEventListener('click', () => loginMenu.classList.remove('show'));
+                }
+            }
+        });
 };
+
+loadComp("header", "header.html");
+loadComp("footer", "footer.html");
 </script>
 
 </body>
