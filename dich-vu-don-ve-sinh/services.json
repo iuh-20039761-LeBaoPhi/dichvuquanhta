@@ -82,25 +82,22 @@
       "Hút bụi thảm văn phòng hoặc lau sàn gạch sạch sẽ hàng ngày"
     ],
     "time_slots": [
-      { "value": "morning", "label": "07:00 - 09:00" },
-      { "value": "evening", "label": "17:30 - 19:30" }
+      { "value": "morning", "label": "07:00 - 15:00" },
+      { "value": "evening", "label": "13:00 - 21:00" }
     ],
     "pricing": {
-      "type": "subscription",
-      "packages": [
-        {
-          "name": "Gói tháng",
-          "price": 4000000,
-          "sessions": 22,
-          "staff": 1,
-          "hours_per_session": 2
-        },
-        {
-          "name": "Dọn lẻ",
-          "price": 500000,
-          "staff": 1,
-          "hours": 4
-        }
+      "type": "per_m2",
+      "base_price": 13000,
+      "min_price": 1000000,
+      "levels": {
+        "light": 0.8,
+        "standard": 1,
+        "deep": 1.25
+      },
+      "estimated": [
+        { "area": 80, "staff": 2, "hours": 3 },
+        { "area": 150, "staff": 3, "hours": 5 },
+        { "area": 250, "staff": 4, "hours": 7 }
       ]
     }
   },
@@ -119,40 +116,15 @@
       "Xịt khoáng khử mùi hoặc tinh dầu tạo hương thơm dễ chịu cho khách mới"
     ],
     "time_slots": [
-      { "value": "flex", "label": "Linh hoạt theo lịch khách" }
+      { "value": "morning", "label": "06:00 - 18:00" },
+      { "value": "evening", "label": "18:00 - 6:00" }
     ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Căn 1 PN", "price": 250000, "staff": 1, "hours": 2 },
-        { "name": "Căn 2-3 PN", "price": 450000, "staff": 2, "hours": 4 }
+        { "name": "Căn 1 Phòng ngủ", "price": 250000, "staff": 1, "hours": 2 },
+        { "name": "Căn 2-3 Phòng ngủ", "price": 450000, "staff": 2, "hours": 4 }
       ]
-    }
-  },
-  {
-    "id": 5,
-    "name": "Giúp Việc Gia Đình Theo Giờ",
-    "image": "assets/giup-viec-theo-gio.png",
-    "alt": "Dich vu giup viec nha theo gio linh hoat",
-    "description": "Dọn dẹp linh hoạt.",
-    "includes": [
-      "Quét dọn, lau sàn và sắp xếp đồ đạc trong nhà ngăn nắp",
-      "Rửa chén bát, dọn dẹp khu vực bếp sau khi nấu nướng",
-      "Giặt quần áo bằng máy, phơi và gấp đồ gọn gàng",
-      "Hỗ trợ đi chợ, sơ chế thực phẩm hoặc nấu các món ăn gia đình cơ bản",
-      "Lau bụi các bề mặt nội thất dễ thấy và đổ rác hàng ngày",
-      "Làm các công việc vặt khác theo hướng dẫn trực tiếp của chủ nhà"
-    ],
-    "time_slots": [
-      { "value": "morning", "label": "08:00 - 12:00" },
-      { "value": "afternoon", "label": "13:00 - 17:00" },
-      { "value": "evening", "label": "17:00 - 21:00" }
-    ],
-    "pricing": {
-      "type": "hourly",
-      "price": 70000,
-      "discount_price": 60000,
-      "min_hours": 2
     }
   }
 ]
