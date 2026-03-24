@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Tổng Vệ Sinh Nhà Ở Toàn Diện",
-    "image": "assets/tong-ve-sinh.png",
+    "image": "assets/giup-viec-quet-nha.jpg",
     "alt": "Dich vu tong ve sinh nha o can ho chung cu nha pho",
     "description": "Gói vệ sinh chuyên sâu từ A-Z, tẩy sạch các vết bẩn lâu ngày.",
     "includes": [
@@ -37,7 +37,7 @@
   {
     "id": 2,
     "name": "Vệ Sinh Nhà Sau Xây Dựng & Sửa Chữa",
-    "image": "assets/ve-sinh-sau-xay-dung.png",
+    "image": "assets/lau-kinh-sau-xay-dung.jpg",
     "alt": "Dich vu ve sinh nha moi xay xong hoac vua sua chua",
     "description": "Xử lý triệt để bụi xi măng, sơn, keo.",
     "includes": [
@@ -70,7 +70,7 @@
   {
     "id": 3,
     "name": "Vệ Sinh Văn Phòng & Cửa Hàng",
-    "image": "assets/ve-sinh-van-phong.png",
+    "image": "assets/hut-bui-tham-van-phong.jpg",
     "alt": "Dich vu don dep van phong cong ty cua hang kinh doanh",
     "description": "Dọn dẹp văn phòng chuyên nghiệp.",
     "includes": [
@@ -104,7 +104,7 @@
   {
     "id": 4,
     "name": "Dọn Dẹp Căn Hộ Dịch Vụ & Homestay",
-    "image": "assets/ve-sinh-homestay.png",
+    "image": "assets/ve-sinh-nha-tam-homestay.jpg",
     "alt": "Dich vu don dep airbnb homestay can ho cho thue",
     "description": "Dọn phòng nhanh chuẩn khách sạn.",
     "includes": [

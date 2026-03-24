@@ -1,13 +1,22 @@
-[
+﻿[
   {
     "id": 1,
     "slug": "quy-trinh-tong-ve-sinh-nha-o-toan-dien",
     "title": "Quy Trình 7 Bước Tổng Vệ Sinh Nhà Ở Toàn Diện Từ A-Z",
     "category": "Tổng vệ sinh nhà ở",
-    "tags": ["tổng vệ sinh", "dọn dẹp nhà cửa", "vệ sinh chuyên sâu", "làm sạch nhà phố"],
-    "keywords": ["tổng vệ sinh nhà ở", "dịch vụ dọn nhà toàn diện", "quy trình vệ sinh nhà"],
+    "tags": [
+      "tổng vệ sinh",
+      "dọn dẹp nhà cửa",
+      "vệ sinh chuyên sâu",
+      "làm sạch nhà phố"
+    ],
+    "keywords": [
+      "tổng vệ sinh nhà ở",
+      "dịch vụ dọn nhà toàn diện",
+      "quy trình vệ sinh nhà"
+    ],
     "excerpt": "Tổng vệ sinh không chỉ là quét dọn bề mặt. Khám phá quy trình chuyên sâu giúp loại bỏ bụi bẩn cứng đầu ở mọi ngóc ngách.",
-    "thumbnail": "../assets/tong-ve-sinh.png",
+    "thumbnail": "assets/tong-ve-sinh-lau-san-phong-khach.jpg",
     "published_at": "2026-04-01",
     "read_time": 5,
     "content": {
@@ -35,14 +44,23 @@
     "slug": "luu-y-ve-sinh-nha-sau-xay-dung",
     "title": "5 Sai Lầm Cần Tránh Khi Vệ Sinh Nhà Sau Xây Dựng",
     "category": "Vệ sinh sau xây dựng",
-    "tags": ["vệ sinh sau xây dựng", "tẩy vết sơn", "bụi xi măng", "nhà mới xây"],
-    "keywords": ["vệ sinh nhà sau xây dựng", "tẩy sơn trên sàn", "hút bụi công nghiệp"],
+    "tags": [
+      "vệ sinh sau xây dựng",
+      "tẩy vết sơn",
+      "bụi xi măng",
+      "nhà mới xây"
+    ],
+    "keywords": [
+      "vệ sinh nhà sau xây dựng",
+      "tẩy sơn trên sàn",
+      "hút bụi công nghiệp"
+    ],
     "excerpt": "Nhà mới xây xong thường đầy bụi xi măng và vết sơn. Nếu không biết cách vệ sinh, bạn rất dễ làm hỏng bề mặt vật liệu mới.",
-    "thumbnail": "../assets/ve-sinh-sau-xay-dung.png",
+    "thumbnail": "assets/quet-rac-xay-dung.jpg",
     "published_at": "2026-04-02",
     "read_time": 4,
     "content": {
-      "intro": "Vệ sinh nhà sau xây dựng là cuộc chiến với bụi mịn và các vết bẩn công nghiệp cứng đầu như keo, sơn, và vôi vữa.",
+      "intro": "Vệ sinh nhà sau xây dựng là cuộc chiến with bụi mịn và các vết bẩn công nghiệp cứng đầu như keo, sơn, và vôi vữa.",
       "sections": [
         {
           "heading": "Hút Bụi Trước Khi Lau",
@@ -66,10 +84,19 @@
     "slug": "loi-ich-van-phong-sach-se",
     "title": "Tại Sao Văn Phòng Sạch Sẽ Giúp Tăng Năng Suất Làm Việc?",
     "category": "Vệ sinh văn phòng",
-    "tags": ["vệ sinh văn phòng", "môi trường làm việc", "dọn dẹp công ty", "văn phòng chuyên nghiệp"],
-    "keywords": ["vệ sinh văn phòng", "dịch vụ dọn dẹp công ty", "lợi ích văn phòng sạch"],
+    "tags": [
+      "vệ sinh văn phòng",
+      "môi trường làm việc",
+      "dọn dẹp công ty",
+      "văn phòng chuyên nghiệp"
+    ],
+    "keywords": [
+      "vệ sinh văn phòng",
+      "dịch vụ dọn dẹp công ty",
+      "lợi ích văn phòng sạch"
+    ],
     "excerpt": "Không gian làm việc ngăn nắp không chỉ đẹp mắt mà còn trực tiếp thúc đẩy sự sáng tạo và giảm tỷ lệ nhân viên nghỉ ốm.",
-    "thumbnail": "../assets/ve-sinh-van-phong.png",
+    "thumbnail": "assets/hut-bui-tham-van-phong.jpg",
     "published_at": "2026-04-03",
     "read_time": 4,
     "content": {
@@ -97,10 +124,19 @@
     "slug": "tieu-chuan-ve-sinh-homestay-airbnb",
     "title": "Tiêu Chuẩn Vệ Sinh Khách Sạn Cho Homestay Và Airbnb",
     "category": "Dọn dẹp Homestay",
-    "tags": ["vệ sinh homestay", "airbnb cleaning", "dọn phòng khách sạn", "kinh doanh lưu trú"],
-    "keywords": ["vệ sinh homestay", "dọn dẹp airbnb", "tiêu chuẩn sạch sẽ khách sạn"],
+    "tags": [
+      "vệ sinh homestay",
+      "airbnb cleaning",
+      "dọn phòng khách sạn",
+      "kinh doanh lưu trú"
+    ],
+    "keywords": [
+      "vệ sinh homestay",
+      "dọn dẹp airbnb",
+      "tiêu chuẩn sạch sẽ khách sạn"
+    ],
     "excerpt": "Trong kinh doanh lưu trú, sạch sẽ là yếu tố sống còn để nhận được đánh giá 5 sao từ khách hàng.",
-    "thumbnail": "../assets/ve-sinh-homestay.png",
+    "thumbnail": "assets/don-phong-homestay-thay-ga-giuong.jpg",
     "published_at": "2026-04-04",
     "read_time": 3,
     "content": {
@@ -128,10 +164,19 @@
     "slug": "loi-ich-giup-viec-theo-gio",
     "title": "Giúp Việc Theo Giờ: Giải Pháp Cho Phụ Nữ Hiện Đại",
     "category": "Giúp việc theo giờ",
-    "tags": ["giúp việc theo giờ", "nội trợ thông minh", "tiết kiệm thời gian", "dọn dẹp nhà cửa"],
-    "keywords": ["giúp việc theo giờ", "thuê dọn nhà theo giờ", "tiết kiệm thời gian dọn nhà"],
+    "tags": [
+      "giúp việc theo giờ",
+      "nội trợ thông minh",
+      "tiết kiệm thời gian",
+      "dọn dẹp nhà cửa"
+    ],
+    "keywords": [
+      "giúp việc theo giờ",
+      "thuê dọn nhà theo giờ",
+      "tiết kiệm thời gian dọn nhà"
+    ],
     "excerpt": "Thay vì dành cả ngày cuối tuần để dọn dẹp, tại sao bạn không thuê giúp việc theo giờ để tận hưởng cuộc sống?",
-    "thumbnail": "../assets/giup-viec-theo-gio.png",
+    "thumbnail": "assets/giup-viec-don-phong-khach.jpg",
     "published_at": "2026-04-05",
     "read_time": 3,
     "content": {
@@ -159,10 +204,19 @@
     "slug": "bi-quyet-ve-sinh-bep-sach-bong",
     "title": "Mẹo Vệ Sinh Nhà Bếp Sạch Bóng Dầu Mỡ Trong 30 Phút",
     "category": "Tổng vệ sinh nhà ở",
-    "tags": ["vệ sinh bếp", "tẩy dầu mỡ", "mẹo dọn nhà", "bếp sạch"],
-    "keywords": ["vệ sinh nhà bếp", "tẩy dầu mỡ bếp ga", "mẹo dọn bếp nhanh"],
+    "tags": [
+      "vệ sinh bếp",
+      "tẩy dầu mỡ",
+      "mẹo dọn nhà",
+      "bếp sạch"
+    ],
+    "keywords": [
+      "vệ sinh nhà bếp",
+      "tẩy dầu mỡ bếp ga",
+      "mẹo dọn bếp nhanh"
+    ],
     "excerpt": "Nhà bếp là nơi khó dọn nhất do vết dầu mỡ cứng đầu. Tìm hiểu các mẹo giúp căn bếp luôn sáng bóng và thơm tho.",
-    "thumbnail": "../assets/tong-ve-sinh.png",
+    "thumbnail": "assets/tong-ve-sinh-nha-bep.jpg",
     "published_at": "2026-04-06",
     "read_time": 4,
     "content": {
@@ -190,10 +244,19 @@
     "slug": "khu-mui-nha-moi-xay-xong",
     "title": "Cách Khử Mùi Sơn Và Vật Liệu Cho Nhà Mới Xây",
     "category": "Vệ sinh sau xây dựng",
-    "tags": ["khử mùi nhà mới", "mùi sơn", "vệ sinh sau xây dựng", "mẹo dọn nhà"],
-    "keywords": ["khử mùi sơn nhà mới", "vệ sinh nhà mới xây", "mẹo dọn nhà"],
+    "tags": [
+      "khử mùi nhà mới",
+      "mùi sơn",
+      "vệ sinh sau xây dựng",
+      "mẹo dọn nhà"
+    ],
+    "keywords": [
+      "khử mùi sơn nhà mới",
+      "vệ sinh nhà mới xây",
+      "mẹo dọn nhà"
+    ],
     "excerpt": "Mùi sơn mới có thể gây đau đầu và khó chịu. Hãy áp dụng những cách tự nhiên này để làm sạch không khí trước khi dọn vào.",
-    "thumbnail": "../assets/ve-sinh-sau-xay-dung.png",
+    "thumbnail": "assets/ve-sinh-sau-xay-dung-hut-bui-xi-mang.jpg",
     "published_at": "2026-04-07",
     "read_time": 3,
     "content": {
@@ -221,10 +284,19 @@
     "slug": "ve-sinh-kinh-toa-nha-cao-tang",
     "title": "An Toàn Khi Vệ Sinh Kính Mặt Ngoài Tòa Nhà Cao Tầng",
     "category": "Vệ sinh văn phòng",
-    "tags": ["vệ sinh kính", "lau kính tòa nhà", "an toàn lao động", "vệ sinh công nghiệp"],
-    "keywords": ["lau kính cao tầng", "vệ sinh kính văn phòng", "dịch vụ lau kính chuyên nghiệp"],
+    "tags": [
+      "vệ sinh kính",
+      "lau kính tòa nhà",
+      "an toàn lao động",
+      "vệ sinh công nghiệp"
+    ],
+    "keywords": [
+      "lau kính cao tầng",
+      "vệ sinh kính văn phòng",
+      "dịch vụ lau kính chuyên nghiệp"
+    ],
     "excerpt": "Lau kính mặt ngoài tòa nhà là công việc nguy hiểm, đòi hỏi thiết bị bảo hộ khắt khe và kỹ thuật chuyên môn cao.",
-    "thumbnail": "../assets/ve-sinh-van-phong.png",
+    "thumbnail": "assets/lau-cua-kinh-van-phong.jpg",
     "published_at": "2026-04-08",
     "read_time": 4,
     "content": {
@@ -252,10 +324,19 @@
     "slug": "danh-gia-khach-hang-ve-sinh-homestay",
     "title": "Mối Liên Hệ Giữa Sạch Sẽ Và Doanh Thu Homestay",
     "category": "Dọn dẹp Homestay",
-    "tags": ["doanh thu homestay", "đánh giá khách hàng", "vệ sinh airbnb", "kinh doanh lưu trú"],
-    "keywords": ["vệ sinh homestay", "tăng doanh thu airbnb", "kinh nghiệm kinh doanh homestay"],
+    "tags": [
+      "doanh thu homestay",
+      "đánh giá khách hàng",
+      "vệ sinh airbnb",
+      "kinh doanh lưu trú"
+    ],
+    "keywords": [
+      "vệ sinh homestay",
+      "tăng doanh thu airbnb",
+      "kinh nghiệm kinh doanh homestay"
+    ],
     "excerpt": "Dữ liệu cho thấy sạch sẽ là yếu tố đầu tiên khách hàng nhắc đến khi để lại đánh giá tốt trên các nền tảng đặt phòng.",
-    "thumbnail": "../assets/ve-sinh-homestay.png",
+    "thumbnail": "assets/giup-viec-gap-quan-ao.jpg",
     "published_at": "2026-04-09",
     "read_time": 4,
     "content": {
@@ -283,10 +364,19 @@
     "slug": "cach-chon-nguoi-giup-viec-theo-gio",
     "title": "Kinh Nghiệm Chọn Người Giúp Việc Theo Giờ Đáng Tin Cậy",
     "category": "Giúp việc theo giờ",
-    "tags": ["chọn người giúp việc", "giúp việc theo giờ", "uy tín", "kinh nghiệm dọn nhà"],
-    "keywords": ["tìm người giúp việc theo giờ", "thuê dọn nhà uy tín", "kinh nghiệm thuê người giúp việc"],
+    "tags": [
+      "chọn người giúp việc",
+      "giúp việc theo giờ",
+      "uy tín",
+      "kinh nghiệm dọn nhà"
+    ],
+    "keywords": [
+      "tìm người giúp việc theo giờ",
+      "thuê dọn nhà uy tín",
+      "kinh nghiệm thuê người giúp việc"
+    ],
     "excerpt": "Tìm được người giúp việc trung thực và thạo việc không khó nếu bạn biết các tiêu chí đánh giá sau đây.",
-    "thumbnail": "../assets/giup-viec-theo-gio.png",
+    "thumbnail": "assets/giup-viec-quet-nha.jpg",
     "published_at": "2026-04-10",
     "read_time": 3,
     "content": {
@@ -314,10 +404,19 @@
     "slug": "ve-sinh-sofa-nem-tai-nha",
     "title": "Tại Sao Nên Giặt Sofa Và Nệm Định Kỳ 6 Tháng 1 Lần?",
     "category": "Tổng vệ sinh nhà ở",
-    "tags": ["giặt sofa", "vệ sinh nệm", "khử khuẩn", "bảo vệ sức khỏe"],
-    "keywords": ["giặt sofa tại nhà", "vệ sinh nệm định kỳ", "dịch vụ giặt nệm"],
+    "tags": [
+      "giặt sofa",
+      "vệ sinh nệm",
+      "khử khuẩn",
+      "bảo vệ sức khỏe"
+    ],
+    "keywords": [
+      "giặt sofa tại nhà",
+      "vệ sinh nệm định kỳ",
+      "dịch vụ giặt nệm"
+    ],
     "excerpt": "Sofa và nệm là nơi chứa hàng triệu mạt bụi và vi khuẩn gây dị ứng da. Việc hút bụi thông thường là không đủ.",
-    "thumbnail": "../assets/tong-ve-sinh.png",
+    "thumbnail": "assets/hut-bui-nem-phong-ngu.jpg",
     "published_at": "2026-04-11",
     "read_time": 4,
     "content": {
@@ -345,10 +444,19 @@
     "slug": "ve-sinh-san-nha-moi-xay",
     "title": "Cách Làm Sạch Sàn Nhà Sau Xây Dựng Cho Từng Loại Chất Liệu",
     "category": "Vệ sinh sau xây dựng",
-    "tags": ["vệ sinh sàn nhà", "sàn gỗ", "sàn đá", "vệ sinh sau xây dựng"],
-    "keywords": ["vệ sinh sàn đá", "làm sạch sàn gỗ nhà mới", "tẩy sàn gạch tàu"],
+    "tags": [
+      "vệ sinh sàn nhà",
+      "sàn gỗ",
+      "sàn đá",
+      "vệ sinh sau xây dựng"
+    ],
+    "keywords": [
+      "vệ sinh sàn đá",
+      "làm sạch sàn gỗ nhà mới",
+      "tẩy sàn gạch tàu"
+    ],
     "excerpt": "Mỗi loại sàn nhà cần một phương pháp vệ sinh khác nhau để đảm bảo độ bền và tính thẩm mỹ.",
-    "thumbnail": "../assets/ve-sinh-sau-xay-dung.png",
+    "thumbnail": "assets/may-cha-san-cong-nghiep.jpg",
     "published_at": "2026-04-12",
     "read_time": 3,
     "content": {
@@ -376,10 +484,19 @@
     "slug": "sap-xep-kho-luu-tru-van-phong",
     "title": "Mẹo Sắp Xếp Kho Hồ Sơ Văn Phòng Ngăn Nắp, Khoa Học",
     "category": "Vệ sinh văn phòng",
-    "tags": ["sắp xếp hồ sơ", "vệ sinh kho", "văn phòng ngăn nắp", "dọn dẹp văn phòng"],
-    "keywords": ["sắp xếp kho văn phòng", "dọn dẹp hồ sơ", "vệ sinh văn phòng định kỳ"],
+    "tags": [
+      "sắp xếp hồ sơ",
+      "vệ sinh kho",
+      "văn phòng ngăn nắp",
+      "dọn dẹp văn phòng"
+    ],
+    "keywords": [
+      "sắp xếp kho văn phòng",
+      "dọn dẹp hồ sơ",
+      "vệ sinh văn phòng định kỳ"
+    ],
     "excerpt": "Một kho hồ sơ lộn xộn không chỉ khó tìm kiếm mà còn là nơi trú ngụ của gián, chuột và ẩm mốc.",
-    "thumbnail": "../assets/ve-sinh-van-phong.png",
+    "thumbnail": "assets/ve-sinh-ban-lam-viec-van-phong.jpg",
     "published_at": "2026-04-13",
     "read_time": 3,
     "content": {
@@ -407,10 +524,19 @@
     "slug": "vung-khu-khuan-trong-homestay",
     "title": "Những Khu Vực Cần Khử Khuẩn Kỹ Lưỡng Trong Homestay",
     "category": "Dọn dẹp Homestay",
-    "tags": ["khử khuẩn homestay", "an toàn khách hàng", "vệ sinh airbnb", "dịch vụ dọn dẹp"],
-    "keywords": ["khu vực vệ sinh homestay", "khử khuẩn phòng airbnb", "vệ sinh lưu trú"],
+    "tags": [
+      "khử khuẩn homestay",
+      "an toàn khách hàng",
+      "vệ sinh airbnb",
+      "dịch vụ dọn dẹp"
+    ],
+    "keywords": [
+      "khu vực vệ sinh homestay",
+      "khử khuẩn phòng airbnb",
+      "vệ sinh lưu trú"
+    ],
     "excerpt": "Trong thời điểm sức khỏe được ưu tiên, việc khử khuẩn các 'điểm chạm' thường xuyên sẽ tạo sự an tâm tuyệt đối cho khách.",
-    "thumbnail": "../assets/ve-sinh-homestay.png",
+    "thumbnail": "assets/ve-sinh-nha-tam-homestay.jpg",
     "published_at": "2026-04-14",
     "read_time": 4,
     "content": {
@@ -438,10 +564,19 @@
     "slug": "tiet-kiem-khi-thue-giup-viec-theo-gio",
     "title": "Làm Sao Để Thuê Giúp Việc Theo Giờ Tiết Kiệm Nhất?",
     "category": "Giúp việc theo giờ",
-    "tags": ["tiết kiệm chi phí", "mẹo thuê giúp việc", "giúp việc theo giờ", "dọn nhà giá rẻ"],
-    "keywords": ["giá giúp việc theo giờ", "mẹo thuê dọn nhà tiết kiệm", "dịch vụ giúp việc uy tín"],
+    "tags": [
+      "tiết kiệm chi phí",
+      "mẹo thuê giúp việc",
+      "giúp việc theo giờ",
+      "dọn nhà giá rẻ"
+    ],
+    "keywords": [
+      "giá giúp việc theo giờ",
+      "mẹo thuê dọn nhà tiết kiệm",
+      "dịch vụ giúp việc uy tín"
+    ],
     "excerpt": "Bằng cách sắp xếp công việc hợp lý, bạn có thể giảm thiểu số giờ thuê mà vẫn có một ngôi nhà sạch sẽ.",
-    "thumbnail": "../assets/giup-viec-theo-gio.png",
+    "thumbnail": "assets/giup-viec-lau-san-nha.jpg",
     "published_at": "2026-04-15",
     "read_time": 3,
     "content": {
@@ -469,10 +604,19 @@
     "slug": "ve-sinh-may-lanh-dinh-ky",
     "title": "Lợi Ích Không Ngờ Của Việc Vệ Sinh Máy Lạnh Định Kỳ",
     "category": "Tổng vệ sinh nhà ở",
-    "tags": ["vệ sinh máy lạnh", "tiết kiệm điện", "bảo trì điện lạnh", "sức khỏe gia đình"],
-    "keywords": ["vệ sinh máy lạnh tại nhà", "tác hại máy lạnh bẩn", "dịch vụ tổng vệ sinh"],
+    "tags": [
+      "vệ sinh máy lạnh",
+      "tiết kiệm điện",
+      "bảo trì điện lạnh",
+      "sức khỏe gia đình"
+    ],
+    "keywords": [
+      "vệ sinh máy lạnh tại nhà",
+      "tác hại máy lạnh bẩn",
+      "dịch vụ tổng vệ sinh"
+    ],
     "excerpt": "Máy lạnh bẩn không chỉ gây tốn điện mà còn là ổ vi khuẩn phát tán trong không khí gia đình.",
-    "thumbnail": "../assets/tong-ve-sinh.png",
+    "thumbnail": "assets/ve-sinh-quat-tran-den.jpg",
     "published_at": "2026-04-16",
     "read_time": 4,
     "content": {
@@ -500,10 +644,19 @@
     "slug": "ve-sinh-sau-xay-dung-nha-xuong",
     "title": "Quy Trình Vệ Sinh Sau Xây Dựng Cho Nhà Xưởng, Kho Bãi",
     "category": "Vệ sinh sau xây dựng",
-    "tags": ["vệ sinh nhà xưởng", "vệ sinh công nghiệp", "sau xây dựng", "quản lý kho"],
-    "keywords": ["vệ sinh nhà xưởng mới xây", "quét bụi kho bãi", "dịch vụ vệ sinh công nghiệp"],
+    "tags": [
+      "vệ sinh nhà xưởng",
+      "vệ sinh công nghiệp",
+      "sau xây dựng",
+      "quản lý kho"
+    ],
+    "keywords": [
+      "vệ sinh nhà xưởng mới xây",
+      "quét bụi kho bãi",
+      "dịch vụ vệ sinh công nghiệp"
+    ],
     "excerpt": "Nhà xưởng sau thi công đầy rác thải và bụi bẩn. Cần một quy trình vệ sinh công nghiệp để đưa vào hoạt động sản xuất.",
-    "thumbnail": "../assets/ve-sinh-sau-xay-dung.png",
+    "thumbnail": "assets/lau-kinh-sau-xay-dung.jpg",
     "published_at": "2026-04-17",
     "read_time": 5,
     "content": {
@@ -531,10 +684,19 @@
     "slug": "vong-doi-tham-van-phong",
     "title": "Khi Nào Bạn Cần Giặt Thảm Văn Phòng Khẩn Cấp?",
     "category": "Vệ sinh văn phòng",
-    "tags": ["giặt thảm văn phòng", "vệ sinh định kỳ", "mùi hôi thảm", "môi trường làm việc"],
-    "keywords": ["dịch vụ giặt thảm văn phòng", "giặt thảm định kỳ", "vệ sinh thảm giá rẻ"],
+    "tags": [
+      "giặt thảm văn phòng",
+      "vệ sinh định kỳ",
+      "mùi hôi thảm",
+      "môi trường làm việc"
+    ],
+    "keywords": [
+      "dịch vụ giặt thảm văn phòng",
+      "giặt thảm định kỳ",
+      "vệ sinh thảm giá rẻ"
+    ],
     "excerpt": "Thảm văn phòng chứa nhiều bụi mịn và vi khuẩn hơn bạn nghĩ. Đừng đợi đến khi thấy vết bẩn rõ rệt mới bắt đầu dọn.",
-    "thumbnail": "../assets/ve-sinh-van-phong.png",
+    "thumbnail": "assets/lau-kinh-phong-hop.jpg",
     "published_at": "2026-04-18",
     "read_time": 3,
     "content": {
@@ -562,10 +724,19 @@
     "slug": "quan-ly-do-dac-khach-bo-quen",
     "title": "Quy Trình Xử Lý Đồ Khách Bỏ Quên Khi Dọn Homestay",
     "category": "Dọn dẹp Homestay",
-    "tags": ["lost and found", "phục vụ khách hàng", "vệ sinh homestay", "uy tín"],
-    "keywords": ["đồ khách bỏ quên homestay", "quy trình dọn phòng airbnb", "chăm sóc khách hàng"],
+    "tags": [
+      "lost and found",
+      "phục vụ khách hàng",
+      "vệ sinh homestay",
+      "uy tín"
+    ],
+    "keywords": [
+      "đồ khách bỏ quên homestay",
+      "quy trình dọn phòng airbnb",
+      "chăm sóc khách hàng"
+    ],
     "excerpt": "Tính trung thực của nhân viên vệ sinh là yếu tố sống còn để xây dựng uy tín cho chủ Homestay.",
-    "thumbnail": "../assets/ve-sinh-homestay.png",
+    "thumbnail": "assets/sap-xep-giuong-homestay.jpg",
     "published_at": "2026-04-19",
     "read_time": 3,
     "content": {
@@ -593,10 +764,19 @@
     "slug": "stress-khi-nha-cua-bua-bon",
     "title": "Tại Sao Ngôi Nhà Bừa Bộn Khiến Bạn Cảm Thấy Stress?",
     "category": "Giúp việc theo giờ",
-    "tags": ["tâm lý học", "dọn dẹp nhà cửa", "giúp việc theo giờ", "giảm stress"],
-    "keywords": ["tác hại nhà bừa bộn", "lợi ích dọn dẹp", "thuê dọn nhà theo giờ"],
+    "tags": [
+      "tâm lý học",
+      "dọn dẹp nhà cửa",
+      "giúp việc theo giờ",
+      "giảm stress"
+    ],
+    "keywords": [
+      "tác hại nhà bừa bộn",
+      "lợi ích dọn dẹp",
+      "thuê dọn nhà theo giờ"
+    ],
     "excerpt": "Khoa học chứng minh sự lộn xộn trong không gian sống khiến não bộ bị quá tải và tăng nồng độ cortisol (hormone gây stress).",
-    "thumbnail": "../assets/giup-viec-theo-gio.png",
+    "thumbnail": "assets/giup-viec-rua-chen.jpg",
     "published_at": "2026-04-20",
     "read_time": 4,
     "content": {
@@ -624,10 +804,19 @@
     "slug": "ve-sinh-vach-kinh-nha-tam",
     "title": "Cách Tẩy Cặn Canxi Vách Kính Nhà Tắm Sáng Bóng Như Mới",
     "category": "Tổng vệ sinh nhà ở",
-    "tags": ["vệ sinh nhà tắm", "tẩy cặn canxi", "mẹo dọn nhà", "vách kính"],
-    "keywords": ["tẩy kính nhà tắm bị ố", "mẹo vệ sinh toilet", "tẩy cặn canxi vòi sen"],
+    "tags": [
+      "vệ sinh nhà tắm",
+      "tẩy cặn canxi",
+      "mẹo dọn nhà",
+      "vách kính"
+    ],
+    "keywords": [
+      "tẩy kính nhà tắm bị ố",
+      "mẹo vệ sinh toilet",
+      "tẩy cặn canxi vòi sen"
+    ],
     "excerpt": "Những vết trắng đục trên vách kính nhà tắm rất khó làm sạch bằng nước lau sàn thông thường. Hãy thử ngay mẹo này.",
-    "thumbnail": "../assets/tong-ve-sinh.png",
+    "thumbnail": "assets/tong-ve-sinh-nha-tam.jpg",
     "published_at": "2026-04-21",
     "read_time": 3,
     "content": {
@@ -655,10 +844,19 @@
     "slug": "kiem-tra-an-toan-sau-khi-xay-dung",
     "title": "Vệ Sinh Kết Hợp Kiểm Tra An Toàn Sau Khi Xây Dựng",
     "category": "Vệ sinh sau xây dựng",
-    "tags": ["an toàn nhà ở", "vệ sinh sau xây dựng", "kiểm tra điện nước", "nhà mới"],
-    "keywords": ["kiểm tra nhà mới xây", "vệ sinh sau thi công", "lưu ý nhận nhà mới"],
+    "tags": [
+      "an toàn nhà ở",
+      "vệ sinh sau xây dựng",
+      "kiểm tra điện nước",
+      "nhà mới"
+    ],
+    "keywords": [
+      "kiểm tra nhà mới xây",
+      "vệ sinh sau thi công",
+      "lưu ý nhận nhà mới"
+    ],
     "excerpt": "Quá trình vệ sinh sau xây dựng là thời điểm vàng để phát hiện các lỗi thi công ẩn giấu trước khi nhận bàn giao.",
-    "thumbnail": "../assets/ve-sinh-sau-xay-dung.png",
+    "thumbnail": "assets/tay-keo-dan-tren-kinh.jpg",
     "published_at": "2026-04-22",
     "read_time": 4,
     "content": {
@@ -686,10 +884,19 @@
     "slug": "khu-mui-pantry-van-phong",
     "title": "Giải Pháp Khử Mùi Hôi Khu Vực Pantry Văn Phòng",
     "category": "Vệ sinh văn phòng",
-    "tags": ["vệ sinh pantry", "khu vực ăn uống", "văn phòng", "khử mùi"],
-    "keywords": ["vệ sinh khu vực ăn uống văn phòng", "khử mùi tủ lạnh công ty", "dọn dẹp văn phòng"],
+    "tags": [
+      "vệ sinh pantry",
+      "khu vực ăn uống",
+      "văn phòng",
+      "khử mùi"
+    ],
+    "keywords": [
+      "vệ sinh khu vực ăn uống văn phòng",
+      "khử mùi tủ lạnh công ty",
+      "dọn dẹp văn phòng"
+    ],
     "excerpt": "Pantry là nơi nhân viên ăn uống, nếu không vệ sinh kỹ sẽ phát sinh mùi thực phẩm và thu hút côn trùng.",
-    "thumbnail": "../assets/ve-sinh-van-phong.png",
+    "thumbnail": "assets/ve-sinh-pantry-van-phong.jpg",
     "published_at": "2026-04-23",
     "read_time": 3,
     "content": {
@@ -717,10 +924,19 @@
     "slug": "chuan-bi-don-khach-tet",
     "title": "Dọn Nhà Đón Tết: Khi Nào Nên Bắt Đầu Tổng Vệ Sinh?",
     "category": "Tổng vệ sinh nhà ở",
-    "tags": ["dọn nhà đón tết", "tổng vệ sinh", "mẹo tết", "dọn dẹp"],
-    "keywords": ["tổng vệ sinh nhà cửa đón tết", "dịch vụ dọn nhà tết", "lịch dọn nhà cuối năm"],
+    "tags": [
+      "dọn nhà đón tết",
+      "tổng vệ sinh",
+      "mẹo tết",
+      "dọn dẹp"
+    ],
+    "keywords": [
+      "tổng vệ sinh nhà cửa đón tết",
+      "dịch vụ dọn nhà tết",
+      "lịch dọn nhà cuối năm"
+    ],
     "excerpt": "Đừng để sát Tết mới bắt đầu dọn dẹp. Hãy lập kế hoạch sớm để tránh mệt mỏi và có giá dịch vụ tốt nhất.",
-    "thumbnail": "../assets/tong-ve-sinh.png",
+    "thumbnail": "assets/phong-homestay-san-sang-don-khach.jpg",
     "published_at": "2026-04-24",
     "read_time": 3,
     "content": {
@@ -748,10 +964,19 @@
     "slug": "ve-sinh-thiet-bi-ve-sinh-moi",
     "title": "Cách Bảo Quản Thiết Bị Vệ Sinh Cao Cấp Sau Khi Lắp Đặt",
     "category": "Vệ sinh sau xây dựng",
-    "tags": ["bảo quản đồ dùng", "thiết bị vệ sinh", "vệ sinh sau xây dựng", "nhà mới"],
-    "keywords": ["vệ sinh vòi sen đen", "bảo quản bồn cầu thông minh", "vệ sinh thiết bị cao cấp"],
+    "tags": [
+      "bảo quản đồ dùng",
+      "thiết bị vệ sinh",
+      "vệ sinh sau xây dựng",
+      "nhà mới"
+    ],
+    "keywords": [
+      "vệ sinh vòi sen đen",
+      "bảo quản bồn cầu thông minh",
+      "vệ sinh thiết bị cao cấp"
+    ],
     "excerpt": "Nhiều gia chủ vô tình làm hỏng lớp mạ của vòi sen cao cấp do dùng sai hóa chất tẩy rửa khi vừa xây xong nhà.",
-    "thumbnail": "../assets/ve-sinh-sau-xay-dung.png",
+    "thumbnail": "assets/tay-son-tren-san-gach.jpg",
     "published_at": "2026-04-25",
     "read_time": 3,
     "content": {
@@ -779,10 +1004,19 @@
     "slug": "loi-ich-thom-tho-trong-van-phong",
     "title": "Liệu Pháp Hương Thơm: Bí Quyết Tạo Ấn Tượng Tại Cửa Hàng",
     "category": "Vệ sinh văn phòng",
-    "tags": ["hương thơm văn phòng", "trải nghiệm khách hàng", "vệ sinh cửa hàng", "tinh dầu"],
-    "keywords": ["khử mùi văn phòng", "tạo hương thơm cửa hàng", "dịch vụ vệ sinh chuyên nghiệp"],
+    "tags": [
+      "hương thơm văn phòng",
+      "trải nghiệm khách hàng",
+      "vệ sinh cửa hàng",
+      "tinh dầu"
+    ],
+    "keywords": [
+      "khử mùi văn phòng",
+      "tạo hương thơm cửa hàng",
+      "dịch vụ vệ sinh chuyên nghiệp"
+    ],
     "excerpt": "Sạch thôi chưa đủ, một mùi hương dễ chịu sẽ khiến khách hàng muốn ở lại lâu hơn và nhân viên cảm thấy thư thái hơn.",
-    "thumbnail": "../assets/ve-sinh-van-phong.png",
+    "thumbnail": "assets/ve-sinh-quay-le-tan.jpg",
     "published_at": "2026-04-26",
     "read_time": 3,
     "content": {
@@ -810,10 +1044,19 @@
     "slug": "giat-ui-cho-can-ho-dich-vu",
     "title": "Quản Lý Giặt Ủi Hiệu Quả Cho Chủ Chuỗi Căn Hộ Dịch Vụ",
     "category": "Dọn dẹp Homestay",
-    "tags": ["giặt ủi", "quản lý vận hành", "căn hộ dịch vụ", "vệ sinh"],
-    "keywords": ["giặt ga trải giường homestay", "dịch vụ dọn phòng trọn gói", "giặt sấy airbnb"],
+    "tags": [
+      "giặt ủi",
+      "quản lý vận hành",
+      "căn hộ dịch vụ",
+      "vệ sinh"
+    ],
+    "keywords": [
+      "giặt ga trải giường homestay",
+      "dịch vụ dọn phòng trọn gói",
+      "giặt sấy airbnb"
+    ],
     "excerpt": "Chi phí giặt ủi chiếm tỷ trọng lớn trong vận hành Homestay. Làm sao để tối ưu mà vẫn đảm bảo chất lượng?",
-    "thumbnail": "../assets/ve-sinh-homestay.png",
+    "thumbnail": "assets/giup-viec-giat-do-may.jpg",
     "published_at": "2026-04-27",
     "read_time": 4,
     "content": {
@@ -841,10 +1084,19 @@
     "slug": "ve-sinh-nha-co-thu-cung",
     "title": "Mẹo Giữ Nhà Luôn Sạch Khi Nuôi Thú Cưng",
     "category": "Giúp việc theo giờ",
-    "tags": ["thú cưng", "vệ sinh nhà cửa", "lông chó mèo", "giúp việc theo giờ"],
-    "keywords": ["dọn lông thú cưng", "khử mùi chó mèo trong nhà", "giúp việc dọn nhà có thú cưng"],
+    "tags": [
+      "thú cưng",
+      "vệ sinh nhà cửa",
+      "lông chó mèo",
+      "giúp việc theo giờ"
+    ],
+    "keywords": [
+      "dọn lông thú cưng",
+      "khử mùi chó mèo trong nhà",
+      "giúp việc dọn nhà có thú cưng"
+    ],
     "excerpt": "Yêu thú cưng nhưng không yêu lông của chúng vương vãi khắp nơi? Đây là giải pháp dành cho bạn.",
-    "thumbnail": "../assets/giup-viec-theo-gio.png",
+    "thumbnail": "assets/don-phong-khach-airbnb.jpg",
     "published_at": "2026-04-28",
     "read_time": 3,
     "content": {
@@ -872,10 +1124,19 @@
     "slug": "an-toan-hoa-chat-ve-sinh",
     "title": "Tại Sao Chúng Tôi Ưu Tiên Hóa Chất Vệ Sinh Sinh Học?",
     "category": "Tổng vệ sinh nhà ở",
-    "tags": ["hóa chất sinh học", "vệ sinh xanh", "an toàn sức khỏe", "tổng vệ sinh"],
-    "keywords": ["nước lau nhà sinh học", "vệ sinh nhà an toàn", "dịch vụ dọn nhà eco-friendly"],
+    "tags": [
+      "hóa chất sinh học",
+      "vệ sinh xanh",
+      "an toàn sức khỏe",
+      "tổng vệ sinh"
+    ],
+    "keywords": [
+      "nước lau nhà sinh học",
+      "vệ sinh nhà an toàn",
+      "dịch vụ dọn nhà eco-friendly"
+    ],
     "excerpt": "Hóa chất tẩy rửa công nghiệp mạnh có thể làm sạch nhanh nhưng lại để lại dư lượng độc hại cho trẻ nhỏ và vật nuôi.",
-    "thumbnail": "../assets/tong-ve-sinh.png",
+    "thumbnail": "assets/tong-ve-sinh-lau-kinh-ban-cong.jpg",
     "published_at": "2026-04-29",
     "read_time": 4,
     "content": {
@@ -903,10 +1164,19 @@
     "slug": "gia-tri-cua-su-ngan-nap",
     "title": "Sống Ngăn Nắp: Thay Đổi Không Gian, Thay Đổi Cuộc Đời",
     "category": "Dịch vụ chăm sóc",
-    "tags": ["phong cách sống", "ngăn nắp", "dọn dẹp", "hạnh phúc"],
-    "keywords": ["lối sống tối giản", "ngôi nhà ngăn nắp", "giá trị dọn dẹp"],
+    "tags": [
+      "phong cách sống",
+      "ngăn nắp",
+      "dọn dẹp",
+      "hạnh phúc"
+    ],
+    "keywords": [
+      "lối sống tối giản",
+      "ngôi nhà ngăn nắp",
+      "giá trị dọn dẹp"
+    ],
     "excerpt": "Dọn dẹp không chỉ là làm sạch, mà còn là quá trình thanh lọc tâm hồn và thiết lập một cuộc sống mới tích cực hơn.",
-    "thumbnail": "../assets/vai-tro-cua-nguoi-giup-viec-trong-phuc-hoi-benh.png",
+    "thumbnail": "assets/ve-sinh-bep-homestay.jpg",
     "published_at": "2026-04-30",
     "read_time": 3,
     "content": {
