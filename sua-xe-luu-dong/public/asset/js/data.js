@@ -1,6 +1,8 @@
 const BOOKING_MODAL_SOURCE = "dat-dich-vu.html";
 const BOOKING_MODAL_STYLE_ID = "bookingModalInlineStyles";
 const BOOKING_MODAL_EMBED_FIX_STYLE_ID = "bookingModalEmbedFixStyles";
+const BOOKING_GOOGLE_SHEET_API =
+  "https://script.google.com/macros/s/AKfycbzGk9VOSebrVPRhBtXpOZyBpXaYZpzbvPD3hQ5oQ7uIGnn2HXBv2bBqJ6ouOpZ3g_kENA/exec";
 let bookingModalLoadPromise = null;
 
 function injectBookingModalStyles(doc) {
@@ -1209,6 +1211,102 @@ function initBookingConfirmFlow() {
   const confirmImages = document.getElementById("confirmImages");
   const confirmVideos = document.getElementById("confirmVideos");
   const confirmMediaUrls = [];
+  const ORDER_CODE_PREFIX = "SXLD";
+  const ORDER_CODE_STORE_KEY = "sua_xe_luu_dong_order_codes";
+  const ORDER_CODE_TTL_MS = 24 * 60 * 60 * 1000;
+  let currentOrderCode = "";
+
+  function normalizeStoredOrderCodes(payload) {
+    const now = Date.now();
+
+    if (!Array.isArray(payload)) return [];
+
+    const normalized = payload
+      .map((item) => {
+        if (typeof item === "string") {
+          return { code: item, createdAt: now };
+        }
+
+        if (item && typeof item.code === "string") {
+          const createdAt = Number(item.createdAt || 0);
+          return {
+            code: item.code,
+            createdAt:
+              Number.isFinite(createdAt) && createdAt > 0 ? createdAt : now,
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean)
+      .filter((item) => now - item.createdAt < ORDER_CODE_TTL_MS);
+
+    const deduped = new Map();
+    normalized.forEach((item) => {
+      deduped.set(item.code, item);
+    });
+
+    return Array.from(deduped.values());
+  }
+
+  function readStoredOrderCodeEntries() {
+    try {
+      const raw = localStorage.getItem(ORDER_CODE_STORE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      const cleaned = normalizeStoredOrderCodes(parsed);
+      localStorage.setItem(ORDER_CODE_STORE_KEY, JSON.stringify(cleaned));
+      return cleaned;
+    } catch (_err) {
+      return [];
+    }
+  }
+
+  function getStoredOrderCodes() {
+    return readStoredOrderCodeEntries().map((item) => item.code);
+  }
+
+  function saveOrderCode(orderCode) {
+    if (!orderCode) return;
+
+    const existingEntries = readStoredOrderCodeEntries();
+    if (existingEntries.some((item) => item.code === orderCode)) return;
+
+    existingEntries.push({
+      code: orderCode,
+      createdAt: Date.now(),
+    });
+
+    const trimmed = existingEntries.slice(-3000);
+    try {
+      localStorage.setItem(ORDER_CODE_STORE_KEY, JSON.stringify(trimmed));
+    } catch (_err) {
+      // Ignore localStorage failure (private mode / quota exceeded).
+    }
+  }
+
+  function createRandomOrderCode() {
+    const numberPart = String(Math.floor(Math.random() * 10000)).padStart(
+      4,
+      "0",
+    );
+    return `${ORDER_CODE_PREFIX}${numberPart}`;
+  }
+
+  function generateUniqueOrderCode() {
+    const existingCodes = new Set(getStoredOrderCodes());
+
+    for (let i = 0; i < 200; i += 1) {
+      const candidate = createRandomOrderCode();
+      if (!existingCodes.has(candidate)) {
+        saveOrderCode(candidate);
+        return candidate;
+      }
+    }
+
+    const fallback = `${ORDER_CODE_PREFIX}${Date.now().toString().slice(-4)}`;
+    saveOrderCode(fallback);
+    return fallback;
+  }
 
   if (!form || !bookingModalEl || !confirmModalEl) return;
   if (form.dataset.confirmFlowBound === "true") return;
@@ -1343,10 +1441,25 @@ function initBookingConfirmFlow() {
     return selectedText(itemSelect);
   }
 
+  function moneyOnlyText(value) {
+    const text = String(value || "").trim();
+    if (!text) return "";
+
+    // Keep only the amount part, remove any trailing notes like "(11.5 km)".
+    return text.split("(")[0].trim();
+  }
+
   function renderSummary() {
+    if (!currentOrderCode) {
+      currentOrderCode = generateUniqueOrderCode();
+    }
+
+    form.dataset.orderCode = currentOrderCode;
+
     const summary = {
       confirmName: document.getElementById("nameCustomer")?.value,
       confirmPhone: document.getElementById("phoneCustomer")?.value,
+      confirmOrderCode: currentOrderCode,
       confirmService: selectedText(serviceSelect),
       confirmVehicleType: selectedText(vehicleType),
       confirmBrand: selectedText(brandSelect),
@@ -1355,7 +1468,7 @@ function initBookingConfirmFlow() {
       confirmAddress: addressInput?.value,
       confirmPrice: priceInput?.value,
       confirmSurvey: surveyInput?.value,
-      confirmTransport: transportInput?.value,
+      confirmTransport: moneyOnlyText(transportInput?.value),
       confirmTotal: totalInput?.value,
       confirmNote: noteInput?.value,
     };
@@ -1364,6 +1477,98 @@ function initBookingConfirmFlow() {
       const el = document.getElementById(id);
       if (el) el.textContent = normalizeValue(value);
     });
+  }
+
+  function collectBookingData() {
+    if (!currentOrderCode) {
+      currentOrderCode = generateUniqueOrderCode();
+    }
+
+    const transportFee = moneyOnlyText(transportInput?.value);
+    const payload = {
+      service_group: "sua-xe-luu-dong",
+      name: document.getElementById("nameCustomer")?.value || "",
+      phone: document.getElementById("phoneCustomer")?.value || "",
+      order_code: currentOrderCode,
+      service_name: selectedText(serviceSelect),
+      vehicle_type: selectedText(vehicleType),
+      brand: selectedText(brandSelect),
+      item: selectedItemText(),
+      booking_time: datetimeInput?.value || "",
+      address: addressInput?.value || "",
+      price: priceInput?.value || "",
+      survey_fee: surveyInput?.value || "",
+      transport_fee: transportFee,
+      ship: transportFee,
+      total: totalInput?.value || "",
+      message: noteInput?.value || "",
+    };
+
+    return payload;
+  }
+
+  function parseJsonSafe(raw) {
+    try {
+      return raw ? JSON.parse(raw) : null;
+    } catch (_err) {
+      return null;
+    }
+  }
+
+  function handleConfirmSubmit() {
+    const payload = collectBookingData();
+    const originalText = confirmBtn.textContent;
+
+    if (!BOOKING_GOOGLE_SHEET_API) {
+      alert("Chưa cấu hình BOOKING_GOOGLE_SHEET_API để lưu dữ liệu.");
+      return;
+    }
+
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "Đang gửi...";
+
+    fetch(BOOKING_GOOGLE_SHEET_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=UTF-8",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => {
+        return response.text().then((raw) => {
+          const result = parseJsonSafe(raw);
+          if (!response.ok || !result || result.success !== true) {
+            const serverMessage =
+              (result && result.error) || raw || "Gửi dữ liệu thất bại";
+            throw new Error(`HTTP ${response.status}: ${serverMessage}`);
+          }
+        });
+      })
+      .then(() => {
+        bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
+        hideBookingStep();
+
+        alert(
+          `Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.\nMã đơn hàng của bạn: ${payload.order_code}`,
+        );
+
+        form.reset();
+        clearConfirmMedia();
+        currentOrderCode = "";
+        delete form.dataset.orderCode;
+
+        if (!isEmbeddedMode) {
+          showBookingStep();
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi gửi dữ liệu sửa xe:", err);
+        alert("Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.");
+      })
+      .finally(() => {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = originalText;
+      });
   }
 
   function backToBookingModal() {
@@ -1393,21 +1598,7 @@ function initBookingConfirmFlow() {
   }
 
   if (confirmBtn) {
-    confirmBtn.addEventListener("click", function () {
-      bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
-      hideBookingStep();
-
-      alert(
-        "Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
-      );
-
-      form.reset();
-      clearConfirmMedia();
-
-      if (!isEmbeddedMode) {
-        showBookingStep();
-      }
-    });
+    confirmBtn.addEventListener("click", handleConfirmSubmit);
   }
 
   if (!confirmModalEl.dataset.mediaCleanupBound) {

@@ -1,7 +1,31 @@
 const BOOKING_MODAL_SOURCE = "dat-dich-vu.html";
 const BOOKING_MODAL_STYLE_ID = "bookingModalInlineStyles";
 const BOOKING_MODAL_EMBED_FIX_STYLE_ID = "bookingModalEmbedFixStyles";
+const BOOKING_GOOGLE_SHEET_API =
+  "https://script.google.com/macros/s/AKfycbzGk9VOSebrVPRhBtXpOZyBpXaYZpzbvPD3hQ5oQ7uIGnn2HXBv2bBqJ6ouOpZ3g_kENA/exec";
 let bookingModalLoadPromise = null;
+
+function getBookingTimeInput() {
+  return (
+    document.getElementById("bookingTime") ||
+    document.querySelector('input[name="booking_time"]')
+  );
+}
+
+function toDateTimeLocalNow() {
+  const now = new Date();
+  const tzOffsetMs = now.getTimezoneOffset() * 60000;
+  return new Date(now.getTime() - tzOffsetMs).toISOString().slice(0, 16);
+}
+
+function fillBookingTimeNow(force = false) {
+  const input = getBookingTimeInput();
+  if (!input) return;
+
+  if (force || !String(input.value || "").trim()) {
+    input.value = toDateTimeLocalNow();
+  }
+}
 
 function injectBookingModalStyles(doc) {
   if (document.getElementById(BOOKING_MODAL_STYLE_ID)) {
@@ -137,6 +161,7 @@ window.BookingModalManager.open = function (serviceId = null) {
     const bookingModal = document.getElementById("bookingModal");
     if (!bookingModal) return;
 
+    fillBookingTimeNow(true);
     bootstrap.Modal.getOrCreateInstance(bookingModal).show();
 
     if (serviceId != null) {
@@ -749,11 +774,25 @@ function initBookingModal() {
       if (!serviceId) return;
 
       pendingQuickServiceId = serviceId;
+      fillBookingTimeNow(true);
 
       const modalEl = document.getElementById("bookingModal");
       if (modalEl) {
         bootstrap.Modal.getOrCreateInstance(modalEl).show();
       }
+    });
+  }
+
+  if (document.body.dataset.bookingTimeAutoFillBound !== "true") {
+    document.body.dataset.bookingTimeAutoFillBound = "true";
+
+    document.addEventListener("click", function (e) {
+      const trigger = e.target.closest(
+        '[data-bs-target="#bookingModal"], [data-bs-toggle="modal"][href="#bookingModal"], a[href="#bookingModal"]',
+      );
+      if (!trigger) return;
+
+      fillBookingTimeNow(true);
     });
   }
 
@@ -799,6 +838,8 @@ function initBookingModal() {
   if (bookingModalEl && !bookingModalEl.dataset.quickServiceSyncLoaded) {
     bookingModalEl.dataset.quickServiceSyncLoaded = "true";
     bookingModalEl.addEventListener("shown.bs.modal", function () {
+      fillBookingTimeNow(true);
+
       if (!pendingQuickServiceId) return;
 
       if (applyQuickServiceSelection(pendingQuickServiceId)) {
@@ -819,10 +860,10 @@ function initBookingModal() {
       toggleServiceOptionGroups(false);
 
       kgInput.value = "";
-      pairInput.value = "";
+      if (pairInput) pairInput.value = "";
 
       kgBox.style.display = "block";
-      pairBox.style.display = "none";
+      if (pairBox) pairBox.style.display = "none";
 
       priceInput.value = "";
       shipInput.value = "";
@@ -873,17 +914,17 @@ function initBookingModal() {
     const unit = service.price_unit;
 
     kgInput.value = 1;
-    pairInput.value = 1;
+    if (pairInput) pairInput.value = 1;
 
     kgBox.style.display = "none";
-    pairBox.style.display = "none";
+    if (pairBox) pairBox.style.display = "none";
 
     if (unit === "kg") kgBox.style.display = "block";
-    if (unit === "pair") pairBox.style.display = "block";
+    if (unit === "pair" && pairBox) pairBox.style.display = "block";
 
     if (quantityInput) {
       quantityInput.value =
-        unit === "pair"
+        unit === "pair" && pairInput
           ? String(pairInput.value || 1)
           : String(kgInput.value || 1);
     }
@@ -919,7 +960,9 @@ function initBookingModal() {
     let quantity = 1;
 
     if (kgBox.style.display === "block") quantity = Number(kgInput.value);
-    if (pairBox.style.display === "block") quantity = Number(pairInput.value);
+    if (pairBox && pairInput && pairBox.style.display === "block") {
+      quantity = Number(pairInput.value);
+    }
 
     if (quantityInput) {
       const normalizedQuantity =
@@ -975,7 +1018,7 @@ function initBookingModal() {
   }
 
   kgInput.addEventListener("input", calculate);
-  pairInput.addEventListener("input", calculate);
+  if (pairInput) pairInput.addEventListener("input", calculate);
 
   if (workItemsList && !workItemsList.dataset.priceSyncBound) {
     workItemsList.dataset.priceSyncBound = "true";
@@ -1163,6 +1206,103 @@ function initBookingConfirmFlow() {
   const confirmImages = document.getElementById("confirmImages");
   const confirmVideos = document.getElementById("confirmVideos");
   const confirmMediaUrls = [];
+  const ORDER_CODE_PREFIX = "GUN";
+  const ORDER_CODE_STORE_KEY = "giat_ui_nhanh_order_codes";
+  const ORDER_CODE_TTL_MS = 24 * 60 * 60 * 1000;
+  let currentOrderCode = "";
+
+  function normalizeStoredOrderCodes(payload) {
+    const now = Date.now();
+
+    if (!Array.isArray(payload)) return [];
+
+    const normalized = payload
+      .map((item) => {
+        if (typeof item === "string") {
+          return { code: item, createdAt: now };
+        }
+
+        if (item && typeof item.code === "string") {
+          const createdAt = Number(item.createdAt || 0);
+          return {
+            code: item.code,
+            createdAt:
+              Number.isFinite(createdAt) && createdAt > 0 ? createdAt : now,
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean)
+      .filter((item) => now - item.createdAt < ORDER_CODE_TTL_MS);
+
+    const dedupedMap = new Map();
+    normalized.forEach((item) => {
+      dedupedMap.set(item.code, item);
+    });
+
+    return Array.from(dedupedMap.values());
+  }
+
+  function readStoredOrderCodeEntries() {
+    try {
+      const raw = localStorage.getItem(ORDER_CODE_STORE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      const cleaned = normalizeStoredOrderCodes(parsed);
+      localStorage.setItem(ORDER_CODE_STORE_KEY, JSON.stringify(cleaned));
+      return cleaned;
+    } catch (_err) {
+      return [];
+    }
+  }
+
+  function getStoredOrderCodes() {
+    return readStoredOrderCodeEntries().map((item) => item.code);
+  }
+
+  function saveOrderCode(orderCode) {
+    if (!orderCode) return;
+
+    const existingEntries = readStoredOrderCodeEntries();
+    if (existingEntries.some((item) => item.code === orderCode)) return;
+
+    existingEntries.push({
+      code: orderCode,
+      createdAt: Date.now(),
+    });
+
+    // Giới hạn số mã lưu cục bộ để tránh phình localStorage.
+    const trimmed = existingEntries.slice(-3000);
+    try {
+      localStorage.setItem(ORDER_CODE_STORE_KEY, JSON.stringify(trimmed));
+    } catch (_err) {
+      // Bỏ qua lỗi localStorage (private mode / quota full).
+    }
+  }
+
+  function createRandomOrderCode() {
+    const numberPart = String(Math.floor(Math.random() * 10000)).padStart(
+      4,
+      "0",
+    );
+    return `${ORDER_CODE_PREFIX}${numberPart}`;
+  }
+
+  function generateUniqueOrderCode() {
+    const existingCodes = new Set(getStoredOrderCodes());
+
+    for (let i = 0; i < 200; i += 1) {
+      const candidate = createRandomOrderCode();
+      if (!existingCodes.has(candidate)) {
+        saveOrderCode(candidate);
+        return candidate;
+      }
+    }
+
+    const fallback = `${ORDER_CODE_PREFIX}${Date.now().toString().slice(-4)}`;
+    saveOrderCode(fallback);
+    return fallback;
+  }
 
   function parseIntegerLike(value) {
     const normalized = String(value == null ? "" : value).replace(/\D/g, "");
@@ -1294,12 +1434,17 @@ function initBookingConfirmFlow() {
       form.querySelectorAll('input[name="support_chemicals"]:checked'),
     ).map((el) => el.value);
 
+    if (!currentOrderCode) {
+      currentOrderCode = generateUniqueOrderCode();
+    }
+
     let quantity = "";
     if (isKgVisible && kgInput?.value) quantity = `${kgInput.value} kg`;
     if (isPairVisible && pairInput?.value) quantity = `${pairInput.value} đôi`;
 
     data.service_name =
       serviceText && serviceText !== "Chọn dịch vụ" ? serviceText : "";
+    data.order_code = currentOrderCode;
     data.sub_service =
       transportOptionText &&
       transportOptionText !== "Chọn hình thức nhận / giao"
@@ -1314,17 +1459,25 @@ function initBookingConfirmFlow() {
         shippingSurchargeEl?.value ||
         "0",
     );
-    data.shipping_surcharge = String(rawShippingSurcharge);
+    data.shipping_surcharge = rawShippingSurcharge.toLocaleString("vi-VN");
     data.total = document.getElementById("total")?.value || "";
     data.work_items = selectedWorkItems.join(", ");
     data.support_chemicals = selectedChemicals.join(", ");
+
+    const rawBookingTime = String(data.booking_time || "").trim();
+    const bookingTimeDisplay = rawBookingTime
+      ? new Date(rawBookingTime).toLocaleString("vi-VN")
+      : "";
+    data.booking_time = rawBookingTime;
 
     return {
       data,
       preview: {
         name: data.name,
+        orderCode: data.order_code,
         phone: data.phone,
         address: data.address,
+        bookingTime: bookingTimeDisplay,
         service: data.service_name,
         subService: data.sub_service,
         quantity: data.quantity,
@@ -1342,8 +1495,10 @@ function initBookingConfirmFlow() {
   function renderConfirmModal(preview) {
     const fields = {
       confirmName: preview.name,
+      confirmOrderCode: preview.orderCode,
       confirmPhone: preview.phone,
       confirmAddress: preview.address,
+      confirmBookingTime: preview.bookingTime,
       confirmService: preview.service,
       confirmSubService: preview.subService,
       confirmQuantity: preview.quantity,
@@ -1364,6 +1519,7 @@ function initBookingConfirmFlow() {
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    fillBookingTimeNow(true);
 
     const { preview } = collectBookingData();
     renderConfirmModal(preview);
@@ -1378,6 +1534,73 @@ function initBookingConfirmFlow() {
     showBookingStep();
   }
 
+  function handleConfirmSubmit() {
+    const { data } = collectBookingData();
+    const originalText = confirmBtn.textContent;
+
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "Đang gửi...";
+
+    return fetch(BOOKING_GOOGLE_SHEET_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=UTF-8",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        return response.text().then((raw) => {
+          let result = null;
+
+          try {
+            result = raw ? JSON.parse(raw) : null;
+          } catch (_err) {
+            result = null;
+          }
+
+          if (!response.ok || !result || result.success !== true) {
+            const serverMessage =
+              (result && result.error) || raw || "Gửi dữ liệu thất bại";
+            throw new Error(`HTTP ${response.status}: ${serverMessage}`);
+          }
+
+          return result;
+        });
+      })
+      .then(() => {
+        bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
+        hideBookingStep();
+
+        alert(
+          "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
+        );
+
+        form.reset();
+        clearConfirmMedia();
+        currentOrderCode = "";
+
+        if (!isEmbeddedMode) {
+          showBookingStep();
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi gửi dữ liệu lên Google Sheet:", err);
+        const msg = String(err && err.message ? err.message : "");
+        if (msg.includes("401")) {
+          alert(
+            "API Google Sheet chưa được cấp quyền public (401). Vui lòng Deploy Web App với quyền Anyone và chạy bằng tài khoản chủ sở hữu script.",
+          );
+          return;
+        }
+
+        alert("Không thể gửi dữ liệu. Vui lòng thử lại.");
+      })
+      .finally(() => {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = originalText;
+      });
+  }
+
   const backBtn = document.getElementById("confirmBackBtn");
   const closeBtn = document.getElementById("confirmCloseBtn");
   const confirmBtn = document.getElementById("confirmSubmitBtn");
@@ -1390,21 +1613,7 @@ function initBookingConfirmFlow() {
   }
 
   if (confirmBtn) {
-    confirmBtn.addEventListener("click", function () {
-      bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
-      hideBookingStep();
-
-      alert(
-        "Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
-      );
-
-      form.reset();
-      clearConfirmMedia();
-
-      if (!isEmbeddedMode) {
-        showBookingStep();
-      }
-    });
+    confirmBtn.addEventListener("click", handleConfirmSubmit);
   }
 
   if (!confirmModalEl.dataset.mediaCleanupBound) {

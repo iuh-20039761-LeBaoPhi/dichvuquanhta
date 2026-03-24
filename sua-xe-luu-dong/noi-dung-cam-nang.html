@@ -9,7 +9,7 @@
     />
     <meta
       name="keywords"
-      content="chi tiết bài viết sửa xe, hướng dẫn sửa xe máy, xử lý sự cố trên đường, kinh nghiệm cứu hộ xe, dấu hiệu xe cần sửa, mẹo bảo dưỡng xe, thông tin phụ tùng xe máy, kiến thức vận hành xe, an toàn giao thông xe máy, dịch vụ sửa xe tận nơi, hotline cứu hộ xe, Dịch Vụ Quanh Ta"
+      content=""
     />
     <title>Dịch Vụ Quanh Ta - Sửa Xe Lưu Động</title>
     <link
@@ -108,19 +108,60 @@
       </div>
     </div>
     <script>
+      function redirectToCamNang() {
+        window.location.replace("cam-nang.html");
+      }
+
+      function setMetaKeywords(tags) {
+        const keywordsMeta = document.querySelector('meta[name="keywords"]');
+        if (!keywordsMeta) return;
+
+        if (!tags) {
+          keywordsMeta.setAttribute("content", "");
+          return;
+        }
+
+        const keywords = Array.isArray(tags)
+          ? tags
+              .map((tag) => String(tag).trim())
+              .filter(Boolean)
+              .join(", ")
+          : String(tags)
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+              .join(", ");
+
+        keywordsMeta.setAttribute("content", keywords);
+      }
+
       const params = new URLSearchParams(window.location.search);
       const slug = params.get("slug");
+
+      if (!slug) {
+        redirectToCamNang();
+      }
 
       fetch("public/news.json")
         .then(function (res) {
           return res.json();
         })
         .then(function (posts) {
+          if (!Array.isArray(posts) || posts.length === 0) {
+            redirectToCamNang();
+            return;
+          }
+
           const post = posts.find(function (p) {
             return p.slug === slug;
           });
 
-          if (!post) return;
+          if (!post) {
+            redirectToCamNang();
+            return;
+          }
+
+          setMetaKeywords(post.tags);
 
           // thay tiêu đề
           document.getElementById("postTitle").childNodes[0].nodeValue =
@@ -136,6 +177,7 @@
         })
         .catch(function (err) {
           console.error("Không tải được news.json", err);
+          redirectToCamNang();
         });
     </script>
 
@@ -836,18 +878,29 @@
       fetch("public/news.json")
         .then((res) => res.json())
         .then((data) => {
+          if (!Array.isArray(data) || data.length === 0) {
+            redirectToCamNang();
+            return;
+          }
+
           articles = data;
 
           const article = articles.find((a) => a.slug === slug);
 
-          if (!article) return;
+          if (!article) {
+            redirectToCamNang();
+            return;
+          }
 
           renderArticle(article);
           generateTOC();
           renderRelated(article);
           renderTags(article);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          redirectToCamNang();
+        });
 
       function renderArticle(article) {
         const container = document.querySelector(".article");
@@ -948,10 +1001,11 @@
       }
       function renderTags(article) {
         const container = document.querySelector(".tags-list");
+        const tags = Array.isArray(article.tags) ? article.tags : [];
 
         container.innerHTML = "";
 
-        article.tags.forEach((tag) => {
+        tags.forEach((tag) => {
           container.insertAdjacentHTML(
             "beforeend",
             `

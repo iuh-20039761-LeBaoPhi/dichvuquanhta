@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Dịch vụ dọn vệ sinh nhà cửa chuyên nghiệp: dọn nhà theo giờ, tổng vệ sinh, vệ sinh sau xây dựng, lau kính, vệ sinh bếp và toilet. Đảm bảo sạch sẽ, nhanh chóng, tiết kiệm thời gian cho gia đình và doanh nghiệp.">
+    <meta name="keywords" content="dịch vụ dọn vệ sinh, dọn nhà theo giờ, tổng vệ sinh nhà cửa, vệ sinh sau xây dựng, lau kính, vệ sinh nhà ở, vệ sinh văn phòng, giúp việc theo giờ">
+    <title>Dịch Vụ Dọn Vệ Sinh</title>
+    <link rel="shortcut icon" type="image/x-icon" href="assets/logo_main.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" />
+    <style>
+    /* Base & Layout */
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+    .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+      body {padding-top: 96px;}
+      .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
+    /* ================= MOBILE ONLY (Under 992px) ================= */
+    @media (max-width: 991.98px) {
+      body {
+    padding-top: 86px;
+  }
+      .navbar { overflow-x: clip; }
+      
+      .navbar .container > span { 
+        max-width: 34vw; white-space: nowrap; overflow: hidden; 
+        text-overflow: ellipsis; font-size: 0.95rem; 
+      }
+
+      .navbar-brand img { width: 56px !important; height: 42px !important; }
+
+      /* Mobile Dropdown Menu */
+      .navbar-collapse { 
+        position: absolute; top: 100%; left: 0; right: 0; width: auto; 
+        background: #fff; z-index: 999; border-radius: 0 0 12px 12px; 
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+      }
+      
+      .navbar-collapse.show { display: block; }
+
+      /* Navigation Items & Links */
+      .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
+      .navbar-collapse .nav-item { width: 100%; text-align: center; }
+      .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
+      .navbar-collapse .btn { width: 80%; margin-top: 10px; }
+
+      /* Hero Image Adjustment */
+      .hero-section img { width: 100% !important; max-width: 340px; height: auto !important; }
+    }
+    </style>
+<script src="/ga.js"></script>
+  </head>
+  <body>
+    <div style="font-family: &quot;Quicksand&quot;, sans-serif">
+      <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+        <div class="container">
+          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../index.html" style="color: #007bff">
+            <img style="width: 80px; height: 60px" src="assets/logo-he-thong.png" alt="Dịch Vụ Dọn Vệ Sinh" />
+          </a>
+          <span class="fw-bold text-primary">Dịch Vụ Dọn Vệ Sinh</span>
+          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #007bff">
+            <img style="width: 80px; height: 60px" src="assets/logo_main.png" alt="Dịch Vụ Dọn Vệ Sinh" />
+          </a>
+          <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+            <ul class="navbar-nav align-items-center gap-3">
+              <li class="nav-item">
+                <a class="nav-link fw-bold px-3 active" href="index.html" style="color: #007bff; font-size: larger">Trang Chủ</a>
+              </li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="gioi-thieu.html">Giới Thiệu</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="dich-vu.html">Dịch Vụ</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="dieu-khoan.html">Điều Khoản</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="cam-nang.html">Cẩm Nang</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="lien-he.html">Liên Hệ</a></li>
+              <li class="nav-item">
+                <a class="btn text-white rounded-pill px-4 py-2 shadow-sm" href="#" data-lookup-modal data-lookup-modal-src="#"
+                  style="background: linear-gradient(135deg, #629bf0, #407cec); transition: 0.3s;"
+                  onmouseover="this.style.background = 'linear-gradient(135deg, #d84374, #c2185b)'; this.style.transform = 'scale(1.05)';"
+                  onmouseout="this.style.background = 'linear-gradient(135deg, #629bf0, #407cec)'; this.style.transform = 'scale(1)';">
+                  Tra cứu đơn hàng
+                </a>
+              </li>
+              <li class="nav-item ms-lg-3" id="loginNavItem">
+                <a class="btn text-white rounded-pill px-4 py-2 shadow-sm" href="#" data-login-modal data-login-modal-src="#"
+                  style="background-color: #007bff; transition: 0.3s;"
+                  onmouseover="this.style.backgroundColor = '#d84374'; this.style.transform = 'scale(1.05)';"
+                  onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)';">
+                  Đăng Nhập
+                </a>
+              </li>
+              <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
+                <div class="dropdown">
+                  <button class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                    <img id="navAvatar" src="assets/logo_main.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
+                    <span id="navUserName" class="fw-semibold small">Tài khoản</span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <li><a class="dropdown-item" href="#" data-profile-modal data-profile-modal-src="#">Sửa đổi thông tin</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#">Đăng xuất</a></li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+        <section class="hero-section py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #e8f5e9 100%);">
+        <div class="container py-lg-5">
+            <div class="row align-items-center">
+
+            <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+                <h1 class="display-3 fw-bold mb-3">
+                Dọn Vệ Sinh <br />
+                <span class="text-primary" style="font-family: 'Roboto', sans-serif">Nhà Cửa</span> Chuyên Nghiệp
+                </h1>
+
+                <p class="lead text-muted mb-4">
+                Giải pháp dọn dẹp nhà cửa, căn hộ và văn phòng nhanh chóng – sạch sẽ – tiết kiệm thời gian với dịch vụ dọn nhà theo giờ, tổng vệ sinh và vệ sinh sau xây dựng.
+                </p>
+
+                <button class="btn text-white rounded-pill btn-lg px-5 py-3 shadow-sm" 
+                style="background-color: #007bff; transition: 0.3s;"
+                onmouseover="this.style.backgroundColor = '#d84374'; this.style.transform = 'scale(1.05)';"
+                onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)';"
+                onclick="window.location.href = 'lien-he.html'">
+                🧹 Đặt Lịch Dọn Dẹp Ngay
+                </button>
+            </div>
+
+            <div class="col-lg-6 text-center">
+                <img src="assets/tam-quan-trong-cua-viec-kham-suc-khoe-dinh-ky.png" 
+                class="img-fluid rounded-pill shadow-lg" 
+                alt="Dịch vụ dọn vệ sinh nhà cửa chuyên nghiệp" 
+                style="width: 500px; height: 450px; object-fit: cover;" />
+            </div>
+
+            </div>
+        </div>
+        </section>
+
+        <section class="py-5 bg-light">
+        <div class="container py-5">
+            <h2 class="text-center fw-bold display-5 mb-5">
+            Giá Trị Cốt Lõi Của Dịch Vụ Dọn Vệ Sinh
+            </h2>
+
+            <div class="row g-4" id="features-grid">
+
+            <div class="col-md-6 col-lg-3 text-center">
+                <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
+                <div class="mb-4 fs-1 text-primary">
+                    <i class="fas fa-broom"></i>
+                </div>
+                <h3 class="h5 fw-bold">Dọn Sạch Triệt Để</h3>
+                <p class="text-muted small mb-0">
+                    Làm sạch toàn bộ không gian từ sàn nhà, bếp, toilet đến các khu vực khó tiếp cận, đảm bảo sạch sẽ từng chi tiết.
+                </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 text-center">
+                <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
+                <div class="mb-4 fs-1 text-primary">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="h5 fw-bold">Linh Hoạt Thời Gian</h3>
+                <p class="text-muted small mb-0">
+                    Cung cấp dịch vụ dọn nhà theo giờ, theo ngày hoặc định kỳ phù hợp với lịch trình của gia đình và doanh nghiệp.
+                </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 text-center">
+                <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
+                <div class="mb-4 fs-1 text-primary">
+                    <i class="fas fa-spray-can-sparkles"></i>
+                </div>
+                <h3 class="h5 fw-bold">Thiết Bị & Hóa Chất An Toàn</h3>
+                <p class="text-muted small mb-0">
+                    Sử dụng dụng cụ và dung dịch vệ sinh chuyên dụng, an toàn cho sức khỏe và thân thiện với môi trường.
+                </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 text-center">
+                <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
+                <div class="mb-4 fs-1 text-primary">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="h5 fw-bold">Uy Tín & Trách Nhiệm</h3>
+                <p class="text-muted small mb-0">
+                    Cam kết trung thực, đúng giờ và bảo vệ tài sản khách hàng trong suốt quá trình dọn dẹp.
+                </p>
+                </div>
+            </div>
+
+            </div>
+        </div>
+        </section>
+
+      <section class="py-5">
+        <div class="container py-5">
+          <h2 class="text-center fw-bold display-5 mb-5">Các Dịch Vụ Chính</h2>
+          <div class="row g-4 mb-5" id="services-grid">
+            
+          </div>
+          <div class="text-center">
+            <a
+              href="dich-vu.html"
+              class="btn btn-outline-secondary px-5 rounded-pill fw-bold"
+              style="border-color: #007bff; color: #007bff"
+              >Xem Tất Cả Dịch Vụ</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <footer class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+          <div class="row g-4 mb-4">
+            <div class="col-lg-4">
+              <h3 class="h4 fw-bold mb-3" style="color: #007bff">Dịch Vụ Dọn Vệ Sinh</h3>
+              <p class="opacity-75">Hệ thống cung cấp dịch vụ dọn vệ sinh nhà cửa và văn phòng chuyên nghiệp hàng đầu tại Việt Nam.</p>
+              <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
+              <p class="opacity-75 small">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</p>
+              
+              <h4 class="h5 fw-bold mt-4 mb-3">Liên Hệ</h4>
+              <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
+              <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
+            </div>
+            <div class="col-lg-2">
+              <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+              <ul class="list-unstyled">
+                <li class="mb-2"><a href="gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
+                <li class="mb-2"><a href="dich-vu.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
+                <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
+                <li class="mb-2"><a href="../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
+                <li class="mb-2"><a href="../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
+                <li class="mb-2"><a href="../cham-soc-vuon-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Vườn & Rẫy</a></li>
+                <li class="mb-2"><a href="../giat-ui-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giặt Ủi Cao Cấp</a></li>
+                <li class="mb-2"><a href="../tho-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Thợ Nhà & Sửa Chữa</a></li>
+                <li class="mb-2"><a href="../cham-soc-nguoi-gia/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Người Già</a></li>
+                <li class="mb-2"><a href="../cham-soc-nguoi-benh/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Bệnh Nhân</a></li>
+                <li class="mb-2"><a href="../giao-hang-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giao Hàng Nhanh</a></li>
+              </ul>
+            </div>
+            <div class="col-lg-3">
+              <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+              <div class="d-flex gap-2">
+                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-youtube"></i></a>
+                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-tiktok"></i></a>
+              </div>
+              <div class="mt-4">
+                <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
+                <div class="d-flex gap-2 flex-wrap">
+                  <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px;">
+                    <i data-lucide="apple" class="me-2" style="width: 18px;"></i>
+                    <div class="text-start lh-1">
+                      <small class="d-block" style="font-size: 8px;">Download on</small>
+                      <span class="fw-bold" style="font-size: 11px;">App Store</span>
+                    </div>
+                  </a>
+                  <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px;">
+                    <i data-lucide="play" class="me-2" style="width: 18px;"></i>
+                    <div class="text-start lh-1">
+                      <small class="d-block" style="font-size: 8px;">Get it on</small>
+                      <span class="fw-bold" style="font-size: 11px;">Google Play</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="opacity-25" />
+          <p class="text-center small opacity-50 mb-0">
+            &copy; 2026 Dịch Vụ Dọn Vệ Sinh. Bảo lưu mọi quyền.</p>
+        </div>
+      </footer>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+        // Load services from JSON and display 4 services on homepage
+        async function loadHomeServices() {
+            try {
+                const response = await fetch('services.json');
+                const services = await response.json();
+                const servicesGrid = document.getElementById("services-grid");
+
+                // Lấy 4 dịch vụ đầu tiên
+                const homepageServices = services.slice(0, 4);
+
+                homepageServices.forEach(service => {
+                    const col = document.createElement("div");
+                    col.className = "col-md-6 col-lg-3";
+                  const imageAlt = (service.alt || service.name || "Dich vu dọn vệ sinh").replace(/"/g, "&quot;");
+
+                    col.innerHTML = `
+                        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden hover-lift">
+                            <img src="${service.image}" 
+                                class="card-img-top" 
+                        alt="${imageAlt}" 
+                                style="height: 200px; object-fit: cover;">
+                            <div class="card-body p-4 text-center">
+                                <h3 class="h5 fw-bold">${service.name}</h3>
+                                <p class="card-text text-muted small">${service.description}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    servicesGrid.appendChild(col);
+                });
+            } catch (error) {
+                console.error('Error loading services:', error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadHomeServices);
+      </script>
+    </div>
+  </body>
+</html>
+

@@ -17,7 +17,12 @@
  */
 
 // true khi chạy trên localhost/XAMPP, false khi chạy web tĩnh
-const IS_LOCAL = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+// true chỉ khi chạy trên XAMPP (port 80), không phải Live Server (5500/5501)
+const IS_LOCAL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+    && (window.location.port === '' || window.location.port === '80');
+
+// Google Apps Script Web App URL — thay bằng URL thật sau khi deploy
+const GSHEET_URL = window.GSHEET_URL || 'https://script.google.com/macros/s/AKfycbx8J5infIIqf-VOFCNq89L7W1xRfluTU0Dt4R8Vijl81zhid59aql3vURdT01dwaaKgPQ/exec';
 
 // ==================== DOM REFS (khởi tạo sau khi modal load) ====================
 let bookingModal, mainService, subService, servicePrice, brandSelectorWrap, brandOptionsContainer;
@@ -29,6 +34,31 @@ let initBookingPromise;
 let _currentItem = null;
 // Danh sách các dịch vụ đã chọn (multi-select)
 let _selectedItems = [];
+
+// ==================== GOOGLE SHEETS — fire-and-forget ====================
+function sendToSheet(pendingData, orderCode) {
+    if (!GSHEET_URL) return;
+    const now = new Date();
+    const created_at = now.toLocaleString('vi-VN', { hour12: false });
+    const payload = {
+        order_code:      orderCode || '',
+        name:            pendingData.name            || '',
+        phone:           pendingData.phone           || '',
+        service:         pendingData.service_id      || '',
+        address:         pendingData.address         || '',
+        note:            pendingData.note            || '',
+        selected_brand:  pendingData.selected_brand  || '',
+        estimated_price: pendingData.estimated_price || '',
+        status:          'new',
+        created_at,
+    };
+    fetch(GSHEET_URL, {
+        method:  'POST',
+        mode:    'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body:    JSON.stringify(payload),
+    }).catch(() => {});
+}
 
 // ==================== FORMAT HELPER ====================
 function fmtVND(n) {
@@ -535,6 +565,7 @@ async function initBooking() {
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
+                sendToSheet(_pendingData, res.order_code);
                 onSuccess(res.order_code);
             } else {
                 if (IS_LOCAL) {
@@ -550,6 +581,7 @@ async function initBooking() {
                 alert('❌ Không thể kết nối đến server!\nVui lòng kiểm tra XAMPP đang chạy và thử lại.');
                 resetConfirmBtn();
             } else {
+                sendToSheet(_pendingData, null);
                 alert('✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại trong thời gian sớm nhất.\n\n📞 Hotline: 0775 472 347');
                 bookingModal.hide();
                 document.getElementById('bookingForm').reset();

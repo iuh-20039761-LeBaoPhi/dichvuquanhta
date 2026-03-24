@@ -2,6 +2,37 @@
  * Car Detail Page JavaScript
  */
 
+// Google Apps Script Web App URL để lưu đặt xe lên Google Sheets
+const TX_GSHEET_URL = window.GSHEET_URL || 'https://script.google.com/macros/s/AKfycbx8J5infIIqf-VOFCNq89L7W1xRfluTU0Dt4R8Vijl81zhid59aql3vURdT01dwaaKgPQ/exec';
+
+function txSendToSheet(data, bookingId) {
+    if (!TX_GSHEET_URL) return;
+    const now = new Date();
+    const payload = {
+        sheet_name:      'DatXe',
+        order_code:      bookingId ? 'TX' + bookingId : '',
+        name:            data.customer_name    || '',
+        phone:           data.customer_phone   || '',
+        email:           data.customer_email   || '',
+        car:             data.car_name         || '',
+        pickup_date:     data.pickup_date      || '',
+        return_date:     data.return_date      || '',
+        pickup_time:     data.pickup_time      || '',
+        return_time:     data.return_time      || '',
+        address:         data.customer_address || '',
+        addon_services:  (data.addon_services || []).join(', '),
+        note:            data.notes            || '',
+        status:          'new',
+        created_at:      now.toLocaleString('vi-VN', { hour12: false }),
+    };
+    fetch(TX_GSHEET_URL, {
+        method:  'POST',
+        mode:    'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body:    JSON.stringify(payload),
+    }).catch(() => {});
+}
+
 let currentCar = null;
 let currentImages = [];
 let bookingModalSetup = false;
@@ -385,7 +416,7 @@ function setupDateCalculation(pricePerDay) {
 
 async function loadBookingModal() {
     if (document.getElementById('bookingModal')) return;
-    const res = await fetch('views/partials/dat-lich-modal.html?v=2');
+    const res = await fetch('views/partials/dat-lich.html?v=2');
     const html = await res.text();
     document.body.insertAdjacentHTML('beforeend', html);
 }
@@ -599,6 +630,7 @@ async function executeTxBooking(car) {
         const result = await API.bookings.create(bookingData);
 
         if (result.success) {
+            txSendToSheet(bookingData, result.booking_id);
             const sp = new URLSearchParams({ page: 'booking-success', id: result.booking_id });
             sp.set('days',        result.total_days  ?? days);
             sp.set('addon_total', result.addon_total ?? addonTotal);
@@ -606,6 +638,7 @@ async function executeTxBooking(car) {
             if (bookingData.addon_services.length) sp.set('addons', bookingData.addon_services.join('|'));
             window.location.href = 'index.php?' + sp.toString();
         } else if (result.demo) {
+            txSendToSheet(bookingData, null);
             const addonLines = bookingData.addon_services.length
                 ? `<br><br><strong>Dịch vụ đi kèm:</strong> ${bookingData.addon_services.join(', ')}`
                 : '';

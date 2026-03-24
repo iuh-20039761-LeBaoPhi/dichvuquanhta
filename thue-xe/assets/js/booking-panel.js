@@ -84,7 +84,7 @@
             '<span>Đang tải form đặt xe...</span>' +
             '</div>'
         );
-        $body.load('views/partials/dat-lich-modal.html #bookingFormContent', function (_response, status) {
+        $body.load('views/partials/dat-lich.html #bookingFormContent', function (_response, status) {
             if (status === 'error') {
                 $body.html(
                     '<p class="text-danger p-4">' +

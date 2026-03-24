@@ -632,18 +632,27 @@
                           <input type="number" id="kg" min="1" />
                         </div>
 
-                        <div id="pairBox" style="display: none">
-                          <label>Đôi</label>
-                          <input type="number" id="pair" min="1" />
-                        </div>
-                        <input
-                          type="hidden"
-                          id="quantityContact"
-                          name="quantity"
-                          value="1"
-                        />
                       </div>
                     </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="message">Ghi chú</label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      placeholder="Nội dung yêu cầu..."
+                    ></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="bookingTime">Thời gian đặt dịch vụ *</label>
+                    <input
+                      type="datetime-local"
+                      id="bookingTime"
+                      name="booking_time"
+                      required
+                    />
                   </div>
 
                   <div class="form-group">
@@ -667,15 +676,6 @@
                   <div class="form-group">
                     <label>Tổng tiền</label>
                     <input type="text" id="total" readonly />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="message">Ghi chú</label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      placeholder="Nội dung cần tư vấn..."
-                    ></textarea>
                   </div>
 
                   <div class="form-group">
@@ -796,6 +796,10 @@
                     <td id="confirmAddress">-</td>
                   </tr>
                   <tr>
+                    <th scope="row">Mã đơn</th>
+                    <td id="confirmOrderCode">-</td>
+                  </tr>
+                  <tr>
                     <th scope="row">Dịch vụ quan tâm</th>
                     <td id="confirmService">-</td>
                   </tr>
@@ -818,6 +822,10 @@
                   <tr>
                     <th scope="row">Giá dịch vụ</th>
                     <td id="confirmPrice">-</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Thời gian đặt dịch vụ</th>
+                    <td id="confirmBookingTime">-</td>
                   </tr>
                   <tr>
                     <th scope="row">Phí di chuyển</th>

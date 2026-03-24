@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Các dịch vụ dọn vệ sinh nhà cửa chuyên nghiệp: dọn nhà theo giờ, tổng vệ sinh, vệ sinh sau xây dựng, lau kính, vệ sinh bếp và toilet. Giải pháp sạch sẽ, nhanh chóng, tiết kiệm thời gian cho gia đình và doanh nghiệp.">
+    <meta name="keywords" content="dịch vụ dọn vệ sinh, dọn nhà theo giờ, tổng vệ sinh nhà cửa, vệ sinh sau xây dựng, lau kính, vệ sinh nhà ở, vệ sinh văn phòng, giúp việc theo giờ">
+    <title>Dịch Vụ Dọn Vệ Sinh Nhà Cửa Chuyên Nghiệp</title>
+    <link rel="shortcut icon" type="image/x-icon" href="assets/logo_main.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" />
+    <style>
+    /* Base & Global */
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+      body {padding-top: 96px;}
+      .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
+    /* Navbar Layout (Everywhere) */
+    .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+    .package-locked { opacity: 0.45; filter: grayscale(0.2); cursor: not-allowed; }
+
+    /* ================= MOBILE ONLY (Under 992px) ================= */
+    @media (max-width: 991.98px) {
+      body {
+    padding-top: 86px;
+  }
+      .navbar { overflow-x: clip; }
+      
+      .navbar .container > span { 
+        max-width: 34vw; white-space: nowrap; overflow: hidden; 
+        text-overflow: ellipsis; font-size: 0.95rem; 
+      }
+
+      .navbar-brand img { width: 56px !important; height: 42px !important; }
+
+      /* Mobile Menu Dropdown */
+      .navbar-collapse { 
+        position: absolute; top: 100%; left: 0; right: 0; width: auto; 
+        background: #fff; z-index: 999; border-radius: 0 0 12px 12px; 
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+      }
+      
+      .navbar-collapse.show { display: block; }
+
+      /* Nav Items Alignment */
+      .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
+      .navbar-collapse .nav-item { width: 100%; text-align: center; }
+      .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
+      .navbar-collapse .btn { width: 80%; margin-top: 10px; }
+
+      /* Hero Section Mobile */
+      .hero-section img { width: 100% !important; max-width: 340px; height: auto !important; }
+    }
+    </style>
+<script src="/ga.js"></script>
+  </head>
+  <body style="font-family: &quot;Quicksand&quot;, sans-serif">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../index.html" style="color: #007bff">
+          <img style="width: 80px; height: 60px" src="assets/logo-he-thong.png" alt="cham-soc-me-va-be" />
+        </a>
+        
+        <span class="fw-bold text-primary">Dịch Vụ Dọn Vệ Sinh</span>
+
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #007bff">
+          <img style="width: 80px; height: 60px" src="assets/logo_main.png" alt="cham-soc-me-va-be" />
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse" data-bs-target="#navMenu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+          <ul class="navbar-nav align-items-center gap-3">
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="index.html">Trang Chủ</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="gioi-thieu.html">Giới Thiệu</a></li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold px-3 active" href="dich-vu.html" style="color: #007bff; font-size: larger">Dịch Vụ</a>
+            </li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="dieu-khoan.html">Điều Khoản</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="cam-nang.html">Cẩm Nang</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="lien-he.html">Liên Hệ</a></li>
+
+            <li class="nav-item">
+                <a class="btn text-white rounded-pill px-4 py-2 shadow-sm" href="#" data-lookup-modal data-lookup-modal-src="#"
+                  style="background: linear-gradient(135deg, #629bf0, #407cec); transition: 0.3s;"
+                  onmouseover="this.style.background = 'linear-gradient(135deg, #d84374, #c2185b)'; this.style.transform = 'scale(1.05)';"
+                  onmouseout="this.style.background = 'linear-gradient(135deg, #629bf0, #407cec)'; this.style.transform = 'scale(1)';">
+                  Tra cứu đơn hàng
+                </a>
+              </li>
+              <li class="nav-item ms-lg-3" id="loginNavItem">
+                <a class="btn text-white rounded-pill px-4 py-2 shadow-sm" href="#" data-login-modal data-login-modal-src="#"
+                  style="background-color: #007bff; transition: 0.3s;"
+                  onmouseover="this.style.backgroundColor = '#d84374'; this.style.transform = 'scale(1.05)';"
+                  onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)';">
+                  Đăng Nhập
+                </a>
+              </li>
+              <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
+                <div class="dropdown">
+                  <button class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                    <img id="navAvatar" src="assets/logo_main.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
+                    <span id="navUserName" class="fw-semibold small">Tài khoản</span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <li><a class="dropdown-item" href="#" data-profile-modal data-profile-modal-src="#">Sửa đổi thông tin</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#">Đăng xuất</a></li>
+                  </ul>
+                </div>
+              </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Services Hero Banner -->
+    <section class="py-5" style="background-color: #f3faff">
+      <div class="container py-5 text-center">
+        <h2 class="fw-bold display-5 mb-3">🧹 Tư Vấn Dọn Dẹp Ngay</h2>
+        <p class="lead text-muted mb-4">Liên hệ ngay để đặt lịch dọn vệ sinh nhanh chóng, tư vấn miễn phí và phù hợp với nhu cầu của bạn.</p>
+        <button
+          class="btn text-white rounded-pill px-5 py-3 shadow-sm"
+          style="
+            background-color: #007bff;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+          "
+          onclick="window.location.href = 'lien-he.html'"
+          onmouseover="
+            this.style.backgroundColor = '#0056b3';
+            this.style.transform = 'scale(1.05)';
+          "
+          onmouseout="
+            this.style.backgroundColor = '#007bff';
+            this.style.transform = 'scale(1)';
+          "
+        >
+           📞 Liên Hệ Tư Vấn Ngay
+        </button>
+      </div>
+    </section>
+    <!-- Services Detail -->
+    <section class="py-5">
+        <div class="container py-lg-5">
+            <div id="servicesContainer"></div>
+        </div>
+    </section>
+    <!-- Booking Section -->
+    <section class="py-5" style="background-color: #f3faff">
+      <div class="container py-5 text-center">
+        <h2 class="fw-bold display-5 mb-3">Cần Dọn Nhà Ngay Hôm Nay?</h2>
+        <p class="lead text-muted mb-4"> Đặt lịch dọn vệ sinh theo giờ hoặc tổng vệ sinh nhanh chóng, nhân viên đến tận nơi, sạch sẽ – tiết kiệm thời gian.</p>
+        <button
+          class="btn text-white rounded-pill px-5 py-3 shadow-sm"
+          style="
+            background-color: #007bff;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+          "
+          onclick="window.location.href = 'lien-he.html'"
+          onmouseover="
+            this.style.backgroundColor = '#0056b3';
+            this.style.transform = 'scale(1.05)';
+          "
+          onmouseout="
+            this.style.backgroundColor = '#007bff';
+            this.style.transform = 'scale(1)';
+          "
+        >
+          🧹 Liên Hệ Để Được Tư Vấn Ngay
+        </button>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3">
+      <div class="container">
+        <div class="row g-4 mb-4">
+          <div class="col-lg-4">
+            <h3 class="h4 fw-bold mb-3" style="color: #007bff">Dịch Vụ Dọn Vệ Sinh</h3>
+              <p class="opacity-75">Hệ thống cung cấp dịch vụ dọn vệ sinh nhà cửa và văn phòng chuyên nghiệp hàng đầu tại Việt Nam.</p>
+            <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
+            <p class="opacity-75 small">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</p>
+            
+            <h4 class="h5 fw-bold mt-4 mb-3">Liên Hệ</h4>
+            <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
+            <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
+          </div>
+          <div class="col-lg-2">
+            <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+            <ul class="list-unstyled">
+              <li class="mb-2"><a href="gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
+                <li class="mb-2"><a href="dich-vu.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
+                <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
+                <li class="mb-2"><a href="../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
+                <li class="mb-2"><a href="../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
+                <li class="mb-2"><a href="../cham-soc-vuon-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Vườn & Rẫy</a></li>
+                <li class="mb-2"><a href="../giat-ui-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giặt Ủi Cao Cấp</a></li>
+                <li class="mb-2"><a href="../tho-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Thợ Nhà & Sửa Chữa</a></li>
+                <li class="mb-2"><a href="../cham-soc-nguoi-gia/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Người Già</a></li>
+                <li class="mb-2"><a href="../cham-soc-nguoi-benh/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Bệnh Nhân</a></li>
+                <li class="mb-2"><a href="../giao-hang-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giao Hàng Nhanh</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+            <div class="d-flex gap-2">
+              <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-youtube"></i></a>
+              <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="mt-4">
+              <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
+              <div class="d-flex gap-2 flex-wrap">
+                <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px;">
+                  <i data-lucide="apple" class="me-2" style="width: 18px;"></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block" style="font-size: 8px;">Download on</small>
+                    <span class="fw-bold" style="font-size: 11px;">App Store</span>
+                  </div>
+                </a>
+                <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px;">
+                  <i data-lucide="play" class="me-2" style="width: 18px;"></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block" style="font-size: 8px;">Get it on</small>
+                    <span class="fw-bold" style="font-size: 11px;">Google Play</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="opacity-25" />
+        <p class="text-center small opacity-50 mb-0">
+          &copy; 2026 Dịch Vụ Dọn Vệ Sinh. Bảo lưu mọi quyền.
+        </p>
+      </div>
+    </footer>
+
+
+    <div class="modal fade" id="bookingFlowModal" tabindex="-1" aria-hidden="true">
+      <style>
+        #bookingFlowModal .modal-dialog {
+          max-width: 500px;
+        }
+
+        #bookingFlowModal .modal-body {
+          height: calc(100vh - 170px);
+        }
+
+        #bookingFlowModal #bookingFlowFrame {
+          height: 100%;
+        }
+
+        #bookingFlowModal .booking-modal-title {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          color: #007bff;
+          font-size: 1.2rem;
+          line-height: 1.2;
+          margin: 0;
+        }
+
+        #bookingFlowModal .booking-modal-title .brand-logo {
+          display: inline-flex;
+          align-items: center;
+        }
+
+        #bookingFlowModal .booking-modal-title .brand-logo img {
+          width: 56px;
+          height: 42px;
+          object-fit: contain;
+          image-rendering: -webkit-optimize-contrast;
+        }
+
+        #bookingFlowModal .modal-header {
+          padding-top: 0.75rem;
+          padding-bottom: 0.75rem;
+        }
+
+        #bookingFlowModal .modal-header .btn-close {
+          margin-left: 10px;
+        }
+
+        @media (max-width: 575.98px) {
+          #bookingFlowModal .modal-body {
+            height: calc(100vh - 140px);
+          }
+          #bookingFlowModal .booking-modal-title {
+            gap: 8px;
+            font-size: 1rem;
+          }
+
+          #bookingFlowModal .booking-modal-title .brand-logo img {
+            width: 44px;
+            height: 33px;
+          }
+        }
+      </style>
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4 overflow-hidden">
+          <div class="modal-header border-0" style="background: linear-gradient(135deg, #e1ebff 0%, #ffffff 50%, #e0e8f7 100%);">
+            <h5 class="modal-title fw-bold booking-modal-title">
+              <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3 brand-logo" href="../index.html" style="color: #007bff">
+                <img src="assets/logo-he-thong.png" alt="dịch vụ dọn vệ sinh" />
+              </a>
+              <span>Đặt Lịch Dịch Vụ</span>
+              <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3 brand-logo" href="index.html" style="color: #007bff">
+                <img src="assets/logo_main.png" alt="dịch vụ dọn vệ sinh" />
+              </a>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-0" style="background:#fff;">
+            <iframe
+              id="bookingFlowFrame"
+              title="Dat lich dich vu"
+              src="about:blank"
+              loading="lazy"
+              style="display:block;width:100%;border:0;"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="bookingSuccessModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 overflow-hidden">
+          <div class="modal-header border-0" style="background: linear-gradient(135deg, #e1ebff 0%, #ffffff 50%, #e0e8f7 100%);">
+            <h5 class="modal-title fw-bold" style="color:#007bff">Thông Báo</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center py-4" style="background:#fff;">
+            <i class="fas fa-check-circle mb-3" style="font-size:3rem;color:#2e7d32"></i>
+            <h5 class="fw-bold mb-2">Đặt lịch thành công!</h5>
+            <p id="bookingSuccessText" class="text-muted mb-0">Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
+          </div>
+          <div class="modal-footer border-0 pt-0 justify-content-center">
+            <button type="button" class="btn text-white rounded-pill px-4" data-bs-dismiss="modal" style="background:#2e7d32">Đã hiểu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(async function () {
+        var SERVICES = [];
+        var bookingModalEl = document.getElementById('bookingFlowModal');
+        var bookingFrame = document.getElementById('bookingFlowFrame');
+        var bookingModal = bookingModalEl ? new bootstrap.Modal(bookingModalEl) : null;
+        var bookingSuccessModalEl = document.getElementById('bookingSuccessModal');
+        var bookingSuccessTextEl = document.getElementById('bookingSuccessText');
+        var bookingSuccessModal = bookingSuccessModalEl ? new bootstrap.Modal(bookingSuccessModalEl) : null;
+
+        function buildBookingUrl(serviceId) {
+          var params = new URLSearchParams();
+          params.set('embedded', '1');
+          if (serviceId !== undefined && serviceId !== null && serviceId !== '') {
+            params.set('serviceId', String(serviceId));
+          }
+          return 'dat-lich.html?' + params.toString();
+        }
+
+        function openBookingModal(serviceId) {
+          if (!bookingModal || !bookingFrame) return;
+          bookingFrame.src = buildBookingUrl(serviceId);
+          bookingModal.show();
+        }
+
+        function renderServiceCards(list) {
+          $('#servicesContainer').empty();
+          list.forEach(function (service, index) {
+            var reverse = index % 2 ? 'flex-lg-row-reverse' : '';
+            var serviceAlt = (service.alt || service.name || 'Dich vu dọn vệ sinh').replace(/"/g, '&quot;');
+            var includesHTML = service.includes
+              .map(function (item) {
+                return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:#007bff"></i>' + item + '</li>';
+              })
+              .join('');
+
+            $('#servicesContainer').append(
+              '<div class="row align-items-center mb-5 g-5 ' +
+                reverse +
+                '">' +
+                '<div class="col-lg-6">' +
+                '<img src="' +
+                service.image +
+                '" alt="' +
+                serviceAlt +
+                '" class="img-fluid rounded-4 shadow-lg">' +
+                '</div>' +
+                '<div class="col-lg-6">' +
+                '<h2 class="fw-bold display-6 mb-3" style="color:#007bff">' +
+                service.name +
+                '</h2>' +
+                '<p class="text-secondary lh-lg mb-4">' +
+                service.description +
+                '</p>' +
+                '<h4 class="fw-bold mb-3">Bao gồm</h4>' +
+                '<ul class="list-unstyled mb-4">' +
+                includesHTML +
+                '</ul>' +
+                '<button type="button" class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" style="background:#007bff;border:none" data-id="' +
+                service.id +
+                '">' +
+                '<i class="fas fa-calendar-check me-1"></i>Đặt Lịch Ngay' +
+                '</button>' +
+                '</div>' +
+                '</div>'
+            );
+          });
+        }
+
+        try {
+          var response = await fetch('services.json');
+          SERVICES = await response.json();
+          renderServiceCards(SERVICES);
+        } catch (error) {
+          console.error('Lỗi load services.json:', error);
+          alert('Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.');
+        }
+
+        $(document).on('click', '.btn-book', function () {
+          openBookingModal($(this).data('id'));
+        });
+
+        $('#openBookingFromCta').on('click', function () {
+          var serviceId = SERVICES.length ? SERVICES[0].id : '';
+          openBookingModal(serviceId);
+        });
+
+        if (bookingModalEl) {
+          bookingModalEl.addEventListener('hidden.bs.modal', function () {
+            if (bookingFrame) {
+              bookingFrame.src = 'about:blank';
+            }
+          });
+        }
+
+        window.addEventListener('message', function (event) {
+          if (!event || !event.data || !event.data.type) return;
+
+          if (event.data.type === 'booking:success') {
+            if (bookingSuccessTextEl) {
+              bookingSuccessTextEl.textContent = event.data.message || 'Chúng tôi sẽ liên hệ với bạn sớm nhất.';
+            }
+            if (bookingSuccessModal) {
+              bookingSuccessModal.show();
+            }
+            return;
+          }
+
+          if (event.data.type === 'booking:close' && bookingModal) {
+            bookingModal.hide();
+          }
+        });
+      });
+    </script>
+    
+  </body>
+</html>
+

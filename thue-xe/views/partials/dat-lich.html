@@ -90,8 +90,8 @@ window.PAGE_SEO = {
     title:   'Dịch Vụ Quanh Ta - Thuê Xe - Đặt Lịch',
     desc:    'Đặt xe trực tuyến tại Thuê Xe Toàn Quốc. Hotline hỗ trợ 24/7: 0775 472 347.',
     keys:    'đặt xe thuê, car rental booking, thuê xe toàn quốc',
-    url:     'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/partials/dat-lich-modal.html',
-    navPage: 'dat-lich-modal'
+    url:     'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/partials/dat-lich.html',
+    navPage: 'dat-lich'
 };
 loadHeader();
 </script>
@@ -235,7 +235,42 @@ loadHeader();
                 </div>
               </div>
 
-              <!-- SECTION 2: Địa chỉ -->
+              <!-- SECTION 2: Dịch vụ đi kèm -->
+              <div class="bk-tx-section">
+                <div class="bk-tx-section-title"><i class="fas fa-concierge-bell"></i> Dịch vụ đi kèm <small class="text-muted fw-normal">(không bắt buộc)</small></div>
+                <p class="text-muted small mb-2">Nhấn vào toàn bộ thẻ để chọn dịch vụ phù hợp.</p>
+                <div class="row g-2 addon-service-grid" id="addonServiceList">
+                  <!-- Được inject động bởi JS -->
+                </div>
+              </div>
+
+              <!-- SECTION 3: Ghi chú & Đính kèm -->
+              <div class="bk-tx-section">
+                <div class="bk-tx-section-title"><i class="fas fa-comment-dots"></i> Ghi chú & Đính kèm <small class="text-muted fw-normal">(tùy chọn)</small></div>
+                <div class="mb-3">
+                  <label class="form-label">Ghi chú</label>
+                  <textarea class="form-control" name="notes" rows="2"></textarea>
+                </div>
+                <div class="tx-upload-zone">
+                  <div class="tx-upload-header">
+                    <i class="fas fa-cloud-upload-alt tx-upload-icon"></i>
+                    <span class="tx-upload-hint">Thêm ảnh hoặc video về xe / yêu cầu</span>
+                  </div>
+                  <div class="tx-upload-btns">
+                    <button type="button" id="txPhotoCaptureBtn" class="tx-capture-photo booking-touch-btn">
+                      <i class="fas fa-camera"></i> Chọn ảnh
+                    </button>
+                    <input type="file" id="txMediaPhotoInput" accept="image/*" multiple style="display:none">
+                    <button type="button" id="txVideoCaptureBtn" class="tx-capture-video booking-touch-btn">
+                      <i class="fas fa-video"></i> Chọn video
+                    </button>
+                    <input type="file" id="txMediaVideoInput" accept="video/*" style="display:none">
+                  </div>
+                  <div id="txMediaPreviewContainer" class="tx-media-grid"></div>
+                </div>
+              </div>
+
+              <!-- SECTION 4: Địa chỉ -->
               <div class="bk-tx-section">
                 <div class="bk-tx-section-title"><i class="fas fa-map-marker-alt"></i> Địa chỉ</div>
                 <label class="form-label">Địa chỉ *</label>
@@ -251,47 +286,6 @@ loadHeader();
                 <div id="mapBoxAddr" class="map-picker-box" style="display:none; margin-top:10px;">
                   <div id="mapElAddr" class="map-el"></div>
                   <p class="text-muted small mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Nhấp vào bản đồ để chọn vị trí — địa chỉ sẽ tự động điền</p>
-                </div>
-              </div>
-
-              <!-- SECTION 3: Dịch vụ đi kèm -->
-              <div class="bk-tx-section">
-                <div class="bk-tx-section-title"><i class="fas fa-concierge-bell"></i> Dịch vụ đi kèm <small class="text-muted fw-normal">(không bắt buộc)</small></div>
-                <p class="text-muted small mb-2">Nhấn vào toàn bộ thẻ để chọn dịch vụ phù hợp.</p>
-                <div class="row g-2 addon-service-grid" id="addonServiceList">
-                  <!-- Được inject động bởi JS -->
-                </div>
-              </div>
-
-              <!-- SECTION 4: Ghi chú & Đính kèm -->
-              <div class="bk-tx-section">
-                <div class="bk-tx-section-title"><i class="fas fa-comment-dots"></i> Ghi chú & Đính kèm <small class="text-muted fw-normal">(tùy chọn)</small></div>
-                <div class="mb-3">
-                  <label class="form-label">Ghi chú</label>
-                  <textarea class="form-control" name="notes" rows="2"></textarea>
-                </div>
-                <div>
-                  <label class="form-label">Đính kèm hình ảnh / video</label>
-                  <div class="row g-2">
-                    <div class="col-6">
-                      <button type="button" id="txPhotoCaptureBtn" class="tx-capture-photo booking-touch-btn w-100">
-                        <i class="fas fa-camera"></i> Chụp hình
-                      </button>
-                      <input type="file" id="txMediaPhotoInput" accept="image/*" multiple style="display:none">
-                      <div class="tx-media-preview-box mt-2">
-                        <div id="txMediaPhotoPreviewContainer" class="tx-media-preview-grid photo-grid"></div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <button type="button" id="txVideoCaptureBtn" class="tx-capture-video booking-touch-btn w-100">
-                        <i class="fas fa-video"></i> Quay video
-                      </button>
-                      <input type="file" id="txMediaVideoInput" accept="video/*" style="display:none">
-                      <div class="tx-media-preview-box mt-2">
-                        <div id="txMediaVideoPreviewContainer" class="tx-media-preview-grid video-grid"></div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -410,16 +404,15 @@ loadHeader();
     const videoInput = document.getElementById('txMediaVideoInput');
     const photoBtn   = document.getElementById('txPhotoCaptureBtn');
     const videoBtn   = document.getElementById('txVideoCaptureBtn');
-    const photoPreview = document.getElementById('txMediaPhotoPreviewContainer');
-    const videoPreview = document.getElementById('txMediaVideoPreviewContainer');
+    const previewGrid = document.getElementById('txMediaPreviewContainer');
     if (photoBtn) photoBtn.addEventListener('click', () => photoInput && photoInput.click());
     if (videoBtn) videoBtn.addEventListener('click', () => videoInput && videoInput.click());
     if (photoInput) photoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addMediaPreview(f, photoPreview));
+        Array.from(this.files).forEach(f => addMediaPreview(f, previewGrid));
         this.value = '';
     });
     if (videoInput) videoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addMediaPreview(f, videoPreview));
+        Array.from(this.files).forEach(f => addMediaPreview(f, previewGrid));
         this.value = '';
     });
     function addMediaPreview(file, container) {
@@ -1027,7 +1020,7 @@ loadHeader();
                     if (result.success) {
                         showAlert(`<i class="fas fa-check-circle me-2"></i><strong>Đặt xe thành công!</strong><br>Mã đơn: <strong>#${result.booking_id}</strong> – Xe: <strong>${bookingData.car_name}</strong>.${addonLines}<br><strong>Tổng tiền: ${fmt(totalPrice)}đ</strong><br>Chúng tôi sẽ liên hệ xác nhận sớm nhất.`, 'success');
                         document.getElementById('bookingFormFull').reset();
-                        _standaloneMediaFiles = []; ['txMediaPhotoPreviewContainer','txMediaVideoPreviewContainer'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+                        _standaloneMediaFiles = []; const _pg = document.getElementById('txMediaPreviewContainer'); if (_pg) _pg.innerHTML = '';
                     } else {
                         showAlert(`<i class="fas fa-times-circle me-2"></i><strong>Lỗi:</strong> ${result.message || 'Gửi đặt xe thất bại. Vui lòng thử lại!'}`, 'danger');
                     }

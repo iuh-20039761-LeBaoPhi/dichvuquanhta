@@ -671,25 +671,50 @@ body {
     justify-content: center;
 }
 
-/* Capture buttons — luôn cùng hàng, chia đôi đều */
-.tx-capture-btns {
+/* Upload zone */
+.tx-upload-zone {
+    background: #f8fafc;
+    border: 2px dashed rgba(59,130,246,0.28);
+    border-radius: 12px;
+    padding: 18px 14px 14px;
+    text-align: center;
+}
+.tx-upload-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-bottom: 12px;
+    color: #94a3b8;
+}
+.tx-upload-icon { font-size: 1.25rem; color: rgba(59,130,246,0.55); }
+.tx-upload-hint { font-size: 0.82rem; }
+.tx-upload-btns {
     display: flex;
     gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
 }
+.tx-media-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.tx-media-grid:empty { display: none; }
+
+/* Capture buttons */
 .tx-capture-photo,
 .tx-capture-video {
-    flex: 1 1 0;
-    justify-content: center;
-    min-width: 0;
     border: none;
-    padding: 8px 12px;
+    padding: 8px 20px;
     border-radius: 50px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 6px;
     min-height: 40px;
     transition: opacity 0.2s;
@@ -718,34 +743,6 @@ body {
     gap: 6px;
 }
 
-/* Media preview box — luôn hiện */
-.tx-media-preview-box {
-    margin-top: 10px;
-    background: #f8fafc;
-    border: 1px dashed rgba(59,130,246,0.35);
-    border-radius: 10px;
-    padding: 10px 12px;
-    min-height: 50px;
-    display: flex;
-    align-items: center;
-}
-.tx-media-preview-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    width: 100%;
-}
-.tx-media-preview-grid:empty::before {
-    content: 'Chưa có ảnh / video';
-}
-.tx-media-preview-grid.photo-grid:empty::before {
-    content: 'Chưa có ảnh';
-}
-.tx-media-preview-grid.video-grid:empty::before {
-    content: 'Chưa có video';
-    font-size: 0.8rem;
-    color: #94a3b8;
-}
 
 #bookingModal .tx-confirm-actions .btn {
     min-height: 44px;

@@ -253,7 +253,7 @@ function injectBackBar() {
         'dat-lich-thanh-cong': 'Đặt xe thành công',
         'tra-cuu-don':     'Theo dõi đơn',
         'huong-dan-he-thong': 'Hướng dẫn hệ thống',
-        'dat-lich-modal':  'Đặt lịch'
+        'dat-lich':  'Đặt lịch'
     };
 
     const PARENT = {

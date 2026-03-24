@@ -2416,41 +2416,44 @@ body {
 }
 .btn-autofill:hover { opacity: 0.88; }
 
-/* Media preview box */
-.media-preview-box {
-    margin-top: 10px;
+/* Upload zone */
+.bk-upload-zone {
     background: #f8fafc;
-    border: 1px dashed rgba(17,153,142,0.35);
-    border-radius: 10px;
-    padding: 10px 12px;
-    min-height: 52px;
+    border: 2px dashed rgba(17,153,142,0.30);
+    border-radius: 12px;
+    padding: 18px 14px 14px;
+    text-align: center;
+}
+.bk-upload-header {
     display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-bottom: 12px;
+    color: #94a3b8;
 }
-.media-preview-grid {
+.bk-upload-icon { font-size: 1.25rem; color: rgba(17,153,142,0.55); }
+.bk-upload-hint { font-size: 0.82rem; }
+.bk-upload-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.bk-media-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    width: 100%;
+    justify-content: center;
 }
-/* Placeholder khi chưa có ảnh/video */
-.media-preview-grid:empty::before {
-    content: 'Chưa có ảnh / video';
-}
-.media-preview-grid.photo-grid:empty::before {
-    content: 'Chưa có ảnh';
-}
-.media-preview-grid.video-grid:empty::before {
-    content: 'Chưa có video';
-    font-size: 0.8rem;
-    color: #94a3b8;
-}
+.bk-media-grid:empty { display: none; }
 
 /* Media capture buttons */
 .btn-capture-photo,
 .btn-capture-video {
     border: none;
-    padding: 7px 16px;
+    padding: 8px 20px;
     border-radius: 50px;
     font-size: 0.85rem;
     font-weight: 600;

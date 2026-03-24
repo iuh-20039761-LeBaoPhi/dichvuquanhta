@@ -19,9 +19,47 @@
 
 'use strict';
 
-const _BD_IS_LOCAL = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+// true chỉ khi chạy trên XAMPP (port 80), không phải Live Server (5500/5501)
+const _BD_IS_LOCAL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+    && (window.location.port === '' || window.location.port === '80');
 // Base path cho fetch — trang pages/public/ dùng '../../', partials/ dùng '../'
 const _BD_BASE = window.BD_BASE || '../../';
+
+// Google Apps Script Web App URL — thay bằng URL thật sau khi deploy
+const _BD_GSHEET_URL = window.GSHEET_URL || 'https://script.google.com/macros/s/AKfycbx8J5infIIqf-VOFCNq89L7W1xRfluTU0Dt4R8Vijl81zhid59aql3vURdT01dwaaKgPQ/exec';
+
+// ===================================================================
+// GOOGLE SHEETS — fire-and-forget
+// ===================================================================
+function _bdSendToSheet(pendingData, orderCode) {
+    if (!_BD_GSHEET_URL) return;
+    const now = new Date();
+    const created_at = now.toLocaleString('vi-VN', { hour12: false });
+    const surveyAmt = (_bdCurSurvey && _bdCurSurvey.required) ? (_bdCurSurvey.amount || 0) : 0;
+    const travelAmt = _bdTravelAmt || 0;
+    const basePrice = _bdCurPrice  || 0;
+    const payload = {
+        order_code:       orderCode || '',
+        name:             pendingData.name            || '',
+        phone:            pendingData.phone           || '',
+        service:          pendingData.service_id      || '',
+        address:          pendingData.address         || '',
+        note:             pendingData.note            || '',
+        selected_brand:   pendingData.selected_brand  || '',
+        estimated_price:  basePrice,
+        travel_fee:       travelAmt,
+        inspection_fee:   surveyAmt,
+        total_price:      basePrice + travelAmt,
+        status:           'new',
+        created_at,
+    };
+    fetch(_BD_GSHEET_URL, {
+        method:  'POST',
+        mode:    'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body:    JSON.stringify(payload),
+    }).catch(() => {}); // bỏ qua lỗi, không ảnh hưởng UX
+}
 
 // ===================================================================
 // SHARED: FORMAT + PRICING
@@ -263,19 +301,18 @@ function _bdSetupMedia() {
     const videoInput    = document.getElementById('mediaVideoInput');
     const photoBtn      = document.getElementById('photoCaptureBtn');
     const videoBtn      = document.getElementById('videoCaptureBtn');
-    const photoPreview  = document.getElementById('mediaPhotoPreviewContainer');
-    const videoPreview  = document.getElementById('mediaVideoPreviewContainer');
+    const previewGrid   = document.getElementById('mediaPreviewContainer');
     if (!photoInput || !videoInput) return;
 
     photoBtn && photoBtn.addEventListener('click', () => photoInput.click());
     videoBtn && videoBtn.addEventListener('click', () => videoInput.click());
 
     photoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => _bdAddMedia(f, photoPreview));
+        Array.from(this.files).forEach(f => _bdAddMedia(f, previewGrid));
         this.value = '';
     });
     videoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => _bdAddMedia(f, videoPreview));
+        Array.from(this.files).forEach(f => _bdAddMedia(f, previewGrid));
         this.value = '';
     });
 }
@@ -308,10 +345,8 @@ function _bdAddMedia(file, previewBox) {
 
 function _bdClearMedia() {
     _bdMediaFiles = [];
-    const pg = document.getElementById('mediaPhotoPreviewContainer');
-    const vg = document.getElementById('mediaVideoPreviewContainer');
-    if (pg) pg.innerHTML = '';
-    if (vg) vg.innerHTML = '';
+    const grid = document.getElementById('mediaPreviewContainer');
+    if (grid) grid.innerHTML = '';
 }
 
 // ===================================================================
@@ -454,6 +489,7 @@ async function _bdSubmitApi(pendingData, submitBtn, onSuccess) {
         });
         const data = await res.json();
         if (data.status === 'success') {
+            _bdSendToSheet(pendingData, data.order_code);
             onSuccess(data.order_code || null);
         } else {
             if (_BD_IS_LOCAL) {
@@ -468,6 +504,7 @@ async function _bdSubmitApi(pendingData, submitBtn, onSuccess) {
             alert('❌ Không thể kết nối server. Vui lòng thử lại sau!');
             resetBtn();
         } else {
+            _bdSendToSheet(pendingData, 'TN' + Date.now());
             alert('✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại trong thời gian sớm nhất.\n\n📞 Hotline: 0775 472 347');
             onSuccess(null);
         }

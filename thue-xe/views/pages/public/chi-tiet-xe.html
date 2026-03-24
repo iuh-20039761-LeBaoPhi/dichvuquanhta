@@ -250,6 +250,44 @@ const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe';
 const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
 const today = () => new Date().toISOString().split('T')[0];
 
+const TX_GSHEET_URL = window.GSHEET_URL || 'https://script.google.com/macros/s/AKfycbx8J5infIIqf-VOFCNq89L7W1xRfluTU0Dt4R8Vijl81zhid59aql3vURdT01dwaaKgPQ/exec';
+
+function txSendToSheetStatic(data, selectedCar, days) {
+    if (!TX_GSHEET_URL) return;
+    const now        = new Date();
+    const rentalCost = (data.price_per_day || 0) * (days || 0);
+    const addonCost  = data.addon_total || 0;
+    const payload = {
+        sheet_name:      'DatXe',
+        order_code:      'TX' + Date.now(),
+        name:            data.customer_name    || '',
+        phone:           data.customer_phone   || '',
+        email:           data.customer_email   || '',
+        id_number:       data.id_number        || '',
+        car:             data.car_name         || '',
+        pickup_date:     data.pickup_date      || '',
+        return_date:     data.return_date      || '',
+        pickup_time:     data.pickup_time      || '',
+        return_time:     data.return_time      || '',
+        days:            days || 0,
+        price_per_day:   data.price_per_day    || 0,
+        address:         data.customer_address || '',
+        addon_services:  (data.addon_services  || []).join(', '),
+        rental_cost:     rentalCost,
+        addon_cost:      addonCost,
+        total_price:     rentalCost + addonCost,
+        note:            data.notes            || '',
+        status:          'new',
+        created_at:      now.toLocaleString('vi-VN', { hour12: false }),
+    };
+    fetch(TX_GSHEET_URL, {
+        method:  'POST',
+        mode:    'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body:    JSON.stringify(payload),
+    }).catch(() => {});
+}
+
 // selectedCarId: id của chiếc xe vật lý đang được chọn
 let selectedCarId = null;
 // _currentCarType: dùng làm fallback khi chiếc xe không có ảnh riêng
@@ -1021,7 +1059,8 @@ function renderCarDetail(carType, availableCars) {
             const { _days: days, _totalPrice: totalPrice, ...bookingData } = _pendingBooking;
             const addonLines = bookingData.addon_services.length ? `<br><strong>Dịch vụ đi kèm:</strong> ${bookingData.addon_services.join(', ')}` : '';
             const selectedCar = (STATIC_DATA.cars || []).find(c => c.id === bookingData.car_id);
-            const IS_LOCAL = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+            // Trang static — không gọi API với static ID (ID không khớp DB)
+            const IS_LOCAL = false;
             if (IS_LOCAL) {
                 try {
                     const res = await fetch('controllers/booking-controller.php?action=create', {
@@ -1042,6 +1081,7 @@ function renderCarDetail(carType, availableCars) {
                     showAlert('<i class="fas fa-times-circle me-2"></i>Không thể kết nối đến server! Vui lòng kiểm tra XAMPP đang chạy và thử lại.', 'danger');
                 }
             } else {
+                txSendToSheetStatic(bookingData, selectedCar, days);
                 await new Promise(r => setTimeout(r, 600));
                 document.getElementById('txBookingConfirm').style.display = 'none';
                 document.getElementById('bookingFormFull').style.display  = '';

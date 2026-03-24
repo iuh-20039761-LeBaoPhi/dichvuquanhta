@@ -1,5 +1,6 @@
-// true khi chạy trên localhost/XAMPP, false khi chạy web tĩnh
-const IS_LOCAL = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+// true chỉ khi chạy trên XAMPP (port 80), không phải Live Server (5500/5501)
+const IS_LOCAL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+    && (window.location.port === '' || window.location.port === '80');
 
 async function getMergedStaticCars() {
     const sd = await STATIC_DATA_PROMISE;
