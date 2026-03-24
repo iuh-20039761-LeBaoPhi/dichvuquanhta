@@ -1,257 +1,268 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <script src="/ga.js"></script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/ga.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dịch vụ quanh ta | Chăm Sóc Vườn Nhà</title>
+    <meta name="description" id="seoDesc" content="Dịch vụ chăm sóc vườn chuyên nghiệp, kiến tạo không gian xanh đẳng cấp cho ngôi nhà của bạn.">
+    <link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<title id="seoTitle">Dịch vụ quanh ta | Chăm sóc vườn nhà</title>
-<link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
+    <style>
+        :root {
+            --primary-dark: #12372a; 
+            --primary-gold: #ad8b73; 
+            --soft-white: #fbf9f1;
+            --text-gray: #434343;
+            --white: #ffffff;
+            --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-<style>
-.service-page{
-  --green:#1f6f43;
-  --green2:#2e8b57;
-  --light:#f5f7f6;
-  --border:#e5e7eb;
+        * { box-sizing: border-box; transition: var(--transition); }
 
-  font-family:'Segoe UI',sans-serif;
-  background:var(--light);
-}
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--soft-white);
+            color: var(--text-gray);
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-.service-page .container{
-  max-width:1300px;
-  margin:auto;
-  padding:30px 20px;
-}
+        /* ===== LAYOUT CẤU TRÚC CHÍNH ===== */
+        .master-wrapper {
+            display: grid;
+            grid-template-columns: 55% 45%;
+            min-height: 100vh;
+        }
 
-.service-page .hero{
-  height:220px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  background:linear-gradient(135deg,#1f6f43,#2e8b57);
-}
+        .visual-side {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--primary-dark);
+        }
 
-.service-page .hero h1{
-  font-size:24px;
-}
+        .visual-side img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+        }
 
-.service-page .layout{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:35px;
-  margin-top:-60px;
-}
+        .price-floating-circle {
+            position: absolute;
+            bottom: 50px;
+            right: -40px;
+            width: 180px;
+            height: 180px;
+            background: var(--primary-gold);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: 8px solid var(--soft-white);
+        }
 
-.service-page .box{
-  background:#fff;
-  border-radius:16px;
-  padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+        .price-floating-circle span { font-size: 0.8rem; text-transform: uppercase; }
+        .price-floating-circle b { font-size: 1.2rem; margin-top: 5px; }
 
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-}
+        /* Phía phải: Nội dung cuộn */
+        .info-side {
+            padding: 40px 10% 100px;
+            background: var(--soft-white);
+            position: relative;
+        }
 
-.service-page .img img{
-  width:100%;
-  height:300px;
-  object-fit:cover;
-  border-radius:12px;
-}
+        /* Nút quay về mới thêm */
+        .back-to-services {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            opacity: 0.6;
+        }
 
-.service-page h2{
-  color:var(--green);
-  margin-bottom:10px;
-}
+        .back-to-services:hover {
+            opacity: 1;
+            color: var(--primary-gold);
+            transform: translateX(-5px);
+        }
 
-.service-page .desc{
-  color:#555;
-  margin-bottom:15px;
-  line-height:1.6;
-}
+        .service-name-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            line-height: 1.1;
+            color: var(--primary-dark);
+            margin: 0 0 30px 0;
+        }
 
-.service-page .price{
-  font-weight:bold;
-  color:#e63946;
-  margin-bottom:15px;
-}
+        .service-desc {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-gray);
+            margin-bottom: 50px;
+            font-weight: 400;
+        }
 
-.service-page .calc{
-  background:#f1f8f4;
-  padding:15px;
-  border-radius:10px;
-}
+        /* ===== BOOKING PANEL ===== */
+        .modern-calculator {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.03);
+            border-left: 4px solid var(--primary-dark);
+        }
 
-.service-page input{
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  border:1px solid var(--border);
-  border-radius:8px;
-}
+        .input-box { margin-bottom: 30px; }
+        .input-box label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
 
-.service-page .result{
-  margin-top:10px;
-  font-weight:bold;
-  color:#e63946;
-}
+        .input-box input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+            font-size: 1.5rem;
+            outline: none;
+            background: transparent;
+            font-family: 'Cormorant Garamond', serif;
+        }
 
-.service-page .btn{
-  margin-top:12px;
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:var(--green);
-  color:#fff;
-  cursor:pointer;
-}
+        .input-box input:focus { border-bottom-color: var(--primary-gold); }
 
-.service-page .btn:hover{
-  background:var(--green2);
-}
+        .total-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin: 40px 0;
+        }
 
-.service-page .sidebar{
-  background:#fff;
-  padding:15px;
-  border-radius:12px;
-  height:fit-content;
-  box-shadow:0 5px 20px rgba(0,0,0,0.08);
-}
+        .total-display .label { font-size: 0.85rem; color: #999; max-width: 60%; }
+        .total-display .value { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            color: var(--primary-dark);
+            font-family: 'Cormorant Garamond', serif;
+        }
 
-.service-page .sidebar h3{
-  color:var(--green);
-  margin-bottom:10px;
-}
+        .btn-premium {
+            width: 100%;
+            background: var(--primary-dark);
+            color: var(--white);
+            padding: 25px;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
 
-.service-page .card{
-  margin-bottom:15px;
-  background:#fff;
-  border-radius:10px;
-  overflow:hidden;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
-  transition:.2s;
-}
+        .btn-premium:hover { background: var(--primary-gold); letter-spacing: 6px; }
 
-.service-page .card:hover{
-  transform:translateY(-4px);
-}
+        /* ===== SIDEBAR GỢI Ý ===== */
+        .related-section { margin-top: 80px; }
+        .related-section h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
 
-.service-page .card img{
-  width:100%;
-  height:130px;
-  object-fit:cover;
-}
+        .mini-card {
+            display: flex;
+            gap: 20px;
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 25px;
+            align-items: center;
+        }
 
-.service-page .card h4{
-  padding:10px;
-  font-size:15px;
-}
+        .mini-card .img-box { width: 80px; height: 80px; flex-shrink: 0; background: #eee; }
+        .mini-card img { width: 100%; height: 100%; object-fit: cover; }
+        .mini-card h4 { margin: 0; font-size: 0.95rem; font-weight: 600; }
+        .mini-card p { margin: 5px 0 0; color: var(--primary-gold); font-size: 0.85rem; font-weight: 700; }
+        .mini-card:hover h4 { color: var(--primary-gold); }
 
-.service-page .card p{
-  padding:0 10px;
-  color:#e63946;
-  font-weight:bold;
-}
-
-.service-page .card a{
-  display:block;
-  margin:10px;
-  padding:8px;
-  background:var(--green);
-  color:#fff;
-  text-align:center;
-  border-radius:6px;
-  text-decoration:none;
-}
-
-/* ===== MOBILE FIX (THÊM NHẸ) ===== */
-@media(max-width:900px){
-  .service-page .layout{
-    grid-template-columns:1fr;
-  }
-
-  .service-page .box{
-    grid-template-columns:1fr;
-  }
-
-  .service-page .hero{
-    height:180px;
-  }
-}
-
-/* 👇 thêm cho mobile mượt hơn */
-@media(max-width:600px){
-  .service-page .img img{
-    height:220px;
-  }
-
-  .service-page .btn{
-    padding:14px;
-    font-size:16px;
-  }
-}
-</style>
+        @media (max-width: 1024px) {
+            .master-wrapper { grid-template-columns: 1fr; }
+            .visual-side { height: 50vh; position: relative; }
+            .price-floating-circle { right: 20px; bottom: -40px; width: 120px; height: 120px; }
+            .info-side { padding: 80px 5%; }
+        }
+    </style>
 </head>
-
 <body>
 
 <div id="header"></div>
 
-<div class="service-page">
+<main class="master-wrapper">
+    <section class="visual-side">
+        <img id="serviceImage" src="" alt="Dịch vụ chăm sóc vườn">
+        <div class="price-floating-circle">
+            <span>Chỉ từ</span>
+            <b id="servicePrice">---</b>
+        </div>
+    </section>
 
-<div class="hero">
-  <h1 id="heroTitle"></h1>
-</div>
+    <section class="info-side">
+        <a href="dichvu.html" class="back-to-services">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại trang dịch vụ
+        </a>
 
-<div class="container">
-<div class="layout">
+        <h1 class="service-name-title" id="serviceName">Đang tải...</h1>
+        
+        <p class="service-desc" id="serviceDescription">
+            Vui lòng chờ trong giây lát, chúng tôi đang chuẩn bị thông tin tốt nhất cho bạn.
+        </p>
 
-<div class="main">
-  <div class="box">
+        <div class="modern-calculator">
+            <div class="input-box">
+                <label for="area">Diện tích khu vườn của bạn (m²)</label>
+                <input type="number" id="area" placeholder="Nhập diện tích..." min="1">
+            </div>
 
-    <div class="img">
-      <img id="serviceImage">
-    </div>
+            <div class="total-display">
+                <span class="label">Chi phí dự kiến (Đã bao gồm VAT & Phí dịch vụ)</span>
+                <span class="value" id="total">0 VNĐ</span>
+            </div>
 
-    <div>
-      <h2 id="serviceName"></h2>
-      <p class="desc" id="serviceDescription"></p>
-      <p class="price" id="servicePrice"></p>
+            <button class="btn-premium" id="bookBtn">Đặt lịch ngay</button>
+        </div>
 
-      <div class="calc">
-        <label>Nhập diện tích (m²)</label>
-        <input type="number" id="area">
-
-        <p class="result" id="total"></p>
-
-        <button class="btn" id="bookBtn">
-          Đặt lịch dịch vụ
-        </button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<div class="sidebar">
-  <h3>Dịch vụ liên quan</h3>
-  <div id="related"></div>
-</div>
-
-</div>
-</div>
-</div>
+        <div class="related-section">
+            <h3>Dịch vụ khác</h3>
+            <div id="related"></div>
+        </div>
+    </section>
+</main>
 
 <div id="footer"></div>
 
 <script>
-// ===== DOM =====
-const heroTitle = document.getElementById("heroTitle");
 const serviceName = document.getElementById("serviceName");
 const serviceDescription = document.getElementById("serviceDescription");
 const servicePrice = document.getElementById("servicePrice");
@@ -261,134 +272,107 @@ const area = document.getElementById("area");
 const total = document.getElementById("total");
 const bookBtn = document.getElementById("bookBtn");
 
-// ===== CONFIG =====
 const IMAGE_PATH = "assets/images/";
-const DEFAULT_IMAGE = IMAGE_PATH + "default.jpg";
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1584473457406-623048ff437e?q=80&w=2000";
 
-// ===== LOAD HEADER / FOOTER =====
+// Load Components
 function loadComponent(id, file) {
-  fetch(file)
-    .then(r => r.text())
-    .then(data => {
-      document.getElementById(id).innerHTML = data;
-    })
-    .catch(() => console.warn("Không load được:", file));
+    fetch(file).then(r => r.text()).then(data => {
+        document.getElementById(id).innerHTML = data;
+    });
 }
-
 loadComponent("header", "header.html");
 loadComponent("footer", "footer.html");
 
-// ===== LẤY ID =====
 const params = new URLSearchParams(location.search);
 const id = parseInt(params.get("id"));
 
-if (!id) {
-  document.body.innerHTML = "<h2>Thiếu ID dịch vụ</h2>";
-  throw new Error("Missing ID");
-}
-
-// ===== LOAD DATA =====
-let services = [];
 let service = null;
 
+// Fetch Data & SEO Optimization
 fetch("dichvu.json")
-  .then(r => r.json())
-  .then(data => {
+    .then(r => r.json())
+    .then(data => {
+        const services = data.services || [];
+        service = services.find(s => s.id === id);
+        
+        if (!service) {
+            serviceName.innerText = "Dịch vụ không tồn tại";
+            return;
+        }
 
-    services = data.services || [];
-    service = services.find(s => s.id === id);
+        // 1. UPDATE CONTENT
+        serviceName.innerText = service.name;
+        serviceDescription.innerText = service.description || "Dịch vụ chăm sóc vườn chuyên nghiệp hàng đầu.";
+        servicePrice.innerText = (service.price_m2_min || 0).toLocaleString("vi-VN") + "đ/m²";
+        serviceImage.src = service.image ? IMAGE_PATH + service.image : DEFAULT_IMAGE;
 
-    if (!service) {
-      document.body.innerHTML = "<h2>Không tìm thấy dịch vụ</h2>";
-      return;
-    }
+        // 2. SEO UPDATE (Dynamic Title, Alt, Meta)
+        document.title = `${service.name} | Chăm sóc vườn nhà Keri`;
+        document.getElementById("seoDesc").setAttribute("content", service.description.substring(0, 160));
+        serviceImage.alt = `Dịch vụ ${service.name} chuyên nghiệp`;
 
-    // ===== HIỂN THỊ =====
-    heroTitle.innerText = service.name;
-    serviceName.innerText = service.name;
-    serviceDescription.innerText = service.description || "Chưa có mô tả";
+        // 3. SCHEMA MARKUP (SEO Rich Snippets)
+        const schemaData = {
+            "@context": "https://schema.org/",
+            "@type": "Service",
+            "name": service.name,
+            "description": service.description,
+            "provider": {
+                "@type": "LocalBusiness",
+                "name": "Chăm sóc vườn nhà Keri"
+            },
+            "offers": {
+                "@type": "Offer",
+                "priceCurrency": "VND",
+                "price": service.price_m2_min
+            }
+        };
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.text = JSON.stringify(schemaData);
+        document.head.appendChild(script);
 
-    servicePrice.innerText =
-      (service.price_m2_min || 0).toLocaleString("vi-VN") +
-      " VNĐ / " + (service.area_unit || "m²");
-
-    // ===== ẢNH (FIX TRẮNG) =====
-    serviceImage.src = service.image
-      ? IMAGE_PATH + service.image
-      : DEFAULT_IMAGE;
-
-    serviceImage.onerror = function () {
-      this.src = DEFAULT_IMAGE;
-    };
-
-    // ===== RELATED =====
-    related.innerHTML = "";
-
-    (service.related_services || []).forEach(i => {
-      let s = services.find(x => x.id === i);
-      if (!s) return;
-
-      let div = document.createElement("div");
-      div.className = "card";
-
-      div.innerHTML = `
-        <img src="${IMAGE_PATH + s.image}" onerror="this.src='${DEFAULT_IMAGE}'">
-        <h4>${s.name}</h4>
-        <p>${(s.price_m2_min || 0).toLocaleString("vi-VN")} VNĐ</p>
-        <a href="chitiet_dichvu.html?id=${s.id}">Xem</a>
-      `;
-
-      related.appendChild(div);
+        // 4. RENDER RELATED
+        related.innerHTML = "";
+        (service.related_services || []).forEach(rid => {
+            let s = services.find(x => x.id === rid);
+            if (!s) return;
+            const card = document.createElement("a");
+            card.href = `chitiet_dichvu.html?id=${s.id}`;
+            card.className = "mini-card";
+            card.innerHTML = `
+                <div class="img-box"><img src="${IMAGE_PATH + s.image}" alt="${s.name}" onerror="this.src='${DEFAULT_IMAGE}'"></div>
+                <div>
+                    <h4>${s.name}</h4>
+                    <p>${(s.price_m2_min || 0).toLocaleString("vi-VN")} VNĐ</p>
+                </div>
+            `;
+            related.appendChild(card);
+        });
     });
 
-  })
-  .catch(err => {
-    console.error(err);
-    document.body.innerHTML = "<h2>Lỗi tải dữ liệu</h2>";
-  });
-
-// ===== TÍNH TIỀN =====
+// LOGIC TÍNH TOÁN (Giữ nguyên)
 area.oninput = function () {
-
-  if (!service) return;
-
-  let a = parseFloat(this.value);
-
-  if (!a || a <= 0) {
-    total.innerText = "";
-    return;
-  }
-
-  let cost = a * service.price_m2_min;
-  let fee = cost * 0.1;
-  let final = cost + fee;
-
-  total.innerText =
-    "Tổng: " + final.toLocaleString("vi-VN") + " VNĐ";
-
-  // MOBILE UX
-  if (window.innerWidth < 768) {
-    total.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
+    if (!service) return;
+    let val = parseFloat(this.value);
+    if (!val || val <= 0) {
+        total.innerText = "0 VNĐ";
+        return;
+    }
+    // Logic: Giá gốc * diện tích + 10% phí dịch vụ
+    let final = (val * service.price_m2_min) * 1.1;
+    total.innerText = final.toLocaleString("vi-VN") + " VNĐ";
 };
 
-// ===== ĐẶT LỊCH =====
 bookBtn.onclick = function () {
-
-  if (!service) {
-    alert("Chưa load xong dữ liệu");
-    return;
-  }
-
-  if (!area.value || area.value <= 0) {
-    alert("Nhập diện tích hợp lệ");
-    return;
-  }
-
-  location.href =
-    "datlich.html?service=" + service.id +
-    "&area=" + area.value;
+    if (!area.value || area.value <= 0) {
+        alert("Vui lòng nhập diện tích!");
+        return;
+    }
+    location.href = `datlich.html?service=${service.id}&area=${area.value}`;
 };
 </script>
+
 </body>
 </html>

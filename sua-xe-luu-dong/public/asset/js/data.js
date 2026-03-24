@@ -142,7 +142,7 @@ window.BookingModalManager.open = function (serviceId = null) {
     bootstrap.Modal.getOrCreateInstance(bookingModal).show();
 
     if (serviceId != null) {
-      const serviceSelect = document.getElementById("serviceSelect");
+      const serviceSelect = document.getElementById("loaidichvu");
       if (serviceSelect) {
         const normalized = String(serviceId);
         const hasOption = Array.from(serviceSelect.options).some(
@@ -175,7 +175,7 @@ const mapPicker = (() => {
   }
 
   function getAddressInput() {
-    return getFirstElementById(["addressInput", "address"]);
+    return getFirstElementById(["diachi", "address"]);
   }
 
   function uniqueNonEmpty(items) {
@@ -327,7 +327,7 @@ const mapPicker = (() => {
 
   function toggle() {
     const box = getFirstElementById(["osmMapWrapper", "mapPickerBox"]);
-    const btn = document.getElementById("toggleMapBtn");
+    const btn = document.getElementById("nutmobando");
     if (!box || !btn) return;
 
     const opening = box.style.display === "none" || box.style.display === "";
@@ -445,23 +445,23 @@ function initBookingModal() {
   }
 
   // ===== ELEMENT =====
-  const serviceSelect = document.getElementById("serviceSelect");
-  const vehicleType = document.getElementById("vehicleType");
-  const brandSelect = document.getElementById("brandSelect");
-  const itemSelect = document.getElementById("itemSelect");
+  const serviceSelect = document.getElementById("loaidichvu");
+  const vehicleType = document.getElementById("loaixe");
+  const brandSelect = document.getElementById("hangxe");
+  const itemSelect = document.getElementById("mauxe");
   const customItemInputWrapper = document.getElementById(
     "customItemInputWrapper",
   );
-  const customItemInput = document.getElementById("customItemInput");
+  const customItemInput = document.getElementById("mauxekhac");
   const datetimeInput = document.querySelector(
-    '#bookingForm input[type="datetime-local"]',
+    '#formdatdichvu input[type="datetime-local"]',
   );
 
-  const priceInput = document.getElementById("price-contact");
-  const transportInput = document.getElementById("transport-fee");
-  const surveyInput = document.getElementById("survey-fee");
-  const totalInput = document.getElementById("total-price");
-  const addressInput = document.getElementById("addressInput");
+  const priceInput = document.getElementById("giadichvu");
+  const transportInput = document.getElementById("phidichuyen");
+  const surveyInput = document.getElementById("phikhaosat");
+  const totalInput = document.getElementById("tongchiphi");
+  const addressInput = document.getElementById("diachi");
   const estimateServicePrice = document.getElementById("estimateServicePrice");
   const estimateTransportFee = document.getElementById("estimateTransportFee");
   const estimateTempTotal = document.getElementById("estimateTempTotal");
@@ -1024,9 +1024,9 @@ function initBookingModal() {
       const phone = this.dataset.phone;
       const address = this.dataset.address;
 
-      document.getElementById("nameCustomer").value = customer;
-      document.getElementById("phoneCustomer").value = phone;
-      document.getElementById("addressInput").value = address;
+      document.getElementById("hotenkhachhang").value = customer;
+      document.getElementById("sodienthoaikhachhang").value = phone;
+      document.getElementById("diachi").value = address;
       scheduleRecalculateTransportFee(150);
     });
   }
@@ -1043,7 +1043,7 @@ function initBookingModal() {
     });
   }
 
-  const bookingForm = document.getElementById("bookingForm");
+  const bookingForm = document.getElementById("formdatdichvu");
   if (bookingForm && bookingForm.dataset.customItemResetBound !== "true") {
     bookingForm.dataset.customItemResetBound = "true";
     bookingForm.addEventListener("reset", function () {
@@ -1058,11 +1058,11 @@ function initBookingModal() {
 }
 
 function initMediaUpload() {
-  const form = document.getElementById("bookingForm");
-  const imageBtn = document.getElementById("capturePhotoBtn");
-  const videoBtn = document.getElementById("recordVideoBtn");
-  const imageInput = document.getElementById("imageUploadInput");
-  const videoInput = document.getElementById("videoUploadInput");
+  const form = document.getElementById("formdatdichvu");
+  const imageBtn = document.getElementById("nutchupanh");
+  const videoBtn = document.getElementById("nutquayvideo");
+  const imageInput = document.getElementById("tailenhinhanh");
+  const videoInput = document.getElementById("tailenvideo");
   const imageList = document.getElementById("imagePreviewList");
   const videoList = document.getElementById("videoPreviewList");
   const imageEmpty = document.getElementById("imageEmptyState");
@@ -1203,11 +1203,11 @@ function initMediaUpload() {
 }
 
 function initBookingConfirmFlow() {
-  const form = document.getElementById("bookingForm");
+  const form = document.getElementById("formdatdichvu");
   const bookingModalEl = document.getElementById("bookingModal");
   const confirmModalEl = document.getElementById("bookingConfirmModal");
-  const imageInput = document.getElementById("imageUploadInput");
-  const videoInput = document.getElementById("videoUploadInput");
+  const imageInput = document.getElementById("tailenhinhanh");
+  const videoInput = document.getElementById("tailenvideo");
   const confirmImages = document.getElementById("confirmImages");
   const confirmVideos = document.getElementById("confirmVideos");
   const confirmMediaUrls = [];
@@ -1312,17 +1312,17 @@ function initBookingConfirmFlow() {
   if (form.dataset.confirmFlowBound === "true") return;
   form.dataset.confirmFlowBound = "true";
 
-  const serviceSelect = document.getElementById("serviceSelect");
-  const vehicleType = document.getElementById("vehicleType");
-  const brandSelect = document.getElementById("brandSelect");
-  const itemSelect = document.getElementById("itemSelect");
-  const customItemInput = document.getElementById("customItemInput");
-  const addressInput = document.getElementById("addressInput");
+  const serviceSelect = document.getElementById("loaidichvu");
+  const vehicleType = document.getElementById("loaixe");
+  const brandSelect = document.getElementById("hangxe");
+  const itemSelect = document.getElementById("mauxe");
+  const customItemInput = document.getElementById("mauxekhac");
+  const addressInput = document.getElementById("diachi");
 
-  const priceInput = document.getElementById("price-contact");
-  const surveyInput = document.getElementById("survey-fee");
-  const transportInput = document.getElementById("transport-fee");
-  const totalInput = document.getElementById("total-price");
+  const priceInput = document.getElementById("giadichvu");
+  const surveyInput = document.getElementById("phikhaosat");
+  const transportInput = document.getElementById("phidichuyen");
+  const totalInput = document.getElementById("tongchiphi");
 
   const datetimeInput = form.querySelector('input[type="datetime-local"]');
   const noteInput = form.querySelector("textarea");
@@ -1457,8 +1457,8 @@ function initBookingConfirmFlow() {
     form.dataset.orderCode = currentOrderCode;
 
     const summary = {
-      confirmName: document.getElementById("nameCustomer")?.value,
-      confirmPhone: document.getElementById("phoneCustomer")?.value,
+      confirmName: document.getElementById("hotenkhachhang")?.value,
+      confirmPhone: document.getElementById("sodienthoaikhachhang")?.value,
       confirmOrderCode: currentOrderCode,
       confirmService: selectedText(serviceSelect),
       confirmVehicleType: selectedText(vehicleType),
@@ -1487,8 +1487,8 @@ function initBookingConfirmFlow() {
     const transportFee = moneyOnlyText(transportInput?.value);
     const payload = {
       service_group: "sua-xe-luu-dong",
-      name: document.getElementById("nameCustomer")?.value || "",
-      phone: document.getElementById("phoneCustomer")?.value || "",
+      name: document.getElementById("hotenkhachhang")?.value || "",
+      phone: document.getElementById("sodienthoaikhachhang")?.value || "",
       order_code: currentOrderCode,
       service_name: selectedText(serviceSelect),
       vehicle_type: selectedText(vehicleType),
@@ -1513,6 +1513,31 @@ function initBookingConfirmFlow() {
     } catch (_err) {
       return null;
     }
+  }
+
+  function showBookingSuccessFeedback(orderCode) {
+    const message = orderCode
+      ? `Đặt dịch vụ thành công! Mã đơn hàng của bạn: ${orderCode}`
+      : "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.";
+    const toastEl = document.getElementById("successToast");
+
+    if (
+      !toastEl ||
+      !window.bootstrap ||
+      typeof bootstrap.Toast !== "function"
+    ) {
+      alert(
+        `Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.\nMã đơn hàng của bạn: ${orderCode || "-"}`,
+      );
+      return;
+    }
+
+    const toastBody = toastEl.querySelector(".toast-body");
+    if (toastBody) {
+      toastBody.textContent = message;
+    }
+
+    bootstrap.Toast.getOrCreateInstance(toastEl).show();
   }
 
   function handleConfirmSubmit() {
@@ -1548,9 +1573,7 @@ function initBookingConfirmFlow() {
         bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
         hideBookingStep();
 
-        alert(
-          `Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.\nMã đơn hàng của bạn: ${payload.order_code}`,
-        );
+        showBookingSuccessFeedback(payload.order_code);
 
         form.reset();
         clearConfirmMedia();
@@ -1610,8 +1633,8 @@ function initBookingConfirmFlow() {
 }
 
 function mapPickerInit() {
-  const locateBtn = document.getElementById("locateBtn");
-  const toggleMapBtn = document.getElementById("toggleMapBtn");
+  const locateBtn = document.getElementById("nutvitricuatoi");
+  const toggleMapBtn = document.getElementById("nutmobando");
   const bookingModal = document.getElementById("bookingModal");
 
   if (locateBtn && !locateBtn.dataset.loaded) {

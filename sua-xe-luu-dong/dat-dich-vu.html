@@ -513,7 +513,7 @@
       <div class="modal fade" id="bookingModal">
         <div class="modal-dialog modal-lg modal-fullscreen-sm-down">
           <div class="modal-content">
-            <form id="bookingForm">
+            <form id="formdatdichvu">
               <!-- Modal Header -->
               <div class="modal-header">
                 <div class="nav-brand">
@@ -529,6 +529,8 @@
                 <button
                   type="button"
                   class="btn-close"
+                  id="nutdongform"
+                  name="nutdongform"
                   data-bs-dismiss="modal"
                 ></button>
               </div>
@@ -547,7 +549,8 @@
                     <input
                       type="text"
                       class="form-control"
-                      id="nameCustomer"
+                      id="hotenkhachhang"
+                      name="hotenkhachhang"
                       placeholder="Nhập họ tên của bạn"
                       required
                     />
@@ -560,7 +563,8 @@
                     <input
                       type="tel"
                       class="form-control"
-                      id="phoneCustomer"
+                      id="sodienthoaikhachhang"
+                      name="sodienthoaikhachhang"
                       placeholder="Nhập số điện thoại"
                       required
                     />
@@ -570,45 +574,58 @@
                       ><i class="fas fa-list-ul me-2"></i>Loại dịch vụ
                       <span class="text-danger">*</span></label
                     >
-                    <select class="form-select" id="serviceSelect" required>
+                    <select class="form-select" id="loaidichvu" name="loaidichvu" required>
                       <option value="">Chọn loại dịch vụ</option>
                     </select>
                   </div>
 
                   <div class="col-md-4">
                     <label class="form-label">Loại xe *</label>
-                    <select class="form-select" id="vehicleType" required>
+                    <select class="form-select" id="loaixe" name="loaixe" required>
                       <option value="">Chọn loại xe</option>
                     </select>
                   </div>
 
                   <div class="col-md-4">
                     <label class="form-label">Hãng xe *</label>
-                    <select class="form-select" id="brandSelect" required>
+                    <select class="form-select" id="hangxe" name="hangxe" required>
                       <option value="">Chọn hãng</option>
                     </select>
                   </div>
 
                   <div class="col-md-4">
                     <label class="form-label">Mẫu xe *</label>
-                    <select class="form-select" id="itemSelect" required>
+                    <select class="form-select" id="mauxe" name="mauxe" required>
                       <option value="">Chọn mẫu xe</option>
                     </select>
                     <div class="mt-2 d-none" id="customItemInputWrapper">
                       <input
                         type="text"
                         class="form-control"
-                        id="customItemInput"
+                        id="mauxekhac"
+                        name="mauxekhac"
                         placeholder="Nhập mẫu xe khác"
                       />
                     </div>
                   </div>
                   <div class="col-md-12">
                     <label class="form-label"
+                      ><i class="fas fa-comment me-2"></i>Mô tả vấn đề</label
+                    >
+                    <textarea
+                      class="form-control"
+                      id="motavande"
+                      name="motavande"
+                      rows="4"
+                      placeholder="Mô tả chi tiết vấn đề của xe bạn..."
+                    ></textarea>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label"
                       ><i class="fas fa-clock me-2"></i>Thời gian mong muốn
                       <span class="text-danger">*</span></label
                     >
-                    <input type="datetime-local" class="form-control" />
+                    <input type="datetime-local" class="form-control" id="thoigianmongmuon" name="thoigianmongmuon" />
                   </div>
                   <div class="col-md-12">
                     <label class="form-label"
@@ -617,7 +634,8 @@
                     >
                     <div class="input-group">
                       <input
-                        id="addressInput"
+                        id="diachi"
+                        name="diachi"
                         type="text"
                         class="form-control"
                         placeholder="Nhập địa chỉ của bạn"
@@ -628,14 +646,16 @@
                       <button
                         class="btn btn-outline-secondary"
                         type="button"
-                        id="locateBtn"
+                        id="nutvitricuatoi"
+                        name="nutvitricuatoi"
                       >
                         <i class="fas fa-location-arrow"></i> Vị trí của tôi
                       </button>
                       <button
                         class="btn btn-outline-info"
                         type="button"
-                        id="toggleMapBtn"
+                        id="nutmobando"
+                        name="nutmobando"
                       >
                         <i class="fas fa-map-marked-alt"></i> Mở bản đồ
                       </button>
@@ -725,28 +745,20 @@
                       </div>
 
                       <div class="d-none">
-                        <input type="text" id="price-contact" readonly />
-                        <input type="text" id="survey-fee" readonly />
-                        <input type="text" id="transport-fee" readonly />
-                        <input type="text" id="total-price" readonly />
+                        <input type="text" id="giadichvu" name="giadichvu" readonly />
+                        <input type="text" id="phikhaosat" name="phikhaosat" readonly />
+                        <input type="text" id="phidichuyen" name="phidichuyen" readonly />
+                        <input type="text" id="tongchiphi" name="tongchiphi" readonly />
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-12">
-                    <label class="form-label"
-                      ><i class="fas fa-comment me-2"></i>Mô tả vấn đề</label
-                    >
-                    <textarea
-                      class="form-control"
-                      rows="4"
-                      placeholder="Mô tả chi tiết vấn đề của xe bạn..."
-                    ></textarea>
-                  </div>
+
                   <div class="col-md-12">
                     <label>Hình ảnh và video</label>
                     <input
                       type="file"
-                      id="imageUploadInput"
+                      id="tailenhinhanh"
+                      name="tailenhinhanh"
                       accept="image/*"
                       capture="environment"
                       multiple
@@ -754,7 +766,8 @@
                     />
                     <input
                       type="file"
-                      id="videoUploadInput"
+                      id="tailenvideo"
+                      name="tailenvideo"
                       accept="video/*"
                       capture="environment"
                       multiple
@@ -764,14 +777,16 @@
                       <button
                         type="button"
                         class="btn btn-outline-primary"
-                        id="capturePhotoBtn"
+                        id="nutchupanh"
+                        name="nutchupanh"
                       >
                         <i class="fas fa-camera"></i> Chụp ảnh
                       </button>
                       <button
                         type="button"
                         class="btn btn-outline-danger"
-                        id="recordVideoBtn"
+                        id="nutquayvideo"
+                        name="nutquayvideo"
                       >
                         <i class="fas fa-video"></i> Quay video
                       </button>
@@ -805,6 +820,8 @@
                   <button
                     type="submit"
                     class="btn btn-primary-custom px-5 py-3"
+                    id="nutguiyeucau"
+                    name="nutguiyeucau"
                   >
                     <i class="fas fa-paper-plane me-2"></i>Gửi yêu cầu
                   </button>
@@ -1082,6 +1099,28 @@
         </div>
       </div>
     </footer>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div
+        id="successToast"
+        class="toast align-items-center text-bg-success border-0"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/asset/js/setting.js"></script>
     <script src="public/asset/js/data.js"></script>

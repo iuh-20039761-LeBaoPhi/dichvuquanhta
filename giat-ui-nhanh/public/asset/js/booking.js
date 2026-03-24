@@ -7,8 +7,8 @@ let bookingModalLoadPromise = null;
 
 function getBookingTimeInput() {
   return (
-    document.getElementById("bookingTime") ||
-    document.querySelector('input[name="booking_time"]')
+    document.getElementById("thoigiandatdichvu") ||
+    document.querySelector('input[name="thoigiandatdichvu"]')
   );
 }
 
@@ -165,7 +165,7 @@ window.BookingModalManager.open = function (serviceId = null) {
     bootstrap.Modal.getOrCreateInstance(bookingModal).show();
 
     if (serviceId != null) {
-      const serviceSelect = document.getElementById("serviceContact");
+      const serviceSelect = document.getElementById("dichvuquantam");
       if (serviceSelect) {
         const normalized = String(serviceId);
         const hasOption = Array.from(serviceSelect.options).some(
@@ -198,7 +198,7 @@ const mapPicker = (() => {
   }
 
   function getAddressInput() {
-    return getFirstElementById(["addressInput", "address"]);
+    return getFirstElementById(["diachi", "address"]);
   }
 
   function uniqueNonEmpty(items) {
@@ -290,7 +290,7 @@ const mapPicker = (() => {
     }
 
     return ensureLeaflet().then(() => {
-      const mapEl = getFirstElementById(["osmMap", "mapPickerEl"]);
+      const mapEl = getFirstElementById(["bando", "mapPickerEl"]);
       if (!mapEl) return;
 
       map = L.map(mapEl).setView(HCM, 13);
@@ -357,8 +357,8 @@ const mapPicker = (() => {
   }
 
   function toggle() {
-    const box = getFirstElementById(["osmMapWrapper", "mapPickerBox"]);
-    const btn = document.getElementById("toggleMapBtn");
+    const box = getFirstElementById(["khungbando", "mapPickerBox"]);
+    const btn = document.getElementById("nutbando");
     if (!box || !btn) return;
 
     const opening = box.style.display === "none" || box.style.display === "";
@@ -395,7 +395,7 @@ const mapPicker = (() => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
 
-        const box = getFirstElementById(["osmMapWrapper", "mapPickerBox"]);
+        const box = getFirstElementById(["khungbando", "mapPickerBox"]);
         if (box && (box.style.display === "none" || box.style.display === "")) {
           toggle();
         }
@@ -482,27 +482,27 @@ function initBookingModal() {
     }
   }
 
-  const serviceSelect = document.getElementById("serviceContact");
-  const transportOptionSelect = document.getElementById("transportOption");
-  const workItemsList = document.getElementById("workItemsList");
-  const chemicalsList = document.getElementById("chemicalsList");
+  const serviceSelect = document.getElementById("dichvuquantam");
+  const transportOptionSelect = document.getElementById("hinhthucnhangiao");
+  const workItemsList = document.getElementById("danhsachcongviec");
+  const chemicalsList = document.getElementById("danhsachhoachat");
   const workItemsGroup = workItemsList?.closest(".form-group");
   const chemicalsGroup = chemicalsList?.closest(".form-group");
   const bookingModalEl = document.getElementById("bookingModal");
 
-  const kgBox = document.getElementById("kgBox");
+  const kgBox = document.getElementById("khoiluongbox");
   const pairBox = document.getElementById("pairBox");
 
-  const kgInput = document.getElementById("kg");
+  const kgInput = document.getElementById("khoiluong");
   const pairInput = document.getElementById("pair");
   const quantityInput = document.getElementById("quantityContact");
-  const bookingForm = document.getElementById("contactForm");
+  const bookingForm = document.getElementById("formdatdichvu");
 
-  const priceInput = document.getElementById("priceContact");
-  const shipInput = document.getElementById("ship");
-  const shippingSurchargeInput = document.getElementById("shippingSurcharge");
-  const totalInput = document.getElementById("total");
-  const addressInput = document.getElementById("addressInput");
+  const priceInput = document.getElementById("giadichvu");
+  const shipInput = document.getElementById("tiendichuyen");
+  const shippingSurchargeInput = document.getElementById("phuphigiaonhan");
+  const totalInput = document.getElementById("tongtien");
+  const addressInput = document.getElementById("diachi");
 
   // ❗ nếu chưa load xong modal thì thoát
   if (!serviceSelect) return;
@@ -736,7 +736,7 @@ function initBookingModal() {
     let html = "";
     items.forEach((item, index) => {
       const value = String(item);
-      const inputId = `${name}_${index}`;
+      const inputId = `${name}${index}`;
       html += `
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="${inputId}" name="${name}" value="${value}" checked>
@@ -855,8 +855,8 @@ function initBookingModal() {
     if (!serviceId) {
       transportOptionSelect.innerHTML =
         '<option value="">Chọn hình thức nhận / giao</option>';
-      renderCheckboxList(workItemsList, [], "work_items");
-      renderCheckboxList(chemicalsList, [], "support_chemicals");
+      renderCheckboxList(workItemsList, [], "congviec");
+      renderCheckboxList(chemicalsList, [], "hoachathotro");
       toggleServiceOptionGroups(false);
 
       kgInput.value = "";
@@ -903,11 +903,11 @@ function initBookingModal() {
 
     const servicePrice = Number(service.price || 0);
     priceInput.value = servicePrice.toLocaleString("vi-VN");
-    renderCheckboxList(workItemsList, service.work_items || [], "work_items");
+    renderCheckboxList(workItemsList, service.work_items || [], "congviec");
     renderCheckboxList(
       chemicalsList,
       service.support_chemicals || [],
-      "support_chemicals",
+      "hoachathotro",
     );
     toggleServiceOptionGroups(true);
 
@@ -973,7 +973,7 @@ function initBookingModal() {
     const totalWeight =
       Number.isFinite(quantity) && quantity > 0 ? quantity : 0;
     const selectedWorkItemCount = bookingForm
-      ? bookingForm.querySelectorAll('input[name="work_items"]:checked').length
+      ? bookingForm.querySelectorAll('input[name="congviec"]:checked').length
       : 0;
     const workItemMultiplier =
       selectedWorkItemCount > 0 ? selectedWorkItemCount : 1;
@@ -1023,7 +1023,7 @@ function initBookingModal() {
   if (workItemsList && !workItemsList.dataset.priceSyncBound) {
     workItemsList.dataset.priceSyncBound = "true";
     workItemsList.addEventListener("change", function (event) {
-      if (event.target && event.target.name === "work_items") {
+      if (event.target && event.target.name === "congviec") {
         calculate();
       }
     });
@@ -1053,15 +1053,15 @@ function initBookingModal() {
 }
 
 function initMediaUpload() {
-  const form = document.getElementById("contactForm");
-  const imageBtn = document.getElementById("capturePhotoBtn");
-  const videoBtn = document.getElementById("recordVideoBtn");
-  const imageInput = document.getElementById("imageUploadInput");
-  const videoInput = document.getElementById("videoUploadInput");
-  const imageList = document.getElementById("imagePreviewList");
-  const videoList = document.getElementById("videoPreviewList");
-  const imageEmpty = document.getElementById("imageEmptyState");
-  const videoEmpty = document.getElementById("videoEmptyState");
+  const form = document.getElementById("formdatdichvu");
+  const imageBtn = document.getElementById("nutchupanh");
+  const videoBtn = document.getElementById("nutquayvideo");
+  const imageInput = document.getElementById("tailenhinhanh");
+  const videoInput = document.getElementById("tailenvideo");
+  const imageList = document.getElementById("danhsachxemtruochinhanh");
+  const videoList = document.getElementById("danhsachxemtruocvideo");
+  const imageEmpty = document.getElementById("trangthaitronghinhanh");
+  const videoEmpty = document.getElementById("trangthaitrongvideo");
 
   if (
     !form ||
@@ -1201,8 +1201,8 @@ function initBookingConfirmFlow() {
   const form = document.querySelector(".contactForm");
   const bookingModalEl = document.getElementById("bookingModal");
   const confirmModalEl = document.getElementById("bookingConfirmModal");
-  const imageInput = document.getElementById("imageUploadInput");
-  const videoInput = document.getElementById("videoUploadInput");
+  const imageInput = document.getElementById("tailenhinhanh");
+  const videoInput = document.getElementById("tailenvideo");
   const confirmImages = document.getElementById("confirmImages");
   const confirmVideos = document.getElementById("confirmVideos");
   const confirmMediaUrls = [];
@@ -1411,11 +1411,11 @@ function initBookingConfirmFlow() {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    const serviceSelect = document.getElementById("serviceContact");
-    const transportOptionSelect = document.getElementById("transportOption");
-    const kgInput = document.getElementById("kg");
+    const serviceSelect = document.getElementById("dichvuquantam");
+    const transportOptionSelect = document.getElementById("hinhthucnhangiao");
+    const kgInput = document.getElementById("khoiluong");
     const pairInput = document.getElementById("pair");
-    const kgBox = document.getElementById("kgBox");
+    const kgBox = document.getElementById("khoiluongbox");
     const pairBox = document.getElementById("pairBox");
 
     const serviceText =
@@ -1428,10 +1428,10 @@ function initBookingConfirmFlow() {
       pairBox && getComputedStyle(pairBox).display !== "none";
 
     const selectedWorkItems = Array.from(
-      form.querySelectorAll('input[name="work_items"]:checked'),
+      form.querySelectorAll('input[name="congviec"]:checked'),
     ).map((el) => el.value);
     const selectedChemicals = Array.from(
-      form.querySelectorAll('input[name="support_chemicals"]:checked'),
+      form.querySelectorAll('input[name="hoachathotro"]:checked'),
     ).map((el) => el.value);
 
     if (!currentOrderCode) {
@@ -1451,20 +1451,27 @@ function initBookingConfirmFlow() {
         ? transportOptionText
         : "";
     data.quantity = quantity;
-    data.price = document.getElementById("priceContact")?.value || "";
-    data.ship = document.getElementById("ship")?.value || "";
-    const shippingSurchargeEl = document.getElementById("shippingSurcharge");
+    data.price = document.getElementById("giadichvu")?.value || "";
+    data.ship = document.getElementById("tiendichuyen")?.value || "";
+    const shippingSurchargeEl = document.getElementById("phuphigiaonhan");
     const rawShippingSurcharge = parseIntegerLike(
       shippingSurchargeEl?.dataset.rawValue ||
         shippingSurchargeEl?.value ||
         "0",
     );
     data.shipping_surcharge = rawShippingSurcharge.toLocaleString("vi-VN");
-    data.total = document.getElementById("total")?.value || "";
+    data.total = document.getElementById("tongtien")?.value || "";
     data.work_items = selectedWorkItems.join(", ");
     data.support_chemicals = selectedChemicals.join(", ");
 
-    const rawBookingTime = String(data.booking_time || "").trim();
+    data.name = data.hoten || "";
+    data.phone = data.sodienthoai || "";
+    data.address = data.diachi || "";
+    data.message = data.ghichu || "";
+    data.service = data.dichvu || "";
+    data.transport_option = data.hinhthucnhangiao || "";
+
+    const rawBookingTime = String(data.thoigiandatdichvu || "").trim();
     const bookingTimeDisplay = rawBookingTime
       ? new Date(rawBookingTime).toLocaleString("vi-VN")
       : "";
@@ -1534,6 +1541,26 @@ function initBookingConfirmFlow() {
     showBookingStep();
   }
 
+  function showBookingSuccessFeedback() {
+    const toastEl = document.getElementById("successToast");
+    if (
+      !toastEl ||
+      !window.bootstrap ||
+      typeof bootstrap.Toast !== "function"
+    ) {
+      alert("Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.");
+      return;
+    }
+
+    const toastBody = toastEl.querySelector(".toast-body");
+    if (toastBody) {
+      toastBody.textContent =
+        "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.";
+    }
+
+    bootstrap.Toast.getOrCreateInstance(toastEl).show();
+  }
+
   function handleConfirmSubmit() {
     const { data } = collectBookingData();
     const originalText = confirmBtn.textContent;
@@ -1571,9 +1598,7 @@ function initBookingConfirmFlow() {
         bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
         hideBookingStep();
 
-        alert(
-          "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
-        );
+        showBookingSuccessFeedback();
 
         form.reset();
         clearConfirmMedia();
@@ -1625,8 +1650,8 @@ function initBookingConfirmFlow() {
 }
 
 function mapPickerInit() {
-  const locateBtn = document.getElementById("locateBtn");
-  const toggleMapBtn = document.getElementById("toggleMapBtn");
+  const locateBtn = document.getElementById("nutvitrihientai");
+  const toggleMapBtn = document.getElementById("nutbando");
   const bookingModal = document.getElementById("bookingModal");
 
   if (locateBtn && !locateBtn.dataset.loaded) {

@@ -6,327 +6,275 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 
 <style>
-/* Thêm Reset margin cho body để mất khoảng trắng */
-body {
-    margin: 0;
-    padding: 0;
+/* Reset cơ bản */
+body { margin: 0; padding: 0; }
+
+/* =========================================
+   FOOTER CHÍNH (LUXURY EMERALD LAYOUT)
+   ========================================= */
+.keri-footer {
+    background: #094a3a;
+    background: linear-gradient(135deg, #094a3a 0%, #116954 100%);
+    color: #e2d8c3;
+    padding: 80px 20px 30px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    position: relative;
+    overflow: hidden;
 }
 
-.keri-footer{
-background:linear-gradient(135deg,#6fbf95,#5aa882);
-color:#0b5d3b;
-padding:64px 26px 26px;
-font-weight:600;
-font-family:'Be Vietnam Pro', sans-serif;
+.keri-footer::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('https://www.transparenttextures.com/patterns/leaf.png');
+    opacity: 0.05;
+    pointer-events: none;
 }
 
-.keri-footer-container{
-max-width:1000px;
-margin:auto;
-display:grid;
-grid-template-columns:2fr 1fr 1fr;
-gap:40px;
+.keri-footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 60px;
+    position: relative;
+    z-index: 2;
 }
 
-.keri-footer-logo{
-font-size:30px;
-color:#0b3d2e;
-margin-bottom:14px;
-font-weight:800;
-white-space:nowrap;
-font-family:'Playfair Display', serif;
-letter-spacing:0.5px;
-transition:0.3s ease;
+.keri-footer-logo {
+    font-size: 32px;
+    color: #ffffff;
+    margin-bottom: 20px;
+    font-weight: 800;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 1px;
+    display: inline-block;
 }
 
-.keri-footer-logo:hover{
-transform:translateY(-2px);
-opacity:0.9;
+.keri-footer-desc {
+    max-width: 360px;
+    line-height: 1.8;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 25px;
+    font-weight: 400;
+    text-align: justify;
 }
 
-.keri-footer-desc{
-max-width:340px;
-line-height:1.75;
-font-size:14px;
-color:#000;
-margin-bottom:18px;
-text-align:justify;
-word-spacing:1px;
-}
-
-.keri-company-info{
-margin-top:10px;
-line-height:1.5;
-font-size:14px;
-color:#000;
-font-weight:600;
-max-width:340px;
-display:flex;
-flex-direction:column;
-gap:12px;
-}
-
-.keri-company-info p{margin:0;}
-
-.keri-company-info i{
-margin-right:8px;
-color:#0b5d3b;
-}
-
-.keri-footer-col{
-position:relative;
-padding-right:20px;
-}
-
-.keri-footer-col:not(:last-child)::after{
-content:"";
-position:absolute;
-right:0;
-top:10px;
-width:1px;
-height:80%;
-background:rgba(0,0,0,0.1);
-}
-
-.keri-footer-col h3{
-margin-bottom:14px;
-font-size:20px;
-color:#083c2a;
-font-weight:800;
-white-space:nowrap;
-font-family:'Playfair Display', serif;
-letter-spacing:0.4px;
-transition:0.3s ease;
-}
-
-.keri-footer-col h3:hover{
-color:#1f6f43;
-transform:translateY(-2px);
-}
-
-.keri-footer-links{
-list-style:none;
-padding:0;
-}
-
-.keri-footer-links li{margin-bottom:12px;}
-
-.keri-footer-links a{
-color:#0b5d3b;
-text-decoration:none;
-font-size:14px;
-}
-
-.keri-social-text{
-font-size:14px;
-line-height:1.75;
-margin-bottom:18px;
-max-width:260px;
-text-align:justify;
-word-spacing:1px;
-}
-
-.keri-social-icons{
-display:flex;
-gap:12px;
-}
-
-.keri-social-icons a{
-width:38px;
-height:38px;
-background:white;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-color:#1f6f43;
-font-size:16px;
-box-shadow:0 3px 8px rgba(0,0,0,0.15);
-}
-
-.keri-footer-bottom{
-border-top:1px solid rgba(255,255,255,0.2);
-margin-top:42px;
-padding-top:12px;
-text-align:center;
-font-size:14px;
-}
-
-/* Fix lỗi p đẩy lề dưới */
-.keri-footer-bottom p {
-margin: 0;
-}
-
-.keri-app-download{margin-top:12px;}
-
-.keri-app-title{
-font-size:14px;
-font-weight:700;
-margin-bottom:6px;
-}
-
-.keri-app-buttons{
-display:flex;
-gap:8px;
-}
-
-.keri-app-btn{
-display:flex;
-align-items:center;
-gap:6px;
-padding:8px 12px;
-background:white;
-border-radius:8px;
-font-size:14px;
-text-decoration:none;
-color:#0b5d3b;
-box-shadow:0 3px 8px rgba(0,0,0,0.12);
-}
-
-/* Chỉnh cụm liên hệ nằm bên phải màn hình */
-.keri-floating-contact {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
+.keri-company-info {
     display: flex;
     flex-direction: column;
+    gap: 15px;
+}
+
+.keri-company-info strong {
+    color: #d4a373;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+}
+
+.keri-company-info p {
+    margin: 0;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
     gap: 12px;
-    z-index: 999;
+    color: rgba(255, 255, 255, 0.7);
+    transition: 0.3s;
 }
 
-@media(max-width:768px){
-.keri-floating-contact{
-right:12px;
-bottom:20px;
+.keri-company-info p i {
+    color: #d4a373;
+    margin-top: 4px;
+    width: 16px;
 }
 
-.keri-zalo-btn img,
-.keri-phone-btn{
-width:48px;
-height:48px;
-}
-}
-
-.keri-zalo-btn img{
-width:55px;
-height:55px;
-border-radius:50%;
-display: block;
+.keri-footer-col h3 {
+    margin-bottom: 25px;
+    font-size: 22px;
+    color: #ffffff;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    position: relative;
+    padding-bottom: 10px;
 }
 
-.keri-phone-btn{
-width:55px;
-height:55px;
-background:#1f6f43;
-display:flex;
-align-items:center;
-justify-content:center;
-border-radius:50%;
-color:white;
-font-size:20px;
-text-decoration:none;
-box-shadow:0 3px 8px rgba(0,0,0,0.15);
+.keri-footer-col h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 40px; height: 2px;
+    background: #d4a373;
 }
 
-@media(max-width:900px){
-.keri-footer-col::after{display:none;}
-.keri-footer-container{grid-template-columns:1fr;text-align:center;}
-.keri-footer-logo{white-space:normal;}
-.keri-company-info{align-items:center;}
-.keri-social-icons{justify-content:center;}
-.keri-app-buttons{justify-content:center;}
+.keri-footer-links { list-style: none; padding: 0; }
+.keri-footer-links li { margin-bottom: 12px; }
+.keri-footer-links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+.keri-footer-links a:hover { color: #d4a373; transform: translateX(8px); }
+
+.keri-social-icons { display: flex; gap: 15px; }
+.keri-social-icons a {
+    width: 42px; height: 42px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.keri-social-icons a:hover {
+    background: #d4a373; color: #094a3a;
+    transform: translateY(-5px) rotate(8deg);
 }
 
-@media(max-width:600px){
-.keri-footer-desc,
-.keri-social-text{
-text-align:center;
+.keri-app-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.keri-app-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px; background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px; font-size: 13px;
+    text-decoration: none; color: #fff; transition: 0.3s;
 }
+.keri-app-btn:hover { background: #fff; color: #094a3a; }
+
+.keri-footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 60px;
+    padding: 25px 0 0; /* Đã sửa để tránh khoảng trắng phía dưới */
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
 }
 
-@media(max-width:600px){
-.keri-footer-desc,
-.keri-social-text{
-text-align:left;
+/* =========================================
+   FIX LỖI CỘT 3 & FLOATING CONTACT
+   ========================================= */
+.keri-quote-box {
+    margin-top: 35px; 
+    background: rgba(255,255,255,0.05); 
+    padding: 20px; 
+    border-radius: 15px; 
+    border: 1px solid rgba(255,255,255,0.1); /* ĐÃ FIX LỖI TẠI ĐÂY */
 }
+
+.keri-floating-contact {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 9999;
+}
+
+.keri-zalo-btn img, .keri-phone-btn {
+    width: 50px; /* Giảm nhẹ để tinh tế hơn */
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+.keri-phone-btn {
+    background: #d4a373;
+    color: #fff;
+    font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+    animation: keri-pulse 2s infinite;
+}
+
+@keyframes keri-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(212, 163, 115, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(212, 163, 115, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 163, 115, 0); }
+}
+
+@media(max-width: 992px) {
+    .keri-footer-container { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+    .keri-footer-desc { margin: 0 auto 25px; }
+    .keri-company-info { align-items: center; }
+    .keri-footer-col h3::after { left: 50%; transform: translateX(-50%); }
+    .keri-social-icons, .keri-app-buttons { justify-content: center; }
+    .keri-floating-contact { right: 15px; bottom: 15px; }
 }
 </style>
 </head>
 <body>
 
 <footer class="keri-footer">
+    <div class="keri-footer-container">
+        <div class="keri-footer-col">
+            <h2 class="keri-footer-logo">Chăm Sóc Vườn Nhà</h2>
+            <p class="keri-footer-desc">Nâng tầm không gian sống với dịch vụ chăm sóc cảnh quan chuyên nghiệp. Chúng tôi mang tâm huyết kiến tạo những khoảng xanh thẩm mỹ, bền vững cho ngôi nhà của bạn.</p>
 
-<div class="keri-footer-container">
+            <div class="keri-company-info">
+                <strong>CÔNG TY TNHH DỊCH VỤ QUANH TA KERI</strong>
+                <p><i class="fa-solid fa-file-lines"></i> MST: 0315609853</p>
+                <p><i class="fa-solid fa-location-dot"></i> Tòa nhà SBI, Lô 6B, Đường số 3 – CVPM Quang Trung, Quận 12, TP. HCM</p>
+                <p><i class="fa-solid fa-phone"></i> 0901 234 567</p>
+                <p><i class="fa-solid fa-envelope"></i> dichvuquanhta.vn@gmail.com</p>
+            </div>
+        </div>
 
-<div class="keri-footer-col">
-<h2 class="keri-footer-logo">Chăm Sóc Vườn Nhà</h2>
-<p class="keri-footer-desc">Dịch vụ chăm sóc vườn chuyên nghiệp giúp không gian sống xanh sạch, thẩm mỹ và gần gũi với thiên nhiên hơn mỗi ngày.</p>
+        <div class="keri-footer-col">
+            <h3>Các Dịch Vụ Khác</h3>
+            <ul class="keri-footer-links">
+                <li><a href="../cham-soc-me-va-be/index.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Chăm sóc mẹ và bé</a></li>
+                <li><a href="../cham-soc-nguoi-gia/index.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Chăm sóc người già</a></li>
+                <li><a href="../cham-soc-nguoi-benh/index.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Chăm sóc người bệnh</a></li>
+                <li><a href="trangchu.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Chăm sóc vườn nhà</a></li>
+                <li><a href="../giat-ui-nhanh/index.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Giặt ủi cao cấp</a></li>
+                <li><a href="../dich-vu-don-ve-sinh/demo/index.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Lau dọn vệ sinh</a></li>
+                <li><a href="../tho-nha/index.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Thợ nhà và sửa chữa</a></li>
+                <li><a href="../giao-hang-nhanh/index.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Giao hàng nhanh</a></li>
+                <li><a href="../thue-xe/index.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Thuê xe</a></li>
+                <li><a href="../sua-xe-luu-dong/index.html"><i class="fa-solid fa-chevron-right" style="font-size: 10px; margin-right: 8px;"></i> Sửa xe lưu động</a></li>
+            </ul>
+        </div>
 
-<div class="keri-company-info">
-<strong>CÔNG TY TNHH DỊCH VỤ QUANH TA KERI</strong>
-<p><i class="fa-solid fa-file-lines"></i> MST: 0315609853</p>
-<p><i class="fa-solid fa-location-dot"></i>
-Tòa nhà SBI, Lô 6B, Đường số 3 – CVPM Quang Trung, Quận 12, TP. Hồ Chí Minh
-</p>
-<p><i class="fa-solid fa-phone"></i> 0775 472 347</p>
-<p><i class="fa-solid fa-envelope"></i> dichvuquanhta.vn@gmail.com</p>
-</div>
+        <div class="keri-footer-col">
+            <h3>Kết Nối Với KERI</h3>
+            <div class="keri-social-icons">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+            
+            <div class="keri-quote-box">
+                <span style="display:block; font-size: 13px; font-style: italic; opacity: 0.8;">"Không gian xanh cho cuộc sống an lành"</span>
+            </div>
 
-<div class="keri-app-download">
-<div class="keri-app-title">Tải ứng dụng</div>
-<div class="keri-app-buttons">
-<a href="#" class="keri-app-btn"><i class="fa-brands fa-google-play"></i> Google Play</a>
-<a href="#" class="keri-app-btn"><i class="fa-brands fa-apple"></i> App Store</a>
-</div>
-</div>
-</div>
+            <div class="keri-app-download">
+                <div class="keri-app-buttons" style="margin-top:20px;">
+                    <a href="#" class="keri-app-btn"><i class="fa-brands fa-google-play"></i> Google Play</a>
+                    <a href="#" class="keri-app-btn"><i class="fa-brands fa-apple"></i> App Store</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="keri-footer-col">
-<h3>Dịch vụ</h3>
-<ul class="keri-footer-links">
-<li><a href="../cham-soc-me-va-be/index.html">Chăm sóc mẹ và bé</a></li>
-<li><a href="../cham-soc-nguoi-gia/index.html">Chăm sóc người già</a></li>
-<li><a href="../cham-soc-nguoi-benh/index.html">Chăm sóc bệnh nhân</a></li>
-<li><a href="trangchu.html">Chăm sóc vườn nhà, rẫy</a></li>
-<li><a href="../giat-ui-nhanh/index.html">Giặt ủi cao cấp</a></li>
-<li><a href="../dich-vu-don-ve-sinh/demo/index.html">Lau dọn vệ sinh</a></li>
-<li><a href="../tho-nha/index.html">Thợ nhà và sửa chữa</a></li>
-<li><a href="../giao-hang-nhanh/index.html">Giao hàng nhanh</a></li>
-<li><a href="../thue-xe/index.html">Thuê xe</a></li>
-<li><a href="../sua-xe-luu-dong/index.html">Sửa xe lưu động</a></li>
-</ul>
-</div>
-
-<div class="keri-footer-col">
-<h3>Kết Nối Với Chúng Tôi</h3>
-<p class="keri-social-text">Theo dõi chúng tôi ngay hôm nay để không bỏ lỡ những mẹo chăm sóc vườn hiệu quả, hữu ích cùng hàng loạt chương trình ưu đãi hấp dẫn dành riêng cho bạn!</p>
-<div class="keri-social-icons">
-<a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-<a href="#"><i class="fa-brands fa-instagram"></i></a>
-<a href="#"><i class="fa-brands fa-youtube"></i></a>
-<a href="#"><i class="fa-brands fa-tiktok"></i></a>
-</div>
-</div>
-
-</div>
-
-<div class="keri-footer-bottom">
-<p>© 2026 <strong>Chăm Sóc Vườn Nhà</strong> | Công Ty TNHH Dịch Vụ Quanh Ta Keri</p>
-</div>
-
+    <div class="keri-footer-bottom">
+        <p>© 2026 <strong>Chăm Sóc Vườn Nhà</strong> | Hệ sinh thái Keri Group</p>
+    </div>
 </footer>
 
 <div class="keri-floating-contact">
-<a href="https://zalo.me/0775472347" target="_blank" class="keri-zalo-btn">
-<img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg">
-</a>
-<a href="tel:0775472347" class="keri-phone-btn">
-<i class="fa-solid fa-phone"></i>
-</a>
+    <a href="https://zalo.me/0775472347" target="_blank" class="keri-zalo-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo">
+    </a>
+    <a href="tel:0901234567" class="keri-phone-btn">
+        <i class="fa-solid fa-phone"></i>
+    </a>
 </div>
 
 </body>

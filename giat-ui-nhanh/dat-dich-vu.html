@@ -175,16 +175,16 @@
         outline: none;
       }
 
-      #bookingModal #priceContact,
-      #bookingModal #ship,
-      #bookingModal #total,
-      #bookingModal #shippingSurcharge {
+      #bookingModal #giadichvu,
+      #bookingModal #tiendichuyen,
+      #bookingModal #tongtien,
+      #bookingModal #phuphigiaonhan {
         font-weight: 700;
         color: #0f172a;
         background: #f1f5f9;
       }
 
-      #bookingModal #total {
+      #bookingModal #tongtien {
         color: #0f766e;
       }
 
@@ -492,7 +492,7 @@
         >
           <div class="modal-dialog modal-lg  modal-fullscreen-md-down">
             <div class="modal-content">
-              <form id="contactForm" class="contactForm">
+              <form id="formdatdichvu" class="contactForm">
                 <!-- Modal Header -->
                 <div class="modal-header">
                   <div class="booking-header-brand">
@@ -513,40 +513,40 @@
                 <!-- Modal body -->
                 <div class="modal-body">
                   <div class="form-group">
-                    <label for="nameCustomer">Họ và tên *</label>
-                    <input type="text" id="nameCustomer" name="name" required />
+                    <label for="hotenkhachhang">Họ và tên *</label>
+                    <input type="text" id="hotenkhachhang" name="hoten" required />
                   </div>
 
                   <div class="form-group">
-                    <label for="phoneCustomer">Số điện thoại *</label>
+                    <label for="sodienthoaikhachhang">Số điện thoại *</label>
                     <input
                       type="number"
-                      id="phoneCustomer"
-                      name="phone"
+                      id="sodienthoaikhachhang"
+                      name="sodienthoai"
                       required
                     />
                   </div>
 
                   <div class="form-group">
-                    <label for="addressInput">Địa chỉ</label>
+                    <label for="diachi">Địa chỉ</label>
                     <div class="input-group">
                       <input
                         type="text"
-                        id="addressInput"
-                        name="address"
+                        id="diachi"
+                        name="diachi"
                         placeholder="Nhập địa chỉ của bạn"
                       />
                     </div>
                   </div>
                   <div class="form-group">
                     <div class="d-flex gap-2 flex-wrap">
-                      <button class="btn btn-info" type="button" id="locateBtn">
+                      <button class="btn btn-info" type="button" id="nutvitrihientai">
                         <i class="fas fa-location-arrow"></i> Vị trí hiện tại
                       </button>
                       <button
                         class="btn btn-outline-info"
                         type="button"
-                        id="toggleMapBtn"
+                        id="nutbando"
                       >
                         <i class="fas fa-map-marked-alt"></i> Mở bản đồ
                       </button>
@@ -555,12 +555,12 @@
 
                   <div
                     class="form-group map-wrapper"
-                    id="osmMapWrapper"
+                    id="khungbando"
                     style="display: none"
                   >
                     <label>Chọn vị trí trên bản đồ</label>
                     <div
-                      id="osmMap"
+                      id="bando"
                       style="height: 320px; border-radius: 12px"
                     ></div>
                   </div>
@@ -568,11 +568,11 @@
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label for="serviceContact">Dịch vụ quan tâm</label>
+                        <label for="dichvuquantam">Dịch vụ quan tâm</label>
                         <select
-                          id="serviceContact"
+                          id="dichvuquantam"
                           class="service-contact"
-                          name="service"
+                          name="dichvu"
                         >
                           <option value="">Chọn dịch vụ</option>
                         </select>
@@ -582,7 +582,7 @@
                     <div class="col-sm-6">
                       <div class="form-group">
                         <label>Hình thức nhận / giao</label>
-                        <select id="transportOption" name="transport_option">
+                        <select id="hinhthucnhangiao" name="hinhthucnhangiao">
                           <option value="">Chọn hình thức nhận / giao</option>
                         </select>
                       </div>
@@ -594,7 +594,7 @@
                       <div class="form-group">
                         <label>Công việc thực hiện</label>
                         <div
-                          id="workItemsList"
+                          id="danhsachcongviec"
                           class="d-flex flex-column gap-2"
                         >
                           <span class="text-muted small"
@@ -607,7 +607,7 @@
                       <div class="form-group">
                         <label>Hóa chất hỗ trợ</label>
                         <div
-                          id="chemicalsList"
+                          id="danhsachhoachat"
                           class="d-flex flex-column gap-2"
                         >
                           <span class="text-muted small"
@@ -622,14 +622,14 @@
                     <div class="col-md-6">
                       <div class="form-group">
                         <label>Giá dịch vụ</label>
-                        <input type="text" id="priceContact" readonly />
+                        <input type="text" id="giadichvu" readonly />
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <div id="kgBox">
+                        <div id="khoiluongbox">
                           <label>Trọng lượng (kg)</label>
-                          <input type="number" id="kg" min="1" />
+                          <input type="number" id="khoiluong" min="1" />
                         </div>
 
                       </div>
@@ -637,35 +637,35 @@
                   </div>
 
                   <div class="form-group">
-                    <label for="message">Ghi chú</label>
+                    <label for="ghichu">Ghi chú</label>
                     <textarea
-                      id="message"
-                      name="message"
+                      id="ghichu"
+                      name="ghichu"
                       placeholder="Nội dung yêu cầu..."
                     ></textarea>
                   </div>
 
                   <div class="form-group">
-                    <label for="bookingTime">Thời gian đặt dịch vụ *</label>
+                    <label for="thoigiandatdichvu">Thời gian đặt dịch vụ *</label>
                     <input
                       type="datetime-local"
-                      id="bookingTime"
-                      name="booking_time"
+                      id="thoigiandatdichvu"
+                      name="thoigiandatdichvu"
                       required
                     />
                   </div>
 
                   <div class="form-group">
                     <label>Tiền di chuyển</label>
-                    <input type="text" id="ship" readonly />
+                    <input type="text" id="tiendichuyen" readonly />
                   </div>
 
                   <div class="form-group">
                     <label>Phụ phí giao, nhận hàng (tạm tính)</label>
                     <input
                       type="number"
-                      id="shippingSurcharge"
-                      name="shipping_surcharge"
+                      id="phuphigiaonhan"
+                      name="phuphigiaonhan"
                       min="0"
                       step="1000"
                       value="0"
@@ -675,14 +675,14 @@
 
                   <div class="form-group">
                     <label>Tổng tiền</label>
-                    <input type="text" id="total" readonly />
+                    <input type="text" id="tongtien" readonly />
                   </div>
 
                   <div class="form-group">
                     <label>Hình ảnh và video</label>
                     <input
                       type="file"
-                      id="imageUploadInput"
+                      id="tailenhinhanh"
                       accept="image/*"
                       capture="environment"
                       multiple
@@ -690,7 +690,7 @@
                     />
                     <input
                       type="file"
-                      id="videoUploadInput"
+                      id="tailenvideo"
                       accept="video/*"
                       capture="environment"
                       multiple
@@ -700,14 +700,14 @@
                       <button
                         type="button"
                         class="btn btn-outline-primary"
-                        id="capturePhotoBtn"
+                        id="nutchupanh"
                       >
                         <i class="fas fa-camera"></i> Chụp ảnh
                       </button>
                       <button
                         type="button"
                         class="btn btn-outline-danger"
-                        id="recordVideoBtn"
+                        id="nutquayvideo"
                       >
                         <i class="fas fa-video"></i> Quay video
                       </button>
@@ -716,19 +716,19 @@
                   <div class="form-group">
                     <div class="media-grid">
                       <div class="media-card">
-                        <div class="media-empty" id="imageEmptyState">
+                        <div class="media-empty" id="trangthaitronghinhanh">
                           <i class="fas fa-camera"></i>
                           <div class="media-subtitle">Chưa có ảnh nào được chọn.</div>
                         </div>
-                        <div id="imagePreviewList" class="media-list"></div>
+                        <div id="danhsachxemtruochinhanh" class="media-list"></div>
                       </div>
 
                       <div class="media-card">
-                        <div class="media-empty" id="videoEmptyState">
+                        <div class="media-empty" id="trangthaitrongvideo">
                           <i class="fas fa-video"></i>
                           <div class="media-subtitle">Chưa có video nào được chọn.</div>
                         </div>
-                        <div id="videoPreviewList" class="media-list"></div>
+                        <div id="danhsachxemtruocvideo" class="media-list"></div>
                       </div>
                     </div>
                   </div>
@@ -1082,25 +1082,6 @@
           <div class="toast-body">
             Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.
           </div>
-          <button
-            type="button"
-            class="btn-close btn-close-white me-2 m-auto"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-      </div>
-    </div>
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-      <div
-        id="successCancelOrderToast"
-        class="toast align-items-center text-bg-success border-0"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-      >
-        <div class="d-flex">
-          <div class="toast-body">Hủy đơn hàng thành công!</div>
           <button
             type="button"
             class="btn-close btn-close-white me-2 m-auto"
