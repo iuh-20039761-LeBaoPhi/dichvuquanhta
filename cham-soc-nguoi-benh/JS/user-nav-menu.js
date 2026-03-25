@@ -70,6 +70,8 @@
     return document.getElementById(id);
   }
 
+  var hasSyncedSession = false;
+
   function setLoggedOut() {
     var loginNavItem = getEl('loginNavItem');
     var userMenuContainer = getEl('userMenuContainer');
@@ -119,7 +121,10 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
+  function initNavState() {
+    var hasNavTargets = !!(getEl('loginNavItem') || getEl('userMenuContainer'));
+    if (!hasNavTargets) return;
+
     var cachedUser = null;
     try {
       cachedUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -133,7 +138,27 @@
       setLoggedOut();
     }
 
-    syncFromSession();
+    if (!hasSyncedSession) {
+      hasSyncedSession = true;
+      syncFromSession();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initNavState();
+  });
+
+  // Mark normal in-site link navigation so close-tab logout does not run.
+  document.addEventListener('click', function (event) {
+    markInSiteNavigation(event.target);
+  }, true);
+
+  // Auto logout when the user closes/leaves the page.
+  window.addEventListener('beforeunload', autoLogoutOnClose);
+  window.addEventListener('pagehide', autoLogoutOnClose);
+
+  document.addEventListener('siteLayout:ready', function () {
+    initNavState();
   });
 
   window.addEventListener('auth:login-success', function (event) {

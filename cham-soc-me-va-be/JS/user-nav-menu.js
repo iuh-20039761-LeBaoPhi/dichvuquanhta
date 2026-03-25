@@ -148,6 +148,15 @@
     initNavState();
   });
 
+  // Mark normal in-site link navigation so close-tab logout does not run.
+  document.addEventListener('click', function (event) {
+    markInSiteNavigation(event.target);
+  }, true);
+
+  // Auto logout when the user closes/leaves the page.
+  window.addEventListener('beforeunload', autoLogoutOnClose);
+  window.addEventListener('pagehide', autoLogoutOnClose);
+
   document.addEventListener('siteLayout:ready', function () {
     initNavState();
   });
