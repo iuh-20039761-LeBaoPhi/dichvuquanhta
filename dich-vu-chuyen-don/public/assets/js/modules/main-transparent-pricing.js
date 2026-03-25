@@ -5,87 +5,22 @@
   const core = window.FastGoCore || {};
   if (!core.toPublicUrl || !core.escapeHtml) return;
 
-  const serviceMeta = {
-    chuyen_nha: {
-      mo_ta_ngan:
-        "Căn hộ, nhà phố, phòng trọ hoặc chung cư cần chuyển đồ sinh hoạt và nội thất gia đình.",
-      phu_hop_khi:
-        "Phù hợp khi bạn cần xe, nhân công, đóng gói, tháo lắp và sắp xếp lại tại nhà mới.",
-      phan_co_ban: ["Xe vận chuyển", "Quãng đường phát sinh"],
-      phan_phat_sinh: [
-        "Nhân công",
-        "Đóng gói",
-        "Tháo lắp",
-        "Mặt bằng khó",
-        "Khung giờ tối/đêm",
-        "Thời tiết",
-      ],
-      luc_nen_khao_sat:
-        "Nên khảo sát trước nếu có nhiều tầng, hẻm nhỏ, đồ dễ vỡ, đồ giá trị cao hoặc cần tháo lắp kỹ thuật.",
-      trang_dich_vu: "public/trang/dich-vu/chuyen-nha.html",
-    },
-    chuyen_van_phong: {
-      mo_ta_ngan:
-        "Văn phòng công ty cần di dời hồ sơ, bàn ghế, máy tính, server và thiết bị vận hành.",
-      phu_hop_khi:
-        "Phù hợp khi bạn cần di dời có kế hoạch, kiểm soát tài liệu và giữ nhịp vận hành ổn định.",
-      phan_co_ban: ["Xe vận chuyển", "Quãng đường phát sinh"],
-      phan_phat_sinh: [
-        "Đóng gói hồ sơ",
-        "Thiết bị IT",
-        "Tháo lắp nội thất",
-        "Thiết bị nặng",
-        "Mặt bằng tòa nhà",
-        "Ngoài giờ/cuối tuần",
-      ],
-      luc_nen_khao_sat:
-        "Nên khảo sát trước nếu có server, tài liệu bảo mật, tòa nhà giới hạn giờ ra vào hoặc cần làm ngoài giờ.",
-      trang_dich_vu: "public/trang/dich-vu/chuyen-van-phong.html",
-    },
-    chuyen_kho_bai: {
-      mo_ta_ngan:
-        "Kho hàng, nhà xưởng hoặc mô hình logistics cần xe tải, xe nâng, xe cẩu và kiểm kê chặt chẽ.",
-      phu_hop_khi:
-        "Phù hợp khi bạn cần di dời pallet, kiện hàng nặng, máy móc và gia cố hàng hóa trước khi chuyển.",
-      phan_co_ban: ["Xe vận chuyển", "Quãng đường phát sinh"],
-      phan_phat_sinh: [
-        "Pallet",
-        "Xe nâng/xe cẩu",
-        "Bốc xếp nặng",
-        "Gia cố hàng",
-        "Đường cấm tải",
-        "Kiểm kê",
-      ],
-      luc_nen_khao_sat:
-        "Nên khảo sát trước nếu có máy móc lớn, nhiều pallet, đường cấm tải hoặc cần xe nâng, xe cẩu tại hiện trường.",
-      trang_dich_vu: "public/trang/dich-vu/chuyen-kho-bai.html",
-    },
-  };
-
-  const commonFactors = [
+  const commonFormulaGroups = [
     {
-      ten: "Quãng đường di chuyển",
-      mo_ta: "Khoảng cách từ điểm đi đến điểm đến là nền tảng để tính xe cơ bản và phần km phát sinh.",
+      ten: "Chi phí cơ bản",
+      mo_ta: "Gồm loại xe phù hợp, quãng đường cơ bản và phí km vượt ngưỡng nếu hành trình dài hơn mức miễn phí.",
     },
     {
-      ten: "Loại xe phù hợp",
-      mo_ta: "Mỗi quy mô nhu cầu sẽ cần loại xe khác nhau. Xe càng lớn thì giá mở đầu càng khác.",
+      ten: "Chi phí dịch vụ",
+      mo_ta: "Là các hạng mục bạn chọn thêm như nhân công, đóng gói, tháo lắp, bảo vệ IT, xe nâng hoặc xe cẩu.",
     },
     {
-      ten: "Nhân công và hạng mục hỗ trợ",
-      mo_ta: "Đóng gói, tháo lắp, bốc xếp, xe nâng hoặc xe cẩu đều làm thay đổi chi phí tham khảo.",
+      ten: "Phụ phí cố định",
+      mo_ta: "Áp dụng khi có đồ cồng kềnh, dễ vỡ, vượt ngưỡng thể tích hoặc vượt ngưỡng trọng lượng của đơn hàng.",
     },
     {
-      ten: "Điều kiện mặt bằng",
-      mo_ta: "Hẻm nhỏ, cầu thang hẹp, xe đỗ xa, đường cấm tải hoặc cần trung chuyển đều có thể phát sinh thêm.",
-    },
-    {
-      ten: "Khung giờ thực hiện",
-      mo_ta: "Buổi tối, ban đêm hoặc cuối tuần thường khác với khung giờ tiêu chuẩn ban ngày.",
-    },
-    {
-      ten: "Thời tiết và tình trạng thực tế",
-      mo_ta: "Mưa, mặt bằng trơn trượt hoặc điều kiện bốc xếp khó có thể làm chi phí thay đổi so với mức tham khảo.",
+      ten: "Điều chỉnh thời điểm",
+      mo_ta: "Khung giờ và thời tiết hiện đang được tham chiếu theo phụ phí phát sinh; chưa áp dụng hệ số nhân chính thức.",
     },
   ];
 
@@ -98,51 +33,53 @@
   }
 
   function formatCurrency(amount) {
-    const value = Number(amount || 0);
-    if (!Number.isFinite(value)) return "";
-    return `${value.toLocaleString("vi-VN")}đ`;
+    return core.formatCurrencyVnd(amount);
   }
 
   function loadTransparentPricingData() {
     return fetch(core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json"))
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`Cannot load transparent pricing data: ${response.status}`);
+          throw new Error(`Cannot load pricing reference data: ${response.status}`);
         }
         return response.json();
       })
       .catch((error) => {
-        console.error("Cannot load transparent pricing data:", error);
+        console.error("Cannot load pricing reference data:", error);
         return [];
       });
   }
 
-  function getServiceMeta(slug) {
-    return serviceMeta[String(slug || "").trim()] || {};
+  function getTransparentInfo(item) {
+    return item && item.thong_tin_minh_bach ? item.thong_tin_minh_bach : {};
   }
 
-  function collectSurchargeTexts(groups) {
-    const items = [];
+  function getStartingPrice(item) {
+    const value = core.getPricingStartingPrice(item);
+    return value > 0 ? `Từ ${formatCurrency(value)}/chuyến` : "";
+  }
 
-    if (groups?.khung_gio?.buoi_toi) {
-      items.push("Buổi tối");
-    }
-    if (groups?.khung_gio?.ban_dem) {
-      items.push("Ban đêm");
-    }
-    if (groups?.thoi_tiet?.troi_mua) {
-      items.push("Trời mưa");
-    }
+  function collectSurchargeItems(serviceData) {
+    return [
+      ...core.getPricingFixedFeeEntries(serviceData).map((item) => ({
+        label: item.title,
+        amount: item.value,
+      })),
+      ...core.getPricingMultiplierEntries(serviceData).map((item) => ({
+        label: item.title,
+        amount: item.value,
+      })),
+      ...core.getPricingCalculationItems(serviceData).map((item) => ({
+        label: item.ten,
+        amount: `${formatCurrency(item.don_gia)}${item.don_vi ? ` / ${item.don_vi}` : ""}`,
+      })),
+    ];
+  }
 
-    ["dieu_kien_tiep_can", "dac_thu"].forEach((groupKey) => {
-      const list = groups?.[groupKey];
-      if (!Array.isArray(list)) return;
-      list.forEach((item) => {
-        items.push(core.escapeHtml(item.ten_muc || ""));
-      });
-    });
-
-    return items;
+  function renderChipList(items, formatter) {
+    return items
+      .map((item) => `<span class="chip-bang-gia">${formatter(item)}</span>`)
+      .join("");
   }
 
   function buildQuickCompare(data) {
@@ -151,26 +88,29 @@
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">So sánh nhanh</span>
           <h2>Ba nhóm dịch vụ khác nhau ngay từ cách hình thành giá</h2>
-          <p>Trang này không lặp lại bảng giá chi tiết của từng dịch vụ. Nó giúp bạn hiểu vì sao giá mở đầu khác nhau và vì sao có phát sinh.</p>
+          <p>Bạn có thể nhìn nhanh mức khởi điểm, nhóm hạng mục chính và đi tiếp sang đúng trang dịch vụ khi cần xem sâu hơn.</p>
         </div>
         <div class="luoi-so-sanh-dich-vu">
           ${data
             .map((item) => {
-              const slug = String(item.slug_dich_vu || "").trim();
-              const meta = getServiceMeta(slug);
-              const hangMuc = (item.hang_muc_hien_thi || [])
+              const info = getTransparentInfo(item);
+              const hangMuc = core.getPricingDisplayItems(item)
                 .slice(0, 3)
-                .map((entry) => `<li>${core.escapeHtml(entry.ten_hang_muc || "")}</li>`)
+                .map(
+                  (entry) =>
+                    `<li>${core.escapeHtml(String(entry?.ten || "").trim())}</li>`,
+                )
                 .join("");
+
               return `
                 <article class="the-so-sanh-dich-vu">
                   <span class="nhan-dich-vu-bang-gia">${core.escapeHtml(item.ten_dich_vu || "")}</span>
-                  <strong class="gia-mo-dau-bang-gia">${core.escapeHtml(item.gia_tu || "")}</strong>
-                  <p>${core.escapeHtml(meta.mo_ta_ngan || "")}</p>
+                  <strong class="gia-mo-dau-bang-gia">${core.escapeHtml(getStartingPrice(item))}</strong>
+                  <p>${core.escapeHtml(info.mo_ta_ngan || "")}</p>
                   <ul class="danh-sach-tom-tat">
                     ${hangMuc}
                   </ul>
-                  <a class="link-phu-bang-gia" href="${core.escapeHtml(meta.trang_dich_vu || "#")}">Xem bảng giá chi tiết ở trang dịch vụ</a>
+                  <a class="link-phu-bang-gia" href="${core.escapeHtml(item.duong_dan_chi_tiet || "#")}">Xem bảng giá chi tiết ở trang dịch vụ</a>
                 </article>
               `;
             })
@@ -185,11 +125,15 @@
       <section class="phan-cach-hinh-thanh-gia">
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">Công thức chung</span>
-          <h2>Giá tham khảo được hình thành từ đâu</h2>
-          <p>Dù là chuyển nhà, chuyển văn phòng công ty hay chuyển kho bãi, chi phí đều xoay quanh sáu nhóm yếu tố dưới đây.</p>
+          <h2>Công thức giá chung của ba nhóm dịch vụ</h2>
+          <p>Giá tham khảo hiện được ghép từ 4 phần chính. Đây là cách đọc nhanh nhất trước khi xem sâu từng dịch vụ.</p>
+        </div>
+        <div class="khung-cong-thuc-tong-quat">
+          <span class="nhan-cong-thuc-tong-quat">Công thức đang dùng</span>
+          <p>Chi phí cơ bản + Chi phí dịch vụ + Phụ phí cố định + Điều chỉnh theo khung giờ hoặc thời tiết</p>
         </div>
         <div class="luoi-yeu-to-gia">
-          ${commonFactors
+          ${commonFormulaGroups
             .map(
               (item) => `
                 <article class="the-yeu-to-gia">
@@ -215,41 +159,41 @@
         <div class="luoi-cong-thuc-rieng">
           ${data
             .map((item) => {
-              const slug = String(item.slug_dich_vu || "").trim();
-              const meta = getServiceMeta(slug);
-              const phanCoBan = Array.isArray(meta.phan_co_ban) ? meta.phan_co_ban : [];
-              const phanPhatSinh = Array.isArray(meta.phan_phat_sinh) ? meta.phan_phat_sinh : [];
+              const info = getTransparentInfo(item);
+              const basicParts = Array.isArray(info.phan_co_ban)
+                ? info.phan_co_ban
+                : [];
+              const extraParts = Array.isArray(info.phan_phat_sinh)
+                ? info.phan_phat_sinh
+                : [];
+
               return `
                 <article class="the-cong-thuc-rieng">
                   <div class="dau-the-cong-thuc">
                     <span class="nhan-dich-vu-bang-gia">${core.escapeHtml(item.ten_dich_vu || "")}</span>
                     <h3>${core.escapeHtml(item.ten_dich_vu || "")}</h3>
-                    <p>${core.escapeHtml(meta.phu_hop_khi || "")}</p>
+                    <p>${core.escapeHtml(info.phu_hop_khi || "")}</p>
                   </div>
 
                   <div class="luoi-cau-truc-gia">
                     <section class="khung-cau-truc-gia">
                       <span class="nhan-cau-truc-gia">Phần cơ bản</span>
                       <div class="cum-chip-bang-gia cum-chip-bang-gia-nhat">
-                        ${phanCoBan
-                          .map((entry) => `<span class="chip-bang-gia">${core.escapeHtml(entry)}</span>`)
-                          .join("")}
+                        ${renderChipList(basicParts, (entry) => core.escapeHtml(entry))}
                       </div>
                     </section>
 
                     <section class="khung-cau-truc-gia">
                       <span class="nhan-cau-truc-gia">Phần phát sinh nếu có</span>
                       <div class="cum-chip-bang-gia">
-                        ${phanPhatSinh
-                          .map((entry) => `<span class="chip-bang-gia">${core.escapeHtml(entry)}</span>`)
-                          .join("")}
+                        ${renderChipList(extraParts, (entry) => core.escapeHtml(entry))}
                       </div>
                     </section>
                   </div>
 
                   <section class="khung-canh-bao-khao-sat">
                     <span class="nhan-canh-bao-khao-sat">Nên khảo sát trước khi</span>
-                    <p>${core.escapeHtml(meta.luc_nen_khao_sat || "")}</p>
+                    <p>${core.escapeHtml(info.nen_khao_sat_khi || "")}</p>
                   </section>
                 </article>
               `;
@@ -266,20 +210,27 @@
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">Phụ phí phát sinh</span>
           <h2>Những yếu tố dễ làm giá thay đổi nhất</h2>
-          <p>Trang này chỉ chỉ ra nhóm yếu tố làm giá tăng, không lặp lại mức tiền chi tiết của từng dịch vụ. Bảng giá cụ thể vẫn nằm ở trang dịch vụ tương ứng.</p>
+          <p>Đây là các nhóm phụ phí có trong cùng nguồn dữ liệu giá tham khảo của từng dịch vụ, giúp bạn nhìn nhanh yếu tố nào dễ làm chi phí thay đổi.</p>
         </div>
         <div class="luoi-phu-phi">
           ${data
             .map((item) => {
-              const surchargeTexts = collectSurchargeTexts(item.phu_phi);
+              const surchargeItems = collectSurchargeItems(item);
               return `
                 <article class="the-phu-phi">
                   <h3>${core.escapeHtml(item.ten_dich_vu || "")}</h3>
-                  <div class="cum-chip-bang-gia">
-                    ${surchargeTexts
-                      .map((text) => `<span class="chip-bang-gia">${text}</span>`)
+                  <ul class="danh-sach-phu-phi-bang-gia">
+                    ${surchargeItems
+                      .map((entry) => {
+                        return `
+                          <li class="muc-phu-phi-bang-gia">
+                            <span class="ten-phu-phi-bang-gia">${core.escapeHtml(entry.label)}</span>
+                            <span class="gia-tri-phu-phi-bang-gia">${core.escapeHtml(entry.amount || "Cần xác nhận")}</span>
+                          </li>
+                        `;
+                      })
                       .join("")}
-                  </div>
+                  </ul>
                 </article>
               `;
             })
@@ -297,34 +248,145 @@
           <h2>Khi nào nên khảo sát, khi nào có thể đặt lịch luôn</h2>
           <p>Nếu bạn chưa chắc về mặt bằng, khối lượng hoặc phụ phí phát sinh, khảo sát trước luôn là lựa chọn an toàn hơn.</p>
         </div>
-        <div class="bang-quyet-dinh">
-          <div class="dong-bang-quyet-dinh dong-bang-quyet-dinh-tieu-de">
-            <div class="o-bang-quyet-dinh o-bang-quyet-dinh-tieu-chi">Tiêu chí</div>
-            ${data.map((item) => `<div class="o-bang-quyet-dinh">${core.escapeHtml(item.ten_dich_vu || "")}</div>`).join("")}
-          </div>
-          <div class="dong-bang-quyet-dinh">
-            <div class="o-bang-quyet-dinh o-bang-quyet-dinh-tieu-chi">Có thể đặt lịch luôn khi</div>
-            ${data
-              .map(
-                (item) =>
-                  `<div class="o-bang-quyet-dinh">Bạn đã rõ lộ trình, mặt bằng và không có hạng mục đặc biệt ngoài gói cơ bản.</div>`,
-              )
-              .join("")}
-          </div>
-          <div class="dong-bang-quyet-dinh">
-            <div class="o-bang-quyet-dinh o-bang-quyet-dinh-tieu-chi">Nên khảo sát trước khi</div>
-            ${data
-              .map(
-                (item) =>
-                  `<div class="o-bang-quyet-dinh">${core.escapeHtml(
-                    getServiceMeta(item.slug_dich_vu).luc_nen_khao_sat || "",
-                  )}</div>`,
-              )
-              .join("")}
-          </div>
+        <div class="luoi-the-ra-quyet-dinh">
+          ${data
+            .map((item) => {
+              const info = getTransparentInfo(item);
+              return `
+                <article class="the-ra-quyet-dinh">
+                  <span class="nhan-dich-vu-bang-gia">${core.escapeHtml(item.ten_dich_vu || "")}</span>
+                  <div class="khoi-ra-quyet-dinh khoi-ra-quyet-dinh-sang">
+                    <span class="nhan-khoi-ra-quyet-dinh">Có thể đặt lịch luôn khi</span>
+                    <p>${core.escapeHtml(info.co_the_dat_lich_luon_khi || "")}</p>
+                  </div>
+                  <div class="khoi-ra-quyet-dinh">
+                    <span class="nhan-khoi-ra-quyet-dinh">Nên khảo sát trước khi</span>
+                    <p>${core.escapeHtml(info.nen_khao_sat_khi || "")}</p>
+                  </div>
+                </article>
+              `;
+            })
+            .join("")}
         </div>
       </section>
     `;
+  }
+
+  function buildTabbedContent(data) {
+    const tabs = [
+      {
+        id: "so-sanh",
+        label: "So sánh nhanh",
+        content: buildQuickCompare(data),
+      },
+      {
+        id: "cong-thuc",
+        label: "Công thức chung",
+        content: buildCommonFormulaSection(),
+      },
+      {
+        id: "phat-sinh",
+        label: "Theo từng dịch vụ",
+        content: buildServiceFormulaSection(data),
+      },
+      {
+        id: "phu-phi",
+        label: "Phụ phí",
+        content: buildSurchargeSection(data),
+      },
+      {
+        id: "quyet-dinh",
+        label: "Khi nào khảo sát",
+        content: buildDecisionSection(data),
+      },
+    ];
+
+    return `
+      <div class="cum-tab-bang-gia" data-tab-bang-gia>
+        <div class="thanh-tab-bang-gia" role="tablist" aria-label="Nội dung bảng giá minh bạch">
+          ${tabs
+            .map(
+              (tab, index) => `
+                <button
+                  type="button"
+                  class="nut-tab-bang-gia${index === 0 ? " dang-chon" : ""}"
+                  role="tab"
+                  id="tab-${tab.id}"
+                  aria-controls="panel-${tab.id}"
+                  aria-selected="${index === 0 ? "true" : "false"}"
+                  tabindex="${index === 0 ? "0" : "-1"}"
+                  data-tab-target="${tab.id}"
+                >
+                  ${core.escapeHtml(tab.label)}
+                </button>
+              `,
+            )
+            .join("")}
+        </div>
+        <div class="noi-dung-tab-bang-gia">
+          ${tabs
+            .map(
+              (tab, index) => `
+                <div
+                  class="panel-tab-bang-gia${index === 0 ? " dang-chon" : ""}"
+                  role="tabpanel"
+                  id="panel-${tab.id}"
+                  aria-labelledby="tab-${tab.id}"
+                  ${index === 0 ? "" : "hidden"}
+                  data-tab-panel="${tab.id}"
+                >
+                  ${tab.content}
+                </div>
+              `,
+            )
+            .join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  function initTabs(root) {
+    const tabRoot = root.querySelector("[data-tab-bang-gia]");
+    if (!tabRoot) return;
+
+    const tabs = Array.from(tabRoot.querySelectorAll("[data-tab-target]"));
+    const panels = Array.from(tabRoot.querySelectorAll("[data-tab-panel]"));
+
+    function activateTab(targetId) {
+      tabs.forEach((tab) => {
+        const isActive = tab.getAttribute("data-tab-target") === targetId;
+        tab.classList.toggle("dang-chon", isActive);
+        tab.setAttribute("aria-selected", isActive ? "true" : "false");
+        tab.setAttribute("tabindex", isActive ? "0" : "-1");
+      });
+
+      panels.forEach((panel) => {
+        const isActive = panel.getAttribute("data-tab-panel") === targetId;
+        panel.classList.toggle("dang-chon", isActive);
+        panel.hidden = !isActive;
+      });
+    }
+
+    tabRoot.addEventListener("click", (event) => {
+      const tab = event.target.closest("[data-tab-target]");
+      if (!tab) return;
+      activateTab(tab.getAttribute("data-tab-target"));
+    });
+
+    tabRoot.addEventListener("keydown", (event) => {
+      const currentIndex = tabs.findIndex((tab) => tab === document.activeElement);
+      if (currentIndex === -1) return;
+
+      let nextIndex = currentIndex;
+      if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabs.length;
+      if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+
+      if (nextIndex !== currentIndex) {
+        event.preventDefault();
+        tabs[nextIndex].focus();
+        activateTab(tabs[nextIndex].getAttribute("data-tab-target"));
+      }
+    });
   }
 
   function renderTransparentPricing(root, data) {
@@ -334,13 +396,8 @@
       return;
     }
 
-    root.innerHTML = `
-      ${buildQuickCompare(data)}
-      ${buildCommonFormulaSection()}
-      ${buildServiceFormulaSection(data)}
-      ${buildSurchargeSection(data)}
-      ${buildDecisionSection(data)}
-    `;
+    root.innerHTML = buildTabbedContent(data);
+    initTabs(root);
   }
 
   onReady(function () {

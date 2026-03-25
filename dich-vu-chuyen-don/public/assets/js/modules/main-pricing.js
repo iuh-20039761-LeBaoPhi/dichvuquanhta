@@ -6,14 +6,26 @@
   if (!core) return;
 
   function formatCurrency(value) {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+    return core.formatCurrencyVnd(value);
+  }
+
+  function buildPricingFactorCards(serviceData) {
+    return [
+      ...core.getPricingCalculationItems(serviceData).map((item) => ({
+        title: item.ten,
+        value: `${formatCurrency(item.don_gia)}${item.don_vi ? ` / ${item.don_vi}` : ""}`,
+        note: "Hạng mục dịch vụ tính theo số lượng thực tế.",
+      })),
+      ...core.getPricingFixedFeeEntries(serviceData),
+      ...core.getPricingMultiplierEntries(serviceData),
+    ];
   }
 
   function getServiceType() {
     const path = window.location.pathname.toLowerCase();
-    if (path.includes("chuyen-nha")) return "moving_house";
-    if (path.includes("chuyen-van-phong")) return "moving_office";
-    if (path.includes("chuyen-kho-bai")) return "moving_warehouse";
+    if (path.includes("chuyen-nha")) return "chuyen_nha";
+    if (path.includes("chuyen-van-phong")) return "chuyen_van_phong";
+    if (path.includes("chuyen-kho-bai")) return "chuyen_kho_bai";
     return null;
   }
 
@@ -26,7 +38,7 @@
     if (!grid) return;
 
     try {
-      const resp = await fetch(core.toPublicUrl("assets/js/data/pricing-reference.json"));
+      const resp = await fetch(core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json"));
       if (!resp.ok) throw new Error("Thất bại khi tải file JSON");
       const data = await resp.json();
 
@@ -34,9 +46,9 @@
       if (!serviceData) return;
 
       renderPricing(grid, serviceData);
-      
-      if (formulaContainer && serviceData.cau_hinh_tinh_gia) {
-        renderFormula(formulaContainer, serviceData.cau_hinh_tinh_gia);
+
+      if (formulaContainer) {
+        renderFormula(formulaContainer, serviceData);
       }
     } catch (err) {
       console.error("Lỗi load bảng giá:", err);
@@ -45,7 +57,7 @@
 
   function renderPricing(container, data) {
     container.innerHTML = "";
-    data.hang_muc_bao_gia.forEach((item) => {
+    core.getPricingDisplayItems(data).forEach((item) => {
       const card = document.createElement("article");
       card.className = "group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 soft-shadow hover:-translate-y-1 transition-all duration-300";
       
@@ -78,82 +90,86 @@
     });
   }
 
-  function renderFormula(container, config) {
+  function renderFormula(container, serviceData) {
+    const transparentInfo = serviceData.thong_tin_minh_bach || {};
+    const basicParts = Array.isArray(transparentInfo.phan_co_ban)
+      ? transparentInfo.phan_co_ban
+      : [];
+    const extraParts = Array.isArray(transparentInfo.phan_phat_sinh)
+      ? transparentInfo.phan_phat_sinh
+      : [];
+    const formulaSummary =
+      transparentInfo.tom_tat_tong_chi_phi ||
+      "Cước cơ bản + Phí vượt km + Hạng mục hỗ trợ đi kèm + Phụ phí điều kiện thực tế";
+    const factorCards = buildPricingFactorCards(serviceData);
+    const pricingOverviewUrl = core.toProjectUrl("bang-gia-chuyen-don.html");
+    const vehicleOptions = core.getPricingVehicleEntries(serviceData);
+    const startingVehicle = vehicleOptions
+      .filter((item) => Number(item?.gia_co_ban || 0) > 0)
+      .sort((left, right) => Number(left.gia_co_ban || 0) - Number(right.gia_co_ban || 0))[0];
+
     container.innerHTML = `
-      <div class="bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl p-8 md:p-10 border border-primary/10 shadow-lg mb-16 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -ml-20 -mb-20"></div>
-        
-        <div class="relative z-10">
-          <div class="text-center mb-10">
-            <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-sm text-accent mb-4">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+      <div class="bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl p-6 md:p-8 border border-primary/10 shadow-lg mb-12 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-primary/10 rounded-full blur-3xl -ml-16 -mb-16"></div>
+
+        <div class="relative z-10 grid lg:grid-cols-[1.25fr_0.75fr] gap-6 items-start">
+          <div>
+            <span class="inline-flex bg-white text-primary font-bold text-xs uppercase tracking-[0.2em] px-3 py-1.5 rounded-full shadow-sm">
+              Tóm tắt cách tính giá
             </span>
-            <h3 class="text-3xl font-bold text-primary">Cơ chế tính giá minh bạch</h3>
-            <p class="text-slate-600 mt-2">Biết trước chi phí, không lo phát sinh với bảng tính rõ ràng</p>
-          </div>
-          
-          <div class="grid lg:grid-cols-2 gap-10">
-            <!-- Bảng giá xe -->
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
-              <h4 class="font-bold text-lg text-slate-800 mb-5 flex items-center">
-                <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center mr-3 text-sm">1</span> 
-                Cước xe tải và lộ trình
-              </h4>
-              <div class="space-y-4">
-                ${Object.values(config.loai_xe).map(xe => `
-                  <div class="relative pl-4 border-l-2 border-slate-200 hover:border-accent transition-colors">
-                    <div class="flex justify-between items-start">
-                      <div>
-                        <span class="font-bold text-slate-800 text-lg block">${xe.ten_hien_thi}</span>
-                        <p class="text-sm text-slate-500 mt-1">Gói cơ bản: dưới ${xe.km_co_ban}km đầu tiên</p>
-                      </div>
-                      <div class="text-right">
-                        <span class="font-bold text-accent text-xl">${formatCurrency(xe.gia_co_ban)}</span>
-                        <p class="text-sm rounded text-primary font-medium mt-1">Phát sinh: +${formatCurrency(xe.gia_moi_km_tiep)}/km</p>
-                      </div>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- Các phụ phí -->
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
-              <h4 class="font-bold text-lg text-slate-800 mb-5 flex items-center">
-                <span class="w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center mr-3 text-sm">2</span> 
-                Phụ phí theo điều kiện thực tế
-              </h4>
-              <div class="grid grid-cols-2 gap-4">
-                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 group hover:bg-primary/5 transition-colors">
-                  <span class="text-xs font-bold tracking-wider text-slate-500 uppercase block mb-1">Thể tích đồ đạc</span>
-                  <p class="text-base font-bold text-slate-800">${formatCurrency(config.phu_phi.the_tich.don_gia_moi_buoc)}<span class="text-xs font-normal text-slate-500"> / m³</span></p>
-                  <p class="text-[11px] text-slate-500 mt-1">Tính cho phần vượt quá ${config.phu_phi.the_tich.nguong_mien_phi}m³</p>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 group hover:bg-primary/5 transition-colors">
-                  <span class="text-xs font-bold tracking-wider text-slate-500 uppercase block mb-1">Trọng lượng hàng</span>
-                  <p class="text-base font-bold text-slate-800">${formatCurrency(config.phu_phi.trong_luong.don_gia_moi_buoc)}<span class="text-xs font-normal text-slate-500"> / 100kg</span></p>
-                  <p class="text-[11px] text-slate-500 mt-1">Tính cho phần vượt quá ${config.phu_phi.trong_luong.nguong_mien_phi}kg</p>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 group hover:bg-primary/5 transition-colors">
-                  <span class="text-xs font-bold tracking-wider text-slate-500 uppercase block mb-1">Dễ vỡ / Cồng kềnh</span>
-                  <p class="text-base font-bold text-slate-800">Từ ${formatCurrency(config.phu_phi.tinh_chat_do_dac.de_vo)}</p>
-                  <p class="text-[11px] text-slate-500 mt-1">Đánh giá thực tế theo từng tài sản</p>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 group hover:bg-primary/5 transition-colors">
-                  <span class="text-xs font-bold tracking-wider text-slate-500 uppercase block mb-1">Phí ngoài giờ</span>
-                  <p class="text-base font-bold text-slate-800">Từ ${formatCurrency(config.phu_phi.khung_gio.buoi_toi)}</p>
-                  <p class="text-[11px] text-slate-500 mt-1">Buổi tối, đêm hoặc ngày Lễ Tết</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-8 mx-auto max-w-2xl bg-white rounded-xl p-5 border-2 border-primary border-dashed shadow-sm text-center">
-            <p class="text-sm font-bold text-primary uppercase tracking-widest mb-2">Công thức tính tổng chi phí</p>
-            <p class="text-slate-700 text-base md:text-lg font-medium">
-              Cước cơ bản + Phí vượt km + Phụ phí khối lượng + Phụ phí điều kiện
+            <h3 class="text-2xl md:text-3xl font-bold text-primary mt-4">
+              Dịch vụ này được tính theo một công thức chung
+            </h3>
+            <p class="text-slate-600 mt-3 leading-relaxed">
+              ${formulaSummary}
             </p>
+            ${
+              startingVehicle
+                ? `<div class="mt-5 rounded-xl bg-white/85 border border-white p-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Mốc giá khởi điểm</p>
+                    <p class="text-lg font-bold text-slate-900 mt-1">${startingVehicle.ten_hien_thi}: ${formatCurrency(startingVehicle.gia_co_ban)}</p>
+                    <p class="text-sm text-slate-500 mt-1">Đã gồm ${startingVehicle.km_co_ban}km đầu tiên, sau đó +${formatCurrency(startingVehicle.gia_moi_km_tiep)}/km.</p>
+                    ${
+                      startingVehicle.dung_tich_m3 > 0
+                        ? ""
+                        : '<p class="text-xs text-slate-500 mt-2">Số chuyến hiện tạm tính theo tải trọng vì chưa có dung tích xe chuẩn hóa.</p>'
+                    }
+                  </div>`
+                : ""
+            }
+            <div class="mt-5 flex flex-wrap gap-2">
+              ${basicParts.map((item) => `<span class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary">${item}</span>`).join("")}
+              ${extraParts.slice(0, 3).map((item) => `<span class="inline-flex items-center rounded-full bg-white px-3 py-1.5 text-sm font-medium text-slate-700 border border-slate-200">${item}</span>`).join("")}
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Bạn cần xem sâu hơn?</p>
+            <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+              Trang bảng giá chung giải thích đầy đủ 4 nhóm chi phí, các tình huống phát sinh và khi nào nên khảo sát trước.
+            </p>
+            <a
+              class="mt-4 inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary/90"
+              href="${pricingOverviewUrl}"
+            >
+              Xem cơ chế giá đầy đủ
+            </a>
+            ${
+              factorCards.length
+                ? `<div class="mt-5 border-t border-slate-100 pt-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Một vài yếu tố thường gặp</p>
+                    <ul class="mt-3 space-y-3">
+                      ${factorCards.slice(0, 3).map((item) => `
+                        <li class="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
+                          <p class="text-sm font-semibold text-slate-800">${item.title}</p>
+                          <p class="text-sm text-accent font-bold mt-1">${item.value}</p>
+                        </li>
+                      `).join("")}
+                    </ul>
+                  </div>`
+                : ""
+            }
           </div>
         </div>
       </div>

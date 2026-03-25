@@ -947,7 +947,8 @@ textarea.form-control {
   background: #f8fafc;
   cursor: pointer;
   transition: 0.2s;
-  margin-bottom: 16px;
+  margin-bottom: 0;
+  min-width: 0;
 }
 .upload-zone:hover {
   border-color: #94a3b8;
@@ -1289,9 +1290,31 @@ textarea.form-control {
     border-top-width: 1px;
   }
   .upload-split-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
     margin-bottom: 10px;
+    align-items: stretch;
+  }
+  .upload-zone {
+    padding: 18px 10px;
+    min-height: 100%;
+  }
+  .upload-zone > i {
+    font-size: 26px !important;
+  }
+  .upload-zone p {
+    margin-top: 6px !important;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  #xem_truoc_anh_hang_hoa,
+  #xem_truoc_video_hang_hoa {
+    max-height: 120px;
+    margin-top: 10px;
+  }
+  .upload-meta {
+    font-size: 11px;
+    line-height: 1.4;
   }
   .instant-flow__hero,
   .instant-flow__grid {

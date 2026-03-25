@@ -60,7 +60,7 @@
       "chuyen-van-phong.html",
     ].includes(currentPage);
     const pricingLink = hasPricingSection
-      ? "#bao-gia"
+      ? "#pricing-reference"
       : `${projectBase}bang-gia-chuyen-don.html`;
     const servicesLink = `${projectBase}dich-vu-chuyen-don.html`;
 
@@ -119,7 +119,11 @@
     if (!onRootIndexPage) return "";
 
     const hash = window.location.hash.toLowerCase();
-    if (hash === "#bao-gia") return "pricing";
+    if (
+      hash === "#pricing-reference" ||
+      hash === "#pricing" ||
+      hash === "#bao-gia"
+    ) return "pricing";
     if (hash === "#contact") return "contact";
     return "home";
   }

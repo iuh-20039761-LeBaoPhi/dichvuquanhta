@@ -1,11 +1,7 @@
 <section class="the-bieu-mau">
   <div class="khung-luu-y">
     <span class="khung-luu-y-nhan">Đặt lịch chuyển dọn</span>
-    <h2>Điền thông tin cần thiết để đội ngũ chuẩn bị lịch chuyển dọn phù hợp</h2>
-    <p>
-      Càng đầy đủ thông tin về lộ trình, mặt bằng và khối lượng công việc, đội ngũ
-      càng dễ tư vấn phương án triển khai sát với thực tế hơn.
-    </p>
+    <h2>Điền nhanh thông tin chính để gửi lịch chuyển dọn</h2>
   </div>
 
   <form
@@ -14,42 +10,99 @@
     data-loai-bieu-mau="dat-lich"
     novalidate
   >
-    <div class="cum-buoc">
+    <div class="thanh-tien-trinh-dat-lich" data-booking-step-indicator>
+      <button
+        type="button"
+        class="muc-tien-trinh-dat-lich is-active"
+        data-booking-step-indicator-item="1"
+      >
+        <span class="muc-tien-trinh-dat-lich__so">1</span>
+        <span class="muc-tien-trinh-dat-lich__ten">Liên hệ & lộ trình</span>
+      </button>
+      <button
+        type="button"
+        class="muc-tien-trinh-dat-lich"
+        data-booking-step-indicator-item="2"
+      >
+        <span class="muc-tien-trinh-dat-lich__so">2</span>
+        <span class="muc-tien-trinh-dat-lich__ten">Mặt bằng</span>
+      </button>
+      <button
+        type="button"
+        class="muc-tien-trinh-dat-lich"
+        data-booking-step-indicator-item="3"
+      >
+        <span class="muc-tien-trinh-dat-lich__so">3</span>
+        <span class="muc-tien-trinh-dat-lich__ten">Thời gian</span>
+      </button>
+      <button
+        type="button"
+        class="muc-tien-trinh-dat-lich"
+        data-booking-step-indicator-item="4"
+      >
+        <span class="muc-tien-trinh-dat-lich__so">4</span>
+        <span class="muc-tien-trinh-dat-lich__ten">Dịch vụ</span>
+      </button>
+      <button
+        type="button"
+        class="muc-tien-trinh-dat-lich"
+        data-booking-step-indicator-item="5"
+      >
+        <span class="muc-tien-trinh-dat-lich__so">5</span>
+        <span class="muc-tien-trinh-dat-lich__ten">Tệp & ghi chú</span>
+      </button>
+      <button
+        type="button"
+        class="muc-tien-trinh-dat-lich"
+        data-booking-step-indicator-item="6"
+      >
+        <span class="muc-tien-trinh-dat-lich__so">6</span>
+        <span class="muc-tien-trinh-dat-lich__ten">Xác nhận</span>
+      </button>
+    </div>
+
+    <div class="cum-buoc is-active" data-booking-step="1">
       <div class="tieu-de-buoc">
         <span>01</span>
         <div>
           <div class="nhan-truong-kem-goi-y">
-            <h3>Thông tin liên hệ và dịch vụ</h3>
+            <h3>Thông tin liên hệ, dịch vụ và lộ trình</h3>
             <details class="goi-y-thong-tin">
-              <summary aria-label="Xem chú thích thông tin liên hệ và dịch vụ">i</summary>
+              <summary aria-label="Xem chú thích thông tin liên hệ và dịch vụ">
+                i
+              </summary>
               <div class="goi-y-thong-tin__noi-dung">
-                Xác định đúng nhu cầu và người phụ trách chính để đội ngũ liên hệ
-                lại nhanh hơn trước khi chốt lịch chuyển dọn.
+                Xác định đúng nhu cầu và người phụ trách chính để đội ngũ liên
+                hệ lại nhanh hơn trước khi chốt lịch chuyển dọn.
               </div>
             </details>
           </div>
         </div>
       </div>
 
-      <div class="luoi-truong">
-        <div class="nhom-truong">
-          <label for="loai-dich-vu-dat-lich" class="nhan-truong">Loại dịch vụ *</label>
-          <select
-            id="loai-dich-vu-dat-lich"
-            class="truong-nhap truong-chon"
-            name="loai_dich_vu"
-            data-truong-dich-vu
-            required
-          >
-            <option value="">Chọn dịch vụ cần đặt lịch</option>
-            <option value="chuyen_nha">Chuyển nhà trọn gói</option>
-            <option value="chuyen_van_phong">Chuyển văn phòng công ty</option>
-            <option value="chuyen_kho_bai">Chuyển kho bãi</option>
-          </select>
-        </div>
+      <div class="nhom-truong nhom-truong-rong">
+        <label for="loai-dich-vu-dat-lich" class="nhan-truong"
+          >Loại dịch vụ *</label
+        >
+        <select
+          id="loai-dich-vu-dat-lich"
+          class="truong-nhap truong-chon"
+          name="loai_dich_vu"
+          data-truong-dich-vu
+          required
+        >
+          <option value="">Chọn dịch vụ cần đặt lịch</option>
+          <option value="chuyen_nha">Chuyển nhà trọn gói</option>
+          <option value="chuyen_van_phong">Chuyển văn phòng công ty</option>
+          <option value="chuyen_kho_bai">Chuyển kho bãi</option>
+        </select>
+      </div>
 
+      <div class="luoi-truong luoi-truong-lien-he-dat-lich">
         <div class="nhom-truong">
-          <label for="ho-ten-dat-lich" class="nhan-truong">Người liên hệ *</label>
+          <label for="ho-ten-dat-lich" class="nhan-truong"
+            >Người liên hệ *</label
+          >
           <input
             id="ho-ten-dat-lich"
             class="truong-nhap"
@@ -61,7 +114,9 @@
         </div>
 
         <div class="nhom-truong">
-          <label for="so-dien-thoai-dat-lich" class="nhan-truong">Số điện thoại *</label>
+          <label for="so-dien-thoai-dat-lich" class="nhan-truong"
+            >Số điện thoại *</label
+          >
           <input
             id="so-dien-thoai-dat-lich"
             class="truong-nhap"
@@ -78,7 +133,12 @@
           data-hien-theo-dich-vu="chuyen_van_phong,chuyen_kho_bai"
           hidden
         >
-          <label for="ten-cong-ty-dat-lich" class="nhan-truong">Tên công ty hoặc đơn vị</label>
+          <label
+            for="ten-cong-ty-dat-lich"
+            class="nhan-truong"
+            data-nhan-cong-ty-dat-lich
+            >Tên công ty hoặc đơn vị</label
+          >
           <input
             id="ten-cong-ty-dat-lich"
             class="truong-nhap"
@@ -87,42 +147,20 @@
           />
         </div>
       </div>
-    </div>
-
-    <div class="cum-buoc">
-      <div class="tieu-de-buoc">
-        <span>02</span>
-        <div>
-          <div class="nhan-truong-kem-goi-y">
-            <h3>Lộ trình, thời gian và điều kiện tiếp cận</h3>
-            <details class="goi-y-thong-tin">
-              <summary aria-label="Xem chú thích lộ trình và thời gian">i</summary>
-              <div class="goi-y-thong-tin__noi-dung">
-                Điền rõ điểm đi, điểm đến, thời gian mong muốn và những hạn chế
-                tiếp cận để đội ngũ chuẩn bị xe, nhân sự và phương án triển khai
-                sát thực tế hơn.
-              </div>
-            </details>
-          </div>
-        </div>
-      </div>
 
       <div class="khung-lo-trinh-dat-lich">
         <div class="luoi-dia-diem-dat-lich">
           <div class="the-dia-diem-dat-lich">
             <div class="hang-dia-diem-dat-lich">
-              <span class="nhan-dia-diem-dat-lich nhan-dia-diem-di">Điểm đi</span>
-              <button
-                type="button"
-                class="nut-ban-do-ui nut-ban-do-ui-vi-tri"
-                data-ban-do-dat-lich-hanh-dong="vi-tri-hien-tai"
+              <span class="nhan-dia-diem-dat-lich nhan-dia-diem-di"
+                >Điểm đi</span
               >
-                Lấy vị trí hiện tại
-              </button>
             </div>
             <div class="luoi-truong">
               <div class="nhom-truong nhom-truong-rong">
-                <label for="dia-chi-di-dat-lich" class="nhan-truong">Địa chỉ điểm đi *</label>
+                <label for="dia-chi-di-dat-lich" class="nhan-truong"
+                  >Địa chỉ điểm đi *</label
+                >
                 <input
                   id="dia-chi-di-dat-lich"
                   class="truong-nhap"
@@ -131,74 +169,18 @@
                   required
                 />
               </div>
-
-              <div class="nhom-truong is-hidden" data-hien-theo-dich-vu="chuyen_nha" hidden>
-                <label for="loai-nha-diem-di-dat-lich" class="nhan-truong">Loại nhà điểm đi</label>
-                <select
-                  id="loai-nha-diem-di-dat-lich"
-                  class="truong-nhap truong-chon"
-                  name="loai_nha_diem_di"
-                >
-                  <option value="">Chọn loại nhà</option>
-                  <option value="can_ho">Căn hộ</option>
-                  <option value="nha_pho">Nhà phố</option>
-                  <option value="phong_tro">Phòng trọ</option>
-                  <option value="chung_cu">Chung cư</option>
-                </select>
-              </div>
-
-              <div class="nhom-truong">
-                <label for="so-tang-diem-di-dat-lich" class="nhan-truong">Số tầng điểm đi</label>
-                <input
-                  id="so-tang-diem-di-dat-lich"
-                  class="truong-nhap"
-                  type="number"
-                  min="0"
-                  name="so_tang_diem_di"
-                />
-              </div>
-
-              <div
-                class="nhom-truong is-hidden"
-                data-hien-theo-dich-vu="chuyen_van_phong"
-                hidden
-              >
-                <label for="loai-mat-bang-di-van-phong-dat-lich" class="nhan-truong">Mặt bằng điểm đi</label>
-                <select
-                  id="loai-mat-bang-di-van-phong-dat-lich"
-                  class="truong-nhap truong-chon"
-                  name="loai_mat_bang_di_van_phong"
-                >
-                  <option value="">Chọn loại mặt bằng</option>
-                  <option value="toa_nha_van_phong">Tòa nhà văn phòng</option>
-                  <option value="nha_pho">Nhà phố</option>
-                  <option value="mat_bang_thuong_mai">Mặt bằng thương mại</option>
-                  <option value="shophouse">Shophouse</option>
-                </select>
-              </div>
-
-              <div class="nhom-truong is-hidden" data-hien-theo-dich-vu="chuyen_kho_bai" hidden>
-                <label for="loai-kho-diem-di-dat-lich" class="nhan-truong">Loại kho điểm đi</label>
-                <select
-                  id="loai-kho-diem-di-dat-lich"
-                  class="truong-nhap truong-chon"
-                  name="loai_kho_diem_di"
-                >
-                  <option value="">Chọn loại kho hoặc nhà xưởng</option>
-                  <option value="kho_thuong">Kho thường</option>
-                  <option value="kho_logistics">Kho logistics</option>
-                  <option value="kho_lanh">Kho lạnh</option>
-                  <option value="nha_xuong">Nhà xưởng</option>
-                </select>
-              </div>
             </div>
           </div>
 
           <div class="the-dia-diem-dat-lich">
-            <span class="nhan-dia-diem-dat-lich nhan-dia-diem-den">Điểm đến</span>
+            <span class="nhan-dia-diem-dat-lich nhan-dia-diem-den"
+              >Điểm đến</span
+            >
             <div class="luoi-truong">
               <div class="nhom-truong nhom-truong-rong">
-                <label for="dia-chi-den-dat-lich" class="nhan-truong">Địa chỉ điểm đến *</label>
+                <label for="dia-chi-den-dat-lich" class="nhan-truong"
+                  >Địa chỉ điểm đến *</label
+                >
                 <input
                   id="dia-chi-den-dat-lich"
                   class="truong-nhap"
@@ -207,82 +189,25 @@
                   required
                 />
               </div>
-
-              <div class="nhom-truong is-hidden" data-hien-theo-dich-vu="chuyen_nha" hidden>
-                <label for="loai-nha-diem-den-dat-lich" class="nhan-truong">Loại nhà điểm đến</label>
-                <select
-                  id="loai-nha-diem-den-dat-lich"
-                  class="truong-nhap truong-chon"
-                  name="loai_nha_diem_den"
-                >
-                  <option value="">Chọn loại nhà</option>
-                  <option value="can_ho">Căn hộ</option>
-                  <option value="nha_pho">Nhà phố</option>
-                  <option value="phong_tro">Phòng trọ</option>
-                  <option value="chung_cu">Chung cư</option>
-                </select>
-              </div>
-
-              <div class="nhom-truong">
-                <label for="so-tang-diem-den-dat-lich" class="nhan-truong">Số tầng điểm đến</label>
-                <input
-                  id="so-tang-diem-den-dat-lich"
-                  class="truong-nhap"
-                  type="number"
-                  min="0"
-                  name="so_tang_diem_den"
-                />
-              </div>
-
-              <div
-                class="nhom-truong is-hidden"
-                data-hien-theo-dich-vu="chuyen_van_phong"
-                hidden
-              >
-                <label for="loai-mat-bang-den-van-phong-dat-lich" class="nhan-truong">Mặt bằng điểm đến</label>
-                <select
-                  id="loai-mat-bang-den-van-phong-dat-lich"
-                  class="truong-nhap truong-chon"
-                  name="loai_mat_bang_den_van_phong"
-                >
-                  <option value="">Chọn loại mặt bằng</option>
-                  <option value="toa_nha_van_phong">Tòa nhà văn phòng</option>
-                  <option value="nha_pho">Nhà phố</option>
-                  <option value="mat_bang_thuong_mai">Mặt bằng thương mại</option>
-                  <option value="shophouse">Shophouse</option>
-                </select>
-              </div>
-
-              <div class="nhom-truong is-hidden" data-hien-theo-dich-vu="chuyen_kho_bai" hidden>
-                <label for="loai-kho-diem-den-dat-lich" class="nhan-truong">Loại kho điểm đến</label>
-                <select
-                  id="loai-kho-diem-den-dat-lich"
-                  class="truong-nhap truong-chon"
-                  name="loai_kho_diem_den"
-                >
-                  <option value="">Chọn loại kho hoặc nhà xưởng</option>
-                  <option value="kho_thuong">Kho thường</option>
-                  <option value="kho_logistics">Kho logistics</option>
-                  <option value="kho_lanh">Kho lạnh</option>
-                  <option value="nha_xuong">Nhà xưởng</option>
-                </select>
-              </div>
             </div>
           </div>
         </div>
 
-        <div class="khung-ban-do-ui khung-ban-do-dat-lich" data-ban-do-ui="dat-lich">
+        <div
+          class="khung-ban-do-ui khung-ban-do-dat-lich"
+          data-ban-do-ui="dat-lich"
+        >
           <div class="khung-ban-do-ui-dau">
             <div class="nhan-truong-kem-goi-y">
-              <span class="nhan-truong">Bản đồ lộ trình hai địa điểm</span>
-              <details class="goi-y-thong-tin">
-                <summary aria-label="Xem chú thích bản đồ đặt lịch">i</summary>
-                <div class="goi-y-thong-tin__noi-dung">
-                  Bạn có thể nhập địa chỉ hoặc kéo hai ghim trực tiếp trên bản đồ
-                  để đối chiếu nhanh điểm đi, điểm đến và quãng đường dự kiến.
-                </div>
-              </details>
+              <span class="nhan-truong">Bản đồ</span>
             </div>
+            <button
+              type="button"
+              class="nut-ban-do-ui nut-ban-do-ui-vi-tri"
+              data-ban-do-dat-lich-hanh-dong="vi-tri-hien-tai"
+            >
+              Lấy vị trí hiện tại
+            </button>
           </div>
 
           <div class="map-legend">
@@ -320,7 +245,7 @@
               <strong data-gia-tri-khoang-cach-dat-lich>0</strong> km
             </span>
             <p class="mo-ta-phu" data-trang-thai-ban-do-dat-lich>
-              Nhập địa chỉ hoặc kéo ghim để chỉnh lại lộ trình trực tiếp trên bản đồ.
+              Nhập địa chỉ hoặc kéo ghim để cập nhật lộ trình.
             </p>
           </div>
 
@@ -345,62 +270,324 @@
             data-ban-do-dat-lich-toa-do="diem_den_lng"
           />
         </div>
-
-        <div class="luoi-truong">
-          <div class="nhom-truong">
-            <label for="loai-xe-dat-lich" class="nhan-truong">Loại xe dự kiến</label>
-            <select
-              id="loai-xe-dat-lich"
-              class="truong-nhap truong-chon"
-              name="loai_xe"
-            >
-              <option value="">Chọn dịch vụ để xem gợi ý loại xe</option>
-            </select>
-            <span class="mo-ta-phu" data-goi-y-loai-xe-dat-lich>
-              Chọn loại dịch vụ để hệ thống gợi ý nhóm xe phù hợp trước khi tính giá.
-            </span>
-          </div>
-        </div>
-
-        <div class="luoi-thoi-gian-dat-lich">
-          <div class="the-thoi-gian-dat-lich">
-            <label for="ngay-thuc-hien-dat-lich" class="nhan-truong">Ngày thực hiện *</label>
-            <input id="ngay-thuc-hien-dat-lich" class="truong-nhap" type="date" name="ngay_thuc_hien" required />
-          </div>
-
-          <div class="the-thoi-gian-dat-lich">
-            <label for="khung-gio-dat-lich" class="nhan-truong">Khung giờ mong muốn *</label>
-            <select id="khung-gio-dat-lich" class="truong-nhap truong-chon" name="khung_gio_thuc_hien" required>
-              <option value="">Chọn khung giờ</option>
-              <option value="sang">Sáng 08:00 - 11:30</option>
-              <option value="chieu">Chiều 13:30 - 17:00</option>
-              <option value="toi">Tối 17:00 - 21:00</option>
-              <option value="dem">Đêm 21:00 - 06:00</option>
-              <option value="linh_dong">Linh động</option>
-            </select>
-          </div>
-
-          <div class="the-thoi-gian-dat-lich">
-            <label for="thoi-tiet-du-kien-dat-lich" class="nhan-truong">Thời tiết dự kiến</label>
-            <select
-              id="thoi-tiet-du-kien-dat-lich"
-              class="truong-nhap truong-chon"
-              name="thoi_tiet_du_kien"
-            >
-              <option value="">Chọn thời tiết dự kiến</option>
-              <option value="binh_thuong">Bình thường</option>
-              <option value="troi_mua">Trời mưa</option>
-            </select>
-          </div>
-        </div>
-
-        <input
-          id="khung-gio-tinh-gia-dat-lich"
-          type="hidden"
-          name="khung_gio_tinh_gia"
-          data-khung-gio-tinh-gia
-        />
       </div>
+
+      <div class="cum-dieu-huong-buoc">
+        <button
+          type="button"
+          class="nut-chinh nut-buoc-tiep"
+          data-booking-step-next="2"
+        >
+          Tiếp theo
+        </button>
+      </div>
+    </div>
+
+    <div class="cum-buoc" data-booking-step="2" hidden>
+      <div class="tieu-de-buoc">
+        <span>02</span>
+        <div>
+          <div class="nhan-truong-kem-goi-y">
+            <h3>Mặt bằng hai điểm</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="khung-lo-trinh-dat-lich">
+        <div class="khung-chi-tiet-lo-trinh-dat-lich">
+          <div class="nhan-truong-kem-goi-y">
+            <span class="nhan-truong">Thông tin mặt bằng</span>
+          </div>
+
+          <div class="luoi-dia-diem-dat-lich luoi-dia-diem-dat-lich--chi-tiet">
+            <div class="the-dia-diem-dat-lich the-dia-diem-dat-lich--chi-tiet">
+              <span class="nhan-dia-diem-dat-lich nhan-dia-diem-di"
+                >Chi tiết điểm đi</span
+              >
+              <div class="luoi-truong">
+                <div
+                  class="nhom-truong is-hidden"
+                  data-hien-theo-dich-vu="chuyen_nha"
+                  hidden
+                >
+                  <label for="loai-nha-diem-di-dat-lich" class="nhan-truong"
+                    >Loại nhà điểm đi</label
+                  >
+                  <select
+                    id="loai-nha-diem-di-dat-lich"
+                    class="truong-nhap truong-chon"
+                    name="loai_nha_diem_di"
+                  >
+                    <option value="">Chọn loại nhà</option>
+                    <option value="can_ho">Căn hộ</option>
+                    <option value="nha_pho">Nhà phố</option>
+                    <option value="phong_tro">Phòng trọ</option>
+                    <option value="chung_cu">Chung cư</option>
+                  </select>
+                </div>
+
+                <div class="nhom-truong">
+                  <label for="so-tang-diem-di-dat-lich" class="nhan-truong"
+                    >Số tầng điểm đi</label
+                  >
+                  <input
+                    id="so-tang-diem-di-dat-lich"
+                    class="truong-nhap"
+                    type="number"
+                    min="0"
+                    name="so_tang_diem_di"
+                  />
+                </div>
+
+                <div
+                  class="nhom-truong is-hidden"
+                  data-hien-theo-dich-vu="chuyen_van_phong"
+                  hidden
+                >
+                  <label
+                    for="loai-mat-bang-di-van-phong-dat-lich"
+                    class="nhan-truong"
+                    >Mặt bằng điểm đi</label
+                  >
+                  <select
+                    id="loai-mat-bang-di-van-phong-dat-lich"
+                    class="truong-nhap truong-chon"
+                    name="loai_mat_bang_di_van_phong"
+                  >
+                    <option value="">Chọn loại mặt bằng</option>
+                    <option value="toa_nha_van_phong">Tòa nhà văn phòng</option>
+                    <option value="nha_pho">Nhà phố</option>
+                    <option value="mat_bang_thuong_mai">
+                      Mặt bằng thương mại
+                    </option>
+                    <option value="shophouse">Shophouse</option>
+                  </select>
+                </div>
+
+                <div
+                  class="nhom-truong is-hidden"
+                  data-hien-theo-dich-vu="chuyen_kho_bai"
+                  hidden
+                >
+                  <label for="loai-kho-diem-di-dat-lich" class="nhan-truong"
+                    >Loại kho điểm đi</label
+                  >
+                  <select
+                    id="loai-kho-diem-di-dat-lich"
+                    class="truong-nhap truong-chon"
+                    name="loai_kho_diem_di"
+                  >
+                    <option value="">Chọn loại kho hoặc nhà xưởng</option>
+                    <option value="kho_thuong">Kho thường</option>
+                    <option value="kho_logistics">Kho logistics</option>
+                    <option value="kho_lanh">Kho lạnh</option>
+                    <option value="nha_xuong">Nhà xưởng</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="the-dia-diem-dat-lich the-dia-diem-dat-lich--chi-tiet">
+              <span class="nhan-dia-diem-dat-lich nhan-dia-diem-den"
+                >Chi tiết điểm đến</span
+              >
+              <div class="luoi-truong">
+                <div
+                  class="nhom-truong is-hidden"
+                  data-hien-theo-dich-vu="chuyen_nha"
+                  hidden
+                >
+                  <label for="loai-nha-diem-den-dat-lich" class="nhan-truong"
+                    >Loại nhà điểm đến</label
+                  >
+                  <select
+                    id="loai-nha-diem-den-dat-lich"
+                    class="truong-nhap truong-chon"
+                    name="loai_nha_diem_den"
+                  >
+                    <option value="">Chọn loại nhà</option>
+                    <option value="can_ho">Căn hộ</option>
+                    <option value="nha_pho">Nhà phố</option>
+                    <option value="phong_tro">Phòng trọ</option>
+                    <option value="chung_cu">Chung cư</option>
+                  </select>
+                </div>
+
+                <div class="nhom-truong">
+                  <label for="so-tang-diem-den-dat-lich" class="nhan-truong"
+                    >Số tầng điểm đến</label
+                  >
+                  <input
+                    id="so-tang-diem-den-dat-lich"
+                    class="truong-nhap"
+                    type="number"
+                    min="0"
+                    name="so_tang_diem_den"
+                  />
+                </div>
+
+                <div
+                  class="nhom-truong is-hidden"
+                  data-hien-theo-dich-vu="chuyen_van_phong"
+                  hidden
+                >
+                  <label
+                    for="loai-mat-bang-den-van-phong-dat-lich"
+                    class="nhan-truong"
+                    >Mặt bằng điểm đến</label
+                  >
+                  <select
+                    id="loai-mat-bang-den-van-phong-dat-lich"
+                    class="truong-nhap truong-chon"
+                    name="loai_mat_bang_den_van_phong"
+                  >
+                    <option value="">Chọn loại mặt bằng</option>
+                    <option value="toa_nha_van_phong">Tòa nhà văn phòng</option>
+                    <option value="nha_pho">Nhà phố</option>
+                    <option value="mat_bang_thuong_mai">
+                      Mặt bằng thương mại
+                    </option>
+                    <option value="shophouse">Shophouse</option>
+                  </select>
+                </div>
+
+                <div
+                  class="nhom-truong is-hidden"
+                  data-hien-theo-dich-vu="chuyen_kho_bai"
+                  hidden
+                >
+                  <label for="loai-kho-diem-den-dat-lich" class="nhan-truong"
+                    >Loại kho điểm đến</label
+                  >
+                  <select
+                    id="loai-kho-diem-den-dat-lich"
+                    class="truong-nhap truong-chon"
+                    name="loai_kho_diem_den"
+                  >
+                    <option value="">Chọn loại kho hoặc nhà xưởng</option>
+                    <option value="kho_thuong">Kho thường</option>
+                    <option value="kho_logistics">Kho logistics</option>
+                    <option value="kho_lanh">Kho lạnh</option>
+                    <option value="nha_xuong">Nhà xưởng</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cum-dieu-huong-buoc">
+        <button
+          type="button"
+          class="nut-phu nut-buoc-lui"
+          data-booking-step-prev="1"
+        >
+          Quay lại
+        </button>
+        <button
+          type="button"
+          class="nut-chinh nut-buoc-tiep"
+          data-booking-step-next="3"
+        >
+          Tiếp theo
+        </button>
+      </div>
+    </div>
+
+    <div class="cum-buoc" data-booking-step="3" hidden>
+      <div class="tieu-de-buoc">
+        <span>03</span>
+        <div>
+          <div class="nhan-truong-kem-goi-y">
+            <h3>Thời gian và điều kiện</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="luoi-thoi-gian-dat-lich luoi-thoi-gian-dat-lich--dieu-phoi">
+        <div class="the-thoi-gian-dat-lich">
+          <label for="ngay-thuc-hien-dat-lich" class="nhan-truong"
+            >Ngày thực hiện *</label
+          >
+          <input
+            id="ngay-thuc-hien-dat-lich"
+            class="truong-nhap"
+            type="date"
+            name="ngay_thuc_hien"
+            required
+          />
+        </div>
+
+        <div class="the-thoi-gian-dat-lich">
+          <label for="khung-gio-dat-lich" class="nhan-truong"
+            >Khung giờ mong muốn *</label
+          >
+          <select
+            id="khung-gio-dat-lich"
+            class="truong-nhap truong-chon"
+            name="khung_gio_thuc_hien"
+            required
+          >
+            <option value="">Chọn khung giờ</option>
+            <option value="sang">Sáng 08:00 - 11:30</option>
+            <option value="chieu">Chiều 13:30 - 17:00</option>
+            <option value="toi">Tối 17:00 - 21:00</option>
+            <option value="dem">Đêm 21:00 - 06:00</option>
+            <option value="linh_dong">Linh động</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="khung-thoi-tiet-tu-dong-dat-lich">
+        <div class="nhan-truong-kem-goi-y">
+          <h4>Thời tiết tự động</h4>
+          <details class="goi-y-thong-tin">
+            <summary aria-label="Xem chú thích thời tiết tự động">i</summary>
+            <div class="goi-y-thong-tin__noi-dung">
+              Hệ thống tự lấy dự báo theo ngày thực hiện và vị trí đã ghim trên
+              bản đồ, người dùng không cần chọn tay.
+            </div>
+          </details>
+        </div>
+        <div class="the-thoi-tiet-tu-dong-dat-lich">
+          <span
+            class="nhan-xac-nhan-dat-lich"
+            data-thoi-tiet-tu-dong-trang-thai
+          >
+            Dự báo tự động
+          </span>
+          <strong data-thoi-tiet-tu-dong-gia-tri>Đang chờ dữ liệu</strong>
+          <span class="mo-ta-phu" data-thoi-tiet-tu-dong-dat-lich>
+            Hệ thống sẽ tự nhận diện thời tiết theo ngày thực hiện và vị trí đã
+            ghim trên bản đồ.
+          </span>
+        </div>
+        <div class="nhom-truong nhom-truong-an" hidden aria-hidden="true">
+          <select
+            id="thoi-tiet-du-kien-dat-lich"
+            class="truong-nhap truong-chon"
+            disabled
+          >
+            <option value="">Chọn thời tiết dự kiến</option>
+            <option value="binh_thuong">Bình thường</option>
+            <option value="troi_mua">Trời mưa</option>
+          </select>
+          <input
+            id="thoi-tiet-du-kien-dat-lich-gui"
+            type="hidden"
+            name="thoi_tiet_du_kien"
+            value=""
+          />
+        </div>
+      </div>
+
+      <input
+        id="khung-gio-tinh-gia-dat-lich"
+        type="hidden"
+        name="khung_gio_tinh_gia"
+        data-khung-gio-tinh-gia
+      />
 
       <div class="cum-lua-chon-co-tieu-de">
         <div class="cum-lua-chon-tieu-de">
@@ -416,20 +603,35 @@
           </div>
         </div>
 
-        <div class="cum-lua-chon cum-lua-chon-rong" data-nhom-chip="dieu_kien_dat_lich">
-          <label class="lua-chon-chip" data-hien-theo-dich-vu="chuyen_nha,chuyen_van_phong">
+        <div
+          class="cum-lua-chon cum-lua-chon-rong"
+          data-nhom-chip="dieu_kien_dat_lich"
+        >
+          <label
+            class="lua-chon-chip"
+            data-hien-theo-dich-vu="chuyen_nha,chuyen_van_phong"
+          >
             <input type="checkbox" name="co_thang_may_diem_di" value="1" />
             <span>Điểm đi có thang máy</span>
           </label>
-          <label class="lua-chon-chip" data-hien-theo-dich-vu="chuyen_nha,chuyen_van_phong">
+          <label
+            class="lua-chon-chip"
+            data-hien-theo-dich-vu="chuyen_nha,chuyen_van_phong"
+          >
             <input type="checkbox" name="co_thang_may_diem_den" value="1" />
             <span>Điểm đến có thang máy</span>
           </label>
-          <label class="lua-chon-chip" data-hien-theo-dich-vu="chuyen_nha,chuyen_van_phong">
+          <label
+            class="lua-chon-chip"
+            data-hien-theo-dich-vu="chuyen_nha,chuyen_van_phong"
+          >
             <input type="checkbox" name="xe_tai_do_xa_diem_di" value="1" />
             <span>Xe tải đỗ xa ở điểm đi</span>
           </label>
-          <label class="lua-chon-chip" data-hien-theo-dich-vu="chuyen_van_phong,chuyen_kho_bai">
+          <label
+            class="lua-chon-chip"
+            data-hien-theo-dich-vu="chuyen_van_phong,chuyen_kho_bai"
+          >
             <input type="checkbox" name="duong_cam_tai" value="1" />
             <span>Đường cấm tải / giới hạn xe</span>
           </label>
@@ -443,77 +645,88 @@
           </label>
         </div>
       </div>
+
+      <div class="cum-dieu-huong-buoc">
+        <button
+          type="button"
+          class="nut-phu nut-buoc-lui"
+          data-booking-step-prev="2"
+        >
+          Quay lại
+        </button>
+        <button
+          type="button"
+          class="nut-chinh nut-buoc-tiep"
+          data-booking-step-next="4"
+        >
+          Tiếp theo
+        </button>
+      </div>
     </div>
 
-    <div class="cum-buoc">
+    <div class="cum-buoc" data-booking-step="4" hidden>
       <div class="tieu-de-buoc">
-        <span>03</span>
+        <span>04</span>
         <div>
           <div class="nhan-truong-kem-goi-y">
-            <h3>Quy mô theo nhóm dịch vụ</h3>
-            <details class="goi-y-thong-tin">
-              <summary aria-label="Xem chú thích quy mô theo nhóm dịch vụ">i</summary>
-              <div class="goi-y-thong-tin__noi-dung">
-                Chọn đúng nhóm dịch vụ để hiển thị bộ thông tin phù hợp với
-                chuyển nhà, chuyển văn phòng công ty hoặc chuyển kho bãi.
-              </div>
-            </details>
+            <h3>Chi tiết dịch vụ và giá tạm tính</h3>
           </div>
         </div>
       </div>
 
-      <div class="khung-gia-tham-khao-dat-lich">
-        <div class="nhan-truong-kem-goi-y">
-          <h4>Giá tham khảo theo dịch vụ đã chọn</h4>
-          <details class="goi-y-thong-tin">
-            <summary aria-label="Xem chú thích giá tham khảo">i</summary>
-            <div class="goi-y-thong-tin__noi-dung">
-              Bảng giá này chỉ mang tính tham khảo theo từng nhóm dịch vụ.
-              Mức thực tế còn phụ thuộc vào lộ trình, khối lượng, mặt bằng và
-              các yêu cầu hỗ trợ đi kèm.
-            </div>
-          </details>
-        </div>
-
-        <div class="khung-gia-tham-khao-dat-lich-rong" data-gia-tham-khao-dat-lich>
-          <div class="khung-gia-tham-khao-dat-lich-mac-dinh" data-gia-tham-khao-dat-lich-mac-dinh>
-            Chọn loại dịch vụ để xem đúng nhóm giá tham khảo dành cho chuyển nhà,
-            chuyển văn phòng công ty hoặc chuyển kho bãi.
-          </div>
-
-          <div class="khung-gia-tham-khao-dat-lich-noi-dung is-hidden" data-gia-tham-khao-dat-lich-noi-dung hidden>
-            <div class="khung-gia-tham-khao-dat-lich-dau">
-              <span class="the-thong-tin-nhan">Bảng giá tham khảo</span>
-              <h5 data-gia-tham-khao-dat-lich-ten-dich-vu>Chưa chọn dịch vụ</h5>
-              <p data-gia-tham-khao-dat-lich-mo-ta>
-                Các hạng mục dưới đây sẽ thay đổi theo đúng nhóm dịch vụ bạn đã chọn.
-              </p>
-            </div>
-
-            <div class="luoi-gia-tham-khao-dat-lich" data-gia-tham-khao-dat-lich-danh-sach></div>
-          </div>
-        </div>
+      <div class="nhom-truong nhom-truong-rong">
+        <label for="loai-xe-dat-lich" class="nhan-truong"
+          >Loại xe dự kiến</label
+        >
+        <select
+          id="loai-xe-dat-lich"
+          class="truong-nhap truong-chon"
+          name="loai_xe"
+          required
+        >
+          <option value="">Chọn dịch vụ để chọn loại xe</option>
+        </select>
       </div>
 
       <div class="khung-dich-vu-mac-dinh" data-khoi-mac-dinh>
-        Chọn loại dịch vụ để hiển thị bộ câu hỏi phù hợp với chuyển nhà, chuyển văn phòng công ty hoặc chuyển kho bãi.
+        Chọn dịch vụ để mở các trường phù hợp.
       </div>
 
-      <div class="khung-dich-vu is-hidden" data-khoi-dich-vu="chuyen_nha" hidden>
+      <div
+        class="khung-dich-vu is-hidden"
+        data-khoi-dich-vu="chuyen_nha"
+        hidden
+      >
         <h4>Chi tiết chuyển nhà</h4>
         <div class="luoi-truong">
           <div class="nhom-truong">
-            <label for="dien-tich-nha-dat-lich" class="nhan-truong">Diện tích nhà</label>
-            <input id="dien-tich-nha-dat-lich" class="truong-nhap" type="text" name="dien_tich_nha" />
+            <label for="dien-tich-nha-dat-lich" class="nhan-truong"
+              >Diện tích nhà</label
+            >
+            <input
+              id="dien-tich-nha-dat-lich"
+              class="truong-nhap"
+              type="text"
+              name="dien_tich_nha"
+            />
           </div>
 
           <div class="nhom-truong">
-            <label for="so-phong-dat-lich" class="nhan-truong">Số phòng chính</label>
-            <input id="so-phong-dat-lich" class="truong-nhap" type="text" name="so_phong" />
+            <label for="so-phong-dat-lich" class="nhan-truong"
+              >Số phòng chính</label
+            >
+            <input
+              id="so-phong-dat-lich"
+              class="truong-nhap"
+              type="text"
+              name="so_phong"
+            />
           </div>
 
           <div class="nhom-truong">
-            <label for="so-nhan-cong-dat-lich" class="nhan-truong">Số nhân công dự kiến</label>
+            <label for="so-nhan-cong-dat-lich" class="nhan-truong"
+              >Số nhân công dự kiến</label
+            >
             <input
               id="so-nhan-cong-dat-lich"
               class="truong-nhap"
@@ -524,7 +737,9 @@
           </div>
 
           <div class="nhom-truong">
-            <label for="so-goi-dong-goi-dat-lich" class="nhan-truong">Số gói đóng gói</label>
+            <label for="so-goi-dong-goi-dat-lich" class="nhan-truong"
+              >Số gói đóng gói</label
+            >
             <input
               id="so-goi-dong-goi-dat-lich"
               class="truong-nhap"
@@ -535,7 +750,9 @@
           </div>
 
           <div class="nhom-truong">
-            <label for="so-bo-thao-lap-dat-lich" class="nhan-truong">Số bộ tháo lắp</label>
+            <label for="so-bo-thao-lap-dat-lich" class="nhan-truong"
+              >Số bộ tháo lắp</label
+            >
             <input
               id="so-bo-thao-lap-dat-lich"
               class="truong-nhap"
@@ -546,7 +763,10 @@
           </div>
         </div>
 
-        <div class="cum-lua-chon cum-lua-chon-rong" data-nhom-chip="chi_tiet_nha_dat_lich">
+        <div
+          class="cum-lua-chon cum-lua-chon-rong"
+          data-nhom-chip="chi_tiet_nha_dat_lich"
+        >
           <label class="lua-chon-chip">
             <input type="checkbox" name="can_thao_lap_noi_that" value="1" />
             <span>Cần tháo lắp</span>
@@ -570,21 +790,42 @@
         </div>
       </div>
 
-      <div class="khung-dich-vu is-hidden" data-khoi-dich-vu="chuyen_van_phong" hidden>
+      <div
+        class="khung-dich-vu is-hidden"
+        data-khoi-dich-vu="chuyen_van_phong"
+        hidden
+      >
         <h4>Chi tiết chuyển văn phòng công ty</h4>
         <div class="luoi-truong">
           <div class="nhom-truong">
-            <label for="so-cho-ngoi-dat-lich" class="nhan-truong">Số chỗ ngồi hoặc bàn làm việc</label>
-            <input id="so-cho-ngoi-dat-lich" class="truong-nhap" type="number" min="1" name="so_cho_ngoi" />
+            <label for="so-cho-ngoi-dat-lich" class="nhan-truong"
+              >Số chỗ ngồi hoặc bàn làm việc</label
+            >
+            <input
+              id="so-cho-ngoi-dat-lich"
+              class="truong-nhap"
+              type="number"
+              min="1"
+              name="so_cho_ngoi"
+            />
           </div>
 
           <div class="nhom-truong">
-            <label for="so-phong-ban-dat-lich" class="nhan-truong">Số phòng ban cần dời chỗ</label>
-            <input id="so-phong-ban-dat-lich" class="truong-nhap" type="text" name="so_phong_ban" />
+            <label for="so-phong-ban-dat-lich" class="nhan-truong"
+              >Số phòng ban cần dời chỗ</label
+            >
+            <input
+              id="so-phong-ban-dat-lich"
+              class="truong-nhap"
+              type="text"
+              name="so_phong_ban"
+            />
           </div>
 
           <div class="nhom-truong">
-            <label for="so-thung-ho-so-dat-lich" class="nhan-truong">Số thùng hồ sơ</label>
+            <label for="so-thung-ho-so-dat-lich" class="nhan-truong"
+              >Số thùng hồ sơ</label
+            >
             <input
               id="so-thung-ho-so-dat-lich"
               class="truong-nhap"
@@ -595,7 +836,9 @@
           </div>
 
           <div class="nhom-truong">
-            <label for="so-bo-may-it-dat-lich" class="nhan-truong">Số bộ máy IT</label>
+            <label for="so-bo-may-it-dat-lich" class="nhan-truong"
+              >Số bộ máy IT</label
+            >
             <input
               id="so-bo-may-it-dat-lich"
               class="truong-nhap"
@@ -606,7 +849,9 @@
           </div>
 
           <div class="nhom-truong">
-            <label for="so-mon-noi-that-van-phong-dat-lich" class="nhan-truong">Số món nội thất văn phòng</label>
+            <label for="so-mon-noi-that-van-phong-dat-lich" class="nhan-truong"
+              >Số món nội thất văn phòng</label
+            >
             <input
               id="so-mon-noi-that-van-phong-dat-lich"
               class="truong-nhap"
@@ -617,7 +862,9 @@
           </div>
 
           <div class="nhom-truong">
-            <label for="so-thiet-bi-nang-dat-lich" class="nhan-truong">Số thiết bị nặng</label>
+            <label for="so-thiet-bi-nang-dat-lich" class="nhan-truong"
+              >Số thiết bị nặng</label
+            >
             <input
               id="so-thiet-bi-nang-dat-lich"
               class="truong-nhap"
@@ -628,7 +875,10 @@
           </div>
         </div>
 
-        <div class="cum-lua-chon cum-lua-chon-rong" data-nhom-chip="chi_tiet_van_phong_dat_lich">
+        <div
+          class="cum-lua-chon cum-lua-chon-rong"
+          data-nhom-chip="chi_tiet_van_phong_dat_lich"
+        >
           <label class="lua-chon-chip">
             <input type="checkbox" name="can_bao_mat_tai_lieu" value="1" />
             <span>Bảo mật tài liệu</span>
@@ -644,21 +894,41 @@
         </div>
       </div>
 
-      <div class="khung-dich-vu is-hidden" data-khoi-dich-vu="chuyen_kho_bai" hidden>
+      <div
+        class="khung-dich-vu is-hidden"
+        data-khoi-dich-vu="chuyen_kho_bai"
+        hidden
+      >
         <h4>Chi tiết chuyển kho bãi</h4>
         <div class="luoi-truong">
           <div class="nhom-truong">
-            <label for="khoi-luong-kho-dat-lich" class="nhan-truong">Khối lượng hàng hóa</label>
-            <input id="khoi-luong-kho-dat-lich" class="truong-nhap" type="text" name="khoi_luong_hang_hoa" />
+            <label for="khoi-luong-kho-dat-lich" class="nhan-truong"
+              >Khối lượng hàng hóa</label
+            >
+            <input
+              id="khoi-luong-kho-dat-lich"
+              class="truong-nhap"
+              type="text"
+              name="khoi_luong_hang_hoa"
+            />
           </div>
 
           <div class="nhom-truong">
-            <label for="loai-hang-dat-lich" class="nhan-truong">Loại hàng hóa</label>
-            <input id="loai-hang-dat-lich" class="truong-nhap" type="text" name="loai_hang_hoa" />
+            <label for="loai-hang-dat-lich" class="nhan-truong"
+              >Loại hàng hóa</label
+            >
+            <input
+              id="loai-hang-dat-lich"
+              class="truong-nhap"
+              type="text"
+              name="loai_hang_hoa"
+            />
           </div>
 
           <div class="nhom-truong">
-            <label for="so-pallet-dat-lich" class="nhan-truong">Số pallet</label>
+            <label for="so-pallet-dat-lich" class="nhan-truong"
+              >Số pallet</label
+            >
             <input
               id="so-pallet-dat-lich"
               class="truong-nhap"
@@ -669,7 +939,9 @@
           </div>
 
           <div class="nhom-truong">
-            <label for="so-ca-xe-nang-dat-lich" class="nhan-truong">Số ca xe nâng</label>
+            <label for="so-ca-xe-nang-dat-lich" class="nhan-truong"
+              >Số ca xe nâng</label
+            >
             <input
               id="so-ca-xe-nang-dat-lich"
               class="truong-nhap"
@@ -680,7 +952,9 @@
           </div>
 
           <div class="nhom-truong">
-            <label for="so-ca-xe-cau-dat-lich" class="nhan-truong">Số ca xe cẩu</label>
+            <label for="so-ca-xe-cau-dat-lich" class="nhan-truong"
+              >Số ca xe cẩu</label
+            >
             <input
               id="so-ca-xe-cau-dat-lich"
               class="truong-nhap"
@@ -691,7 +965,9 @@
           </div>
 
           <div class="nhom-truong">
-            <label for="so-nhan-su-boc-xep-dat-lich" class="nhan-truong">Số nhân sự bốc xếp</label>
+            <label for="so-nhan-su-boc-xep-dat-lich" class="nhan-truong"
+              >Số nhân sự bốc xếp</label
+            >
             <input
               id="so-nhan-su-boc-xep-dat-lich"
               class="truong-nhap"
@@ -702,7 +978,9 @@
           </div>
 
           <div class="nhom-truong">
-            <label for="so-don-vi-gia-co-dat-lich" class="nhan-truong">Số đơn vị gia cố</label>
+            <label for="so-don-vi-gia-co-dat-lich" class="nhan-truong"
+              >Số đơn vị gia cố</label
+            >
             <input
               id="so-don-vi-gia-co-dat-lich"
               class="truong-nhap"
@@ -728,34 +1006,70 @@
           </label>
         </div>
       </div>
-    </div>
 
-    <div class="cum-buoc">
-      <div class="tieu-de-buoc">
-        <span>04</span>
-        <div>
-          <div class="nhan-truong-kem-goi-y">
-            <h3>Lưu ý và tệp đính kèm</h3>
-            <details class="goi-y-thong-tin">
-              <summary aria-label="Xem chú thích lưu ý và tệp đính kèm">i</summary>
-              <div class="goi-y-thong-tin__noi-dung">
-                Bổ sung hình ảnh, video hoặc các dặn dò quan trọng để đội ngũ
-                chuẩn bị sát hơn với điều kiện triển khai thực tế.
+      <div class="khung-gia-tham-khao-dat-lich">
+        <div class="nhan-truong-kem-goi-y">
+          <h4>Giá tạm tính</h4>
+        </div>
+
+        <div
+          class="khung-gia-tham-khao-dat-lich-rong"
+          data-gia-tham-khao-dat-lich
+        >
+          <div
+            class="khung-gia-tham-khao-dat-lich-mac-dinh"
+            data-gia-tham-khao-dat-lich-mac-dinh
+          >
+            Chọn dịch vụ và loại xe để xem giá.
+          </div>
+
+          <div
+            class="khung-gia-tham-khao-dat-lich-noi-dung is-hidden"
+            data-gia-tham-khao-dat-lich-noi-dung
+            hidden
+          >
+            <div class="khung-chi-tiet-gia-chot-dat-lich">
+              <div class="khung-tong-gia-chot-dat-lich">
+                <span class="nhan-xac-nhan-dat-lich">Tổng tạm tính</span>
+                <strong data-tong-gia-chot-dat-lich>Chưa đủ dữ liệu</strong>
+                <p data-goi-y-gia-chot-dat-lich>
+                  Giá sẽ cập nhật ngay khi bạn đổi dữ liệu.
+                </p>
               </div>
-            </details>
+              <div
+                class="luoi-chi-tiet-gia-chot-dat-lich"
+                data-chi-tiet-gia-chot-dat-lich
+              ></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="luoi-truong">
-        <div class="nhom-truong nhom-truong-rong">
-          <label for="ghi-chu-dat-lich" class="nhan-truong">Nội dung cần lưu ý thêm</label>
-          <textarea
-            id="ghi-chu-dat-lich"
-            class="truong-nhap truong-van-ban"
-            name="ghi_chu"
-            rows="4"
-          ></textarea>
+      <div class="cum-dieu-huong-buoc">
+        <button
+          type="button"
+          class="nut-phu nut-buoc-lui"
+          data-booking-step-prev="3"
+        >
+          Quay lại
+        </button>
+        <button
+          type="button"
+          class="nut-chinh nut-buoc-tiep"
+          data-booking-step-next="5"
+        >
+          Tiếp theo
+        </button>
+      </div>
+    </div>
+
+    <div class="cum-buoc" data-booking-step="5" hidden>
+      <div class="tieu-de-buoc">
+        <span>05</span>
+        <div>
+          <div class="nhan-truong-kem-goi-y">
+            <h3>Tệp đính kèm và ghi chú</h3>
+          </div>
         </div>
       </div>
 
@@ -774,8 +1088,9 @@
               data-xem-truoc-tep="xem-truoc-anh-dat-lich"
             />
             <span class="tieu-de-tai-len">Tải ảnh mặt bằng</span>
-            <span class="mo-ta-tai-len">Hữu ích cho các trường hợp cần xe nâng, tháo lắp hoặc vào hẻm nhỏ.</span>
-            <strong id="tep-anh-dat-lich-da-chon" class="ten-tep-da-chon">Chưa có ảnh nào được chọn</strong>
+            <strong id="tep-anh-dat-lich-da-chon" class="ten-tep-da-chon"
+              >Chưa có ảnh nào được chọn</strong
+            >
             <img
               id="xem-truoc-anh-dat-lich"
               class="xem-truoc-tep xem-truoc-anh"
@@ -797,8 +1112,9 @@
               data-xem-truoc-tep="xem-truoc-video-dat-lich"
             />
             <span class="tieu-de-tai-len">Tải video mặt bằng</span>
-            <span class="mo-ta-tai-len">Phù hợp khi cần quay nhanh lối vào, cầu thang, thang máy hoặc đường xe vào.</span>
-            <strong id="tep-video-dat-lich-da-chon" class="ten-tep-da-chon">Chưa có video nào được chọn</strong>
+            <strong id="tep-video-dat-lich-da-chon" class="ten-tep-da-chon"
+              >Chưa có video nào được chọn</strong
+            >
             <video
               id="xem-truoc-video-dat-lich"
               class="xem-truoc-tep xem-truoc-video"
@@ -809,22 +1125,43 @@
           </label>
         </div>
       </div>
+
+      <div class="luoi-truong">
+        <div class="nhom-truong nhom-truong-rong">
+          <label for="ghi-chu-dat-lich" class="nhan-truong">Ghi chú thêm</label>
+          <textarea
+            id="ghi-chu-dat-lich"
+            class="truong-nhap truong-van-ban"
+            name="ghi_chu"
+            rows="4"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="cum-dieu-huong-buoc">
+        <button
+          type="button"
+          class="nut-phu nut-buoc-lui"
+          data-booking-step-prev="4"
+        >
+          Quay lại
+        </button>
+        <button
+          type="button"
+          class="nut-chinh nut-buoc-tiep"
+          data-booking-step-next="6"
+        >
+          Tiếp theo
+        </button>
+      </div>
     </div>
 
-    <div class="cum-buoc">
+    <div class="cum-buoc" data-booking-step="6" hidden>
       <div class="tieu-de-buoc">
-        <span>05</span>
+        <span>06</span>
         <div>
           <div class="nhan-truong-kem-goi-y">
-            <h3>Xác nhận trước khi gửi</h3>
-            <details class="goi-y-thong-tin">
-              <summary aria-label="Xem chú thích xác nhận đặt lịch">i</summary>
-              <div class="goi-y-thong-tin__noi-dung">
-                Kiểm tra lại lộ trình, thời gian thực hiện, chi tiết dịch vụ,
-                media đính kèm và giá tham khảo trước khi đội ngũ tiếp nhận yêu
-                cầu đặt lịch.
-              </div>
-            </details>
+            <h3>Kiểm tra và gửi</h3>
           </div>
         </div>
       </div>
@@ -832,7 +1169,7 @@
       <div class="khung-xac-nhan-dat-lich" data-tom-tat-dat-lich>
         <section class="cum-xac-nhan-dat-lich">
           <div class="tieu-de-xac-nhan-dat-lich">
-            <h4>Thông tin liên hệ</h4>
+            <h4>Liên hệ và lịch trình</h4>
           </div>
           <div class="luoi-xac-nhan-dat-lich">
             <div class="muc-xac-nhan-dat-lich">
@@ -847,14 +1184,6 @@
               <span class="nhan-xac-nhan-dat-lich">Đơn vị</span>
               <strong data-tom-tat-dat-lich="don_vi">Không có</strong>
             </div>
-          </div>
-        </section>
-
-        <section class="cum-xac-nhan-dat-lich">
-          <div class="tieu-de-xac-nhan-dat-lich">
-            <h4>Lộ trình và thời gian</h4>
-          </div>
-          <div class="luoi-xac-nhan-dat-lich">
             <div class="muc-xac-nhan-dat-lich">
               <span class="nhan-xac-nhan-dat-lich">Dịch vụ</span>
               <strong data-tom-tat-dat-lich="dich_vu">Chưa chọn</strong>
@@ -877,7 +1206,9 @@
             </div>
             <div class="muc-xac-nhan-dat-lich">
               <span class="nhan-xac-nhan-dat-lich">Khung giờ tính phụ phí</span>
-              <strong data-tom-tat-dat-lich="khung_gio_tinh_gia">Chưa chọn</strong>
+              <strong data-tom-tat-dat-lich="khung_gio_tinh_gia"
+                >Chưa chọn</strong
+              >
             </div>
             <div class="muc-xac-nhan-dat-lich">
               <span class="nhan-xac-nhan-dat-lich">Thời tiết dự kiến</span>
@@ -888,7 +1219,7 @@
 
         <section class="cum-xac-nhan-dat-lich">
           <div class="tieu-de-xac-nhan-dat-lich">
-            <h4>Chi tiết dịch vụ</h4>
+            <h4>Triển khai</h4>
           </div>
           <div class="luoi-xac-nhan-dat-lich">
             <div class="muc-xac-nhan-dat-lich">
@@ -922,44 +1253,56 @@
             <div class="trang-thai-media-xac-nhan" data-media-dat-lich-rong>
               Chưa có ảnh hoặc video nào được chọn.
             </div>
-            <div class="luoi-media-xac-nhan-dat-lich" data-media-dat-lich-luoi hidden></div>
+            <div
+              class="luoi-media-xac-nhan-dat-lich"
+              data-media-dat-lich-luoi
+              hidden
+            ></div>
           </div>
         </section>
 
         <section class="cum-xac-nhan-dat-lich">
           <div class="tieu-de-xac-nhan-dat-lich">
             <div class="nhan-truong-kem-goi-y">
-              <h4>Giá tham khảo và lưu ý phát sinh</h4>
-              <details class="goi-y-thong-tin">
-                <summary aria-label="Xem chú thích giá tham khảo ở bước xác nhận">i</summary>
-                <div class="goi-y-thong-tin__noi-dung">
-                  Đây là mức giá tham khảo theo dịch vụ đã chọn, chưa phải báo giá
-                  chốt. Chi phí thực tế có thể thay đổi theo thời tiết, khung giờ,
-                  điều kiện tiếp cận và yêu cầu hỗ trợ phát sinh.
-                </div>
-              </details>
+              <h4>Giá chốt và các dòng tính</h4>
             </div>
           </div>
           <div class="khung-gia-xac-nhan-dat-lich">
             <div class="trang-thai-gia-xac-nhan" data-gia-xac-nhan-rong>
-              Chọn dịch vụ để xem đúng nhóm giá tham khảo.
+              Chọn dịch vụ và nhập đủ thông tin để xem giá chốt.
             </div>
-            <div class="luoi-gia-xac-nhan-dat-lich" data-gia-xac-nhan-luoi hidden></div>
+            <div
+              class="luoi-gia-xac-nhan-dat-lich"
+              data-gia-xac-nhan-luoi
+              hidden
+            ></div>
           </div>
           <div class="danh-sach-luu-y-xac-nhan" data-luu-y-xac-nhan-dat-lich>
-            <div class="muc-luu-y-xac-nhan">Đội ngũ sẽ xác nhận lại các phát sinh nếu có trước khi chốt lịch.</div>
+            <div class="muc-luu-y-xac-nhan">
+              Giá chốt đang bám theo đúng thông tin bạn đã nhập trong biểu mẫu.
+            </div>
           </div>
         </section>
       </div>
     </div>
 
-    <div id="thong-bao-dat-lich" class="thong-bao-bieu-mau" data-thong-bao-bieu-mau hidden></div>
+    <div
+      id="thong-bao-dat-lich"
+      class="thong-bao-bieu-mau"
+      data-thong-bao-bieu-mau
+      hidden
+    ></div>
 
-    <div class="cum-hanh-dong">
+    <div class="cum-hanh-dong" data-booking-final-actions hidden>
+      <button
+        type="button"
+        class="nut-phu nut-buoc-lui"
+        data-booking-step-prev="5"
+      >
+        Quay lại
+      </button>
       <button type="submit" class="nut-chinh">Gửi yêu cầu đặt lịch</button>
-      <p class="mo-ta-phu">
-        Chức năng gửi yêu cầu đang được hoàn thiện để đồng bộ với hệ thống tiếp nhận.
-      </p>
+      <p class="mo-ta-phu">Kiểm tra lại thông tin rồi gửi yêu cầu.</p>
     </div>
   </form>
 </section>

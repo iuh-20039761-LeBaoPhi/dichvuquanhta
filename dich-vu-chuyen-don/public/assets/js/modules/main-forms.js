@@ -12,7 +12,6 @@
 
   const bookingVehicleOptions = {
     chuyen_nha: {
-      note: "Gợi ý mặc định: xe Van 500kg cho nhu cầu nhỏ, xe tải 1.5 tấn hoặc 2.5 tấn cho nhà nhiều phòng và nhiều đồ.",
       defaultValue: "xe_van_500kg",
       options: [
         { value: "xe_van_500kg", label: "Xe Van 500kg" },
@@ -21,7 +20,6 @@
       ],
     },
     chuyen_van_phong: {
-      note: "Gợi ý mặc định: xe Van 500kg cho văn phòng nhỏ, xe tải 1.5 tấn hoặc 2.5 tấn cho nhiều chỗ ngồi và thiết bị.",
       defaultValue: "xe_van_500kg",
       options: [
         { value: "xe_van_500kg", label: "Xe Van 500kg (VP)" },
@@ -30,7 +28,6 @@
       ],
     },
     chuyen_kho_bai: {
-      note: "Gợi ý mặc định: xe tải 1.5 tấn cho kho nhỏ, xe 2.5 tấn hoặc 5 tấn cho khối lượng lớn và hàng nặng.",
       defaultValue: "xe_tai_1_5_tan",
       options: [
         { value: "xe_tai_1_5_tan", label: "Xe Tải 1.5 Tấn (Kho)" },
@@ -41,6 +38,7 @@
   };
 
   let pricingReferencePromise = null;
+  const bookingWeatherCache = new Map();
 
   function onReady(fn) {
     if (document.readyState === "loading") {
@@ -67,7 +65,7 @@
   function loadPricingReference() {
     if (!pricingReferencePromise) {
       pricingReferencePromise = fetch(
-        core.toPublicUrl("assets/js/data/pricing-reference.json"),
+        core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json"),
       )
         .then((response) => {
           if (!response.ok) {
@@ -110,6 +108,19 @@
     return map[normalized] || "";
   }
 
+  function normalizePricingDataServiceId(rawValue) {
+    const value = String(rawValue || "").trim().toLowerCase();
+    const map = {
+      chuyen_nha: "moving_house",
+      chuyen_van_phong: "moving_office",
+      chuyen_kho_bai: "moving_warehouse",
+      moving_house: "moving_house",
+      moving_office: "moving_office",
+      moving_warehouse: "moving_warehouse",
+    };
+    return map[value] || "";
+  }
+
   function getSelectedLabel(select) {
     if (!select) return "";
     const option = select.options[select.selectedIndex];
@@ -145,6 +156,15 @@
   function mapBookingPricingTimeSlot(rawValue) {
     const value = String(rawValue || "").trim();
     if (!value) return "";
+    if (
+      value === "buoi_toi" ||
+      value === "ban_dem" ||
+      value === "can_xac_nhan" ||
+      value === "binh_thuong" ||
+      value === "cuoi_tuan"
+    ) {
+      return value;
+    }
     if (value === "toi") return "buoi_toi";
     if (value === "dem") return "ban_dem";
     if (value === "linh_dong") return "can_xac_nhan";
@@ -156,6 +176,7 @@
     if (!mapped) return "Chưa chọn";
     if (mapped === "buoi_toi") return "Buổi tối";
     if (mapped === "ban_dem") return "Ban đêm";
+    if (mapped === "cuoi_tuan") return "Cuối tuần";
     if (mapped === "can_xac_nhan") return "Chờ xác nhận";
     return "Ban ngày";
   }
@@ -321,6 +342,265 @@
       lng: parseFloat(data[0].lon),
       label: String(data[0].display_name || "").trim(),
     };
+  }
+
+  function getBookingWeatherTarget(scope) {
+    const fromLat = Number(
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_di_lat']")?.value || 0,
+    );
+    const fromLng = Number(
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_di_lng']")?.value || 0,
+    );
+    const toLat = Number(
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_den_lat']")?.value || 0,
+    );
+    const toLng = Number(
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_den_lng']")?.value || 0,
+    );
+
+    const hasFrom = !!(fromLat && fromLng);
+    const hasTo = !!(toLat && toLng);
+
+    if (hasFrom && hasTo) {
+      return {
+        lat: (fromLat + toLat) / 2,
+        lng: (fromLng + toLng) / 2,
+        mode: "midpoint",
+      };
+    }
+
+    if (hasFrom) {
+      return { lat: fromLat, lng: fromLng, mode: "pickup" };
+    }
+
+    if (hasTo) {
+      return { lat: toLat, lng: toLng, mode: "delivery" };
+    }
+
+    return null;
+  }
+
+  async function fetchBookingWeatherForecast(lat, lng, dateValue) {
+    const cacheKey = `${Number(lat).toFixed(4)}:${Number(lng).toFixed(4)}:${dateValue}`;
+    if (!bookingWeatherCache.has(cacheKey)) {
+      const request = fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lng)}&hourly=precipitation,rain,weather_code&daily=rain_sum,precipitation_hours,weather_code&timezone=auto&start_date=${encodeURIComponent(dateValue)}&end_date=${encodeURIComponent(dateValue)}`,
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Weather request failed: ${response.status}`);
+          }
+          return response.json();
+        })
+        .catch((error) => {
+          bookingWeatherCache.delete(cacheKey);
+          throw error;
+        });
+
+      bookingWeatherCache.set(cacheKey, request);
+    }
+
+    return bookingWeatherCache.get(cacheKey);
+  }
+
+  function isRainWeatherCode(code) {
+    return [
+      51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85,
+      86, 95, 96, 99,
+    ].includes(Number(code));
+  }
+
+  function getBookingWeatherHours(dateValue, timeSlot, forecast) {
+    const times = Array.isArray(forecast?.hourly?.time) ? forecast.hourly.time : [];
+    const precipitation = Array.isArray(forecast?.hourly?.precipitation)
+      ? forecast.hourly.precipitation
+      : [];
+    const rain = Array.isArray(forecast?.hourly?.rain) ? forecast.hourly.rain : [];
+    const weatherCodes = Array.isArray(forecast?.hourly?.weather_code)
+      ? forecast.hourly.weather_code
+      : [];
+
+    const ranges = {
+      sang: [8, 11],
+      chieu: [13, 17],
+      toi: [17, 21],
+      dem: [21, 23],
+    };
+    const range = ranges[String(timeSlot || "").trim()] || null;
+
+    return times
+      .map((time, index) => ({
+        time: String(time || ""),
+        hour: Number(String(time || "").slice(11, 13)),
+        precipitation: Number(precipitation[index] || 0),
+        rain: Number(rain[index] || 0),
+        weatherCode: Number(weatherCodes[index] || 0),
+      }))
+      .filter((item) => item.time.startsWith(`${dateValue}T`))
+      .filter((item) => {
+        if (!range) return true;
+        return item.hour >= range[0] && item.hour <= range[1];
+      });
+  }
+
+  function inferBookingWeatherValue(dateValue, timeSlot, forecast) {
+    const slotHours = getBookingWeatherHours(dateValue, timeSlot, forecast);
+    const hasSlotRain = slotHours.some(
+      (item) =>
+        item.precipitation > 0.1 ||
+        item.rain > 0.1 ||
+        isRainWeatherCode(item.weatherCode),
+    );
+
+    if (hasSlotRain) {
+      return "troi_mua";
+    }
+
+    const dailyRainSum = Number(forecast?.daily?.rain_sum?.[0] || 0);
+    const dailyPrecipitationHours = Number(
+      forecast?.daily?.precipitation_hours?.[0] || 0,
+    );
+    const dailyWeatherCode = Number(forecast?.daily?.weather_code?.[0] || 0);
+
+    if (
+      dailyRainSum > 0.2 ||
+      dailyPrecipitationHours > 0 ||
+      isRainWeatherCode(dailyWeatherCode)
+    ) {
+      return "troi_mua";
+    }
+
+    return "binh_thuong";
+  }
+
+  function getTodayDateString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function getMaxForecastDateString() {
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 15);
+    const year = maxDate.getFullYear();
+    const month = String(maxDate.getMonth() + 1).padStart(2, "0");
+    const day = String(maxDate.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function syncBookingExecutionDateLimits(scope) {
+    const dateInput = scope.querySelector("#ngay-thuc-hien-dat-lich");
+    if (!dateInput) return;
+    dateInput.min = getTodayDateString();
+  }
+
+  async function refreshBookingWeather(scope) {
+    if (!scope.querySelector(".form-dat-lich")) return;
+
+    const dateInput = scope.querySelector("#ngay-thuc-hien-dat-lich");
+    const timeSelect = scope.querySelector("#khung-gio-dat-lich");
+    const weatherSelect = scope.querySelector("#thoi-tiet-du-kien-dat-lich");
+    const weatherHiddenInput = scope.querySelector(
+      "#thoi-tiet-du-kien-dat-lich-gui",
+    );
+    const weatherOutput = scope.querySelector("[data-thoi-tiet-tu-dong-dat-lich]");
+    const weatherValueOutput = scope.querySelector(
+      "[data-thoi-tiet-tu-dong-gia-tri]",
+    );
+    const weatherStateOutput = scope.querySelector(
+      "[data-thoi-tiet-tu-dong-trang-thai]",
+    );
+    if (!dateInput || !weatherSelect || !weatherOutput) return;
+
+    function applyWeatherValue(value, stateLabel) {
+      weatherSelect.value = value;
+      if (weatherHiddenInput) weatherHiddenInput.value = value;
+      if (weatherValueOutput) {
+        weatherValueOutput.textContent = value
+          ? getSelectedLabel(weatherSelect) || "Chưa có dữ liệu"
+          : "Chưa có dữ liệu";
+      }
+      if (weatherStateOutput && stateLabel) {
+        weatherStateOutput.textContent = stateLabel;
+      }
+    }
+
+    const dateValue = String(dateInput.value || "").trim();
+    const timeValue = String(timeSelect?.value || "").trim();
+    const target = getBookingWeatherTarget(scope);
+    const today = getTodayDateString();
+    const maxForecastDate = getMaxForecastDateString();
+
+    if (!dateValue) {
+      applyWeatherValue("", "Dự báo tự động");
+      weatherOutput.textContent =
+        "Chọn ngày thực hiện để hệ thống tự lấy dự báo thời tiết.";
+      return;
+    }
+
+    if (dateValue < today) {
+      applyWeatherValue("", "Không hỗ trợ");
+      weatherOutput.textContent =
+        "Ngày thực hiện đang ở quá khứ nên không thể lấy forecast thời tiết tự động.";
+      return;
+    }
+
+    if (dateValue > maxForecastDate) {
+      applyWeatherValue("", "Chưa đến phạm vi forecast");
+      weatherOutput.textContent =
+        "Ngày này đang vượt phạm vi dự báo thời tiết ngắn hạn. Hệ thống sẽ tự kiểm tra lại khi lịch gần hơn.";
+      return;
+    }
+
+    if (!target) {
+      applyWeatherValue("", "Dự báo tự động");
+      weatherOutput.textContent =
+        "Ghim ít nhất một vị trí trên bản đồ để hệ thống tự lấy thời tiết cho ngày thực hiện.";
+      return;
+    }
+
+    applyWeatherValue("", "Đang kiểm tra");
+    weatherOutput.textContent =
+      "Đang lấy dự báo thời tiết từ Open-Meteo cho lịch trình bạn đã chọn...";
+    const requestKey = `${dateValue}:${timeValue}:${target.lat.toFixed(4)}:${target.lng.toFixed(4)}`;
+    weatherOutput.dataset.requestKey = requestKey;
+
+    try {
+      const forecast = await fetchBookingWeatherForecast(
+        target.lat,
+        target.lng,
+        dateValue,
+      );
+      if (weatherOutput.dataset.requestKey !== requestKey) return;
+      const inferredValue = inferBookingWeatherValue(dateValue, timeValue, forecast);
+      applyWeatherValue(inferredValue, "Dự báo tự động");
+      renderFormSummaries(scope);
+      renderBookingPricing(scope);
+
+      const locationLabel =
+        target.mode === "midpoint"
+          ? "điểm giữa lộ trình"
+          : target.mode === "pickup"
+            ? "điểm đi"
+            : "điểm đến";
+      weatherOutput.textContent =
+        inferredValue === "troi_mua"
+          ? `Dự báo có mưa tại ${locationLabel} vào ngày đã chọn. Hệ thống đã tự chuyển sang “Trời mưa”.`
+          : `Dự báo thời tiết ổn định tại ${locationLabel} vào ngày đã chọn. Hệ thống đang để “Bình thường”.`;
+    } catch (error) {
+      if (weatherOutput.dataset.requestKey !== requestKey) return;
+      console.warn("Booking weather forecast failed:", error);
+      applyWeatherValue("", "Chưa lấy được");
+      weatherOutput.textContent =
+        "Chưa lấy được dự báo thời tiết tự động. Hệ thống sẽ chưa cộng phụ phí thời tiết cho đến khi có dữ liệu.";
+    }
   }
 
   function initSurveyMap(scope) {
@@ -902,6 +1182,11 @@
       map.setView(defaultCenter, 12);
     }
 
+    scope.__bookingMapState = {
+      map,
+      updateMapBounds,
+    };
+
     function setPointCoords(point, lat, lng) {
       const config = getPointConfig(point);
       config.latInput.value = String(lat);
@@ -909,6 +1194,7 @@
       renderBookingMapPreview(scope);
       renderFormSummaries(scope);
       updateDistanceAndRoute();
+      refreshBookingWeather(scope);
     }
 
     function clearPoint(point) {
@@ -919,6 +1205,7 @@
       renderFormSummaries(scope);
       updateDistanceAndRoute();
       updateMapBounds();
+      refreshBookingWeather(scope);
     }
 
     async function moveMarker(point, lat, lng, options = {}) {
@@ -1021,6 +1308,32 @@
     toMarker.on("dragend", function () {
       const latlng = toMarker.getLatLng();
       moveMarker("diem_den", latlng.lat, latlng.lng, { shouldReverse: true });
+    });
+
+    map.on("click", function (event) {
+      const latlng = event.latlng;
+      const hasFrom = hasPoint(fromLatInput, fromLngInput);
+      const hasTo = hasPoint(toLatInput, toLngInput);
+      let targetPoint = "diem_di";
+
+      if (hasFrom && !hasTo) {
+        targetPoint = "diem_den";
+      } else if (hasFrom && hasTo) {
+        const fromDistance = fromMarker.getLatLng().distanceTo(latlng);
+        const toDistance = toMarker.getLatLng().distanceTo(latlng);
+        targetPoint = fromDistance <= toDistance ? "diem_di" : "diem_den";
+      }
+
+      if (statusOutput) {
+        statusOutput.textContent =
+          targetPoint === "diem_di"
+            ? "Đang đặt nhanh ghim điểm đi theo vị trí bạn vừa bấm trên bản đồ..."
+            : "Đang đặt nhanh ghim điểm đến theo vị trí bạn vừa bấm trên bản đồ...";
+      }
+
+      moveMarker(targetPoint, latlng.lat, latlng.lng, {
+        shouldReverse: true,
+      });
     });
 
     let fromTimer = null;
@@ -1162,7 +1475,6 @@
 
   function syncBookingVehicleOptions(scope, serviceValue) {
     const select = scope.querySelector("#loai-xe-dat-lich");
-    const note = scope.querySelector("[data-goi-y-loai-xe-dat-lich]");
     if (!select) return;
 
     const normalized = normalizeService(serviceValue);
@@ -1170,12 +1482,8 @@
     const previousValue = String(select.value || "").trim();
 
     if (!config) {
-      select.innerHTML = '<option value="">Chọn dịch vụ để xem gợi ý loại xe</option>';
+      select.innerHTML = '<option value="">Chọn dịch vụ để chọn loại xe</option>';
       select.value = "";
-      if (note) {
-        note.textContent =
-          "Chọn loại dịch vụ để hệ thống gợi ý nhóm xe phù hợp trước khi tính giá.";
-      }
       return;
     }
 
@@ -1190,10 +1498,6 @@
       select.value = previousValue;
     } else {
       select.value = config.defaultValue;
-    }
-
-    if (note) {
-      note.textContent = config.note;
     }
   }
 
@@ -1546,6 +1850,555 @@
       .join("");
   }
 
+  function parseBookingNumber(rawValue) {
+    const raw = String(rawValue || "").trim();
+    if (!raw) return 0;
+
+    let cleaned = raw.replace(/\s+/g, "").replace(/[^\d.,-]/g, "");
+    if (!cleaned) return 0;
+
+    if (cleaned.includes(",") && cleaned.includes(".")) {
+      cleaned = cleaned.replace(/\./g, "").replace(/,/g, ".");
+    } else if (cleaned.includes(",")) {
+      cleaned = cleaned.replace(/,/g, ".");
+    } else {
+      const dotMatches = cleaned.match(/\./g) || [];
+      if (dotMatches.length > 1) {
+        cleaned = cleaned.replace(/\./g, "");
+      }
+    }
+
+    const value = Number(cleaned);
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  function getBookingNumericValue(scope, selector) {
+    const value = parseBookingNumber(scope.querySelector(selector)?.value || "");
+    return value > 0 ? value : 0;
+  }
+
+  function isBookingChecked(scope, selector) {
+    return !!scope.querySelector(`${selector}:checked`);
+  }
+
+  function parseMinPriceFromRange(text) {
+    const value = String(text || "").trim();
+    if (!value || /miễn phí/i.test(value)) return 0;
+    const matches = value.match(/\d[\d.]*/g);
+    if (!matches || !matches.length) return 0;
+    return Number(matches[0].replace(/\./g, "")) || 0;
+  }
+
+  function getBookingDistanceKmValue(scope) {
+    const fromLat = Number(
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_di_lat']")?.value || 0,
+    );
+    const fromLng = Number(
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_di_lng']")?.value || 0,
+    );
+    const toLat = Number(
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_den_lat']")?.value || 0,
+    );
+    const toLng = Number(
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_den_lng']")?.value || 0,
+    );
+
+    if (!fromLat || !fromLng || !toLat || !toLng) return 0;
+    return calculateDistanceKm(fromLat, fromLng, toLat, toLng);
+  }
+
+  function getBookingDisplayItem(serviceData, slug) {
+    return core
+      .getPricingDisplayItems(serviceData)
+      .find((item) => String(item?.slug || "").trim() === String(slug || "").trim());
+  }
+
+  function getBookingDisplayItemUnitPrice(serviceData, slug) {
+    const displayItem = getBookingDisplayItem(serviceData, slug);
+    return parseMinPriceFromRange(displayItem?.khoang_gia || "");
+  }
+
+  function getBookingSpecialFixedItem(serviceData, slug) {
+    const standard = core.getPricingStandardStructure(serviceData);
+    const items = standard?.phu_phi_co_dinh?.tinh_chat_do_dac;
+    if (!Array.isArray(items)) return null;
+    return items.find((item) => String(item?.slug || "").trim() === String(slug || "").trim()) || null;
+  }
+
+  function getBookingFixedTimeWeatherAmount(serviceData, groupKey, slug) {
+    const standard = core.getPricingStandardStructure(serviceData);
+    const items = Array.isArray(standard?.he_so?.[groupKey]) ? standard.he_so[groupKey] : [];
+    const match = items.find((item) => String(item?.slug || "").trim() === String(slug || "").trim());
+    if (!match) return 0;
+
+    const referenceValue = Number(match?.tham_chieu_du_lieu_cu?.gia_tri || 0);
+    if (Number.isFinite(referenceValue) && referenceValue > 0) {
+      return referenceValue;
+    }
+
+    return 0;
+  }
+
+  function markBookingSelectedOption(selectionMap, payload) {
+    const displaySlug = String(payload?.displaySlug || "").trim();
+    if (!displaySlug) return;
+
+    const amount = Number(payload?.amount || 0);
+    const quantity = Number(payload?.quantity || 0);
+    const existing = selectionMap.get(displaySlug);
+
+    if (existing) {
+      existing.amount += amount;
+      existing.quantity += quantity;
+      existing.note = payload.note || existing.note;
+      existing.state = payload.state || existing.state;
+      existing.included = existing.included || !!payload.included;
+      return;
+    }
+
+    selectionMap.set(displaySlug, {
+      amount,
+      quantity,
+      note: String(payload?.note || "").trim(),
+      state: String(payload?.state || "").trim(),
+      included: !!payload?.included,
+    });
+  }
+
+  function formatBookingMoneyLine(amount) {
+    if (!Number.isFinite(amount) || amount <= 0) return "Miễn phí";
+    return core.formatCurrencyVnd(amount);
+  }
+
+  function renderBookingLineItem(item) {
+    const detail = String(item?.detail || "").trim();
+    return `
+      <div class="muc-chi-tiet-gia-chot-dat-lich">
+        <div class="muc-chi-tiet-gia-chot-dat-lich__hang">
+          <span>${core.escapeHtml(item.label || "")}</span>
+          <strong>${core.escapeHtml(formatBookingMoneyLine(item.amount))}</strong>
+        </div>
+        ${detail ? `<p>${core.escapeHtml(detail)}</p>` : ""}
+      </div>
+    `;
+  }
+
+  function buildBookingPricingState(scope, serviceData) {
+    const normalizedService = normalizeService(serviceData?.id || "");
+    const vehicleValue = String(
+      scope.querySelector("#loai-xe-dat-lich")?.value || "",
+    ).trim();
+    const vehicleEntries = core.getPricingVehicleEntries(serviceData);
+    const vehicleEntry = vehicleEntries.find(
+      (item) => String(item?.slug || "").trim() === vehicleValue,
+    );
+    const calculationItems = core.getPricingCalculationItems(serviceData);
+    const calcItemMap = new Map(
+      calculationItems.map((item) => [String(item?.slug || "").trim(), item]),
+    );
+    const displayItems = core.getPricingDisplayItems(serviceData);
+    const optionSelections = new Map();
+    const breakdownLines = [];
+    const notes = [];
+    const includedOptionSlugs = new Set(
+      normalizedService === "chuyen_nha"
+        ? ["sap_xep_tai_nha_moi"]
+        : normalizedService === "chuyen_van_phong"
+          ? ["lap_dat_tai_van_phong_moi"]
+          : [],
+    );
+    const distanceKm = getBookingDistanceKmValue(scope);
+    const hasDistance = distanceKm > 0;
+    let total = 0;
+
+    function addChargeLine({
+      label,
+      detail,
+      amount,
+      displaySlug = "",
+      quantity = 0,
+      note = "",
+      forceInclude = false,
+      state = "",
+      included = false,
+    }) {
+      const numericAmount = Number(amount || 0);
+      if (numericAmount <= 0 && !forceInclude) return;
+
+      breakdownLines.push({
+        label,
+        detail,
+        amount: numericAmount > 0 ? numericAmount : 0,
+      });
+
+      if (numericAmount > 0) {
+        total += numericAmount;
+      }
+
+      if (displaySlug) {
+        markBookingSelectedOption(optionSelections, {
+          displaySlug,
+          amount: numericAmount > 0 ? numericAmount : 0,
+          quantity,
+          note,
+          state,
+          included,
+        });
+      }
+    }
+
+    function addCalculationCharge({
+      calcSlug,
+      quantity,
+      label,
+      displaySlug,
+      note,
+    }) {
+      const calcItem = calcItemMap.get(calcSlug);
+      if (!calcItem || quantity <= 0) return;
+      const amount = Number(calcItem.don_gia || 0) * quantity;
+      addChargeLine({
+        label: label || calcItem.ten || "Hạng mục phát sinh",
+        detail: `${quantity} ${calcItem.don_vi || "đơn vị"} x ${core.formatCurrencyVnd(calcItem.don_gia || 0)}`,
+        amount,
+        displaySlug: displaySlug || calcItem.nguon_hien_thi_slug || calcSlug,
+        quantity,
+        note,
+        state: quantity > 1 ? `Đang chọn x${quantity}` : "Đang chọn",
+      });
+    }
+
+    if (!vehicleEntry) {
+      notes.push("Chọn loại xe để khóa cước cơ bản và hoàn tất giá chốt.");
+    } else {
+      let tripCount = 1;
+      const tripNotes = [];
+
+      if (normalizedService === "chuyen_kho_bai") {
+        const totalWeightKg = getBookingNumericValue(scope, "#khoi-luong-kho-dat-lich");
+        if (totalWeightKg > 0 && vehicleEntry.tai_trong_kg > 0) {
+          tripCount = Math.max(1, Math.ceil(totalWeightKg / vehicleEntry.tai_trong_kg));
+          if (tripCount > 1) {
+            tripNotes.push(`Tổng ${Math.round(totalWeightKg)}kg nên hệ thống tính ${tripCount} chuyến theo tải trọng xe.`);
+          }
+        }
+      }
+
+      const baseAmount = Number(vehicleEntry.gia_co_ban || 0) * tripCount;
+      addChargeLine({
+        label: "Cước xe cơ bản",
+        detail: `${vehicleEntry.ten_hien_thi}${tripCount > 1 ? ` x ${tripCount} chuyến` : ""}`,
+        amount: baseAmount,
+      });
+
+      if (hasDistance) {
+        const extraKm = Math.max(
+          0,
+          Math.ceil(distanceKm - Number(vehicleEntry.km_co_ban || 0)),
+        );
+        if (extraKm > 0 && Number(vehicleEntry.gia_moi_km_tiep || 0) > 0) {
+          addChargeLine({
+            label: "Quãng đường vượt ngưỡng",
+            detail: `${extraKm} km x ${core.formatCurrencyVnd(vehicleEntry.gia_moi_km_tiep || 0)}${tripCount > 1 ? ` x ${tripCount} chuyến` : ""}`,
+            amount: extraKm * Number(vehicleEntry.gia_moi_km_tiep || 0) * tripCount,
+          });
+        }
+      } else {
+        tripNotes.push(
+          `Chưa ghim đủ hai điểm trên bản đồ nên hệ thống mới tính trong ${vehicleEntry.km_co_ban}km đầu.`,
+        );
+      }
+
+      notes.push(...tripNotes);
+    }
+
+    if (normalizedService === "chuyen_nha") {
+      addCalculationCharge({
+        calcSlug: "nhan_cong_boc_xep",
+        quantity: getBookingNumericValue(scope, "#so-nhan-cong-dat-lich"),
+      });
+
+      addCalculationCharge({
+        calcSlug: "dong_goi_do_dac",
+        quantity: Math.max(
+          getBookingNumericValue(scope, "#so-goi-dong-goi-dat-lich"),
+          isBookingChecked(scope, "input[name='can_dong_goi_do_dac']") ? 1 : 0,
+        ),
+      });
+
+      addCalculationCharge({
+        calcSlug: "thao_lap_thiet_bi",
+        quantity: Math.max(
+          getBookingNumericValue(scope, "#so-bo-thao-lap-dat-lich"),
+          isBookingChecked(scope, "input[name='can_thao_lap_noi_that']") ? 1 : 0,
+        ),
+        displaySlug: "ho_tro_thao_lap_ky_thuat",
+      });
+
+      [
+        { selector: "input[name='co_do_de_vo']", slug: "de_vo" },
+        { selector: "input[name='co_do_cong_kenh']", slug: "cong_kenh" },
+        { selector: "input[name='co_do_gia_tri_cao']", slug: "gia_tri_cao" },
+      ].forEach(({ selector, slug }) => {
+        if (!isBookingChecked(scope, selector)) return;
+        const specialItem = getBookingSpecialFixedItem(serviceData, slug);
+        if (!specialItem) return;
+        addChargeLine({
+          label: specialItem.ten || "Hạng mục đặc biệt",
+          detail: `${specialItem.so_luong_mac_dinh_khi_chi_tick_checkbox || 1} ${specialItem.don_vi || "món"} x ${core.formatCurrencyVnd(specialItem.don_gia || 0)}`,
+          amount:
+            Number(specialItem.don_gia || 0) *
+            Number(
+              specialItem.so_luong_mac_dinh_khi_chi_tick_checkbox || 1,
+            ),
+          displaySlug: slug === "de_vo" ? "dong_goi_do_dac" : slug === "cong_kenh" ? "thao_lap_noi_that" : "ho_tro_thao_lap_ky_thuat",
+          quantity: Number(
+            specialItem.so_luong_mac_dinh_khi_chi_tick_checkbox || 1,
+          ),
+          note: "Tính theo checkbox đặc biệt đã chọn.",
+          state: "Đang chọn",
+        });
+      });
+    }
+
+    if (normalizedService === "chuyen_van_phong") {
+      addCalculationCharge({
+        calcSlug: "dong_goi_ho_so",
+        quantity: getBookingNumericValue(scope, "#so-thung-ho-so-dat-lich"),
+      });
+
+      addCalculationCharge({
+        calcSlug: "bao_ve_thiet_bi_it",
+        quantity: Math.max(
+          getBookingNumericValue(scope, "#so-bo-may-it-dat-lich"),
+          isBookingChecked(scope, "input[name='can_di_doi_server']") ? 1 : 0,
+        ),
+      });
+
+      addCalculationCharge({
+        calcSlug: "thao_lap_noi_that_van_phong",
+        quantity: getBookingNumericValue(
+          scope,
+          "#so-mon-noi-that-van-phong-dat-lich",
+        ),
+      });
+
+      const heavyEquipmentQty = getBookingNumericValue(
+        scope,
+        "#so-thiet-bi-nang-dat-lich",
+      );
+      const heavyEquipmentUnit = getBookingDisplayItemUnitPrice(
+        serviceData,
+        "van_chuyen_thiet_bi_nang",
+      );
+      if (heavyEquipmentQty > 0 && heavyEquipmentUnit > 0) {
+        addChargeLine({
+          label: "Vận chuyển thiết bị nặng",
+          detail: `${heavyEquipmentQty} máy x ${core.formatCurrencyVnd(heavyEquipmentUnit)}`,
+          amount: heavyEquipmentQty * heavyEquipmentUnit,
+          displaySlug: "van_chuyen_thiet_bi_nang",
+          quantity: heavyEquipmentQty,
+          state: heavyEquipmentQty > 1 ? `Đang chọn x${heavyEquipmentQty}` : "Đang chọn",
+        });
+      }
+
+      if (isBookingChecked(scope, "input[name='can_thuc_hien_cuoi_tuan']")) {
+        const weekendAmount = getBookingFixedTimeWeatherAmount(
+          serviceData,
+          "khung_gio",
+          "cuoi_tuan",
+        );
+        addChargeLine({
+          label: "Phụ phí cuối tuần",
+          detail: "Áp dụng cho ca thực hiện vào thứ bảy hoặc chủ nhật.",
+          amount: weekendAmount,
+          note: "Đã ghi nhận checkbox làm cuối tuần.",
+          state: "Đang chọn",
+        });
+      }
+
+      if (isBookingChecked(scope, "input[name='can_bao_mat_tai_lieu']")) {
+        notes.push("Yêu cầu bảo mật tài liệu đã được ghi nhận để đội ngũ triển khai đúng quy trình.");
+      }
+    }
+
+    if (normalizedService === "chuyen_kho_bai") {
+      addCalculationCharge({
+        calcSlug: "boc_xep_khoi_luong_lon",
+        quantity: getBookingNumericValue(scope, "#so-nhan-su-boc-xep-dat-lich"),
+      });
+
+      addCalculationCharge({
+        calcSlug: "dong_mang_co_pallet",
+        quantity: getBookingNumericValue(scope, "#so-pallet-dat-lich"),
+      });
+
+      const liftShiftQty =
+        getBookingNumericValue(scope, "#so-ca-xe-nang-dat-lich") +
+        getBookingNumericValue(scope, "#so-ca-xe-cau-dat-lich");
+      addCalculationCharge({
+        calcSlug: "thue_xe_nang_cau",
+        quantity: Math.max(
+          liftShiftQty,
+          isBookingChecked(scope, "input[name='can_xe_nang_dat_lich']") ||
+            isBookingChecked(scope, "input[name='can_xe_cau_dat_lich']")
+            ? 1
+            : 0,
+        ),
+      });
+
+      const reinforcementQty = getBookingNumericValue(
+        scope,
+        "#so-don-vi-gia-co-dat-lich",
+      );
+      const reinforcementUnit = getBookingDisplayItemUnitPrice(
+        serviceData,
+        "dong_goi_gia_co",
+      );
+      if (reinforcementQty > 0 && reinforcementUnit > 0) {
+        addChargeLine({
+          label: "Đóng gói & gia cố",
+          detail: `${reinforcementQty} đơn vị x ${core.formatCurrencyVnd(reinforcementUnit)}`,
+          amount: reinforcementQty * reinforcementUnit,
+          displaySlug: "dong_goi_gia_co",
+          quantity: reinforcementQty,
+          state: reinforcementQty > 1 ? `Đang chọn x${reinforcementQty}` : "Đang chọn",
+        });
+      }
+
+      if (isBookingChecked(scope, "input[name='can_kiem_ke_hang_hoa']")) {
+        addChargeLine({
+          label: "Kiểm kê & bàn giao",
+          detail: "Hạng mục miễn phí đã được chọn cùng đơn hàng.",
+          amount: 0,
+          displaySlug: "kiem_ke_ban_giao",
+          quantity: 1,
+          note: "Miễn phí khi cần kiểm kê đối soát.",
+          forceInclude: true,
+          state: "Đang chọn",
+        });
+      }
+    }
+
+    const pricingTimeSlug = String(
+      scope.querySelector("[data-khung-gio-tinh-gia]")?.value || "",
+    ).trim();
+    if (pricingTimeSlug && pricingTimeSlug !== "binh_thuong" && pricingTimeSlug !== "can_xac_nhan") {
+      const timeAmount = getBookingFixedTimeWeatherAmount(
+        serviceData,
+        "khung_gio",
+        pricingTimeSlug,
+      );
+      addChargeLine({
+        label: `Khung giờ ${getBookingPricingTimeLabel(pricingTimeSlug)}`,
+        detail: "Áp dụng phụ phí khung giờ theo bảng giá minh bạch.",
+        amount: timeAmount,
+      });
+    } else if (pricingTimeSlug === "can_xac_nhan") {
+      notes.push("Khung giờ linh động đã được ghi nhận, hiện chưa cộng thêm phụ phí riêng.");
+    }
+
+    const weatherValue = String(
+      scope.querySelector("#thoi-tiet-du-kien-dat-lich")?.value || "",
+    ).trim();
+    if (weatherValue === "troi_mua") {
+      const weatherAmount = getBookingFixedTimeWeatherAmount(
+        serviceData,
+        "thoi_tiet",
+        "troi_mua",
+      );
+      addChargeLine({
+        label: "Phụ phí thời tiết mưa",
+        detail: "Áp dụng khi bạn chọn triển khai trong điều kiện mưa.",
+        amount: weatherAmount,
+      });
+    }
+
+    const conditionLabels = getCheckedLabels(
+      scope,
+      "[data-nhom-chip='dieu_kien_dat_lich'] input[type='checkbox']",
+    );
+    if (conditionLabels.length) {
+      notes.push(
+        `Điều kiện tiếp cận đã ghi nhận: ${conditionLabels.join(", ")}. Các checkbox này đang dùng để điều phối, chưa có dòng phí riêng trong bảng giá chốt.`,
+      );
+    }
+
+    includedOptionSlugs.forEach((slug) => {
+      if (!optionSelections.has(slug)) {
+        markBookingSelectedOption(optionSelections, {
+          displaySlug: slug,
+          amount: 0,
+          quantity: 1,
+          note: "Hạng mục hỗ trợ đã gồm trong gói cơ bản.",
+          state: "Đã gồm",
+          included: true,
+        });
+      }
+    });
+
+    const selectedDisplayItems = displayItems
+      .filter((item) => String(item?.slug || "").trim() !== "cuoc_xe")
+      .filter((item) => {
+        const displaySlug = String(item?.slug || "").trim();
+        return optionSelections.has(displaySlug);
+      });
+
+    const optionCardsHtml = selectedDisplayItems.length
+      ? selectedDisplayItems
+      .map((item) => {
+        const displaySlug = String(item?.slug || "").trim();
+        const selected = optionSelections.get(displaySlug);
+        const isActive = !!selected;
+        const stateLabel = selected?.state || (selected?.included ? "Đã gồm" : "Chưa chọn");
+        const amountText = selected
+          ? formatBookingMoneyLine(selected.amount)
+          : "Chưa chọn";
+        const noteText = selected?.note || item.ghi_chu || "";
+
+        return `
+          <article class="the-gia-tham-khao-dat-lich${isActive ? " dang-chon" : ""}">
+            <div class="the-gia-tham-khao-dat-lich__dau">
+              <h6>${core.escapeHtml(item.ten || "")}</h6>
+              <span class="nhan-trang-thai-goi-dat-lich">${core.escapeHtml(stateLabel)}</span>
+            </div>
+            <strong class="the-gia-tham-khao-dat-lich__gia">${core.escapeHtml(amountText)}</strong>
+            <span>${core.escapeHtml(noteText)}</span>
+          </article>
+        `;
+      })
+      .join("")
+      : `
+        <article class="the-gia-tham-khao-dat-lich">
+          <div class="the-gia-tham-khao-dat-lich__dau">
+            <h6>Chưa có hạng mục chọn thêm</h6>
+            <span class="nhan-trang-thai-goi-dat-lich">Chưa phát sinh</span>
+          </div>
+          <strong class="the-gia-tham-khao-dat-lich__gia">Chưa có mục bổ sung</strong>
+          <span>Step này chỉ liệt kê các mục bạn đã bật hoặc đã nhập số lượng.</span>
+        </article>
+      `;
+
+    const breakdownHtml = breakdownLines.length
+      ? breakdownLines.map((item) => renderBookingLineItem(item)).join("")
+      : '<div class="muc-chi-tiet-gia-chot-dat-lich"><p>Chưa có dòng tính nào được kích hoạt. Chọn xe hoặc thêm hạng mục để hệ thống cập nhật ngay.</p></div>';
+
+    return {
+      title: serviceData.ten_dich_vu || "Giá chốt",
+      description:
+        serviceData?.thong_tin_minh_bach?.tom_tat_tong_chi_phi ||
+        "Giá chốt đang bám theo bảng giá minh bạch và các lựa chọn bạn nhập trong form.",
+      optionCardsHtml,
+      breakdownHtml,
+      breakdownLines,
+      total: vehicleEntry ? total : null,
+      totalNote: vehicleEntry
+        ? "Giá chốt sẽ tự cập nhật ngay khi bạn đổi loại xe, số lượng hoặc checkbox phát sinh."
+        : "Chọn loại xe trước để khóa cước cơ bản và hoàn tất giá chốt.",
+      notes,
+    };
+  }
+
   async function renderBookingPricing(scope) {
     const pricingRoot = scope.querySelector("[data-gia-tham-khao-dat-lich]");
     if (!pricingRoot) return;
@@ -1565,21 +2418,16 @@
     const list = pricingRoot.querySelector(
       "[data-gia-tham-khao-dat-lich-danh-sach]",
     );
+    const detailGrid = pricingRoot.querySelector(
+      "[data-chi-tiet-gia-chot-dat-lich]",
+    );
+    const totalValue = pricingRoot.querySelector("[data-tong-gia-chot-dat-lich]");
+    const totalHint = pricingRoot.querySelector("[data-goi-y-gia-chot-dat-lich]");
     const confirmEmpty = scope.querySelector("[data-gia-xac-nhan-rong]");
     const confirmGrid = scope.querySelector("[data-gia-xac-nhan-luoi]");
     const confirmNotes = scope.querySelector("[data-luu-y-xac-nhan-dat-lich]");
     const serviceSelect = scope.querySelector("#loai-dich-vu-dat-lich");
     const pricingServiceId = getPricingServiceId(serviceSelect?.value || "");
-    const timeValue = String(
-      scope.querySelector("#khung-gio-dat-lich")?.value || "",
-    ).trim();
-    const weatherValue = String(
-      scope.querySelector("#thoi-tiet-du-kien-dat-lich")?.value || "",
-    ).trim();
-    const conditionLabels = getCheckedLabels(
-      scope,
-      "[data-nhom-chip='dieu_kien_dat_lich'] input[type='checkbox']",
-    );
 
     if (!pricingServiceId) {
       if (defaultBlock) defaultBlock.hidden = false;
@@ -1588,6 +2436,12 @@
         contentBlock.classList.add("is-hidden");
       }
       if (list) list.innerHTML = "";
+      if (detailGrid) detailGrid.innerHTML = "";
+      if (totalValue) totalValue.textContent = "Chưa đủ dữ liệu";
+      if (totalHint) {
+        totalHint.textContent =
+          "Chọn dịch vụ, xe và nhập đủ các hạng mục cần dùng để hệ thống tính giá chốt.";
+      }
       if (confirmEmpty) confirmEmpty.hidden = false;
       if (confirmGrid) {
         confirmGrid.hidden = true;
@@ -1595,14 +2449,17 @@
       }
       if (confirmNotes) {
         confirmNotes.innerHTML =
-          '<div class="muc-luu-y-xac-nhan">Đội ngũ sẽ xác nhận lại các phát sinh nếu có trước khi chốt lịch.</div>';
+          '<div class="muc-luu-y-xac-nhan">Giá chốt sẽ hiện khi bạn chọn dịch vụ và bắt đầu khai báo các hạng mục chính.</div>';
       }
       return;
     }
 
     const pricingData = await loadPricingReference();
     const serviceData = Array.isArray(pricingData)
-      ? pricingData.find((item) => item.id === pricingServiceId)
+      ? pricingData.find(
+          (item) =>
+            normalizePricingDataServiceId(item?.id) === pricingServiceId,
+        )
       : null;
 
     if (!serviceData || !list) {
@@ -1611,6 +2468,8 @@
         contentBlock.hidden = true;
         contentBlock.classList.add("is-hidden");
       }
+      if (detailGrid) detailGrid.innerHTML = "";
+      if (totalValue) totalValue.textContent = "Chưa đủ dữ liệu";
       if (confirmEmpty) confirmEmpty.hidden = false;
       if (confirmGrid) {
         confirmGrid.hidden = true;
@@ -1626,87 +2485,69 @@
     }
 
     if (title) {
-      title.textContent = serviceData.ten_dich_vu || "Giá tham khảo";
+      title.textContent = serviceData.ten_dich_vu || "Giá chốt";
     }
 
     if (description) {
       description.textContent =
-        "Hệ thống đang hiển thị đúng nhóm giá tham khảo dành cho dịch vụ bạn đã chọn.";
+        serviceData?.thong_tin_minh_bach?.tom_tat_tong_chi_phi ||
+        serviceData?.thong_tin_minh_bach?.phu_hop_khi ||
+        "Hệ thống đang hiển thị đúng gói cơ bản, hạng mục chọn thêm và giá chốt của dịch vụ bạn đã chọn.";
     }
 
-    const pricingMarkup = Array.isArray(serviceData.hang_muc_bao_gia)
-      ? serviceData.hang_muc_bao_gia
-          .slice(0, 6)
-          .map((item) => {
-            const ten = String(item.ten || "").trim();
-            const khoangGia = String(item.khoang_gia || "").trim();
-            const donVi = String(item.don_vi || "").trim();
-            const ghiChu = String(item.ghi_chu || "").trim();
+    const pricingState = buildBookingPricingState(scope, serviceData);
 
-            return `
-              <article class="the-gia-tham-khao-dat-lich">
-                <h6>${ten}</h6>
-                <strong>${khoangGia}${donVi ? ` / ${donVi}` : ""}</strong>
-                <span>${ghiChu}</span>
-              </article>
-            `;
-          })
-          .join("")
-      : "";
+    if (list) {
+      list.innerHTML = pricingState.optionCardsHtml;
+    }
+    if (detailGrid) {
+      detailGrid.innerHTML = pricingState.breakdownHtml;
+    }
+    if (totalValue) {
+      totalValue.textContent =
+        pricingState.total === null
+          ? "Chưa đủ dữ liệu"
+          : core.formatCurrencyVnd(pricingState.total);
+    }
+    if (totalHint) {
+      totalHint.textContent = pricingState.totalNote;
+    }
 
-    list.innerHTML = pricingMarkup;
-
-    if (confirmEmpty) confirmEmpty.hidden = true;
+    if (confirmEmpty) confirmEmpty.hidden = false;
     if (confirmGrid) {
+      const confirmationItems = pricingState.breakdownLines.map((item) => {
+        const detail = String(item.detail || "").trim();
+        return `
+          <article class="the-gia-xac-nhan-dat-lich">
+            <h5>${core.escapeHtml(item.label || "")}</h5>
+            <strong>${core.escapeHtml(formatBookingMoneyLine(item.amount))}</strong>
+            <span>${core.escapeHtml(detail || "Đã ghi nhận theo lựa chọn hiện tại.")}</span>
+          </article>
+        `;
+      });
+
+      confirmationItems.push(`
+        <article class="the-gia-xac-nhan-dat-lich the-gia-xac-nhan-dat-lich--tong">
+          <h5>Tổng giá chốt</h5>
+          <strong>${core.escapeHtml(
+            pricingState.total === null
+              ? "Chưa đủ dữ liệu"
+              : core.formatCurrencyVnd(pricingState.total),
+          )}</strong>
+          <span>${core.escapeHtml(pricingState.totalNote)}</span>
+        </article>
+      `);
+
+      confirmEmpty.hidden = true;
       confirmGrid.hidden = false;
-      confirmGrid.innerHTML = Array.isArray(serviceData.hang_muc_bao_gia)
-        ? serviceData.hang_muc_bao_gia
-            .map((item) => {
-              const ten = String(item.ten || "").trim();
-              const khoangGia = String(item.khoang_gia || "").trim();
-              const donVi = String(item.don_vi || "").trim();
-              const ghiChu = String(item.ghi_chu || "").trim();
-
-              return `
-                <article class="the-gia-xac-nhan-dat-lich">
-                  <h5>${ten}</h5>
-                  <strong>${khoangGia}${donVi ? ` / ${donVi}` : ""}</strong>
-                  <span>${ghiChu}</span>
-                </article>
-              `;
-            })
-            .join("")
-        : "";
-    }
-
-    const notes = [
-      "Đây là giá tham khảo theo dịch vụ đã chọn, chưa phải báo giá chốt.",
-    ];
-
-    if (timeValue === "toi") {
-      notes.push("Khung giờ tối có thể phát sinh phụ phí ngoài giờ theo chính sách dịch vụ.");
-    } else if (timeValue === "dem") {
-      notes.push("Khung giờ ban đêm thường áp dụng phụ phí cao hơn và cần xác nhận nhân sự trước khi chốt lịch.");
-    } else if (timeValue === "linh_dong") {
-      notes.push("Khung giờ linh động sẽ được đội ngũ xác nhận lại trước khi chốt lịch.");
-    }
-
-    if (weatherValue === "troi_mua") {
-      notes.push(
-        "Nếu thời tiết xấu vào ngày thực hiện, phụ phí thời tiết có thể được áp dụng theo bảng giá tham khảo.",
-      );
-    }
-
-    if (conditionLabels.length) {
-      notes.push(
-        `Điều kiện tiếp cận hiện tại gồm: ${conditionLabels.join(
-          ", ",
-        )}. Các yếu tố này có thể ảnh hưởng đến chi phí triển khai thực tế.`,
-      );
+      confirmGrid.innerHTML = confirmationItems.join("");
     }
 
     if (confirmNotes) {
-      confirmNotes.innerHTML = notes
+      confirmNotes.innerHTML = pricingState.notes
+        .concat([
+          "Nếu bạn đổi loại xe, thay số lượng hạng mục hoặc bật thêm checkbox phát sinh, giá chốt sẽ tự cập nhật ngay trong form.",
+        ])
         .map((note) => `<div class="muc-luu-y-xac-nhan">${note}</div>`)
         .join("");
     }
@@ -1837,6 +2678,16 @@
   function applyServiceState(scope, serviceValue) {
     const normalized = normalizeService(serviceValue);
     const emptyPanel = scope.querySelector("[data-khoi-mac-dinh]");
+    const companyLabel = scope.querySelector("[data-nhan-cong-ty-dat-lich]");
+
+    if (companyLabel) {
+      companyLabel.textContent =
+        normalized === "chuyen_van_phong"
+          ? "Tên công ty"
+          : normalized === "chuyen_kho_bai"
+            ? "Tên kho hoặc đơn vị vận hành"
+            : "Tên công ty hoặc đơn vị";
+    }
 
     scope.querySelectorAll("[data-khoi-dich-vu]").forEach((panel) => {
       const shouldShow =
@@ -1870,6 +2721,17 @@
     syncBookingPricingTimeSlot(scope);
     renderFormSummaries(scope);
     renderBookingPricing(scope);
+
+    if (scope.__bookingMapState?.map) {
+      const refreshMapLayout = function () {
+        scope.__bookingMapState.map.invalidateSize();
+        scope.__bookingMapState.updateMapBounds?.();
+      };
+
+      refreshMapLayout();
+      window.requestAnimationFrame(refreshMapLayout);
+      window.setTimeout(refreshMapLayout, 120);
+    }
   }
 
   function initServiceSelect(scope) {
@@ -1963,26 +2825,253 @@
     renderFormSummaries(scope);
   }
 
+  function getBookingStepPanels(scope) {
+    return Array.from(scope.querySelectorAll("[data-booking-step]"));
+  }
+
+  function getBookingCurrentStep(scope) {
+    const activePanel = getBookingStepPanels(scope).find((panel) => !panel.hidden);
+    return Number(activePanel?.getAttribute("data-booking-step") || 1);
+  }
+
+  function isBookingFieldVisible(field) {
+    return !field.disabled && !field.hidden && !field.closest("[hidden]");
+  }
+
+  function validateBookingStep(scope, stepNumber) {
+    const panel = scope.querySelector(`[data-booking-step="${stepNumber}"]`);
+    if (!panel) return true;
+
+    // Clear previous errors
+    panel.querySelectorAll('.input-error').forEach((el) => el.classList.remove('input-error'));
+    panel.querySelectorAll('.field-error-msg').forEach((el) => el.remove());
+
+    let isValid = true;
+    let firstErrorField = null;
+
+    const markError = (field, message) => {
+      isValid = false;
+      field.classList.add('input-error');
+      
+      const group = field.closest('.nhom-truong') || field.parentElement;
+      let errorEl = group.querySelector('.field-error-msg');
+      if (!errorEl) {
+        errorEl = document.createElement('span');
+        errorEl.className = 'field-error-msg';
+        // Thêm thông báo ngay dưới thẻ input/select
+        field.insertAdjacentElement('afterend', errorEl);
+      }
+      errorEl.textContent = '❌ Lỗi: ' + message;
+      
+      if (!firstErrorField) firstErrorField = field;
+    };
+
+    const markMapError = (message) => {
+      isValid = false;
+      const mapBtn = panel.querySelector('.nut-ban-do-ui-vi-tri');
+      if (mapBtn) {
+        mapBtn.classList.add('input-error');
+        let errorEl = mapBtn.parentElement.querySelector('.field-error-msg');
+        if (!errorEl) {
+          errorEl = document.createElement('span');
+          errorEl.className = 'field-error-msg';
+          mapBtn.insertAdjacentElement('afterend', errorEl);
+        }
+        errorEl.textContent = '❌ Lỗi: ' + message;
+        if (!firstErrorField) firstErrorField = mapBtn;
+      }
+    };
+
+    // 1. Kiểm tra trường bắt buộc (required) cơ bản
+    const fields = panel.querySelectorAll("input, select, textarea");
+    for (const field of fields) {
+      if (!isBookingFieldVisible(field)) continue;
+      
+      if (field.hasAttribute("required") && !field.value.trim()) {
+        const labelText = field.closest('.nhom-truong')?.querySelector('.nhan-truong')?.textContent.replace('*', '').trim() || 'Trường này';
+        markError(field, `Vui lòng nhập/chọn ${labelText.toLowerCase()}`);
+      } else if (field.type === "tel" && field.value.trim()) {
+        const phoneRegex = /^(0|\+84)[0-9]{9}$/;
+        if (!phoneRegex.test(field.value.replace(/\s+/g, ''))) {
+          markError(field, "Số điện thoại không hợp lệ (cần đủ 10 số)");
+        }
+      }
+    }
+
+    // 2. Logic kiểm tra chuyên sâu theo từng bước (Business Logic)
+    if (stepNumber === 1) {
+      const fromAddr = panel.querySelector('#dia-chi-di-dat-lich')?.value.trim();
+      const toAddr = panel.querySelector('#dia-chi-den-dat-lich')?.value.trim();
+      
+      if (fromAddr && toAddr && fromAddr.toLowerCase() === toAddr.toLowerCase()) {
+        markError(panel.querySelector('#dia-chi-den-dat-lich'), "Điểm đến không được trùng với điểm đi.");
+      }
+
+      const latFrom = scope.querySelector('input[name="vi_tri_diem_di_lat"]')?.value;
+      const latTo = scope.querySelector('input[name="vi_tri_diem_den_lat"]')?.value;
+      
+      if (!latFrom || !latTo) {
+        markMapError("Vui lòng lấy vị trí hoặc kéo ghim trên bản đồ để tính khoảng cách.");
+      }
+    }
+
+    if (stepNumber === 3) {
+      const dateField = panel.querySelector('#ngay-thuc-hien-dat-lich');
+      if (dateField && dateField.value) {
+        const selectedDate = new Date(dateField.value);
+        selectedDate.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+          markError(dateField, "Ngày thực hiện không được ở trong quá khứ.");
+        }
+      }
+    }
+
+    // 3. Xử lý UI nếu có lỗi
+    if (!isValid && firstErrorField) {
+      firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (typeof firstErrorField.focus === 'function') {
+        firstErrorField.focus({ preventScroll: true });
+      }
+    }
+
+    return isValid;
+  }
+
+  function updateBookingStepIndicator(scope, currentStep) {
+    scope
+      .querySelectorAll("[data-booking-step-indicator-item]")
+      .forEach((item) => {
+        const step = Number(item.getAttribute("data-booking-step-indicator-item") || 0);
+        item.classList.toggle("is-active", step === currentStep);
+        item.classList.toggle("is-completed", step < currentStep);
+      });
+
+    const finalActions = scope.querySelector("[data-booking-final-actions]");
+    if (finalActions) {
+      finalActions.hidden = currentStep !== 6;
+    }
+  }
+
+  function goToBookingStep(scope, targetStep, options = {}) {
+    const panels = getBookingStepPanels(scope);
+    if (!panels.length) return;
+
+    const maxStep = panels.length;
+    const nextStep = Math.min(Math.max(Number(targetStep || 1), 1), maxStep);
+    const currentStep = getBookingCurrentStep(scope);
+
+    if (!options.force && nextStep > currentStep) {
+      for (let step = currentStep; step < nextStep; step += 1) {
+        if (!validateBookingStep(scope, step)) return;
+      }
+    }
+
+    panels.forEach((panel) => {
+      const step = Number(panel.getAttribute("data-booking-step") || 0);
+      const isActive = step === nextStep;
+      panel.hidden = !isActive;
+      panel.classList.toggle("is-active", isActive);
+    });
+
+    updateBookingStepIndicator(scope, nextStep);
+
+    if (nextStep === 6) {
+      renderFormSummaries(scope);
+      renderBookingMediaReview(scope);
+      renderBookingPricing(scope);
+    }
+
+    if ((nextStep === 1 || nextStep === 2) && scope.__bookingMapState?.map) {
+      const refreshMapLayout = function () {
+        scope.__bookingMapState.map.invalidateSize();
+        scope.__bookingMapState.updateMapBounds?.();
+      };
+      refreshMapLayout();
+      window.requestAnimationFrame(refreshMapLayout);
+    }
+
+    const activePanel = scope.querySelector(`[data-booking-step="${nextStep}"]`);
+    activePanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function initBookingStepWizard(scope) {
+    if (!scope.querySelector("[data-booking-step]")) return;
+
+    scope.querySelectorAll("[data-booking-step-next]").forEach((button) => {
+      button.addEventListener("click", function () {
+        const nextStep = Number(button.getAttribute("data-booking-step-next") || 0);
+        if (nextStep) {
+          goToBookingStep(scope, nextStep);
+        }
+      });
+    });
+
+    scope.querySelectorAll("[data-booking-step-prev]").forEach((button) => {
+      button.addEventListener("click", function () {
+        const previousStep = Number(button.getAttribute("data-booking-step-prev") || 0);
+        if (previousStep) {
+          goToBookingStep(scope, previousStep, { force: true });
+        }
+      });
+    });
+
+    scope.querySelectorAll("[data-booking-step-indicator-item]").forEach((button) => {
+      button.addEventListener("click", function () {
+        const targetStep = Number(
+          button.getAttribute("data-booking-step-indicator-item") || 0,
+        );
+        if (!targetStep) return;
+
+        const currentStep = getBookingCurrentStep(scope);
+        if (targetStep <= currentStep) {
+          goToBookingStep(scope, targetStep, { force: true });
+        }
+      });
+    });
+
+    goToBookingStep(scope, 1, { force: true });
+  }
+
   function initBookingFormUi(scope) {
     if (!scope.querySelector(".form-dat-lich")) return;
 
-    scope.addEventListener("input", function () {
+    scope.addEventListener("input", function (event) {
+      if (event.target && event.target.classList.contains("input-error")) {
+        event.target.classList.remove("input-error");
+        const group = event.target.closest('.nhom-truong') || event.target.parentElement;
+        const msg = group?.querySelector('.field-error-msg');
+        if (msg) msg.remove();
+      }
+
       syncBookingPricingTimeSlot(scope);
       renderBookingMapPreview(scope);
       renderFormSummaries(scope);
       renderBookingMediaReview(scope);
       renderBookingPricing(scope);
+      refreshBookingWeather(scope);
     });
 
-    scope.addEventListener("change", function () {
+    scope.addEventListener("change", function (event) {
+      if (event.target && event.target.classList.contains("input-error")) {
+        event.target.classList.remove("input-error");
+        const group = event.target.closest('.nhom-truong') || event.target.parentElement;
+        const msg = group?.querySelector('.field-error-msg');
+        if (msg) msg.remove();
+      }
+
       syncBookingPricingTimeSlot(scope);
       renderBookingMapPreview(scope);
       renderFormSummaries(scope);
       renderBookingMediaReview(scope);
       renderBookingPricing(scope);
+      refreshBookingWeather(scope);
     });
 
     initBookingMap(scope);
+    syncBookingExecutionDateLimits(scope);
     syncBookingVehicleOptions(
       scope,
       scope.querySelector("#loai-dich-vu-dat-lich")?.value || "",
@@ -1992,6 +3081,8 @@
     renderFormSummaries(scope);
     renderBookingMediaReview(scope);
     renderBookingPricing(scope);
+    refreshBookingWeather(scope);
+    initBookingStepWizard(scope);
   }
 
   function initFormNotice(scope, formType) {
