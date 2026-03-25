@@ -176,70 +176,9 @@
     </style>
 <script src="/ga.js"></script>
   </head>
-  <body>
+  <body data-nav-active="home" data-nav-active-style="large">
     <div style="font-family: &quot;Quicksand&quot;, sans-serif">
-      <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
-        <div class="container">
-          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../index.html" style="color: #007bff">
-            <img style="width: 80px; height: 60px" src="assets/logo-he-thong.png" alt="cham-soc-me-va-be" />
-          </a>
-
-          <span class="fw-bold text-primary">Chăm Sóc Bệnh Nhân</span>
-
-          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #007bff">
-            <img style="width: 80px; height: 60px" src="assets/logo-cham-soc-benh-nhan.png" alt="cham-soc-me-va-be" />
-          </a>
-
-          <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse" data-bs-target="#navMenu">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-
-          <div class="collapse navbar-collapse justify-content-end" id="navMenu">
-            <ul class="navbar-nav align-items-center gap-3">
-              <li class="nav-item">
-                <a class="nav-link fw-bold px-3 active" href="index.html" style="color: #007bff; font-size: larger">Trang Chủ</a>
-              </li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/gioi-thieu.html">Giới Thiệu</a></li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="dich-vu-cham-soc-nguoi-benh.html">Dịch Vụ</a></li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/dieu-khoan.html">Điều Khoản</a></li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/cam-nang.html">Cẩm Nang</a></li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="html/lien-he.html">Liên Hệ</a></li>
-
-              <li class="nav-item">
-                <a class="btn text-white rounded-pill px-4 py-2 shadow-sm" href="khach_hang/lookup.html" data-lookup-modal data-lookup-modal-src="khach_hang/lookup.html"
-                  style="background: linear-gradient(135deg, #629bf0, #407cec); transition: 0.3s;"
-                  onmouseover="this.style.background = 'linear-gradient(135deg, #0056b3, #004a99)'; this.style.transform = 'scale(1.05)';"
-                  onmouseout="this.style.background = 'linear-gradient(135deg, #629bf0, #407cec)'; this.style.transform = 'scale(1)';">
-                  Tra cứu đơn hàng
-                </a>
-              </li>
-
-              <li class="nav-item ms-lg-3" id="loginNavItem">
-                <a class="btn text-white rounded-pill px-4 py-2 shadow-sm" href="login.html" data-login-modal data-login-modal-src="login.html"
-                  style="background-color: #007bff; transition: 0.3s;"
-                  onmouseover="this.style.backgroundColor = '#0056b3'; this.style.transform = 'scale(1.05)';"
-                  onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)';">
-                  Đăng Nhập
-                </a>
-              </li>
-
-              <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
-                <div class="dropdown">
-                  <button class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img id="navAvatar" src="assets/logo-cham-soc-benh-nhan.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
-                    <span id="navUserName" class="fw-semibold small">Tài khoản</span>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                    <li><a class="dropdown-item" href="khach_hang/profile.html" data-profile-modal data-profile-modal-src="khach_hang/profile.html">Sửa đổi thông tin</a></li>
-                    <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item text-danger" href="api/logout.php">Đăng xuất</a></li>
-                  </ul>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+      <div id="site-header"></div>
 
     <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #e8f4ff 100%)">
       <div class="container py-lg-4">
@@ -533,74 +472,7 @@
       </div>
     </section>
 
-      <footer class="bg-dark text-white pt-5 pb-3">
-        <div class="container">
-          <div class="row g-4 mb-4">
-            <div class="col-lg-4">
-              <h3 class="h4 fw-bold mb-3" style="color: #007bff">Chăm Sóc Bệnh Nhân</h3>
-              <p class="opacity-75">Hệ thống cung ứng nhân sự chăm sóc bệnh nhân chuyên nghiệp hàng đầu tại Việt Nam.</p>
-              <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
-              <p class="opacity-75 small">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</p>
-              
-              <h4 class="h5 fw-bold mt-4 mb-3">Liên Hệ</h4>
-              <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
-              <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
-            </div>
-
-            <div class="col-lg-2">
-              <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
-              <ul class="list-unstyled">
-                <li class="mb-2"><a href="HTML/gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
-                <li class="mb-2"><a href="dich-vu-cham-soc-nguoi-benh.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
-                <li class="mb-2"><a href="HTML/lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
-                <li class="mb-2"><a href="../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
-                <li class="mb-2"><a href="../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
-                <li class="mb-2"><a href="../cham-soc-vuon-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Vườn & Rẫy</a></li>
-                <li class="mb-2"><a href="../giat-ui-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giặt Ủi Cao Cấp</a></li>
-                <li class="mb-2"><a href="../tho-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Thợ Nhà & Sửa Chữa</a></li>
-                <li class="mb-2"><a href="../cham-soc-nguoi-gia/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Người Già</a></li>
-                <li class="mb-2"><a href="../cham-soc-nguoi-benh/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Bệnh Nhân</a></li>
-                <li class="mb-2"><a href="../giao-hang-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giao Hàng Nhanh</a></li>
-              </ul>
-            </div>
- 
-            <div class="col-lg-3">
-              <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
-              <div class="d-flex gap-2">
-                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-youtube"></i></a>
-                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-tiktok"></i></a>
-              </div>
-
-              <div class="mt-4">
-                <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
-                <div class="d-flex gap-2 flex-wrap">
-                  <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px;">
-                    <i data-lucide="apple" class="me-2" style="width: 18px;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 8px;">Download on</small>
-                      <span class="fw-bold" style="font-size: 11px;">App Store</span>
-                    </div>
-                  </a>
-                  <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px;">
-                    <i data-lucide="play" class="me-2" style="width: 18px;"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 8px;">Get it on</small>
-                      <span class="fw-bold" style="font-size: 11px;">Google Play</span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <hr class="opacity-25" />
-          <p class="text-center small opacity-50 mb-0">
-            &copy; 2026 Chăm Sóc Bệnh Nhân. Đồng hành cùng sức khỏe Việt.
-          </p>
-        </div>
-      </footer>
+      <div id="site-footer"></div>
 
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -1826,7 +1698,8 @@
     </script>
 
       <script src="JS/login-modal-core.js"></script>
-      <script src="JS/user-nav-menu.js"></script>
+      <script src="JS/shared-layout.js"></script>
+    <script src="JS/user-nav-menu.js"></script>
       <script src="JS/login-modal-loader.js"></script>
       <script src="JS/lookup-modal-core.js"></script>
       <script src="JS/lookup-modal-loader.js"></script>
@@ -1835,4 +1708,5 @@
     </div>
   </body>
 </html>
+
 

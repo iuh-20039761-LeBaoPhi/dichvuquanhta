@@ -1,49 +1,44 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title id="page-title">Cẩm Nang Chăm Sóc Người bệnh – Kiến Thức   Toàn Diện</title>
-    <meta id="meta-desc" name="description" content="Cẩm nang kiến thức chăm sóc người bệnh  : dinh dưỡng, sức khỏe tâm lý, phát triển , dịch vụ osin chuyên nghiệp tại nhà.">
-    <meta id="meta-kw"   name="keywords"    content="chăm sóc người bệnh  dinh dưỡng  , osin chăm người bệnh, phục hồi  ">
+    <title id="page-title">Cẩm Nang Chăm Sóc Mẹ Và Bé – Kiến Thức Sau Sinh Toàn Diện</title>
+    <meta id="meta-desc" name="description" content="Cẩm nang kiến thức chăm sóc mẹ và bé sau sinh: dinh dưỡng, sức khỏe tâm lý, phát triển trẻ sơ sinh, dịch vụ osin chuyên nghiệp tại nhà.">
+    <meta id="meta-kw"   name="keywords"    content="chăm sóc mẹ sau sinh, chăm sóc bé sơ sinh, dinh dưỡng sau sinh, osin chăm bé, phục hồi sau sinh">
     <meta property="og:type"  content="website" />
-    <meta id="og-title"  property="og:title"       content="Cẩm Nang Chăm Sóc Người bệnh" />
-    <meta id="og-desc"   property="og:description" content="Kiến thức chăm sóc người bệnh   toàn diện." />
-    <link rel="shortcut icon" type="image/x-icon" href="../assets/logo-cham-soc-benh-nhan.png" />
+    <meta id="og-title"  property="og:title"       content="Cẩm Nang Chăm Sóc Mẹ Và Bé" />
+    <meta id="og-desc"   property="og:description" content="Kiến thức chăm sóc mẹ và bé sau sinh toàn diện." />
+
+    <link rel="shortcut icon" type="image/x-icon" href="assets/logomvb.png" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <style>
       :root {
-        --pink:   #62cff0;
-        --pink-d: #4390d8;
-        --pink-l: #f0f9ff;
-        --pink-m: #e4f0fc;
+        --pink:   #f06292;
+        --pink-d: #d84374;
+        --pink-l: #fff0f6;
+        --pink-m: #fce4ec;
         --teal:   #26a69a;
         --teal-l: #e0f2f1;
       }
-      html,
-      body {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-      }
-      body {padding-top: 96px;}
-      .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
+      html,body {width: 100%;max-width: 100%;overflow-x: hidden; }
       body { font-family:"Quicksand",sans-serif;  color:#444; background:#fafafa; }
-
+      .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
+    /* GIỮ header luôn 1 hàng */
+      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
       /* ── CATEGORY PILLS ─────────────────────────── */
       .cat-pill { font-size:.72rem; font-weight:700; letter-spacing:.4px; padding:3px 11px; border-radius:50px; display:inline-block; }
-      .cat-0 { background:#e4f2fc; color:#1870c2; }
+      .cat-0 { background:#fce4ec; color:#c2185b; }
       .cat-1 { background:#e8f5e9; color:#2e7d32; }
-      .cat-2 { background:#fff3e0; color:#005ce6; }
-      .cat-3 { background:#e3f2fd; color:#70c015; }
+      .cat-2 { background:#fff3e0; color:#e65100; }
+      .cat-3 { background:#e3f2fd; color:#1565c0; }
       .cat-4 { background:#f3e5f5; color:#6a1b9a; }
-      .cat-5 { background:#e0f2f1; color:#00694a; }
-      .cat-6 { background:#fbe9e7; color:#0c0fbf; }
+      .cat-5 { background:#e0f2f1; color:#00695c; }
+      .cat-6 { background:#fbe9e7; color:#bf360c; }
       .cat-7 { background:#ede7f6; color:#4527a0; }
-      .cat-8 { background:#ede7f6; color:#a0279a; }
 
       /* ── CARDS ──────────────────────────────────── */
       .post-card { transition:transform .25s,box-shadow .25s; border-radius:16px !important; overflow:hidden; border:none !important; cursor:pointer; }
@@ -83,15 +78,9 @@
       .breadcrumb-item a { color:var(--pink); text-decoration:none; }
       .img-ph { background:linear-gradient(135deg,var(--pink-l),var(--pink-m)); display:flex; align-items:center; justify-content:center; }
       /* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
-      .navbar .container {
-        display: flex;
-        flex-wrap: nowrap !important;
-        align-items: center;
-        min-width: 0;
-      }
+      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
 
-      /* ================= MOBILE ONLY ================= */
-      /* ================= MOBILE ONLY ================= */
+/* ================= MOBILE ONLY ================= */
       @media (max-width: 991.98px) {
         body {
     padding-top: 86px;
@@ -99,86 +88,20 @@
         .navbar { overflow-x: clip; }
         .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
         .navbar-brand img { width: 56px !important; height: 42px !important; }
-
-        /* ÉP menu xuống dưới navbar */
         .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-
-        /* Khi mở menu */
         .navbar-collapse.show { display: block; }
-
-        /* UL dọc + căn giữa */
         .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
-
-        /* Item */
         .navbar-collapse .nav-item { width: 100%; text-align: center; }
-
-        /* Link */
         .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
-
-        /* Button */
         .navbar-collapse .btn { width: 80%; margin-top: 10px; }
-      }
+      }    
     </style>
 <script src="/ga.js"></script>
   </head>
-  <body>
+  <body data-nav-active="blog" data-nav-active-style="normal">
 
   <!-- ═══════════ NAVBAR (giữ nguyên) ═══════════ -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
-        <div class="container">
-            <a href="../../index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
-                <img src="../assets/logo-he-thong.png" alt="cham-soc-me-va-be" style="width: 80px; height: 60px" />
-            </a>
-            <span class="fw-bold text-primary">Chăm Sóc Người Bệnh</span>
-            <a href="../index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
-                <img src="../assets/logo-cham-soc-benh-nhan.png" alt="cham-soc-me-va-be" style="width: 80px; height: 60px" />
-            </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
-                <ul class="navbar-nav align-items-center gap-3">
-                    <li class="nav-item"><a href="../index.html" class="nav-link fw-bold px-3">Trang Chủ</a></li>
-                    <li class="nav-item"><a href="gioi-thieu.html" class="nav-link fw-bold px-3">Giới Thiệu</a></li>
-                    <li class="nav-item"><a href="../dich-vu-cham-soc-nguoi-benh.html" class="nav-link fw-bold px-3">Dịch Vụ</a></li>
-                    <li class="nav-item"><a href="dieu-khoan.html" class="nav-link fw-bold px-3">Điều Khoản</a></li>
-                    <li class="nav-item"><a href="cam-nang.html" class="nav-link fw-bold px-3 active" style="color:#007bff;">Cẩm Nang</a></li>
-                    <li class="nav-item"><a href="lien-he.html" class="nav-link fw-bold px-3">Liên Hệ</a></li>
-                    <li class="nav-item">
-                        <a href="khach_hang/lookup.html" class="btn text-white rounded-pill px-4 py-2 shadow-sm" 
-                          style="background: linear-gradient(135deg, #629bf0, #407cec);" 
-                          data-lookup-modal data-lookup-modal-src="khach_hang/lookup.html"
-                          onmouseover="this.style.background = 'linear-gradient(135deg, #d84374, #c2185b)'; this.style.transform = 'scale(1.05)';"
-                          onmouseout="this.style.background = 'linear-gradient(135deg, #629bf0, #407cec)'; this.style.transform = 'scale(1)';"
-                        >Tra cứu đơn hàng</a>
-                    </li>
-                    <li class="nav-item ms-lg-3" id="loginNavItem">
-                        <a href="../login.html" class="btn text-white rounded-pill px-4 py-2 shadow-sm" 
-                          style="background-color: #007bff" 
-                          data-login-modal data-login-modal-src="../login.html"
-                          onmouseover="this.style.backgroundColor = '#d84374'; this.style.transform = 'scale(1.05)';"
-                          onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)';"
-                        >Đăng Nhập</a>
-                    </li>
-                    <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
-                        <div class="dropdown">
-                            <button class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-flex align-items-center gap-2" 
-                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img id="navAvatar" src="../assets/logo-cham-soc-benh-nhan.png" alt="avatar" width="32" height="32" class="rounded-circle border" />
-                                <span id="navUserName" class="fw-semibold small">Tài khoản</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                <li><a href="khach_hang/profile.html" class="dropdown-item" data-profile-modal data-profile-modal-src="khach_hang/profile.html">Sửa đổi thông tin</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a href="../api/logout.php" class="dropdown-item text-danger">Đăng xuất</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <div id="site-header"></div>
 
   <!-- ═══════════ HERO ═══════════ -->
   <section class="hero-section py-5" id="hero-section">
@@ -186,10 +109,10 @@
       <div class="row justify-content-center text-center">
         <div class="col-lg-8">
           <span class="badge rounded-pill px-4 py-2 fs-6 mb-3 text-white" style="background-color:var(--pink-d)">
-            <i class="fas fa-heart me-1"></i> Chăm Sóc  Người Bệnh
+            <i class="fas fa-heart me-1"></i> Chăm Sóc Mẹ Và Bé
           </span>
-          <h1 class="display-5 fw-bold mb-3" id="hero-title">Cẩm Nang Chăm Sóc  Người Bệnh  </h1>
-          <p class="lead text-muted" id="hero-sub">30 bài viết kiến thức chuyên sâu về chăm sóc người bệnh, dinh dưỡng và phục hồi   — biên soạn bởi đội ngũ chuyên nghiệp.</p>
+          <h1 class="display-5 fw-bold mb-3" id="hero-title">Cẩm Nang Chăm Sóc Mẹ Và Bé Sau Sinh</h1>
+          <p class="lead text-muted" id="hero-sub">30 bài viết kiến thức chuyên sâu về chăm sóc mẹ, bé sơ sinh, dinh dưỡng và phục hồi sau sinh — biên soạn bởi đội ngũ chuyên nghiệp.</p>
           <div class="d-flex justify-content-center flex-wrap gap-4 text-muted small mt-4">
             <span><i class="fas fa-calendar-alt me-1 text-danger"></i> Cập nhật 2025</span>
             <span><i class="fas fa-newspaper me-1 text-danger"></i> <span id="total-posts">30</span> bài viết</span>
@@ -212,7 +135,7 @@
           <div class="col-lg-8">
 
             <!-- Search bar -->
-            <div class="input-group mb-3 shadow-sm rounded-pill overflow-hidden" style="border:2px solid #bbd3f8;">
+            <div class="input-group mb-3 shadow-sm rounded-pill overflow-hidden" style="border:2px solid #f8bbd0;">
               <span class="input-group-text bg-white border-0 ps-3"><i class="fas fa-search" style="color:var(--pink)"></i></span>
               <input type="text" id="search-input" class="form-control border-0 bg-white py-2"
                      placeholder="Tìm kiếm bài viết…" autocomplete="off" />
@@ -272,7 +195,7 @@
                 <a href="tel:0775472347" class="btn text-white fw-bold rounded-pill w-100 py-2 mb-2" style="background:var(--pink-d)">
                   <i class="fas fa-phone me-2"></i>0775 472 347
                 </a>
-                <a href="lien-he.html" class="btn btn-outline-secondary rounded-pill w-100 py-2">
+                <a href="html/lien-he.html" class="btn btn-outline-secondary rounded-pill w-100 py-2">
                   <i class="fas fa-calendar-alt me-2"></i>Đặt Lịch Online
                 </a>
               </div>
@@ -298,7 +221,7 @@
 
           <!-- Article body -->
           <div class="col-lg-8">
-            <button class="btn btn-light rounded-pill mb-4 fw-bold" onclick="showList()" style="color:var(--pink-d)">
+            <button class="btn btn-light rounded-pill mb-4 fw-bold " onclick="showList()" style="color:var(--pink-d)">
               <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
             </button>
 
@@ -381,77 +304,7 @@
   </main>
 
   <!-- ═══════════ FOOTER (giữ nguyên) ═══════════ -->
-  <footer class="bg-dark text-white pt-5 pb-3">
-    <div class="container">
-      <div class="row g-4 mb-4">
-        <div class="col-lg-4">
-          <h3 class="h4 fw-bold mb-3" style="color:#007bff">Chăm sóc  Người Bệnh</h3>
-          <p class="opacity-75">Cung cấp dịch vụ chăm sóc sức khỏe  Người Bệnh chuyên nghiệp hàng đầu tại Việt Nam.</p>
-          <p class="opacity-75">
-                CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853
-              </p>
-              <p class="opacity-75">
-                Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh, Việt Nam
-              </p>
-              <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
-
-              <p class="mb-1 opacity-75 small">
-                <i class="fas fa-phone me-2"></i> 0775472347
-              </p>
-              <p class="mb-1 opacity-75 small">
-                <i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com
-              </p>
-              
-        </div>
-        <div class="col-lg-2">
-          <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
-          <ul class="list-unstyled">
-            <li class="mb-2"><a href="gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
-            <li class="mb-2"><a href="../dich-vu-cham-soc-nguoi-benh.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
-            <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
-            <li class="mb-2"><a class="text-white text-decoration-none opacity-75" target="_blank" href="../../dich-vu-don-ve-sinh/">Lau Dọn Vệ Sinh</a></li>
-            <li class="mb-2"><a class="text-white text-decoration-none opacity-75" target="_blank" href="../../cham-soc-me-va-be/">Chăm Sóc Mẹ &amp; Bé</a></li>
-            <li class="mb-2"><a class="text-white text-decoration-none opacity-75" target="_blank" href="../../cham-soc-vuon-nha/">Chăm Sóc Vườn &amp; Rẫy</a></li>
-            <li class="mb-2"><a class="text-white text-decoration-none opacity-75" target="_blank" href="../../giat-ui-nhanh/">Giặt Ủi Cao Cấp</a></li>
-            <li class="mb-2"><a class="text-white text-decoration-none opacity-75" target="_blank" href="../../tho-nha/">Thợ Nhà &amp; Sửa Chữa</a></li>
-            <li class="mb-2"><a class="text-white text-decoration-none opacity-75" target="_blank" href="../../cham-soc-nguoi-gia/">Chăm Sóc Người Già</a></li>
-            <li class="mb-2"><a class="text-white text-decoration-none opacity-75" target="_blank" href="../../cham-soc-nguoi-benh/">Chăm Sóc Bệnh Nhân</a></li>
-            <li class="mb-2"><a class="text-white text-decoration-none opacity-75" target="_blank" href="../../giao-hang-nhanh/">Giao Hàng Nhanh</a></li>
-          </ul>
-        </div>
-        <div class="col-lg-3">
-          <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
-          <div class="d-flex gap-3">
-            <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-youtube"></i></a>
-            <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-tiktok"></i></a>
-          </div>
-          <div class="mt-4">
-            <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
-            <div class="d-flex gap-2" style="max-width: 300px;">
-              <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                <i data-lucide="apple" class="me-2" style="width: 20px; height: 20px;"></i>
-                <div class="text-start lh-1">
-                  <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
-                  <span class="fw-bold" style="font-size: 11px;">App Store</span>
-                </div>
-              </a>
-              <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                <i data-lucide="play" class="me-2" style="width: 20px; height: 20px; fill: white;"></i>
-                <div class="text-start lh-1">
-                  <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
-                  <span class="fw-bold" style="font-size: 11px;">Google Play</span>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="opacity-25" />
-      <p class="text-center small opacity-50">&copy; 2026 Chăm sóc  Người Bệnh. Tất cả quyền được bảo lưu.</p>
-    </div>
-  </footer>
+  <div id="site-footer"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -462,15 +315,14 @@
   const PER_PAGE  = 6;
 
   const CAT_CLS = {
-    'Chăm sóc người cao tuổi':          'cat-0',
-    'Phục hồi chức năng':          'cat-1',
-    'Dinh dưỡng người bệnh':            'cat-2',
-    'Kỹ năng chăm sóc ':   'cat-3',
-    'Sức khỏe tổng quát':         'cat-4',
-    'Tâm lý y học':               'cat-5',
-    'An toàn cho người bệnh':              'cat-6',
-    'Chăm sóc đặc biệt':      'cat-7',
-    'Dịch vụ chăm sóc':      'cat-8',
+    'Chăm sóc mẹ sau sinh':          'cat-0',
+    'Chăm sóc trẻ sơ sinh':          'cat-1',
+    'Dinh dưỡng sau sinh':            'cat-2',
+    'Sức khỏe tâm lý mẹ sau sinh':   'cat-3',
+    'Phát triển trẻ sơ sinh':         'cat-4',
+    'Hỗ trợ việc nhà':               'cat-5',
+    'Dịch vụ chăm sóc':              'cat-6',
+    'Dinh dưỡng và phát triển':      'cat-7',
   };
   const SEC_ICONS = [
     'fas fa-seedling','fas fa-star','fas fa-check-circle',
@@ -579,8 +431,8 @@
     const cls  = CAT_CLS[p.category] || 'cat-0';
     const date = fmtDate(p.published_at);
     const imgHtml = p.thumbnail
-      ? '<img src="' + p.thumbnail + '" alt="' + esc(p.title) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML=\'<div class=\\\'img-ph\\\' style=\\\'height:185px\\\'><i class=\\\'fas fa-heartbeat fa-2x\\\' style=\\\'color:#f8bbd0\\\'></i></div>\'">'
-      : '<div class="img-ph" style="height:185px"><i class="fas fa-heartbeat fa-2x" style="color:#f8bbd0"></i></div>';
+      ? '<img src="' + p.thumbnail + '" alt="' + esc(p.title) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML=\'<div class=\\\'img-ph\\\' style=\\\'height:185px\\\'><i class=\\\'fas fa-baby fa-2x\\\' style=\\\'color:#f8bbd0\\\'></i></div>\'">'
+      : '<div class="img-ph" style="height:185px"><i class="fas fa-baby fa-2x" style="color:#f8bbd0"></i></div>';
 
     return `
     <div class="col-sm-6">
@@ -681,7 +533,7 @@
         ? p.keywords.join(', ')
         : (p.tags || []).join(', ');
     // SEO update
-    document.getElementById('page-title').textContent = p.title + ' – Chăm Sóc Người Bệnh';
+    document.getElementById('page-title').textContent = p.title + ' – Chăm Sóc Mẹ Và Bé';
     document.getElementById('meta-desc').content      = p.excerpt;
     document.getElementById('meta-kw').content        = seoKeywords;
     document.getElementById('og-title').content       = p.title;
@@ -698,7 +550,7 @@
     // Hero
     document.getElementById('art-hero-wrap').innerHTML = p.thumbnail
       ? '<img src="'+p.thumbnail+'" alt="'+esc(p.title)+'" class="article-hero shadow-sm mb-2" loading="lazy" onerror="this.style.display=\'none\'">'
-      : '<div class="img-ph article-hero shadow-sm mb-2" style="height:320px"><i class="fas fa-heartbeat fa-3x" style="color:#f8bbd0"></i></div>';
+      : '<div class="img-ph article-hero shadow-sm mb-2" style="height:320px"><i class="fas fa-baby fa-3x" style="color:#f8bbd0"></i></div>';
 
     // Meta
     document.getElementById('art-cat-badge').innerHTML = '<span class="cat-pill '+cls+'">'+esc(p.category)+'</span>';
@@ -776,13 +628,13 @@
   function showList() {
     document.getElementById('list-view').style.display    = 'block';
     document.getElementById('article-view').style.display = 'none';
-    document.getElementById('page-title').textContent = 'Cẩm Nang Chăm Sóc  Người Bệnh – Kiến Thức   Toàn Diện';
-    document.getElementById('meta-desc').content      = 'Cẩm nang kiến thức chăm sóc người bệnh: dinh dưỡng, sức khỏe tâm lý, phục hồi chức năng, dịch vụ osin chuyên nghiệp tại nhà.';
-    document.getElementById('meta-kw').content        = 'chăm sóc người bệnh, dinh dưỡng người bệnh, phục hồi chức năng, osin chăm sóc người bệnh';
-    document.getElementById('og-title').content       = 'Cẩm Nang Chăm Sóc Người Bệnh';
-    document.getElementById('og-desc').content        = 'Kiến thức chăm sóc người bệnh toàn diện.';
-    document.getElementById('hero-title').textContent = 'Cẩm Nang Chăm Sóc  Người Bệnh  ';
-    document.getElementById('hero-sub').textContent   = '30 bài viết kiến thức chuyên sâu về chăm sóc  Người Bệnh , dinh dưỡng và phục hồi   — biên soạn bởi đội ngũ chuyên nghiệp.';
+    document.getElementById('page-title').textContent = 'Cẩm Nang Chăm Sóc Mẹ Và Bé – Kiến Thức Sau Sinh Toàn Diện';
+    document.getElementById('meta-desc').content      = 'Cẩm nang kiến thức chăm sóc mẹ và bé sau sinh: dinh dưỡng, sức khỏe tâm lý, phát triển trẻ sơ sinh, dịch vụ osin chuyên nghiệp tại nhà.';
+    document.getElementById('meta-kw').content        = 'chăm sóc mẹ sau sinh, chăm sóc bé sơ sinh, dinh dưỡng sau sinh, osin chăm bé, phục hồi sau sinh';
+    document.getElementById('og-title').content       = 'Cẩm Nang Chăm Sóc Mẹ Và Bé';
+    document.getElementById('og-desc').content        = 'Kiến thức chăm sóc mẹ và bé sau sinh toàn diện.';
+    document.getElementById('hero-title').textContent = 'Cẩm Nang Chăm Sóc Mẹ Và Bé Sau Sinh';
+    document.getElementById('hero-sub').textContent   = '30 bài viết kiến thức chuyên sâu về chăm sóc mẹ, bé sơ sinh, dinh dưỡng và phục hồi sau sinh — biên soạn bởi đội ngũ chuyên nghiệp.';
   }
 
   /* ═══════════════════════════════════════════════
@@ -805,12 +657,16 @@
       .catch(()=>alert('Không thể sao chép.'));
   }
   </script>
-  <script src="../JS/login-modal-core.js"></script>
-    <script src="../JS/user-nav-menu.js"></script>
-    <script src="../JS/login-modal-loader.js"></script>
-    <script src="../JS/lookup-modal-core.js"></script>
-    <script src="../JS/lookup-modal-loader.js"></script>
-    <script src="../JS/profile-modal-core.js"></script>
-  <script src="../JS/profile-modal-loader.js"></script>
+<script src="JS/login-modal-core.js"></script>
+  <script src="JS/shared-layout.js"></script>
+    <script src="JS/user-nav-menu.js"></script>
+  <script src="JS/login-modal-loader.js"></script>
+  <script src="JS/lookup-modal-core.js"></script>
+  <script src="JS/lookup-modal-loader.js"></script>
+  <script src="JS/profile-modal-core.js"></script>
+  <script src="JS/profile-modal-loader.js"></script>
 </body>
 </html>
+
+
+

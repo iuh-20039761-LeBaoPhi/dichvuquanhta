@@ -23,6 +23,8 @@
     return document.getElementById(id);
   }
 
+  var hasSyncedSession = false;
+
   function setLoggedOut() {
     var loginNavItem = getEl('loginNavItem');
     var userMenuContainer = getEl('userMenuContainer');
@@ -72,7 +74,10 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
+  function initNavState() {
+    var hasNavTargets = !!(getEl('loginNavItem') || getEl('userMenuContainer'));
+    if (!hasNavTargets) return;
+
     var cachedUser = null;
     try {
       cachedUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -86,7 +91,18 @@
       setLoggedOut();
     }
 
-    syncFromSession();
+    if (!hasSyncedSession) {
+      hasSyncedSession = true;
+      syncFromSession();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initNavState();
+  });
+
+  document.addEventListener('siteLayout:ready', function () {
+    initNavState();
   });
 
   window.addEventListener('auth:login-success', function (event) {

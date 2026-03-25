@@ -7,7 +7,7 @@
     "tags": ["chăm sóc mẹ sau sinh", "phục hồi sau sinh", "osin sau sinh", "chăm sóc tại nhà"],
     "keywords": "chăm sóc mẹ sau sinh, phục hồi sau sinh, osin sau sinh, chăm sóc tại nhà",
     "excerpt": "Giai đoạn sau sinh là thời điểm quan trọng mẹ cần được nghỉ ngơi và chăm sóc đúng cách. Tìm hiểu những điều cần làm để mẹ phục hồi nhanh, khỏe mạnh.",
-    "thumbnail": "../assets/be-be-di-choi.png",
+    "thumbnail": "assets/be-be-di-choi.png",
     "published_at": "2025-01-05",
     "read_time": 4,
     "content": {
@@ -38,7 +38,7 @@
     "tags": ["tắm trẻ sơ sinh", "chăm sóc bé 0-6 tháng", "vệ sinh bé sơ sinh", "osin chăm bé"],
     "keywords": "tắm trẻ sơ sinh, chăm sóc bé 0-6 tháng, vệ sinh bé sơ sinh, osin chăm bé",
     "excerpt": "Tắm cho trẻ sơ sinh đòi hỏi kỹ thuật và sự cẩn thận. Bài viết hướng dẫn chi tiết các bước tắm bé an toàn, đúng nhiệt độ và đúng thao tác.",
-    "thumbnail": "../assets/be-be-dung-cach.png",
+    "thumbnail": "assets/be-be-dung-cach.png",
     "published_at": "2025-01-08",
     "read_time": 4,
     "content": {
@@ -69,7 +69,7 @@
     "tags": ["dinh dưỡng sau sinh", "thực đơn mẹ sau sinh", "nấu ăn sau sinh", "món ăn lợi sữa"],
     "keywords": "dinh dưỡng sau sinh, thực đơn mẹ sau sinh, nấu ăn sau sinh, món ăn lợi sữa",
     "excerpt": "Chế độ ăn sau sinh ảnh hưởng trực tiếp đến lượng sữa và quá trình phục hồi. Khám phá thực đơn khoa học, đủ chất để mẹ nhanh khỏe và sữa về nhiều.",
-    "thumbnail": "../assets/be-be-thay-me.png",
+    "thumbnail": "assets/be-be-thay-me.png",
     "published_at": "2025-01-10",
     "read_time": 5,
     "content": {
@@ -100,7 +100,7 @@
     "tags": ["trầm cảm sau sinh", "sức khỏe tâm lý mẹ", "chăm sóc tinh thần sau sinh", "baby blues"],
     "keywords": "trầm cảm sau sinh, sức khỏe tâm lý mẹ, chăm sóc tinh thần sau sinh, baby blues",
     "excerpt": "Trầm cảm sau sinh ảnh hưởng đến 1 trong 5 bà mẹ. Nhận biết sớm các dấu hiệu và có sự hỗ trợ đúng lúc sẽ giúp mẹ vượt qua giai đoạn khó khăn này.",
-    "thumbnail": "../assets/cham-be-ngu.png",
+    "thumbnail": "assets/cham-be-ngu.png",
     "published_at": "2025-01-12",
     "read_time": 5,
     "content": {
@@ -131,7 +131,7 @@
     "tags": ["cho bé bú", "tư thế cho bú", "nuôi con bằng sữa mẹ", "hướng dẫn cho bú"],
     "keywords": "cho bé bú, tư thế cho bú, nuôi con bằng sữa mẹ, hướng dẫn cho bú",
     "excerpt": "Tư thế cho bú sai là nguyên nhân hàng đầu gây đau núm vú và bé bú không đủ sữa. Học ngay tư thế đúng để mẹ thoải mái và bé phát triển tốt.",
-    "thumbnail": "../assets/cham-be.png",
+    "thumbnail": "assets/cham-be.png",
     "published_at": "2025-01-15",
     "read_time": 4,
     "content": {
@@ -162,7 +162,7 @@
     "tags": ["giấc ngủ trẻ sơ sinh", "bé ngủ ngon", "ru bé ngủ", "chăm sóc bé ban đêm"],
     "keywords": "giấc ngủ trẻ sơ sinh, bé ngủ ngon, ru bé ngủ, chăm sóc bé ban đêm",
     "excerpt": "Trẻ sơ sinh ngủ đến 16–18 tiếng mỗi ngày nhưng thường xuyên thức giữa đêm. Hiểu rõ chu kỳ ngủ của bé giúp ba mẹ chủ động hơn.",
-    "thumbnail": "../assets/cham-soc-me-be.png",
+    "thumbnail": "assets/cham-soc-me-be.png",
     "published_at": "2025-01-18",
     "read_time": 4,
     "content": {
@@ -193,7 +193,7 @@
     "tags": ["vệ sinh rốn bé", "chăm sóc rốn sơ sinh", "rốn trẻ sơ sinh", "rốn bé rụng"],
     "keywords": "vệ sinh rốn bé, chăm sóc rốn sơ sinh, rốn trẻ sơ sinh, rốn bé rụng",
     "excerpt": "Vệ sinh rốn sai cách có thể gây nhiễm trùng nguy hiểm cho bé. Tìm hiểu cách chăm sóc rốn đúng để rốn mau khô và rụng an toàn.",
-    "thumbnail": "../assets/cho-be-bu.png",
+    "thumbnail": "assets/cho-be-bu.png",
     "published_at": "2025-01-20",
     "read_time": 3,
     "content": {
@@ -224,7 +224,7 @@
     "tags": ["massage sau sinh", "thư giãn sau sinh", "chăm sóc mẹ", "phục hồi thể chất sau sinh"],
     "keywords": "massage sau sinh, thư giãn sau sinh, chăm sóc mẹ, phục hồi thể chất sau sinh",
     "excerpt": "Massage sau sinh không chỉ giảm đau nhức mà còn cải thiện tâm trạng, kích thích sữa về nhiều hơn. Tìm hiểu lợi ích và những điều cần lưu ý.",
-    "thumbnail": "../assets/choi-cung-be.png",
+    "thumbnail": "assets/choi-cung-be.png",
     "published_at": "2025-01-22",
     "read_time": 4,
     "content": {
@@ -255,7 +255,7 @@
     "tags": ["pha sữa công thức", "sữa bột cho bé", "nuôi con bằng sữa ngoài", "chăm sóc bé sơ sinh"],
     "keywords": "pha sữa công thức, sữa bột cho bé, nuôi con bằng sữa ngoài, chăm sóc bé sơ sinh",
     "excerpt": "Pha sữa công thức sai tỷ lệ hoặc không đảm bảo vệ sinh có thể gây hại cho bé. Hướng dẫn cách pha sữa chuẩn, an toàn và đúng nhiệt độ.",
-    "thumbnail": "../assets/doc-sach-cung-be.png",
+    "thumbnail": "assets/doc-sach-cung-be.png",
     "published_at": "2025-01-25",
     "read_time": 3,
     "content": {
@@ -286,7 +286,7 @@
     "tags": ["sinh mổ", "chăm sóc vết mổ", "vết thương sau sinh", "phục hồi sau sinh mổ"],
     "keywords": "sinh mổ, chăm sóc vết mổ, vết thương sau sinh, phục hồi sau sinh mổ",
     "excerpt": "Vết mổ sau sinh cần được chăm sóc đặc biệt để tránh nhiễm trùng và nhanh lành. Hướng dẫn chi tiết cách vệ sinh và những điều tuyệt đối không được làm.",
-    "thumbnail": "../assets/don-do-phu-me.png",
+    "thumbnail": "assets/don-do-phu-me.png",
     "published_at": "2025-01-28",
     "read_time": 4,
     "content": {
@@ -317,7 +317,7 @@
     "tags": ["nhiệt độ trẻ sơ sinh", "bé sốt", "đo nhiệt độ bé", "chăm sóc sức khỏe bé"],
     "keywords": "nhiệt độ trẻ sơ sinh, bé sốt, đo nhiệt độ bé, chăm sóc sức khỏe bé",
     "excerpt": "Trẻ sơ sinh chưa tự điều nhiệt được nên rất dễ sốt hoặc hạ thân nhiệt. Biết cách đo và đọc nhiệt độ đúng giúp phát hiện bệnh sớm.",
-    "thumbnail": "../assets/gap-do-cho-be.png",
+    "thumbnail": "assets/gap-do-cho-be.png",
     "published_at": "2025-02-01",
     "read_time": 3,
     "content": {
@@ -348,7 +348,7 @@
     "tags": ["thay tã cho bé", "hăm tã", "chăm sóc da bé", "tã sơ sinh"],
     "keywords": "thay tã cho bé, hăm tã, chăm sóc da bé, tã sơ sinh",
     "excerpt": "Thay tã không đúng cách là nguyên nhân hàng đầu gây hăm tã ở bé. Học cách thay tã sạch sẽ và nhanh chóng để bảo vệ làn da nhạy cảm của bé.",
-    "thumbnail": "../assets/giat-do-cho-be.png",
+    "thumbnail": "assets/giat-do-cho-be.png",
     "published_at": "2025-02-04",
     "read_time": 3,
     "content": {
@@ -379,7 +379,7 @@
     "tags": ["vệ sinh sau sinh", "chăm sóc cá nhân sau sinh", "hậu sản", "sức khỏe mẹ sau sinh"],
     "keywords": "vệ sinh sau sinh, chăm sóc cá nhân sau sinh, hậu sản, sức khỏe mẹ sau sinh",
     "excerpt": "Vệ sinh đúng cách sau sinh giúp mẹ tránh nhiễm khuẩn, nhanh hồi phục và tự tin hơn trong giai đoạn đầu làm mẹ.",
-    "thumbnail": "../assets/giat-do-phu-me.png",
+    "thumbnail": "assets/giat-do-phu-me.png",
     "published_at": "2025-02-06",
     "read_time": 4,
     "content": {
@@ -410,7 +410,7 @@
     "tags": ["phát triển trẻ sơ sinh", "cột mốc phát triển", "bé 0-3 tháng", "theo dõi sự phát triển bé"],
     "keywords": "phát triển trẻ sơ sinh, cột mốc phát triển, bé 0-3 tháng, theo dõi sự phát triển bé",
     "excerpt": "Mỗi tuần trong 3 tháng đầu đời là một bước phát triển kỳ diệu của bé. Tìm hiểu các mốc phát triển quan trọng để ba mẹ đồng hành đúng cách.",
-    "thumbnail": "../assets/giup-me-bau-van-dong.png",
+    "thumbnail": "assets/giup-me-bau-van-dong.png",
     "published_at": "2025-02-10",
     "read_time": 5,
     "content": {
@@ -441,7 +441,7 @@
     "tags": ["kích sữa về", "ít sữa sau sinh", "tăng sữa mẹ", "sữa mẹ cho bé bú"],
     "keywords": "kích sữa về, ít sữa sau sinh, tăng sữa mẹ, sữa mẹ cho bé bú",
     "excerpt": "Nhiều mẹ lo lắng khi sữa chưa về nhiều sau sinh. Tìm hiểu các cách kích sữa tự nhiên an toàn và hiệu quả để bé luôn có đủ sữa.",
-    "thumbnail": "../assets/lau-don-cham-me-bau.png",
+    "thumbnail": "assets/lau-don-cham-me-bau.png",
     "published_at": "2025-02-12",
     "read_time": 4,
     "content": {
@@ -472,7 +472,7 @@
     "tags": ["chọn osin", "osin chăm bé", "osin sau sinh", "tiêu chí chọn người giúp việc"],
     "keywords": "chọn osin, osin chăm bé, osin sau sinh, tiêu chí chọn người giúp việc",
     "excerpt": "Lựa chọn người chăm sóc mẹ và bé là quyết định quan trọng. Tìm hiểu những tiêu chí không thể bỏ qua khi tuyển osin chuyên chăm mẹ sau sinh.",
-    "thumbnail": "../assets/massage-be.png",
+    "thumbnail": "assets/massage-be.png",
     "published_at": "2025-02-15",
     "read_time": 4,
     "content": {
@@ -503,7 +503,7 @@
     "tags": ["colic trẻ sơ sinh", "bé khóc dạ đề", "bé quấy khóc", "xử lý bé khóc đêm"],
     "keywords": "colic trẻ sơ sinh, bé khóc dạ đề, bé quấy khóc, xử lý bé khóc đêm",
     "excerpt": "Colic khiến bé khóc không ngừng và cha mẹ hoàn toàn bất lực. Tìm hiểu nguyên nhân và những cách xoa dịu bé hiệu quả được các chuyên gia khuyến nghị.",
-    "thumbnail": "../assets/massage-cho-me.png",
+    "thumbnail": "assets/massage-cho-me.png",
     "published_at": "2025-02-18",
     "read_time": 4,
     "content": {
@@ -534,7 +534,7 @@
     "tags": ["dọn phòng mẹ bé", "vệ sinh phòng trẻ sơ sinh", "không gian sống an toàn cho bé", "tổ chức phòng sau sinh"],
     "keywords": "dọn phòng mẹ bé, vệ sinh phòng trẻ sơ sinh, không gian sống an toàn cho bé, tổ chức phòng sau sinh",
     "excerpt": "Môi trường sống sạch sẽ và an toàn ảnh hưởng lớn đến sức khỏe mẹ và bé. Tìm hiểu cách dọn dẹp và sắp xếp phòng tối ưu sau khi đón bé về nhà.",
-    "thumbnail": "../assets/pha-sua-cho-be.png",
+    "thumbnail": "assets/pha-sua-cho-be.png",
     "published_at": "2025-02-20",
     "read_time": 3,
     "content": {
@@ -565,7 +565,7 @@
     "tags": ["giặt đồ bé sơ sinh", "quần áo trẻ sơ sinh", "chất tẩy rửa cho bé", "da nhạy cảm bé sơ sinh"],
     "keywords": "giặt đồ bé sơ sinh, quần áo trẻ sơ sinh, chất tẩy rửa cho bé, da nhạy cảm bé sơ sinh",
     "excerpt": "Da trẻ sơ sinh rất nhạy cảm với chất tẩy rửa và hóa chất. Biết cách giặt đúng giúp bé tránh dị ứng, kích ứng da và mẩn ngứa.",
-    "thumbnail": "../assets/ru-be-ngu.png",
+    "thumbnail": "assets/ru-be-ngu.png",
     "published_at": "2025-02-22",
     "read_time": 3,
     "content": {
@@ -596,7 +596,7 @@
     "tags": ["món ăn lợi sữa", "thực phẩm kích sữa", "nấu ăn cho mẹ sau sinh", "dinh dưỡng mẹ cho bú"],
     "keywords": "món ăn lợi sữa, thực phẩm kích sữa, nấu ăn cho mẹ sau sinh, dinh dưỡng mẹ cho bú",
     "excerpt": "Những món ăn đơn giản từ nguyên liệu quen thuộc có thể giúp mẹ tăng lượng sữa đáng kể. Khám phá 10 món ăn lợi sữa được các mẹ tin dùng.",
-    "thumbnail": "../assets/rua-bat-cham-be.png",
+    "thumbnail": "assets/rua-bat-cham-be.png",
     "published_at": "2025-02-25",
     "read_time": 5,
     "content": {
@@ -627,7 +627,7 @@
     "tags": ["nghỉ ngơi sau sinh", "phục hồi sau sinh", "vận động sau sinh", "quay lại làm việc sau sinh"],
     "keywords": "nghỉ ngơi sau sinh, phục hồi sau sinh, vận động sau sinh, quay lại làm việc sau sinh",
     "excerpt": "Nhiều mẹ không biết mình cần nghỉ bao lâu mới đủ để cơ thể phục hồi hoàn toàn. Cùng tìm hiểu lộ trình phục hồi khoa học sau sinh thường và sinh mổ.",
-    "thumbnail": "../assets/tam-be-cung-me.png",
+    "thumbnail": "assets/tam-be-cung-me.png",
     "published_at": "2025-03-01",
     "read_time": 4,
     "content": {
@@ -658,7 +658,7 @@
     "tags": ["giữ ấm bé sơ sinh", "nhiệt độ phòng cho bé", "mặc đồ cho bé sơ sinh", "hạ thân nhiệt trẻ sơ sinh"],
     "keywords": "giữ ấm bé sơ sinh, nhiệt độ phòng cho bé, mặc đồ cho bé sơ sinh, hạ thân nhiệt trẻ sơ sinh",
     "excerpt": "Trẻ sơ sinh chưa tự điều chỉnh thân nhiệt được. Mặc quá nóng cũng nguy hiểm như để quá lạnh. Học cách giữ ấm đúng chuẩn.",
-    "thumbnail": "../assets/tam-be.png",
+    "thumbnail": "assets/tam-be.png",
     "published_at": "2025-03-03",
     "read_time": 3,
     "content": {
@@ -689,7 +689,7 @@
     "tags": ["tinh thần mẹ sau sinh", "cảm xúc sau sinh", "hỗ trợ tâm lý mẹ", "tuần đầu sau sinh"],
     "keywords": "tinh thần mẹ sau sinh, cảm xúc sau sinh, hỗ trợ tâm lý mẹ, tuần đầu sau sinh",
     "excerpt": "Tuần đầu sau sinh là giai đoạn cảm xúc hỗn độn nhất. Hiểu và chuẩn bị trước sẽ giúp mẹ vượt qua nhẹ nhàng hơn.",
-    "thumbnail": "../assets/thay-ta.png",
+    "thumbnail": "assets/thay-ta.png",
     "published_at": "2025-03-05",
     "read_time": 4,
     "content": {
@@ -720,7 +720,7 @@
     "tags": ["nhật ký bé sơ sinh", "theo dõi sức khỏe bé", "ghi chép tình trạng bé", "chăm sóc bé khoa học"],
     "keywords": "nhật ký bé sơ sinh, theo dõi sức khỏe bé, ghi chép tình trạng bé, chăm sóc bé khoa học",
     "excerpt": "Ghi lại ăn-ngủ-bài tiết của bé mỗi ngày giúp phát hiện bất thường sớm và giúp bác sĩ chẩn đoán chính xác hơn khi bé ốm.",
-    "thumbnail": "../assets/theo-doi-suc-khoe-be.png",
+    "thumbnail": "assets/theo-doi-suc-khoe-be.png",
     "published_at": "2025-03-08",
     "read_time": 3,
     "content": {
@@ -751,7 +751,7 @@
     "tags": ["tắc tia sữa", "viêm vú sau sinh", "tắc sữa mẹ", "thông tia sữa"],
     "keywords": "tắc tia sữa, viêm vú sau sinh, tắc sữa mẹ, thông tia sữa",
     "excerpt": "Tắc tia sữa và viêm vú là hai vấn đề phổ biến nhất ở mẹ cho bú. Xử lý sớm và đúng cách sẽ tránh được nhiều biến chứng đau đớn.",
-    "thumbnail": "../assets/theo-doi-suc-khoe-me.png",
+    "thumbnail": "assets/theo-doi-suc-khoe-me.png",
     "published_at": "2025-03-10",
     "read_time": 4,
     "content": {
@@ -782,7 +782,7 @@
     "tags": ["phát triển bé 3-6 tháng", "cột mốc phát triển bé", "kích thích phát triển bé", "trẻ 3 tháng tuổi"],
     "keywords": "phát triển bé 3-6 tháng, cột mốc phát triển bé, kích thích phát triển bé, trẻ 3 tháng tuổi",
     "excerpt": "Giai đoạn 3–6 tháng bé phát triển vượt bậc về vận động và nhận thức. Tìm hiểu cách đồng hành và kích thích phát triển đúng cách cho bé.",
-    "thumbnail": "../assets/thu-gian-cho-me-bau.png",
+    "thumbnail": "assets/thu-gian-cho-me-bau.png",
     "published_at": "2025-03-12",
     "read_time": 4,
     "content": {
@@ -813,7 +813,7 @@
     "tags": ["co hồi tử cung", "phục hồi sau sinh", "đau bụng sau sinh", "hậu sản phụ khoa"],
     "keywords": "co hồi tử cung, phục hồi sau sinh, đau bụng sau sinh, hậu sản phụ khoa",
     "excerpt": "Tử cung cần 6 tuần để co về kích thước bình thường. Hiểu quá trình này giúp mẹ không lo lắng quá mức và biết dấu hiệu nào cần thăm khám.",
-    "thumbnail": "../assets/trong-be.png",
+    "thumbnail": "assets/trong-be.png",
     "published_at": "2025-03-14",
     "read_time": 3,
     "content": {
@@ -844,7 +844,7 @@
     "tags": ["tập thể dục sau sinh", "bài tập sau sinh", "phục hồi vóc dáng sau sinh", "yoga sau sinh"],
     "keywords": "tập thể dục sau sinh, bài tập sau sinh, phục hồi vóc dáng sau sinh, yoga sau sinh",
     "excerpt": "Tập luyện sau sinh đúng cách giúp mẹ phục hồi vóc dáng, tăng năng lượng và cải thiện tâm trạng. Tìm hiểu các bài tập an toàn và phù hợp nhất.",
-    "thumbnail": "../assets/tu-van-me.png",
+    "thumbnail": "assets/tu-van-me.png",
     "published_at": "2025-03-16",
     "read_time": 4,
     "content": {
@@ -875,7 +875,7 @@
     "tags": ["ăn dặm cho bé", "bé sẵn sàng ăn dặm", "thức ăn đầu tiên cho bé", "6 tháng tuổi ăn dặm"],
     "keywords": "ăn dặm cho bé, bé sẵn sàng ăn dặm, thức ăn đầu tiên cho bé, 6 tháng tuổi ăn dặm",
     "excerpt": "Thời điểm bắt đầu ăn dặm và thực phẩm đầu tiên cho bé là quyết định quan trọng. Tìm hiểu dấu hiệu bé sẵn sàng và cách bắt đầu đúng cách.",
-    "thumbnail": "../assets/ve-sinh-binh-sua.png",
+    "thumbnail": "assets/ve-sinh-binh-sua.png",
     "published_at": "2025-03-18",
     "read_time": 4,
     "content": {
@@ -906,7 +906,7 @@
     "tags": ["dịch vụ osin chăm bé", "thuê người chăm mẹ và bé", "lợi ích dịch vụ chăm sóc", "osin sau sinh chuyên nghiệp"],
     "keywords": "dịch vụ osin chăm bé, thuê người chăm mẹ và bé, lợi ích dịch vụ chăm sóc, osin sau sinh chuyên nghiệp",
     "excerpt": "Dịch vụ osin chuyên nghiệp không chỉ giúp việc đơn thuần mà còn là người đồng hành quan trọng trong giai đoạn vàng chăm sóc mẹ và bé.",
-    "thumbnail": "../assets/xep-do-cho-be.png",
+    "thumbnail": "assets/xep-do-cho-be.png",
     "published_at": "2025-03-20",
     "read_time": 4,
     "content": {
