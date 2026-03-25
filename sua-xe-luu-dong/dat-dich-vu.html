@@ -335,6 +335,12 @@
       #bookingModal .modal-body h3{
         font-size: 24px;
       }
+      body.booking-standalone #bookingModal .modal-dialog {
+          transform: none !important;
+      }
+      .booking-section {
+        padding: 0;
+      }
       @media (max-width: 767px) {
         #bookingModal .modal-dialog,
         #bookingConfirmModal .modal-dialog {
@@ -435,6 +441,12 @@
           bottom: auto;
           box-shadow: none;
           padding: 0.75rem 0.85rem 0.85rem;
+        }
+        .booking-section {
+          padding: 5px 0;
+        }
+        .page-header h1 {
+            font-size: 1.8rem;
         }
       }
     </style>
