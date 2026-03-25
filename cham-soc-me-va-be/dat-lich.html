@@ -469,7 +469,7 @@
           </div>
         </div>
 
-        <!-- <a id="inlineLoginTrigger" href="login.html" data-login-modal data-login-modal-src="login.html" class="d-none">Mở đăng nhập</a> -->
+        <a id="inlineLoginTrigger" href="login.html" data-login-modal data-login-modal-src="login.html" class="d-none">Mở đăng nhập</a>
       </div>
     </section>
 
@@ -616,7 +616,7 @@
       }
 
       $(document).ready(async function () {
-        var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzAYI7UOZOtkwHjrA7eSx9jyCXOY7b06Vo-SAI4xoHvy_ocKZBYxbDOuHODO9ytfncZSw/exec';
+        var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyW57k0-ZuVg1zZ9cN81vMQXZrmJJLrAqPq5jVjAU-diWdzHWvk02AlV6pjj6ido7wsCw/exec';
         var SERVICES = [];
         var CURRENT_SERVICE = null;
         var PENDING_BOOKING_DATA = null;
@@ -1395,6 +1395,87 @@
           }, 2000);
         }
 
+        function buildSheetPayload(data) {
+          return Object.assign({}, data, {
+            sheet_type: 'Chăm sóc mẹ và bé'
+          });
+        }
+
+        function saveBookingToGoogleSheet(data) {
+          return fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(buildSheetPayload(data))
+          })
+            .then(function (res) {
+              return res.json();
+            })
+            .then(function (result) {
+              if (result && (result.status === 'success' || result.result === 'success')) {
+                return result;
+              }
+              throw new Error((result && result.message) || 'Lưu Google Sheet thất bại');
+            });
+        }
+
+        function storePendingDbSync(data) {
+          sessionStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+              booking: data,
+              sheetSaved: true,
+              needsDbSync: true
+            })
+          );
+        }
+
+        function extractPendingBooking(raw) {
+          if (!raw) return null;
+          try {
+            var parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== 'object') return null;
+            if (parsed.booking && typeof parsed.booking === 'object') {
+              return {
+                booking: parsed.booking,
+                sheetSaved: !!parsed.sheetSaved,
+                needsDbSync: parsed.needsDbSync !== false
+              };
+            }
+            return {
+              booking: parsed,
+              sheetSaved: false,
+              needsDbSync: true
+            };
+          } catch (e) {
+            console.error('Không thể đọc dữ liệu đặt lịch chờ:', e);
+            return null;
+          }
+        }
+
+        function submitGuestBookingSheetOnly(data) {
+          var saveBtn = $('#btnConfirmSave');
+          var backBtn = $('#btnBackToEdit');
+          var originalText = saveBtn.html();
+
+          saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...').prop('disabled', true);
+          backBtn.prop('disabled', true);
+
+          saveBookingToGoogleSheet(data)
+            .then(function () {
+              storePendingDbSync(data);
+              PENDING_BOOKING_DATA = null;
+              resetQuickAttachments();
+              finishSuccessState();
+            })
+            .catch(function (err) {
+              alert('Không thể lưu Google Sheet. Vui lòng thử lại.\nChi tiết: ' + ((err && err.message) || 'Lỗi không xác định'));
+            })
+            .finally(function () {
+              saveBtn.html(originalText).prop('disabled', false);
+              backBtn.prop('disabled', false);
+            });
+        }
+
         function submitBookingToSheet(data) {
           var saveBtn = $('#btnConfirmSave');
           var backBtn = $('#btnBackToEdit');
@@ -1403,62 +1484,21 @@
           saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...').prop('disabled', true);
           backBtn.prop('disabled', true);
 
-          var sheetError = null;
-          var dbError = null;
-
-          var sheetPromise = fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(data)
-          })
-            .then(function (res) {
-              return res.json();
-            })
-            .then(function (result) {
-              if (result && result.result === 'success') {
-                return result;
-              }
-              throw new Error((result && result.message) || 'Lưu Google Sheet thất bại');
-            })
-            .catch(function (err) {
-              sheetError = err;
-              console.error('Lỗi khi lưu Google Sheet:', err);
-              throw err;
-            });
-
-          var dbPromise = saveBookingToDatabase(data).catch(function (err) {
-            dbError = err;
-            console.error('Lỗi khi lưu cơ sở dữ liệu:', err);
-            throw err;
-          });
-
-          Promise.allSettled([sheetPromise, dbPromise]).then(function (results) {
-            var sheetOk = results[0].status === 'fulfilled';
-            var dbOk = results[1].status === 'fulfilled';
-
-            saveBtn.html(originalText).prop('disabled', false);
-            backBtn.prop('disabled', false);
-
-            if (sheetOk || dbOk) {
+          Promise.all([saveBookingToGoogleSheet(data), saveBookingToDatabase(data)])
+            .then(function () {
               PENDING_BOOKING_DATA = null;
               sessionStorage.removeItem(STORAGE_KEY);
               resetQuickAttachments();
               finishSuccessState();
-
-              if (!sheetOk && dbOk) {
-                alert('Đặt lịch đã lưu thành công trong cơ sở dữ liệu, nhưng lưu Google Sheet thất bại.');
-              } else if (sheetOk && !dbOk) {
-                alert('Đặt lịch đã lưu thành công trên Google Sheet, nhưng lưu cơ sở dữ liệu thất bại.');
-              }
-              return;
-            }
-
-            alert(
-              'Không thể lưu dữ liệu ở cả Google Sheet và cơ sở dữ liệu. Vui lòng thử lại.\n' +
-                'Sheet: ' + ((sheetError && sheetError.message) || 'Lỗi không xác định') + '\n' +
-                'DB: ' + ((dbError && dbError.message) || 'Lỗi không xác định')
-            );
-          });
+            })
+            .catch(function (err) {
+              console.error('Lỗi khi lưu đặt lịch (Sheet + DB):', err);
+              alert('Không thể lưu đồng thời Google Sheet và cơ sở dữ liệu. Vui lòng thử lại.\nChi tiết: ' + ((err && err.message) || 'Lỗi không xác định'));
+            })
+            .finally(function () {
+              saveBtn.html(originalText).prop('disabled', false);
+              backBtn.prop('disabled', false);
+            });
         }
 
         function showReviewStep() {
@@ -1671,34 +1711,32 @@
           }
 
           if (!isUserLoggedIn()) {
-            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(PENDING_BOOKING_DATA));
-            document.getElementById('inlineLoginTrigger').click();
+            submitGuestBookingSheetOnly(PENDING_BOOKING_DATA);
             return;
           }
 
           submitBookingToSheet(PENDING_BOOKING_DATA);
         });
 
-        window.addEventListener('auth:login-success', function () {
-          if (PENDING_BOOKING_DATA) {
-            submitBookingToSheet(PENDING_BOOKING_DATA);
-            return;
-          }
+        function trySyncPendingDbAfterLogin() {
+          if (!isUserLoggedIn()) return;
+          var pending = extractPendingBooking(sessionStorage.getItem(STORAGE_KEY));
+          if (!pending || !pending.booking || !pending.needsDbSync) return;
 
-          var raw = sessionStorage.getItem(STORAGE_KEY);
-          if (!raw) return;
-          try {
-            var parsed = JSON.parse(raw);
-            if (parsed && typeof parsed === 'object') {
-              PENDING_BOOKING_DATA = parsed;
-              renderReviewData(PENDING_BOOKING_DATA);
-              showReviewStep();
-              submitBookingToSheet(PENDING_BOOKING_DATA);
-            }
-          } catch (e) {
-            console.error('Không thể đọc dữ liệu đặt lịch chờ:', e);
-          }
+          saveBookingToDatabase(pending.booking)
+            .then(function () {
+              sessionStorage.removeItem(STORAGE_KEY);
+            })
+            .catch(function (err) {
+              console.error('Đồng bộ đặt lịch chờ vào cơ sở dữ liệu thất bại:', err);
+            });
+        }
+
+        window.addEventListener('auth:login-success', function () {
+          trySyncPendingDbAfterLogin();
         });
+
+        trySyncPendingDbAfterLogin();
       });
     </script>
 
