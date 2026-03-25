@@ -507,6 +507,16 @@ function initBookingModal() {
   // ❗ nếu chưa load xong modal thì thoát
   if (!serviceSelect) return;
 
+  // Ensure standalone mode gets an initial datetime value on first render.
+  fillBookingTimeNow(false);
+
+  if (bookingForm && bookingForm.dataset.bookingTimeResetBound !== "true") {
+    bookingForm.dataset.bookingTimeResetBound = "true";
+    bookingForm.addEventListener("reset", function () {
+      setTimeout(() => fillBookingTimeNow(true), 0);
+    });
+  }
+
   let transportFee = 0;
   shipInput.value = transportFee.toLocaleString("vi-VN");
 
@@ -1313,6 +1323,20 @@ function initBookingConfirmFlow() {
   if (form.dataset.confirmFlowBound === "true") return;
   form.dataset.confirmFlowBound = "true";
   const isEmbeddedMode = Boolean(bookingModalEl.closest("#modalContainer"));
+  let pendingStandaloneAction = null;
+  let shouldReturnToBookingAfterConfirmHidden = false;
+
+  function cleanupStandaloneModalArtifacts() {
+    if (isEmbeddedMode) return;
+
+    document
+      .querySelectorAll(".modal-backdrop")
+      .forEach((backdrop) => backdrop.remove());
+
+    document.body.classList.remove("modal-open");
+    document.body.style.removeProperty("overflow");
+    document.body.style.removeProperty("padding-right");
+  }
 
   function showBookingStep() {
     if (isEmbeddedMode) {
@@ -1320,8 +1344,8 @@ function initBookingConfirmFlow() {
       return;
     }
 
+    cleanupStandaloneModalArtifacts();
     bookingModalEl.style.display = "block";
-    bookingModalEl.classList.add("show");
     bookingModalEl.setAttribute("aria-hidden", "false");
   }
 
@@ -1332,7 +1356,6 @@ function initBookingConfirmFlow() {
     }
 
     bookingModalEl.style.display = "none";
-    bookingModalEl.classList.remove("show");
     bookingModalEl.setAttribute("aria-hidden", "true");
   }
 
@@ -1536,9 +1559,14 @@ function initBookingConfirmFlow() {
     bootstrap.Modal.getOrCreateInstance(confirmModalEl).show();
   });
 
-  function backToBooking() {
+  function hideConfirmAndQueueReturn(action) {
+    shouldReturnToBookingAfterConfirmHidden = action === "show-booking";
+    pendingStandaloneAction = isEmbeddedMode ? null : action;
     bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
-    showBookingStep();
+  }
+
+  function backToBooking() {
+    hideConfirmAndQueueReturn("show-booking");
   }
 
   function showBookingSuccessFeedback() {
@@ -1595,7 +1623,7 @@ function initBookingConfirmFlow() {
         });
       })
       .then(() => {
-        bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
+        hideConfirmAndQueueReturn("submit-success");
         hideBookingStep();
 
         showBookingSuccessFeedback();
@@ -1605,7 +1633,7 @@ function initBookingConfirmFlow() {
         currentOrderCode = "";
 
         if (!isEmbeddedMode) {
-          showBookingStep();
+          pendingStandaloneAction = "show-booking";
         }
       })
       .catch((err) => {
@@ -1634,7 +1662,13 @@ function initBookingConfirmFlow() {
     backBtn.addEventListener("click", backToBooking);
   }
   if (closeBtn) {
-    closeBtn.addEventListener("click", backToBooking);
+    closeBtn.addEventListener("click", function () {
+      shouldReturnToBookingAfterConfirmHidden = true;
+
+      if (!isEmbeddedMode) {
+        pendingStandaloneAction = "show-booking";
+      }
+    });
   }
 
   if (confirmBtn) {
@@ -1645,6 +1679,26 @@ function initBookingConfirmFlow() {
     confirmModalEl.dataset.mediaCleanupBound = "true";
     confirmModalEl.addEventListener("hidden.bs.modal", function () {
       clearConfirmMedia();
+
+      if (isEmbeddedMode) {
+        if (shouldReturnToBookingAfterConfirmHidden) {
+          shouldReturnToBookingAfterConfirmHidden = false;
+          showBookingStep();
+        }
+        return;
+      }
+
+      cleanupStandaloneModalArtifacts();
+
+      if (pendingStandaloneAction === "show-booking") {
+        pendingStandaloneAction = null;
+        shouldReturnToBookingAfterConfirmHidden = false;
+        showBookingStep();
+        return;
+      }
+
+      pendingStandaloneAction = null;
+      shouldReturnToBookingAfterConfirmHidden = false;
     });
   }
 }

@@ -73,6 +73,10 @@
         opacity: 1;
       }
 
+      body.booking-standalone #bookingModal .modal-dialog {
+        transform: none !important;
+      }
+
       #bookingModal .modal-content,
       #bookingConfirmModal .modal-content {
         border: 0;
@@ -313,7 +317,7 @@
 
       .booking-section {
         background: #eef2f7;
-        padding: 80px 0;
+        padding: 5px 0px;
       }
 
       .booking-section .booking-shell {
@@ -405,7 +409,7 @@
 
         .booking-section .booking-shell {
           max-width: 100%;
-          padding-top: 55px;
+          padding: 5px 0px;
         }
 
         .booking-standalone .hero .hero-text h1 {
@@ -418,6 +422,13 @@
         .booking-standalone .booking-section {
           padding: 0;
         }
+        #bookingModal .modal-footer{
+          margin-top: -11px;
+        }
+        .booking-standalone #bookingModal .modal-footer{
+          margin-top: 0px;
+        }
+
       }
     </style>
   </head>
@@ -776,6 +787,7 @@
               type="button"
               class="btn-close"
               id="confirmCloseBtn"
+              data-bs-dismiss="modal"
               aria-label="Close"
             ></button>
           </div>
