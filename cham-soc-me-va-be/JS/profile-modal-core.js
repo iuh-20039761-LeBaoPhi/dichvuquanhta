@@ -44,7 +44,10 @@
 
       if (!data.success) {
         if (data.message === 'Unauthorized') {
-          window.location.href = new URL('login.html', projectBase).href;
+          var alertContainer = root.querySelector('#alertContainer');
+          if (alertContainer) {
+            alertContainer.innerHTML = '<div class="alert alert-warning"><i class="bi bi-info-circle me-2"></i>Vui lòng đăng nhập để xem thông tin tài khoản.</div>';
+          }
         }
         return;
       }
@@ -111,6 +114,8 @@
 
   window.initProfileModal = function (scope) {
     var root = scope || document;
+    var profileForm = root.querySelector('#profileForm');
+    if (!profileForm) return;
 
     bindPreview('avatar', 'avatarPreview');
     bindPreview('cccd_image', 'cccdPreview');
@@ -119,11 +124,12 @@
   };
 
   document.addEventListener('DOMContentLoaded', function () {
-    window.initProfileModal(document);
-
     var path = window.location.pathname.toLowerCase();
     var isProfilePage = path.endsWith('/khach_hang/profile.html') || path.endsWith('khach_hang/profile.html') || path.endsWith('/profile.html') || path.endsWith('profile.html');
-    if (!isProfilePage || typeof bootstrap === 'undefined') return;
+    if (!isProfilePage) return;
+
+    window.initProfileModal(document);
+    if (typeof bootstrap === 'undefined') return;
 
     var profileModalEl = document.getElementById('profileModal');
     if (!profileModalEl) return;
