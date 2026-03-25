@@ -1,480 +1,678 @@
 [
   {
-    "ma_dich_vu": "chuyen_nha",
-    "slug_dich_vu": "chuyen_nha",
+    "id": "chuyen_nha",
     "ten_dich_vu": "Chuyển Nhà Trọn Gói",
-    "gia_tu": "Từ 300.000/chuyến",
-    "cong_thuc_hien_thi": "Giá tham khảo = Phần cơ bản (xe vận chuyển + quãng đường phát sinh) + Phần chỉ cộng khi phát sinh (nhân công, đóng gói, tháo lắp, điều kiện mặt bằng, thời gian, thời tiết)",
-    "hang_muc_hien_thi": [
+    "duong_dan_chi_tiet": "public/trang/dich-vu/chuyen-nha.html",
+    "thong_tin_minh_bach": {
+      "mo_ta_ngan": "Căn hộ, nhà phố, phòng trọ hoặc chung cư cần chuyển đồ sinh hoạt và nội thất gia đình.",
+      "phu_hop_khi": "Phù hợp khi bạn cần xe, nhân công, đóng gói, tháo lắp và sắp xếp lại tại nhà mới.",
+      "phan_co_ban": ["Xe vận chuyển", "Quãng đường phát sinh"],
+      "phan_phat_sinh": ["Nhân công", "Đóng gói", "Tháo lắp", "Mặt bằng khó", "Khung giờ tối/đêm", "Thời tiết"],
+      "nen_khao_sat_khi": "Có nhiều tầng, hẻm nhỏ, đồ dễ vỡ, đồ giá trị cao hoặc cần tháo lắp kỹ thuật.",
+      "co_the_dat_lich_luon_khi": "Bạn đã rõ loại xe cần dùng, địa chỉ hai đầu, số tầng và không có hạng mục đặc biệt ngoài gói cơ bản.",
+      "tom_tat_tong_chi_phi": "Cước xe theo loại xe + phí km vượt ngưỡng + nhân công, đóng gói, tháo lắp nếu chọn + phụ phí mặt bằng, thời tiết và khung giờ nếu phát sinh."
+    },
+    "cau_truc_gia_chuan": {
+      "phien_ban": "v2-compatible",
+      "cong_thuc_tong_quat": "(chi_phi_co_ban + chi_phi_dich_vu + phu_phi_co_dinh) x he_so",
+      "cong_thuc_tam_thoi_hien_tai": "chi_phi_co_ban + chi_phi_dich_vu + phu_phi_co_dinh + dieu_chinh_khung_gio_thoi_tiet",
+      "chi_phi_co_ban": {
+        "cuoc_xe": {
+          "bao_gom": ["xe_tai", "tai_xe", "quang_duong_co_ban"],
+          "khong_bao_gom": ["nhan_cong_boc_xep", "thiet_bi_nang_ha", "dich_vu_dac_biet"],
+          "quy_tac_so_chuyen": {
+            "che_do": "tu_dong",
+            "cong_thuc": "ceil(max(tong_trong_luong_kg / tai_trong_xe_kg, tong_the_tich_m3 / dung_tich_xe_m3))",
+            "tam_thoi_khi_thieu_du_lieu_the_tich": "chi_tinh_theo_trong_luong",
+            "trang_thai_du_lieu_the_tich_xe": "chua_bo_sung_dung_tich_xe_m3",
+            "ghi_chu": "Tạm thời số chuyến chỉ tính theo tải trọng vì chưa có dung tích xe chuẩn hóa.",
+            "chi_nhan_theo_chuyen": ["cuoc_xe", "phi_km_vuot"]
+          },
+          "loai_xe": [
+            {
+              "slug": "xe_van_500kg",
+              "ten": "Xe Van 500kg",
+              "tai_trong_xe_kg": 500,
+              "dung_tich_xe_m3": null,
+              "gia_co_ban": 230000,
+              "km_mien_phi": 10,
+              "gia_km_vuot": 12000
+            },
+            {
+              "slug": "xe_tai_1_5_tan",
+              "ten": "Xe Tải 1.5 Tấn",
+              "tai_trong_xe_kg": 1500,
+              "dung_tich_xe_m3": null,
+              "gia_co_ban": 370000,
+              "km_mien_phi": 10,
+              "gia_km_vuot": 14000
+            },
+            {
+              "slug": "xe_tai_2_5_tan",
+              "ten": "Xe Tải 2.5 Tấn",
+              "tai_trong_xe_kg": 2500,
+              "dung_tich_xe_m3": null,
+              "gia_co_ban": 650000,
+              "km_mien_phi": 10,
+              "gia_km_vuot": 24000
+            }
+          ]
+        }
+      },
+      "chi_phi_dich_vu": {
+        "nguyen_tac": "chi_dung_hang_muc_tinh_toan_de_tinh_tien",
+        "hang_muc_tinh_toan": [
+          {
+            "slug": "nhan_cong_boc_xep",
+            "ten": "Nhân công bốc xếp",
+            "don_vi": "người",
+            "don_gia": 280000,
+            "nguon_hien_thi_slug": "nhan_cong_boc_xep"
+          },
+          {
+            "slug": "dong_goi_do_dac",
+            "ten": "Đóng gói đồ đạc",
+            "don_vi": "gói",
+            "don_gia": 180000,
+            "nguon_hien_thi_slug": "dong_goi_do_dac"
+          },
+          {
+            "slug": "thao_lap_thiet_bi",
+            "ten": "Tháo lắp thiết bị",
+            "don_vi": "bộ",
+            "don_gia": 220000,
+            "nguon_hien_thi_slug": "ho_tro_thao_lap_ky_thuat"
+          }
+        ]
+      },
+      "phu_phi_co_dinh": {
+        "the_tich": {
+          "ap_dung": "toan_don",
+          "don_vi": "m3",
+          "nguong_mien_phi": 5,
+          "buoc_nhay": 1,
+          "don_gia_moi_buoc": 40000,
+          "cong_thuc": "so_buoc = ceil(max(0, tong_the_tich - nguong_mien_phi) / buoc_nhay); phi = so_buoc x don_gia_moi_buoc"
+        },
+        "trong_luong": {
+          "ap_dung": "toan_don",
+          "don_vi": "kg",
+          "nguong_mien_phi": 500,
+          "buoc_nhay": 100,
+          "don_gia_moi_buoc": 40000,
+          "cong_thuc": "so_buoc = ceil(max(0, tong_trong_luong - nguong_mien_phi) / buoc_nhay); phi = so_buoc x don_gia_moi_buoc"
+        },
+        "tinh_chat_do_dac": [
+          {
+            "slug": "de_vo",
+            "ten": "Đồ dễ vỡ",
+            "don_gia": 40000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          },
+          {
+            "slug": "cong_kenh",
+            "ten": "Đồ cồng kềnh",
+            "don_gia": 70000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          },
+          {
+            "slug": "gia_tri_cao",
+            "ten": "Đồ giá trị cao",
+            "don_gia": 120000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          },
+          {
+            "slug": "dong_goi_dac_biet",
+            "ten": "Đóng gói đặc biệt",
+            "don_gia": 80000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          }
+        ]
+      },
+      "he_so": {
+        "trang_thai": "chot_theo_phu_phi_co_dinh",
+        "che_do_hien_tai": "phu_phi_co_dinh",
+        "ghi_chu": "Khung giờ và thời tiết hiện được tính trực tiếp như phụ phí cố định trong giá chốt.",
+        "khung_gio": [
+          {
+            "slug": "buoi_toi",
+            "ten": "Buổi tối",
+            "he_so": null,
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 80000 }
+          },
+          {
+            "slug": "ban_dem",
+            "ten": "Ban đêm",
+            "he_so": null,
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 150000 }
+          }
+        ],
+        "thoi_tiet": [
+          {
+            "slug": "troi_mua",
+            "ten": "Trời mưa",
+            "he_so": null,
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 30000 }
+          }
+        ]
+      }
+    },
+    "hang_muc_bao_gia": [
       {
-        "ten_hang_muc": "Xe tải vận chuyển",
-        "khoang_gia": "300.000 – 800.000",
+        "slug": "cuoc_xe",
+        "ten": "Xe tải vận chuyển",
+        "khoang_gia": "230.000 – 650.000",
         "don_vi": "chuyến",
-        "ghi_chu": "Hệ thống xe tải đa dạng từ 500kg đến 2 tấn, phù hợp với mọi ngõ ngách và khối lượng đồ đạc."
+        "ghi_chu": "Hệ thống xe tải đa dạng từ 500kg đến 2.5 tấn, phù hợp với nhiều quy mô chuyển dọn và tuyến đường nội thành.",
+        "hinh_anh": "assets/images/chuyendon-nha-o.png",
+        "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
       },
       {
-        "ten_hang_muc": "Nhân công bốc xếp",
-        "khoang_gia": "200.000 – 400.000",
+        "slug": "nhan_cong_boc_xep",
+        "ten": "Nhân công bốc xếp",
+        "khoang_gia": "180.000 – 350.000",
         "don_vi": "người",
-        "ghi_chu": "Đội ngũ nhân viên khỏe mạnh, tháo vát và có trách nhiệm cao trong công việc."
+        "ghi_chu": "Đội ngũ nhân viên khỏe mạnh, tháo vát và có trách nhiệm cao trong công việc.",
+        "hinh_anh": "assets/images/staff-deliver.png",
+        "icon_svg": "M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
       },
       {
-        "ten_hang_muc": "Đóng gói đồ đạc",
-        "khoang_gia": "100.000 – 300.000",
+        "slug": "dong_goi_do_dac",
+        "ten": "Đóng gói đồ đạc",
+        "khoang_gia": "90.000 – 250.000",
         "don_vi": "gói",
-        "ghi_chu": "Sử dụng vật liệu bảo vệ chuyên dụng: thùng carton, màng PE, xốp chống sốc."
+        "ghi_chu": "Sử dụng vật liệu bảo vệ chuyên dụng: thùng carton, màng PE, xốp chống sốc.",
+        "hinh_anh": "assets/images/chuyendon-van-chuyen-an-toan.png",
+        "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
       },
       {
-        "ten_hang_muc": "Tháo lắp nội thất",
-        "khoang_gia": "150.000 – 350.000",
+        "slug": "thao_lap_noi_that",
+        "ten": "Tháo lắp nội thất",
+        "khoang_gia": "120.000 – 320.000",
         "don_vi": "món",
-        "ghi_chu": "Xử lý tủ quần áo, giường ngủ, bàn gỗ tự nhiên và gỗ công nghiệp đúng kỹ thuật."
+        "ghi_chu": "Xử lý tủ quần áo, giường ngủ, bàn gỗ tự nhiên và gỗ công nghiệp đúng kỹ thuật.",
+        "hinh_anh": "assets/images/feature-relocation-staff.png",
+        "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
       },
       {
-        "ten_hang_muc": "Hỗ trợ tháo lắp kỹ thuật",
-        "khoang_gia": "150.000 – 350.000",
+        "slug": "ho_tro_thao_lap_ky_thuat",
+        "ten": "Hỗ trợ tháo lắp kỹ thuật",
+        "khoang_gia": "120.000 – 320.000",
         "don_vi": "bộ",
-        "ghi_chu": "Tháo lắp máy lạnh, bình nóng lạnh, tivi treo tường đúng kỹ thuật và an toàn."
+        "ghi_chu": "Tháo lắp máy lạnh, bình nóng lạnh, tivi treo tường đúng kỹ thuật và an toàn.",
+        "hinh_anh": "assets/images/chuyendon-thiet-bi-gia-dinh.png",
+        "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
       },
       {
-        "ten_hang_muc": "Sắp xếp tại nhà mới",
+        "slug": "sap_xep_tai_nha_moi",
+        "ten": "Sắp xếp tại nhà mới",
         "khoang_gia": "Hỗ trợ miễn phí",
         "don_vi": "lần",
-        "ghi_chu": "Hỗ trợ lắp đặt và sắp xếp đồ đạc vào đúng vị trí theo yêu cầu của gia chủ."
+        "ghi_chu": "Hỗ trợ lắp đặt và sắp xếp đồ đạc vào đúng vị trí theo yêu cầu của gia chủ.",
+        "hinh_anh": "assets/images/chuyendon-tron-goi.png",
+        "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
       }
-    ],
-    "lua_chon_xe": [
-      {
-        "gia_tri": "xe_van_500kg",
-        "ten_hien_thi": "Xe Van 500kg",
-        "gia_co_ban": 300000,
-        "km_co_ban": 4,
-        "gia_moi_km_tiep": 20000
-      },
-      {
-        "gia_tri": "xe_tai_1_5_tan",
-        "ten_hien_thi": "Xe Tải 1.5 Tấn",
-        "gia_co_ban": 500000,
-        "km_co_ban": 4,
-        "gia_moi_km_tiep": 28000
-      },
-      {
-        "gia_tri": "xe_tai_2_5_tan",
-        "ten_hien_thi": "Xe Tải 2.5 Tấn",
-        "gia_co_ban": 800000,
-        "km_co_ban": 4,
-        "gia_moi_km_tiep": 35000
-      }
-    ],
-    "hang_muc_cong_them": [
-      {
-        "ma_hang_muc": "nhan_cong",
-        "ten_hang_muc": "Nhân công bốc xếp",
-        "don_vi": "người",
-        "don_gia": 300000,
-        "truong_du_lieu": "so_nhan_cong_du_kien"
-      },
-      {
-        "ma_hang_muc": "dong_goi",
-        "ten_hang_muc": "Đóng gói đồ đạc",
-        "don_vi": "gói",
-        "don_gia": 200000,
-        "truong_du_lieu": "so_goi_dong_goi"
-      },
-      {
-        "ma_hang_muc": "thao_lap",
-        "ten_hang_muc": "Tháo lắp thiết bị",
-        "don_vi": "bộ",
-        "don_gia": 250000,
-        "truong_du_lieu": "so_bo_thao_lap"
-      }
-    ],
-    "phu_phi": {
-      "khung_gio": {
-        "buoi_toi": 100000,
-        "ban_dem": 200000
-      },
-      "thoi_tiet": {
-        "troi_mua": 50000
-      },
-      "dieu_kien_tiep_can": [
-        {
-          "ma_muc": "xe_tai_do_xa_diem_di",
-          "ten_muc": "Xe tải đỗ xa ở điểm đi",
-          "so_tien": 50000
-        },
-        {
-          "ma_muc": "co_thang_bo_hep",
-          "ten_muc": "Cầu thang bộ hẹp",
-          "so_tien": 50000
-        },
-        {
-          "ma_muc": "can_trung_chuyen",
-          "ten_muc": "Cần trung chuyển",
-          "so_tien": 80000
-        }
-      ],
-      "dac_thu": [
-        {
-          "ma_muc": "co_do_de_vo",
-          "ten_muc": "Có đồ dễ vỡ",
-          "so_tien": 50000
-        },
-        {
-          "ma_muc": "co_do_cong_kenh",
-          "ten_muc": "Có đồ cồng kềnh",
-          "so_tien": 80000
-        },
-        {
-          "ma_muc": "co_do_gia_tri_cao",
-          "ten_muc": "Có đồ giá trị cao",
-          "so_tien": 150000
-        }
-      ]
-    },
-    "nguoi_dung_tu_nhap": [
-      "loai_xe",
-      "dia_chi_di",
-      "dia_chi_den",
-      "ngay_thuc_hien",
-      "khung_gio_thuc_hien",
-      "thoi_tiet_du_kien",
-      "so_tang_diem_di",
-      "so_tang_diem_den",
-      "so_nhan_cong_du_kien",
-      "so_goi_dong_goi",
-      "so_bo_thao_lap"
-    ],
-    "he_thong_tu_tinh": [
-      "km_thuc_te",
-      "phi_km_vuot",
-      "phu_phi_khung_gio",
-      "phu_phi_thoi_tiet",
-      "tong_tam_tinh"
     ]
   },
   {
-    "ma_dich_vu": "chuyen_van_phong",
-    "slug_dich_vu": "chuyen_van_phong",
+    "id": "chuyen_van_phong",
     "ten_dich_vu": "Chuyển Văn Phòng Công Ty",
-    "gia_tu": "Từ 500.000/chuyến",
-    "cong_thuc_hien_thi": "Giá tham khảo = Phần cơ bản (xe vận chuyển + quãng đường phát sinh) + Phần chỉ cộng khi phát sinh (đóng gói hồ sơ, bảo vệ thiết bị IT, tháo lắp nội thất, thiết bị nặng, điều kiện mặt bằng, thời gian, thời tiết)",
-    "hang_muc_hien_thi": [
+    "duong_dan_chi_tiet": "public/trang/dich-vu/chuyen-van-phong.html",
+    "thong_tin_minh_bach": {
+      "mo_ta_ngan": "Văn phòng công ty cần di dời hồ sơ, bàn ghế, máy tính, server và thiết bị vận hành.",
+      "phu_hop_khi": "Phù hợp khi bạn cần di dời có kế hoạch, kiểm soát tài liệu và giữ nhịp vận hành ổn định.",
+      "phan_co_ban": ["Xe vận chuyển", "Quãng đường phát sinh"],
+      "phan_phat_sinh": ["Đóng gói hồ sơ", "Thiết bị IT", "Tháo lắp nội thất", "Thiết bị nặng", "Mặt bằng tòa nhà", "Ngoài giờ/cuối tuần"],
+      "nen_khao_sat_khi": "Có server, tài liệu bảo mật, tòa nhà giới hạn giờ ra vào hoặc cần làm ngoài giờ.",
+      "co_the_dat_lich_luon_khi": "Bạn đã rõ sơ đồ di dời, số lượng bàn ghế thiết bị, điều kiện tòa nhà và không có hạng mục kỹ thuật đặc biệt.",
+      "tom_tat_tong_chi_phi": "Cước xe theo loại xe + phí km vượt ngưỡng + đóng gói hồ sơ, bảo vệ IT, tháo lắp nội thất và thiết bị nặng nếu chọn + phụ phí tòa nhà, thời tiết và khung giờ nếu phát sinh."
+    },
+    "cau_truc_gia_chuan": {
+      "phien_ban": "v2-compatible",
+      "cong_thuc_tong_quat": "(chi_phi_co_ban + chi_phi_dich_vu + phu_phi_co_dinh) x he_so",
+      "cong_thuc_tam_thoi_hien_tai": "chi_phi_co_ban + chi_phi_dich_vu + phu_phi_co_dinh + dieu_chinh_khung_gio_thoi_tiet",
+      "chi_phi_co_ban": {
+        "cuoc_xe": {
+          "bao_gom": ["xe_tai", "tai_xe", "quang_duong_co_ban"],
+          "khong_bao_gom": ["nhan_cong_boc_xep", "xe_nang_xe_cau", "dich_vu_ky_thuat_dac_biet"],
+          "quy_tac_so_chuyen": {
+            "che_do": "tu_dong",
+            "cong_thuc": "ceil(max(tong_trong_luong_kg / tai_trong_xe_kg, tong_the_tich_m3 / dung_tich_xe_m3))",
+            "tam_thoi_khi_thieu_du_lieu_the_tich": "chi_tinh_theo_trong_luong",
+            "trang_thai_du_lieu_the_tich_xe": "chua_bo_sung_dung_tich_xe_m3",
+            "ghi_chu": "Tạm thời số chuyến chỉ tính theo tải trọng vì chưa có dung tích xe chuẩn hóa.",
+            "chi_nhan_theo_chuyen": ["cuoc_xe", "phi_km_vuot"]
+          },
+          "loai_xe": [
+            {
+              "slug": "xe_van_500kg",
+              "ten": "Xe Van 500kg (VP)",
+              "tai_trong_xe_kg": 500,
+              "dung_tich_xe_m3": null,
+              "gia_co_ban": 220000,
+              "km_mien_phi": 10,
+              "gia_km_vuot": 12000
+            },
+            {
+              "slug": "xe_tai_1_5_tan",
+              "ten": "Xe Tải 1.5 Tấn (VP)",
+              "tai_trong_xe_kg": 1500,
+              "dung_tich_xe_m3": null,
+              "gia_co_ban": 360000,
+              "km_mien_phi": 10,
+              "gia_km_vuot": 14500
+            },
+            {
+              "slug": "xe_tai_2_5_tan",
+              "ten": "Xe Tải 2.5 Tấn (VP)",
+              "tai_trong_xe_kg": 2500,
+              "dung_tich_xe_m3": null,
+              "gia_co_ban": 590000,
+              "km_mien_phi": 10,
+              "gia_km_vuot": 18000
+            }
+          ]
+        }
+      },
+      "chi_phi_dich_vu": {
+        "nguyen_tac": "chi_dung_hang_muc_tinh_toan_de_tinh_tien",
+        "hang_muc_tinh_toan": [
+          {
+            "slug": "dong_goi_ho_so",
+            "ten": "Đóng gói hồ sơ",
+            "don_vi": "thùng",
+            "don_gia": 180000,
+            "nguon_hien_thi_slug": "dong_goi_ho_so_tai_lieu"
+          },
+          {
+            "slug": "bao_ve_thiet_bi_it",
+            "ten": "Bảo vệ thiết bị IT",
+            "don_vi": "máy",
+            "don_gia": 260000,
+            "nguon_hien_thi_slug": "bao_ve_thiet_bi_it"
+          },
+          {
+            "slug": "thao_lap_noi_that_van_phong",
+            "ten": "Tháo lắp nội thất VP",
+            "don_vi": "món",
+            "don_gia": 220000,
+            "nguon_hien_thi_slug": "thao_lap_noi_that_van_phong"
+          }
+        ]
+      },
+      "phu_phi_co_dinh": {
+        "the_tich": {
+          "ap_dung": "toan_don",
+          "don_vi": "m3",
+          "nguong_mien_phi": 5,
+          "buoc_nhay": 1,
+          "don_gia_moi_buoc": 60000,
+          "cong_thuc": "so_buoc = ceil(max(0, tong_the_tich - nguong_mien_phi) / buoc_nhay); phi = so_buoc x don_gia_moi_buoc"
+        },
+        "trong_luong": {
+          "ap_dung": "toan_don",
+          "don_vi": "kg",
+          "nguong_mien_phi": 500,
+          "buoc_nhay": 100,
+          "don_gia_moi_buoc": 60000,
+          "cong_thuc": "so_buoc = ceil(max(0, tong_trong_luong - nguong_mien_phi) / buoc_nhay); phi = so_buoc x don_gia_moi_buoc"
+        },
+        "tinh_chat_do_dac": [
+          {
+            "slug": "de_vo",
+            "ten": "Đồ dễ vỡ",
+            "don_gia": 80000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          },
+          {
+            "slug": "cong_kenh",
+            "ten": "Đồ cồng kềnh",
+            "don_gia": 100000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          },
+          {
+            "slug": "gia_tri_cao",
+            "ten": "Đồ giá trị cao",
+            "don_gia": 220000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          },
+          {
+            "slug": "dong_goi_dac_biet",
+            "ten": "Đóng gói đặc biệt",
+            "don_gia": 150000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          }
+        ]
+      },
+      "he_so": {
+        "trang_thai": "chot_theo_phu_phi_co_dinh",
+        "che_do_hien_tai": "phu_phi_co_dinh",
+        "ghi_chu": "Khung giờ và thời tiết hiện được tính trực tiếp như phụ phí cố định trong giá chốt.",
+        "khung_gio": [
+          {
+            "slug": "buoi_toi",
+            "ten": "Buổi tối",
+            "he_so": null,
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 120000 }
+          },
+          {
+            "slug": "ban_dem",
+            "ten": "Ban đêm",
+            "he_so": null,
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 220000 }
+          },
+          {
+            "slug": "cuoi_tuan",
+            "ten": "Cuối tuần",
+            "he_so": null,
+            "ghi_chu": "Áp dụng phụ phí cố định cho ca thực hiện vào cuối tuần.",
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 100000 }
+          }
+        ],
+        "thoi_tiet": [
+          {
+            "slug": "troi_mua",
+            "ten": "Trời mưa",
+            "he_so": null,
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 70000 }
+          }
+        ]
+      }
+    },
+    "hang_muc_bao_gia": [
       {
-        "ten_hang_muc": "Cung cấp xe tải",
-        "khoang_gia": "500.000 – 1.500.000",
+        "slug": "cuoc_xe",
+        "ten": "Cung cấp xe tải",
+        "khoang_gia": "220.000 – 590.000",
         "don_vi": "chuyến",
-        "ghi_chu": "Đội xe tải đa dạng tải trọng, có thùng kín bảo vệ tài sản, phù hợp mọi quy mô."
+        "ghi_chu": "Đội xe tải đa dạng tải trọng, có thùng kín bảo vệ tài sản, phù hợp mọi quy mô.",
+        "hinh_anh": "assets/images/chuyendon-van-phong.png",
+        "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
       },
       {
-        "ten_hang_muc": "Đóng gói hồ sơ, tài liệu",
-        "khoang_gia": "150.000 – 400.000",
+        "slug": "dong_goi_ho_so_tai_lieu",
+        "ten": "Đóng gói hồ sơ, tài liệu",
+        "khoang_gia": "120.000 – 320.000",
         "don_vi": "thùng",
-        "ghi_chu": "Phân loại, đóng thùng và niêm phong tài liệu theo từng phòng ban bảo mật."
+        "ghi_chu": "Phân loại, đóng thùng và niêm phong tài liệu theo từng phòng ban bảo mật.",
+        "hinh_anh": "assets/images/dong-goi-tai-lieu.png",
+        "icon_svg": "M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
       },
       {
-        "ten_hang_muc": "Bảo vệ thiết bị IT",
-        "khoang_gia": "250.000 – 500.000",
+        "slug": "bao_ve_thiet_bi_it",
+        "ten": "Bảo vệ thiết bị IT",
+        "khoang_gia": "220.000 – 450.000",
         "don_vi": "bộ máy",
-        "ghi_chu": "Đóng gói máy tính, màn hình, server bằng xốp nổ và vật tư chuyên dụng."
+        "ghi_chu": "Đóng gói máy tính, màn hình, server bằng xốp nổ và vật tư chuyên dụng.",
+        "hinh_anh": "assets/images/boc-lot-it.png",
+        "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
       },
       {
-        "ten_hang_muc": "Tháo lắp nội thất văn phòng",
-        "khoang_gia": "150.000 – 350.000",
+        "slug": "thao_lap_noi_that_van_phong",
+        "ten": "Tháo lắp nội thất văn phòng",
+        "khoang_gia": "120.000 – 300.000",
         "don_vi": "món",
-        "ghi_chu": "Kỹ thuật tháo lắp bàn làm việc, tủ hồ sơ, vách ngăn văn phòng chuyên nghiệp."
+        "ghi_chu": "Kỹ thuật tháo lắp bàn làm việc, tủ hồ sơ, vách ngăn văn phòng chuyên nghiệp.",
+        "hinh_anh": "assets/images/thao-lap-van-phong.png",
+        "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
       },
       {
-        "ten_hang_muc": "Vận chuyển thiết bị nặng",
-        "khoang_gia": "500.000 – 2.000.000",
+        "slug": "van_chuyen_thiet_bi_nang",
+        "ten": "Vận chuyển thiết bị nặng",
+        "khoang_gia": "420.000 – 1.800.000",
         "don_vi": "máy",
-        "ghi_chu": "Di dời két sắt, máy photocopy, tủ server bằng công cụ chuyên dụng an toàn."
+        "ghi_chu": "Di dời két sắt, máy photocopy, tủ server bằng công cụ chuyên dụng an toàn.",
+        "hinh_anh": "assets/images/van-chuyen-thiet-bi-nang.png",
+        "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8zm0 0h6m-6 0H6"
       },
       {
-        "ten_hang_muc": "Lắp đặt tại văn phòng mới",
+        "slug": "lap_dat_tai_van_phong_moi",
+        "ten": "Lắp đặt tại văn phòng mới",
         "khoang_gia": "Hỗ trợ miễn phí",
         "don_vi": "lần",
-        "ghi_chu": "Lắp đặt lại bàn ghế, hệ thống máy tính theo sơ đồ bố trí để làm việc ngay."
+        "ghi_chu": "Lắp đặt lại bàn ghế, hệ thống máy tính theo sơ đồ bố trí để làm việc ngay.",
+        "hinh_anh": "assets/images/lap-dat-van-phong-moi.png",
+        "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
       }
-    ],
-    "lua_chon_xe": [
-      {
-        "gia_tri": "xe_van_500kg",
-        "ten_hien_thi": "Xe Van 500kg (VP)",
-        "gia_co_ban": 500000,
-        "km_co_ban": 4,
-        "gia_moi_km_tiep": 25000
-      },
-      {
-        "gia_tri": "xe_tai_1_5_tan",
-        "ten_hien_thi": "Xe Tải 1.5 Tấn (VP)",
-        "gia_co_ban": 800000,
-        "km_co_ban": 4,
-        "gia_moi_km_tiep": 32000
-      },
-      {
-        "gia_tri": "xe_tai_2_5_tan",
-        "ten_hien_thi": "Xe Tải 2.5 Tấn (VP)",
-        "gia_co_ban": 1500000,
-        "km_co_ban": 4,
-        "gia_moi_km_tiep": 40000
-      }
-    ],
-    "hang_muc_cong_them": [
-      {
-        "ma_hang_muc": "dong_goi_ho_so",
-        "ten_hang_muc": "Đóng gói hồ sơ",
-        "don_vi": "thùng",
-        "don_gia": 200000,
-        "truong_du_lieu": "so_thung_ho_so"
-      },
-      {
-        "ma_hang_muc": "bao_ve_it",
-        "ten_hang_muc": "Bảo vệ thiết bị IT",
-        "don_vi": "bộ máy",
-        "don_gia": 300000,
-        "truong_du_lieu": "so_bo_may_it"
-      },
-      {
-        "ma_hang_muc": "thao_lap_van_phong",
-        "ten_hang_muc": "Tháo lắp nội thất văn phòng",
-        "don_vi": "món",
-        "don_gia": 250000,
-        "truong_du_lieu": "so_mon_noi_that_van_phong"
-      },
-      {
-        "ma_hang_muc": "thiet_bi_nang",
-        "ten_hang_muc": "Thiết bị nặng",
-        "don_vi": "máy",
-        "don_gia": 500000,
-        "truong_du_lieu": "so_thiet_bi_nang"
-      }
-    ],
-    "phu_phi": {
-      "khung_gio": {
-        "buoi_toi": 150000,
-        "ban_dem": 300000
-      },
-      "thoi_tiet": {
-        "troi_mua": 100000
-      },
-      "dieu_kien_tiep_can": [
-        {
-          "ma_muc": "xe_tai_do_xa_diem_di",
-          "ten_muc": "Xe tải đỗ xa ở điểm đi",
-          "so_tien": 70000
-        },
-        {
-          "ma_muc": "duong_cam_tai",
-          "ten_muc": "Đường cấm tải / giới hạn xe",
-          "so_tien": 120000
-        },
-        {
-          "ma_muc": "co_thang_bo_hep",
-          "ten_muc": "Cầu thang bộ hẹp",
-          "so_tien": 70000
-        },
-        {
-          "ma_muc": "can_trung_chuyen",
-          "ten_muc": "Cần trung chuyển",
-          "so_tien": 100000
-        }
-      ],
-      "dac_thu": [
-        {
-          "ma_muc": "can_bao_mat_tai_lieu",
-          "ten_muc": "Bảo mật tài liệu",
-          "so_tien": 200000
-        },
-        {
-          "ma_muc": "can_di_doi_server",
-          "ten_muc": "Di dời server / thiết bị IT",
-          "so_tien": 300000
-        },
-        {
-          "ma_muc": "can_thuc_hien_cuoi_tuan",
-          "ten_muc": "Cần làm cuối tuần",
-          "so_tien": 150000
-        }
-      ]
-    },
-    "nguoi_dung_tu_nhap": [
-      "loai_xe",
-      "dia_chi_di",
-      "dia_chi_den",
-      "ngay_thuc_hien",
-      "khung_gio_thuc_hien",
-      "thoi_tiet_du_kien",
-      "so_tang_diem_di",
-      "so_tang_diem_den",
-      "so_cho_ngoi",
-      "so_phong_ban",
-      "so_thung_ho_so",
-      "so_bo_may_it",
-      "so_mon_noi_that_van_phong",
-      "so_thiet_bi_nang"
-    ],
-    "he_thong_tu_tinh": [
-      "km_thuc_te",
-      "phi_km_vuot",
-      "phu_phi_khung_gio",
-      "phu_phi_thoi_tiet",
-      "tong_tam_tinh"
     ]
   },
   {
-    "ma_dich_vu": "chuyen_kho_bai",
-    "slug_dich_vu": "chuyen_kho_bai",
+    "id": "chuyen_kho_bai",
     "ten_dich_vu": "Chuyển Kho Bãi",
-    "gia_tu": "Từ 800.000/chuyến",
-    "cong_thuc_hien_thi": "Giá tham khảo = Phần cơ bản (xe vận chuyển + quãng đường phát sinh) + Phần chỉ cộng khi phát sinh (pallet, xe nâng hoặc xe cẩu, bốc xếp nặng, gia cố hàng, điều kiện mặt bằng, thời gian, thời tiết)",
-    "hang_muc_hien_thi": [
+    "duong_dan_chi_tiet": "public/trang/dich-vu/chuyen-kho-bai.html",
+    "thong_tin_minh_bach": {
+      "mo_ta_ngan": "Kho hàng, nhà xưởng hoặc mô hình logistics cần xe tải, xe nâng, xe cẩu và kiểm kê chặt chẽ.",
+      "phu_hop_khi": "Phù hợp khi bạn cần di dời pallet, kiện hàng nặng, máy móc và gia cố hàng hóa trước khi chuyển.",
+      "phan_co_ban": ["Xe vận chuyển", "Quãng đường phát sinh"],
+      "phan_phat_sinh": ["Pallet", "Xe nâng/xe cẩu", "Bốc xếp nặng", "Gia cố hàng", "Đường cấm tải", "Kiểm kê"],
+      "nen_khao_sat_khi": "Có máy móc lớn, nhiều pallet, đường cấm tải hoặc cần xe nâng, xe cẩu tại hiện trường.",
+      "co_the_dat_lich_luon_khi": "Bạn đã rõ khối lượng hàng, số pallet, phương tiện nâng hạ cần dùng và điều kiện xe vào ra kho bãi.",
+      "tom_tat_tong_chi_phi": "Cước xe theo tải trọng + phí km vượt ngưỡng + pallet, xe nâng, xe cẩu, bốc xếp và gia cố nếu chọn + phụ phí đường cấm tải, thời tiết và khung giờ nếu phát sinh."
+    },
+    "cau_truc_gia_chuan": {
+      "phien_ban": "v2-compatible",
+      "cong_thuc_tong_quat": "(chi_phi_co_ban + chi_phi_dich_vu + phu_phi_co_dinh) x he_so",
+      "cong_thuc_tam_thoi_hien_tai": "chi_phi_co_ban + chi_phi_dich_vu + phu_phi_co_dinh + dieu_chinh_khung_gio_thoi_tiet",
+      "chi_phi_co_ban": {
+        "cuoc_xe": {
+          "bao_gom": ["xe_tai", "tai_xe", "quang_duong_co_ban"],
+          "khong_bao_gom": ["nhan_cong_boc_xep", "xe_nang", "xe_cau", "gia_co_hang_hoa"],
+          "quy_tac_so_chuyen": {
+            "che_do": "tu_dong",
+            "cong_thuc": "ceil(max(tong_trong_luong_kg / tai_trong_xe_kg, tong_the_tich_m3 / dung_tich_xe_m3))",
+            "tam_thoi_khi_thieu_du_lieu_the_tich": "chi_tinh_theo_trong_luong",
+            "trang_thai_du_lieu_the_tich_xe": "chua_bo_sung_dung_tich_xe_m3",
+            "ghi_chu": "Tạm thời số chuyến chỉ tính theo tải trọng vì chưa có dung tích xe chuẩn hóa.",
+            "chi_nhan_theo_chuyen": ["cuoc_xe", "phi_km_vuot"]
+          },
+          "loai_xe": [
+            {
+              "slug": "xe_tai_1_5_tan",
+              "ten": "Xe Tải 1.5 Tấn (Kho)",
+              "tai_trong_xe_kg": 1500,
+              "dung_tich_xe_m3": null,
+              "gia_co_ban": 420000,
+              "km_mien_phi": 10,
+              "gia_km_vuot": 14000
+            },
+            {
+              "slug": "xe_tai_2_5_tan",
+              "ten": "Xe Tải 2.5 Tấn (Kho)",
+              "tai_trong_xe_kg": 2500,
+              "dung_tich_xe_m3": null,
+              "gia_co_ban": 690000,
+              "km_mien_phi": 10,
+              "gia_km_vuot": 20000
+            },
+            {
+              "slug": "xe_tai_5_tan",
+              "ten": "Xe Tải 5 Tấn (Kho)",
+              "tai_trong_xe_kg": 5000,
+              "dung_tich_xe_m3": null,
+              "gia_co_ban": 1180000,
+              "km_mien_phi": 10,
+              "gia_km_vuot": 26000
+            }
+          ]
+        }
+      },
+      "chi_phi_dich_vu": {
+        "nguyen_tac": "chi_dung_hang_muc_tinh_toan_de_tinh_tien",
+        "hang_muc_tinh_toan": [
+          {
+            "slug": "boc_xep_khoi_luong_lon",
+            "ten": "Bốc xếp khối lượng lớn",
+            "don_vi": "người",
+            "don_gia": 400000,
+            "nguon_hien_thi_slug": "nhan_cong_boc_xep_nang"
+          },
+          {
+            "slug": "dong_mang_co_pallet",
+            "ten": "Đóng màng co pallet",
+            "don_vi": "pallet",
+            "don_gia": 220000,
+            "nguon_hien_thi_slug": "luan_chuyen_pallet"
+          },
+          {
+            "slug": "thue_xe_nang_cau",
+            "ten": "Thuê xe nâng/cẩu",
+            "don_vi": "ca",
+            "don_gia": 2200000,
+            "nguon_hien_thi_slug": "thue_xe_nang_xe_cau"
+          }
+        ]
+      },
+      "phu_phi_co_dinh": {
+        "the_tich": {
+          "ap_dung": "toan_don",
+          "don_vi": "m3",
+          "nguong_mien_phi": 10,
+          "buoc_nhay": 1,
+          "don_gia_moi_buoc": 80000,
+          "cong_thuc": "so_buoc = ceil(max(0, tong_the_tich - nguong_mien_phi) / buoc_nhay); phi = so_buoc x don_gia_moi_buoc"
+        },
+        "trong_luong": {
+          "ap_dung": "toan_don",
+          "don_vi": "kg",
+          "nguong_mien_phi": 1000,
+          "buoc_nhay": 100,
+          "don_gia_moi_buoc": 80000,
+          "cong_thuc": "so_buoc = ceil(max(0, tong_trong_luong - nguong_mien_phi) / buoc_nhay); phi = so_buoc x don_gia_moi_buoc"
+        },
+        "tinh_chat_do_dac": [
+          {
+            "slug": "de_vo",
+            "ten": "Đồ dễ vỡ",
+            "don_gia": 180000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          },
+          {
+            "slug": "cong_kenh",
+            "ten": "Đồ cồng kềnh",
+            "don_gia": 250000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          },
+          {
+            "slug": "gia_tri_cao",
+            "ten": "Đồ giá trị cao",
+            "don_gia": 850000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          },
+          {
+            "slug": "dong_goi_dac_biet",
+            "ten": "Đóng gói đặc biệt",
+            "don_gia": 420000,
+            "don_vi": "món",
+            "ap_dung": "theo_mon",
+            "so_luong_mac_dinh_khi_chi_tick_checkbox": 1
+          }
+        ]
+      },
+      "he_so": {
+        "trang_thai": "chot_theo_phu_phi_co_dinh",
+        "che_do_hien_tai": "phu_phi_co_dinh",
+        "ghi_chu": "Khung giờ và thời tiết hiện được tính trực tiếp như phụ phí cố định trong giá chốt.",
+        "khung_gio": [
+          {
+            "slug": "buoi_toi",
+            "ten": "Buổi tối",
+            "he_so": null,
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 250000 }
+          },
+          {
+            "slug": "ban_dem",
+            "ten": "Ban đêm",
+            "he_so": null,
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 400000 }
+          }
+        ],
+        "thoi_tiet": [
+          {
+            "slug": "troi_mua",
+            "ten": "Trời mưa",
+            "he_so": null,
+            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 150000 }
+          }
+        ]
+      }
+    },
+    "hang_muc_bao_gia": [
       {
-        "ten_hang_muc": "Xe tải & xe thùng kín",
-        "khoang_gia": "800.000 – 2.500.000",
+        "slug": "cuoc_xe",
+        "ten": "Xe tải & xe thùng kín",
+        "khoang_gia": "420.000 – 1.180.000",
         "don_vi": "chuyến",
-        "ghi_chu": "Xe tải hạng nặng từ 2 tấn đến 10 tấn, phù hợp di dời kho xưởng quy mô lớn."
+        "ghi_chu": "Xe tải từ 1.5 tấn đến 5 tấn, phù hợp di dời kho bãi, pallet và hàng hóa khối lượng lớn.",
+        "hinh_anh": "assets/images/chuyendon-kho-bai.png",
+        "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
       },
       {
-        "ten_hang_muc": "Luân chuyển pallet",
-        "khoang_gia": "150.000 – 300.000",
+        "slug": "luan_chuyen_pallet",
+        "ten": "Luân chuyển pallet",
+        "khoang_gia": "120.000 – 260.000",
         "don_vi": "pallet",
-        "ghi_chu": "Bốc xếp, cố định hàng hóa trên pallet và luân chuyển hàng loạt an toàn."
+        "ghi_chu": "Bốc xếp, cố định hàng hóa trên pallet và luân chuyển hàng loạt an toàn.",
+        "hinh_anh": "assets/images/feature-pallet.png",
+        "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m0-10L4 7m8 4v10"
       },
       {
-        "ten_hang_muc": "Thuê xe nâng - xe cẩu",
-        "khoang_gia": "1.500.000 – 3.500.000",
+        "slug": "thue_xe_nang_xe_cau",
+        "ten": "Thuê xe nâng - xe cẩu",
+        "khoang_gia": "1.300.000 – 3.200.000",
         "don_vi": "ca",
-        "ghi_chu": "Hỗ trợ nâng hạ máy móc nặng, kệ kho và các kiện hàng cồng kềnh đặc thù."
+        "ghi_chu": "Hỗ trợ nâng hạ máy móc nặng, kệ kho và các kiện hàng cồng kềnh đặc thù.",
+        "hinh_anh": "assets/images/chuyendon-kho-bai.png",
+        "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8z"
       },
       {
-        "ten_hang_muc": "Nhân công bốc xếp nặng",
-        "khoang_gia": "300.000 – 600.000",
+        "slug": "nhan_cong_boc_xep_nang",
+        "ten": "Nhân công bốc xếp nặng",
+        "khoang_gia": "280.000 – 520.000",
         "don_vi": "người",
-        "ghi_chu": "Đội ngũ nhân sự chuyên trách bốc xếp hàng kho xưởng, kiện hàng nặng."
+        "ghi_chu": "Đội ngũ nhân sự chuyên trách bốc xếp hàng kho xưởng, kiện hàng nặng.",
+        "hinh_anh": "assets/images/nhan-cong-boc-xep.png",
+        "icon_svg": "M17 20H7m10 0a2 2 0 002-2v-1a4 4 0 00-4-4H9a4 4 0 00-4 4v1a2 2 0 002 2"
       },
       {
-        "ten_hang_muc": "Đóng gói & Gia cố",
-        "khoang_gia": "200.000 – 500.000",
+        "slug": "dong_goi_gia_co",
+        "ten": "Đóng gói & Gia cố",
+        "khoang_gia": "180.000 – 420.000",
         "don_vi": "đơn vị",
-        "ghi_chu": "Gia cố kiện hàng, chống rung lắc, bảo vệ máy móc khi di chuyển đường dài."
+        "ghi_chu": "Gia cố kiện hàng, chống rung lắc, bảo vệ máy móc khi di chuyển đường dài.",
+        "hinh_anh": "assets/images/dong-goi-va-gia-co.png",
+        "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0"
       },
       {
-        "ten_hang_muc": "Kiểm kê & Bàn giao",
+        "slug": "kiem_ke_ban_giao",
+        "ten": "Kiểm kê & Bàn giao",
         "khoang_gia": "Miễn phí",
         "don_vi": "lần",
-        "ghi_chu": "Đối soát 100% số lượng hàng hóa, thiết bị trước và sau khi di dời kho bãi."
+        "ghi_chu": "Đối soát 100% số lượng hàng hóa, thiết bị trước và sau khi di dời kho bãi.",
+        "hinh_anh": "assets/images/kiem-ke-va-ban-giao.png",
+        "icon_svg": "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2"
       }
-    ],
-    "lua_chon_xe": [
-      {
-        "gia_tri": "xe_tai_1_5_tan",
-        "ten_hien_thi": "Xe Tải 1.5 Tấn (Kho)",
-        "gia_co_ban": 800000,
-        "km_co_ban": 10,
-        "gia_moi_km_tiep": 45000
-      },
-      {
-        "gia_tri": "xe_tai_2_5_tan",
-        "ten_hien_thi": "Xe Tải 2.5 Tấn (Kho)",
-        "gia_co_ban": 1500000,
-        "km_co_ban": 10,
-        "gia_moi_km_tiep": 55000
-      },
-      {
-        "gia_tri": "xe_tai_5_tan",
-        "ten_hien_thi": "Xe Tải 5 Tấn (Kho)",
-        "gia_co_ban": 2500000,
-        "km_co_ban": 10,
-        "gia_moi_km_tiep": 75000
-      }
-    ],
-    "hang_muc_cong_them": [
-      {
-        "ma_hang_muc": "pallet",
-        "ten_hang_muc": "Luân chuyển pallet",
-        "don_vi": "pallet",
-        "don_gia": 250000,
-        "truong_du_lieu": "so_pallet"
-      },
-      {
-        "ma_hang_muc": "xe_nang",
-        "ten_hang_muc": "Xe nâng",
-        "don_vi": "ca",
-        "don_gia": 2500000,
-        "truong_du_lieu": "so_ca_xe_nang"
-      },
-      {
-        "ma_hang_muc": "xe_cau",
-        "ten_hang_muc": "Xe cẩu",
-        "don_vi": "ca",
-        "don_gia": 2500000,
-        "truong_du_lieu": "so_ca_xe_cau"
-      },
-      {
-        "ma_hang_muc": "nhan_su_boc_xep",
-        "ten_hang_muc": "Nhân sự bốc xếp",
-        "don_vi": "người",
-        "don_gia": 450000,
-        "truong_du_lieu": "so_nhan_su_boc_xep"
-      },
-      {
-        "ma_hang_muc": "gia_co",
-        "ten_hang_muc": "Gia cố hàng",
-        "don_vi": "đơn vị",
-        "don_gia": 250000,
-        "truong_du_lieu": "so_don_vi_gia_co"
-      }
-    ],
-    "phu_phi": {
-      "khung_gio": {
-        "buoi_toi": 300000,
-        "ban_dem": 500000
-      },
-      "thoi_tiet": {
-        "troi_mua": 200000
-      },
-      "dieu_kien_tiep_can": [
-        {
-          "ma_muc": "duong_cam_tai",
-          "ten_muc": "Đường cấm tải / giới hạn xe",
-          "so_tien": 150000
-        },
-        {
-          "ma_muc": "can_trung_chuyen",
-          "ten_muc": "Cần trung chuyển",
-          "so_tien": 150000
-        }
-      ],
-      "dac_thu": [
-        {
-          "ma_muc": "can_kiem_ke_hang_hoa",
-          "ten_muc": "Kiểm kê trước và sau chuyển",
-          "so_tien": 200000
-        }
-      ]
-    },
-    "nguoi_dung_tu_nhap": [
-      "loai_xe",
-      "dia_chi_di",
-      "dia_chi_den",
-      "ngay_thuc_hien",
-      "khung_gio_thuc_hien",
-      "thoi_tiet_du_kien",
-      "khoi_luong_hang_hoa",
-      "loai_hang_hoa",
-      "so_pallet",
-      "so_ca_xe_nang",
-      "so_ca_xe_cau",
-      "so_nhan_su_boc_xep",
-      "so_don_vi_gia_co"
-    ],
-    "he_thong_tu_tinh": [
-      "km_thuc_te",
-      "phi_km_vuot",
-      "phu_phi_khung_gio",
-      "phu_phi_thoi_tiet",
-      "tong_tam_tinh"
     ]
   }
 ]

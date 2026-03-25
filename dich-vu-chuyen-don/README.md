@@ -56,7 +56,7 @@ dich-vu-chuyen-don/
         │   ├── shared-layout.js
         │   ├── data/
         │   │   ├── news-data.json
-        │   │   └── pricing-reference.json
+        │   │   └── bang-gia-minh-bach.json
         │   └── modules/
         │       ├── main-landing.js
         │       ├── main-navigation.js
