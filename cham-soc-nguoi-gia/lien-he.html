@@ -9,7 +9,7 @@
     <link
       rel="shortcut icon"
       type="image/x-icon"
-      href="../assets/logong.png"
+      href="assets/logong.png"
     />
     <!-- Bootstrap 5 CSS -->
     <link
@@ -622,7 +622,7 @@ body {
         }
 
         function loadServices() {
-          $.getJSON("../services.json")
+          $.getJSON("services.json")
             .done(function (services) {
               if (Array.isArray(services) && services.length) {
                 renderServiceOptions(services);

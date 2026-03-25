@@ -7,7 +7,7 @@
     "tags": ["chăm sóc người già", "dịch vụ nuôi bệnh", "sức khỏe người cao tuổi", "osin chăm người già"],
     "keywords": ["chăm sóc người già", "dịch vụ nuôi bệnh", "sức khỏe người cao tuổi", "osin chăm người già"],
     "excerpt": "Chăm sóc người cao tuổi đòi hỏi sự kiên nhẫn và kiến thức y tế cơ bản. Khám phá các nguyên tắc giúp người già sống vui, khỏe mỗi ngày.",
-    "thumbnail": "../assets/dich-vu-phuc-hoi-tri-lieu-co-ban.png",
+    "thumbnail": "assets/dich-vu-phuc-hoi-tri-lieu-co-ban.png",
     "published_at": "2026-03-01",
     "read_time": 4,
     "content": {
@@ -38,7 +38,7 @@
     "tags": ["chăm sóc sau tai biến", "phục hồi chức năng", "liệt nửa người", "osin nuôi bệnh"],
     "keywords": ["chăm sóc sau tai biến", "phục hồi chức năng", "liệt nửa người", "osin nuôi bệnh"],
     "excerpt": "Giai đoạn sau tai biến là thời điểm vàng để phục hồi. Tìm hiểu cách chăm sóc và tập luyện giúp bệnh nhân sớm lấy lại khả năng vận động.",
-    "thumbnail": "../assets/xu-ly-tinh-trang-nguoi-gia-bi-nghet-tho.png",
+    "thumbnail": "assets/xu-ly-tinh-trang-nguoi-gia-bi-nghet-tho.png",
     "published_at": "2026-03-02",
     "read_time": 5,
     "content": {
@@ -69,7 +69,7 @@
     "tags": ["dinh dưỡng tiểu đường", "thực đơn người bệnh", "kiểm soát đường huyết", "nấu ăn cho người bệnh"],
     "keywords": ["dinh dưỡng tiểu đường", "thực đơn người bệnh", "kiểm soát đường huyết", "nấu ăn cho người bệnh"],
     "excerpt": "Chế độ ăn quyết định 70% hiệu quả điều trị tiểu đường. Khám phá danh sách thực phẩm nên ăn và nên tránh để ổn định đường huyết.",
-    "thumbnail": "../assets/nguyen-tac-vang-cham-soc-nguoi-gia-tai-nha.png",
+    "thumbnail": "assets/nguyen-tac-vang-cham-soc-nguoi-gia-tai-nha.png",
     "published_at": "2026-03-03",
     "read_time": 4,
     "content": {
@@ -100,7 +100,7 @@
     "tags": ["vệ sinh bệnh nhân", "chăm sóc tại giường", "thay bỉm người già", "dịch vụ chăm sóc tại nhà"],
     "keywords": ["vệ sinh người bệnh", "chăm sóc tại nhà", "thay bỉm", "dịch vụ chăm sóc"],
     "excerpt": "Vệ sinh cho người bệnh nằm một chỗ cần đúng kỹ thuật để vừa sạch sẽ, vừa không làm đau hay ảnh hưởng đến vết thương của họ.",
-    "thumbnail": "../assets/khong-gian-song-ly-tuong-cho-nguoi-gia.png",
+    "thumbnail": "assets/khong-gian-song-ly-tuong-cho-nguoi-gia.png",
     "published_at": "2026-03-04",
     "read_time": 3,
     "content": {
@@ -131,7 +131,7 @@
     "tags": ["đo huyết áp", "cao huyết áp", "sức khỏe tim mạch", "theo dõi bệnh nhân"],
     "keywords": ["theo dõi huyết áp", "đo huyết áp tại nhà", "sức khỏe tim mạch", "chăm sóc người cao tuổi"],
     "excerpt": "Huyết áp cao là 'kẻ giết người thầm lặng'. Biết cách đo và theo dõi đúng giúp phòng tránh đột quỵ và các bệnh tim mạch.",
-    "thumbnail": "../assets/theo-doi-huyet-ap-tai-nha.png",
+    "thumbnail": "assets/theo-doi-huyet-ap-tai-nha.png",
     "published_at": "2026-03-05",
     "read_time": 3,
     "content": {
@@ -162,7 +162,7 @@
     "tags": ["tâm lý người bệnh", "chăm sóc tinh thần", "trầm cảm người già", "người nuôi bệnh tận tâm"],
     "keywords": ["tâm lý người bệnh", "chăm sóc tinh thần", "trầm cảm người già", "người nuôi bệnh tận tâm"],
     "excerpt": "Người mắc bệnh mãn tính thường dễ cáu gắt, mặc cảm. Hiểu được tâm lý giúp người chăm sóc kết nối và hỗ trợ họ tốt hơn.",
-    "thumbnail": "../assets/giu-ve-sinh-cho-nguoi-gia-nam-liet.png",
+    "thumbnail": "assets/giu-ve-sinh-cho-nguoi-gia-nam-liet.png",
     "published_at": "2026-03-06",
     "read_time": 4,
     "content": {
@@ -193,7 +193,7 @@
     "tags": ["phòng ngừa té ngã", "an toàn cho người già", "người già ngã", "chăm sóc tại nhà"],
     "keywords": ["phòng ngừa té ngã", "an toàn cho người già", "người già ngã", "chăm sóc tại nhà"],
     "excerpt": "Té ngã ở người già có thể dẫn đến gãy xương hông và nằm liệt giường. Hãy biến ngôi nhà thành môi trường an toàn tuyệt đối.",
-    "thumbnail": "../assets/dich-vu-dong-hanh-cham-soc-tinh-than.png",
+    "thumbnail": "assets/dich-vu-dong-hanh-cham-soc-tinh-than.png",
     "published_at": "2026-03-07",
     "read_time": 4,
     "content": {
@@ -224,7 +224,7 @@
     "tags": ["chăm sóc giảm nhẹ", "bệnh nhân ung thư", "chăm sóc cuối đời", "dịch vụ nuôi bệnh chuyên nghiệp"],
     "keywords": ["chăm sóc giảm nhẹ", "bệnh nhân ung thư", "chăm sóc cuối đời", "dịch vụ nuôi bệnh chuyên nghiệp"],
     "excerpt": "Mục tiêu chính là giảm đau đớn và mang lại sự an yên nhất cho bệnh nhân trong những ngày tháng cuối cùng.",
-    "thumbnail": "../assets/cham-soc-nguoi-benh-ung-thu-giai-doan-cuoi.png",
+    "thumbnail": "assets/cham-soc-nguoi-benh-ung-thu-giai-doan-cuoi.png",
     "published_at": "2026-03-08",
     "read_time": 5,
     "content": {
@@ -255,7 +255,7 @@
     "tags": ["thay băng vết thương", "vệ sinh vết thương", "nhiễm trùng vết thương", "chăm sóc sau phẫu thuật"],
     "keywords": ["thay băng vết thương", "vệ sinh vết thương", "nhiễm trùng vết thương", "chăm sóc sau phẫu thuật"],
     "excerpt": "Thay băng đúng cách giúp vết thương nhanh lành và tránh nguy cơ nhiễm trùng máu nguy hiểm.",
-    "thumbnail": "../assets/cham-soc-nguoi-gia-hau-phau-copy-0.png",
+    "thumbnail": "assets/cham-soc-nguoi-gia-hau-phau-copy-0.png",
     "published_at": "2026-03-09",
     "read_time": 3,
     "content": {
@@ -286,7 +286,7 @@
     "tags": ["Alzheimer", "sa sút trí tuệ", "mất trí nhớ người già", "người giúp việc chăm người bệnh"],
     "keywords": ["Alzheimer", "sa sút trí tuệ", "mất trí nhớ người già", "chăm sóc người cao tuổi"],
     "excerpt": "Chăm sóc người mất trí nhớ cần sự kiên nhẫn gấp bội và những mẹo nhỏ để giúp họ duy trì nề nếp sinh hoạt.",
-    "thumbnail": "../assets/giu-ve-sinh-cho-nguoi-gia-sa-sut-tri-tue.png",
+    "thumbnail": "assets/giu-ve-sinh-cho-nguoi-gia-sa-sut-tri-tue.png",
     "published_at": "2026-03-10",
     "read_time": 5,
     "content": {
@@ -317,7 +317,7 @@
     "tags": ["suy thận", "chạy thận", "dinh dưỡng suy thận", "chăm sóc bệnh nhân tại nhà"],
     "keywords": ["suy thận", "chạy thận", "dinh dưỡng suy thận", "chăm sóc bệnh nhân tại nhà"],
     "excerpt": "Bệnh nhân suy thận cần một chế độ ăn uống và nghỉ ngơi khắt khe để duy trì sức khỏe giữa các chu kỳ lọc máu.",
-    "thumbnail": "../assets/cham-soc-benh-nhan-suy-than.png",
+    "thumbnail": "assets/cham-soc-benh-nhan-suy-than.png",
     "published_at": "2026-03-11",
     "read_time": 4,
     "content": {
@@ -348,7 +348,7 @@
     "tags": ["giảm đau tự nhiên", "chăm sóc sức khỏe", "massage người bệnh", "liệu pháp tinh thần"],
     "keywords": ["giảm đau tự nhiên", "chăm sóc sức khỏe", "massage người bệnh", "liệu pháp tinh thần"],
     "excerpt": "Bên cạnh thuốc tây, các biện pháp vật lý và tâm lý có tác dụng hỗ trợ giảm đau cực kỳ hiệu quả cho bệnh nhân mãn tính.",
-    "thumbnail": "../assets/giup-nguoi-benh-vuot-qua-con-dau.png",
+    "thumbnail": "assets/giup-nguoi-benh-vuot-qua-con-dau.png",
     "published_at": "2026-03-12",
     "read_time": 3,
     "content": {
@@ -379,7 +379,7 @@
     "tags": ["uống thuốc đúng giờ", "quản lý thuốc", "an toàn dược phẩm", "người chăm sóc bệnh nhân"],
     "keywords": ["quản lý thuốc", "uống thuốc an toàn", "chăm sóc người bệnh", "dịch vụ chăm sóc"],
     "excerpt": "Nhầm lẫn thuốc hoặc quên liều là sai lầm phổ biến nhưng cực kỳ nguy hiểm. Hãy học cách quản lý tủ thuốc gia đình thông minh.",
-    "thumbnail": "../assets/sap-xep-thuoc-cho-nguoi-benh.png",
+    "thumbnail": "assets/sap-xep-thuoc-cho-nguoi-benh.png",
     "published_at": "2026-03-13",
     "read_time": 3,
     "content": {
@@ -410,7 +410,7 @@
     "tags": ["viêm phổi nằm lâu", "vỗ rung phổi", "chăm sóc hô hấp", "nuôi bệnh tại nhà"],
     "keywords": ["phòng ngừa viêm phổi", "chăm sóc người bệnh nằm lâu", "vỗ rung phổi", "dịch vụ chăm sóc tại nhà"],
     "excerpt": "Viêm phổi là biến chứng thường gặp và dễ dẫn đến tử vong ở người già nằm liệt. Hãy chủ động phòng ngừa ngay từ hôm nay.",
-    "thumbnail": "../assets/phong-ngua-viem-phoi-cho-nguoi-nam-lau.png",
+    "thumbnail": "assets/phong-ngua-viem-phoi-cho-nguoi-nam-lau.png",
     "published_at": "2026-03-14",
     "read_time": 4,
     "content": {
@@ -441,7 +441,7 @@
     "tags": ["đau xương khớp", "bài tập người già", "thoái hóa khớp", "người chăm sóc hỗ trợ tập vật lý"],
     "keywords": ["bài tập xương khớp", "vận động người bệnh", "phục hồi chức năng", "chăm sóc người cao tuổi"],
     "excerpt": "Càng đau càng lười vận động sẽ khiến khớp bị cứng. Tập luyện đúng cách giúp bôi trơn khớp và giảm đau hiệu quả.",
-    "thumbnail": "../assets/bai-tap-cho-nguoi-benh-xuong-khop.png",
+    "thumbnail": "assets/bai-tap-cho-nguoi-benh-xuong-khop.png",
     "published_at": "2026-03-15",
     "read_time": 4,
     "content": {
@@ -472,7 +472,7 @@
     "tags": ["bệnh tim mạch", "chăm sóc tim mạch", "suy tim", "osin chăm bệnh"],
     "keywords": ["chăm sóc tim mạch", "bệnh tim", "suy tim", "dịch vụ chăm sóc"],
     "excerpt": "Tránh xúc động mạnh và vận động quá sức là hai nguyên tắc cốt lõi để bảo vệ trái tim của người bệnh.",
-    "thumbnail": "../assets/luu-y-khi-cham-soc-nguoi-benh-tim-mach.png",
+    "thumbnail": "assets/luu-y-khi-cham-soc-nguoi-benh-tim-mach.png",
     "published_at": "2026-03-16",
     "read_time": 4,
     "content": {
@@ -503,7 +503,7 @@
     "tags": ["tắm nắng", "Vitamin D", "sức khỏe người già", "người chăm sóc người già"],
     "keywords": ["tắm nắng", "Vitamin D", "sức khỏe người già", "chăm sóc người cao tuổi"],
     "excerpt": "Chỉ 15-20 phút tắm nắng mỗi ngày có thể giúp người già chắc khỏe xương và cải thiện tinh thần rõ rệt.",
-    "thumbnail": "../assets/loi-ich-cua-viec-tam-nang-cho-nguoi-gia.png",
+    "thumbnail": "assets/loi-ich-cua-viec-tam-nang-cho-nguoi-gia.png",
     "published_at": "2026-03-17",
     "read_time": 3,
     "content": {
@@ -534,7 +534,7 @@
     "tags": ["Parkinson", "run tay chân", "người chăm sóc bệnh nhân thần kinh", "nuôi bệnh chuyên nghiệp"],
     "keywords": ["Parkinson", "run tay chân", "người chăm sóc bệnh nhân thần kinh", "nuôi bệnh chuyên nghiệp"],
     "excerpt": "Run rẩy và cứng cơ khiến những việc đơn giản như mặc áo, ăn cơm trở nên khó khăn. Hãy học cách giúp họ tự tin hơn.",
-    "thumbnail": "../assets/cham-soc-nguoi-benh-parkinson.png",
+    "thumbnail": "assets/cham-soc-nguoi-benh-parkinson.png",
     "published_at": "2026-03-18",
     "read_time": 4,
     "content": {
@@ -565,7 +565,7 @@
     "tags": ["giấc ngủ người bệnh", "mất ngủ", "chăm sóc sức khỏe", "người nuôi bệnh trực đêm"],
     "keywords": ["giấc ngủ người bệnh", "mất ngủ", "chăm sóc sức khỏe", "người nuôi bệnh trực đêm"],
     "excerpt": "Giấc ngủ là thời gian để cơ thể tự chữa lành. Một đêm mất ngủ có thể khiến tình trạng bệnh trở nên tồi tệ hơn.",
-    "thumbnail": "../assets/giac-ngu-cua-nguoi-benh.png",
+    "thumbnail": "assets/giac-ngu-cua-nguoi-benh.png",
     "published_at": "2026-03-19",
     "read_time": 3,
     "content": {
@@ -596,7 +596,7 @@
     "tags": ["kiệt sức người chăm sóc", "stress", "dịch vụ giúp việc chăm bệnh", "giải pháp chăm sóc"],
     "keywords": ["kiệt sức người chăm sóc", "stress", "dịch vụ giúp việc chăm bệnh", "giải pháp chăm sóc"],
     "excerpt": "Chăm sóc người bệnh dài ngày là một công việc cực kỳ áp lực. Đừng quên chăm sóc chính mình trước khi quá muộn.",
-    "thumbnail": "../assets/nguoi-cham-soc-cung-can-duoc-cham-soc.png",
+    "thumbnail": "assets/nguoi-cham-soc-cung-can-duoc-cham-soc.png",
     "published_at": "2026-03-20",
     "read_time": 4,
     "content": {
@@ -627,7 +627,7 @@
     "tags": ["sau phẫu thuật", "vệ sinh vết mổ", "chăm sóc hậu phẫu", "osin chăm bệnh"],
     "keywords": ["vệ sinh vết thương", "sau phẫu thuật", "chăm sóc hậu phẫu", "dịch vụ chăm sóc"],
     "excerpt": "Sai lầm trong vệ sinh sau mổ có thể dẫn đến nhiễm trùng vết thương và kéo dài thời gian nằm viện.",
-    "thumbnail": "../assets/ve-sinh-cho-nguoi-benh-sau-phau-thuat.png",
+    "thumbnail": "assets/ve-sinh-cho-nguoi-benh-sau-phau-thuat.png",
     "published_at": "2026-03-21",
     "read_time": 3,
     "content": {
@@ -658,7 +658,7 @@
     "tags": ["loãng xương", "Canxi", "sức khỏe xương khớp", "thực đơn người già"],
     "keywords": ["loãng xương", "Canxi", "sức khỏe xương khớp", "thực đơn người già"],
     "excerpt": "Dinh dưỡng đúng cách giúp ngăn ngừa nguy cơ gãy xương tự nhiên ở người cao tuổi.",
-    "thumbnail": "../assets/dinh-duong-cho-nguoi-gia-bi-loang-xuong.png",
+    "thumbnail": "assets/dinh-duong-cho-nguoi-gia-bi-loang-xuong.png",
     "published_at": "2026-03-22",
     "read_time": 4,
     "content": {
@@ -689,7 +689,7 @@
     "tags": ["sức khỏe mùa đông", "phòng bệnh hô hấp", "giữ ấm người già", "nuôi bệnh tại nhà"],
     "keywords": ["sức khỏe mùa đông", "phòng bệnh hô hấp", "giữ ấm người già", "nuôi bệnh tại nhà"],
     "excerpt": "Thời tiết lạnh đột ngột là nguyên nhân hàng đầu gây đột quỵ và viêm phổi ở người cao tuổi.",
-    "thumbnail": "../assets/phong-benh-mua-lanh-cho-nguoi-gia.png",
+    "thumbnail": "assets/phong-benh-mua-lanh-cho-nguoi-gia.png",
     "published_at": "2026-03-23",
     "read_time": 3,
     "content": {
@@ -720,7 +720,7 @@
     "tags": ["xe lăn", "an toàn di chuyển", "hỗ trợ người bệnh", "osin chăm người liệt"],
     "keywords": ["xe lăn", "an toàn di chuyển", "hỗ trợ người bệnh", "osin chăm người liệt"],
     "excerpt": "Sử dụng xe lăn không đúng cách có thể gây lật xe hoặc làm chấn thương người bệnh khi lên xuống.",
-    "thumbnail": "../assets/cach-su-dung-xe-lan-an-toan.png",
+    "thumbnail": "assets/cach-su-dung-xe-lan-an-toan.png",
     "published_at": "2026-03-24",
     "read_time": 3,
     "content": {
@@ -751,7 +751,7 @@
     "tags": ["chăm sóc người sốt", "hạ sốt", "sốt cao ở người già", "người nuôi bệnh"],
     "keywords": ["sốt cao", "chăm sóc người bệnh", "hạ sốt", "người già"],
     "excerpt": "Sốt cao ở người già rất nguy hiểm vì dễ gây mất nước và co giật. Hãy bình tĩnh xử lý theo các bước sau.",
-    "thumbnail": "../assets/cham-soc-nguoi-benh-khi-bi-sot.png",
+    "thumbnail": "assets/cham-soc-nguoi-benh-khi-bi-sot.png",
     "published_at": "2026-03-25",
     "read_time": 3,
     "content": {
@@ -782,7 +782,7 @@
     "tags": ["giảm ho", "viêm họng người già", "bài thuốc dân gian", "chăm sóc hô hấp"],
     "keywords": ["giảm ho", "viêm họng", "người già", "chăm sóc hô hấp"],
     "excerpt": "Cơn ho kéo dài khiến người già mất ngủ và mệt mỏi. Áp dụng những cách đơn giản để làm dịu cổ họng ngay lập tức.",
-    "thumbnail": "../assets/cham-soc-nguoi-benh-bi-ho.png",
+    "thumbnail": "assets/cham-soc-nguoi-benh-bi-ho.png",
     "published_at": "2026-03-26",
     "read_time": 3,
     "content": {
@@ -813,7 +813,7 @@
     "tags": ["lợi ích thuê osin", "nuôi bệnh chuyên nghiệp", "phục hồi sức khỏe", "dịch vụ chăm sóc tại nhà"],
     "keywords": ["phục hồi sức khỏe", "chăm sóc tại nhà", "người chăm sóc chuyên nghiệp", "dịch vụ chăm sóc"],
     "excerpt": "Khoa học chứng minh, bệnh nhân được chăm sóc đúng cách tại nhà có tốc độ hồi phục nhanh hơn 30% so với bình thường.",
-    "thumbnail": "../assets/vai-tro-cua-nguoi-giup-viec-trong-phuc-hoi-benh.png",
+    "thumbnail": "assets/vai-tro-cua-nguoi-giup-viec-trong-phuc-hoi-benh.png",
     "published_at": "2026-03-27",
     "read_time": 4,
     "content": {
@@ -844,7 +844,7 @@
     "tags": ["táo bón", "hệ tiêu hóa", "chất xơ", "chăm sóc người già nằm liệt"],
     "keywords": ["táo bón", "hệ tiêu hóa", "chất xơ", "chăm sóc người già nằm liệt"],
     "excerpt": "Ít vận động khiến nhu động ruột yếu đi gây táo bón kinh niên. Hãy thay đổi thực đơn và thói quen để cải thiện tình hình.",
-    "thumbnail": "../assets/cham-soc-nguoi-benh-bi-tao-bon.png",
+    "thumbnail": "assets/cham-soc-nguoi-benh-bi-tao-bon.png",
     "published_at": "2026-03-28",
     "read_time": 3,
     "content": {
@@ -875,7 +875,7 @@
     "tags": ["xuất viện", "chuẩn bị phòng bệnh", "an toàn tại nhà", "chăm sóc người bệnh mới mổ"],
     "keywords": ["chuẩn bị phòng bệnh", "an toàn tại nhà", "chăm sóc người bệnh", "xuất viện"],
     "excerpt": "Việc chuẩn bị phòng ốc chu đáo giúp người bệnh cảm thấy thoải mái và an toàn ngay khi vừa về tới nhà.",
-    "thumbnail": "../assets/chuan-bi-phong-cho-nguoi-benh-xuat-vien.png",
+    "thumbnail": "assets/chuan-bi-phong-cho-nguoi-benh-xuat-vien.png",
     "published_at": "2026-03-29",
     "read_time": 4,
     "content": {
@@ -906,7 +906,7 @@
     "tags": ["khám định kỳ", "tầm soát bệnh", "sức khỏe người già", "phòng bệnh hơn chữa bệnh"],
     "keywords": ["khám định kỳ", "tầm soát bệnh", "sức khỏe người già", "phòng bệnh hơn chữa bệnh"],
     "excerpt": "Phát hiện sớm các mầm mống bệnh giúp tăng tỉ lệ điều trị thành công lên đến 90%. Đừng đợi đau mới đi khám.",
-    "thumbnail": "../assets/tam-quan-trong-cua-viec-kham-suc-khoe-dinh-ky.png",
+    "thumbnail": "assets/tam-quan-trong-cua-viec-kham-suc-khoe-dinh-ky.png",
     "published_at": "2026-03-30",
     "read_time": 3,
     "content": {

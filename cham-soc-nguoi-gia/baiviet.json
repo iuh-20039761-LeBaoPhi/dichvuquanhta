@@ -7,7 +7,7 @@
     "tags": ["chăm sóc người già", "người già khó đi lại", "hỗ trợ di chuyển", "osin chăm người già"],
     "keywords": ["chăm sóc người già", "người già khó đi lại", "hỗ trợ di chuyển", "osin chăm người già"],
     "excerpt": "Người già khó đi lại cần sự hỗ trợ đặc biệt để tránh té ngã và lở loét. Khám phá cách chăm sóc giúp các cụ vận động an toàn.",
-    "thumbnail": "../assets/bai-viet-bi-quyet-cham-soc-nguoi-gia-kho-di-lai.png",
+    "thumbnail": "assets/bai-viet-bi-quyet-cham-soc-nguoi-gia-kho-di-lai.png",
     "published_at": "2026-03-01",
     "read_time": 5,
     "content": {
@@ -34,7 +34,7 @@
     "tags": ["tâm lý người già", "sa sút trí tuệ", "chăm sóc tinh thần", "người nuôi bệnh"],
     "keywords": ["tâm lý người già", "sa sút trí tuệ", "chăm sóc tinh thần", "người nuôi bệnh"],
     "excerpt": "Sự phụ thuộc vào người khác khiến người già dễ mặc cảm. Hãy học cách lắng nghe và chia sẻ để họ cảm thấy được tôn trọng.",
-    "thumbnail": "../assets/bai-viet-tam-ly-nguoi-cao-tuoi-khong-the-tu-cham-soc.png",
+    "thumbnail": "assets/bai-viet-tam-ly-nguoi-cao-tuoi-khong-the-tu-cham-soc.png",
     "published_at": "2026-03-02",
     "read_time": 4,
     "content": {
@@ -61,7 +61,7 @@
     "tags": ["dinh dưỡng người già", "người già nằm liệt", "chế độ ăn người cao tuổi", "osin nấu ăn"],
     "keywords": ["dinh dưỡng người già", "người già nằm liệt", "chế độ ăn người cao tuổi", "osin nấu ăn"],
     "excerpt": "Người nằm lâu một chỗ rất dễ bị táo bón và suy dinh dưỡng. Chế độ ăn cần được thiết kế khoa học, dễ tiêu hóa.",
-    "thumbnail": "../assets/bai-viet-nguyen-tac-dinh-duong-cho-nguoi-gia-nam-liet.png",
+    "thumbnail": "assets/bai-viet-nguyen-tac-dinh-duong-cho-nguoi-gia-nam-liet.png",
     "published_at": "2026-03-03",
     "read_time": 5,
     "content": {
@@ -88,7 +88,7 @@
     "tags": ["loét tì đè", "vệ sinh người già", "chăm sóc người liệt", "kỹ năng osin"],
     "keywords": ["loét tì đè", "vệ sinh người già", "chăm sóc người liệt", "kỹ năng osin"],
     "excerpt": "Vết loét có thể gây nhiễm trùng nguy hiểm. Hãy học cách thay đổi tư thế và vệ sinh da đúng cách cho người cao tuổi.",
-    "thumbnail": "../assets/bai-viet-cach-phong-ngua-loet-ti-de-o-nguoi-gia.png",
+    "thumbnail": "assets/bai-viet-cach-phong-ngua-loet-ti-de-o-nguoi-gia.png",
     "published_at": "2026-03-04",
     "read_time": 4,
     "content": {
@@ -115,7 +115,7 @@
     "tags": ["thuê osin chăm người già", "dịch vụ giúp việc", "chăm sóc sức khỏe tại nhà"],
     "keywords": ["chăm sóc người già", "người già khó đi lại", "hỗ trợ di chuyển", "osin chăm người già"],
     "excerpt": "Việc thuê người giúp việc chuyên trách giúp gia đình yên tâm làm việc và người già được chăm sóc bài bản hơn.",
-    "thumbnail": "../assets/bai-viet-loi-ich-thue-osin-cham-soc-nguoi-gia.png",
+    "thumbnail": "assets/bai-viet-loi-ich-thue-osin-cham-soc-nguoi-gia.png",
     "published_at": "2026-03-05",
     "read_time": 4,
     "content": {
@@ -142,7 +142,7 @@
     "tags": ["vệ sinh tại giường", "tắm cho người già", "chăm sóc tại nhà"],
     "keywords": ["vệ sinh người già", "tắm cho người cao tuổi", "chăm sóc tại nhà"],
     "excerpt": "Tắm rửa, gội đầu cho người già không thể đi lại cần sự khéo léo để không làm họ bị lạnh hay đau mỏi.",
-    "thumbnail": "../assets/bai-viet-ve-sinh-ca-nhan-cho-nguoi-gia-dung-cach.png",
+    "thumbnail": "assets/bai-viet-ve-sinh-ca-nhan-cho-nguoi-gia-dung-cach.png",
     "published_at": "2026-03-06",
     "read_time": 4,
     "content": {
@@ -169,7 +169,7 @@
     "tags": ["phòng ngừa té ngã", "an toàn nhà tắm", "người già yếu chân"],
     "keywords": ["an toàn nhà tắm", "người già khó đi lại", "phòng ngừa té ngã", "osin an toàn"],
     "excerpt": "Nhà tắm là nơi dễ xảy ra tai nạn nhất đối với người già. Một vài thay đổi nhỏ sẽ bảo vệ sức khỏe của cha mẹ bạn.",
-    "thumbnail": "../assets/phong-benh-mua-lanh-cho-nguoi-gia.png",
+    "thumbnail": "assets/phong-benh-mua-lanh-cho-nguoi-gia.png",
     "published_at": "2026-03-07",
     "read_time": 3,
     "content": {
@@ -196,7 +196,7 @@
     "tags": ["bài tập người già", "vật lý trị liệu tại nhà", "vận động tại giường"],
     "keywords": ["bài tập người già", "vật lý trị liệu", "vận động tại giường"],
     "excerpt": "Vận động nhẹ nhàng giúp máu lưu thông và ngăn ngừa teo cơ cho người cao tuổi phải nằm lâu một chỗ.",
-    "thumbnail": "../assets/bai-viet-bai-tap-van-dong-tai-cho-cho-nguoi-gia.png",
+    "thumbnail": "assets/bai-viet-bai-tap-van-dong-tai-cho-cho-nguoi-gia.png",
     "published_at": "2026-03-08",
     "read_time": 5,
     "content": {
@@ -223,7 +223,7 @@
     "tags": ["uống thuốc đúng giờ", "quản lý thuốc", "chăm sóc người già"],
     "keywords": ["quản lý thuốc", "uống thuốc đúng giờ", "chăm sóc người già"],
     "excerpt": "Người già thường hay quên hoặc nhầm lẫn các loại thuốc. Việc quản lý thuốc đòi hỏi sự tỉ mỉ và cẩn thận.",
-    "thumbnail": "../assets/khong-gian-song-ly-tuong-cho-nguoi-gia.png",
+    "thumbnail": "assets/khong-gian-song-ly-tuong-cho-nguoi-gia.png",
     "published_at": "2026-03-09",
     "read_time": 3,
     "content": {
@@ -250,7 +250,7 @@
     "tags": ["mất ngủ người già", "giấc ngủ người già", "osin chăm sóc đêm"],
     "keywords": ["mất ngủ người già", "giấc ngủ người già", "chăm sóc người già"],
     "excerpt": "Mất ngủ khiến người già mệt mỏi và dễ mắc các bệnh về tâm thần. Tìm hiểu cách giúp các cụ ngủ ngon hơn.",
-    "thumbnail": "../assets/bai-viet-cham-soc-nguoi-gia-hau-phau-copy-0.png",
+    "thumbnail": "assets/bai-viet-cham-soc-nguoi-gia-hau-phau-copy-0.png",
     "published_at": "2026-03-10",
     "read_time": 4,
     "content": {
@@ -277,7 +277,7 @@
     "tags": ["Alzheimer", "mất trí nhớ", "sa sút trí tuệ", "osin chuyên nghiệp"],
     "keywords": ["Alzheimer", "mất trí nhớ", "sa sút trí tuệ", "chăm sóc người già"],
     "excerpt": "Người bị Alzheimer cần sự kiên nhẫn và môi trường sống an toàn để tránh đi lạc hoặc hoảng sợ.",
-    "thumbnail": "../assets/bai-viet-cham-soc-nguoi-gia-bi-alzheimer.png",
+    "thumbnail": "assets/bai-viet-cham-soc-nguoi-gia-bi-alzheimer.png",
     "published_at": "2026-03-11",
     "read_time": 5,
     "content": {
@@ -304,7 +304,7 @@
     "tags": ["đột quỵ", "sơ cứu người già", "tai biến mạch máu não"],
     "keywords": ["đột quỵ", "sơ cứu người già", "tai biến mạch máu não"],
     "excerpt": "Thời gian vàng trong đột quỵ là rất ngắn. Biết cách nhận biết sớm dấu hiệu giúp cứu sống người thân của bạn.",
-    "thumbnail": "../assets/bai-viet-so-cuu-dot-quy-tai-nha.png",
+    "thumbnail": "assets/bai-viet-so-cuu-dot-quy-tai-nha.png",
     "published_at": "2026-03-12",
     "read_time": 4,
     "content": {
@@ -331,7 +331,7 @@
     "tags": ["tim mạch người già", "huyết áp cao", "sống khỏe"],
     "keywords": ["tim mạch người già", "huyết áp cao", "sống khỏe"],
     "excerpt": "Kiểm soát huyết áp và chế độ ăn nhạt giúp bảo vệ trái tim của người già khỏi các biến chứng nguy hiểm.",
-    "thumbnail": "../assets/bai-viet-cai-thien-suc-khoe-tim-mach-nguoi-gia.png",
+    "thumbnail": "assets/bai-viet-cai-thien-suc-khoe-tim-mach-nguoi-gia.png",
     "published_at": "2026-03-13",
     "read_time": 4,
     "content": {
@@ -358,7 +358,7 @@
     "tags": ["chăm sóc hậu phẫu", "người già sau mổ", "phục hồi sức khỏe"],
     "keywords": ["chăm sóc hậu phẫu", "người già sau mổ", "phục hồi sức khỏe"],
     "excerpt": "Sau phẫu thuật, người già rất yếu và dễ bị nhiễm trùng. Cần một quy trình chăm sóc đặc biệt để phục hồi nhanh chóng.",
-    "thumbnail": "../assets/bai-viet-cham-soc-nguoi-gia-hau-phau.png",
+    "thumbnail": "assets/bai-viet-cham-soc-nguoi-gia-hau-phau.png",
     "published_at": "2026-03-14",
     "read_time": 5,
     "content": {
@@ -385,7 +385,7 @@
     "tags": ["loãng xương", "bổ sung canxi", "người già yếu"],
     "keywords": ["loãng xương", "bổ sung canxi", "người già yếu"],
     "excerpt": "Loãng xương khiến người già dễ bị gãy xương dù chỉ va chạm nhẹ. Hãy tìm hiểu cách bảo vệ hệ xương khớp cho các cụ.",
-    "thumbnail": "../assets/bai-viet-giai-phap-cho-nguoi-gia-bi-loang-xuong.png",
+    "thumbnail": "assets/bai-viet-giai-phap-cho-nguoi-gia-bi-loang-xuong.png",
     "published_at": "2026-03-15",
     "read_time": 4,
     "content": {
@@ -412,7 +412,7 @@
     "tags": ["thay bỉm người già", "vệ sinh người liệt", "kỹ năng chăm sóc"],
     "keywords": ["vệ sinh người già", "thay bỉm người cao tuổi", "chăm sóc người liệt"],
     "excerpt": "Kỹ thuật thay tã bỉm đúng cách giúp người già sạch sẽ, không bị hăm loét và luôn cảm thấy thoải mái.",
-    "thumbnail": "../assets/bai-viet-giu-ve-sinh-cho-nguoi-gia-nam-liet.png",
+    "thumbnail": "assets/bai-viet-giu-ve-sinh-cho-nguoi-gia-nam-liet.png",
     "published_at": "2026-03-16",
     "read_time": 4,
     "content": {
@@ -439,7 +439,7 @@
     "tags": ["uống nước", "sức khỏe người già", "hydrat hóa"],
     "keywords": ["uống nước người già", "dinh dưỡng người cao tuổi", "hydrat hóa"],
     "excerpt": "Người già thường ít cảm giác khát, dẫn đến tình trạng mất nước âm thầm cực kỳ nguy hiểm.",
-    "thumbnail": "../assets/bai-viet-tam-quan-trong-cua-nuoc-voi-nguoi-gia.png",
+    "thumbnail": "assets/bai-viet-tam-quan-trong-cua-nuoc-voi-nguoi-gia.png",
     "published_at": "2026-03-17",
     "read_time": 3,
     "content": {
@@ -466,7 +466,7 @@
     "tags": ["không gian sống", "phòng ngủ người già", "an toàn tại nhà"],
     "keywords": ["an toàn nhà tắm", "người già khó đi lại", "phòng ngừa té ngã", "osin an toàn"],
     "excerpt": "Phòng của người già cần đủ ánh sáng, thoáng khí và không có vật cản để giảm thiểu rủi ro tai nạn.",
-    "thumbnail": "../assets/bai-viet-khong-gian-song-ly-tuong-cho-nguoi-gia.png",
+    "thumbnail": "assets/bai-viet-khong-gian-song-ly-tuong-cho-nguoi-gia.png",
     "published_at": "2026-03-18",
     "read_time": 4,
     "content": {
@@ -493,7 +493,7 @@
     "tags": ["tiểu đường", "chăm sóc người bệnh", "osin chăm người bệnh"],
     "keywords": ["tiểu đường người già", "chăm sóc tiểu đường", "osin chăm sóc"],
     "excerpt": "Bệnh tiểu đường ở người già cần sự kiểm soát chặt chẽ về đường huyết và chế độ vận động.",
-    "thumbnail": "../assets/bai-viet-cham-soc-nguoi-gia-benh-tieu-duong.png",
+    "thumbnail": "assets/bai-viet-cham-soc-nguoi-gia-benh-tieu-duong.png",
     "published_at": "2026-03-19",
     "read_time": 5,
     "content": {
@@ -520,7 +520,7 @@
     "tags": ["giải trí người già", "sống vui sống khỏe", "tâm lý"],
     "keywords": ["giải trí người già", "sống vui sống khỏe", "tâm lý người già"],
     "excerpt": "Sức khỏe tinh thần tốt giúp đẩy lùi bệnh tật. Hãy khuyến khích các cụ tham gia các hoạt động giải trí nhẹ nhàng.",
-    "thumbnail": "../assets/bai-viet-thu-gian-tinh-than-cho-nguoi-gia.png",
+    "thumbnail": "assets/bai-viet-thu-gian-tinh-than-cho-nguoi-gia.png",
     "published_at": "2026-03-20",
     "read_time": 3,
     "content": {
@@ -547,7 +547,7 @@
     "tags": ["khám sức khỏe", "phòng bệnh", "người già"],
     "keywords": ["khám định kỳ", "phòng bệnh", "người già"],
     "excerpt": "Khám định kỳ giúp phát hiện sớm các mầm mống bệnh và điều chỉnh phác đồ điều trị kịp thời.",
-    "thumbnail": "../assets/bai-viet-kham-suc-khoe-dinh-ky-nguoi-gia.png",
+    "thumbnail": "assets/bai-viet-kham-suc-khoe-dinh-ky-nguoi-gia.png",
     "published_at": "2026-03-21",
     "read_time": 4,
     "content": {
@@ -574,7 +574,7 @@
     "tags": ["Parkinson", "run tay chân", "hỗ trợ sinh hoạt"],
     "keywords": ["Parkinson", "chăm sóc người bệnh", "hỗ trợ sinh hoạt"],
     "excerpt": "Run rẩy và cứng cơ khiến sinh hoạt của người bệnh Parkinson trở nên khó khăn. Hãy tìm hiểu cách hỗ trợ họ hiệu quả.",
-    "thumbnail": "../assets/bai-viet-cham-soc-nguoi-gia-parkinson.png",
+    "thumbnail": "assets/bai-viet-cham-soc-nguoi-gia-parkinson.png",
     "published_at": "2026-03-22",
     "read_time": 5,
     "content": {
@@ -601,7 +601,7 @@
     "tags": ["giữ ấm", "mùa đông", "viêm phổi người già"],
     "keywords": ["giữ ấm mùa đông", "phòng ngừa viêm phổi", "người già"],
     "excerpt": "Thời tiết lạnh là kẻ thù của người già chân yếu, phổi yếu. Hãy bảo vệ cha mẹ bạn bằng những cách đơn giản.",
-    "thumbnail": "../assets/bai-viet-giu-am-cho-nguoi-gia-mua-lanh.png",
+    "thumbnail": "assets/bai-viet-giu-am-cho-nguoi-gia-mua-lanh.png",
     "published_at": "2026-03-23",
     "read_time": 3,
     "content": {
@@ -628,7 +628,7 @@
     "tags": ["sơ cứu nghẹn", "sặc thức ăn", "an toàn ăn uống"],
     "keywords": ["sơ cứu nghẹn", "sặc thức ăn", "an toàn ăn uống"],
     "excerpt": "Nghẹn thức ăn rất hay xảy ra ở người già có cơ hàm yếu. Biết kỹ thuật sơ cứu có thể cứu người trong tích tắc.",
-    "thumbnail": "../assets/bai-viet-xu-ly-tinh-trang-nguoi-gia-bi-nghet-tho.png",
+    "thumbnail": "assets/bai-viet-xu-ly-tinh-trang-nguoi-gia-bi-nghet-tho.png",
     "published_at": "2026-03-24",
     "read_time": 4,
     "content": {
@@ -655,7 +655,7 @@
     "tags": ["suy thận", "chạy thận", "osin nuôi bệnh"],
     "keywords": ["suy thận", "chạy thận", "dinh dưỡng người già"],
     "excerpt": "Bệnh suy thận yêu cầu một chế độ ăn uống khắt khe về lượng đạm, muối và nước đưa vào cơ thể.",
-    "thumbnail": "../assets/bai-viet-cham-soc-nguoi-gia-suy-than.png",
+    "thumbnail": "assets/bai-viet-cham-soc-nguoi-gia-suy-than.png",
     "published_at": "2026-03-25",
     "read_time": 5,
     "content": {
@@ -682,7 +682,7 @@
     "tags": ["trầm cảm", "tâm thần người già", "chia sẻ"],
     "keywords": ["trầm cảm người già", "tâm lý người cao tuổi", "chia sẻ"],
     "excerpt": "Sự cô đơn và bệnh tật kéo dài dễ khiến người già rơi vào trầm cảm. Hãy dành thời gian để thấu hiểu họ.",
-    "thumbnail": "../assets/bai-viet-nguoi-gia-bi-tram-cam.png",
+    "thumbnail": "assets/bai-viet-nguoi-gia-bi-tram-cam.png",
     "published_at": "2026-03-26",
     "read_time": 4,
     "content": {
@@ -709,7 +709,7 @@
     "tags": ["giường y tế", "chăm sóc tại nhà", "thiết bị y tế"],
     "keywords": ["giường y tế", "chăm sóc tại nhà", "thiết bị y tế"],
     "excerpt": "Giường y tế hỗ trợ nâng hạ giúp việc ăn uống và vệ sinh người liệt trở nên dễ dàng hơn bao giờ hết.",
-    "thumbnail": "../assets/bai-viet-ky-thang-su-dung-giuong-y-te.png",
+    "thumbnail": "assets/bai-viet-ky-thang-su-dung-giuong-y-te.png",
     "published_at": "2026-03-27",
     "read_time": 3,
     "content": {
@@ -736,7 +736,7 @@
     "tags": ["nuôi bệnh bệnh viện", "chăm sóc người già", "osin nuôi bệnh"],
     "keywords": ["nuôi bệnh bệnh viện", "chăm sóc người già", "osin nuôi bệnh"],
     "excerpt": "Trong những ngày cha mẹ nằm viện, một người nuôi bệnh chuyên nghiệp sẽ thay bạn chăm lo từng bữa ăn giấc ngủ cho các cụ.",
-    "thumbnail": "../assets/bai-viet-nuoi-benh-tai-benh-vien.png",
+    "thumbnail": "assets/bai-viet-nuoi-benh-tai-benh-vien.png",
     "published_at": "2026-03-28",
     "read_time": 4,
     "content": {
@@ -763,7 +763,7 @@
     "tags": ["massage người già", "xoa bóp", "giảm đau nhức"],
     "keywords": ["massage người già", "xoa bóp", "giảm đau nhức"],
     "excerpt": "Xoa bóp nhẹ nhàng giúp giảm đau nhức xương khớp và mang lại sự thư thái cho người già không thể đi lại.",
-    "thumbnail": "../assets/bai-viet-loi-ich-cua-massage-cho-nguoi-gia.png",
+    "thumbnail": "assets/bai-viet-loi-ich-cua-massage-cho-nguoi-gia.png",
     "published_at": "2026-03-29",
     "read_time": 3,
     "content": {
@@ -790,7 +790,7 @@
     "tags": ["tìm người giúp việc", "osin chăm người già", "uy tín"],
     "keywords": ["tìm người giúp việc", "osin chăm người già", "uy tín"],
     "excerpt": "Một người chăm sóc tốt không chỉ giỏi việc mà còn phải có cái tâm yêu thương người cao tuổi.",
-    "thumbnail": "../assets/bai-viet-nguoi-giup-viec-tan-tam-la-gia-tai.png",
+    "thumbnail": "assets/bai-viet-nguoi-giup-viec-tan-tam-la-gia-tai.png",
     "published_at": "2026-03-30",
     "read_time": 4,
     "content": {
