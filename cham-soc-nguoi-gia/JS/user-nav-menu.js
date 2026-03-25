@@ -14,7 +14,7 @@
   }
 
   function assetUrl(path) {
-    if (!path) return new URL('assets/logomvb.png', projectBase).href;
+    if (!path) return new URL('assets/logong.png', projectBase).href;
     if (/^https?:\/\//i.test(path)) return path;
     return new URL(String(path).replace(/^\/+/, ''), projectBase).href;
   }
@@ -22,6 +22,8 @@
   function getEl(id) {
     return document.getElementById(id);
   }
+
+  var hasSyncedSession = false;
 
   function setLoggedOut() {
     var loginNavItem = getEl('loginNavItem');
@@ -47,7 +49,7 @@
     }
 
     if (navAvatar) {
-      var avatar = user && user.anh_dai_dien ? user.anh_dai_dien : 'assets/logomvb.png';
+      var avatar = user && user.anh_dai_dien ? user.anh_dai_dien : 'assets/logong.png';
       navAvatar.src = assetUrl(avatar);
     }
   }
@@ -72,7 +74,10 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
+  function initNavState() {
+    var hasNavTargets = !!(getEl('loginNavItem') || getEl('userMenuContainer'));
+    if (!hasNavTargets) return;
+
     var cachedUser = null;
     try {
       cachedUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -86,7 +91,18 @@
       setLoggedOut();
     }
 
-    syncFromSession();
+    if (!hasSyncedSession) {
+      hasSyncedSession = true;
+      syncFromSession();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initNavState();
+  });
+
+  document.addEventListener('siteLayout:ready', function () {
+    initNavState();
   });
 
   window.addEventListener('auth:login-success', function (event) {
