@@ -69,6 +69,24 @@
     return document.getElementById(id);
   }
 
+  function setMenuLinksByRole(user) {
+    var profileLink = getEl('navProfileLink');
+    var invoiceLink = getEl('navInvoiceLink');
+    var role = user && user.vai_tro ? String(user.vai_tro).toLowerCase() : '';
+
+    if (profileLink) {
+      profileLink.setAttribute('href', 'khach_hang/profile.html');
+      profileLink.setAttribute('data-profile-modal-src', 'khach_hang/profile.html');
+    }
+
+    if (invoiceLink) {
+      var invoicePath = role === 'nhan_vien'
+        ? 'nhan_vien/danh-sach-hoa-don.html'
+        : 'khach_hang/danh-sach-hoa-don.html';
+      invoiceLink.setAttribute('href', invoicePath);
+    }
+  }
+
   var hasSyncedSession = false;
 
   function setLoggedOut() {
@@ -77,6 +95,8 @@
 
     if (loginNavItem) loginNavItem.classList.remove('d-none');
     if (userMenuContainer) userMenuContainer.classList.add('d-none');
+
+    setMenuLinksByRole(null);
   }
 
   function setLoggedIn(user) {
@@ -98,6 +118,8 @@
       var avatar = user && user.anh_dai_dien ? user.anh_dai_dien : 'assets/logong.png';
       navAvatar.src = assetUrl(avatar);
     }
+
+    setMenuLinksByRole(user);
   }
 
   async function syncFromSession() {
