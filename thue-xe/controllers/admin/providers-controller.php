@@ -1,8 +1,7 @@
 <?php
 /**
- * Providers Admin Controller — v3
- * Bảng `users` → `nguoidung`, cột tiếng Việt không dấu.
- * AS alias để output JSON giữ nguyên field name cũ.
+ * Providers Admin Controller
+ * Schema-adaptive cho bảng nguoidung.
  */
 
 require_once dirname(__DIR__) . '/session.php';
@@ -20,23 +19,67 @@ $action = $_GET['action'] ?? '';
 $db     = new Database();
 $conn   = $db->getConnection();
 
+function tx_cols_meta(PDO $conn): array {
+    static $meta = null;
+    if ($meta !== null) return $meta;
+
+    $stmt = $conn->query('SHOW COLUMNS FROM nguoidung');
+    $meta = [];
+    foreach ($stmt->fetchAll() as $row) {
+        $meta[$row['Field']] = $row;
+    }
+    return $meta;
+}
+
+function tx_has_col(array $meta, string $col): bool {
+    return isset($meta[$col]);
+}
+
+function tx_status_enum_values(array $meta): array {
+    if (!isset($meta['trangthai'])) return [];
+    $type = (string)($meta['trangthai']['Type'] ?? '');
+    if (!preg_match('/^enum\((.*)\)$/i', $type, $m)) return [];
+    $raw = $m[1];
+    $parts = array_map('trim', explode(',', $raw));
+    $vals = [];
+    foreach ($parts as $p) {
+        $vals[] = trim($p, "'\"");
+    }
+    return $vals;
+}
+
+$colsMeta = tx_cols_meta($conn);
+$statusValues = tx_status_enum_values($colsMeta);
+$supportsRejected = in_array('rejected', $statusValues, true);
+
 // ─── LIST ─────────────────────────────────────────────────────────────────────
 if ($action === 'list') {
     $filter_status = $_GET['status'] ?? '';
     $allowed       = ['pending', 'active', 'rejected', 'blocked'];
 
-    // alias: tên cột tiếng Anh cũ để frontend không đổi
+    if ($filter_status === 'rejected' && !$supportsRejected) {
+        // DB không có trạng thái rejected thì coi như không có dữ liệu rejected.
+        echo json_encode(['success' => true, 'data' => []]);
+        exit;
+    }
+
+    $companyExpr = tx_has_col($colsMeta, 'tencongty') ? 'tencongty' : "''";
+    $licenseExpr = tx_has_col($colsMeta, 'sogiayphep') ? 'sogiayphep' : "''";
+    $addressExpr = tx_has_col($colsMeta, 'diachi') ? 'diachi' : "''";
+    $descExpr = tx_has_col($colsMeta, 'mota') ? 'mota' : "''";
+    $reasonExpr = tx_has_col($colsMeta, 'lydotuchoi') ? 'lydotuchoi' : "''";
+
     $select = "SELECT
         id,
         hoten          AS full_name,
         email,
         sodienthoai    AS phone,
-        tencongty      AS company_name,
-        sogiayphep     AS license_number,
-        diachi         AS address,
-        mota           AS description,
+        {$companyExpr} AS company_name,
+        {$licenseExpr} AS license_number,
+        {$addressExpr} AS address,
+        {$descExpr}    AS description,
         trangthai      AS status,
-        lydotuchoi     AS rejection_reason,
+        {$reasonExpr}  AS rejection_reason,
         ngaytao        AS created_at
     FROM nguoidung WHERE vaitro = 'provider'";
 
@@ -105,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['success' => false, 'message' => 'Vui lòng nhập lý do từ chối']);
                 exit;
             }
-            $new_status = 'rejected';
+            $new_status = $supportsRejected ? 'rejected' : 'blocked';
             break;
         case 'block':
             if (!$reason) $reason = 'Vi phạm điều khoản dịch vụ';
@@ -120,12 +163,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
     }
 
-    // UPDATE nguoidung: trangthai + lydotuchoi
-    $stmt = $conn->prepare(
-        "UPDATE nguoidung SET trangthai = ?, lydotuchoi = ?
-         WHERE id = ? AND vaitro = 'provider'"
-    );
-    $stmt->execute([$new_status, $reason, $provider_id]);
+    if (!empty($statusValues) && !in_array($new_status, $statusValues, true)) {
+        echo json_encode(['success' => false, 'message' => 'DB hiện tại không hỗ trợ trạng thái: ' . $new_status]);
+        exit;
+    }
+
+    if (tx_has_col($colsMeta, 'lydotuchoi')) {
+        $stmt = $conn->prepare(
+            "UPDATE nguoidung SET trangthai = ?, lydotuchoi = ?
+             WHERE id = ? AND vaitro = 'provider'"
+        );
+        $stmt->execute([$new_status, $reason, $provider_id]);
+    } else {
+        $stmt = $conn->prepare(
+            "UPDATE nguoidung SET trangthai = ?
+             WHERE id = ? AND vaitro = 'provider'"
+        );
+        $stmt->execute([$new_status, $provider_id]);
+    }
 
     $msgs = [
         'approve' => 'Đã duyệt tài khoản nhà cung cấp',

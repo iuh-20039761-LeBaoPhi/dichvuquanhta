@@ -292,7 +292,7 @@
             .then(res => {
                 if (res.success) {
                     msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng ký thành công! Đang chuyển hướng...</span>';
-                    setTimeout(() => window.location.href = 'views/pages/customer/bang-dieu-khien.html', 1000);
+                    setTimeout(() => window.location.href = 'controllers/customer/dashboard-controller.php', 1000);
                 } else {
                     msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (res.message || 'Đăng ký thất bại') + '</span>';
                     btn.disabled = false;

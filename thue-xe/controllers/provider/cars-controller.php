@@ -35,6 +35,26 @@ function ensureMediaTable(PDO $conn): void {
     );
 }
 
+function ensureProviderCarMapTable(PDO $conn): void {
+        $conn->exec(
+                "CREATE TABLE IF NOT EXISTS nhacungcap_xechiec (
+                        id INT PRIMARY KEY AUTO_INCREMENT,
+                        idnhacungcap INT NOT NULL,
+                        idxechiec INT NOT NULL,
+                        ngaytao DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE KEY uq_provider_car (idnhacungcap, idxechiec),
+                        INDEX idx_provider (idnhacungcap),
+                        INDEX idx_car (idxechiec),
+                        CONSTRAINT fk_ncc_xc_provider
+                            FOREIGN KEY (idnhacungcap) REFERENCES nguoidung(id)
+                            ON DELETE CASCADE,
+                        CONSTRAINT fk_ncc_xc_car
+                            FOREIGN KEY (idxechiec) REFERENCES xechiec(id)
+                            ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+        );
+}
+
 function uploadCarMedia(array $file, string $prefix, array $allowedMime): ?string {
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
         return null;
@@ -70,6 +90,7 @@ try {
 
     if ($action === 'getMyCars') {
         ensureMediaTable($conn);
+        ensureProviderCarMapTable($conn);
 
         $stmt = $conn->prepare(
             "SELECT
@@ -98,9 +119,11 @@ try {
              FROM xechiec xc
              INNER JOIN xemau xm ON xm.id = xc.idxemau
              LEFT JOIN loaixe lx ON lx.id = xm.idloaixe
+               INNER JOIN nhacungcap_xechiec m ON m.idxechiec = xc.id
+               WHERE m.idnhacungcap = ?
              ORDER BY xc.ngaytao DESC"
         );
-        $stmt->execute();
+           $stmt->execute([$providerId]);
         $cars = $stmt->fetchAll();
 
         if (!empty($cars)) {
@@ -142,6 +165,7 @@ try {
 
     if ($action === 'create') {
         ensureMediaTable($conn);
+        ensureProviderCarMapTable($conn);
 
         $name         = trim((string)($_POST['name'] ?? ''));
         $brand        = trim((string)($_POST['brand'] ?? ''));
@@ -249,6 +273,11 @@ try {
         $insertCar->execute([$modelId, $licensePlate]);
         $carId = (int)$conn->lastInsertId();
 
+        $mapStmt = $conn->prepare(
+            "INSERT INTO nhacungcap_xechiec (idnhacungcap, idxechiec) VALUES (?, ?)"
+        );
+        $mapStmt->execute([$providerId, $carId]);
+
         $insertMedia = $conn->prepare(
             "INSERT INTO xemau_media (idxemau, loai, vitri, tep, sapxep) VALUES (?, ?, ?, ?, ?)"
         );
@@ -266,6 +295,8 @@ try {
     }
 
     if ($action === 'updateStatus') {
+        ensureProviderCarMapTable($conn);
+
         $body = json_decode(file_get_contents('php://input'), true) ?? [];
         $carId = (int)($body['car_id'] ?? 0);
         $newStatus = trim((string)($body['status'] ?? ''));
@@ -276,10 +307,16 @@ try {
             exit;
         }
 
-        $check = $conn->prepare("SELECT id FROM xechiec WHERE id = ? LIMIT 1");
-        $check->execute([$carId]);
+        $check = $conn->prepare(
+            "SELECT xc.id
+             FROM xechiec xc
+             INNER JOIN nhacungcap_xechiec m ON m.idxechiec = xc.id
+             WHERE xc.id = ? AND m.idnhacungcap = ?
+             LIMIT 1"
+        );
+        $check->execute([$carId, $providerId]);
         if (!$check->fetch()) {
-            echo json_encode(['success' => false, 'message' => 'Không tìm thấy xe']);
+            echo json_encode(['success' => false, 'message' => 'Không tìm thấy xe thuộc nhà cung cấp']);
             exit;
         }
 

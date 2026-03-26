@@ -129,6 +129,45 @@
         document.getElementById('identifier').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
         document.getElementById('loginBtn').addEventListener('click', login);
 
+        function resolveAppBase() {
+            const path = window.location.pathname || '';
+            const lower = path.toLowerCase();
+
+            const thueXeIndex = lower.indexOf('/thue-xe/');
+            if (thueXeIndex !== -1) {
+                const prefix = path.slice(0, thueXeIndex + '/thue-xe/'.length);
+                return window.location.origin + prefix;
+            }
+
+            if (lower.startsWith('/globalcare/')) {
+                return window.location.origin + '/GlobalCare/thue-xe/';
+            }
+
+            return window.location.origin + '/thue-xe/';
+        }
+
+        const APP_BASE = resolveAppBase();
+
+        function buildApiUrl(action) {
+            const endpoint = new URL('controllers/customer/auth-controller.php', APP_BASE);
+            endpoint.searchParams.set('action', action);
+            return endpoint.toString();
+        }
+
+        function buildRedirectUrl(rawRedirect) {
+            const value = (rawRedirect || '').trim();
+            if (!value) {
+                return new URL('controllers/customer/dashboard-controller.php', APP_BASE).toString();
+            }
+
+            // Prevent off-site redirect, only allow local relative path.
+            if (/^https?:\/\//i.test(value)) {
+                return new URL('controllers/customer/dashboard-controller.php', APP_BASE).toString();
+            }
+
+            return new URL(value.replace(/^\/+/, ''), APP_BASE).toString();
+        }
+
         function login() {
             const identifier = document.getElementById('identifier').value.trim();
             const password   = document.getElementById('password').value;
@@ -144,7 +183,7 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...';
             msg.innerHTML = '';
 
-            fetch('controllers/customer/auth-controller.php?action=login', {
+            fetch(buildApiUrl('login'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ identifier, password })
@@ -155,7 +194,7 @@
                     localStorage.setItem('customer_logged_in', 'true');
                     localStorage.setItem('customer_name', res.name);
                     msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';
-                    const redirect = new URLSearchParams(location.search).get('redirect') || 'views/pages/customer/bang-dieu-khien.html';
+                    const redirect = buildRedirectUrl(new URLSearchParams(location.search).get('redirect'));
                     setTimeout(() => window.location.href = redirect, 700);
                 } else {
                     msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (res.message || 'Đăng nhập thất bại') + '</span>';

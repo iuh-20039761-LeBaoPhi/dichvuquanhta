@@ -1,7 +1,7 @@
 <?php
 /**
- * Booking Admin Controller — v3
- * Bảng `bookings` → `datxe`, cột dùng AS alias để giữ API contract.
+ * Booking Admin Controller
+ * Đồng bộ schema hiện tại: datxe + nguoidung + xechiec + xemau.
  */
 
 require_once dirname(__DIR__) . '/session.php';
@@ -14,49 +14,52 @@ if (!isset($_SESSION['admin_id'])) {
 
 require_once '../../config/database.php';
 
-// SELECT chuẩn cho datxe — alias giữ nguyên field name cũ
-define('BOOKING_SELECT', "
-    id,
-    idkhachhang           AS user_id,
-    idnhacungcap          AS provider_id,
-    idxe                  AS car_id,
-    tenxe                 AS car_name,
-    tenkhachhang          AS customer_name,
-    emailkhachhang        AS customer_email,
-    dienthoaikhachhang    AS customer_phone,
-    diachikhachhang       AS customer_address,
-    socccd                AS id_number,
-    ngaynhan              AS pickup_date,
-    gionhan               AS pickup_time,
-    ngaytra               AS return_date,
-    gioratra              AS return_time,
-    diachinhan            AS pickup_location,
-    ghichu                AS notes,
-    songay                AS total_days,
-    tongtien              AS total_price,
-    dichvuthem            AS addon_services,
-    tiendichvuthem        AS addon_total,
-    tamtinh               AS subtotal,
-    tienvat               AS tax_amount,
-    tiendatcoc            AS deposit_amount,
-    tongcuoi              AS final_total,
-    trangthai             AS status,
-    ngaytao               AS created_at");
-
 $action = $_GET['action'] ?? '';
 $db     = new Database();
 $conn   = $db->getConnection();
 
+$bookingSelect = "
+    b.id,
+    b.idkhachhang                        AS user_id,
+    NULL                                 AS provider_id,
+    b.idxechiec                          AS car_id,
+    xm.ten                               AS car_name,
+    u.hoten                              AS customer_name,
+    u.email                              AS customer_email,
+    u.sodienthoai                        AS customer_phone,
+    ''                                   AS customer_address,
+    ''                                   AS id_number,
+    b.ngaynhan                           AS pickup_date,
+    b.gionhan                            AS pickup_time,
+    b.ngaytra                            AS return_date,
+    b.gioratra                           AS return_time,
+    b.diachinhan                         AS pickup_location,
+    b.ghichu                             AS notes,
+    b.songay                             AS total_days,
+    (b.songay * xm.giathue_ngay)         AS total_price,
+    '[]'                                 AS addon_services,
+    0                                    AS addon_total,
+    (b.songay * xm.giathue_ngay)         AS subtotal,
+    ROUND((b.songay * xm.giathue_ngay) * 0.1) AS tax_amount,
+    ROUND((b.songay * xm.giathue_ngay) * COALESCE(xm.tiledatcoc, 0.3)) AS deposit_amount,
+    ((b.songay * xm.giathue_ngay) + ROUND((b.songay * xm.giathue_ngay) * 0.1)) AS final_total,
+    b.trangthai                          AS status,
+    b.ngaytao                            AS created_at";
+
 switch ($action) {
     case 'list':
         $status = $_GET['status'] ?? '';
-        $sql    = "SELECT " . BOOKING_SELECT . " FROM datxe";
+        $sql    = "SELECT " . $bookingSelect . "
+                   FROM datxe b
+                   INNER JOIN nguoidung u ON u.id = b.idkhachhang
+                   INNER JOIN xechiec xc ON xc.id = b.idxechiec
+                   INNER JOIN xemau xm ON xm.id = xc.idxemau";
         $params = [];
         if ($status) {
-            $sql .= " WHERE trangthai = ?";
+            $sql .= " WHERE b.trangthai = ?";
             $params[] = $status;
         }
-        $sql .= " ORDER BY ngaytao DESC";
+        $sql .= " ORDER BY b.ngaytao DESC";
         $stmt = $conn->prepare($sql);
         $stmt->execute($params);
         echo json_encode(['success' => true, 'data' => $stmt->fetchAll()]);
@@ -64,7 +67,12 @@ switch ($action) {
 
     case 'recent':
         $stmt = $conn->query(
-            "SELECT " . BOOKING_SELECT . " FROM datxe ORDER BY ngaytao DESC LIMIT 10"
+            "SELECT " . $bookingSelect . "
+             FROM datxe b
+             INNER JOIN nguoidung u ON u.id = b.idkhachhang
+             INNER JOIN xechiec xc ON xc.id = b.idxechiec
+             INNER JOIN xemau xm ON xm.id = xc.idxemau
+             ORDER BY b.ngaytao DESC LIMIT 10"
         );
         echo json_encode(['success' => true, 'data' => $stmt->fetchAll()]);
         break;
@@ -77,8 +85,10 @@ switch ($action) {
                 SUM(trangthai = 'confirmed')                        AS confirmed,
                 SUM(trangthai = 'cancelled')                        AS cancelled,
                 SUM(trangthai = 'completed')                        AS completed,
-                SUM(CASE WHEN trangthai = 'completed' THEN tongtien ELSE 0 END) AS revenue
-             FROM datxe"
+                SUM(CASE WHEN b.trangthai = 'completed' THEN (b.songay * xm.giathue_ngay) ELSE 0 END) AS revenue
+             FROM datxe b
+             INNER JOIN xechiec xc ON xc.id = b.idxechiec
+             INNER JOIN xemau xm ON xm.id = xc.idxemau"
         );
         echo json_encode(['success' => true, 'data' => $stmt->fetch()]);
         break;

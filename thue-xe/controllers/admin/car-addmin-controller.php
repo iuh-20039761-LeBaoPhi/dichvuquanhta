@@ -1,8 +1,7 @@
 <?php
 /**
- * Car Admin Controller — v3
- * Bảng `cars` → `xe`, bảng `bookings` → `datxe`.
- * Cột dùng AS alias để giữ API contract.
+ * Car Admin Controller
+ * Đồng bộ schema hiện tại: xechiec + xemau + loaixe + datxe.
  */
 
 require_once dirname(__DIR__) . '/session.php';
@@ -15,36 +14,44 @@ if (!isset($_SESSION['admin_id'])) {
 
 require_once '../../config/database.php';
 
-// SELECT chuẩn cho xe — alias giữ nguyên field name cũ
-define('CAR_ADMIN_SELECT', "
-    id,
-    ten               AS name,
-    thuonghieu        AS brand,
-    model,
-    namsanxuat        AS year,
-    loaixe            AS car_type,
-    socho             AS seats,
-    hopso             AS transmission,
-    nhienlieu         AS fuel_type,
-    giathue           AS price_per_day,
-    tilephicuoituan   AS weekend_surcharge_rate,
-    tiledatcoc        AS deposit_rate,
-    anhchinh          AS main_image,
-    mota              AS description,
-    tienich           AS features,
-    trangthai         AS status,
-    idnhacungcap      AS provider_id,
-    urlvideo          AS video_url,
-    ngaytao           AS created_at");
-
 $action = $_GET['action'] ?? '';
 $db     = new Database();
 $conn   = $db->getConnection();
 
+$carSelect = "
+    xc.id                                   AS id,
+    xm.id                                   AS model_id,
+    xm.ten                                  AS name,
+    xm.thuonghieu                           AS brand,
+    xm.model                                AS model,
+    xm.namsanxuat                           AS year,
+    COALESCE(lx.ten, 'Khác')                AS car_type,
+    xm.socho                                AS seats,
+    xm.hopso                                AS transmission,
+    xm.nhienlieu                            AS fuel_type,
+    xm.giathue_ngay                         AS price_per_day,
+    0.10                                    AS weekend_surcharge_rate,
+    xm.tiledatcoc                           AS deposit_rate,
+    xm.anhchinh                             AS main_image,
+    xm.mota_chitiet                         AS description,
+    ''                                      AS features,
+    CASE
+        WHEN xc.tinhrang = 'hoatdong' THEN 'available'
+        WHEN xc.tinhrang IN ('baodoi', 'baoduong') THEN 'maintenance'
+        ELSE 'rented'
+    END                                     AS status,
+    NULL                                    AS provider_id,
+    ''                                      AS video_url,
+    xc.ngaytao                              AS created_at";
+
 switch ($action) {
     case 'list':
         $stmt = $conn->query(
-            "SELECT " . CAR_ADMIN_SELECT . " FROM xe ORDER BY ngaytao DESC"
+            "SELECT " . $carSelect . "
+             FROM xechiec xc
+             INNER JOIN xemau xm ON xm.id = xc.idxemau
+             LEFT JOIN loaixe lx ON lx.id = xm.idloaixe
+             ORDER BY xc.ngaytao DESC"
         );
         echo json_encode(['success' => true, 'data' => $stmt->fetchAll()]);
         break;
@@ -52,7 +59,11 @@ switch ($action) {
     case 'get':
         $id   = (int)($_GET['id'] ?? 0);
         $stmt = $conn->prepare(
-            "SELECT " . CAR_ADMIN_SELECT . " FROM xe WHERE id = ?"
+            "SELECT " . $carSelect . "
+             FROM xechiec xc
+             INNER JOIN xemau xm ON xm.id = xc.idxemau
+             LEFT JOIN loaixe lx ON lx.id = xm.idloaixe
+             WHERE xc.id = ?"
         );
         $stmt->execute([$id]);
         $car = $stmt->fetch();
@@ -63,10 +74,10 @@ switch ($action) {
         $stmt = $conn->query(
             "SELECT
                 COUNT(*)                         AS total,
-                SUM(trangthai = 'available')     AS available,
-                SUM(trangthai = 'rented')        AS rented,
-                SUM(trangthai = 'maintenance')   AS maintenance
-             FROM xe"
+                SUM(tinhrang = 'hoatdong')       AS available,
+                SUM(tinhrang = 'thaihoc')        AS rented,
+                SUM(tinhrang IN ('baodoi','baoduong')) AS maintenance
+             FROM xechiec"
         );
         echo json_encode(['success' => true, 'data' => $stmt->fetch()]);
         break;
@@ -74,31 +85,80 @@ switch ($action) {
     case 'create':
         $data = json_decode(file_get_contents('php://input'), true);
         try {
-            // INSERT dùng tên cột mới của bảng xe
-            $stmt = $conn->prepare(
-                "INSERT INTO xe
-                    (ten, thuonghieu, model, namsanxuat, socho, hopso, nhienlieu,
-                     giathue, anhchinh, mota, tienich, trangthai)
+            $conn->beginTransaction();
+
+            $typeName = trim((string)($data['car_type'] ?? 'Khác'));
+            $typeStmt = $conn->prepare("SELECT id FROM loaixe WHERE ten = ? LIMIT 1");
+            $typeStmt->execute([$typeName]);
+            $typeRow = $typeStmt->fetch();
+            if ($typeRow) {
+                $typeId = (int)$typeRow['id'];
+            } else {
+                $insType = $conn->prepare("INSERT INTO loaixe (ten, mota, trangthai) VALUES (?, ?, 1)");
+                $insType->execute([$typeName, 'Tạo bởi admin']);
+                $typeId = (int)$conn->lastInsertId();
+            }
+
+            $modelName = trim((string)$data['name']);
+            if ($modelName === '') {
+                throw new RuntimeException('Tên xe không hợp lệ');
+            }
+
+            // Đảm bảo unique cho xemau.ten
+            $probeName = $modelName;
+            $i = 1;
+            while (true) {
+                $chk = $conn->prepare("SELECT id FROM xemau WHERE ten = ? LIMIT 1");
+                $chk->execute([$probeName]);
+                if (!$chk->fetch()) {
+                    break;
+                }
+                $i++;
+                $probeName = $modelName . ' #' . $i;
+            }
+
+            $insModel = $conn->prepare(
+                "INSERT INTO xemau
+                    (ten, thuonghieu, model, namsanxuat, idloaixe, socho, hopso, nhienlieu,
+                     giathue_ngay, tiledatcoc, anhchinh, mota_chitiet, trangthai)
                  VALUES
-                    (:ten, :thuonghieu, :model, :namsanxuat, :socho, :hopso, :nhienlieu,
-                     :giathue, :anhchinh, :mota, :tienich, :trangthai)"
+                    (:ten, :thuonghieu, :model, :namsanxuat, :idloaixe, :socho, :hopso, :nhienlieu,
+                     :giathue_ngay, :tiledatcoc, :anhchinh, :mota_chitiet, 'active')"
             );
-            $stmt->execute([
-                ':ten'         => $data['name'],
-                ':thuonghieu'  => $data['brand'],
-                ':model'       => $data['model'],
-                ':namsanxuat'  => (int)$data['year'],
-                ':socho'       => (int)$data['seats'],
-                ':hopso'       => $data['transmission'],
-                ':nhienlieu'   => $data['fuel_type'],
-                ':giathue'     => (float)$data['price_per_day'],
-                ':anhchinh'    => $data['main_image']   ?? '',
-                ':mota'        => $data['description']  ?? '',
-                ':tienich'     => $data['features']     ?? '',
-                ':trangthai'   => $data['status']       ?? 'available',
+            $insModel->execute([
+                ':ten'          => $probeName,
+                ':thuonghieu'   => trim((string)($data['brand'] ?? '')),
+                ':model'        => trim((string)($data['model'] ?? '')),
+                ':namsanxuat'   => (int)($data['year'] ?? date('Y')),
+                ':idloaixe'     => $typeId,
+                ':socho'        => (int)($data['seats'] ?? 5),
+                ':hopso'        => trim((string)($data['transmission'] ?? 'Tự động')),
+                ':nhienlieu'    => trim((string)($data['fuel_type'] ?? 'Xăng')),
+                ':giathue_ngay' => (float)($data['price_per_day'] ?? 0),
+                ':tiledatcoc'   => 0.3,
+                ':anhchinh'     => trim((string)($data['main_image'] ?? '')),
+                ':mota_chitiet' => trim((string)($data['description'] ?? '')),
             ]);
-            echo json_encode(['success' => true, 'id' => $conn->lastInsertId()]);
+
+            $modelId = (int)$conn->lastInsertId();
+            $carStatus = ($data['status'] ?? 'available') === 'available' ? 'hoatdong' : (($data['status'] ?? '') === 'maintenance' ? 'baoduong' : 'thaihoc');
+            $plate = 'ADM-' . strtoupper(substr(md5((string)microtime(true)), 0, 6));
+
+            $insCar = $conn->prepare("INSERT INTO xechiec (idxemau, bienso, km_hientai, tinhrang) VALUES (?, ?, 0, ?)");
+            $insCar->execute([$modelId, $plate, $carStatus]);
+            $carId = (int)$conn->lastInsertId();
+
+            $conn->commit();
+            echo json_encode(['success' => true, 'id' => $carId]);
         } catch (PDOException $e) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        } catch (RuntimeException $e) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
         break;
@@ -107,30 +167,48 @@ switch ($action) {
         $data = json_decode(file_get_contents('php://input'), true);
         $id   = (int)($data['id'] ?? 0);
         try {
-            $stmt = $conn->prepare(
-                "UPDATE xe SET
-                    ten = :ten, thuonghieu = :thuonghieu, model = :model,
-                    namsanxuat = :namsanxuat, socho = :socho, hopso = :hopso,
-                    nhienlieu = :nhienlieu, giathue = :giathue,
-                    anhchinh = :anhchinh, mota = :mota, tienich = :tienich,
-                    trangthai = :trangthai
+            $find = $conn->prepare("SELECT idxemau FROM xechiec WHERE id = ? LIMIT 1");
+            $find->execute([$id]);
+            $row = $find->fetch();
+            if (!$row) {
+                echo json_encode(['success' => false, 'message' => 'Không tìm thấy xe']);
+                break;
+            }
+
+            $modelId = (int)$row['idxemau'];
+
+            $updModel = $conn->prepare(
+                "UPDATE xemau SET
+                    ten = :ten,
+                    thuonghieu = :thuonghieu,
+                    model = :model,
+                    namsanxuat = :namsanxuat,
+                    socho = :socho,
+                    hopso = :hopso,
+                    nhienlieu = :nhienlieu,
+                    giathue_ngay = :giathue_ngay,
+                    anhchinh = :anhchinh,
+                    mota_chitiet = :mota_chitiet
                  WHERE id = :id"
             );
-            $stmt->execute([
-                ':ten'        => $data['name'],
-                ':thuonghieu' => $data['brand'],
-                ':model'      => $data['model'],
-                ':namsanxuat' => (int)$data['year'],
-                ':socho'      => (int)$data['seats'],
-                ':hopso'      => $data['transmission'],
-                ':nhienlieu'  => $data['fuel_type'],
-                ':giathue'    => (float)$data['price_per_day'],
-                ':anhchinh'   => $data['main_image']  ?? '',
-                ':mota'       => $data['description'] ?? '',
-                ':tienich'    => $data['features']    ?? '',
-                ':trangthai'  => $data['status']      ?? 'available',
-                ':id'         => $id,
+            $updModel->execute([
+                ':ten'          => trim((string)($data['name'] ?? '')),
+                ':thuonghieu'   => trim((string)($data['brand'] ?? '')),
+                ':model'        => trim((string)($data['model'] ?? '')),
+                ':namsanxuat'   => (int)($data['year'] ?? date('Y')),
+                ':socho'        => (int)($data['seats'] ?? 5),
+                ':hopso'        => trim((string)($data['transmission'] ?? 'Tự động')),
+                ':nhienlieu'    => trim((string)($data['fuel_type'] ?? 'Xăng')),
+                ':giathue_ngay' => (float)($data['price_per_day'] ?? 0),
+                ':anhchinh'     => trim((string)($data['main_image'] ?? '')),
+                ':mota_chitiet' => trim((string)($data['description'] ?? '')),
+                ':id'           => $modelId,
             ]);
+
+            $carStatus = ($data['status'] ?? 'available') === 'available' ? 'hoatdong' : (($data['status'] ?? '') === 'maintenance' ? 'baoduong' : 'thaihoc');
+            $updCar = $conn->prepare("UPDATE xechiec SET tinhrang = ? WHERE id = ?");
+            $updCar->execute([$carStatus, $id]);
+
             echo json_encode(['success' => true]);
         } catch (PDOException $e) {
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
@@ -174,15 +252,25 @@ switch ($action) {
             // Kiểm tra đơn đặt xe đang active trong datxe
             $check = $conn->prepare(
                 "SELECT COUNT(*) FROM datxe
-                 WHERE idxe = ? AND trangthai IN ('pending', 'confirmed')"
+                 WHERE idxechiec = ? AND trangthai IN ('pending', 'confirmed')"
             );
             $check->execute([$id]);
             if ($check->fetchColumn() > 0) {
                 echo json_encode(['success' => false, 'message' => 'Không thể xóa xe đang có đơn đặt!']);
                 break;
             }
-            $stmt = $conn->prepare("DELETE FROM xe WHERE id = ?");
+
+            $find = $conn->prepare("SELECT idxemau FROM xechiec WHERE id = ? LIMIT 1");
+            $find->execute([$id]);
+            $row = $find->fetch();
+            if (!$row) {
+                echo json_encode(['success' => false, 'message' => 'Không tìm thấy xe']);
+                break;
+            }
+
+            $stmt = $conn->prepare("DELETE FROM xechiec WHERE id = ?");
             $stmt->execute([$id]);
+
             echo json_encode(['success' => true]);
         } catch (PDOException $e) {
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
