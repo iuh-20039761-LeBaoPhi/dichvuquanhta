@@ -1,0 +1,320 @@
+{
+  "session": {
+    "user": {
+      "username": "mock_customer",
+      "fullname": "Khách hàng test",
+      "phone": "0909000001",
+      "email": "mock.customer@example.com"
+    }
+  },
+  "tracking_orders": [
+    {
+      "order": {
+        "id": "MOCK-STD-001",
+        "order_code": "MOCK-STD-001",
+        "created_at": "2026-03-26T09:30:00+07:00",
+        "pickup_time": "2026-03-26T10:00:00+07:00",
+        "status": "shipping",
+        "sender_name": "Trần Minh Châu",
+        "sender_phone": "0909123123",
+        "receiver_name": "Nguyễn Hoàng An",
+        "receiver_phone": "0938111222",
+        "pickup_address": "24 Nguyễn Hữu Cảnh, Bình Thạnh, TP.HCM",
+        "delivery_address": "118 Lê Văn Sỹ, Phú Nhuận, TP.HCM",
+        "service_type": "standard",
+        "service_name": "Giao hàng tiêu chuẩn",
+        "vehicle": "xe_tai",
+        "vehicle_label": "Xe tải 1 tấn",
+        "payment_method": "chuyen_khoan",
+        "fee_payer": "gui",
+        "cod_value": 0,
+        "total_fee": 185000,
+        "notes": "Hồ sơ cần giao trong hôm nay. Gọi trước cho người nhận 15 phút.",
+        "estimated_delivery": "Khoảng 13:20",
+        "pickup_date": "2026-03-26",
+        "pickup_slot": "10:00-10:30",
+        "pickup_slot_label": "10:00 - 10:30",
+        "service_condition_key": "macdinh",
+        "service_condition_label": "Tuyến nội thành, giao 2 điểm",
+        "weather_source": "du_lieu_thoi_tiet_theo_gio",
+        "weather_note": "",
+        "khoang_cach_km": 12.4,
+        "pricing_breakdown": {
+          "basePrice": 150000,
+          "overweightFee": 0,
+          "volumeFee": 0,
+          "goodsFee": 15000,
+          "timeFee": 0,
+          "conditionFee": 10000,
+          "vehicleFee": 10000,
+          "codFee": 0,
+          "insuranceFee": 0,
+          "serviceFee": 0
+        }
+      },
+      "items": [
+        {
+          "loai_hang": "thuong",
+          "ten_hang": "Hồ sơ hợp đồng",
+          "so_luong": 4,
+          "gia_tri_khai_bao": 1200000,
+          "can_nang": 1.5,
+          "chieu_dai": 35,
+          "chieu_rong": 28,
+          "chieu_cao": 6
+        },
+        {
+          "loai_hang": "thuong",
+          "ten_hang": "Hộp quà tặng",
+          "so_luong": 2,
+          "gia_tri_khai_bao": 800000,
+          "can_nang": 2,
+          "chieu_dai": 40,
+          "chieu_rong": 30,
+          "chieu_cao": 25
+        }
+      ],
+      "tracking": {
+        "order_code": "MOCK-STD-001",
+        "status_raw": "shipping",
+        "status_text": "Đang giao",
+        "timeline": [
+          {
+            "text": "Đơn hàng đã được tạo",
+            "time": "2026-03-26T09:30:00+07:00"
+          },
+          {
+            "text": "Đã xác nhận thông tin và lên lịch lấy hàng",
+            "time": "2026-03-26T09:45:00+07:00"
+          },
+          {
+            "text": "Tài xế đã lấy hàng và đang giao",
+            "time": "2026-03-26T10:20:00+07:00"
+          }
+        ]
+      },
+      "provider": {
+        "shipper_id": "SHP-028",
+        "shipper_name": "Nguyễn Văn Hòa",
+        "shipper_phone": "0908555666",
+        "shipper_vehicle": "Xe tải 1 tấn",
+        "attachments": [],
+        "shipper_reports": [],
+        "feedback_media": []
+      },
+      "customer": {
+        "fullname": "Trần Minh Châu",
+        "phone": "0909123123",
+        "email": "chau.tm@example.com"
+      },
+      "logs": [
+        {
+          "old_status_label": "Chờ xử lý",
+          "new_status_label": "Đã xác nhận",
+          "created_at": "2026-03-26T09:45:00+07:00",
+          "note": "Điều phối viên đã xác nhận thông tin giao nhận."
+        },
+        {
+          "old_status_label": "Đã xác nhận",
+          "new_status_label": "Đang giao",
+          "created_at": "2026-03-26T10:20:00+07:00",
+          "note": "Tài xế Nguyễn Văn Hòa đã lấy hàng thành công."
+        }
+      ]
+    },
+    {
+      "order": {
+        "id": "MOCK-BULK-001",
+        "order_code": "MOCK-BULK-001",
+        "created_at": "2026-03-26T08:10:00+07:00",
+        "pickup_time": "2026-03-26T09:00:00+07:00",
+        "status": "pending",
+        "sender_name": "Phạm Quốc Đạt",
+        "sender_phone": "0911222333",
+        "receiver_name": "Lê Thị Như",
+        "receiver_phone": "0905666777",
+        "pickup_address": "Kho A, 18 Quang Trung, Gò Vấp, TP.HCM",
+        "delivery_address": "Kho B, KCN Sóng Thần, Dĩ An, Bình Dương",
+        "service_type": "fast",
+        "service_name": "Giao hàng nhanh",
+        "vehicle": "xe_tai",
+        "vehicle_label": "Xe tải 2.5 tấn",
+        "payment_method": "tien_mat",
+        "fee_payer": "nhan",
+        "cod_value": 0,
+        "total_fee": 640000,
+        "notes": "Đơn nhiều kiện. Ưu tiên giao trong buổi sáng nếu xếp được xe.",
+        "estimated_delivery": "Dự kiến giao trong ngày",
+        "pickup_date": "2026-03-26",
+        "pickup_slot": "09:00-10:00",
+        "pickup_slot_label": "09:00 - 10:00",
+        "service_condition_key": "macdinh",
+        "service_condition_label": "Lô hàng nhiều kiện, cần xe tải riêng",
+        "weather_source": "du_lieu_thoi_tiet_theo_gio",
+        "weather_note": "",
+        "khoang_cach_km": 24,
+        "pricing_breakdown": {
+          "basePrice": 520000,
+          "overweightFee": 70000,
+          "volumeFee": 0,
+          "goodsFee": 0,
+          "timeFee": 0,
+          "conditionFee": 50000,
+          "vehicleFee": 0,
+          "codFee": 0,
+          "insuranceFee": 0,
+          "serviceFee": 0
+        }
+      },
+      "items": [
+        {
+          "loai_hang": "thuong",
+          "ten_hang": "Kiện hàng A",
+          "so_luong": 15,
+          "gia_tri_khai_bao": 15000000,
+          "can_nang": 21.33,
+          "chieu_dai": 100,
+          "chieu_rong": 70,
+          "chieu_cao": 60
+        }
+      ],
+      "tracking": {
+        "order_code": "MOCK-BULK-001",
+        "status_raw": "pending",
+        "status_text": "Chờ xử lý",
+        "timeline": [
+          {
+            "text": "Đơn hàng đã được tạo",
+            "time": "2026-03-26T08:10:00+07:00"
+          },
+          {
+            "text": "Đang chờ điều phối xe và gán tài xế",
+            "time": "2026-03-26T08:35:00+07:00"
+          }
+        ]
+      },
+      "provider": {
+        "attachments": [],
+        "shipper_reports": [],
+        "feedback_media": []
+      },
+      "customer": {
+        "fullname": "Phạm Quốc Đạt",
+        "phone": "0911222333",
+        "email": "dat.pq@example.com"
+      },
+      "logs": [
+        {
+          "old_status_label": "Mới tạo",
+          "new_status_label": "Chờ xử lý",
+          "created_at": "2026-03-26T08:35:00+07:00",
+          "note": "Đơn đang chờ xếp xe phù hợp."
+        }
+      ]
+    },
+    {
+      "order": {
+        "id": "MOCK-COD-001",
+        "order_code": "MOCK-COD-001",
+        "created_at": "2026-03-25T14:40:00+07:00",
+        "pickup_time": "2026-03-25T15:00:00+07:00",
+        "status": "completed",
+        "sender_name": "Ngô Bảo Hân",
+        "sender_phone": "0987111222",
+        "receiver_name": "Đoàn Gia Linh",
+        "receiver_phone": "0933444555",
+        "pickup_address": "55 Hoàng Văn Thụ, Tân Bình, TP.HCM",
+        "delivery_address": "22 Trần Hưng Đạo, Thủ Dầu Một, Bình Dương",
+        "service_type": "express",
+        "service_name": "Giao hàng hỏa tốc",
+        "vehicle": "xe_tai",
+        "vehicle_label": "Xe tải nhỏ",
+        "payment_method": "tien_mat",
+        "fee_payer": "gui",
+        "cod_value": 2450000,
+        "total_fee": 210000,
+        "notes": "Khách cần đổi tiền mệnh giá nhỏ khi thu COD.",
+        "estimated_delivery": "Khoảng 17:15",
+        "pickup_date": "2026-03-25",
+        "pickup_slot": "15:00-15:30",
+        "pickup_slot_label": "15:00 - 15:30",
+        "service_condition_key": "macdinh",
+        "service_condition_label": "Đơn cần giao nhanh trong ngày",
+        "weather_source": "du_lieu_thoi_tiet_theo_gio",
+        "weather_note": "",
+        "khoang_cach_km": 31,
+        "pricing_breakdown": {
+          "basePrice": 160000,
+          "overweightFee": 0,
+          "volumeFee": 0,
+          "goodsFee": 10000,
+          "timeFee": 0,
+          "conditionFee": 0,
+          "vehicleFee": 0,
+          "codFee": 40000,
+          "insuranceFee": 0,
+          "serviceFee": 0
+        }
+      },
+      "items": [
+        {
+          "loai_hang": "gia-tri-cao",
+          "ten_hang": "Đơn hàng mỹ phẩm",
+          "so_luong": 3,
+          "gia_tri_khai_bao": 2450000,
+          "can_nang": 2.67,
+          "chieu_dai": 45,
+          "chieu_rong": 30,
+          "chieu_cao": 25
+        }
+      ],
+      "tracking": {
+        "order_code": "MOCK-COD-001",
+        "status_raw": "completed",
+        "status_text": "Hoàn tất",
+        "timeline": [
+          {
+            "text": "Đơn hàng đã được tạo",
+            "time": "2026-03-25T14:40:00+07:00"
+          },
+          {
+            "text": "Tài xế đã lấy hàng",
+            "time": "2026-03-25T15:05:00+07:00"
+          },
+          {
+            "text": "Giao thành công và đã thu đủ COD",
+            "time": "2026-03-25T17:15:00+07:00"
+          }
+        ]
+      },
+      "provider": {
+        "shipper_id": "SHP-041",
+        "shipper_name": "Lê Quốc Thái",
+        "shipper_phone": "0909888777",
+        "shipper_vehicle": "Xe tải nhỏ",
+        "attachments": [],
+        "shipper_reports": [],
+        "feedback_media": []
+      },
+      "customer": {
+        "fullname": "Ngô Bảo Hân",
+        "phone": "0987111222",
+        "email": "han.ngo@example.com"
+      },
+      "logs": [
+        {
+          "old_status_label": "Mới tạo",
+          "new_status_label": "Đang giao",
+          "created_at": "2026-03-25T15:05:00+07:00",
+          "note": "Tài xế đã nhận hàng từ điểm lấy."
+        },
+        {
+          "old_status_label": "Đang giao",
+          "new_status_label": "Hoàn tất",
+          "created_at": "2026-03-25T17:15:00+07:00",
+          "note": "Đã giao thành công và thu đủ tiền COD."
+        }
+      ]
+    }
+  ]
+}

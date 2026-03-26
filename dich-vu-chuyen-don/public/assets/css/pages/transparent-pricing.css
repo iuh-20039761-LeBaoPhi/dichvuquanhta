@@ -153,35 +153,28 @@
   margin-top: 48px;
 }
 
-.luoi-so-sanh-dich-vu,
-.luoi-cong-thuc-rieng {
+.luoi-so-sanh-dich-vu {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
 }
 
 .the-so-sanh-dich-vu,
-.the-cong-thuc-rieng,
 .the-phu-phi,
 .the-nguyen-tac-bang-gia {
   display: grid;
   gap: 16px;
   align-content: start;
   padding: 24px;
-  border-radius: 26px;
+  border-radius: 22px;
   border: 1px solid rgba(27, 67, 50, 0.08);
   background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 20px 48px rgba(17, 24, 39, 0.05);
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.045);
 }
 
 .the-so-sanh-dich-vu {
   height: 100%;
   grid-template-rows: auto auto auto 1fr auto;
-}
-
-.the-cong-thuc-rieng {
-  height: 100%;
-  grid-template-rows: auto 1fr auto;
 }
 
 .nhan-dich-vu-bang-gia {
@@ -206,7 +199,6 @@
 }
 
 .the-so-sanh-dich-vu p,
-.the-cong-thuc-rieng p,
 .the-phu-phi p,
 .the-nguyen-tac-bang-gia p,
 .o-bang-quyet-dinh {
@@ -249,7 +241,6 @@
 }
 
 .muc-noi-dung-bang-gia h4,
-.dau-the-cong-thuc h3,
 .the-yeu-to-gia h3,
 .the-phu-phi h3,
 .the-nguyen-tac-bang-gia h3 {
@@ -276,9 +267,9 @@
 
 .khung-cong-thuc-tong-quat {
   display: grid;
-  gap: 10px;
-  padding: 20px 22px;
-  border-radius: 24px;
+  gap: 12px;
+  padding: 22px 24px;
+  border-radius: 22px;
   border: 1px solid rgba(255, 183, 3, 0.24);
   background: linear-gradient(180deg, #fff8e1 0%, #fffdf6 100%);
 }
@@ -291,20 +282,133 @@
   text-transform: uppercase;
 }
 
-.khung-cong-thuc-tong-quat p {
+.dong-cong-thuc-tong-quat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
   margin: 0;
+}
+
+.muc-cong-thuc-tong-quat {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 183, 3, 0.22);
   color: #28483b;
-  font-size: clamp(1rem, 2vw, 1.2rem);
+  font: inherit;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: 1.45;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.muc-cong-thuc-tong-quat:hover,
+.muc-cong-thuc-tong-quat:focus-visible {
+  outline: none;
+  border-color: rgba(27, 67, 50, 0.35);
+  color: #173528;
+}
+
+.muc-cong-thuc-tong-quat.dang-chon {
+  border-color: #1b4332;
+  background: #1b4332;
+  color: #fff;
+}
+
+.dau-cong-thuc-tong-quat {
+  color: #8b6410;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.chi-tiet-cong-thuc {
+  margin: 0;
+  border-radius: 22px;
+  border: 1px solid rgba(27, 67, 50, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.045);
+}
+
+.cum-muc-phi-chi-tiet {
+  display: grid;
+  padding: 18px 22px 22px;
+}
+
+.noi-dung-muc-phi-chi-tiet {
+  display: grid;
+}
+
+.panel-muc-phi-chi-tiet {
+  display: none;
+  gap: 14px;
+}
+
+.panel-muc-phi-chi-tiet.dang-chon {
+  display: grid;
+}
+
+.mo-ta-muc-phi-chi-tiet {
+  margin: 0;
+  color: #5f776c;
+  line-height: 1.8;
+}
+
+.cum-dong-giai-thich-cong-thuc {
+  display: grid;
+}
+
+.dong-giai-thich-cong-thuc {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  gap: 18px;
+  padding: 16px 0;
+  border-top: 1px solid #e6eee9;
+}
+
+.dong-giai-thich-cong-thuc:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.dong-giai-thich-cong-thuc h3 {
+  margin: 0;
+  color: #173528;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.danh-sach-giai-thich-cong-thuc {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.danh-sach-giai-thich-cong-thuc li {
+  color: #355548;
+  line-height: 1.75;
+}
+
+.danh-sach-giai-thich-cong-thuc strong {
+  color: #173528;
 }
 
 .the-yeu-to-gia {
   padding: 22px;
-  border-radius: 24px;
+  border-radius: 20px;
   background: #fff;
   border: 1px solid rgba(27, 67, 50, 0.08);
-  box-shadow: 0 18px 40px rgba(17, 24, 39, 0.04);
+  box-shadow: 0 10px 26px rgba(17, 24, 39, 0.035);
 }
 
 .the-yeu-to-gia h3 {
@@ -318,83 +422,71 @@
   line-height: 1.75;
 }
 
-.dau-the-cong-thuc {
-  display: grid;
-  gap: 12px;
-  min-height: 185px;
-  align-content: start;
+.bang-so-sanh-cong-thuc-wrapper {
+  overflow-x: auto;
+  border-radius: 22px;
+  border: 1px solid rgba(27, 67, 50, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.045);
 }
 
-.dau-the-cong-thuc h3 {
-  margin: 0;
-  font-size: 1.45rem;
-  line-height: 1.3;
+.bang-so-sanh-cong-thuc {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
 }
 
-.khung-cong-thuc-bang-gia {
-  display: grid;
-  gap: 8px;
-  padding: 16px 18px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 183, 3, 0.25);
-  background: linear-gradient(180deg, #fff8e3 0%, #fffdf6 100%);
+.bang-so-sanh-cong-thuc thead {
+  background: #eff4f0;
 }
 
-.khung-cong-thuc-bang-gia > span {
-  color: #8b6410;
-  font-size: 12px;
-  font-weight: 600;
+.bang-so-sanh-cong-thuc th,
+.bang-so-sanh-cong-thuc td {
+  padding: 18px 20px;
+  border-bottom: 1px solid #e6eee9;
+  text-align: left;
+  vertical-align: top;
+}
+
+.bang-so-sanh-cong-thuc thead th {
+  color: #173528;
+  font-size: 13px;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.khung-cong-thuc-bang-gia p {
-  margin: 0;
+.bang-so-sanh-cong-thuc tbody th,
+.bang-so-sanh-cong-thuc tbody td {
   color: #355548;
   line-height: 1.75;
 }
 
-.luoi-cau-truc-gia {
-  display: grid;
-  gap: 10px;
-  align-content: start;
+.bang-so-sanh-cong-thuc tbody tr:last-child th,
+.bang-so-sanh-cong-thuc tbody tr:last-child td {
+  border-bottom: 0;
 }
 
-.khung-cau-truc-gia {
-  display: grid;
-  gap: 10px;
-  padding: 14px 0 0;
-  border-top: 1px solid #e6eee9;
-  background: transparent;
+.bang-so-sanh-cong-thuc tbody tr:nth-child(even) {
+  background: rgba(246, 250, 247, 0.75);
 }
 
-.nhan-cau-truc-gia {
+.bang-so-sanh-cong-thuc tbody th {
+  min-width: 210px;
+}
+
+.ten-dich-vu-bang-cong-thuc {
+  display: block;
   color: #173528;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: normal;
 }
 
-.cum-chip-bang-gia-nhat .chip-bang-gia {
-  background: #f8fbf9;
-}
-
-.khung-canh-bao-khao-sat {
-  display: grid;
-  gap: 10px;
-  padding: 14px 0 0 16px;
-  margin-top: auto;
-  border-left: 3px solid rgba(255, 183, 3, 0.75);
-  background: transparent;
-}
-
-.nhan-canh-bao-khao-sat {
+.o-noi-bat-bang-cong-thuc {
   color: #8b6410;
-  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
 }
 
 .muc-noi-dung-bang-gia {
@@ -412,12 +504,6 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
-}
-
-.cum-chip-bang-gia {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
 }
 
 .danh-sach-phu-phi-bang-gia {
@@ -453,18 +539,6 @@
   font-weight: 600;
   text-align: right;
   white-space: nowrap;
-}
-
-.chip-bang-gia {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 12px;
-  border-radius: 999px;
-  border: 1px solid #dce8e1;
-  background: #eff5f1;
-  color: #244438;
-  font-size: 14px;
-  line-height: 1.45;
 }
 
 .luoi-the-ra-quyet-dinh {
@@ -562,13 +636,246 @@
   line-height: 1.75;
 }
 
+.pricing-formula-summary {
+  position: relative;
+  overflow: hidden;
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid rgba(27, 67, 50, 0.1);
+  background:
+    radial-gradient(circle at top right, rgba(255, 183, 3, 0.18), transparent 28%),
+    linear-gradient(135deg, rgba(246, 250, 247, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%);
+  box-shadow: 0 22px 50px rgba(17, 24, 39, 0.07);
+}
+
+.pricing-formula-summary__glow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 999px;
+  filter: blur(50px);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.pricing-formula-summary__glow--top {
+  top: -120px;
+  right: -90px;
+  background: rgba(255, 183, 3, 0.2);
+}
+
+.pricing-formula-summary__glow--bottom {
+  bottom: -130px;
+  left: -110px;
+  background: rgba(27, 67, 50, 0.12);
+}
+
+.pricing-formula-summary__layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.pricing-formula-summary__main,
+.pricing-formula-summary__aside {
+  display: grid;
+  align-content: start;
+}
+
+.pricing-formula-summary__badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(27, 67, 50, 0.08);
+  color: #1b4332;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.pricing-formula-summary__title {
+  margin: 18px 0 0;
+  color: #173528;
+  font-size: clamp(1.85rem, 3.2vw, 2.8rem);
+  line-height: 1.14;
+}
+
+.pricing-formula-summary__description,
+.pricing-formula-summary__aside-copy {
+  margin: 14px 0 0;
+  color: #587166;
+  line-height: 1.8;
+}
+
+.pricing-formula-summary__starting,
+.pricing-formula-summary__factors-block {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(27, 67, 50, 0.1);
+}
+
+.pricing-formula-summary__label {
+  margin: 0;
+  color: #6a7f75;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pricing-formula-summary__starting-row,
+.pricing-formula-summary__factor-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 10px;
+}
+
+.pricing-formula-summary__starting-name,
+.pricing-formula-summary__factor-title,
+.pricing-formula-summary__factor-value,
+.pricing-formula-summary__starting-price,
+.pricing-formula-summary__starting-note,
+.pricing-formula-summary__hint,
+.pricing-formula-summary__factor-note {
+  margin: 0;
+}
+
+.pricing-formula-summary__starting-name,
+.pricing-formula-summary__factor-title {
+  color: #173528;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.pricing-formula-summary__starting-price,
+.pricing-formula-summary__factor-value {
+  color: #d97706;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.pricing-formula-summary__starting-note,
+.pricing-formula-summary__hint,
+.pricing-formula-summary__factor-note {
+  color: #5f776c;
+  line-height: 1.75;
+}
+
+.pricing-formula-summary__starting-note,
+.pricing-formula-summary__factor-note {
+  margin-top: 6px;
+}
+
+.pricing-formula-summary__hint {
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+
+.pricing-formula-summary__parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.pricing-formula-summary__part {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.pricing-formula-summary__part--primary {
+  background: rgba(27, 67, 50, 0.1);
+  color: #1b4332;
+}
+
+.pricing-formula-summary__part--neutral {
+  background: rgba(255, 255, 255, 0.84);
+  border-color: rgba(27, 67, 50, 0.08);
+  color: #355548;
+}
+
+.pricing-formula-summary__aside {
+  padding-left: 28px;
+  border-left: 1px solid rgba(27, 67, 50, 0.1);
+}
+
+.pricing-formula-summary__cta {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: #1b4332;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.pricing-formula-summary__cta:hover {
+  background: #173528;
+  transform: translateY(-1px);
+}
+
+.pricing-formula-summary__factors {
+  display: grid;
+  gap: 14px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pricing-formula-summary__factor {
+  padding-top: 14px;
+  border-top: 1px solid rgba(27, 67, 50, 0.08);
+}
+
+.pricing-formula-summary__factor:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
 @media (max-width: 1180px) {
   .luoi-so-sanh-dich-vu,
-  .luoi-cong-thuc-rieng,
   .luoi-phu-phi,
   .luoi-yeu-to-gia,
   .luoi-the-ra-quyet-dinh {
     grid-template-columns: 1fr;
+  }
+
+  .pricing-formula-summary__layout {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .pricing-formula-summary__aside {
+    padding-left: 0;
+    padding-top: 24px;
+    border-left: 0;
+    border-top: 1px solid rgba(27, 67, 50, 0.1);
   }
 }
 
@@ -611,7 +918,6 @@
   }
 
   .the-so-sanh-dich-vu,
-  .the-cong-thuc-rieng,
   .the-phu-phi,
   .the-nguyen-tac-bang-gia,
   .the-yeu-to-gia,
@@ -619,17 +925,28 @@
     padding: 18px 14px;
   }
 
-  .khung-cau-truc-gia {
-    padding-top: 12px;
-  }
-
-  .dau-the-cong-thuc {
-    min-height: 0;
-  }
-
-  .khung-canh-bao-khao-sat {
-    padding-top: 12px;
+  .cum-muc-phi-chi-tiet {
     padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .dong-cong-thuc-tong-quat {
+    gap: 8px;
+  }
+
+  .muc-cong-thuc-tong-quat {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .dau-cong-thuc-tong-quat {
+    display: none;
+  }
+
+  .dong-giai-thich-cong-thuc {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .muc-phu-phi-bang-gia {
@@ -642,7 +959,6 @@
   }
 
   .luoi-so-sanh-dich-vu,
-  .luoi-cong-thuc-rieng,
   .luoi-phu-phi,
   .luoi-yeu-to-gia,
   .luoi-the-ra-quyet-dinh,
@@ -654,6 +970,44 @@
   .dau-muc-trang,
   .hero-bang-gia-noi-dung {
     max-width: none;
+  }
+
+  #pricing-reference #pricing-formula-container {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .pricing-formula-summary {
+    padding: 24px 20px 28px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .pricing-formula-summary__badge {
+    padding: 9px 14px;
+    letter-spacing: 0.14em;
+  }
+
+  .pricing-formula-summary__title {
+    font-size: clamp(1.6rem, 7vw, 2.15rem);
+  }
+
+  .pricing-formula-summary__starting-row,
+  .pricing-formula-summary__factor-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pricing-formula-summary__starting-price,
+  .pricing-formula-summary__factor-value {
+    text-align: left;
+  }
+
+  .bang-so-sanh-cong-thuc th,
+  .bang-so-sanh-cong-thuc td {
+    padding: 16px 14px;
   }
 }
 
@@ -683,7 +1037,6 @@
   }
 
   .the-so-sanh-dich-vu,
-  .the-cong-thuc-rieng,
   .the-phu-phi,
   .the-nguyen-tac-bang-gia,
   .the-yeu-to-gia,
@@ -692,8 +1045,18 @@
     border-radius: 20px;
   }
 
-  .chip-bang-gia {
-    padding: 9px 11px;
-    font-size: 13px;
+  .pricing-formula-summary {
+    padding: 22px 16px 26px;
   }
+
+  .pricing-formula-summary__parts {
+    gap: 8px;
+  }
+
+  .pricing-formula-summary__part {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
 }

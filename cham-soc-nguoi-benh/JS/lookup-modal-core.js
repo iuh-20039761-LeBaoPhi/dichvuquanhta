@@ -50,7 +50,7 @@
 
   function getStatusBadge(status) {
     var badges = {
-      cho_xu_ly: '<span class="badge rounded-pill text-bg-warning">Chờ xử lý</span>',
+      cho_duyet: '<span class="badge rounded-pill text-bg-warning">Chờ xử lý</span>',
       da_nhan: '<span class="badge rounded-pill text-bg-info">Đã nhận</span>',
       dang_lam: '<span class="badge rounded-pill text-bg-primary">Đang làm</span>',
       hoan_thanh: '<span class="badge rounded-pill text-bg-success">Hoàn thành</span>',

@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Đăng nhập tài khoản Giặt Ủi Nhanh để đặt lịch nhanh, theo dõi đơn và nhận ưu đãi dịch vụ tiện lợi mỗi ngày."
+    />
+    <title>Đăng nhập | Dịch Vụ Quanh Ta - Giặt Ủi Nhanh</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link href="public/asset/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+      :root {
+        --bg-start: #e6f6ef;
+        --bg-end: #eaf3ff;
+        --surface: #ffffff;
+        --text-main: #132238;
+        --text-sub: #597089;
+        --line: #dce7f2;
+        --brand-green: #0fa26d;
+        --brand-blue: #1f7be8;
+        --brand-orange: #ff7a1a;
+        --focus-ring: rgba(31, 123, 232, 0.32);
+        --shadow-soft: 0 18px 50px rgba(17, 68, 120, 0.12);
+        --shadow-card: 0 10px 30px rgba(14, 55, 96, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        font-family: "Be Vietnam Pro", sans-serif;
+        color: var(--text-main);
+        background: linear-gradient(140deg, #4a00e0, #8e2de2);
+        min-height: 100vh;
+      }
+
+      .auth-page {
+        position: relative;
+        min-height: 100vh;
+        padding: 20px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .auth-shell {
+        position: relative;
+        z-index: 1;
+        width: min(560px, 100%);
+        /* border-radius: 28px; */
+        overflow: hidden;
+        /* background: var(--surface);
+        box-shadow: var(--shadow-soft); */
+        animation: enter-card 0.65s ease both;
+      }
+
+      .auth-form-wrap {
+        padding: 22px 16px;
+      }
+
+      .auth-form-card {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 22px 16px;
+        box-shadow: var(--shadow-card);
+        background: #fff;
+      }
+
+      .brand-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        text-decoration: none;
+      }
+
+      .brand-logo img {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+      }
+
+      .brand-logo span {
+        color: var(--text-main);
+        font-size: 1.05rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+
+      .auth-title {
+        margin: 0 0 6px;
+        font-size: clamp(1.4rem, 1.1rem + 1.6vw, 1.9rem);
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .auth-subtitle {
+        margin: 0 0 20px;
+        color: var(--text-sub);
+        font-size: 0.95rem;
+        text-align: center;
+      }
+
+      .form-label {
+        font-weight: 600;
+        font-size: 0.94rem;
+      }
+
+      .form-control {
+        border-radius: 12px;
+        border: 1px solid #cdddec;
+        height: 46px;
+      }
+
+      .form-control:focus {
+        border-color: var(--brand-blue);
+        box-shadow: 0 0 0 4px var(--focus-ring);
+      }
+
+      .password-group {
+        position: relative;
+      }
+
+      .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        border: 0;
+        background: #eef5ff;
+        color: var(--brand-blue);
+        font-weight: 600;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        padding: 6px 9px;
+      }
+
+      .toggle-password:hover {
+        background: #ddeaff;
+      }
+
+      .toggle-password:focus-visible {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+
+      .field-error {
+        display: block;
+        min-height: 20px;
+        margin-top: 4px;
+        font-size: 0.83rem;
+        color: #d93025;
+      }
+
+      .row-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+        margin-top: 2px;
+        margin-bottom: 6px;
+      }
+
+      .row-meta a {
+        color: var(--brand-blue);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .row-meta a:hover {
+        text-decoration: underline;
+      }
+
+      .btn-login {
+        width: 100%;
+        border: 0;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(
+          135deg,
+          var(--brand-green),
+          var(--brand-blue)
+        );
+        box-shadow: 0 12px 24px rgba(15, 162, 109, 0.28);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          filter 0.2s ease;
+      }
+
+      .btn-login:hover {
+        transform: translateY(-1px);
+        filter: saturate(1.07);
+        box-shadow: 0 15px 28px rgba(31, 123, 232, 0.26);
+      }
+
+      .btn-login:focus-visible {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+
+      .btn-login:disabled {
+        opacity: 0.88;
+        cursor: not-allowed;
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #7a8ea3;
+        margin: 18px 0 14px;
+        font-size: 0.86rem;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        height: 1px;
+        background: #d9e6f3;
+        flex: 1;
+      }
+
+      .social-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .btn-social {
+        border: 1px solid #cfe0ef;
+        background: #fff;
+        color: #234;
+        border-radius: 12px;
+        padding: 10px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-social:hover {
+        background: #f5faff;
+      }
+
+      .btn-social:focus-visible {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+
+      .auth-footer {
+        margin-top: 15px;
+        text-align: center;
+        color: var(--text-sub);
+        font-size: 0.9rem;
+      }
+
+      .auth-footer a {
+        color: var(--brand-orange);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .auth-footer a:hover {
+        text-decoration: underline;
+      }
+
+      .policy-links {
+        margin-top: 10px;
+        font-size: 0.82rem;
+      }
+
+      .policy-links a {
+        color: #617d98;
+        text-decoration: none;
+      }
+
+      .policy-links a:hover {
+        text-decoration: underline;
+      }
+
+      .auth-alert {
+        margin-top: 12px;
+        border-radius: 12px;
+      }
+
+      @media (min-width: 768px) {
+        .auth-page {
+          padding: 34px;
+        }
+
+        .auth-form-wrap {
+          padding: 30px;
+        }
+
+        .auth-form-card {
+          padding: 30px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+
+      @keyframes enter-card {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="auth-page">
+      <section class="auth-shell" aria-label="Đăng nhập tài khoản">
+        <div class="auth-form-wrap">
+          <div class="auth-form-card">
+            <a
+              href="index.html"
+              class="brand-logo"
+              aria-label="Trang chủ Giặt Ủi Nhanh"
+            >
+              <img
+                src="public/asset/image/logo-dich-vu-quanh-ta.png"
+                alt="Logo Dịch Vụ Quanh Ta"
+              />
+              <span>Giặt Ủi Nhanh</span>
+              <img
+                src="public/asset/image/logo-giat-ui-nhanh.png"
+                alt="Logo Giặt Ủi Nhanh"
+              />
+            </a>
+
+            <h1 class="auth-title">Đăng nhập tài khoản</h1>
+            <p class="auth-subtitle">
+              Nhập thông tin để tiếp tục đặt dịch vụ nhanh chóng.
+            </p>
+
+            <form id="loginForm" novalidate>
+              <div class="mb-2">
+                <label for="identity" class="form-label">Số điện thoại</label>
+                <input
+                  id="identity"
+                  name="identity"
+                  type="text"
+                  class="form-control"
+                  placeholder="09xxxxxxxx"
+                  autocomplete="username"
+                  aria-describedby="identityError"
+                  required
+                />
+                <small
+                  id="identityError"
+                  class="field-error"
+                  aria-live="polite"
+                ></small>
+              </div>
+
+              <div class="mb-1">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <div class="password-group">
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    class="form-control pe-5"
+                    placeholder="Nhập mật khẩu"
+                    autocomplete="current-password"
+                    aria-describedby="passwordError"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    id="togglePassword"
+                    aria-label="Hiện mật khẩu"
+                    aria-pressed="false"
+                  >
+                    Hiện
+                  </button>
+                </div>
+                <small
+                  id="passwordError"
+                  class="field-error"
+                  aria-live="polite"
+                ></small>
+              </div>
+
+              <div class="row-meta">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="remember"
+                  />
+                  <label class="form-check-label" for="remember"
+                    >Ghi nhớ đăng nhập</label
+                  >
+                </div>
+                <a href="#" aria-label="Khôi phục mật khẩu">Quên mật khẩu?</a>
+              </div>
+
+              <button id="submitBtn" type="submit" class="btn-login mt-2">
+                <span class="btn-text">Đăng nhập</span>
+              </button>
+
+              <div
+                id="loginStatus"
+                class="alert alert-success auth-alert d-none"
+                role="status"
+                aria-live="polite"
+              >
+                Đăng nhập thành công! Đang chuyển bạn đến trang chính...
+              </div>
+
+              <div class="divider">Hoặc đăng nhập bằng</div>
+
+              <div class="social-grid">
+                <button
+                  type="button"
+                  class="btn-social"
+                  aria-label="Đăng nhập nhà cung cấp"
+                >
+                  <i class="fas fa-user-alt"></i>
+                  Nhà cung cấp
+                </button>
+                <button
+                  type="button"
+                  class="btn-social"
+                  aria-label="Đăng nhập admin"
+                >
+                  <i class="fas fa-shield-alt"></i>
+                  Admin
+                </button>
+              </div>
+            </form>
+
+            <div class="auth-footer">
+              Chưa có tài khoản?
+              <a href="dang-ky.html" aria-label="Đăng ký tài khoản mới"
+                >Đăng ký ngay</a
+              >
+
+              <div class="policy-links">
+                <a href="index.html">
+                  <i class="fas fa-arrow-left me-1"></i>Trang chủ</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="public/asset/js/bootstrap.bundle.min.js"></script>
+    <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+      WebFont.load({
+        google: {
+          families: ["Public Sans:300,400,500,600,700"],
+        },
+        custom: {
+          families: [
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+            "simple-line-icons",
+          ],
+          urls: ["public/asset/css/fonts.min.css"],
+        },
+        active: function () {
+          sessionStorage.fonts = true;
+        },
+      });
+    </script>
+    <script>
+      (function () {
+        var form = document.getElementById("loginForm");
+        var identityInput = document.getElementById("identity");
+        var passwordInput = document.getElementById("password");
+        var identityError = document.getElementById("identityError");
+        var passwordError = document.getElementById("passwordError");
+        var togglePasswordBtn = document.getElementById("togglePassword");
+        var submitBtn = document.getElementById("submitBtn");
+        var loginStatus = document.getElementById("loginStatus");
+
+        // function isEmail(value) {
+        //   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        // }
+
+        function isPhoneVN(value) {
+          return /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/.test(value);
+        }
+
+        function validateIdentity() {
+          var value = identityInput.value.trim();
+          identityError.textContent = "";
+          identityInput.setAttribute("aria-invalid", "false");
+
+          if (!value) {
+            identityError.textContent = "Vui lòng nhập số điện thoại.";
+            identityInput.setAttribute("aria-invalid", "true");
+            return false;
+          }
+
+          if (!isPhoneVN(value)) {
+            identityError.textContent =
+              "Định dạng chưa đúng. Hãy nhập số điện thoại hợp lệ.";
+            identityInput.setAttribute("aria-invalid", "true");
+            return false;
+          }
+
+          return true;
+        }
+
+        function validatePassword() {
+          var value = passwordInput.value;
+          passwordError.textContent = "";
+          passwordInput.setAttribute("aria-invalid", "false");
+
+          if (!value.trim()) {
+            passwordError.textContent = "Vui lòng nhập mật khẩu.";
+            passwordInput.setAttribute("aria-invalid", "true");
+            return false;
+          }
+
+          if (value.length < 6) {
+            passwordError.textContent = "Mật khẩu cần tối thiểu 6 ký tự.";
+            passwordInput.setAttribute("aria-invalid", "true");
+            return false;
+          }
+
+          return true;
+        }
+
+        togglePasswordBtn.addEventListener("click", function () {
+          var isHidden = passwordInput.type === "password";
+          passwordInput.type = isHidden ? "text" : "password";
+          togglePasswordBtn.textContent = isHidden ? "Ẩn" : "Hiện";
+          togglePasswordBtn.setAttribute(
+            "aria-label",
+            isHidden ? "Ẩn mật khẩu" : "Hiện mật khẩu",
+          );
+          togglePasswordBtn.setAttribute(
+            "aria-pressed",
+            isHidden ? "true" : "false",
+          );
+        });
+
+        identityInput.addEventListener("blur", validateIdentity);
+        passwordInput.addEventListener("blur", validatePassword);
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          loginStatus.classList.add("d-none");
+
+          var isIdentityValid = validateIdentity();
+          var isPasswordValid = validatePassword();
+
+          if (!isIdentityValid || !isPasswordValid) {
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span><span class="btn-text">Đang xử lý...</span>';
+
+          setTimeout(function () {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span class="btn-text">Đăng nhập</span>';
+            loginStatus.classList.remove("d-none");
+            form.reset();
+            togglePasswordBtn.textContent = "Hiện";
+            togglePasswordBtn.setAttribute("aria-pressed", "false");
+            passwordInput.type = "password";
+          }, 1200);
+        });
+      })();
+    </script>
+  </body>
+</html>

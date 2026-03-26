@@ -1078,6 +1078,39 @@ footer {
   margin-left: 10px;
   padding: 10px;
 }
+
+.login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.28);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.login-btn:hover,
+.login-btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(249, 115, 22, 0.35);
+  filter: saturate(1.1);
+  color: #fff;
+}
+
+.login-btn:focus-visible {
+  outline: 3px solid rgba(249, 115, 22, 0.3);
+  outline-offset: 2px;
+}
+.navbar.scrolled .nav-link.login-btn {
+  color: #fff;
+}
 /* Responsive */
 @media (max-width: 768px) {
   .btn.info {

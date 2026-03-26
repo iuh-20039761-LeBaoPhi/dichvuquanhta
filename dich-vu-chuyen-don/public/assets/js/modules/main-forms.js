@@ -143,6 +143,33 @@
       .filter(Boolean);
   }
 
+  function queryFirst(scope, selectors) {
+    const selectorList = Array.isArray(selectors) ? selectors : [selectors];
+
+    for (const selector of selectorList) {
+      const node = scope.querySelector(selector);
+      if (node) return node;
+    }
+
+    return null;
+  }
+
+  function getCheckedLabelsFromSelectors(scope, selectors) {
+    const selectorList = Array.isArray(selectors) ? selectors : [selectors];
+    const labels = [];
+    const seen = new Set();
+
+    selectorList.forEach((selector) => {
+      getCheckedLabels(scope, selector).forEach((label) => {
+        if (seen.has(label)) return;
+        seen.add(label);
+        labels.push(label);
+      });
+    });
+
+    return labels;
+  }
+
   function countChecked(scope, selector) {
     return scope.querySelectorAll(`${selector}:checked`).length;
   }
@@ -214,7 +241,34 @@
     return earthRadius * c;
   }
 
+  // Cập nhật preview file ngay tại khu upload sau mỗi lần người dùng chọn lại tệp.
   function updateFilePreview(scope, input) {
+    const previewGridId = input.getAttribute("data-xem-truoc-luoi");
+    const previewEmptyId = input.getAttribute("data-xem-truoc-trang-thai");
+    const previewGrid = previewGridId
+      ? scope.querySelector(`#${previewGridId}`)
+      : null;
+    const previewEmpty = previewEmptyId
+      ? scope.querySelector(`#${previewEmptyId}`)
+      : null;
+
+    if (previewGrid) {
+      const items = Array.from(input.files || []).map((file) => ({
+        file,
+        kind: file.type.startsWith("video/") ? "video" : "image",
+      }));
+      renderMediaPreviewGrid(previewGrid, items, {
+        videoControls: false,
+        mutedVideo: true,
+        cardClassName:
+          "the-media-xac-nhan-dat-lich the-media-xac-nhan-dat-lich--upload",
+      });
+
+      if (previewEmpty) previewEmpty.hidden = items.length > 0;
+      previewGrid.hidden = !items.length;
+      return;
+    }
+
     const previewId = input.getAttribute("data-xem-truoc-tep");
     const preview = previewId ? scope.querySelector(`#${previewId}`) : null;
     if (!preview) return;
@@ -242,6 +296,61 @@
     if (preview.tagName === "VIDEO") {
       preview.load();
     }
+  }
+
+  // Gom toàn bộ file từ nhiều input để dùng chung cho preview hoặc màn xác nhận.
+  function collectFileItemsFromInputs(scope, selector) {
+    const items = [];
+    scope.querySelectorAll(selector).forEach((input) => {
+      Array.from(input.files || []).forEach((file) => {
+        items.push({
+          file,
+          kind: file.type.startsWith("video/") ? "video" : "image",
+        });
+      });
+    });
+    return items;
+  }
+
+  // Render lưới media thống nhất cho cả preview tại chỗ và preview ở bước xác nhận.
+  function renderMediaPreviewGrid(grid, items, options = {}) {
+    if (!grid) return;
+
+    const {
+      videoControls = true,
+      mutedVideo = false,
+      cardClassName = "the-media-xac-nhan-dat-lich",
+    } = options;
+
+    revokePreviewUrlsIn(grid);
+    grid.innerHTML = "";
+
+    if (!Array.isArray(items) || !items.length) {
+      grid.hidden = true;
+      return;
+    }
+
+    grid.hidden = false;
+    grid.innerHTML = items
+      .map(({ file, kind }, index) => {
+        const objectUrl = window.URL.createObjectURL(file);
+        const escapedName = core.escapeHtml(file.name);
+        const media =
+          kind === "video"
+            ? `<video ${videoControls ? "controls " : ""}${mutedVideo ? "muted playsinline " : ""}preload="metadata" src="${objectUrl}" data-object-url="${objectUrl}"></video>`
+            : `<img src="${objectUrl}" alt="${escapedName}" data-object-url="${objectUrl}" />`;
+
+        return `
+          <article class="${cardClassName}">
+            ${media}
+            <div class="meta-media-xac-nhan-dat-lich">
+              <strong>${escapedName}</strong>
+              <span>${kind === "video" ? "Video" : "Ảnh"} đính kèm ${index + 1}</span>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
   }
 
   function updateSpecialItemField(scope) {
@@ -501,6 +610,7 @@
     dateInput.min = getTodayDateString();
   }
 
+  // Tự suy ra trạng thái thời tiết theo ngày, khung giờ và vị trí người dùng đã chọn.
   async function refreshBookingWeather(scope) {
     if (!scope.querySelector(".form-dat-lich")) return;
 
@@ -1501,6 +1611,79 @@
     }
   }
 
+  function getBookingVehicleConfig(serviceValue) {
+    return bookingVehicleOptions[normalizeService(serviceValue)] || null;
+  }
+
+  function resolveBookingVehicleEntry(scope, serviceValue, vehicleEntries) {
+    const select = queryFirst(scope, [
+      "#loai-xe-dat-lich",
+      "select[name='loai_xe']",
+      "[data-truong-loai-xe-dat-lich]",
+    ]);
+    const entries = Array.isArray(vehicleEntries) ? vehicleEntries : [];
+    const currentValue = String(select?.value || "").trim();
+    const currentEntry = entries.find(
+      (item) => String(item?.slug || "").trim() === currentValue,
+    );
+
+    if (currentEntry) {
+      return currentEntry;
+    }
+
+    const config = getBookingVehicleConfig(serviceValue);
+    const fallbackValue =
+      config?.defaultValue ||
+      String(entries[0]?.slug || "").trim();
+    const fallbackEntry = entries.find(
+      (item) => String(item?.slug || "").trim() === fallbackValue,
+    );
+
+    if (select && fallbackValue) {
+      const optionExists = Array.from(select.options).some(
+        (option) => String(option.value || "").trim() === fallbackValue,
+      );
+
+      if (!optionExists && config) {
+        syncBookingVehicleOptions(scope, serviceValue);
+      }
+
+      const hasResolvedOption = Array.from(select.options).some(
+        (option) => String(option.value || "").trim() === fallbackValue,
+      );
+
+      if (!hasResolvedOption) {
+        const option = document.createElement("option");
+        option.value = fallbackValue;
+        option.textContent =
+          config?.options.find((item) => item.value === fallbackValue)?.label ||
+          fallbackEntry?.ten_hien_thi ||
+          fallbackValue;
+        select.appendChild(option);
+      }
+
+      select.value = fallbackValue;
+    }
+
+    return fallbackEntry || null;
+  }
+
+  function getBookingVehicleLabel(scope, serviceValue) {
+    const select = queryFirst(scope, [
+      "#loai-xe-dat-lich",
+      "select[name='loai_xe']",
+      "[data-truong-loai-xe-dat-lich]",
+    ]);
+    const selectedLabel = getSelectedLabel(select);
+    if (selectedLabel) return selectedLabel;
+
+    const config = getBookingVehicleConfig(serviceValue);
+    return (
+      config?.options.find((item) => item.value === config.defaultValue)?.label ||
+      "Chưa chọn"
+    );
+  }
+
   function syncBookingPricingTimeSlot(scope) {
     const timeSelect = scope.querySelector("#khung-gio-dat-lich");
     const hiddenInput = scope.querySelector("[data-khung-gio-tinh-gia]");
@@ -1657,6 +1840,9 @@
       const dienTich = String(
         scope.querySelector("#dien-tich-nha-dat-lich")?.value || "",
       ).trim();
+      const tongTheTich = String(
+        scope.querySelector("#tong-the-tich-nha-dat-lich")?.value || "",
+      ).trim();
       const soPhong = String(
         scope.querySelector("#so-phong-dat-lich")?.value || "",
       ).trim();
@@ -1677,6 +1863,7 @@
       return joinSurveyParts(
         [
           dienTich,
+          tongTheTich && `${tongTheTich} m3`,
           soPhong && `${soPhong} phòng`,
           soNhanCong && `${soNhanCong} nhân công`,
           soGoiDongGoi && `${soGoiDongGoi} gói đóng gói`,
@@ -1691,8 +1878,17 @@
       const soChoNgoi = String(
         scope.querySelector("#so-cho-ngoi-dat-lich")?.value || "",
       ).trim();
+      const tongKhoiLuong = String(
+        scope.querySelector("#tong-khoi-luong-van-phong-dat-lich")?.value || "",
+      ).trim();
+      const tongTheTich = String(
+        scope.querySelector("#tong-the-tich-van-phong-dat-lich")?.value || "",
+      ).trim();
       const soPhongBan = String(
         scope.querySelector("#so-phong-ban-dat-lich")?.value || "",
+      ).trim();
+      const soNhanCong = String(
+        scope.querySelector("#so-nhan-cong-van-phong-dat-lich")?.value || "",
       ).trim();
       const soThungHoSo = String(
         scope.querySelector("#so-thung-ho-so-dat-lich")?.value || "",
@@ -1714,7 +1910,10 @@
       return joinSurveyParts(
         [
           soChoNgoi && `${soChoNgoi} chỗ ngồi`,
+          tongKhoiLuong && `${tongKhoiLuong} kg`,
+          tongTheTich && `${tongTheTich} m3`,
           soPhongBan && `${soPhongBan} phòng ban`,
+          soNhanCong && `${soNhanCong} nhân công`,
           soThungHoSo && `${soThungHoSo} thùng hồ sơ`,
           soBoMayIt && `${soBoMayIt} bộ máy IT`,
           soMonNoiThat && `${soMonNoiThat} món nội thất`,
@@ -1728,6 +1927,9 @@
     if (normalized === "chuyen_kho_bai") {
       const khoiLuong = String(
         scope.querySelector("#khoi-luong-kho-dat-lich")?.value || "",
+      ).trim();
+      const tongTheTich = String(
+        scope.querySelector("#tong-the-tich-kho-dat-lich")?.value || "",
       ).trim();
       const loaiHang = String(
         scope.querySelector("#loai-hang-dat-lich")?.value || "",
@@ -1755,6 +1957,7 @@
       return joinSurveyParts(
         [
           khoiLuong,
+          tongTheTich && `${tongTheTich} m3`,
           loaiHang,
           soPallet && `${soPallet} pallet`,
           soCaXeNang && `${soCaXeNang} ca xe nâng`,
@@ -1793,61 +1996,61 @@
   }
 
   function formatBookingConditionDetail(scope) {
-    const labels = getCheckedLabels(
-      scope,
+    const labels = getCheckedLabelsFromSelectors(scope, [
       "[data-nhom-chip='dieu_kien_dat_lich'] input[type='checkbox']",
-    );
+      "[data-nhom-chip='dieu_kien_tiep_can'] input[type='checkbox']",
+      "[data-booking-condition-group] input[type='checkbox']",
+    ]);
     return labels.length ? labels.join(", ") : "Chưa có";
   }
 
+  function getBookingNoteValue(scope) {
+    const noteField = queryFirst(scope, [
+      "#ghi-chu-dat-lich",
+      "#ghi-chu-booking",
+      "#ghi-chu",
+      "textarea[name='ghi_chu']",
+      "[data-truong-ghi-chu-dat-lich]",
+    ]);
+    return String(noteField?.value || "").trim();
+  }
+
+  function getBookingSummaryTarget(scope, key) {
+    const summaryBox = scope.querySelector("[data-tom-tat-dat-lich]");
+    if (!summaryBox) return null;
+
+    return queryFirst(summaryBox, [
+      `[data-tom-tat-dat-lich='${key}']`,
+      `[data-summary-booking='${key}']`,
+      `[data-summary='${key}']`,
+    ]);
+  }
+
+  // Tạo lại danh sách media ở bước xác nhận từ các file người dùng đã tải lên.
   function renderBookingMediaReview(scope) {
     const emptyState = scope.querySelector("[data-media-dat-lich-rong]");
     const grid = scope.querySelector("[data-media-dat-lich-luoi]");
     if (!emptyState || !grid) return;
 
-    revokePreviewUrlsIn(grid);
-    grid.innerHTML = "";
-
-    const items = [];
-    scope
-      .querySelectorAll("#tep-anh-dat-lich, #tep-video-dat-lich")
-      .forEach((input) => {
-        Array.from(input.files || []).forEach((file) => {
-          items.push({
-            file,
-            kind: file.type.startsWith("video/") ? "video" : "image",
-          });
-        });
-      });
+    const items = collectFileItemsFromInputs(
+      scope,
+      "#tep-anh-dat-lich, #tep-video-dat-lich",
+    );
 
     if (!items.length) {
       emptyState.hidden = false;
       grid.hidden = true;
+      revokePreviewUrlsIn(grid);
+      grid.innerHTML = "";
       return;
     }
 
     emptyState.hidden = true;
-    grid.hidden = false;
-
-    grid.innerHTML = items
-      .map(({ file, kind }, index) => {
-        const objectUrl = window.URL.createObjectURL(file);
-        const media =
-          kind === "video"
-            ? `<video controls preload="metadata" src="${objectUrl}" data-object-url="${objectUrl}"></video>`
-            : `<img src="${objectUrl}" alt="${file.name}" data-object-url="${objectUrl}" />`;
-
-        return `
-          <article class="the-media-xac-nhan-dat-lich">
-            ${media}
-            <div class="meta-media-xac-nhan-dat-lich">
-              <strong>${file.name}</strong>
-              <span>${kind === "video" ? "Video" : "Ảnh"} đính kèm ${index + 1}</span>
-            </div>
-          </article>
-        `;
-      })
-      .join("");
+    renderMediaPreviewGrid(grid, items, {
+      videoControls: true,
+      mutedVideo: false,
+      cardClassName: "the-media-xac-nhan-dat-lich",
+    });
   }
 
   function parseBookingNumber(rawValue) {
@@ -1875,6 +2078,89 @@
   function getBookingNumericValue(scope, selector) {
     const value = parseBookingNumber(scope.querySelector(selector)?.value || "");
     return value > 0 ? value : 0;
+  }
+
+  function getBookingWeightValue(scope, normalizedService) {
+    const selectorMap = {
+      chuyen_kho_bai: "#khoi-luong-kho-dat-lich",
+      chuyen_nha: "#tong-khoi-luong-nha-dat-lich",
+      chuyen_van_phong: "#tong-khoi-luong-van-phong-dat-lich",
+    };
+
+    const selector = selectorMap[normalizedService];
+    return selector ? getBookingNumericValue(scope, selector) : 0;
+  }
+
+  function getBookingVolumeValue(scope, normalizedService) {
+    const selectorMap = {
+      chuyen_kho_bai: "#tong-the-tich-kho-dat-lich",
+      chuyen_nha: "#tong-the-tich-nha-dat-lich",
+      chuyen_van_phong: "#tong-the-tich-van-phong-dat-lich",
+    };
+
+    const selector = selectorMap[normalizedService];
+    return selector ? getBookingNumericValue(scope, selector) : 0;
+  }
+
+  function formatBookingVolumeValue(volume) {
+    return Number(volume || 0).toLocaleString("vi-VN", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+  }
+
+  function resolveBookingTripCount(scope, normalizedService, vehicleEntry) {
+    const totalWeightKg = getBookingWeightValue(scope, normalizedService);
+    const totalVolumeM3 = getBookingVolumeValue(scope, normalizedService);
+    const weightTrips =
+      totalWeightKg > 0 && Number(vehicleEntry?.tai_trong_kg || 0) > 0
+        ? Math.max(1, Math.ceil(totalWeightKg / Number(vehicleEntry.tai_trong_kg || 0)))
+        : 0;
+    const volumeTrips =
+      totalVolumeM3 > 0 && Number(vehicleEntry?.dung_tich_m3 || 0) > 0
+        ? Math.max(1, Math.ceil(totalVolumeM3 / Number(vehicleEntry.dung_tich_m3 || 0)))
+        : 0;
+    const tripCount = Math.max(weightTrips, volumeTrips, 1);
+    const notes = [];
+
+    if (weightTrips > 0 && volumeTrips > 0) {
+      if (tripCount > 1) {
+        notes.push(
+          `Tổng ${Math.round(totalWeightKg)}kg và ${formatBookingVolumeValue(totalVolumeM3)}m3 nên hệ thống tính ${tripCount} chuyến theo giá trị lớn hơn giữa tải trọng và dung tích xe.`,
+        );
+      } else {
+        notes.push(
+          "Số chuyến đang được đối chiếu theo cả tải trọng và dung tích xe, hiện chốt ở 1 chuyến.",
+        );
+      }
+    } else if (weightTrips > 0) {
+      if (tripCount > 1) {
+        notes.push(
+          `Tổng ${Math.round(totalWeightKg)}kg nên hệ thống tạm tính ${tripCount} chuyến theo tải trọng xe.`,
+        );
+      }
+
+      if (totalVolumeM3 > 0 && Number(vehicleEntry?.dung_tich_m3 || 0) <= 0) {
+        notes.push(
+          "Đã có thể tích hàng hóa nhưng xe chưa có dung tích chuẩn hóa, nên số chuyến hiện vẫn tạm tính theo tải trọng.",
+        );
+      }
+    } else if (volumeTrips > 0) {
+      if (tripCount > 1) {
+        notes.push(
+          `Tổng ${formatBookingVolumeValue(totalVolumeM3)}m3 nên hệ thống tính ${tripCount} chuyến theo dung tích xe.`,
+        );
+      }
+    }
+
+    return {
+      tripCount,
+      totalWeightKg,
+      totalVolumeM3,
+      weightTrips,
+      volumeTrips,
+      notes,
+    };
   }
 
   function isBookingChecked(scope, selector) {
@@ -1985,12 +2271,11 @@
 
   function buildBookingPricingState(scope, serviceData) {
     const normalizedService = normalizeService(serviceData?.id || "");
-    const vehicleValue = String(
-      scope.querySelector("#loai-xe-dat-lich")?.value || "",
-    ).trim();
     const vehicleEntries = core.getPricingVehicleEntries(serviceData);
-    const vehicleEntry = vehicleEntries.find(
-      (item) => String(item?.slug || "").trim() === vehicleValue,
+    const vehicleEntry = resolveBookingVehicleEntry(
+      scope,
+      normalizedService,
+      vehicleEntries,
     );
     const calculationItems = core.getPricingCalculationItems(serviceData);
     const calcItemMap = new Map(
@@ -2071,18 +2356,13 @@
     if (!vehicleEntry) {
       notes.push("Chọn loại xe để khóa cước cơ bản và hoàn tất giá chốt.");
     } else {
-      let tripCount = 1;
-      const tripNotes = [];
-
-      if (normalizedService === "chuyen_kho_bai") {
-        const totalWeightKg = getBookingNumericValue(scope, "#khoi-luong-kho-dat-lich");
-        if (totalWeightKg > 0 && vehicleEntry.tai_trong_kg > 0) {
-          tripCount = Math.max(1, Math.ceil(totalWeightKg / vehicleEntry.tai_trong_kg));
-          if (tripCount > 1) {
-            tripNotes.push(`Tổng ${Math.round(totalWeightKg)}kg nên hệ thống tính ${tripCount} chuyến theo tải trọng xe.`);
-          }
-        }
-      }
+      const tripEstimate = resolveBookingTripCount(
+        scope,
+        normalizedService,
+        vehicleEntry,
+      );
+      const tripCount = tripEstimate.tripCount;
+      const tripNotes = [...tripEstimate.notes];
 
       const baseAmount = Number(vehicleEntry.gia_co_ban || 0) * tripCount;
       addChargeLine({
@@ -2162,6 +2442,14 @@
     }
 
     if (normalizedService === "chuyen_van_phong") {
+      addCalculationCharge({
+        calcSlug: "nhan_cong_van_phong",
+        quantity: getBookingNumericValue(
+          scope,
+          "#so-nhan-cong-van-phong-dat-lich",
+        ),
+      });
+
       addCalculationCharge({
         calcSlug: "dong_goi_ho_so",
         quantity: getBookingNumericValue(scope, "#so-thung-ho-so-dat-lich"),
@@ -2314,13 +2602,21 @@
       });
     }
 
+    const floorDi = getBookingNumericValue(scope, "#so-tang-diem-di-dat-lich");
+    const floorDen = getBookingNumericValue(scope, "#so-tang-diem-den-dat-lich");
+    if (floorDi > 0 || floorDen > 0) {
+      notes.push(
+        `Ghi nhận điểm đi ${floorDi} tầng, điểm đến ${floorDen} tầng. Phụ phí lên xuống tầng (nếu có) sẽ được chốt sau khi khảo sát thực tế.`,
+      );
+    }
+
     const conditionLabels = getCheckedLabels(
       scope,
       "[data-nhom-chip='dieu_kien_dat_lich'] input[type='checkbox']",
     );
     if (conditionLabels.length) {
       notes.push(
-        `Điều kiện tiếp cận đã ghi nhận: ${conditionLabels.join(", ")}. Các checkbox này đang dùng để điều phối, chưa có dòng phí riêng trong bảng giá chốt.`,
+        `Điều kiện tiếp cận đã ghi nhận: ${conditionLabels.join(", ")}. Các yếu tố này có thể phát sinh phụ phí hẻm hoặc đẩy bộ sau khảo sát.`,
       );
     }
 
@@ -2613,11 +2909,11 @@
     const toInput = scope.querySelector("#dia-chi-den-dat-lich");
     const vehicleSelect = scope.querySelector("#loai-xe-dat-lich");
     const weatherSelect = scope.querySelector("#thoi-tiet-du-kien-dat-lich");
-    const noteInput = scope.querySelector("#ghi-chu-dat-lich");
     const pricingTimeInput = scope.querySelector("[data-khung-gio-tinh-gia]");
     const serviceValue = serviceSelect?.value || "";
     const fromText = String(fromInput?.value || "").trim();
     const toText = String(toInput?.value || "").trim();
+    const noteText = getBookingNoteValue(scope);
 
     const routeText =
       fromText && toText
@@ -2634,14 +2930,14 @@
       lo_trinh: routeText,
       lich_thuc_hien: formatBookingSchedule(scope),
       khoang_cach: formatBookingDistance(scope),
-      loai_xe: getSelectedLabel(vehicleSelect) || "Chưa chọn",
+      loai_xe: getBookingVehicleLabel(scope, serviceValue),
       khung_gio_tinh_gia:
         getBookingPricingTimeLabel(pricingTimeInput?.value || "") || "Chưa chọn",
       thoi_tiet: getSelectedLabel(weatherSelect) || "Chưa chọn",
       trien_khai: formatBookingDeploymentDetail(scope, serviceValue),
       dieu_kien: formatBookingConditionDetail(scope),
       chi_tiet: formatBookingServiceDetail(scope, serviceValue),
-      ghi_chu: String(noteInput?.value || "").trim() || "Chưa có",
+      ghi_chu: noteText || "Chưa có",
       tep_dinh_kem: `${countFiles(
         scope,
         "#tep-anh-dat-lich, #tep-video-dat-lich",
@@ -2649,7 +2945,7 @@
     };
 
     Object.entries(values).forEach(([key, value]) => {
-      const target = summaryBox.querySelector(`[data-tom-tat-dat-lich='${key}']`);
+      const target = getBookingSummaryTarget(scope, key);
       if (target) target.textContent = value;
     });
   }
@@ -2675,6 +2971,76 @@
     });
   }
 
+  function buildServiceContextHref(baseHref, serviceValue) {
+    const href = String(baseHref || "").trim();
+    if (!href) return "";
+
+    const [beforeHash, hashPart] = href.split("#");
+    const [pathPart, queryPart] = beforeHash.split("?");
+    const params = new URLSearchParams(queryPart || "");
+    const normalized = normalizeService(serviceValue);
+
+    if (normalized) {
+      params.set("dich-vu", normalized);
+    } else {
+      params.delete("dich-vu");
+    }
+
+    const query = params.toString();
+    return `${pathPart}${query ? `?${query}` : ""}${hashPart ? `#${hashPart}` : ""}`;
+  }
+
+  function syncServiceContextLinks(serviceValue) {
+    document.querySelectorAll("[data-giu-dich-vu]").forEach((link) => {
+      const baseHref =
+        link.getAttribute("data-base-href") ||
+        link.getAttribute("data-giu-dich-vu") ||
+        link.getAttribute("href") ||
+        "";
+      if (!baseHref) return;
+
+      if (!link.hasAttribute("data-base-href")) {
+        link.setAttribute("data-base-href", baseHref);
+      }
+
+      link.setAttribute("href", buildServiceContextHref(baseHref, serviceValue));
+    });
+  }
+
+  function isVisibleFormField(field) {
+    return !field.disabled && !field.hidden && !field.closest("[hidden]");
+  }
+
+  function normalizePhoneValue(value) {
+    return String(value || "").replace(/\s+/g, "").trim();
+  }
+
+  function isValidVietnamesePhone(value) {
+    return /^(0|\+84)[0-9]{9}$/.test(normalizePhoneValue(value));
+  }
+
+  function syncPhoneFieldValidity(scope) {
+    scope.querySelectorAll("input[type='tel']").forEach((field) => {
+      if (!isVisibleFormField(field)) {
+        field.setCustomValidity("");
+        return;
+      }
+
+      const value = String(field.value || "").trim();
+      if (!value) {
+        field.setCustomValidity("");
+        return;
+      }
+
+      field.setCustomValidity(
+        isValidVietnamesePhone(value)
+          ? ""
+          : "Số điện thoại không hợp lệ (cần đủ 10 số).",
+      );
+    });
+  }
+
+  // Đồng bộ toàn bộ UI phụ thuộc vào loại dịch vụ đang chọn: field, label, giá và summary.
   function applyServiceState(scope, serviceValue) {
     const normalized = normalizeService(serviceValue);
     const emptyPanel = scope.querySelector("[data-khoi-mac-dinh]");
@@ -2721,6 +3087,7 @@
     syncBookingPricingTimeSlot(scope);
     renderFormSummaries(scope);
     renderBookingPricing(scope);
+    syncServiceContextLinks(normalized);
 
     if (scope.__bookingMapState?.map) {
       const refreshMapLayout = function () {
@@ -2744,6 +3111,7 @@
       select.value = initialValue;
     }
 
+    syncServiceContextLinks(select.value);
     applyServiceState(scope, select.value);
     select.addEventListener("change", function () {
       applyServiceState(scope, select.value);
@@ -2809,16 +3177,19 @@
     }
 
     scope.addEventListener("input", function () {
+      syncPhoneFieldValidity(scope);
       renderSurveyMapPreview(scope);
       renderFormSummaries(scope);
     });
 
     scope.addEventListener("change", function () {
+      syncPhoneFieldValidity(scope);
       updateSpecialItemField(scope);
       renderSurveyMapPreview(scope);
       renderFormSummaries(scope);
     });
 
+    syncPhoneFieldValidity(scope);
     updateSpecialItemField(scope);
     initSurveyMap(scope);
     renderSurveyMapPreview(scope);
@@ -2834,50 +3205,97 @@
     return Number(activePanel?.getAttribute("data-booking-step") || 1);
   }
 
-  function isBookingFieldVisible(field) {
-    return !field.disabled && !field.hidden && !field.closest("[hidden]");
-  }
-
+  // Kiểm tra dữ liệu của từng bước trước khi cho phép chuyển sang bước tiếp theo.
   function validateBookingStep(scope, stepNumber) {
     const panel = scope.querySelector(`[data-booking-step="${stepNumber}"]`);
     if (!panel) return true;
 
+    function detachErrorId(target, errorId) {
+      if (!target || !errorId) return;
+      const current = String(target.getAttribute("aria-describedby") || "")
+        .split(/\s+/)
+        .filter(Boolean)
+        .filter((token) => token !== errorId);
+      if (current.length) {
+        target.setAttribute("aria-describedby", current.join(" "));
+      } else {
+        target.removeAttribute("aria-describedby");
+      }
+    }
+
+    function clearErrorState(target) {
+      if (!target) return;
+      target.classList.remove("input-error");
+      target.removeAttribute("aria-invalid");
+      const errorId = target.getAttribute("data-error-id");
+      if (errorId) {
+        detachErrorId(target, errorId);
+        target.removeAttribute("data-error-id");
+      }
+    }
+
     // Clear previous errors
-    panel.querySelectorAll('.input-error').forEach((el) => el.classList.remove('input-error'));
-    panel.querySelectorAll('.field-error-msg').forEach((el) => el.remove());
+    panel.querySelectorAll(".input-error").forEach((el) => clearErrorState(el));
+    panel.querySelectorAll(".field-error-msg").forEach((el) => el.remove());
 
     let isValid = true;
     let firstErrorField = null;
 
     const markError = (field, message) => {
+      if (!field) return;
       isValid = false;
-      field.classList.add('input-error');
-      
-      const group = field.closest('.nhom-truong') || field.parentElement;
-      let errorEl = group.querySelector('.field-error-msg');
+      field.classList.add("input-error");
+      field.setAttribute("aria-invalid", "true");
+
+      const group = field.closest(".nhom-truong") || field.parentElement;
+      let errorEl = group.querySelector(".field-error-msg");
       if (!errorEl) {
-        errorEl = document.createElement('span');
-        errorEl.className = 'field-error-msg';
-        // Thêm thông báo ngay dưới thẻ input/select
-        field.insertAdjacentElement('afterend', errorEl);
+        errorEl = document.createElement("span");
+        errorEl.className = "field-error-msg";
+        errorEl.setAttribute("role", "alert");
+        errorEl.setAttribute("aria-live", "assertive");
+        field.insertAdjacentElement("afterend", errorEl);
       }
-      errorEl.textContent = '❌ Lỗi: ' + message;
-      
+      if (!errorEl.id) {
+        errorEl.id =
+          field.id
+            ? `${field.id}-error`
+            : `booking-field-error-${stepNumber}-${group.children.length}`;
+      }
+      errorEl.textContent = "Lỗi: " + message;
+      field.setAttribute("data-error-id", errorEl.id);
+
+      const describedBy = String(field.getAttribute("aria-describedby") || "")
+        .split(/\s+/)
+        .filter(Boolean);
+      if (!describedBy.includes(errorEl.id)) {
+        describedBy.push(errorEl.id);
+        field.setAttribute("aria-describedby", describedBy.join(" "));
+      }
+
       if (!firstErrorField) firstErrorField = field;
     };
 
     const markMapError = (message) => {
       isValid = false;
-      const mapBtn = panel.querySelector('.nut-ban-do-ui-vi-tri');
+      const mapBtn = panel.querySelector(".nut-ban-do-ui-vi-tri");
       if (mapBtn) {
-        mapBtn.classList.add('input-error');
-        let errorEl = mapBtn.parentElement.querySelector('.field-error-msg');
+        mapBtn.classList.add("input-error");
+        mapBtn.setAttribute("aria-invalid", "true");
+        let errorEl = mapBtn.parentElement.querySelector(".field-error-msg");
         if (!errorEl) {
-          errorEl = document.createElement('span');
-          errorEl.className = 'field-error-msg';
-          mapBtn.insertAdjacentElement('afterend', errorEl);
+          errorEl = document.createElement("span");
+          errorEl.className = "field-error-msg";
+          errorEl.setAttribute("role", "alert");
+          errorEl.setAttribute("aria-live", "assertive");
+          mapBtn.insertAdjacentElement("afterend", errorEl);
         }
-        errorEl.textContent = '❌ Lỗi: ' + message;
+        if (!errorEl.id) {
+          errorEl.id = "booking-map-error";
+        }
+        errorEl.textContent = "Lỗi: " + message;
+        mapBtn.setAttribute("data-error-id", errorEl.id);
+        mapBtn.setAttribute("aria-describedby", errorEl.id);
         if (!firstErrorField) firstErrorField = mapBtn;
       }
     };
@@ -2885,14 +3303,13 @@
     // 1. Kiểm tra trường bắt buộc (required) cơ bản
     const fields = panel.querySelectorAll("input, select, textarea");
     for (const field of fields) {
-      if (!isBookingFieldVisible(field)) continue;
+      if (!isVisibleFormField(field)) continue;
       
       if (field.hasAttribute("required") && !field.value.trim()) {
         const labelText = field.closest('.nhom-truong')?.querySelector('.nhan-truong')?.textContent.replace('*', '').trim() || 'Trường này';
         markError(field, `Vui lòng nhập/chọn ${labelText.toLowerCase()}`);
       } else if (field.type === "tel" && field.value.trim()) {
-        const phoneRegex = /^(0|\+84)[0-9]{9}$/;
-        if (!phoneRegex.test(field.value.replace(/\s+/g, ''))) {
+        if (!isValidVietnamesePhone(field.value)) {
           markError(field, "Số điện thoại không hợp lệ (cần đủ 10 số)");
         }
       }
@@ -2915,7 +3332,7 @@
       }
     }
 
-    if (stepNumber === 3) {
+    if (stepNumber === 2) {
       const dateField = panel.querySelector('#ngay-thuc-hien-dat-lich');
       if (dateField && dateField.value) {
         const selectedDate = new Date(dateField.value);
@@ -2940,21 +3357,33 @@
     return isValid;
   }
 
+  // Cập nhật trạng thái stepper và nút submit cuối theo bước đang active.
   function updateBookingStepIndicator(scope, currentStep) {
     scope
       .querySelectorAll("[data-booking-step-indicator-item]")
       .forEach((item) => {
         const step = Number(item.getAttribute("data-booking-step-indicator-item") || 0);
+        const stepLabel = String(item.getAttribute("data-booking-step-label") || "").trim();
         item.classList.toggle("is-active", step === currentStep);
         item.classList.toggle("is-completed", step < currentStep);
+        if (step === currentStep) {
+          item.setAttribute("aria-current", "step");
+        } else {
+          item.removeAttribute("aria-current");
+        }
+        item.setAttribute(
+          "aria-label",
+          stepLabel ? `Bước ${step}: ${stepLabel}` : `Bước ${step}`,
+        );
       });
 
     const finalActions = scope.querySelector("[data-booking-final-actions]");
     if (finalActions) {
-      finalActions.hidden = currentStep !== 6;
+      finalActions.hidden = currentStep !== 5;
     }
   }
 
+  // Chuyển bước trong wizard, kèm validate các bước trước nếu người dùng đang đi tới.
   function goToBookingStep(scope, targetStep, options = {}) {
     const panels = getBookingStepPanels(scope);
     if (!panels.length) return;
@@ -2978,13 +3407,13 @@
 
     updateBookingStepIndicator(scope, nextStep);
 
-    if (nextStep === 6) {
+    if (nextStep === 5) {
       renderFormSummaries(scope);
       renderBookingMediaReview(scope);
       renderBookingPricing(scope);
     }
 
-    if ((nextStep === 1 || nextStep === 2) && scope.__bookingMapState?.map) {
+    if (nextStep === 1 && scope.__bookingMapState?.map) {
       const refreshMapLayout = function () {
         scope.__bookingMapState.map.invalidateSize();
         scope.__bookingMapState.updateMapBounds?.();
@@ -2997,6 +3426,7 @@
     activePanel?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  // Gắn sự kiện cho nút next/prev và stepper để kích hoạt flow 5 bước của form đặt lịch.
   function initBookingStepWizard(scope) {
     if (!scope.querySelector("[data-booking-step]")) return;
 
@@ -3035,17 +3465,33 @@
     goToBookingStep(scope, 1, { force: true });
   }
 
+  // Khởi tạo toàn bộ hành vi động của form đặt lịch: map, pricing, summary, media và wizard.
   function initBookingFormUi(scope) {
     if (!scope.querySelector(".form-dat-lich")) return;
 
     scope.addEventListener("input", function (event) {
       if (event.target && event.target.classList.contains("input-error")) {
         event.target.classList.remove("input-error");
+        event.target.removeAttribute("aria-invalid");
+        const errorId = event.target.getAttribute("data-error-id");
+        if (errorId) {
+          const describedBy = String(event.target.getAttribute("aria-describedby") || "")
+            .split(/\s+/)
+            .filter(Boolean)
+            .filter((token) => token !== errorId);
+          if (describedBy.length) {
+            event.target.setAttribute("aria-describedby", describedBy.join(" "));
+          } else {
+            event.target.removeAttribute("aria-describedby");
+          }
+          event.target.removeAttribute("data-error-id");
+        }
         const group = event.target.closest('.nhom-truong') || event.target.parentElement;
         const msg = group?.querySelector('.field-error-msg');
         if (msg) msg.remove();
       }
 
+      syncPhoneFieldValidity(scope);
       syncBookingPricingTimeSlot(scope);
       renderBookingMapPreview(scope);
       renderFormSummaries(scope);
@@ -3057,11 +3503,26 @@
     scope.addEventListener("change", function (event) {
       if (event.target && event.target.classList.contains("input-error")) {
         event.target.classList.remove("input-error");
+        event.target.removeAttribute("aria-invalid");
+        const errorId = event.target.getAttribute("data-error-id");
+        if (errorId) {
+          const describedBy = String(event.target.getAttribute("aria-describedby") || "")
+            .split(/\s+/)
+            .filter(Boolean)
+            .filter((token) => token !== errorId);
+          if (describedBy.length) {
+            event.target.setAttribute("aria-describedby", describedBy.join(" "));
+          } else {
+            event.target.removeAttribute("aria-describedby");
+          }
+          event.target.removeAttribute("data-error-id");
+        }
         const group = event.target.closest('.nhom-truong') || event.target.parentElement;
         const msg = group?.querySelector('.field-error-msg');
         if (msg) msg.remove();
       }
 
+      syncPhoneFieldValidity(scope);
       syncBookingPricingTimeSlot(scope);
       renderBookingMapPreview(scope);
       renderFormSummaries(scope);
@@ -3071,6 +3532,7 @@
     });
 
     initBookingMap(scope);
+    syncPhoneFieldValidity(scope);
     syncBookingExecutionDateLimits(scope);
     syncBookingVehicleOptions(
       scope,
@@ -3085,6 +3547,7 @@
     initBookingStepWizard(scope);
   }
 
+  // Chặn submit thật ở bản demo hiện tại và hiển thị trạng thái hoàn thiện của biểu mẫu.
   function initFormNotice(scope, formType) {
     const form = scope.querySelector("form[data-loai-bieu-mau]");
     const notice = scope.querySelector("[data-thong-bao-bieu-mau]");
@@ -3093,6 +3556,7 @@
     form.addEventListener("submit", function (event) {
       event.preventDefault();
 
+      syncPhoneFieldValidity(scope);
       if (!form.reportValidity()) return;
 
       if (formType === "khao-sat") {

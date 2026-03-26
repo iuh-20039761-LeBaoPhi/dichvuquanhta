@@ -21,6 +21,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link href="public/asset/css/styles.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
+    />
     <script src="/ga.js"></script>
     <style>
       .booking-standalone .hero .hero-text h1 {
@@ -445,16 +449,17 @@
           <li><a href="index.html" class="nav-link">Trang chủ</a></li>
           <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
           <li><a href="dich-vu.html" class="nav-link">Dịch vụ</a></li>
-          <li><a href="index.html#process" class="nav-link">Quy trình</a></li>
           <li><a href="cam-nang.html" class="nav-link">Cẩm nang</a></li>
           <li><a href="don-dat.html" class="nav-link">Đơn đặt</a></li>
           <li>
             <a
               class="nav-link"
-              data-bs-toggle="modal"
-              data-bs-target="#bookingModal"
+              href="dat-dich-vu.html"
               >Đặt dịch vụ</a
             >
+          </li>
+          <li>
+            <a href="dang-nhap.html" class="nav-link login-btn">Đăng nhập</a>
           </li>
         </ul>
         <button class="menu-toggle" id="menuToggle" aria-label="Menu">
@@ -1081,28 +1086,6 @@
           </p>
         </div>
     </footer>
-     <!-- Toast -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-      <div
-        id="successToast"
-        class="toast align-items-center text-bg-success border-0"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-      >
-        <div class="d-flex">
-          <div class="toast-body">
-            Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.
-          </div>
-          <button
-            type="button"
-            class="btn-close btn-close-white me-2 m-auto"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-      </div>
-    </div>
     <script
       type="text/javascript"
       src="public/asset/js/bootstrap.bundle.min.js"
@@ -1110,6 +1093,10 @@
     <script
       type="text/javascript"
       src="public/asset/js/jquery-3.7.1.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"
     ></script>
     <script type="text/javascript" src="public/asset/js/database.js"></script>
     <script type="text/javascript" src="public/asset/js/script.js"></script>
