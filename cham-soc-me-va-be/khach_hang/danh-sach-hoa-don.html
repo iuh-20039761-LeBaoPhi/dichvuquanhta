@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khách Hàng Dashboard - Hệ Thống Quản Lý Dịch Vụ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-danger-subtle">
+    <div class="modal fade" id="dashboardModal" tabindex="-1" aria-labelledby="dashboardModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow bg-white">
+                <div class="modal-header border-0 bg-danger-subtle px-3 py-3">
+                    <h4 class="mb-0 text-danger-emphasis fw-semibold" id="dashboardModalLabel"><i class="bi bi-card-list me-2"></i>Danh Sách Hóa Đơn Đã Đặt</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
+                        <h5 class="mb-0">Hóa Đơn Của Tôi</h5>
+                        <a href="services.html" class="btn btn-danger btn-sm"><i class="bi bi-calendar-plus me-2"></i>Đặt Lịch Dịch Vụ</a>
+                    </div>
+
+                    <div class="card border-danger-subtle shadow-sm">
+                        <div class="card-body p-2 p-md-3">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0" style="font-size: 14px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Dịch vụ</th>
+                                            <th class="d-none d-md-table-cell">Ngày bắt đầu</th>
+                                            <th>Trạng thái</th>
+                                            <th class="d-none d-md-table-cell">Nhân viên</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoicesTable">
+                                        <tr><td colspan="5" class="text-center">Đang tải...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="employeeDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-danger-subtle border-0">
+                    <h5 class="modal-title text-danger-emphasis"><i class="bi bi-person-badge-fill me-2"></i>Thông Tin Nhân Viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="employeeDetailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="uploadMediaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger-subtle border-0">
+                    <h5 class="modal-title text-danger-emphasis"><i class="bi bi-cloud-upload me-2"></i>Upload Hình Ảnh / Video</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadMediaForm">
+                        <input type="hidden" id="uploadInvoiceId" name="hoa_don_id"> <div class="mb-3">
+                            <label class="form-label">Chọn file (Hình ảnh hoặc Video)</label>
+                            <input type="file" class="form-control" name="file" accept="image/*,video/*" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" name="mo_ta" rows="3" placeholder="Mô tả về hình ảnh/video..."></textarea> </div>
+                        <button type="submit" class="btn btn-danger w-100">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="invoiceDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-danger-subtle border-0">
+                    <h5 class="modal-title text-danger-emphasis"><i class="bi bi-file-text-fill me-2"></i>Chi Tiết Hóa Đơn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="invoiceDetailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../JS/dashboard-modal-core.js"></script>
+</body>
+</html>

@@ -3,6 +3,7 @@
 
   const core = window.GiaoHangNhanhCore || {};
   const apiUrl = "../../khach-hang-giaohang/api/customer_portal.php";
+  const mockDataUrl = "../assets/data/mock-tracking-orders.json";
   const routes = {
     login: "../../dang-nhap.html",
     dashboard: "dashboard.html",
@@ -14,6 +15,58 @@
         ? core.toApiUrl("logout.php")
         : "../logout.php",
   };
+
+  let mockDatasetPromise = null;
+
+  function isMockMode() {
+    return new URLSearchParams(window.location.search).get("mock") === "1";
+  }
+
+  async function loadMockDataset() {
+    if (!mockDatasetPromise) {
+      const mockUrl = new URL(mockDataUrl, window.location.href);
+      mockDatasetPromise = fetch(mockUrl.toString(), {
+        credentials: "same-origin",
+      }).then(async (response) => {
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data) {
+          throw new Error("Không đọc được dữ liệu mock để test chi tiết đơn.");
+        }
+        return data;
+      });
+    }
+
+    return mockDatasetPromise;
+  }
+
+  function findMockOrderRecord(dataset, orderId) {
+    const items = Array.isArray(dataset?.tracking_orders)
+      ? dataset.tracking_orders
+      : [];
+    const normalizedOrderId = String(orderId || "").trim().toUpperCase();
+
+    return (
+      items.find((item) => {
+        const trackingCode = String(item?.tracking?.order_code || "")
+          .trim()
+          .toUpperCase();
+        const detailId = String(
+          item?.order?.id ||
+            item?.order?.order_code ||
+            item?.detail?.order?.id ||
+            item?.detail?.order?.order_code ||
+            "",
+        )
+          .trim()
+          .toUpperCase();
+
+        return (
+          normalizedOrderId &&
+          (normalizedOrderId === trackingCode || normalizedOrderId === detailId)
+        );
+      }) || null
+    );
+  }
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -54,6 +107,218 @@
       month: "2-digit",
       year: "numeric",
     });
+  }
+
+  function getServiceLabel(serviceType, fallbackLabel) {
+    if (fallbackLabel) return fallbackLabel;
+    const normalized = String(serviceType || "").toLowerCase();
+    if (normalized === "instant") return "Giao ngay lập tức";
+    if (normalized === "express") return "Giao hàng hỏa tốc";
+    if (normalized === "fast") return "Giao hàng nhanh";
+    if (normalized === "standard") return "Giao hàng tiêu chuẩn";
+    return "--";
+  }
+
+  function getPaymentMethodLabel(paymentMethod) {
+    const normalized = String(paymentMethod || "").toLowerCase();
+    return ["bank", "bank_transfer", "transfer", "chuyen_khoan"].includes(
+      normalized,
+    )
+      ? "Chuyển khoản"
+      : "Tiền mặt";
+  }
+
+  function getFeePayerLabel(feePayer) {
+    return String(feePayer || "").toLowerCase() === "nhan"
+      ? "Người nhận"
+      : "Người gửi";
+  }
+
+  function getStatusLabel(status) {
+    const normalized = String(status || "").toLowerCase();
+    if (
+      normalized === "completed" ||
+      normalized === "delivered" ||
+      normalized === "success"
+    ) {
+      return "Hoàn tất";
+    }
+    if (normalized === "shipping" || normalized === "in_transit") {
+      return "Đang giao";
+    }
+    if (normalized === "cancelled" || normalized === "canceled") {
+      return "Đã hủy";
+    }
+    return "Chờ xử lý";
+  }
+
+  function normalizeMockBreakdown(rawBreakdown, shippingFee) {
+    const breakdown = rawBreakdown || {};
+    return {
+      base_price: Number(breakdown.base_price ?? breakdown.basePrice ?? 0),
+      overweight_fee: Number(
+        breakdown.overweight_fee ?? breakdown.overweightFee ?? 0,
+      ),
+      volume_fee: Number(breakdown.volume_fee ?? breakdown.volumeFee ?? 0),
+      goods_fee: Number(breakdown.goods_fee ?? breakdown.goodsFee ?? 0),
+      time_fee: Number(breakdown.time_fee ?? breakdown.timeFee ?? 0),
+      condition_fee: Number(
+        breakdown.condition_fee ?? breakdown.conditionFee ?? 0,
+      ),
+      vehicle_fee: Number(breakdown.vehicle_fee ?? breakdown.vehicleFee ?? 0),
+      cod_fee: Number(breakdown.cod_fee ?? breakdown.codFee ?? 0),
+      insurance_fee: Number(
+        breakdown.insurance_fee ?? breakdown.insuranceFee ?? 0,
+      ),
+      service_fee: Number(breakdown.service_fee ?? breakdown.serviceFee ?? 0),
+      total_fee: Number(
+        breakdown.total_fee ?? breakdown.totalFee ?? shippingFee ?? 0,
+      ),
+    };
+  }
+
+  function normalizeMockItems(items) {
+    return (Array.isArray(items) ? items : []).map((item) => ({
+      item_name: item.item_name || item.ten_hang || "",
+      quantity: Number(item.quantity ?? item.so_luong ?? 1),
+      weight: Number(item.weight ?? item.can_nang ?? 0),
+      declared_value: Number(
+        item.declared_value ?? item.gia_tri_khai_bao ?? 0,
+      ),
+      length: Number(item.length ?? item.chieu_dai ?? 0),
+      width: Number(item.width ?? item.chieu_rong ?? 0),
+      height: Number(item.height ?? item.chieu_cao ?? 0),
+      loai_hang: item.loai_hang || "",
+      ten_hang: item.ten_hang || item.item_name || "",
+      so_luong: Number(item.so_luong ?? item.quantity ?? 1),
+      gia_tri_khai_bao: Number(
+        item.gia_tri_khai_bao ?? item.declared_value ?? 0,
+      ),
+      can_nang: Number(item.can_nang ?? item.weight ?? 0),
+      chieu_dai: Number(item.chieu_dai ?? item.length ?? 0),
+      chieu_rong: Number(item.chieu_rong ?? item.width ?? 0),
+      chieu_cao: Number(item.chieu_cao ?? item.height ?? 0),
+    }));
+  }
+
+  function normalizeMockOrderDetail(record, dataset) {
+    const rawOrder = record?.order || record?.detail?.order || {};
+    const tracking = record?.tracking || {};
+    const rawProvider = record?.provider || record?.detail?.provider || {};
+    const items = normalizeMockItems(record?.items || record?.detail?.items || []);
+    const shippingFee = Number(
+      rawOrder.shipping_fee ?? rawOrder.total_fee ?? tracking.shipping_fee ?? 0,
+    );
+    const status =
+      rawOrder.status || tracking.status || tracking.status_raw || "pending";
+    const serviceMeta = rawOrder.service_meta || {};
+    const order = {
+      ...rawOrder,
+      id: rawOrder.id || rawOrder.order_code || tracking.order_code || "",
+      order_code: rawOrder.order_code || tracking.order_code || rawOrder.id || "",
+      status,
+      status_label:
+        rawOrder.status_label ||
+        tracking.status_label ||
+        tracking.status_text ||
+        getStatusLabel(status),
+      service_label: getServiceLabel(
+        rawOrder.service_type,
+        rawOrder.service_label || rawOrder.service_name,
+      ),
+      shipping_fee: shippingFee,
+      cod_amount: Number(
+        rawOrder.cod_amount ?? rawOrder.cod_value ?? tracking.cod_amount ?? 0,
+      ),
+      payment_method: rawOrder.payment_method || "",
+      payment_method_label:
+        rawOrder.payment_method_label ||
+        serviceMeta.payment_method_label ||
+        getPaymentMethodLabel(rawOrder.payment_method),
+      payer_label:
+        rawOrder.payer_label ||
+        serviceMeta.payer_label ||
+        getFeePayerLabel(rawOrder.fee_payer),
+      clean_note: rawOrder.clean_note || rawOrder.notes || "",
+      vehicle_type:
+        rawOrder.vehicle_type || rawOrder.vehicle_label || serviceMeta.vehicle_label || "",
+      created_at: rawOrder.created_at || tracking.created_at || "",
+      fee_breakdown: normalizeMockBreakdown(
+        rawOrder.pricing_breakdown || rawOrder.fee_breakdown,
+        shippingFee,
+      ),
+      service_meta: {
+        ...serviceMeta,
+        service_name: getServiceLabel(
+          rawOrder.service_type,
+          serviceMeta.service_name || rawOrder.service_name || rawOrder.service_label,
+        ),
+        estimated_eta:
+          serviceMeta.estimated_eta || rawOrder.estimated_delivery || "",
+        pickup_date: serviceMeta.pickup_date || rawOrder.pickup_date || "",
+        pickup_slot: serviceMeta.pickup_slot || rawOrder.pickup_slot || "",
+        pickup_slot_label:
+          serviceMeta.pickup_slot_label || rawOrder.pickup_slot_label || "--",
+        delivery_date: serviceMeta.delivery_date || rawOrder.delivery_date || "",
+        delivery_slot_label:
+          serviceMeta.delivery_slot_label ||
+          rawOrder.delivery_slot_label ||
+          "--",
+        vehicle_label:
+          serviceMeta.vehicle_label ||
+          rawOrder.vehicle_label ||
+          rawOrder.vehicle_type ||
+          "--",
+        service_condition_label:
+          serviceMeta.service_condition_label ||
+          rawOrder.service_condition_label ||
+          "",
+        payer_label:
+          serviceMeta.payer_label || getFeePayerLabel(rawOrder.fee_payer),
+        payment_method_label:
+          serviceMeta.payment_method_label ||
+          getPaymentMethodLabel(rawOrder.payment_method),
+        distance_km: Number(
+          serviceMeta.distance_km ?? rawOrder.khoang_cach_km ?? 0,
+        ),
+      },
+    };
+
+    return {
+      status: "success",
+      order,
+      provider: {
+        ...rawProvider,
+        shipper_vehicle:
+          rawProvider.shipper_vehicle ||
+          rawProvider.vehicle_type ||
+          order.vehicle_type ||
+          "",
+        attachments: Array.isArray(rawProvider.attachments)
+          ? rawProvider.attachments
+          : [],
+        shipper_reports: Array.isArray(rawProvider.shipper_reports)
+          ? rawProvider.shipper_reports
+          : [],
+        feedback_media: Array.isArray(rawProvider.feedback_media)
+          ? rawProvider.feedback_media
+          : [],
+      },
+      customer:
+        record?.customer ||
+        record?.detail?.customer ||
+        dataset?.session?.user || {
+          fullname: order.sender_name || "",
+          phone: order.sender_phone || "",
+          email: "",
+        },
+      items,
+      logs: Array.isArray(record?.logs)
+        ? record.logs
+        : Array.isArray(record?.detail?.logs)
+          ? record.detail.logs
+          : [],
+    };
   }
 
   function formatMultilineText(value) {
@@ -107,6 +372,38 @@
     }
 
     return data;
+  }
+
+  async function getSessionData() {
+    if (!isMockMode()) {
+      return apiRequest("session");
+    }
+
+    const dataset = await loadMockDataset();
+    return {
+      status: "success",
+      user: dataset?.session?.user || {
+        username: "mock_customer",
+        fullname: "Khách hàng test",
+        phone: "0900000000",
+        email: "mock@example.com",
+      },
+    };
+  }
+
+  async function getOrderDetailData(orderId) {
+    if (!isMockMode()) {
+      return apiRequest("order-detail", { params: { id: orderId } });
+    }
+
+    const dataset = await loadMockDataset();
+    const record = findMockOrderRecord(dataset, orderId);
+
+    if (!record) {
+      throw new Error("Không tìm thấy dữ liệu mock cho chi tiết đơn hàng.");
+    }
+
+    return normalizeMockOrderDetail(record, dataset);
   }
 
   function getPageRoot() {
@@ -388,8 +685,47 @@
       .join("")}</div>`;
   }
 
-  function renderBookingReview(order, items, attachments, logs) {
+  function hasProviderInfo(provider) {
+    return Boolean(
+      provider?.shipper_id ||
+        provider?.shipper_name ||
+        provider?.fullname ||
+        provider?.phone ||
+        provider?.shipper_phone,
+    );
+  }
+
+  function getProviderDisplayName(provider) {
+    return (
+      provider?.shipper_name ||
+      provider?.fullname ||
+      provider?.username ||
+      "--"
+    );
+  }
+
+  function renderProviderReview(provider, order) {
+    if (!hasProviderInfo(provider)) {
+      return '<div class="customer-empty">Đơn hàng chưa được gán nhà cung cấp cụ thể.</div>';
+    }
+
+    return `
+      <div class="customer-review-section">
+        <div class="rv-row"><span class="rv-label">Mã phụ trách</span><span class="rv-val">${escapeHtml(provider.shipper_id || provider.provider_id || "--")}</span></div>
+        <div class="rv-row"><span class="rv-label">Người phụ trách</span><span class="rv-val">${escapeHtml(getProviderDisplayName(provider))}</span></div>
+        <div class="rv-row"><span class="rv-label">Số điện thoại</span><span class="rv-val">${escapeHtml(provider.shipper_phone || provider.phone || "--")}</span></div>
+        <div class="rv-row"><span class="rv-label">Phương tiện</span><span class="rv-val">${escapeHtml(provider.shipper_vehicle || provider.vehicle_type || order.vehicle_type || "--")}</span></div>
+        <div class="rv-row"><span class="rv-label">Khu vực phụ trách</span><span class="rv-val">${escapeHtml(provider.area_label || provider.region || provider.hub_label || provider.company_name || "--")}</span></div>
+        <div class="rv-row"><span class="rv-label">Ghi chú từ shipper</span><span class="rv-val">${formatMultilineText(order.shipper_note || "Chưa có ghi chú từ shipper.")}</span></div>
+      </div>
+    `;
+  }
+
+  function renderBookingReview(order, items, provider, logs) {
     const serviceMeta = order.service_meta || {};
+    const attachments = Array.isArray(provider?.attachments)
+      ? provider.attachments
+      : [];
     const distanceLabel =
       Number(serviceMeta.distance_km || 0) > 0
         ? `${Number(serviceMeta.distance_km).toLocaleString("vi-VN", {
@@ -437,6 +773,7 @@
         <section class="customer-review-block">
           <h3><i class="fas fa-calendar-check"></i> Lịch trình</h3>
           <div class="customer-review-section">
+            <div class="rv-row"><span class="rv-label">Tạo đơn lúc</span><span class="rv-val">${formatDateTime(order.created_at)}</span></div>
             <div class="rv-row"><span class="rv-label">Lấy hàng</span><span class="rv-val">${pickupLabel}</span></div>
             <div class="rv-row"><span class="rv-label">Khung giờ lấy hàng</span><span class="rv-val">${escapeHtml(serviceMeta.pickup_slot_label || "--")}</span></div>
             <div class="rv-row"><span class="rv-label">Mốc nhận mong muốn</span><span class="rv-val">${deliveryDeadline}</span></div>
@@ -453,6 +790,22 @@
             <div class="rv-row"><span class="rv-label">Người trả cước</span><span class="rv-val">${escapeHtml(order.payer_label || "Người gửi")}</span></div>
             <div class="rv-row"><span class="rv-label">Thanh toán</span><span class="rv-val">${escapeHtml(order.payment_method_label || "--")}</span></div>
             <div class="rv-row"><span class="rv-label">Trạng thái thanh toán</span><span class="rv-val">${escapeHtml(order.payment_status_label || "--")}</span></div>
+            <div class="rv-row"><span class="rv-label">Mã tham chiếu thanh toán</span><span class="rv-val">${escapeHtml(order.payment_reference || "--")}</span></div>
+          </div>
+        </section>
+
+        <section class="customer-review-block">
+          <h3><i class="fas fa-user-check"></i> Nhà cung cấp phụ trách</h3>
+          ${renderProviderReview(provider, order)}
+        </section>
+
+        <section class="customer-review-block">
+          <h3><i class="fas fa-circle-info"></i> Theo dõi đơn</h3>
+          <div class="customer-review-section">
+            <div class="rv-row"><span class="rv-label">Trạng thái hiện tại</span><span class="rv-val">${escapeHtml(order.status_label || order.status || "--")}</span></div>
+            <div class="rv-row"><span class="rv-label">Mã đơn nội bộ</span><span class="rv-val">${escapeHtml(order.id || "--")}</span></div>
+            <div class="rv-row"><span class="rv-label">Mã đơn khách theo dõi</span><span class="rv-val">${escapeHtml(order.order_code || "--")}</span></div>
+            <div class="rv-row"><span class="rv-label">Bằng chứng giao hàng</span><span class="rv-val">${order.pod_image ? "Đã có" : "Chưa có"}</span></div>
           </div>
         </section>
 
@@ -723,7 +1076,7 @@
       throw new Error("Thiếu id đơn hàng.");
     }
 
-    const data = await apiRequest("order-detail", { params: { id: orderId } });
+    const data = await getOrderDetailData(orderId);
     const { content } = getPageRoot();
     const order = data.order || {};
     const provider = data.provider || {};
@@ -749,6 +1102,8 @@
           <article><span>Tổng phí ship</span><strong>${formatCurrency(order.shipping_fee)}</strong></article>
           <article><span>Thu hộ COD</span><strong>${formatCurrency(order.cod_amount)}</strong></article>
           <article><span>Thanh toán</span><strong>${escapeHtml(order.payment_status_label || "--")}</strong></article>
+          <article><span>Tạo đơn lúc</span><strong>${formatDateTime(order.created_at)}</strong></article>
+          <article><span>Nhà cung cấp</span><strong>${escapeHtml(hasProviderInfo(provider) ? getProviderDisplayName(provider) : "Chưa gán")}</strong></article>
         </div>
 
         <div class="customer-tab-switcher" id="customer-tab-switcher">
@@ -758,7 +1113,7 @@
         </div>
 
         <div class="customer-tab-panel is-active" data-panel="booking">
-          ${renderBookingReview(order, items, provider.attachments, logs)}
+          ${renderBookingReview(order, items, provider, logs)}
         </div>
 
         <div class="customer-tab-panel" data-panel="provider">
@@ -766,11 +1121,17 @@
             <article class="customer-info-card">
               <h3>Thông tin nhà cung cấp</h3>
               ${
-                provider.shipper_id
+                hasProviderInfo(provider)
                   ? renderInfoList([
-                      { label: "Shipper phụ trách", value: provider.shipper_name || "--" },
-                      { label: "Số điện thoại", value: provider.shipper_phone || "--" },
-                      { label: "Phương tiện", value: provider.shipper_vehicle || order.vehicle_type || "--" },
+                      { label: "Mã nhà cung cấp", value: provider.shipper_id || provider.provider_id || "--" },
+                      { label: "Người phụ trách", value: getProviderDisplayName(provider) },
+                      { label: "Tài khoản", value: provider.username || "--" },
+                      { label: "Số điện thoại", value: provider.shipper_phone || provider.phone || "--" },
+                      { label: "Email", value: provider.email || "--" },
+                      { label: "Phương tiện", value: provider.shipper_vehicle || provider.vehicle_type || order.vehicle_type || "--" },
+                      { label: "Khu vực phụ trách", value: provider.area_label || provider.region || provider.hub_label || provider.company_name || "--" },
+                      { label: "Ngày tham gia", value: formatDateOnly(provider.joined_at) },
+                      { label: "Đánh giá trung bình", value: provider.rating_avg ? `${provider.rating_avg}/5` : "--" },
                       { label: "Ghi chú từ shipper", value: order.shipper_note || "Chưa có ghi chú từ shipper." },
                     ])
                   : '<div class="customer-empty">Đơn hàng chưa được gán nhà cung cấp cụ thể.</div>'
@@ -990,7 +1351,7 @@
     const page = document.body.dataset.customerPage;
     if (!page) return;
 
-    const sessionData = await apiRequest("session");
+    const sessionData = await getSessionData();
     syncPublicHeader(sessionData.user || {});
     renderShell(sessionData.user || {}, page);
 

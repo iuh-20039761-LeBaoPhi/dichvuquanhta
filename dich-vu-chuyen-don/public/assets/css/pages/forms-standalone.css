@@ -1,6 +1,10 @@
 .trang-bieu-mau {
   background:
-    radial-gradient(circle at top left, rgba(255, 183, 3, 0.12), transparent 26%),
+    radial-gradient(
+      circle at top left,
+      rgba(255, 183, 3, 0.12),
+      transparent 26%
+    ),
     linear-gradient(180deg, #f7fbf8 0%, #ffffff 22%, #f2f7f5 100%);
 }
 
@@ -88,7 +92,10 @@
   padding: 0 22px;
   font-weight: 700;
   text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .nut-hanh-dong:hover,
@@ -210,7 +217,7 @@
 
 .thanh-tien-trinh-dat-lich {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -223,6 +230,12 @@
   background: transparent;
   color: #739084;
   cursor: pointer;
+}
+
+.muc-tien-trinh-dat-lich:focus-visible {
+  outline: 3px solid rgba(27, 67, 50, 0.18);
+  outline-offset: 2px;
+  border-radius: 14px;
 }
 
 .muc-tien-trinh-dat-lich__so {
@@ -238,22 +251,11 @@
   font-weight: 800;
 }
 
-.muc-tien-trinh-dat-lich__ten {
-  font-size: 12px;
-  font-weight: 700;
-  text-align: center;
-}
-
 .muc-tien-trinh-dat-lich.is-active .muc-tien-trinh-dat-lich__so,
 .muc-tien-trinh-dat-lich.is-completed .muc-tien-trinh-dat-lich__so {
   border-color: #1b4332;
   background: #1b4332;
   color: #fff;
-}
-
-.muc-tien-trinh-dat-lich.is-active .muc-tien-trinh-dat-lich__ten,
-.muc-tien-trinh-dat-lich.is-completed .muc-tien-trinh-dat-lich__ten {
-  color: #173528;
 }
 
 .cum-buoc {
@@ -303,6 +305,7 @@
 .nhom-truong {
   display: grid;
   gap: 8px;
+  align-content: start;
 }
 
 .nhom-truong-an {
@@ -395,7 +398,9 @@
   padding: 12px 14px;
   color: #173528;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .truong-nhap:focus {
@@ -490,7 +495,7 @@
 }
 
 .the-thoi-tiet-tu-dong-dat-lich strong {
-  color: #173528;
+  color: #2d6a4f;
   font-size: 1rem;
   line-height: 1.5;
 }
@@ -514,14 +519,6 @@
   font-size: 1rem;
 }
 
-.hang-dia-diem-dat-lich {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
 .the-dia-diem-dat-lich .luoi-truong {
   grid-template-columns: 1fr;
   gap: 14px;
@@ -537,28 +534,6 @@
 
 .the-dia-diem-dat-lich--chi-tiet {
   background: #f8fbf9;
-}
-
-.nhan-dia-diem-dat-lich {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  padding: 7px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.nhan-dia-diem-di {
-  background: rgba(27, 67, 50, 0.1);
-  color: #1b4332;
-}
-
-.nhan-dia-diem-den {
-  background: rgba(255, 183, 3, 0.16);
-  color: #945f00;
 }
 
 .luoi-thoi-gian-dat-lich {
@@ -582,6 +557,18 @@
   display: grid;
   gap: 10px;
   margin-top: 18px;
+}
+
+.cum-truong-co-tieu-de {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.cum-truong-tieu-de h5 {
+  margin: 0;
+  color: #173528;
+  font-size: 0.95rem;
 }
 
 .cum-lua-chon-tieu-de .nhan-truong-kem-goi-y h4 {
@@ -803,7 +790,11 @@
   color: #325244;
   font-size: 14px;
   font-weight: 600;
-  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .lua-chon-chip input:checked + span {
@@ -860,6 +851,23 @@
   display: block;
   max-height: 240px;
   object-fit: cover;
+}
+
+.khung-preview-tai-len {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.trang-thai-preview-tai-len {
+  color: #5d766b;
+  font-size: 13px;
+}
+
+.luoi-preview-tai-len {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 .khung-ban-do-ui {
@@ -929,7 +937,10 @@
   color: #244738;
   font-weight: 700;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .nut-ban-do-ui:hover,
@@ -1186,6 +1197,7 @@
   border-radius: 14px;
   border: 1px solid #dbe6df;
   background: #fff;
+  box-shadow: 0 10px 24px rgba(23, 53, 40, 0.06);
 }
 
 .the-media-xac-nhan-dat-lich img,
@@ -1195,6 +1207,11 @@
   height: 140px;
   object-fit: cover;
   background: #f3f7f5;
+}
+
+.the-media-xac-nhan-dat-lich--upload img,
+.the-media-xac-nhan-dat-lich--upload video {
+  height: 132px;
 }
 
 .meta-media-xac-nhan-dat-lich {
@@ -1259,9 +1276,11 @@
 }
 
 .cum-hanh-dong {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
-  justify-items: start;
+  justify-content: flex-start;
 }
 
 .cum-dieu-huong-buoc {
@@ -1274,6 +1293,11 @@
 .nut-buoc-lui,
 .nut-buoc-tiep {
   min-width: 132px;
+}
+
+.cum-hanh-dong .mo-ta-phu {
+  flex-basis: 100%;
+  margin: 0;
 }
 
 .nut-chinh {
@@ -1413,7 +1437,19 @@
 }
 
 .form-dat-lich .hop-tai-len {
-  gap: 6px;
+  gap: 10px;
+}
+
+.form-dat-lich .khung-preview-tai-len {
+  margin-top: 4px;
+}
+
+.form-dat-lich .trang-thai-preview-tai-len {
+  color: #637c71;
+}
+
+.form-dat-lich .luoi-preview-tai-len {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 .form-dat-lich .cum-xac-nhan-dat-lich + .cum-xac-nhan-dat-lich {
@@ -1441,6 +1477,10 @@
 
   .form-bieu-mau {
     gap: 18px;
+  }
+
+  .khu-bieu-mau {
+    padding-bottom: 120px;
   }
 
   .the-bieu-mau,
@@ -1482,10 +1522,6 @@
     gap: 12px;
   }
 
-  .thanh-tien-trinh-dat-lich {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .luoi-gia-tham-khao-dat-lich {
     grid-template-columns: 1fr;
   }
@@ -1513,13 +1549,7 @@
   }
 
   .cum-lua-chon {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
-  }
-
-  .cum-lua-chon-rong {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .cum-lua-chon-co-tieu-de {
@@ -1532,14 +1562,11 @@
   }
 
   .lua-chon-chip {
-    display: flex;
+    display: inline-flex;
   }
 
   .lua-chon-chip span {
-    width: 100%;
-    justify-content: flex-start;
-    text-align: left;
-    padding: 10px 14px;
+    padding: 8px 14px;
     line-height: 1.45;
   }
 
@@ -1554,6 +1581,10 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-items: stretch;
+  }
+
+  .cum-hanh-dong .mo-ta-phu {
+    grid-column: 1 / -1;
   }
 
   .luoi-tom-tat-khao-sat {
@@ -1581,15 +1612,6 @@
 @media (max-width: 640px) {
   .hero-bieu-mau .container {
     padding-inline: 14px;
-  }
-
-  .thanh-tien-trinh-dat-lich {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .muc-tien-trinh-dat-lich {
-    justify-items: start;
-    padding-inline: 0;
   }
 
   .form-dat-lich .luoi-truong-lien-he-dat-lich,
@@ -1702,10 +1724,6 @@
     align-items: stretch;
   }
 
-  .hang-dia-diem-dat-lich {
-    align-items: stretch;
-  }
-
   .khung-ban-do-ui-dau .nut-ban-do-ui-vi-tri {
     width: auto;
   }
@@ -1753,5 +1771,134 @@
   .lua-chon-chip span {
     min-height: 44px;
     padding: 11px 13px;
+  }
+}
+
+/* Giao diện form dat lich duoc lam phang hon de tranh khung chong khung. */
+.form-dat-lich .cum-lua-chon,
+.form-dat-lich .cum-lua-chon-rong {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.form-dat-lich .lua-chon-chip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.form-dat-lich .lua-chon-chip input {
+  position: static;
+  inset: auto;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 3px 0 0;
+  opacity: 1;
+}
+
+.form-dat-lich .lua-chon-chip span {
+  display: block;
+  min-height: 0;
+  width: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #173528;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.form-dat-lich .lua-chon-chip input:checked + span {
+  border-color: transparent;
+  background: transparent;
+  color: #173528;
+  box-shadow: none;
+}
+
+.form-dat-lich .khung-ban-do-ui-dau,
+.form-dat-lich .khung-ban-do-ui-chan,
+.form-dat-lich .khung-gia-tham-khao-dat-lich-dau,
+.form-dat-lich .cum-xac-nhan-dat-lich {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.form-dat-lich .khung-ban-do-mo-phong {
+  border-radius: 12px;
+  background: #f7faf8;
+}
+
+.form-dat-lich .cum-truong-co-tieu-de + .cum-truong-co-tieu-de {
+  padding-top: 10px;
+  border-top: 1px solid #e5efe9;
+}
+
+.form-dat-lich .cum-truong-tieu-de h5 {
+  color: #325244;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.form-dat-lich .khung-xac-nhan-dat-lich {
+  gap: 0;
+}
+
+.form-dat-lich .muc-luu-y-xac-nhan {
+  padding: 12px 0;
+  border-bottom: 1px solid #e5efe9;
+}
+
+.form-dat-lich .muc-luu-y-xac-nhan:last-child {
+  border-bottom: 0;
+}
+
+.form-dat-lich .the-gia-tham-khao-dat-lich.dang-chon {
+  border-color: #edf3ef;
+  background: transparent;
+}
+
+.form-dat-lich .khung-tong-gia-chot-dat-lich {
+  gap: 4px;
+  padding: 12px 0 0;
+  border-top: 1px solid #e5efe9;
+  border-radius: 0;
+  background: transparent;
+}
+
+.form-dat-lich .khung-tong-gia-chot-dat-lich .nhan-xac-nhan-dat-lich,
+.form-dat-lich .khung-tong-gia-chot-dat-lich p,
+.form-dat-lich .khung-tong-gia-chot-dat-lich strong {
+  color: #173528;
+}
+
+@media (max-width: 768px) {
+  .form-dat-lich .cum-lua-chon,
+  .form-dat-lich .cum-lua-chon-rong,
+  .form-dat-lich .cum-lua-chon[data-nhom-chip="muc_do_khoi_luong"],
+  .form-dat-lich .cum-lua-chon[data-nhom-chip="hinh_thuc_khao_sat"],
+  .form-dat-lich .cum-lua-chon[data-nhom-chip="muc_do_gap"],
+  .form-dat-lich .cum-lua-chon[data-nhom-chip="dieu_kien_tiep_can"],
+  .form-dat-lich .cum-lua-chon[data-nhom-chip="hang_muc_ho_tro"],
+  .form-dat-lich .cum-lua-chon[data-nhom-chip="chi_tiet_kho_bai"],
+  .form-dat-lich .cum-lua-chon[data-nhom-chip="dieu_kien_dat_lich"],
+  .form-dat-lich .cum-lua-chon[data-nhom-chip="chi_tiet_nha_dat_lich"],
+  .form-dat-lich .cum-lua-chon[data-nhom-chip="chi_tiet_kho_bai_dat_lich"] {
+    grid-template-columns: 1fr;
+  }
+
+  .form-dat-lich .lua-chon-chip span {
+    min-height: 0;
+    padding: 0;
   }
 }
