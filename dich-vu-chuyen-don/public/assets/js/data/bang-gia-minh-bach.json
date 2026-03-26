@@ -7,7 +7,14 @@
       "mo_ta_ngan": "Căn hộ, nhà phố, phòng trọ hoặc chung cư cần chuyển đồ sinh hoạt và nội thất gia đình.",
       "phu_hop_khi": "Phù hợp khi bạn cần xe, nhân công, đóng gói, tháo lắp và sắp xếp lại tại nhà mới.",
       "phan_co_ban": ["Xe vận chuyển", "Quãng đường phát sinh"],
-      "phan_phat_sinh": ["Nhân công", "Đóng gói", "Tháo lắp", "Mặt bằng khó", "Khung giờ tối/đêm", "Thời tiết"],
+      "phan_phat_sinh": [
+        "Nhân công",
+        "Đóng gói",
+        "Tháo lắp",
+        "Mặt bằng khó",
+        "Khung giờ tối/đêm",
+        "Thời tiết"
+      ],
       "nen_khao_sat_khi": "Có nhiều tầng, hẻm nhỏ, đồ dễ vỡ, đồ giá trị cao hoặc cần tháo lắp kỹ thuật.",
       "co_the_dat_lich_luon_khi": "Bạn đã rõ loại xe cần dùng, địa chỉ hai đầu, số tầng và không có hạng mục đặc biệt ngoài gói cơ bản.",
       "tom_tat_tong_chi_phi": "Cước xe theo loại xe + phí km vượt ngưỡng + nhân công, đóng gói, tháo lắp nếu chọn + phụ phí mặt bằng, thời tiết và khung giờ nếu phát sinh."
@@ -19,13 +26,17 @@
       "chi_phi_co_ban": {
         "cuoc_xe": {
           "bao_gom": ["xe_tai", "tai_xe", "quang_duong_co_ban"],
-          "khong_bao_gom": ["nhan_cong_boc_xep", "thiet_bi_nang_ha", "dich_vu_dac_biet"],
+          "khong_bao_gom": [
+            "nhan_cong_boc_xep",
+            "thiet_bi_nang_ha",
+            "dich_vu_dac_biet"
+          ],
           "quy_tac_so_chuyen": {
             "che_do": "tu_dong",
             "cong_thuc": "ceil(max(tong_trong_luong_kg / tai_trong_xe_kg, tong_the_tich_m3 / dung_tich_xe_m3))",
             "tam_thoi_khi_thieu_du_lieu_the_tich": "chi_tinh_theo_trong_luong",
-            "trang_thai_du_lieu_the_tich_xe": "chua_bo_sung_dung_tich_xe_m3",
-            "ghi_chu": "Tạm thời số chuyến chỉ tính theo tải trọng vì chưa có dung tích xe chuẩn hóa.",
+            "trang_thai_du_lieu_the_tich_xe": "da_bo_sung_dung_tich_xe_m3_tham_khao",
+            "ghi_chu": "Số chuyến ưu tiên giá trị lớn hơn giữa tải trọng và dung tích xe; nếu thiếu thể tích đơn hàng thì tạm tính theo tải trọng.",
             "chi_nhan_theo_chuyen": ["cuoc_xe", "phi_km_vuot"]
           },
           "loai_xe": [
@@ -33,7 +44,7 @@
               "slug": "xe_van_500kg",
               "ten": "Xe Van 500kg",
               "tai_trong_xe_kg": 500,
-              "dung_tich_xe_m3": null,
+              "dung_tich_xe_m3": 4,
               "gia_co_ban": 230000,
               "km_mien_phi": 10,
               "gia_km_vuot": 12000
@@ -42,7 +53,7 @@
               "slug": "xe_tai_1_5_tan",
               "ten": "Xe Tải 1.5 Tấn",
               "tai_trong_xe_kg": 1500,
-              "dung_tich_xe_m3": null,
+              "dung_tich_xe_m3": 8,
               "gia_co_ban": 370000,
               "km_mien_phi": 10,
               "gia_km_vuot": 14000
@@ -51,7 +62,7 @@
               "slug": "xe_tai_2_5_tan",
               "ten": "Xe Tải 2.5 Tấn",
               "tai_trong_xe_kg": 2500,
-              "dung_tich_xe_m3": null,
+              "dung_tich_xe_m3": 12,
               "gia_co_ban": 650000,
               "km_mien_phi": 10,
               "gia_km_vuot": 24000
@@ -146,13 +157,19 @@
             "slug": "buoi_toi",
             "ten": "Buổi tối",
             "he_so": null,
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 80000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 80000
+            }
           },
           {
             "slug": "ban_dem",
             "ten": "Ban đêm",
             "he_so": null,
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 150000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 150000
+            }
           }
         ],
         "thoi_tiet": [
@@ -160,7 +177,10 @@
             "slug": "troi_mua",
             "ten": "Trời mưa",
             "he_so": null,
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 30000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 30000
+            }
           }
         ]
       }
@@ -230,7 +250,14 @@
       "mo_ta_ngan": "Văn phòng công ty cần di dời hồ sơ, bàn ghế, máy tính, server và thiết bị vận hành.",
       "phu_hop_khi": "Phù hợp khi bạn cần di dời có kế hoạch, kiểm soát tài liệu và giữ nhịp vận hành ổn định.",
       "phan_co_ban": ["Xe vận chuyển", "Quãng đường phát sinh"],
-      "phan_phat_sinh": ["Đóng gói hồ sơ", "Thiết bị IT", "Tháo lắp nội thất", "Thiết bị nặng", "Mặt bằng tòa nhà", "Ngoài giờ/cuối tuần"],
+      "phan_phat_sinh": [
+        "Đóng gói hồ sơ",
+        "Thiết bị IT",
+        "Tháo lắp nội thất",
+        "Thiết bị nặng",
+        "Mặt bằng tòa nhà",
+        "Ngoài giờ/cuối tuần"
+      ],
       "nen_khao_sat_khi": "Có server, tài liệu bảo mật, tòa nhà giới hạn giờ ra vào hoặc cần làm ngoài giờ.",
       "co_the_dat_lich_luon_khi": "Bạn đã rõ sơ đồ di dời, số lượng bàn ghế thiết bị, điều kiện tòa nhà và không có hạng mục kỹ thuật đặc biệt.",
       "tom_tat_tong_chi_phi": "Cước xe theo loại xe + phí km vượt ngưỡng + đóng gói hồ sơ, bảo vệ IT, tháo lắp nội thất và thiết bị nặng nếu chọn + phụ phí tòa nhà, thời tiết và khung giờ nếu phát sinh."
@@ -242,13 +269,17 @@
       "chi_phi_co_ban": {
         "cuoc_xe": {
           "bao_gom": ["xe_tai", "tai_xe", "quang_duong_co_ban"],
-          "khong_bao_gom": ["nhan_cong_boc_xep", "xe_nang_xe_cau", "dich_vu_ky_thuat_dac_biet"],
+          "khong_bao_gom": [
+            "nhan_cong_boc_xep",
+            "xe_nang_xe_cau",
+            "dich_vu_ky_thuat_dac_biet"
+          ],
           "quy_tac_so_chuyen": {
             "che_do": "tu_dong",
             "cong_thuc": "ceil(max(tong_trong_luong_kg / tai_trong_xe_kg, tong_the_tich_m3 / dung_tich_xe_m3))",
             "tam_thoi_khi_thieu_du_lieu_the_tich": "chi_tinh_theo_trong_luong",
-            "trang_thai_du_lieu_the_tich_xe": "chua_bo_sung_dung_tich_xe_m3",
-            "ghi_chu": "Tạm thời số chuyến chỉ tính theo tải trọng vì chưa có dung tích xe chuẩn hóa.",
+            "trang_thai_du_lieu_the_tich_xe": "da_bo_sung_dung_tich_xe_m3_tham_khao",
+            "ghi_chu": "Số chuyến ưu tiên giá trị lớn hơn giữa tải trọng và dung tích xe; nếu thiếu thể tích đơn hàng thì tạm tính theo tải trọng.",
             "chi_nhan_theo_chuyen": ["cuoc_xe", "phi_km_vuot"]
           },
           "loai_xe": [
@@ -256,7 +287,7 @@
               "slug": "xe_van_500kg",
               "ten": "Xe Van 500kg (VP)",
               "tai_trong_xe_kg": 500,
-              "dung_tich_xe_m3": null,
+              "dung_tich_xe_m3": 4,
               "gia_co_ban": 220000,
               "km_mien_phi": 10,
               "gia_km_vuot": 12000
@@ -265,7 +296,7 @@
               "slug": "xe_tai_1_5_tan",
               "ten": "Xe Tải 1.5 Tấn (VP)",
               "tai_trong_xe_kg": 1500,
-              "dung_tich_xe_m3": null,
+              "dung_tich_xe_m3": 8,
               "gia_co_ban": 360000,
               "km_mien_phi": 10,
               "gia_km_vuot": 14500
@@ -274,7 +305,7 @@
               "slug": "xe_tai_2_5_tan",
               "ten": "Xe Tải 2.5 Tấn (VP)",
               "tai_trong_xe_kg": 2500,
-              "dung_tich_xe_m3": null,
+              "dung_tich_xe_m3": 12,
               "gia_co_ban": 590000,
               "km_mien_phi": 10,
               "gia_km_vuot": 18000
@@ -285,6 +316,13 @@
       "chi_phi_dich_vu": {
         "nguyen_tac": "chi_dung_hang_muc_tinh_toan_de_tinh_tien",
         "hang_muc_tinh_toan": [
+          {
+            "slug": "nhan_cong_van_phong",
+            "ten": "Nhân công bốc xếp (VP)",
+            "don_vi": "người",
+            "don_gia": 350000,
+            "nguon_hien_thi_slug": "nhan_cong_van_phong"
+          },
           {
             "slug": "dong_goi_ho_so",
             "ten": "Đóng gói hồ sơ",
@@ -369,20 +407,29 @@
             "slug": "buoi_toi",
             "ten": "Buổi tối",
             "he_so": null,
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 120000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 120000
+            }
           },
           {
             "slug": "ban_dem",
             "ten": "Ban đêm",
             "he_so": null,
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 220000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 220000
+            }
           },
           {
             "slug": "cuoi_tuan",
             "ten": "Cuối tuần",
             "he_so": null,
             "ghi_chu": "Áp dụng phụ phí cố định cho ca thực hiện vào cuối tuần.",
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 100000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 100000
+            }
           }
         ],
         "thoi_tiet": [
@@ -390,7 +437,10 @@
             "slug": "troi_mua",
             "ten": "Trời mưa",
             "he_so": null,
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 70000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 70000
+            }
           }
         ]
       }
@@ -404,6 +454,15 @@
         "ghi_chu": "Đội xe tải đa dạng tải trọng, có thùng kín bảo vệ tài sản, phù hợp mọi quy mô.",
         "hinh_anh": "assets/images/chuyendon-van-phong.png",
         "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
+      },
+      {
+        "slug": "nhan_cong_van_phong",
+        "ten": "Nhân công bốc xếp văn phòng",
+        "khoang_gia": "250.000 – 450.000",
+        "don_vi": "người",
+        "ghi_chu": "Nhân sự bốc xếp và điều phối đồ đạc văn phòng theo khu vực làm việc, ưu tiên an toàn tài sản và tiến độ di dời.",
+        "hinh_anh": "assets/images/nhan-cong-boc-xep-van-phong.png",
+        "icon_svg": "M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
       },
       {
         "slug": "dong_goi_ho_so_tai_lieu",
@@ -460,7 +519,14 @@
       "mo_ta_ngan": "Kho hàng, nhà xưởng hoặc mô hình logistics cần xe tải, xe nâng, xe cẩu và kiểm kê chặt chẽ.",
       "phu_hop_khi": "Phù hợp khi bạn cần di dời pallet, kiện hàng nặng, máy móc và gia cố hàng hóa trước khi chuyển.",
       "phan_co_ban": ["Xe vận chuyển", "Quãng đường phát sinh"],
-      "phan_phat_sinh": ["Pallet", "Xe nâng/xe cẩu", "Bốc xếp nặng", "Gia cố hàng", "Đường cấm tải", "Kiểm kê"],
+      "phan_phat_sinh": [
+        "Pallet",
+        "Xe nâng/xe cẩu",
+        "Bốc xếp nặng",
+        "Gia cố hàng",
+        "Đường cấm tải",
+        "Kiểm kê"
+      ],
       "nen_khao_sat_khi": "Có máy móc lớn, nhiều pallet, đường cấm tải hoặc cần xe nâng, xe cẩu tại hiện trường.",
       "co_the_dat_lich_luon_khi": "Bạn đã rõ khối lượng hàng, số pallet, phương tiện nâng hạ cần dùng và điều kiện xe vào ra kho bãi.",
       "tom_tat_tong_chi_phi": "Cước xe theo tải trọng + phí km vượt ngưỡng + pallet, xe nâng, xe cẩu, bốc xếp và gia cố nếu chọn + phụ phí đường cấm tải, thời tiết và khung giờ nếu phát sinh."
@@ -472,13 +538,18 @@
       "chi_phi_co_ban": {
         "cuoc_xe": {
           "bao_gom": ["xe_tai", "tai_xe", "quang_duong_co_ban"],
-          "khong_bao_gom": ["nhan_cong_boc_xep", "xe_nang", "xe_cau", "gia_co_hang_hoa"],
+          "khong_bao_gom": [
+            "nhan_cong_boc_xep",
+            "xe_nang",
+            "xe_cau",
+            "gia_co_hang_hoa"
+          ],
           "quy_tac_so_chuyen": {
             "che_do": "tu_dong",
             "cong_thuc": "ceil(max(tong_trong_luong_kg / tai_trong_xe_kg, tong_the_tich_m3 / dung_tich_xe_m3))",
             "tam_thoi_khi_thieu_du_lieu_the_tich": "chi_tinh_theo_trong_luong",
-            "trang_thai_du_lieu_the_tich_xe": "chua_bo_sung_dung_tich_xe_m3",
-            "ghi_chu": "Tạm thời số chuyến chỉ tính theo tải trọng vì chưa có dung tích xe chuẩn hóa.",
+            "trang_thai_du_lieu_the_tich_xe": "da_bo_sung_dung_tich_xe_m3_tham_khao",
+            "ghi_chu": "Số chuyến ưu tiên giá trị lớn hơn giữa tải trọng và dung tích xe; nếu thiếu thể tích đơn hàng thì tạm tính theo tải trọng.",
             "chi_nhan_theo_chuyen": ["cuoc_xe", "phi_km_vuot"]
           },
           "loai_xe": [
@@ -486,7 +557,7 @@
               "slug": "xe_tai_1_5_tan",
               "ten": "Xe Tải 1.5 Tấn (Kho)",
               "tai_trong_xe_kg": 1500,
-              "dung_tich_xe_m3": null,
+              "dung_tich_xe_m3": 8,
               "gia_co_ban": 420000,
               "km_mien_phi": 10,
               "gia_km_vuot": 14000
@@ -495,7 +566,7 @@
               "slug": "xe_tai_2_5_tan",
               "ten": "Xe Tải 2.5 Tấn (Kho)",
               "tai_trong_xe_kg": 2500,
-              "dung_tich_xe_m3": null,
+              "dung_tich_xe_m3": 12,
               "gia_co_ban": 690000,
               "km_mien_phi": 10,
               "gia_km_vuot": 20000
@@ -504,7 +575,7 @@
               "slug": "xe_tai_5_tan",
               "ten": "Xe Tải 5 Tấn (Kho)",
               "tai_trong_xe_kg": 5000,
-              "dung_tich_xe_m3": null,
+              "dung_tich_xe_m3": 22,
               "gia_co_ban": 1180000,
               "km_mien_phi": 10,
               "gia_km_vuot": 26000
@@ -599,13 +670,19 @@
             "slug": "buoi_toi",
             "ten": "Buổi tối",
             "he_so": null,
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 250000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 250000
+            }
           },
           {
             "slug": "ban_dem",
             "ten": "Ban đêm",
             "he_so": null,
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 400000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 400000
+            }
           }
         ],
         "thoi_tiet": [
@@ -613,7 +690,10 @@
             "slug": "troi_mua",
             "ten": "Trời mưa",
             "he_so": null,
-            "tham_chieu_du_lieu_cu": { "kieu": "phu_phi_co_dinh", "gia_tri": 150000 }
+            "tham_chieu_du_lieu_cu": {
+              "kieu": "phu_phi_co_dinh",
+              "gia_tri": 150000
+            }
           }
         ]
       }
