@@ -141,16 +141,25 @@
 
         function resolveAppBase() {
             const path = window.location.pathname || '';
-            const hasGlobalCare = path.toLowerCase().includes('/globalcare/thue-xe/');
-            const hasThueXeOnly = path.toLowerCase().includes('/thue-xe/');
+            const lower = path.toLowerCase();
+
+            const thueXeIndex = lower.indexOf('/thue-xe/');
+            if (thueXeIndex !== -1) {
+                const prefix = path.slice(0, thueXeIndex + '/thue-xe/'.length);
+                return window.location.origin + prefix;
+            }
 
             if (isLiveServerRuntime()) {
-                if (hasGlobalCare) return 'http://localhost/GlobalCare/thue-xe/';
-                if (hasThueXeOnly) return 'http://localhost/thue-xe/';
+                if (lower.includes('/globalcare/')) return 'http://localhost/GlobalCare/thue-xe/';
+                if (lower.includes('/thue-xe/')) return 'http://localhost/thue-xe/';
                 return 'http://localhost/GlobalCare/thue-xe/';
             }
 
-            return document.querySelector('base')?.href || (window.location.origin + '/GlobalCare/thue-xe/');
+            if (lower.startsWith('/globalcare/')) {
+                return window.location.origin + '/GlobalCare/thue-xe/';
+            }
+
+            return window.location.origin + '/thue-xe/';
         }
 
         const APP_BASE = resolveAppBase();
@@ -212,7 +221,7 @@
                     localStorage.setItem('provider_company', res.company);
                     msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';
                     setTimeout(() => {
-                        window.location.href = new URL('views/pages/provider/bang-dieu-khien.html', APP_BASE).toString();
+                        window.location.href = new URL('controllers/provider/dashboard-controller.php', APP_BASE).toString();
                     }, 700);
                 } else {
                     msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (res.message || 'Đăng nhập thất bại') + '</span>';

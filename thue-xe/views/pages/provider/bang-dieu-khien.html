@@ -4,7 +4,7 @@
 <script src="/ga.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="../../../">
+    <base href="../../">
     <title>Dịch Vụ Quanh Ta - Thuê Xe - Bảng Điều Khiển Nhà Cung Cấp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -93,13 +93,13 @@
         <span>Thuê Xe</span>
     </div>
     <div class="sidebar-user">
-        <div class="avatar">P</div>
-        <div class="user-name">Nhà cung cấp Minh Phát</div>
-        <div class="user-company">Công ty TNHH DV Minh Phát</div>
+        <div class="avatar" id="providerAvatar">P</div>
+        <div class="user-name" id="providerName">Nhà cung cấp</div>
+        <div class="user-company" id="providerCompany">Đang tải thông tin...</div>
     </div>
     <nav class="sidebar-nav">
         <ul class="p-0">
-            <li><a href="views/pages/provider/bang-dieu-khien.html" class="nav-link-item active"><i class="fas fa-table-columns"></i>Bảng điều khiển</a></li>
+            <li><a href="controllers/provider/dashboard-controller.php" class="nav-link-item active"><i class="fas fa-table-columns"></i>Bảng điều khiển</a></li>
             <li><a href="views/pages/provider/quan-ly-xe.html" class="nav-link-item"><i class="fas fa-car-side"></i>Quản lý xe</a></li>
             <li><a href="views/pages/provider/quan-ly-tai-khoan.html" class="nav-link-item"><i class="fas fa-id-card"></i>Quản lý tài khoản</a></li>
             <li><a href="index.html" class="nav-link-item"><i class="fas fa-home"></i>Trang chủ</a></li>
@@ -121,17 +121,17 @@
     <div class="page-content">
         <div class="welcome-card">
             <div>
-                <h4>Xin chào, Nhà cung cấp Minh Phát!</h4>
+                <h4 id="welcomeTitle">Xin chào, Nhà cung cấp!</h4>
                 <p class="mb-0">Theo dõi nhanh hiệu suất xe cho thuê và chuyển tới các trang quản lý chi tiết.</p>
             </div>
             <i class="fas fa-car-side icon"></i>
         </div>
 
         <div class="row g-3 mb-3">
-            <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-car"></i></div><div><div class="stat-value" id="statTotal">4</div><div class="stat-label">Tổng số xe</div></div></div></div>
-            <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-road"></i></div><div><div class="stat-value" id="statActive">3</div><div class="stat-label">Đang cho thuê</div></div></div></div>
-            <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-pause-circle"></i></div><div><div class="stat-value" id="statPaused">1</div><div class="stat-label">Tạm dừng</div></div></div></div>
-            <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div><div class="stat-value" id="statUpdated">25/03/2026</div><div class="stat-label">Cập nhật</div></div></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-car"></i></div><div><div class="stat-value" id="statTotal">—</div><div class="stat-label">Tổng số xe</div></div></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-road"></i></div><div><div class="stat-value" id="statActive">—</div><div class="stat-label">Đang hoạt động</div></div></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-pause-circle"></i></div><div><div class="stat-value" id="statPaused">—</div><div class="stat-label">Tạm dừng/Bảo dưỡng</div></div></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-receipt"></i></div><div><div class="stat-value" id="statOrders">—</div><div class="stat-label">Đơn đã nhận</div></div></div></div>
         </div>
 
         <div class="row g-3 mb-3">
@@ -162,36 +162,150 @@
             <div class="section-header"><i class="fas fa-table me-2"></i>Danh sách xe đang cho thuê</div>
             <div id="tableWrap"></div>
         </div>
+
+        <div class="section-card mt-3">
+            <div class="section-header"><i class="fas fa-calendar-check me-2"></i>Đơn đặt xe của nhà cung cấp</div>
+            <div id="bookingTableWrap"></div>
+        </div>
     </div>
 </div>
 
 <script>
-const VEHICLES = [
-    { id: 'XE001', name: 'Toyota Vios 2023', plate: '51H-428.79', pricePerDay: 850000, status: 'active' },
-    { id: 'XE002', name: 'KIA Carnival 2022', plate: '50G-188.32', pricePerDay: 1600000, status: 'active' },
-    { id: 'XE003', name: 'Ford Ranger XLS', plate: '61C-725.14', pricePerDay: 1200000, status: 'paused' },
-    { id: 'XE004', name: 'Mazda CX-5', plate: '59A-190.88', pricePerDay: 1450000, status: 'active' }
-];
+let providerCars = [];
+let providerBookings = [];
 
-function fmtPrice(n) { return Number(n).toLocaleString('vi-VN') + ' đ'; }
-function getStatusMeta(status) {
-    return status === 'active'
-        ? { label: 'Đang cho thuê', badgeClass: 'badge-active' }
-        : { label: 'Tạm dừng', badgeClass: 'badge-paused' };
+function resolveAppBase() {
+    const path = window.location.pathname || '';
+    const lower = path.toLowerCase();
+    const thueXeIndex = lower.indexOf('/thue-xe/');
+    if (thueXeIndex !== -1) {
+        const prefix = path.slice(0, thueXeIndex + '/thue-xe/'.length);
+        return window.location.origin + prefix;
+    }
+    if (lower.startsWith('/globalcare/')) {
+        return window.location.origin + '/GlobalCare/thue-xe/';
+    }
+    return window.location.origin + '/thue-xe/';
 }
-function renderTable() {
-    const rows = VEHICLES.map(vehicle => {
-        const s = getStatusMeta(vehicle.status);
+
+const APP_BASE = resolveAppBase();
+
+function appUrl(relativePath) {
+    return new URL(relativePath.replace(/^\/+/, ''), APP_BASE).toString();
+}
+
+function fmtPrice(n) { return Number(n || 0).toLocaleString('vi-VN') + ' đ'; }
+function fmtDate(d) {
+    if (!d) return '—';
+    const dt = new Date(d);
+    return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
+}
+
+function getCarStatusMeta(status) {
+    if (status === 'available') return { label: 'Đang hoạt động', badgeClass: 'badge-active' };
+    if (status === 'maintenance') return { label: 'Tạm dừng', badgeClass: 'badge-paused' };
+    return { label: 'Đã thuê', badgeClass: 'badge-paused' };
+}
+
+function getBookingStatusMeta(status) {
+    if (status === 'pending') return { label: 'Chờ xác nhận', badgeClass: 'badge-paused' };
+    if (status === 'confirmed') return { label: 'Đã xác nhận', badgeClass: 'badge-active' };
+    if (status === 'completed') return { label: 'Hoàn thành', badgeClass: 'badge-active' };
+    return { label: 'Đã hủy', badgeClass: 'badge-paused' };
+}
+
+async function ensureProviderLogin() {
+    try {
+        const response = await fetch(appUrl('controllers/provider/auth-controller.php?action=checkLogin'));
+        const data = await response.json();
+        if (!data.success) {
+            window.location.href = appUrl('views/pages/provider/dang-nhap.html?redirect=' + encodeURIComponent('controllers/provider/dashboard-controller.php'));
+            return null;
+        }
+        return data;
+    } catch (error) {
+        window.location.href = appUrl('views/pages/provider/dang-nhap.html?redirect=' + encodeURIComponent('controllers/provider/dashboard-controller.php'));
+        return null;
+    }
+}
+
+function renderProviderInfo(profile) {
+    const name = profile.name || 'Nhà cung cấp';
+    const company = profile.company || 'Chưa cập nhật công ty';
+    document.getElementById('providerName').textContent = name;
+    document.getElementById('providerCompany').textContent = company;
+    document.getElementById('providerAvatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('welcomeTitle').textContent = `Xin chào, ${name}!`;
+}
+
+function renderCarsTable() {
+    const wrap = document.getElementById('tableWrap');
+    if (!providerCars.length) {
+        wrap.innerHTML = '<div class="text-center text-muted py-4">Bạn chưa đăng ký xe nào.</div>';
+        return;
+    }
+
+    const rows = providerCars.map(car => {
+        const s = getCarStatusMeta(car.status);
         return `<tr>
-            <td data-label="Mã xe" style="font-weight:700;">${vehicle.id}</td>
-            <td data-label="Tên xe">${vehicle.name}</td>
-            <td data-label="Biển số">${vehicle.plate}</td>
-            <td data-label="Giá thuê/ngày"><strong>${fmtPrice(vehicle.pricePerDay)}</strong></td>
+            <td data-label="Mã xe" style="font-weight:700;">#${car.id}</td>
+            <td data-label="Tên xe">${car.name || '—'}</td>
+            <td data-label="Biển số">${car.license_plate || '—'}</td>
+            <td data-label="Giá thuê/ngày"><strong>${fmtPrice(car.price_per_day)}</strong></td>
             <td data-label="Trạng thái"><span class="badge-status ${s.badgeClass}">${s.label}</span></td>
             <td data-label="Hành động"><a class="btn-detail text-decoration-none" href="views/pages/provider/quan-ly-xe.html">Chi tiết</a></td>
         </tr>`;
     }).join('');
-    document.getElementById('tableWrap').innerHTML = `<div class="table-responsive"><table class="table table-hover align-middle mb-0 mobile-friendly-table"><thead><tr><th>Mã xe</th><th>Tên xe</th><th>Biển số</th><th>Giá thuê/ngày</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+
+    wrap.innerHTML = `<div class="table-responsive"><table class="table table-hover align-middle mb-0 mobile-friendly-table"><thead><tr><th>Mã xe</th><th>Tên xe</th><th>Biển số</th><th>Giá thuê/ngày</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function renderBookingsTable() {
+    const wrap = document.getElementById('bookingTableWrap');
+    if (!providerBookings.length) {
+        wrap.innerHTML = '<div class="text-center text-muted py-4">Chưa có đơn đặt xe nào.</div>';
+        return;
+    }
+
+    const rows = providerBookings.map(booking => {
+        const s = getBookingStatusMeta(booking.status);
+        return `<tr>
+            <td data-label="Mã đơn" style="font-weight:700;">#${booking.id}</td>
+            <td data-label="Khách hàng">${booking.customer_name || '—'}</td>
+            <td data-label="Xe">${booking.car_name || '—'}</td>
+            <td data-label="Thời gian">${fmtDate(booking.pickup_date)} - ${fmtDate(booking.return_date)}</td>
+            <td data-label="Tổng tiền"><strong>${fmtPrice(booking.total_price)}</strong></td>
+            <td data-label="Trạng thái"><span class="badge-status ${s.badgeClass}">${s.label}</span></td>
+        </tr>`;
+    }).join('');
+
+    wrap.innerHTML = `<div class="table-responsive"><table class="table table-hover align-middle mb-0 mobile-friendly-table"><thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Xe</th><th>Thời gian thuê</th><th>Tổng tiền</th><th>Trạng thái</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function renderStats() {
+    const totalCars = providerCars.length;
+    const activeCars = providerCars.filter(car => car.status === 'available').length;
+    const pausedCars = providerCars.filter(car => car.status !== 'available').length;
+    const totalOrders = providerBookings.length;
+
+    document.getElementById('statTotal').textContent = totalCars;
+    document.getElementById('statActive').textContent = activeCars;
+    document.getElementById('statPaused').textContent = pausedCars;
+    document.getElementById('statOrders').textContent = totalOrders;
+}
+
+async function loadDashboardData() {
+    const [carsRes, bookingsRes] = await Promise.all([
+        fetch(appUrl('controllers/provider/cars-controller.php?action=getMyCars')).then(r => r.json()),
+        fetch(appUrl('controllers/provider/bookings-controller.php?action=getMyBookings')).then(r => r.json())
+    ]);
+
+    providerCars = carsRes.success ? (carsRes.data || []) : [];
+    providerBookings = bookingsRes.success ? (bookingsRes.data || []) : [];
+
+    renderStats();
+    renderCarsTable();
+    renderBookingsTable();
 }
 
 function toggleSidebar() {
@@ -202,9 +316,19 @@ function closeSidebar() {
     document.querySelector('.sidebar').classList.remove('open');
     document.getElementById('sidebarOverlay').classList.remove('show');
 }
-function logout() { alert('Đăng xuất (mô phỏng giao diện).'); }
+function logout() {
+    fetch(appUrl('controllers/provider/auth-controller.php?action=logout'))
+        .then(() => {
+            window.location.href = appUrl('views/pages/provider/dang-nhap.html');
+        });
+}
 
-renderTable();
+(async function initProviderDashboard() {
+    const profile = await ensureProviderLogin();
+    if (!profile) return;
+    renderProviderInfo(profile);
+    await loadDashboardData();
+})();
 </script>
 </body>
 </html>

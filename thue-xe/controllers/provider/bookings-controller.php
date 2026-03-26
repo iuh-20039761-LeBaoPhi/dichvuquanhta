@@ -1,8 +1,7 @@
 <?php
 /**
- * Provider Bookings Controller — v3
- * Bảng `bookings` → `datxe`, cột tiếng Việt không dấu.
- * AS alias để output JSON giữ nguyên field name cũ.
+ * Provider Bookings Controller
+ * Đồng bộ schema hiện tại: datxe + nguoidung + xechiec + xemau.
  */
 
 require_once dirname(__DIR__) . '/session.php';
@@ -18,27 +17,54 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'provider') {
 $action      = $_GET['action'] ?? '';
 $provider_id = (int)$_SESSION['user_id'];
 
+function ensureProviderCarMapTable(PDO $conn): void {
+        $conn->exec(
+                "CREATE TABLE IF NOT EXISTS nhacungcap_xechiec (
+                        id INT PRIMARY KEY AUTO_INCREMENT,
+                        idnhacungcap INT NOT NULL,
+                        idxechiec INT NOT NULL,
+                        ngaytao DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE KEY uq_provider_car (idnhacungcap, idxechiec),
+                        INDEX idx_provider (idnhacungcap),
+                        INDEX idx_car (idxechiec),
+                        CONSTRAINT fk_ncc_xc_provider
+                            FOREIGN KEY (idnhacungcap) REFERENCES nguoidung(id)
+                            ON DELETE CASCADE,
+                        CONSTRAINT fk_ncc_xc_car
+                            FOREIGN KEY (idxechiec) REFERENCES xechiec(id)
+                            ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+        );
+}
+
 try {
     $db   = new Database();
     $conn = $db->getConnection();
+    ensureProviderCarMapTable($conn);
 
     if ($action === 'getMyBookings') {
         $stmt = $conn->prepare(
             "SELECT
-                id,
-                idxe                 AS car_id,
-                tenxe                AS car_name,
-                tenkhachhang         AS customer_name,
-                dienthoaikhachhang   AS customer_phone,
-                ngaynhan             AS pickup_date,
-                ngaytra              AS return_date,
-                songay               AS total_days,
-                tongtien             AS total_price,
-                trangthai            AS status,
-                ngaytao              AS created_at
-             FROM datxe WHERE idnhacungcap = ? ORDER BY ngaytao DESC"
+                b.id,
+                b.idxechiec                  AS car_id,
+                xm.ten                       AS car_name,
+                u.hoten                      AS customer_name,
+                u.sodienthoai                AS customer_phone,
+                b.ngaynhan                   AS pickup_date,
+                b.ngaytra                    AS return_date,
+                b.songay                     AS total_days,
+                (b.songay * xm.giathue_ngay) AS total_price,
+                b.trangthai                  AS status,
+                b.ngaytao                    AS created_at
+             FROM datxe b
+             INNER JOIN nguoidung u ON u.id = b.idkhachhang
+             INNER JOIN xechiec xc ON xc.id = b.idxechiec
+             INNER JOIN xemau xm ON xm.id = xc.idxemau
+               INNER JOIN nhacungcap_xechiec m ON m.idxechiec = xc.id
+               WHERE m.idnhacungcap = ?
+             ORDER BY b.ngaytao DESC"
         );
-        $stmt->execute([$provider_id]);
+           $stmt->execute([$provider_id]);
         echo json_encode(['success' => true, 'data' => $stmt->fetchAll()]);
         exit;
     }
@@ -54,9 +80,11 @@ try {
             exit;
         }
 
-        // Chỉ được cập nhật đơn của provider mình — idnhacungcap
         $stmt = $conn->prepare(
-            "SELECT id, trangthai AS status FROM datxe WHERE id = ? AND idnhacungcap = ?"
+            "SELECT b.id, b.trangthai AS status
+             FROM datxe b
+             INNER JOIN nhacungcap_xechiec m ON m.idxechiec = b.idxechiec
+             WHERE b.id = ? AND m.idnhacungcap = ?"
         );
         $stmt->execute([$booking_id, $provider_id]);
         $booking = $stmt->fetch();

@@ -1,8 +1,7 @@
 <?php
 /**
- * Customer Bookings Controller — v3
- * Bảng `bookings` → `datxe`, `users` → `nguoidung`.
- * AS alias để output JSON giữ nguyên field name cũ.
+ * Customer Bookings Controller
+ * Đồng bộ schema hiện tại: datxe + nguoidung + xechiec + xemau.
  */
 
 require_once dirname(__DIR__) . '/session.php';
@@ -23,26 +22,26 @@ try {
     $conn = $db->getConnection();
 
     if ($action === 'getMyBookings') {
-        // JOIN datxe với nguoidung (nhà cung cấp)
         $stmt = $conn->prepare(
             "SELECT
                 b.id,
-                b.idxe               AS car_id,
-                b.tenxe              AS car_name,
-                b.ngaynhan           AS pickup_date,
-                b.ngaytra            AS return_date,
-                b.songay             AS total_days,
-                b.tongtien           AS total_price,
-                b.tiendichvuthem     AS addon_total,
-                b.diachinhan         AS pickup_location,
-                b.trangthai          AS status,
-                b.ngaytao            AS created_at,
-                p.id                 AS provider_id,
-                p.hoten              AS provider_name,
-                p.sodienthoai        AS provider_phone,
-                p.tencongty          AS provider_company
+                b.idxechiec                  AS car_id,
+                xm.ten                       AS car_name,
+                b.ngaynhan                   AS pickup_date,
+                b.ngaytra                    AS return_date,
+                b.songay                     AS total_days,
+                (b.songay * xm.giathue_ngay) AS total_price,
+                0                            AS addon_total,
+                b.diachinhan                 AS pickup_location,
+                b.trangthai                  AS status,
+                b.ngaytao                    AS created_at,
+                NULL                         AS provider_id,
+                NULL                         AS provider_name,
+                NULL                         AS provider_phone,
+                NULL                         AS provider_company
              FROM datxe b
-             LEFT JOIN nguoidung p ON p.id = b.idnhacungcap AND p.vaitro = 'provider'
+             INNER JOIN xechiec xc ON xc.id = b.idxechiec
+             INNER JOIN xemau xm ON xm.id = xc.idxemau
              WHERE b.idkhachhang = ?
              ORDER BY b.ngaytao DESC"
         );

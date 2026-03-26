@@ -52,8 +52,8 @@ function initAuthNav() {
                 if (avatarEl) avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
 
                 const dashMap = {
-                    customer: 'views/pages/customer/bang-dieu-khien.html',
-                    provider: 'views/pages/provider/bang-dieu-khien.html',
+                    customer: 'controllers/customer/dashboard-controller.php',
+                    provider: 'controllers/provider/dashboard-controller.php',
                     admin:    'admin/index.php'
                 };
                 const logoutMap = {
@@ -68,7 +68,7 @@ function initAuthNav() {
                 };
 
                 const dashLink = document.getElementById('auth-dashboard-link');
-                if (dashLink) dashLink.href = dashMap[data.role] || 'views/pages/customer/bang-dieu-khien.html';
+                if (dashLink) dashLink.href = dashMap[data.role] || 'controllers/customer/dashboard-controller.php';
 
                 const logoutLink = document.getElementById('auth-logout-link');
                 if (logoutLink) {
