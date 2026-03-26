@@ -21,6 +21,10 @@
     <link rel="stylesheet" href="public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="public/asset/css/styles.css" />
     <link rel="stylesheet" href="public/asset/css/services.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
+    />
     <script src="/ga.js"></script>
     <style>
       .hero .hero-text h1 {
@@ -85,7 +89,6 @@
           <li><a href="index.html" class="nav-link">Trang chủ</a></li>
           <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
           <li><a href="dich-vu.html" class="nav-link">Dịch vụ</a></li>
-          <li><a href="index.html#process" class="nav-link">Quy trình</a></li>
           <li><a href="cam-nang.html" class="nav-link">Cẩm nang</a></li>
           <li><a href="don-dat.html" class="nav-link">Đơn đặt</a></li>
           <li>
@@ -95,6 +98,9 @@
               data-bs-target="#bookingModal"
               >Đặt dịch vụ</a
             >
+          </li>
+          <li>
+            <a href="dang-nhap.html" class="nav-link login-btn">Đăng nhập</a>
           </li>
         </ul>
         <button class="menu-toggle" id="menuToggle" aria-label="Menu">
@@ -348,28 +354,6 @@
       </div>
     </footer>
 
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-      <div
-        id="successToast"
-        class="toast align-items-center text-bg-success border-0"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-      >
-        <div class="d-flex">
-          <div class="toast-body">
-            Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.
-          </div>
-          <button
-            type="button"
-            class="btn-close btn-close-white me-2 m-auto"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-      </div>
-    </div>
-
     <div id="modalContainer"></div>
     <button
       class="scroll-to-top"
@@ -399,6 +383,10 @@
     <script
       type="text/javascript"
       src="public/asset/js/jquery-3.7.1.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"
     ></script>
     <script type="text/javascript" src="public/asset/js/database.js"></script>
     <script type="text/javascript" src="public/asset/js/script.js"></script>

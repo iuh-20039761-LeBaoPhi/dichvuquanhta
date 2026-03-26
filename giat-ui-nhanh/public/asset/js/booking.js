@@ -5,6 +5,37 @@ const BOOKING_GOOGLE_SHEET_API =
   "https://script.google.com/macros/s/AKfycbzGk9VOSebrVPRhBtXpOZyBpXaYZpzbvPD3hQ5oQ7uIGnn2HXBv2bBqJ6ouOpZ3g_kENA/exec";
 let bookingModalLoadPromise = null;
 
+const notyf = typeof window.Notyf === "function" ? new window.Notyf() : null;
+
+function showToast(message, type = "success") {
+  if (!notyf) {
+    console.error(message);
+    return;
+  }
+
+  if (type === "success") {
+    notyf.success({
+      message: message,
+      dismissible: true,
+      position: {
+        x: "right",
+        y: "top",
+      },
+      duration: 3000,
+    });
+  } else {
+    notyf.error({
+      message: message,
+      dismissible: true,
+      position: {
+        x: "right",
+        y: "top",
+      },
+      duration: 3000,
+    });
+  }
+}
+
 function getBookingTimeInput() {
   return (
     document.getElementById("thoigiandatdichvu") ||
@@ -1569,26 +1600,6 @@ function initBookingConfirmFlow() {
     hideConfirmAndQueueReturn("show-booking");
   }
 
-  function showBookingSuccessFeedback() {
-    const toastEl = document.getElementById("successToast");
-    if (
-      !toastEl ||
-      !window.bootstrap ||
-      typeof bootstrap.Toast !== "function"
-    ) {
-      alert("Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.");
-      return;
-    }
-
-    const toastBody = toastEl.querySelector(".toast-body");
-    if (toastBody) {
-      toastBody.textContent =
-        "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.";
-    }
-
-    bootstrap.Toast.getOrCreateInstance(toastEl).show();
-  }
-
   function handleConfirmSubmit() {
     const { data } = collectBookingData();
     const originalText = confirmBtn.textContent;
@@ -1626,7 +1637,10 @@ function initBookingConfirmFlow() {
         hideConfirmAndQueueReturn("submit-success");
         hideBookingStep();
 
-        showBookingSuccessFeedback();
+        showToast(
+          "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.",
+          "success",
+        );
 
         form.reset();
         clearConfirmMedia();
@@ -1640,13 +1654,16 @@ function initBookingConfirmFlow() {
         console.error("Lỗi gửi dữ liệu lên Google Sheet:", err);
         const msg = String(err && err.message ? err.message : "");
         if (msg.includes("401")) {
-          alert(
-            "API Google Sheet chưa được cấp quyền public (401). Vui lòng Deploy Web App với quyền Anyone và chạy bằng tài khoản chủ sở hữu script.",
-          );
+          const permissionMessage =
+            "API Google Sheet chưa được cấp quyền public (401). Vui lòng Deploy Web App với quyền Anyone và chạy bằng tài khoản chủ sở hữu script.";
+          console.error(permissionMessage);
+          showToast(permissionMessage, "error");
           return;
         }
 
-        alert("Không thể gửi dữ liệu. Vui lòng thử lại.");
+        const failMessage = "Không thể gửi dữ liệu. Vui lòng thử lại.";
+        console.error(failMessage);
+        showToast(failMessage, "error");
       })
       .finally(() => {
         confirmBtn.disabled = false;

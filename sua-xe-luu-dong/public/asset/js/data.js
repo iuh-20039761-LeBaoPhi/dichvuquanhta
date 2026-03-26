@@ -5,6 +5,37 @@ const BOOKING_GOOGLE_SHEET_API =
   "https://script.google.com/macros/s/AKfycbzGk9VOSebrVPRhBtXpOZyBpXaYZpzbvPD3hQ5oQ7uIGnn2HXBv2bBqJ6ouOpZ3g_kENA/exec";
 let bookingModalLoadPromise = null;
 
+const notyf = typeof window.Notyf === "function" ? new window.Notyf() : null;
+
+function showToast(message, type = "success") {
+  if (!notyf) {
+    console.error(message);
+    return;
+  }
+
+  if (type === "success") {
+    notyf.success({
+      message: message,
+      dismissible: true,
+      position: {
+        x: "right",
+        y: "top",
+      },
+      duration: 3000,
+    });
+  } else {
+    notyf.error({
+      message: message,
+      dismissible: true,
+      position: {
+        x: "right",
+        y: "top",
+      },
+      duration: 3000,
+    });
+  }
+}
+
 function injectBookingModalStyles(doc) {
   if (document.getElementById(BOOKING_MODAL_STYLE_ID)) {
     return;
@@ -1515,37 +1546,13 @@ function initBookingConfirmFlow() {
     }
   }
 
-  function showBookingSuccessFeedback(orderCode) {
-    const message = orderCode
-      ? `Đặt dịch vụ thành công! Mã đơn hàng của bạn: ${orderCode}`
-      : "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.";
-    const toastEl = document.getElementById("successToast");
-
-    if (
-      !toastEl ||
-      !window.bootstrap ||
-      typeof bootstrap.Toast !== "function"
-    ) {
-      alert(
-        `Cảm ơn bạn đã đặt dịch vụ! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.\nMã đơn hàng của bạn: ${orderCode || "-"}`,
-      );
-      return;
-    }
-
-    const toastBody = toastEl.querySelector(".toast-body");
-    if (toastBody) {
-      toastBody.textContent = message;
-    }
-
-    bootstrap.Toast.getOrCreateInstance(toastEl).show();
-  }
-
   function handleConfirmSubmit() {
     const payload = collectBookingData();
     const originalText = confirmBtn.textContent;
 
     if (!BOOKING_GOOGLE_SHEET_API) {
-      alert("Chưa cấu hình BOOKING_GOOGLE_SHEET_API để lưu dữ liệu.");
+      console.error("Chưa cấu hình BOOKING_GOOGLE_SHEET_API để lưu dữ liệu.");
+      showToast("Chưa cấu hình hệ thống lưu dữ liệu đặt lịch.", "error");
       return;
     }
 
@@ -1573,7 +1580,10 @@ function initBookingConfirmFlow() {
         bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
         hideBookingStep();
 
-        showBookingSuccessFeedback(payload.order_code);
+        showToast(
+          `Đặt dịch vụ thành công! Mã đơn hàng của bạn: ${payload.order_code}`,
+          "success",
+        );
 
         form.reset();
         clearConfirmMedia();
@@ -1586,7 +1596,8 @@ function initBookingConfirmFlow() {
       })
       .catch((err) => {
         console.error("Lỗi gửi dữ liệu sửa xe:", err);
-        alert("Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.");
+        console.error("Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.");
+        showToast("Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.", "error");
       })
       .finally(() => {
         confirmBtn.disabled = false;

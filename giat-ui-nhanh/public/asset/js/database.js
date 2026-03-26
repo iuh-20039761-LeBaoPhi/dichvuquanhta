@@ -5,8 +5,36 @@ const statisticAPI = "http://localhost/Giat-Ui-Nhanh/public/statistics";
 const searchOrderAPI = "http://localhost/Giat-Ui-Nhanh/public/search_orders";
 
 const toastEl = document.getElementById("successToast");
+let dbNotyf = null;
 
-const toast = new bootstrap.Toast(toastEl);
+const toast =
+  toastEl && window.bootstrap && typeof bootstrap.Toast === "function"
+    ? new bootstrap.Toast(toastEl)
+    : null;
+
+function showOrderSuccessToast(
+  message = "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.",
+) {
+  if (typeof window.Notyf === "function") {
+    if (!dbNotyf) {
+      dbNotyf = new window.Notyf({
+        duration: 3200,
+        dismissible: true,
+        position: { x: "right", y: "top" },
+      });
+    }
+
+    dbNotyf.success(message);
+    return;
+  }
+
+  if (toast) {
+    toast.show();
+    return;
+  }
+
+  alert(message);
+}
 
 function chooseComboAPI() {
   const form = document.querySelector(".contactFormCombo");
@@ -33,8 +61,8 @@ function chooseComboAPI() {
         modal.hide();
         // reset form
         form.reset();
-        // hiện toast
-        toast.show();
+        // hiện thông báo thành công
+        showOrderSuccessToast();
       })
       .catch((err) => {
         console.error("Lỗi gửi dữ liệu:", err);
@@ -66,7 +94,7 @@ function bookAServiceAPI() {
         // reset contactForm
         this.reset();
         // show toast
-        toast.show();
+        showOrderSuccessToast();
       })
       .catch((err) => {
         console.error("Lỗi gửi dữ liệu:", err);
