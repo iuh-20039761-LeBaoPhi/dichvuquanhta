@@ -197,18 +197,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="invoiceDetailModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content border-0 rounded-4 shadow-lg">
-                <div class="modal-header bg-danger-subtle border-0">
-                    <h5 class="modal-title text-danger-emphasis"><i class="bi bi-file-text-fill me-2"></i>Chi Tiết Hóa Đơn</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body bg-body-tertiary" id="invoiceDetailContent"></div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal fade" id="uploadMediaModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 rounded-4 shadow-lg">
@@ -659,65 +647,18 @@
             }
         }
 
-        async function viewInvoiceDetail(invoiceId) {
-            var content = document.getElementById('invoiceDetailContent');
-            var localInvoice = getInvoiceFromCache(invoiceId);
+        function viewInvoiceDetail(invoiceId) {
+            var normalizedId = Number(invoiceId);
+            var localInvoice = getInvoiceFromCache(normalizedId);
+            var url = 'chi-tiet-hoa-don.html?hoa_don_id=' + normalizedId;
 
-            content.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-danger" role="status"></div></div>';
-            bootstrap.Modal.getOrCreateInstance(document.getElementById('invoiceDetailModal')).show();
-
-            try {
-                var response = await fetch('../api/get_invoice_detail.php?hoa_don_id=' + Number(invoiceId));
-                var data = await response.json();
-
-                if (data.success) {
-                    var serverInvoice = data.invoice || {};
-                    var mergedInvoice = localInvoice ? Object.assign({}, localInvoice, serverInvoice) : serverInvoice;
-                    var mergedEmployee = data.nhan_vien || (localInvoice ? {
-                        id: localInvoice.nhan_vien_id,
-                        ten: localInvoice.employee_name,
-                        dien_thoai: localInvoice.employee_phone,
-                        email: localInvoice.employee_email,
-                        danh_gia: localInvoice.employee_rating,
-                        kinh_nghiem: localInvoice.employee_kinh_nghiem,
-                        anh_dai_dien: localInvoice.employee_avatar
-                    } : null);
-                    var resolvedMedia = Array.isArray(data.media) && data.media.length > 0 ? data.media : ((localInvoice && localInvoice.media) || []);
-
-                    renderInvoiceDetailContent(content, mergedInvoice, mergedEmployee, resolvedMedia);
-                    return;
-                }
-
-                if (localInvoice) {
-                    renderInvoiceDetailContent(content, localInvoice, {
-                        id: localInvoice.nhan_vien_id,
-                        ten: localInvoice.employee_name,
-                        dien_thoai: localInvoice.employee_phone,
-                        email: localInvoice.employee_email,
-                        danh_gia: localInvoice.employee_rating,
-                        kinh_nghiem: localInvoice.employee_kinh_nghiem,
-                        anh_dai_dien: localInvoice.employee_avatar
-                    }, localInvoice.media || []);
-                    return;
-                }
-
-                content.innerHTML = '<div class="alert alert-warning mb-0">' + escapeHtml(data.message || 'Không thể tải chi tiết hóa đơn.') + '</div>';
-            } catch (error) {
-                if (localInvoice) {
-                    renderInvoiceDetailContent(content, localInvoice, {
-                        id: localInvoice.nhan_vien_id,
-                        ten: localInvoice.employee_name,
-                        dien_thoai: localInvoice.employee_phone,
-                        email: localInvoice.employee_email,
-                        danh_gia: localInvoice.employee_rating,
-                        kinh_nghiem: localInvoice.employee_kinh_nghiem,
-                        anh_dai_dien: localInvoice.employee_avatar
-                    }, localInvoice.media || []);
-                    return;
-                }
-
-                content.innerHTML = '<div class="alert alert-danger mb-0">Không thể tải chi tiết hóa đơn. Vui lòng thử lại.</div>';
+            if (localInvoice && hasDisplayValue(localInvoice.dien_thoai)) {
+                url += '&dien_thoai=' + encodeURIComponent(String(localInvoice.dien_thoai));
             }
+             if (typeof window.__markInSiteNavigation === 'function') {
+                window.__markInSiteNavigation();
+            }
+            window.location.href = url;
         }
 
         document.getElementById('uploadMediaForm').addEventListener('submit', async function (e) {
