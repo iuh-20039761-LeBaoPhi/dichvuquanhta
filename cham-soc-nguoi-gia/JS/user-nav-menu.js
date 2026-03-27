@@ -31,7 +31,11 @@
       // Ignore malformed links.
     }
   }
+  function markInSiteNavigationProgrammatically() {
+    isInSiteNavigation = true;
+  }
 
+  window.__markInSiteNavigation = markInSiteNavigationProgrammatically;
   function autoLogoutOnClose() {
     var hasUser = false;
     try {
