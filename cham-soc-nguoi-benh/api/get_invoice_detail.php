@@ -4,8 +4,24 @@ require_once 'db.php';
 $isLoggedIn = isset($_SESSION['nguoi_dung_id']);
 $userId = $isLoggedIn ? intval($_SESSION['nguoi_dung_id']) : 0;
 $userRole = $isLoggedIn ? $_SESSION['vai_tro'] : '';
-$invoiceId = isset($_GET['hoa_don_id']) ? intval($_GET['hoa_don_id']) : 0;
-$lookupPhone = isset($_GET['dien_thoai']) ? sanitize($_GET['dien_thoai']) : '';
+
+$requestData = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $rawInput = file_get_contents('php://input');
+    $decodedInput = json_decode($rawInput, true);
+    if (is_array($decodedInput)) {
+        $requestData = $decodedInput;
+    }
+}
+
+$invoiceId = isset($requestData['hoa_don_id'])
+    ? intval($requestData['hoa_don_id'])
+    : (isset($_GET['hoa_don_id']) ? intval($_GET['hoa_don_id']) : 0);
+
+$lookupPhoneRaw = isset($requestData['dien_thoai'])
+    ? $requestData['dien_thoai']
+    : (isset($_GET['dien_thoai']) ? $_GET['dien_thoai'] : '');
+$lookupPhone = sanitize((string)$lookupPhoneRaw);
 
 if ($invoiceId === 0) {
     echo json_encode(['success' => false, 'message' => 'Invalid invoice ID']);

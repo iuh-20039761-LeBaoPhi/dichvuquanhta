@@ -342,10 +342,57 @@
             return String(params.get('dien_thoai') || '').trim();
         }
 
+        function getDetailContextFromSessionStorage() {
+            try {
+                var raw = sessionStorage.getItem('invoice_detail_context');
+                if (!raw) return null;
+
+                var parsed = JSON.parse(raw);
+                var invoiceId = Number(parsed && parsed.hoa_don_id);
+                var lookupPhone = String((parsed && parsed.dien_thoai) || '').trim();
+
+                if (!invoiceId) return null;
+
+                return {
+                    hoa_don_id: invoiceId,
+                    dien_thoai: lookupPhone
+                };
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function clearUrlSensitiveQuery() {
+            if (!window.location.search) return;
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        function resolveInvoiceDetailContext() {
+            var fromStorage = getDetailContextFromSessionStorage();
+            if (fromStorage && fromStorage.hoa_don_id) {
+                clearUrlSensitiveQuery();
+                return fromStorage;
+            }
+
+            // Backward compatibility for old links.
+            var fromUrl = {
+                hoa_don_id: getInvoiceIdFromUrl(),
+                dien_thoai: getLookupPhoneFromUrl()
+            };
+
+            if (fromUrl.hoa_don_id) {
+                clearUrlSensitiveQuery();
+                return fromUrl;
+            }
+
+            return null;
+        }
+
         async function loadInvoiceDetail() {
             var content = document.getElementById('invoiceDetailContent');
-            var invoiceId = getInvoiceIdFromUrl();
-            var lookupPhone = getLookupPhoneFromUrl();
+            var detailContext = resolveInvoiceDetailContext();
+            var invoiceId = detailContext ? Number(detailContext.hoa_don_id) : 0;
+            var lookupPhone = detailContext ? String(detailContext.dien_thoai || '').trim() : '';
 
             if (!invoiceId) {
                 content.innerHTML = '<div class="alert alert-warning mb-0">Thiếu mã hóa đơn. Vui lòng quay lại danh sách hóa đơn để chọn hóa đơn cần xem.</div>';
@@ -355,12 +402,16 @@
             content.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-danger" role="status"></div></div>';
 
             try {
-                var apiUrl = '../api/get_invoice_detail.php?hoa_don_id=' + invoiceId;
-                if (lookupPhone) {
-                    apiUrl += '&dien_thoai=' + encodeURIComponent(lookupPhone);
-                }
-
-                var response = await fetch(apiUrl);
+                var response = await fetch('../api/get_invoice_detail.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        hoa_don_id: invoiceId,
+                        dien_thoai: lookupPhone
+                    })
+                });
                 var data = await response.json();
 
                 if (data.message === 'Unauthorized') {

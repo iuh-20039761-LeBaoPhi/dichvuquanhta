@@ -649,16 +649,28 @@
 
         function viewInvoiceDetail(invoiceId) {
             var normalizedId = Number(invoiceId);
+            if (!normalizedId) {
+                return;
+            }
+
             var localInvoice = getInvoiceFromCache(normalizedId);
-            var url = 'chi-tiet-hoa-don.html?hoa_don_id=' + normalizedId;
+            var detailContext = {
+                hoa_don_id: normalizedId
+            };
 
             if (localInvoice && hasDisplayValue(localInvoice.dien_thoai)) {
-                url += '&dien_thoai=' + encodeURIComponent(String(localInvoice.dien_thoai));
+                detailContext.dien_thoai = String(localInvoice.dien_thoai);
+            }
+
+            try {
+                sessionStorage.setItem('invoice_detail_context', JSON.stringify(detailContext));
+            } catch (error) {
+                // Ignore storage error and continue to navigate.
             }
              if (typeof window.__markInSiteNavigation === 'function') {
                 window.__markInSiteNavigation();
             }
-            window.location.href = url;
+            window.location.href = 'chi-tiet-hoa-don.html';
         }
 
         document.getElementById('uploadMediaForm').addEventListener('submit', async function (e) {
