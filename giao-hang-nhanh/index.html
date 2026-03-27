@@ -553,6 +553,9 @@
 
           if (!faqs.length) {
             faqList.innerHTML = "<p>Chưa có câu hỏi thường gặp nào.</p>";
+            document.dispatchEvent(
+              new CustomEvent("ghn:landing-faq-updated"),
+            );
             return;
           }
 
@@ -565,6 +568,8 @@
                 </div>`,
             )
             .join("");
+
+          document.dispatchEvent(new CustomEvent("ghn:landing-faq-updated"));
         }
 
         function renderAuthUi(isLoggedIn, role) {
@@ -622,7 +627,7 @@
               cod_min: 5000,
             };
 
-            const data = {
+            const fallbackData = {
               services: [],
               testimonials: [
                 {
@@ -671,7 +676,32 @@
               },
               is_logged_in: false,
               role: "guest",
+              user: null,
             };
+
+            let data = fallbackData;
+
+            try {
+              const response = await fetch("public/landing_data_ajax.php", {
+                headers: {
+                  Accept: "application/json",
+                },
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+              }
+
+              const payload = await response.json();
+              if (payload && payload.status === "success" && payload.data) {
+                data = {
+                  ...fallbackData,
+                  ...payload.data,
+                };
+              }
+            } catch (fetchError) {
+              console.warn("Cannot load landing data from API, using fallback.", fetchError);
+            }
 
             const servicesToRender = window.servicesData || data.services;
             if (Array.isArray(servicesToRender) && servicesToRender.length) {

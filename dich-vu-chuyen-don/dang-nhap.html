@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <link rel="icon" type="image/x-icon" href="public/assets/images/favicon.ico" />
+    <meta charset="UTF-8" />
+    <title>Đăng nhập tài khoản | Dịch vụ Chuyển Dọn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Đăng nhập khu vực khách hàng hoặc đối tác cung ứng của Dịch vụ Chuyển Dọn để quản lý yêu cầu khảo sát, đặt lịch và tiến độ xử lý."
+    />
+    <link rel="canonical" href="dang-nhap.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="dang-nhap.html" />
+    <meta property="og:title" content="Đăng nhập tài khoản | Dịch vụ Chuyển Dọn" />
+    <meta
+      property="og:description"
+      content="Truy cập khu vực tài khoản dành cho khách hàng và đối tác cung ứng của Dịch vụ Chuyển Dọn."
+    />
+    <meta property="og:image" content="public/assets/images/chuyendon-tron-goi.png" />
+    <meta property="og:site_name" content="Dịch vụ Chuyển Dọn" />
+
+    <link rel="stylesheet" href="public/assets/css/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="/ga.js"></script>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="trang-bieu-mau trang-tai-khoan">
+      <section class="hero-bieu-mau hero-tai-khoan">
+        <div class="container hero-bieu-mau-noi-dung">
+          <div class="hero-bieu-mau-van-ban">
+            <span class="nhan-phu">Khu vực tài khoản</span>
+            <h1>Đăng nhập theo đúng vai trò để quản lý yêu cầu chuyển dọn</h1>
+            <p>
+              Khách hàng có thể theo dõi lịch khảo sát, đặt lịch và các mốc xử lý.
+              Đối tác cung ứng có khu vực riêng để nhận yêu cầu, cập nhật năng lực và
+              phối hợp vận hành với điều phối viên.
+            </p>
+            <div class="hero-bieu-mau-hanh-dong">
+              <a class="nut-hanh-dong nut-sang" href="dang-ky.html?vai-tro=khach-hang">Tạo tài khoản khách hàng</a>
+              <a class="nut-hanh-dong nut-vien" href="dang-ky.html?vai-tro=doi-tac">Đăng ký đối tác cung ứng</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="khu-bieu-mau khu-tai-khoan">
+        <div class="container luoi-tai-khoan">
+          <div class="cot-bieu-mau">
+            <div class="the-bieu-mau the-tai-khoan">
+              <nav class="bo-chon-vai-tro" aria-label="Chọn vai trò đăng nhập">
+                <a class="bo-chon-vai-tro__nut" data-auth-role-link="khach-hang" href="dang-nhap.html?vai-tro=khach-hang">Khách hàng</a>
+                <a class="bo-chon-vai-tro__nut" data-auth-role-link="doi-tac" href="dang-nhap.html?vai-tro=doi-tac">Đối tác cung ứng</a>
+              </nav>
+
+              <div class="gioi-thieu-tai-khoan">
+                <h2>Chọn vai trò rồi đăng nhập</h2>
+                <p>
+                  Mỗi nhóm người dùng có luồng xử lý khác nhau. Dùng đúng khu vực để
+                  đội điều phối, khách hàng và đối tác trao đổi thông tin rõ ràng hơn.
+                </p>
+              </div>
+
+              <section class="bang-thong-tin-vai-tro" data-auth-role-panel="khach-hang">
+                <div class="dong-tieu-de-form">
+                  <div>
+                    <h3>Đăng nhập khách hàng</h3>
+                    <p>Dành cho người cần quản lý yêu cầu khảo sát, đơn đặt lịch và thông tin liên hệ.</p>
+                  </div>
+                  <span class="nhan-vai-tro">Khách hàng</span>
+                </div>
+
+                <form class="form-tai-khoan" data-auth-form data-auth-mode="login" data-auth-role="khach-hang">
+                  <div class="luoi-truong">
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="customer-login-email">Email đăng nhập</label>
+                      <input class="truong-nhap" id="customer-login-email" name="email" type="email" data-auth-autofill="email" required />
+                    </div>
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="customer-login-phone">Số điện thoại</label>
+                      <input class="truong-nhap" id="customer-login-phone" name="phone" type="tel" data-auth-autofill="phone" />
+                    </div>
+                  </div>
+
+                  <div class="nhom-truong">
+                    <label class="nhan-truong" for="customer-login-password">Mật khẩu</label>
+                    <div class="khung-mat-khau">
+                      <input class="truong-nhap" id="customer-login-password" name="password" type="password" required />
+                      <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="customer-login-password">Hiện</button>
+                    </div>
+                  </div>
+
+                  <div class="hang-phu-tai-khoan">
+                    <label class="lua-chon-nho">
+                      <input type="checkbox" name="remember_me" />
+                      <span>Ghi nhớ đăng nhập trên thiết bị này</span>
+                    </label>
+                    <a class="lien-ket-van-ban" data-auth-cross-link="dang-ky" href="dang-ky.html?vai-tro=khach-hang">Chưa có tài khoản? Đăng ký</a>
+                  </div>
+
+                  <button class="nut-chinh nut-sang nut-toan-chieu" type="submit">Đăng nhập khách hàng</button>
+                  <div class="thong-bao-tai-khoan" data-auth-feedback hidden></div>
+                </form>
+              </section>
+
+              <section class="bang-thong-tin-vai-tro" data-auth-role-panel="doi-tac" hidden>
+                <div class="dong-tieu-de-form">
+                  <div>
+                    <h3>Đăng nhập đối tác cung ứng</h3>
+                    <p>Dành cho đội xe, đội bốc xếp hoặc đơn vị cung ứng cần cập nhật năng lực và nhận việc.</p>
+                  </div>
+                  <span class="nhan-vai-tro">Đối tác cung ứng</span>
+                </div>
+
+                <form class="form-tai-khoan" data-auth-form data-auth-mode="login" data-auth-role="doi-tac">
+                  <div class="luoi-truong">
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="provider-login-email">Email</label>
+                      <input class="truong-nhap" id="provider-login-email" name="email" type="email" data-auth-autofill="email" required />
+                    </div>
+                  </div>
+
+                  <div class="nhom-truong">
+                    <label class="nhan-truong" for="provider-login-password">Mật khẩu</label>
+                    <div class="khung-mat-khau">
+                      <input class="truong-nhap" id="provider-login-password" name="password" type="password" required />
+                      <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="provider-login-password">Hiện</button>
+                    </div>
+                  </div>
+
+                  <div class="hang-phu-tai-khoan">
+                    <label class="lua-chon-nho">
+                      <input type="checkbox" name="remember_me" />
+                      <span>Giữ trạng thái cho ca điều phối tiếp theo</span>
+                    </label>
+                    <a class="lien-ket-van-ban" data-auth-cross-link="dang-ky" href="dang-ky.html?vai-tro=doi-tac">Chưa có tài khoản? Đăng ký</a>
+                  </div>
+
+                  <button class="nut-chinh nut-sang nut-toan-chieu" type="submit">Đăng nhập đối tác</button>
+                  <div class="thong-bao-tai-khoan" data-auth-feedback hidden></div>
+                </form>
+              </section>
+            </div>
+          </div>
+
+          <aside class="cot-thong-tin">
+            <div class="the-thong-tin the-thong-tin--role" data-auth-role-note="khach-hang">
+              <span class="the-thong-tin-nhan">Khách hàng</span>
+              <h2>Quản lý yêu cầu ở một chỗ</h2>
+              <ul class="the-thong-tin__list">
+                <li>Xem nhanh lịch khảo sát, trạng thái đơn đặt lịch và ghi chú cần xử lý.</li>
+                <li>Cập nhật số điện thoại, địa chỉ liên hệ và nhu cầu chuyển dọn mới.</li>
+                <li>Giữ mạch trao đổi rõ ràng với điều phối viên theo từng yêu cầu.</li>
+              </ul>
+            </div>
+
+            <div class="the-thong-tin the-thong-tin--role" data-auth-role-note="doi-tac" hidden>
+              <span class="the-thong-tin-nhan">Đối tác cung ứng</span>
+              <h2>Điều phối năng lực rõ hơn</h2>
+              <ul class="the-thong-tin__list">
+                <li>Quản lý thông tin đội xe, đội bốc xếp và khu vực hoạt động.</li>
+                <li>Chuẩn hóa đầu mối liên hệ để nhận job và phản hồi nhanh hơn.</li>
+                <li>Tạo nền cho bước xét duyệt và đối soát khi cần nối backend sau.</li>
+              </ul>
+            </div>
+
+            <div class="the-thong-tin">
+              <span class="the-thong-tin-nhan">Lối tắt</span>
+              <h2>Đi sang bước tiếp theo</h2>
+              <div class="cum-lien-ket-tai-khoan">
+                <a class="nut-phu" data-auth-cross-link="dang-ky" href="dang-ky.html?vai-tro=khach-hang">Đăng ký tài khoản</a>
+                <a class="nut-phu" href="khao-sat.html">Đi tới khảo sát</a>
+                <a class="nut-phu" href="dat-lich.html">Đi tới đặt lịch</a>
+              </div>
+            </div>
+
+            <div class="the-lien-ket-nhanh">
+              <h4>Gợi ý triển khai tiếp</h4>
+              <p>
+                Nếu muốn đi xa hơn phần giao diện này, bước kế tiếp hợp lý là nối xác thực,
+                phân quyền vai trò và trang quản lý riêng cho từng nhóm người dùng.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="public/assets/js/shared-layout.js"></script>
+    <script src="public/assets/js/main.js" defer></script>
+  </body>
+</html>

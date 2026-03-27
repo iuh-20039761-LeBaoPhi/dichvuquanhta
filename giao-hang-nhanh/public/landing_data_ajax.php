@@ -34,6 +34,30 @@ if ($faqsRes) {
 $pricingConfig = ['weight_free' => 2, 'weight_price' => 5000, 'cod_min' => 5000];
 $isLoggedIn = !empty($_SESSION['user_id']);
 $role = $isLoggedIn ? ($_SESSION['role'] ?? 'customer') : 'guest';
+$user = null;
+
+if ($isLoggedIn) {
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+    if ($userId > 0) {
+        $userStmt = $conn->prepare("SELECT id, username, fullname, role FROM users WHERE id = ? LIMIT 1");
+        if ($userStmt) {
+            $userStmt->bind_param('i', $userId);
+            $userStmt->execute();
+            $userRow = $userStmt->get_result()->fetch_assoc();
+            $userStmt->close();
+
+            if ($userRow) {
+                $role = $userRow['role'] ?? $role;
+                $user = [
+                    'id' => (int) ($userRow['id'] ?? $userId),
+                    'username' => $userRow['username'] ?? '',
+                    'fullname' => $userRow['fullname'] ?? '',
+                    'role' => $role,
+                ];
+            }
+        }
+    }
+}
 
 echo json_encode([
     'status' => 'success',
@@ -43,7 +67,8 @@ echo json_encode([
         'faqs' => $faqs,
         'pricing_config' => $pricingConfig,
         'is_logged_in' => $isLoggedIn,
-        'role' => $role
+        'role' => $role,
+        'user' => $user,
     ]
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 

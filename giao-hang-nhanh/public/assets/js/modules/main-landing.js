@@ -15,6 +15,9 @@
 
   function initFaqAccordion() {
     document.querySelectorAll(".faq-question").forEach((q) => {
+      if (q.dataset.faqReady === "1") return;
+      q.dataset.faqReady = "1";
+
       q.addEventListener("click", () => {
         const item = q.closest(".faq-item");
         const isActive = item.classList.contains("active");
@@ -888,5 +891,6 @@
       lucide.createIcons();
     }
   });
+  document.addEventListener("ghn:landing-faq-updated", initFaqAccordion);
   initHeroAnimation();
 })(window, document);

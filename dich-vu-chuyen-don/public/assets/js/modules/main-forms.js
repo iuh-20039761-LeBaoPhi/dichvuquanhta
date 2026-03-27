@@ -1840,6 +1840,9 @@
       const dienTich = String(
         scope.querySelector("#dien-tich-nha-dat-lich")?.value || "",
       ).trim();
+      const tongKhoiLuong = String(
+        scope.querySelector("#tong-khoi-luong-nha-dat-lich")?.value || "",
+      ).trim();
       const tongTheTich = String(
         scope.querySelector("#tong-the-tich-nha-dat-lich")?.value || "",
       ).trim();
@@ -1863,6 +1866,7 @@
       return joinSurveyParts(
         [
           dienTich,
+          tongKhoiLuong && `${tongKhoiLuong} kg`,
           tongTheTich && `${tongTheTich} m3`,
           soPhong && `${soPhong} phòng`,
           soNhanCong && `${soNhanCong} nhân công`,
@@ -2354,7 +2358,7 @@
     }
 
     if (!vehicleEntry) {
-      notes.push("Chọn loại xe để khóa cước cơ bản và hoàn tất giá chốt.");
+      notes.push("Chọn loại xe để khóa cước cơ bản và hoàn tất giá tạm tính.");
     } else {
       const tripEstimate = resolveBookingTripCount(
         scope,
@@ -2610,10 +2614,11 @@
       );
     }
 
-    const conditionLabels = getCheckedLabels(
-      scope,
+    const conditionLabels = getCheckedLabelsFromSelectors(scope, [
       "[data-nhom-chip='dieu_kien_dat_lich'] input[type='checkbox']",
-    );
+      "[data-nhom-chip='dieu_kien_tiep_can'] input[type='checkbox']",
+      "[data-booking-condition-group] input[type='checkbox']",
+    ]);
     if (conditionLabels.length) {
       notes.push(
         `Điều kiện tiếp cận đã ghi nhận: ${conditionLabels.join(", ")}. Các yếu tố này có thể phát sinh phụ phí hẻm hoặc đẩy bộ sau khảo sát.`,
@@ -2680,17 +2685,17 @@
       : '<div class="muc-chi-tiet-gia-chot-dat-lich"><p>Chưa có dòng tính nào được kích hoạt. Chọn xe hoặc thêm hạng mục để hệ thống cập nhật ngay.</p></div>';
 
     return {
-      title: serviceData.ten_dich_vu || "Giá chốt",
+      title: serviceData.ten_dich_vu || "Giá tạm tính",
       description:
         serviceData?.thong_tin_minh_bach?.tom_tat_tong_chi_phi ||
-        "Giá chốt đang bám theo bảng giá minh bạch và các lựa chọn bạn nhập trong form.",
+        "Giá tạm tính đang bám theo bảng giá minh bạch và các lựa chọn bạn nhập trong form.",
       optionCardsHtml,
       breakdownHtml,
       breakdownLines,
       total: vehicleEntry ? total : null,
       totalNote: vehicleEntry
-        ? "Giá chốt sẽ tự cập nhật ngay khi bạn đổi loại xe, số lượng hoặc checkbox phát sinh."
-        : "Chọn loại xe trước để khóa cước cơ bản và hoàn tất giá chốt.",
+        ? "Giá tạm tính sẽ tự cập nhật ngay khi bạn đổi loại xe, số lượng hoặc checkbox phát sinh."
+        : "Chọn loại xe trước để khóa cước cơ bản và hoàn tất giá tạm tính.",
       notes,
     };
   }
@@ -2736,7 +2741,7 @@
       if (totalValue) totalValue.textContent = "Chưa đủ dữ liệu";
       if (totalHint) {
         totalHint.textContent =
-          "Chọn dịch vụ, xe và nhập đủ các hạng mục cần dùng để hệ thống tính giá chốt.";
+          "Chọn dịch vụ, xe và nhập đủ các hạng mục cần dùng để hệ thống tính giá tạm tính.";
       }
       if (confirmEmpty) confirmEmpty.hidden = false;
       if (confirmGrid) {
@@ -2745,7 +2750,7 @@
       }
       if (confirmNotes) {
         confirmNotes.innerHTML =
-          '<div class="muc-luu-y-xac-nhan">Giá chốt sẽ hiện khi bạn chọn dịch vụ và bắt đầu khai báo các hạng mục chính.</div>';
+          '<div class="muc-luu-y-xac-nhan">Giá tạm tính sẽ hiện khi bạn chọn dịch vụ và bắt đầu khai báo các hạng mục chính.</div>';
       }
       return;
     }
@@ -2781,14 +2786,14 @@
     }
 
     if (title) {
-      title.textContent = serviceData.ten_dich_vu || "Giá chốt";
+      title.textContent = serviceData.ten_dich_vu || "Giá tạm tính";
     }
 
     if (description) {
       description.textContent =
         serviceData?.thong_tin_minh_bach?.tom_tat_tong_chi_phi ||
         serviceData?.thong_tin_minh_bach?.phu_hop_khi ||
-        "Hệ thống đang hiển thị đúng gói cơ bản, hạng mục chọn thêm và giá chốt của dịch vụ bạn đã chọn.";
+        "Hệ thống đang hiển thị gói cơ bản, hạng mục chọn thêm và giá tạm tính của dịch vụ bạn đã chọn.";
     }
 
     const pricingState = buildBookingPricingState(scope, serviceData);
@@ -2824,7 +2829,7 @@
 
       confirmationItems.push(`
         <article class="the-gia-xac-nhan-dat-lich the-gia-xac-nhan-dat-lich--tong">
-          <h5>Tổng giá chốt</h5>
+          <h5>Tổng tạm tính</h5>
           <strong>${core.escapeHtml(
             pricingState.total === null
               ? "Chưa đủ dữ liệu"
@@ -2842,7 +2847,8 @@
     if (confirmNotes) {
       confirmNotes.innerHTML = pricingState.notes
         .concat([
-          "Nếu bạn đổi loại xe, thay số lượng hạng mục hoặc bật thêm checkbox phát sinh, giá chốt sẽ tự cập nhật ngay trong form.",
+          "Giá tạm tính hiện chỉ gồm các hạng mục có đơn giá rõ ràng; các thông tin điều phối sẽ được đội ngũ rà lại khi tiếp nhận.",
+          "Nếu bạn đổi loại xe, thay số lượng hạng mục hoặc bật thêm checkbox phát sinh, giá tạm tính sẽ tự cập nhật ngay trong form.",
         ])
         .map((note) => `<div class="muc-luu-y-xac-nhan">${note}</div>`)
         .join("");
@@ -3552,6 +3558,15 @@
     const form = scope.querySelector("form[data-loai-bieu-mau]");
     const notice = scope.querySelector("[data-thong-bao-bieu-mau]");
     if (!form || !notice) return;
+    const submitButton = form.querySelector("[data-nut-gui-bieu-mau]") || form.querySelector("button[type='submit']");
+    const defaultSubmitLabel = String(submitButton?.textContent || "").trim() || "Gửi";
+
+    function syncSubmitState(isSubmitting, label) {
+      if (!submitButton) return;
+      submitButton.disabled = isSubmitting;
+      submitButton.textContent = label || defaultSubmitLabel;
+      submitButton.setAttribute("aria-disabled", isSubmitting ? "true" : "false");
+    }
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
@@ -3559,16 +3574,25 @@
       syncPhoneFieldValidity(scope);
       if (!form.reportValidity()) return;
 
-      if (formType === "khao-sat") {
-        notice.textContent =
-          "Biểu mẫu khảo sát đã sẵn sàng về nội dung và giao diện. Chức năng gửi yêu cầu chính thức đang được hoàn thiện.";
-      } else {
-        notice.textContent =
-          "Biểu mẫu đặt lịch đã sẵn sàng về nội dung và giao diện. Chức năng gửi yêu cầu chính thức đang được hoàn thiện.";
-      }
-
+      syncSubmitState(true, "Đang ghi nhận...");
       notice.hidden = false;
+      notice.classList.remove("is-success", "is-error");
+      notice.classList.add("is-pending");
+      notice.textContent =
+        formType === "khao-sat"
+          ? "Hệ thống đang rà lại dữ liệu khảo sát bạn vừa nhập."
+          : "Hệ thống đang rà lại thông tin đặt lịch và các hạng mục bạn vừa chọn.";
       notice.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+      window.setTimeout(function () {
+        notice.classList.remove("is-pending", "is-error");
+        notice.classList.add("is-success");
+        notice.textContent =
+          formType === "khao-sat"
+            ? "Biểu mẫu khảo sát demo đã được ghi nhận. Chức năng gửi yêu cầu chính thức đang được hoàn thiện, nhưng nội dung bạn vừa nhập đã sẵn sàng để đội ngũ dùng tiếp."
+            : "Biểu mẫu đặt lịch demo đã được ghi nhận. Giá tạm tính và các thông tin điều phối đang bám theo dữ liệu bạn vừa nhập; chức năng gửi yêu cầu chính thức đang được hoàn thiện.";
+        syncSubmitState(false, defaultSubmitLabel);
+      }, 900);
     });
   }
 

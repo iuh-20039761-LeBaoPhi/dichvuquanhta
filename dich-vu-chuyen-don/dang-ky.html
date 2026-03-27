@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <link rel="icon" type="image/x-icon" href="public/assets/images/favicon.ico" />
+    <meta charset="UTF-8" />
+    <title>Đăng ký tài khoản | Dịch vụ Chuyển Dọn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Đăng ký tài khoản khách hàng hoặc đối tác cung ứng cho Dịch vụ Chuyển Dọn để chuẩn hóa thông tin liên hệ và quy trình xử lý yêu cầu."
+    />
+    <link rel="canonical" href="dang-ky.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="dang-ky.html" />
+    <meta property="og:title" content="Đăng ký tài khoản | Dịch vụ Chuyển Dọn" />
+    <meta
+      property="og:description"
+      content="Tạo tài khoản dành cho khách hàng hoặc đối tác cung ứng trên website Dịch vụ Chuyển Dọn."
+    />
+    <meta property="og:image" content="public/assets/images/chuyendon-tron-goi.png" />
+    <meta property="og:site_name" content="Dịch vụ Chuyển Dọn" />
+
+    <link rel="stylesheet" href="public/assets/css/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="/ga.js"></script>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <main class="trang-bieu-mau trang-tai-khoan">
+      <section class="hero-bieu-mau hero-tai-khoan">
+        <div class="container hero-bieu-mau-noi-dung">
+          <div class="hero-bieu-mau-van-ban">
+            <span class="nhan-phu">Mở tài khoản mới</span>
+            <h1>Đăng ký khu vực riêng cho khách hàng hoặc đối tác cung ứng</h1>
+            <p>
+              Từ bước này, thông tin liên hệ và vai trò được gom về một nơi. Khách hàng
+              dễ tạo yêu cầu chuyển dọn hơn, còn đối tác có nền để cập nhật năng lực và
+              đi vào luồng xét duyệt sau này.
+            </p>
+            <div class="hero-bieu-mau-hanh-dong">
+              <a class="nut-hanh-dong nut-sang" href="dang-nhap.html?vai-tro=khach-hang">Đã có tài khoản? Đăng nhập</a>
+              <a class="nut-hanh-dong nut-vien" href="dich-vu-chuyen-don.html">Xem lại dịch vụ</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="khu-bieu-mau khu-tai-khoan">
+        <div class="container luoi-tai-khoan">
+          <div class="cot-bieu-mau">
+            <div class="the-bieu-mau the-tai-khoan">
+              <nav class="bo-chon-vai-tro" aria-label="Chọn vai trò đăng ký">
+                <a class="bo-chon-vai-tro__nut" data-auth-role-link="khach-hang" href="dang-ky.html?vai-tro=khach-hang">Khách hàng</a>
+                <a class="bo-chon-vai-tro__nut" data-auth-role-link="doi-tac" href="dang-ky.html?vai-tro=doi-tac">Đối tác cung ứng</a>
+              </nav>
+
+              <div class="gioi-thieu-tai-khoan">
+                <h2>Tạo tài khoản theo nhu cầu sử dụng</h2>
+                <p>
+                  Form khách hàng tập trung vào thông tin liên hệ cần thiết để đặt lịch.
+                  Form đối tác tập trung vào đầu mối vận hành, khu vực hoạt động và năng lực chính.
+                </p>
+              </div>
+
+              <section class="bang-thong-tin-vai-tro" data-auth-role-panel="khach-hang">
+                <div class="dong-tieu-de-form">
+                  <div>
+                    <h3>Đăng ký khách hàng</h3>
+                    <p>Tạo hồ sơ để đặt khảo sát, đặt lịch và lưu lịch sử nhu cầu chuyển dọn.</p>
+                  </div>
+                  <span class="nhan-vai-tro">Khách hàng</span>
+                </div>
+
+                <form class="form-tai-khoan" data-auth-form data-auth-mode="register" data-auth-role="khach-hang">
+                  <div class="luoi-truong">
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="customer-register-name">Họ và tên</label>
+                      <input class="truong-nhap" id="customer-register-name" name="full_name" type="text" data-auth-autofill="fullName" required />
+                    </div>
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="customer-register-phone">Số điện thoại</label>
+                      <input class="truong-nhap" id="customer-register-phone" name="phone" type="tel" data-auth-autofill="phone" required />
+                    </div>
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="customer-register-email">Email</label>
+                      <input class="truong-nhap" id="customer-register-email" name="email" type="email" data-auth-autofill="email" required />
+                    </div>
+                  </div>
+
+                  <div class="luoi-truong">
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="customer-register-password">Mật khẩu</label>
+                      <div class="khung-mat-khau">
+                        <input class="truong-nhap" id="customer-register-password" name="password" type="password" required />
+                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="customer-register-password">Hiện</button>
+                      </div>
+                    </div>
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="customer-register-confirm">Nhập lại mật khẩu</label>
+                      <div class="khung-mat-khau">
+                        <input class="truong-nhap" id="customer-register-confirm" name="password_confirm" type="password" required />
+                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="customer-register-confirm">Hiện</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="hang-phu-tai-khoan">
+                    <label class="lua-chon-nho">
+                      <input type="checkbox" name="agree_terms" required />
+                      <span>Tôi đồng ý với chính sách và điều khoản sử dụng</span>
+                    </label>
+                    <a class="lien-ket-van-ban" data-auth-cross-link="dang-nhap" href="dang-nhap.html?vai-tro=khach-hang">Đã có tài khoản? Đăng nhập</a>
+                  </div>
+
+                  <button class="nut-chinh nut-sang nut-toan-chieu" type="submit">Đăng ký khách hàng</button>
+                  <div class="thong-bao-tai-khoan" data-auth-feedback hidden></div>
+                </form>
+              </section>
+
+              <section class="bang-thong-tin-vai-tro" data-auth-role-panel="doi-tac" hidden>
+                <div class="dong-tieu-de-form">
+                  <div>
+                    <h3>Đăng ký đối tác cung ứng</h3>
+                    <p>Dành cho đội xe tải, đội bốc xếp hoặc đơn vị muốn tham gia mạng lưới chuyển dọn.</p>
+                  </div>
+                  <span class="nhan-vai-tro">Đối tác cung ứng</span>
+                </div>
+
+                <form class="form-tai-khoan" data-auth-form data-auth-mode="register" data-auth-role="doi-tac">
+                  <div class="luoi-truong">
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="provider-register-company">Tên đơn vị / đội nhóm</label>
+                      <input class="truong-nhap" id="provider-register-company" name="full_name" type="text" data-auth-autofill="fullName" required />
+                    </div>
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="provider-register-contact">Người phụ trách</label>
+                      <input class="truong-nhap" id="provider-register-contact" name="contact_person" type="text" required />
+                    </div>
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="provider-register-phone">Số điện thoại</label>
+                      <input class="truong-nhap" id="provider-register-phone" name="phone" type="tel" data-auth-autofill="phone" required />
+                    </div>
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="provider-register-email">Email vận hành</label>
+                      <input class="truong-nhap" id="provider-register-email" name="email" type="email" data-auth-autofill="email" required />
+                    </div>
+                  </div>
+
+                  <div class="luoi-truong">
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="provider-register-password">Mật khẩu</label>
+                      <div class="khung-mat-khau">
+                        <input class="truong-nhap" id="provider-register-password" name="password" type="password" required />
+                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="provider-register-password">Hiện</button>
+                      </div>
+                    </div>
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="provider-register-confirm">Nhập lại mật khẩu</label>
+                      <div class="khung-mat-khau">
+                        <input class="truong-nhap" id="provider-register-confirm" name="password_confirm" type="password" required />
+                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="provider-register-confirm">Hiện</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="hang-phu-tai-khoan">
+                    <label class="lua-chon-nho">
+                      <input type="checkbox" name="agree_terms" required />
+                      <span>Tôi xác nhận thông tin đăng ký là chính xác và đồng ý với điều khoản sử dụng</span>
+                    </label>
+                    <a class="lien-ket-van-ban" data-auth-cross-link="dang-nhap" href="dang-nhap.html?vai-tro=doi-tac">Đã có tài khoản? Đăng nhập</a>
+                  </div>
+
+                  <button class="nut-chinh nut-sang nut-toan-chieu" type="submit">Đăng ký đối tác</button>
+                  <div class="thong-bao-tai-khoan" data-auth-feedback hidden></div>
+                </form>
+              </section>
+            </div>
+          </div>
+
+          <aside class="cot-thong-tin">
+            <div class="the-thong-tin the-thong-tin--role" data-auth-role-note="khach-hang">
+              <span class="the-thong-tin-nhan">Khách hàng</span>
+              <h2>Thông tin nên chuẩn bị</h2>
+              <ul class="the-thong-tin__list">
+                <li>Email và số điện thoại thường dùng khi đặt lịch hoặc nhận tư vấn.</li>
+                <li>Họ tên đúng người liên hệ để điều phối viên xác nhận yêu cầu nhanh hơn.</li>
+                <li>Mật khẩu đủ mạnh để thuận tiện theo dõi lịch khảo sát và đặt lịch sau này.</li>
+              </ul>
+            </div>
+
+            <div class="the-thong-tin the-thong-tin--role" data-auth-role-note="doi-tac" hidden>
+              <span class="the-thong-tin-nhan">Đối tác cung ứng</span>
+              <h2>Thông tin nên chuẩn bị</h2>
+              <ul class="the-thong-tin__list">
+                <li>Tên đơn vị, đầu mối liên hệ và kênh vận hành chính.</li>
+                <li>Số điện thoại và email đang dùng để tiếp nhận phản hồi xét duyệt.</li>
+                <li>Mật khẩu đủ mạnh để thuận tiện quản lý tài khoản sau khi được duyệt.</li>
+              </ul>
+            </div>
+
+            <div class="the-thong-tin">
+              <span class="the-thong-tin-nhan">Liên kết nhanh</span>
+              <h2>Đi sang trang phù hợp</h2>
+              <div class="cum-lien-ket-tai-khoan">
+                <a class="nut-phu" data-auth-cross-link="dang-nhap" href="dang-nhap.html?vai-tro=khach-hang">Đi tới đăng nhập</a>
+                <a class="nut-phu" href="khao-sat.html">Khảo sát dịch vụ</a>
+                <a class="nut-phu" href="chinh-sach-va-dieu-khoan.html">Xem điều khoản</a>
+              </div>
+            </div>
+
+            <div class="the-lien-ket-nhanh">
+              <h4>Vai trò đặt tên linh hoạt</h4>
+              <p>
+                Trong giao diện mình dùng tên “đối tác cung ứng” để bao trùm đội xe, đội bốc xếp
+                hoặc đơn vị phối hợp khác. Nếu bạn muốn đổi sang “nhà cung cấp” mình có thể đổi toàn bộ nhãn rất nhanh.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="public/assets/js/shared-layout.js"></script>
+    <script src="public/assets/js/main.js" defer></script>
+  </body>
+</html>

@@ -580,22 +580,20 @@
     }
 
     return `
-      <div class="customer-review-section">
-        ${rows
-          .map(
-            (item) => `
-          <div class="rv-row">
-            <span class="rv-label">${escapeHtml(item.label)}</span>
-            <span class="rv-val">${formatCurrency(item.value)}</span>
-          </div>`,
-          )
-          .join("")}
-        <div class="rv-total-row">
-          <span>Tổng cước</span>
-          <strong>${formatCurrency(
-            breakdown.total_fee > 0 ? breakdown.total_fee : shippingFee || 0,
-          )}</strong>
-        </div>
+      ${rows
+        .map(
+          (item) => `
+        <div class="rv-row">
+          <span class="rv-label">${escapeHtml(item.label)}</span>
+          <span class="rv-val">${formatCurrency(item.value)}</span>
+        </div>`,
+        )
+        .join("")}
+      <div class="rv-total-row">
+        <span>Tổng cước</span>
+        <strong>${formatCurrency(
+          breakdown.total_fee > 0 ? breakdown.total_fee : shippingFee || 0,
+        )}</strong>
       </div>
     `;
   }
@@ -704,23 +702,6 @@
     );
   }
 
-  function renderProviderReview(provider, order) {
-    if (!hasProviderInfo(provider)) {
-      return '<div class="customer-empty">Đơn hàng chưa được gán nhà cung cấp cụ thể.</div>';
-    }
-
-    return `
-      <div class="customer-review-section">
-        <div class="rv-row"><span class="rv-label">Mã phụ trách</span><span class="rv-val">${escapeHtml(provider.shipper_id || provider.provider_id || "--")}</span></div>
-        <div class="rv-row"><span class="rv-label">Người phụ trách</span><span class="rv-val">${escapeHtml(getProviderDisplayName(provider))}</span></div>
-        <div class="rv-row"><span class="rv-label">Số điện thoại</span><span class="rv-val">${escapeHtml(provider.shipper_phone || provider.phone || "--")}</span></div>
-        <div class="rv-row"><span class="rv-label">Phương tiện</span><span class="rv-val">${escapeHtml(provider.shipper_vehicle || provider.vehicle_type || order.vehicle_type || "--")}</span></div>
-        <div class="rv-row"><span class="rv-label">Khu vực phụ trách</span><span class="rv-val">${escapeHtml(provider.area_label || provider.region || provider.hub_label || provider.company_name || "--")}</span></div>
-        <div class="rv-row"><span class="rv-label">Ghi chú từ shipper</span><span class="rv-val">${formatMultilineText(order.shipper_note || "Chưa có ghi chú từ shipper.")}</span></div>
-      </div>
-    `;
-  }
-
   function renderBookingReview(order, items, provider, logs) {
     const serviceMeta = order.service_meta || {};
     const attachments = Array.isArray(provider?.attachments)
@@ -736,80 +717,53 @@
     const pickupLabel = order.pickup_time
       ? formatDateTime(order.pickup_time)
       : serviceMeta.pickup_date || "--";
-    const deliveryDeadline =
-      serviceMeta.delivery_date || serviceMeta.delivery_slot_label
-        ? `${escapeHtml(serviceMeta.delivery_date || "--")} | ${escapeHtml(
-            serviceMeta.delivery_slot_label || "--",
-          )}`
-        : "--";
 
     return `
       <div class="customer-review-layout">
         <section class="customer-review-block">
           <h3><i class="fas fa-address-book"></i> Thông tin liên hệ</h3>
-          <div class="customer-review-section">
-            <div class="rv-row"><span class="rv-label">Người gửi</span><span class="rv-val">${escapeHtml(order.sender_name || "--")} · ${escapeHtml(order.sender_phone || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Người nhận</span><span class="rv-val">${escapeHtml(order.receiver_name || "--")} · ${escapeHtml(order.receiver_phone || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Lấy hàng tại</span><span class="rv-val">${escapeHtml(order.pickup_address || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Giao hàng đến</span><span class="rv-val">${escapeHtml(order.delivery_address || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Khoảng cách</span><span class="rv-val">${distanceLabel}</span></div>
-          </div>
+          <div class="rv-row"><span class="rv-label">Người gửi</span><span class="rv-val">${escapeHtml(order.sender_name || "--")} · ${escapeHtml(order.sender_phone || "--")}</span></div>
+          <div class="rv-row"><span class="rv-label">Người nhận</span><span class="rv-val">${escapeHtml(order.receiver_name || "--")} · ${escapeHtml(order.receiver_phone || "--")}</span></div>
+          <div class="rv-row"><span class="rv-label">Lấy hàng tại</span><span class="rv-val">${escapeHtml(order.pickup_address || "--")}</span></div>
+          <div class="rv-row"><span class="rv-label">Giao hàng đến</span><span class="rv-val">${escapeHtml(order.delivery_address || "--")}</span></div>
+          <div class="rv-row"><span class="rv-label">Khoảng cách</span><span class="rv-val">${distanceLabel}</span></div>
         </section>
 
-        <section class="customer-review-block">
+        <section class="customer-review-block customer-review-block--wide">
           <h3><i class="fas fa-boxes-stacked"></i> Hàng hóa và đóng gói</h3>
           ${renderOrderItemCards(items)}
-          <div class="customer-review-section">
-            <div class="rv-row"><span class="rv-label">Giá trị thu hộ (COD)</span><span class="rv-val">${order.cod_amount ? formatCurrency(order.cod_amount) : "Không có"}</span></div>
-            <div class="rv-row"><span class="rv-label">Ghi chú vận chuyển</span><span class="rv-val">${formatMultilineText(order.clean_note || "Không có")}</span></div>
-          </div>
+          <div class="rv-row"><span class="rv-label">Giá trị thu hộ (COD)</span><span class="rv-val">${order.cod_amount ? formatCurrency(order.cod_amount) : "Không có"}</span></div>
+          <div class="rv-row"><span class="rv-label">Ghi chú vận chuyển</span><span class="rv-val">${formatMultilineText(order.clean_note || "Không có")}</span></div>
         </section>
 
-        <section class="customer-review-block">
+        <section class="customer-review-block customer-review-block--wide">
           <h3><i class="fas fa-photo-film"></i> Media đính kèm</h3>
           ${renderAttachmentPreview(attachments)}
         </section>
 
         <section class="customer-review-block">
           <h3><i class="fas fa-calendar-check"></i> Lịch trình</h3>
-          <div class="customer-review-section">
-            <div class="rv-row"><span class="rv-label">Tạo đơn lúc</span><span class="rv-val">${formatDateTime(order.created_at)}</span></div>
-            <div class="rv-row"><span class="rv-label">Lấy hàng</span><span class="rv-val">${pickupLabel}</span></div>
-            <div class="rv-row"><span class="rv-label">Khung giờ lấy hàng</span><span class="rv-val">${escapeHtml(serviceMeta.pickup_slot_label || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Mốc nhận mong muốn</span><span class="rv-val">${deliveryDeadline}</span></div>
-            <div class="rv-row"><span class="rv-label">Thời gian giao dự kiến</span><span class="rv-val">${escapeHtml(serviceMeta.estimated_eta || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Gói dịch vụ</span><span class="rv-val">${escapeHtml(order.service_label || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Phương tiện tính giá</span><span class="rv-val">${escapeHtml(serviceMeta.vehicle_label || order.vehicle_type || "--")}</span></div>
-          </div>
+          <div class="rv-row"><span class="rv-label">Tạo đơn lúc</span><span class="rv-val">${formatDateTime(order.created_at)}</span></div>
+          <div class="rv-row"><span class="rv-label">Lấy hàng</span><span class="rv-val">${pickupLabel}</span></div>
+          <div class="rv-row"><span class="rv-label">Thời gian giao dự kiến</span><span class="rv-val">${escapeHtml(serviceMeta.estimated_eta || "--")}</span></div>
         </section>
 
         <section class="customer-review-block">
           <h3><i class="fas fa-receipt"></i> Chi phí</h3>
           ${renderFeeBreakdownRows(order.fee_breakdown || {}, order.shipping_fee)}
-          <div class="customer-review-section">
-            <div class="rv-row"><span class="rv-label">Người trả cước</span><span class="rv-val">${escapeHtml(order.payer_label || "Người gửi")}</span></div>
-            <div class="rv-row"><span class="rv-label">Thanh toán</span><span class="rv-val">${escapeHtml(order.payment_method_label || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Trạng thái thanh toán</span><span class="rv-val">${escapeHtml(order.payment_status_label || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Mã tham chiếu thanh toán</span><span class="rv-val">${escapeHtml(order.payment_reference || "--")}</span></div>
-          </div>
-        </section>
-
-        <section class="customer-review-block">
-          <h3><i class="fas fa-user-check"></i> Nhà cung cấp phụ trách</h3>
-          ${renderProviderReview(provider, order)}
+          <div class="rv-row"><span class="rv-label">Người trả cước</span><span class="rv-val">${escapeHtml(order.payer_label || "Người gửi")}</span></div>
+          <div class="rv-row"><span class="rv-label">Thanh toán</span><span class="rv-val">${escapeHtml(order.payment_method_label || "--")}</span></div>
+          <div class="rv-row"><span class="rv-label">Trạng thái thanh toán</span><span class="rv-val">${escapeHtml(order.payment_status_label || "--")}</span></div>
         </section>
 
         <section class="customer-review-block">
           <h3><i class="fas fa-circle-info"></i> Theo dõi đơn</h3>
-          <div class="customer-review-section">
-            <div class="rv-row"><span class="rv-label">Trạng thái hiện tại</span><span class="rv-val">${escapeHtml(order.status_label || order.status || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Mã đơn nội bộ</span><span class="rv-val">${escapeHtml(order.id || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Mã đơn khách theo dõi</span><span class="rv-val">${escapeHtml(order.order_code || "--")}</span></div>
-            <div class="rv-row"><span class="rv-label">Bằng chứng giao hàng</span><span class="rv-val">${order.pod_image ? "Đã có" : "Chưa có"}</span></div>
-          </div>
+          <div class="rv-row"><span class="rv-label">Trạng thái hiện tại</span><span class="rv-val">${escapeHtml(order.status_label || order.status || "--")}</span></div>
+          <div class="rv-row"><span class="rv-label">Mã đơn khách theo dõi</span><span class="rv-val">${escapeHtml(order.order_code || "--")}</span></div>
+          <div class="rv-row"><span class="rv-label">Bằng chứng giao hàng</span><span class="rv-val">${order.pod_image ? "Đã có" : "Chưa có"}</span></div>
         </section>
 
-        <section class="customer-review-block">
+        <section class="customer-review-block customer-review-block--wide">
           <h3><i class="fas fa-timeline"></i> Lịch sử xử lý</h3>
           <div class="customer-timeline">
             ${
@@ -872,32 +826,97 @@
       completed: "Hoàn tất",
       cancelled: "Đã hủy",
     };
+    const totalOrders = Number(stats.total || 0);
+    const activeOrders = Number(stats.pending || 0) + Number(stats.shipping || 0);
+    const kpiCards = [
+      {
+        tone: "total",
+        label: "Tổng đơn",
+        value: formatNumber(totalOrders),
+        hint: totalOrders ? "Toàn bộ đơn đã tạo" : "Chưa phát sinh đơn mới",
+      },
+      {
+        tone: "pending",
+        label: "Chờ xử lý",
+        value: formatNumber(stats.pending || 0),
+        hint: Number(stats.pending || 0) ? "Cần theo dõi sớm" : "Hiện không có đơn chờ",
+      },
+      {
+        tone: "shipping",
+        label: "Đang giao",
+        value: formatNumber(stats.shipping || 0),
+        hint: Number(stats.shipping || 0) ? "Đơn đang luân chuyển" : "Không có đơn đang giao",
+      },
+      {
+        tone: "completed",
+        label: "Hoàn tất",
+        value: formatNumber(stats.completed || 0),
+        hint: Number(stats.completed || 0) ? "Đã giao thành công" : "Chưa có đơn hoàn tất",
+      },
+      {
+        tone: "unpaid",
+        label: "Chưa thanh toán",
+        value: formatNumber(stats.unpaid || 0),
+        hint: Number(stats.unpaid || 0) ? "Nên kiểm tra thu hộ/COD" : "Không có khoản chờ",
+      },
+    ];
+    const dashboardHighlights = [
+      `${formatNumber(activeOrders)} đơn đang cần theo dõi`,
+      `${formatNumber(stats.unpaid || 0)} đơn cần đối soát`,
+      recentStatus === "all"
+        ? "Đang xem tất cả đơn gần đây"
+        : `Đang lọc: ${recentStatusLabels[recentStatus] || recentStatus}`,
+    ];
 
     content.innerHTML = `
-      <section class="customer-panel">
+      <section class="customer-dashboard-hero">
+        <div class="customer-dashboard-hero-copy">
+          <p class="customer-section-kicker">Bảng điều khiển khách hàng</p>
+          <h2>Tổng quan đơn hàng và thao tác nhanh</h2>
+          <p class="customer-dashboard-hero-text">Theo dõi nhanh trạng thái đơn, mở lịch sử đơn và đi thẳng tới hồ sơ cá nhân mà không phải cuộn qua nhiều màn hình.</p>
+        </div>
+        <div class="customer-dashboard-hero-actions">
+          <a href="${routes.orders}" class="customer-btn customer-btn-primary">Xem lịch sử đơn</a>
+          <a href="${routes.profile}" class="customer-btn customer-btn-ghost">Cập nhật hồ sơ</a>
+        </div>
+        <div class="customer-dashboard-highlight-list">
+          ${dashboardHighlights
+            .map((item) => `<span class="customer-dashboard-highlight">${escapeHtml(item)}</span>`)
+            .join("")}
+        </div>
+      </section>
+      <section class="customer-panel customer-panel-overview">
         <div class="customer-panel-head">
           <div>
-            <p class="customer-section-kicker">Bảng điều khiển khách hàng</p>
-            <h2>Tổng quan đơn hàng và thao tác nhanh</h2>
+            <p class="customer-section-kicker">Chỉ số nhanh</p>
+            <h2>Nhìn một màn là nắm được tình trạng đơn</h2>
           </div>
-          <a href="${routes.orders}" class="customer-btn customer-btn-ghost">Mở lịch sử đơn</a>
+          <span class="customer-panel-note">Cập nhật theo bộ lọc hiện tại</span>
         </div>
         <div class="customer-kpi-grid">
-          <article class="customer-kpi-card"><span>Tổng đơn</span><strong>${formatNumber(stats.total || 0)}</strong></article>
-          <article class="customer-kpi-card"><span>Chờ xử lý</span><strong>${formatNumber(stats.pending || 0)}</strong></article>
-          <article class="customer-kpi-card"><span>Đang giao</span><strong>${formatNumber(stats.shipping || 0)}</strong></article>
-          <article class="customer-kpi-card"><span>Hoàn tất</span><strong>${formatNumber(stats.completed || 0)}</strong></article>
-          <article class="customer-kpi-card"><span>Chưa thanh toán</span><strong>${formatNumber(stats.unpaid || 0)}</strong></article>
+          ${kpiCards
+            .map(
+              (item) => `
+            <article class="customer-kpi-card customer-kpi-card-${item.tone}">
+              <span>${escapeHtml(item.label)}</span>
+              <strong>${item.value}</strong>
+              <small>${escapeHtml(item.hint)}</small>
+            </article>`,
+            )
+            .join("")}
         </div>
       </section>
       <section class="customer-grid-two customer-grid-dashboard">
-        <article class="customer-panel">
+        <article class="customer-panel customer-panel-orders">
           <div class="customer-panel-head">
             <div>
               <p class="customer-section-kicker">Đơn gần đây</p>
               <h2>Theo dõi các đơn mới nhất</h2>
+              <p class="customer-panel-subtext">Ưu tiên các đơn vừa tạo hoặc đang cần bạn chú ý.</p>
             </div>
-            <div class="customer-chip-group">
+            <a href="${routes.orders}" class="customer-btn customer-btn-ghost customer-btn-sm">Xem tất cả</a>
+          </div>
+          <div class="customer-chip-group customer-chip-group-dashboard">
               ${["all", "pending", "shipping", "completed", "cancelled"]
                 .map(
                   (item) =>
@@ -906,29 +925,29 @@
                     )}</a>`,
                 )
                 .join("")}
-            </div>
           </div>
-          <div class="customer-list">
+          <div class="customer-list customer-list-compact">
             ${
               recentOrders.length
                 ? recentOrders
                     .map(
                       (order) => `
-                <article class="customer-order-card">
-                  <div class="customer-order-main">
-                    <div>
+                <article class="customer-order-card customer-order-card-compact">
+                  <div class="customer-order-topline">
+                    <div class="customer-order-heading">
                       <p class="customer-order-code">${escapeHtml(order.order_code)}</p>
-                      <p class="customer-order-dest">${escapeHtml(order.receiver_name)} · ${escapeHtml(order.delivery_address)}</p>
+                      <p class="customer-order-recipient">${escapeHtml(order.receiver_name || "Người nhận chưa cập nhật")}</p>
                     </div>
                     ${createStatusBadge(order.status, order.status_label)}
                   </div>
-                  <div class="customer-order-meta">
-                    <span>${escapeHtml(order.service_label)}</span>
-                    <span>${formatCurrency(order.shipping_fee)}</span>
-                    <span>${formatDateTime(order.created_at)}</span>
+                  <p class="customer-order-dest">${escapeHtml(order.delivery_address || "--")}</p>
+                  <div class="customer-order-meta customer-order-meta-compact">
+                    <span><b>Dịch vụ</b>${escapeHtml(order.service_label || "--")}</span>
+                    <span><b>Cước phí</b>${formatCurrency(order.shipping_fee)}</span>
+                    <span><b>Thời gian</b>${formatDateTime(order.created_at)}</span>
                   </div>
-                  <div class="customer-order-actions">
-                    <a class="customer-btn customer-btn-primary" href="${routes.detail}?id=${order.id}">Chi tiết đơn</a>
+                  <div class="customer-order-actions customer-order-actions-compact">
+                    <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?id=${order.id}">Xem chi tiết</a>
                   </div>
                 </article>`,
                     )
@@ -937,23 +956,17 @@
             }
           </div>
         </article>
-        <aside class="customer-panel">
-          <div class="customer-panel-head">
-            <div>
-              <p class="customer-section-kicker">Menu quản lý cá nhân</p>
-              <h2>Truy cập nhanh</h2>
-            </div>
-          </div>
-          <div class="customer-todo-list">
-            <article class="customer-todo neutral">
-              <p>Xem lại toàn bộ đơn đã tạo, lọc theo trạng thái và mở chi tiết từng đơn.</p>
-              <a href="${routes.orders}">Mở lịch sử đơn</a>
-            </article>
-            <article class="customer-todo info">
-              <p>Cập nhật họ tên, số điện thoại, công ty và địa chỉ ngay trên hồ sơ cá nhân.</p>
-              <a href="${routes.profile}">Mở hồ sơ cá nhân</a>
-            </article>
-          </div>
+        <aside class="customer-quicklinks-strip">
+          <a href="${routes.orders}" class="customer-quicklink-item">
+            <p class="customer-section-kicker">Lịch sử đơn</p>
+            <strong>Mở danh sách đơn hàng</strong>
+            <span class="customer-mobile-hidden">Tra cứu đầy đủ, lọc và dùng phân trang ở một nơi duy nhất.</span>
+          </a>
+          <a href="${routes.profile}" class="customer-quicklink-item">
+            <p class="customer-section-kicker">Hồ sơ cá nhân</p>
+            <strong>Cập nhật thông tin tài khoản</strong>
+            <span class="customer-mobile-hidden">Chỉnh sửa nhanh họ tên, số điện thoại, công ty và địa chỉ liên hệ.</span>
+          </a>
         </aside>
       </section>
     `;
@@ -975,17 +988,33 @@
     const items = Array.isArray(data.items) ? data.items : [];
     const filters = data.filters || {};
     const pagination = data.pagination || {};
+    const statusLabels = {
+      pending: "Chờ xử lý",
+      shipping: "Đang giao",
+      completed: "Hoàn tất",
+      cancelled: "Đã hủy",
+    };
+    const activeFilters = [];
+    if (filters.search) activeFilters.push(`Từ khóa: ${filters.search}`);
+    if (filters.status) activeFilters.push(`Trạng thái: ${statusLabels[filters.status] || filters.status}`);
+    if (filters.date_from) activeFilters.push(`Từ ngày: ${filters.date_from}`);
+    if (filters.date_to) activeFilters.push(`Đến ngày: ${filters.date_to}`);
+    const currentPage = Number(pagination.page || 1);
+    const totalPages = Number(pagination.total_pages || 1);
+    const totalResults = Number(pagination.total || items.length || 0);
 
     content.innerHTML = `
-      <section class="customer-panel">
+      <section class="customer-panel customer-orders-panel">
         <div class="customer-panel-head">
           <div>
             <p class="customer-section-kicker">Lịch sử đơn hàng</p>
             <h2>Tra cứu và xem lại đơn theo trạng thái</h2>
+            <p class="customer-panel-subtext">Trang ${formatNumber(currentPage)} / ${formatNumber(totalPages)} · ${formatNumber(totalResults)} đơn phù hợp với bộ lọc hiện tại.</p>
           </div>
+          <span class="customer-panel-note">Quản lý tập trung</span>
         </div>
 
-        <form id="customer-order-filter" class="customer-filter-form">
+        <form id="customer-order-filter" class="customer-filter-form customer-filter-form-compact">
           <label>
             <span>Tìm mã đơn / người nhận</span>
             <input type="text" name="search" value="${escapeHtml(filters.search || "")}" placeholder="ORD..., tên người nhận, số điện thoại" />
@@ -1014,28 +1043,38 @@
           </div>
         </form>
 
-        <div class="customer-list">
+        <div class="customer-active-filters">
+          ${
+            activeFilters.length
+              ? activeFilters
+                  .map((item) => `<span class="customer-chip customer-chip-muted">${escapeHtml(item)}</span>`)
+                  .join("")
+              : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn hàng của bạn.</span>'
+          }
+        </div>
+
+        <div class="customer-list customer-list-history">
           ${
             items.length
               ? items
                   .map(
                     (order) => `
-              <article class="customer-order-card">
-                <div class="customer-order-main">
-                  <div>
+              <article class="customer-order-card customer-order-card-history">
+                <div class="customer-order-topline">
+                  <div class="customer-order-heading">
                     <p class="customer-order-code">${escapeHtml(order.order_code)}</p>
                     <p class="customer-order-dest">Từ ${escapeHtml(order.pickup_address)} đến ${escapeHtml(order.delivery_address)}</p>
                   </div>
                   ${createStatusBadge(order.status, order.status_label)}
                 </div>
-                <div class="customer-order-meta">
-                  <span>Dịch vụ: ${escapeHtml(order.service_label)}</span>
-                  <span>Phí ship: ${formatCurrency(order.shipping_fee)}</span>
-                  <span>COD: ${formatCurrency(order.cod_amount)}</span>
-                  <span>Tạo lúc: ${formatDateTime(order.created_at)}</span>
+                <div class="customer-order-meta customer-order-meta-compact customer-order-meta-history">
+                  <span><b>Dịch vụ</b>${escapeHtml(order.service_label || "--")}</span>
+                  <span><b>Phí ship</b>${formatCurrency(order.shipping_fee)}</span>
+                  <span><b>COD</b>${formatCurrency(order.cod_amount)}</span>
+                  <span><b>Tạo lúc</b>${formatDateTime(order.created_at)}</span>
                 </div>
-                <div class="customer-order-actions">
-                  <a class="customer-btn customer-btn-primary" href="${routes.detail}?id=${order.id}">Chi tiết đơn</a>
+                <div class="customer-order-actions customer-order-actions-compact">
+                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?id=${order.id}">Xem chi tiết</a>
                 </div>
               </article>`,
                   )
@@ -1043,7 +1082,9 @@
               : '<div class="customer-empty">Không tìm thấy đơn hàng phù hợp.</div>'
           }
         </div>
-        ${buildPagination(pagination.page || 1, pagination.total_pages || 1)}
+        <div class="customer-pagination-wrap">
+          ${buildPagination(currentPage, totalPages)}
+        </div>
       </section>
     `;
 
@@ -1083,6 +1124,7 @@
     const customer = data.customer || {};
     const items = Array.isArray(data.items) ? data.items : [];
     const logs = Array.isArray(data.logs) ? data.logs : [];
+    const providerDisplayName = hasProviderInfo(provider) ? getProviderDisplayName(provider) : "Chưa gán";
 
     content.innerHTML = `
       <section class="customer-panel">
@@ -1103,7 +1145,7 @@
           <article><span>Thu hộ COD</span><strong>${formatCurrency(order.cod_amount)}</strong></article>
           <article><span>Thanh toán</span><strong>${escapeHtml(order.payment_status_label || "--")}</strong></article>
           <article><span>Tạo đơn lúc</span><strong>${formatDateTime(order.created_at)}</strong></article>
-          <article><span>Nhà cung cấp</span><strong>${escapeHtml(hasProviderInfo(provider) ? getProviderDisplayName(provider) : "Chưa gán")}</strong></article>
+          <article><span>Nhà cung cấp</span><strong>${escapeHtml(providerDisplayName)}</strong></article>
         </div>
 
         <div class="customer-tab-switcher" id="customer-tab-switcher">
@@ -1130,8 +1172,6 @@
                       { label: "Email", value: provider.email || "--" },
                       { label: "Phương tiện", value: provider.shipper_vehicle || provider.vehicle_type || order.vehicle_type || "--" },
                       { label: "Khu vực phụ trách", value: provider.area_label || provider.region || provider.hub_label || provider.company_name || "--" },
-                      { label: "Ngày tham gia", value: formatDateOnly(provider.joined_at) },
-                      { label: "Đánh giá trung bình", value: provider.rating_avg ? `${provider.rating_avg}/5` : "--" },
                       { label: "Ghi chú từ shipper", value: order.shipper_note || "Chưa có ghi chú từ shipper." },
                     ])
                   : '<div class="customer-empty">Đơn hàng chưa được gán nhà cung cấp cụ thể.</div>'

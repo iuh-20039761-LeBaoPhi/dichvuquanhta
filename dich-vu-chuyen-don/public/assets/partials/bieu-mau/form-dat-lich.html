@@ -674,6 +674,19 @@
             </div>
 
             <div class="nhom-truong">
+              <label for="tong-khoi-luong-nha-dat-lich" class="nhan-truong"
+                >Tổng khối lượng ước tính (kg)</label
+              >
+              <input
+                id="tong-khoi-luong-nha-dat-lich"
+                class="truong-nhap"
+                type="text"
+                name="tong_khoi_luong_uoc_tinh_nha"
+                inputmode="decimal"
+                />
+            </div>
+
+            <div class="nhom-truong">
               <label for="tong-the-tich-nha-dat-lich" class="nhan-truong"
                 >Tổng thể tích ước tính (m3)</label
               >
@@ -683,8 +696,7 @@
                 type="text"
                 name="tong_the_tich_uoc_tinh_nha"
                 inputmode="decimal"
-                placeholder="Ví dụ: 12.5"
-              />
+                />
             </div>
 
             <div class="nhom-truong">
@@ -817,8 +829,7 @@
                 type="text"
                 name="tong_khoi_luong_uoc_tinh_van_phong"
                 inputmode="decimal"
-                placeholder="Ví dụ: 1200"
-              />
+                />
             </div>
 
             <div class="nhom-truong">
@@ -831,8 +842,7 @@
                 type="text"
                 name="tong_the_tich_uoc_tinh_van_phong"
                 inputmode="decimal"
-                placeholder="Ví dụ: 18"
-              />
+                />
             </div>
 
             <div class="nhom-truong">
@@ -980,8 +990,7 @@
                 type="text"
                 name="tong_the_tich_uoc_tinh_kho"
                 inputmode="decimal"
-                placeholder="Ví dụ: 25"
-              />
+                />
             </div>
 
             <div class="nhom-truong">
@@ -1095,6 +1104,10 @@
         <div class="nhan-truong-kem-goi-y">
           <h4>Giá tạm tính</h4>
         </div>
+        <p class="mo-ta-phu">
+          Giá tạm tính đang bám theo xe, quãng đường và các hạng mục có đơn giá
+          rõ ràng trong biểu mẫu.
+        </p>
 
         <div
           class="khung-gia-tham-khao-dat-lich-rong"
@@ -1264,6 +1277,11 @@
           </div>
         </div>
       </div>
+      <p class="mo-ta-phu">
+        Rà lại thông tin điều phối, tệp đính kèm và giá tạm tính trước khi gửi.
+        Một số yếu tố như tầng, hẻm nhỏ hoặc trung chuyển có thể cần chốt lại
+        sau khi xác nhận thực tế.
+      </p>
 
       <div class="khung-xac-nhan-dat-lich" data-tom-tat-dat-lich>
         <section class="cum-xac-nhan-dat-lich">
@@ -1363,12 +1381,12 @@
         <section class="cum-xac-nhan-dat-lich">
           <div class="tieu-de-xac-nhan-dat-lich">
             <div class="nhan-truong-kem-goi-y">
-              <h4>Giá chốt và các dòng tính</h4>
+              <h4>Giá tạm tính và các dòng tính</h4>
             </div>
           </div>
           <div class="khung-gia-xac-nhan-dat-lich">
             <div class="trang-thai-gia-xac-nhan" data-gia-xac-nhan-rong>
-              Chọn dịch vụ và nhập đủ thông tin để xem giá chốt.
+              Chọn dịch vụ và nhập đủ thông tin để xem giá tạm tính.
             </div>
             <div
               class="luoi-gia-xac-nhan-dat-lich"
@@ -1378,7 +1396,7 @@
           </div>
           <div class="danh-sach-luu-y-xac-nhan" data-luu-y-xac-nhan-dat-lich>
             <div class="muc-luu-y-xac-nhan">
-              Giá chốt đang bám theo đúng thông tin bạn đã nhập trong biểu mẫu.
+              Giá tạm tính đang bám theo đúng thông tin bạn đã nhập trong biểu mẫu.
             </div>
           </div>
         </section>
@@ -1389,6 +1407,8 @@
       id="thong-bao-dat-lich"
       class="thong-bao-bieu-mau"
       data-thong-bao-bieu-mau
+      role="status"
+      aria-live="polite"
       hidden
     ></div>
 
@@ -1400,8 +1420,13 @@
       >
         Quay lại
       </button>
-      <button type="submit" class="nut-chinh">Đặt lịch</button>
-      <p class="mo-ta-phu">Kiểm tra lại thông tin rồi gửi yêu cầu.</p>
+      <button type="submit" class="nut-chinh" data-nut-gui-bieu-mau>
+        Đặt lịch
+      </button>
+      <p class="mo-ta-phu">
+        Hệ thống sẽ ghi nhận bản demo của biểu mẫu và hiển thị lại trạng thái
+        xử lý ngay sau khi bạn gửi.
+      </p>
     </div>
   </form>
 </section>

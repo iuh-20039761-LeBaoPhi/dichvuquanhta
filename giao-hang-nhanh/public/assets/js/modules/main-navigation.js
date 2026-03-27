@@ -1,118 +1,193 @@
 (function (window, document) {
-  if (window.__giaoHangNhanhNavInitDone) return;
-  window.__giaoHangNhanhNavInitDone = true;
+  if (window.GiaoHangNhanhNavigation) return;
 
-  const core = window.GiaoHangNhanhCore;
-  if (!core) return;
+  const initializedRoots = new WeakSet();
+  let globalEventsBound = false;
 
-  const hamburgerBtn = document.getElementById("hamburger-btn");
-  const navMenu = document.getElementById("nav-menu");
+  function getCore() {
+    return window.GiaoHangNhanhCore || {};
+  }
 
-  const closeAllDropdowns = () => {
-    // Legacy support & Submenus
-    document.querySelectorAll(".has-submenu").forEach((item) => {
+  function closeAllDropdowns(root = document) {
+    root.querySelectorAll(".has-submenu").forEach((item) => {
       item.classList.remove("open");
     });
-    
-    // Header actions
-    document.querySelectorAll(".profile-dropdown-wrapper, .notification-wrapper").forEach((item) => {
+
+    root
+      .querySelectorAll(".profile-dropdown-wrapper, .notification-wrapper")
+      .forEach((item) => {
         item.classList.remove("open");
-    });
+      });
 
-    document.querySelectorAll(".header-dropdown, .profile-menu").forEach((menu) => {
-        menu.classList.remove("open");
-    });
-  };
-
-  // Hamburger Toggle
-  if (hamburgerBtn && navMenu) {
-    hamburgerBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      hamburgerBtn.classList.toggle("active");
-      navMenu.classList.toggle("active");
+    root.querySelectorAll(".header-dropdown, .profile-menu").forEach((menu) => {
+      menu.classList.remove("open");
     });
   }
 
-  // Submenu Toggle (Mobile & Desktop Click)
-  document.querySelectorAll(".submenu-toggle, .has-submenu > a").forEach((toggle) => {
-    toggle.addEventListener("click", function (e) {
-      const isMobile = window.innerWidth <= 1024;
-      const parentLi = this.closest(".has-submenu");
-      if (!parentLi) return;
+  function closeMobileMenu(root = document) {
+    const hamburgerBtn = root.querySelector("#hamburger-btn");
+    const navMenu = root.querySelector("#nav-menu");
+    if (!hamburgerBtn || !navMenu) return;
 
-      // Trên mobile hoặc nếu thẻ a có href='#' thì ngăn chặn chuyển trang
-      if (isMobile || this.getAttribute('href') === '#') {
-        e.preventDefault();
-        e.stopPropagation();
+    hamburgerBtn.classList.remove("active");
+    navMenu.classList.remove("active");
+  }
 
-        const isOpen = parentLi.classList.contains("open");
-        
-        // Close other submenus/dropdowns
-        if (!isOpen) closeAllDropdowns();
+  function bindRoot(root = document) {
+    if (!root || initializedRoots.has(root)) return;
+    initializedRoots.add(root);
 
-        parentLi.classList.toggle("open");
+    const hamburgerBtn = root.querySelector("#hamburger-btn");
+    const navMenu = root.querySelector("#nav-menu");
+
+    if (hamburgerBtn && navMenu && hamburgerBtn.dataset.navBound !== "1") {
+      hamburgerBtn.dataset.navBound = "1";
+      hamburgerBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        hamburgerBtn.classList.toggle("active");
+        navMenu.classList.toggle("active");
+      });
+    }
+
+    root.querySelectorAll(".submenu-toggle, .has-submenu > a").forEach((toggle) => {
+      if (toggle.dataset.navBound === "1") return;
+      toggle.dataset.navBound = "1";
+
+      toggle.addEventListener("click", function (event) {
+        const isMobile = window.innerWidth <= 1024;
+        const parentLi = this.closest(".has-submenu");
+        if (!parentLi) return;
+
+        if (isMobile || this.getAttribute("href") === "#") {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const isOpen = parentLi.classList.contains("open");
+          if (!isOpen) closeAllDropdowns(root);
+          parentLi.classList.toggle("open");
+        }
+      });
+    });
+
+    const profileToggle = root.querySelector("#profile-toggle");
+    const profileWrapper = root.querySelector(".profile-dropdown-wrapper");
+    const profileMenu = root.querySelector(".profile-menu");
+
+    if (
+      profileToggle &&
+      profileMenu &&
+      profileWrapper &&
+      profileToggle.dataset.navBound !== "1"
+    ) {
+      profileToggle.dataset.navBound = "1";
+      profileToggle.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const isOpen = profileWrapper.classList.contains("open");
+        closeAllDropdowns(root);
+        if (!isOpen) {
+          profileWrapper.classList.add("open");
+          profileMenu.classList.add("open");
+        }
+      });
+    }
+
+    const adminNotifyBell = root.querySelector("#admin-notification-bell");
+    const adminNotifyWrapper = root.querySelector(".notification-wrapper");
+    const adminNotifyDropdown = root.querySelector("#admin-notification-dropdown");
+
+    if (
+      adminNotifyBell &&
+      adminNotifyDropdown &&
+      adminNotifyWrapper &&
+      adminNotifyBell.dataset.navBound !== "1"
+    ) {
+      adminNotifyBell.dataset.navBound = "1";
+      adminNotifyBell.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const isOpen = adminNotifyWrapper.classList.contains("open");
+        closeAllDropdowns(root);
+
+        if (!isOpen) {
+          adminNotifyWrapper.classList.add("open");
+          adminNotifyDropdown.classList.add("open");
+
+          const dropdownBody = adminNotifyDropdown.querySelector(".dropdown-body");
+          const core = getCore();
+          if (
+            dropdownBody &&
+            dropdownBody.querySelector(".empty-state") &&
+            typeof core.toApiUrl === "function"
+          ) {
+            fetch(core.toApiUrl("get_notifications_ajax.php"))
+              .then((response) => response.text())
+              .then((html) => {
+                if (html.trim()) dropdownBody.innerHTML = html;
+              })
+              .catch(() => {});
+          }
+        }
+      });
+    }
+  }
+
+  function bindGlobalEvents() {
+    if (globalEventsBound) return;
+    globalEventsBound = true;
+
+    document.addEventListener("click", function (event) {
+      if (
+        !event.target.closest(".has-submenu") &&
+        !event.target.closest(".profile-dropdown-wrapper") &&
+        !event.target.closest(".notification-wrapper")
+      ) {
+        closeAllDropdowns(document);
+      }
+
+      const hamburgerBtn = document.querySelector("#hamburger-btn");
+      const navMenu = document.querySelector("#nav-menu");
+      if (
+        hamburgerBtn &&
+        navMenu &&
+        !navMenu.contains(event.target) &&
+        !hamburgerBtn.contains(event.target)
+      ) {
+        closeMobileMenu(document);
       }
     });
-  });
 
-  // Profile Dropdown
-  const profileToggle = document.getElementById("profile-toggle");
-  const profileWrapper = document.querySelector(".profile-dropdown-wrapper");
-  const profileMenu = document.querySelector(".profile-menu");
-  
-  if (profileToggle && profileMenu && profileWrapper) {
-    profileToggle.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const isOpen = profileWrapper.classList.contains("open");
-        closeAllDropdowns();
-        if (!isOpen) {
-            profileWrapper.classList.add("open");
-            profileMenu.classList.add("open");
-        }
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 768) {
+        closeMobileMenu(document);
+      }
     });
   }
 
-  // Admin Notification Bell
-  const adminNotifyBell = document.getElementById("admin-notification-bell");
-  const adminNotifyWrapper = document.querySelector(".notification-wrapper");
-  const adminNotifyDropdown = document.getElementById("admin-notification-dropdown");
-  
-  if (adminNotifyBell && adminNotifyDropdown && adminNotifyWrapper) {
-    adminNotifyBell.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const isOpen = adminNotifyWrapper.classList.contains("open");
-        closeAllDropdowns();
-        
-        if (!isOpen) {
-            adminNotifyWrapper.classList.add("open");
-            adminNotifyDropdown.classList.add("open");
-            
-            const dropdownBody = adminNotifyDropdown.querySelector(".dropdown-body");
-            if (dropdownBody && dropdownBody.querySelector(".empty-state")) {
-                 fetch(core.toApiUrl("get_notifications_ajax.php"))
-                  .then((res) => res.text())
-                  .then((html) => {
-                    if (html.trim()) dropdownBody.innerHTML = html;
-                  })
-                  .catch(() => {});
-            }
-        }
-    });
+  function init(root = document) {
+    bindRoot(root);
+    bindGlobalEvents();
   }
 
-  // Global click to close
-  document.addEventListener("click", function (e) {
-    if (!e.target.closest(".has-submenu") && !e.target.closest(".profile-dropdown-wrapper") && !e.target.closest(".notification-wrapper")) {
-        closeAllDropdowns();
-    }
-    
-    // Close mobile menu if clicked outside
-    if (navMenu && !navMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-        hamburgerBtn.classList.remove("active");
-        navMenu.classList.remove("active");
-    }
+  window.GiaoHangNhanhNavigation = {
+    init,
+    closeAllDropdowns,
+    closeMobileMenu,
+  };
+
+  document.addEventListener("ghn:layout-ready", function (event) {
+    init(event.detail?.headerHost || document);
   });
 
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
+        init(document);
+      },
+      { once: true },
+    );
+  } else {
+    init(document);
+  }
 })(window, document);

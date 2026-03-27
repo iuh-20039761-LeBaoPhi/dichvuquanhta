@@ -312,6 +312,14 @@
   if (headerHost) applyLinks(headerHost, linkMap);
   if (headerHost) applyActiveNav(headerHost);
   if (footerHost) applyLinks(footerHost, linkMap);
+  document.dispatchEvent(
+    new CustomEvent("ghn:layout-ready", {
+      detail: {
+        headerHost,
+        footerHost,
+      },
+    }),
+  );
   applyFavicon();
   maybeShowPromoPopup(linkMap);
 

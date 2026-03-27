@@ -18,6 +18,7 @@
     "modules/main-pricing.js",
     "modules/main-transparent-pricing.js",
     "modules/main-forms.js",
+    "modules/main-auth.js",
   ];
 
   const versionSuffix =

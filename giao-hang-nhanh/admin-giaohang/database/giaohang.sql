@@ -182,6 +182,57 @@ CREATE TABLE `notifications` (
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `contact_messages`
+--
+
+CREATE TABLE `contact_messages` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `subject` varchar(255) NOT NULL DEFAULT 'Tuvan',
+  `message` text NOT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `note_admin` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `system_settings`
+--
+
+CREATE TABLE `system_settings` (
+  `id` int(11) NOT NULL,
+  `setting_key` varchar(100) NOT NULL,
+  `setting_value` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `system_settings`
+--
+
+INSERT INTO `system_settings` (`id`, `setting_key`, `setting_value`, `created_at`, `updated_at`) VALUES
+(1, 'bank_id', '', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(2, 'bank_name', '', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(3, 'bank_account_no', '', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(4, 'bank_account_name', '', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(5, 'qr_template', 'compact', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(6, 'company_name', 'Giao Hàng Nhanh', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(7, 'company_hotline', '', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(8, 'company_email', '', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(9, 'company_address', '', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(10, 'openweather_api_key', '', '2026-03-16 12:04:12', '2026-03-16 12:04:12'),
+(11, 'google_sheets_webhook_url', '', '2026-03-16 12:04:12', '2026-03-16 12:04:12');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `saved_addresses`
 --
 
@@ -251,6 +302,15 @@ ALTER TABLE `notifications`
   ADD KEY `user_id` (`user_id`),
   ADD KEY `order_id` (`order_id`);
 
+ALTER TABLE `contact_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `status` (`status`);
+
+ALTER TABLE `system_settings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `setting_key` (`setting_key`);
+
 ALTER TABLE `saved_addresses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
@@ -275,6 +335,12 @@ ALTER TABLE `order_logs`
 
 ALTER TABLE `notifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `contact_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `system_settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 ALTER TABLE `saved_addresses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

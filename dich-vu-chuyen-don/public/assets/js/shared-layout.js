@@ -25,6 +25,8 @@
     "cam-nang-chi-tiet.html": "news",
     "khao-sat.html": "survey",
     "dat-lich.html": "booking",
+    "dang-nhap.html": "account",
+    "dang-ky.html": "account",
   };
 
   function loadPartial(url) {
@@ -75,6 +77,13 @@
       contact: `${projectBase}index.html#contact`,
       survey: `${projectBase}khao-sat.html`,
       booking: `${projectBase}dat-lich.html`,
+      account: `${projectBase}dang-nhap.html?vai-tro=khach-hang`,
+      login: `${projectBase}dang-nhap.html`,
+      register: `${projectBase}dang-ky.html`,
+      "login-customer": `${projectBase}dang-nhap.html?vai-tro=khach-hang`,
+      "register-customer": `${projectBase}dang-ky.html?vai-tro=khach-hang`,
+      "login-provider": `${projectBase}dang-nhap.html?vai-tro=doi-tac`,
+      "register-provider": `${projectBase}dang-ky.html?vai-tro=doi-tac`,
       policy: `${projectBase}chinh-sach-va-dieu-khoan.html`,
       "moving-house": `${publicBase}trang/dich-vu/chuyen-nha.html`,
       "moving-warehouse": `${publicBase}trang/dich-vu/chuyen-kho-bai.html`,

@@ -1088,6 +1088,18 @@
   line-height: 1.7;
 }
 
+.thong-bao-bieu-mau.is-pending {
+  border-color: #f2cf7a;
+  background: #fff6df;
+  color: #7a4b00;
+}
+
+.thong-bao-bieu-mau.is-success {
+  border-color: #c8ddd0;
+  background: #edf7f1;
+  color: #1b4332;
+}
+
 .khung-tom-tat-khao-sat {
   padding: 4px 0 0;
   border: 0;
@@ -1306,6 +1318,13 @@
   color: #173528;
   box-shadow: 0 18px 32px rgba(255, 183, 3, 0.18);
   cursor: pointer;
+}
+
+.nut-chinh:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+  box-shadow: none;
 }
 
 .form-dat-lich .goi-y-thong-tin {
