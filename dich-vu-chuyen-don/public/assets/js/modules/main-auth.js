@@ -326,6 +326,24 @@
     });
   }
 
+  function bindUploadNamePreview() {
+    document.querySelectorAll(".tep-tai-anh").forEach((input) => {
+      if (!input || !input.id) return;
+      const nameLabel = document.querySelector(`[data-ten-tep="${input.id}"]`);
+      if (!nameLabel) return;
+      const defaultText = nameLabel.textContent || "Chưa chọn tệp";
+      const updateName = () => {
+        if (input.files && input.files.length > 0) {
+          nameLabel.textContent = input.files[0].name;
+        } else {
+          nameLabel.textContent = defaultText;
+        }
+      };
+      input.addEventListener("change", updateName);
+      updateName();
+    });
+  }
+
   function hydrateSavedIdentity() {
     let savedIdentity = {};
 
@@ -396,7 +414,8 @@
       }
 
       function getDefaultRedirect(role) {
-        const fallback = role === "doi-tac" ? "index.html" : "dat-lich.html";
+        const fallback =
+          role === "doi-tac" ? "index.html" : "tai-khoan-khach-hang.html";
         return typeof core.toProjectUrl === "function" ? core.toProjectUrl(fallback) : fallback;
       }
 
@@ -529,6 +548,7 @@
   const role = getPreferredRole();
   syncRole(role);
   bindPasswordToggles();
+  bindUploadNamePreview();
   hydrateSavedIdentity();
   bindForms();
 })(window, document);

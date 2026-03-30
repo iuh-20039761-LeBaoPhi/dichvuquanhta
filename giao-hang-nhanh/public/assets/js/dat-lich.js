@@ -47,11 +47,16 @@ function resolveOrderFormConfigUrl() {
 
 function resolveBookingApiUrl(path = "dat-lich-ajax.php") {
   if (typeof window === "undefined") return path;
+  const normalized = String(path || "").replace(/^\.?\//, "");
+
+  if (typeof window.bookingApiBaseUrl === "string" && window.bookingApiBaseUrl.trim() !== "") {
+    return new URL(normalized, window.bookingApiBaseUrl).toString();
+  }
+
   if (window.GiaoHangNhanhCore?.toApiUrl) {
     return window.GiaoHangNhanhCore.toApiUrl(path);
   }
 
-  const normalized = String(path || "").replace(/^\.?\//, "");
   const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
   const marker = "/giao-hang-nhanh/";
   const markerIndex = currentPath.toLowerCase().lastIndexOf(marker);
@@ -1557,38 +1562,54 @@ async function applyReorderPrefill(data) {
     source_order_code: data.source_order_code || "",
   };
 
-  document.getElementById("nguoi_gui_ho_ten").value = data.sender_name || "";
-  document.getElementById("nguoi_gui_so_dien_thoai").value = data.sender_phone || "";
-  document.getElementById("nguoi_nhan_ho_ten").value = data.receiver_name || "";
-  document.getElementById("nguoi_nhan_so_dien_thoai").value = data.receiver_phone || "";
-  document.getElementById("ghi_chu_tai_xe").value = data.notes || "";
-  document.getElementById("gia_tri_thu_ho_cod").value = parseFloat(data.cod_value) || 0;
+  document.getElementById("nguoi_gui_ho_ten").value =
+    data.nguoi_gui_ho_ten || data.sender_name || "";
+  document.getElementById("nguoi_gui_so_dien_thoai").value =
+    data.nguoi_gui_so_dien_thoai || data.sender_phone || "";
+  document.getElementById("nguoi_nhan_ho_ten").value =
+    data.nguoi_nhan_ho_ten || data.receiver_name || "";
+  document.getElementById("nguoi_nhan_so_dien_thoai").value =
+    data.nguoi_nhan_so_dien_thoai || data.receiver_phone || "";
+  document.getElementById("ghi_chu_tai_xe").value =
+    data.ghi_chu_tai_xe || data.notes || "";
+  document.getElementById("gia_tri_thu_ho_cod").value =
+    parseFloat(data.gia_tri_thu_ho_cod || data.cod_value) || 0;
 
   const vehicleChoice = document.getElementById("phuong_tien_giao_hang");
   if (vehicleChoice) {
+    const phuongTien = data.phuong_tien || data.vehicle || "";
     vehicleChoice.value = Array.from(vehicleChoice.options).some(
-      (option) => option.value === data.vehicle,
+      (option) => option.value === phuongTien,
     )
-      ? data.vehicle
+      ? phuongTien
       : "auto";
   }
 
-  setOptionGroupValue("nhom_nguoi_tra_cuoc", data.fee_payer || "gui");
-  setOptionGroupValue("nhom_phuong_thuc_thanh_toan", data.payment_method || "tien_mat");
+  setOptionGroupValue(
+    "nhom_nguoi_tra_cuoc",
+    data.nguoi_tra_cuoc || data.fee_payer || "gui",
+  );
+  setOptionGroupValue(
+    "nhom_phuong_thuc_thanh_toan",
+    data.phuong_thuc_thanh_toan || data.payment_method || "tien_mat",
+  );
 
-  orderItems = normalizeReorderItems(data.items);
+  orderItems = normalizeReorderItems(data.mat_hang || data.items);
   hien_thi_danh_sach_hang_hoa();
 
-  if (data.service_type) {
-    selectedService = { serviceType: data.service_type };
+  if (data.dich_vu || data.service_type) {
+    const internalServiceType = getInternalServiceType(
+      data.dich_vu || data.service_type,
+    );
+    selectedService = { serviceType: internalServiceType };
     setDeliveryMode(
-      data.service_type === "instant" ? "instant" : "scheduled",
+      internalServiceType === "instant" ? "instant" : "scheduled",
       { render: false },
     );
   }
 
   await applyReorderAddresses(data);
-  if (data.service_type) {
+  if (data.dich_vu || data.service_type) {
     renderServiceCards();
   }
   markReorderMode(data.source_order_code || `#${data.source_order_id || ""}`);
@@ -1626,14 +1647,15 @@ function applyCustomerPrefill(data) {
   const senderPhoneInput = document.getElementById("nguoi_gui_so_dien_thoai");
   const pickupInput = document.getElementById("dia_chi_lay_hang");
 
-  if (senderNameInput && !senderNameInput.value.trim() && data.sender_name) {
-    senderNameInput.value = data.sender_name;
+  if (senderNameInput && !senderNameInput.value.trim()) {
+    senderNameInput.value = data.nguoi_gui_ho_ten || data.sender_name || "";
   }
-  if (senderPhoneInput && !senderPhoneInput.value.trim() && data.sender_phone) {
-    senderPhoneInput.value = data.sender_phone;
+  if (senderPhoneInput && !senderPhoneInput.value.trim()) {
+    senderPhoneInput.value =
+      data.nguoi_gui_so_dien_thoai || data.sender_phone || "";
   }
-  if (pickupInput && !pickupInput.value.trim() && data.pickup_address) {
-    pickupInput.value = data.pickup_address;
+  if (pickupInput && !pickupInput.value.trim()) {
+    pickupInput.value = data.dia_chi_lay_hang || data.pickup_address || "";
   }
 }
 
@@ -2485,7 +2507,7 @@ async function submitOrderToGoogleSheetsFallback(payload) {
         "Content-Type": "text/plain;charset=utf-8",
       },
       body: JSON.stringify({
-        source: "frontend_google_sheets_fallback",
+        source: "google_sheets_du_phong",
         order_code: fallbackOrderCode,
         created_at: new Date().toISOString(),
         payload: {
@@ -2581,10 +2603,12 @@ function getInternalServiceType(serviceValue) {
 function getWeatherSourceStorageValue(source) {
   const normalized = String(source || "").toLowerCase();
   if (!normalized) return "";
+  if (normalized === "fallback") return "du_lieu_tam_tinh";
   if (normalized === "openmeteo_hourly") return "du_lieu_thoi_tiet_theo_gio";
   if (normalized === "openmeteo_current") return "du_lieu_thoi_tiet_hien_tai";
   if (normalized === "openweather_forecast") return "du_lieu_du_bao_thoi_tiet";
   if (normalized === "openweather_current") return "du_lieu_thoi_tiet_hien_tai";
+  if (normalized.startsWith("du_lieu_")) return normalized;
   return normalized
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -2833,6 +2857,36 @@ function tao_payload_php_tuong_thich(du_lieu_gui) {
       reorderContext && reorderContext.source_order_id
         ? reorderContext.source_order_id
         : null,
+    nguoi_gui_ho_ten: du_lieu_gui.nguoi_gui_ho_ten,
+    nguoi_gui_so_dien_thoai: du_lieu_gui.nguoi_gui_so_dien_thoai,
+    nguoi_nhan_ho_ten: du_lieu_gui.nguoi_nhan_ho_ten,
+    nguoi_nhan_so_dien_thoai: du_lieu_gui.nguoi_nhan_so_dien_thoai,
+    dia_chi_lay_hang: du_lieu_gui.dia_chi_lay_hang,
+    dia_chi_giao_hang: du_lieu_gui.dia_chi_giao_hang,
+    ngay_lay_hang: du_lieu_gui.ngay_lay_hang,
+    khung_gio_lay_hang: du_lieu_gui.khung_gio_lay_hang,
+    ten_khung_gio_lay_hang: du_lieu_gui.ten_khung_gio_lay_hang,
+    ghi_chu_tai_xe: du_lieu_gui.ghi_chu_tai_xe,
+    gia_tri_thu_ho_cod: du_lieu_gui.gia_tri_thu_ho_cod,
+    phuong_thuc_thanh_toan: du_lieu_gui.phuong_thuc_thanh_toan,
+    nguoi_tra_cuoc: du_lieu_gui.nguoi_tra_cuoc,
+    dich_vu: du_lieu_gui.dich_vu,
+    ten_dich_vu: du_lieu_gui.ten_dich_vu,
+    du_kien_giao_hang: du_lieu_gui.du_kien_giao_hang,
+    phuong_tien: du_lieu_gui.phuong_tien,
+    ten_phuong_tien: du_lieu_gui.ten_phuong_tien,
+    tong_cuoc: du_lieu_gui.tong_cuoc,
+    chi_tiet_gia_cuoc: tao_chi_tiet_gia_cuoc_php(
+      du_lieu_gui.chi_tiet_gia_cuoc || {},
+    ),
+    vi_do_lay_hang: du_lieu_gui.vi_do_lay_hang,
+    kinh_do_lay_hang: du_lieu_gui.kinh_do_lay_hang,
+    vi_do_giao_hang: du_lieu_gui.vi_do_giao_hang,
+    kinh_do_giao_hang: du_lieu_gui.kinh_do_giao_hang,
+    ma_dieu_kien_dich_vu: dieuKienDichVu,
+    nguon_thoi_tiet: getWeatherSourceStorageValue(nhanDienThoiTiet),
+    ghi_chu_thoi_tiet: weatherQuoteState?.note || "",
+    mat_hang: du_lieu_gui.mat_hang || [],
     sender_name: du_lieu_gui.nguoi_gui_ho_ten,
     sender_phone: du_lieu_gui.nguoi_gui_so_dien_thoai,
     receiver_name: du_lieu_gui.nguoi_nhan_ho_ten,

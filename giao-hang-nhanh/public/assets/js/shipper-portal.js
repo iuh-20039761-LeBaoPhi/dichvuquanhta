@@ -215,6 +215,27 @@
     return `<span class="customer-status-badge status-${escapeHtml(status || "")}">${escapeHtml(label || status || "--")}</span>`;
   }
 
+  function getAvailableStatusOptions(currentStatus) {
+    const normalized = String(currentStatus || "").toLowerCase();
+    const map = {
+      pending: [
+        { value: "pending", label: "Giữ nguyên chờ xử lý" },
+        { value: "shipping", label: "Đang giao" },
+        { value: "cancelled", label: "Hủy đơn" },
+        { value: "decline", label: "Từ chối / trả đơn" },
+      ],
+      shipping: [
+        { value: "shipping", label: "Đang giao" },
+        { value: "completed", label: "Hoàn tất" },
+        { value: "cancelled", label: "Hủy đơn" },
+      ],
+      completed: [{ value: "completed", label: "Hoàn tất" }],
+      cancelled: [{ value: "cancelled", label: "Đã hủy" }],
+    };
+
+    return map[normalized] || [{ value: normalized || "pending", label: "Giữ nguyên trạng thái" }];
+  }
+
   function buildPagination(currentPage, totalPages) {
     if (!totalPages || totalPages <= 1) return "";
     const buttons = [];
@@ -903,11 +924,12 @@
                 <label>
                   <span>Trạng thái mới</span>
                   <select name="status" required>
-                    <option value="">Chọn trạng thái</option>
-                    <option value="shipping" ${order.status === "shipping" ? "selected" : ""}>Đang giao</option>
-                    <option value="completed" ${order.status === "completed" ? "selected" : ""}>Hoàn tất</option>
-                    <option value="cancelled" ${order.status === "cancelled" ? "selected" : ""}>Hủy đơn</option>
-                    <option value="decline">Từ chối / trả đơn</option>
+                    ${getAvailableStatusOptions(order.status)
+                      .map(
+                        (option) =>
+                          `<option value="${escapeHtml(option.value)}" ${order.status === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`,
+                      )
+                      .join("")}
                   </select>
                 </label>
                 <label class="customer-form-full">
@@ -1075,11 +1097,21 @@
             <form id="shipper-profile-form" class="customer-form-stack">
               <label><span>Tên đăng nhập</span><input value="${escapeHtml(profile.username || "")}" disabled /></label>
               <label><span>Email</span><input value="${escapeHtml(profile.email || "")}" disabled /></label>
-              <label><span>Họ và tên</span><input name="fullname" value="${escapeHtml(profile.fullname || "")}" required /></label>
-              <label><span>Số điện thoại</span><input name="phone" value="${escapeHtml(profile.phone || "")}" required /></label>
-              <label><span>Phương tiện</span><input name="vehicle_type" value="${escapeHtml(profile.vehicle_type || "")}" placeholder="Ví dụ: Xe máy, xe tải nhỏ..." /></label>
+              <label><span>Họ và tên</span><input name="ho_ten" value="${escapeHtml(profile.ho_ten || profile.fullname || "")}" required /></label>
+              <label><span>Số điện thoại</span><input name="so_dien_thoai" value="${escapeHtml(profile.so_dien_thoai || profile.phone || "")}" required /></label>
+              <label><span>Phương tiện</span><input name="loai_phuong_tien" value="${escapeHtml(profile.loai_phuong_tien || profile.vehicle_type || "")}" placeholder="Ví dụ: Xe máy, xe tải nhỏ..." /></label>
               <label><span>Ngày tham gia</span><input value="${escapeHtml(formatDateOnly(profile.created_at))}" disabled /></label>
               <button class="customer-btn customer-btn-primary" type="submit">Lưu thông tin</button>
+            </form>
+          </article>
+          <article class="customer-info-card">
+            <h3>Đổi mật khẩu</h3>
+            <form id="shipper-password-form" class="customer-form-stack">
+              <label><span>Mật khẩu hiện tại</span><input name="mat_khau_hien_tai" type="password" autocomplete="current-password" required /></label>
+              <label><span>Mật khẩu mới</span><input name="mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required /></label>
+              <label><span>Xác nhận mật khẩu mới</span><input name="xac_nhan_mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required /></label>
+              <small class="customer-form-helper">Mật khẩu mới cần ít nhất 8 ký tự và khác mật khẩu hiện tại.</small>
+              <button class="customer-btn customer-btn-primary" type="submit">Cập nhật mật khẩu</button>
             </form>
           </article>
           <article class="customer-info-card">
@@ -1111,6 +1143,34 @@
             body: new FormData(profileForm),
           });
           showToast("Đã cập nhật hồ sơ nhà cung cấp.", "success");
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      });
+    }
+
+    const passwordForm = document.getElementById("shipper-password-form");
+    if (passwordForm) {
+      passwordForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(passwordForm);
+        const newPassword = String(formData.get("mat_khau_moi") || "");
+        const confirmPassword = String(
+          formData.get("xac_nhan_mat_khau_moi") || "",
+        );
+
+        if (newPassword !== confirmPassword) {
+          showToast("Xác nhận mật khẩu mới không khớp.", "error");
+          return;
+        }
+
+        try {
+          await apiRequest("change-password", {
+            method: "POST",
+            body: formData,
+          });
+          showToast("Đã đổi mật khẩu thành công.", "success");
+          passwordForm.reset();
         } catch (error) {
           showToast(error.message, "error");
         }

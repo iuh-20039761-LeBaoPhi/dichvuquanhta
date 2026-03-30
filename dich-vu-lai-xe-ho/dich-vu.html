@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Dịch vụ thuê tài xế lái xe hộ chuyên nghiệp: lái xe theo giờ, theo ngày, đường dài, tài xế riêng. Tài xế có kinh nghiệm, an toàn, đúng giờ, phục vụ tận nơi với mức giá hợp lý.">
+    <meta name="keywords" content="thuê tài xế, đặt lịch tài xế, lái xe hộ, tài xế theo giờ, tài xế riêng, dịch vụ lái xe, thuê lái xe, tài xế chuyên nghiệp">
+    <title>Dịch Vụ Thuê Tài Xế Lái Xe Hộ Chuyên Nghiệp</title>
+    <link rel="shortcut icon" type="image/x-icon" href="assets/logo_main.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" />
+    <style>
+    /* Base & Global */
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+    body { padding-top: 96px; font-family: 'Quicksand', sans-serif; }
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1050; }
+    .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+    
+    /* Service Card Styles */
+    .service-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .service-card:hover { transform: translateY(-5px); box-shadow: 0 1.5rem 2.5rem rgba(0,0,0,0.1) !important; }
+    
+    .price-tag {
+      background: linear-gradient(135deg, #007bff, #00b4d8);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: inline-block;
+    }
+    
+    .package-badge {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 8px 12px;
+      transition: all 0.2s ease;
+    }
+    .package-badge:hover { background: #e3f2fd; transform: translateX(5px); }
+
+    @media (max-width: 991.98px) {
+      body { padding-top: 86px; }
+      .navbar { overflow-x: clip; }
+      .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
+      .navbar-brand img { width: 56px !important; height: 42px !important; }
+      .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+      .navbar-collapse.show { display: block; }
+      .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
+      .navbar-collapse .nav-item { width: 100%; text-align: center; }
+      .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
+      .service-detail-row { margin-bottom: 2rem !important; }
+    }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../index.html" style="color: #007bff">
+          <img style="width: 80px; height: 60px" src="assets/logo-he-thong.png" alt="Thuê tài xế" />
+        </a>
+        <span class="fw-bold text-primary">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</span>
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #007bff">
+          <img style="width: 80px; height: 60px" src="assets/logo_main.png" alt="Thuê tài xế" />
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+          <ul class="navbar-nav align-items-center gap-3">
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="index.html">Trang Chủ</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="gioi-thieu.html">Giới Thiệu</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3 active" href="dich-vu.html" style="color: #007bff; font-size: larger">Dịch Vụ</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="dieu-khoan.html">Điều Khoản</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="cam-nang.html">Cẩm Nang</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold px-3" href="lien-he.html">Liên Hệ</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Banner -->
+    <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #fff3e0 100%);">
+      <div class="container py-5 text-center">
+        <h2 class="fw-bold display-5 mb-3">🚗 Đặt Lịch Thuê Tài Xế Ngay</h2>
+        <p class="lead text-muted mb-4">Liên hệ ngay để đặt lịch thuê tài xế lái xe hộ nhanh chóng, tư vấn miễn phí và phù hợp với nhu cầu di chuyển của bạn.</p>
+        <button class="btn text-white rounded-pill px-5 py-3 shadow-sm" style="background-color: #007bff; border: none; font-weight: 700;" onclick="window.location.href='dat-lich-tai-xe.html'">
+          📞 Đặt Lịch Thuê Tài Xế Ngay
+        </button>
+      </div>
+    </section>
+    
+    <!-- Services Detail -->
+    <section class="py-5">
+      <div class="container py-lg-5">
+        <div id="servicesContainer">
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Đang tải...</span>
+            </div>
+            <p class="mt-3 text-muted">Đang tải danh sách dịch vụ...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Why Choose Us -->
+    <section class="py-5 bg-light">
+      <div class="container py-4">
+        <h2 class="text-center fw-bold display-5 mb-5">Tại Sao Nên Chọn Chúng Tôi?</h2>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3 text-center">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+              <div class="mb-3 fs-1 text-primary"><i class="fas fa-id-card"></i></div>
+              <h5 class="fw-bold">Tài Xế Chuyên Nghiệp</h5>
+              <p class="text-muted small">Đội ngũ tài xế có kinh nghiệm, bằng lái hợp lệ, am hiểu đường xá, thái độ phục vụ chuyên nghiệp.</p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3 text-center">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+              <div class="mb-3 fs-1 text-primary"><i class="fas fa-clock"></i></div>
+              <h5 class="fw-bold">Linh Hoạt Thời Gian</h5>
+              <p class="text-muted small">Dịch vụ theo giờ, theo ngày, theo chuyến. Đáp ứng mọi nhu cầu di chuyển.</p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3 text-center">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+              <div class="mb-3 fs-1 text-primary"><i class="fas fa-shield-alt"></i></div>
+              <h5 class="fw-bold">An Toàn Tuyệt Đối</h5>
+              <p class="text-muted small">Cam kết lái xe an toàn, tuân thủ luật giao thông, bảo hiểm đầy đủ.</p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3 text-center">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+              <div class="mb-3 fs-1 text-primary"><i class="fas fa-tag"></i></div>
+              <h5 class="fw-bold">Giá Cả Hợp Lý</h5>
+              <p class="text-muted small">Bảng giá minh bạch, không phát sinh chi phí ẩn. Nhiều gói phù hợp với nhu cầu.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="py-5" style="background: linear-gradient(135deg, #007bff 0%, #00b4d8 100%);">
+      <div class="container py-5 text-center text-white">
+        <h2 class="fw-bold display-5 mb-3">Sẵn Sàng Cho Chuyến Đi Của Bạn?</h2>
+        <p class="lead mb-4 opacity-90">Đặt lịch thuê tài xế ngay hôm nay để nhận ưu đãi đặc biệt!</p>
+        <button class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow" style="color: #007bff;" onclick="window.location.href='dat-lich-tai-xe.html'">
+          <i class="fas fa-calendar-alt me-2"></i>Đặt Lịch Ngay
+        </button>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3">
+      <div class="container">
+        <div class="row g-4 mb-4">
+          <div class="col-lg-4">
+            <h3 class="h4 fw-bold mb-3" style="color: #007bff">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</h3>
+            <p class="opacity-75">Hệ thống cung cấp dịch vụ tài xế lái xe hộ chuyên nghiệp hàng đầu tại Việt Nam.</p>
+            <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
+            <p class="opacity-75 small">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</p>
+            <h4 class="h5 fw-bold mt-4 mb-3">Liên Hệ</h4>
+            <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
+            <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
+          </div>
+          <div class="col-lg-2">
+            <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+            <ul class="list-unstyled">
+              <li class="mb-2"><a href="gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
+              <li class="mb-2"><a href="dich-vu.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
+              <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
+              <li class="mb-2"><a href="../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
+              <li class="mb-2"><a href="../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+            <div class="d-flex gap-2">
+              <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-instagram"></i></a>
+            </div>
+            <div class="mt-4">
+              <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
+              <div class="d-flex gap-2 flex-wrap">
+                <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px;">
+                  <i class="fab fa-apple me-2"></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block" style="font-size: 8px;">Download on</small>
+                    <span class="fw-bold" style="font-size: 11px;">App Store</span>
+                  </div>
+                </a>
+                <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px; background-color: #34a853; border-color: #34a853;">
+                  <i class="fab fa-google-play me-2"></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block" style="font-size: 8px;">Get it on</small>
+                    <span class="fw-bold" style="font-size: 11px;">Google Play</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="opacity-25" />
+        <p class="text-center small opacity-50 mb-0">&copy; 2026 Dịch Vụ Thuê Tài Xế Lái Xe Hộ.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      // Format tiền tệ
+      function formatMoney(price) {
+        if (price === "Liên hệ") return price;
+        return price.toLocaleString('vi-VN') + ' đ';
+      }
+
+      // Render danh sách dịch vụ từ JSON
+      function renderServiceCards(services) {
+        const container = document.getElementById('servicesContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        
+        services.forEach((service, index) => {
+          const reverse = index % 2 === 1 ? 'flex-lg-row-reverse' : '';
+          const imageAlt = (service.alt || service.name).replace(/"/g, '&quot;');
+          
+          // Tạo HTML cho các gói dịch vụ
+          let packagesHTML = '';
+          if (service.pricing && service.pricing.packages && service.pricing.packages.length > 0) {
+            packagesHTML = `<div class="mt-4"><h5 class="fw-bold mb-3">📋 Các gói dịch vụ:</h5><div class="d-flex flex-wrap gap-2">`;
+            service.pricing.packages.forEach(pkg => {
+              packagesHTML += `<div class="package-badge d-inline-flex align-items-center gap-2">
+                <span class="fw-bold">${pkg.name}</span>
+                <span class="price-tag" style="background: #007bff; font-size: 0.8rem;">${formatMoney(pkg.price)}</span>
+              </div>`;
+            });
+            packagesHTML += `</div></div>`;
+          }
+          
+          const serviceHTML = `
+            <div class="row align-items-center mb-5 g-5 service-detail-row ${reverse}">
+              <div class="col-lg-6">
+                <img src="${service.image}" alt="${imageAlt}" class="img-fluid rounded-4 shadow-lg" 
+                  style="width: 100%; height: auto; min-height: 280px; object-fit: cover;"
+                  onerror="this.src='https://placehold.co/600x400?text=${encodeURIComponent(service.name)}'">
+              </div>
+              <div class="col-lg-6">
+                <h2 class="fw-bold display-6 mb-3" style="color:#007bff">${service.name}</h2>
+                <p class="text-secondary lh-lg mb-4">${service.description}</p>
+                <h4 class="fw-bold mb-3">✨ Bao gồm</h4>
+                <ul class="list-unstyled mb-4">
+                  ${service.includes.map(item => `<li class="py-2" style="color:#555"><i class="fas fa-check-circle me-2" style="color:#007bff"></i>${item}</li>`).join('')}
+                </ul>
+                ${packagesHTML}
+                <button type="button" class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold mt-4" 
+                  style="background:#007bff; border:none" data-id="${service.id}">
+                  <i class="fas fa-calendar-check me-1"></i>Đặt Lịch Thuê Tài Xế Ngay
+                </button>
+              </div>
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', serviceHTML);
+        });
+      }
+
+      // Load dữ liệu từ file services.json
+      async function loadServices() {
+        const container = document.getElementById('servicesContainer');
+        try {
+          const response = await fetch('services.json');
+          if (!response.ok) {
+            throw new Error('Không thể tải file services.json');
+          }
+          const services = await response.json();
+          renderServiceCards(services);
+        } catch (error) {
+          console.error('Lỗi tải services.json:', error);
+          container.innerHTML = `
+            <div class="text-center py-5">
+              <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+              <h4 class="mt-3 text-muted">Không thể tải danh sách dịch vụ</h4>
+              <p class="text-muted">Vui lòng kiểm tra lại file services.json hoặc thử lại sau.</p>
+              <button class="btn btn-primary rounded-pill mt-2" onclick="location.reload()">
+                <i class="fas fa-sync-alt me-2"></i>Tải lại
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      $(document).ready(function() {
+        loadServices();
+        
+        $(document).on('click', '.btn-book', function() {
+          const serviceId = $(this).data('id');
+          window.location.href = 'dat-lich-tai-xe.html?serviceId=' + serviceId;
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ip_address = $_SERVER['REMOTE_ADDR'];
     $status = 0; // 0 = Mới
 
-    $stmt = $conn->prepare("INSERT INTO contact_messages (user_id, name, email, phone, subject, message, ip_address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO lien_he (nguoi_dung_id, ten, email, so_dien_thoai, chu_de, noi_dung, dia_chi_ip, trang_thai) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("issssssi", $user_id, $name, $email, $phone, $subject, $message, $ip_address, $status);
 
     if ($stmt->execute()) {

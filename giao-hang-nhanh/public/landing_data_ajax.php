@@ -6,47 +6,22 @@ require_once __DIR__ . '/../config/db.php';
 
 header('Content-Type: application/json; charset=UTF-8');
 
-$services = [];
-$testimonials = [];
-$faqs = [];
-
-$servicesRes = $conn->query("SELECT id, name, type_key, base_price FROM services ORDER BY base_price ASC");
-if ($servicesRes) {
-    while ($row = $servicesRes->fetch_assoc()) {
-        $services[] = $row;
-    }
-}
-
-$testimonialsRes = $conn->query("SELECT customer_name, customer_role, content, rating FROM testimonials WHERE is_visible = 1 ORDER BY created_at DESC LIMIT 3");
-if ($testimonialsRes) {
-    while ($row = $testimonialsRes->fetch_assoc()) {
-        $testimonials[] = $row;
-    }
-}
-
-$faqsRes = $conn->query("SELECT question, answer FROM faqs ORDER BY display_order ASC");
-if ($faqsRes) {
-    while ($row = $faqsRes->fetch_assoc()) {
-        $faqs[] = $row;
-    }
-}
-
 $pricingConfig = ['weight_free' => 2, 'weight_price' => 5000, 'cod_min' => 5000];
-$isLoggedIn = !empty($_SESSION['user_id']);
+$isLoggedIn = !empty($_SESSION['user_id']) && (($_SESSION['role'] ?? '') !== 'admin');
 $role = $isLoggedIn ? ($_SESSION['role'] ?? 'customer') : 'guest';
 $user = null;
 
 if ($isLoggedIn) {
     $userId = (int) ($_SESSION['user_id'] ?? 0);
     if ($userId > 0) {
-        $userStmt = $conn->prepare("SELECT id, username, fullname, role FROM users WHERE id = ? LIMIT 1");
+        $userStmt = $conn->prepare("SELECT id, ten_dang_nhap AS username, ho_ten AS fullname, vai_tro AS role FROM nguoi_dung WHERE id = ? LIMIT 1");
         if ($userStmt) {
             $userStmt->bind_param('i', $userId);
             $userStmt->execute();
             $userRow = $userStmt->get_result()->fetch_assoc();
             $userStmt->close();
 
-            if ($userRow) {
+            if ($userRow && ($userRow['role'] ?? '') !== 'admin') {
                 $role = $userRow['role'] ?? $role;
                 $user = [
                     'id' => (int) ($userRow['id'] ?? $userId),
@@ -54,6 +29,9 @@ if ($isLoggedIn) {
                     'fullname' => $userRow['fullname'] ?? '',
                     'role' => $role,
                 ];
+            } else {
+                $isLoggedIn = false;
+                $role = 'guest';
             }
         }
     }
@@ -62,9 +40,6 @@ if ($isLoggedIn) {
 echo json_encode([
     'status' => 'success',
     'data' => [
-        'services' => $services,
-        'testimonials' => $testimonials,
-        'faqs' => $faqs,
         'pricing_config' => $pricingConfig,
         'is_logged_in' => $isLoggedIn,
         'role' => $role,

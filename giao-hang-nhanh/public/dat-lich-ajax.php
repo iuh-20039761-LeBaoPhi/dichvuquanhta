@@ -79,14 +79,91 @@ function first_non_empty_value(...$values) {
     return '';
 }
 
+function normalize_booking_payload(array $data): array {
+    $aliases = [
+        'sender_name' => ['nguoi_gui_ho_ten'],
+        'sender_phone' => ['nguoi_gui_so_dien_thoai'],
+        'receiver_name' => ['nguoi_nhan_ho_ten'],
+        'receiver_phone' => ['nguoi_nhan_so_dien_thoai'],
+        'search_pickup' => ['dia_chi_lay_hang'],
+        'search_delivery' => ['dia_chi_giao_hang'],
+        'pickup_date' => ['ngay_lay_hang'],
+        'pickup_slot' => ['khung_gio_lay_hang'],
+        'pickup_slot_label' => ['ten_khung_gio_lay_hang'],
+        'notes' => ['ghi_chu_tai_xe'],
+        'cod_value' => ['gia_tri_thu_ho_cod'],
+        'payment_method' => ['phuong_thuc_thanh_toan'],
+        'fee_payer' => ['nguoi_tra_cuoc'],
+        'service' => ['dich_vu'],
+        'service_name' => ['ten_dich_vu'],
+        'estimated_eta' => ['du_kien_giao_hang'],
+        'vehicle' => ['phuong_tien'],
+        'vehicle_label' => ['ten_phuong_tien'],
+        'total_fee' => ['tong_cuoc'],
+        'pricing_breakdown' => ['chi_tiet_gia_cuoc'],
+        'pickup_lat' => ['vi_do_lay_hang'],
+        'pickup_lng' => ['kinh_do_lay_hang'],
+        'delivery_lat' => ['vi_do_giao_hang'],
+        'delivery_lng' => ['kinh_do_giao_hang'],
+        'service_condition_key' => ['ma_dieu_kien_dich_vu'],
+        'weather_source' => ['nguon_thoi_tiet'],
+        'weather_note' => ['ghi_chu_thoi_tiet'],
+        'items' => ['mat_hang'],
+    ];
+
+    foreach ($aliases as $legacyKey => $newKeys) {
+        if (!array_key_exists($legacyKey, $data) || $data[$legacyKey] === null || $data[$legacyKey] === '') {
+            foreach ($newKeys as $newKey) {
+                if (array_key_exists($newKey, $data) && $data[$newKey] !== null && $data[$newKey] !== '') {
+                    $data[$legacyKey] = $data[$newKey];
+                    break;
+                }
+            }
+        }
+    }
+
+    if ((!array_key_exists('items', $data) || !is_array($data['items'])) && isset($data['mat_hang']) && is_array($data['mat_hang'])) {
+        $data['items'] = $data['mat_hang'];
+    }
+
+    return $data;
+}
+
+function with_booking_prefill_aliases(array $payload): array {
+    return array_merge($payload, [
+        'nguoi_gui_ho_ten' => $payload['sender_name'] ?? '',
+        'nguoi_gui_so_dien_thoai' => $payload['sender_phone'] ?? '',
+        'dia_chi_lay_hang' => $payload['pickup_address'] ?? '',
+    ]);
+}
+
+function with_booking_reorder_aliases(array $payload): array {
+    return array_merge($payload, [
+        'nguoi_gui_ho_ten' => $payload['sender_name'] ?? '',
+        'nguoi_gui_so_dien_thoai' => $payload['sender_phone'] ?? '',
+        'nguoi_nhan_ho_ten' => $payload['receiver_name'] ?? '',
+        'nguoi_nhan_so_dien_thoai' => $payload['receiver_phone'] ?? '',
+        'dia_chi_lay_hang' => $payload['pickup_address'] ?? '',
+        'dia_chi_giao_hang' => $payload['delivery_address'] ?? '',
+        'dich_vu' => $payload['service_type'] ?? '',
+        'phuong_tien' => $payload['vehicle'] ?? '',
+        'phuong_thuc_thanh_toan' => $payload['payment_method'] ?? '',
+        'nguoi_tra_cuoc' => $payload['fee_payer'] ?? 'gui',
+        'gia_tri_thu_ho_cod' => $payload['cod_value'] ?? 0,
+        'ghi_chu_tai_xe' => $payload['notes'] ?? '',
+        'mat_hang' => $payload['items'] ?? [],
+    ]);
+}
+
 function get_booking_prefill(mysqli $conn, $userId) {
     $prefill = [
         'sender_name' => '',
         'sender_phone' => '',
         'pickup_address' => '',
     ];
+    $companyAddress = '';
 
-    $userStmt = $conn->prepare("SELECT fullname, phone, company_address FROM users WHERE id = ? LIMIT 1");
+    $userStmt = $conn->prepare("SELECT ho_ten AS fullname, so_dien_thoai AS phone, dia_chi_cong_ty AS company_address FROM nguoi_dung WHERE id = ? LIMIT 1");
     if ($userStmt) {
         $userStmt->bind_param('i', $userId);
         $userStmt->execute();
@@ -96,11 +173,11 @@ function get_booking_prefill(mysqli $conn, $userId) {
         if ($user) {
             $prefill['sender_name'] = trim((string) ($user['fullname'] ?? ''));
             $prefill['sender_phone'] = trim((string) ($user['phone'] ?? ''));
-            $prefill['pickup_address'] = trim((string) ($user['company_address'] ?? ''));
+            $companyAddress = trim((string) ($user['company_address'] ?? ''));
         }
     }
 
-    $savedAddressStmt = $conn->prepare("SELECT phone, address FROM saved_addresses WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+    $savedAddressStmt = $conn->prepare("SELECT so_dien_thoai AS phone, dia_chi AS address FROM dia_chi_da_luu WHERE nguoi_dung_id = ? ORDER BY id DESC LIMIT 1");
     if ($savedAddressStmt) {
         $savedAddressStmt->bind_param('i', $userId);
         $savedAddressStmt->execute();
@@ -117,8 +194,12 @@ function get_booking_prefill(mysqli $conn, $userId) {
         }
     }
 
+    if ($prefill['pickup_address'] === '' && $companyAddress !== '') {
+        $prefill['pickup_address'] = $companyAddress;
+    }
+
     if ($prefill['pickup_address'] === '') {
-        $orderStmt = $conn->prepare("SELECT pickup_address FROM orders WHERE user_id = ? AND pickup_address IS NOT NULL AND pickup_address <> '' ORDER BY id DESC LIMIT 1");
+        $orderStmt = $conn->prepare("SELECT dia_chi_lay_hang AS pickup_address FROM don_hang WHERE nguoi_dung_id = ? AND dia_chi_lay_hang IS NOT NULL AND dia_chi_lay_hang <> '' ORDER BY id DESC LIMIT 1");
         if ($orderStmt) {
             $orderStmt->bind_param('i', $userId);
             $orderStmt->execute();
@@ -131,7 +212,44 @@ function get_booking_prefill(mysqli $conn, $userId) {
         }
     }
 
-    return $prefill;
+    return with_booking_prefill_aliases($prefill);
+}
+
+function save_recent_pickup_address(mysqli $conn, $userId, $name, $phone, $address) {
+    $userId = (int) $userId;
+    $name = trim((string) $name);
+    $phone = trim((string) $phone);
+    $address = trim((string) $address);
+
+    if ($userId <= 0 || $address === '') {
+        return;
+    }
+
+    $existingStmt = $conn->prepare("SELECT id FROM dia_chi_da_luu WHERE nguoi_dung_id = ? AND dia_chi = ? LIMIT 1");
+    if ($existingStmt) {
+        $existingStmt->bind_param('is', $userId, $address);
+        $existingStmt->execute();
+        $existing = $existingStmt->get_result()->fetch_assoc();
+        $existingStmt->close();
+
+        if ($existing) {
+            $updateStmt = $conn->prepare("UPDATE dia_chi_da_luu SET ten_goi_nho = ?, so_dien_thoai = ? WHERE id = ? AND nguoi_dung_id = ?");
+            if ($updateStmt) {
+                $addressId = (int) $existing['id'];
+                $updateStmt->bind_param('ssii', $name, $phone, $addressId, $userId);
+                $updateStmt->execute();
+                $updateStmt->close();
+            }
+            return;
+        }
+    }
+
+    $insertStmt = $conn->prepare("INSERT INTO dia_chi_da_luu (nguoi_dung_id, ten_goi_nho, so_dien_thoai, dia_chi) VALUES (?, ?, ?, ?)");
+    if ($insertStmt) {
+        $insertStmt->bind_param('isss', $userId, $name, $phone, $address);
+        $insertStmt->execute();
+        $insertStmt->close();
+    }
 }
 
 function extract_slot_start_time($slotValue, $fallback = '08:00') {
@@ -370,14 +488,6 @@ function build_pricing_breakdown_record(array $data, $shippingFee) {
     ];
 }
 
-function get_openweather_api_key($conn) {
-    $envKey = getenv('OPENWEATHERMAP_API_KEY') ?: getenv('OPENWEATHER_API_KEY');
-    if ($envKey) {
-        return trim((string) $envKey);
-    }
-    return trim((string) getSetting($conn, 'openweather_api_key', ''));
-}
-
 function get_google_sheets_webhook_url($conn) {
     $envUrl = getenv('GOOGLE_SHEETS_WEBHOOK_URL') ?: getenv('GOOGLE_APPS_SCRIPT_WEBHOOK_URL');
     if ($envUrl) {
@@ -533,6 +643,44 @@ function time_text_to_minutes($timeText) {
     return intval($matches[1]) * 60 + intval($matches[2]);
 }
 
+function normalize_service_type($value) {
+    $normalized = strtolower(trim((string) $value));
+    $map = [
+        'giao_ngay_lap_tuc' => 'instant',
+        'giao_hoa_toc' => 'express',
+        'giao_nhanh' => 'fast',
+        'giao_tieu_chuan' => 'standard',
+        'so_luong_lon' => 'bulk',
+        'quoc_te_tiet_kiem' => 'intl_economy',
+        'quoc_te_hoa_toc' => 'intl_express',
+    ];
+    return $map[$normalized] ?? $normalized;
+}
+
+function to_vn_service_code($value) {
+    $normalized = normalize_service_type($value);
+    $map = [
+        'instant' => 'giao_ngay_lap_tuc',
+        'express' => 'giao_hoa_toc',
+        'fast' => 'giao_nhanh',
+        'standard' => 'giao_tieu_chuan',
+        'bulk' => 'so_luong_lon',
+        'intl_economy' => 'quoc_te_tiet_kiem',
+        'intl_express' => 'quoc_te_hoa_toc',
+    ];
+    return $map[$normalized] ?? $normalized;
+}
+
+function to_vn_weather_source($value) {
+    $normalized = strtolower(trim((string) $value));
+    $map = [
+        'openmeteo_hourly' => 'du_lieu_thoi_tiet_theo_gio',
+        'openmeteo_current' => 'du_lieu_thoi_tiet_hien_tai',
+        'fallback' => 'du_lieu_tam_tinh',
+    ];
+    return $map[$normalized] ?? $normalized;
+}
+
 function http_get_json($url) {
     if (function_exists('curl_init')) {
         $ch = curl_init($url);
@@ -573,45 +721,51 @@ function http_get_json($url) {
     return ['ok' => true, 'data' => $decoded];
 }
 
-function pick_openweather_bucket(array $payload, $pickupAtUnix) {
-    $current = $payload['current'] ?? [];
-    $hourly = isset($payload['hourly']) && is_array($payload['hourly']) ? $payload['hourly'] : [];
-    if (!$hourly) {
-        return [$current, 'openweather_current'];
+function find_closest_openmeteo_hourly_index(array $hourlyTimes, $pickupAtUnix) {
+    if ($pickupAtUnix <= 0 || empty($hourlyTimes)) {
+        return -1;
     }
 
-    $closest = null;
+    $closestIndex = -1;
     $closestDiff = null;
-    foreach ($hourly as $row) {
-        $rowTs = isset($row['dt']) ? intval($row['dt']) : 0;
-        if ($rowTs <= 0) continue;
-        $diff = abs($rowTs - $pickupAtUnix);
-        if ($closest === null || $diff < $closestDiff) {
-            $closest = $row;
+    foreach ($hourlyTimes as $index => $timeText) {
+        $ts = strtotime((string) $timeText);
+        if ($ts === false || $ts <= 0) {
+            continue;
+        }
+        $diff = abs($ts - $pickupAtUnix);
+        if ($closestDiff === null || $diff < $closestDiff) {
             $closestDiff = $diff;
+            $closestIndex = (int) $index;
         }
     }
 
-    if ($closest !== null) {
-        return [$closest, 'openweather_forecast'];
-    }
-
-    return [$current, 'openweather_current'];
+    return $closestIndex;
 }
 
-function map_weather_condition(array $bucket) {
-    $weatherId = intval($bucket['weather'][0]['id'] ?? 800);
-    $rainVolume = 0.0;
-    if (isset($bucket['rain']) && is_array($bucket['rain'])) {
-        $rainVolume = floatval($bucket['rain']['1h'] ?? array_values($bucket['rain'])[0] ?? 0);
-    }
-    $snowVolume = 0.0;
-    if (isset($bucket['snow']) && is_array($bucket['snow'])) {
-        $snowVolume = floatval($bucket['snow']['1h'] ?? array_values($bucket['snow'])[0] ?? 0);
-    }
-    $windSpeed = floatval($bucket['wind_speed'] ?? 0);
+function map_openmeteo_weather_condition(array $bucket) {
+    $weatherCode = intval($bucket['weather_code'] ?? 0);
+    $precipitation = floatval($bucket['precipitation'] ?? 0);
+    $rain = floatval($bucket['rain'] ?? 0);
+    $showers = floatval($bucket['showers'] ?? 0);
+    $snowfall = floatval($bucket['snowfall'] ?? 0);
+    $windSpeed = floatval($bucket['wind_speed_10m'] ?? 0);
 
-    if (($weatherId >= 200 && $weatherId < 300) || $rainVolume >= 3 || $snowVolume >= 1 || $windSpeed >= 10) {
+    $thunderstormCodes = [95, 96, 99];
+    $heavyRainCodes = [65, 67, 82];
+    $lightRainCodes = [51, 53, 55, 56, 57, 61, 63, 66, 80, 81];
+    $snowCodes = [71, 73, 75, 77, 85, 86];
+
+    if (
+        in_array($weatherCode, $thunderstormCodes, true) ||
+        in_array($weatherCode, $heavyRainCodes, true) ||
+        in_array($weatherCode, $snowCodes, true) ||
+        $precipitation >= 3 ||
+        $rain >= 3 ||
+        $showers >= 3 ||
+        $snowfall >= 1 ||
+        $windSpeed >= 36
+    ) {
         return [
             'condition_key' => 'muato',
             'condition_label' => 'Mưa lớn / thời tiết xấu',
@@ -619,7 +773,12 @@ function map_weather_condition(array $bucket) {
         ];
     }
 
-    if (($weatherId >= 300 && $weatherId < 600) || $rainVolume > 0 || $snowVolume > 0) {
+    if (
+        in_array($weatherCode, $lightRainCodes, true) ||
+        $precipitation > 0 ||
+        $rain > 0 ||
+        $showers > 0
+    ) {
         return [
             'condition_key' => 'muanhe',
             'condition_label' => 'Mưa nhẹ / đường đông',
@@ -634,12 +793,49 @@ function map_weather_condition(array $bucket) {
     ];
 }
 
+function pick_openmeteo_bucket(array $payload, $pickupAtUnix) {
+    $current = isset($payload['current']) && is_array($payload['current']) ? $payload['current'] : [];
+    $hourly = isset($payload['hourly']) && is_array($payload['hourly']) ? $payload['hourly'] : [];
+    $hourlyTimes = isset($hourly['time']) && is_array($hourly['time']) ? $hourly['time'] : [];
+    $hourlyIndex = find_closest_openmeteo_hourly_index($hourlyTimes, $pickupAtUnix);
+    if ($hourlyIndex >= 0) {
+        return [
+            [
+                'weather_code' => $hourly['weather_code'][$hourlyIndex] ?? null,
+                'precipitation' => $hourly['precipitation'][$hourlyIndex] ?? null,
+                'rain' => $hourly['rain'][$hourlyIndex] ?? null,
+                'showers' => $hourly['showers'][$hourlyIndex] ?? null,
+                'snowfall' => $hourly['snowfall'][$hourlyIndex] ?? null,
+                'wind_speed_10m' => $hourly['wind_speed_10m'][$hourlyIndex] ?? null,
+            ],
+            'openmeteo_hourly',
+        ];
+    }
+
+    return [$current, 'openmeteo_current'];
+}
+
+function get_openmeteo_forecast_days($pickupAtUnix) {
+    $now = time();
+    if ($pickupAtUnix <= 0) {
+        return 3;
+    }
+    $daysAhead = (int) ceil(($pickupAtUnix - $now) / 86400);
+    if ($daysAhead <= 1) {
+        return 2;
+    }
+    if ($daysAhead <= 3) {
+        return 3;
+    }
+    return min(7, max(3, $daysAhead + 1));
+}
+
 function get_weather_quote_data($conn, $lat, $lng, $pickupAtUnix, $mode = 'instant') {
     $fallback = [
         'condition_key' => 'macdinh',
         'condition_label' => 'Thời tiết bình thường',
         'summary' => 'Tạm tính theo điều kiện thời tiết bình thường',
-        'note' => 'Chưa lấy được dữ liệu thời tiết hoặc chưa cấu hình OpenWeatherMap API key.',
+        'note' => 'Chưa lấy được dữ liệu thời tiết tự động từ Open-Meteo.',
         'source' => 'fallback',
         'checked_at' => date('Y-m-d H:i'),
         'effective_at' => date('Y-m-d H:i', $pickupAtUnix),
@@ -647,33 +843,25 @@ function get_weather_quote_data($conn, $lat, $lng, $pickupAtUnix, $mode = 'insta
         'mode' => $mode,
     ];
 
-    $apiKey = get_openweather_api_key($conn);
-    if ($apiKey === '') {
-        return $fallback;
-    }
-
+    $forecastDays = get_openmeteo_forecast_days($pickupAtUnix);
     $url = sprintf(
-        'https://api.openweathermap.org/data/3.0/onecall?lat=%s&lon=%s&exclude=minutely,daily,alerts&units=metric&appid=%s',
+        'https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&timezone=Asia/Bangkok&forecast_days=%s&current=weather_code,precipitation,rain,showers,wind_speed_10m&hourly=weather_code,precipitation,rain,showers,snowfall,wind_speed_10m',
         rawurlencode((string) $lat),
         rawurlencode((string) $lng),
-        rawurlencode($apiKey)
+        rawurlencode((string) $forecastDays)
     );
     $response = http_get_json($url);
     if (!$response['ok']) {
-        $fallback['note'] = 'Không gọi được OpenWeatherMap: ' . ($response['message'] ?? 'Lỗi không xác định.');
-        return $fallback;
-    }
-    if (isset($response['data']['cod']) && intval($response['data']['cod']) >= 400) {
-        $fallback['note'] = 'OpenWeatherMap trả về lỗi: ' . ($response['data']['message'] ?? 'Không xác định.');
+        $fallback['note'] = 'Không gọi được Open-Meteo: ' . ($response['message'] ?? 'Lỗi không xác định.');
         return $fallback;
     }
 
-    [$bucket, $source] = pick_openweather_bucket($response['data'], $pickupAtUnix);
-    $mapped = map_weather_condition($bucket);
+    [$bucket, $source] = pick_openmeteo_bucket($response['data'], $pickupAtUnix);
+    $mapped = map_openmeteo_weather_condition($bucket);
     return array_merge($fallback, $mapped, [
         'note' => $mapped['condition_key'] === 'macdinh'
             ? 'Hệ thống tự kiểm tra thời tiết tại điểm lấy hàng. Hiện chưa cần cộng phụ phí thời tiết.'
-            : 'Hệ thống đã tự lấy dữ liệu OpenWeatherMap để cộng phụ phí thời tiết. Khách hàng không cần chọn tay.',
+            : 'Hệ thống đã tự lấy dữ liệu Open-Meteo để cộng phụ phí thời tiết. Khách hàng không cần chọn tay.',
         'source' => $source,
         'is_fallback' => false,
     ]);
@@ -730,7 +918,7 @@ function calculate_surcharge_fee($transportSubtotal, array $config) {
 }
 
 function apply_server_side_instant_pricing(&$data, &$shippingFee, $conn) {
-    $serviceType = strtolower(trim((string) ($data['service'] ?? '')));
+    $serviceType = normalize_service_type($data['service'] ?? '');
     if ($serviceType !== 'instant') {
         return;
     }
@@ -746,7 +934,7 @@ function apply_server_side_instant_pricing(&$data, &$shippingFee, $conn) {
     $data['service_condition_label'] = trim((string) ($conditionConfig['label'] ?? $weatherQuote['condition_label'] ?? 'Thời tiết bình thường'));
     $data['time_surcharge_key'] = trim((string) ($timeConfig['key'] ?? ''));
     $data['time_surcharge_label'] = trim((string) ($timeConfig['label'] ?? ''));
-    $data['weather_source'] = $weatherQuote['source'];
+    $data['weather_source'] = to_vn_weather_source($weatherQuote['source']);
     $data['weather_note'] = $weatherQuote['note'];
 
     $breakdown = isset($data['pricing_breakdown']) && is_array($data['pricing_breakdown'])
@@ -817,11 +1005,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['reorder_id'])) {
 
     $userId = intval($_SESSION['user_id']);
     $stmt = $conn->prepare("
-        SELECT id, order_code, name, phone, receiver_name, receiver_phone,
-               pickup_address, delivery_address, service_type, vehicle_type,
-               package_type, weight, cod_amount, note, payment_method
-        FROM orders
-        WHERE id = ? AND user_id = ?
+        SELECT id, ma_don_hang AS order_code, ten_nguoi_gui AS name, so_dien_thoai_nguoi_gui AS phone,
+               ten_nguoi_nhan AS receiver_name, so_dien_thoai_nguoi_nhan AS receiver_phone,
+               dia_chi_lay_hang AS pickup_address, dia_chi_giao_hang AS delivery_address,
+               loai_dich_vu AS service_type, loai_phuong_tien AS vehicle_type,
+               loai_goi_hang AS package_type, tong_can_nang AS weight, so_tien_cod AS cod_amount,
+               ghi_chu AS note, phuong_thuc_thanh_toan AS payment_method
+        FROM don_hang
+        WHERE id = ? AND nguoi_dung_id = ?
         LIMIT 1
     ");
     $stmt->bind_param("ii", $reorderId, $userId);
@@ -836,15 +1027,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['reorder_id'])) {
 
     $itemType = map_package_type_to_item_type($order['package_type'] ?? '');
     $itemStmt = $conn->prepare("
-        SELECT item_name, quantity, weight, length, width, height, declared_value
-        FROM order_items
-        WHERE order_id = ?
+        SELECT ten_mat_hang AS item_name, so_luong AS quantity, can_nang AS weight,
+               chieu_dai AS length, chieu_rong AS width, chieu_cao AS height,
+               gia_tri_khai_bao AS declared_value
+        FROM don_hang_mat_hang
+        WHERE don_hang_id = ?
         ORDER BY id ASC
     ");
     if (!$itemStmt) {
         json_response([
             'success' => false,
-            'message' => 'Không thể tải chi tiết hàng hóa của đơn cũ. Có thể bảng order_items trong database chưa được cập nhật.',
+            'message' => 'Không thể tải chi tiết hàng hóa của đơn cũ.',
         ], 500);
     }
     $itemStmt->bind_param("i", $reorderId);
@@ -881,7 +1074,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['reorder_id'])) {
     $noteData = extract_reorder_note_and_fee_payer($order['note'] ?? '');
     json_response([
         'success' => true,
-        'data' => [
+        'data' => with_booking_reorder_aliases([
             'source_order_id' => intval($order['id']),
             'source_order_code' => $order['order_code'] ?? '',
             'sender_name' => $order['name'] ?? '',
@@ -897,7 +1090,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['reorder_id'])) {
             'cod_value' => floatval($order['cod_amount'] ?? 0),
             'notes' => $noteData['note'],
             'items' => $items,
-        ],
+        ]),
     ]);
 }
 
@@ -920,6 +1113,8 @@ if (!is_array($data)) {
     json_response(['success' => false, 'message' => 'Dữ liệu không hợp lệ.'], 400);
 }
 
+$data = normalize_booking_payload($data);
+
 $conn->begin_transaction();
 
 try {
@@ -934,11 +1129,15 @@ try {
     $receiver_phone = $data['receiver_phone'] ?? '';
     $delivery_address = $data['search_delivery'] ?? '';
     
-    $service_type = $data['service'] ?? '';
+    $service_type_raw = $data['service'] ?? '';
     $vehicle_type = first_non_empty_value($data['vehicle_label'] ?? '', $data['vehicle'] ?? '');
     $shipping_fee = floatval($data['total_fee'] ?? 0);
     $cod_amount = floatval($data['cod_value'] ?? 0);
     apply_server_side_instant_pricing($data, $shipping_fee, $conn);
+    $service_type_internal = normalize_service_type($service_type_raw);
+    $data['service'] = to_vn_service_code($service_type_internal);
+    $service_type = $data['service'];
+    $data['weather_source'] = to_vn_weather_source($data['weather_source'] ?? '');
     $note = build_structured_order_note($data, $data['notes'] ?? '');
     $service_meta_json = encode_json_for_db(build_service_meta_record($data));
     $pricing_breakdown_json = encode_json_for_db(build_pricing_breakdown_record($data, $shipping_fee));
@@ -979,13 +1178,13 @@ try {
     }
 
     // Insert order chính
-    $sql = "INSERT INTO orders (
-                order_code, user_id, pickup_address, pickup_lat, pickup_lng, name, phone, 
-                receiver_name, receiver_phone, delivery_address, delivery_lat, delivery_lng,
-                service_type, service_condition_key, vehicle_type, khoang_cach_km, weight, cod_amount, 
-                shipping_fee, pickup_time, requested_delivery_time, estimated_delivery, note,
-                service_meta_json, pricing_breakdown_json, booking_payload_json,
-                weather_source, weather_note, payment_method, status, created_at
+    $sql = "INSERT INTO don_hang (
+                ma_don_hang, nguoi_dung_id, dia_chi_lay_hang, vi_do_lay_hang, kinh_do_lay_hang, ten_nguoi_gui, so_dien_thoai_nguoi_gui,
+                ten_nguoi_nhan, so_dien_thoai_nguoi_nhan, dia_chi_giao_hang, vi_do_giao_hang, kinh_do_giao_hang,
+                loai_dich_vu, ma_dieu_kien_dich_vu, loai_phuong_tien, khoang_cach_km, tong_can_nang, so_tien_cod,
+                phi_van_chuyen, thoi_gian_lay_hang, thoi_gian_giao_hang_yeu_cau, thoi_gian_giao_hang_du_kien, ghi_chu,
+                du_lieu_dich_vu_json, chi_tiet_gia_json, du_lieu_dat_lich_json,
+                nguon_thoi_tiet, ghi_chu_thoi_tiet, phuong_thuc_thanh_toan, trang_thai, tao_luc
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())";
 
     $stmt = $conn->prepare($sql);
@@ -1009,13 +1208,13 @@ try {
 
     // Insert chi tiết món hàng
     if (isset($data['items']) && is_array($data['items'])) {
-        $item_sql = "INSERT INTO order_items (
-                        order_id, item_name, quantity, weight, 
-                        length, width, height, declared_value
+        $item_sql = "INSERT INTO don_hang_mat_hang (
+                        don_hang_id, ten_mat_hang, so_luong, can_nang,
+                        chieu_dai, chieu_rong, chieu_cao, gia_tri_khai_bao
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $item_stmt = $conn->prepare($item_sql);
         if (!$item_stmt) {
-            throw new Exception("Không thể lưu chi tiết hàng hóa. Có thể bảng order_items trong database chưa được cập nhật.");
+            throw new Exception("Không thể lưu chi tiết hàng hóa.");
         }
         
         foreach ($data['items'] as $item) {
@@ -1037,6 +1236,8 @@ try {
         }
         $item_stmt->close();
     }
+
+    save_recent_pickup_address($conn, $user_id, $name, $phone, $pickup_address);
 
     $uploadDir = dirname(__DIR__) . '/public/uploads/order_attachments/' . $order_code;
     $uploadedMedia = save_upload_group('goods_media', $uploadDir, [
@@ -1088,7 +1289,9 @@ try {
         'success' => true, 
         'message' => 'Đặt đơn hàng thành công!',
         'order_code' => $order_code,
+        'ma_don_hang' => $order_code,
         'uploaded_files' => $uploadedMedia,
+        'tep_da_tai_len' => $uploadedMedia,
         'google_sheets_synced' => (bool) ($googleSheetsSync['synced'] ?? false),
         'google_sheets_configured' => (bool) ($googleSheetsSync['configured'] ?? false),
     ]);

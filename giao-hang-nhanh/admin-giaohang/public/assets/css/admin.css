@@ -1,0 +1,20 @@
+/* ===== ADMIN PANEL STYLES ===== */
+/* ===== BASE IMPORTS ===== */
+@import "base/reset.css";
+@import "base/typography.css";
+@import "base/global.css";
+
+/* ===== ADMIN SPECIFIC IMPORTS ===== */
+@import "admin/layout.css";
+@import "admin/components.css";
+@import "admin/pages.css";
+
+/* ===== GLOBAL COMPONENT IMPORTS ===== */
+@import "components/buttons.css";
+@import "components/forms.css";
+@import "components/cards.css";
+@import "components/ui-kit.css";
+@import "components/modal.css";
+
+/* ===== LAYOUT & FOOTER ===== */
+@import "layout/footer.css";

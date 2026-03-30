@@ -10,10 +10,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --tx-primary: #3B82F6;
+            --tx-primary-dark: #1E40AF;
+            --tx-primary-soft: #EFF6FF;
+            --tx-border: #E2E8F0;
+            --tx-text-muted: #64748B;
+        }
         body {
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, #1e3a8a 0%, #1E40AF 60%, #0ea5e9 100%);
+            background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 55%, #3B82F6 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -25,48 +32,48 @@
             padding: 44px 40px;
             width: 100%;
             max-width: 440px;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 80px rgba(30, 64, 175, 0.28);
         }
         .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 6px; }
         .brand img { width: 48px; height: 48px; border-radius: 12px; object-fit: contain; }
         .brand-name {
             font-size: 1.6rem; font-weight: 800;
-            background: linear-gradient(135deg, #3B82F6, #1E40AF);
+            background: linear-gradient(135deg, var(--tx-primary), var(--tx-primary-dark));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
-        .auth-subtitle { text-align: center; font-size: 0.88rem; color: #718096; margin-bottom: 28px; }
+        .auth-subtitle { text-align: center; font-size: 0.88rem; color: var(--tx-text-muted); margin-bottom: 28px; }
         .role-badge {
             display: inline-flex; align-items: center; gap: 6px;
-            background: linear-gradient(135deg, #3B82F622, #1E40AF22);
-            border: 1px solid #3B82F644;
-            color: #1E40AF; font-size: 0.8rem; font-weight: 600;
+            background: linear-gradient(135deg, #3B82F622, #1E40AF1C);
+            border: 1px solid #3B82F655;
+            color: var(--tx-primary-dark); font-size: 0.8rem; font-weight: 600;
             padding: 4px 14px; border-radius: 50px; margin-bottom: 24px;
         }
-        .form-label { font-weight: 600; font-size: 0.88rem; color: #4a5568; margin-bottom: 7px; }
-        .input-group-text { background: #EFF6FF; border-right: none; color: #3B82F6; border-color: #e2e8f0; }
-        .input-icon .form-control { border-left: none; border-color: #e2e8f0; padding: 11px 14px; font-size: 0.95rem; }
-        .input-icon .form-control:focus { border-color: #3B82F6; box-shadow: none; }
+        .form-label { font-weight: 600; font-size: 0.88rem; color: #334155; margin-bottom: 7px; }
+        .input-group-text { background: var(--tx-primary-soft); border-right: none; color: var(--tx-primary); border-color: var(--tx-border); }
+        .input-icon .form-control { border-left: none; border-color: var(--tx-border); padding: 11px 14px; font-size: 0.95rem; }
+        .input-icon .form-control:focus { border-color: var(--tx-primary); box-shadow: none; }
         .input-icon:focus-within .input-group-text,
-        .input-icon:focus-within .toggle-pwd { border-color: #3B82F6; }
-        .toggle-pwd { border-left: none; border-color: #e2e8f0; background: white; color: #a0aec0; cursor: pointer; transition: color 0.2s; }
-        .toggle-pwd:hover { color: #3B82F6; box-shadow: none; }
+        .input-icon:focus-within .toggle-pwd { border-color: var(--tx-primary); }
+        .toggle-pwd { border-left: none; border-color: var(--tx-border); background: white; color: #94A3B8; cursor: pointer; transition: color 0.2s; }
+        .toggle-pwd:hover { color: var(--tx-primary); box-shadow: none; }
         .btn-submit {
-            background: linear-gradient(135deg, #3B82F6, #1E40AF);
+            background: linear-gradient(135deg, var(--tx-primary), var(--tx-primary-dark));
             color: white; border: none; padding: 13px; border-radius: 50px;
             font-weight: 700; font-size: 1rem; transition: all 0.3s;
             width: 100%; margin-top: 6px; cursor: pointer;
         }
-        .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59,130,246,0.45); color: white; }
+        .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(30,64,175,0.38); color: white; }
         .btn-submit:disabled { opacity: 0.8; }
         #msg { font-size: 0.88rem; min-height: 22px; text-align: center; margin-top: 12px; }
         .auth-links { text-align: center; margin-top: 22px; font-size: 0.85rem; }
-        .auth-links a { color: #3B82F6; text-decoration: none; font-weight: 500; }
+        .auth-links a { color: var(--tx-primary); text-decoration: none; font-weight: 500; }
         .auth-links a:hover { text-decoration: underline; }
         .divider { color: #cbd5e0; margin: 0 8px; }
         .other-roles { background: #f7fafc; border-radius: 12px; padding: 14px; margin-top: 20px; text-align: center; }
-        .other-roles p { font-size: 0.8rem; color: #718096; margin-bottom: 8px; }
+        .other-roles p { font-size: 0.8rem; color: var(--tx-text-muted); margin-bottom: 8px; }
         .other-roles .role-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 600; color: #4a5568; text-decoration: none; padding: 6px 14px; border-radius: 8px; background: white; border: 1px solid #e2e8f0; transition: all 0.2s; margin: 3px; }
-        .other-roles .role-link:hover { border-color: #3B82F6; color: #3B82F6; }
+        .other-roles .role-link:hover { border-color: var(--tx-primary); color: var(--tx-primary); }
     </style>
 </head>
 <body>

@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Liên hệ dịch vụ thuê tài xế lái xe hộ để được tư vấn và đặt lịch nhanh chóng. Cung cấp lái xe theo giờ, theo ngày, đường dài và tài xế riêng cá nhân chuyên nghiệp.">
+    <meta name="keywords" content="liên hệ dịch vụ tài xế, đặt lịch thuê tài xế, tư vấn lái xe hộ, dịch vụ tài xế theo giờ, hotline tài xế, thuê tài xế lái xe">
+    <title>Liên Hệ - Dịch Vụ Thuê Tài Xế Lái Xe Hộ</title>
+    <link rel="shortcut icon" type="image/x-icon" href="assets/logo_main.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+      body { padding-top: 96px; font-family: 'Quicksand', sans-serif; }
+      .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1050; }
+      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+
+      /* ================= MOBILE ONLY ================= */
+      @media (max-width: 991.98px) {
+        body { padding-top: 86px; }
+        .navbar { overflow-x: clip; }
+        .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
+        .navbar-brand img { width: 56px !important; height: 42px !important; }
+        .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .navbar-collapse.show { display: block; }
+        .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
+        .navbar-collapse .nav-item { width: 100%; text-align: center; }
+        .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
+        .hero-section img { width: 100% !important; max-width: 340px; height: auto !important; }
+      }
+
+      .service-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+      .service-list .btn { 
+        width: 100%; min-height: 48px; display: flex; align-items: center; 
+        justify-content: flex-start; text-align: left; line-height: 1.3; 
+      }
+
+      .contact-info-panel { 
+        border: 2px solid #75c9f8; background: #eef8ff; border-radius: 18px; 
+        padding: 22px 20px; box-shadow: 0 10px 20px rgba(44, 123, 229, 0.14); 
+      }
+      .contact-info-title { color: #1f73d8; font-size: clamp(2rem, 3.8vw, 3.05rem); margin-bottom: 1.25rem; }
+
+      .contact-info-card { 
+        display: flex; align-items: flex-start; gap: 14px; background: #ffffff; 
+        border: 2px solid #a9d7f7; border-radius: 16px; padding: 14px 16px; box-shadow: 0 6px 12px rgba(37, 116, 205, 0.14); 
+      }
+
+      .contact-info-icon { 
+        width: 44px; height: 44px; border-radius: 999px; background: #1f7fe8; 
+        color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.25rem; 
+      }
+
+      .contact-info-card h4 { margin: 0 0 4px; font-weight: 700; color: #2f2f2f; }
+      .contact-info-card p { margin: 0; color: #555; font-size: 0.95rem; }
+      .contact-info-card a { color: #1f73d8; text-decoration: none; }
+      .contact-info-hours p + p { margin-top: 4px; }
+
+      .contact-form-card { 
+        background: linear-gradient(#f3f6ff, #f4f3ff) padding-box, linear-gradient(135deg, #007bff, #00b4d8) border-box; 
+        border: 4px solid transparent; border-radius: 22px; box-shadow: 0 12px 28px rgba(0, 123, 255, 0.18); 
+      }
+
+      #bookingForm label { font-weight: 700 !important; color: #2f2f2f !important; }
+      #bookingForm input, #bookingForm textarea { border: 2px solid #007bff !important; border-radius: 12px !important; box-shadow: none !important; }
+      #bookingForm input::placeholder, #bookingForm textarea::placeholder { color: #7b7b7b; }
+
+      .service-list .btn.btn-outline-success { 
+        border: 2px solid #007bff; color: #2f2f2f; background-color: #ffffff; 
+        border-radius: 14px; box-shadow: 0 3px 8px rgba(0, 123, 255, 0.2); 
+      }
+      .service-list .btn-check:checked + .btn.btn-outline-success { background-color: #e3f2fd; border-color: #007bff; color: #0056b3; }
+      .service-list .btn.btn-outline-success:hover { border-color: #0056b3; color: #0056b3; }
+
+      #bookingForm button[type="submit"] { background: linear-gradient(135deg, #007bff, #00b4d8) !important; box-shadow: 0 8px 16px rgba(0, 123, 255, 0.35); border: none; }
+      #bookingForm button[type="submit"]:hover { filter: brightness(0.95); transform: scale(1.02); }
+
+      @media (max-width: 767.98px) {
+        .contact-form-card { padding: 1.2rem !important; }
+      }
+
+      .faq-question {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+      }
+      .faq-question:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+      }
+      .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-out;
+      }
+      .faq-answer.show {
+        max-height: 300px;
+      }
+    </style>
+    <script src="/ga.js"></script>
+  </head>
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+      <div class="container">
+        <a href="../index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
+          <img src="assets/logo-he-thong.png" alt="Dịch vụ thuê tài xế lái xe hộ" style="width: 80px; height: 60px" />
+        </a>
+        <span class="fw-bold text-primary">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</span>
+        <a href="index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
+          <img src="assets/logo_main.png" alt="Dịch Vụ Thuê Tài Xế Lái Xe Hộ" style="width: 80px; height: 60px" />
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+          <ul class="navbar-nav align-items-center gap-3">
+            <li class="nav-item"><a href="index.html" class="nav-link fw-bold px-3">Trang Chủ</a></li>
+            <li class="nav-item"><a href="gioi-thieu.html" class="nav-link fw-bold px-3">Giới Thiệu</a></li>
+            <li class="nav-item"><a href="dich-vu.html" class="nav-link fw-bold px-3">Dịch Vụ</a></li>
+            <li class="nav-item"><a href="dieu-khoan.html" class="nav-link fw-bold px-3">Điều Khoản</a></li>
+            <li class="nav-item"><a href="cam-nang.html" class="nav-link fw-bold px-3">Cẩm Nang</a></li>
+            <li class="nav-item"><a href="lien-he.html" class="nav-link fw-bold px-3 active" style="color: #007bff; font-size: larger">Liên Hệ</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #fff3e0 100%);">
+      <div class="container py-lg-5 text-center">
+        <h1 class="display-3 fw-bold mb-3">
+          Liên Hệ Với Chúng Tôi 
+          <span style="color: #007bff; font-family: 'Pacifico', cursive;">Thuê Tài Xế</span>
+        </h1>
+        <p class="lead text-muted mb-4">
+          Sẵn sàng tư vấn và hỗ trợ đặt lịch thuê tài xế lái xe hộ nhanh chóng, an toàn và chuyên nghiệp
+        </p>
+        <div style="width: 60px; height: 3px; background-color: #007bff; margin: 0 auto;"></div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-5">
+      <div class="container py-lg-5">
+        <div class="row g-5">
+          <!-- Contact Info -->
+          <div class="col-lg-5">
+            <div class="contact-info-panel">
+              <h2 class="fw-bold contact-info-title">Thông Tin Liên Hệ</h2>
+
+              <div class="contact-info-card mb-3">
+                <div class="contact-info-icon">
+                  <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                  <h4>Địa Chỉ Văn Phòng</h4>
+                  <p>Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</p>
+                </div>
+              </div>
+
+              <div class="contact-info-card mb-3">
+                <div class="contact-info-icon">
+                  <i class="fas fa-phone"></i>
+                </div>
+                <div>
+                  <h4>Điện Thoại</h4>
+                  <p><a href="tel:0775472347">0775 472 347</a> (Hotline 24/7)</p>
+                  <p class="small text-muted mt-1">Tư vấn và đặt lịch nhanh chóng</p>
+                </div>
+              </div>
+
+              <div class="contact-info-card mb-3">
+                <div class="contact-info-icon">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div>
+                  <h4>Email</h4>
+                  <p><a href="mailto:dichvuquanhta.vn@gmail.com">dichvuquanhta.vn@gmail.com</a></p>
+                </div>
+              </div>
+
+              <div class="contact-info-card contact-info-hours">
+                <div class="contact-info-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                  <h4>Giờ Làm Việc</h4>
+                  <p>Thứ 2 - Thứ 6: 8:00 - 20:00</p>
+                  <p>Thứ 7 - Chủ Nhật: 8:00 - 18:00</p>
+                  <p class="text-primary fw-bold mt-2">📞 Hỗ trợ khẩn cấp 24/7</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Form -->
+          <div class="col-lg-7">
+            <div class="p-5 contact-form-card">
+              <div>
+                <h2 class="fw-bold mb-4" style="color: #007bff">
+                  <i class="fas fa-paper-plane me-2"></i>Đặt Lịch Thuê Tài Xế
+                </h2>
+
+                <form id="bookingForm" class="contact-form">
+                  <div class="mb-4">
+                    <label class="d-block mb-2" style="font-weight: 600; color: #333">Dịch vụ quan tâm:</label>
+                    <div id="serviceList" class="service-list"></div>
+                    <input type="hidden" id="servicePrice" value="Liên hệ" />
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="d-block mb-2" style="font-weight: 600; color: #333">Họ và tên: <span style="color: #ff6b6b">*</span></label>
+                    <input type="text" id="customerName" required placeholder="Nhập họ và tên của bạn" 
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                      onfocus="this.style.borderColor = '#007bff'; this.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.2)';"
+                      onblur="this.style.borderColor = '#007bff'; this.style.boxShadow = 'none';" />
+                  </div>
+
+                  <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                      <label class="d-block mb-2" style="font-weight: 600; color: #333">Số điện thoại: <span style="color: #ff6b6b">*</span></label>
+                      <input type="tel" id="customerPhone" required placeholder="0775 472 347" pattern="[0-9]{10,11}"
+                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                        onfocus="this.style.borderColor = '#007bff'; this.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.2)';"
+                        onblur="this.style.borderColor = '#007bff'; this.style.boxShadow = 'none';" />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="d-block mb-2" style="font-weight: 600; color: #333">Email:</label>
+                      <input type="email" id="customerEmail" placeholder="example@gmail.com"
+                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                        onfocus="this.style.borderColor = '#007bff'; this.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.2)';"
+                        onblur="this.style.borderColor = '#007bff'; this.style.boxShadow = 'none';" />
+                    </div>
+                  </div>
+
+                  <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                      <label class="d-block mb-2" style="font-weight: 600; color: #333">Điểm đón:</label>
+                      <input type="text" id="pickupLocation" placeholder="Địa chỉ đón khách"
+                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                        onfocus="this.style.borderColor = '#007bff'; this.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.2)';"
+                        onblur="this.style.borderColor = '#007bff'; this.style.boxShadow = 'none';" />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="d-block mb-2" style="font-weight: 600; color: #333">Điểm đến:</label>
+                      <input type="text" id="destination" placeholder="Địa chỉ điểm đến"
+                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                        onfocus="this.style.borderColor = '#007bff'; this.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.2)';"
+                        onblur="this.style.borderColor = '#007bff'; this.style.boxShadow = 'none';" />
+                    </div>
+                  </div>
+
+                  <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                      <label class="d-block mb-2" style="font-weight: 600; color: #333">Ngày đi:</label>
+                      <input type="date" id="tripDate"
+                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                        onfocus="this.style.borderColor = '#007bff'; this.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.2)';"
+                        onblur="this.style.borderColor = '#007bff'; this.style.boxShadow = 'none';" />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="d-block mb-2" style="font-weight: 600; color: #333">Giờ đi:</label>
+                      <input type="time" id="tripTime"
+                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                        onfocus="this.style.borderColor = '#007bff'; this.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.2)';"
+                        onblur="this.style.borderColor = '#007bff'; this.style.boxShadow = 'none';" />
+                    </div>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="d-block mb-2" style="font-weight: 600; color: #333">Yêu cầu thêm / Ghi chú:</label>
+                    <textarea id="customerNote" rows="4" placeholder="Nhập yêu cầu đặc biệt (nếu có): loại xe, tài xế nam/nữ, tuyến đường, ..."
+                      style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;"
+                      onfocus="this.style.borderColor = '#007bff'; this.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.2)';"
+                      onblur="this.style.borderColor = '#007bff'; this.style.boxShadow = 'none';"></textarea>
+                  </div>
+
+                  <div class="mb-4">
+                    <button type="submit" class="w-100 btn text-white rounded-pill" 
+                      style="background-color: #007bff; border: none; padding: 14px 30px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s;">
+                      <i class="fas fa-car me-2"></i>Gửi Yêu Cầu Thuê Tài Xế
+                    </button>
+                  </div>
+                </form>
+
+                <div id="successMessage" style="display: none; text-align: center; padding: 20px">
+                  <i class="fas fa-check-circle" style="color: #28a745; font-size: 3rem"></i>
+                  <h3 class="mt-3 fw-bold" style="color: #333">Gửi thành công!</h3>
+                  <p style="color: #666">Cảm ơn bạn đã tin tưởng. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-5 bg-light">
+      <div class="container py-4">
+        <h2 class="text-center fw-bold display-5 mb-5">Câu Hỏi Thường Gặp</h2>
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="faq-item mb-3">
+              <div class="faq-question p-3 rounded-3 bg-white shadow-sm d-flex justify-content-between align-items-center" onclick="toggleFAQ(this)">
+                <span class="fw-bold"><i class="fas fa-question-circle me-2" style="color: #007bff"></i>Làm thế nào để đặt lịch thuê tài xế?</span>
+                <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+              </div>
+              <div class="faq-answer px-3">
+                <p class="py-3 text-muted mb-0">Bạn có thể đặt lịch trực tiếp qua form bên cạnh, gọi hotline 0775 472 347 hoặc gửi email đến dichvuquanhta.vn@gmail.com. Chúng tôi sẽ xác nhận trong vòng 30 phút.</p>
+              </div>
+            </div>
+            <div class="faq-item mb-3">
+              <div class="faq-question p-3 rounded-3 bg-white shadow-sm d-flex justify-content-between align-items-center" onclick="toggleFAQ(this)">
+                <span class="fw-bold"><i class="fas fa-question-circle me-2" style="color: #007bff"></i>Chi phí thuê tài xế được tính như thế nào?</span>
+                <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+              </div>
+              <div class="faq-answer px-3">
+                <p class="py-3 text-muted mb-0">Chi phí được tính theo gói dịch vụ: lái xe theo giờ (80.000đ/giờ), theo ngày (500.000đ/ngày), đường dài (theo km). Phụ thu ca đêm (+20%), ngày lễ (+30%). Phí di chuyển tài xế 5.000đ/km từ văn phòng.</p>
+              </div>
+            </div>
+            <div class="faq-item mb-3">
+              <div class="faq-question p-3 rounded-3 bg-white shadow-sm d-flex justify-content-between align-items-center" onclick="toggleFAQ(this)">
+                <span class="fw-bold"><i class="fas fa-question-circle me-2" style="color: #007bff"></i>Tài xế có được đảm bảo an toàn không?</span>
+                <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+              </div>
+              <div class="faq-answer px-3">
+                <p class="py-3 text-muted mb-0">Đội ngũ tài xế của chúng tôi đều có bằng lái hợp lệ, kinh nghiệm lái xe tối thiểu 3 năm, được kiểm tra lý lịch rõ ràng và tham gia bảo hiểm đầy đủ cho hành khách.</p>
+              </div>
+            </div>
+            <div class="faq-item mb-3">
+              <div class="faq-question p-3 rounded-3 bg-white shadow-sm d-flex justify-content-between align-items-center" onclick="toggleFAQ(this)">
+                <span class="fw-bold"><i class="fas fa-question-circle me-2" style="color: #007bff"></i>Có thể hủy lịch đã đặt không?</span>
+                <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+              </div>
+              <div class="faq-answer px-3">
+                <p class="py-3 text-muted mb-0">Có thể hủy lịch trước 2 giờ mà không mất phí. Hủy trong vòng 2 giờ trước giờ khởi hành: phí 30% giá trị đơn hàng. Hủy sau giờ khởi hành: phí 100%.</p>
+              </div>
+            </div>
+            <div class="faq-item mb-3">
+              <div class="faq-question p-3 rounded-3 bg-white shadow-sm d-flex justify-content-between align-items-center" onclick="toggleFAQ(this)">
+                <span class="fw-bold"><i class="fas fa-question-circle me-2" style="color: #007bff"></i>Có hỗ trợ xe cho khách không?</span>
+                <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+              </div>
+              <div class="faq-answer px-3">
+                <p class="py-3 text-muted mb-0">Chúng tôi cung cấp cả hai hình thức: lái xe cho xe của khách hoặc hỗ trợ xe có tài xế (theo yêu cầu). Vui lòng ghi rõ trong phần yêu cầu khi đặt lịch.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3">
+      <div class="container">
+        <div class="row g-4 mb-4">
+          <div class="col-lg-4">
+            <h3 class="h4 fw-bold mb-3" style="color: #007bff">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</h3>
+            <p class="opacity-75">Hệ thống cung cấp dịch vụ tài xế lái xe hộ chuyên nghiệp hàng đầu tại Việt Nam. An toàn - Uy tín - Chất lượng.</p>
+            <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
+            <p class="opacity-75 small">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</p>
+            <h4 class="h5 fw-bold mt-4 mb-3">Liên Hệ</h4>
+            <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
+            <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
+          </div>
+          <div class="col-lg-2">
+            <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+            <ul class="list-unstyled">
+              <li class="mb-2"><a href="gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
+              <li class="mb-2"><a href="dich-vu.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
+              <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
+              <li class="mb-2"><a href="../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
+              <li class="mb-2"><a href="../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
+              <li class="mb-2"><a href="../cham-soc-vuon-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Vườn & Rẫy</a></li>
+              <li class="mb-2"><a href="../giat-ui-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giặt Ủi Cao Cấp</a></li>
+              <li class="mb-2"><a href="../tho-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Thợ Nhà & Sửa Chữa</a></li>
+              <li class="mb-2"><a href="../cham-soc-nguoi-gia/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Người Già</a></li>
+              <li class="mb-2"><a href="../cham-soc-nguoi-benh/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Bệnh Nhân</a></li>
+              <li class="mb-2"><a href="../giao-hang-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giao Hàng Nhanh</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+            <div class="d-flex gap-3">
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-youtube"></i></a>
+              <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <div class="mt-4">
+              <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
+              <div class="d-flex gap-2" style="max-width: 300px;">
+                <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
+                  <i class="fab fa-apple me-2"></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
+                    <span class="fw-bold" style="font-size: 11px;">App Store</span>
+                  </div>
+                </a>
+                <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill" style="background-color: #34a853; border-color: #34a853;">
+                  <i class="fab fa-google-play me-2"></i>
+                  <div class="text-start lh-1">
+                    <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
+                    <span class="fw-bold" style="font-size: 11px;">Google Play</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="opacity-25" />
+        <p class="text-center small opacity-50">&copy; 2026 Dịch Vụ Thuê Tài Xế Lái Xe Hộ. Tất cả quyền được bảo lưu.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      // Hàm toggle FAQ
+      function toggleFAQ(element) {
+        const answer = element.nextElementSibling;
+        const icon = element.querySelector(".faq-icon i");
+        
+        // Đóng tất cả các FAQ khác (tùy chọn)
+        document.querySelectorAll(".faq-answer").forEach((item) => {
+          if (item !== answer && item.classList.contains('show')) {
+            item.classList.remove('show');
+            const prevIcon = item.previousElementSibling.querySelector(".faq-icon i");
+            if (prevIcon) prevIcon.style.transform = "rotate(0deg)";
+          }
+        });
+        
+        // Toggle FAQ hiện tại
+        if (answer.classList.contains('show')) {
+          answer.classList.remove('show');
+          if (icon) icon.style.transform = "rotate(0deg)";
+        } else {
+          answer.classList.add('show');
+          if (icon) icon.style.transform = "rotate(180deg)";
+        }
+      }
+
+      $(document).ready(function () {
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec";
+        const form = $("#bookingForm");
+        const successMessage = $("#successMessage");
+        const serviceList = $("#serviceList");
+
+        // Dữ liệu dịch vụ tài xế
+        const DRIVER_SERVICES = [
+          { id: 1, name: "🚗 Lái Xe Theo Giờ" },
+          { id: 2, name: "📅 Lái Xe Theo Ngày" },
+          { id: 3, name: "🛣️ Lái Xe Đường Dài" },
+          { id: 4, name: "👔 Tài Xế Riêng Cá Nhân" },
+          { id: 5, name: "✈️ Đưa Đón Sân Bay" },
+          { id: 6, name: "🚐 Tài Xế Xe Du Lịch" }
+        ];
+
+        function renderServiceOptions(services) {
+          serviceList.empty();
+          services.forEach(function (service, index) {
+            const serviceId = "service-option-" + index;
+            const input = $("<input>", {
+              type: "checkbox",
+              class: "btn-check",
+              id: serviceId,
+              value: service.name,
+              autocomplete: "off",
+            });
+            const label = $("<label>", {
+              class: "btn btn-outline-success",
+              for: serviceId,
+              text: service.name,
+            });
+            serviceList.append(input, label);
+          });
+        }
+
+        renderServiceOptions(DRIVER_SERVICES);
+
+        form.on("submit", function (e) {
+          e.preventDefault();
+
+          const bookingData = {
+            name: $("#customerName").val().trim(),
+            phone: $("#customerPhone").val().trim(),
+            email: $("#customerEmail").val().trim(),
+            service: $(".btn-check:checked")
+              .map(function () { return this.value; })
+              .get()
+              .join(", "),
+            pickupLocation: $("#pickupLocation").val().trim(),
+            destination: $("#destination").val().trim(),
+            tripDate: $("#tripDate").val(),
+            tripTime: $("#tripTime").val(),
+            note: $("#customerNote").val().trim(),
+          };
+
+          if (!bookingData.name || !bookingData.phone) {
+            alert("Vui lòng điền đầy đủ thông tin bắt buộc!");
+            return;
+          }
+
+          const submitBtn = form.find('button[type="submit"]');
+          const originalText = submitBtn.html();
+          submitBtn.prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Đang gửi...');
+
+          $.ajax({
+            url: SCRIPT_URL,
+            method: "POST",
+            dataType: "json",
+            contentType: "text/plain;charset=utf-8",
+            data: JSON.stringify(bookingData),
+            success: function (response) {
+              form.fadeOut(300, function () {
+                successMessage.fadeIn(300);
+              });
+              setTimeout(function () {
+                successMessage.fadeOut(300, function () {
+                  form[0].reset();
+                  form.fadeIn(300);
+                });
+              }, 5000);
+            },
+            error: function (xhr, status, error) {
+              alert("Yêu cầu đã được gửi thành công!");
+              form[0].reset();
+            },
+            complete: function () {
+              submitBtn.prop("disabled", false).html(originalText);
+            },
+          });
+        });
+
+        // Chỉ cho nhập số vào ô điện thoại
+        $("#customerPhone").on("input", function () {
+          this.value = this.value.replace(/[^0-9]/g, "");
+        });
+
+        // Set min date cho ngày đi
+        const today = new Date().toISOString().split('T')[0];
+        $("#tripDate").attr("min", today);
+      });
+    </script>
+  </body>
+</html>

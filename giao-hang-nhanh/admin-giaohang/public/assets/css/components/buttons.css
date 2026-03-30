@@ -1,0 +1,238 @@
+/* ===== BUTTONS ===== */
+
+/* Nút chính (Cam) */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ff7a00;
+  color: #ffffff;
+  padding: 10px 24px; /* Giảm padding để bù cho border 2px */
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+  box-sizing: border-box;
+}
+
+.btn-primary:hover {
+  background-color: #e96f00;
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Nút phụ (Viền trắng/trong suốt) */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #0a2a66; /* Mặc định dùng màu navy nếu không chỉ định */
+  color: #0a2a66;
+  padding: 10px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background-color: transparent;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Nút đặt hàng (Trong Quote Card) */
+.btn-order {
+  display: inline-block;
+  background-color: #ff7a00;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+  text-decoration: none;
+  margin-top: 16px;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-order:hover {
+  background-color: #e96f00;
+  transform: translateY(-2px);
+}
+
+/* App Download Buttons */
+.app-btns {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-store {
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(5px);
+}
+
+.btn-store:hover {
+  background-color: #ffffff;
+  color: #0a2a66;
+  transform: translateY(-3px);
+  border-color: #ffffff;
+}
+
+.store-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.store-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.store-subtitle {
+  font-size: 10px;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+.store-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Back to Top Button */
+#back-to-top-btn {
+  display: none;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 99;
+  border: none;
+  outline: none;
+  background-color: #ff7a00;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition:
+    opacity 0.3s,
+    visibility 0.3s,
+    background-color 0.3s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+#back-to-top-btn.show {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+#back-to-top-btn:hover {
+  background-color: #e96f00;
+}
+
+/* Small & Outline Buttons (Customer Dashboard) */
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.btn-outline {
+  border: 1px solid #0a2a66;
+  color: #0a2a66;
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background: #0a2a66;
+  color: white;
+}
+
+.btn-print {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-filter {
+  background: #0a2a66;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Hero Buttons Group */
+.hero-btns {
+  display: flex;
+  gap: 15px;
+}
+
+.centered-btns {
+  justify-content: center;
+}
+
+.hero-btns .btn-secondary {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.hero-btns .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-btns,
+  .hero-btns {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    text-align: center;
+  }
+}

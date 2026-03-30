@@ -14,11 +14,13 @@
 @import "components/forms.css";
 @import "components/cards.css";
 @import "components/ui-kit.css";
+@import "components/promo-popup.css";
 
 /* ===== PAGE IMPORTS ===== */
 @import "pages/landing.css";
 @import "pages/forms-standalone.css";
 @import "pages/auth.css";
+@import "pages/customer-dashboard.css";
 @import "pages/services-hub.css";
 @import "pages/transparent-pricing.css";
 @import "pages/moving-house.css";

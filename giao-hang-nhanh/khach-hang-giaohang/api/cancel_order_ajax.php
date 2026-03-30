@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Kiểm tra trạng thái hiện tại của đơn hàng
-    $stmt = $conn->prepare("SELECT id, status, user_id FROM orders WHERE order_code = ?");
+    $stmt = $conn->prepare("SELECT id, trang_thai AS status, nguoi_dung_id AS user_id FROM don_hang WHERE ma_don_hang = ?");
     $stmt->bind_param("s", $code);
     $stmt->execute();
     $res = $stmt->get_result();
@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $reason = trim($_POST['reason'] ?? 'Không có lý do cụ thể');
 
     // Cập nhật trạng thái thành 'cancelled' và lưu lý do
-    $update = $conn->prepare("UPDATE orders SET status = 'cancelled', cancel_reason = ? WHERE id = ?");
+    $update = $conn->prepare("UPDATE don_hang SET trang_thai = 'cancelled', ly_do_huy = ? WHERE id = ?");
     $update->bind_param("si", $reason, $order['id']);
 
     if ($update->execute()) {

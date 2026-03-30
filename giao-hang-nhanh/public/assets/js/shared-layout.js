@@ -221,19 +221,19 @@
               Ưu đãi nổi bật trong ngày
             </span>
             <h2 class="promo-popup-title" id="promo-popup-title">
-              Giao hàng <strong>rẻ hơn 30%</strong> so với các đơn vị giao hàng công nghệ khác
+              Giao hàng tiết kiệm <strong>đến 30%</strong> so với đơn vị giao hàng công nghệ
             </h2>
             <p class="promo-popup-desc">
-              Theo dõi đơn hàng theo thời gian thực trên bản đồ và chủ động nắm lộ trình giao nhận ngay trên website.
+              Theo dõi lộ trình giao nhận rõ ràng, cập nhật trạng thái đơn ngay trên website.
             </p>
             <div class="promo-popup-highlights">
               <div class="promo-popup-chip">
-                <strong>Giá tham khảo dễ chốt</strong>
-                <span>Mức cước minh bạch, dễ so sánh cho nhu cầu giao nội thành hằng ngày.</span>
+                <strong>Giá minh bạch</strong>
+                <span>Cước phí rõ ràng, dễ đối chiếu cho nhu cầu giao nội thành.</span>
               </div>
               <div class="promo-popup-chip">
-                <strong>Theo dõi trực tuyến</strong>
-                <span>Cập nhật vị trí đơn hàng liên tục để bạn chủ động phối hợp lấy và giao hàng.</span>
+                <strong>Cập nhật nhanh</strong>
+                <span>Nắm tình trạng đơn liên tục để chủ động nhận và giao hàng.</span>
               </div>
             </div>
             <div class="promo-popup-actions">

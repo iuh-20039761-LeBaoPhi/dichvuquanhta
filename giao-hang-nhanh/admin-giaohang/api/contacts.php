@@ -19,14 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         admin_api_json(['success' => false, 'message' => 'Dữ liệu cập nhật không hợp lệ.'], 400);
     }
 
-    $stmt = $conn->prepare("UPDATE contact_messages SET status = ?, note_admin = ? WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE lien_he SET trang_thai = ?, ghi_chu_quan_tri = ? WHERE id = ?");
     $stmt->bind_param('isi', $status, $note, $id);
     $stmt->execute();
     $updated = $stmt->affected_rows;
     $stmt->close();
 
     if ($updated < 1) {
-        $checkStmt = $conn->prepare("SELECT id FROM contact_messages WHERE id = ? LIMIT 1");
+            $checkStmt = $conn->prepare("SELECT id FROM lien_he WHERE id = ? LIMIT 1");
         $checkStmt->bind_param('i', $id);
         $checkStmt->execute();
         $exists = $checkStmt->get_result()->fetch_assoc();
@@ -57,12 +57,12 @@ if ($filterStatus !== 'all') {
     if (!array_key_exists($statusValue, $statusMap)) {
         admin_api_json(['success' => false, 'message' => 'Bộ lọc trạng thái không hợp lệ.'], 400);
     }
-    $whereSql = ' WHERE status = ?';
+    $whereSql = ' WHERE trang_thai = ?';
     $params[] = $statusValue;
     $types .= 'i';
 }
 
-$countSql = "SELECT COUNT(*) AS total FROM contact_messages" . $whereSql;
+$countSql = "SELECT COUNT(*) AS total FROM lien_he" . $whereSql;
 $stmtCount = $conn->prepare($countSql);
 if ($types !== '') {
     $stmtCount->bind_param($types, ...$params);
@@ -72,8 +72,8 @@ $countRow = $stmtCount->get_result()->fetch_assoc();
 $totalRecords = intval($countRow['total'] ?? 0);
 $stmtCount->close();
 
-$sql = "SELECT id, name, email, subject, message, note_admin, status, created_at
-        FROM contact_messages" . $whereSql . " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+$sql = "SELECT id, ten AS name, email, chu_de AS subject, noi_dung AS message, ghi_chu_quan_tri AS note_admin, trang_thai AS status, tao_luc AS created_at
+        FROM lien_he" . $whereSql . " ORDER BY tao_luc DESC LIMIT ? OFFSET ?";
 $paramsWithPage = $params;
 $paramsWithPage[] = $limit;
 $paramsWithPage[] = $offset;
@@ -105,11 +105,11 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 
 $summary = ['all' => 0, '0' => 0, '1' => 0, '2' => 0];
-$allCountResult = $conn->query("SELECT COUNT(*) AS total FROM contact_messages");
+$allCountResult = $conn->query("SELECT COUNT(*) AS total FROM lien_he");
 if ($allCountResult && $allCountRow = $allCountResult->fetch_assoc()) {
     $summary['all'] = intval($allCountRow['total'] ?? 0);
 }
-$summaryResult = $conn->query("SELECT status, COUNT(*) AS total FROM contact_messages GROUP BY status");
+$summaryResult = $conn->query("SELECT trang_thai AS status, COUNT(*) AS total FROM lien_he GROUP BY trang_thai");
 if ($summaryResult) {
     while ($row = $summaryResult->fetch_assoc()) {
         $summary[(string) intval($row['status'] ?? 0)] = intval($row['total'] ?? 0);

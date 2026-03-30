@@ -14,25 +14,25 @@ function fetch_users_list($conn) {
     $types = '';
 
     if ($search !== '') {
-        $where[] = "(username LIKE ? OR fullname LIKE ? OR email LIKE ? OR phone LIKE ?)";
+        $where[] = "(ten_dang_nhap LIKE ? OR ho_ten LIKE ? OR email LIKE ? OR so_dien_thoai LIKE ?)";
         $term = '%' . $search . '%';
         array_push($params, $term, $term, $term, $term);
         $types .= 'ssss';
     }
 
     if ($role !== '') {
-        $where[] = "role = ?";
+        $where[] = "vai_tro = ?";
         $params[] = $role;
         $types .= 's';
     }
 
     if ($approvalStatus === 'pending') {
-        $where[] = "is_approved = 0 AND role = 'shipper'";
+        $where[] = "da_duyet = 0 AND vai_tro = 'shipper'";
     }
 
     $whereSql = empty($where) ? '' : (' WHERE ' . implode(' AND ', $where));
 
-    $countSql = "SELECT COUNT(*) AS total FROM users" . $whereSql;
+    $countSql = "SELECT COUNT(*) AS total FROM nguoi_dung" . $whereSql;
     $stmtCount = $conn->prepare($countSql);
     if ($types !== '') {
         $stmtCount->bind_param($types, ...$params);
@@ -42,9 +42,9 @@ function fetch_users_list($conn) {
     $totalRecords = intval($countResult['total'] ?? 0);
     $stmtCount->close();
 
-    $sql = "SELECT id, username, fullname, phone, email, role, vehicle_type, created_at,
-                   is_locked, lock_reason, is_approved
-            FROM users" . $whereSql . " ORDER BY id DESC LIMIT ? OFFSET ?";
+    $sql = "SELECT id, ten_dang_nhap AS username, ho_ten AS fullname, so_dien_thoai AS phone, email, vai_tro AS role, loai_phuong_tien AS vehicle_type, tao_luc AS created_at,
+                   bi_khoa AS is_locked, ly_do_khoa AS lock_reason, da_duyet AS is_approved
+            FROM nguoi_dung" . $whereSql . " ORDER BY id DESC LIMIT ? OFFSET ?";
     $paramsWithPage = $params;
     $paramsWithPage[] = $limit;
     $paramsWithPage[] = $offset;
@@ -114,13 +114,13 @@ function handle_user_action($conn) {
     }
 
     if ($action === 'approve') {
-        $stmt = $conn->prepare("UPDATE users SET is_approved = 1 WHERE id = ? AND role = 'shipper'");
+        $stmt = $conn->prepare("UPDATE nguoi_dung SET da_duyet = 1 WHERE id = ? AND vai_tro = 'shipper'");
         $stmt->bind_param('i', $userId);
         $stmt->execute();
         $updated = $stmt->affected_rows;
         $stmt->close();
         if ($updated < 1) {
-            $checkStmt = $conn->prepare("SELECT id FROM users WHERE id = ? AND role = 'shipper' LIMIT 1");
+            $checkStmt = $conn->prepare("SELECT id FROM nguoi_dung WHERE id = ? AND vai_tro = 'shipper' LIMIT 1");
             $checkStmt->bind_param('i', $userId);
             $checkStmt->execute();
             $exists = $checkStmt->get_result()->fetch_assoc();
@@ -133,13 +133,13 @@ function handle_user_action($conn) {
     }
 
     if ($action === 'lock') {
-        $stmt = $conn->prepare("UPDATE users SET is_locked = 1, lock_reason = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE nguoi_dung SET bi_khoa = 1, ly_do_khoa = ? WHERE id = ?");
         $stmt->bind_param('si', $reason, $userId);
         $stmt->execute();
         $updated = $stmt->affected_rows;
         $stmt->close();
         if ($updated < 1) {
-            $checkStmt = $conn->prepare("SELECT id FROM users WHERE id = ? LIMIT 1");
+            $checkStmt = $conn->prepare("SELECT id FROM nguoi_dung WHERE id = ? LIMIT 1");
             $checkStmt->bind_param('i', $userId);
             $checkStmt->execute();
             $exists = $checkStmt->get_result()->fetch_assoc();
@@ -152,13 +152,13 @@ function handle_user_action($conn) {
     }
 
     if ($action === 'unlock') {
-        $stmt = $conn->prepare("UPDATE users SET is_locked = 0, lock_reason = NULL WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE nguoi_dung SET bi_khoa = 0, ly_do_khoa = NULL WHERE id = ?");
         $stmt->bind_param('i', $userId);
         $stmt->execute();
         $updated = $stmt->affected_rows;
         $stmt->close();
         if ($updated < 1) {
-            $checkStmt = $conn->prepare("SELECT id FROM users WHERE id = ? LIMIT 1");
+            $checkStmt = $conn->prepare("SELECT id FROM nguoi_dung WHERE id = ? LIMIT 1");
             $checkStmt->bind_param('i', $userId);
             $checkStmt->execute();
             $exists = $checkStmt->get_result()->fetch_assoc();
@@ -171,7 +171,7 @@ function handle_user_action($conn) {
     }
 
     if ($action === 'delete') {
-        $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+        $stmt = $conn->prepare("DELETE FROM nguoi_dung WHERE id = ?");
         $stmt->bind_param('i', $userId);
         if (!$stmt->execute()) {
             $error = $stmt->error;

@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // --- FIX: Kiểm tra tài khoản bị khóa (Force Logout) ---
 if (isset($_SESSION['user_id']) && isset($conn)) {
-    $stmt_lock = $conn->prepare("SELECT is_locked FROM users WHERE id = ?");
+    $stmt_lock = $conn->prepare("SELECT bi_khoa AS is_locked FROM nguoi_dung WHERE id = ?");
     if ($stmt_lock) {
         $stmt_lock->bind_param("i", $_SESSION['user_id']);
         $stmt_lock->execute();
@@ -80,7 +80,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <?php
                 $unread_count = 0;
                 if (isset($_SESSION['user_id']) && isset($conn)) {
-                    $stmt_count = $conn->prepare("SELECT COUNT(*) as total FROM notifications WHERE user_id = ? AND is_read = 0");
+                    $stmt_count = $conn->prepare("SELECT COUNT(*) as total FROM thong_bao WHERE nguoi_dung_id = ? AND da_doc = 0");
                     if ($stmt_count) {
                         $stmt_count->bind_param("i", $_SESSION['user_id']);
                         $stmt_count->execute();

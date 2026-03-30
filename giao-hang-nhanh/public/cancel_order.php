@@ -13,7 +13,7 @@ $id = $_GET['id'] ?? 0;
 
 if ($id) {
     // Cập nhật trạng thái thành 'cancelled' (Đã hủy)
-    $stmt = $conn->prepare("UPDATE orders SET status = 'cancelled' WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE don_hang SET trang_thai = 'cancelled' WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();

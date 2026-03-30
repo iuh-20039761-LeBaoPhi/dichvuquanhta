@@ -34,9 +34,8 @@
             <span class="nhan-phu">Khu vực tài khoản</span>
             <h1>Đăng nhập theo đúng vai trò để quản lý yêu cầu chuyển dọn</h1>
             <p>
-              Khách hàng có thể theo dõi lịch khảo sát, đặt lịch và các mốc xử lý.
-              Đối tác cung ứng có khu vực riêng để nhận yêu cầu, cập nhật năng lực và
-              phối hợp vận hành với điều phối viên.
+              Khách hàng theo dõi khảo sát và đặt lịch. Đối tác cung ứng nhận yêu cầu
+              và cập nhật năng lực.
             </p>
             <div class="hero-bieu-mau-hanh-dong">
               <a class="nut-hanh-dong nut-sang" href="dang-ky.html?vai-tro=khach-hang">Tạo tài khoản khách hàng</a>
@@ -57,38 +56,33 @@
 
               <div class="gioi-thieu-tai-khoan">
                 <h2>Chọn vai trò rồi đăng nhập</h2>
-                <p>
-                  Mỗi nhóm người dùng có luồng xử lý khác nhau. Dùng đúng khu vực để
-                  đội điều phối, khách hàng và đối tác trao đổi thông tin rõ ràng hơn.
-                </p>
               </div>
 
               <section class="bang-thong-tin-vai-tro" data-auth-role-panel="khach-hang">
                 <div class="dong-tieu-de-form">
                   <div>
                     <h3>Đăng nhập khách hàng</h3>
-                    <p>Dành cho người cần quản lý yêu cầu khảo sát, đơn đặt lịch và thông tin liên hệ.</p>
+                    <p>Dành cho khách hàng theo dõi khảo sát và lịch đã đặt.</p>
                   </div>
-                  <span class="nhan-vai-tro">Khách hàng</span>
                 </div>
 
                 <form class="form-tai-khoan" data-auth-form data-auth-mode="login" data-auth-role="khach-hang">
                   <div class="luoi-truong">
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="customer-login-email">Email đăng nhập</label>
-                      <input class="truong-nhap" id="customer-login-email" name="email" type="email" data-auth-autofill="email" required />
+                      <label class="nhan-truong" for="khach-hang-dang-nhap-email">Email đăng nhập</label>
+                      <input class="truong-nhap" id="khach-hang-dang-nhap-email" name="email" type="email" data-auth-autofill="email" required />
                     </div>
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="customer-login-phone">Số điện thoại</label>
-                      <input class="truong-nhap" id="customer-login-phone" name="phone" type="tel" data-auth-autofill="phone" />
+                      <label class="nhan-truong" for="khach-hang-dang-nhap-so-dien-thoai">Số điện thoại</label>
+                      <input class="truong-nhap" id="khach-hang-dang-nhap-so-dien-thoai" name="phone" type="tel" data-auth-autofill="phone" />
                     </div>
                   </div>
 
                   <div class="nhom-truong">
-                    <label class="nhan-truong" for="customer-login-password">Mật khẩu</label>
+                    <label class="nhan-truong" for="khach-hang-dang-nhap-mat-khau">Mật khẩu</label>
                     <div class="khung-mat-khau">
-                      <input class="truong-nhap" id="customer-login-password" name="password" type="password" required />
-                      <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="customer-login-password">Hiện</button>
+                      <input class="truong-nhap" id="khach-hang-dang-nhap-mat-khau" name="password" type="password" required />
+                      <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="khach-hang-dang-nhap-mat-khau">Hiện</button>
                     </div>
                   </div>
 
@@ -109,24 +103,23 @@
                 <div class="dong-tieu-de-form">
                   <div>
                     <h3>Đăng nhập đối tác cung ứng</h3>
-                    <p>Dành cho đội xe, đội bốc xếp hoặc đơn vị cung ứng cần cập nhật năng lực và nhận việc.</p>
+                    <p>Dành cho đối tác cung ứng nhận việc và cập nhật năng lực.</p>
                   </div>
-                  <span class="nhan-vai-tro">Đối tác cung ứng</span>
                 </div>
 
                 <form class="form-tai-khoan" data-auth-form data-auth-mode="login" data-auth-role="doi-tac">
                   <div class="luoi-truong">
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="provider-login-email">Email</label>
-                      <input class="truong-nhap" id="provider-login-email" name="email" type="email" data-auth-autofill="email" required />
+                      <label class="nhan-truong" for="doi-tac-dang-nhap-email">Email</label>
+                      <input class="truong-nhap" id="doi-tac-dang-nhap-email" name="email" type="email" data-auth-autofill="email" required />
                     </div>
                   </div>
 
                   <div class="nhom-truong">
-                    <label class="nhan-truong" for="provider-login-password">Mật khẩu</label>
+                    <label class="nhan-truong" for="doi-tac-dang-nhap-mat-khau">Mật khẩu</label>
                     <div class="khung-mat-khau">
-                      <input class="truong-nhap" id="provider-login-password" name="password" type="password" required />
-                      <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="provider-login-password">Hiện</button>
+                      <input class="truong-nhap" id="doi-tac-dang-nhap-mat-khau" name="password" type="password" required />
+                      <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="doi-tac-dang-nhap-mat-khau">Hiện</button>
                     </div>
                   </div>
 

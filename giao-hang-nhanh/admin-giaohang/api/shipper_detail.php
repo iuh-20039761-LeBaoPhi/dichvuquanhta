@@ -12,9 +12,9 @@ if ($shipperId <= 0) {
     admin_api_json(['success' => false, 'message' => 'Thiếu id shipper hợp lệ.'], 400);
 }
 
-$stmt = $conn->prepare("SELECT id, username, fullname, phone, email, vehicle_type, created_at, is_locked, is_approved
-                        FROM users
-                        WHERE id = ? AND role = 'shipper'
+$stmt = $conn->prepare("SELECT id, ten_dang_nhap AS username, ho_ten AS fullname, so_dien_thoai AS phone, email, loai_phuong_tien AS vehicle_type, tao_luc AS created_at, bi_khoa AS is_locked, da_duyet AS is_approved
+                        FROM nguoi_dung
+                        WHERE id = ? AND vai_tro = 'shipper'
                         LIMIT 1");
 $stmt->bind_param('i', $shipperId);
 $stmt->execute();
@@ -25,21 +25,21 @@ if (!$shipper) {
     admin_api_json(['success' => false, 'message' => 'Shipper không tồn tại hoặc ID không hợp lệ.'], 404);
 }
 
-$stmt = $conn->prepare("SELECT COUNT(*) AS total FROM orders WHERE shipper_id = ?");
+$stmt = $conn->prepare("SELECT COUNT(*) AS total FROM don_hang WHERE shipper_id = ?");
 $stmt->bind_param('i', $shipperId);
 $stmt->execute();
 $totalOrders = intval(($stmt->get_result()->fetch_assoc()['total'] ?? 0));
 $stmt->close();
 
-$stmt = $conn->prepare("SELECT COUNT(*) AS completed FROM orders WHERE shipper_id = ? AND status = 'completed'");
+$stmt = $conn->prepare("SELECT COUNT(*) AS completed FROM don_hang WHERE shipper_id = ? AND trang_thai = 'completed'");
 $stmt->bind_param('i', $shipperId);
 $stmt->execute();
 $completedOrders = intval(($stmt->get_result()->fetch_assoc()['completed'] ?? 0));
 $stmt->close();
 
-$stmt = $conn->prepare("SELECT AVG(rating) AS avg_rating, COUNT(rating) AS count_rating
-                        FROM orders
-                        WHERE shipper_id = ? AND rating > 0");
+$stmt = $conn->prepare("SELECT AVG(danh_gia_so_sao) AS avg_rating, COUNT(danh_gia_so_sao) AS count_rating
+                        FROM don_hang
+                        WHERE shipper_id = ? AND danh_gia_so_sao > 0");
 $stmt->bind_param('i', $shipperId);
 $stmt->execute();
 $ratingData = $stmt->get_result()->fetch_assoc();
@@ -50,11 +50,11 @@ $countRating = intval($ratingData['count_rating'] ?? 0);
 $successRate = $totalOrders > 0 ? round(($completedOrders / $totalOrders) * 100, 1) : 0.0;
 
 $feedbacks = [];
-$stmt = $conn->prepare("SELECT o.order_code, o.rating, o.feedback, o.created_at, u.fullname AS customer_name
-                        FROM orders o
-                        LEFT JOIN users u ON o.user_id = u.id
-                        WHERE o.shipper_id = ? AND o.rating > 0
-                        ORDER BY o.created_at DESC
+$stmt = $conn->prepare("SELECT o.ma_don_hang AS order_code, o.danh_gia_so_sao AS rating, o.phan_hoi AS feedback, o.tao_luc AS created_at, u.ho_ten AS customer_name
+                        FROM don_hang o
+                        LEFT JOIN nguoi_dung u ON o.nguoi_dung_id = u.id
+                        WHERE o.shipper_id = ? AND o.danh_gia_so_sao > 0
+                        ORDER BY o.tao_luc DESC
                         LIMIT 5");
 $stmt->bind_param('i', $shipperId);
 $stmt->execute();

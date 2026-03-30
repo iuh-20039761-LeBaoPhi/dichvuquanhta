@@ -67,7 +67,7 @@ if (empty($order_code) || $amount_paid <= 0) {
 }
 
 // 6. Tìm và xác thực đơn hàng trong CSDL
-$stmt = $conn->prepare("SELECT id, user_id, shipping_fee, payment_status FROM orders WHERE order_code = ? LIMIT 1");
+$stmt = $conn->prepare("SELECT id, nguoi_dung_id AS user_id, phi_van_chuyen AS shipping_fee, trang_thai_thanh_toan AS payment_status FROM don_hang WHERE ma_don_hang = ? LIMIT 1");
 $stmt->bind_param("s", $order_code);
 $stmt->execute();
 $order = $stmt->get_result()->fetch_assoc();
@@ -92,7 +92,7 @@ if ((int) $amount_paid !== (int) $order['shipping_fee']) {
     error_log("Webhook Error: Amount mismatch for order '$order_code'. Expected: {$order['shipping_fee']}, Paid: {$amount_paid}.");
     // Ghi chú lại cho admin về việc thanh toán sai số tiền
     $note_content = "Webhook: Nhận được thanh toán sai lệch " . number_format($amount_paid) . "đ. Mong đợi " . number_format($order['shipping_fee']) . "đ. Mã GD: $transaction_id";
-    $update_stmt = $conn->prepare("UPDATE orders SET admin_note = CONCAT(IFNULL(admin_note, ''), '\n', ?) WHERE id = ?");
+    $update_stmt = $conn->prepare("UPDATE don_hang SET ghi_chu_quan_tri = CONCAT(IFNULL(ghi_chu_quan_tri, ''), '\n', ?) WHERE id = ?");
     $update_stmt->bind_param("si", $note_content, $order['id']);
     $update_stmt->execute();
     $update_stmt->close();
@@ -103,16 +103,16 @@ if ((int) $amount_paid !== (int) $order['shipping_fee']) {
 $conn->begin_transaction();
 try {
     // Cập nhật trạng thái thanh toán
-    $conn->query("UPDATE orders SET payment_status = 'paid' WHERE id = {$order['id']}");
+    $conn->query("UPDATE don_hang SET trang_thai_thanh_toan = 'paid' WHERE id = {$order['id']}");
 
     // Ghi log
-    $conn->query("INSERT INTO order_logs (order_id, user_id, old_status, new_status) VALUES ({$order['id']}, NULL, 'Payment Unpaid', 'Payment Paid (Webhook)')");
+    $conn->query("INSERT INTO nhat_ky_don_hang (don_hang_id, nguoi_dung_id, trang_thai_cu, trang_thai_moi, ghi_chu) VALUES ({$order['id']}, NULL, 'Payment Unpaid', 'Payment Paid (Webhook)', 'Webhook xác nhận thanh toán')");
 
     // Gửi thông báo cho khách hàng
     if ($order['user_id']) {
         $msg = "Thanh toán cho đơn hàng #{$order_code} đã được xác nhận thành công.";
         $link = get_public_base_path() . "khach-hang/chi-tiet-don-hang.html?id={$order['id']}";
-        $conn->query("INSERT INTO notifications (user_id, order_id, message, link) VALUES ({$order['user_id']}, {$order['id']}, '$msg', '$link')");
+        $conn->query("INSERT INTO thong_bao (nguoi_dung_id, don_hang_id, noi_dung, duong_dan) VALUES ({$order['user_id']}, {$order['id']}, '$msg', '$link')");
         // Cân nhắc sử dụng prepared statement ở đây nếu có thể
     }
 

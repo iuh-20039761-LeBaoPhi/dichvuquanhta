@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 $stats = ['pending' => 0, 'shipping' => 0, 'completed' => 0, 'cancelled' => 0];
 $totalOrders = 0;
-$statResult = $conn->query("SELECT status, COUNT(*) AS total FROM orders GROUP BY status");
+$statResult = $conn->query("SELECT trang_thai AS status, COUNT(*) AS total FROM don_hang GROUP BY trang_thai");
 if ($statResult) {
     while ($row = $statResult->fetch_assoc()) {
         $statusKey = $row['status'] ?: 'pending';
@@ -30,25 +30,25 @@ $params = [];
 $types = '';
 
 if ($search !== '') {
-    $where[] = "(order_code LIKE ? OR client_order_code LIKE ? OR name LIKE ? OR phone LIKE ?)";
+    $where[] = "(ma_don_hang LIKE ? OR ma_don_hang_khach LIKE ? OR ten_nguoi_gui LIKE ? OR so_dien_thoai_nguoi_gui LIKE ?)";
     $term = '%' . $search . '%';
     array_push($params, $term, $term, $term, $term);
     $types .= 'ssss';
 }
 
 if ($status !== '') {
-    $where[] = "status = ?";
+    $where[] = "trang_thai = ?";
     $params[] = $status;
     $types .= 's';
 }
 
 if ($issue === 'has_admin_note') {
-    $where[] = "(admin_note IS NOT NULL AND admin_note != '')";
+    $where[] = "(ghi_chu_quan_tri IS NOT NULL AND ghi_chu_quan_tri != '')";
 }
 
 $whereSql = empty($where) ? '' : (' WHERE ' . implode(' AND ', $where));
 
-$countSql = "SELECT COUNT(*) AS total FROM orders" . $whereSql;
+$countSql = "SELECT COUNT(*) AS total FROM don_hang" . $whereSql;
 $stmtCount = $conn->prepare($countSql);
 if ($types !== '') {
     $stmtCount->bind_param($types, ...$params);
@@ -58,9 +58,21 @@ $countResult = $stmtCount->get_result()->fetch_assoc();
 $totalRecords = intval($countResult['total'] ?? 0);
 $stmtCount->close();
 
-$sql = "SELECT id, order_code, client_order_code, name, phone, receiver_name, receiver_phone,
-               pickup_time, service_type, shipping_fee, payment_status, status, admin_note, created_at
-        FROM orders" . $whereSql . " ORDER BY id DESC LIMIT ? OFFSET ?";
+$sql = "SELECT id,
+               ma_don_hang AS order_code,
+               ma_don_hang_khach AS client_order_code,
+               ten_nguoi_gui AS name,
+               so_dien_thoai_nguoi_gui AS phone,
+               ten_nguoi_nhan AS receiver_name,
+               so_dien_thoai_nguoi_nhan AS receiver_phone,
+               thoi_gian_lay_hang AS pickup_time,
+               loai_dich_vu AS service_type,
+               phi_van_chuyen AS shipping_fee,
+               trang_thai_thanh_toan AS payment_status,
+               trang_thai AS status,
+               ghi_chu_quan_tri AS admin_note,
+               tao_luc AS created_at
+        FROM don_hang" . $whereSql . " ORDER BY id DESC LIMIT ? OFFSET ?";
 $paramsWithPage = $params;
 $paramsWithPage[] = $limit;
 $paramsWithPage[] = $offset;
@@ -71,8 +83,21 @@ $stmt->bind_param($typesWithPage, ...$paramsWithPage);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$serviceMap = ['slow' => 'Chậm', 'standard' => 'Tiêu chuẩn', 'fast' => 'Nhanh', 'express' => 'Hỏa tốc', 'instant' => 'Ngay lập tức', 'bulk' => 'Số lượng lớn'];
-$statusMap = ['pending' => 'Chờ lấy', 'shipping' => 'Đang giao', 'completed' => 'Hoàn tất', 'cancelled' => 'Đã hủy'];
+$serviceMap = [
+    'giao_tieu_chuan' => 'Tiêu chuẩn',
+    'giao_nhanh' => 'Nhanh',
+    'giao_hoa_toc' => 'Hỏa tốc',
+    'giao_ngay_lap_tuc' => 'Ngay lập tức',
+    'so_luong_lon' => 'Số lượng lớn',
+    'quoc_te_tiet_kiem' => 'Quốc tế tiết kiệm',
+    'quoc_te_hoa_toc' => 'Quốc tế hỏa tốc',
+];
+$statusMap = ['pending' => 'Chờ xử lý', 'shipping' => 'Đang giao', 'completed' => 'Hoàn tất', 'cancelled' => 'Đã hủy'];
+$paymentStatusMap = [
+    'paid' => 'Đã thanh toán',
+    'unpaid' => 'Chưa thanh toán',
+    'refunded' => 'Đã hoàn tiền',
+];
 
 $orders = [];
 while ($row = $result->fetch_assoc()) {
@@ -89,7 +114,7 @@ while ($row = $result->fetch_assoc()) {
         'service_label' => $serviceMap[$row['service_type'] ?? ''] ?? ($row['service_type'] ?? ''),
         'shipping_fee' => floatval($row['shipping_fee'] ?? 0),
         'payment_status' => $row['payment_status'] ?? '',
-        'payment_status_label' => ($row['payment_status'] ?? '') === 'paid' ? 'Đã trả' : 'Chưa trả',
+        'payment_status_label' => $paymentStatusMap[$row['payment_status'] ?? ''] ?? ($row['payment_status'] ?? ''),
         'status' => $row['status'] ?? '',
         'status_label' => $statusMap[$row['status'] ?? ''] ?? ($row['status'] ?? ''),
         'has_admin_note' => !empty($row['admin_note']),

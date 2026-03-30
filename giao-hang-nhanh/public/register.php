@@ -8,13 +8,13 @@ $error_msg = "";
 
 // 2. Xử lý khi submit form
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST['username'] ?? '');
+    $username = trim((string) ($_POST['ten_dang_nhap'] ?? ($_POST['username'] ?? '')));
     $email = trim($_POST['email'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $fullname = trim($_POST['fullname'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
-    $role = $_POST['role'] ?? 'customer'; // Lấy vai trò từ form
+    $phone = trim((string) ($_POST['so_dien_thoai'] ?? ($_POST['phone'] ?? '')));
+    $fullname = trim((string) ($_POST['ho_ten'] ?? ($_POST['fullname'] ?? '')));
+    $password = $_POST['mat_khau'] ?? ($_POST['password'] ?? '');
+    $confirm_password = $_POST['xac_nhan_mat_khau'] ?? ($_POST['confirm_password'] ?? '');
+    $role = $_POST['vai_tro'] ?? ($_POST['role'] ?? 'customer'); // Lấy vai trò từ form
 
     // Validate cơ bản
     if (empty($username) || empty($password) || empty($email) || empty($phone) || empty($fullname)) {
@@ -25,16 +25,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error_msg = "Email không hợp lệ.";
     } elseif (!preg_match('/^0[0-9]{9,10}$/', $phone)) {
         $error_msg = "Số điện thoại không hợp lệ.";
+    } elseif ($role === 'shipper') {
+        $error_msg = "Vui lòng đăng ký shipper tại trang dang-ky.html để tải đầy đủ hồ sơ xác minh.";
     } else {
         // Kiểm tra username đã tồn tại chưa
-        // Kiểm tra cả username hoặc email đã tồn tại chưa
-        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
-        $stmt->bind_param("ss", $username, $email);
+        // Kiểm tra cả username, email hoặc số điện thoại đã tồn tại chưa
+        $stmt = $conn->prepare("SELECT id FROM nguoi_dung WHERE ten_dang_nhap = ? OR email = ? OR so_dien_thoai = ?");
+        $stmt->bind_param("sss", $username, $email, $phone);
         $stmt->execute();
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            $error_msg = "Tên đăng nhập hoặc Email đã được sử dụng.";
+            $error_msg = "Tên đăng nhập, Email hoặc Số điện thoại đã được sử dụng.";
         } else {
             // Hash password
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -44,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $is_approved = ($role === 'shipper') ? 0 : 1;
 
             // Insert vào DB
-            $insert_stmt = $conn->prepare("INSERT INTO users (username, email, phone, fullname, password, role, is_approved) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $insert_stmt = $conn->prepare("INSERT INTO nguoi_dung (ten_dang_nhap, email, so_dien_thoai, ho_ten, mat_khau, vai_tro, da_duyet) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $insert_stmt->bind_param("ssssssi", $username, $email, $phone, $fullname, $hashed_password, $role, $is_approved);
 
             if ($insert_stmt->execute()) {
@@ -234,7 +236,7 @@ $conn->close();
             <!-- Thêm lựa chọn vai trò -->
             <div class="form-group">
                 <label>Bạn muốn đăng ký với vai trò</label>
-                <select name="role"
+                <select name="vai_tro"
                     style="width:100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 8px;">
                     <option value="customer">Khách hàng (Gửi hàng)</option>
                     <option value="shipper">Tài xế (Nhận đơn)</option>
@@ -242,13 +244,13 @@ $conn->close();
             </div>
             <div class="form-group">
                 <label>Tên đăng nhập</label>
-                <input type="text" name="username" required placeholder="Nhập username"
-                    value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>">
+                <input type="text" name="ten_dang_nhap" required placeholder="Nhập username"
+                    value="<?php echo htmlspecialchars($_POST['ten_dang_nhap'] ?? ($_POST['username'] ?? '')); ?>">
             </div>
             <div class="form-group">
                 <label>Họ và tên</label>
-                <input type="text" name="fullname" required placeholder="Nhập họ tên đầy đủ"
-                    value="<?php echo htmlspecialchars($_POST['fullname'] ?? ''); ?>">
+                <input type="text" name="ho_ten" required placeholder="Nhập họ tên đầy đủ"
+                    value="<?php echo htmlspecialchars($_POST['ho_ten'] ?? ($_POST['fullname'] ?? '')); ?>">
             </div>
             <div class="form-group">
                 <label>Email</label>
@@ -257,16 +259,16 @@ $conn->close();
             </div>
             <div class="form-group">
                 <label>Số điện thoại</label>
-                <input type="tel" name="phone" required placeholder="09xxxxxxxxx"
-                    value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>">
+                <input type="tel" name="so_dien_thoai" required placeholder="09xxxxxxxxx"
+                    value="<?php echo htmlspecialchars($_POST['so_dien_thoai'] ?? ($_POST['phone'] ?? '')); ?>">
             </div>
             <div class="form-group">
                 <label>Mật khẩu</label>
-                <input type="password" name="password" required placeholder="Nhập mật khẩu">
+                <input type="password" name="mat_khau" required placeholder="Nhập mật khẩu">
             </div>
             <div class="form-group">
                 <label>Xác nhận mật khẩu</label>
-                <input type="password" name="confirm_password" required placeholder="Nhập lại mật khẩu">
+                <input type="password" name="xac_nhan_mat_khau" required placeholder="Nhập lại mật khẩu">
             </div>
             <button type="submit" class="btn-primary" style="width: 100%;">Đăng Ký</button>
         </form>
