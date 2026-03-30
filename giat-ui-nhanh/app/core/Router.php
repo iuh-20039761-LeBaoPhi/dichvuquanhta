@@ -11,9 +11,12 @@ class Router {
 
         $path = parse_url($uri, PHP_URL_PATH);
 
-        $basePath = '/Giat-Ui-Nhanh/public';
-        $path = str_replace($basePath, '', $path);
         $path = trim($path, '/');
+        $basePath = trim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
+
+        if ($basePath !== '' && strpos($path, $basePath . '/') === 0) {
+            $path = substr($path, strlen($basePath) + 1);
+        }
 
         $segments = explode('/', $path);
 
@@ -68,8 +71,11 @@ class Router {
             case 'services':
                 $controller = new ServiceController();
 
-                if ($method === 'GET') {
+                if ($method === 'GET' && !$id) {
                     $controller->index();
+                }
+                elseif ($method === 'GET' && $id) {
+                    $controller->show($id);
                 }
                 elseif ($method === 'POST') {
                     $controller->store();
