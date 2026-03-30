@@ -95,6 +95,14 @@ class Router {
                     self::methodNotAllowed();
                 }
                 break;
+            case 'register_customers':
+                if ($method === 'POST') {
+                    (new UserController())->registerCustomer();
+                }
+                else {
+                    self::methodNotAllowed();
+                }
+                break;
             case 'statistics':
                 if ($method === 'POST') {
                     (new StatisticController())->revenueTable();
