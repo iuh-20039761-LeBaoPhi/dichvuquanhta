@@ -467,6 +467,7 @@
         const shipperFields = document.querySelectorAll("[data-role-field='shipper']");
         const shipperRequiredInputs = document.querySelectorAll("[data-shipper-required]");
         const uploadInputs = document.querySelectorAll(".tep-tai-anh");
+        const uploadNameTargets = document.querySelectorAll("[data-upload-filename]");
         const params = new URLSearchParams(window.location.search);
         const redirectValue = params.get("redirect") || "";
 
@@ -481,6 +482,12 @@
           msgBox.textContent = message;
           msgBox.className = "msg-box " + type;
           msgBox.style.display = "block";
+        }
+
+        function resetUploadNameLabels() {
+          uploadNameTargets.forEach((target) => {
+            target.textContent = "Chưa chọn tệp";
+          });
         }
 
         if (redirectValue) {
@@ -509,6 +516,10 @@
               }
             }
           });
+
+          if (!isShipper) {
+            resetUploadNameLabels();
+          }
         }
 
         roleTabs.forEach((tab) => {

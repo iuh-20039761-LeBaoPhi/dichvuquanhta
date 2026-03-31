@@ -404,13 +404,6 @@
   padding: 16px;
 }
 
-.customer-order-main {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: flex-start;
-}
-
 .customer-order-topline {
   display: flex;
   justify-content: space-between;
@@ -443,8 +436,7 @@
 .customer-order-meta,
 .customer-timeline-item span,
 .customer-selected-files,
-.customer-empty,
-.customer-empty-cell {
+.customer-empty {
   color: #64748b;
 }
 
@@ -489,6 +481,7 @@
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
 }
 
@@ -603,6 +596,7 @@
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
 }
 
@@ -622,8 +616,7 @@
   margin-top: 18px;
 }
 
-.customer-empty,
-.customer-empty-cell {
+.customer-empty {
   font-size: 14px;
   line-height: 1.6;
 }
@@ -685,8 +678,7 @@
   color: #b91c1c;
 }
 
-.customer-filter-form,
-.customer-filter-grid {
+.customer-filter-form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
@@ -705,7 +697,6 @@
 }
 
 .customer-filter-form label,
-.customer-filter-grid label,
 .customer-form-stack label,
 .customer-form-grid label {
   display: grid;
@@ -716,8 +707,6 @@
 
 .customer-filter-form input,
 .customer-filter-form select,
-.customer-filter-grid input,
-.customer-filter-grid select,
 .customer-form-stack input,
 .customer-form-stack textarea,
 .customer-form-grid select,
@@ -735,30 +724,6 @@
   grid-column: 1 / -1;
   align-items: flex-end;
   justify-content: flex-end;
-}
-
-.customer-table-wrap {
-  overflow-x: auto;
-}
-
-.customer-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 860px;
-}
-
-.customer-table th,
-.customer-table td {
-  border-bottom: 1px solid #edf2fb;
-  padding: 14px 12px;
-  text-align: left;
-  vertical-align: top;
-}
-
-.customer-table th {
-  color: #64748b;
-  font-size: 13px;
-  text-transform: uppercase;
 }
 
 .customer-page-btn,
@@ -1126,18 +1091,32 @@
   gap: 8px;
 }
 
-.customer-portal-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 0 6px;
-  color: #64748b;
+.customer-dialog {
+  width: min(100%, 520px);
+  padding: 0;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.22);
 }
 
-.customer-portal-footer a {
+.customer-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.46);
+}
+
+.customer-dialog-card {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  background: #fff;
+}
+
+.customer-dialog-card h2 {
+  margin: 0;
   color: #0a2a66;
-  text-decoration: none;
-  font-weight: 600;
+}
+
+.customer-dialog-actions {
+  justify-content: flex-end;
 }
 
 @media (max-width: 1200px) {
@@ -1172,8 +1151,7 @@
   }
 
   .customer-portal-topbar,
-  .customer-panel-head,
-  .customer-portal-footer {
+  .customer-panel-head {
     flex-wrap: wrap;
     align-items: flex-start;
   }
@@ -1183,7 +1161,6 @@
   .customer-grid-dashboard,
   .customer-detail-grid,
   .customer-filter-form,
-  .customer-filter-grid,
   .customer-form-grid,
   .customer-address-layout {
     grid-template-columns: 1fr;
@@ -1195,6 +1172,11 @@
 
   .customer-portal-sidebar {
     position: static;
+    order: 2;
+  }
+
+  .customer-portal-main {
+    order: 1;
   }
 
   .customer-portal-topbar,
@@ -1214,10 +1196,6 @@
 
   .customer-chip-group {
     justify-content: flex-start;
-  }
-
-  .customer-order-main {
-    flex-direction: column;
   }
 
   .customer-review-item {
@@ -1248,7 +1226,6 @@
   .customer-grid-two,
   .customer-detail-grid,
   .customer-filter-form,
-  .customer-filter-grid,
   .customer-form-grid,
   .customer-address-layout,
   .customer-file-grid,
@@ -1323,6 +1300,15 @@
     width: 100%;
   }
 
+  .customer-dialog {
+    width: calc(100% - 24px);
+    max-width: 520px;
+  }
+
+  .customer-dialog-card {
+    padding: 18px;
+  }
+
   .customer-order-meta {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1377,10 +1363,6 @@
 
   .customer-status-badge {
     width: 100%;
-  }
-
-  .customer-table {
-    min-width: 680px;
   }
 
   .rv-row,

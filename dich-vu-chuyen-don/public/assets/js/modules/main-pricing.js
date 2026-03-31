@@ -11,12 +11,11 @@
 
   function buildPricingFactorCards(serviceData) {
     return [
-      ...core.getPricingCalculationItems(serviceData).map((item) => ({
+      ...core.getPricingCheckboxItems(serviceData).map((item) => ({
         title: item.ten,
-        value: `${formatCurrency(item.don_gia)}${item.don_vi ? ` / ${item.don_vi}` : ""}`,
-        note: "Hạng mục dịch vụ tính theo số lượng thực tế.",
+        value: formatCurrency(item.don_gia),
+        note: "Chỉ cộng khi bạn chọn hạng mục này.",
       })),
-      ...core.getPricingFixedFeeEntries(serviceData),
       ...core.getPricingMultiplierEntries(serviceData),
     ];
   }
@@ -81,7 +80,7 @@
             <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Giá tham khảo</p>
             <p class="text-accent font-bold text-lg mt-1">
               ${item.khoang_gia}
-              <span class="text-sm font-medium text-slate-500">/ ${item.don_vi}</span>
+              ${item.don_vi ? `<span class="text-sm font-medium text-slate-500">/ ${item.don_vi}</span>` : ""}
             </p>
           </div>
         </div>
@@ -100,13 +99,13 @@
       : [];
     const formulaSummary =
       transparentInfo.tom_tat_tong_chi_phi ||
-      "Cước cơ bản + Phí vượt km + Hạng mục hỗ trợ đi kèm + Phụ phí điều kiện thực tế";
+      "Tổng tiền = Số km di chuyển x Giá mỗi km theo loại xe + Các phụ phí nếu có";
     const factorCards = buildPricingFactorCards(serviceData);
     const pricingOverviewUrl = core.toProjectUrl("bang-gia-chuyen-don.html");
     const vehicleOptions = core.getPricingVehicleEntries(serviceData);
     const startingVehicle = vehicleOptions
-      .filter((item) => Number(item?.gia_co_ban || 0) > 0)
-      .sort((left, right) => Number(left.gia_co_ban || 0) - Number(right.gia_co_ban || 0))[0];
+      .filter((item) => Number(item?.gia_moi_km || 0) > 0)
+      .sort((left, right) => Number(left.gia_moi_km || 0) - Number(right.gia_moi_km || 0))[0];
     const summaryParts = [
       ...basicParts.map((item) => ({ label: item, tone: "primary" })),
       ...extraParts.slice(0, 2).map((item) => ({ label: item, tone: "neutral" })),
@@ -123,7 +122,7 @@
               Tóm tắt cách tính giá
             </span>
             <h3 class="pricing-formula-summary__title">
-              Dịch vụ này được tính theo một công thức chung
+              Dịch vụ này được tính theo km và phụ phí phát sinh
             </h3>
             <p class="pricing-formula-summary__description">
               ${formulaSummary}
@@ -131,17 +130,12 @@
             ${
               startingVehicle
                 ? `<div class="pricing-formula-summary__starting">
-                    <p class="pricing-formula-summary__label">Mốc giá khởi điểm</p>
+                    <p class="pricing-formula-summary__label">Giá theo km thấp nhất</p>
                     <div class="pricing-formula-summary__starting-row">
                       <p class="pricing-formula-summary__starting-name">${startingVehicle.ten_hien_thi}</p>
-                      <p class="pricing-formula-summary__starting-price">${formatCurrency(startingVehicle.gia_co_ban)}</p>
+                      <p class="pricing-formula-summary__starting-price">${formatCurrency(startingVehicle.gia_moi_km)}</p>
                     </div>
-                    <p class="pricing-formula-summary__starting-note">Đã gồm ${startingVehicle.km_co_ban}km đầu tiên, sau đó +${formatCurrency(startingVehicle.gia_moi_km_tiep)}/km.</p>
-                    ${
-                      startingVehicle.dung_tich_m3 > 0
-                        ? ""
-                        : '<p class="pricing-formula-summary__hint">Hiện số chuyến vẫn tạm tính theo tải trọng. Khi có đủ thể tích đơn hàng và dung tích xe chuẩn hóa, hệ thống sẽ lấy giá trị lớn hơn giữa tải trọng và dung tích.</p>'
-                    }
+                    <p class="pricing-formula-summary__starting-note">Cước xe được tính trực tiếp theo tổng số km di chuyển nhân với đơn giá của loại xe đã chọn.</p>
                   </div>`
                 : ""
             }
@@ -165,13 +159,13 @@
           <div class="pricing-formula-summary__aside">
             <p class="pricing-formula-summary__label">Bạn cần xem sâu hơn?</p>
             <p class="pricing-formula-summary__aside-copy">
-              Trang bảng giá chung giải thích đầy đủ 4 nhóm chi phí, các tình huống phát sinh và khi nào nên khảo sát trước.
+              Trang bảng giá chung giải thích cách tính theo km, các nhóm phụ phí và những tình huống thường làm chi phí thay đổi.
             </p>
             <a
               class="pricing-formula-summary__cta"
               href="${pricingOverviewUrl}"
             >
-              Xem cơ chế giá đầy đủ
+              Xem cách tính chi tiết
             </a>
             ${
               factorCards.length

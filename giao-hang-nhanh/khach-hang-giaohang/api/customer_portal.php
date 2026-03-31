@@ -483,11 +483,31 @@ function handle_orders(mysqli $conn): void
         $types .= 's';
     }
 
+    if ($dateFrom !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateFrom)) {
+        respond(['status' => 'error', 'message' => 'Ngày bắt đầu không hợp lệ.'], 422);
+    }
+
+    if ($dateTo !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateTo)) {
+        respond(['status' => 'error', 'message' => 'Ngày kết thúc không hợp lệ.'], 422);
+    }
+
+    if ($dateFrom !== '' && $dateTo !== '' && $dateFrom > $dateTo) {
+        respond(['status' => 'error', 'message' => 'Khoảng ngày lọc không hợp lệ.'], 422);
+    }
+
     if ($dateFrom !== '' && $dateTo !== '') {
         $where[] = "DATE(tao_luc) BETWEEN ? AND ?";
         $params[] = $dateFrom;
         $params[] = $dateTo;
         $types .= 'ss';
+    } elseif ($dateFrom !== '') {
+        $where[] = "DATE(tao_luc) >= ?";
+        $params[] = $dateFrom;
+        $types .= 's';
+    } elseif ($dateTo !== '') {
+        $where[] = "DATE(tao_luc) <= ?";
+        $params[] = $dateTo;
+        $types .= 's';
     }
 
     $whereSql = implode(' AND ', $where);
@@ -1108,7 +1128,7 @@ function handle_submit_feedback(mysqli $conn): void
         respond(['status' => 'error', 'message' => 'Vui lòng chọn mức đánh giá từ 1 đến 5 sao.'], 422);
     }
 
-    $stmt = $conn->prepare("SELECT ma_don_hang AS order_code FROM don_hang WHERE id = ? AND nguoi_dung_id = ? LIMIT 1");
+    $stmt = $conn->prepare("SELECT ma_don_hang AS order_code, trang_thai AS status FROM don_hang WHERE id = ? AND nguoi_dung_id = ? LIMIT 1");
     if (!$stmt) {
         respond(['status' => 'error', 'message' => 'Không thể kiểm tra đơn hàng phản hồi.'], 500);
     }
@@ -1120,6 +1140,10 @@ function handle_submit_feedback(mysqli $conn): void
 
     if (!$order) {
         respond(['status' => 'error', 'message' => 'Đơn hàng không hợp lệ.'], 404);
+    }
+
+    if ((string) ($order['status'] ?? '') !== 'completed') {
+        respond(['status' => 'error', 'message' => 'Chỉ có thể gửi phản hồi khi đơn hàng đã hoàn tất.'], 422);
     }
 
     $updateStmt = $conn->prepare("UPDATE don_hang SET danh_gia_so_sao = ?, phan_hoi = ? WHERE id = ? AND nguoi_dung_id = ?");

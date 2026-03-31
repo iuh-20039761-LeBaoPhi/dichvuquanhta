@@ -44,6 +44,26 @@ function register_save_upload(string $field, string $targetDir, array $allowedEx
         throw new RuntimeException('Định dạng tệp không được hỗ trợ.');
     }
 
+    $allowedMimeTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/heic',
+        'image/heif',
+    ];
+    $mimeType = '';
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if ($finfo) {
+            $mimeType = (string) finfo_file($finfo, $tmpName);
+            finfo_close($finfo);
+        }
+    }
+
+    if ($mimeType === '' || !in_array($mimeType, $allowedMimeTypes, true)) {
+        throw new RuntimeException('Tệp tải lên không đúng định dạng ảnh hợp lệ.');
+    }
+
     if (!is_dir($targetDir) && !mkdir($targetDir, 0775, true) && !is_dir($targetDir)) {
         throw new RuntimeException('Không thể tạo thư mục lưu hồ sơ shipper.');
     }

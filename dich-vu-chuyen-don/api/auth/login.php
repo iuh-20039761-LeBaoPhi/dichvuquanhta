@@ -15,7 +15,6 @@ $data = chuyen_don_get_json_input();
 
 $role = chuyen_don_resolve_role($data['role'] ?? '');
 $email = chuyen_don_normalize_email($data['email'] ?? '');
-$phone = chuyen_don_normalize_phone($data['phone'] ?? '');
 $password = (string) ($data['password'] ?? '');
 
 if ($role === '') {
@@ -52,10 +51,6 @@ if (!$user || !password_verify($password, (string) $user['password_hash'])) {
 
 if ((string) ($user['status'] ?? '') !== 'active') {
     chuyen_don_fail('Tài khoản hiện không thể đăng nhập.', 403);
-}
-
-if ($phone !== '' && $phone !== chuyen_don_normalize_phone($user['phone'] ?? '')) {
-    chuyen_don_fail('Email, số điện thoại hoặc mật khẩu không khớp.', 401);
 }
 
 $updateStmt = $conn->prepare('UPDATE auth_users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?');

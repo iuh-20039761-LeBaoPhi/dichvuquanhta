@@ -6,6 +6,7 @@
   const mockDataUrl = "../assets/data/mock-tracking-orders.json";
   const routes = {
     login: "../../dang-nhap.html",
+    booking: "../../dat-lich-giao-hang-nhanh.html",
     dashboard: "dashboard.html",
     orders: "lich-su-don-hang.html",
     detail: "chi-tiet-don-hang.html",
@@ -347,6 +348,70 @@
     window.alert(message);
   }
 
+  function openCancelOrderDialog(orderCode) {
+    return new Promise((resolve) => {
+      if (
+        typeof window.HTMLDialogElement === "undefined" ||
+        typeof document.createElement("dialog").showModal !== "function"
+      ) {
+        const confirmed = window.confirm(
+          `Bạn có chắc muốn hủy đơn ${orderCode || ""} không?`,
+        );
+        if (!confirmed) {
+          resolve(null);
+          return;
+        }
+        const reason = window.prompt(
+          "Nhập lý do hủy đơn (có thể để trống nếu không cần):",
+          "Khách hàng chủ động hủy đơn.",
+        );
+        resolve(reason === null ? null : String(reason).trim());
+        return;
+      }
+
+      const dialog = document.createElement("dialog");
+      dialog.className = "customer-dialog";
+      dialog.innerHTML = `
+        <form method="dialog" class="customer-dialog-card">
+          <div class="customer-dialog-copy">
+            <p class="customer-section-kicker">Xác nhận hủy đơn</p>
+            <h2>Hủy đơn ${escapeHtml(orderCode || "")}</h2>
+            <p class="customer-panel-subtext">Đơn sau khi hủy sẽ không thể tiếp tục xử lý.</p>
+          </div>
+          <label class="customer-form-stack">
+            <span>Lý do hủy</span>
+            <textarea name="cancel_reason" rows="4" placeholder="Nhập lý do hủy nếu cần...">Khách hàng chủ động hủy đơn.</textarea>
+          </label>
+          <div class="customer-inline-actions customer-dialog-actions">
+            <button type="button" class="customer-btn customer-btn-ghost" data-dialog-close>Quay lại</button>
+            <button type="submit" class="customer-btn customer-btn-danger" value="confirm">Xác nhận hủy</button>
+          </div>
+        </form>
+      `;
+
+      const cleanup = () => {
+        if (dialog.isConnected) dialog.remove();
+      };
+
+      dialog.addEventListener("close", () => {
+        if (dialog.returnValue === "confirm") {
+          const reasonField = dialog.querySelector("[name='cancel_reason']");
+          resolve(String(reasonField?.value || "").trim());
+        } else {
+          resolve(null);
+        }
+        cleanup();
+      });
+
+      dialog.querySelector("[data-dialog-close]")?.addEventListener("click", () => {
+        dialog.close("cancel");
+      });
+
+      document.body.appendChild(dialog);
+      dialog.showModal();
+    });
+  }
+
   function buildLoginRedirect() {
     const target = `${window.location.pathname}${window.location.search}`;
     return `${routes.login}?redirect=${encodeURIComponent(target)}`;
@@ -468,6 +533,7 @@
             </p>
           </div>
           <div class="customer-portal-top-actions">
+            <a href="${routes.booking}" class="customer-btn customer-btn-primary">Tạo đơn mới</a>
             <a href="${routes.logout}" class="customer-btn customer-btn-ghost">Đăng xuất</a>
           </div>
         </section>
@@ -547,16 +613,8 @@
   }
 
   async function requestCancelOrder(orderId, orderCode) {
-    const confirmCancel = window.confirm(
-      `Bạn có chắc muốn hủy đơn ${orderCode || `#${orderId}`} không?`,
-    );
-    if (!confirmCancel) return false;
-
-    const reason =
-      window.prompt(
-        "Nhập lý do hủy đơn (có thể để trống nếu không cần):",
-        "Khách hàng chủ động hủy đơn.",
-      ) || "";
+    const reason = await openCancelOrderDialog(orderCode || `#${orderId}`);
+    if (reason === null) return false;
 
     const formData = new FormData();
     formData.append("order_id", orderId);
@@ -867,30 +925,6 @@
       </div>`;
   }
 
-  function renderServiceMeta(order) {
-    const meta = order.service_meta || {};
-    const normalizedServiceType = normalizeServiceType(order.service_type);
-    return renderInfoList([
-      { label: "Gói dịch vụ", value: meta.service_name || order.service_label || "--" },
-      { label: "ETA dự kiến", value: meta.estimated_eta || "--" },
-      { label: "Ngày lấy hàng", value: meta.pickup_date || formatDateOnly(order.pickup_time) },
-      { label: "Khung giờ lấy hàng", value: meta.pickup_slot_label || "--" },
-      { label: "Ngày nhận mong muốn", value: meta.delivery_date || "--" },
-      { label: "Khung giờ nhận mong muốn", value: meta.delivery_slot_label || "--" },
-      { label: "Phương tiện tính giá", value: meta.vehicle_label || order.vehicle_type || "--" },
-      { label: "Phương tiện gợi ý", value: meta.vehicle_suggestion || "--" },
-      {
-        label: "Điều kiện tính giá khi đặt lịch",
-        value:
-          meta.service_condition_label ||
-          (normalizedServiceType === "instant" ? "Bình thường" : "Không áp dụng"),
-      },
-      { label: "Khoảng cách tuyến", value: meta.distance_label || "--" },
-      { label: "Người trả cước", value: meta.payer_label || order.payer_label || "--" },
-      { label: "Phương thức thanh toán", value: meta.payment_method_label || order.payment_method_label || "--" },
-    ]);
-  }
-
   async function initDashboard() {
     renderLoading("Đang tải tổng quan khách hàng...");
     const params = new URLSearchParams(window.location.search);
@@ -959,6 +993,7 @@
           <p class="customer-dashboard-hero-text">Theo dõi nhanh trạng thái đơn, mở lịch sử đơn và đi thẳng tới hồ sơ cá nhân mà không phải cuộn qua nhiều màn hình.</p>
         </div>
         <div class="customer-dashboard-hero-actions">
+          <a href="${routes.booking}" class="customer-btn customer-btn-primary">Tạo đơn mới</a>
           <a href="${routes.orders}" class="customer-btn customer-btn-primary">Xem lịch sử đơn</a>
           <a href="${routes.profile}" class="customer-btn customer-btn-ghost">Cập nhật hồ sơ</a>
         </div>
@@ -1041,6 +1076,11 @@
           </div>
         </article>
         <aside class="customer-quicklinks-strip">
+          <a href="${routes.booking}" class="customer-quicklink-item">
+            <p class="customer-section-kicker">Tạo đơn</p>
+            <strong>Đi thẳng tới màn đặt lịch</strong>
+            <span class="customer-mobile-hidden">Mở biểu mẫu tạo đơn mới ngay sau khi đăng nhập mà không phải quay lại landing page.</span>
+          </a>
           <a href="${routes.orders}" class="customer-quicklink-item">
             <p class="customer-section-kicker">Lịch sử đơn</p>
             <strong>Mở danh sách đơn hàng</strong>
@@ -1182,6 +1222,14 @@
       filterForm.addEventListener("submit", (event) => {
         event.preventDefault();
         const formData = new FormData(filterForm);
+        const dateFrom = String(formData.get("date_from") || "").trim();
+        const dateTo = String(formData.get("date_to") || "").trim();
+
+        if (dateFrom && dateTo && dateFrom > dateTo) {
+          showToast("Khoảng ngày lọc không hợp lệ.", "error");
+          return;
+        }
+
         const url = new URL(window.location.href);
         ["search", "status", "date_from", "date_to"].forEach((field) => {
           const value = String(formData.get(field) || "").trim();
@@ -1216,6 +1264,10 @@
     const items = Array.isArray(data.items) ? data.items : [];
     const logs = Array.isArray(data.logs) ? data.logs : [];
     const providerDisplayName = hasProviderInfo(provider) ? getProviderDisplayName(provider) : "Chưa gán";
+    const canSubmitFeedback = String(order.status || "").toLowerCase() === "completed";
+    const feedbackSummary = order.rating
+      ? `Đã đánh giá ${escapeHtml(order.rating)} sao${order.feedback ? ` · ${escapeHtml(order.feedback)}` : ""}`
+      : "Chưa có phản hồi nào cho đơn này.";
 
     content.innerHTML = `
       <section class="customer-panel">
@@ -1227,6 +1279,7 @@
           <div class="customer-inline-actions">
             ${createStatusBadge(order.status, order.status_label)}
             ${renderCancelButton(order)}
+            <a class="customer-btn customer-btn-primary" href="${routes.booking}">Tạo đơn mới</a>
             <a class="customer-btn customer-btn-ghost" href="${routes.orders}">Về lịch sử đơn</a>
           </div>
         </div>
@@ -1284,7 +1337,9 @@
 
           <article class="customer-info-card">
             <h3>Phản hồi dịch vụ</h3>
-            <form id="customer-feedback-form" class="customer-form-stack">
+            ${
+              canSubmitFeedback
+                ? `<form id="customer-feedback-form" class="customer-form-stack">
               <input type="hidden" name="order_id" value="${order.id}" />
               <div class="customer-form-grid">
                 <label>
@@ -1322,7 +1377,12 @@
               <div class="customer-inline-actions">
                 <button class="customer-btn customer-btn-primary" type="submit">Gửi phản hồi</button>
               </div>
-            </form>
+            </form>`
+                : `<div class="customer-todo info">
+              <p>Chỉ có thể gửi phản hồi khi đơn hàng đã hoàn tất.</p>
+              <p class="customer-panel-subtext">${feedbackSummary}</p>
+            </div>`
+            }
           </article>
         </div>
 
@@ -1370,32 +1430,33 @@
       });
     });
 
-    const captureImage = document.getElementById("feedback-capture-image");
-    const captureVideo = document.getElementById("feedback-capture-video");
-    const uploadInput = document.getElementById("feedback-upload");
-    const selectedFilesHost = document.getElementById("customer-selected-files");
     const feedbackForm = document.getElementById("customer-feedback-form");
 
-    function refreshSelectedFiles() {
-      if (!selectedFilesHost) return;
+    if (feedbackForm) {
+      const captureImage = document.getElementById("feedback-capture-image");
+      const captureVideo = document.getElementById("feedback-capture-video");
+      const uploadInput = document.getElementById("feedback-upload");
+      const selectedFilesHost = document.getElementById("customer-selected-files");
 
-      const files = [];
+      function refreshSelectedFiles() {
+        if (!selectedFilesHost) return;
+
+        const files = [];
+        [captureImage, captureVideo, uploadInput].forEach((input) => {
+          if (input && input.files) {
+            Array.from(input.files).forEach((file) => files.push(file.name));
+          }
+        });
+
+        selectedFilesHost.textContent = files.length
+          ? `Đã chọn: ${files.join(", ")}`
+          : "Chưa chọn ảnh hoặc video phản hồi.";
+      }
+
       [captureImage, captureVideo, uploadInput].forEach((input) => {
-        if (input && input.files) {
-          Array.from(input.files).forEach((file) => files.push(file.name));
-        }
+        if (input) input.addEventListener("change", refreshSelectedFiles);
       });
 
-      selectedFilesHost.textContent = files.length
-        ? `Đã chọn: ${files.join(", ")}`
-        : "Chưa chọn ảnh hoặc video phản hồi.";
-    }
-
-    [captureImage, captureVideo, uploadInput].forEach((input) => {
-      if (input) input.addEventListener("change", refreshSelectedFiles);
-    });
-
-    if (feedbackForm) {
       feedbackForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(feedbackForm);

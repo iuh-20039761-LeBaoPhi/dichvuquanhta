@@ -1114,6 +1114,29 @@
   border-top: 1px dashed #d6e3dc;
 }
 
+.khung-tong-xac-nhan-dat-lich {
+  display: grid;
+  gap: 4px;
+  margin: 10px 0 4px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff8df 0%, #fff1b8 100%);
+  border: 1px solid #f0d37a;
+  box-shadow: 0 10px 22px rgba(172, 121, 0, 0.08);
+}
+
+.khung-tong-xac-nhan-dat-lich strong {
+  color: #173528;
+  font-size: 1.4rem;
+  line-height: 1.3;
+}
+
+.khung-tong-xac-nhan-dat-lich p {
+  margin: 0;
+  color: #6e5310;
+  line-height: 1.55;
+}
+
 .cum-xac-nhan-dat-lich {
   display: grid;
   gap: 12px;
@@ -1135,6 +1158,11 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px 14px;
+}
+
+.luoi-gia-xac-nhan-dat-lich {
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
 .muc-xac-nhan-dat-lich,
@@ -1176,14 +1204,28 @@
   font-size: 13px;
 }
 
+.the-gia-xac-nhan-dat-lich__hang {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.the-gia-xac-nhan-dat-lich__hang strong {
+  text-align: right;
+  white-space: nowrap;
+}
+
 .the-gia-xac-nhan-dat-lich--tong {
-  padding-top: 18px;
-  border-top: 2px solid #d7e2dc;
-  border-bottom: 0;
+  padding: 16px 18px;
+  border: 1px solid #d6e3dc;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fff8df 0%, #fff1b8 100%);
+  box-shadow: 0 12px 28px rgba(172, 121, 0, 0.1);
 }
 
 .the-gia-xac-nhan-dat-lich--tong strong {
-  font-size: 1.22rem;
+  font-size: 1.3rem;
 }
 
 .khung-media-xac-nhan-dat-lich,
@@ -1200,8 +1242,8 @@
 
 .luoi-media-xac-nhan-dat-lich {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
 }
 
 .the-media-xac-nhan-dat-lich {
@@ -1216,9 +1258,24 @@
 .the-media-xac-nhan-dat-lich video {
   display: block;
   width: 100%;
-  height: 140px;
+  height: 112px;
   object-fit: cover;
   background: #f3f7f5;
+}
+
+.the-media-xac-nhan-dat-lich--more {
+  display: grid;
+  align-content: stretch;
+}
+
+.the-media-xac-nhan-dat-lich__them {
+  display: grid;
+  place-items: center;
+  min-height: 112px;
+  background: linear-gradient(180deg, #f3f7f5 0%, #e6efe9 100%);
+  color: #173528;
+  font-size: 1.6rem;
+  font-weight: 800;
 }
 
 .the-media-xac-nhan-dat-lich--upload img,
@@ -1234,8 +1291,10 @@
 
 .meta-media-xac-nhan-dat-lich strong {
   color: #173528;
-  font-size: 14px;
-  overflow-wrap: anywhere;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .meta-media-xac-nhan-dat-lich span {
@@ -1255,6 +1314,14 @@
   border: 1px solid #dbe6df;
   color: #4b665b;
   line-height: 1.6;
+}
+
+.muc-luu-y-xac-nhan--hop-nhat {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fff8df 0%, #fff2c2 100%);
+  border-color: #f0d37a;
+  color: #6e5310;
 }
 
 .luoi-tom-tat-khao-sat {
@@ -1431,8 +1498,8 @@
 }
 
 .form-dat-lich .khung-gia-tham-khao-dat-lich {
-  margin-top: 10px;
-  gap: 10px;
+  margin-top: 6px;
+  gap: 0;
 }
 
 .form-dat-lich .khung-gia-tham-khao-dat-lich-rong,
@@ -1473,6 +1540,24 @@
 
 .form-dat-lich .cum-xac-nhan-dat-lich + .cum-xac-nhan-dat-lich {
   padding-top: 12px;
+  border-top: 0;
+}
+
+.form-dat-lich .tieu-de-xac-nhan-dat-lich {
+  margin-bottom: 2px;
+}
+
+.form-dat-lich .khung-gia-xac-nhan-dat-lich,
+.form-dat-lich .khung-media-xac-nhan-dat-lich {
+  gap: 8px;
+}
+
+.form-dat-lich .the-gia-xac-nhan-dat-lich {
+  padding: 10px 0;
+}
+
+.form-dat-lich .the-gia-xac-nhan-dat-lich--tong {
+  margin-bottom: 4px;
 }
 
 @media (max-width: 1024px) {
@@ -1802,6 +1887,16 @@
   margin-top: 12px;
 }
 
+.form-dat-lich .cum-lua-chon[data-nhom-chip="dieu_kien_dat_lich"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.form-dat-lich .cum-lua-chon[data-nhom-chip="chi_tiet_nha_dat_lich"],
+.form-dat-lich .cum-lua-chon[data-nhom-chip="chi_tiet_van_phong_dat_lich"],
+.form-dat-lich .cum-lua-chon[data-nhom-chip="chi_tiet_kho_bai_dat_lich"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .form-dat-lich .lua-chon-chip {
   display: flex;
   align-items: flex-start;
@@ -1873,6 +1968,10 @@
   gap: 0;
 }
 
+.form-dat-lich .khung-tong-xac-nhan-dat-lich {
+  margin: 8px 0 6px;
+}
+
 .form-dat-lich .muc-luu-y-xac-nhan {
   padding: 12px 0;
   border-bottom: 1px solid #e5efe9;
@@ -1902,6 +2001,30 @@
 }
 
 @media (max-width: 768px) {
+  .form-dat-lich .cum-buoc[data-booking-step="5"] > .mo-ta-phu {
+    margin: 4px 0 8px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .form-dat-lich .khung-tong-xac-nhan-dat-lich {
+    margin: 6px 0 4px;
+    padding: 12px 14px;
+  }
+
+  .form-dat-lich .khung-tong-xac-nhan-dat-lich strong {
+    font-size: 1.25rem;
+  }
+
+  .form-dat-lich .khung-xac-nhan-dat-lich {
+    gap: 8px;
+    padding-top: 8px;
+  }
+
+  .form-dat-lich .cum-xac-nhan-dat-lich + .cum-xac-nhan-dat-lich {
+    padding-top: 8px;
+  }
+
   .form-dat-lich .cum-lua-chon,
   .form-dat-lich .cum-lua-chon-rong,
   .form-dat-lich .cum-lua-chon[data-nhom-chip="muc_do_khoi_luong"],
@@ -1913,7 +2036,19 @@
   .form-dat-lich .cum-lua-chon[data-nhom-chip="dieu_kien_dat_lich"],
   .form-dat-lich .cum-lua-chon[data-nhom-chip="chi_tiet_nha_dat_lich"],
   .form-dat-lich .cum-lua-chon[data-nhom-chip="chi_tiet_kho_bai_dat_lich"] {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+
+  .form-dat-lich .luoi-media-xac-nhan-dat-lich {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .form-dat-lich .the-media-xac-nhan-dat-lich img,
+  .form-dat-lich .the-media-xac-nhan-dat-lich video,
+  .form-dat-lich .the-media-xac-nhan-dat-lich__them {
+    height: 92px;
+    min-height: 92px;
   }
 
   .form-dat-lich .lua-chon-chip span {

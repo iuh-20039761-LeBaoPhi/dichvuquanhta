@@ -21,6 +21,9 @@
 @import "pages/forms-standalone.css";
 @import "pages/auth.css";
 @import "pages/customer-dashboard.css";
+@import "pages/customer-history.css";
+@import "pages/customer-detail.css";
+@import "pages/customer-profile.css";
 @import "pages/services-hub.css";
 @import "pages/transparent-pricing.css";
 @import "pages/moving-house.css";

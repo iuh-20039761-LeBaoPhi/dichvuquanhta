@@ -1,0 +1,151 @@
+{
+  "optional_checkbox_config": {
+    "chuyen_nha": [
+      {
+        "selector": "input[name='can_dong_goi_do_dac']",
+        "checkbox_slug": "dong_goi_do_dac"
+      },
+      {
+        "selector": "input[name='can_thao_lap_noi_that']",
+        "checkbox_slug": "thao_lap",
+        "display_slug": "ho_tro_thao_lap_ky_thuat"
+      }
+    ],
+    "chuyen_van_phong": [
+      {
+        "selector": "input[name='can_dong_goi_ho_so']",
+        "checkbox_slug": "dong_goi_ho_so"
+      },
+      {
+        "selector": "input[name='can_di_doi_server']",
+        "checkbox_slug": "bao_ve_thiet_bi_it"
+      },
+      {
+        "selector": "input[name='can_thao_lap_noi_that_van_phong']",
+        "checkbox_slug": "thao_lap",
+        "display_slug": "thao_lap_noi_that_van_phong"
+      },
+      {
+        "selector": "input[name='co_thiet_bi_nang_van_phong']",
+        "checkbox_slug": "thiet_bi_nang",
+        "display_slug": "van_chuyen_thiet_bi_nang"
+      }
+    ],
+    "chuyen_kho_bai": [
+      {
+        "selector": "input[name='can_luan_chuyen_pallet']",
+        "checkbox_slug": "pallet",
+        "display_slug": "luan_chuyen_pallet"
+      },
+      {
+        "selectors": [
+          "input[name='can_xe_nang_dat_lich']",
+          "input[name='can_xe_cau_dat_lich']"
+        ],
+        "checkbox_slug": "xe_nang_cau",
+        "display_slug": "thue_xe_nang_xe_cau"
+      },
+      {
+        "selector": "input[name='can_gia_co_hang_hoa']",
+        "checkbox_slug": "gia_co",
+        "display_slug": "dong_goi_gia_co"
+      }
+    ]
+  },
+  "special_checkbox_config": {
+    "chuyen_nha": [
+      {
+        "selector": "input[name='co_do_de_vo']",
+        "slug": "de_vo",
+        "display_slug": "dong_goi_do_dac"
+      },
+      {
+        "selector": "input[name='co_do_cong_kenh']",
+        "slug": "cong_kenh",
+        "display_slug": "thao_lap_noi_that"
+      },
+      {
+        "selector": "input[name='co_do_gia_tri_cao']",
+        "slug": "gia_tri_cao",
+        "display_slug": "ho_tro_thao_lap_ky_thuat"
+      }
+    ]
+  },
+  "included_option_config": {
+    "chuyen_nha": ["sap_xep_tai_nha_moi"],
+    "chuyen_van_phong": ["lap_dat_tai_van_phong_moi"],
+    "chuyen_kho_bai": []
+  },
+  "time_checkbox_config": {
+    "chuyen_van_phong": [
+      {
+        "selector": "input[name='can_thuc_hien_cuoi_tuan']",
+        "group_key": "khung_gio",
+        "slug": "cuoi_tuan",
+        "label": "Phụ phí cuối tuần",
+        "detail": "Áp dụng cho ca thực hiện vào thứ bảy hoặc chủ nhật.",
+        "note": "Đã ghi nhận checkbox làm cuối tuần."
+      }
+    ]
+  },
+  "note_checkbox_config": {
+    "chuyen_van_phong": [
+      {
+        "selector": "input[name='can_bao_mat_tai_lieu']",
+        "note": "Yêu cầu bảo mật tài liệu đã được ghi nhận để đội ngũ triển khai đúng quy trình."
+      }
+    ]
+  },
+  "conditional_included_option_config": {
+    "chuyen_kho_bai": [
+      {
+        "selector": "input[name='can_kiem_ke_hang_hoa']",
+        "display_slug": "kiem_ke_ban_giao",
+        "label": "Kiểm kê & bàn giao",
+        "detail": "Hạng mục miễn phí đã được chọn cùng đơn hàng.",
+        "note": "Miễn phí khi cần kiểm kê đối soát.",
+        "state": "Đang chọn"
+      }
+    ]
+  },
+  "summary_config": {
+    "deployment_detail": {
+      "chuyen_nha": [],
+      "chuyen_van_phong": [],
+      "chuyen_kho_bai": []
+    },
+    "survey_service_detail": {
+      "chuyen_nha": [
+        { "kind": "checked_label", "selector": "input[name='muc_do_khoi_luong']", "prefix": "Khối lượng ", "transform": "lowercase" },
+        { "kind": "selected_label", "selector": "#loai-mat-bang-nha-khao-sat" },
+        { "kind": "input_value", "selector": "#so-tang-khao-sat", "suffix": " tầng" },
+        { "kind": "input_value", "selector": "#so-phong-khao-sat", "suffix": " phòng" },
+        { "kind": "checkbox_labels", "selector": "input[name='can_dong_goi'], input[name='can_thao_lap'], input[name='co_do_gia_tri_cao']", "limit": 2 }
+      ],
+      "chuyen_van_phong": [
+        { "kind": "checked_label", "selector": "input[name='muc_do_khoi_luong']", "prefix": "Khối lượng ", "transform": "lowercase" },
+        { "kind": "selected_label", "selector": "#loai-mat-bang-van-phong-khao-sat" },
+        { "kind": "input_value", "selector": "#so-nhan-su-khao-sat", "suffix": " nhân sự" },
+        { "kind": "input_value", "selector": "#dien-tich-van-phong-khao-sat" },
+        { "kind": "checkbox_labels", "selector": "[data-nhom-chip='chi_tiet_van_phong'] input[type='checkbox']", "limit": 2 }
+      ],
+      "chuyen_kho_bai": [
+        { "kind": "checked_label", "selector": "input[name='muc_do_khoi_luong']", "prefix": "Khối lượng ", "transform": "lowercase" },
+        { "kind": "selected_label", "selector": "#loai-mat-bang-kho-khao-sat" },
+        { "kind": "input_value", "selector": "#quy-mo-kho-khao-sat" },
+        { "kind": "checkbox_labels", "selector": "[data-nhom-chip='chi_tiet_kho_bai'] input[type='checkbox']", "limit": 2 }
+      ]
+    },
+    "booking_service_detail": {
+      "chuyen_nha": [
+        { "kind": "checkbox_labels", "selector": "input[name='can_thao_lap_noi_that'], input[name='can_dong_goi_do_dac'], input[name='co_do_gia_tri_cao'], input[name='co_do_de_vo'], input[name='co_do_cong_kenh']", "limit": 3 }
+      ],
+      "chuyen_van_phong": [
+        { "kind": "checkbox_labels", "selector": "input[name='can_dong_goi_ho_so'], input[name='can_bao_mat_tai_lieu'], input[name='can_di_doi_server'], input[name='can_thao_lap_noi_that_van_phong'], input[name='co_thiet_bi_nang_van_phong'], input[name='can_thuc_hien_cuoi_tuan']", "limit": 3 }
+      ],
+      "chuyen_kho_bai": [
+        { "kind": "checkbox_labels", "selector": "input[name='can_luan_chuyen_pallet'], input[name='can_xe_nang_dat_lich'], input[name='can_xe_cau_dat_lich'], input[name='can_gia_co_hang_hoa'], input[name='can_kiem_ke_hang_hoa']", "limit": 3 }
+      ]
+    }
+  }
+}

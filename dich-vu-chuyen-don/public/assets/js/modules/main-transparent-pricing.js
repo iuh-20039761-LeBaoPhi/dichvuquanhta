@@ -8,18 +8,18 @@
   const commonFormulaGroups = [
     {
       id: "cuoc-xe",
-      ten: "Cước xe cơ bản",
-      mo_ta: "Phần có ở cả 3 nhóm dịch vụ, dựa trên loại xe, số chuyến và quãng đường thực tế. Khi có đủ dữ liệu, hệ thống lấy giá trị lớn hơn giữa tải trọng và dung tích; nếu thiếu thể tích đơn hàng thì tạm tính theo tải trọng.",
+      ten: "Cước xe theo km",
+      mo_ta: "Phần có ở cả 3 nhóm dịch vụ, dựa trên số km di chuyển và giá mỗi km của loại xe bạn chọn.",
     },
     {
       id: "ho-tro",
-      ten: "Hạng mục hỗ trợ thêm",
-      mo_ta: "Chỉ tính khi bạn cần thêm nhân công, đóng gói, tháo lắp, bảo vệ IT, xe nâng hoặc xe cẩu.",
+      ten: "Phụ phí checkbox",
+      mo_ta: "Chỉ tính khi bạn bật các hạng mục phát sinh như đóng gói, tháo lắp, pallet, xe nâng hoặc xe cẩu.",
     },
     {
       id: "phu-phi",
       ten: "Phụ phí điều kiện thực tế",
-      mo_ta: "Phát sinh khi có tầng lầu, hẻm nhỏ, đồ nặng, đồ dễ vỡ, nhiều pallet hoặc mặt bằng khó tiếp cận.",
+      mo_ta: "Phát sinh theo điều kiện mặt bằng, thời tiết, khung giờ và các lưu ý đặc thù của đơn chuyển dọn.",
     },
     {
       id: "thoi-diem",
@@ -60,22 +60,18 @@
 
   function getStartingPrice(item) {
     const value = core.getPricingStartingPrice(item);
-    return value > 0 ? `Từ ${formatCurrency(value)}/chuyến` : "";
+    return value > 0 ? `Từ ${formatCurrency(value)}/km` : "";
   }
 
   function collectSurchargeItems(serviceData) {
     return [
-      ...core.getPricingFixedFeeEntries(serviceData).map((item) => ({
-        label: item.title,
-        amount: item.value,
-      })),
       ...core.getPricingMultiplierEntries(serviceData).map((item) => ({
         label: item.title,
         amount: item.value,
       })),
-      ...core.getPricingCalculationItems(serviceData).map((item) => ({
+      ...core.getPricingCheckboxItems(serviceData).map((item) => ({
         label: item.ten,
-        amount: `${formatCurrency(item.don_gia)}${item.don_vi ? ` / ${item.don_vi}` : ""}`,
+        amount: formatCurrency(item.don_gia),
       })),
     ];
   }
@@ -105,53 +101,49 @@
     return data
       .map((item) => {
         const serviceName = core.escapeHtml(item.ten_dich_vu || "");
-        const standardStructure = core.getPricingStandardStructure(item) || {};
         let details = [];
 
         if (groupId === "cuoc-xe") {
           const vehicles = core.getPricingVehicleEntries(item);
-          const tripRule =
-            standardStructure?.chi_phi_co_ban?.cuoc_xe?.quy_tac_so_chuyen
-              ?.ghi_chu || "";
           const vehicleLines = vehicles
             .map((vehicle) => {
-              return `${core.escapeHtml(vehicle.ten_hien_thi)}: <strong>${core.escapeHtml(formatCurrency(vehicle.gia_co_ban) || "Cần xác nhận")}</strong>${vehicle.km_co_ban > 0 ? ` gồm ${core.escapeHtml(String(vehicle.km_co_ban))}km đầu` : ""}${vehicle.gia_moi_km_tiep > 0 ? `, sau đó +<strong>${core.escapeHtml(formatCurrency(vehicle.gia_moi_km_tiep))}</strong>/km` : ""}.`;
+              return `${core.escapeHtml(vehicle.ten_hien_thi)}: <strong>${core.escapeHtml(formatCurrency(vehicle.gia_moi_km) || "Cần xác nhận")}</strong>/km.`;
             });
 
           details = [
             vehicles.length
               ? `Giá xe tham khảo: ${vehicleLines.join(" ")}`
               : "Giá xe được chốt theo loại xe phù hợp và quãng đường thực tế.",
-            tripRule
-              ? core.escapeHtml(tripRule)
-              : "Hiện số chuyến vẫn đang tạm tính theo tải trọng; khi đủ thể tích đơn hàng và dung tích xe, hệ thống sẽ lấy giá trị lớn hơn giữa tải trọng và dung tích.",
+            "Tổng cước xe = số km di chuyển x giá mỗi km của loại xe đã chọn.",
           ];
         }
 
         if (groupId === "ho-tro") {
-          const calculationItems = core.getPricingCalculationItems(item);
-          details = calculationItems.length
-            ? calculationItems.map((entry) => {
+          const checkboxItems = core.getPricingCheckboxItems(item);
+          details = checkboxItems.length
+            ? checkboxItems.map((entry) => {
                 const price = formatCurrency(entry.don_gia);
-                return `${core.escapeHtml(entry.ten)}: <strong>${core.escapeHtml(price || "Cần xác nhận")}</strong>${entry.don_vi ? ` / ${core.escapeHtml(entry.don_vi)}` : ""}.`;
+                return `${core.escapeHtml(entry.ten)}: <strong>${core.escapeHtml(price || "Cần xác nhận")}</strong>.`;
               })
-            : ["Chỉ cộng thêm khi bạn chọn các hạng mục hỗ trợ ngoài cước xe cơ bản."];
+            : ["Chỉ cộng thêm khi bạn chọn các hạng mục hỗ trợ ngoài cước xe theo km."];
         }
 
         if (groupId === "phu-phi") {
-          const fixedFees = core.getPricingFixedFeeEntries(item);
-          details = fixedFees.length
-            ? fixedFees.map((entry) => {
-                return `<strong>${core.escapeHtml(entry.title)}:</strong> ${core.escapeHtml(entry.value || "Cần xác nhận")}${entry.note ? `, ${core.escapeHtml(entry.note)}` : ""}.`;
-              })
-            : ["Phụ phí sẽ chốt theo điều kiện thực tế của đồ đạc và mặt bằng."];
+          const extraParts = Array.isArray(getTransparentInfo(item).phan_phat_sinh)
+            ? getTransparentInfo(item).phan_phat_sinh
+            : [];
+          details = extraParts.length
+            ? extraParts.map(
+                (entry) =>
+                  `Có thể phát sinh với hạng mục <strong>${core.escapeHtml(String(entry || "").trim())}</strong> khi điều kiện thực tế yêu cầu.`,
+              )
+            : ["Phụ phí sẽ chốt theo điều kiện thực tế của đồ đạc và mặt bằng triển khai."];
         }
 
         if (groupId === "thoi-diem") {
           const multiplierEntries = core.getPricingMultiplierEntries(item);
           const note =
-            standardStructure?.he_so?.ghi_chu ||
-            "Khung giờ và thời tiết hiện đang dùng dữ liệu tham chiếu.";
+            "Khung giờ và thời tiết được cộng trực tiếp như phụ phí cố định.";
           details = multiplierEntries.length
             ? [
                 ...multiplierEntries.map((entry) => {
@@ -179,8 +171,8 @@
       <section class="phan-bang-gia-so-sanh">
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">So sánh nhanh</span>
-          <h2>Ba nhóm dịch vụ khác nhau ngay từ cách hình thành giá</h2>
-          <p>Bạn có thể nhìn nhanh mức khởi điểm, nhóm hạng mục chính và đi tiếp sang đúng trang dịch vụ khi cần xem sâu hơn.</p>
+          <h2>Ba nhóm dịch vụ khác nhau ở phụ phí và phạm vi hỗ trợ</h2>
+          <p>Bạn có thể nhìn nhanh đơn giá theo km, nhóm hạng mục chính và đi tiếp sang đúng trang dịch vụ khi cần xem sâu hơn.</p>
         </div>
         <div class="luoi-so-sanh-dich-vu">
           ${data
@@ -216,12 +208,12 @@
     return `
       <section class="phan-cach-hinh-thanh-gia" data-fee-tab-root>
         <div class="dau-muc-trang">
-          <span class="the-thong-tin-nhan">Công thức chung</span>
-          <h2>Công thức giá chung của ba nhóm dịch vụ</h2>
-          <p>Giá tham khảo của cả 3 nhóm đều đi theo một logic chung. Khác nhau chủ yếu ở hạng mục hỗ trợ và điều kiện thực tế tại điểm đi, điểm đến.</p>
+          <span class="the-thong-tin-nhan">Cách tính chung</span>
+          <h2>Cả ba nhóm dịch vụ đều tính theo km và phụ phí</h2>
+          <p>Giá tham khảo của cả 3 nhóm đều bám theo cùng một logic: cước xe theo km cộng với các phụ phí phát sinh theo nhu cầu và điều kiện thực tế.</p>
         </div>
         <div class="khung-cong-thuc-tong-quat">
-          <span class="nhan-cong-thuc-tong-quat">Công thức đang dùng</span>
+          <span class="nhan-cong-thuc-tong-quat">Nhóm thành phần giá</span>
           <div class="dong-cong-thuc-tong-quat" role="tablist" aria-label="Công thức tính giá tham khảo">
               ${commonFormulaGroups
                 .map(
@@ -277,9 +269,9 @@
     return `
       <section class="phan-cong-thuc-rieng">
         <div class="dau-muc-trang">
-          <span class="the-thong-tin-nhan">Công thức riêng</span>
-          <h2>Mỗi dịch vụ có một lớp phát sinh khác nhau</h2>
-          <p>Cả 3 nhóm đều dùng công thức chung ở trên. Bảng dưới đây chỉ giữ lại những cột khác nhau để bạn so sánh nhanh và tận dụng khoảng ngang tốt hơn.</p>
+          <span class="the-thong-tin-nhan">Điểm khác nhau</span>
+          <h2>Mỗi dịch vụ có một nhóm phụ phí đặc thù riêng</h2>
+          <p>Cả 3 nhóm đều tính theo km như nhau. Bảng dưới đây chỉ giữ lại các phần khác nhau để bạn so sánh nhanh và chọn đúng dịch vụ.</p>
         </div>
         <div class="bang-so-sanh-cong-thuc-wrapper">
           <table class="bang-so-sanh-cong-thuc">
@@ -309,7 +301,7 @@
                         <span class="ten-dich-vu-bang-cong-thuc">${core.escapeHtml(item.ten_dich_vu || "")}</span>
                       </th>
                       <td>${core.escapeHtml(info.phu_hop_khi || "")}</td>
-                      <td>${renderInlineList(basicParts, "Xe và quãng đường thực tế")}</td>
+                      <td>${renderInlineList(basicParts, "Loại xe và quãng đường di chuyển")}</td>
                       <td>${renderInlineList(extraParts, "Chốt thêm theo nhu cầu thực tế")}</td>
                       <td class="o-noi-bat-bang-cong-thuc">${core.escapeHtml(info.nen_khao_sat_khi || "")}</td>
                     </tr>

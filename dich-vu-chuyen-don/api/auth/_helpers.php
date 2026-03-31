@@ -124,7 +124,7 @@ if (!function_exists('chuyen_don_get_role_label')) {
 if (!function_exists('chuyen_don_get_default_redirect')) {
     function chuyen_don_get_default_redirect(string $role): string
     {
-        return $role === 'doi-tac' ? 'index.html' : 'tai-khoan-khach-hang.html';
+        return $role === 'doi-tac' ? 'index.html' : 'khach-hang/dashboard.html';
     }
 }
 

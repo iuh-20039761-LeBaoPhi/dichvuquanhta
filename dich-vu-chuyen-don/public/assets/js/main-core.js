@@ -86,24 +86,19 @@
 
   function getPricingStandardStructure(serviceData) {
     return serviceData && typeof serviceData === "object"
-      ? serviceData.cau_truc_gia_chuan || null
+      ? serviceData.bang_gia || null
       : null;
   }
 
   function getPricingVehicleEntries(serviceData) {
-    const standardStructure = getPricingStandardStructure(serviceData);
-    const standardVehicles =
-      standardStructure?.chi_phi_co_ban?.cuoc_xe?.loai_xe;
+    const pricingStructure = getPricingStandardStructure(serviceData);
+    const vehicleItems = pricingStructure?.loai_xe;
 
-    if (Array.isArray(standardVehicles) && standardVehicles.length) {
-      return standardVehicles.map((item) => ({
+    if (Array.isArray(vehicleItems) && vehicleItems.length) {
+      return vehicleItems.map((item) => ({
         slug: String(item?.slug || "").trim(),
         ten_hien_thi: String(item?.ten || "").trim(),
-        gia_co_ban: Number(item?.gia_co_ban || 0),
-        km_co_ban: Number(item?.km_mien_phi || 0),
-        gia_moi_km_tiep: Number(item?.gia_km_vuot || 0),
-        tai_trong_kg: Number(item?.tai_trong_xe_kg || 0),
-        dung_tich_m3: Number(item?.dung_tich_xe_m3 || 0),
+        gia_moi_km: Number(item?.gia_moi_km || 0),
       }));
     }
     return [];
@@ -123,16 +118,14 @@
       : [];
   }
 
-  function getPricingCalculationItems(serviceData) {
-    const standardStructure = getPricingStandardStructure(serviceData);
-    const standardItems =
-      standardStructure?.chi_phi_dich_vu?.hang_muc_tinh_toan;
+  function getPricingCheckboxItems(serviceData) {
+    const pricingStructure = getPricingStandardStructure(serviceData);
+    const checkboxItems = pricingStructure?.phu_phi?.checkbox;
 
-    if (Array.isArray(standardItems) && standardItems.length) {
-      return standardItems.map((item) => ({
+    if (Array.isArray(checkboxItems) && checkboxItems.length) {
+      return checkboxItems.map((item) => ({
         slug: String(item?.slug || "").trim(),
         ten: String(item?.ten || "").trim(),
-        don_vi: String(item?.don_vi || "").trim(),
         don_gia: Number(item?.don_gia || 0),
         nguon_hien_thi_slug: String(item?.nguon_hien_thi_slug || "").trim(),
       }));
@@ -140,77 +133,17 @@
     return [];
   }
 
-  function getPricingFixedFeeEntries(serviceData) {
-    const standardStructure = getPricingStandardStructure(serviceData);
-    const fixedStructure = standardStructure?.phu_phi_co_dinh;
-
-    if (fixedStructure) {
-      const items = [];
-
-      if (fixedStructure.the_tich?.don_gia_moi_buoc) {
-        items.push({
-          title: "Thể tích vượt ngưỡng",
-          value: `${formatCurrencyVnd(fixedStructure.the_tich.don_gia_moi_buoc)} / ${fixedStructure.the_tich.don_vi || "m³"}`,
-          note: `Tính gộp toàn đơn, vượt ${fixedStructure.the_tich.nguong_mien_phi}${fixedStructure.the_tich.don_vi || "m³"} theo bước ${fixedStructure.the_tich.buoc_nhay}${fixedStructure.the_tich.don_vi || "m³"}`,
-        });
-      }
-
-      if (fixedStructure.trong_luong?.don_gia_moi_buoc) {
-        items.push({
-          title: "Trọng lượng vượt ngưỡng",
-          value: `${formatCurrencyVnd(fixedStructure.trong_luong.don_gia_moi_buoc)} / ${fixedStructure.trong_luong.buoc_nhay || 1}${fixedStructure.trong_luong.don_vi || "kg"}`,
-          note: `Tính gộp toàn đơn, vượt ${fixedStructure.trong_luong.nguong_mien_phi}${fixedStructure.trong_luong.don_vi || "kg"} theo bước ${fixedStructure.trong_luong.buoc_nhay}${fixedStructure.trong_luong.don_vi || "kg"}`,
-        });
-      }
-
-      if (Array.isArray(fixedStructure.tinh_chat_do_dac)) {
-        fixedStructure.tinh_chat_do_dac.forEach((item) => {
-          const amount = Number(item?.don_gia || 0);
-          if (!Number.isFinite(amount) || amount <= 0) return;
-          items.push({
-            title: String(item?.ten || "").trim(),
-            value: `${formatCurrencyVnd(amount)}${item?.don_vi ? ` / ${item.don_vi}` : ""}`,
-            note:
-              item?.ap_dung === "theo_mon"
-                ? "Áp dụng theo số món, thiếu số lượng thì mặc định 1 món."
-                : "Áp dụng theo cấu hình của đơn hàng.",
-          });
-        });
-      }
-
-      return items;
-    }
-    return [];
-  }
-
-  function formatMultiplierValue(item) {
-    const multiplier = Number(item?.he_so);
-    if (Number.isFinite(multiplier) && multiplier > 0) {
-      return `x${multiplier.toFixed(2).replace(/\.00$/, "").replace(/0$/, "")}`;
-    }
-
-    const referenceValue = Number(item?.tham_chieu_du_lieu_cu?.gia_tri || 0);
-    if (Number.isFinite(referenceValue) && referenceValue > 0) {
-      return formatCurrencyVnd(referenceValue);
-    }
-
-    return "0";
-  }
-
   function getPricingMultiplierEntries(serviceData) {
-    const standardStructure = getPricingStandardStructure(serviceData);
-    const multiplierStructure = standardStructure?.he_so;
+    const pricingStructure = getPricingStandardStructure(serviceData);
+    const surchargeGroups = pricingStructure?.phu_phi;
 
-    if (multiplierStructure) {
+    if (surchargeGroups) {
       return ["khung_gio", "thoi_tiet"]
-        .flatMap((groupKey) => (Array.isArray(multiplierStructure[groupKey]) ? multiplierStructure[groupKey] : []))
+        .flatMap((groupKey) => (Array.isArray(surchargeGroups[groupKey]) ? surchargeGroups[groupKey] : []))
         .map((item) => ({
           title: String(item?.ten || "").trim(),
-          value: formatMultiplierValue(item),
-          note:
-            Number(item?.he_so) > 0
-              ? "Áp dụng như hệ số nhân trên tổng trước đó."
-              : "Áp dụng như phụ phí cố định đã chốt trong bảng giá.",
+          value: formatCurrencyVnd(item?.don_gia || 0),
+          note: "Áp dụng như phụ phí cố định trong bảng giá.",
         }));
     }
     return [];
@@ -218,7 +151,7 @@
 
   function getPricingStartingPrice(serviceData) {
     const values = getPricingVehicleEntries(serviceData)
-      .map((item) => Number(item?.gia_co_ban || 0))
+      .map((item) => Number(item?.gia_moi_km || 0))
       .filter((value) => Number.isFinite(value) && value > 0);
     return values.length ? Math.min(...values) : 0;
   }
@@ -240,8 +173,7 @@
     getPricingStandardStructure,
     getPricingVehicleEntries,
     getPricingDisplayItems,
-    getPricingCalculationItems,
-    getPricingFixedFeeEntries,
+    getPricingCheckboxItems,
     getPricingMultiplierEntries,
     getPricingStartingPrice,
   };

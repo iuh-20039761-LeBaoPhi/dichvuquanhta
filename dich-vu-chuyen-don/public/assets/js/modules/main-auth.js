@@ -221,9 +221,6 @@
     pushIfInvalid(emailInput, (input) => validateEmailField(input));
 
     if (mode === "login") {
-      if (role !== "doi-tac") {
-        pushIfInvalid(phoneInput, (input) => validatePhoneField(input));
-      }
       pushIfInvalid(passwordInput, (input) => validatePasswordField(input, "login"));
     }
 
@@ -415,7 +412,7 @@
 
       function getDefaultRedirect(role) {
         const fallback =
-          role === "doi-tac" ? "index.html" : "tai-khoan-khach-hang.html";
+          role === "doi-tac" ? "index.html" : "khach-hang/dashboard.html";
         return typeof core.toProjectUrl === "function" ? core.toProjectUrl(fallback) : fallback;
       }
 
@@ -502,7 +499,6 @@
         const payload = {
           role,
           email: String(formData.get("email") || "").trim(),
-          phone: String(formData.get("phone") || "").trim(),
           full_name: String(formData.get("full_name") || "").trim(),
           contact_person: String(formData.get("contact_person") || "").trim(),
           password: String(formData.get("password") || ""),

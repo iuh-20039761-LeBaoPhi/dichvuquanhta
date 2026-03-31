@@ -27,7 +27,8 @@
     "dat-lich.html": "booking",
     "dang-nhap.html": "account",
     "dang-ky.html": "account",
-    "tai-khoan-khach-hang.html": "account",
+    "dashboard.html": "account",
+    "lich-su-yeu-cau.html": "account",
   };
 
   function loadPartial(url) {

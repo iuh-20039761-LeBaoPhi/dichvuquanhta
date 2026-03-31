@@ -56,7 +56,7 @@ if (!function_exists('chuyen_don_get_db_config')) {
             'host' => $_ENV['DB_HOST'] ?? 'localhost',
             'user' => $_ENV['DB_USER'] ?? 'root',
             'pass' => $_ENV['DB_PASS'] ?? '',
-            'name' => $_ENV['DB_NAME'] ?? 'dich_vu_chuyen_don',
+            'name' => $_ENV['DB_NAME'] ?? 'dichvuchuyendon',
             'port' => (int) ($_ENV['DB_PORT'] ?? 3306),
         ];
 

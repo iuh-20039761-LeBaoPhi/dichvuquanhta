@@ -1,0 +1,111 @@
+.trang-ho-so-khach-hang {
+  background:
+    radial-gradient(circle at top right, rgba(255, 183, 3, 0.12), transparent 22%),
+    linear-gradient(180deg, #f4faf6 0%, #ffffff 24%, #edf5f0 100%);
+}
+
+.hero-ho-so-khach-hang {
+  background: linear-gradient(135deg, #123326 0%, #1b4332 48%, #2d6a4f 100%);
+  color: #ffffff;
+}
+
+.khu-ho-so-khach-hang {
+  padding: 42px 0 84px;
+}
+
+.luoi-ho-so-khach-hang {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.82fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.noi-dung-ho-so-khach-hang,
+.canh-ho-so-khach-hang {
+  display: grid;
+  gap: 24px;
+}
+
+.the-ho-so-khach-hang {
+  background: #ffffff;
+  border: 1px solid rgba(27, 67, 50, 0.1);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 20px 52px rgba(15, 23, 42, 0.08);
+}
+
+.the-ho-so-khach-hang--hero {
+  background:
+    radial-gradient(circle at top right, rgba(255, 183, 3, 0.18), transparent 24%),
+    linear-gradient(135deg, rgba(18, 51, 38, 0.98) 0%, rgba(27, 67, 50, 0.96) 100%);
+  color: #ffffff;
+}
+
+.the-ho-so-khach-hang--hero h2 {
+  margin: 18px 0 10px;
+  font-size: clamp(1.8rem, 2vw, 2.45rem);
+  line-height: 1.2;
+}
+
+.the-ho-so-khach-hang--hero p,
+.the-ho-so-khach-hang p,
+.the-ho-so-khach-hang li,
+.the-ho-so-khach-hang small {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.the-ho-so-khach-hang--hero p {
+  color: #dbe8df;
+}
+
+.luoi-thong-tin-ho-so,
+.luoi-bao-mat-ho-so {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.thong-bao-ho-so {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  font-weight: 600;
+}
+
+.thong-bao-ho-so.is-success {
+  background: #e8f7ef;
+  border-color: #b8e3c7;
+  color: #146c43;
+}
+
+.thong-bao-ho-so.is-error {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #9f1239;
+}
+
+.the-ho-so-khach-hang .nut-phu,
+.the-ho-so-khach-hang .nut-hanh-dong,
+.the-ho-so-khach-hang .nut-chinh {
+  text-decoration: none;
+}
+
+.tom-tat-ho-so {
+  display: grid;
+  gap: 14px;
+}
+
+.tom-tat-ho-so .the-hoso-dashboard strong {
+  display: block;
+  margin-top: 10px;
+}
+
+@media (max-width: 960px) {
+  .luoi-ho-so-khach-hang,
+  .luoi-thong-tin-ho-so,
+  .luoi-bao-mat-ho-so {
+    grid-template-columns: 1fr;
+  }
+}
