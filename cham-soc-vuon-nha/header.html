@@ -1,319 +1,185 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <script src="/ga.js"></script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dịch vụ quanh ta | Chăm Sóc Vườn Nhà</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dịch vụ quanh ta | Chăm Sóc Vườn Nhà</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #116954;
+            --primary-dark: #094a3a;
+            --secondary: #e2d8c3;
+            --bg-header: rgba(255, 255, 255, 0.98);
+            --text-main: #1a1a1a;
+            --font-heading: 'Lora', serif;
+            --font-body: 'Mulish', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); background-color: #fdfdfc; color: var(--text-main); overflow-x: hidden; }
 
-<style>
-/* =========================================
-   1. RESET & VARIABLES
-   ========================================= */
-:root {
-  --primary: #116954;
-  --primary-dark: #094a3a;
-  --secondary: #e2d8c3;
-  --accent: #d4a373;
-  --bg-body: #fdfdfc;
-  --bg-header: rgba(255, 255, 255, 0.98);
-  --text-main: #1a1a1a;
-  --font-heading: 'Lora', serif;
-  --font-body: 'Mulish', sans-serif;
-  --ease: cubic-bezier(0.23, 1, 0.32, 1);
-  --transition: all 0.4s var(--ease);
-  --shadow-sm: 0 2px 4px rgba(17, 105, 84, 0.05);
-  --shadow-md: 0 10px 30px -10px rgba(17, 105, 84, 0.1);
-  --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
-}
+        .site-header {
+            z-index: 99999;
+            position: sticky;
+            top: 0;
+            padding: 14px 0;
+            background: var(--bg-header);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
 
-* { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        .site-container {
+            max-width: 1440px;
+            margin: auto;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-body {
-  font-family: var(--font-body);
-  background-color: var(--bg-body);
-  color: var(--text-main);
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
+        .site-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .site-logo img { height: 45px; border-radius: 8px; }
+        .site-logo span { font-size: 22px; font-weight: 700; color: var(--primary); font-family: var(--font-heading); }
 
-/* =========================================
-   2. SITE HEADER & CONTAINER
-   ========================================= */
-.site-header {
-  z-index: 99999;
-  position: sticky;
-  top: 0;
-  padding: 14px 0;
-  background: var(--bg-header);
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
-  border-bottom: 1px solid rgba(0,0,0,0.03);
-}
+        .site-nav { display: flex; gap: 5px; flex: 1; justify-content: center; }
+        .site-nav a {
+            text-decoration: none;
+            color: var(--text-main);
+            padding: 8px 12px;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            transition: var(--transition);
+        }
+        .site-nav a:hover { color: var(--primary); }
 
-.site-header.shrink { padding: 8px 0; box-shadow: var(--shadow-md); }
+        /* DROP DOWN LOGIN */
+        .site-login-box { position: relative; }
+        .site-login-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+        }
 
-.site-container {
-  max-width: 1440px;
-  margin: auto;
-  padding: 0 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px; /* Khoảng cách an toàn giữa các khối lớn */
-}
+        .site-login-menu {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            background: #fff;
+            width: 220px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            border: 1px solid rgba(0,0,0,0.08);
+            overflow: hidden;
+            z-index: 100000;
+        }
 
-/* =========================================
-   3. LOGO (FIXED SIZE)
-   ========================================= */
-.site-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  flex-shrink: 0; /* Không cho phép logo bị bóp méo */
-}
+        .site-login-menu.active { display: flex !important; animation: fadeIn 0.3s ease forwards; }
+        .site-login-menu a {
+            padding: 14px 20px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 600;
+            border-bottom: 1px solid #f5f5f5;
+            transition: 0.2s;
+        }
+        .site-login-menu a:hover { background: #f9f9f9; color: var(--primary); padding-left: 25px; }
 
-.site-logo img {
-  height: 48px;
-  border-radius: 10px;
-  object-fit: cover;
-  border: 1px solid rgba(0,0,0,0.05);
-}
+        /* MOBILE */
+        .site-menu-btn { display: none; flex-direction: column; gap: 6px; cursor: pointer; }
+        .site-menu-btn span { width: 28px; height: 2px; background: var(--primary); }
 
-.site-logo span {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--primary);
-  font-family: var(--font-heading);
-  white-space: nowrap;
-}
+        .site-mobile-menu {
+            position: fixed;
+            top: 0; right: 0; width: 300px; height: 100%;
+            background: var(--primary);
+            transform: translateX(100%);
+            transition: 0.4s ease;
+            z-index: 100001;
+            padding: 80px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .site-mobile-menu.active { transform: translateX(0); }
+        .site-mobile-menu a { color: #fff; text-decoration: none; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
 
-/* =========================================
-   4. NAVIGATION PC (ÉP 1 DÒNG)
-   ========================================= */
-.site-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  flex: 1; /* Chiếm không gian ở giữa */
-  flex-wrap: nowrap; /* TUYỆT ĐỐI KHÔNG XUỐNG DÒNG */
-  overflow: hidden; 
-}
+        .site-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            opacity: 0; pointer-events: none;
+            transition: 0.3s;
+            z-index: 100000;
+        }
+        .site-overlay.active { opacity: 1; pointer-events: auto; }
 
-.site-nav a {
-  text-decoration: none;
-  color: var(--text-main);
-  padding: 8px 12px;
-  font-weight: 700;
-  font-size: 13px; /* Kích thước tối ưu cho menu dài */
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap; /* Không ngắt chữ bên trong link */
-  border-radius: 6px;
-  transition: var(--transition);
-  position: relative;
-}
-
-.site-nav a:hover { color: var(--primary); background: rgba(17, 105, 84, 0.05); }
-
-.site-nav a::after {
-  content: "";
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: var(--primary);
-  transition: var(--transition);
-  transform: translateX(-50%);
-}
-.site-nav a:hover::after { width: 40%; }
-
-/* =========================================
-   5. LOGIN & MENU BUTTON
-   ========================================= */
-.site-login-box { position: relative; flex-shrink: 0; }
-
-.site-login-btn {
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 50px;
-  font-weight: 700;
-  font-size: 13px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: 0 4px 12px rgba(17, 105, 84, 0.15);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.site-login-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
-
-.site-login-menu {
-  position: absolute;
-  top: calc(100% + 15px);
-  right: 0;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: var(--shadow-lg);
-  width: 220px;
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.05);
-  z-index: 100000;
-}
-.site-login-menu.show { display: flex; animation: fadeIn 0.3s var(--ease); }
-
-.site-login-menu a {
-  padding: 12px 20px;
-  text-decoration: none;
-  color: var(--text-main);
-  font-size: 14px;
-  font-weight: 600;
-  transition: var(--transition);
-}
-.site-login-menu a:hover { background: var(--secondary); padding-left: 25px; }
-
-/* Hamburger Button */
-.site-menu-btn {
-  display: none;
-  flex-direction: column;
-  gap: 6px;
-  cursor: pointer;
-  z-index: 100001;
-}
-.site-menu-btn span { width: 28px; height: 2px; background: var(--primary); transition: var(--transition); }
-.site-menu-btn.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); background: #fff; }
-.site-menu-btn.active span:nth-child(2) { opacity: 0; }
-.site-menu-btn.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); background: #fff; }
-
-/* =========================================
-   6. MOBILE MENU & OVERLAY
-   ========================================= */
-.site-mobile-menu {
-  position: fixed;
-  top: 0;
-  right: 0;
-  transform: translateX(100%);
-  width: 320px;
-  height: 100%;
-  background: var(--primary);
-  padding: 100px 30px;
-  transition: transform 0.5s var(--ease);
-  z-index: 100002;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-.site-mobile-menu.show { transform: translateX(0); }
-
-.site-mobile-menu a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 600;
-  padding: 12px 20px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.1);
-  transition: var(--transition);
-}
-.site-mobile-menu a:hover { background: #fff; color: var(--primary); transform: translateX(-10px); }
-
-.site-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(6px);
-  opacity: 0;
-  pointer-events: none;
-  transition: var(--transition);
-  z-index: 100000;
-}
-.site-overlay.show { opacity: 1; pointer-events: auto; }
-
-/* =========================================
-   7. RESPONSIVE OPTIMIZATION
-   ========================================= */
-@media (max-width: 1280px) {
-  .site-nav a { font-size: 12px; padding: 8px 8px; }
-  .site-logo span { font-size: 20px; }
-}
-
-@media (max-width: 1100px) {
-  /* Ép chữ menu nhỏ lại nữa trước khi sang mobile để giữ 1 dòng */
-  .site-nav a { font-size: 11px; padding: 6px 5px; }
-  .site-container { padding: 0 15px; }
-}
-
-@media (max-width: 992px) {
-  .site-nav { display: none; }
-  .site-menu-btn { display: flex; }
-}
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-</style>
+        @media (max-width: 1024px) {
+            .site-nav { display: none; }
+            .site-menu-btn { display: flex; }
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-
 <body>
 
 <header class="site-header">
-  <div class="site-container">
-    <a href="../index.html" class="site-logo">
-      <img src="assets/images/logo1.jpg" alt="Logo">
-      <span>Chăm Sóc Vườn</span>
-      <img src="assets/images/logo2.jpg" alt="Logo">
-    </a>
+    <div class="site-container">
+        <a href="../index.html" class="site-logo">
+            <img src="assets/images/logo1.jpg" alt="Logo">
+            <span>Chăm Sóc Vườn</span>
+            <img src="assets/images/logo2.jpg" alt="Logo">
+        </a>
 
-    <nav class="site-nav">
-      <a href="trangchu.html">Trang chủ</a>
-      <a href="gioithieu.html">Giới thiệu</a>
-      <a href="dichvu.html">Dịch vụ</a>
-      <a href="tintuc.html">Bài viết</a>
-      <a href="dieukhoan.html">Điều khoản</a>
-      <a href="lienhe.html">Hỗ trợ và Liên hệ</a>
-      <a href="datlich.html">Đặt lịch</a>
-      <a href="tracuu.html">Tra cứu đơn đặt</a>
-    </nav>
+        <nav class="site-nav">
+            <a href="trangchu.html">Trang chủ</a>
+            <a href="gioithieu.html">Giới thiệu</a>
+            <a href="dichvu.html">Dịch vụ</a>
+            <a href="tintuc.html">Bài viết</a>
+            <a href="lienhe.html">Hỗ trợ</a>
+            <a href="dieukhoan.html">Điều khoản</a>
+            <a href="datlich.html">Đặt lịch</a>
+        </nav>
 
-    <div style="display:flex;align-items:center;gap:15px;">
-      <div class="site-login-box">
-        <button class="site-login-btn" id="loginBtn"><span>Đăng nhập</span></button>
-        <div class="site-login-menu" id="loginMenu">
-          <a href="#">👤 Khách hàng</a>
-          <a href="#">🛡 Quản trị viên</a>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <div class="site-login-box">
+                <button class="site-login-btn" id="loginBtn">Đăng nhập</button>
+                <div class="site-login-menu" id="loginMenu">
+                    <a href="login_customer.html">👤 Khách hàng</a>
+                    <a href="login_admin.html">🛡 Quản trị viên</a>
+                </div>
+            </div>
+            <div class="site-menu-btn" id="menuBtn">
+                <span></span><span></span><span></span>
+            </div>
         </div>
-      </div>
-      <div class="site-menu-btn" id="menuBtn">
-        <span></span><span></span><span></span>
-      </div>
     </div>
-  </div>
 </header>
 
 <div class="site-mobile-menu" id="mobileMenu">
-  <a href="trangchu.html">Trang chủ</a>
-  <a href="gioithieu.html">Giới thiệu</a>
-  <a href="dichvu.html">Dịch vụ</a>
-  <a href="tintuc.html">Bài viết</a>
-  <a href="dieukhoan.html">Điều khoản</a>
-  <a href="lienhe.html">Hỗ trợ và Liên hệ</a>
-  <a href="datlich.html">Đặt lịch</a>
-  <a href="tracuu.html">Tra cứu đơn đặt</a>
+    <a href="trangchu.html">Trang chủ</a>
+    <a href="gioithieu.html">Giới thiệu</a>
+    <a href="dichvu.html">Dịch vụ</a>
+    <a href="tintuc.html">Bài viết</a>
+    <a href="dieukhoan.html">Điều khoản</a>
+    <a href="lienhe.html">Liên hệ</a>
+    <a href="datlich.html">Đặt lịch</a>
 </div>
-
 <div class="site-overlay" id="overlay"></div>
 
-<script src="/js/header.js"></script>
-
+<script src="js/header.js"></script>
 </body>
 </html>

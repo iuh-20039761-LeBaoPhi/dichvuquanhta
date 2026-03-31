@@ -381,37 +381,108 @@
 <div id="footer"></div>
 
 <script>
-    /* GIỮ NGUYÊN LOGIC LOAD COMPONENT */
-    const loadComp = (id, file, callback) => {
-        fetch(file).then(res => res.text()).then(data => {
-            document.getElementById(id).innerHTML = data;
-            if(callback) callback();
-        });
-    };
+    // --- 1. HÀM NẠP COMPONENT (HEADER/FOOTER) ---
+const loadComp = (id, file, callback) => {
+    fetch(file)
+        .then(res => res.ok ? res.text() : Promise.reject())
+        .then(html => {
+            const wrapper = document.getElementById(id);
+            wrapper.innerHTML = html;
+            if (callback) callback();
+        })
+        .catch(err => console.warn(`Không thể nạp ${file}:`, err));
+};
 
-    loadComp("header", "header.html", initHeaderMenu);
-    loadComp("footer", "footer.html");
+// --- 2. KHỞI TẠO LOGIC SAU KHI HEADER NẠP XONG ---
+function initHeaderLogic() {
+    const loginBtn = document.getElementById("loginBtn");
+    const loginMenu = document.getElementById("loginMenu");
+    const currentUser = localStorage.getItem('currentUser');
 
-    function initHeaderMenu() {
-        const menuBtn = document.getElementById("menuBtn");
-        const mobileMenu = document.getElementById("mobileMenu");
-        const overlay = document.getElementById("overlay");
-        if (menuBtn && mobileMenu && overlay) {
-            menuBtn.onclick = (e) => {
-                e.stopPropagation();
-                mobileMenu.classList.toggle("show");
-                overlay.classList.toggle("show");
-                menuBtn.classList.toggle("active");
-                document.body.style.overflow = mobileMenu.classList.contains("show") ? "hidden" : "";
-            };
-            overlay.onclick = () => {
-                mobileMenu.classList.remove("show");
-                overlay.classList.remove("show");
-                menuBtn.classList.remove("active");
-                document.body.style.overflow = "";
-            };
-        }
+    // Kiểm tra trạng thái đăng nhập
+    if (currentUser && loginBtn && loginMenu) {
+        // Thay đổi UI sang trạng thái "Đã đăng nhập"
+        loginBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> Xin chào, ${currentUser}`;
+        loginBtn.classList.add('logged-in');
+
+        loginMenu.innerHTML = `
+            <div class="user-greeting"></div>
+            <a href="thongtin.html"><i class="fa-solid fa-address-card"></i> Hồ sơ cá nhân</a>
+            <a href="lichsu.html"><i class="fa-solid fa-calendar-check"></i> Lịch sử đặt lịch</a>
+            <hr style="border: 0; border-top: 1px solid #f1f1f1; margin: 8px 0;">
+            <a href="#" id="logoutBtn" style="color: #c0392b; font-weight: 600;">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        `;
+
+        // Sự kiện đăng xuất
+        document.getElementById("logoutBtn").onclick = (e) => {
+            e.preventDefault();
+            localStorage.clear(); // Xóa sạch để bảo mật
+            window.location.reload();
+        };
     }
+}
+
+// Gọi nạp linh hoạt
+loadComp("header", "header.html", initHeaderLogic);
+loadComp("footer", "footer.html");
+
+// --- 3. ĐIỀU KHIỂN SỰ KIỆN (EVENT DELEGATION) ---
+document.addEventListener("click", (e) => {
+    const loginMenu = document.getElementById("loginMenu");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const overlay = document.getElementById("overlay");
+    const menuBtn = document.getElementById("menuBtn");
+
+    // Click vào nút Login/Xin chào
+    if (e.target.closest("#loginBtn")) {
+        e.preventDefault();
+        loginMenu?.classList.toggle("active");
+        mobileMenu?.classList.remove("active"); // Đóng menu mobile nếu đang mở
+    } 
+    // Click vào nút Menu Mobile (Hamburger)
+    else if (e.target.closest("#menuBtn")) {
+        mobileMenu?.classList.add("active");
+        overlay?.classList.add("active");
+        document.body.style.overflow = "hidden"; // Khóa cuộn trang
+    }
+    // Click vào Overlay hoặc ra ngoài để đóng mọi thứ
+    else if (e.target.closest("#overlay") || (!e.target.closest(".site-login-box") && !e.target.closest("#mobileMenu"))) {
+        loginMenu?.classList.remove("active");
+        mobileMenu?.classList.remove("active");
+        overlay?.classList.remove("active");
+        document.body.style.overflow = ""; // Mở lại cuộn trang
+    }
+});
+
+// --- 4. HIỆU ỨNG HEADER KHI CUỘN (SCROLL PERFORMANCE) ---
+let lastScroll = 0;
+window.addEventListener("scroll", () => {
+    const headerElement = document.querySelector("header") || document.querySelector(".site-header");
+    if (!headerElement) return;
+
+    const currentScroll = window.pageYOffset;
+
+    if (currentScroll > 50) {
+        headerElement.classList.add("scrolled");
+        // Hiệu ứng Glassmorphism tinh tế
+        Object.assign(headerElement.style, {
+            background: "rgba(255, 255, 255, 0.9)",
+            backdropFilter: "blur(15px)",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+            padding: "15px 0"
+        });
+    } else {
+        headerElement.classList.remove("scrolled");
+        Object.assign(headerElement.style, {
+            background: "transparent",
+            boxShadow: "none",
+            padding: "25px 0"
+        });
+    }
+    lastScroll = currentScroll;
+}, { passive: true });
 </script>
 
 </body>

@@ -263,115 +263,189 @@
 <div id="footer"></div>
 
 <script>
-const serviceName = document.getElementById("serviceName");
-const serviceDescription = document.getElementById("serviceDescription");
-const servicePrice = document.getElementById("servicePrice");
-const serviceImage = document.getElementById("serviceImage");
-const related = document.getElementById("related");
-const area = document.getElementById("area");
-const total = document.getElementById("total");
-const bookBtn = document.getElementById("bookBtn");
-
+/* ==========================================
+   1. CẤU HÌNH CHUNG & ĐƯỜNG DẪN
+   ========================================== */
 const IMAGE_PATH = "assets/images/";
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1584473457406-623048ff437e?q=80&w=2000";
 
-// Load Components
-function loadComponent(id, file) {
-    fetch(file).then(r => r.text()).then(data => {
-        document.getElementById(id).innerHTML = data;
+const el = {
+    name: document.getElementById("serviceName"),
+    desc: document.getElementById("serviceDescription"),
+    price: document.getElementById("servicePrice"),
+    image: document.getElementById("serviceImage"),
+    related: document.getElementById("related"),
+    areaInput: document.getElementById("area"),
+    totalDisplay: document.getElementById("total"),
+    bookBtn: document.getElementById("bookBtn")
+};
+
+/* ==========================================
+   2. NẠP COMPONENT & LOGIC ĐĂNG NHẬP (MỚI KẾT HỢP)
+   ========================================== */
+const loadComponent = (id, file, callback) => {
+    fetch(file)
+        .then(r => r.ok ? r.text() : Promise.reject())
+        .then(html => {
+            document.getElementById(id).innerHTML = html;
+            if (callback) callback(); // Chạy logic đăng nhập ngay sau khi Header có mặt
+        })
+        .catch(err => console.warn(`Lỗi nạp ${file}`));
+};
+
+// Hàm khởi tạo logic Header (đã đồng bộ với trang chủ của bà)
+function initHeaderLogic() {
+    const loginBtn = document.getElementById("loginBtn");
+    const loginMenu = document.getElementById("loginMenu");
+    const currentUser = localStorage.getItem('currentUser');
+
+    if (currentUser && loginBtn && loginMenu) {
+        // 1. Đổi chữ "Đăng nhập" thành "Xin chào"
+        loginBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> Xin chào, ${currentUser}`;
+        
+        // 2. Cập nhật menu dropdown
+       loginMenu.innerHTML = `
+            <div class="user-greeting"></div>
+            <a href="thongtin.html"><i class="fa-solid fa-address-card"></i> Hồ sơ cá nhân</a>
+            <a href="lichsu.html"><i class="fa-solid fa-calendar-check"></i> Lịch sử đặt lịch</a>
+            <hr style="border: 0; border-top: 1px solid #f1f1f1; margin: 8px 0;">
+            <a href="#" id="logoutBtn" style="color: #c0392b; font-weight: 600;">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        `;
+
+        // 3. Xử lý Đăng xuất
+        document.getElementById("logoutBtn").addEventListener("click", function(e) {
+            e.preventDefault();
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('userRole');
+            window.location.reload();
+        });
+    }
+
+    // Hiệu ứng Header khi cuộn trang
+    window.addEventListener("scroll", function() {
+        const header = document.querySelector(".site-header"); // Đảm bảo class này trùng với header.html
+        if (header) {
+            header.classList.toggle("scrolled", window.scrollY > 50);
+        }
     });
 }
-loadComponent("header", "header.html");
+
+// Gọi nạp Header/Footer
+loadComponent("header", "header.html", initHeaderLogic);
 loadComponent("footer", "footer.html");
 
-const params = new URLSearchParams(location.search);
-const id = parseInt(params.get("id"));
+/* ==========================================
+   3. XỬ LÝ CLICK TOÀN CỤC (Event Delegation)
+   ========================================== */
+document.addEventListener("click", function (e) {
+    const loginMenu = document.getElementById("loginMenu");
+    
+    // Toggle Menu khi bấm nút
+    if (e.target.closest("#loginBtn")) {
+        e.preventDefault();
+        if (loginMenu) loginMenu.classList.toggle("active");
+    }
 
-let service = null;
+    // Đóng menu khi click ra ngoài
+    if (loginMenu && !loginMenu.contains(e.target) && !e.target.closest("#loginBtn")) {
+        loginMenu.classList.remove("active");
+    }
+});
 
-// Fetch Data & SEO Optimization
+/* ==========================================
+   4. XỬ LÝ DỮ LIỆU DỊCH VỤ DYNAMIC (GIỮ NGUYÊN)
+   ========================================== */
+const params = new URLSearchParams(window.location.search);
+const serviceId = parseInt(params.get("id"));
+let currentService = null;
+
 fetch("dichvu.json")
     .then(r => r.json())
     .then(data => {
         const services = data.services || [];
-        service = services.find(s => s.id === id);
+        currentService = services.find(s => s.id === serviceId);
         
-        if (!service) {
-            serviceName.innerText = "Dịch vụ không tồn tại";
+        if (!currentService) {
+            el.name.innerText = "Dịch vụ không tồn tại";
             return;
         }
 
-        // 1. UPDATE CONTENT
-        serviceName.innerText = service.name;
-        serviceDescription.innerText = service.description || "Dịch vụ chăm sóc vườn chuyên nghiệp hàng đầu.";
-        servicePrice.innerText = (service.price_m2_min || 0).toLocaleString("vi-VN") + "đ/m²";
-        serviceImage.src = service.image ? IMAGE_PATH + service.image : DEFAULT_IMAGE;
-
-        // 2. SEO UPDATE (Dynamic Title, Alt, Meta)
-        document.title = `${service.name} | Chăm sóc vườn nhà Keri`;
-        document.getElementById("seoDesc").setAttribute("content", service.description.substring(0, 160));
-        serviceImage.alt = `Dịch vụ ${service.name} chuyên nghiệp`;
-
-        // 3. SCHEMA MARKUP (SEO Rich Snippets)
-        const schemaData = {
-            "@context": "https://schema.org/",
-            "@type": "Service",
-            "name": service.name,
-            "description": service.description,
-            "provider": {
-                "@type": "LocalBusiness",
-                "name": "Chăm sóc vườn nhà Keri"
-            },
-            "offers": {
-                "@type": "Offer",
-                "priceCurrency": "VND",
-                "price": service.price_m2_min
-            }
-        };
-        const script = document.createElement('script');
-        script.type = 'application/ld+json';
-        script.text = JSON.stringify(schemaData);
-        document.head.appendChild(script);
-
-        // 4. RENDER RELATED
-        related.innerHTML = "";
-        (service.related_services || []).forEach(rid => {
-            let s = services.find(x => x.id === rid);
-            if (!s) return;
-            const card = document.createElement("a");
-            card.href = `chitiet_dichvu.html?id=${s.id}`;
-            card.className = "mini-card";
-            card.innerHTML = `
-                <div class="img-box"><img src="${IMAGE_PATH + s.image}" alt="${s.name}" onerror="this.src='${DEFAULT_IMAGE}'"></div>
-                <div>
-                    <h4>${s.name}</h4>
-                    <p>${(s.price_m2_min || 0).toLocaleString("vi-VN")} VNĐ</p>
-                </div>
-            `;
-            related.appendChild(card);
-        });
+        renderServiceDetail(currentService, services);
+        setupSEO(currentService);
+    })
+    .catch(err => {
+        console.error("Lỗi tải dữ liệu:", err);
+        el.name.innerText = "Không thể kết nối máy chủ";
     });
 
-// LOGIC TÍNH TOÁN (Giữ nguyên)
-area.oninput = function () {
-    if (!service) return;
-    let val = parseFloat(this.value);
-    if (!val || val <= 0) {
-        total.innerText = "0 VNĐ";
+function renderServiceDetail(service, allServices) {
+    el.name.innerText = service.name;
+    el.desc.innerText = service.description || "Dịch vụ chăm sóc vườn chuyên nghiệp.";
+    el.price.innerText = `${(service.price_m2_min || 0).toLocaleString("vi-VN")}đ/m²`;
+    el.image.src = service.image ? (IMAGE_PATH + service.image) : DEFAULT_IMAGE;
+    el.image.alt = `Dịch vụ ${service.name}`;
+
+    el.related.innerHTML = "";
+    const relatedIds = service.related_services || [];
+    
+    relatedIds.forEach(rid => {
+        const s = allServices.find(x => x.id === rid);
+        if (!s) return;
+
+        const card = document.createElement("a");
+        card.href = `chitiet_dichvu.html?id=${s.id}`;
+        card.className = "mini-card";
+        card.innerHTML = `
+            <div class="img-box">
+                <img src="${IMAGE_PATH + s.image}" alt="${s.name}" onerror="this.src='${DEFAULT_IMAGE}'">
+            </div>
+            <div>
+                <h4>${s.name}</h4>
+                <p>Giá từ: ${(s.price_m2_min || 0).toLocaleString("vi-VN")} VNĐ</p>
+            </div>
+        `;
+        el.related.appendChild(card);
+    });
+}
+
+/* ==========================================
+   5. LOGIC TÍNH TOÁN & ĐẶT LỊCH (GIỮ NGUYÊN)
+   ========================================== */
+el.areaInput.addEventListener('input', function() {
+    if (!currentService) return;
+    const areaValue = parseFloat(this.value);
+    if (!areaValue || areaValue <= 0) {
+        el.totalDisplay.innerText = "0 VNĐ";
         return;
     }
-    // Logic: Giá gốc * diện tích + 10% phí dịch vụ
-    let final = (val * service.price_m2_min) * 1.1;
-    total.innerText = final.toLocaleString("vi-VN") + " VNĐ";
+    const basePrice = areaValue * currentService.price_m2_min;
+    const finalTotal = basePrice + (basePrice * 0.1); // +10% phí
+    el.totalDisplay.innerText = `${Math.round(finalTotal).toLocaleString("vi-VN")} VNĐ`;
+});
+
+el.bookBtn.onclick = function() {
+    const areaVal = el.areaInput.value;
+    if (!areaVal || areaVal <= 0) {
+        alert("Quý khách vui lòng nhập diện tích.");
+        el.areaInput.focus();
+        return;
+    }
+    this.innerText = "ĐANG XỬ LÝ...";
+    setTimeout(() => {
+        window.location.href = `datlich.html?service=${currentService.id}&area=${areaVal}`;
+    }, 400);
 };
 
-bookBtn.onclick = function () {
-    if (!area.value || area.value <= 0) {
-        alert("Vui lòng nhập diện tích!");
-        return;
-    }
-    location.href = `datlich.html?service=${service.id}&area=${area.value}`;
-};
+/* ==========================================
+   6. SEO (GIỮ NGUYÊN)
+   ========================================== */
+function setupSEO(service) {
+    document.title = `${service.name.toUpperCase()} - Dịch vụ xanh cao cấp`;
+    const metaDesc = document.getElementById("seoDesc");
+    if(metaDesc) metaDesc.setAttribute("content", service.description.substring(0, 160));
+}
 </script>
 
 </body>

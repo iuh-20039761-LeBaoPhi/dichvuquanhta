@@ -321,7 +321,7 @@ const handleSearch = () => {
 document.getElementById("searchBtn").onclick = handleSearch;
 document.getElementById("searchInput").onkeyup = (e) => { if(e.key === "Enter") handleSearch(); };
 
-// --- 4. KẾT NỐI COMPONENT & KÍCH HOẠT MOBILE MENU ---
+// --- 4. KẾT NỐI COMPONENT & LOGIC ĐĂNG NHẬP/MOBILE MENU ---
 const loadComp = (id, file) => {
     fetch(file)
         .then(r => r.text())
@@ -330,35 +330,92 @@ const loadComp = (id, file) => {
             wrapper.innerHTML = html;
 
             if (id === 'header') {
-                // Khởi tạo các sự kiện cho Menu ngay sau khi HTML được nạp
                 const menuBtn = document.getElementById('menuBtn');
                 const mobileMenu = document.getElementById('mobileMenu');
                 const overlay = document.getElementById('overlay');
                 const loginBtn = document.getElementById('loginBtn');
                 const loginMenu = document.getElementById('loginMenu');
 
-                // Toggle Mobile Menu
-                if (menuBtn && mobileMenu && overlay) {
-                    menuBtn.onclick = () => {
-                        menuBtn.classList.toggle('active');
-                        mobileMenu.classList.toggle('show');
-                        overlay.classList.toggle('show');
-                    };
+                // A. KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser && loginBtn && loginMenu) {
+                    // Đổi nút Đăng nhập thành Xin chào
+                    loginBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> Xin chào, ${currentUser}`;
+                    
+                    // Cập nhật nội dung Dropdown Menu
+                      loginMenu.innerHTML = `
+            <div class="user-greeting"></div>
+            <a href="thongtin.html"><i class="fa-solid fa-address-card"></i> Hồ sơ cá nhân</a>
+            <a href="lichsu.html"><i class="fa-solid fa-calendar-check"></i> Lịch sử đặt lịch</a>
+            <hr style="border: 0; border-top: 1px solid #f1f1f1; margin: 8px 0;">
+            <a href="#" id="logoutBtn" style="color: #c0392b; font-weight: 600;">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        `;
 
-                    overlay.onclick = () => {
-                        menuBtn.classList.remove('active');
-                        mobileMenu.classList.remove('show');
-                        overlay.classList.remove('show');
+                    // Xử lý sự kiện Đăng xuất
+                    document.getElementById("logoutBtn").onclick = (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem('currentUser');
+                        localStorage.removeItem('userRole');
+                        window.location.reload();
                     };
                 }
 
-                // Toggle Login Menu
+               // B. TOGGLE MOBILE MENU (Sửa lại cho khớp với CSS/JS gốc)
+if (menuBtn && mobileMenu && overlay) {
+    menuBtn.onclick = (e) => {
+        e.preventDefault();
+        // Dùng 'active' thay vì 'show' cho đồng bộ
+        mobileMenu.classList.toggle('active');
+        overlay.classList.toggle('active');
+        
+        // Chặn cuộn trang khi mở menu
+        if (mobileMenu.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    };
+
+    overlay.onclick = () => {
+        mobileMenu.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+}
+
+                // C. TOGGLE LOGIN DROPDOWN (Sửa logic hiển thị)
                 if (loginBtn && loginMenu) {
                     loginBtn.onclick = (e) => {
+                        e.preventDefault();
                         e.stopPropagation();
-                        loginMenu.classList.toggle('show');
+                        
+                        const isCurrentlyActive = loginMenu.classList.contains('active');
+                        
+                        // Đóng mobile menu nếu đang mở để tránh chồng chéo
+                        if(mobileMenu) mobileMenu.classList.remove('show'); 
+
+                        if (!isCurrentlyActive) {
+                            loginMenu.style.setProperty("display", "flex", "important");
+                            setTimeout(() => loginMenu.classList.add('active'), 10);
+                        } else {
+                            loginMenu.classList.remove('active');
+                            setTimeout(() => loginMenu.style.setProperty("display", "none", "important"), 300);
+                        }
                     };
-                    document.addEventListener('click', () => loginMenu.classList.remove('show'));
+
+                    // Đóng khi click ra ngoài
+                    document.addEventListener('click', (e) => {
+                        if (!e.target.closest('.site-login-box') && !e.target.closest('#loginBtn')) {
+                            loginMenu.classList.remove('active');
+                            setTimeout(() => {
+                                if(!loginMenu.classList.contains('active')) {
+                                    loginMenu.style.setProperty("display", "none", "important");
+                                }
+                            }, 300);
+                        }
+                    });
                 }
             }
         });

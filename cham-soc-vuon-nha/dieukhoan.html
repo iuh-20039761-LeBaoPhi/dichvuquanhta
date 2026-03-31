@@ -394,52 +394,129 @@
 <div id="footer"></div>
 
 <script>
-    // Logic tải Header/Footer 
-    fetch("header.html").then(r => r.text()).then(d => {
-        document.getElementById("header").innerHTML = d;
-        initHeaderMenu(); 
-    });
-    fetch("footer.html").then(r => r.text()).then(d => document.getElementById("footer").innerHTML = d);
+   /* ==========================================
+   1. NẠP COMPONENT & LOGIC ĐĂNG NHẬP (HEADER/FOOTER)
+   ========================================== */
+const loadComponent = (id, file, callback) => {
+    fetch(file)
+        .then(r => r.ok ? r.text() : Promise.reject())
+        .then(html => {
+            document.getElementById(id).innerHTML = html;
+            if (callback) callback();
+        })
+        .catch(err => console.warn(`Lỗi nạp ${file}:`, err));
+};
 
-    function initHeaderMenu() {
-        // Giữ nguyên logic menu mobile của bạn
-        const menuBtn = document.getElementById("menuBtn");
-        const mobileMenu = document.getElementById("mobileMenu");
-        const overlay = document.getElementById("overlay");
-        if(!menuBtn || !mobileMenu || !overlay) return;
+function initHeader() {
+    const loginBtn = document.getElementById('loginBtn');
+    const loginMenu = document.getElementById('loginMenu');
+    const menuBtn = document.getElementById('menuBtn'); // Nút 3 gạch
+    const mobileMenu = document.getElementById('mobileMenu'); // Menu trượt
+    const overlay = document.getElementById('overlay'); // Lớp phủ
+    const currentUser = localStorage.getItem('currentUser');
 
-        menuBtn.onclick = function(e){
-            e.stopPropagation();
-            mobileMenu.classList.toggle("show");
-            overlay.classList.toggle("show");
-            menuBtn.classList.toggle("active"); 
-            document.body.style.overflow = mobileMenu.classList.contains("show") ? "hidden" : "";
-        };
-
-        overlay.onclick = function(){
-            mobileMenu.classList.remove("show");
-            overlay.classList.remove("show");
-            menuBtn.classList.remove("active");
-            document.body.style.overflow = "";
+    // 1. LOGIC XIN CHÀO (Cho cả Desktop & Mobile)
+    if (currentUser && loginBtn && loginMenu) {
+        loginBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> Xin chào, ${currentUser}`;
+        loginMenu.innerHTML = `
+            <a href="thongtin.html"><i class="fa-solid fa-address-card"></i> Hồ sơ cá nhân</a>
+            <a href="lichsu.html"><i class="fa-solid fa-calendar-check"></i> Lịch sử đặt lịch</a>
+            <hr style="border: 0; border-top: 1px solid #f1f1f1; margin: 8px 0;">
+            <a href="#" id="logoutBtn" style="color: #c0392b; font-weight: 600;">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        `;
+        document.getElementById("logoutBtn").onclick = (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.reload();
         };
     }
 
-    // Hiệu ứng Fade-in khi scroll
+    // 2. LOGIC CLICK TOÀN CỤC (Dùng Delegation cho sạch)
+    document.addEventListener('click', (e) => {
+        // A. Bấm nút Login/Xin chào
+        if (e.target.closest('#loginBtn')) {
+            e.preventDefault();
+            loginMenu.classList.toggle('active');
+            // Đóng mobile menu nếu đang mở để khỏi chồng nhau
+            if(mobileMenu) mobileMenu.classList.remove('active');
+            if(overlay) overlay.classList.remove('active');
+        } 
+        
+        // B. Bấm nút Menu Mobile (Nút 3 gạch)
+        else if (e.target.closest('#menuBtn')) {
+            e.preventDefault();
+            if(mobileMenu) mobileMenu.classList.toggle('active');
+            if(overlay) overlay.classList.toggle('active');
+            if(menuBtn) menuBtn.classList.toggle('active');
+        }
+
+        // C. Bấm vào Overlay hoặc bấm ra ngoài để đóng hết
+        else if (e.target.closest('#overlay') || !e.target.closest('.site-login-box')) {
+            if (loginMenu) loginMenu.classList.remove('active');
+            if (mobileMenu) mobileMenu.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            if (menuBtn) menuBtn.classList.remove('active');
+        }
+    });
+}
+
+
+loadComponent("header", "header.html", initHeader);
+loadComponent("footer", "footer.html");
+
+/* ==========================================
+   2. HIỆU ỨNG CUỘN TRANG & ACTIVE SIDEBAR
+   ========================================== */
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll('.legal-card');
+    const navLinks = document.querySelectorAll('.nav-menu li a');
+
+    // --- Xử lý Click cuộn mượt ---
+    navLinks.forEach(link => {
+        link.onclick = (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
+            if(targetSection) {
+                window.scrollTo({
+                    top: targetSection.offsetTop - 100, // Cách top 100px để không bị dính header
+                    behavior: 'smooth'
+                });
+            }
+        };
+    });
+
+    // --- Hiệu ứng Fade-in & Highlight Sidebar khi cuộn ---
+    const observerOptions = { threshold: 0.3 };
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                // Fade-in card
                 entry.target.style.opacity = "1";
                 entry.target.style.transform = "translateY(0)";
+
+                // Highlight link tương ứng trong menu
+                const id = entry.target.getAttribute('id');
+                navLinks.forEach(link => {
+                    link.style.color = link.getAttribute('href') === `#${id}` ? '#1a4d2e' : '#64748b';
+                    link.style.fontWeight = link.getAttribute('href') === `#${id}` ? '700' : '400';
+                    link.style.background = link.getAttribute('href') === `#${id}` ? 'rgba(212, 163, 115, 0.1)' : 'transparent';
+                    link.style.paddingLeft = link.getAttribute('href') === `#${id}` ? '12px' : '0';
+                    link.style.borderRadius = '8px';
+                });
             }
         });
-    }, { threshold: 0.1 });
+    }, observerOptions);
 
-    document.querySelectorAll('.legal-card').forEach(card => {
+    sections.forEach(card => {
         card.style.opacity = "0";
         card.style.transform = "translateY(30px)";
-        card.style.transition = "all 0.8s ease-out";
+        card.style.transition = "all 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
         observer.observe(card);
     });
+});
 </script>
 
 </body>

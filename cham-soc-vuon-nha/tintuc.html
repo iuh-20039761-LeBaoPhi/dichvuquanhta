@@ -202,124 +202,184 @@
 <div id="footer-container"></div>
 
 <script>
-    let news = [], filtered = [], postsPerPage = 8, currentPage = 1, currentCategory = "";
+   // --- 1. BIẾN TOÀN CỤC & QUẢN LÝ DỮ LIỆU ---
+let news = [], filtered = [], postsPerPage = 8, currentPage = 1, currentCategory = "";
 
-    // 1. KẾT NỐI VÀ KHỞI TẠO HEADER (Mobile Menu + Overlay)
-    fetch("header.html").then(r => r.text()).then(d => {
-        const headerBox = document.getElementById("header-container");
-        headerBox.innerHTML = d;
+// --- 2. NẠP COMPONENT & LOGIC ĐĂNG NHẬP (HEADER/FOOTER) ---
+const loadComponent = (id, file, callback) => {
+    fetch(file)
+        .then(r => r.ok ? r.text() : Promise.reject())
+        .then(html => {
+            document.getElementById(id).innerHTML = html;
+            if (callback) callback();
+        })
+        .catch(err => console.warn(`Lỗi nạp ${file}:`, err));
+};
+
+// Khởi tạo Header sau khi nạp xong
+function initHeader() {
+    const loginBtn = document.getElementById('loginBtn');
+    const loginMenu = document.getElementById('loginMenu');
+    const menuBtn = document.getElementById('menuBtn'); // Nút 3 gạch
+    const mobileMenu = document.getElementById('mobileMenu'); // Menu trượt
+    const overlay = document.getElementById('overlay'); // Lớp phủ
+    const currentUser = localStorage.getItem('currentUser');
+
+    // 1. LOGIC XIN CHÀO (Cho cả Desktop & Mobile)
+    if (currentUser && loginBtn && loginMenu) {
+        loginBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> Xin chào, ${currentUser}`;
+        loginMenu.innerHTML = `
+            <a href="thongtin.html"><i class="fa-solid fa-address-card"></i> Hồ sơ cá nhân</a>
+            <a href="lichsu.html"><i class="fa-solid fa-calendar-check"></i> Lịch sử đặt lịch</a>
+            <hr style="border: 0; border-top: 1px solid #f1f1f1; margin: 8px 0;">
+            <a href="#" id="logoutBtn" style="color: #c0392b; font-weight: 600;">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        `;
+        document.getElementById("logoutBtn").onclick = (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.reload();
+        };
+    }
+
+    // 2. LOGIC CLICK TOÀN CỤC (Dùng Delegation cho sạch)
+    document.addEventListener('click', (e) => {
+        // A. Bấm nút Login/Xin chào
+        if (e.target.closest('#loginBtn')) {
+            e.preventDefault();
+            loginMenu.classList.toggle('active');
+            // Đóng mobile menu nếu đang mở để khỏi chồng nhau
+            if(mobileMenu) mobileMenu.classList.remove('active');
+            if(overlay) overlay.classList.remove('active');
+        } 
         
-        // Kích hoạt logic Mobile Menu sau khi header load xong
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const overlay = document.getElementById('overlay');
-        const loginBtn = document.getElementById('loginBtn');
-        const loginMenu = document.getElementById('loginMenu');
-
-        if (menuBtn && mobileMenu && overlay) {
-            menuBtn.onclick = () => {
-                menuBtn.classList.toggle('active');
-                mobileMenu.classList.toggle('show');
-                overlay.classList.toggle('show');
-            };
-            overlay.onclick = () => {
-                menuBtn.classList.remove('active');
-                mobileMenu.classList.remove('show');
-                overlay.classList.remove('show');
-            };
+        // B. Bấm nút Menu Mobile (Nút 3 gạch)
+        else if (e.target.closest('#menuBtn')) {
+            e.preventDefault();
+            if(mobileMenu) mobileMenu.classList.toggle('active');
+            if(overlay) overlay.classList.toggle('active');
+            if(menuBtn) menuBtn.classList.toggle('active');
         }
 
-        if (loginBtn && loginMenu) {
-            loginBtn.onclick = (e) => {
-                e.stopPropagation();
-                loginMenu.classList.toggle('show');
-            };
-            document.addEventListener('click', () => loginMenu.classList.remove('show'));
+        // C. Bấm vào Overlay hoặc bấm ra ngoài để đóng hết
+        else if (e.target.closest('#overlay') || !e.target.closest('.site-login-box')) {
+            if (loginMenu) loginMenu.classList.remove('active');
+            if (mobileMenu) mobileMenu.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            if (menuBtn) menuBtn.classList.remove('active');
         }
     });
+}
 
-    fetch("footer.html").then(r => r.text()).then(d => document.getElementById("footer-container").innerHTML = d);
+loadComponent("header-container", "header.html", initHeader);
+loadComponent("footer-container", "footer.html");
 
-    // 2. LOGIC TIN TỨC (GIỮ NGUYÊN)
-    fetch("tintuc.json?v=" + Date.now()).then(r => r.json()).then(d => {
+// --- 3. LOGIC XỬ LÝ TIN TỨC ---
+fetch("tintuc.json?v=" + Date.now())
+    .then(r => r.json())
+    .then(d => {
         news = d.news;
         const params = new URLSearchParams(window.location.search);
         currentCategory = params.get("category") || "";
         filtered = currentCategory ? news.filter(n => n.category === currentCategory) : [...news];
         renderCategories();
-        render();
+        renderNews();
     });
 
-    function render() {
-        const container = document.getElementById("news-container");
-        let start = (currentPage - 1) * postsPerPage;
-        let list = filtered.slice(start, start + postsPerPage);
+function renderNews() {
+    const container = document.getElementById("news-container");
+    let start = (currentPage - 1) * postsPerPage;
+    let list = filtered.slice(start, start + postsPerPage);
 
-        if (list.length === 0) {
-            container.innerHTML = "<div style='grid-column: span 4; text-align: center; padding: 50px;'>Dữ liệu đang được cập nhật...</div>";
-            document.getElementById("pagination").innerHTML = "";
-            return;
-        }
+    if (list.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px; opacity: 0.5; font-style: italic;">Chưa có bài viết nào trong mục này...</div>`;
+        document.getElementById("pagination").innerHTML = "";
+        return;
+    }
 
-        container.innerHTML = list.map(post => `
-            <a href="chitiet_tintuc.html?slug=${post.slug}" class="art-card">
-                <img src="assets/images/${post.image}" class="art-img" loading="lazy">
-                <div class="art-overlay">
-                    <span class="art-cat">${post.category}</span>
-                    <h3 class="art-title">${post.title}</h3>
-                    <div style="font-size:0.75rem; opacity:0.7">
-                        ${post.date} — ${post.readingTime} MIN READ
-                    </div>
+    container.innerHTML = list.map(post => `
+        <a href="chitiet_tintuc.html?slug=${post.slug}" class="art-card">
+            <img src="assets/images/${post.image}" class="art-img" loading="lazy">
+            <div class="art-overlay">
+                <span class="art-cat">${post.category}</span>
+                <h3 class="art-title">${post.title}</h3>
+                <div style="font-size:0.7rem; opacity:0.8; letter-spacing: 1px;">
+                    ${post.date} — ${post.readingTime} MIN READ
                 </div>
-            </a>
-        `).join('');
+            </div>
+        </a>
+    `).join('');
+    renderPagination();
+}
 
-        renderPagination();
+function renderCategories() {
+    const cats = [...new Set(news.map(n => n.category))];
+    let html = `<button class="cat-btn ${!currentCategory ? 'active' : ''}" onclick="filterCat('')">TẤT CẢ</button>`;
+    html += cats.map(c => `<button class="cat-btn ${currentCategory === c ? 'active' : ''}" onclick="filterCat('${c}')">${c.toUpperCase()}</button>`).join('');
+    document.getElementById("cat-list").innerHTML = html;
+}
+
+function filterCat(cat) {
+    currentCategory = cat;
+    filtered = cat ? news.filter(n => n.category === cat) : [...news];
+    currentPage = 1;
+    renderNews();
+    renderCategories();
+    const newUrl = cat ? `?category=${encodeURIComponent(cat)}` : window.location.pathname;
+    history.pushState({}, "", newUrl);
+}
+
+function renderPagination() {
+    let total = Math.ceil(filtered.length / postsPerPage);
+    let html = "";
+    if (total <= 1) return document.getElementById("pagination").innerHTML = "";
+    
+    for (let i = 1; i <= total; i++) {
+        html += `<button class="pagin-btn ${i == currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
     }
+    document.getElementById("pagination").innerHTML = html;
+}
 
-    function renderCategories() {
-        let cats = [...new Set(news.map(n => n.category))];
-        let html = `<button class="cat-btn ${currentCategory === '' ? 'active' : ''}" onclick="filterCat('')">TẤT CẢ</button>`;
-        cats.forEach(c => {
-            html += `<button class="cat-btn ${currentCategory === c ? 'active' : ''}" onclick="filterCat('${c}')">${c}</button>`;
-        });
-        document.getElementById("cat-list").innerHTML = html;
+function goPage(p) { 
+    currentPage = p; 
+    window.scrollTo({ top: 450, behavior: 'smooth' }); 
+    renderNews(); 
+}
+
+// --- 4. TÌM KIẾM & PHÍM TẮT ---
+function toggleSearch(show) {
+    const modal = document.getElementById("search-modal");
+    const input = document.getElementById("search-input");
+    if (!modal) return;
+    
+    modal.style.display = show ? "flex" : "none";
+    if (show) {
+        input.value = "";
+        input.focus();
+        document.body.style.overflow = "hidden"; // Khóa cuộn trang
+    } else {
+        document.body.style.overflow = "";
     }
+}
 
-    function filterCat(cat) {
-        currentCategory = cat;
-        filtered = cat ? news.filter(n => n.category === cat) : [...news];
-        currentPage = 1;
-        render();
-        renderCategories();
-        history.pushState({}, "", cat ? `?category=${encodeURIComponent(cat)}` : window.location.pathname);
+function searchNow() {
+    let k = document.getElementById("search-input").value.toLowerCase().trim();
+    if (!k) return toggleSearch(false);
+    
+    filtered = news.filter(n => n.title.toLowerCase().includes(k) || n.category.toLowerCase().includes(k));
+    currentPage = 1;
+    renderNews();
+    toggleSearch(false);
+}
+
+document.addEventListener('keydown', e => { 
+    if (e.key === 'Escape') toggleSearch(false); 
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { // Phím tắt "/" để tìm nhanh
+        e.preventDefault();
+        toggleSearch(true);
     }
-
-    function renderPagination() {
-        let total = Math.ceil(filtered.length / postsPerPage);
-        let html = "";
-        for (let i = 1; i <= total; i++) {
-            html += `<button class="pagin-btn ${i == currentPage ? 'active' : ''}" onclick="go(${i})">${i}</button>`;
-        }
-        document.getElementById("pagination").innerHTML = html;
-    }
-
-    function go(p) { currentPage = p; window.scrollTo({ top: 400, behavior: 'smooth' }); render(); }
-
-    function toggleSearch(show) {
-        document.getElementById("search-modal").style.display = show ? "flex" : "none";
-        if(show) document.getElementById("search-input").focus();
-    }
-
-    function searchNow() {
-        let k = document.getElementById("search-input").value.toLowerCase();
-        filtered = news.filter(n => n.title.toLowerCase().includes(k) || n.category.toLowerCase().includes(k));
-        currentPage = 1;
-        render();
-        toggleSearch(false);
-    }
-
-    document.addEventListener('keydown', e => { if(e.key === 'Escape') toggleSearch(false); });
+});
 </script>
 </body>
 </html>

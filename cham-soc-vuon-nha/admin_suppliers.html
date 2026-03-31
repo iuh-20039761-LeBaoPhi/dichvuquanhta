@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Nhà cung cấp | Keri Admin Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
+    <style>
+        :root {
+            --primary: #116954;
+            --primary-soft: #e8f3f0;
+            --accent: #c5a059;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text-main: #1a1c1e;
+            --text-sub: #636e72;
+            --border: #edf2f7;
+            --radius-lg: 24px;
+            --radius-md: 12px;
+            --shadow: 0 10px 40px rgba(0,0,0,0.04);
+        }
+
+        /* --- CẤU TRÚC CHUNG --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Mulish', sans-serif; background: var(--bg); color: var(--text-main); display: flex; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { 
+            width: 280px; height: 100vh; background: var(--primary); 
+            color: white; padding: 40px 24px; position: fixed; 
+        }
+        .sidebar h2 { 
+            font-family: 'Lora', serif; font-size: 24px; margin-bottom: 48px; 
+            text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;
+        }
+        .nav-link { 
+            display: flex; align-items: center; gap: 14px; color: rgba(255,255,255,0.6); 
+            text-decoration: none; padding: 16px 20px; border-radius: var(--radius-md); 
+            transition: 0.3s; margin-bottom: 8px; font-weight: 500;
+        }
+        .nav-link.active { background: rgba(255,255,255,0.12); color: white; }
+        .nav-link:hover:not(.active) { color: white; background: rgba(255,255,255,0.05); }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { margin-left: 280px; flex: 1; padding: 48px; }
+        
+        .header-box { margin-bottom: 40px; }
+        .header-box h1 { font-family: 'Lora', serif; color: var(--primary); font-size: 32px; }
+        .header-box p { color: var(--text-sub); margin-top: 5px; }
+
+        /* --- FORM & CARDS --- */
+        .premium-card {
+            background: var(--white); border-radius: var(--radius-lg); 
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            padding: 30px; margin-bottom: 32px;
+        }
+        .card-title {
+            font-family: 'Lora', serif; font-size: 18px; color: var(--primary);
+            margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
+        }
+
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        
+        input, select { 
+            padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); 
+            font-family: inherit; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); background: var(--primary-soft); }
+
+        .btn-premium {
+            background: var(--primary); color: white; border: none; padding: 14px 28px;
+            border-radius: var(--radius-md); font-weight: 700; cursor: pointer;
+            transition: 0.3s; align-self: flex-end; text-transform: uppercase; font-size: 12px;
+        }
+        .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(17,105,84,0.3); }
+
+        /* --- TABLE --- */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 16px; font-size: 11px; text-transform: uppercase; color: var(--text-sub); border-bottom: 2px solid var(--bg); }
+        td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        
+        .tag-service { background: var(--primary-soft); color: var(--primary); padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; }
+
+        /* --- ORDER ALLOCATION --- */
+        .orders-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+        .order-card {
+            background: var(--white); border-radius: var(--radius-md); padding: 20px;
+            border-left: 4px solid var(--accent); box-shadow: var(--shadow);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .order-info b { font-family: 'Lora', serif; font-size: 16px; color: var(--primary); }
+        .order-info p { font-size: 13px; color: var(--text-sub); margin: 4px 0; }
+
+        .assign-select { 
+            background: var(--bg); border: 1px solid var(--border); 
+            padding: 8px; border-radius: 8px; font-weight: 600; color: var(--primary);
+            cursor: pointer; transition: 0.2s;
+        }
+        .assign-select:hover { border-color: var(--accent); }
+
+        .logout-link { color: #ff7675 !important; border: 1px solid rgba(255,118,117,0.3); margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <h2>Chăm Sóc Vườn Nhà Admin</h2>
+        <nav style="display: flex; flex-direction: column; height: calc(100% - 100px);">
+            <a href="index_admin.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Tổng quan</a>
+            <a href="admin_orders.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Quản lý đơn hàng</a>
+            <a href="admin_suppliers.html" class="nav-link active"><i class="fa-solid fa-users"></i> Nhà cung cấp</a>
+            
+            <a href="javascript:void(0)" onclick="handleLogout()" class="nav-link logout-link">
+                <i class="fa-solid fa-power-off"></i> Đăng xuất
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="header-box">
+            <h1>Quản lý Đối tác & Nhà cung cấp</h1>
+            <p>Đăng ký và điều phối đơn vị thi công cho hệ thống KERI</p>
+        </div>
+
+        <div class="premium-card">
+            <div class="card-title"><i class="fa-solid fa-plus-circle"></i> Đăng ký nhà cung cấp mới</div>
+            <div class="grid-form">
+                <div class="form-group">
+                    <label>Tên đơn vị/Cá nhân</label>
+                    <input type="text" id="supName" placeholder="Tên đối tác...">
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="tel" id="supPhone" placeholder="SĐT liên hệ...">
+                </div>
+                <div class="form-group">
+                    <label>Chuyên môn chính</label>
+                    <select id="supService">
+                        <option value="Cắt cỏ & Dọn vườn">Cắt cỏ & Dọn vườn</option>
+                        <option value="Thiết kế cảnh quan">Thiết kế cảnh quan</option>
+                        <option value="Hệ thống tưới">Hệ thống tưới</option>
+                        <option value="Chăm sóc cây đặc biệt">Chăm sóc cây đặc biệt</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Khu vực hỗ trợ</label>
+                    <input type="text" id="supArea" placeholder="VD: Dĩ An, Bình Dương...">
+                </div>
+                <button class="btn-premium" onclick="addSupplier()">Thêm đối tác</button>
+            </div>
+        </div>
+
+        <div class="premium-card" style="padding: 20px;">
+            <div class="card-title"><i class="fa-solid fa-list-check"></i> Danh sách đối tác hiện tại</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Đối tác</th>
+                            <th>Dịch vụ</th>
+                            <th>Khu vực</th>
+                            <th>Liên hệ</th>
+                            <th style="text-align: center;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplierList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="header-box" style="margin-top: 50px; margin-bottom: 20px;">
+            <h2 style="font-family: 'Lora', serif; color: var(--primary);">Điều phối đơn hàng vừa đặt</h2>
+        </div>
+        <div class="orders-list" id="pendingOrders"></div>
+    </main>
+
+<script>
+// --- LOGIC ĐỒNG BỘ VỚI HỆ THỐNG KERI ---
+let suppliers = JSON.parse(localStorage.getItem('suppliers')) || [
+    {id: 1, name: "Cảnh Quan KERI", service: "Thiết kế cảnh quan", area: "Toàn quốc", phone: "0912345678"},
+    {id: 2, name: "Đội thi công Anh Bảy", service: "Cắt cỏ & Dọn vườn", area: "Bình Dương", phone: "0988776655"}
+];
+
+function renderSuppliers() {
+    const list = document.getElementById('supplierList');
+    list.innerHTML = suppliers.map(s => `
+        <tr>
+            <td><b style="color: var(--primary)">${s.name}</b></td>
+            <td><span class="tag-service">${s.service}</span></td>
+            <td><i class="fa-solid fa-location-dot" style="font-size:12px; color:var(--accent)"></i> ${s.area}</td>
+            <td>${s.phone}</td>
+            <td style="text-align: center;">
+                <button onclick="deleteSupplier(${s.id})" style="color:#ff7675; border:none; background:none; cursor:pointer; font-size:16px;">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+    localStorage.setItem('suppliers', JSON.stringify(suppliers));
+    renderPendingOrders(); 
+}
+
+function addSupplier() {
+    const name = document.getElementById('supName').value;
+    const phone = document.getElementById('supPhone').value;
+    const service = document.getElementById('supService').value;
+    const area = document.getElementById('supArea').value;
+
+    if(!name || !phone) return alert("Vui lòng nhập đủ thông tin đối tác!");
+    
+    suppliers.push({ id: Date.now(), name, phone, service, area });
+    renderSuppliers();
+    
+    // Clear form
+    document.getElementById('supName').value = '';
+    document.getElementById('supPhone').value = '';
+    document.getElementById('supArea').value = '';
+}
+
+function deleteSupplier(id) {
+    if(confirm("Bạn muốn xóa đối tác này?")) {
+        suppliers = suppliers.filter(s => s.id !== id);
+        renderSuppliers();
+    }
+}
+
+function renderPendingOrders() {
+    const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+    const container = document.getElementById('pendingOrders');
+
+    // 1. Lọc đơn hợp lệ & Chưa Hoàn Thành
+    const activeOrders = orders.filter(o => o.id && (o.phone || o.name) && o.status !== "Hoàn thành");
+
+    if(activeOrders.length === 0) {
+        container.innerHTML = "<p style='color: #a0aec0; grid-column: 1/-1; text-align:center; padding: 40px; background:white; border-radius:12px; border: 1px dashed #cbd5e0;'>Không có đơn hàng nào chờ điều phối.</p>";
+        return;
+    }
+
+    container.innerHTML = activeOrders.map((ord) => {
+        // 2. KHỚP KEY DỮ LIỆU ĐỂ TRÁNH LỖI UNDEFINED
+        const customer = ord.name || ord.customerName || ord.fullName || 'Khách chưa nhập tên';
+        const date = ord.timestamp || ord.date || ord.time || 'N/A';
+        const service = ord.services || ord.service || 'Dịch vụ vườn';
+
+        return `
+            <div class="order-card" style="${ord.assignedSupplier ? 'border-left-color: var(--primary)' : ''}">
+                <div class="order-info">
+                    <small style="color:var(--accent); font-weight:700;">#${ord.id}</small><br>
+                    <b>${customer}</b>
+                    <p><i class="fa-solid fa-leaf"></i> ${service}</p>
+                    <small style="font-size: 11px;"><i class="fa-regular fa-clock"></i> Ngày đặt: ${date}</small>
+                </div>
+                <div style="text-align: right;">
+                    <label style="font-size: 9px; font-weight:800; display:block; margin-bottom:5px; color:var(--text-sub);">GIAO VIỆC CHO:</label>
+                    <select class="assign-select" onchange="assignSupplier('${ord.id}', this.value)">
+                        <option value="">-- Chọn đối tác --</option>
+                        ${suppliers.map(s => `<option value="${s.name}" ${ord.assignedSupplier === s.name ? 'selected' : ''}>${s.name}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function assignSupplier(orderId, supplierName) {
+    let orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+    const idx = orders.findIndex(o => o.id === orderId);
+    
+    if (idx !== -1) {
+        orders[idx].assignedSupplier = supplierName;
+        
+        // Logic đồng bộ: Nếu chọn thợ -> Đã xác nhận. Nếu bỏ chọn thợ -> Chờ xử lý.
+        if (supplierName) {
+            orders[idx].status = "Đã xác nhận";
+            alert("Đã điều phối đơn cho: " + supplierName);
+        } else {
+            orders[idx].status = "Chờ xử lý";
+        }
+        
+        localStorage.setItem('allOrders', JSON.stringify(orders));
+        renderPendingOrders();
+    }
+}
+
+function handleLogout() {
+        if(confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị?")) {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('currentUser');
+            window.location.href = 'trangchu.html';
+        }
+    }
+
+document.addEventListener("DOMContentLoaded", renderSuppliers);
+</script>
+</body>
+</html>

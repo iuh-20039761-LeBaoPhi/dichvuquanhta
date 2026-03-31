@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổng quan Quản trị | Keri Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
+    <style>
+        :root {
+            --primary: #116954;
+            --primary-soft: #e8f3f0;
+            --accent: #c5a059;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text-main: #1a1c1e;
+            --text-sub: #636e72;
+            --radius-lg: 24px;
+            --radius-md: 12px;
+            --shadow: 0 10px 40px rgba(0,0,0,0.04);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Mulish', sans-serif; background: var(--bg); color: var(--text-main); display: flex; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { 
+            width: 280px; height: 100vh; background: var(--primary); 
+            color: white; padding: 40px 24px; position: fixed; 
+        }
+        
+        .sidebar h2 { 
+            font-family: 'Lora', serif; font-size: 24px; margin-bottom: 48px; 
+            text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;
+        }
+
+        .nav-link { 
+            display: flex; align-items: center; gap: 14px; color: rgba(255,255,255,0.6); 
+            text-decoration: none; padding: 16px 20px; border-radius: var(--radius-md); 
+            transition: 0.3s; margin-bottom: 8px; font-weight: 500;
+        }
+        .nav-link.active { background: rgba(255,255,255,0.12); color: white; }
+        .nav-link:hover:not(.active) { color: white; background: rgba(255,255,255,0.05); }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { margin-left: 280px; flex: 1; padding: 48px; }
+        
+        .header-box { margin-bottom: 40px; }
+        .header-box h1 { font-family: 'Lora', serif; color: var(--primary); font-size: 32px; }
+        .header-box p { color: var(--text-sub); margin-top: 5px; }
+
+        /* --- STAT CARDS --- */
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+        
+        .stat-card { 
+            background: var(--white); padding: 32px; border-radius: var(--radius-lg); 
+            box-shadow: var(--shadow); border: 1px solid #edf2f7; position: relative;
+            transition: 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        
+        .stat-card i { 
+            position: absolute; top: 32px; right: 32px; font-size: 24px; color: var(--primary-soft); 
+        }
+        
+        .stat-card h3 { font-size: 14px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+        .stat-card .value { font-size: 28px; font-weight: 800; color: var(--primary); font-family: 'Lora', serif; }
+
+        /* --- QUICK ACTIONS & WELCOME --- */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), #0a4d3d);
+            padding: 40px; border-radius: var(--radius-lg); color: white;
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px;
+        }
+        .welcome-text h2 { font-family: 'Lora', serif; font-size: 24px; margin-bottom: 10px; }
+        
+        .btn-action {
+            padding: 12px 24px; background: var(--accent); color: var(--text-main);
+            text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn-action:hover { background: #d4b375; transform: scale(1.05); }
+
+        .logout-link {
+            margin-top: auto; color: #ff7675 !important; border: 1px solid rgba(255,118,117,0.3);
+        }
+        .logout-link:hover { background: rgba(255,118,117,0.1) !important; }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <h2>Chăm Sóc Vườn Nhà Admin</h2>
+        <nav style="display: flex; flex-direction: column; height: calc(100% - 100px);">
+            <a href="index_admin.html" class="nav-link active"><i class="fa-solid fa-chart-line"></i> Tổng quan</a>
+            <a href="admin_orders.html" class="nav-link"><i class="fa-solid fa-receipt"></i> Quản lý đơn hàng</a>
+            <a href="admin_suppliers.html" class="nav-link"><i class="fa-solid fa-users"></i> Nhà cung cấp</a>
+
+            <a href="javascript:void(0)" onclick="handleLogout()" class="nav-link logout-link" style="margin-top: auto;">
+                <i class="fa-solid fa-power-off"></i> Đăng xuất
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="header-box">
+            <h1>Hệ thống Quản trị</h1>
+            <p id="current-date">Cập nhật dữ liệu thời gian thực</p>
+        </div>
+
+        <div class="welcome-banner">
+            <div class="welcome-text">
+                <h2>Chào mừng trở lại, Quản trị viên!</h2>
+                <p>Hôm nay bạn có một số đơn hàng mới cần phê duyệt và phản hồi khách hàng.</p>
+            </div>
+            <a href="admin_orders.html" class="btn-action">Xử lý đơn ngay</a>
+        </div>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <i class="fa-solid fa-shopping-bag"></i>
+                <h3>Đơn hàng mới</h3>
+                <div class="value" id="real-orders">0</div>
+            </div>
+
+            <div class="stat-card">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+                <h3>Doanh thu ước tính</h3>
+                <div class="value" id="real-revenue">0đ</div>
+            </div>
+
+            <div class="stat-card">
+                <i class="fa-solid fa-headset"></i>
+                <h3>Yêu cầu hỗ trợ</h3>
+                <div class="value" id="real-support">0</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    // 1. Hàm hiển thị ngày tháng hiện tại
+    function displayDate() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = "Hôm nay, " + now.toLocaleDateString('vi-VN', options);
+    }
+
+    // 2. Hàm tính toán dữ liệu thực tế từ localStorage
+    function updateStats() {
+        // Lấy danh sách đơn hàng thực tế
+        const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+        const supports = JSON.parse(localStorage.getItem('allSupport')) || [];
+
+        // Hiển thị số lượng đơn hàng
+        document.getElementById('real-orders').innerText = orders.length;
+
+        // --- TÍNH DOANH THU THỰC TẾ TỪ MỖI ĐƠN HÀNG ---
+        let totalRevenue = 0;
+        
+        orders.forEach(order => {
+            if (order.total) {
+                // Bước A: Chuyển đổi chuỗi "1.200.000 VNĐ" thành số 1200000
+                // Regex /\D/g sẽ xóa sạch mọi ký tự không phải là số
+                const priceValue = parseInt(order.total.replace(/\D/g, '')) || 0;
+                totalRevenue += priceValue;
+            }
+        });
+
+        // Hiển thị doanh thu đã tính toán
+        document.getElementById('real-revenue').innerText = totalRevenue.toLocaleString('vi-VN') + "đ";
+        // ----------------------------------------------
+
+        // Hiển thị số yêu cầu hỗ trợ
+        document.getElementById('real-support').innerText = supports.length;
+    }
+
+    // 3. Hàm Đăng xuất
+    function handleLogout() {
+        if(confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị?")) {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('currentUser');
+            window.location.href = 'trangchu.html';
+        }
+    }
+
+    // Khởi chạy khi load trang
+    window.onload = function() {
+        displayDate();
+        updateStats();
+    }
+</script>
+</body>
+</html>

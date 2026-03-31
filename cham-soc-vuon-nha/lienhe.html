@@ -355,96 +355,167 @@
 
 <script>
     /* ==========================================
-       1. KẾT NỐI HEADER & FOOTER
-       ========================================== */
-    fetch("header.html").then(res => res.text()).then(data => {
-      document.getElementById("header").innerHTML = data;
-      initHeaderMenu();
-    });
+   1. NẠP COMPONENT & LOGIC ĐĂNG NHẬP (HEADER/FOOTER)
+   ========================================== */
+const loadComponent = (id, file, callback) => {
+    fetch(file)
+        .then(r => r.ok ? r.text() : Promise.reject())
+        .then(html => {
+            document.getElementById(id).innerHTML = html;
+            if (callback) callback();
+        })
+        .catch(err => console.warn(`Lỗi nạp ${file}:`, err));
+};
 
-    fetch('footer.html').then(res => res.text()).then(data => {
-      document.getElementById('footer').innerHTML = data;
-    });
+function initHeader() {
+    const loginBtn = document.getElementById('loginBtn');
+    const loginMenu = document.getElementById('loginMenu');
+    const menuBtn = document.getElementById('menuBtn'); // Nút 3 gạch
+    const mobileMenu = document.getElementById('mobileMenu'); // Menu trượt
+    const overlay = document.getElementById('overlay'); // Lớp phủ
+    const currentUser = localStorage.getItem('currentUser');
 
-    function initHeaderMenu() {
-      const menuBtn = document.getElementById("menuBtn");
-      const mobileMenu = document.getElementById("mobileMenu");
-      const overlay = document.getElementById("overlay");
-      if (menuBtn && mobileMenu && overlay) {
-        menuBtn.onclick = function(e) {
-          e.stopPropagation();
-          mobileMenu.classList.toggle("show");
-          overlay.classList.toggle("show");
-          menuBtn.classList.toggle("active");
-          document.body.style.overflow = mobileMenu.classList.contains("show") ? "hidden" : "";
+    // 1. LOGIC XIN CHÀO (Cho cả Desktop & Mobile)
+    if (currentUser && loginBtn && loginMenu) {
+        loginBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> Xin chào, ${currentUser}`;
+        loginMenu.innerHTML = `
+            <a href="thongtin.html"><i class="fa-solid fa-address-card"></i> Hồ sơ cá nhân</a>
+            <a href="lichsu.html"><i class="fa-solid fa-calendar-check"></i> Lịch sử đặt lịch</a>
+            <hr style="border: 0; border-top: 1px solid #f1f1f1; margin: 8px 0;">
+            <a href="#" id="logoutBtn" style="color: #c0392b; font-weight: 600;">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        `;
+        document.getElementById("logoutBtn").onclick = (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.reload();
         };
-        overlay.onclick = function() {
-          mobileMenu.classList.remove("show");
-          overlay.classList.remove("show");
-          menuBtn.classList.remove("active");
-          document.body.style.overflow = "";
-        };
-      }
     }
 
-    /* ==========================================
-       2. LOGIC VALIDATE FORM
-       ========================================== */
-    function showError(input, message) {
-      let error = input.parentElement.querySelector('.keri-error');
-      if (!error) {
+    // 2. LOGIC CLICK TOÀN CỤC (Dùng Delegation cho sạch)
+    document.addEventListener('click', (e) => {
+        // A. Bấm nút Login/Xin chào
+        if (e.target.closest('#loginBtn')) {
+            e.preventDefault();
+            loginMenu.classList.toggle('active');
+            // Đóng mobile menu nếu đang mở để khỏi chồng nhau
+            if(mobileMenu) mobileMenu.classList.remove('active');
+            if(overlay) overlay.classList.remove('active');
+        } 
+        
+        // B. Bấm nút Menu Mobile (Nút 3 gạch)
+        else if (e.target.closest('#menuBtn')) {
+            e.preventDefault();
+            if(mobileMenu) mobileMenu.classList.toggle('active');
+            if(overlay) overlay.classList.toggle('active');
+            if(menuBtn) menuBtn.classList.toggle('active');
+        }
+
+        // C. Bấm vào Overlay hoặc bấm ra ngoài để đóng hết
+        else if (e.target.closest('#overlay') || !e.target.closest('.site-login-box')) {
+            if (loginMenu) loginMenu.classList.remove('active');
+            if (mobileMenu) mobileMenu.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            if (menuBtn) menuBtn.classList.remove('active');
+        }
+    });
+}
+
+
+// Thực thi nạp
+loadComponent("header", "header.html", initHeader);
+loadComponent("footer", "footer.html");
+
+/* ==========================================
+   2. LOGIC KIỂM TRA BIỂU MẪU (FORM VALIDATION)
+   ========================================== */
+function showError(input, message) {
+    let container = input.parentElement;
+    let error = container.querySelector('.keri-error');
+    if (!error) {
         error = document.createElement('div');
         error.className = 'keri-error';
-        input.parentElement.appendChild(error);
-      }
-      error.innerText = message;
-      error.style.display = 'block';
-      input.classList.add('keri-input-error');
+        container.appendChild(error);
+    }
+    error.innerText = message;
+    error.style.display = 'block';
+    input.classList.add('keri-input-error');
+}
+
+function clearError(input) {
+    const error = input.parentElement.querySelector('.keri-error');
+    if (error) error.style.display = 'none';
+    input.classList.remove('keri-input-error');
+}
+
+function validateInput(input) {
+    const value = input.value.trim();
+    const label = input.parentElement.querySelector('label')?.innerText || "";
+    
+    if (input.required && value === '') {
+        showError(input, 'Vui lòng điền thông tin này');
+        return false;
+    }
+    
+    if (input.type === 'email' && value !== "") {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            showError(input, 'Địa chỉ email không hợp lệ');
+            return false;
+        }
+    }
+    
+    if (label.includes('Số điện thoại') && value !== "") {
+        if (!/^(0[3|5|7|8|9])[0-9]{8}$/.test(value.replace(/\s/g, ""))) {
+            showError(input, 'Số điện thoại không đúng định dạng (10 số)');
+            return false;
+        }
     }
 
-    function clearError(input) {
-      const error = input.parentElement.querySelector('.keri-error');
-      if (error) error.style.display = 'none';
-      input.classList.remove('keri-input-error');
-    }
+    clearError(input);
+    return true;
+}
 
-    function validateInput(input) {
-      const value = input.value.trim();
-      if (input.placeholder && input.placeholder.includes('VD: Nguyễn')) {
-        if (value.length < 2) return showError(input, 'Tên phải từ 2 ký tự trở lên');
-      }
-      if (input.placeholder && input.placeholder.includes('090')) {
-        if (!/^0[0-9]{9}$/.test(value)) return showError(input, 'Số điện thoại không hợp lệ (10 số)');
-      }
-      if (input.type === 'email') {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return showError(input, 'Email không hợp lệ');
-      }
-      if (value === '' && input.required) return showError(input, 'Vui lòng nhập trường này');
+// Xử lý khi nhấn nút gửi
+function keriSubmitForm(e) {
+    e.preventDefault();
+    const form = e.target;
+    const inputs = form.querySelectorAll('input, textarea');
+    let isAllValid = true;
 
-      clearError(input);
-      return true;
-    }
-
-    function keriSubmitForm(e) {
-      e.preventDefault();
-      const inputs = document.querySelectorAll('.keri-contact-form input, .keri-contact-form textarea');
-      let valid = true;
-
-      inputs.forEach(input => {
-        if (input.required && !validateInput(input)) valid = false;
-      });
-
-      if (valid) {
-        alert('Cảm ơn bạn! Thông tin đã được gửi thành công. Chúng tôi sẽ liên hệ lại sớm nhất.');
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const inputs = document.querySelectorAll('.keri-contact-form input, .keri-contact-form textarea');
-      inputs.forEach(input => {
-        input.addEventListener('blur', () => validateInput(input));
-      });
+    inputs.forEach(input => {
+        if (!validateInput(input)) isAllValid = false;
     });
+
+    if (isAllValid) {
+        const btn = form.querySelector('.submit-btn');
+        const originalText = btn.innerHTML;
+        
+        // Hiệu ứng gửi giả lập
+        btn.innerHTML = 'Đang gửi... <i class="fa-solid fa-spinner fa-spin"></i>';
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.7';
+
+        setTimeout(() => {
+            alert('Cảm ơn bạn! Keri đã tiếp nhận yêu cầu khảo sát. Chúng tôi sẽ liên hệ lại qua số điện thoại bạn cung cấp trong vòng 24h.');
+            form.reset();
+            btn.innerHTML = originalText;
+            btn.style.pointerEvents = 'auto';
+            btn.style.opacity = '1';
+        }, 1500);
+    }
+}
+
+// Lắng nghe sự kiện gõ phím để xóa lỗi ngay lập tức
+document.addEventListener("DOMContentLoaded", () => {
+    const formInputs = document.querySelectorAll('.keri-contact-form input, .keri-contact-form textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('blur', () => validateInput(input));
+        input.addEventListener('input', () => {
+            if(input.classList.contains('keri-input-error')) validateInput(input);
+        });
+    });
+});
 </script>
 </body>
 </html>

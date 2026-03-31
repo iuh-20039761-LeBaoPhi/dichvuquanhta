@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Dịch Vụ | Keri Garden Service</title>
+    <link rel="icon" href="assets/images/logo2.jpg" type="image/jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #12372a;    /* Deep Forest Green */
+            --accent: #ad8b73;     /* Muted Wood */
+            --bg: #fbf9f1;         /* Silk White */
+            --white: #ffffff;
+            --text-dark: #2d2d2d;
+            --text-light: #717171;
+            --border: #e8e2d6;
+            --shadow: 0 15px 35px rgba(18, 55, 42, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-dark);
+            margin: 0; padding: 0;
+            background-image: url("https://www.transparenttextures.com/patterns/pinstriped-suit.png");
+        }
+
+        /* --- HEADER & FOOTER PLACEHOLDERS --- */
+        #header-container, #footer-container { width: 100%; }
+
+        .main-wrapper { padding: 60px 15px; min-height: 70vh; }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .page-title {
+            text-align: center; margin-bottom: 50px;
+        }
+        .page-title h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 42px; color: var(--primary); margin: 0;
+        }
+        .page-title .subtitle {
+            text-transform: uppercase; letter-spacing: 4px; font-size: 12px;
+            font-weight: 600; color: var(--accent); margin-top: 10px;
+        }
+
+        /* --- EMPTY STATE --- */
+        .empty-history {
+            background: var(--white); border-radius: 15px; padding: 80px 20px;
+            text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border);
+        }
+        .empty-history i { font-size: 50px; color: var(--border); margin-bottom: 20px; }
+
+        /* --- ORDER CARD --- */
+        .order-card {
+            background: var(--white); border-radius: 15px; margin-bottom: 25px;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            overflow: hidden; transition: var(--transition);
+        }
+        .order-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+        .card-top {
+            padding: 20px 30px; background: #fafafa;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .order-id { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 1px; }
+        
+        .status-badge {
+            font-size: 10px; font-weight: 800; padding: 6px 14px; border-radius: 50px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .status-pending { background: #fff8eb; color: #d4a017; } /* Chờ xử lý */
+        .status-confirmed { background: #edf7ed; color: #2e7d32; } /* Đã xác nhận/Phân thợ */
+        .status-done { background: #f3e5f5; color: #7b1fa2; }    /* Hoàn thành */
+
+        .card-content { padding: 30px; display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        
+        .service-info h3 { 
+            font-family: 'Cormorant Garamond', serif; font-size: 24px; 
+            margin: 0 0 10px 0; color: var(--primary); 
+        }
+        .info-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; color: var(--text-light); }
+        .info-row i { color: var(--accent); width: 16px; }
+
+        .vendor-box {
+            background: #fdfaf3; border: 1px dashed var(--accent);
+            border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 12px;
+        }
+        .vendor-box i { font-size: 20px; color: var(--primary); }
+        .vendor-name { font-size: 14px; font-weight: 700; color: var(--primary); }
+
+        .card-price {
+            text-align: right; display: flex; flex-direction: column; justify-content: center;
+        }
+        .price-label { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; }
+        .price-value { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .card-content { grid-template-columns: 1fr; }
+            .card-price { text-align: left; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="header-container"></div>
+
+<div class="main-wrapper">
+    <div class="container">
+        <div class="page-title">
+            <div class="subtitle">Keri Premium Experience</div>
+            <h1>Lịch Sử Đặt Lịch</h1>
+        </div>
+
+        <div id="historyList">
+            </div>
+    </div>
+</div>
+
+<div id="footer-container"></div>
+
+<script>
+    // Hàm load linh kiện (Header/Footer)
+    const loadComp = (id, file) => {
+        fetch(file).then(res => res.text()).then(data => {
+            document.getElementById(id).innerHTML = data;
+        });
+    };
+
+    function renderHistory() {
+        const container = document.getElementById('historyList');
+        const currentUser = localStorage.getItem('currentUser'); // Lấy tên người đăng nhập
+        
+        // Lấy từ key 'allOrders' (Khớp với trang đặt và admin)
+        const allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+
+        // Lọc đơn hàng của khách hiện tại (Khớp theo tên khách hàng)
+        const myOrders = allOrders.filter(order => 
+            (order.customer === currentUser) || (order.name === currentUser)
+        );
+
+        if (myOrders.length === 0) {
+            container.innerHTML = `
+                <div class="empty-history">
+                    <i class="fa-solid fa-leaf"></i>
+                    <p style="font-weight: 500; color: var(--text-light)">Bạn chưa có yêu cầu chăm sóc nào.</p>
+                    <a href="datlich.html" style="color: var(--accent); font-weight: 700; text-decoration: none;">ĐẶT LỊCH NGAY →</a>
+                </div>`;
+            return;
+        }
+
+        // Hiển thị từ mới nhất đến cũ nhất
+        container.innerHTML = [...myOrders].reverse().map(order => {
+            // Xác định class CSS cho trạng thái
+            let statusClass = 'status-pending';
+            let statusText = order.status || 'Chờ xử lý';
+            
+            if (statusText === 'Đã xác nhận' || order.assignedSupplier) statusClass = 'status-confirmed';
+            if (statusText === 'Hoàn thành') statusClass = 'status-done';
+
+            return `
+                <div class="order-card">
+                    <div class="card-top">
+                        <span class="order-id">MÃ ĐƠN: #${order.id}</span>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="service-info">
+                            <h3>${order.service || order.services || 'Dịch vụ sân vườn'}</h3>
+                            
+                            <div class="info-row">
+                                <i class="fa-solid fa-calendar-day"></i>
+                                <span>Ngày đặt: ${order.dateCreated || order.timestamp || 'N/A'}</span>
+                            </div>
+                            
+                            <div class="info-row" style="margin-bottom: 20px;">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>${order.address || 'Địa chỉ đã cung cấp'}</span>
+                            </div>
+
+                            <div class="vendor-box">
+                                <i class="fa-solid fa-user-gear"></i>
+                                <div>
+                                    <div style="font-size: 10px; color: var(--accent); font-weight: 700; text-transform: uppercase;">Đối tác thực hiện</div>
+                                    <div class="vendor-name">${order.assignedSupplier || 'Đang điều phối nhân sự...'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-price">
+                            <span class="price-label">Tổng chi phí</span>
+                            <span class="price-value">${order.total || '0 VNĐ'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadComp("header-container", "header.html");
+        loadComp("footer-container", "footer.html");
+        renderHistory();
+    });
+
+    // Tự động cập nhật nếu admin thao tác ở tab khác
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'allOrders') renderHistory();
+    });
+</script>
+
+</body>
+</html>

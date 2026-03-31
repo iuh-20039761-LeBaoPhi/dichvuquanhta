@@ -2,6 +2,50 @@
 <html lang="vi">
 <head>
     <script src="/ga.js"></script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "LocalBusiness",
+   "@id": "https://dichvuquanhta.vn/#business",
+   "name": "Dịch Vụ Quanh Ta",
+   "url": "https://dichvuquanhta.vn",
+   "telephone": "0775472347"
+  },
+  {
+   "@type": "Service",
+   "name": "Chăm sóc vườn nhà",
+   "url": "https://dichvuquanhta.vn/cham-soc-vuon-nha/",
+   "description": "Dịch vụ chăm sóc vườn nhà chuyên nghiệp tại TP.HCM",
+   "areaServed": {
+     "@type": "Place",
+     "name": "TP.HCM"
+   },
+   "provider": {
+     "@id": "https://dichvuquanhta.vn/#business"
+   }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+     {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Trang chủ",
+       "item": "https://dichvuquanhta.vn"
+     },
+     {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Chăm sóc vườn nhà",
+       "item": "https://dichvuquanhta.vn/cham-soc-vuon-nha/"
+     }
+   ]
+  }
+ ]
+}
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dịch vụ quanh ta | Chăm Sóc Vườn Nhà</title>
@@ -345,36 +389,94 @@
 
     <div id="footer"></div>
 
-    <script>
-        const loadComp = (id, file, callback) => {
-            fetch(file).then(res => res.text()).then(data => {
+  <script>
+    // 1. Hàm nạp Header/Footer và thực thi logic sau khi nạp xong
+    const loadComp = (id, file, callback) => {
+        fetch(file)
+            .then(res => res.ok ? res.text() : Promise.reject())
+            .then(data => {
                 document.getElementById(id).innerHTML = data;
-                if(callback) callback();
-            });
-        };
-        loadComp("header", "header.html", initHeaderMenu);
-        loadComp("footer", "footer.html");
+                if (callback) callback(); // Chạy logic sau khi HTML đã nạp vào DOM
+            })
+            .catch(err => console.error("Lỗi nạp file:", file));
+    };
 
-        function initHeaderMenu() {
-            const menuBtn = document.getElementById("menuBtn");
-            const mobileMenu = document.getElementById("mobileMenu");
-            const overlay = document.getElementById("overlay");
-            if (menuBtn && mobileMenu && overlay) {
-                menuBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    mobileMenu.classList.toggle("show");
-                    overlay.classList.toggle("show");
-                    menuBtn.classList.toggle("active");
-                    document.body.style.overflow = mobileMenu.classList.contains("show") ? "hidden" : "";
-                };
-                overlay.onclick = () => {
-                    mobileMenu.classList.remove("show");
-                    overlay.classList.remove("show");
-                    menuBtn.classList.remove("active");
-                    document.body.style.overflow = "";
-                };
+    // 2. LOGIC TỔNG HỢP (Chạy sau khi Header nạp xong)
+    function initHeaderLogic() {
+        const loginBtn = document.getElementById("loginBtn");
+        const loginMenu = document.getElementById("loginMenu");
+        const currentUser = localStorage.getItem('currentUser');
+
+        // --- KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP ---
+        if (currentUser && loginBtn && loginMenu) {
+            // Đổi chữ "Đăng nhập" thành "Xin chào"
+            loginBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> Xin chào, ${currentUser}`;
+            
+            // Cập nhật menu dropdown cho người dùng đã đăng nhập
+              loginMenu.innerHTML = `
+            <div class="user-greeting"></div>
+            <a href="thongtin.html"><i class="fa-solid fa-address-card"></i> Hồ sơ cá nhân</a>
+            <a href="lichsu.html"><i class="fa-solid fa-calendar-check"></i> Lịch sử đặt lịch</a>
+            <hr style="border: 0; border-top: 1px solid #f1f1f1; margin: 8px 0;">
+            <a href="#" id="logoutBtn" style="color: #c0392b; font-weight: 600;">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        `;
+
+            // Gắn sự kiện đăng xuất
+            document.getElementById("logoutBtn").addEventListener("click", function(e) {
+                e.preventDefault();
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('userRole');
+                window.location.reload();
+            });
+        }
+
+        // --- HIỆU ỨNG CUỘN (SCROLL) ---
+        window.addEventListener("scroll", function() {
+            const header = document.querySelector(".site-header");
+            if (header) {
+                header.classList.toggle("scrolled", window.scrollY > 50);
+            }
+        });
+    }
+
+    // 3. XỬ LÝ SỰ KIỆN CLICK (Event Delegation)
+    document.addEventListener("click", function (e) {
+        const loginMenu = document.getElementById("loginMenu");
+        const mobileMenu = document.getElementById("mobileMenu");
+        const overlay = document.getElementById("overlay");
+
+        // Click vào nút Đăng nhập / Xin chào
+        if (e.target.closest("#loginBtn")) {
+            e.preventDefault();
+            if (loginMenu) loginMenu.classList.toggle("active");
+        }
+
+        // Click vào nút Menu Mobile
+        if (e.target.closest("#menuBtn")) {
+            if (mobileMenu && overlay) {
+                mobileMenu.classList.add("active");
+                overlay.classList.add("active");
             }
         }
-    </script>
+
+        // Click vào Overlay hoặc ra ngoài để đóng
+        if (e.target.closest("#overlay")) {
+            if (loginMenu) loginMenu.classList.remove("active");
+            if (mobileMenu) mobileMenu.classList.remove("active");
+            if (overlay) overlay.classList.remove("active");
+        }
+
+        // Tự đóng loginMenu khi click ra ngoài vùng đó
+        if (loginMenu && !loginMenu.contains(e.target) && !e.target.closest("#loginBtn")) {
+            loginMenu.classList.remove("active");
+        }
+    });
+
+    // Gọi nạp Header và truyền logic vào callback
+    loadComp("header", "header.html", initHeaderLogic);
+    loadComp("footer", "footer.html");
+</script>
 </body>
 </html>
