@@ -774,13 +774,33 @@ function initBookingModal() {
       return;
     }
 
+    const normalizeLabel = (text) =>
+      String(text || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+
+    const lockAllOptions = name === "congviec";
+    const mandatoryValue =
+      name === "congviec"
+        ? "giat"
+        : name === "hoachathotro"
+          ? "bot giat"
+          : "";
+
     let html = "";
     items.forEach((item, index) => {
       const value = String(item);
       const inputId = `${name}${index}`;
+      const isMandatory =
+        lockAllOptions ||
+        (mandatoryValue && normalizeLabel(value) === mandatoryValue);
+      const checkedAttr = isMandatory ? "checked" : "";
+      const mandatoryAttr = isMandatory ? 'data-mandatory="true"' : "";
       html += `
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="${inputId}" name="${name}" value="${value}" checked>
+          <input class="form-check-input" type="checkbox" id="${inputId}" name="${name}" value="${value}" ${checkedAttr} ${mandatoryAttr}>
           <label class="form-check-label" for="${inputId}">${value}</label>
         </div>
       `;
@@ -1011,17 +1031,12 @@ function initBookingModal() {
 
     const totalWeight =
       Number.isFinite(quantity) && quantity > 0 ? quantity : 0;
-    const selectedWorkItemCount = bookingForm
-      ? bookingForm.querySelectorAll('input[name="congviec"]:checked').length
-      : 0;
-    const workItemMultiplier =
-      selectedWorkItemCount > 0 ? selectedWorkItemCount : 1;
 
     const isKgUnit = kgBox.style.display === "block";
     const baseServiceAmount = isKgUnit
       ? price + Math.max(0, totalWeight - 1) * 10000
       : price * totalWeight;
-    const serviceAmount = baseServiceAmount * workItemMultiplier;
+    const serviceAmount = baseServiceAmount;
 
     priceInput.value = Math.round(serviceAmount).toLocaleString("vi-VN");
     const distanceKm =
@@ -1063,7 +1078,27 @@ function initBookingModal() {
     workItemsList.dataset.priceSyncBound = "true";
     workItemsList.addEventListener("change", function (event) {
       if (event.target && event.target.name === "congviec") {
+        if (
+          event.target.dataset.mandatory === "true" &&
+          event.target.checked === false
+        ) {
+          event.target.checked = true;
+        }
         calculate();
+      }
+    });
+  }
+
+  if (chemicalsList && !chemicalsList.dataset.lockMandatoryBound) {
+    chemicalsList.dataset.lockMandatoryBound = "true";
+    chemicalsList.addEventListener("change", function (event) {
+      if (
+        event.target &&
+        event.target.name === "hoachathotro" &&
+        event.target.dataset.mandatory === "true" &&
+        event.target.checked === false
+      ) {
+        event.target.checked = true;
       }
     });
   }

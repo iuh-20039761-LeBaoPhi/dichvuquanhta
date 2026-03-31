@@ -15,9 +15,8 @@
       "work_items": ["Giặt", "Sấy", "Ủi"],
       "support_chemicals": ["Bột giặt", "Nước xả"],
       "transport_options": [
-        { "name": "Đến nhận hàng", "price": 10000 },
-        { "name": "Giao hàng", "price": 10000 },
-        { "name": "Tự lấy", "price": 0 }
+        { "name": "Nhận và giao tận nơi", "price": 10000 },
+        { "name": "Khách tự chủ động", "price": 0 }
       ]
     },
     {
@@ -30,9 +29,8 @@
       "work_items": ["Giặt", "Sấy", "Ủi"],
       "support_chemicals": ["Bột giặt", "Nước xả"],
       "transport_options": [
-        { "name": "Đến nhận hàng", "price": 10000 },
-        { "name": "Giao hàng", "price": 10000 },
-        { "name": "Tự lấy", "price": 0 }
+        { "name": "Nhận và giao tận nơi", "price": 10000 },
+        { "name": "Khách tự chủ động", "price": 0 }
       ]
     },
     {
@@ -45,9 +43,8 @@
       "work_items": ["Giặt", "Sấy", "Ủi"],
       "support_chemicals": ["Bột giặt", "Nước xả"],
       "transport_options": [
-        { "name": "Đến nhận hàng", "price": 10000 },
-        { "name": "Giao hàng", "price": 10000 },
-        { "name": "Tự lấy", "price": 0 }
+        { "name": "Nhận và giao tận nơi", "price": 10000 },
+        { "name": "Khách tự chủ động", "price": 0 }
       ]
     }
   ]
