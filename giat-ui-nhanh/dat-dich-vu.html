@@ -516,7 +516,7 @@
                       src="public/asset/image/logo-dich-vu-quanh-ta.png"
                       alt="Logo dịch vụ quanh ta"
                     />
-                    <h4 class="modal-title">Đặt dịch vụ</h4>
+                    <h4 class="modal-title">Đặt Giặt Ủi Nhanh</h4>
                     <img src="public/asset/image/logo-giat-ui-nhanh.png" alt="Logo giặt ủi nhanh" />
                   </div>
                   <button
@@ -597,10 +597,13 @@
 
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Hình thức nhận / giao</label>
-                        <select id="hinhthucnhangiao" name="hinhthucnhangiao">
-                          <option value="">Chọn hình thức nhận / giao</option>
-                        </select>
+                        <label for="thoigiandatdichvu">Thời gian đặt dịch vụ *</label>
+                        <input
+                          type="datetime-local"
+                          id="thoigiandatdichvu"
+                          name="thoigiandatdichvu"
+                          required
+                        />
                       </div>
                     </div>
                   </div>
@@ -652,23 +655,12 @@
                     </div>
                   </div>
 
+                  
                   <div class="form-group">
-                    <label for="ghichu">Ghi chú</label>
-                    <textarea
-                      id="ghichu"
-                      name="ghichu"
-                      placeholder="Nội dung yêu cầu..."
-                    ></textarea>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="thoigiandatdichvu">Thời gian đặt dịch vụ *</label>
-                    <input
-                      type="datetime-local"
-                      id="thoigiandatdichvu"
-                      name="thoigiandatdichvu"
-                      required
-                    />
+                    <label>Hình thức nhận / giao</label>
+                    <select id="hinhthucnhangiao" name="hinhthucnhangiao">
+                      <option value="">Chọn hình thức nhận / giao</option>
+                    </select>
                   </div>
 
                   <div class="form-group">
@@ -687,6 +679,15 @@
                       value="0"
                       readonly
                     />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="ghichu">Ghi chú</label>
+                    <textarea
+                      id="ghichu"
+                      name="ghichu"
+                      placeholder="Nội dung yêu cầu..."
+                    ></textarea>
                   </div>
 
                   <div class="form-group">
