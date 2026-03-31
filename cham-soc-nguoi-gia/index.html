@@ -113,6 +113,50 @@ body {
 }
 </style>
 <script src="/ga.js"></script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "LocalBusiness",
+   "@id": "https://dichvuquanhta.vn/#business",
+   "name": "Dịch Vụ Quanh Ta",
+   "url": "https://dichvuquanhta.vn",
+   "telephone": "0775472347"
+  },
+  {
+   "@type": "Service",
+   "name": "Chăm sóc người già",
+   "url": "https://dichvuquanhta.vn/cham-soc-nguoi-gia/",
+   "description": "Dịch vụ chăm sóc người già tại nhà, hỗ trợ sinh hoạt và theo dõi sức khỏe",
+   "areaServed": {
+     "@type": "Place",
+     "name": "TP.HCM"
+   },
+   "provider": {
+     "@id": "https://dichvuquanhta.vn/#business"
+   }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+     {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Trang chủ",
+       "item": "https://dichvuquanhta.vn"
+     },
+     {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Chăm sóc người già",
+       "item": "https://dichvuquanhta.vn/cham-soc-nguoi-gia/"
+     }
+   ]
+  }
+ ]
+}
+</script>
   </head>
   <body data-nav-active="home" data-nav-active-style="large">
 
@@ -155,7 +199,7 @@ body {
                   this.style.backgroundColor = '#2e7d32';
                   this.style.transform = 'scale(1)';
                 "
-                onclick="window.location.href = 'html/lien-he.html'"
+                onclick="window.location.href = 'lien-he.html'"
               >
                  📞 Liên Hệ Tư Vấn Ngay
               </button>
@@ -321,7 +365,7 @@ body {
           <div class="mt-4">
             <button
               class="btn btn-light btn-lg px-5 rounded-pill shadow fw-bold"
-              onclick="window.location.href = 'html/lien-he.html'"
+              onclick="window.location.href = 'lien-he.html'"
             >
               📞 Liên Hệ Tư Vấn Ngay
             </button>

@@ -49,7 +49,52 @@
       .hero-section img { width: 100% !important; max-width: 340px; height: auto !important; }
     }
     </style>
+    
 <script src="/ga.js"></script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "LocalBusiness",
+   "@id": "https://dichvuquanhta.vn/#business",
+   "name": "Dịch Vụ Quanh Ta",
+   "url": "https://dichvuquanhta.vn",
+   "telephone": "0775472347"
+  },
+  {
+   "@type": "Service",
+   "name": "Chăm sóc người bệnh",
+   "url": "https://dichvuquanhta.vn/cham-soc-nguoi-benh/",
+   "description": "Dịch vụ chăm sóc người bệnh tại nhà, tận tâm và chuyên nghiệp tại TP.HCM",
+   "areaServed": {
+     "@type": "Place",
+     "name": "TP.HCM"
+   },
+   "provider": {
+     "@id": "https://dichvuquanhta.vn/#business"
+   }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+     {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Trang chủ",
+       "item": "https://dichvuquanhta.vn"
+     },
+     {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Chăm sóc người bệnh",
+       "item": "https://dichvuquanhta.vn/cham-soc-nguoi-benh/"
+     }
+   ]
+  }
+ ]
+}
+</script>
   </head>
   <body data-nav-active="home" data-nav-active-style="large">
     <div style="font-family: &quot;Quicksand&quot;, sans-serif">
@@ -71,7 +116,7 @@
                 style="background-color: #007bff; transition: 0.3s;"
                 onmouseover="this.style.backgroundColor = '#d84374'; this.style.transform = 'scale(1.05)';"
                 onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)';"
-                onclick="window.location.href = 'html/lien-he.html'">
+                onclick="window.location.href = 'lien-he.html'">
                 📞 Liên Hệ Tư Vấn Ngay
               </button>
             </div>
@@ -222,7 +267,7 @@
           <div class="mt-4">
             <button
               class="btn btn-light btn-lg px-5 rounded-pill shadow fw-bold"
-              onclick="window.location.href = 'html/lien-he.html'"
+              onclick="window.location.href = 'lien-he.html'"
             >
               📞 Liên Hệ Tư Vấn Ngay
             </button>
