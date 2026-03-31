@@ -22,6 +22,10 @@
       rel="stylesheet"
     />
     <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
@@ -119,6 +123,51 @@
         backdrop-filter: blur(6px);
         background: rgba(0, 0, 0, 0.6);
       }
+
+      .footer-services-toggle {
+        /* width: 100%; */
+        border: 0;
+        background: transparent;
+        color: inherit;
+        padding: 0;
+        margin-bottom: 0.5rem;
+        /* display: flex; */
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      .footer-services-toggle:focus-visible {
+        outline: 2px solid #0d6efd;
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+
+      .footer-services-arrow {
+        display: inline-flex;
+        font-size: 0.7rem;
+        transition: transform 0.25s ease;
+      }
+
+      .footer-services-toggle[aria-expanded="true"] .footer-services-arrow {
+        transform: rotate(180deg);
+      }
+
+      .footer-services-list {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.35s ease,
+          opacity 0.25s ease;
+      }
+
+      .footer-services-list.is-open {
+        max-height: 520px;
+        opacity: 1;
+      }
+
       /* ===== Mobile ===== */
       @media (max-width: 768px) {
         .welcome-modal {
@@ -599,7 +648,7 @@
                   class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
                 >
                   <a
-                    href="giao-hang-nhanh/"
+                    href="giao-hang-nhanh/dich-vu-giao-hang.html"
                     class="text-decoration-none fw-bold d-flex align-items-center gap-2"
                     style="color: #0a2a66"
                   >
@@ -657,7 +706,7 @@
                   class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
                 >
                   <a
-                    href="dich-vu-chuyen-don/"
+                    href="dich-vu-chuyen-don/dich-vu-chuyen-don.html"
                     class="text-decoration-none fw-bold d-flex align-items-center gap-2"
                     style="color: #1b4332"
                   >
@@ -1147,13 +1196,13 @@
             </p>
             <div class="d-flex gap-2">
               <a href="#" class="social-btn"
-                ><i data-lucide="facebook" style="width: 20px"></i
+                ><i class="fa-brands fa-facebook-f" style="font-size: 20px"></i
               ></a>
               <a href="#" class="social-btn"
-                ><i data-lucide="instagram" style="width: 20px"></i
+                ><i class="fa-brands fa-instagram" style="font-size: 20px"></i
               ></a>
               <a href="#" class="social-btn"
-                ><i data-lucide="twitter" style="width: 20px"></i
+                ><i class="fa-brands fa-twitter" style="font-size: 20px"></i
               ></a>
             </div>
             <h5 class="h6 my-3">Tải Ứng Dụng</h5>
@@ -1200,8 +1249,22 @@
           </div>
 
           <div class="col-md-6 col-lg-3">
-            <h5 class="h6">Dịch Vụ</h5>
-            <ul class="list-unstyled small">
+            <button
+              type="button"
+              class="footer-services-toggle h6"
+              id="footerServicesToggle"
+              aria-expanded="false"
+              aria-controls="footerServicesList"
+            >
+              <span>Dịch Vụ</span>
+              <span class="footer-services-arrow" aria-hidden="true"
+                >&#9662;</span
+              >
+            </button>
+            <ul
+              class="list-unstyled small footer-services-list"
+              id="footerServicesList"
+            >
               <li>
                 <a href="cham-soc-me-va-be/dich-vu-cham-soc-me-be.html"
                   >Chăm Sóc Mẹ & Bé</a
@@ -1218,9 +1281,7 @@
                 >
               </li>
               <li>
-                <a href="dich-vu-don-ve-sinh/demo/services.html"
-                  >Dịch vụ Vệ Sinh</a
-                >
+                <a href="dich-vu-don-ve-sinh/dich-vu.html">Dịch vụ Vệ Sinh</a>
               </li>
               <li>
                 <a href="cham-soc-vuon-nha/dichvu.html">Chăm Sóc Vườn Nhà</a>
@@ -1229,10 +1290,14 @@
                 <a href="giat-ui-nhanh/dich-vu.html">Giặt Ủi Nhanh</a>
               </li>
               <li>
-                <a href="giao-hang-nhanh/">Giao Hàng Nhanh</a>
+                <a href="giao-hang-nhanh/dich-vu-giao-hang.html"
+                  >Giao Hàng Nhanh</a
+                >
               </li>
               <li>
-                <a href="dich-vu-chuyen-don/">Dịch Vụ Chuyển Dọn</a>
+                <a href="dich-vu-chuyen-don/dich-vu-chuyen-don.html"
+                  >Dịch Vụ Chuyển Dọn</a
+                >
               </li>
               <li>
                 <a href="thue-xe/views/pages/public/dich-vu.html">Thuê Xe</a>
@@ -1313,6 +1378,35 @@
           // }, 6000);
         }, 300);
       });
+
+      (function () {
+        const toggleButton = document.getElementById("footerServicesToggle");
+        const servicesList = document.getElementById("footerServicesList");
+
+        if (!toggleButton || !servicesList) {
+          return;
+        }
+
+        const setExpandedState = function (isExpanded) {
+          toggleButton.setAttribute("aria-expanded", String(isExpanded));
+          servicesList.classList.toggle("is-open", isExpanded);
+        };
+
+        setExpandedState(false);
+
+        toggleButton.addEventListener("click", function () {
+          const isExpanded =
+            toggleButton.getAttribute("aria-expanded") === "true";
+          setExpandedState(!isExpanded);
+        });
+
+        toggleButton.addEventListener("keydown", function (event) {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggleButton.click();
+          }
+        });
+      })();
     </script>
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

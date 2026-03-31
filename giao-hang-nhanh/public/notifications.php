@@ -51,7 +51,7 @@ if ($page < 1) $page = 1;
 
 // Đếm tổng số sử dụng Prepared Statement
 $total_records = 0;
-$stmt_count = $conn->prepare("SELECT COUNT(*) as total FROM notifications WHERE user_id = ?");
+$stmt_count = $conn->prepare("SELECT COUNT(*) as total FROM thong_bao WHERE nguoi_dung_id = ?");
 if ($stmt_count) {
     $stmt_count->bind_param("i", $user_id);
     $stmt_count->execute();
@@ -65,7 +65,7 @@ $total_pages = ceil($total_records / $limit);
 
 // Lấy danh sách
 $notifications = [];
-$stmt = $conn->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?");
+$stmt = $conn->prepare("SELECT id, noi_dung AS message, duong_dan AS link, da_doc AS is_read, tao_luc AS created_at FROM thong_bao WHERE nguoi_dung_id = ? ORDER BY tao_luc DESC LIMIT ? OFFSET ?");
 if ($stmt) {
     $stmt->bind_param("iii", $user_id, $limit, $offset);
     $stmt->execute();
@@ -79,7 +79,7 @@ if ($stmt) {
 }
 
 // Đánh dấu tất cả là đã đọc
-$stmt_read = $conn->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0");
+$stmt_read = $conn->prepare("UPDATE thong_bao SET da_doc = 1 WHERE nguoi_dung_id = ? AND da_doc = 0");
 if ($stmt_read) {
     $stmt_read->bind_param("i", $user_id);
     $stmt_read->execute();

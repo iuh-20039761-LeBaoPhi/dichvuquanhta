@@ -109,9 +109,23 @@
     });
   }
 
+  function normalizeServiceType(value) {
+    const normalized = String(value || "").toLowerCase();
+    const map = {
+      giao_ngay_lap_tuc: "instant",
+      giao_hoa_toc: "express",
+      giao_nhanh: "fast",
+      giao_tieu_chuan: "standard",
+      so_luong_lon: "bulk",
+      quoc_te_tiet_kiem: "intl_economy",
+      quoc_te_hoa_toc: "intl_express",
+    };
+    return map[normalized] || normalized;
+  }
+
   function getServiceLabel(serviceType, fallbackLabel) {
     if (fallbackLabel) return fallbackLabel;
-    const normalized = String(serviceType || "").toLowerCase();
+    const normalized = normalizeServiceType(serviceType);
     if (normalized === "instant") return "Giao ngay lập tức";
     if (normalized === "express") return "Giao hàng hỏa tốc";
     if (normalized === "fast") return "Giao hàng nhanh";
@@ -512,6 +526,74 @@
     return `<span class="customer-status-badge status-${escapeHtml(status || "")}">${escapeHtml(label || status || "--")}</span>`;
   }
 
+  function isOrderCancelable(order) {
+    if (!order) return false;
+    if (typeof order.can_cancel === "boolean") return order.can_cancel;
+    return String(order.status || "").toLowerCase() === "pending";
+  }
+
+  function renderCancelButton(order, compact = false) {
+    if (!isOrderCancelable(order)) return "";
+    return `
+      <button
+        type="button"
+        class="customer-btn customer-btn-danger ${compact ? "customer-btn-sm" : ""}"
+        data-cancel-order-id="${escapeHtml(order.id)}"
+        data-cancel-order-code="${escapeHtml(order.order_code || "")}"
+      >
+        Hủy đơn
+      </button>
+    `;
+  }
+
+  async function requestCancelOrder(orderId, orderCode) {
+    const confirmCancel = window.confirm(
+      `Bạn có chắc muốn hủy đơn ${orderCode || `#${orderId}`} không?`,
+    );
+    if (!confirmCancel) return false;
+
+    const reason =
+      window.prompt(
+        "Nhập lý do hủy đơn (có thể để trống nếu không cần):",
+        "Khách hàng chủ động hủy đơn.",
+      ) || "";
+
+    const formData = new FormData();
+    formData.append("order_id", orderId);
+    if (reason.trim()) {
+      formData.append("reason", reason.trim());
+    }
+
+    await apiRequest("cancel-order", {
+      method: "POST",
+      body: formData,
+    });
+
+    showToast("Đã hủy đơn hàng thành công.", "success");
+    return true;
+  }
+
+  function bindCancelButtons(root = document) {
+    root.querySelectorAll("[data-cancel-order-id]").forEach((button) => {
+      if (button.dataset.cancelBound === "1") return;
+      button.dataset.cancelBound = "1";
+      button.addEventListener("click", async () => {
+        const orderId = button.dataset.cancelOrderId;
+        const orderCode = button.dataset.cancelOrderCode || "";
+        try {
+          const cancelled = await requestCancelOrder(orderId, orderCode);
+          if (cancelled) {
+            window.setTimeout(() => {
+              window.location.reload();
+            }, 600);
+          }
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      });
+    });
+  }
+
   function buildPagination(currentPage, totalPages) {
     if (!totalPages || totalPages <= 1) return "";
     const buttons = [];
@@ -787,6 +869,7 @@
 
   function renderServiceMeta(order) {
     const meta = order.service_meta || {};
+    const normalizedServiceType = normalizeServiceType(order.service_type);
     return renderInfoList([
       { label: "Gói dịch vụ", value: meta.service_name || order.service_label || "--" },
       { label: "ETA dự kiến", value: meta.estimated_eta || "--" },
@@ -800,7 +883,7 @@
         label: "Điều kiện tính giá khi đặt lịch",
         value:
           meta.service_condition_label ||
-          (order.service_type === "instant" ? "Bình thường" : "Không áp dụng"),
+          (normalizedServiceType === "instant" ? "Bình thường" : "Không áp dụng"),
       },
       { label: "Khoảng cách tuyến", value: meta.distance_label || "--" },
       { label: "Người trả cước", value: meta.payer_label || order.payer_label || "--" },
@@ -947,6 +1030,7 @@
                     <span><b>Thời gian</b>${formatDateTime(order.created_at)}</span>
                   </div>
                   <div class="customer-order-actions customer-order-actions-compact">
+                    ${renderCancelButton(order, true)}
                     <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?id=${order.id}">Xem chi tiết</a>
                   </div>
                 </article>`,
@@ -970,6 +1054,8 @@
         </aside>
       </section>
     `;
+
+    bindCancelButtons(content);
   }
 
   async function initOrders() {
@@ -1001,7 +1087,9 @@
     if (filters.date_to) activeFilters.push(`Đến ngày: ${filters.date_to}`);
     const currentPage = Number(pagination.page || 1);
     const totalPages = Number(pagination.total_pages || 1);
-    const totalResults = Number(pagination.total || items.length || 0);
+    const totalResults = Number(
+      pagination.total_records || pagination.total || items.length || 0,
+    );
 
     content.innerHTML = `
       <section class="customer-panel customer-orders-panel">
@@ -1074,6 +1162,7 @@
                   <span><b>Tạo lúc</b>${formatDateTime(order.created_at)}</span>
                 </div>
                 <div class="customer-order-actions customer-order-actions-compact">
+                  ${renderCancelButton(order, true)}
                   <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?id=${order.id}">Xem chi tiết</a>
                 </div>
               </article>`,
@@ -1106,6 +1195,8 @@
         window.location.href = url.toString();
       });
     }
+
+    bindCancelButtons(content);
   }
 
   async function initOrderDetail() {
@@ -1135,6 +1226,7 @@
           </div>
           <div class="customer-inline-actions">
             ${createStatusBadge(order.status, order.status_label)}
+            ${renderCancelButton(order)}
             <a class="customer-btn customer-btn-ghost" href="${routes.orders}">Về lịch sử đơn</a>
           </div>
         </div>
@@ -1328,6 +1420,8 @@
       });
     }
 
+    bindCancelButtons(content);
+
   }
 
   async function initProfile() {
@@ -1336,6 +1430,35 @@
     const { content } = getPageRoot();
     const profile = data.profile || {};
     const stats = data.stats || {};
+    const savedAddresses = Array.isArray(data.saved_addresses)
+      ? data.saved_addresses
+      : [];
+    const savedAddressMap = new Map(
+      savedAddresses.map((item) => [String(item.id), item]),
+    );
+
+    const savedAddressCards = savedAddresses.length
+      ? savedAddresses
+          .map(
+            (item) => `
+              <article class="customer-address-card">
+                <div class="customer-address-card-head">
+                  <div>
+                    <strong>${escapeHtml(item.name || "Địa chỉ đã lưu")}</strong>
+                    <span>${escapeHtml(item.phone || "--")}</span>
+                  </div>
+                  <div class="customer-address-card-actions">
+                    <button type="button" class="customer-btn customer-btn-ghost customer-btn-sm" data-address-edit="${item.id}">Sửa</button>
+                    <button type="button" class="customer-btn customer-btn-danger customer-btn-sm" data-address-delete="${item.id}">Xóa</button>
+                  </div>
+                </div>
+                <p>${escapeHtml(item.address || "--")}</p>
+                <small>Lưu lúc ${formatDateTime(item.created_at)}</small>
+              </article>
+            `,
+          )
+          .join("")
+      : '<div class="customer-empty">Chưa có địa chỉ nào được lưu. Địa chỉ mới nhất sẽ được tự điền khi bạn đặt đơn.</div>';
 
     content.innerHTML = `
       <section class="customer-panel">
@@ -1358,15 +1481,51 @@
             <form id="customer-profile-form" class="customer-form-stack">
               <label><span>Tên đăng nhập</span><input value="${escapeHtml(profile.username || "")}" disabled /></label>
               <label><span>Email</span><input value="${escapeHtml(profile.email || "")}" disabled /></label>
-              <label><span>Họ và tên</span><input name="fullname" value="${escapeHtml(profile.fullname || "")}" required /></label>
-              <label><span>Số điện thoại</span><input name="phone" value="${escapeHtml(profile.phone || "")}" required /></label>
-              <label><span>Tên công ty</span><input name="company_name" value="${escapeHtml(profile.company_name || "")}" /></label>
-              <label><span>Mã số thuế</span><input name="tax_code" value="${escapeHtml(profile.tax_code || "")}" /></label>
-              <label><span>Địa chỉ công ty</span><textarea name="company_address" rows="4">${escapeHtml(profile.company_address || "")}</textarea></label>
+              <label><span>Họ và tên</span><input name="ho_ten" value="${escapeHtml(profile.ho_ten || profile.fullname || "")}" required /></label>
+              <label><span>Số điện thoại</span><input name="so_dien_thoai" value="${escapeHtml(profile.so_dien_thoai || profile.phone || "")}" required /></label>
+              <label><span>Tên công ty</span><input name="ten_cong_ty" value="${escapeHtml(profile.ten_cong_ty || profile.company_name || "")}" /></label>
+              <label><span>Mã số thuế</span><input name="ma_so_thue" value="${escapeHtml(profile.ma_so_thue || profile.tax_code || "")}" /></label>
+              <label><span>Địa chỉ công ty</span><textarea name="dia_chi_cong_ty" rows="4">${escapeHtml(profile.dia_chi_cong_ty || profile.company_address || "")}</textarea></label>
               <button class="customer-btn customer-btn-primary" type="submit">Lưu thông tin</button>
             </form>
           </article>
+          <article class="customer-info-card">
+            <h3>Đổi mật khẩu</h3>
+            <form id="customer-password-form" class="customer-form-stack">
+              <label><span>Mật khẩu hiện tại</span><input name="mat_khau_hien_tai" type="password" autocomplete="current-password" required /></label>
+              <label><span>Mật khẩu mới</span><input name="mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required /></label>
+              <label><span>Xác nhận mật khẩu mới</span><input name="xac_nhan_mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required /></label>
+              <small class="customer-form-helper">Mật khẩu mới cần ít nhất 8 ký tự và khác mật khẩu hiện tại.</small>
+              <button class="customer-btn customer-btn-primary" type="submit">Cập nhật mật khẩu</button>
+            </form>
+          </article>
         </div>
+        <article class="customer-info-card customer-detail-grid--stack">
+          <div class="customer-panel-head">
+            <div>
+              <p class="customer-section-kicker">Sổ địa chỉ</p>
+              <h3>Quản lý địa chỉ đã lưu</h3>
+              <p class="customer-panel-subtext">Địa chỉ mới nhất sẽ được ưu tiên gợi ý lại khi bạn tạo đơn giao hàng mới.</p>
+            </div>
+            <span class="customer-panel-note">${formatNumber(savedAddresses.length)} địa chỉ</span>
+          </div>
+          <div class="customer-address-layout">
+            <div class="customer-address-list">
+              ${savedAddressCards}
+            </div>
+            <form id="customer-address-form" class="customer-form-stack customer-address-form">
+              <input type="hidden" name="dia_chi_id" id="customer-address-id" value="" />
+              <h3 id="customer-address-form-title">Thêm địa chỉ mới</h3>
+              <label><span>Tên gợi nhớ</span><input name="ten_goi_nho" id="customer-address-name" placeholder="Ví dụ: Kho chính, Văn phòng..." required /></label>
+              <label><span>Số điện thoại</span><input name="so_dien_thoai" id="customer-address-phone" inputmode="numeric" placeholder="Nhập số điện thoại liên hệ" required /></label>
+              <label><span>Địa chỉ</span><textarea name="dia_chi" id="customer-address-value" rows="4" placeholder="Nhập địa chỉ lấy hàng thường dùng" required></textarea></label>
+              <div class="customer-inline-actions">
+                <button class="customer-btn customer-btn-primary" type="submit" id="customer-address-submit">Lưu địa chỉ</button>
+                <button class="customer-btn customer-btn-ghost" type="button" id="customer-address-reset">Tạo mới</button>
+              </div>
+            </form>
+          </div>
+        </article>
       </section>
     `;
 
@@ -1380,11 +1539,120 @@
             body: new FormData(profileForm),
           });
           showToast("Đã cập nhật hồ sơ cá nhân.", "success");
+          window.setTimeout(() => {
+            window.location.reload();
+          }, 600);
         } catch (error) {
           showToast(error.message, "error");
         }
       });
     }
+
+    const passwordForm = document.getElementById("customer-password-form");
+    if (passwordForm) {
+      passwordForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(passwordForm);
+        const newPassword = String(formData.get("mat_khau_moi") || "");
+        const confirmPassword = String(formData.get("xac_nhan_mat_khau_moi") || "");
+
+        if (newPassword !== confirmPassword) {
+          showToast("Xác nhận mật khẩu mới không khớp.", "error");
+          return;
+        }
+
+        try {
+          await apiRequest("change-password", {
+            method: "POST",
+            body: formData,
+          });
+          showToast("Đã đổi mật khẩu thành công.", "success");
+          passwordForm.reset();
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      });
+    }
+
+    const addressForm = document.getElementById("customer-address-form");
+    const addressIdInput = document.getElementById("customer-address-id");
+    const addressNameInput = document.getElementById("customer-address-name");
+    const addressPhoneInput = document.getElementById("customer-address-phone");
+    const addressValueInput = document.getElementById("customer-address-value");
+    const addressFormTitle = document.getElementById("customer-address-form-title");
+    const addressSubmit = document.getElementById("customer-address-submit");
+    const addressReset = document.getElementById("customer-address-reset");
+
+    const resetAddressForm = () => {
+      if (addressForm) addressForm.reset();
+      if (addressIdInput) addressIdInput.value = "";
+      if (addressFormTitle) addressFormTitle.textContent = "Thêm địa chỉ mới";
+      if (addressSubmit) addressSubmit.textContent = "Lưu địa chỉ";
+    };
+
+    if (addressReset) {
+      addressReset.addEventListener("click", resetAddressForm);
+    }
+
+    if (addressForm) {
+      addressForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try {
+          await apiRequest("save-address", {
+            method: "POST",
+            body: new FormData(addressForm),
+          });
+          showToast("Đã lưu địa chỉ thành công.", "success");
+          window.setTimeout(() => {
+            window.location.reload();
+          }, 600);
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      });
+    }
+
+    content.querySelectorAll("[data-address-edit]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const item = savedAddressMap.get(String(button.dataset.addressEdit || ""));
+        if (!item) return;
+        if (addressIdInput) addressIdInput.value = item.id;
+        if (addressNameInput) addressNameInput.value = item.ten_goi_nho || item.name || "";
+        if (addressPhoneInput) addressPhoneInput.value = item.so_dien_thoai || item.phone || "";
+        if (addressValueInput) addressValueInput.value = item.dia_chi || item.address || "";
+        if (addressFormTitle) addressFormTitle.textContent = "Cập nhật địa chỉ";
+        if (addressSubmit) addressSubmit.textContent = "Cập nhật địa chỉ";
+        addressForm?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    content.querySelectorAll("[data-address-delete]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const addressId = String(button.dataset.addressDelete || "");
+        const item = savedAddressMap.get(addressId);
+        if (!item) return;
+        const confirmed = window.confirm(
+          `Xóa địa chỉ "${item.name || "Địa chỉ đã lưu"}"?`,
+        );
+        if (!confirmed) return;
+
+        const formData = new FormData();
+        formData.append("dia_chi_id", addressId);
+
+        try {
+          await apiRequest("delete-address", {
+            method: "POST",
+            body: formData,
+          });
+          showToast("Đã xóa địa chỉ đã lưu.", "success");
+          window.setTimeout(() => {
+            window.location.reload();
+          }, 600);
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      });
+    });
   }
 
   async function init() {

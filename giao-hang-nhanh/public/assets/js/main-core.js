@@ -36,7 +36,7 @@
     "chinh-sach-bao-mat.html": `${projectBasePath}chinh-sach-bao-mat.html`,
     "chinh-sach-van-chuyen.html": `${projectBasePath}chinh-sach-van-chuyen.html`,
     "dieu-khoan-su-dung.html": `${projectBasePath}dieu-khoan-su-dung.html`,
-    "admin_stats.php": `${publicBasePath}admin-giaohang/admin_stats.php`,
+    "admin_stats.php": `${projectBasePath}admin-giaohang/public/admin_stats.php`,
     "cancel_order_ajax.php": `${projectBasePath}khach-hang-giaohang/api/cancel_order_ajax.php`,
     "get_notifications_ajax.php": `${projectBasePath}khach-hang-giaohang/api/get_notifications_ajax.php`,
   };
@@ -260,7 +260,6 @@
       weight_price: 5000,
       cod_min: 5000,
     };
-    const servicesData = window.servicesData || [];
 
     let basePrice = 0;
     let weightFee = 0;
@@ -290,6 +289,12 @@
     const intlCountry = String(extras.intlCountry || "").trim();
     const intlProvince = String(extras.intlProvince || "").trim();
     const isIntlService = isInternationalServiceType(normalizedServiceType);
+    const localServiceMap = {
+      standard: { name: "Giao tiêu chuẩn", basePrice: 30000 },
+      fast: { name: "Giao nhanh", basePrice: 40000 },
+      express: { name: "Giao hỏa tốc", basePrice: 50000 },
+      instant: { name: "Giao ngay lập tức", basePrice: 65000 },
+    };
 
     if (
       isIntlService &&
@@ -347,25 +352,14 @@
       }
     }
 
-    const service = servicesData.find(
-      (s) => s.type_key === normalizedServiceType,
-    );
-    if (service) {
-      serviceName = service.name;
-      if (service.base_price == 0) {
-        isContactPrice = true;
-      } else {
-        basePrice = parseFloat(service.base_price);
-      }
-    } else {
-      if (normalizedServiceType === "standard") basePrice = 30000;
-      else if (normalizedServiceType === "fast") basePrice = 40000;
-      else if (normalizedServiceType === "express") basePrice = 50000;
-      else if (normalizedServiceType === "instant") basePrice = 65000;
-      else if (normalizedServiceType === "intl_economy")
-        serviceName = "Tiêu chuẩn quốc tế";
-      else if (normalizedServiceType === "intl_express")
-        serviceName = "Chuyển phát nhanh quốc tế";
+    const localService = localServiceMap[normalizedServiceType];
+    if (localService) {
+      serviceName = localService.name;
+      basePrice = localService.basePrice;
+    } else if (normalizedServiceType === "intl_economy") {
+      serviceName = "Tiêu chuẩn quốc tế";
+    } else if (normalizedServiceType === "intl_express") {
+      serviceName = "Chuyển phát nhanh quốc tế";
     }
 
     const quoteMatch = getServiceQuoteFromDomesticCalculator(

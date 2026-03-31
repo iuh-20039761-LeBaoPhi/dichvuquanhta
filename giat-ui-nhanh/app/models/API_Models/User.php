@@ -3,7 +3,7 @@ require_once __DIR__ . "/../../core/Database.php";
 
 class User {
     private $db;
-    private $table = "users";
+    private $table = "nguoidung";
 
     public function __construct() {
         $this->db = (new Database())->connect();
@@ -39,8 +39,13 @@ class User {
     }
     
     public function submitLogin($data) {
-        $stmt = $this->db->prepare("SELECT * FROM $this->table WHERE user_email=? AND user_password=?");
-        $stmt->execute([$data['user_email'], sha1($data['user_password'])]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare("SELECT * FROM $this->table WHERE sodienthoai=? AND matkhau=?");
+        $stmt->execute([$data['sodienthoai'], sha1($data['matkhau'])]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user; // thất bại
+    }
+    public function createUserCustomer($data) {
+        $stmt = $this->db->prepare("INSERT INTO $this->table (hoten, email, sodienthoai, matkhau) VALUES (?, ?, ?, ?)");
+        return $stmt->execute([$data['hoten'], $data['email'], $data['sodienthoai'], sha1($data['matkhau'])]);
     }
 }

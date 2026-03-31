@@ -13,7 +13,7 @@ giao-hang-nhanh/
 ├── dang-ky.html                      # Trang đăng ký khách hàng
 ├── tra-cuu-gia.html                  # Trang tra cứu bảng giá
 ├── tra-don-hang.html                 # Trang tra cứu đơn hàng
-├── dat-lich-giao-hang-nhanh.html     # Trang đặt lịch giao hàng
+├── dat-lich-giao-hang-nhanh.html     # Trang đặt lịch giao hàng (trang bọc)
 ├── cam-nang.html                     # Danh sách cẩm nang
 ├── cam-nang-chi-tiet.html            # Chi tiết cẩm nang
 ├── huong-dan-dat-hang.html           # Hướng dẫn đặt hàng
@@ -38,6 +38,7 @@ giao-hang-nhanh/
 │   │   ├── shipper_detail.php       # API chi tiết hiệu suất shipper
 │   │   └── contacts.php             # API hòm thư liên hệ
 │   ├── config/db.php                # DB config riêng cho admin module
+│   ├── public/                      # Giao diện standalone cho admin
 │   └── database/giaohang.sql        # Schema CSDL
 ├── khach-hang-giaohang/
 │   └── api/
@@ -47,19 +48,6 @@ giao-hang-nhanh/
 ├── nha-cung-cap-giaohang/
 │   └── api/                         # Backend nha cung cap (se tach them theo tung buoc)
 └── public/
-    ├── admin-giaohang/
-    │   ├── admin_stats.php          # Dashboard admin
-    │   ├── orders_manage.php        # Quản lý đơn hàng
-    │   ├── order_detail.php         # Chi tiết đơn hàng admin
-    │   ├── users_manage.php         # Quản lý người dùng
-    │   ├── user_form.php            # Form chỉnh sửa người dùng
-    │   ├── user_history.php         # Lịch sử hoạt động người dùng
-    │   ├── contact_manage.php       # Quản lý liên hệ
-    │   ├── admin_settings.php       # Cài đặt hệ thống
-    │   ├── admin_profile.php        # Hồ sơ admin
-    │   ├── admin_pricing_guide.php  # Hướng dẫn giá nội bộ
-    │   ├── admin_shipper_detail.php # Chi tiết shipper
-    │   └── admin_refund_report.php  # Báo cáo hoàn tiền
     ├── assets/
     │   ├── css/
     │   │   ├── styles.css            # Entry point CSS (dùng @import)
@@ -81,8 +69,12 @@ giao-hang-nhanh/
     │   │   ├── admin-stats.js        # Biểu đồ thống kê (Chart.js)
     │   │   └── modules/
     │   │       ├── main-navigation.js   # Điều hướng và mobile menu
+    │   │       ├── main-forms.js        # Mount partial form đặt lịch vào host
     │   │       ├── main-landing.js      # Logic form tính cước trang chủ
     │   │       └── main-tracking.js     # Tra cứu & hủy đơn hàng
+    │   ├── partials/
+    │   │   └── bieu-mau/
+    │   │       └── form-dat-lich-giao-hang.html # Partial form đặt lịch giao hàng
     │   └── images/
     ├── data/
     │   ├── pricing-data.json        # Dữ liệu bảng giá
@@ -156,6 +148,9 @@ Mỗi module có guard `if (window.__flag) return;` để tránh load lại.
 
 ### Dynamic Header/Footer
 `shared-layout.js` dùng `XMLHttpRequest` đồng bộ để inject `includes/header.html` và `includes/footer.html` vào `#site-header` và `#site-footer`. Links được resolve tự động qua `data-layout-link` attribute tuỳ theo vị trí (root hay `/public/`).
+
+### Form đặt lịch theo pattern biểu mẫu
+`dat-lich-giao-hang-nhanh.html` hiện là **trang bọc**. Form thật được tách ra partial [form-dat-lich-giao-hang.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\partials\bieu-mau\form-dat-lich-giao-hang.html) và được mount bởi [main-forms.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\modules\main-forms.js).
 
 ### CSS Architecture
 Entry points: `styles.css` (trang public) và `admin.css` (trang admin). Cả hai dùng `@import` để gộp các module CSS con.

@@ -38,9 +38,23 @@
     });
   }
 
+  function normalizeServiceType(value) {
+    const normalized = String(value || "").toLowerCase();
+    const map = {
+      giao_ngay_lap_tuc: "instant",
+      giao_hoa_toc: "express",
+      giao_nhanh: "fast",
+      giao_tieu_chuan: "standard",
+      so_luong_lon: "bulk",
+      quoc_te_tiet_kiem: "intl_economy",
+      quoc_te_hoa_toc: "intl_express",
+    };
+    return map[normalized] || normalized;
+  }
+
   function getServiceLabel(serviceType, fallbackLabel) {
     if (fallbackLabel) return fallbackLabel;
-    const normalized = String(serviceType || "").toLowerCase();
+    const normalized = normalizeServiceType(serviceType);
     if (normalized === "instant") return "Giao ngay lập tức";
     if (normalized === "express") return "Giao hàng hỏa tốc";
     if (normalized === "fast") return "Giao hàng nhanh";

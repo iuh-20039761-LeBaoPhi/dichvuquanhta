@@ -5,7 +5,7 @@ admin_api_require_admin();
 
 function fetch_settings_map($conn) {
     $settings = [];
-    $result = $conn->query("SELECT id, setting_key, setting_value FROM system_settings ORDER BY id ASC");
+    $result = $conn->query("SELECT id, khoa_cai_dat AS setting_key, gia_tri_cai_dat AS setting_value FROM cai_dat_he_thong ORDER BY id ASC");
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             $settings[$row['setting_key']] = [
@@ -44,17 +44,17 @@ foreach ($settingsData as $key => $value) {
     }
     $settingValue = is_scalar($value) ? trim((string) $value) : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-    $checkStmt = $conn->prepare("SELECT id FROM system_settings WHERE setting_key = ? LIMIT 1");
+    $checkStmt = $conn->prepare("SELECT id FROM cai_dat_he_thong WHERE khoa_cai_dat = ? LIMIT 1");
     $checkStmt->bind_param('s', $settingKey);
     $checkStmt->execute();
     $existing = $checkStmt->get_result()->fetch_assoc();
     $checkStmt->close();
 
     if ($existing) {
-        $stmt = $conn->prepare("UPDATE system_settings SET setting_value = ? WHERE setting_key = ?");
+        $stmt = $conn->prepare("UPDATE cai_dat_he_thong SET gia_tri_cai_dat = ? WHERE khoa_cai_dat = ?");
         $stmt->bind_param('ss', $settingValue, $settingKey);
     } else {
-        $stmt = $conn->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES (?, ?)");
+        $stmt = $conn->prepare("INSERT INTO cai_dat_he_thong (khoa_cai_dat, gia_tri_cai_dat) VALUES (?, ?)");
         $stmt->bind_param('ss', $settingKey, $settingValue);
     }
     $stmt->execute();

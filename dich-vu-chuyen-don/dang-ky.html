@@ -34,9 +34,8 @@
             <span class="nhan-phu">Mở tài khoản mới</span>
             <h1>Đăng ký khu vực riêng cho khách hàng hoặc đối tác cung ứng</h1>
             <p>
-              Từ bước này, thông tin liên hệ và vai trò được gom về một nơi. Khách hàng
-              dễ tạo yêu cầu chuyển dọn hơn, còn đối tác có nền để cập nhật năng lực và
-              đi vào luồng xét duyệt sau này.
+              Khách hàng tạo tài khoản để đặt khảo sát và đặt lịch. Đối tác cung ứng
+              đăng ký để đi vào luồng xét duyệt.
             </p>
             <div class="hero-bieu-mau-hanh-dong">
               <a class="nut-hanh-dong nut-sang" href="dang-nhap.html?vai-tro=khach-hang">Đã có tài khoản? Đăng nhập</a>
@@ -57,50 +56,45 @@
 
               <div class="gioi-thieu-tai-khoan">
                 <h2>Tạo tài khoản theo nhu cầu sử dụng</h2>
-                <p>
-                  Form khách hàng tập trung vào thông tin liên hệ cần thiết để đặt lịch.
-                  Form đối tác tập trung vào đầu mối vận hành, khu vực hoạt động và năng lực chính.
-                </p>
               </div>
 
               <section class="bang-thong-tin-vai-tro" data-auth-role-panel="khach-hang">
                 <div class="dong-tieu-de-form">
                   <div>
                     <h3>Đăng ký khách hàng</h3>
-                    <p>Tạo hồ sơ để đặt khảo sát, đặt lịch và lưu lịch sử nhu cầu chuyển dọn.</p>
+                    <p>Tạo hồ sơ để đặt khảo sát và đặt lịch.</p>
                   </div>
-                  <span class="nhan-vai-tro">Khách hàng</span>
                 </div>
 
                 <form class="form-tai-khoan" data-auth-form data-auth-mode="register" data-auth-role="khach-hang">
                   <div class="luoi-truong">
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="customer-register-name">Họ và tên</label>
-                      <input class="truong-nhap" id="customer-register-name" name="full_name" type="text" data-auth-autofill="fullName" required />
+                      <label class="nhan-truong" for="khach-hang-dang-ky-ho-ten">Họ và tên</label>
+                      <input class="truong-nhap" id="khach-hang-dang-ky-ho-ten" name="full_name" type="text" data-auth-autofill="fullName" required />
                     </div>
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="customer-register-phone">Số điện thoại</label>
-                      <input class="truong-nhap" id="customer-register-phone" name="phone" type="tel" data-auth-autofill="phone" required />
+                      <label class="nhan-truong" for="khach-hang-dang-ky-so-dien-thoai">Số điện thoại</label>
+                      <input class="truong-nhap" id="khach-hang-dang-ky-so-dien-thoai" name="phone" type="tel" data-auth-autofill="phone" required />
                     </div>
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="customer-register-email">Email</label>
-                      <input class="truong-nhap" id="customer-register-email" name="email" type="email" data-auth-autofill="email" required />
+                      <label class="nhan-truong" for="khach-hang-dang-ky-email">Email</label>
+                      <input class="truong-nhap" id="khach-hang-dang-ky-email" name="email" type="email" data-auth-autofill="email" required />
                     </div>
                   </div>
 
                   <div class="luoi-truong">
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="customer-register-password">Mật khẩu</label>
+                      <label class="nhan-truong" for="khach-hang-dang-ky-mat-khau">Mật khẩu</label>
                       <div class="khung-mat-khau">
-                        <input class="truong-nhap" id="customer-register-password" name="password" type="password" required />
-                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="customer-register-password">Hiện</button>
+                        <input class="truong-nhap" id="khach-hang-dang-ky-mat-khau" name="password" type="password" required />
+                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="khach-hang-dang-ky-mat-khau">Hiện</button>
                       </div>
                     </div>
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="customer-register-confirm">Nhập lại mật khẩu</label>
+                      <label class="nhan-truong" for="khach-hang-dang-ky-xac-nhan">Nhập lại mật khẩu</label>
                       <div class="khung-mat-khau">
-                        <input class="truong-nhap" id="customer-register-confirm" name="password_confirm" type="password" required />
-                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="customer-register-confirm">Hiện</button>
+                        <input class="truong-nhap" id="khach-hang-dang-ky-xac-nhan" name="password_confirm" type="password" required />
+                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="khach-hang-dang-ky-xac-nhan">Hiện</button>
                       </div>
                     </div>
                   </div>
@@ -122,47 +116,152 @@
                 <div class="dong-tieu-de-form">
                   <div>
                     <h3>Đăng ký đối tác cung ứng</h3>
-                    <p>Dành cho đội xe tải, đội bốc xếp hoặc đơn vị muốn tham gia mạng lưới chuyển dọn.</p>
+                    <p>Dành cho đối tác cung ứng muốn tham gia mạng lưới chuyển dọn.</p>
                   </div>
-                  <span class="nhan-vai-tro">Đối tác cung ứng</span>
                 </div>
 
                 <form class="form-tai-khoan" data-auth-form data-auth-mode="register" data-auth-role="doi-tac">
                   <div class="luoi-truong">
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="provider-register-company">Tên đơn vị / đội nhóm</label>
-                      <input class="truong-nhap" id="provider-register-company" name="full_name" type="text" data-auth-autofill="fullName" required />
+                      <label class="nhan-truong" for="doi-tac-dang-ky-ten-don-vi">Tên đơn vị / đội nhóm</label>
+                      <input class="truong-nhap" id="doi-tac-dang-ky-ten-don-vi" name="full_name" type="text" data-auth-autofill="fullName" required />
                     </div>
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="provider-register-contact">Người phụ trách</label>
-                      <input class="truong-nhap" id="provider-register-contact" name="contact_person" type="text" required />
+                      <label class="nhan-truong" for="doi-tac-dang-ky-nguoi-phu-trach">Người phụ trách</label>
+                      <input class="truong-nhap" id="doi-tac-dang-ky-nguoi-phu-trach" name="contact_person" type="text" required />
                     </div>
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="provider-register-phone">Số điện thoại</label>
-                      <input class="truong-nhap" id="provider-register-phone" name="phone" type="tel" data-auth-autofill="phone" required />
+                      <label class="nhan-truong" for="doi-tac-dang-ky-so-dien-thoai">Số điện thoại</label>
+                      <input class="truong-nhap" id="doi-tac-dang-ky-so-dien-thoai" name="phone" type="tel" data-auth-autofill="phone" required />
                     </div>
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="provider-register-email">Email vận hành</label>
-                      <input class="truong-nhap" id="provider-register-email" name="email" type="email" data-auth-autofill="email" required />
+                      <label class="nhan-truong" for="doi-tac-dang-ky-email">Email vận hành</label>
+                      <input class="truong-nhap" id="doi-tac-dang-ky-email" name="email" type="email" data-auth-autofill="email" required />
                     </div>
                   </div>
 
                   <div class="luoi-truong">
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="provider-register-password">Mật khẩu</label>
+                      <label class="nhan-truong" for="doi-tac-dang-ky-so-cccd">Số CCCD/CMND</label>
+                      <input
+                        class="truong-nhap"
+                        id="doi-tac-dang-ky-so-cccd"
+                        name="cccd"
+                        type="text"
+                        inputmode="numeric"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="hang-tai-anh">
+                    <div class="the-tai-anh">
+                      <input
+                        class="tep-tai-anh"
+                        id="doi-tac-dang-ky-anh-cccd-mat-truoc"
+                        name="cccd_front"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                      />
+                      <label class="nhan-tai-anh" for="doi-tac-dang-ky-anh-cccd-mat-truoc">
+                        <span class="bieu-tuong-tai-anh"><i class="fa-regular fa-id-card"></i></span>
+                        <span>
+                          <span class="tieu-de-tai-anh">Ảnh CCCD mặt trước</span>
+                          <span class="ghi-chu-tai-anh">Nhấn để chọn ảnh (JPG/PNG).</span>
+                        </span>
+                      </label>
+                      <span class="ten-tep-tai-anh" data-ten-tep="doi-tac-dang-ky-anh-cccd-mat-truoc">Chưa chọn tệp</span>
+                    </div>
+                    <div class="the-tai-anh">
+                      <input
+                        class="tep-tai-anh"
+                        id="doi-tac-dang-ky-anh-cccd-mat-sau"
+                        name="cccd_back"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                      />
+                      <label class="nhan-tai-anh" for="doi-tac-dang-ky-anh-cccd-mat-sau">
+                        <span class="bieu-tuong-tai-anh"><i class="fa-regular fa-id-card"></i></span>
+                        <span>
+                          <span class="tieu-de-tai-anh">Ảnh CCCD mặt sau</span>
+                          <span class="ghi-chu-tai-anh">Nhấn để chọn ảnh (JPG/PNG).</span>
+                        </span>
+                      </label>
+                      <span class="ten-tep-tai-anh" data-ten-tep="doi-tac-dang-ky-anh-cccd-mat-sau">Chưa chọn tệp</span>
+                    </div>
+                    <div class="the-tai-anh">
+                      <input
+                        class="tep-tai-anh"
+                        id="doi-tac-dang-ky-anh-dai-dien"
+                        name="avatar"
+                        type="file"
+                        accept="image/*"
+                        capture="user"
+                      />
+                      <label class="nhan-tai-anh" for="doi-tac-dang-ky-anh-dai-dien">
+                        <span class="bieu-tuong-tai-anh"><i class="fa-regular fa-user"></i></span>
+                        <span>
+                          <span class="tieu-de-tai-anh">Ảnh đại diện</span>
+                          <span class="ghi-chu-tai-anh">Nhấn để chụp hoặc chọn ảnh.</span>
+                        </span>
+                      </label>
+                      <span class="ten-tep-tai-anh" data-ten-tep="doi-tac-dang-ky-anh-dai-dien">Chưa chọn tệp</span>
+                    </div>
+                  </div>
+
+                  <div class="luoi-truong">
+                    <div class="nhom-truong">
+                      <label class="nhan-truong" for="doi-tac-dang-ky-mat-khau">Mật khẩu</label>
                       <div class="khung-mat-khau">
-                        <input class="truong-nhap" id="provider-register-password" name="password" type="password" required />
-                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="provider-register-password">Hiện</button>
+                        <input class="truong-nhap" id="doi-tac-dang-ky-mat-khau" name="password" type="password" required />
+                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="doi-tac-dang-ky-mat-khau">Hiện</button>
                       </div>
                     </div>
                     <div class="nhom-truong">
-                      <label class="nhan-truong" for="provider-register-confirm">Nhập lại mật khẩu</label>
+                      <label class="nhan-truong" for="doi-tac-dang-ky-xac-nhan">Nhập lại mật khẩu</label>
                       <div class="khung-mat-khau">
-                        <input class="truong-nhap" id="provider-register-confirm" name="password_confirm" type="password" required />
-                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="provider-register-confirm">Hiện</button>
+                        <input class="truong-nhap" id="doi-tac-dang-ky-xac-nhan" name="password_confirm" type="password" required />
+                        <button class="khung-mat-khau__nut" type="button" data-auth-password-toggle="doi-tac-dang-ky-xac-nhan">Hiện</button>
                       </div>
                     </div>
                   </div>
+
+                  <details class="khoi-mo-rong">
+                    <summary class="khoi-mo-rong__tieu-de">Dịch vụ / Khả năng / Khu vực (không bắt buộc)</summary>
+                    <div class="khoi-mo-rong__noi-dung">
+                      <div class="luoi-truong">
+                        <div class="nhom-truong">
+                          <label class="nhan-truong" for="doi-tac-dang-ky-dich-vu">Dịch vụ cung ứng</label>
+                          <input
+                            class="truong-nhap"
+                            id="doi-tac-dang-ky-dich-vu"
+                            name="service_types"
+                            type="text"
+                          />
+                        </div>
+                        <div class="nhom-truong">
+                          <label class="nhan-truong" for="doi-tac-dang-ky-kha-nang">Khả năng / Quy mô</label>
+                          <input
+                            class="truong-nhap"
+                            id="doi-tac-dang-ky-kha-nang"
+                            name="capacity"
+                            type="text"
+                          />
+                        </div>
+                        <div class="nhom-truong">
+                          <label class="nhan-truong" for="doi-tac-dang-ky-khu-vuc">Khu vực hoạt động</label>
+                          <input
+                            class="truong-nhap"
+                            id="doi-tac-dang-ky-khu-vuc"
+                            name="service_area"
+                            type="text"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </details>
 
                   <div class="hang-phu-tai-khoan">
                     <label class="lua-chon-nho">

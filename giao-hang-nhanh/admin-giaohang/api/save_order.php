@@ -8,6 +8,34 @@ require_once __DIR__ . '/../config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit;
 
+$normalize_service_type = function ($value) {
+    $normalized = strtolower(trim((string) $value));
+    $map = [
+        'giao_ngay_lap_tuc' => 'instant',
+        'giao_hoa_toc' => 'express',
+        'giao_nhanh' => 'fast',
+        'giao_tieu_chuan' => 'standard',
+        'so_luong_lon' => 'bulk',
+        'quoc_te_tiet_kiem' => 'intl_economy',
+        'quoc_te_hoa_toc' => 'intl_express',
+    ];
+    return $map[$normalized] ?? $normalized;
+};
+
+$to_vn_service_code = function ($value) use ($normalize_service_type) {
+    $normalized = $normalize_service_type($value);
+    $map = [
+        'instant' => 'giao_ngay_lap_tuc',
+        'express' => 'giao_hoa_toc',
+        'fast' => 'giao_nhanh',
+        'standard' => 'giao_tieu_chuan',
+        'bulk' => 'so_luong_lon',
+        'intl_economy' => 'quoc_te_tiet_kiem',
+        'intl_express' => 'quoc_te_hoa_toc',
+    ];
+    return $map[$normalized] ?? $normalized;
+};
+
 $json = file_get_contents('php://input');
 $data = json_decode($json, true) ?: $_POST;
 
@@ -46,20 +74,22 @@ $fields = [
     'payment_status'   => $data['payment_status'] ?? 'unpaid'
 ];
 
+$fields['service_type'] = $to_vn_service_code($fields['service_type']);
+
 if (empty($fields['name']) || empty($fields['phone']) || empty($fields['delivery_address'])) {
     echo json_encode(['status' => 'error', 'message' => 'Lỗi: Thiếu thông tin bắt buộc (Tên, SĐT hoặc địa chỉ giao)']);
     exit;
 }
 
-$sql = "INSERT INTO orders (
-    order_code, user_id, pickup_address, name, phone, 
-    receiver_name, receiver_phone, delivery_address, 
-    intl_country, intl_province, intl_postal_code, receiver_id_number,
-    is_corporate, company_name, company_email, company_tax_code, company_address, company_bank_info,
-    package_type, service_type, intl_purpose, intl_hs_code, vehicle_type, client_order_code,
-    weight, cod_amount, shipping_fee, 
-    note, payment_method, payment_status, status
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
+$sql = "INSERT INTO don_hang (
+    ma_don_hang, nguoi_dung_id, dia_chi_lay_hang, ten_nguoi_gui, so_dien_thoai_nguoi_gui,
+    ten_nguoi_nhan, so_dien_thoai_nguoi_nhan, dia_chi_giao_hang,
+    quoc_gia_quoc_te, tinh_bang_quoc_te, ma_buu_chinh_quoc_te, so_giay_to_nguoi_nhan,
+    la_doanh_nghiep, ten_cong_ty, email_cong_ty, ma_so_thue_cong_ty, dia_chi_cong_ty, thong_tin_ngan_hang_cong_ty,
+    loai_goi_hang, loai_dich_vu, muc_dich_quoc_te, ma_hs_quoc_te, loai_phuong_tien, ma_don_hang_khach,
+    tong_can_nang, so_tien_cod, phi_van_chuyen,
+    ghi_chu, phuong_thuc_thanh_toan, trang_thai_thanh_toan, trang_thai
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
 
 $stmt = $conn->prepare($sql);
 // 29 tham số: sisssssssssssisssssssssdddsss

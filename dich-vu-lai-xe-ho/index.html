@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Dịch vụ thuê tài xế lái xe hộ chuyên nghiệp: lái xe theo giờ, theo ngày, đường dài. Tài xế có kinh nghiệm, an toàn, đúng giờ, phục vụ tận nơi với mức giá hợp lý.">
+    <meta name="keywords" content="thuê tài xế, đặt lịch tài xế, lái xe hộ, tài xế theo giờ, tài xế riêng, dịch vụ lái xe, thuê lái xe, tài xế chuyên nghiệp">
+    <title>Dịch Vụ Thuê Tài Xế Lái Xe Hộ</title>
+    <link rel="shortcut icon" type="image/x-icon" href="assets/logo_main.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" />
+    <style>
+    /* Base & Layout */
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+    .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+    body { padding-top: 96px; }
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1050; }
+
+    /* Hover effect cho cards */
+    .hover-lift {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-lift:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 1rem 2rem rgba(0,0,0,0.1) !important;
+    }
+
+    /* ================= MOBILE ONLY (Under 992px) ================= */
+    @media (max-width: 991.98px) {
+      body { padding-top: 86px; }
+      .navbar { overflow-x: clip; }
+      .navbar .container > span { 
+        max-width: 34vw; white-space: nowrap; overflow: hidden; 
+        text-overflow: ellipsis; font-size: 0.95rem; 
+      }
+      .navbar-brand img { width: 56px !important; height: 42px !important; }
+      .navbar-collapse { 
+        position: absolute; top: 100%; left: 0; right: 0; width: auto; 
+        background: #fff; z-index: 999; border-radius: 0 0 12px 12px; 
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+      }
+      .navbar-collapse.show { display: block; }
+      .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
+      .navbar-collapse .nav-item { width: 100%; text-align: center; }
+      .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
+      .navbar-collapse .btn { width: 80%; margin-top: 10px; }
+      .hero-section img { width: 100% !important; max-width: 340px; height: auto !important; }
+    }
+    </style>
+    <script src="/ga.js"></script>
+  </head>
+  <body>
+    <div style="font-family: 'Quicksand', sans-serif">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
+        <div class="container">
+          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../index.html" style="color: #007bff">
+            <img style="width: 80px; height: 60px" src="assets/logo-he-thong.png" alt="Dịch Vụ Thuê Tài Xế" />
+          </a>
+          <span class="fw-bold text-primary">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</span>
+          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #007bff">
+            <img style="width: 80px; height: 60px" src="assets/logo_main.png" alt="Dịch Vụ Thuê Tài Xế" />
+          </a>
+          <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+            <ul class="navbar-nav align-items-center gap-3">
+              <li class="nav-item">
+                <a class="nav-link fw-bold px-3 active" href="index.html" style="color: #007bff; font-size: larger">Trang Chủ</a>
+              </li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="gioi-thieu.html">Giới Thiệu</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="dich-vu.html">Dịch Vụ</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="dieu-khoan.html">Điều Khoản</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="cam-nang.html">Cẩm Nang</a></li>
+              <li class="nav-item"><a class="nav-link fw-bold px-3" href="lien-he.html">Liên Hệ</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Hero Section -->
+      <section class="hero-section py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #fff3e0 100%);">
+        <div class="container py-lg-5">
+          <div class="row align-items-center">
+            <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+              <h1 class="display-3 fw-bold mb-3">
+                Thuê Tài Xế <br />
+                <span class="text-primary" style="font-family: 'Roboto', sans-serif">Lái Xe Hộ</span> Chuyên Nghiệp
+              </h1>
+              <p class="lead text-muted mb-4">
+                Dịch vụ tài xế lái xe hộ theo giờ, theo ngày, đường dài. Tài xế có kinh nghiệm, an toàn, đúng giờ, phục vụ tận nơi với mức giá hợp lý. Đặt lịch nhanh chóng chỉ với vài bước đơn giản.
+              </p>
+              <button class="btn text-white rounded-pill btn-lg px-5 py-3 shadow-sm" 
+                style="background-color: #007bff; transition: 0.3s;"
+                onmouseover="this.style.backgroundColor = '#e68a2e'; this.style.transform = 'scale(1.05)';"
+                onmouseout="this.style.backgroundColor = '#007bff'; this.style.transform = 'scale(1)';"
+                onclick="window.location.href = 'dat-lich-tai-xe.html'">
+                🚗 Đặt Lịch Thuê Tài Xế Ngay
+              </button>
+            </div>
+            <div class="col-lg-6 text-center">
+              <img src="assets/tai-xe-lai-xe-ho.jpg" 
+                class="img-fluid rounded-pill shadow-lg" 
+                alt="Dịch vụ thuê tài xế lái xe hộ chuyên nghiệp" 
+                style="width: 500px; height: 450px; object-fit: cover;"
+                onerror="this.src='https://placehold.co/500x450?text=Tài+Xế+Lái+Xe+Hộ'">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Giá Trị Cốt Lõi -->
+      <section class="py-5 bg-light">
+        <div class="container py-5">
+          <h2 class="text-center fw-bold display-5 mb-5">
+            Tại Sao Nên Chọn Dịch Vụ Thuê Tài Xế Của Chúng Tôi?
+          </h2>
+          <div class="row g-4">
+            <div class="col-md-6 col-lg-3 text-center">
+              <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift">
+                <div class="mb-4 fs-1 text-primary">
+                  <i class="fas fa-id-card"></i>
+                </div>
+                <h3 class="h5 fw-bold">Tài Xế Chuyên Nghiệp</h3>
+                <p class="text-muted small mb-0">
+                  Đội ngũ tài xế có kinh nghiệm, bằng lái hợp lệ, am hiểu đường xá, thái độ phục vụ chuyên nghiệp và thân thiện.
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-3 text-center">
+              <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift">
+                <div class="mb-4 fs-1 text-primary">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="h5 fw-bold">Linh Hoạt Thời Gian</h3>
+                <p class="text-muted small mb-0">
+                  Dịch vụ theo giờ, theo ngày, theo chuyến. Đáp ứng mọi nhu cầu từ di chuyển trong thành phố đến các chuyến đường dài.
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-3 text-center">
+              <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift">
+                <div class="mb-4 fs-1 text-primary">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="h5 fw-bold">An Toàn Tuyệt Đối</h3>
+                <p class="text-muted small mb-0">
+                  Cam kết lái xe an toàn, tuân thủ luật giao thông, bảo hiểm đầy đủ, mang lại sự an tâm cho hành khách.
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-3 text-center">
+              <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift">
+                <div class="mb-4 fs-1 text-primary">
+                  <i class="fas fa-tag"></i>
+                </div>
+                <h3 class="h5 fw-bold">Giá Cả Hợp Lý</h3>
+                <p class="text-muted small mb-0">
+                  Bảng giá minh bạch, không phát sinh chi phí ẩn. Nhiều gói dịch vụ phù hợp với nhu cầu và ngân sách của khách hàng.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Các Gói Dịch Vụ Chính -->
+      <section class="py-5">
+        <div class="container py-5">
+          <h2 class="text-center fw-bold display-5 mb-5">Các Gói Dịch Vụ Tài Xế</h2>
+          <div class="row g-4 mb-5" id="services-grid">
+            <!-- Services will be loaded dynamically -->
+          </div>
+          <div class="text-center">
+            <a href="dich-vu.html" class="btn btn-outline-secondary px-5 rounded-pill fw-bold" style="border-color: #007bff; color: #007bff">
+              Xem Tất Cả Gói Dịch Vụ
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Lợi Ích Khi Sử Dụng Dịch Vụ -->
+      <section class="py-5 bg-light">
+        <div class="container py-4">
+          <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+              <img src="assets/tai-xe-chuyen-nghiep.jpg" 
+                class="img-fluid rounded-4 shadow" 
+                alt="Tài xế chuyên nghiệp"
+                style="width: 100%; max-height: 400px; object-fit: cover;"
+                onerror="this.src='https://placehold.co/600x400?text=Tài+Xế+Chuyên+Nghiệp'">
+            </div>
+            <div class="col-lg-6">
+              <h2 class="fw-bold mb-4">Lợi Ích Khi Sử Dụng Dịch Vụ Thuê Tài Xế</h2>
+              <div class="d-flex mb-3">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-check-circle text-primary fs-4 me-3"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">Tiết Kiệm Thời Gian & Công Sức</h5>
+                  <p class="text-muted">Không phải tự lái xe trong những chuyến đường dài, kẹt xe hay khi mệt mỏi.</p>
+                </div>
+              </div>
+              <div class="d-flex mb-3">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-check-circle text-primary fs-4 me-3"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">An Toàn Trên Mọi Hành Trình</h5>
+                  <p class="text-muted">Tài xế có kinh nghiệm xử lý tình huống, đảm bảo an toàn cho bạn và gia đình.</p>
+                </div>
+              </div>
+              <div class="d-flex mb-3">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-check-circle text-primary fs-4 me-3"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">Linh Hoạt Đặt Lịch</h5>
+                  <p class="text-muted">Đặt lịch trước theo nhu cầu, hỗ trợ 24/7 kể cả ngày lễ, cuối tuần.</p>
+                </div>
+              </div>
+              <div class="d-flex mb-3">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-check-circle text-primary fs-4 me-3"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">Đa Dạng Phương Tiện</h5>
+                  <p class="text-muted">Phù hợp với nhiều loại xe: sedan, SUV, MPV, xe 7 chỗ, 16 chỗ theo yêu cầu.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Call to Action -->
+      <section class="py-5" style="background: linear-gradient(135deg, #007bff 0%, #00b4d8 100%);">
+        <div class="container py-5 text-center text-white">
+          <h2 class="fw-bold display-5 mb-3">Sẵn Sàng Cho Chuyến Đi Của Bạn?</h2>
+          <p class="lead mb-4 opacity-90">Đặt lịch thuê tài xế ngay hôm nay để nhận ưu đãi đặc biệt!</p>
+          <button class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow" 
+            style="color: #007bff;"
+            onclick="window.location.href = 'dat-lich-tai-xe.html'">
+            <i class="fas fa-calendar-alt me-2"></i>Đặt Lịch Ngay
+          </button>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+          <div class="row g-4 mb-4">
+            <div class="col-lg-4">
+              <h3 class="h4 fw-bold mb-3" style="color: #007bff">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</h3>
+              <p class="opacity-75">Hệ thống cung cấp dịch vụ tài xế lái xe hộ chuyên nghiệp hàng đầu tại Việt Nam. An toàn - Uy tín - Chất lượng.</p>
+              <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
+              <p class="opacity-75 small">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</p>
+              <h4 class="h5 fw-bold mt-4 mb-3">Liên Hệ</h4>
+              <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
+              <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
+            </div>
+            <div class="col-lg-2">
+              <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
+              <ul class="list-unstyled">
+                <li class="mb-2"><a href="gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
+                <li class="mb-2"><a href="dich-vu.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
+                <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
+                <li class="mb-2"><a href="../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
+                <li class="mb-2"><a href="../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
+                <li class="mb-2"><a href="../cham-soc-vuon-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Vườn & Rẫy</a></li>
+                <li class="mb-2"><a href="../giat-ui-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giặt Ủi Cao Cấp</a></li>
+                <li class="mb-2"><a href="../tho-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Thợ Nhà & Sửa Chữa</a></li>
+                <li class="mb-2"><a href="../cham-soc-nguoi-gia/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Người Già</a></li>
+                <li class="mb-2"><a href="../cham-soc-nguoi-benh/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Bệnh Nhân</a></li>
+                <li class="mb-2"><a href="../giao-hang-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giao Hàng Nhanh</a></li>
+              </ul>
+            </div>
+            <div class="col-lg-3">
+              <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
+              <div class="d-flex gap-2">
+                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-youtube"></i></a>
+                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-tiktok"></i></a>
+              </div>
+              <div class="mt-4">
+                <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
+                <div class="d-flex gap-2 flex-wrap">
+                  <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px;">
+                    <i class="fab fa-apple me-2"></i>
+                    <div class="text-start lh-1">
+                      <small class="d-block" style="font-size: 8px;">Download on</small>
+                      <span class="fw-bold" style="font-size: 11px;">App Store</span>
+                    </div>
+                  </a>
+                  <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px; background-color: #34a853; border-color: #34a853;">
+                    <i class="fab fa-google-play me-2"></i>
+                    <div class="text-start lh-1">
+                      <small class="d-block" style="font-size: 8px;">Get it on</small>
+                      <span class="fw-bold" style="font-size: 11px;">Google Play</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="opacity-25" />
+          <p class="text-center small opacity-50 mb-0">
+            &copy; 2026 Dịch Vụ Thuê Tài Xế Lái Xe Hộ. Bảo lưu mọi quyền.
+          </p>
+        </div>
+      </footer>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+        // Dữ liệu dịch vụ tài xế (đồng bộ với code đặt lịch)
+        const DRIVER_SERVICES = [
+          {
+            id: 1,
+            name: "Lái Xe Theo Giờ",
+            description: "Thuê tài xế theo giờ linh hoạt, phù hợp với nhu cầu di chuyển trong thành phố, đi chợ, đưa đón con cái, công việc cá nhân.",
+            image: "assets/lai-xe-theo-gio.jpg",
+            alt: "Dịch vụ thuê tài xế lái xe theo giờ",
+            packages: [
+              { name: "Gói 4 giờ", price: 320000 },
+              { name: "Gói 8 giờ", price: 600000 },
+              { name: "Gói 10 giờ", price: 750000 }
+            ]
+          },
+          {
+            id: 2,
+            name: "Lái Xe Theo Ngày",
+            description: "Dịch vụ tài xế lái xe trọn ngày, phù hợp với các chuyến công tác, du lịch, hoặc nhu cầu di chuyển nhiều trong ngày.",
+            image: "assets/lai-xe-theo-ngay.jpg",
+            alt: "Dịch vụ thuê tài xế lái xe theo ngày",
+            packages: [
+              { name: "1 Ngày (8h)", price: 500000 },
+              { name: "3 Ngày", price: 1400000 },
+              { name: "7 Ngày", price: 3200000 }
+            ]
+          },
+          {
+            id: 3,
+            name: "Lái Xe Đường Dài",
+            description: "Tài xế giàu kinh nghiệm cho các chuyến xe đường dài liên tỉnh, xuyên Việt. Đảm bảo an toàn, đúng lịch trình.",
+            image: "assets/lai-xe-duong-dai.jpg",
+            alt: "Dịch vụ thuê tài xế lái xe đường dài",
+            packages: [
+              { name: "Dưới 100km", price: 800000 },
+              { name: "100-200km", price: 1500000 },
+              { name: "200-300km", price: 2100000 }
+            ]
+          },
+          {
+            id: 4,
+            name: "Tài Xế Riêng Cá Nhân",
+            description: "Thuê tài xế riêng lâu dài, phục vụ theo nhu cầu đặc thù của gia đình hoặc doanh nghiệp. Tài xế có lý lịch rõ ràng.",
+            image: "assets/tai-xe-rieng.jpg",
+            alt: "Dịch vụ thuê tài xế riêng cá nhân",
+            packages: [
+              { name: "Theo tháng", price: 12000000 },
+              { name: "Theo quý", price: 33000000 },
+              { name: "Theo năm", price: 120000000 }
+            ]
+          }
+        ];
+
+        // Load services lên trang chủ
+        async function loadHomeServices() {
+          const servicesGrid = document.getElementById("services-grid");
+          if (!servicesGrid) return;
+
+          servicesGrid.innerHTML = '';
+
+          DRIVER_SERVICES.forEach(service => {
+            const col = document.createElement("div");
+            col.className = "col-md-6 col-lg-3";
+            const imageAlt = (service.alt || service.name || "Dịch vụ thuê tài xế").replace(/"/g, "&quot;");
+            // Lấy giá thấp nhất để hiển thị
+            const minPrice = service.packages && service.packages.length > 0 
+              ? Math.min(...service.packages.map(p => p.price)).toLocaleString('vi-VN')
+              : 'Liên hệ';
+
+            col.innerHTML = `
+              <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden hover-lift">
+                <img src="${service.image}" 
+                  class="card-img-top" 
+                  alt="${imageAlt}" 
+                  style="height: 200px; object-fit: cover;"
+                  onerror="this.src='https://placehold.co/400x200?text=${encodeURIComponent(service.name)}'">
+                <div class="card-body p-4 text-center">
+                  <h3 class="h5 fw-bold">${service.name}</h3>
+                  <p class="card-text text-muted small">${service.description}</p>
+                  <div class="mt-2">
+                    <span class="badge bg-primary rounded-pill px-3 py-2">Từ ${minPrice}đ</span>
+                  </div>
+                  <button class="btn btn-outline-primary rounded-pill btn-sm mt-3 px-4" 
+                    onclick="window.location.href = 'dat-lich-tai-xe.html?serviceId=${service.id}'">
+                    Đặt ngay <i class="fas fa-arrow-right ms-1"></i>
+                  </button>
+                </div>
+              </div>
+            `;
+            servicesGrid.appendChild(col);
+          });
+        }
+
+        document.addEventListener("DOMContentLoaded", loadHomeServices);
+      </script>
+    </div>
+  </body>
+</html>

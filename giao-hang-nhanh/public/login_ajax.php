@@ -5,21 +5,21 @@ require_once __DIR__ . '/../config/db.php';
 header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $loginIdentifier = trim((string) ($_POST['so_dien_thoai'] ?? ($_POST['phone'] ?? ($_POST['ten_dang_nhap'] ?? ($_POST['username'] ?? '')))));
+    $password = $_POST['mat_khau'] ?? ($_POST['password'] ?? '');
 
-    if (empty($username) || empty($password)) {
+    if (empty($loginIdentifier) || empty($password)) {
         echo json_encode(['status' => 'error', 'message' => 'Vui lòng nhập đầy đủ thông tin.']);
         exit;
     }
 
-    $stmt = $conn->prepare("SELECT id, username, password, role, fullname, phone, is_locked, lock_reason, is_approved FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT id, ten_dang_nhap AS username, mat_khau AS password, vai_tro AS role, ho_ten AS fullname, so_dien_thoai AS phone, bi_khoa AS is_locked, ly_do_khoa AS lock_reason, da_duyet AS is_approved FROM nguoi_dung WHERE so_dien_thoai = ? OR ten_dang_nhap = ? ORDER BY CASE WHEN so_dien_thoai = ? THEN 0 ELSE 1 END LIMIT 1");
     if (!$stmt) {
         error_log('Login Prepare Error: ' . $conn->error); // Ghi log lỗi server
         echo json_encode(['status' => 'error', 'message' => 'Lỗi hệ thống. Vui lòng thử lại sau.']);
         exit;
     }
-    $stmt->bind_param("s", $username);
+    $stmt->bind_param("sss", $loginIdentifier, $loginIdentifier, $loginIdentifier);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -37,6 +37,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         if (password_verify($password, $user['password'])) {
+            if ($user['role'] === 'admin') {
+                echo json_encode(['status' => 'error', 'message' => 'Thông tin đăng nhập không chính xác.']);
+                exit;
+            }
+
             // BẢO MẬT: Tạo lại Session ID để chống Session Fixation
             session_regenerate_id(true);
 
@@ -49,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo json_encode(['status' => 'error', 'message' => 'Mật khẩu không chính xác.']);
         }
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Tên đăng nhập không tồn tại.']);
+        echo json_encode(['status' => 'error', 'message' => 'Số điện thoại không tồn tại.']);
     }
     $stmt->close();
 }

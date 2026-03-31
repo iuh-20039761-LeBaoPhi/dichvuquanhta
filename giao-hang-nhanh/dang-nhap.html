@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng nhập | Giao Hàng Nhanh</title>
+    <title>Đăng nhập Khách Hàng và Shipper | Giao Hàng Nhanh</title>
     <meta
       name="description"
-      content="Đăng nhập tài khoản Giao Hàng Nhanh để tạo đơn, theo dõi vận đơn và quản lý lịch sử giao hàng."
+      content="Đăng nhập tài khoản khách hàng hoặc shipper của Giao Hàng Nhanh để tạo đơn, theo dõi vận đơn và quản lý lịch sử giao hàng."
     />
     <link rel="stylesheet" href="public/assets/css/styles.css" />
     <link rel="stylesheet" href="public/assets/css/pages/auth.css" />
@@ -127,7 +127,7 @@
       <div class="auth-shell">
         <section class="auth-panel">
           <div>
-            <span class="subpage-hero__badge" style="display: inline-flex; margin-bottom: 18px;">Khách hàng quay lại</span>
+            <span class="subpage-hero__badge" style="display: inline-flex; margin-bottom: 18px;">Khách hàng và shipper</span>
             <h1>Quản lý đơn giao hàng trên một tài khoản duy nhất.</h1>
             <p>
               Đăng nhập để tạo đơn mới, theo dõi trạng thái giao hàng và kiểm tra
@@ -160,35 +160,36 @@
         </section>
 
         <section class="auth-card">
-          <h2 class="auth-title">Đăng nhập</h2>
-          <p class="auth-subtitle">Nhập tài khoản để tiếp tục sử dụng dịch vụ.</p>
+          <h2 class="auth-title">Đăng nhập khách hàng hoặc shipper</h2>
+          <p class="auth-subtitle">Nhập số điện thoại và mật khẩu để tiếp tục sử dụng dịch vụ.</p>
 
-          <div id="form-message" class="msg-box" style="display: none;"></div>
+          <div id="thong-bao-dang-nhap" class="msg-box" style="display: none;"></div>
 
-          <form id="login-form" novalidate>
+          <form id="form-dang-nhap" novalidate>
             <div class="form-group">
-              <label for="username">Tên đăng nhập</label>
+              <label for="so-dien-thoai-dang-nhap">Số điện thoại</label>
               <input
-                id="username"
-                name="username"
-                type="text"
-                autocomplete="username"
+                id="so-dien-thoai-dang-nhap"
+                name="so_dien_thoai"
+                type="tel"
+                autocomplete="tel"
                 required
-                placeholder="Nhập tên đăng nhập"
+                inputmode="numeric"
+                placeholder="Nhập số điện thoại"
               />
             </div>
             <div class="form-group">
-              <label for="password">Mật khẩu</label>
+              <label for="mat-khau">Mật khẩu</label>
               <input
-                id="password"
-                name="password"
+                id="mat-khau"
+                name="mat_khau"
                 type="password"
                 autocomplete="current-password"
                 required
                 placeholder="Nhập mật khẩu"
               />
             </div>
-            <button id="submit-btn" type="submit" class="btn-primary" style="width: 100%;">
+            <button id="nut-gui-dang-nhap" type="submit" class="btn-primary" style="width: 100%;">
               Đăng nhập
             </button>
           </form>
@@ -197,8 +198,12 @@
            Nếu bạn đang đặt đơn từ trang đặt lịch giao hàng, hệ thống sẽ đưa bạn quay lại đúng
             bước đang thao tác sau khi đăng nhập thành công.
           </div>
+          <div class="auth-note" style="background:#eff6ff; color:#1d4ed8;">
+            Quản trị viên đăng nhập tại
+            <a href="admin-giaohang/public/login.php" style="font-weight:700; color:inherit;">trang admin riêng</a>.
+          </div>
           <div class="auth-link">
-            Chưa có tài khoản? <a id="register-link" href="dang-ky.html">Đăng ký ngay</a>
+            Chưa có tài khoản? <a id="lien-ket-dang-ky" href="dang-ky.html">Đăng ký ngay</a>
           </div>
         </section>
       </div>
@@ -214,10 +219,10 @@
     <script src="public/assets/js/main.js" defer></script>
     <script>
       (function () {
-        const form = document.getElementById("login-form");
-        const submitBtn = document.getElementById("submit-btn");
-        const msgBox = document.getElementById("form-message");
-        const registerLink = document.getElementById("register-link");
+        const form = document.getElementById("form-dang-nhap");
+        const submitBtn = document.getElementById("nut-gui-dang-nhap");
+        const msgBox = document.getElementById("thong-bao-dang-nhap");
+        const registerLink = document.getElementById("lien-ket-dang-ky");
         const params = new URLSearchParams(window.location.search);
         const redirectValue = params.get("redirect") || "";
 
@@ -235,7 +240,6 @@
         }
 
         function resolveDefaultPath(role) {
-          if (role === "admin") return "public/admin-giaohang/admin_stats.php";
           if (role === "shipper") return "public/nha-cung-cap/dashboard.html";
           return "public/khach-hang/dashboard.html";
         }
@@ -247,11 +251,11 @@
         form.addEventListener("submit", async function (event) {
           event.preventDefault();
           const formData = new FormData(form);
-          const username = String(formData.get("username") || "").trim();
-          const password = String(formData.get("password") || "");
+          const phone = String(formData.get("so_dien_thoai") || "").trim();
+          const password = String(formData.get("mat_khau") || "");
 
-          if (!username || !password) {
-            showMessage("Vui lòng nhập tên đăng nhập và mật khẩu.", "error");
+          if (!phone || !password) {
+            showMessage("Vui lòng nhập số điện thoại và mật khẩu.", "error");
             return;
           }
 

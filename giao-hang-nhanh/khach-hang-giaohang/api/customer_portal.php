@@ -36,8 +36,8 @@ function require_customer(mysqli $conn): array
 
     $userId = (int) $_SESSION['user_id'];
     $stmt = $conn->prepare(
-        "SELECT id, username, fullname, phone, email, role, company_name, tax_code, company_address, is_locked
-         FROM users
+        "SELECT id, ten_dang_nhap AS username, ho_ten AS fullname, so_dien_thoai AS phone, email, vai_tro AS role, ten_cong_ty AS company_name, ma_so_thue AS tax_code, dia_chi_cong_ty AS company_address, bi_khoa AS is_locked
+         FROM nguoi_dung
          WHERE id = ?
          LIMIT 1"
     );
@@ -71,6 +71,49 @@ function format_currency_value($value): float
     return round((float) $value, 2);
 }
 
+function is_valid_phone(string $phone): bool
+{
+    return (bool) preg_match('/^0[0-9]{9,10}$/', $phone);
+}
+
+function request_value(array $keys, string $default = ''): string
+{
+    foreach ($keys as $key) {
+        if (isset($_POST[$key])) {
+            return trim((string) $_POST[$key]);
+        }
+    }
+
+    return $default;
+}
+
+function with_customer_profile_aliases(array $payload): array
+{
+    return array_merge($payload, [
+        'ten_dang_nhap' => $payload['username'] ?? '',
+        'ho_ten' => $payload['fullname'] ?? '',
+        'so_dien_thoai' => $payload['phone'] ?? '',
+        'ten_cong_ty' => $payload['company_name'] ?? '',
+        'ma_so_thue' => $payload['tax_code'] ?? '',
+        'dia_chi_cong_ty' => $payload['company_address'] ?? '',
+    ]);
+}
+
+function with_saved_address_aliases(array $payload): array
+{
+    return array_merge($payload, [
+        'dia_chi_id' => (int) ($payload['id'] ?? 0),
+        'ten_goi_nho' => $payload['name'] ?? '',
+        'so_dien_thoai' => $payload['phone'] ?? '',
+        'dia_chi' => $payload['address'] ?? '',
+    ]);
+}
+
+function can_customer_cancel_order(string $status): bool
+{
+    return strtolower(trim($status)) === 'pending';
+}
+
 function get_status_label(string $status): string
 {
     $map = [
@@ -86,14 +129,13 @@ function get_status_label(string $status): string
 function get_service_label(string $serviceType): string
 {
     $map = [
-        'slow' => 'Chậm',
-        'standard' => 'Tiêu chuẩn',
-        'fast' => 'Nhanh',
-        'express' => 'Hỏa tốc',
-        'instant' => 'Giao ngay lập tức',
-        'bulk' => 'Số lượng lớn',
-        'intl_economy' => 'Quốc tế tiết kiệm',
-        'intl_express' => 'Quốc tế hỏa tốc',
+        'giao_tieu_chuan' => 'Tiêu chuẩn',
+        'giao_nhanh' => 'Nhanh',
+        'giao_hoa_toc' => 'Hỏa tốc',
+        'giao_ngay_lap_tuc' => 'Giao ngay lập tức',
+        'so_luong_lon' => 'Số lượng lớn',
+        'quoc_te_tiet_kiem' => 'Quốc tế tiết kiệm',
+        'quoc_te_hoa_toc' => 'Quốc tế hỏa tốc',
     ];
 
     return $map[$serviceType] ?? $serviceType;
@@ -219,6 +261,69 @@ function get_feedback_media_for_order(string $orderCode): array
     );
 }
 
+function get_saved_addresses(mysqli $conn, int $userId): array
+{
+    $items = [];
+    $stmt = $conn->prepare(
+        "SELECT id, ten_goi_nho AS name, so_dien_thoai AS phone, dia_chi AS address, tao_luc AS created_at
+         FROM dia_chi_da_luu
+         WHERE nguoi_dung_id = ?
+         ORDER BY id DESC"
+    );
+
+    if (!$stmt) {
+        return $items;
+    }
+
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $items[] = with_saved_address_aliases([
+            'id' => (int) $row['id'],
+            'name' => $row['name'],
+            'phone' => $row['phone'],
+            'address' => $row['address'],
+            'created_at' => $row['created_at'],
+        ]);
+    }
+    $stmt->close();
+
+    return $items;
+}
+
+function add_order_log(mysqli $conn, int $orderId, int $userId, string $oldStatus, string $newStatus, string $note): void
+{
+    $stmt = $conn->prepare(
+        "INSERT INTO nhat_ky_don_hang (don_hang_id, nguoi_dung_id, trang_thai_cu, trang_thai_moi, ghi_chu)
+         VALUES (?, ?, ?, ?, ?)"
+    );
+
+    if (!$stmt) {
+        return;
+    }
+
+    $stmt->bind_param('iisss', $orderId, $userId, $oldStatus, $newStatus, $note);
+    $stmt->execute();
+    $stmt->close();
+}
+
+function add_notification(mysqli $conn, int $userId, int $orderId, string $message, string $link): void
+{
+    $stmt = $conn->prepare(
+        "INSERT INTO thong_bao (nguoi_dung_id, don_hang_id, noi_dung, duong_dan)
+         VALUES (?, ?, ?, ?)"
+    );
+
+    if (!$stmt) {
+        return;
+    }
+
+    $stmt->bind_param('iiss', $userId, $orderId, $message, $link);
+    $stmt->execute();
+    $stmt->close();
+}
+
 function get_customer_kpis(mysqli $conn, int $userId): array
 {
     $stats = [
@@ -232,13 +337,13 @@ function get_customer_kpis(mysqli $conn, int $userId): array
 
     $statsSql = "SELECT
         COUNT(*) AS total_orders,
-        COALESCE(SUM(status = 'pending'), 0) AS pending_orders,
-        COALESCE(SUM(status = 'shipping'), 0) AS shipping_orders,
-        COALESCE(SUM(status = 'completed'), 0) AS completed_orders,
-        COALESCE(SUM(status = 'cancelled'), 0) AS cancelled_orders,
-        COALESCE(SUM(payment_status = 'unpaid' AND status <> 'cancelled'), 0) AS unpaid_orders
-        FROM orders
-        WHERE user_id = ?";
+        COALESCE(SUM(trang_thai = 'pending'), 0) AS pending_orders,
+        COALESCE(SUM(trang_thai = 'shipping'), 0) AS shipping_orders,
+        COALESCE(SUM(trang_thai = 'completed'), 0) AS completed_orders,
+        COALESCE(SUM(trang_thai = 'cancelled'), 0) AS cancelled_orders,
+        COALESCE(SUM(trang_thai_thanh_toan = 'unpaid' AND trang_thai <> 'cancelled'), 0) AS unpaid_orders
+        FROM don_hang
+        WHERE nguoi_dung_id = ?";
 
     $stmt = $conn->prepare($statsSql);
     if ($stmt) {
@@ -266,7 +371,7 @@ function handle_session(mysqli $conn): void
 
     respond([
         'status' => 'success',
-        'user' => [
+        'user' => with_customer_profile_aliases([
             'id' => $userId,
             'username' => $user['username'],
             'fullname' => $user['fullname'],
@@ -275,7 +380,7 @@ function handle_session(mysqli $conn): void
             'company_name' => $user['company_name'],
             'tax_code' => $user['tax_code'],
             'company_address' => $user['company_address'],
-        ],
+        ]),
         'meta' => [
             'order_total' => $stats['total'],
         ],
@@ -294,17 +399,17 @@ function handle_dashboard(mysqli $conn): void
 
     $stats = get_customer_kpis($conn, $userId);
 
-    $recentSql = "SELECT id, order_code, receiver_name, receiver_phone, delivery_address, shipping_fee, cod_amount, status, payment_status, service_type, created_at
-                  FROM orders
-                  WHERE user_id = ?";
+    $recentSql = "SELECT id, ma_don_hang AS order_code, ten_nguoi_nhan AS receiver_name, so_dien_thoai_nguoi_nhan AS receiver_phone, dia_chi_giao_hang AS delivery_address, phi_van_chuyen AS shipping_fee, so_tien_cod AS cod_amount, trang_thai AS status, trang_thai_thanh_toan AS payment_status, loai_dich_vu AS service_type, tao_luc AS created_at
+                  FROM don_hang
+                  WHERE nguoi_dung_id = ?";
     $types = 'i';
     $params = [$userId];
     if ($recentStatus !== 'all') {
-        $recentSql .= " AND status = ?";
+        $recentSql .= " AND trang_thai = ?";
         $types .= 's';
         $params[] = $recentStatus;
     }
-    $recentSql .= " ORDER BY created_at DESC LIMIT 6";
+    $recentSql .= " ORDER BY tao_luc DESC LIMIT 6";
 
     $stmt = $conn->prepare($recentSql);
     if (!$stmt) {
@@ -331,6 +436,7 @@ function handle_dashboard(mysqli $conn): void
             'service_type' => $row['service_type'],
             'service_label' => get_service_label($row['service_type']),
             'created_at' => $row['created_at'],
+            'can_cancel' => can_customer_cancel_order((string) $row['status']),
         ];
     }
     $stmt->close();
@@ -358,12 +464,12 @@ function handle_orders(mysqli $conn): void
     $limit = min(20, max(1, (int) ($_GET['limit'] ?? 10)));
     $offset = ($page - 1) * $limit;
 
-    $where = ["user_id = ?"];
+    $where = ["nguoi_dung_id = ?"];
     $params = [$userId];
     $types = 'i';
 
     if ($search !== '') {
-        $where[] = "(order_code LIKE ? OR receiver_name LIKE ? OR receiver_phone LIKE ?)";
+        $where[] = "(ma_don_hang LIKE ? OR ten_nguoi_nhan LIKE ? OR so_dien_thoai_nguoi_nhan LIKE ?)";
         $searchTerm = '%' . $search . '%';
         $params[] = $searchTerm;
         $params[] = $searchTerm;
@@ -372,13 +478,13 @@ function handle_orders(mysqli $conn): void
     }
 
     if ($status !== '') {
-        $where[] = "status = ?";
+        $where[] = "trang_thai = ?";
         $params[] = $status;
         $types .= 's';
     }
 
     if ($dateFrom !== '' && $dateTo !== '') {
-        $where[] = "DATE(created_at) BETWEEN ? AND ?";
+        $where[] = "DATE(tao_luc) BETWEEN ? AND ?";
         $params[] = $dateFrom;
         $params[] = $dateTo;
         $types .= 'ss';
@@ -386,7 +492,7 @@ function handle_orders(mysqli $conn): void
 
     $whereSql = implode(' AND ', $where);
 
-    $countSql = "SELECT COUNT(*) AS total FROM orders WHERE {$whereSql}";
+    $countSql = "SELECT COUNT(*) AS total FROM don_hang WHERE {$whereSql}";
     $countStmt = $conn->prepare($countSql);
     if (!$countStmt) {
         respond(['status' => 'error', 'message' => 'Không thể tải lịch sử đơn hàng.'], 500);
@@ -396,10 +502,10 @@ function handle_orders(mysqli $conn): void
     $totalRecords = (int) (($countStmt->get_result()->fetch_assoc()['total'] ?? 0));
     $countStmt->close();
 
-    $listSql = "SELECT id, order_code, receiver_name, receiver_phone, pickup_address, delivery_address, shipping_fee, cod_amount, status, payment_status, service_type, created_at
-                FROM orders
+    $listSql = "SELECT id, ma_don_hang AS order_code, ten_nguoi_nhan AS receiver_name, so_dien_thoai_nguoi_nhan AS receiver_phone, dia_chi_lay_hang AS pickup_address, dia_chi_giao_hang AS delivery_address, phi_van_chuyen AS shipping_fee, so_tien_cod AS cod_amount, trang_thai AS status, trang_thai_thanh_toan AS payment_status, loai_dich_vu AS service_type, tao_luc AS created_at
+                FROM don_hang
                 WHERE {$whereSql}
-                ORDER BY created_at DESC
+                ORDER BY tao_luc DESC
                 LIMIT ? OFFSET ?";
     $listStmt = $conn->prepare($listSql);
     if (!$listStmt) {
@@ -430,6 +536,7 @@ function handle_orders(mysqli $conn): void
             'service_type' => $row['service_type'],
             'service_label' => get_service_label($row['service_type']),
             'created_at' => $row['created_at'],
+            'can_cancel' => can_customer_cancel_order((string) $row['status']),
         ];
     }
     $listStmt->close();
@@ -463,10 +570,53 @@ function handle_order_detail(mysqli $conn): void
     }
 
     $stmt = $conn->prepare(
-        "SELECT o.*, u.fullname AS shipper_name, u.phone AS shipper_phone, u.vehicle_type AS shipper_vehicle
-         FROM orders o
-         LEFT JOIN users u ON o.shipper_id = u.id
-         WHERE o.id = ? AND o.user_id = ?
+        "SELECT o.id,
+                o.ma_don_hang AS order_code,
+                o.ma_don_hang_khach AS client_order_code,
+                o.loai_dich_vu AS service_type,
+                o.loai_goi_hang AS package_type,
+                o.loai_phuong_tien AS vehicle_type,
+                o.thoi_gian_lay_hang AS pickup_time,
+                o.dia_chi_lay_hang AS pickup_address,
+                o.dia_chi_giao_hang AS delivery_address,
+                o.ten_nguoi_nhan AS receiver_name,
+                o.so_dien_thoai_nguoi_nhan AS receiver_phone,
+                o.ten_nguoi_gui AS name,
+                o.so_dien_thoai_nguoi_gui AS phone,
+                o.trang_thai AS status,
+                o.phi_van_chuyen AS shipping_fee,
+                o.so_tien_cod AS cod_amount,
+                o.phuong_thuc_thanh_toan AS payment_method,
+                o.trang_thai_thanh_toan AS payment_status,
+                o.tao_luc AS created_at,
+                o.ghi_chu AS note,
+                o.du_lieu_dich_vu_json AS service_meta_json,
+                o.chi_tiet_gia_json AS pricing_breakdown_json,
+                o.du_lieu_dat_lich_json AS booking_payload_json,
+                o.ghi_chu_shipper AS shipper_note,
+                o.ly_do_huy AS cancel_reason,
+                o.danh_gia_so_sao AS rating,
+                o.phan_hoi AS feedback,
+                o.anh_xac_nhan_giao_hang AS pod_image,
+                o.shipper_id,
+                o.la_doanh_nghiep AS is_corporate,
+                o.ten_cong_ty AS company_name,
+                o.email_cong_ty AS company_email,
+                o.ma_so_thue_cong_ty AS company_tax_code,
+                o.dia_chi_cong_ty AS company_address,
+                o.thong_tin_ngan_hang_cong_ty AS company_bank_info,
+                o.quoc_gia_quoc_te AS intl_country,
+                o.tinh_bang_quoc_te AS intl_province,
+                o.ma_buu_chinh_quoc_te AS intl_postal_code,
+                o.so_giay_to_nguoi_nhan AS receiver_id_number,
+                o.muc_dich_quoc_te AS intl_purpose,
+                o.ma_hs_quoc_te AS intl_hs_code,
+                u.ho_ten AS shipper_name,
+                u.so_dien_thoai AS shipper_phone,
+                u.loai_phuong_tien AS shipper_vehicle
+         FROM don_hang o
+         LEFT JOIN nguoi_dung u ON o.shipper_id = u.id
+         WHERE o.id = ? AND o.nguoi_dung_id = ?
          LIMIT 1"
     );
 
@@ -485,9 +635,9 @@ function handle_order_detail(mysqli $conn): void
 
     $items = [];
     $itemStmt = $conn->prepare(
-        "SELECT id, item_name, quantity, weight, length, width, height, declared_value
-         FROM order_items
-         WHERE order_id = ?
+        "SELECT id, ten_mat_hang AS item_name, so_luong AS quantity, can_nang AS weight, chieu_dai AS length, chieu_rong AS width, chieu_cao AS height, gia_tri_khai_bao AS declared_value
+         FROM don_hang_mat_hang
+         WHERE don_hang_id = ?
          ORDER BY id ASC"
     );
     if ($itemStmt) {
@@ -511,10 +661,10 @@ function handle_order_detail(mysqli $conn): void
 
     $logs = [];
     $logStmt = $conn->prepare(
-        "SELECT old_status, new_status, note, created_at
-         FROM order_logs
-         WHERE order_id = ?
-         ORDER BY created_at ASC"
+        "SELECT trang_thai_cu AS old_status, trang_thai_moi AS new_status, ghi_chu AS note, tao_luc AS created_at
+         FROM nhat_ky_don_hang
+         WHERE don_hang_id = ?
+         ORDER BY tao_luc ASC"
     );
     if ($logStmt) {
         $logStmt->bind_param('i', $orderId);
@@ -585,6 +735,7 @@ function handle_order_detail(mysqli $conn): void
             'rating' => $order['rating'] !== null ? (int) $order['rating'] : null,
             'feedback' => $order['feedback'],
             'pod_image' => $order['pod_image'] ? '../uploads/' . ltrim((string) $order['pod_image'], '/') : '',
+            'can_cancel' => can_customer_cancel_order((string) $order['status']),
         ],
         'provider' => [
             'shipper_id' => $order['shipper_id'] ? (int) $order['shipper_id'] : null,
@@ -633,7 +784,7 @@ function handle_profile(mysqli $conn): void
 
     respond([
         'status' => 'success',
-        'profile' => [
+        'profile' => with_customer_profile_aliases([
             'id' => $userId,
             'username' => $user['username'],
             'fullname' => $user['fullname'],
@@ -642,8 +793,9 @@ function handle_profile(mysqli $conn): void
             'company_name' => $user['company_name'],
             'tax_code' => $user['tax_code'],
             'company_address' => $user['company_address'],
-        ],
+        ]),
         'stats' => $stats,
+        'saved_addresses' => get_saved_addresses($conn, $userId),
     ]);
 }
 
@@ -652,23 +804,35 @@ function handle_update_profile(mysqli $conn): void
     $user = require_customer($conn);
     $userId = (int) $user['id'];
 
-    $fullname = trim((string) ($_POST['fullname'] ?? ''));
-    $phone = trim((string) ($_POST['phone'] ?? ''));
-    $companyName = trim((string) ($_POST['company_name'] ?? ''));
-    $taxCode = trim((string) ($_POST['tax_code'] ?? ''));
-    $companyAddress = trim((string) ($_POST['company_address'] ?? ''));
+    $fullname = request_value(['ho_ten', 'fullname']);
+    $phone = request_value(['so_dien_thoai', 'phone']);
+    $companyName = request_value(['ten_cong_ty', 'company_name']);
+    $taxCode = request_value(['ma_so_thue', 'tax_code']);
+    $companyAddress = request_value(['dia_chi_cong_ty', 'company_address']);
 
     if ($fullname === '' || $phone === '') {
         respond(['status' => 'error', 'message' => 'Vui lòng nhập đầy đủ họ tên và số điện thoại.'], 422);
     }
 
-    if (!preg_match('/^0[0-9]{9,10}$/', $phone)) {
+    if (!is_valid_phone($phone)) {
         respond(['status' => 'error', 'message' => 'Số điện thoại không hợp lệ.'], 422);
     }
 
+    $duplicateStmt = $conn->prepare("SELECT id FROM nguoi_dung WHERE so_dien_thoai = ? AND id <> ? LIMIT 1");
+    if ($duplicateStmt) {
+        $duplicateStmt->bind_param('si', $phone, $userId);
+        $duplicateStmt->execute();
+        $duplicate = $duplicateStmt->get_result()->fetch_assoc();
+        $duplicateStmt->close();
+
+        if ($duplicate) {
+            respond(['status' => 'error', 'message' => 'Số điện thoại này đã được sử dụng bởi tài khoản khác.'], 422);
+        }
+    }
+
     $stmt = $conn->prepare(
-        "UPDATE users
-         SET fullname = ?, phone = ?, company_name = ?, tax_code = ?, company_address = ?
+        "UPDATE nguoi_dung
+         SET ho_ten = ?, so_dien_thoai = ?, ten_cong_ty = ?, ma_so_thue = ?, dia_chi_cong_ty = ?
          WHERE id = ?"
     );
 
@@ -687,6 +851,247 @@ function handle_update_profile(mysqli $conn): void
     respond(['status' => 'success', 'message' => 'Đã cập nhật thông tin cá nhân.']);
 }
 
+function handle_change_password(mysqli $conn): void
+{
+    $user = require_customer($conn);
+    $userId = (int) $user['id'];
+
+    $currentPassword = request_value(['mat_khau_hien_tai', 'current_password']);
+    $newPassword = request_value(['mat_khau_moi', 'new_password']);
+    $confirmPassword = request_value(['xac_nhan_mat_khau_moi', 'confirm_password']);
+
+    if ($currentPassword === '' || $newPassword === '' || $confirmPassword === '') {
+        respond(['status' => 'error', 'message' => 'Vui lòng nhập đầy đủ thông tin đổi mật khẩu.'], 422);
+    }
+
+    if (strlen($newPassword) < 8) {
+        respond(['status' => 'error', 'message' => 'Mật khẩu mới phải có ít nhất 8 ký tự.'], 422);
+    }
+
+    if ($newPassword !== $confirmPassword) {
+        respond(['status' => 'error', 'message' => 'Xác nhận mật khẩu mới không khớp.'], 422);
+    }
+
+    $stmt = $conn->prepare("SELECT mat_khau AS password FROM nguoi_dung WHERE id = ? LIMIT 1");
+    if (!$stmt) {
+        respond(['status' => 'error', 'message' => 'Không thể kiểm tra mật khẩu hiện tại.'], 500);
+    }
+
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$row || !password_verify($currentPassword, (string) ($row['password'] ?? ''))) {
+        respond(['status' => 'error', 'message' => 'Mật khẩu hiện tại không chính xác.'], 422);
+    }
+
+    if (password_verify($newPassword, (string) ($row['password'] ?? ''))) {
+        respond(['status' => 'error', 'message' => 'Mật khẩu mới phải khác mật khẩu hiện tại.'], 422);
+    }
+
+    $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
+    $updateStmt = $conn->prepare("UPDATE nguoi_dung SET mat_khau = ? WHERE id = ?");
+    if (!$updateStmt) {
+        respond(['status' => 'error', 'message' => 'Không thể cập nhật mật khẩu.'], 500);
+    }
+
+    $updateStmt->bind_param('si', $newHash, $userId);
+    $success = $updateStmt->execute();
+    $updateStmt->close();
+
+    if (!$success) {
+        respond(['status' => 'error', 'message' => 'Đổi mật khẩu thất bại.'], 500);
+    }
+
+    respond(['status' => 'success', 'message' => 'Đã cập nhật mật khẩu thành công.']);
+}
+
+function handle_save_address(mysqli $conn): void
+{
+    $user = require_customer($conn);
+    $userId = (int) $user['id'];
+
+    $addressId = (int) ($_POST['dia_chi_id'] ?? ($_POST['address_id'] ?? 0));
+    $name = request_value(['ten_goi_nho', 'name']);
+    $phone = request_value(['so_dien_thoai', 'phone']);
+    $address = request_value(['dia_chi', 'address']);
+
+    if ($name === '' || $phone === '' || $address === '') {
+        respond(['status' => 'error', 'message' => 'Vui lòng nhập đủ tên gợi nhớ, số điện thoại và địa chỉ.'], 422);
+    }
+
+    if (!is_valid_phone($phone)) {
+        respond(['status' => 'error', 'message' => 'Số điện thoại địa chỉ lưu không hợp lệ.'], 422);
+    }
+
+    if ($addressId > 0) {
+        $checkStmt = $conn->prepare("SELECT id FROM dia_chi_da_luu WHERE id = ? AND nguoi_dung_id = ? LIMIT 1");
+        if (!$checkStmt) {
+            respond(['status' => 'error', 'message' => 'Không thể kiểm tra địa chỉ cần cập nhật.'], 500);
+        }
+        $checkStmt->bind_param('ii', $addressId, $userId);
+        $checkStmt->execute();
+        $exists = $checkStmt->get_result()->fetch_assoc();
+        $checkStmt->close();
+
+        if (!$exists) {
+            respond(['status' => 'error', 'message' => 'Địa chỉ đã lưu không tồn tại.'], 404);
+        }
+
+        $stmt = $conn->prepare(
+            "UPDATE dia_chi_da_luu
+             SET ten_goi_nho = ?, so_dien_thoai = ?, dia_chi = ?
+             WHERE id = ? AND nguoi_dung_id = ?"
+        );
+        if (!$stmt) {
+            respond(['status' => 'error', 'message' => 'Không thể cập nhật địa chỉ đã lưu.'], 500);
+        }
+        $stmt->bind_param('sssii', $name, $phone, $address, $addressId, $userId);
+        $success = $stmt->execute();
+        $stmt->close();
+
+        if (!$success) {
+            respond(['status' => 'error', 'message' => 'Cập nhật địa chỉ thất bại.'], 500);
+        }
+
+        respond([
+            'status' => 'success',
+            'message' => 'Đã cập nhật địa chỉ đã lưu.',
+            'saved_addresses' => get_saved_addresses($conn, $userId),
+        ]);
+    }
+
+    $stmt = $conn->prepare(
+        "INSERT INTO dia_chi_da_luu (nguoi_dung_id, ten_goi_nho, so_dien_thoai, dia_chi)
+         VALUES (?, ?, ?, ?)"
+    );
+    if (!$stmt) {
+        respond(['status' => 'error', 'message' => 'Không thể lưu địa chỉ mới.'], 500);
+    }
+
+    $stmt->bind_param('isss', $userId, $name, $phone, $address);
+    $success = $stmt->execute();
+    $stmt->close();
+
+    if (!$success) {
+        respond(['status' => 'error', 'message' => 'Lưu địa chỉ thất bại.'], 500);
+    }
+
+    respond([
+        'status' => 'success',
+        'message' => 'Đã thêm địa chỉ đã lưu.',
+        'saved_addresses' => get_saved_addresses($conn, $userId),
+    ]);
+}
+
+function handle_delete_address(mysqli $conn): void
+{
+    $user = require_customer($conn);
+    $userId = (int) $user['id'];
+    $addressId = (int) ($_POST['dia_chi_id'] ?? ($_POST['address_id'] ?? 0));
+
+    if ($addressId <= 0) {
+        respond(['status' => 'error', 'message' => 'Thiếu địa chỉ cần xóa.'], 422);
+    }
+
+    $stmt = $conn->prepare("DELETE FROM dia_chi_da_luu WHERE id = ? AND nguoi_dung_id = ?");
+    if (!$stmt) {
+        respond(['status' => 'error', 'message' => 'Không thể xóa địa chỉ đã lưu.'], 500);
+    }
+
+    $stmt->bind_param('ii', $addressId, $userId);
+    $stmt->execute();
+    $affected = $stmt->affected_rows;
+    $stmt->close();
+
+    if ($affected <= 0) {
+        respond(['status' => 'error', 'message' => 'Địa chỉ không tồn tại hoặc bạn không có quyền xóa.'], 404);
+    }
+
+    respond([
+        'status' => 'success',
+        'message' => 'Đã xóa địa chỉ đã lưu.',
+        'saved_addresses' => get_saved_addresses($conn, $userId),
+    ]);
+}
+
+function handle_cancel_order(mysqli $conn): void
+{
+    $user = require_customer($conn);
+    $userId = (int) $user['id'];
+    $orderId = (int) ($_POST['order_id'] ?? 0);
+    $reason = trim((string) ($_POST['reason'] ?? ''));
+
+    if ($orderId <= 0) {
+        respond(['status' => 'error', 'message' => 'Thiếu đơn hàng cần hủy.'], 422);
+    }
+
+    $stmt = $conn->prepare(
+        "SELECT id, ma_don_hang AS order_code, trang_thai AS status
+         FROM don_hang
+         WHERE id = ? AND nguoi_dung_id = ?
+         LIMIT 1"
+    );
+    if (!$stmt) {
+        respond(['status' => 'error', 'message' => 'Không thể kiểm tra đơn hàng cần hủy.'], 500);
+    }
+
+    $stmt->bind_param('ii', $orderId, $userId);
+    $stmt->execute();
+    $order = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$order) {
+        respond(['status' => 'error', 'message' => 'Đơn hàng không tồn tại hoặc bạn không có quyền thao tác.'], 404);
+    }
+
+    if (!can_customer_cancel_order((string) $order['status'])) {
+        respond(['status' => 'error', 'message' => 'Chỉ có thể hủy đơn đang ở trạng thái chờ xử lý.'], 422);
+    }
+
+    if ($reason === '') {
+        $reason = 'Khách hàng chủ động hủy đơn.';
+    }
+
+    try {
+        $conn->begin_transaction();
+
+        $updateStmt = $conn->prepare(
+            "UPDATE don_hang
+             SET trang_thai = 'cancelled', ly_do_huy = ?
+             WHERE id = ? AND nguoi_dung_id = ?"
+        );
+        if (!$updateStmt) {
+            throw new Exception('Không thể cập nhật trạng thái đơn hàng.');
+        }
+        $updateStmt->bind_param('sii', $reason, $orderId, $userId);
+        $updateStmt->execute();
+        $affected = $updateStmt->affected_rows;
+        $updateStmt->close();
+
+        if ($affected <= 0) {
+            throw new Exception('Đơn hàng không còn khả năng hủy.');
+        }
+
+        add_order_log($conn, $orderId, $userId, (string) $order['status'], 'cancelled', $reason);
+        add_notification(
+            $conn,
+            $userId,
+            $orderId,
+            'Đơn hàng ' . $order['order_code'] . ' đã được hủy.',
+            'khach-hang/chi-tiet-don-hang.html?id=' . $orderId
+        );
+
+        $conn->commit();
+    } catch (Throwable $exception) {
+        $conn->rollback();
+        respond(['status' => 'error', 'message' => $exception->getMessage()], 500);
+    }
+
+    respond(['status' => 'success', 'message' => 'Đã hủy đơn hàng thành công.']);
+}
+
 function handle_submit_feedback(mysqli $conn): void
 {
     require_customer($conn);
@@ -703,7 +1108,7 @@ function handle_submit_feedback(mysqli $conn): void
         respond(['status' => 'error', 'message' => 'Vui lòng chọn mức đánh giá từ 1 đến 5 sao.'], 422);
     }
 
-    $stmt = $conn->prepare("SELECT order_code FROM orders WHERE id = ? AND user_id = ? LIMIT 1");
+    $stmt = $conn->prepare("SELECT ma_don_hang AS order_code FROM don_hang WHERE id = ? AND nguoi_dung_id = ? LIMIT 1");
     if (!$stmt) {
         respond(['status' => 'error', 'message' => 'Không thể kiểm tra đơn hàng phản hồi.'], 500);
     }
@@ -717,7 +1122,7 @@ function handle_submit_feedback(mysqli $conn): void
         respond(['status' => 'error', 'message' => 'Đơn hàng không hợp lệ.'], 404);
     }
 
-    $updateStmt = $conn->prepare("UPDATE orders SET rating = ?, feedback = ? WHERE id = ? AND user_id = ?");
+    $updateStmt = $conn->prepare("UPDATE don_hang SET danh_gia_so_sao = ?, phan_hoi = ? WHERE id = ? AND nguoi_dung_id = ?");
     if (!$updateStmt) {
         respond(['status' => 'error', 'message' => 'Không thể lưu phản hồi.'], 500);
     }
@@ -821,6 +1226,34 @@ switch ($action) {
             respond(['status' => 'error', 'message' => 'Phương thức không hợp lệ.'], 405);
         }
         handle_update_profile($conn);
+        break;
+
+    case 'change-password':
+        if ($method !== 'POST') {
+            respond(['status' => 'error', 'message' => 'Phương thức không hợp lệ.'], 405);
+        }
+        handle_change_password($conn);
+        break;
+
+    case 'save-address':
+        if ($method !== 'POST') {
+            respond(['status' => 'error', 'message' => 'Phương thức không hợp lệ.'], 405);
+        }
+        handle_save_address($conn);
+        break;
+
+    case 'delete-address':
+        if ($method !== 'POST') {
+            respond(['status' => 'error', 'message' => 'Phương thức không hợp lệ.'], 405);
+        }
+        handle_delete_address($conn);
+        break;
+
+    case 'cancel-order':
+        if ($method !== 'POST') {
+            respond(['status' => 'error', 'message' => 'Phương thức không hợp lệ.'], 405);
+        }
+        handle_cancel_order($conn);
         break;
 
     case 'submit-feedback':

@@ -3,14 +3,53 @@ require_once __DIR__ . "/../../core/Database.php";
 
 class Service {
     private $db;
-    private $table = "services";
+    private $table = "dichvu";
 
     public function __construct() {
         $this->db = (new Database())->connect();
     }
 
     public function all() {
-        return $this->db->query("SELECT * FROM $this->table")->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare("SELECT dv.*, gn.ten, gn.gia FROM $this->table AS dv LEFT JOIN giaonhan AS gn ON dv.id = gn.iddichvu");
+        $stmt->execute();
+        $rows= $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $services = [];
+
+        foreach ($rows as $row) { 
+            $id = $row['id'];
+            if(!isset($services[$id])) {
+                $services[$id] = [
+                    'id' => (int)$row['id'],
+                    'service_name' => $row['tendichvu'],
+                    'summary' => $row['mota'],
+                    'image' => $row['hinhanh'],
+                    'price' => $row['gia'],
+                    'price_unit' => $row['donvitinh'],
+                    'work_items' => array_map('trim', explode(',', $row['congviec'])),
+                    'support_chemicals' => array_map('trim', explode(',', $row['hoachat'])),
+                    'transport_options' => []
+                ];
+
+            }
+            if($row["ten"]) {
+                $services[$id]['transport_options'][] = [
+                    'name' => $row['ten'],
+                    'price' => $row['gia']
+                ];
+
+            }
+        }
+        $provider = [
+            'address' => "Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh, Việt Nam",
+            'lat' => 10.871715,
+            'lng' => 106.625886
+        ];
+
+        return [
+            'provider' => $provider,
+            'services' => array_values($services)
+        ];
     }
 
     public function find($id) {

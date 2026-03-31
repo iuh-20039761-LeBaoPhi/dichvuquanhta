@@ -1,0 +1,290 @@
+.trang-dashboard-khach-hang {
+  background:
+    radial-gradient(circle at top left, rgba(255, 183, 3, 0.12), transparent 20%),
+    linear-gradient(180deg, #f4faf6 0%, #ffffff 26%, #eef5f1 100%);
+}
+
+.hero-dashboard-khach-hang {
+  background: linear-gradient(135deg, #123326 0%, #1b4332 48%, #2d6a4f 100%);
+  color: #ffffff;
+}
+
+.khu-dashboard-khach-hang {
+  padding: 42px 0 80px;
+}
+
+.luoi-dashboard-khach-hang {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.85fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.dashboard-khach-hang-noi-dung,
+.dashboard-khach-hang-canh {
+  display: grid;
+  gap: 24px;
+}
+
+.the-dashboard-khach-hang {
+  background: #ffffff;
+  border: 1px solid rgba(27, 67, 50, 0.1);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 20px 52px rgba(15, 23, 42, 0.08);
+}
+
+.the-dashboard-khach-hang--hero {
+  background:
+    radial-gradient(circle at top right, rgba(255, 183, 3, 0.18), transparent 24%),
+    linear-gradient(135deg, rgba(18, 51, 38, 0.98) 0%, rgba(27, 67, 50, 0.96) 100%);
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.dashboard-khach-hang-nhan {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-khach-hang-dau {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.dashboard-khach-hang-dau h2,
+.dashboard-khach-hang-tieu-de {
+  margin: 0;
+}
+
+.dashboard-khach-hang-dau h2 {
+  margin-top: 16px;
+  font-size: clamp(1.8rem, 2vw, 2.5rem);
+  line-height: 1.2;
+}
+
+.dashboard-khach-hang-dau p,
+.dashboard-khach-hang-mo-ta,
+.dashboard-khach-hang-goi-y {
+  color: #dbe8df;
+  line-height: 1.7;
+}
+
+.dashboard-khach-hang-hanh-dong {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.dashboard-khach-hang-hanh-dong .nut-hanh-dong,
+.dashboard-khach-hang-hanh-dong .nut-phu,
+.dashboard-khach-hang-canh .nut-phu {
+  text-decoration: none;
+}
+
+.dashboard-khach-hang-thong-tin {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.dashboard-chi-so {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.dashboard-chi-so span {
+  display: block;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+}
+
+.dashboard-chi-so strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 1.85rem;
+  color: #ffffff;
+}
+
+.dashboard-khach-hang-tieu-de {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.dashboard-khach-hang-tieu-de h3 {
+  margin: 0 0 8px;
+  color: #173528;
+}
+
+.dashboard-khach-hang-tieu-de p {
+  margin: 0;
+  color: #5d7469;
+  line-height: 1.7;
+}
+
+.dashboard-khach-hang-grid-nhanh {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.the-link-nhanh {
+  display: grid;
+  gap: 10px;
+  min-height: 164px;
+  padding: 22px;
+  border-radius: 24px;
+  text-decoration: none;
+  color: #173528;
+  background: linear-gradient(180deg, #f7fbf8 0%, #edf5f0 100%);
+  border: 1px solid #d7e6de;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.the-link-nhanh:hover {
+  transform: translateY(-2px);
+  border-color: rgba(27, 67, 50, 0.22);
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
+}
+
+.the-link-nhanh i {
+  font-size: 1.2rem;
+  color: #ff9f1c;
+}
+
+.the-link-nhanh strong {
+  font-size: 1.1rem;
+}
+
+.the-link-nhanh span,
+.trang-thai-yeu-cau span,
+.the-hoso-dashboard p,
+.the-dashboard-khach-hang ul,
+.the-dashboard-khach-hang li,
+.the-dashboard-khach-hang small {
+  color: #5c7368;
+  line-height: 1.7;
+}
+
+.danh-sach-yeu-cau {
+  display: grid;
+  gap: 16px;
+}
+
+.trang-thai-yeu-cau {
+  display: grid;
+  gap: 14px;
+  padding: 20px 22px;
+  border: 1px solid #dce9e2;
+  border-radius: 24px;
+  background: #fbfdfb;
+}
+
+.trang-thai-yeu-cau__dau {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.trang-thai-yeu-cau__dau strong,
+.the-hoso-dashboard strong {
+  color: #173528;
+}
+
+.nhan-trang-thai-dashboard {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nhan-trang-thai-dashboard--moi {
+  background: #e8f3ff;
+  color: #0f5cad;
+}
+
+.nhan-trang-thai-dashboard--xac-nhan {
+  background: #fff5d9;
+  color: #8d5a00;
+}
+
+.nhan-trang-thai-dashboard--dang-xu-ly {
+  background: #e7faf0;
+  color: #177245;
+}
+
+.luoi-lien-he-dashboard {
+  display: grid;
+  gap: 14px;
+}
+
+.the-hoso-dashboard {
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: #f7fbf8;
+  border: 1px solid #dbe7e1;
+}
+
+.the-hoso-dashboard h4 {
+  margin: 0 0 10px;
+  color: #173528;
+}
+
+.the-hoso-dashboard p {
+  margin: 0;
+}
+
+.the-hoso-dashboard p + p,
+.the-dashboard-khach-hang li + li {
+  margin-top: 8px;
+}
+
+.danh-sach-buoc-tiep {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.dashboard-khach-hang-rong {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 960px) {
+  .luoi-dashboard-khach-hang,
+  .dashboard-khach-hang-grid-nhanh,
+  .dashboard-khach-hang-thong-tin {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-khach-hang-dau {
+    flex-direction: column;
+  }
+}

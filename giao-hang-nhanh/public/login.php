@@ -29,14 +29,14 @@ function normalize_redirect_target($target)
 $redirect_target = normalize_redirect_target($redirect_target);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $loginIdentifier = trim((string) ($_POST['so_dien_thoai'] ?? ($_POST['phone'] ?? ($_POST['ten_dang_nhap'] ?? ($_POST['username'] ?? '')))));
+    $password = $_POST['mat_khau'] ?? ($_POST['password'] ?? '');
 
-    if (empty($username) || empty($password)) {
-        $error_msg = "Vui lòng nhập tên đăng nhập và mật khẩu.";
+    if (empty($loginIdentifier) || empty($password)) {
+        $error_msg = "Vui lòng nhập số điện thoại và mật khẩu.";
     } else {
-        $stmt = $conn->prepare("SELECT id, username, password, role, is_locked, lock_reason, is_approved FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
+        $stmt = $conn->prepare("SELECT id, ten_dang_nhap AS username, mat_khau AS password, vai_tro AS role, bi_khoa AS is_locked, ly_do_khoa AS lock_reason, da_duyet AS is_approved FROM nguoi_dung WHERE so_dien_thoai = ? OR ten_dang_nhap = ? ORDER BY CASE WHEN so_dien_thoai = ? THEN 0 ELSE 1 END LIMIT 1");
+        $stmt->bind_param("sss", $loginIdentifier, $loginIdentifier, $loginIdentifier);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -56,20 +56,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Phân quyền chuyển hướng mặc định
                 $default_redirect = "khach-hang/dashboard.html";
                 if ($user['role'] === 'admin') {
-                    $default_redirect = "admin-giaohang/admin_stats.php";
+                    $error_msg = "Thông tin đăng nhập không chính xác.";
                 } elseif ($user['role'] === 'shipper') {
                     $default_redirect = "nha-cung-cap/dashboard.html";
                 }
 
-                // Nếu có redirect hợp lệ từ request thì ưu tiên.
-                $target = $redirect_target !== '' ? $redirect_target : $default_redirect;
-                header("Location: " . $target);
-                exit;
+                if ($error_msg === '') {
+                    // Nếu có redirect hợp lệ từ request thì ưu tiên.
+                    $target = $redirect_target !== '' ? $redirect_target : $default_redirect;
+                    header("Location: " . $target);
+                    exit;
+                }
             } else {
                 $error_msg = "Mật khẩu không chính xác.";
             }
         } else {
-            $error_msg = "Tên đăng nhập không tồn tại.";
+            $error_msg = "Số điện thoại không tồn tại.";
         }
         $stmt->close();
     }
@@ -100,13 +102,13 @@ $conn->close();
                 <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect_target); ?>">
             <?php endif; ?>
             <div class="form-group">
-                <label>Tên đăng nhập</label>
-                <input type="text" name="username" required
-                    value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>">
+                <label>Số điện thoại</label>
+                <input type="tel" name="so_dien_thoai" required inputmode="numeric"
+                    value="<?php echo htmlspecialchars($_POST['so_dien_thoai'] ?? ($_POST['phone'] ?? ($_POST['ten_dang_nhap'] ?? ($_POST['username'] ?? '')))); ?>">
             </div>
             <div class="form-group">
                 <label>Mật khẩu</label>
-                <input type="password" name="password" required>
+                <input type="password" name="mat_khau" required>
             </div>
             <button type="submit" class="btn-primary" style="width: 100%;">Đăng Nhập</button>
         </form>

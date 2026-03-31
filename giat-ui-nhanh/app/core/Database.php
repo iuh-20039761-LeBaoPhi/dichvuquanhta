@@ -1,7 +1,7 @@
 <?php
 class Database {
     private $host = "localhost";
-    private $db = "giat-ui-nhanh";
+    private $db = "giatuinhanh";
     private $user = "root";
     private $pass = "";
     public $conn;

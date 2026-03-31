@@ -1,0 +1,259 @@
+[
+  {
+    "id": 1,
+    "name": "🚗 Lái Xe Theo Giờ",
+    "image": "assets/lai-xe-theo-gio.jpg",
+    "alt": "Dịch vụ thuê tài xế lái xe theo giờ trong thành phố",
+    "description": "Dịch vụ thuê tài xế theo giờ linh hoạt, phù hợp với nhu cầu di chuyển ngắn trong thành phố, đưa đón con cái, đi chợ, công việc cá nhân. Tài xế có mặt đúng giờ, lái xe an toàn và phục vụ tận tình.",
+    "includes": [
+      "Tài xế có kinh nghiệm lái xe trong nội thành tối thiểu 3 năm",
+      "Phục vụ đúng giờ tại điểm hẹn, sẵn sàng hỗ trợ mang vác hành lý",
+      "Linh hoạt thời gian, có thể gia hạn theo nhu cầu thực tế",
+      "Tài xế am hiểu đường xá, tránh các điểm kẹt xe cao điểm",
+      "Hỗ trợ xe tự lái hoặc lái xe cho khách (xe khách tự cung cấp)",
+      "Thái độ phục vụ chuyên nghiệp, lịch sự và thân thiện"
+    ],
+    "time_slots": [
+      { "value": "morning", "label": "06:00 - 11:00" },
+      { "value": "afternoon", "label": "11:00 - 17:00" },
+      { "value": "evening", "label": "17:00 - 22:00" },
+      { "value": "night", "label": "22:00 - 06:00" }
+    ],
+    "pricing": {
+      "type": "package",
+      "packages": [
+        { "name": "Gói 2 giờ", "price": 160000, "staff": 1, "hours": 2 },
+        { "name": "Gói 4 giờ", "price": 320000, "staff": 1, "hours": 4 },
+        { "name": "Gói 6 giờ", "price": 480000, "staff": 1, "hours": 6 },
+        { "name": "Gói 8 giờ", "price": 600000, "staff": 1, "hours": 8 },
+        { "name": "Gói 10 giờ", "price": 750000, "staff": 1, "hours": 10 }
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "name": "📅 Lái Xe Theo Ngày",
+    "image": "assets/lai-xe-theo-ngay.jpg",
+    "alt": "Dịch vụ thuê tài xế lái xe theo ngày trọn gói",
+    "description": "Dịch vụ tài xế lái xe trọn ngày, phù hợp với các chuyến công tác, du lịch, hoặc nhu cầu di chuyển nhiều trong ngày. Tài xế đồng hành suốt hành trình, đảm bảo an toàn và đúng lịch trình.",
+    "includes": [
+      "Tài xế có kinh nghiệm lái xe đường trường và nội thành",
+      "Phục vụ từ 8-10 giờ/ngày, linh hoạt theo lịch trình khách hàng",
+      "Hỗ trợ các tuyến đường liên tỉnh, am hiểu cung đường du lịch",
+      "Sẵn sàng hỗ trợ mang vác hành lý và tư vấn lộ trình",
+      "Bảo hiểm hành khách đi kèm trong suốt chuyến đi",
+      "Đảm bảo đúng giờ, lái xe an toàn, tuân thủ luật giao thông"
+    ],
+    "time_slots": [
+      { "value": "full_day", "label": "08:00 - 17:00" },
+      { "value": "flexible", "label": "Linh hoạt theo yêu cầu" }
+    ],
+    "pricing": {
+      "type": "package",
+      "packages": [
+        { "name": "1 Ngày (8 giờ)", "price": 500000, "staff": 1, "hours": 8 },
+        { "name": "2 Ngày", "price": 950000, "staff": 1, "hours": 16 },
+        { "name": "3 Ngày", "price": 1400000, "staff": 1, "hours": 24 },
+        { "name": "5 Ngày", "price": 2250000, "staff": 1, "hours": 40 },
+        { "name": "7 Ngày", "price": 3200000, "staff": 1, "hours": 56 }
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "name": "🛣️ Lái Xe Đường Dài",
+    "image": "assets/lai-xe-duong-dai.jpg",
+    "alt": "Dịch vụ thuê tài xế lái xe đường dài liên tỉnh",
+    "description": "Tài xế giàu kinh nghiệm cho các chuyến xe đường dài liên tỉnh, xuyên Việt. Đảm bảo an toàn, đúng lịch trình, am hiểu cung đường, sẵn sàng phục vụ 24/7.",
+    "includes": [
+      "Tài xế có kinh nghiệm lái xe đường dài tối thiểu 5 năm",
+      "Am hiểu cung đường, biết các điểm nghỉ ngơi an toàn",
+      "Hỗ trợ 24/7, sẵn sàng phục vụ cả ban đêm",
+      "Kiểm tra xe kỹ lưỡng trước mỗi chuyến đi dài",
+      "Nghỉ ngơi hợp lý đảm bảo tỉnh táo và an toàn",
+      "Sẵn sàng tư vấn lộ trình, điểm ăn uống, nghỉ ngơi"
+    ],
+    "time_slots": [
+      { "value": "morning", "label": "Sáng sớm (04:00 - 06:00)" },
+      { "value": "day", "label": "Ban ngày (06:00 - 18:00)" },
+      { "value": "night", "label": "Ban đêm (18:00 - 04:00)" }
+    ],
+    "pricing": {
+      "type": "package",
+      "packages": [
+        { "name": "Dưới 100km", "price": 800000, "staff": 1, "hours": 3 },
+        { "name": "100 - 200km", "price": 1500000, "staff": 1, "hours": 5 },
+        { "name": "200 - 300km", "price": 2100000, "staff": 1, "hours": 7 },
+        { "name": "300 - 400km", "price": 2800000, "staff": 1, "hours": 9 },
+        { "name": "400 - 500km", "price": 3500000, "staff": 1, "hours": 11 },
+        { "name": "Trên 500km", "price": "Liên hệ", "staff": 2, "hours": "Theo thỏa thuận" }
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "name": "👔 Tài Xế Riêng Cá Nhân",
+    "image": "assets/tai-xe-rieng.jpg",
+    "alt": "Dịch vụ thuê tài xế riêng cá nhân dài hạn",
+    "description": "Thuê tài xế riêng lâu dài, phục vụ theo nhu cầu đặc thù của gia đình hoặc doanh nghiệp. Tài xế có lý lịch rõ ràng, thái độ chuyên nghiệp, sẵn sàng đồng hành trong thời gian dài.",
+    "includes": [
+      "Tài xế có lý lịch rõ ràng, được kiểm tra nhân thân",
+      "Phục vụ theo yêu cầu riêng của khách hàng, linh hoạt thời gian",
+      "Hợp đồng dài hạn với mức giá ưu đãi, ổn định",
+      "Hỗ trợ 24/7 khi cần thiết, sẵn sàng cho các chuyến đột xuất",
+      "Chăm sóc và bảo dưỡng xe định kỳ (nếu xe khách cung cấp)",
+      "Đảm bảo sự trung thực, thái độ phục vụ chuyên nghiệp"
+    ],
+    "time_slots": [
+      { "value": "full_time", "label": "Toàn thời gian" },
+      { "value": "part_time", "label": "Bán thời gian" }
+    ],
+    "pricing": {
+      "type": "package",
+      "packages": [
+        { "name": "Theo tháng (22 ngày)", "price": 12000000, "staff": 1, "hours": 176 },
+        { "name": "Theo quý (3 tháng)", "price": 33000000, "staff": 1, "hours": 528 },
+        { "name": "Theo 6 tháng", "price": 63000000, "staff": 1, "hours": 1056 },
+        { "name": "Theo năm", "price": 120000000, "staff": 1, "hours": 2112 }
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "name": "✈️ Đưa Đón Sân Bay",
+    "image": "assets/tai-xe-san-bay.jpg",
+    "alt": "Dịch vụ tài xế đưa đón sân bay chuyên nghiệp",
+    "description": "Dịch vụ tài xế đưa đón sân bay chuyên nghiệp, đúng giờ, hỗ trợ theo dõi chuyến bay, hỗ trợ hành lý. Tài xế có mặt trước giờ đón 15-30 phút.",
+    "includes": [
+      "Tài xế có mặt trước giờ đón 15-30 phút",
+      "Theo dõi chuyến bay để điều chỉnh thời gian đón khi chuyến bay bị delay",
+      "Hỗ trợ mang vác hành lý nặng",
+      "Biển tên đón khách tại ga đến (nếu yêu cầu)",
+      "Xe sạch sẽ, điều hòa mát mẻ",
+      "Phí chờ miễn phí 60 phút tại sân bay"
+    ],
+    "time_slots": [
+      { "value": "anytime", "label": "24/7" }
+    ],
+    "pricing": {
+      "type": "package",
+      "packages": [
+        { "name": "Nội thành - Sân bay Tân Sơn Nhất", "price": 350000, "staff": 1, "hours": 2 },
+        { "name": "Nội thành - Sân bay Nội Bài", "price": 400000, "staff": 1, "hours": 2 },
+        { "name": "Nội thành - Sân bay Đà Nẵng", "price": 300000, "staff": 1, "hours": 1.5 },
+        { "name": "Nội thành - Sân bay Cam Ranh", "price": 450000, "staff": 1, "hours": 2 },
+        { "name": "Liên tỉnh - Sân bay (theo km)", "price": "Tính theo km", "staff": 1, "hours": "Theo thực tế" }
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "name": "🚐 Tài Xế Xe Du Lịch & Xe Khách",
+    "image": "assets/xe-du-lich.jpg",
+    "alt": "Dịch vụ tài xế xe du lịch, xe khách",
+    "description": "Dịch vụ tài xế chuyên nghiệp cho xe khách, xe du lịch từ 7 đến 45 chỗ. Phục vụ tour du lịch, công ty, sự kiện.",
+    "includes": [
+      "Tài xế có bằng lái hạng D, E phù hợp với loại xe",
+      "Kinh nghiệm lái xe du lịch, am hiểu các điểm tham quan",
+      "Sẵn sàng phục vụ theo lịch trình tour trọn gói",
+      "Hỗ trợ liên hệ điểm ăn uống, nghỉ ngơi",
+      "Đảm bảo an toàn tuyệt đối cho đoàn khách",
+      "Thái độ thân thiện, nhiệt tình hỗ trợ hành khách"
+    ],
+    "time_slots": [
+      { "value": "full_day", "label": "Theo lịch trình" }
+    ],
+    "pricing": {
+      "type": "package",
+      "packages": [
+        { "name": "Xe 7 chỗ (theo ngày)", "price": 800000, "staff": 1, "hours": 8 },
+        { "name": "Xe 16 chỗ (theo ngày)", "price": 1200000, "staff": 1, "hours": 8 },
+        { "name": "Xe 29 chỗ (theo ngày)", "price": 1800000, "staff": 1, "hours": 8 },
+        { "name": "Xe 45 chỗ (theo ngày)", "price": 2500000, "staff": 1, "hours": 8 },
+        { "name": "Tour trọn gói (3 ngày 2 đêm)", "price": "Theo thỏa thuận", "staff": 1, "hours": "Theo lịch trình" }
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "name": "🌙 Lái Xe Đêm & Sự Kiện",
+    "image": "assets/lai-xe-ban-dem.jpg",
+    "alt": "Dịch vụ tài xế ban đêm sự kiện",
+    "description": "Dịch vụ tài xế phục vụ ban đêm, phù hợp với các buổi tiệc, sự kiện, đưa đón khách hàng sau giờ làm việc muộn.",
+    "includes": [
+      "Phục vụ từ 18h đến 06h sáng hôm sau",
+      "Tài xế tỉnh táo, không sử dụng chất kích thích",
+      "Sẵn sàng phục vụ các buổi tiệc, sự kiện công ty",
+      "Đưa đón khách hàng, đối tác an toàn về nhà",
+      "Phụ thu ca đêm 20% áp dụng cho khung giờ 22h-6h",
+      "Thái độ phục vụ chuyên nghiệp, kín đáo"
+    ],
+    "time_slots": [
+      { "value": "night", "label": "18:00 - 22:00" },
+      { "value": "late_night", "label": "22:00 - 06:00" }
+    ],
+    "pricing": {
+      "type": "package",
+      "packages": [
+        { "name": "Gói 4 giờ (18h-22h)", "price": 380000, "staff": 1, "hours": 4 },
+        { "name": "Gói 4 giờ (22h-2h)", "price": 450000, "staff": 1, "hours": 4 },
+        { "name": "Gói 8 giờ (18h-2h)", "price": 750000, "staff": 1, "hours": 8 },
+        { "name": "Gói 8 giờ (22h-6h)", "price": 850000, "staff": 1, "hours": 8 },
+        { "name": "Trọn đêm (18h-6h)", "price": 1200000, "staff": 1, "hours": 12 }
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "name": "🚛 Tài Xế Xe Tải & Vận Chuyển Hàng Hóa",
+    "image": "assets/tai-xe-xe-tai.jpg",
+    "alt": "Dịch vụ tài xế xe tải vận chuyển hàng hóa",
+    "description": "Tài xế có kinh nghiệm lái xe tải, xe ben, xe container. Phục vụ vận chuyển hàng hóa nội thành và liên tỉnh. Đảm bảo hàng hóa an toàn, đúng thời gian.",
+    "includes": [
+      "Tài xế có bằng lái hạng C, D, E và giấy phép lái xe tải",
+      "Kinh nghiệm vận chuyển hàng hóa các loại",
+      "Am hiểu các tuyến đường cho phép xe tải lưu thông",
+      "Hỗ trợ bốc xếp hàng hóa cơ bản",
+      "Phục vụ 24/7 cho các nhu cầu vận chuyển khẩn cấp"
+    ],
+    "time_slots": [
+      { "value": "anytime", "label": "24/7" }
+    ],
+    "pricing": {
+      "type": "package",
+      "packages": [
+        { "name": "Xe tải dưới 1.5 tấn (theo giờ)", "price": 120000, "staff": 1, "hours": 1 },
+        { "name": "Xe tải dưới 1.5 tấn (theo ngày)", "price": 800000, "staff": 1, "hours": 8 },
+        { "name": "Xe tải 1.5 - 3.5 tấn (theo giờ)", "price": 150000, "staff": 1, "hours": 1 },
+        { "name": "Xe tải 1.5 - 3.5 tấn (theo ngày)", "price": 1000000, "staff": 1, "hours": 8 },
+        { "name": "Xe tải trên 3.5 tấn (theo ngày)", "price": "Liên hệ", "staff": 1, "hours": "Theo thỏa thuận" }
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "name": "👑 Tài Xế Xe Sang Trọng",
+    "image": "assets/tai-xe-xe-sang.jpg",
+    "alt": "Dịch vụ tài xế xe sang trọng Mercedes, BMW, Lexus",
+    "description": "Dịch vụ tài xế chuyên nghiệp cho dòng xe sang trọng, phục vụ đám cưới, đón đối tác, sự kiện cao cấp. Tài xế được đào tạo chuyên sâu về phục vụ cao cấp.",
+    "includes": [
+      "Tài xế được đào tạo chuyên sâu về phục vụ cao cấp",
+      "Trang phục lịch sự (vest, cà vạt theo yêu cầu)",
+      "Thái độ phục vụ chuyên nghiệp, lịch thiệp",
+      "Hỗ trợ mở cửa, mang vác hành lý",
+      "Đúng giờ tuyệt đối, có mặt trước giờ hẹn"
+    ],
+    "time_slots": [
+      { "value": "anytime", "label": "Theo yêu cầu" }
+    ],
+    "pricing": {
+      "type": "package",
+      "packages": [
+        { "name": "Theo giờ (tối thiểu 4h)", "price": 250000, "staff": 1, "hours": 1 },
+        { "name": "Gói nửa ngày (4 giờ)", "price": 1000000, "staff": 1, "hours": 4 },
+        { "name": "Gói cả ngày (8 giờ)", "price": 1800000, "staff": 1, "hours": 8 },
+        { "name": "Sự kiện đám cưới", "price": "Liên hệ", "staff": 1, "hours": "Theo thỏa thuận" }
+      ]
+    }
+  }
+]

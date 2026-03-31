@@ -10,16 +10,16 @@ $kpi = [
     'completed_rate' => 0.0,
 ];
 
-$res = $conn->query("SELECT COALESCE(SUM(shipping_fee), 0) AS total FROM orders WHERE status = 'completed'");
+$res = $conn->query("SELECT COALESCE(SUM(phi_van_chuyen), 0) AS total FROM don_hang WHERE trang_thai = 'completed'");
 $kpi['revenue'] = floatval(($res && $row = $res->fetch_assoc()) ? ($row['total'] ?? 0) : 0);
 
-$res = $conn->query("SELECT COUNT(*) AS total FROM orders");
+$res = $conn->query("SELECT COUNT(*) AS total FROM don_hang");
 $kpi['total_orders'] = intval(($res && $row = $res->fetch_assoc()) ? ($row['total'] ?? 0) : 0);
 
-$res = $conn->query("SELECT COUNT(*) AS total FROM users WHERE role = 'customer'");
+$res = $conn->query("SELECT COUNT(*) AS total FROM nguoi_dung WHERE vai_tro = 'customer'");
 $kpi['total_users'] = intval(($res && $row = $res->fetch_assoc()) ? ($row['total'] ?? 0) : 0);
 
-$res = $conn->query("SELECT COUNT(*) AS total FROM orders WHERE status = 'completed'");
+$res = $conn->query("SELECT COUNT(*) AS total FROM don_hang WHERE trang_thai = 'completed'");
 $completedCount = intval(($res && $row = $res->fetch_assoc()) ? ($row['total'] ?? 0) : 0);
 $kpi['completed_rate'] = $kpi['total_orders'] > 0 ? round(($completedCount / $kpi['total_orders']) * 100, 1) : 0.0;
 
@@ -29,11 +29,11 @@ for ($i = 6; $i >= 0; $i--) {
     $timelineIndex[$date] = ['orders' => 0, 'revenue' => 0.0];
 }
 
-$sql = "SELECT DATE(created_at) AS d, COUNT(*) AS c,
-               COALESCE(SUM(CASE WHEN status = 'completed' THEN shipping_fee ELSE 0 END), 0) AS r
-        FROM orders
-        WHERE created_at >= DATE(NOW()) - INTERVAL 7 DAY
-        GROUP BY DATE(created_at)";
+$sql = "SELECT DATE(tao_luc) AS d, COUNT(*) AS c,
+               COALESCE(SUM(CASE WHEN trang_thai = 'completed' THEN phi_van_chuyen ELSE 0 END), 0) AS r
+        FROM don_hang
+        WHERE tao_luc >= DATE(NOW()) - INTERVAL 7 DAY
+        GROUP BY DATE(tao_luc)";
 $res = $conn->query($sql);
 if ($res) {
     while ($row = $res->fetch_assoc()) {
@@ -56,15 +56,16 @@ foreach ($timelineIndex as $date => $values) {
 }
 
 $serviceMap = [
-    'slow' => 'Chậm',
-    'standard' => 'Tiêu chuẩn',
-    'fast' => 'Nhanh',
-    'express' => 'Hỏa tốc',
-    'instant' => 'Ngay lập tức',
-    'bulk' => 'Số lượng lớn',
+    'giao_tieu_chuan' => 'Tiêu chuẩn',
+    'giao_nhanh' => 'Nhanh',
+    'giao_hoa_toc' => 'Hỏa tốc',
+    'giao_ngay_lap_tuc' => 'Ngay lập tức',
+    'so_luong_lon' => 'Số lượng lớn',
+    'quoc_te_tiet_kiem' => 'Quốc tế tiết kiệm',
+    'quoc_te_hoa_toc' => 'Quốc tế hỏa tốc',
 ];
 $serviceBreakdown = [];
-$res = $conn->query("SELECT service_type, COUNT(*) AS total FROM orders GROUP BY service_type");
+$res = $conn->query("SELECT loai_dich_vu AS service_type, COUNT(*) AS total FROM don_hang GROUP BY loai_dich_vu");
 if ($res) {
     while ($row = $res->fetch_assoc()) {
         $key = (string) ($row['service_type'] ?? '');
@@ -84,7 +85,7 @@ $packageMap = [
     'other' => 'Khác',
 ];
 $packageBreakdown = [];
-$res = $conn->query("SELECT package_type, COUNT(*) AS total FROM orders GROUP BY package_type");
+$res = $conn->query("SELECT loai_goi_hang AS package_type, COUNT(*) AS total FROM don_hang GROUP BY loai_goi_hang");
 if ($res) {
     while ($row = $res->fetch_assoc()) {
         $key = (string) ($row['package_type'] ?? '');
@@ -97,11 +98,11 @@ if ($res) {
 }
 
 $topUsers = [];
-$sql = "SELECT u.id, u.fullname, u.username, COUNT(o.id) AS total_orders,
-               COALESCE(SUM(CASE WHEN o.status = 'completed' THEN o.shipping_fee ELSE 0 END), 0) AS total_spent
-        FROM orders o
-        JOIN users u ON o.user_id = u.id
-        GROUP BY o.user_id, u.id, u.fullname, u.username
+$sql = "SELECT u.id, u.ho_ten AS fullname, u.ten_dang_nhap AS username, COUNT(o.id) AS total_orders,
+               COALESCE(SUM(CASE WHEN o.trang_thai = 'completed' THEN o.phi_van_chuyen ELSE 0 END), 0) AS total_spent
+        FROM don_hang o
+        JOIN nguoi_dung u ON o.nguoi_dung_id = u.id
+        GROUP BY o.nguoi_dung_id, u.id, u.ho_ten, u.ten_dang_nhap
         ORDER BY total_orders DESC
         LIMIT 5";
 $res = $conn->query($sql);

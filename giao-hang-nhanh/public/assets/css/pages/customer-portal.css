@@ -109,6 +109,17 @@
   color: #fff;
 }
 
+.customer-btn-danger {
+  border-color: #fecaca;
+  background: #fff1f2;
+  color: #b91c1c;
+}
+
+.customer-btn-danger:hover {
+  background: #ffe4e6;
+  color: #991b1b;
+}
+
 .customer-btn-ghost {
   border-color: #cfd8ec;
   background: #fff;
@@ -135,8 +146,8 @@
 }
 
 .customer-portal-sidebar {
-  position: sticky;
-  top: 108px;
+  position: static;
+  align-self: start;
 }
 
 .customer-side-card,
@@ -1060,6 +1071,61 @@
   color: #0a2a66;
 }
 
+.customer-form-helper {
+  display: block;
+  margin-top: -6px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.customer-address-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.9fr);
+  gap: 18px;
+}
+
+.customer-address-list {
+  display: grid;
+  gap: 14px;
+}
+
+.customer-address-card {
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid #e3ecfa;
+  background: #f8fbff;
+}
+
+.customer-address-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.customer-address-card-head strong {
+  display: block;
+  color: #0a2a66;
+}
+
+.customer-address-card-head span,
+.customer-address-card small {
+  color: #64748b;
+}
+
+.customer-address-card p {
+  margin: 12px 0 8px;
+  color: #1e293b;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.customer-address-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .customer-portal-footer {
   display: flex;
   justify-content: space-between;
@@ -1118,7 +1184,8 @@
   .customer-detail-grid,
   .customer-filter-form,
   .customer-filter-grid,
-  .customer-form-grid {
+  .customer-form-grid,
+  .customer-address-layout {
     grid-template-columns: 1fr;
   }
 
@@ -1183,6 +1250,7 @@
   .customer-filter-form,
   .customer-filter-grid,
   .customer-form-grid,
+  .customer-address-layout,
   .customer-file-grid,
   .customer-side-meta {
     grid-template-columns: 1fr;

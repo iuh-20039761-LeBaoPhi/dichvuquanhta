@@ -8,6 +8,21 @@ function json_response(array $payload, int $statusCode = 200): void
     exit;
 }
 
+function normalize_service_type($value): string
+{
+    $normalized = strtolower(trim((string) $value));
+    $map = [
+        'giao_ngay_lap_tuc' => 'instant',
+        'giao_hoa_toc' => 'express',
+        'giao_nhanh' => 'fast',
+        'giao_tieu_chuan' => 'standard',
+        'so_luong_lon' => 'bulk',
+        'quoc_te_tiet_kiem' => 'intl_economy',
+        'quoc_te_hoa_toc' => 'intl_express',
+    ];
+    return $map[$normalized] ?? $normalized;
+}
+
 try {
     require_once __DIR__ . '/../config/db.php';
 
@@ -23,9 +38,9 @@ try {
     }
 
     $stmt = $conn->prepare(
-        "SELECT id, order_code, package_type, service_type, cod_amount, status, created_at
-         FROM orders
-         WHERE order_code = ?"
+        "SELECT id, ma_don_hang AS order_code, loai_goi_hang AS package_type, loai_dich_vu AS service_type, so_tien_cod AS cod_amount, trang_thai AS status, tao_luc AS created_at
+         FROM don_hang
+         WHERE ma_don_hang = ?"
     );
     if (!$stmt) {
         json_response(['status' => 'error', 'message' => 'Không thể chuẩn bị truy vấn đơn hàng.']);
@@ -43,13 +58,14 @@ try {
     $order = $result->fetch_assoc();
     $stmt->close();
 
-    if ($search_type === 'bulk' && ($order['service_type'] ?? '') !== 'bulk') {
+    $serviceType = normalize_service_type($order['service_type'] ?? '');
+    if ($search_type === 'bulk' && $serviceType !== 'bulk') {
         json_response(['status' => 'error', 'message' => 'Đây không phải đơn số lượng lớn. Vui lòng tra cứu ở mục Tiêu chuẩn.']);
     }
     if ($search_type === 'cod' && (float) ($order['cod_amount'] ?? 0) <= 0) {
         json_response(['status' => 'error', 'message' => 'Đơn hàng này không có dịch vụ COD.']);
     }
-    if ($search_type === 'standard' && ($order['service_type'] ?? '') === 'bulk') {
+    if ($search_type === 'standard' && $serviceType === 'bulk') {
         json_response(['status' => 'error', 'message' => 'Đây là đơn số lượng lớn. Vui lòng tra cứu ở mục Số lượng lớn.']);
     }
 
@@ -81,10 +97,10 @@ try {
 
     // Lấy log trạng thái, nếu lỗi thì bỏ qua để vẫn trả được kết quả tra cứu.
     $log_stmt = $conn->prepare(
-        "SELECT new_status, created_at
-         FROM order_logs
-         WHERE order_id = ?
-         ORDER BY created_at ASC"
+        "SELECT trang_thai_moi AS new_status, tao_luc AS created_at
+         FROM nhat_ky_don_hang
+         WHERE don_hang_id = ?
+         ORDER BY tao_luc ASC"
     );
     if ($log_stmt) {
         $orderId = (int) $order['id'];

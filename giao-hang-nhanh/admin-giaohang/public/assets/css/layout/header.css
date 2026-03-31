@@ -1,0 +1,44 @@
+/* ===== HEADER ===== */
+#header {
+  background-color: #0a2a66; /* Xanh dương đậm */
+  padding: 16px 40px;
+  position: relative;
+  z-index: 2000;
+}
+
+.logo h1 {
+  color: #ffffff;
+  font-size: 24px;
+}
+
+.logo-link {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* ===== RESPONSIVE HEADER ===== */
+@media (max-width: 768px) {
+  #header {
+    padding: 12px 20px;
+    position: relative;
+    height: auto;
+    overflow: visible !important;
+    z-index: 1000;
+  }
+
+  .logo h1 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  #header {
+    padding: 10px 12px;
+    background-color: #0a2a66;
+  }
+
+  .logo h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+}

@@ -27,6 +27,7 @@
     "dat-lich.html": "booking",
     "dang-nhap.html": "account",
     "dang-ky.html": "account",
+    "tai-khoan-khach-hang.html": "account",
   };
 
   function loadPartial(url) {
@@ -161,6 +162,172 @@
     }
   }
 
+  const PROMO_POPUP_ALLOWED_PAGES = new Set([
+    "",
+    "index.html",
+    "dich-vu-chuyen-don.html",
+    "bang-gia-chuyen-don.html",
+    "dat-lich.html",
+    "khao-sat.html",
+    "chuyen-nha.html",
+    "chuyen-kho-bai.html",
+    "chuyen-van-phong.html",
+  ]);
+  const PROMO_POPUP_STORAGE_KEY = "moving_promo_popup_seen_date_v1";
+
+  function getVietnamDateToken() {
+    try {
+      return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date());
+    } catch (error) {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+  }
+
+  function canUseLocalStorage() {
+    try {
+      const probeKey = "__moving_promo_popup_probe__";
+      window.localStorage.setItem(probeKey, "1");
+      window.localStorage.removeItem(probeKey);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function shouldShowPromoPopup() {
+    if (!PROMO_POPUP_ALLOWED_PAGES.has(currentPage)) return false;
+    if (!canUseLocalStorage()) return true;
+    return (
+      window.localStorage.getItem(PROMO_POPUP_STORAGE_KEY) !==
+      getVietnamDateToken()
+    );
+  }
+
+  function markPromoPopupSeen() {
+    if (!canUseLocalStorage()) return;
+    try {
+      window.localStorage.setItem(
+        PROMO_POPUP_STORAGE_KEY,
+        getVietnamDateToken(),
+      );
+    } catch (error) {
+      console.warn("Không thể lưu trạng thái popup quảng cáo:", error);
+    }
+  }
+
+  function ensurePromoPopup(linkMap) {
+    const existing = document.getElementById("promo-popup-overlay");
+    if (existing) return existing;
+
+    const overlay = document.createElement("div");
+    overlay.id = "promo-popup-overlay";
+    overlay.className = "promo-popup-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-labelledby", "promo-popup-title");
+    overlay.innerHTML = `
+      <div class="promo-popup-card">
+        <button type="button" class="promo-popup-close" aria-label="Đóng thông báo">&times;</button>
+        <div class="promo-popup-body">
+          <div class="promo-popup-copy">
+            <span class="promo-popup-kicker">
+              <i class="fas fa-box-open"></i>
+              Ưu đãi chuyển dọn trong ngày
+            </span>
+            <h2 class="promo-popup-title" id="promo-popup-title">
+              Chuyển dọn <strong>trọn gói</strong> gọn nhẹ trong ngày
+            </h2>
+            <p class="promo-popup-desc">
+              Khảo sát miễn phí, báo giá rõ ràng, đội ngũ chuyên nghiệp bọc lót cẩn thận.
+            </p>
+            <div class="promo-popup-highlights">
+              <div class="promo-popup-chip">
+                <strong>Khảo sát miễn phí</strong>
+                <span>Ước tính khối lượng và báo giá trọn gói trước khi chuyển.</span>
+              </div>
+              <div class="promo-popup-chip">
+                <strong>Cam kết an toàn</strong>
+                <span>Hợp đồng rõ ràng, đền bù nếu có hư hại do vận chuyển.</span>
+              </div>
+            </div>
+            <div class="promo-popup-actions">
+              <a href="${linkMap.pricing}" class="promo-popup-btn promo-popup-btn--primary" data-promo-link="pricing">
+                <i class="fas fa-tags"></i>
+                Nhận báo giá
+              </a>
+              <a href="${linkMap.survey}" class="promo-popup-btn promo-popup-btn--secondary" data-promo-link="survey">
+                <i class="fas fa-calendar-check"></i>
+                Đặt lịch khảo sát
+              </a>
+            </div>
+            <div class="promo-popup-note">
+              Thông báo chỉ hiển thị một lần trong ngày để tránh làm phiền bạn.
+            </div>
+          </div>
+          <div class="promo-popup-visual" aria-hidden="true">
+            <span class="promo-popup-live">Moving Care</span>
+            <div class="promo-popup-map">
+              <span class="promo-popup-pin promo-popup-pin--start">
+                <i class="fas fa-house"></i>
+              </span>
+              <span class="promo-popup-pin promo-popup-pin--end">
+                <i class="fas fa-truck-moving"></i>
+              </span>
+            </div>
+            <h3>Chuyển dọn gọn trong ngày</h3>
+            <p>
+              Đội xe và nhân lực sẵn sàng theo lịch của bạn.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const closeBtn = overlay.querySelector(".promo-popup-close");
+    const dismiss = () => {
+      overlay.remove();
+      document.body.classList.remove("promo-popup-open");
+      document.removeEventListener("keydown", handleEscClose);
+    };
+    const handleEscClose = (event) => {
+      if (event.key === "Escape") {
+        dismiss();
+      }
+    };
+
+    closeBtn?.addEventListener("click", dismiss);
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) dismiss();
+    });
+    overlay.querySelectorAll("[data-promo-link]").forEach((link) => {
+      link.addEventListener("click", () => {
+        dismiss();
+      });
+    });
+
+    document.body.appendChild(overlay);
+    document.body.classList.add("promo-popup-open");
+    document.addEventListener("keydown", handleEscClose);
+    return overlay;
+  }
+
+  function maybeShowPromoPopup(linkMap) {
+    if (!shouldShowPromoPopup()) return;
+    markPromoPopupSeen();
+    window.setTimeout(() => {
+      ensurePromoPopup(linkMap);
+    }, 650);
+  }
+
   const headerHost = injectPartial("site-header", "header.html");
   const footerHost = injectPartial("site-footer", "footer.html");
   const linkMap = buildLinkMap();
@@ -168,6 +335,7 @@
   if (headerHost) applyLinks(headerHost, linkMap);
   if (headerHost) applyActiveNav(headerHost);
   if (footerHost) applyLinks(footerHost, linkMap);
+  maybeShowPromoPopup(linkMap);
 
   window.addEventListener("hashchange", function () {
     if (headerHost) applyActiveNav(headerHost);
