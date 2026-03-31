@@ -926,9 +926,7 @@ function initBookingModal() {
     (service.transport_options || []).forEach((transportOption) => {
       const option = document.createElement("option");
       option.value = transportOption.name;
-      option.textContent = `${transportOption.name} (${Number(
-        transportOption.price || 0,
-      ).toLocaleString("vi-VN")} VND)`;
+      option.textContent = transportOption.name;
       option.dataset.price = Number(transportOption.price || 0);
       transportOptionSelect.appendChild(option);
     });

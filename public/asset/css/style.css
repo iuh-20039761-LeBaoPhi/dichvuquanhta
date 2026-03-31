@@ -157,6 +157,25 @@ body {
     background: rgba(37, 99, 235, 0.1);
   }
 
+  .navbar .nav-link:hover,
+  .navbar .nav-link:focus,
+  .navbar .nav-link:active {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+  }
+
+  .navbar.scrolled .nav-link:hover,
+  .navbar.scrolled .nav-link:focus,
+  .navbar.scrolled .nav-link:active {
+    color: #0f3fae !important;
+    -webkit-text-fill-color: #0f3fae;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    background: rgba(37, 99, 235, 0.1);
+  }
+
   .navbar .dropdown-menu {
     margin-top: 0.4rem;
     min-width: 100%;
