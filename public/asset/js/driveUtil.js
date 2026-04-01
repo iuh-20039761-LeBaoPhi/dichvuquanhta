@@ -1,4 +1,4 @@
-const GG_SHEET_API_URL =
+const SHEET_API_URL =
   "https://script.google.com/macros/s/AKfycbxnkPNuiUNP_ayPThPDzKGKlnj72BY_yHntDUfKP0C5ZVvk0EGHRqcDiYpXgys0P8IxPQ/exec";
 
 function toSafeString(value) {
@@ -6,7 +6,7 @@ function toSafeString(value) {
 }
 
 async function postToAppsScript(data, contentType) {
-  var response = await fetch(GG_SHEET_API_URL, {
+  var response = await fetch(SHEET_API_URL, {
     method: "POST",
     mode: "cors",
     headers: {
