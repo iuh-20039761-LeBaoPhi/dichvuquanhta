@@ -5,52 +5,8 @@
     role: "fastgo-auth-role",
     identity: "fastgo-auth-identity",
     history: "fastgo-customer-history",
+    users: "fastgo-auth-users",
   };
-
-  function getCore() {
-    return window.FastGoCore || {};
-  }
-
-  function getPortalApiUrl(action, params = {}) {
-    const core = getCore();
-    const base =
-      typeof core.toProjectUrl === "function"
-        ? core.toProjectUrl("khach-hang/api/customer_portal.php")
-        : "khach-hang/api/customer_portal.php";
-    const url = new URL(base, window.location.href);
-    url.searchParams.set("action", action);
-
-    Object.entries(params || {}).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        url.searchParams.set(key, String(value));
-      }
-    });
-
-    return url.toString();
-  }
-
-  async function requestPortal(action, options = {}) {
-    const method = String(options.method || "GET").toUpperCase();
-    const response = await fetch(getPortalApiUrl(action, options.params || {}), {
-      method,
-      credentials: "same-origin",
-      headers:
-        method === "GET"
-          ? { Accept: "application/json" }
-          : {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-      body: method === "GET" ? undefined : JSON.stringify(options.data || {}),
-    });
-
-    const payload = await response.json().catch(() => null);
-    if (!response.ok || !payload || payload.status !== "success") {
-      throw new Error(payload?.message || "Không thể kết nối customer portal API.");
-    }
-
-    return payload;
-  }
 
   function safeParse(raw, fallback) {
     try {
@@ -78,6 +34,45 @@
       console.error("Cannot write local payload:", error);
       return false;
     }
+  }
+
+  function getSavedUsers() {
+    const users = readJson(storageKeys.users, []);
+    return Array.isArray(users) ? users : [];
+  }
+
+  function saveUsers(users) {
+    return writeJson(storageKeys.users, Array.isArray(users) ? users : []);
+  }
+
+  function getUserKey(role, email) {
+    return `${String(role || "").trim().toLowerCase()}::${String(email || "").trim().toLowerCase()}`;
+  }
+
+  function getCurrentUserKey() {
+    const identity = readIdentity();
+    return getUserKey(getSavedRole(), identity.email || "");
+  }
+
+  function updateStoredUser(mutator, options = {}) {
+    const currentKey = String(options.currentKey || getCurrentUserKey()).trim();
+    if (!currentKey || currentKey === "::") return null;
+
+    const users = getSavedUsers();
+    const currentUser = users.find((user) => user.key === currentKey);
+    if (!currentUser) return null;
+
+    const nextUser = mutator && typeof mutator === "function" ? mutator(currentUser) : currentUser;
+    if (!nextUser || typeof nextUser !== "object") return null;
+
+    const normalizedUser = {
+      ...currentUser,
+      ...nextUser,
+      key: getUserKey(nextUser.role || currentUser.role, nextUser.email || currentUser.email),
+      updated_at: new Date().toISOString(),
+    };
+    saveUsers(users.map((user) => (user.key === currentKey ? normalizedUser : user)));
+    return normalizedUser;
   }
 
   function buildSampleItems() {
@@ -280,81 +275,93 @@
     }
   }
 
-  async function fetchProfileFromApi() {
-    const result = await requestPortal("profile");
-    if (result.profile) {
-      syncIdentityFromProfile(result.profile);
-    }
-    return result.profile || null;
+  async function fetchProfile() {
+    const profile = syncIdentityFromProfile(readIdentity());
+    return profile || null;
   }
 
-  async function fetchDashboardFromApi() {
-    const result = await requestPortal("dashboard");
-    if (result.profile) {
-      syncIdentityFromProfile(result.profile);
-    }
+  async function fetchDashboard() {
+    const profile = syncIdentityFromProfile(readIdentity());
+    const items = getHistoryItems();
     return {
-      profile: result.profile || null,
-      stats: result.stats || null,
-      recent_requests: Array.isArray(result.recent_requests)
-        ? result.recent_requests.map(normalizeHistoryItem)
-        : [],
+      profile,
+      stats: getDashboardStats(items),
+      recent_requests: items.slice(0, 3),
     };
   }
 
-  async function fetchHistoryFromApi() {
-    const result = await requestPortal("history");
-    if (result.profile) {
-      syncIdentityFromProfile(result.profile);
-    }
+  async function fetchHistory() {
+    const profile = syncIdentityFromProfile(readIdentity());
     return {
-      profile: result.profile || null,
-      history: Array.isArray(result.history)
-        ? result.history.map(normalizeHistoryItem)
-        : [],
+      profile,
+      history: getHistoryItems(),
     };
   }
 
-  async function fetchDetailFromApi(code) {
-    const result = await requestPortal("detail", {
-      params: { code },
-    });
-    if (result.profile) {
-      syncIdentityFromProfile(result.profile);
-    }
+  async function fetchDetail(code) {
+    const profile = syncIdentityFromProfile(readIdentity());
     return {
-      profile: result.profile || null,
-      request: result.request ? normalizeHistoryItem(result.request) : null,
+      profile,
+      request: code ? getHistoryItemByCode(code) : null,
     };
   }
 
-  async function saveRequestToApi(payload) {
-    const result = await requestPortal("save_request", {
-      method: "POST",
-      data: payload,
-    });
-    if (result.request) {
-      saveHistoryItem(normalizeHistoryItem(result.request));
-    }
-    return result.request ? normalizeHistoryItem(result.request) : null;
+  async function saveRequest(payload) {
+    if (!payload || typeof payload !== "object") return null;
+    return saveHistoryItem(payload);
   }
 
-  async function updateProfileOnApi(payload) {
-    const result = await requestPortal("update_profile", {
-      method: "POST",
-      data: payload,
+  async function updateProfile(payload) {
+    const currentIdentity = readIdentity();
+    const currentKey = getUserKey(getSavedRole(), currentIdentity.email || "");
+    const nextProfile = syncIdentityFromProfile({
+      ...currentIdentity,
+      ...(payload && typeof payload === "object" ? payload : {}),
     });
-    if (result.profile) {
-      syncIdentityFromProfile(result.profile);
-    }
-    return result.profile || null;
+
+    updateStoredUser((currentUser) => ({
+      ...currentUser,
+      full_name: String(nextProfile.full_name || currentUser.full_name || "").trim(),
+      fullName: String(nextProfile.fullName || nextProfile.full_name || currentUser.fullName || "").trim(),
+      contact_person: String(nextProfile.contact_person || currentUser.contact_person || "").trim(),
+      contactPerson: String(nextProfile.contactPerson || nextProfile.contact_person || currentUser.contactPerson || "").trim(),
+      email: String(nextProfile.email || currentUser.email || "").trim().toLowerCase(),
+      phone: String(nextProfile.phone || currentUser.phone || "").trim(),
+      role: String(getSavedRole() || currentUser.role || "khach-hang").trim(),
+    }), { currentKey });
+
+    return nextProfile;
   }
 
-  async function changePasswordOnApi(payload) {
-    return requestPortal("change_password", {
-      method: "POST",
-      data: payload,
+  async function changePassword(payload) {
+    const currentPassword = String(payload?.current_password || "");
+    const newPassword = String(payload?.new_password || "");
+    const confirmPassword = String(payload?.confirm_password || "");
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      throw new Error("Vui lòng nhập đủ ba trường mật khẩu.");
+    }
+
+    if (newPassword !== confirmPassword) {
+      throw new Error("Mật khẩu xác nhận chưa khớp.");
+    }
+
+    const updatedUser = updateStoredUser((currentUser) => {
+      if (String(currentUser.password || "") !== currentPassword) {
+        throw new Error("Mật khẩu hiện tại chưa đúng.");
+      }
+
+      return {
+        ...currentUser,
+        password: newPassword,
+      };
     });
+
+    if (!updatedUser) {
+      throw new Error("Không tìm thấy tài khoản hiện tại để cập nhật mật khẩu.");
+    }
+
+    return { status: "success" };
   }
 
   window.FastGoCustomerPortalStore = {
@@ -370,13 +377,13 @@
     getSavedRole,
     getDisplayName,
     getDashboardStats,
-    fetchProfileFromApi,
-    fetchDashboardFromApi,
-    fetchHistoryFromApi,
-    fetchDetailFromApi,
-    saveRequestToApi,
-    updateProfileOnApi,
-    changePasswordOnApi,
+    fetchProfile,
+    fetchDashboard,
+    fetchHistory,
+    fetchDetail,
+    saveRequest,
+    updateProfile,
+    changePassword,
     clearAuthSession,
   };
 })(window);

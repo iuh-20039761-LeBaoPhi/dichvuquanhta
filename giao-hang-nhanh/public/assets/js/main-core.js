@@ -24,36 +24,10 @@
 
   const projectBasePath = resolveProjectBasePath();
   const publicBasePath = `${projectBasePath}public/`;
-  const routeOverrides = {
-    "dang-nhap.html": `${projectBasePath}dang-nhap.html`,
-    "dang-ky.html": `${projectBasePath}dang-ky.html`,
-    "tra-cuu-gia.html": `${projectBasePath}tra-cuu-gia.html`,
-    "tra-don-hang.html": `${projectBasePath}tra-don-hang.html`,
-    "dat-lich-giao-hang-nhanh.html": `${projectBasePath}dat-lich-giao-hang-nhanh.html`,
-    "cam-nang.html": `${projectBasePath}cam-nang.html`,
-    "cam-nang-chi-tiet.html": `${projectBasePath}cam-nang-chi-tiet.html`,
-    "huong-dan-dat-hang.html": `${projectBasePath}huong-dan-dat-hang.html`,
-    "chinh-sach-bao-mat.html": `${projectBasePath}chinh-sach-bao-mat.html`,
-    "chinh-sach-van-chuyen.html": `${projectBasePath}chinh-sach-van-chuyen.html`,
-    "dieu-khoan-su-dung.html": `${projectBasePath}dieu-khoan-su-dung.html`,
-    "admin_stats.php": `${projectBasePath}admin-giaohang/public/admin_stats.php`,
-    "cancel_order_ajax.php": `${projectBasePath}khach-hang-giaohang/api/cancel_order_ajax.php`,
-    "get_notifications_ajax.php": `${projectBasePath}khach-hang-giaohang/api/get_notifications_ajax.php`,
-  };
   const apiBasePath =
     typeof window.apiBasePath === "string"
       ? window.apiBasePath
       : publicBasePath;
-
-  function toApiUrl(path) {
-    if (!path) return path;
-    if (/^(?:[a-z]+:)?\/\//i.test(path)) return path;
-    const normalized = String(path).replace(/^\.?\//, "");
-    if (routeOverrides[normalized]) {
-      return routeOverrides[normalized];
-    }
-    return `${publicBasePath}${normalized}`;
-  }
 
   function showToast(message, type = "info") {
     let container = document.getElementById("ghn-toast-container");
@@ -130,15 +104,7 @@
     if (normalized === "fast") return "fast";
     if (normalized === "express") return "express";
     if (normalized === "instant") return "instant";
-    if (normalized === "bulk") return "standard";
     return null;
-  }
-
-  function isInternationalServiceType(typeKey) {
-    const normalized = String(typeKey || "")
-      .trim()
-      .toLowerCase();
-    return normalized === "intl_economy" || normalized === "intl_express";
   }
 
   function getDomesticPricingData() {
@@ -286,80 +252,27 @@
     const fromDistrict = String(extras.fromDistrict || "").trim();
     const toCity = String(extras.toCity || "").trim();
     const toDistrict = String(extras.toDistrict || "").trim();
-    const intlCountry = String(extras.intlCountry || "").trim();
-    const intlProvince = String(extras.intlProvince || "").trim();
-    const isIntlService = isInternationalServiceType(normalizedServiceType);
+    const quoteDomestic =
+      (window.QUOTE_SHIPPING_DATA && window.QUOTE_SHIPPING_DATA.domestic) || {};
+    const instantMeta = (quoteDomestic.services || {}).instant || {};
+    const instantDistance = quoteDomestic.distanceConfig || {};
     const localServiceMap = {
       standard: { name: "Giao tiêu chuẩn", basePrice: 30000 },
       fast: { name: "Giao nhanh", basePrice: 40000 },
       express: { name: "Giao hỏa tốc", basePrice: 50000 },
-      instant: { name: "Giao ngay lập tức", basePrice: 65000 },
+      instant: {
+        name: "Giao ngay lập tức",
+        basePrice:
+          toPositiveNumber(instantDistance.base_price, 0) *
+            Math.max(toPositiveNumber(instantMeta.serviceMultiplier, 1), 1) ||
+          65000,
+      },
     };
-
-    if (
-      isIntlService &&
-      typeof window.calculateInternationalQuote === "function" &&
-      intlCountry
-    ) {
-      try {
-        const intlResult = window.calculateInternationalQuote({
-          country: intlCountry,
-          province: intlProvince,
-          itemType,
-          weight: toPositiveNumber(weight, 0),
-          quantity,
-          length,
-          width,
-          height,
-          insuranceValue,
-        });
-        const serviceQuote = Array.isArray(intlResult?.services)
-          ? intlResult.services.find(
-              (svc) =>
-                String(svc?.serviceType || "")
-                  .trim()
-                  .toLowerCase() === normalizedServiceType,
-            )
-          : null;
-
-        if (serviceQuote) {
-          const breakdown = serviceQuote.breakdown || {};
-          return {
-            basePrice: toPositiveNumber(breakdown.basePrice, 0),
-            weightFee: toPositiveNumber(breakdown.weightFee, 0),
-            goodsFee: toPositiveNumber(
-              breakdown.goodsAdjustedFee ?? breakdown.goodsFee,
-              0,
-            ),
-            codFee: 0,
-            insuranceFee: toPositiveNumber(breakdown.insuranceFee, 0),
-            regionFee: 0,
-            total: toPositiveNumber(serviceQuote.total, 0),
-            vehicle:
-              serviceQuote.vehicleSuggestion || "Máy bay + xe tải chặng cuối",
-            serviceName: serviceQuote.serviceName || "Dịch vụ quốc tế",
-            isContactPrice: false,
-            areaKey: intlResult.zoneKey || "",
-            levelKey: normalizedServiceType,
-            estimate: serviceQuote.estimate || "",
-            pricingSource: "quote-international",
-            quantity: intlResult.quantity || quantity,
-            billableWeight: toPositiveNumber(intlResult.billableWeight, 0),
-          };
-        }
-      } catch (err) {
-        console.error("calculateInternationalQuote failed", err);
-      }
-    }
 
     const localService = localServiceMap[normalizedServiceType];
     if (localService) {
       serviceName = localService.name;
       basePrice = localService.basePrice;
-    } else if (normalizedServiceType === "intl_economy") {
-      serviceName = "Tiêu chuẩn quốc tế";
-    } else if (normalizedServiceType === "intl_express") {
-      serviceName = "Chuyển phát nhanh quốc tế";
     }
 
     const quoteMatch = getServiceQuoteFromDomesticCalculator(
@@ -408,8 +321,10 @@
     const domesticCalculator = getDomesticCalculator();
     const areaKey = resolveDomesticArea(pickupAddr, deliveryAddr, extras);
     const levelKey = mapServiceLevelByArea(normalizedServiceType, areaKey);
+    const canUseAreaFallback = normalizedServiceType !== "instant";
 
     if (
+      canUseAreaFallback &&
       domesticData &&
       domesticCalculator &&
       levelKey &&
@@ -485,10 +400,8 @@
     apiBasePath,
     projectBasePath,
     publicBasePath,
-    toApiUrl,
     resolveDomesticArea,
     mapServiceLevelByArea,
-    isInternationalServiceType,
     getDomesticPricingData,
     getDomesticCalculator,
     showFieldError,

@@ -2,18 +2,46 @@
   if (window.ShipperPortal) return;
 
   const core = window.GiaoHangNhanhCore || {};
-  const apiUrl = "../../nha-cung-cap/api/shipper_portal.php";
+  const localAuth = window.GiaoHangNhanhLocalAuth || null;
   const routes = {
     login: "../../dang-nhap.html",
     dashboard: "dashboard.html",
     orders: "don-hang.html",
     detail: "chi-tiet-don-hang.html",
     profile: "ho-so.html",
-    logout:
-      typeof core.toApiUrl === "function"
-        ? core.toApiUrl("logout.php")
-        : "../logout.php",
+    logout: "../../dang-nhap.html",
   };
+  const storageKeys = {
+    orders: "ghn-customer-orders",
+  };
+
+  function readJson(key, fallback) {
+    try {
+      const raw = window.localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (error) {
+      console.error("Cannot read shipper portal local payload:", error);
+      return fallback;
+    }
+  }
+
+  function writeJson(key, value) {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.error("Cannot persist shipper portal local payload:", error);
+      return false;
+    }
+  }
+
+  function getCurrentSessionUser() {
+    const session =
+      localAuth && typeof localAuth.getSession === "function"
+        ? localAuth.getSession()
+        : null;
+    return session && typeof session === "object" ? session : null;
+  }
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -68,45 +96,661 @@
     window.alert(message);
   }
 
+  function getStatusLabel(status) {
+    const normalized = String(status || "").toLowerCase();
+    if (
+      normalized === "completed" ||
+      normalized === "delivered" ||
+      normalized === "success"
+    ) {
+      return "Hoàn tất";
+    }
+    if (normalized === "shipping" || normalized === "in_transit") {
+      return "Đang giao";
+    }
+    if (normalized === "cancelled" || normalized === "canceled") {
+      return "Đã hủy";
+    }
+    if (normalized === "decline") {
+      return "Từ chối / trả đơn";
+    }
+    return "Chờ xử lý";
+  }
+
+  function normalizeServiceType(value) {
+    const normalized = String(value || "").toLowerCase();
+    const map = {
+      giao_ngay_lap_tuc: "instant",
+      giao_hoa_toc: "express",
+      giao_nhanh: "fast",
+      giao_tieu_chuan: "standard",
+    };
+    return map[normalized] || normalized;
+  }
+
+  function getServiceLabel(serviceType, fallbackLabel) {
+    if (fallbackLabel) return fallbackLabel;
+    const normalized = normalizeServiceType(serviceType);
+    if (normalized === "instant") return "Giao ngay lập tức";
+    if (normalized === "express") return "Giao hàng hỏa tốc";
+    if (normalized === "fast") return "Giao hàng nhanh";
+    if (normalized === "standard") return "Giao hàng tiêu chuẩn";
+    return "--";
+  }
+
+  function getPaymentMethodLabel(paymentMethod) {
+    const normalized = String(paymentMethod || "").toLowerCase();
+    return ["bank", "bank_transfer", "transfer", "chuyen_khoan"].includes(
+      normalized,
+    )
+      ? "Chuyển khoản"
+      : "Tiền mặt";
+  }
+
+  function getFeePayerLabel(feePayer) {
+    return String(feePayer || "").toLowerCase() === "nhan"
+      ? "Người nhận"
+      : "Người gửi";
+  }
+
+  function normalizeMockBreakdown(rawBreakdown, shippingFee) {
+    const breakdown = rawBreakdown || {};
+    return {
+      base_price: Number(breakdown.base_price ?? breakdown.basePrice ?? 0),
+      overweight_fee: Number(
+        breakdown.overweight_fee ?? breakdown.overweightFee ?? 0,
+      ),
+      volume_fee: Number(breakdown.volume_fee ?? breakdown.volumeFee ?? 0),
+      goods_fee: Number(breakdown.goods_fee ?? breakdown.goodsFee ?? 0),
+      time_fee: Number(breakdown.time_fee ?? breakdown.timeFee ?? 0),
+      condition_fee: Number(
+        breakdown.condition_fee ?? breakdown.conditionFee ?? 0,
+      ),
+      vehicle_fee: Number(breakdown.vehicle_fee ?? breakdown.vehicleFee ?? 0),
+      cod_fee: Number(breakdown.cod_fee ?? breakdown.codFee ?? 0),
+      insurance_fee: Number(
+        breakdown.insurance_fee ?? breakdown.insuranceFee ?? 0,
+      ),
+      service_fee: Number(breakdown.service_fee ?? breakdown.serviceFee ?? 0),
+      total_fee: Number(
+        breakdown.total_fee ?? breakdown.totalFee ?? shippingFee ?? 0,
+      ),
+    };
+  }
+
+  function normalizeMockItems(items) {
+    return (Array.isArray(items) ? items : []).map((item) => ({
+      item_name: item.item_name || item.ten_hang || "",
+      quantity: Number(item.quantity ?? item.so_luong ?? 1),
+      weight: Number(item.weight ?? item.can_nang ?? 0),
+      declared_value: Number(
+        item.declared_value ?? item.gia_tri_khai_bao ?? 0,
+      ),
+      length: Number(item.length ?? item.chieu_dai ?? 0),
+      width: Number(item.width ?? item.chieu_rong ?? 0),
+      height: Number(item.height ?? item.chieu_cao ?? 0),
+      loai_hang: item.loai_hang || "",
+      ten_hang: item.ten_hang || item.item_name || "",
+      so_luong: Number(item.so_luong ?? item.quantity ?? 1),
+      gia_tri_khai_bao: Number(
+        item.gia_tri_khai_bao ?? item.declared_value ?? 0,
+      ),
+      can_nang: Number(item.can_nang ?? item.weight ?? 0),
+      chieu_dai: Number(item.chieu_dai ?? item.length ?? 0),
+      chieu_rong: Number(item.chieu_rong ?? item.width ?? 0),
+      chieu_cao: Number(item.chieu_cao ?? item.height ?? 0),
+    }));
+  }
+
+  function buildProviderFromSession(session) {
+    const vehicle =
+      session?.vehicle_type ||
+      session?.loai_phuong_tien ||
+      session?.shipper_vehicle ||
+      "";
+
+    return {
+      shipper_id: session?.id || session?.username || "",
+      username: session?.username || "",
+      fullname: session?.fullname || session?.ho_ten || "",
+      phone: session?.phone || session?.so_dien_thoai || "",
+      email: session?.email || "",
+      vehicle_type: vehicle,
+      shipper_vehicle: vehicle,
+      attachments: [],
+      shipper_reports: [],
+      feedback_media: [],
+    };
+  }
+
+  function cloneDetail(detail) {
+    return JSON.parse(JSON.stringify(detail || {}));
+  }
+
+  function normalizeLocalOrderDetail(detail, session) {
+    const nextDetail = cloneDetail(detail);
+    const sessionProvider = buildProviderFromSession(session);
+    const nextOrder = nextDetail.order || {};
+    nextOrder.id = nextOrder.id || nextOrder.order_code || "";
+    nextOrder.order_code = nextOrder.order_code || nextOrder.id || "";
+    nextOrder.status = String(nextOrder.status || "pending").toLowerCase();
+    nextOrder.status_label =
+      nextOrder.status_label || getStatusLabel(nextOrder.status);
+    nextOrder.service_label = getServiceLabel(
+      nextOrder.service_type,
+      nextOrder.service_label || nextOrder.service_name,
+    );
+    nextOrder.shipping_fee = Number(
+      nextOrder.shipping_fee || nextOrder.total_fee || 0,
+    );
+    nextOrder.cod_amount = Number(nextOrder.cod_amount || nextOrder.cod_value || 0);
+    nextOrder.created_at = nextOrder.created_at || new Date().toISOString();
+    nextOrder.payment_status_label =
+      nextOrder.payment_status_label ||
+      (nextOrder.status === "completed" ? "Đã hoàn tất" : "Chưa hoàn tất");
+    nextOrder.fee_breakdown = normalizeMockBreakdown(
+      nextOrder.fee_breakdown || nextOrder.pricing_breakdown,
+      nextOrder.shipping_fee,
+    );
+    nextOrder.service_meta =
+      nextOrder.service_meta && typeof nextOrder.service_meta === "object"
+        ? nextOrder.service_meta
+        : {};
+    nextDetail.order = nextOrder;
+    nextDetail.items = normalizeMockItems(nextDetail.items || []);
+    nextDetail.logs = Array.isArray(nextDetail.logs) ? nextDetail.logs : [];
+    nextDetail.provider =
+      nextDetail.provider && typeof nextDetail.provider === "object"
+        ? {
+            ...sessionProvider,
+            ...nextDetail.provider,
+            shipper_reports: Array.isArray(nextDetail.provider.shipper_reports)
+              ? nextDetail.provider.shipper_reports
+              : [],
+            feedback_media: Array.isArray(nextDetail.provider.feedback_media)
+              ? nextDetail.provider.feedback_media
+              : [],
+            attachments: Array.isArray(nextDetail.provider.attachments)
+              ? nextDetail.provider.attachments
+              : [],
+          }
+        : sessionProvider;
+    nextDetail.customer =
+      nextDetail.customer && typeof nextDetail.customer === "object"
+        ? nextDetail.customer
+        : {};
+    return nextDetail;
+  }
+
+  function getOrderSummaryFromDetail(detail) {
+    const order = detail.order || {};
+    return {
+      ...order,
+      id: order.id || order.order_code || "",
+      order_code: order.order_code || order.id || "",
+      status: String(order.status || "pending").toLowerCase(),
+      status_label: order.status_label || getStatusLabel(order.status),
+      service_label: getServiceLabel(order.service_type, order.service_label),
+      shipping_fee: Number(order.shipping_fee || 0),
+      cod_amount: Number(order.cod_amount || 0),
+      pickup_address: order.pickup_address || "",
+      delivery_address: order.delivery_address || "",
+      sender_name: order.sender_name || "",
+      receiver_name: order.receiver_name || "",
+      receiver_phone: order.receiver_phone || "",
+      created_at: order.created_at || "",
+    };
+  }
+
+  async function getAllOrderDetails(session) {
+    const localDetails = (
+      readJson(storageKeys.orders, []) || []
+    ).map((detail) => normalizeLocalOrderDetail(detail, session));
+    return localDetails.sort((left, right) => {
+      const leftTime = new Date(left?.order?.created_at || 0).getTime();
+      const rightTime = new Date(right?.order?.created_at || 0).getTime();
+      return rightTime - leftTime;
+    });
+  }
+
+  function persistOrderDetail(detail, session) {
+    const nextDetail = normalizeLocalOrderDetail(detail, session);
+    const current = (readJson(storageKeys.orders, []) || []).map((item) =>
+      normalizeLocalOrderDetail(item, session),
+    );
+    const nextId = String(
+      nextDetail?.order?.id || nextDetail?.order?.order_code || "",
+    )
+      .trim()
+      .toUpperCase();
+    const filtered = current.filter((item) => {
+      const itemId = String(item?.order?.id || item?.order?.order_code || "")
+        .trim()
+        .toUpperCase();
+      return itemId !== nextId;
+    });
+    filtered.unshift(nextDetail);
+    writeJson(storageKeys.orders, filtered);
+    return nextDetail;
+  }
+
+  function calculateStats(details) {
+    return (Array.isArray(details) ? details : []).reduce(
+      (accumulator, detail) => {
+        const order = detail?.order || {};
+        const status = String(order.status || "pending").toLowerCase();
+        accumulator.total += 1;
+        if (status === "pending") accumulator.pending += 1;
+        if (status === "shipping") accumulator.shipping += 1;
+        if (status === "completed") {
+          accumulator.completed += 1;
+          accumulator.revenue += Number(order.shipping_fee || 0);
+          const createdDate = new Date(order.created_at || 0);
+          const today = new Date();
+          if (
+            createdDate.getFullYear() === today.getFullYear() &&
+            createdDate.getMonth() === today.getMonth() &&
+            createdDate.getDate() === today.getDate()
+          ) {
+            accumulator.today_completed += 1;
+          }
+        }
+        if (status === "cancelled") accumulator.cancelled += 1;
+        return accumulator;
+      },
+      {
+        total: 0,
+        pending: 0,
+        shipping: 0,
+        completed: 0,
+        cancelled: 0,
+        revenue: 0,
+        today_completed: 0,
+        success_rate: 0,
+      },
+    );
+  }
+
+  function updateAuthStorage(mutator) {
+    if (!localAuth) return null;
+    const authKeys = localAuth.storageKeys || {};
+    const usersKey = authKeys.users;
+    const sessionKey = authKeys.session;
+    const usersRaw = readJson(usersKey, []);
+    const users = Array.isArray(usersRaw) ? usersRaw : [];
+    const session = getCurrentSessionUser();
+    if (!usersKey || !sessionKey || !session) return null;
+
+    const index = users.findIndex(
+      (item) => String(item.id || "") === String(session.id || ""),
+    );
+    if (index === -1) return null;
+
+    const nextUser =
+      mutator && typeof mutator === "function"
+        ? mutator({ ...users[index] })
+        : users[index];
+    if (!nextUser) return null;
+
+    users[index] = nextUser;
+    writeJson(usersKey, users);
+    window.localStorage.setItem(
+      sessionKey,
+      JSON.stringify({
+        id: nextUser.id,
+        role: nextUser.role,
+        fullname: nextUser.fullname,
+        email: nextUser.email,
+        phone: nextUser.phone,
+        username: nextUser.username,
+        is_approved: nextUser.is_approved,
+        is_locked: nextUser.is_locked,
+        vehicle_type: nextUser.vehicle_type || nextUser.loai_phuong_tien || "",
+        so_cccd: nextUser.so_cccd || "",
+      }),
+    );
+    return nextUser;
+  }
+
   function buildLoginRedirect() {
     const target = `${window.location.pathname}${window.location.search}`;
     return `${routes.login}?redirect=${encodeURIComponent(target)}`;
   }
 
-  async function apiRequest(action, options = {}) {
-    const method = options.method || "GET";
-    const url = new URL(apiUrl, window.location.href);
-    url.searchParams.set("action", action);
+  async function requestLocalData(action, options = {}) {
+    const session = getCurrentSessionUser();
 
-    if (method === "GET" && options.params) {
-      Object.entries(options.params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== "") {
-          url.searchParams.set(key, value);
-        }
-      });
-    }
-
-    const response = await fetch(url.toString(), {
-      method,
-      credentials: "same-origin",
-      body: method === "GET" ? undefined : options.body,
-    });
-
-    const data = await response.json().catch(() => ({
-      status: "error",
-      message: "Phản hồi máy chủ không hợp lệ.",
-    }));
-
-    if (response.status === 401) {
+    if (!session || session.role !== "shipper") {
       window.location.href = buildLoginRedirect();
-      throw new Error(data.message || "Phiên đăng nhập đã hết hạn.");
+      throw new Error("Phiên đăng nhập đã hết hạn.");
     }
 
-    if (!response.ok || data.status !== "success") {
-      throw new Error(data.message || "Có lỗi xảy ra khi tải dữ liệu.");
+    const allDetails = await getAllOrderDetails(session);
+    const stats = calculateStats(allDetails);
+    stats.success_rate = stats.total
+      ? Math.round((stats.completed / stats.total) * 100)
+      : 0;
+    const summaries = allDetails.map(getOrderSummaryFromDetail);
+
+    if (action === "session") {
+      return { status: "success", user: session };
     }
 
-    return data;
+    if (action === "dashboard") {
+      const recentStatus = String(
+        options.params?.recent_status || "active",
+      ).toLowerCase();
+      const recentOrders = summaries
+        .filter((order) => {
+          if (recentStatus === "all") return true;
+          if (recentStatus === "active") {
+            return ["pending", "shipping"].includes(order.status);
+          }
+          return order.status === recentStatus;
+        })
+        .slice(0, 6);
+
+      return {
+        status: "success",
+        stats,
+        recent_orders: recentOrders,
+      };
+    }
+
+    if (action === "orders") {
+      const search = String(options.params?.search || "")
+        .trim()
+        .toLowerCase();
+      const status = String(options.params?.status || "")
+        .trim()
+        .toLowerCase();
+      const dateFrom = String(options.params?.date_from || "").trim();
+      const dateTo = String(options.params?.date_to || "").trim();
+      const page = Math.max(1, Number(options.params?.page || 1));
+      const limit = 10;
+
+      const filtered = summaries.filter((order) => {
+        const haystack = [
+          order.order_code,
+          order.sender_name,
+          order.receiver_name,
+          order.receiver_phone,
+          order.pickup_address,
+          order.delivery_address,
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        if (search && !haystack.includes(search)) return false;
+        if (status && String(order.status || "").toLowerCase() !== status) {
+          return false;
+        }
+
+        const created = new Date(order.created_at || 0);
+        if (dateFrom) {
+          const from = new Date(`${dateFrom}T00:00:00`);
+          if (created < from) return false;
+        }
+        if (dateTo) {
+          const to = new Date(`${dateTo}T23:59:59`);
+          if (created > to) return false;
+        }
+        return true;
+      });
+
+      const totalRecords = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(totalRecords / limit));
+      const safePage = Math.min(page, totalPages);
+      const start = (safePage - 1) * limit;
+
+      return {
+        status: "success",
+        items: filtered.slice(start, start + limit),
+        filters: {
+          search: options.params?.search || "",
+          status: options.params?.status || "",
+          date_from: options.params?.date_from || "",
+          date_to: options.params?.date_to || "",
+        },
+        pagination: {
+          page: safePage,
+          total_pages: totalPages,
+          total_records: totalRecords,
+          limit,
+        },
+      };
+    }
+
+    if (action === "order-detail") {
+      const orderId = String(options.params?.id || "")
+        .trim()
+        .toUpperCase();
+      const detail = allDetails.find((item) => {
+        const itemId = String(
+          item?.order?.id || item?.order?.order_code || "",
+        )
+          .trim()
+          .toUpperCase();
+        return itemId === orderId;
+      });
+
+      if (!detail) {
+        throw new Error("Không tìm thấy đơn hàng phù hợp.");
+      }
+
+      const currentDetail = normalizeLocalOrderDetail(detail, session);
+      return {
+        status: "success",
+        order: currentDetail.order || {},
+        provider: {
+          ...(currentDetail.provider || {}),
+          stats,
+        },
+        customer: currentDetail.customer || {},
+        items: Array.isArray(currentDetail.items) ? currentDetail.items : [],
+        logs: Array.isArray(currentDetail.logs) ? currentDetail.logs : [],
+      };
+    }
+
+    if (action === "update-order") {
+      const formData = options.body;
+      const orderId = String(formData?.get("order_id") || "")
+        .trim()
+        .toUpperCase();
+      const currentDetail = allDetails.find((item) => {
+        const itemId = String(
+          item?.order?.id || item?.order?.order_code || "",
+        )
+          .trim()
+          .toUpperCase();
+        return itemId === orderId;
+      });
+
+      if (!currentDetail) {
+        throw new Error("Không tìm thấy đơn để cập nhật.");
+      }
+
+      const nextDetail = normalizeLocalOrderDetail(currentDetail, session);
+      const nextStatus = String(formData?.get("status") || "pending")
+        .trim()
+        .toLowerCase();
+      const shipperNote = String(formData?.get("shipper_note") || "").trim();
+      const cancelReason = String(formData?.get("cancel_reason") || "").trim();
+      const uploadedFiles = Array.from(
+        formData?.getAll("media_files[]") || [],
+      ).filter(
+        (file) =>
+          file &&
+          typeof file === "object" &&
+          typeof file.name === "string" &&
+          file.name,
+      );
+
+      const reportItems = uploadedFiles.map((file, index) => {
+        const name = String(file.name || `media-${index + 1}`);
+        const extension = name.includes(".")
+          ? name.split(".").pop().toLowerCase()
+          : "";
+        return {
+          id: `${Date.now()}_${index}`,
+          name,
+          extension,
+          url: "",
+          created_at: new Date().toISOString(),
+        };
+      });
+
+      const oldStatus = nextDetail.order.status;
+      const oldStatusLabel =
+        nextDetail.order.status_label || getStatusLabel(oldStatus);
+      const released = nextStatus === "decline";
+
+      nextDetail.order.shipper_note = shipperNote;
+      nextDetail.order.cancel_reason = cancelReason;
+      nextDetail.provider = {
+        ...buildProviderFromSession(session),
+        ...(nextDetail.provider || {}),
+      };
+      nextDetail.provider.shipper_reports = [
+        ...(Array.isArray(nextDetail.provider.shipper_reports)
+          ? nextDetail.provider.shipper_reports
+          : []),
+        ...reportItems,
+      ];
+
+      if (released) {
+        nextDetail.order.status = "pending";
+        nextDetail.order.status_label = "Chờ xử lý";
+      } else {
+        nextDetail.order.status = nextStatus;
+        nextDetail.order.status_label = getStatusLabel(nextStatus);
+      }
+
+      nextDetail.order.payment_status_label =
+        nextDetail.order.status === "completed"
+          ? "Đã hoàn tất"
+          : "Chưa hoàn tất";
+
+      nextDetail.logs = [
+        {
+          old_status_label: oldStatusLabel,
+          new_status_label: released
+            ? "Trả đơn về điều phối"
+            : nextDetail.order.status_label,
+          created_at: new Date().toISOString(),
+          note:
+            shipperNote ||
+            cancelReason ||
+            (released
+              ? "Nhà cung cấp từ chối nhận đơn và trả đơn về điều phối."
+              : `Nhà cung cấp cập nhật trạng thái sang ${nextDetail.order.status_label}.`),
+        },
+        ...(Array.isArray(nextDetail.logs) ? nextDetail.logs : []),
+      ];
+
+      persistOrderDetail(nextDetail, session);
+
+      return {
+        status: "success",
+        message: released
+          ? "Đã trả đơn về điều phối nội bộ."
+          : "Đã cập nhật đơn hàng.",
+        released,
+      };
+    }
+
+    if (action === "profile") {
+      return {
+        status: "success",
+        profile: {
+          ...session,
+          ho_ten: session.fullname || session.ho_ten || "",
+          so_dien_thoai: session.phone || session.so_dien_thoai || "",
+          loai_phuong_tien:
+            session.vehicle_type || session.loai_phuong_tien || "",
+          created_at: session.created_at || new Date().toISOString(),
+        },
+        stats,
+      };
+    }
+
+    if (action === "update-profile") {
+      const formData = options.body;
+      const fullname = String(formData?.get("ho_ten") || "").trim();
+      const phone = String(formData?.get("so_dien_thoai") || "").trim();
+      const vehicleType = String(
+        formData?.get("loai_phuong_tien") || "",
+      ).trim();
+
+      if (!fullname || !phone) {
+        throw new Error("Vui lòng nhập đầy đủ họ tên và số điện thoại.");
+      }
+
+      const updatedUser = updateAuthStorage((currentUser) => ({
+        ...currentUser,
+        fullname,
+        ho_ten: fullname,
+        phone,
+        so_dien_thoai: phone,
+        vehicle_type: vehicleType,
+        loai_phuong_tien: vehicleType,
+      }));
+
+      if (!updatedUser) {
+        throw new Error("Không thể cập nhật hồ sơ nhà cung cấp.");
+      }
+
+      return {
+        status: "success",
+        profile: updatedUser,
+      };
+    }
+
+    if (action === "change-password") {
+      const formData = options.body;
+      const currentPassword = String(formData?.get("mat_khau_hien_tai") || "");
+      const newPassword = String(formData?.get("mat_khau_moi") || "");
+      const confirmPassword = String(
+        formData?.get("xac_nhan_mat_khau_moi") || "",
+      );
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        throw new Error("Vui lòng nhập đầy đủ thông tin mật khẩu.");
+      }
+      if (newPassword !== confirmPassword) {
+        throw new Error("Xác nhận mật khẩu mới không khớp.");
+      }
+      if (newPassword.length < 8) {
+        throw new Error("Mật khẩu mới cần ít nhất 8 ký tự.");
+      }
+      if (newPassword === currentPassword) {
+        throw new Error("Mật khẩu mới phải khác mật khẩu hiện tại.");
+      }
+
+      const updatedUser = updateAuthStorage((currentUser) => {
+        if (String(currentUser.password || "") !== currentPassword) {
+          throw new Error("Mật khẩu hiện tại không chính xác.");
+        }
+        return {
+          ...currentUser,
+          password: newPassword,
+        };
+      });
+
+      if (!updatedUser) {
+        throw new Error("Không thể đổi mật khẩu cho tài khoản hiện tại.");
+      }
+
+      return {
+        status: "success",
+      };
+    }
+
+    throw new Error("Tác vụ nhà cung cấp chưa được hỗ trợ ở local mode.");
+  }
+
+  async function apiRequest(action, options = {}) {
+    return requestLocalData(action, options);
   }
 
   function getPageRoot() {
@@ -138,6 +782,22 @@
     }
   }
 
+  function bindLogoutActions(root = document) {
+    root.querySelectorAll("[data-local-logout]").forEach((button) => {
+      if (button.dataset.logoutBound === "1") return;
+      button.dataset.logoutBound = "1";
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (localAuth && typeof localAuth.clearSession === "function") {
+          localAuth.clearSession();
+        } else {
+          window.localStorage.removeItem("ghn-auth-session");
+        }
+        window.location.href = routes.login;
+      });
+    });
+  }
+
   function renderShell(user, activePage) {
     const { shell } = getPageRoot();
     if (!shell) return;
@@ -157,7 +817,7 @@
             </p>
           </div>
           <div class="customer-portal-top-actions">
-            <a href="${routes.logout}" class="customer-btn customer-btn-ghost">Đăng xuất</a>
+            <a href="${routes.logout}" class="customer-btn customer-btn-ghost" data-local-logout="1">Đăng xuất</a>
           </div>
         </section>
         <div class="customer-portal-layout">
@@ -184,6 +844,7 @@
         </div>
       </div>
     `;
+    bindLogoutActions(shell);
   }
 
   function renderLoading(message = "Đang tải dữ liệu...") {
@@ -283,47 +944,6 @@
       .join("")}</dl>`;
   }
 
-  function renderFeeBreakdownRows(breakdown, shippingFee) {
-    const rows = [
-      { label: "Phí vận chuyển", value: breakdown.base_price || 0 },
-      { label: "Phí trọng lượng vượt mức", value: breakdown.overweight_fee || 0 },
-      { label: "Phí thể tích", value: breakdown.volume_fee || 0 },
-      { label: "Phụ phí loại hàng", value: breakdown.goods_fee || 0 },
-      { label: "Phí khung giờ", value: breakdown.time_fee || 0 },
-      { label: "Phụ phí điều kiện thực tế", value: breakdown.condition_fee || 0 },
-      { label: "Phí phương tiện", value: breakdown.vehicle_fee || 0 },
-      { label: "Phí COD", value: breakdown.cod_fee || 0 },
-      { label: "Phí bảo hiểm", value: breakdown.insurance_fee || 0 },
-    ].filter((item) => Number(item.value || 0) > 0);
-
-    if (!rows.length) {
-      rows.push({
-        label: "Tổng phí vận chuyển",
-        value: shippingFee || 0,
-      });
-    }
-
-    return `
-      <div class="customer-review-section">
-        ${rows
-          .map(
-            (item) => `
-          <div class="rv-row">
-            <span class="rv-label">${escapeHtml(item.label)}</span>
-            <span class="rv-val">${formatCurrency(item.value)}</span>
-          </div>`,
-          )
-          .join("")}
-        <div class="rv-total-row">
-          <span>Tổng cước</span>
-          <strong>${formatCurrency(
-            breakdown.total_fee > 0 ? breakdown.total_fee : shippingFee || 0,
-          )}</strong>
-        </div>
-      </div>
-    `;
-  }
-
   function isImageExtension(extension) {
     return ["jpg", "jpeg", "png", "webp", "gif", "bmp", "svg", "heic"].includes(
       String(extension || "").toLowerCase(),
@@ -370,10 +990,12 @@
     return `<div class="customer-review-media-grid">${items
       .map((item) => {
         const extension = String(item.extension || "").toLowerCase();
-        const url = escapeHtml(item.url || "#");
+        const rawUrl = String(item.url || "").trim();
+        const url = escapeHtml(rawUrl || "#");
         const name = escapeHtml(item.name || "Tệp đính kèm");
+        const canPreview = Boolean(rawUrl);
 
-        if (isImageExtension(extension)) {
+        if (isImageExtension(extension) && canPreview) {
           return `
             <a class="customer-review-media-card" href="${url}" target="_blank" rel="noreferrer">
               <img class="customer-review-media-thumb" src="${url}" alt="${name}" />
@@ -384,7 +1006,7 @@
             </a>`;
         }
 
-        if (isVideoExtension(extension)) {
+        if (isVideoExtension(extension) && canPreview) {
           return `
             <a class="customer-review-media-card" href="${url}" target="_blank" rel="noreferrer">
               <video class="customer-review-media-thumb" src="${url}" preload="metadata" controls></video>
@@ -460,15 +1082,7 @@
           <div class="rv-row"><span class="rv-label">Tạo đơn lúc</span><span class="rv-val">${formatDateTime(order.created_at)}</span></div>
           <div class="rv-row"><span class="rv-label">Lấy hàng</span><span class="rv-val">${pickupLabel}</span></div>
           <div class="rv-row"><span class="rv-label">Thời gian giao dự kiến</span><span class="rv-val">${escapeHtml(serviceMeta.estimated_eta || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Gói dịch vụ</span><span class="rv-val">${escapeHtml(order.service_label || "--")}</span></div>
-        </section>
-
-        <section class="customer-review-block">
-          <h3><i class="fas fa-receipt"></i> Chi phí</h3>
-          ${renderFeeBreakdownRows(order.fee_breakdown || {}, order.shipping_fee)}
-          <div class="rv-row"><span class="rv-label">Người trả cước</span><span class="rv-val">${escapeHtml(order.payer_label || "Người gửi")}</span></div>
-          <div class="rv-row"><span class="rv-label">Thanh toán</span><span class="rv-val">${escapeHtml(order.payment_method_label || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Trạng thái thanh toán</span><span class="rv-val">${escapeHtml(order.payment_status_label || "--")}</span></div>
+          <div class="rv-row"><span class="rv-label">Phương tiện</span><span class="rv-val">${escapeHtml(order.vehicle_type || serviceMeta.vehicle_label || "--")}</span></div>
         </section>
 
         <section class="customer-review-block">
@@ -638,8 +1252,7 @@
                   </div>
                   <p class="customer-order-dest">${escapeHtml(order.pickup_address)} → ${escapeHtml(order.delivery_address)}</p>
                   <div class="customer-order-meta customer-order-meta-compact">
-                    <span><b>Dịch vụ</b>${escapeHtml(order.service_label || "--")}</span>
-                    <span><b>Cước phí</b>${formatCurrency(order.shipping_fee)}</span>
+                    <span><b>Người gửi</b>${escapeHtml(order.sender_name || "--")}</span>
                     <span><b>Thời gian</b>${formatDateTime(order.created_at)}</span>
                   </div>
                   <div class="customer-order-actions customer-order-actions-compact">
@@ -771,7 +1384,6 @@
                 <div class="customer-order-meta customer-order-meta-compact customer-order-meta-history">
                   <span><b>Người gửi</b>${escapeHtml(order.sender_name || "--")}</span>
                   <span><b>Người nhận</b>${escapeHtml(order.receiver_name || "--")} · ${escapeHtml(order.receiver_phone || "--")}</span>
-                  <span><b>Phí ship</b>${formatCurrency(order.shipping_fee)}</span>
                   <span><b>COD</b>${formatCurrency(order.cod_amount)}</span>
                   <span><b>Tạo lúc</b>${formatDateTime(order.created_at)}</span>
                 </div>
@@ -841,10 +1453,10 @@
         </div>
 
         <div class="customer-detail-summary">
-          <article><span>Gói dịch vụ</span><strong>${escapeHtml(order.service_label || "--")}</strong></article>
-          <article><span>Phí vận chuyển</span><strong>${formatCurrency(order.shipping_fee)}</strong></article>
+          <article><span>Người gửi</span><strong>${escapeHtml(order.sender_name || "--")}</strong></article>
+          <article><span>Người nhận</span><strong>${escapeHtml(order.receiver_name || "--")}</strong></article>
+          <article><span>Phương tiện</span><strong>${escapeHtml(order.vehicle_type || order.vehicle_label || "--")}</strong></article>
           <article><span>COD</span><strong>${formatCurrency(order.cod_amount)}</strong></article>
-          <article><span>Thanh toán</span><strong>${escapeHtml(order.payment_status_label || "--")}</strong></article>
         </div>
 
         <div class="customer-tab-switcher" id="shipper-tab-switcher">

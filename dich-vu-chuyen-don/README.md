@@ -5,7 +5,7 @@ Website riêng cho dịch vụ chuyển dọn trong hệ sinh thái `Dịch Vụ
 - Chuyển văn phòng công ty
 - Chuyển kho bãi
 
-Project hiện ưu tiên `UI / CSS / nội dung / SEO / điều hướng / trải nghiệm form`. Phần khảo sát, đặt lịch và tài khoản đã có giao diện riêng cùng logic phía client, nhưng chưa nối backend thật.
+Project hiện ưu tiên `UI / CSS / nội dung / SEO / điều hướng / trải nghiệm form`. Phần khảo sát, đặt lịch và tài khoản đang chạy theo hướng client-side demo, lưu dữ liệu cục bộ bằng `localStorage`, chưa nối hệ thống lưu trữ chính thức.
 
 ## Phạm vi hiện tại
 
@@ -112,8 +112,7 @@ Hiện đã có:
 - Box tóm tắt nhanh trước khi gửi
 
 Chưa có:
-- Gửi dữ liệu thật lên backend
-- Lưu yêu cầu khảo sát
+- Gửi dữ liệu chính thức lên hệ thống CRUD / Google Sheets
 - Logic xử lý nghiệp vụ sau submit
 
 ## Form đặt lịch
@@ -127,8 +126,7 @@ Hiện đã có:
 - Summary cuối form
 
 Chưa có:
-- Submit thật
-- Đồng bộ dữ liệu backend
+- Đồng bộ dữ liệu sang hệ thống lưu trữ chính thức
 - Tính giá / xác nhận đơn
 
 ## Tài khoản đăng nhập / đăng ký
@@ -149,16 +147,11 @@ Hiện đã có:
   - Tên / đơn vị / người phụ trách theo độ dài hợp lệ
   - Mật khẩu đăng ký có chữ hoa, chữ thường, số và đủ độ dài
   - Mật khẩu xác nhận phải khớp
-  - Checkbox điều khoản bắt buộc
-  - Các trường đặc thù của đối tác cung ứng bắt buộc
+- Checkbox điều khoản bắt buộc
+- Các trường đặc thù của đối tác cung ứng bắt buộc
 - Hiển thị lỗi inline dưới từng trường
-- API đăng ký / đăng nhập thật qua PHP:
-  - `api/auth/register.php`
-  - `api/auth/login.php`
-  - `api/auth/check-session.php`
-  - `api/auth/logout.php`
-- Tạo bảng `auth_users` tự động nếu database kết nối thành công
-- Lưu session server-side bằng cookie `CHUYENDON_SID`
+- Đăng ký / đăng nhập demo bằng `localStorage`
+- Lưu phiên và thông tin hồ sơ cục bộ để dùng lại cho dashboard khách hàng
 
 Chưa có:
 - Dashboard riêng cho từng vai trò
@@ -172,7 +165,6 @@ Chưa có:
 - CSS đang đi theo hướng `base / components / layout / pages`
 - Tất cả HTML user-facing đều đã có `ga.js`
 - `main-core.js` đang cung cấp helper dùng chung cho format tiền, URL nội bộ và lỗi form
-- SQL mẫu cho bảng auth nằm ở [auth_users.sql](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\database\auth_users.sql)
 
 ## Trạng thái hiện tại
 
@@ -180,7 +172,7 @@ Chưa có:
 - Menu `Dịch vụ` trỏ sang `dich-vu-chuyen-don.html`
 - Cụm bảng giá đã tách thành trang riêng
 - Form khảo sát và đặt lịch đã có bố cục riêng, không còn phụ thuộc landing
-- Khu vực tài khoản đã có giao diện hoàn chỉnh, validate client-side và gọi API auth thật
+- Khu vực tài khoản đã có giao diện hoàn chỉnh, validate client-side và lưu dữ liệu demo cục bộ
 - Footer hiện không chứa link auth, auth được gom trong menu `Tài khoản`
 
 ## Liên hệ

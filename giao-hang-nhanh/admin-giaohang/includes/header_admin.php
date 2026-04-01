@@ -71,6 +71,9 @@ if (isset($_SESSION['user_id']) && isset($conn)) {
                 <li class="<?php echo $currentPage === 'contact_manage.php' ? 'active' : ''; ?>">
                     <a href="contact_manage.php">Liên hệ</a>
                 </li>
+                <li class="<?php echo $currentPage === 'admin_pricing.php' ? 'active' : ''; ?>">
+                    <a href="admin_pricing.php">Bảng giá</a>
+                </li>
                 <li class="<?php echo $currentPage === 'admin_settings.php' ? 'active' : ''; ?>">
                     <a href="admin_settings.php">Cài đặt</a>
                 </li>

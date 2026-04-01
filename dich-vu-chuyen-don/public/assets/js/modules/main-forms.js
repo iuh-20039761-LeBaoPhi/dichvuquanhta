@@ -19,6 +19,7 @@
     "khao-sat": core.toPublicUrl("assets/partials/bieu-mau/form-khao-sat.html"),
     "dat-lich": core.toPublicUrl("assets/partials/bieu-mau/form-dat-lich.html"),
   };
+  const bookingCrudTableName = "dich_vu_chuyen_don_dat_lich";
 
   const SERVICE_ALIAS_MAP = {
     chuyen_nha: "chuyen_nha",
@@ -179,6 +180,129 @@
     });
 
     return labels;
+  }
+
+  function buildGeneratedRequestCode(prefix) {
+    const now = new Date();
+    const datePart = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      String(now.getDate()).padStart(2, "0"),
+    ].join("");
+    const randomPart = Math.random().toString(36).slice(2, 7).toUpperCase();
+    return `${prefix}-${datePart}-${randomPart}`;
+  }
+
+  function getBookingInsertFn() {
+    if (typeof window.crud === "function") {
+      return (tableName, data) => window.crud("insert", tableName, data);
+    }
+
+    if (typeof window.krud === "function") {
+      return (tableName, data) => window.krud("insert", tableName, data);
+    }
+
+    return null;
+  }
+
+  function getFileNames(scope, selector) {
+    return Array.from(scope.querySelectorAll(selector)).flatMap((input) =>
+      Array.from(input.files || []).map((file) => file.name).filter(Boolean),
+    );
+  }
+
+  function getBookingPayload(scope, portalStore) {
+    const identity = portalStore?.readIdentity?.() || {};
+    const form = scope.querySelector("form[data-loai-bieu-mau='dat-lich']");
+    const formData = form ? new FormData(form) : new FormData();
+    const serviceSelect = scope.querySelector("#loai-dich-vu-dat-lich");
+    const vehicleSelect = scope.querySelector("#loai-xe-dat-lich");
+    const weatherInput = scope.querySelector("#thoi-tiet-du-kien-dat-lich-gui");
+    const code = buildGeneratedRequestCode("CDL");
+
+    const imageFiles = getFileNames(scope, "#tep-anh-dat-lich");
+    const videoFiles = getFileNames(scope, "#tep-video-dat-lich");
+    const accessConditions = getCheckedLabels(
+      scope,
+      "[data-nhom-chip='dieu_kien_dat_lich'] input[type='checkbox']",
+    );
+    const serviceDetails = getCheckedLabelsFromSelectors(scope, [
+      "[data-nhom-chip='chi_tiet_nha_dat_lich'] input[type='checkbox']",
+      "[data-nhom-chip='chi_tiet_van_phong_dat_lich'] input[type='checkbox']",
+      "[data-nhom-chip='chi_tiet_kho_bai_dat_lich'] input[type='checkbox']",
+    ]);
+    const totalAmount = Number(
+      String(
+        scope.querySelector("[data-tong-gia-chot-dat-lich]")?.textContent || "",
+      ).replace(/[^\d]/g, ""),
+    );
+
+    const scalarValues = {};
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) continue;
+      const nextValue = String(value || "").trim();
+      if (!nextValue) continue;
+
+      if (Object.prototype.hasOwnProperty.call(scalarValues, key)) {
+        scalarValues[key] = `${scalarValues[key]} | ${nextValue}`;
+      } else {
+        scalarValues[key] = nextValue;
+      }
+    }
+
+    return {
+      ma_yeu_cau_noi_bo: code,
+      loai_bieu_mau: "dat_lich",
+      loai_dich_vu: normalizeService(serviceSelect?.value || ""),
+      ten_dich_vu: getSelectedLabel(serviceSelect),
+      ho_ten: String(formData.get("ho_ten") || identity.fullName || identity.full_name || "").trim(),
+      so_dien_thoai: String(formData.get("so_dien_thoai") || identity.phone || "").trim(),
+      ten_cong_ty: String(formData.get("ten_cong_ty") || "").trim(),
+      dia_chi_di: String(formData.get("dia_chi_di") || "").trim(),
+      dia_chi_den: String(formData.get("dia_chi_den") || "").trim(),
+      ngay_thuc_hien: String(formData.get("ngay_thuc_hien") || "").trim(),
+      khung_gio_thuc_hien: String(formData.get("khung_gio_thuc_hien") || "").trim(),
+      ten_khung_gio_thuc_hien: getSelectedLabel(scope.querySelector("#khung-gio-dat-lich")),
+      thoi_tiet_du_kien: String(weatherInput?.value || "").trim(),
+      loai_xe: String(formData.get("loai_xe") || "").trim(),
+      ten_loai_xe: getSelectedLabel(vehicleSelect),
+      ghi_chu: String(formData.get("ghi_chu") || "").trim(),
+      dieu_kien_tiep_can: accessConditions.join(" | "),
+      chi_tiet_dich_vu: serviceDetails.join(" | "),
+      tong_tam_tinh: totalAmount,
+      khoang_cach_km: String(
+        scope.querySelector("[data-gia-tri-khoang-cach-dat-lich]")?.textContent || "",
+      ).replace(",", ".").trim(),
+      anh_dinh_kem: imageFiles.join(" | "),
+      video_dinh_kem: videoFiles.join(" | "),
+      customer_email: String(identity.email || "").trim(),
+      customer_role: String(identity.role || "khach-hang").trim(),
+      created_at: new Date().toISOString(),
+      du_lieu_form_json: JSON.stringify(scalarValues),
+    };
+  }
+
+  async function insertBookingToKrud(scope, portalStore) {
+    const insertFn = getBookingInsertFn();
+    if (!insertFn) {
+      throw new Error("Không tìm thấy hàm crud/krud trên trang đặt lịch.");
+    }
+
+    const payload = getBookingPayload(scope, portalStore);
+    const result = await insertFn(bookingCrudTableName, payload);
+    const remoteId = String(
+      result?.id ||
+        result?.insertId ||
+        result?.insert_id ||
+        result?.data?.id ||
+        "",
+    ).trim();
+
+    return {
+      payload,
+      remoteId,
+      result,
+    };
   }
 
   function countChecked(scope, selector) {
@@ -863,17 +987,47 @@
           ? requestHistoryModule.buildPayload({ scope, formType, portalStore })
           : null;
 
-        if (historyPayload && requestHistoryModule?.persistPayload) {
-          await requestHistoryModule.persistPayload(historyPayload, portalStore);
-        }
+        try {
+          if (formType === "dat-lich") {
+            const bookingResult = await insertBookingToKrud(scope, portalStore);
 
-        notice.classList.remove("is-pending", "is-error");
-        notice.classList.add("is-success");
-        notice.textContent =
-          formType === "khao-sat"
-            ? "Biểu mẫu khảo sát demo đã được ghi nhận. Chức năng gửi yêu cầu chính thức đang được hoàn thiện, nhưng nội dung bạn vừa nhập đã sẵn sàng để đội ngũ dùng tiếp."
-            : "Biểu mẫu đặt lịch demo đã được ghi nhận. Giá tạm tính và các thông tin điều phối đang bám theo dữ liệu bạn vừa nhập; chức năng gửi yêu cầu chính thức đang được hoàn thiện.";
-        syncSubmitState(false, defaultSubmitLabel);
+            if (historyPayload && requestHistoryModule?.persistPayload) {
+              await requestHistoryModule.persistPayload(
+                {
+                  ...historyPayload,
+                  code: bookingResult.payload.ma_yeu_cau_noi_bo,
+                  source: "krud",
+                  summary:
+                    "Yêu cầu đặt lịch đã được lưu lên KRUD và sẵn sàng cho bước điều phối tiếp theo.",
+                  meta: bookingResult.payload.ten_loai_xe
+                    ? `Phương án xe đã chọn: ${bookingResult.payload.ten_loai_xe}`
+                    : historyPayload.meta,
+                },
+                portalStore,
+              );
+            }
+
+            notice.classList.remove("is-pending", "is-error");
+            notice.classList.add("is-success");
+            notice.textContent = `Đặt lịch thành công. Mã yêu cầu: ${bookingResult.payload.ma_yeu_cau_noi_bo}.${bookingResult.remoteId ? ` ID KRUD: ${bookingResult.remoteId}.` : ""}`;
+          } else {
+            if (historyPayload && requestHistoryModule?.persistPayload) {
+              await requestHistoryModule.persistPayload(historyPayload, portalStore);
+            }
+
+            notice.classList.remove("is-pending", "is-error");
+            notice.classList.add("is-success");
+            notice.textContent =
+              "Biểu mẫu khảo sát demo đã được ghi nhận. Chức năng gửi yêu cầu chính thức đang được hoàn thiện, nhưng nội dung bạn vừa nhập đã sẵn sàng để đội ngũ dùng tiếp.";
+          }
+        } catch (error) {
+          notice.classList.remove("is-pending", "is-success");
+          notice.classList.add("is-error");
+          notice.textContent =
+            error?.message || "Không thể gửi yêu cầu đặt lịch lên KRUD ở thời điểm hiện tại.";
+        } finally {
+          syncSubmitState(false, defaultSubmitLabel);
+        }
       }, 900);
     });
   }

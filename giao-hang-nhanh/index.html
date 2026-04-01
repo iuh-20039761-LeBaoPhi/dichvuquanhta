@@ -437,10 +437,13 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
     <script src="public/assets/js/service-catalog.js"></script>
     <script src="public/assets/js/shared-layout.js"></script>
+    <script src="public/assets/js/local-auth.js"></script>
     <script src="public/assets/js/main.js" defer></script>
     <!-- Static Configuration -->
     <script>
       (function bootstrapLandingData() {
+        const localAuth = window.GiaoHangNhanhLocalAuth || null;
+
         function escapeHtml(text) {
           if (text === null || text === undefined) return "";
           return String(text)
@@ -461,15 +464,31 @@
           const routeMap = {
             "dang-nhap.html": "dang-nhap.html",
             "dang-ky.html": "dang-ky.html",
-            "admin_stats.php": "admin-giaohang/public/admin_stats.php",
           };
 
           return routeMap[normalized] || `public/${normalized}`;
         }
 
         function getDashboardPath(role) {
+          if (localAuth && typeof localAuth.getDashboardPath === "function") {
+            return localAuth.getDashboardPath(role);
+          }
           if (role === "shipper") return "public/nha-cung-cap/dashboard.html";
           return "public/khach-hang/dashboard.html";
+        }
+
+        function bindLogoutActions() {
+          document.querySelectorAll("[data-local-logout]").forEach((link) => {
+            if (link.dataset.logoutBound === "1") return;
+            link.dataset.logoutBound = "1";
+            link.addEventListener("click", function (event) {
+              event.preventDefault();
+              if (localAuth && typeof localAuth.clearSession === "function") {
+                localAuth.clearSession();
+              }
+              window.location.href = toPublicUrl("dang-nhap.html");
+            });
+          });
         }
 
         function renderAuthUi(isLoggedIn, role) {
@@ -479,7 +498,7 @@
           const contactSecondary = document.getElementById("contact-secondary-btn");
 
           const dashboardUrl = toPublicUrl(getDashboardPath(role));
-          const logoutUrl = toPublicUrl("logout.php");
+          const logoutUrl = toPublicUrl("dang-nhap.html");
           const loginUrl = toPublicUrl("dang-nhap.html");
           const registerUrl = toPublicUrl("dang-ky.html");
 
@@ -488,16 +507,18 @@
               navLoginItem.innerHTML = `<a href="${dashboardUrl}">Trang quản lý</a>`;
             }
             if (navRegisterItem) {
-              navRegisterItem.innerHTML = `<a href="${logoutUrl}" class="btn-primary nav-auth-cta">Đăng xuất</a>`;
+              navRegisterItem.innerHTML = `<a href="${logoutUrl}" class="btn-primary nav-auth-cta" data-local-logout="1">Đăng xuất</a>`;
             }
             if (contactSecondary) {
               contactSecondary.href = logoutUrl;
+              contactSecondary.setAttribute("data-local-logout", "1");
               contactSecondary.textContent = "Đăng xuất";
             }
             if (contactPrimary) {
               contactPrimary.href = dashboardUrl;
               contactPrimary.textContent = "Vào trang quản lý";
             }
+            bindLogoutActions();
             return;
           }
 
@@ -517,56 +538,18 @@
           }
         }
 
-        async function loadLandingData() {
+        function loadLandingData() {
           try {
-            window.isLoggedIn = false;
-            window.apiBasePath = "public/";
-            const fallbackData = {
-              pricing_config: {
-                weight_free: 2,
-                weight_price: 5000,
-                cod_min: 5000,
-              },
-              is_logged_in: false,
-              role: "guest",
-              user: null,
-            };
             window.pricingConfig = {
               weight_free: 2,
               weight_price: 5000,
               cod_min: 5000,
             };
-
-            let data = fallbackData;
-
-            try {
-              const response = await fetch("public/landing_data_ajax.php", {
-                headers: {
-                  Accept: "application/json",
-                },
-              });
-
-              if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-              }
-
-              const payload = await response.json();
-              if (payload && payload.status === "success" && payload.data) {
-                data = {
-                  ...fallbackData,
-                  ...payload.data,
-                };
-              }
-            } catch (fetchError) {
-              console.warn("Cannot load landing data from API, using fallback.", fetchError);
-            }
-
-            if (data.pricing_config && typeof data.pricing_config === "object") {
-              window.pricingConfig = data.pricing_config;
-            }
-
-            window.isLoggedIn = !!data.is_logged_in;
-            renderAuthUi(window.isLoggedIn, data.role || "guest");
+            const session = localAuth && typeof localAuth.getSession === "function"
+              ? localAuth.getSession()
+              : null;
+            window.isLoggedIn = !!session;
+            renderAuthUi(window.isLoggedIn, session?.role || "guest");
           } catch (error) {
             console.error("Cannot bootstrap landing page", error);
           }

@@ -229,10 +229,10 @@
 
   (async function bootstrapDashboard() {
     try {
-      const result = await store.fetchDashboardFromApi?.();
+      const result = await store.fetchDashboard?.();
       renderDashboard(result || null);
     } catch (error) {
-      console.error("Cannot load customer dashboard API:", error);
+      console.error("Cannot load customer dashboard store:", error);
       renderDashboard(null);
     }
   })();

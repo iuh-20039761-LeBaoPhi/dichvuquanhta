@@ -16,8 +16,7 @@ let reviewUploadObjectUrls = [];
 let isResolvingPickupLocation = false;
 const BOOKING_DRAFT_STORAGE_KEY = "ghn_booking_login_resume_v1";
 const BOOKING_DRAFT_TTL_MS = 6 * 60 * 60 * 1000;
-const DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL =
-  "https://script.google.com/macros/s/AKfycbxhbxqyO8BMJipSMYi_TedfX0EFU1OqQqBW7Fa0R9_cF25EKYHoiMSL3XHBmSclSR0t/exec";
+const LOCAL_CUSTOMER_ORDER_STORAGE_KEY = "ghn-customer-orders";
 let orderItems = [
   {
     loai_hang: "",
@@ -45,29 +44,6 @@ function resolveOrderFormConfigUrl() {
   return `${projectBasePath}public/data/form-dat-hang.json`;
 }
 
-function resolveBookingApiUrl(path = "dat-lich-ajax.php") {
-  if (typeof window === "undefined") return path;
-  const normalized = String(path || "").replace(/^\.?\//, "");
-
-  if (typeof window.bookingApiBaseUrl === "string" && window.bookingApiBaseUrl.trim() !== "") {
-    return new URL(normalized, window.bookingApiBaseUrl).toString();
-  }
-
-  if (window.GiaoHangNhanhCore?.toApiUrl) {
-    return window.GiaoHangNhanhCore.toApiUrl(path);
-  }
-
-  const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
-  const marker = "/giao-hang-nhanh/";
-  const markerIndex = currentPath.toLowerCase().lastIndexOf(marker);
-  if (markerIndex !== -1) {
-    const projectBasePath = currentPath.slice(0, markerIndex + marker.length);
-    return new URL(`public/${normalized}`, `${window.location.origin}${projectBasePath}`).toString();
-  }
-
-  return new URL(normalized, window.location.href).toString();
-}
-
 function getProjectBasePath() {
   if (typeof window === "undefined") return "/";
   const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
@@ -82,16 +58,318 @@ function resolveProjectHtmlUrl(path) {
   return new URL(normalized, `${window.location.origin}${getProjectBasePath()}`).toString();
 }
 
-function getProjectRelativeCurrentUrl() {
-  if (typeof window === "undefined") return "";
-  const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
-  const marker = "/giao-hang-nhanh/";
-  const markerIndex = currentPath.toLowerCase().lastIndexOf(marker);
-  const relativePath =
-    markerIndex !== -1
-      ? currentPath.slice(markerIndex + marker.length)
-      : currentPath.replace(/^\/+/, "");
-  return `${relativePath}${window.location.search || ""}${window.location.hash || ""}`;
+function readLocalJson(key, fallback) {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (error) {
+    console.warn("Không đọc được dữ liệu local:", error);
+    return fallback;
+  }
+}
+
+function writeLocalJson(key, value) {
+  if (typeof window === "undefined") return false;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    console.warn("Không lưu được dữ liệu local:", error);
+    return false;
+  }
+}
+
+function getLocalSession() {
+  if (window.GiaoHangNhanhLocalAuth?.getSession) {
+    return window.GiaoHangNhanhLocalAuth.getSession();
+  }
+  return readLocalJson("ghn-auth-session", null);
+}
+
+function getLocalCustomerOrders() {
+  const orders = readLocalJson(LOCAL_CUSTOMER_ORDER_STORAGE_KEY, []);
+  return Array.isArray(orders) ? orders : [];
+}
+
+function normalizeStorageOrderId(value) {
+  return String(value || "").trim().toUpperCase();
+}
+
+function persistLocalCustomerOrder(detail) {
+  const current = getLocalCustomerOrders();
+  const nextId = normalizeStorageOrderId(
+    detail?.order?.id || detail?.order?.order_code,
+  );
+  const filtered = current.filter((item) => {
+    const itemId = normalizeStorageOrderId(
+      item?.order?.id || item?.order?.order_code,
+    );
+    return itemId !== nextId;
+  });
+  filtered.unshift(detail);
+  return writeLocalJson(LOCAL_CUSTOMER_ORDER_STORAGE_KEY, filtered);
+}
+
+function getLocalOrderDetailById(orderId) {
+  const normalizedId = normalizeStorageOrderId(orderId);
+  return (
+    getLocalCustomerOrders().find((item) => {
+      const itemId = normalizeStorageOrderId(
+        item?.order?.id || item?.order?.order_code,
+      );
+      return itemId === normalizedId;
+    }) || null
+  );
+}
+
+function buildPaymentMethodLabel(value) {
+  return String(value || "").toLowerCase() === "chuyen_khoan"
+    ? "Chuyển khoản"
+    : "Tiền mặt";
+}
+
+function buildFeePayerLabel(value) {
+  return String(value || "").toLowerCase() === "nhan"
+    ? "Người nhận"
+    : "Người gửi";
+}
+
+function buildGeneratedOrderCode() {
+  const now = new Date();
+  const datePart = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+  ].join("");
+  const suffix = Math.random().toString(36).slice(2, 7).toUpperCase();
+  return `GHN-${datePart}-${suffix}`;
+}
+
+function getSelectedUploadMeta() {
+  return getSelectedUploadFiles().map((entry, index) => {
+    const name = String(entry?.file?.name || `tep-${index + 1}`);
+    const extension = name.includes(".")
+      ? name.split(".").pop().toLowerCase()
+      : "";
+    return {
+      id: `${Date.now()}-${index}`,
+      name,
+      extension,
+      url: "",
+      created_at: new Date().toISOString(),
+    };
+  });
+}
+
+function mapStoredDetailToReorderData(detail) {
+  if (!detail || typeof detail !== "object") return null;
+  const order = detail.order || {};
+  return {
+    source_order_id: order.id || order.order_code || "",
+    source_order_code: order.order_code || order.id || "",
+    sender_name: order.sender_name || "",
+    sender_phone: order.sender_phone || "",
+    receiver_name: order.receiver_name || "",
+    receiver_phone: order.receiver_phone || "",
+    search_pickup: order.pickup_address || "",
+    search_delivery: order.delivery_address || "",
+    pickup_address: order.pickup_address || "",
+    delivery_address: order.delivery_address || "",
+    pickup_date:
+      order.service_meta?.pickup_date || order.pickup_date || order.ngay_lay_hang || "",
+    pickup_slot:
+      order.service_meta?.pickup_slot || order.pickup_slot || order.khung_gio_lay_hang || "",
+    pickup_slot_label:
+      order.service_meta?.pickup_slot_label ||
+      order.pickup_slot_label ||
+      order.ten_khung_gio_lay_hang ||
+      "",
+    notes: order.clean_note || order.notes || "",
+    cod_value: order.cod_amount || order.cod_value || 0,
+    payment_method: order.payment_method || "tien_mat",
+    fee_payer: order.fee_payer || "gui",
+    service_type: order.service_type || "",
+    service_name: order.service_label || order.service_name || "",
+    estimated_eta:
+      order.service_meta?.estimated_eta || order.estimated_delivery || "",
+    vehicle: order.vehicle_type || order.vehicle || "",
+    vehicle_label:
+      order.service_meta?.vehicle_label || order.vehicle_label || order.vehicle_type || "",
+    khoang_cach_km:
+      order.service_meta?.distance_km || order.khoang_cach_km || 0,
+    items: Array.isArray(detail.items) ? detail.items : [],
+  };
+}
+
+function buildLocalOrderDetail(payload, orderCode = buildGeneratedOrderCode()) {
+  const session = getLocalSession();
+  const now = new Date().toISOString();
+  const pricingBreakdown = chuan_hoa_chi_tiet_gia_cuoc_da_luu(
+    payload.chi_tiet_gia_cuoc || {},
+  );
+  const serviceType = getInternalServiceType(payload.dich_vu);
+  const uploadedMeta = getSelectedUploadMeta();
+
+  return {
+    status: "success",
+    order: {
+      id: orderCode,
+      order_code: orderCode,
+      created_at: now,
+      pickup_time: payload.ngay_lay_hang || "",
+      pickup_date: payload.ngay_lay_hang || "",
+      pickup_slot: payload.khung_gio_lay_hang || "",
+      pickup_slot_label: payload.ten_khung_gio_lay_hang || "",
+      status: "pending",
+      status_label: "Chờ xử lý",
+      sender_name: payload.nguoi_gui_ho_ten || "",
+      sender_phone: payload.nguoi_gui_so_dien_thoai || "",
+      receiver_name: payload.nguoi_nhan_ho_ten || "",
+      receiver_phone: payload.nguoi_nhan_so_dien_thoai || "",
+      pickup_address: payload.dia_chi_lay_hang || "",
+      delivery_address: payload.dia_chi_giao_hang || "",
+      service_type: serviceType,
+      service_name: payload.ten_dich_vu || "",
+      service_label: payload.ten_dich_vu || "",
+      vehicle_type: payload.ten_phuong_tien || payload.phuong_tien || "",
+      vehicle_label: payload.ten_phuong_tien || payload.phuong_tien || "",
+      payment_method: payload.phuong_thuc_thanh_toan || "tien_mat",
+      payment_method_label: buildPaymentMethodLabel(
+        payload.phuong_thuc_thanh_toan,
+      ),
+      fee_payer: payload.nguoi_tra_cuoc || "gui",
+      payer_label: buildFeePayerLabel(payload.nguoi_tra_cuoc),
+      cod_amount: Number(payload.gia_tri_thu_ho_cod || 0),
+      total_fee: Number(payload.tong_cuoc || 0),
+      shipping_fee: Number(payload.tong_cuoc || 0),
+      notes: payload.ghi_chu_tai_xe || "",
+      clean_note: payload.ghi_chu_tai_xe || "",
+      estimated_delivery: payload.du_kien_giao_hang || "",
+      payment_status_label: "Chưa hoàn tất",
+      khoang_cach_km: Number(payload.khoang_cach_km || 0),
+      fee_breakdown: pricingBreakdown,
+      pricing_breakdown: pricingBreakdown,
+      service_meta: {
+        pickup_date: payload.ngay_lay_hang || "",
+        pickup_slot: payload.khung_gio_lay_hang || "",
+        pickup_slot_label: payload.ten_khung_gio_lay_hang || "",
+        estimated_eta: payload.du_kien_giao_hang || "",
+        vehicle_label: payload.ten_phuong_tien || payload.phuong_tien || "",
+        distance_km: Number(payload.khoang_cach_km || 0),
+        payer_label: buildFeePayerLabel(payload.nguoi_tra_cuoc),
+        payment_method_label: buildPaymentMethodLabel(
+          payload.phuong_thuc_thanh_toan,
+        ),
+      },
+    },
+    provider: {
+      attachments: uploadedMeta,
+      shipper_reports: [],
+      feedback_media: [],
+    },
+    customer: {
+      id: session?.id || "",
+      username: session?.username || "",
+      fullname: session?.fullname || payload.nguoi_gui_ho_ten || "",
+      phone: session?.phone || payload.nguoi_gui_so_dien_thoai || "",
+      email: session?.email || "",
+    },
+    items: Array.isArray(payload.mat_hang) ? payload.mat_hang : [],
+    logs: [
+      {
+        old_status_label: "Mới tạo",
+        new_status_label: "Chờ xử lý",
+        created_at: now,
+        note: "Đơn hàng đã được tạo thành công.",
+      },
+    ],
+  };
+}
+
+function getBookingCrudInsertFn() {
+  if (typeof window.crud === "function") {
+    return (tableName, data) => window.crud("insert", tableName, data);
+  }
+
+  if (typeof window.krud === "function") {
+    return (tableName, data) => window.krud("insert", tableName, data);
+  }
+
+  return null;
+}
+
+function buildCrudBookingInsertPayload(
+  payload,
+  orderCode = buildGeneratedOrderCode(),
+) {
+  const session = getLocalSession();
+  const createdAt = new Date().toISOString();
+  const serviceType = getInternalServiceType(payload.dich_vu);
+
+  return {
+    ma_don_hang_noi_bo: orderCode,
+    ho_ten_nguoi_gui: payload.nguoi_gui_ho_ten || "",
+    so_dien_thoai_nguoi_gui: payload.nguoi_gui_so_dien_thoai || "",
+    ho_ten_nguoi_nhan: payload.nguoi_nhan_ho_ten || "",
+    so_dien_thoai_nguoi_nhan: payload.nguoi_nhan_so_dien_thoai || "",
+    dia_chi_lay_hang: payload.dia_chi_lay_hang || "",
+    dia_chi_giao_hang: payload.dia_chi_giao_hang || "",
+    ngay_lay_hang: payload.ngay_lay_hang || "",
+    khung_gio_lay_hang: payload.khung_gio_lay_hang || "",
+    ten_khung_gio_lay_hang: payload.ten_khung_gio_lay_hang || "",
+    du_kien_giao_hang: payload.du_kien_giao_hang || "",
+    dich_vu: payload.dich_vu || "",
+    ten_dich_vu: payload.ten_dich_vu || "",
+    loai_dich_vu: serviceType || "",
+    phuong_tien: payload.phuong_tien || "",
+    ten_phuong_tien: payload.ten_phuong_tien || "",
+    tong_cuoc: Number(payload.tong_cuoc || 0),
+    gia_tri_thu_ho_cod: Number(payload.gia_tri_thu_ho_cod || 0),
+    phuong_thuc_thanh_toan: payload.phuong_thuc_thanh_toan || "",
+    nguoi_tra_cuoc: payload.nguoi_tra_cuoc || "",
+    ghi_chu: payload.ghi_chu_tai_xe || "",
+    khoang_cach_km: Number(payload.khoang_cach_km || 0),
+    trang_thai: "moi_tao",
+    created_at: createdAt,
+    customer_id: session?.id || "",
+    customer_username: session?.username || "",
+    mat_hang_json: JSON.stringify(Array.isArray(payload.mat_hang) ? payload.mat_hang : []),
+    chi_tiet_gia_cuoc_json: JSON.stringify(payload.chi_tiet_gia_cuoc || {}),
+  };
+}
+
+async function insertBookingWithCrud(payload, orderCode) {
+  const insertFn = getBookingCrudInsertFn();
+  if (!insertFn) {
+    throw new Error(
+      "Không tìm thấy hàm crud/krud trên trang đặt lịch. Kiểm tra lại script krud.js.",
+    );
+  }
+
+  return insertFn(
+    "giaohangnhanh_dat_lich",
+    buildCrudBookingInsertPayload(payload, orderCode),
+  );
+}
+
+function extractCrudInsertOrderIdentifier(result) {
+  if (!result || typeof result !== "object") return "";
+
+  return String(
+    result.order_code ||
+      result.id ||
+      result.insertId ||
+      result.insert_id ||
+      result.record_id ||
+      result.data?.order_code ||
+      result.data?.id ||
+      result.data?.insertId ||
+      result.result?.order_code ||
+      result.result?.id ||
+      result.result?.insertId ||
+      "",
+  ).trim();
 }
 
 function canUseSessionStorage() {
@@ -673,38 +951,6 @@ function normalizeWeatherQuoteResponse(payload) {
     effectiveAt: response.effective_at || "",
     isFallback: response.is_fallback !== false,
   };
-}
-
-async function readJsonResponseSafe(response) {
-  const rawText = await response.text();
-  if (!String(rawText || "").trim()) {
-    if (response.status === 405) {
-      throw new Error(
-        "Máy chủ đang chặn phương thức gửi đơn này (405). Kiểm tra lại endpoint đặt lịch có đang trỏ đúng file PHP trong thư mục public hay không.",
-      );
-    }
-    throw new Error(
-      response.status >= 400
-        ? `Máy chủ trả về lỗi ${response.status} nhưng không gửi nội dung JSON.`
-        : "Máy chủ trả về phản hồi rỗng, không đọc được dữ liệu JSON.",
-    );
-  }
-  try {
-    return JSON.parse(rawText);
-  } catch (error) {
-    const preview = String(rawText || "").trim().slice(0, 80);
-    throw new Error(
-      preview.startsWith("<")
-        ? `Máy chủ đang trả về trang HTML thay vì dữ liệu JSON${
-            response.status === 405
-              ? " do endpoint hiện tại không nhận đúng method."
-              : ""
-          }`
-        : `Phản hồi từ máy chủ không đúng định dạng JSON${
-            response.status >= 400 ? ` (HTTP ${response.status})` : ""
-          }.`,
-    );
-  }
 }
 
 function buildWeatherRequestKey() {
@@ -1620,23 +1866,18 @@ async function initReorderPrefill() {
   if (!reorderId) return;
 
   try {
-    const response = await fetch(
-      `${resolveBookingApiUrl("dat-lich-ajax.php")}?reorder_id=${encodeURIComponent(reorderId)}`,
-    );
-    const result = await readJsonResponseSafe(response);
-    if (!response.ok || !result.success || !result.data) {
-      throw new Error(
-        result.message || "Không thể tải dữ liệu đơn cần đặt lại.",
-      );
+    const storedDetail = getLocalOrderDetailById(reorderId);
+    if (!storedDetail) {
+      throw new Error("Không tìm thấy dữ liệu đơn cần đặt lại trong local.");
     }
-    await applyReorderPrefill(result.data);
+    const reorderData = mapStoredDetailToReorderData(storedDetail);
+    if (!reorderData) {
+      throw new Error("Dữ liệu đơn cần đặt lại không hợp lệ.");
+    }
+    await applyReorderPrefill(reorderData);
   } catch (error) {
-    if (error.message && error.message.includes("HTML")) {
-      console.log("ℹ️ [Hệ thống] Bỏ qua tải đơn cũ do máy chủ trả về HTML (có thể do chưa đăng nhập).");
-    } else {
-      console.error(error);
-      hien_thi_loi(1, error.message || "Không thể tải dữ liệu đơn cũ để đặt lại.");
-    }
+    console.warn("Không thể tải dữ liệu đặt lại:", error);
+    hien_thi_loi(1, error.message || "Không thể tải dữ liệu đơn cũ để đặt lại.");
   }
 }
 
@@ -1663,27 +1904,14 @@ async function initCustomerPrefill() {
   if (getQueryParam("reorder_id")) return;
 
   try {
-    const response = await fetch(
-      `${resolveBookingApiUrl("dat-lich-ajax.php")}?action=prefill`,
-      {
-        credentials: "same-origin",
-      },
-    );
-
-    if (response.status === 401) return;
-
-    const result = await readJsonResponseSafe(response);
-    if (!response.ok || !result.success || !result.data) {
-      throw new Error(result.message || "Không thể tải thông tin người gửi.");
-    }
-
-    applyCustomerPrefill(result.data);
+    const session = getLocalSession();
+    if (!session) return;
+    applyCustomerPrefill({
+      nguoi_gui_ho_ten: session.fullname || "",
+      nguoi_gui_so_dien_thoai: session.phone || "",
+    });
   } catch (error) {
-    if (error.message && error.message.includes("HTML")) {
-      console.log("ℹ️ [Hệ thống] Bỏ qua tự điền thông tin khách do chưa đăng nhập hoặc chạy local.");
-    } else {
-      console.warn("Không tự điền được thông tin khách hàng:", error);
-    }
+    console.warn("Không tự điền được thông tin khách hàng:", error);
   }
 }
 
@@ -2356,41 +2584,6 @@ function getSelectedUploadFiles() {
   ].filter((entry) => entry.file);
 }
 
-function doc_tep_base64(file) {
-  return new Promise((resolve, reject) => {
-    if (!file) {
-      reject(new Error("Không có tệp để đọc."));
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = String(reader.result || "");
-      const base64 = result.includes(",") ? result.split(",")[1] : result;
-      resolve(base64);
-    };
-    reader.onerror = () => {
-      reject(new Error(`Không thể đọc tệp ${file.name || ""}.`));
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-async function tao_du_lieu_tai_len_google_sheets() {
-  const uploads = getSelectedUploadFiles();
-  if (!uploads.length) return [];
-
-  return Promise.all(
-    uploads.map(async (entry) => ({
-      loai: entry.type,
-      file_name: entry.file.name,
-      mime_type: entry.file.type || "application/octet-stream",
-      size: Number(entry.file.size || 0),
-      data_base64: await doc_tep_base64(entry.file),
-    })),
-  );
-}
-
 function clearReviewUploadObjectUrls() {
   reviewUploadObjectUrls.forEach((url) => {
     try {
@@ -2441,105 +2634,6 @@ function hien_thi_tai_len_xac_nhan() {
         `;
     host.appendChild(card);
   });
-}
-
-function resolveGoogleSheetsWebhookUrl() {
-  if (window.GiaoHangNhanhCore?.googleSheetsWebhookUrl) {
-    return String(window.GiaoHangNhanhCore.googleSheetsWebhookUrl).trim();
-  }
-
-  const metaTag = document.querySelector('meta[name="google-sheets-webhook-url"]');
-  if (metaTag?.content) {
-    return String(metaTag.content).trim();
-  }
-
-  try {
-    const stored = window.localStorage?.getItem("ghn_google_sheets_webhook_url");
-    if (stored) return String(stored).trim();
-  } catch (error) {
-    console.warn("Không thể đọc cấu hình Google Sheets webhook từ localStorage:", error);
-  }
-
-  return DEFAULT_GOOGLE_SHEETS_WEBHOOK_URL;
-}
-
-function isDatabaseFallbackCandidate(errorMessage) {
-  const normalized = String(errorMessage || "").toLowerCase();
-  return (
-    normalized.includes("405") ||
-    normalized.includes("html") ||
-    normalized.includes("json") ||
-    normalized.includes("endpoint") ||
-    normalized.includes("php") ||
-    normalized.includes("method") ||
-    normalized.includes("máy chủ") ||
-    normalized.includes("không đọc được dữ liệu")
-  );
-}
-
-async function submitOrderToGoogleSheetsFallback(payload) {
-  const webhookUrl = resolveGoogleSheetsWebhookUrl();
-  if (!webhookUrl) {
-    throw new Error(
-      "Database không lưu được và chưa cấu hình Google Sheets webhook để nhận đơn dự phòng.",
-    );
-  }
-
-  const fallbackOrderCode = `GS-${Date.now()}`;
-  let uploadedFiles = [];
-  try {
-    uploadedFiles = await tao_du_lieu_tai_len_google_sheets();
-  } catch (error) {
-    throw new Error(
-      error?.message ||
-        "Không chuẩn bị được ảnh/video để gửi sang Google Drive qua Google Sheets.",
-    );
-  }
-
-  let response;
-  try {
-    response = await fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        // Apps Script web app thường bị chặn preflight nếu gửi application/json.
-        // Gửi text/plain vẫn giữ nguyên JSON trong body nhưng tránh OPTIONS/CORS rắc rối hơn.
-        "Content-Type": "text/plain;charset=utf-8",
-      },
-      body: JSON.stringify({
-        source: "google_sheets_du_phong",
-        order_code: fallbackOrderCode,
-        created_at: new Date().toISOString(),
-        payload: {
-          ...payload,
-          order_code: fallbackOrderCode,
-        },
-        uploaded_files: uploadedFiles,
-      }),
-    });
-  } catch (error) {
-    throw new Error(
-      "Không gửi được dữ liệu sang Google Sheets. Hãy kiểm tra lại Apps Script đã triển khai dạng Web App, quyền truy cập là 'Anyone', và dùng đúng URL /exec.",
-    );
-  }
-
-  let result = {};
-  try {
-    result = await response.json();
-  } catch (error) {
-    result = {};
-  }
-
-  if (!response.ok || (result && result.success === false)) {
-    throw new Error(
-      result.message ||
-        `Google Sheets không nhận được dữ liệu dự phòng (HTTP ${response.status}).`,
-    );
-  }
-
-  return {
-    order_code: result.order_code || fallbackOrderCode,
-  };
 }
 
 function renderSubmitSuccessState(orderCode, messageHtml) {
@@ -2616,7 +2710,7 @@ function getWeatherSourceStorageValue(source) {
     .replace(/^_+|_+$/g, "");
 }
 
-function tao_chi_tiet_gia_cuoc_luu_tru(breakdown = {}) {
+function tao_chi_tiet_gia_cuoc_de_luu_tru(breakdown = {}) {
   return {
     gia_co_ban: Number(breakdown.basePrice || 0),
     phu_phi_qua_can: Number(breakdown.overweightFee || 0),
@@ -2647,7 +2741,7 @@ function tao_chi_tiet_gia_cuoc_luu_tru(breakdown = {}) {
   };
 }
 
-function tao_chi_tiet_gia_cuoc_php(chiTiet = {}) {
+function chuan_hoa_chi_tiet_gia_cuoc_da_luu(chiTiet = {}) {
   return {
     basePrice: Number(chiTiet.gia_co_ban || 0),
     overweightFee: Number(chiTiet.phu_phi_qua_can || 0),
@@ -2714,82 +2808,35 @@ async function gui_don_hang() {
   btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang xử lý...`;
 
   const payload = tao_du_lieu_gui();
-  const payloadPhp = tao_payload_php_tuong_thich(payload);
+  const internalOrderCode = buildGeneratedOrderCode();
   xoa_loi(5);
 
   try {
-    const formData = new FormData();
-    formData.append("payload", JSON.stringify(payloadPhp));
-    getSelectedUploadFiles().forEach((entry) => {
-      formData.append("goods_media[]", entry.file, entry.file.name);
-    });
-
-    const response = await fetch(resolveBookingApiUrl("dat-lich-ajax.php"), {
-      method: "POST",
-      body: formData,
-      credentials: "same-origin",
-    });
-
-    const result = await readJsonResponseSafe(response);
-    if (result.success) {
-      renderSubmitSuccessState(
-        result.order_code || "GHN-XXXX",
-        result.google_sheets_configured && !result.google_sheets_synced
-          ? "Đơn đã lưu vào Database, nhưng chưa đồng bộ được sang Google Sheets."
-          : !!window.isLoggedIn
-            ? "Bạn có thể theo dõi đơn trong trang quản lý khách hàng."
-            : "Đơn đã được lưu thành công ngay cả khi chưa đăng nhập. Hãy lưu lại mã đơn để tra cứu sau.",
-      );
-    } else if (response.status === 401) {
-      hien_thi_loi(
-        5,
-        result.message || "Phiên đăng nhập đã hết hạn. Vui lòng thử lại.",
-      );
-    } else {
-      try {
-        const sheetsResult = await submitOrderToGoogleSheetsFallback(payload);
-        renderSubmitSuccessState(
-          sheetsResult.order_code,
-          "Database hiện chưa lưu được đơn, nhưng hệ thống đã lưu đơn dự phòng vào Google Sheets. Bạn hãy giữ lại mã này để đối chiếu.",
-        );
-        return;
-      } catch (sheetsError) {
-        console.error(sheetsError);
-        hien_thi_loi(
-          5,
-          sheetsError.message || result.message || "Không lưu được đơn hàng.",
-        );
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }
+    const crudResult = await insertBookingWithCrud(payload, internalOrderCode);
+    const localDetail = buildLocalOrderDetail(payload, internalOrderCode);
+    const returnedRecordId = extractCrudInsertOrderIdentifier(crudResult);
+    if (returnedRecordId) {
+      localDetail.order.remote_id = returnedRecordId;
     }
+    const savedLocally = persistLocalCustomerOrder(localDetail);
+    if (!savedLocally) {
+      console.warn(
+        "Không thể lưu bản sao đơn hàng vào bộ nhớ tạm của trình duyệt sau khi tạo đơn.",
+      );
+    }
+
+    renderSubmitSuccessState(
+      localDetail.order.order_code || internalOrderCode || "GHN-XXXX",
+      !!window.isLoggedIn
+        ? "Đơn hàng đã được tạo thành công. Bạn có thể theo dõi đơn ngay trong tài khoản của mình."
+        : "Đơn hàng đã được tạo thành công. Hãy lưu lại mã đơn để tra cứu sau.",
+    );
   } catch (error) {
     console.error(error);
-    if (isDatabaseFallbackCandidate(error.message)) {
-      try {
-        const sheetsResult = await submitOrderToGoogleSheetsFallback(payload);
-        renderSubmitSuccessState(
-          sheetsResult.order_code,
-          "Database hiện chưa lưu được đơn, nhưng hệ thống đã lưu đơn dự phòng vào Google Sheets. Bạn hãy giữ lại mã này để đối chiếu.",
-        );
-        return;
-      } catch (sheetsError) {
-        console.error(sheetsError);
-        hien_thi_loi(
-          5,
-          sheetsError.message ||
-            "Database chưa lưu được và Google Sheets cũng chưa nhận được dữ liệu.",
-        );
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-        return;
-      }
-    }
-
     hien_thi_loi(
       5,
       error.message ||
-        "Có lỗi xảy ra khi gửi yêu cầu. Vui lòng kiểm tra kết nối mạng.",
+        "Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.",
     );
     btn.disabled = false;
     btn.innerHTML = originalText;
@@ -2799,7 +2846,7 @@ async function gui_don_hang() {
 function tao_du_lieu_gui() {
   const quotePayload = tao_du_lieu_tinh_cuoc();
   const serviceType = selectedService.serviceType;
-  const chiTietGiaCuoc = tao_chi_tiet_gia_cuoc_luu_tru(
+  const chiTietGiaCuoc = tao_chi_tiet_gia_cuoc_de_luu_tru(
     selectedService.breakdown || {},
   );
   const nguoi_gui_ho_ten = document.getElementById("nguoi_gui_ho_ten").value;
@@ -2842,81 +2889,5 @@ function tao_du_lieu_gui() {
     kinh_do_giao_hang: quotePayload.delivery_lng || 0,
     khoang_cach_km: khoang_cach_km,
     mat_hang: orderItems,
-  };
-}
-
-function tao_payload_php_tuong_thich(du_lieu_gui) {
-  const dieuKienDichVu =
-    selectedService.serviceConditionKey ||
-    (getSelectedUrgentCondition() && getSelectedUrgentCondition().key) ||
-    "macdinh";
-  const nhanDienThoiTiet = weatherQuoteState?.source || "";
-
-  return {
-    reorder_id:
-      reorderContext && reorderContext.source_order_id
-        ? reorderContext.source_order_id
-        : null,
-    nguoi_gui_ho_ten: du_lieu_gui.nguoi_gui_ho_ten,
-    nguoi_gui_so_dien_thoai: du_lieu_gui.nguoi_gui_so_dien_thoai,
-    nguoi_nhan_ho_ten: du_lieu_gui.nguoi_nhan_ho_ten,
-    nguoi_nhan_so_dien_thoai: du_lieu_gui.nguoi_nhan_so_dien_thoai,
-    dia_chi_lay_hang: du_lieu_gui.dia_chi_lay_hang,
-    dia_chi_giao_hang: du_lieu_gui.dia_chi_giao_hang,
-    ngay_lay_hang: du_lieu_gui.ngay_lay_hang,
-    khung_gio_lay_hang: du_lieu_gui.khung_gio_lay_hang,
-    ten_khung_gio_lay_hang: du_lieu_gui.ten_khung_gio_lay_hang,
-    ghi_chu_tai_xe: du_lieu_gui.ghi_chu_tai_xe,
-    gia_tri_thu_ho_cod: du_lieu_gui.gia_tri_thu_ho_cod,
-    phuong_thuc_thanh_toan: du_lieu_gui.phuong_thuc_thanh_toan,
-    nguoi_tra_cuoc: du_lieu_gui.nguoi_tra_cuoc,
-    dich_vu: du_lieu_gui.dich_vu,
-    ten_dich_vu: du_lieu_gui.ten_dich_vu,
-    du_kien_giao_hang: du_lieu_gui.du_kien_giao_hang,
-    phuong_tien: du_lieu_gui.phuong_tien,
-    ten_phuong_tien: du_lieu_gui.ten_phuong_tien,
-    tong_cuoc: du_lieu_gui.tong_cuoc,
-    chi_tiet_gia_cuoc: tao_chi_tiet_gia_cuoc_php(
-      du_lieu_gui.chi_tiet_gia_cuoc || {},
-    ),
-    vi_do_lay_hang: du_lieu_gui.vi_do_lay_hang,
-    kinh_do_lay_hang: du_lieu_gui.kinh_do_lay_hang,
-    vi_do_giao_hang: du_lieu_gui.vi_do_giao_hang,
-    kinh_do_giao_hang: du_lieu_gui.kinh_do_giao_hang,
-    ma_dieu_kien_dich_vu: dieuKienDichVu,
-    nguon_thoi_tiet: getWeatherSourceStorageValue(nhanDienThoiTiet),
-    ghi_chu_thoi_tiet: weatherQuoteState?.note || "",
-    mat_hang: du_lieu_gui.mat_hang || [],
-    sender_name: du_lieu_gui.nguoi_gui_ho_ten,
-    sender_phone: du_lieu_gui.nguoi_gui_so_dien_thoai,
-    receiver_name: du_lieu_gui.nguoi_nhan_ho_ten,
-    receiver_phone: du_lieu_gui.nguoi_nhan_so_dien_thoai,
-    search_pickup: du_lieu_gui.dia_chi_lay_hang,
-    search_delivery: du_lieu_gui.dia_chi_giao_hang,
-    pickup_date: du_lieu_gui.ngay_lay_hang,
-    pickup_slot: du_lieu_gui.khung_gio_lay_hang,
-    pickup_slot_label: du_lieu_gui.ten_khung_gio_lay_hang,
-    notes: du_lieu_gui.ghi_chu_tai_xe,
-    cod_value: du_lieu_gui.gia_tri_thu_ho_cod,
-    payment_method: du_lieu_gui.phuong_thuc_thanh_toan,
-    fee_payer: du_lieu_gui.nguoi_tra_cuoc,
-    service: getInternalServiceType(du_lieu_gui.dich_vu),
-    service_name: du_lieu_gui.ten_dich_vu,
-    estimated_eta: du_lieu_gui.du_kien_giao_hang,
-    vehicle: du_lieu_gui.phuong_tien,
-    vehicle_label: du_lieu_gui.ten_phuong_tien,
-    total_fee: du_lieu_gui.tong_cuoc,
-    pricing_breakdown: tao_chi_tiet_gia_cuoc_php(
-      du_lieu_gui.chi_tiet_gia_cuoc || {},
-    ),
-    pickup_lat: du_lieu_gui.vi_do_lay_hang,
-    pickup_lng: du_lieu_gui.kinh_do_lay_hang,
-    delivery_lat: du_lieu_gui.vi_do_giao_hang,
-    delivery_lng: du_lieu_gui.kinh_do_giao_hang,
-    service_condition_key: dieuKienDichVu,
-    weather_source: getWeatherSourceStorageValue(nhanDienThoiTiet),
-    weather_note: weatherQuoteState?.note || "",
-    khoang_cach_km: du_lieu_gui.khoang_cach_km,
-    items: du_lieu_gui.mat_hang || [],
   };
 }

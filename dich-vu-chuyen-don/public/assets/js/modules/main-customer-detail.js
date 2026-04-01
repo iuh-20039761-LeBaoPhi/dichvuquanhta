@@ -81,7 +81,7 @@
       });
       common.push({
         title: "Chuẩn bị chốt phương án",
-        note: "Bước này sẽ có báo giá/nhân sự/xe khi backend thật được nối.",
+        note: "Bước này sẽ có báo giá, nhân sự và xe khi phase dữ liệu chính thức được nối.",
         time: "Bước tiếp theo",
         active: false,
       });
@@ -206,7 +206,7 @@
             <div class="dashboard-khach-hang-tieu-de">
               <div>
                 <h3>Thông tin điều phối</h3>
-                <p>Các trường này là nền cho bước nối backend và chi tiết đơn thật sau này.</p>
+                <p>Các trường này là nền cho bước đồng bộ dữ liệu chính thức và chi tiết đơn sau này.</p>
               </div>
             </div>
             <div class="luoi-thong-tin-chi-tiet">
@@ -309,10 +309,10 @@
     }
 
     try {
-      const result = await store.fetchDetailFromApi?.(code);
+      const result = await store.fetchDetail?.(code);
       renderDetail(result || null);
     } catch (error) {
-      console.error("Cannot load customer detail API:", error);
+      console.error("Cannot load customer detail store:", error);
       renderDetail(null);
     }
   })();

@@ -2,8 +2,7 @@
   if (window.CustomerPortal) return;
 
   const core = window.GiaoHangNhanhCore || {};
-  const apiUrl = "../../khach-hang-giaohang/api/customer_portal.php";
-  const mockDataUrl = "../assets/data/mock-tracking-orders.json";
+  const localAuth = window.GiaoHangNhanhLocalAuth || null;
   const routes = {
     login: "../../dang-nhap.html",
     booking: "../../dat-lich-giao-hang-nhanh.html",
@@ -11,62 +10,39 @@
     orders: "lich-su-don-hang.html",
     detail: "chi-tiet-don-hang.html",
     profile: "ho-so.html",
-    logout:
-      typeof core.toApiUrl === "function"
-        ? core.toApiUrl("logout.php")
-        : "../logout.php",
+    logout: "../../dang-nhap.html",
+  };
+  const storageKeys = {
+    orders: "ghn-customer-orders",
+    addresses: "ghn-customer-addresses",
   };
 
-  let mockDatasetPromise = null;
-
-  function isMockMode() {
-    return new URLSearchParams(window.location.search).get("mock") === "1";
-  }
-
-  async function loadMockDataset() {
-    if (!mockDatasetPromise) {
-      const mockUrl = new URL(mockDataUrl, window.location.href);
-      mockDatasetPromise = fetch(mockUrl.toString(), {
-        credentials: "same-origin",
-      }).then(async (response) => {
-        const data = await response.json().catch(() => null);
-        if (!response.ok || !data) {
-          throw new Error("Không đọc được dữ liệu mock để test chi tiết đơn.");
-        }
-        return data;
-      });
+  function readJson(key, fallback) {
+    try {
+      const raw = window.localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (error) {
+      console.error("Cannot read customer portal local payload:", error);
+      return fallback;
     }
-
-    return mockDatasetPromise;
   }
 
-  function findMockOrderRecord(dataset, orderId) {
-    const items = Array.isArray(dataset?.tracking_orders)
-      ? dataset.tracking_orders
-      : [];
-    const normalizedOrderId = String(orderId || "").trim().toUpperCase();
+  function writeJson(key, value) {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.error("Cannot persist customer portal local payload:", error);
+      return false;
+    }
+  }
 
-    return (
-      items.find((item) => {
-        const trackingCode = String(item?.tracking?.order_code || "")
-          .trim()
-          .toUpperCase();
-        const detailId = String(
-          item?.order?.id ||
-            item?.order?.order_code ||
-            item?.detail?.order?.id ||
-            item?.detail?.order?.order_code ||
-            "",
-        )
-          .trim()
-          .toUpperCase();
-
-        return (
-          normalizedOrderId &&
-          (normalizedOrderId === trackingCode || normalizedOrderId === detailId)
-        );
-      }) || null
-    );
+  function getCurrentSessionUser() {
+    const session =
+      localAuth && typeof localAuth.getSession === "function"
+        ? localAuth.getSession()
+        : null;
+    return session && typeof session === "object" ? session : null;
   }
 
   function escapeHtml(value) {
@@ -117,9 +93,6 @@
       giao_hoa_toc: "express",
       giao_nhanh: "fast",
       giao_tieu_chuan: "standard",
-      so_luong_lon: "bulk",
-      quoc_te_tiet_kiem: "intl_economy",
-      quoc_te_hoa_toc: "intl_express",
     };
     return map[normalized] || normalized;
   }
@@ -216,124 +189,127 @@
     }));
   }
 
-  function normalizeMockOrderDetail(record, dataset) {
-    const rawOrder = record?.order || record?.detail?.order || {};
-    const tracking = record?.tracking || {};
-    const rawProvider = record?.provider || record?.detail?.provider || {};
-    const items = normalizeMockItems(record?.items || record?.detail?.items || []);
-    const shippingFee = Number(
-      rawOrder.shipping_fee ?? rawOrder.total_fee ?? tracking.shipping_fee ?? 0,
-    );
-    const status =
-      rawOrder.status || tracking.status || tracking.status_raw || "pending";
-    const serviceMeta = rawOrder.service_meta || {};
-    const order = {
-      ...rawOrder,
-      id: rawOrder.id || rawOrder.order_code || tracking.order_code || "",
-      order_code: rawOrder.order_code || tracking.order_code || rawOrder.id || "",
-      status,
-      status_label:
-        rawOrder.status_label ||
-        tracking.status_label ||
-        tracking.status_text ||
-        getStatusLabel(status),
-      service_label: getServiceLabel(
-        rawOrder.service_type,
-        rawOrder.service_label || rawOrder.service_name,
-      ),
-      shipping_fee: shippingFee,
-      cod_amount: Number(
-        rawOrder.cod_amount ?? rawOrder.cod_value ?? tracking.cod_amount ?? 0,
-      ),
-      payment_method: rawOrder.payment_method || "",
-      payment_method_label:
-        rawOrder.payment_method_label ||
-        serviceMeta.payment_method_label ||
-        getPaymentMethodLabel(rawOrder.payment_method),
-      payer_label:
-        rawOrder.payer_label ||
-        serviceMeta.payer_label ||
-        getFeePayerLabel(rawOrder.fee_payer),
-      clean_note: rawOrder.clean_note || rawOrder.notes || "",
-      vehicle_type:
-        rawOrder.vehicle_type || rawOrder.vehicle_label || serviceMeta.vehicle_label || "",
-      created_at: rawOrder.created_at || tracking.created_at || "",
-      fee_breakdown: normalizeMockBreakdown(
-        rawOrder.pricing_breakdown || rawOrder.fee_breakdown,
-        shippingFee,
-      ),
-      service_meta: {
-        ...serviceMeta,
-        service_name: getServiceLabel(
-          rawOrder.service_type,
-          serviceMeta.service_name || rawOrder.service_name || rawOrder.service_label,
-        ),
-        estimated_eta:
-          serviceMeta.estimated_eta || rawOrder.estimated_delivery || "",
-        pickup_date: serviceMeta.pickup_date || rawOrder.pickup_date || "",
-        pickup_slot: serviceMeta.pickup_slot || rawOrder.pickup_slot || "",
-        pickup_slot_label:
-          serviceMeta.pickup_slot_label || rawOrder.pickup_slot_label || "--",
-        delivery_date: serviceMeta.delivery_date || rawOrder.delivery_date || "",
-        delivery_slot_label:
-          serviceMeta.delivery_slot_label ||
-          rawOrder.delivery_slot_label ||
-          "--",
-        vehicle_label:
-          serviceMeta.vehicle_label ||
-          rawOrder.vehicle_label ||
-          rawOrder.vehicle_type ||
-          "--",
-        service_condition_label:
-          serviceMeta.service_condition_label ||
-          rawOrder.service_condition_label ||
-          "",
-        payer_label:
-          serviceMeta.payer_label || getFeePayerLabel(rawOrder.fee_payer),
-        payment_method_label:
-          serviceMeta.payment_method_label ||
-          getPaymentMethodLabel(rawOrder.payment_method),
-        distance_km: Number(
-          serviceMeta.distance_km ?? rawOrder.khoang_cach_km ?? 0,
-        ),
-      },
-    };
+  function cloneDetail(detail) {
+    return JSON.parse(JSON.stringify(detail || {}));
+  }
 
+  function normalizeLocalOrderDetail(detail) {
+    const nextDetail = cloneDetail(detail);
+    const nextOrder = nextDetail.order || {};
+    nextOrder.status = String(nextOrder.status || "pending").toLowerCase();
+    nextOrder.status_label =
+      nextOrder.status_label || getStatusLabel(nextOrder.status);
+    nextOrder.service_label = getServiceLabel(
+      nextOrder.service_type,
+      nextOrder.service_label || nextOrder.service_name,
+    );
+    nextOrder.shipping_fee = Number(nextOrder.shipping_fee || nextOrder.total_fee || 0);
+    nextOrder.cod_amount = Number(nextOrder.cod_amount || nextOrder.cod_value || 0);
+    nextOrder.created_at = nextOrder.created_at || new Date().toISOString();
+    nextOrder.fee_breakdown = normalizeMockBreakdown(
+      nextOrder.fee_breakdown || nextOrder.pricing_breakdown,
+      nextOrder.shipping_fee,
+    );
+    nextDetail.order = nextOrder;
+    nextDetail.items = normalizeMockItems(nextDetail.items || []);
+    nextDetail.logs = Array.isArray(nextDetail.logs) ? nextDetail.logs : [];
+    nextDetail.provider = nextDetail.provider && typeof nextDetail.provider === "object"
+      ? nextDetail.provider
+      : {};
+    nextDetail.customer = nextDetail.customer && typeof nextDetail.customer === "object"
+      ? nextDetail.customer
+      : {};
+    return nextDetail;
+  }
+
+  function getOrderSummaryFromDetail(detail) {
+    const order = detail.order || {};
     return {
-      status: "success",
-      order,
-      provider: {
-        ...rawProvider,
-        shipper_vehicle:
-          rawProvider.shipper_vehicle ||
-          rawProvider.vehicle_type ||
-          order.vehicle_type ||
-          "",
-        attachments: Array.isArray(rawProvider.attachments)
-          ? rawProvider.attachments
-          : [],
-        shipper_reports: Array.isArray(rawProvider.shipper_reports)
-          ? rawProvider.shipper_reports
-          : [],
-        feedback_media: Array.isArray(rawProvider.feedback_media)
-          ? rawProvider.feedback_media
-          : [],
-      },
-      customer:
-        record?.customer ||
-        record?.detail?.customer ||
-        dataset?.session?.user || {
-          fullname: order.sender_name || "",
-          phone: order.sender_phone || "",
-          email: "",
-        },
-      items,
-      logs: Array.isArray(record?.logs)
-        ? record.logs
-        : Array.isArray(record?.detail?.logs)
-          ? record.detail.logs
-          : [],
+      ...order,
+      id: order.id || order.order_code || "",
+      order_code: order.order_code || order.id || "",
+      status: String(order.status || "pending").toLowerCase(),
+      status_label: order.status_label || getStatusLabel(order.status),
+      service_label: getServiceLabel(order.service_type, order.service_label),
+      shipping_fee: Number(order.shipping_fee || 0),
+      cod_amount: Number(order.cod_amount || 0),
+      pickup_address: order.pickup_address || "",
+      delivery_address: order.delivery_address || "",
+      receiver_name: order.receiver_name || "",
+      created_at: order.created_at || "",
     };
+  }
+
+  async function getAllOrderDetails() {
+    const localDetails = (readJson(storageKeys.orders, []) || []).map(normalizeLocalOrderDetail);
+    return localDetails.sort((left, right) => {
+      const leftTime = new Date(left?.order?.created_at || 0).getTime();
+      const rightTime = new Date(right?.order?.created_at || 0).getTime();
+      return rightTime - leftTime;
+    });
+  }
+
+  function persistOrderDetail(detail) {
+    const nextDetail = normalizeLocalOrderDetail(detail);
+    const current = (readJson(storageKeys.orders, []) || []).map(normalizeLocalOrderDetail);
+    const nextId = String(nextDetail?.order?.id || nextDetail?.order?.order_code || "").trim().toUpperCase();
+    const filtered = current.filter((item) => {
+      const itemId = String(item?.order?.id || item?.order?.order_code || "").trim().toUpperCase();
+      return itemId !== nextId;
+    });
+    filtered.unshift(nextDetail);
+    writeJson(storageKeys.orders, filtered);
+    return nextDetail;
+  }
+
+  function getSavedAddresses(userId) {
+    const allAddresses = readJson(storageKeys.addresses, []);
+    return (Array.isArray(allAddresses) ? allAddresses : [])
+      .filter((item) => String(item.user_id || "") === String(userId || ""))
+      .sort((left, right) => {
+        const leftTime = new Date(left.created_at || 0).getTime();
+        const rightTime = new Date(right.created_at || 0).getTime();
+        return rightTime - leftTime;
+      });
+  }
+
+  function saveAddressesForUser(userId, addresses) {
+    const allAddresses = readJson(storageKeys.addresses, []);
+    const nextAddresses = Array.isArray(allAddresses) ? allAddresses : [];
+    const preserved = nextAddresses.filter((item) => String(item.user_id || "") !== String(userId || ""));
+    writeJson(storageKeys.addresses, [...preserved, ...(Array.isArray(addresses) ? addresses : [])]);
+  }
+
+  function updateAuthStorage(mutator) {
+    if (!localAuth) return null;
+    const authKeys = localAuth.storageKeys || {};
+    const usersKey = authKeys.users;
+    const sessionKey = authKeys.session;
+    const users = Array.isArray(readJson(usersKey, [])) ? readJson(usersKey, []) : [];
+    const session = getCurrentSessionUser();
+    if (!usersKey || !sessionKey || !session) return null;
+
+    const index = users.findIndex((item) => String(item.id || "") === String(session.id || ""));
+    if (index === -1) return null;
+
+    const nextUser = mutator && typeof mutator === "function" ? mutator({ ...users[index] }) : users[index];
+    if (!nextUser) return null;
+    users[index] = nextUser;
+    writeJson(usersKey, users);
+    window.localStorage.setItem(sessionKey, JSON.stringify({
+      id: nextUser.id,
+      role: nextUser.role,
+      fullname: nextUser.fullname,
+      email: nextUser.email,
+      phone: nextUser.phone,
+      username: nextUser.username,
+      is_approved: nextUser.is_approved,
+      is_locked: nextUser.is_locked,
+      company_name: nextUser.company_name || "",
+      tax_code: nextUser.tax_code || "",
+      company_address: nextUser.company_address || "",
+    }));
+    return nextUser;
   }
 
   function formatMultilineText(value) {
@@ -417,72 +393,261 @@
     return `${routes.login}?redirect=${encodeURIComponent(target)}`;
   }
 
-  async function apiRequest(action, options = {}) {
-    const method = options.method || "GET";
-    const url = new URL(apiUrl, window.location.href);
-    url.searchParams.set("action", action);
+  async function requestLocalData(action, options = {}) {
+    const session = getCurrentSessionUser();
 
-    if (method === "GET" && options.params) {
-      Object.entries(options.params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== "") {
-          url.searchParams.set(key, value);
-        }
-      });
-    }
-
-    const response = await fetch(url.toString(), {
-      method,
-      credentials: "same-origin",
-      body: method === "GET" ? undefined : options.body,
-    });
-
-    const data = await response.json().catch(() => ({
-      status: "error",
-      message: "Phản hồi máy chủ không hợp lệ.",
-    }));
-
-    if (response.status === 401) {
+    if (!session) {
       window.location.href = buildLoginRedirect();
-      throw new Error(data.message || "Phiên đăng nhập đã hết hạn.");
+      throw new Error("Phiên đăng nhập đã hết hạn.");
     }
 
-    if (!response.ok || data.status !== "success") {
-      throw new Error(data.message || "Có lỗi xảy ra khi tải dữ liệu.");
+    const allDetails = await getAllOrderDetails();
+    const summaries = allDetails.map(getOrderSummaryFromDetail);
+
+    if (action === "session") {
+      return { status: "success", user: session };
     }
 
+    if (action === "dashboard") {
+      const recentStatus = String(options?.params?.recent_status || "all").trim().toLowerCase();
+      const filteredRecent =
+        recentStatus && recentStatus !== "all"
+          ? summaries.filter((item) => item.status === recentStatus)
+          : summaries;
+      const stats = {
+        total: summaries.length,
+        pending: summaries.filter((item) => item.status === "pending").length,
+        shipping: summaries.filter((item) => item.status === "shipping").length,
+        completed: summaries.filter((item) => item.status === "completed").length,
+        cancelled: summaries.filter((item) => item.status === "cancelled").length,
+        unpaid: 0,
+      };
+      return {
+        status: "success",
+        stats,
+        recent_orders: filteredRecent.slice(0, 5),
+      };
+    }
+
+    if (action === "orders") {
+      const params = options?.params || {};
+      const search = String(params.search || "").trim().toLowerCase();
+      const status = String(params.status || "").trim().toLowerCase();
+      const dateFrom = String(params.date_from || "").trim();
+      const dateTo = String(params.date_to || "").trim();
+      const page = Math.max(Number(params.page || 1), 1);
+      const pageSize = 6;
+      const filtered = summaries.filter((item) => {
+        if (status && item.status !== status) return false;
+        if (dateFrom && String(item.created_at || "").slice(0, 10) < dateFrom) return false;
+        if (dateTo && String(item.created_at || "").slice(0, 10) > dateTo) return false;
+        if (!search) return true;
+        const haystack = [
+          item.order_code,
+          item.pickup_address,
+          item.delivery_address,
+          item.receiver_name,
+        ]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(search);
+      });
+      const totalPages = Math.max(Math.ceil(filtered.length / pageSize), 1);
+      const safePage = Math.min(page, totalPages);
+      const startIndex = (safePage - 1) * pageSize;
+      return {
+        status: "success",
+        items: filtered.slice(startIndex, startIndex + pageSize),
+        filters: {
+          search: params.search || "",
+          status: params.status || "",
+          date_from: params.date_from || "",
+          date_to: params.date_to || "",
+        },
+        pagination: {
+          page: safePage,
+          total_pages: totalPages,
+          total_records: filtered.length,
+        },
+      };
+    }
+
+    if (action === "order-detail") {
+      const orderId = String(options?.params?.id || "").trim().toUpperCase();
+      const detail =
+        allDetails.find((item) => {
+          const itemId = String(item?.order?.id || item?.order?.order_code || "").trim().toUpperCase();
+          return itemId === orderId;
+        }) || null;
+      if (!detail) {
+        throw new Error("Không tìm thấy dữ liệu cho đơn hàng này.");
+      }
+      return {
+        status: "success",
+        ...detail,
+      };
+    }
+
+    if (action === "cancel-order") {
+      const formData = options.body;
+      const orderId = String(formData?.get("order_id") || "").trim().toUpperCase();
+      const reason = String(formData?.get("reason") || "").trim();
+      const currentDetail =
+        allDetails.find((item) => {
+          const itemId = String(item?.order?.id || item?.order?.order_code || "").trim().toUpperCase();
+          return itemId === orderId;
+        }) || null;
+      if (!currentDetail) {
+        throw new Error("Không tìm thấy đơn hàng cần hủy.");
+      }
+      const nextDetail = normalizeLocalOrderDetail(currentDetail);
+      nextDetail.order.status = "cancelled";
+      nextDetail.order.status_label = "Đã hủy";
+      nextDetail.logs = [
+        {
+          old_status_label: currentDetail.order.status_label || getStatusLabel(currentDetail.order.status),
+          new_status_label: "Đã hủy",
+          created_at: new Date().toISOString(),
+          note: reason || "Khách hàng chủ động hủy đơn.",
+        },
+        ...(Array.isArray(currentDetail.logs) ? currentDetail.logs : []),
+      ];
+      persistOrderDetail(nextDetail);
+      return { status: "success" };
+    }
+
+    if (action === "submit-feedback") {
+      const formData = options.body;
+      const orderId = String(formData?.get("order_id") || "").trim().toUpperCase();
+      const rating = Number(formData?.get("rating") || 0);
+      const feedback = String(formData?.get("feedback") || "").trim();
+      const currentDetail =
+        allDetails.find((item) => {
+          const itemId = String(item?.order?.id || item?.order?.order_code || "").trim().toUpperCase();
+          return itemId === orderId;
+        }) || null;
+      if (!currentDetail) {
+        throw new Error("Không tìm thấy đơn hàng để gửi phản hồi.");
+      }
+      const mediaFiles = formData?.getAll("media_files[]") || [];
+      const feedbackMedia = mediaFiles.map((file, index) => ({
+        name: file?.name || `feedback-${index + 1}`,
+        extension: String(file?.name || "").split(".").pop() || "file",
+        url: "#",
+      }));
+      const nextDetail = normalizeLocalOrderDetail(currentDetail);
+      nextDetail.order.rating = rating;
+      nextDetail.order.feedback = feedback;
+      nextDetail.provider.feedback_media = feedbackMedia;
+      persistOrderDetail(nextDetail);
+      return { status: "success" };
+    }
+
+    if (action === "profile") {
+      const stats = {
+        total: summaries.length,
+        pending: summaries.filter((item) => item.status === "pending").length,
+        shipping: summaries.filter((item) => item.status === "shipping").length,
+        completed: summaries.filter((item) => item.status === "completed").length,
+      };
+      return {
+        status: "success",
+        profile: {
+          ...session,
+          ho_ten: session.fullname || "",
+          so_dien_thoai: session.phone || "",
+          ten_cong_ty: session.company_name || "",
+          ma_so_thue: session.tax_code || "",
+          dia_chi_cong_ty: session.company_address || "",
+        },
+        stats,
+        saved_addresses: getSavedAddresses(session.id),
+      };
+    }
+
+    if (action === "update-profile") {
+      const formData = options.body;
+      const updatedUser = updateAuthStorage((currentUser) => ({
+        ...currentUser,
+        fullname: String(formData?.get("ho_ten") || currentUser.fullname || "").trim(),
+        phone: String(formData?.get("so_dien_thoai") || currentUser.phone || "").trim(),
+        company_name: String(formData?.get("ten_cong_ty") || currentUser.company_name || "").trim(),
+        tax_code: String(formData?.get("ma_so_thue") || currentUser.tax_code || "").trim(),
+        company_address: String(formData?.get("dia_chi_cong_ty") || currentUser.company_address || "").trim(),
+      }));
+      if (!updatedUser) {
+        throw new Error("Không thể cập nhật hồ sơ trong chế độ cục bộ.");
+      }
+      return { status: "success", profile: updatedUser };
+    }
+
+    if (action === "change-password") {
+      const formData = options.body;
+      const currentPassword = String(formData?.get("mat_khau_hien_tai") || "");
+      const newPassword = String(formData?.get("mat_khau_moi") || "");
+      const updatedUser = updateAuthStorage((currentUser) => {
+        if (String(currentUser.password || "") !== currentPassword) {
+          throw new Error("Mật khẩu hiện tại không chính xác.");
+        }
+        return {
+          ...currentUser,
+          password: newPassword,
+        };
+      });
+      if (!updatedUser) {
+        throw new Error("Không thể đổi mật khẩu trong chế độ cục bộ.");
+      }
+      return { status: "success" };
+    }
+
+    if (action === "save-address") {
+      const formData = options.body;
+      const currentAddresses = getSavedAddresses(session.id);
+      const addressId = String(formData?.get("dia_chi_id") || "").trim();
+      const nextAddress = {
+        id: addressId || `ADDR-${Date.now()}`,
+        user_id: session.id,
+        name: String(formData?.get("ten_goi_nho") || "").trim(),
+        phone: String(formData?.get("so_dien_thoai") || "").trim(),
+        address: String(formData?.get("dia_chi") || "").trim(),
+        created_at: new Date().toISOString(),
+        ten_goi_nho: String(formData?.get("ten_goi_nho") || "").trim(),
+        so_dien_thoai: String(formData?.get("so_dien_thoai") || "").trim(),
+        dia_chi: String(formData?.get("dia_chi") || "").trim(),
+      };
+      const filtered = currentAddresses.filter((item) => String(item.id || "") !== String(addressId || ""));
+      filtered.unshift(nextAddress);
+      saveAddressesForUser(session.id, filtered);
+      return { status: "success" };
+    }
+
+    if (action === "delete-address") {
+      const formData = options.body;
+      const addressId = String(formData?.get("dia_chi_id") || "").trim();
+      const currentAddresses = getSavedAddresses(session.id).filter(
+        (item) => String(item.id || "") !== addressId,
+      );
+      saveAddressesForUser(session.id, currentAddresses);
+      return { status: "success" };
+    }
+
+    throw new Error("Hành động portal cục bộ chưa được hỗ trợ.");
+  }
+
+  async function apiRequest(action, options = {}) {
+    const data = await requestLocalData(action, options);
+    if (!data || data.status !== "success") {
+      throw new Error(data?.message || "Có lỗi xảy ra khi tải dữ liệu.");
+    }
     return data;
   }
 
   async function getSessionData() {
-    if (!isMockMode()) {
-      return apiRequest("session");
-    }
-
-    const dataset = await loadMockDataset();
-    return {
-      status: "success",
-      user: dataset?.session?.user || {
-        username: "mock_customer",
-        fullname: "Khách hàng test",
-        phone: "0900000000",
-        email: "mock@example.com",
-      },
-    };
+    return apiRequest("session");
   }
 
   async function getOrderDetailData(orderId) {
-    if (!isMockMode()) {
-      return apiRequest("order-detail", { params: { id: orderId } });
-    }
-
-    const dataset = await loadMockDataset();
-    const record = findMockOrderRecord(dataset, orderId);
-
-    if (!record) {
-      throw new Error("Không tìm thấy dữ liệu mock cho chi tiết đơn hàng.");
-    }
-
-    return normalizeMockOrderDetail(record, dataset);
+    return apiRequest("order-detail", { params: { id: orderId } });
   }
 
   function getPageRoot() {
@@ -514,6 +679,20 @@
     }
   }
 
+  function bindLogoutActions(root = document) {
+    root.querySelectorAll("[data-local-logout]").forEach((link) => {
+      if (link.dataset.logoutBound === "1") return;
+      link.dataset.logoutBound = "1";
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (localAuth && typeof localAuth.clearSession === "function") {
+          localAuth.clearSession();
+        }
+        window.location.href = buildLoginRedirect();
+      });
+    });
+  }
+
   function renderShell(user, activePage) {
     const { shell } = getPageRoot();
     if (!shell) return;
@@ -534,7 +713,7 @@
           </div>
           <div class="customer-portal-top-actions">
             <a href="${routes.booking}" class="customer-btn customer-btn-primary">Tạo đơn mới</a>
-            <a href="${routes.logout}" class="customer-btn customer-btn-ghost">Đăng xuất</a>
+            <a href="${routes.logout}" class="customer-btn customer-btn-ghost" data-local-logout="1">Đăng xuất</a>
           </div>
         </section>
         <div class="customer-portal-layout">
@@ -561,6 +740,7 @@
         </div>
       </div>
     `;
+    bindLogoutActions(shell);
   }
 
   function renderLoading(message = "Đang tải dữ liệu...") {
@@ -947,75 +1127,47 @@
     const activeOrders = Number(stats.pending || 0) + Number(stats.shipping || 0);
     const kpiCards = [
       {
-        tone: "total",
         label: "Tổng đơn",
         value: formatNumber(totalOrders),
         hint: totalOrders ? "Toàn bộ đơn đã tạo" : "Chưa phát sinh đơn mới",
       },
       {
-        tone: "pending",
-        label: "Chờ xử lý",
-        value: formatNumber(stats.pending || 0),
-        hint: Number(stats.pending || 0) ? "Cần theo dõi sớm" : "Hiện không có đơn chờ",
-      },
-      {
-        tone: "shipping",
         label: "Đang giao",
         value: formatNumber(stats.shipping || 0),
         hint: Number(stats.shipping || 0) ? "Đơn đang luân chuyển" : "Không có đơn đang giao",
       },
       {
-        tone: "completed",
-        label: "Hoàn tất",
-        value: formatNumber(stats.completed || 0),
-        hint: Number(stats.completed || 0) ? "Đã giao thành công" : "Chưa có đơn hoàn tất",
-      },
-      {
-        tone: "unpaid",
-        label: "Chưa thanh toán",
-        value: formatNumber(stats.unpaid || 0),
-        hint: Number(stats.unpaid || 0) ? "Nên kiểm tra thu hộ/COD" : "Không có khoản chờ",
+        label: "Chờ xử lý",
+        value: formatNumber(stats.pending || 0),
+        hint: Number(stats.pending || 0) ? "Cần theo dõi sớm" : "Hiện không có đơn chờ",
       },
     ];
-    const dashboardHighlights = [
-      `${formatNumber(activeOrders)} đơn đang cần theo dõi`,
-      `${formatNumber(stats.unpaid || 0)} đơn cần đối soát`,
-      recentStatus === "all"
-        ? "Đang xem tất cả đơn gần đây"
-        : `Đang lọc: ${recentStatusLabels[recentStatus] || recentStatus}`,
-    ];
+    const heroState = Number(stats.shipping || 0)
+      ? `${formatNumber(stats.shipping || 0)} đơn đang giao`
+      : Number(stats.pending || 0)
+        ? `${formatNumber(stats.pending || 0)} đơn chờ xử lý`
+        : "Chưa có đơn cần theo dõi ngay";
+    const recentOrdersPreview = recentOrders.slice(0, 3);
 
     content.innerHTML = `
       <section class="customer-dashboard-hero">
         <div class="customer-dashboard-hero-copy">
           <p class="customer-section-kicker">Bảng điều khiển khách hàng</p>
-          <h2>Tổng quan đơn hàng và thao tác nhanh</h2>
-          <p class="customer-dashboard-hero-text">Theo dõi nhanh trạng thái đơn, mở lịch sử đơn và đi thẳng tới hồ sơ cá nhân mà không phải cuộn qua nhiều màn hình.</p>
+          <h2>Theo dõi đơn hàng của bạn trong một màn hình</h2>
+          <p class="customer-dashboard-hero-state">${escapeHtml(heroState)}</p>
+          <p class="customer-dashboard-hero-text">Mở nhanh lịch sử đơn, kiểm tra tiến độ gần nhất và đi tiếp tới thao tác cần làm ngay.</p>
         </div>
         <div class="customer-dashboard-hero-actions">
           <a href="${routes.booking}" class="customer-btn customer-btn-primary">Tạo đơn mới</a>
-          <a href="${routes.orders}" class="customer-btn customer-btn-primary">Xem lịch sử đơn</a>
-          <a href="${routes.profile}" class="customer-btn customer-btn-ghost">Cập nhật hồ sơ</a>
-        </div>
-        <div class="customer-dashboard-highlight-list">
-          ${dashboardHighlights
-            .map((item) => `<span class="customer-dashboard-highlight">${escapeHtml(item)}</span>`)
-            .join("")}
+          <a href="${routes.orders}" class="customer-btn customer-btn-ghost">Lịch sử đơn</a>
         </div>
       </section>
-      <section class="customer-panel customer-panel-overview">
-        <div class="customer-panel-head">
-          <div>
-            <p class="customer-section-kicker">Chỉ số nhanh</p>
-            <h2>Nhìn một màn là nắm được tình trạng đơn</h2>
-          </div>
-          <span class="customer-panel-note">Cập nhật theo bộ lọc hiện tại</span>
-        </div>
-        <div class="customer-kpi-grid">
+      <section class="customer-dashboard-stats">
+        <div class="customer-kpi-grid customer-kpi-grid-dashboard">
           ${kpiCards
             .map(
               (item) => `
-            <article class="customer-kpi-card customer-kpi-card-${item.tone}">
+            <article class="customer-kpi-card">
               <span>${escapeHtml(item.label)}</span>
               <strong>${item.value}</strong>
               <small>${escapeHtml(item.hint)}</small>
@@ -1024,41 +1176,30 @@
             .join("")}
         </div>
       </section>
-      <section class="customer-grid-two customer-grid-dashboard">
-        <article class="customer-panel customer-panel-orders">
+      <section class="customer-panel customer-panel-orders customer-panel-orders-main">
           <div class="customer-panel-head">
             <div>
               <p class="customer-section-kicker">Đơn gần đây</p>
-              <h2>Theo dõi các đơn mới nhất</h2>
-              <p class="customer-panel-subtext">Ưu tiên các đơn vừa tạo hoặc đang cần bạn chú ý.</p>
+              <h2>3 đơn gần nhất cần bạn theo dõi</h2>
+              <p class="customer-panel-subtext">Tập trung vào các đơn vừa tạo hoặc đang thay đổi trạng thái.</p>
             </div>
             <a href="${routes.orders}" class="customer-btn customer-btn-ghost customer-btn-sm">Xem tất cả</a>
           </div>
-          <div class="customer-chip-group customer-chip-group-dashboard">
-              ${["all", "pending", "shipping", "completed", "cancelled"]
-                .map(
-                  (item) =>
-                    `<a class="customer-chip ${recentStatus === item ? "is-active" : ""}" href="?recent_status=${encodeURIComponent(item)}">${escapeHtml(
-                      recentStatusLabels[item] || item,
-                    )}</a>`,
-                )
-                .join("")}
-          </div>
           <div class="customer-list customer-list-compact">
             ${
-              recentOrders.length
-                ? recentOrders
+              recentOrdersPreview.length
+                ? recentOrdersPreview
                     .map(
                       (order) => `
                 <article class="customer-order-card customer-order-card-compact">
                   <div class="customer-order-topline">
                     <div class="customer-order-heading">
                       <p class="customer-order-code">${escapeHtml(order.order_code)}</p>
-                      <p class="customer-order-recipient">${escapeHtml(order.receiver_name || "Người nhận chưa cập nhật")}</p>
+                      <p class="customer-order-recipient">Người nhận: ${escapeHtml(order.receiver_name || "Chưa cập nhật")}</p>
                     </div>
                     ${createStatusBadge(order.status, order.status_label)}
                   </div>
-                  <p class="customer-order-dest">${escapeHtml(order.delivery_address || "--")}</p>
+                  <p class="customer-order-route">Từ ${escapeHtml(order.pickup_address || "--")} đến ${escapeHtml(order.delivery_address || "--")}</p>
                   <div class="customer-order-meta customer-order-meta-compact">
                     <span><b>Dịch vụ</b>${escapeHtml(order.service_label || "--")}</span>
                     <span><b>Cước phí</b>${formatCurrency(order.shipping_fee)}</span>
@@ -1074,24 +1215,6 @@
                 : '<div class="customer-empty">Chưa có đơn hàng nào trong bộ lọc này.</div>'
             }
           </div>
-        </article>
-        <aside class="customer-quicklinks-strip">
-          <a href="${routes.booking}" class="customer-quicklink-item">
-            <p class="customer-section-kicker">Tạo đơn</p>
-            <strong>Đi thẳng tới màn đặt lịch</strong>
-            <span class="customer-mobile-hidden">Mở biểu mẫu tạo đơn mới ngay sau khi đăng nhập mà không phải quay lại landing page.</span>
-          </a>
-          <a href="${routes.orders}" class="customer-quicklink-item">
-            <p class="customer-section-kicker">Lịch sử đơn</p>
-            <strong>Mở danh sách đơn hàng</strong>
-            <span class="customer-mobile-hidden">Tra cứu đầy đủ, lọc và dùng phân trang ở một nơi duy nhất.</span>
-          </a>
-          <a href="${routes.profile}" class="customer-quicklink-item">
-            <p class="customer-section-kicker">Hồ sơ cá nhân</p>
-            <strong>Cập nhật thông tin tài khoản</strong>
-            <span class="customer-mobile-hidden">Chỉnh sửa nhanh họ tên, số điện thoại, công ty và địa chỉ liên hệ.</span>
-          </a>
-        </aside>
       </section>
     `;
 

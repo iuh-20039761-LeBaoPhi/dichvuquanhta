@@ -132,16 +132,16 @@
     };
   }
 
-  // Ưu tiên lưu qua API, nếu lỗi thì fallback về store local.
+  // Lưu trực tiếp vào store local để form và portal khách hàng dùng chung một nguồn dữ liệu demo.
   async function persistPayload(payload, portalStore) {
     if (!payload || !portalStore) return;
 
-    if (portalStore.saveRequestToApi) {
+    if (portalStore.saveRequest) {
       try {
-        await portalStore.saveRequestToApi(payload);
+        await portalStore.saveRequest(payload);
         return;
       } catch (error) {
-        console.error("Cannot save request to customer portal API:", error);
+        console.error("Cannot save request to customer portal store:", error);
       }
     }
 
