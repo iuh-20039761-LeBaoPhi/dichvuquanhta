@@ -1,190 +1,56 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<script src="/ga.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thợ Nhà - Quản lý đơn nhà cung cấp</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Thợ Nhà - Quản lý Đối Tác</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/provider-order-management.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .sidebar { background-color: #fff; border-right: 1px solid #dee2e6; min-height: 100vh; }
+        .sidebar-brand img { height: 40px; border-radius: 8px; }
+        .nav-link { color: #495057; font-weight: 600; padding: 0.75rem 1rem; border-radius: 0.375rem; margin-bottom: 0.5rem; transition: all 0.2s; background: transparent; }
+        .nav-link:hover { background-color: #f1f3f5; color: #0d6efd; }
+        .nav-link.active { background-color: #e7f1ff; color: #0d6efd; }
+        .nav-link.text-danger:hover { background-color: #ffe6e6; }
+        .main-content { padding: 2rem; overflow-y: auto; max-height: 100vh; }
+        @media (max-width: 768px) {
+            .sidebar { min-height: auto; border-right: none; border-bottom: 1px solid #dee2e6; }
+            .nav { flex-direction: row; overflow-x: auto; flex-wrap: nowrap; }
+            .nav-link { min-width: max-content; margin-bottom: 0; margin-right: 0.5rem; }
+            .main-content { max-height: none; padding: 1rem; }
+        }
+    </style>
 </head>
-<body class="order-page">
-    <div class="order-page-shell">
-        <header class="order-topbar">
-            <a class="brand" href="../../index.html" aria-label="Về trang chủ">
-                <img src="../../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg" alt="Thợ Nhà">
-                <div class="brand-copy">
-                    <strong>Thợ Nhà</strong>
-                    <span>Bảng theo dõi yêu cầu dịch vụ</span>
-                </div>
-            </a>
-
-            <div class="header-actions">
-                <a class="head-link" href="../../index.html">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Trang chủ</span>
-                </a>
-                <button id="refreshProviderBtn" class="head-btn" type="button">
-                    <i class="fa-solid fa-rotate"></i>
-                    <span>Làm mới</span>
-                </button>
+<body>
+    <div class="d-flex flex-column flex-md-row min-vh-100 overflow-hidden text-break">
+        <!-- Sidebar -->
+        <aside class="sidebar col-12 col-md-3 col-lg-2 px-3 py-4">
+            <div class="sidebar-brand d-flex align-items-center mb-4 px-2">
+                <img src="../../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg" alt="Logo" class="me-2 shadow-sm">
+                <strong class="text-primary fs-5">Đối tác Thợ Nhà</strong>
             </div>
-        </header>
+            <nav class="nav flex-md-column" id="sidebarNav">
+                <button class="nav-link active border-0 text-start d-flex align-items-center gap-2" data-page="quan-ly-don"><i class="fa-solid fa-briefcase text-center" style="width:20px;"></i> Quản lý công việc</button>
+                <button class="nav-link border-0 text-start d-flex align-items-center gap-2" data-page="tai-khoan"><i class="fa-solid fa-id-card text-center" style="width:20px;"></i> Hồ sơ đối tác</button>
+                <a href="../../index.html" class="nav-link text-decoration-none d-flex align-items-center gap-2"><i class="fa-solid fa-house text-center" style="width:20px;"></i> Về trang chủ</a>
+                <button class="nav-link text-danger border-0 text-start d-flex align-items-center gap-2 mt-md-auto" onclick="logoutProvider()"><i class="fa-solid fa-right-from-bracket text-center" style="width:20px;"></i> Đăng xuất</button>
+            </nav>
+        </aside>
 
-        <main class="invoice-page-shell">
-            <section class="invoice-card">
-                <header class="invoice-card-header">
-                    <div class="invoice-title-wrap">
-                        <p class="invoice-kicker">Nhà cung cấp</p>
-                        <h1><i class="fa-solid fa-briefcase"></i> Theo dõi và nhận đơn khách hàng</h1>
-                        <p class="invoice-subtitle">Xem thông tin người đặt, nhận đơn thực hiện và cập nhật tiến độ thi công.</p>
-                    </div>
-                </header>
-
-                <section class="invoice-profile-strip" aria-label="Thông tin nhà cung cấp">
-                    <article class="profile-chip">
-                        <span class="chip-label">Người phụ trách</span>
-                        <strong id="providerName">Nhà cung cấp</strong>
-                    </article>
-                    <article class="profile-chip">
-                        <span class="chip-label">Đơn vị</span>
-                        <strong id="providerCompany">Đối tác Thợ Nhà</strong>
-                    </article>
-                    <article class="profile-chip">
-                        <span class="chip-label">Liên hệ</span>
-                        <strong id="providerPhone">Chưa cập nhật</strong>
-                    </article>
-                </section>
-
-                <section class="stats-grid" aria-label="Thống kê đơn hàng">
-                    <article class="stat-card">
-                        <span class="stat-icon blue"><i class="fa-solid fa-bullhorn"></i></span>
-                        <div>
-                            <p class="stat-label">Đơn mới chờ nhận</p>
-                            <h2 id="statOpen">0</h2>
-                        </div>
-                    </article>
-                    <article class="stat-card">
-                        <span class="stat-icon sky"><i class="fa-solid fa-clipboard-list"></i></span>
-                        <div>
-                            <p class="stat-label">Đơn đã nhận</p>
-                            <h2 id="statAssigned">0</h2>
-                        </div>
-                    </article>
-                    <article class="stat-card">
-                        <span class="stat-icon amber"><i class="fa-solid fa-person-digging"></i></span>
-                        <div>
-                            <p class="stat-label">Đang thực hiện</p>
-                            <h2 id="statDoing">0</h2>
-                        </div>
-                    </article>
-                    <article class="stat-card">
-                        <span class="stat-icon green"><i class="fa-solid fa-circle-check"></i></span>
-                        <div>
-                            <p class="stat-label">Hoàn thành</p>
-                            <h2 id="statDone">0</h2>
-                        </div>
-                    </article>
-                </section>
-
-                <section class="order-board" aria-label="Đơn đang yêu cầu">
-                    <header class="board-header">
-                        <div>
-                            <h3><i class="fa-solid fa-inbox"></i> Đơn đang yêu cầu nhà cung cấp</h3>
-                            <p>Bảng chỉ giữ thông tin cơ bản để dễ nhìn. Bấm Xem chi tiết để mở đầy đủ thông tin đơn và thao tác nhận đơn.</p>
-                        </div>
-                    </header>
-
-                    <div class="desktop-table-wrap">
-                        <table class="invoice-table">
-                            <thead>
-                                <tr>
-                                    <th>Mã đơn</th>
-                                    <th>Khách hàng</th>
-                                    <th>Dịch vụ yêu cầu</th>
-                                    <th>Ngày đặt</th>
-                                    <th>Trạng thái</th>
-                                    <th>Xem chi tiết</th>
-                                </tr>
-                            </thead>
-                            <tbody id="openRequestBody">
-                                <tr>
-                                    <td colspan="6" class="table-loading">Đang tải yêu cầu mới...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="mobile-list" id="openMobileList">
-                        <article class="mobile-card loading">Đang tải yêu cầu mới...</article>
-                    </div>
-
-                    <div id="openEmptyState" class="empty-state" hidden>
-                        <i class="fa-regular fa-face-smile"></i>
-                        <h4>Hiện chưa có yêu cầu mới</h4>
-                        <p>Nhấn Làm mới để kiểm tra các đơn vừa phát sinh.</p>
-                    </div>
-                </section>
-
-                <section class="order-board secondary" aria-label="Đơn đã nhận">
-                    <header class="board-header">
-                        <div>
-                            <h3><i class="fa-solid fa-list-check"></i> Đơn bạn đang phụ trách</h3>
-                            <p>Bấm Xem chi tiết để xem đầy đủ thông tin đơn và cập nhật tiến độ xử lý.</p>
-                        </div>
-                    </header>
-
-                    <div class="desktop-table-wrap">
-                        <table class="invoice-table">
-                            <thead>
-                                <tr>
-                                    <th>Mã đơn</th>
-                                    <th>Khách hàng</th>
-                                    <th>Dịch vụ</th>
-                                    <th>Trạng thái</th>
-                                    <th>Xem chi tiết</th>
-                                </tr>
-                            </thead>
-                            <tbody id="assignedOrderBody">
-                                <tr>
-                                    <td colspan="5" class="table-loading">Đang tải đơn đã nhận...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="mobile-list" id="assignedMobileList">
-                        <article class="mobile-card loading">Đang tải đơn đã nhận...</article>
-                    </div>
-
-                    <div id="assignedEmptyState" class="empty-state" hidden>
-                        <i class="fa-regular fa-clipboard"></i>
-                        <h4>Bạn chưa nhận đơn nào</h4>
-                        <p>Chọn Nhận thực hiện trong bảng đơn mới để bắt đầu.</p>
-                    </div>
-                </section>
-            </section>
+        <!-- Main Content -->
+        <main class="main-content flex-grow-1" id="pageContent">
         </main>
     </div>
 
-    <div id="providerDetailModal" class="order-detail-modal" hidden>
-        <button class="order-detail-backdrop" type="button" data-action="close-detail" aria-label="Đóng chi tiết đơn"></button>
-        <section class="order-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="providerDetailTitle">
-            <header class="order-detail-head">
-                <div>
-                    <h3 id="providerDetailTitle">Chi tiết đơn dịch vụ</h3>
-                    <p id="providerDetailCode" class="order-detail-code">Mã đơn</p>
-                </div>
-                <button class="detail-close-btn" type="button" data-action="close-detail" aria-label="Đóng">×</button>
-            </header>
-            <div id="providerDetailBody" class="order-detail-body"></div>
-        </section>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/shared/order-store.js"></script>
+    <script src="../../assets/js/shared/krud-helper.js"></script>
+    <script src="../../assets/js/shared/order-view-utils.js"></script>
     <script src="../../assets/js/provider/order-management.js"></script>
+    <script src="../../assets/js/provider/shell.js"></script>
 </body>
 </html>

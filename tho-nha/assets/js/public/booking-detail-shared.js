@@ -1,22 +1,163 @@
-﻿/**
+/**
  * booking-detail-shared.js
- * Shared logic for booking flow: pricing, travel fee, media, confirmation, submit, validation.
+ * ═══════════════════════════════════════════════════════════════════
+ * Logic chia sẻ cho luồng đặt lịch (booking flow).
+ *
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │  DATA FLOW KHI ĐẶT LỊCH:                                      │
+ * │                                                                 │
+ * │  1. AUTH GATE                                                   │
+ * │     └─ Kiểm tra localStorage → hiển thị banner đăng nhập       │
+ * │     └─ Prefill họ tên, SĐT, địa chỉ từ profile đã lưu        │
+ * │                                                                 │
+ * │  2. CHỌN DỊCH VỤ + THƯƠNG HIỆU                                │
+ * │     └─ _bdSetBreakdown() nhận giá + config phí di chuyển       │
+ * │                                                                 │
+ * │  3. TÍNH PHÍ DI CHUYỂN (nếu mode = 'per_km')                  │
+ * │     └─ Nominatim geocode địa chỉ → lat/lng                    │
+ * │     └─ OSRM tính quãng đường → km → phí (VNĐ)                 │
+ * │     └─ Hoặc map-picker cung cấp tọa độ trực tiếp              │
+ * │                                                                 │
+ * │  4. MEDIA                                                       │
+ * │     └─ Chụp/chọn ảnh + video → preview + đếm số lượng         │
+ * │                                                                 │
+ * │  5. XÁC NHẬN + SUBMIT                                          │
+ * │     └─ _bdBuildPendingData() → tổng hợp form thành payload     │
+ * │     └─ _bdSubmitApi() gọi:                                      │
+ * │         a) KRUD insertRow('datlich_thonha', ...)                │
+ * │         b) Google Sheets (fire-and-forget backup)               │
+ * │         c) Lưu profile vào localStorage                         │
+ * └─────────────────────────────────────────────────────────────────┘
+ *
+ * DEPENDENCIES:
+ *   - krud-helper.js (ThoNhaKrud) — wrapper KRUD API
+ *   - order-store.js              — pricing presets + profile helpers
+ *   - Nominatim API               — geocoding (công khai, không cần key)
+ *   - OSRM API                    — routing (công khai)
+ *
+ * ĐƯỢC GỌI TỪ:
+ *   - booking-panel.js  (modal đặt lịch)
+ *   - booking-detail.js (trang chi tiết dịch vụ)
+ * ═══════════════════════════════════════════════════════════════════
  */
 
 'use strict';
 
-// true chỉ khi chạy trên XAMPP (port 80), không phải Live Server (5500/5501)
-const _BD_IS_LOCAL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-    && (window.location.port === '' || window.location.port === '80');
 // Base path cho fetch — trang pages/public/ dùng '../../', partials/ dùng '../'
 const _BD_BASE = window.BD_BASE || '../../';
+// KRUD client + table lưu booking từ modal
+const _BD_KRUD_SCRIPT_URL = window.BD_KRUD_SCRIPT_URL || 'https://api.dvqt.vn/js/krud.js';
+const _BD_KRUD_TABLE = window.BD_KRUD_TABLE || 'datlich_thonha';
+const _BD_CUSTOMER_LOGIN_KEY = 'customer_logged_in';
+const _BD_CUSTOMER_PROFILE_KEY = 'thonha_customer_profile_v1';
 
 // Google Apps Script Web App URL — thay bằng URL thật sau khi deploy
 const _BD_GSHEET_URL = window.GSHEET_URL || 'https://script.google.com/macros/s/AKfycbx8J5infIIqf-VOFCNq89L7W1xRfluTU0Dt4R8Vijl81zhid59aql3vURdT01dwaaKgPQ/exec';
 
 // ===================================================================
+// AUTH GATE — yêu cầu đăng nhập trước khi đặt lịch
+// ===================================================================
+// Parse JSON an toàn, trả về fallback nếu dữ liệu rỗng hoặc lỗi cú pháp.
+function _bdSafeParse(raw, fallback) {
+    if (!raw) return fallback;
+    try {
+        return JSON.parse(raw);
+    } catch (_err) {
+        return fallback;
+    }
+}
+
+// Lấy hồ sơ khách hàng đã lưu trong localStorage.
+function _bdGetCustomerProfileFromStorage() {
+    try {
+        return _bdSafeParse(localStorage.getItem(_BD_CUSTOMER_PROFILE_KEY), {}) || {};
+    } catch (_err) {
+        return {};
+    }
+}
+
+// Kiểm tra khách hàng đã đăng nhập hợp lệ hay chưa.
+function _bdIsCustomerLoggedIn() {
+    try {
+        const logged = localStorage.getItem(_BD_CUSTOMER_LOGIN_KEY) === 'true';
+        if (!logged) return false;
+        const profile = _bdGetCustomerProfileFromStorage();
+        return !!(profile && (profile.phone || profile.name));
+    } catch (_err) {
+        return false;
+    }
+}
+
+// Tạo URL trang đăng nhập khách hàng theo base path hiện tại.
+function _bdGetCustomerLoginUrl() {
+    return _BD_BASE + 'pages/customer/dang-nhap.html';
+}
+
+// Hiển thị banner trạng thái đăng nhập trên form đặt lịch.
+function _bdRenderAuthBanner() {
+    const banner = document.getElementById('bookingAuthBanner');
+    if (!banner) return;
+
+    if (_bdIsCustomerLoggedIn()) {
+        const p = _bdGetCustomerProfileFromStorage();
+        const name = String(p.name || localStorage.getItem('customer_name') || 'Khách hàng');
+        const phone = String(p.phone || '');
+        banner.innerHTML = '<div class="alert alert-success py-2 mb-0"><i class="fas fa-check-circle me-1"></i>Đang đặt lịch bằng tài khoản: <strong>' +
+            name + '</strong>' + (phone ? ' - ' + phone : '') + '</div>';
+        banner.style.display = '';
+        return;
+    }
+
+    banner.innerHTML = '<div class="alert alert-warning py-2 mb-0"><i class="fas fa-exclamation-triangle me-1"></i>Bạn cần <strong>đăng nhập khách hàng</strong> trước khi đặt lịch. <a href="' +
+        _bdGetCustomerLoginUrl() + '">Đăng nhập ngay</a></div>';
+    banner.style.display = '';
+}
+
+// Điền sẵn thông tin khách hàng vào form nếu đã có profile.
+function _bdPrefillCustomerProfileToForm() {
+    if (!_bdIsCustomerLoggedIn()) return;
+    const profile = _bdGetCustomerProfileFromStorage();
+    const hotenEl = document.getElementById('hoten');
+    const sdtEl = document.getElementById('sodienthoai');
+    const diachiEl = document.getElementById('diachi');
+
+    if (hotenEl && !String(hotenEl.value || '').trim() && profile.name) {
+        hotenEl.value = String(profile.name);
+    }
+    if (sdtEl && !String(sdtEl.value || '').trim() && profile.phone) {
+        sdtEl.value = String(profile.phone);
+    }
+    if (diachiEl && !String(diachiEl.value || '').trim() && profile.address) {
+        diachiEl.value = String(profile.address);
+    }
+}
+
+// Chuẩn bị trạng thái auth ban đầu cho luồng đặt lịch.
+function _bdPrepareBookingAuthState() {
+    _bdRenderAuthBanner();
+    _bdPrefillCustomerProfileToForm();
+}
+
+// Chặn thao tác đặt lịch nếu khách chưa đăng nhập.
+function _bdRequireCustomerLogin() {
+    if (_bdIsCustomerLoggedIn()) return true;
+
+    _bdRenderAuthBanner();
+    const banner = document.getElementById('bookingAuthBanner');
+    if (banner) banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    alert('Vui lòng đăng nhập tài khoản khách hàng trước khi đặt lịch.');
+    return false;
+}
+
+// ===================================================================
 // GOOGLE SHEETS — fire-and-forget
 // ===================================================================
+/**
+ * Gửi bản ghi tóm tắt đơn hàng sang Google Sheets (backup phụ).
+ * Fire-and-forget: không chặn UX khi lỗi, mode 'no-cors'.
+ * @param {Object} pendingData - Dữ liệu form đã tổng hợp
+ * @param {string} orderCode   - Mã đơn hàng (VD: TN-20260401-A1B2)
+ */
 function _bdSendToSheet(pendingData, orderCode) {
     if (!_BD_GSHEET_URL) return;
     const now = new Date();
@@ -50,10 +191,22 @@ function _bdSendToSheet(pendingData, orderCode) {
 // ===================================================================
 // SHARED: FORMAT + PRICING
 // ===================================================================
+/**
+ * Format số tiền sang chuỗi VND. VD: 150000 → "150.000đ"
+ * @param {number} n - Số tiền
+ * @returns {string}
+ */
 function _bdFmt(n) {
     return Number(n).toLocaleString('vi-VN') + 'đ';
 }
 
+/**
+ * Tính các giá trị chi phí tổng hợp cho breakdown hiển thị.
+ * @param {number} basePrice  - Giá dịch vụ cơ bản
+ * @param {number} travelAmt  - Phí di chuyển
+ * @param {Object} surveyFee  - { required: bool, amount: number }
+ * @returns {{ travel, survey, total, noRepair, hasFees }}
+ */
 function _bdCalcPricing(basePrice, travelAmt, surveyFee) {
     const t    = travelAmt || 0;
     const survey = (surveyFee && surveyFee.required) ? (surveyFee.amount || 0) : 0;
@@ -77,6 +230,11 @@ let _bdCurPrice       = 0;      // giá dịch vụ hiện tại (để refresh)
 let _bdCurSurvey      = null;   // survey fee hiện tại (để refresh)
 let _bdPendingCoords  = null;   // tọa độ chờ nếu user chọn map trước khi chọn dịch vụ
 
+/**
+ * Geocode địa chỉ văn bản → tọa độ lat/lng bằng Nominatim API.
+ * @param {string} address - Địa chỉ cần tìm (VD: "123 Nguyễn Du, Q1")
+ * @returns {Promise<{lat: number, lng: number}|null>} null nếu không tìm thấy
+ */
 async function _bdGeocode(address) {
     const url = 'https://nominatim.openstreetmap.org/search?' +
         new URLSearchParams({ q: address + ', TP.HCM, Việt Nam', format: 'json', limit: 1, countrycodes: 'vn' });
@@ -86,6 +244,14 @@ async function _bdGeocode(address) {
     return { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
 }
 
+/**
+ * Tính quãng đường lái xe giữa 2 điểm bằng OSRM API.
+ * @param {number} pLat - Latitude nhà cung cấp
+ * @param {number} pLng - Longitude nhà cung cấp
+ * @param {number} cLat - Latitude khách hàng
+ * @param {number} cLng - Longitude khách hàng
+ * @returns {Promise<number|null>} Khoảng cách km, null nếu lỗi
+ */
 async function _bdRoadDist(pLat, pLng, cLat, cLng) {
     // OSRM dùng lng,lat (không phải lat,lng)
     const url = `https://router.project-osrm.org/route/v1/driving/${pLng},${pLat};${cLng},${cLat}?overview=false`;
@@ -96,6 +262,13 @@ async function _bdRoadDist(pLat, pLng, cLat, cLng) {
     return data.routes[0].distance / 1000; // meters → km
 }
 
+/**
+ * Quy đổi quãng đường → phí di chuyển theo config dịch vụ.
+ * Phí = km × pricePerKm, làm tròn 1.000đ, clamp [minFee, maxFee].
+ * @param {number} km  - Khoảng cách (km)
+ * @param {Object} cfg - { pricePerKm, minFee?, maxFee? }
+ * @returns {number} Phí di chuyển (VNĐ)
+ */
 function _bdFeeFromDist(km, cfg) {
     let fee = Math.round(km * cfg.pricePerKm / 1000) * 1000; // làm tròn 1,000đ
     if (cfg.minFee) fee = Math.max(fee, cfg.minFee);
@@ -103,10 +276,12 @@ function _bdFeeFromDist(km, cfg) {
     return fee;
 }
 
+// Render lại breakdown dựa trên state hiện tại.
 function _bdRefreshBreakdown() {
     _bdUpdateBreakdown(_bdCurPrice, _bdTravelCfg, _bdCurSurvey);
 }
 
+// Debounce thao tác tính phí di chuyển từ địa chỉ nhập tay.
 function _bdStartTravelCalc() {
     if (!_bdTravelCfg || _bdTravelCfg.mode !== 'per_km') return;
     clearTimeout(_bdTravelTimer);
@@ -120,6 +295,7 @@ function _bdStartTravelCalc() {
     _bdTravelTimer = setTimeout(_bdDoTravelCalc, 800);
 }
 
+// Thực thi geocode + route để cập nhật phí di chuyển theo km.
 async function _bdDoTravelCalc() {
     if (!_bdTravelCfg) return;
     const addr = document.getElementById('diachi')?.value?.trim();
@@ -139,6 +315,7 @@ async function _bdDoTravelCalc() {
 }
 
 // Gọi trực tiếp từ map-picker khi đã có tọa độ — bỏ qua geocoding
+// Tính phí di chuyển trực tiếp từ tọa độ map picker.
 async function _bdTravelFromCoords(lat, lng) {
     // Lưu tọa độ để dùng khi dịch vụ được chọn sau
     _bdPendingCoords = { lat, lng };
@@ -158,7 +335,13 @@ async function _bdTravelFromCoords(lat, lng) {
     _bdRefreshBreakdown();
 }
 
-// Gọi khi chọn dịch vụ mới — lưu state và render
+/**
+ * Thiết lập state breakdown khi người dùng đổi dịch vụ.
+ * Gọi bởi: booking-panel.js khi user chọn/đổi dịch vụ từ dropdown.
+ * @param {number} price     - Giá dịch vụ cơ bản (VNĐ)
+ * @param {Object} travelFee - Config phí di chuyển: { mode, pricePerKm, ... }
+ * @param {Object} surveyFee - Config phí khảo sát: { required, amount }
+ */
 function _bdSetBreakdown(price, travelFee, surveyFee) {
     _bdCurPrice  = price || 0;
     _bdCurSurvey = surveyFee || null;
@@ -179,6 +362,7 @@ function _bdSetBreakdown(price, travelFee, surveyFee) {
 }
 
 // Gắn listener địa chỉ — gọi 1 lần sau khi form có trong DOM
+// Khởi tạo listener địa chỉ để tự động tính phí theo km.
 function _bdSetupAddressListener() {
     const addrEl = document.getElementById('diachi');
     if (!addrEl || addrEl._bdListened) return;
@@ -187,6 +371,7 @@ function _bdSetupAddressListener() {
 }
 
 // Dùng chung cho cả modal và standalone (cùng ID trong DOM)
+// Render khối breakdown chi phí cho cả modal và trang standalone.
 function _bdUpdateBreakdown(price, travelFee, surveyFee) {
     const wrap = document.getElementById('pricingBreakdownWrap');
     if (!wrap) return;
@@ -268,6 +453,7 @@ function _bdUpdateBreakdown(price, travelFee, surveyFee) {
     wrap.style.display = '';
 }
 
+// Ẩn breakdown và reset trạng thái tính phí di chuyển.
 function _bdHideBreakdown(clearCoords) {
     const wrap = document.getElementById('pricingBreakdownWrap');
     if (wrap) wrap.style.display = 'none';
@@ -277,6 +463,7 @@ function _bdHideBreakdown(clearCoords) {
     clearTimeout(_bdTravelTimer);
 }
 
+// Xóa giao diện chọn thương hiệu khi chưa có dịch vụ phù hợp.
 function _bdClearBrandSelectorUi() {
     const brandWrap = document.getElementById('brandSelectorWrap');
     const brandBox = document.getElementById('brandOptionsContainer');
@@ -289,6 +476,7 @@ function _bdClearBrandSelectorUi() {
 // ===================================================================
 let _bdMediaFiles = [];
 
+// Gắn sự kiện cho input ảnh/video và nút mở trình chọn file.
 function _bdSetupMedia() {
     const photoInput    = document.getElementById('inputhinhanh');
     const videoInput    = document.getElementById('inputvideo');
@@ -311,6 +499,7 @@ function _bdSetupMedia() {
     });
 }
 
+// Thêm file media vào state và render preview có thể xóa.
 function _bdAddMedia(file, previewBox) {
     const id = Date.now() + Math.random();
     _bdMediaFiles.push({ id, file });
@@ -337,6 +526,7 @@ function _bdAddMedia(file, previewBox) {
     if (previewBox) previewBox.appendChild(wrap);
 }
 
+// Xóa toàn bộ media đã chọn và dọn vùng preview.
 function _bdClearMedia() {
     _bdMediaFiles = [];
     const pg = document.getElementById('mediaPhotoPreviewContainer');
@@ -348,6 +538,7 @@ function _bdClearMedia() {
 // ===================================================================
 // SHARED: CONFIRM SCREEN — điền dữ liệu vào bảng xác nhận
 // ===================================================================
+// Điền dữ liệu khách hàng, chi phí và media vào màn hình xác nhận.
 function _bdFillConfirm(name, phone, service, address, noteRaw) {
     // Thông tin khách hàng
     const cfName = document.getElementById('cf-name');
@@ -485,6 +676,129 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
 // ===================================================================
 // SHARED: API SUBMIT
 // ===================================================================
+// Chuẩn hóa số về chuỗi 2 ký tự (ví dụ tháng/ngày/giờ).
+function _bdPad2(n) {
+    return String(n).padStart(2, '0');
+}
+
+// Sinh mã đơn hàng theo định dạng TN-YYYYMMDD-XXXX.
+function _bdBuildOrderCode() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = _bdPad2(now.getMonth() + 1);
+    const d = _bdPad2(now.getDate());
+    const suffix = Math.floor(Math.random() * 9000) + 1000;
+    return `TN-${y}${m}${d}-${suffix}`;
+}
+
+// Trả về thời gian hiện tại theo định dạng datetime SQL.
+function _bdNowSql() {
+    const d = new Date();
+    return `${d.getFullYear()}-${_bdPad2(d.getMonth() + 1)}-${_bdPad2(d.getDate())} ${_bdPad2(d.getHours())}:${_bdPad2(d.getMinutes())}:${_bdPad2(d.getSeconds())}`;
+}
+
+// Ép giá trị tiền về số nguyên hợp lệ, mặc định 0 nếu không hợp lệ.
+function _bdToMoney(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? Math.round(n) : 0;
+}
+
+// Đếm số lượng ảnh/video đã đính kèm trong đơn.
+function _bdGetMediaStats() {
+    const stats = { total: 0, images: 0, videos: 0 };
+    _bdMediaFiles.forEach((item) => {
+        const type = String(item?.file?.type || '');
+        if (type.startsWith('image/')) stats.images += 1;
+        if (type.startsWith('video/')) stats.videos += 1;
+    });
+    stats.total = stats.images + stats.videos;
+    return stats;
+}
+
+// Lấy helper KRUD toàn cục và báo lỗi nếu chưa load script.
+function _bdGetKrudHelper() {
+    if (!window.ThoNhaKrud) {
+        throw new Error('Không tải được helper KRUD');
+    }
+    return window.ThoNhaKrud;
+}
+
+/**
+ * Mapping dữ liệu pending → schema bảng 'datlich_thonha' (KRUD).
+ * @param {Object} pendingData - Payload từ _bdBuildPendingData()
+ * @param {string} orderCode   - Mã đơn hàng
+ * @returns {Object} Row object sẵn sàng insert vào KRUD
+ */
+function _bdBuildKrudBookingRecord(pendingData, orderCode) {
+    const mediaStats = _bdGetMediaStats();
+    const basePrice = _bdToMoney(pendingData.estimated_price || _bdCurPrice || 0);
+    const travelFee = _bdTravelStatus === 'ok' ? _bdToMoney(_bdTravelAmt) : 0;
+    const surveyFee = (_bdCurSurvey && _bdCurSurvey.required) ? _bdToMoney(_bdCurSurvey.amount || 0) : 0;
+
+    const lat = Number(_bdPendingCoords?.lat);
+    const lng = Number(_bdPendingCoords?.lng);
+
+    return {
+        madon: orderCode,
+        hoten: pendingData.name || '',
+        sodienthoai: pendingData.phone || '',
+        tendichvu: pendingData.service_id || '',
+        thuonghieu: pendingData.selected_brand || '',
+        diachi: pendingData.address || '',
+        ghichu: pendingData.note || '',
+        giadichvu: basePrice,
+        phidichuyen: travelFee,
+        quangduongkm: Number.isFinite(_bdTravelDistKm) && _bdTravelDistKm > 0 ? Number(_bdTravelDistKm.toFixed(2)) : null,
+        trangthaidichuyen: _bdTravelStatus || 'na',
+        phikhaosat: surveyFee,
+        tongtien: basePrice + travelFee,
+        soluongmedia: mediaStats.total,
+        soluonganh: mediaStats.images,
+        soluongvideo: mediaStats.videos,
+        maplat: Number.isFinite(lat) ? Number(lat.toFixed(7)) : null,
+        maplng: Number.isFinite(lng) ? Number(lng.toFixed(7)) : null,
+        nguontrang: window.location.pathname || '',
+        trangthai: 'new',
+        ngaytao: _bdNowSql()
+    };
+}
+
+// Ghi nhớ thông tin khách hàng để prefill cho lần đặt lịch sau.
+function _bdRememberCustomerProfile(pendingData) {
+    try {
+        var payload = {
+            name: pendingData && pendingData.name ? pendingData.name : 'Khách hàng',
+            phone: pendingData && pendingData.phone ? pendingData.phone : '',
+            address: pendingData && pendingData.address ? pendingData.address : ''
+        };
+        localStorage.setItem('thonha_customer_profile_v1', JSON.stringify(payload));
+    } catch (_err) {
+        // Bỏ qua lỗi localStorage để không ảnh hưởng luồng đặt lịch.
+    }
+}
+
+/**
+ * Tạo bản ghi đặt lịch mới qua KRUD helper → insertRow().
+ * @param {Object} pendingData - Payload từ _bdBuildPendingData()
+ * @returns {Promise<{orderCode: string, result: *}>}
+ */
+async function _bdInsertBookingWithKrud(pendingData) {
+    const helper = _bdGetKrudHelper();
+
+    const orderCode = _bdBuildOrderCode();
+    const row = _bdBuildKrudBookingRecord(pendingData, orderCode);
+    const result = await helper.insertRow(_BD_KRUD_TABLE, row, _BD_KRUD_SCRIPT_URL);
+
+    return { orderCode, result };
+}
+
+/**
+ * Hàm chính submit đơn hàng: KRUD insert → Google Sheets → callback.
+ * Quản lý trạng thái nút (disabled/spinner) và error handling.
+ * @param {Object}      pendingData - Payload từ _bdBuildPendingData()
+ * @param {HTMLElement} submitBtn   - Nút submit để toggle trạng thái
+ * @param {Function}    onSuccess   - Callback(orderCode) khi thành công
+ */
 async function _bdSubmitApi(pendingData, submitBtn, onSuccess) {
     submitBtn.disabled  = true;
     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
@@ -494,38 +808,26 @@ async function _bdSubmitApi(pendingData, submitBtn, onSuccess) {
     };
 
     try {
-        const res  = await fetch(_BD_BASE + 'api/public/book.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(pendingData)
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-            _bdSendToSheet(pendingData, data.order_code);
-            onSuccess(data.order_code || null);
-        } else {
-            if (_BD_IS_LOCAL) {
-                alert('❌ ' + (data.message || 'Có lỗi xảy ra, vui lòng thử lại!'));
-                resetBtn();
-            } else {
-                onSuccess(null);
-            }
-        }
-    } catch {
-        if (_BD_IS_LOCAL) {
-            alert('❌ Không thể kết nối server. Vui lòng thử lại sau!');
-            resetBtn();
-        } else {
-            _bdSendToSheet(pendingData, 'TN' + Date.now());
-            alert('✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại trong thời gian sớm nhất.\n\n📞 Hotline: 0775 472 347');
-            onSuccess(null);
-        }
+        const inserted = await _bdInsertBookingWithKrud(pendingData);
+        _bdRememberCustomerProfile(pendingData);
+        _bdSendToSheet(pendingData, inserted.orderCode);
+        onSuccess(inserted.orderCode || null);
+    } catch (err) {
+        console.error('[booking-detail] Submit failed:', err);
+        alert('❌ ' + (err?.message || 'Không thể kết nối API đặt lịch. Vui lòng thử lại sau!'));
+        resetBtn();
     }
 }
 
 // ===================================================================
 // SHARED: BUILD PENDING DATA từ form
 // ===================================================================
+/**
+ * Tổng hợp dữ liệu form hiện tại thành payload pending để submit.
+ * Bao gồm: họ tên, SĐT, dịch vụ, địa chỉ, ghi chú, thương hiệu, giá.
+ * @param {string} service - Tên dịch vụ đã chọn (VD: "Sửa máy lạnh (Daikin)")
+ * @returns {Object} { name, phone, service_id, address, note, selected_brand, estimated_price }
+ */
 function _bdBuildPendingData(service) {
     let noteVal = (document.getElementById('ghichu')?.value || '').trim();
     if (_bdMediaFiles.length > 0) {
@@ -577,6 +879,7 @@ function _bdBuildPendingData(service) {
 // ===================================================================
 // SHARED: VALIDATE COMMON FIELDS (name, phone, address)
 // ===================================================================
+// Kiểm tra các trường bắt buộc và định dạng số điện thoại.
 function _bdValidateCommon(data) {
     if (!data.name || !data.phone || !data.service_id || !data.address) {
         alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
@@ -599,6 +902,7 @@ function _bdValidateCommon(data) {
 // countEl     — (tuỳ chọn) badge hiển thị số lượng đã chọn
 // priceEl     — (tuỳ chọn) input hiển thị giá tham khảo
 // ===================================================================
+// Render cụm nút chọn nhiều dịch vụ con và đồng bộ dữ liệu liên quan.
 function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) {
     container.innerHTML = '';
     if (hiddenEl) hiddenEl.value = '';
@@ -613,6 +917,7 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
     let selectedItems = [];
     let selectedBrands = Object.create(null);
 
+    // Xóa lựa chọn thương hiệu của dịch vụ đã bị bỏ chọn.
     function _trimRemovedBrandSelections() {
         const selectedNames = new Set(selectedItems.map(i => i.name));
         Object.keys(selectedBrands).forEach((svcName) => {
@@ -620,18 +925,21 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
         });
     }
 
+    // Tạo nhãn hiển thị dịch vụ kèm thương hiệu đã chọn.
     function _serviceLabel(item) {
         const brand = selectedBrands[item.name];
         if (brand && brand.name) return `${item.name} (${brand.name})`;
         return item.name;
     }
 
+    // Lấy giá cuối cùng của dịch vụ theo thương hiệu đang chọn.
     function _effectiveItemPrice(item) {
         const selected = selectedBrands[item.name];
         if (selected && Number.isFinite(selected.price)) return selected.price;
         return item.price || 0;
     }
 
+    // Render danh sách chọn thương hiệu cho các dịch vụ có bảng giá theo hãng.
     function _renderBrandSelectors() {
         if (!brandWrap || !brandBox) return;
 
@@ -709,6 +1017,7 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
         brandWrap.style.display = '';
     }
 
+    // Đồng bộ hidden input, badge, giá hiển thị và breakdown chi phí.
     function _sync() {
         _renderBrandSelectors();
 

@@ -31,13 +31,15 @@ function displayRecentOrders(orders) {
         return;
     }
 
+    const viewUtils = window.ThoNhaOrderViewUtils;
+
     tbody.innerHTML = orders.map(order => `
         <tr>
-            <td><strong style="color:var(--admin-primary)">${order.order_code}</strong></td>
-            <td>${order.customer_name}</td>
-            <td><span class="text-muted">${(order.service_names || '').split(',')[0] || '—'}</span></td>
+            <td><strong style="color:var(--admin-primary)">${order.orderCode}</strong></td>
+            <td>${order.customer && order.customer.name ? order.customer.name : 'Khách hàng'}</td>
+            <td><span class="text-muted">${(order.service || '').split(',')[0] || '—'}</span></td>
             <td>${getStatusBadge(order.status)}</td>
-            <td>${formatDate(order.created_at)}</td>
+            <td>${viewUtils ? viewUtils.formatDateTime(order.createdAt).split(' ')[0] : (order.createdAt || '').split('T')[0]}</td>
         </tr>
     `).join('');
 }
@@ -92,7 +94,7 @@ function loadDashboardStats() {
     }
 
     if (allOrders.length > 0) {
-        const unique = new Set(allOrders.map(o => o.phone)).size;
+        const unique = new Set(allOrders.map(o => o.customer && o.customer.phone ? String(o.customer.phone).trim() : '').filter(p => p)).size;
         const el = document.getElementById('dashTotalCustomers');
         if (el) el.textContent = unique;
     }

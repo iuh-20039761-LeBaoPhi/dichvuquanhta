@@ -1,8 +1,16 @@
-(function () {
+/**
+ * Khởi tạo dữ liệu và sự kiện cho trang Quản lý Công việc của Đối tác
+ */
+window.initProviderOrders = function() {
     'use strict';
+    
+    if (window._providerOrdersInit) return;
+    window._providerOrdersInit = true;
 
     var store = window.ThoNhaOrderStore;
     if (!store) return;
+    var viewUtils = window.ThoNhaOrderViewUtils;
+    if (!viewUtils) return;
 
     var STATUS_CLASS_MAP = {
         new: 'status-new',
@@ -12,12 +20,18 @@
         cancel: 'status-cancel'
     };
 
-    var currencyFormatter = new Intl.NumberFormat('vi-VN');
+    var KRUD_SCRIPT_URL = window.BD_KRUD_SCRIPT_URL || 'https://api.dvqt.vn/js/krud.js';
+    var KRUD_TABLE = window.BD_KRUD_TABLE || 'datlich_thonha';
+    var PROVIDER_TABLE = window.BD_PROVIDER_TABLE || 'nhacungcap_thonha';
+    var PROVIDER_ASSIGN_CACHE_KEY = 'thonha_provider_assign_cache_v1';
+    var ASSIGNED_STATUS = { confirmed: true, doing: true, done: true };
 
     var provider = store.getProviderProfile();
 
     var state = {
-        selectedOrderId: null
+        selectedOrderId: null,
+        orders: [],
+        isLoading: false
     };
 
     var elements = {
@@ -40,145 +54,464 @@
         detailCode: document.getElementById('providerDetailCode')
     };
 
-    function escapeHtml(value) {
-        return String(value || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+    var escapeHtml = viewUtils.escapeHtml;
+    var toDigits = viewUtils.toDigits;
+    var sortByCreatedDesc = viewUtils.sortByCreatedDesc;
+    var formatDateTime = viewUtils.formatDateTime;
+    var getProviderIdFromOrderRow = viewUtils.getProviderIdFromOrderRow;
+    var buildProviderMapByIds = viewUtils.buildProviderMapByIds;
+    var mapApiOrderBase = viewUtils.mapApiOrderBase;
+    var buildStatusBadge = viewUtils.buildStatusBadge;
+    var buildDetailActionButton = viewUtils.buildDetailActionButton;
+    var buildDetailRow = viewUtils.buildDetailRow;
+
+    /**
+     * Lấy thời gian hiện tại dưới dạng chuỗi ISO.
+     * @returns {string} ISO string.
+     */
+    function nowIsoFallback() {
+        return new Date().toISOString();
     }
 
-    function formatDateTime(value) {
-        if (!value) return 'N/A';
-        var date = new Date(value);
-        if (Number.isNaN(date.getTime())) return 'N/A';
-        var dd = String(date.getDate()).padStart(2, '0');
-        var mm = String(date.getMonth() + 1).padStart(2, '0');
-        var yyyy = date.getFullYear();
-        var hh = String(date.getHours()).padStart(2, '0');
-        var min = String(date.getMinutes()).padStart(2, '0');
-        return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + min;
+    /**
+     * Phân giải chuỗi JSON an toàn với giá trị dự phòng.
+     * @param {string} raw - Chuỗi JSON thô.
+     * @param {*} fallback - Giá trị khi lỗi.
+     * @returns {*} Kết quả parse hoặc fallback.
+     */
+    function safeParse(raw, fallback) {
+        if (!raw) return fallback;
+        try {
+            return JSON.parse(raw);
+        } catch (_err) {
+            return fallback;
+        }
     }
 
+    /**
+     * Lấy mã nhận diện duy nhất của đối tác (ID hoặc SĐT).
+     * @param {Object} info - Thông tin đối tác.
+     * @returns {string} Identity.
+     */
+    function providerIdentity(info) {
+        var item = info || {};
+        return String(item.id || toDigits(item.phone) || item.phone || item.name || '').trim();
+    }
+
+    /**
+     * Chuẩn hoá thông tin đối tác về cấu trúc nội bộ.
+     * @param {Object} info - Object thô.
+     * @returns {Object} { id, name, phone, company }.
+     */
+    function normalizeProvider(info) {
+        var item = info || {};
+        var id = providerIdentity(item);
+        return {
+            id: id,
+            name: String(item.name || 'Nhà cung cấp').trim() || 'Nhà cung cấp',
+            phone: String(item.phone || '').trim(),
+            company: String(item.company || '').trim()
+        };
+    }
+
+    /**
+     * Đọc cache phân phối đơn hàng cho đối tác từ LocalStorage.
+     * @returns {Object} Cache data.
+     */
+    function readProviderAssignCache() {
+        var parsed = safeParse(localStorage.getItem(PROVIDER_ASSIGN_CACHE_KEY), {});
+        return parsed && typeof parsed === 'object' ? parsed : {};
+    }
+
+    /**
+     * Ghi cache phân phối đơn hàng vào LocalStorage.
+     * @param {Object} cache - Cache object.
+     */
+    function writeProviderAssignCache(cache) {
+        localStorage.setItem(PROVIDER_ASSIGN_CACHE_KEY, JSON.stringify(cache || {}));
+    }
+
+    /**
+     * Lấy thông tin đối tác đã nhận đơn từ cache (dùng khi API chưa cập nhật kịp).
+     * @param {Object} cache - Bản đồ cache.
+     * @param {string|number} orderId - ID đơn.
+     * @param {string} orderCode - Mã đơn.
+     */
+    function getCachedAssignedProvider(cache, orderId, orderCode) {
+        var src = cache || {};
+        var idKey = orderId !== undefined && orderId !== null ? ('id:' + String(orderId)) : '';
+        var codeKey = orderCode ? ('code:' + String(orderCode)) : '';
+
+        var hit = null;
+        if (idKey && src[idKey] && src[idKey].provider) {
+            hit = src[idKey].provider;
+        } else if (codeKey && src[codeKey] && src[codeKey].provider) {
+            hit = src[codeKey].provider;
+        }
+
+        if (!hit) return null;
+        var normalized = normalizeProvider(hit);
+        return normalized.id ? normalized : null;
+    }
+
+    /**
+     * Lưu thông tin phân phối đơn hàng vào cache.
+     * @param {string|number} orderId - ID đơn.
+     * @param {string} orderCode - Mã đơn.
+     * @param {Object} providerInfo - Thông tin đối tác.
+     */
+    function cacheAssignedProvider(orderId, orderCode, providerInfo) {
+        var normalized = normalizeProvider(providerInfo);
+        if (!normalized.id) return;
+
+        var cache = readProviderAssignCache();
+        var payload = {
+            provider: normalized,
+            updatedAt: nowIsoFallback()
+        };
+
+        if (orderId !== undefined && orderId !== null && String(orderId).trim() !== '') {
+            cache['id:' + String(orderId)] = payload;
+        }
+        if (orderCode) {
+            cache['code:' + String(orderCode)] = payload;
+        }
+
+        writeProviderAssignCache(cache);
+    }
+
+    /**
+     * Điều chỉnh giao diện khi đang tải dữ liệu.
+     * @param {boolean} isLoading - Trạng thái loading.
+     */
+    function setLoadingState(isLoading) {
+        state.isLoading = !!isLoading;
+        if (!state.isLoading) return;
+
+        if (elements.openBody) {
+            elements.openBody.innerHTML = '<tr><td colspan="6" class="table-loading">Đang tải yêu cầu mới...</td></tr>';
+        }
+        if (elements.assignedBody) {
+            elements.assignedBody.innerHTML = '<tr><td colspan="5" class="table-loading">Đang tải đơn đã nhận...</td></tr>';
+        }
+        if (elements.openMobileList) {
+            elements.openMobileList.innerHTML = '<article class="mobile-card loading">Đang tải yêu cầu mới...</article>';
+        }
+        if (elements.assignedMobileList) {
+            elements.assignedMobileList.innerHTML = '<article class="mobile-card loading">Đang tải đơn đã nhận...</article>';
+        }
+        if (elements.openEmpty) elements.openEmpty.hidden = true;
+        if (elements.assignedEmpty) elements.assignedEmpty.hidden = true;
+    }
+
+    /**
+     * Lấy Helper KRUD.
+     */
+    function getKrudHelper() {
+        if (!window.ThoNhaKrud) {
+            throw new Error('Không tải được helper KRUD');
+        }
+        return window.ThoNhaKrud;
+    }
+
+    /**
+     * Tải toàn bộ dòng từ một bảng.
+     */
+    async function fetchTableRows(tableName) {
+        return getKrudHelper().listTable(tableName, null, KRUD_SCRIPT_URL);
+    }
+
+    /**
+     * Chuẩn hoá trạng thái từ API (pending -> new, active -> confirmed, etc.).
+     * @param {string} value - Giá trị trạng thái thô.
+     */
+    function normalizeStatus(value) {
+        var s = String(value || '').trim().toLowerCase();
+        if (!s) return 'new';
+        if (s === 'pending') return 'new';
+        if (s === 'active') return 'confirmed';
+        return s;
+    }
+
+    /**
+     * Tải map thông tin nhà cung cấp.
+     */
+    async function fetchProviderMapByIds(providerIdSet) {
+        var ids = Object.keys(providerIdSet || {});
+        if (!ids.length) return {};
+
+        var rows = await fetchTableRows(PROVIDER_TABLE);
+        return buildProviderMapByIds(rows, providerIdSet);
+    }
+
+    /**
+     * Ánh xạ dòng API thành Đơn hàng chuẩn của Đối tác.
+     * @param {Object} row - Dòng thô.
+     * @param {number} index - Index.
+     * @param {Object} providerCache - Cache thầu đơn.
+     * @param {Object} providerMapById - Map đối tác.
+     */
+    function mapApiOrder(row, index, providerCache, providerMapById) {
+        return mapApiOrderBase(row, index, {
+            providerMapById: providerMapById,
+            updatedAtFields: ['capnhatluc', 'updated_at', 'updatedAt'],
+            normalizeStatus: normalizeStatus,
+            defaultStatus: 'new',
+            includeRaw: true,
+            providerFallback: function (ctx) {
+                return getCachedAssignedProvider(providerCache, ctx.row.id, ctx.orderCode);
+            }
+        });
+    }
+
+    /**
+     * Tải dữ liệu toàn bộ đơn từ API.
+     */
+    async function fetchRemoteOrders() {
+        var rows = await fetchTableRows(KRUD_TABLE);
+        var providerIdSet = {};
+        rows.forEach(function (row) {
+            var providerId = getProviderIdFromOrderRow(row);
+            if (providerId) providerIdSet[providerId] = true;
+        });
+
+        var providerMapById = {};
+        try {
+            providerMapById = await fetchProviderMapByIds(providerIdSet);
+        } catch (err) {
+            console.warn('[provider-order] Không tải được bảng nhà cung cấp:', err);
+        }
+
+        var providerCache = readProviderAssignCache();
+        return sortByCreatedDesc(rows.map(function (row, index) {
+            return mapApiOrder(row, index, providerCache, providerMapById);
+        }));
+    }
+
+    /**
+     * Lọc đơn hàng mới (chưa có người nhận) từ state.
+     */
+    function getOpenOrdersFromState() {
+        return state.orders.filter(function (order) {
+            return order.status === 'new';
+        });
+    }
+
+    /**
+     * Lọc đơn hàng đã được giao cho Đối tác hiện tại.
+     */
+    function getAssignedOrdersFromState() {
+        var orders = state.orders.filter(function (order) {
+            return !!ASSIGNED_STATUS[order.status];
+        });
+
+        if (!provider) return orders;
+        var currentProviderId = providerIdentity(provider);
+        if (!currentProviderId) return orders;
+
+        var hasProviderAssignments = orders.some(function (order) {
+            return !!(order.provider && providerIdentity(order.provider));
+        });
+        if (!hasProviderAssignments) return orders;
+
+        return orders.filter(function (order) {
+            return order.provider && providerIdentity(order.provider) === currentProviderId;
+        });
+    }
+
+    /**
+     * Tìm đơn hàng trong state.
+     */
+    function getOrderById(orderId) {
+        for (var i = 0; i < state.orders.length; i += 1) {
+            if (String(state.orders[i].id) === String(orderId)) return state.orders[i];
+        }
+        return null;
+    }
+
+    /**
+     * Kiểm tra xem lỗi trả về từ API có phải là lỗi thiếu cột hay không.
+     * @param {string} message - Msg lỗi.
+     */
+    function isMissingColumnError(message) {
+        var msg = String(message || '').toLowerCase();
+        return msg.indexOf('unknown column') !== -1
+            || msg.indexOf("doesn't exist") !== -1
+            || msg.indexOf('does not exist') !== -1
+            || msg.indexOf('invalid column') !== -1
+            || msg.indexOf('column not found') !== -1;
+    }
+
+    /**
+     * Kiểm tra xem lỗi có phải do thiếu cột id_nhacungcap hay không.
+     */
+    function isMissingProviderIdColumnError(message) {
+        var msg = String(message || '').toLowerCase();
+        return isMissingColumnError(msg) && msg.indexOf('id_nhacungcap') !== -1;
+    }
+
+    /**
+     * Chọn một khóa (field) tồn tại trong object từ danh sách ứng viên.
+     * @param {Object} raw - Dữ liệu thô.
+     * @param {string[]} candidates - Danh sách các khóa khả thi.
+     */
+    function pickExistingKey(raw, candidates) {
+        var src = raw || {};
+        for (var i = 0; i < candidates.length; i += 1) {
+            var key = candidates[i];
+            if (Object.prototype.hasOwnProperty.call(src, key)) {
+                return key;
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Cập nhật trạng thái và thông tin nhà cung cấp thầu đơn lên API.
+     * @param {string} action - 'accept', 'start', 'done'.
+     * @param {Object} order - Đơn hàng.
+     */
+    async function updateRemoteOrder(action, order) {
+        var statusMap = {
+            accept: 'confirmed',
+            start: 'doing',
+            done: 'done'
+        };
+        var nextStatus = statusMap[action];
+        if (!nextStatus) throw new Error('Thao tác không hợp lệ');
+
+        var updateData = { trangthai: nextStatus };
+        var fallbackData = { trangthai: nextStatus };
+        var providerId = '';
+
+        if (action === 'accept') {
+            var providerIdKey = pickExistingKey(order._raw, ['id_nhacungcap', 'idnhacungcap', 'nhacungcapid', 'provider_id', 'providerId']);
+            var providerNameKey = pickExistingKey(order._raw, ['nhacungcapten', 'provider_name', 'providerName']);
+            var providerPhoneKey = pickExistingKey(order._raw, ['nhacungcapsdt', 'provider_phone', 'providerPhone']);
+            var providerCompanyKey = pickExistingKey(order._raw, ['nhacungcapcuahang', 'provider_company', 'providerCompany']);
+
+            providerId = String(provider.id || '').trim();
+            if (!providerId) {
+                throw new Error('Không tìm thấy id nhà cung cấp. Vui lòng đăng nhập lại tài khoản nhà cung cấp.');
+            }
+
+            var providerName = String(provider.name || 'Nhà cung cấp');
+            var providerPhone = String(provider.phone || '');
+            var providerCompany = String(provider.company || '');
+
+            updateData.id_nhacungcap = providerId;
+            updateData.nhacungcapid = providerId;
+            updateData.nhacungcapten = providerName;
+            updateData.nhacungcapsdt = providerPhone;
+            updateData.nhacungcapcuahang = providerCompany;
+
+            if (providerIdKey && providerIdKey !== 'id_nhacungcap' && providerIdKey !== 'nhacungcapid') {
+                updateData[providerIdKey] = providerId;
+            }
+            if (providerNameKey && providerNameKey !== 'nhacungcapten') updateData[providerNameKey] = providerName;
+            if (providerPhoneKey && providerPhoneKey !== 'nhacungcapsdt') updateData[providerPhoneKey] = providerPhone;
+            if (providerCompanyKey && providerCompanyKey !== 'nhacungcapcuahang') updateData[providerCompanyKey] = providerCompany;
+
+            fallbackData.id_nhacungcap = providerId;
+            if (providerIdKey && providerIdKey !== 'id_nhacungcap') fallbackData[providerIdKey] = providerId;
+        }
+
+        var updatedAtKey = pickExistingKey(order._raw, ['capnhatluc', 'updated_at']);
+        if (updatedAtKey) {
+            var now = new Date();
+            var pad = function (n) { return String(n).padStart(2, '0'); };
+            var updatedAtValue =
+                now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + ' ' +
+                pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+            updateData[updatedAtKey] = updatedAtValue;
+            fallbackData[updatedAtKey] = updatedAtValue;
+        }
+
+        var krudHelper = getKrudHelper();
+        try {
+            await krudHelper.updateRow(KRUD_TABLE, order.id, updateData, KRUD_SCRIPT_URL);
+        } catch (err) {
+            var errorMessage = err && err.message ? err.message : 'Không cập nhật được đơn hàng';
+            if (action === 'accept' && isMissingProviderIdColumnError(errorMessage)) {
+                throw new Error('Bảng datlich_thonha chưa có cột id_nhacungcap. Vui lòng thêm cột này trong database để lưu nhà cung cấp nhận đơn.');
+            }
+            if (action === 'accept' && isMissingColumnError(errorMessage)) {
+                try {
+                    await krudHelper.updateRow(KRUD_TABLE, order.id, fallbackData, KRUD_SCRIPT_URL);
+                    return;
+                } catch (fallbackErr) {
+                    throw new Error(fallbackErr && fallbackErr.message ? fallbackErr.message : 'Không cập nhật được đơn hàng');
+                }
+            }
+            throw new Error(errorMessage);
+        }
+    }
+
+    /**
+     * Tải và xử lý dữ liệu đơn hàng từ API.
+     */
+    async function loadOrdersFromApi(showErrorAlert) {
+        setLoadingState(true);
+        try {
+            state.orders = await fetchRemoteOrders();
+        } catch (err) {
+            console.error('[provider-order] Không tải được dữ liệu API:', err);
+            state.orders = [];
+            if (showErrorAlert) {
+                alert('Không tải được dữ liệu từ api.dvqt.vn. Vui lòng thử lại sau.');
+            }
+        } finally {
+            setLoadingState(false);
+            render();
+        }
+    }
+
+    /**
+     * Nhãn trạng thái.
+     */
     function statusBadge(status) {
-        var meta = store.statusMeta[status] || { label: status };
-        var cls = STATUS_CLASS_MAP[status] || 'status-new';
-        return '<span class="status-badge ' + cls + '">' + escapeHtml(meta.label) + '</span>';
+        return buildStatusBadge(status, store.statusMeta, STATUS_CLASS_MAP);
     }
 
-    function formatCurrency(value) {
-        var amount = Number(value);
-        if (!Number.isFinite(amount)) amount = 0;
-        return currencyFormatter.format(Math.round(amount)) + ' đ';
-    }
-
-    function moneyOrFree(value) {
-        var amount = Number(value);
-        if (!Number.isFinite(amount) || amount <= 0) return 'Miễn phí';
-        return formatCurrency(amount);
-    }
-
+    /**
+     * Chi phí mẫu đặt lịch.
+     */
     function getBookingPricing(order) {
         if (typeof store.getBookingPricing !== 'function') return null;
         return store.getBookingPricing(order);
     }
 
-    function getTravelFeeText(bookingPricing) {
-        if (!bookingPricing || !bookingPricing.travel) return 'Không phát sinh';
-
-        var travel = bookingPricing.travel;
-        if (travel.mode === 'per_km') {
-            if (travel.status === 'ok' && Number.isFinite(Number(travel.amount))) {
-                var text = moneyOrFree(travel.amount);
-                if (Number.isFinite(Number(travel.distanceKm))) {
-                    text += ' (~' + Number(travel.distanceKm).toFixed(1) + ' km)';
-                }
-                return text;
-            }
-            if (travel.status === 'loading') return 'Đang tính';
-            if (travel.status === 'error') return 'Không tính được';
-            return 'Chưa xác định';
-        }
-
-        var hasMin = Number.isFinite(Number(travel.min));
-        var hasMax = Number.isFinite(Number(travel.max));
-        var hasAmount = Number.isFinite(Number(travel.amount));
-
-        if (hasMin && hasMax && Number(travel.min) !== Number(travel.max)) {
-            return formatCurrency(travel.min) + ' - ' + formatCurrency(travel.max);
-        }
-        if (hasAmount) return moneyOrFree(travel.amount);
-        if (hasMin) return moneyOrFree(travel.min);
-        if (hasMax) return moneyOrFree(travel.max);
-        return 'Không phát sinh';
-    }
-
-    function bookingLine(label, value, extraClass) {
-        var rowClass = extraClass ? 'booking-line ' + extraClass : 'booking-line';
-        return '<div class="' + rowClass + '"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value) + '</strong></div>';
-    }
-
+    /**
+     * Tóm tắt chi phí đặt lịch.
+     */
     function bookingCostSummary(order) {
-        var bookingPricing = getBookingPricing(order);
-        if (!bookingPricing) {
-            return '<span class="booking-missing">Chưa có dữ liệu chi phí từ modal đặt lịch.</span>';
-        }
-
-        var survey = bookingPricing.survey || { required: false, amount: 0 };
-        var serviceText = bookingPricing.hasServicePrice
-            ? moneyOrFree(bookingPricing.servicePrice)
-            : 'Chưa cập nhật';
-        var travelText = getTravelFeeText(bookingPricing);
-        var surveyText = survey.required && Number(survey.amount) > 0
-            ? formatCurrency(survey.amount) + ' (nếu không sửa)'
-            : 'Không phát sinh';
-
-        var totalText = 'Chưa cập nhật';
-        if (bookingPricing.totalPending) {
-            totalText = 'Giá dịch vụ + phí di chuyển';
-        } else if (Number.isFinite(Number(bookingPricing.totalEstimate))) {
-            totalText = moneyOrFree(bookingPricing.totalEstimate);
-        }
-
-        var noteHtml = bookingPricing.note
-            ? '<p class="booking-note-inline">' + escapeHtml(bookingPricing.note) + '</p>'
-            : '';
-
-        return '<div class="booking-breakdown">' +
-            bookingLine('Giá dịch vụ', serviceText) +
-            bookingLine('Phí di chuyển', travelText) +
-            bookingLine('Phí khảo sát', surveyText) +
-            bookingLine('Tổng tạm tính', totalText, 'booking-total') +
-            noteHtml +
-            '</div>';
+        return viewUtils.buildBookingCostSummary(order, getBookingPricing);
     }
 
-    function bookingCostCell(order) {
-        return bookingCostSummary(order);
-    }
-
-    function bookingCostMobile(order) {
-        return '<div class="booking-mobile-block">' +
-            '<p class="booking-mobile-title">Chi phí theo đặt lịch</p>' +
-            bookingCostSummary(order) +
-            '</div>';
-    }
-
+    /**
+     * Nút xem chi tiết.
+     */
     function detailActionButton(order) {
-        return '<button class="btn-detail" type="button" data-action="view-detail" data-id="' + escapeHtml(order.id) + '">Xem chi tiết</button>';
+        return buildDetailActionButton(order.id, 'Xem chi tiết');
     }
 
+    /**
+     * Dòng chi tiết.
+     */
     function detailRow(label, value) {
-        return '<div class="detail-row"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value || 'N/A') + '</strong></div>';
+        return buildDetailRow(label, value);
     }
 
+    /**
+     * Lấy các nút thao tác khả dụng của đơn hàng dựa trên trạng thái.
+     * @param {Object} order - Đơn hàng.
+     */
     function getOrderActionButton(order) {
         if (order.status === 'new' && !order.provider) {
             return '<button class="btn-action btn-accept" data-action="accept" data-id="' + escapeHtml(order.id) + '">Nhận thực hiện</button>';
         }
 
-        if (!order.provider || order.provider.id !== provider.id) {
+        if (order.provider && order.provider.id && provider.id && String(order.provider.id) !== String(provider.id)) {
             return '<span class="action-done">Đơn đang được nhà cung cấp khác xử lý</span>';
         }
 
@@ -201,23 +534,15 @@
         return '<span class="action-done">Không có thao tác khả dụng</span>';
     }
 
-    function getOrderById(orderId) {
-        var openOrders = store.getOpenRequests();
-        for (var i = 0; i < openOrders.length; i += 1) {
-            if (openOrders[i].id === orderId) return openOrders[i];
-        }
-
-        var assignedOrders = store.getProviderOrders(provider.id);
-        for (var j = 0; j < assignedOrders.length; j += 1) {
-            if (assignedOrders[j].id === orderId) return assignedOrders[j];
-        }
-
-        return null;
-    }
-
+    /**
+     * Render thông tin đơn vị thợ thầu trong modal chi tiết.
+     */
     function renderProviderInfo(order) {
         if (!order.provider) {
-            return '<p class="detail-note">Đơn chưa có nhà cung cấp nhận thực hiện.</p>';
+            if (order.status === 'new') {
+                return '<p class="detail-note">Đơn chưa có nhà cung cấp nhận thực hiện.</p>';
+            }
+            return '<p class="detail-note">Đơn đã được nhận thực hiện, nhưng dữ liệu chưa có thông tin nhà cung cấp chi tiết.</p>';
         }
 
         return '<div class="detail-grid">' +
@@ -227,6 +552,9 @@
             '</div>';
     }
 
+    /**
+     * Đổ dữ liệu đơn hàng vào modal chi tiết.
+     */
     function renderOrderDetail(order) {
         if (!elements.detailBody || !elements.detailCode) return;
 
@@ -265,6 +593,9 @@
             '</section>';
     }
 
+    /**
+     * Mở modal xem chi tiết.
+     */
     function openOrderDetail(orderId) {
         if (!elements.detailModal) return;
         var order = getOrderById(orderId);
@@ -279,6 +610,9 @@
         document.body.classList.add('detail-modal-open');
     }
 
+    /**
+     * Đóng modal chi tiết.
+     */
     function closeOrderDetail() {
         if (!elements.detailModal) return;
         state.selectedOrderId = null;
@@ -286,6 +620,9 @@
         document.body.classList.remove('detail-modal-open');
     }
 
+    /**
+     * Cập nhật các thống kê tóm tắt đầu trang.
+     */
     function updateStats(openOrders, assignedOrders) {
         var doing = assignedOrders.filter(function (item) {
             return item.status === 'doing' || item.status === 'confirmed';
@@ -300,6 +637,9 @@
         elements.statDone.textContent = String(done);
     }
 
+    /**
+     * Render danh sách đơn hàng mới nhất (Yêu cầu mới).
+     */
     function renderOpenOrders(openOrders) {
         if (!openOrders.length) {
             elements.openBody.innerHTML = '';
@@ -338,6 +678,9 @@
         }).join('');
     }
 
+    /**
+     * Render danh sách đơn hàng đối tác đã nhận.
+     */
     function renderAssignedOrders(assignedOrders) {
         if (!assignedOrders.length) {
             elements.assignedBody.innerHTML = '';
@@ -374,9 +717,12 @@
         }).join('');
     }
 
+    /**
+     * Hàm điều phối render toàn bộ UI.
+     */
     function render() {
-        var openOrders = store.getOpenRequests();
-        var assignedOrders = store.getProviderOrders(provider.id);
+        var openOrders = getOpenOrdersFromState();
+        var assignedOrders = getAssignedOrdersFromState();
 
         updateStats(openOrders, assignedOrders);
         renderOpenOrders(openOrders);
@@ -392,24 +738,30 @@
         }
     }
 
-    function handleAction(action, orderId) {
-        var result = { ok: false };
-        if (action === 'accept') {
-            result = store.assignOrder(orderId, provider);
-        } else if (action === 'start') {
-            result = store.updateOrderStatus(orderId, 'doing', provider.id);
-        } else if (action === 'done') {
-            result = store.updateOrderStatus(orderId, 'done', provider.id);
-        }
-
-        if (!result.ok) {
-            alert('Không thể cập nhật đơn. Vui lòng thử lại.');
+    /**
+     * Xử lý click các nút thao tác nghiệp vụ (Nhận đơn, Bắt đầu, Hoàn thành).
+     */
+    async function handleAction(action, orderId) {
+        var order = getOrderById(orderId);
+        if (!order) {
+            alert('Không tìm thấy đơn hàng. Vui lòng tải lại danh sách.');
             return;
         }
 
-        render();
+        try {
+            await updateRemoteOrder(action, order);
+            if (action === 'accept' || (!order.provider && (action === 'start' || action === 'done'))) {
+                cacheAssignedProvider(order.id, order.orderCode, provider);
+            }
+            await loadOrdersFromApi(false);
+        } catch (err) {
+            alert(err && err.message ? err.message : 'Không thể cập nhật đơn. Vui lòng thử lại.');
+        }
     }
 
+    /**
+     * Ràng buộc sự kiện thao tác bảng và phím tắt.
+     */
     function bindTableActions() {
         document.addEventListener('click', function (event) {
             var detailTrigger = event.target.closest('button[data-action="view-detail"][data-id]');
@@ -440,25 +792,26 @@
         });
     }
 
+    /**
+     * Đổ thông tin thợ thầu vào giao diện hồ sơ.
+     */
     function bindProviderProfile() {
-        elements.providerName.textContent = provider.name || 'Nhà cung cấp';
-        elements.providerCompany.textContent = provider.company || 'Đối tác Thợ Nhà';
-        elements.providerPhone.textContent = provider.phone || 'Chưa cập nhật';
+        if (elements.providerCompany) elements.providerCompany.textContent = profile.company || profile.name || 'Nhà cung cấp Thợ Nhà';
+        if (elements.providerName) elements.providerName.textContent = profile.name || 'Người dùng';
+        if (elements.providerPhone) elements.providerPhone.textContent = profile.phone || 'Chưa có SĐT';
     }
 
+    /**
+     * Ràng buộc các sự kiện hệ thống (Làm mới).
+     */
     function bindEvents() {
         elements.refreshBtn.addEventListener('click', function () {
-            render();
-        });
-
-        window.addEventListener('thonha:orders-changed', render);
-        window.addEventListener('storage', function (event) {
-            if (event.key === store.changeKey) render();
+            loadOrdersFromApi(true);
         });
     }
 
     bindProviderProfile();
     bindTableActions();
     bindEvents();
-    render();
-})();
+    loadOrdersFromApi(false);
+};

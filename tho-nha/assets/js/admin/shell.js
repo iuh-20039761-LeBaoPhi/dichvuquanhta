@@ -1,26 +1,56 @@
 // ==================== CORE FUNCTIONS ====================
 
 // Check login
-fetch('../../api/admin/auth/check-session.php')
-    .then(res => res.json())
-    .then(res => {
-        if (res.status !== 'logged_in') {
-            localStorage.clear();
-            window.location.href = 'dang-nhap.html';
-        } else {
+(function checkAdminLogin() {
+    const isLocalLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+    const localUsername = localStorage.getItem('admin_username') || 'Admin';
+
+    console.log('[AdminShell] Checking login status...', { isLocalLoggedIn, localUsername });
+
+    if (isLocalLoggedIn) {
+        console.log('[AdminShell] Local login detected. Updating UI.');
+        const el = document.getElementById('adminUsername');
+        const av = document.getElementById('userAvatar');
+        if (el) el.textContent = localUsername;
+        if (av) av.textContent = localUsername.charAt(0).toUpperCase();
+        return;
+    }
+
+    console.log('[AdminShell] No local session. Verifying with server via check-session.php...');
+    fetch('../../api/admin/auth/check-session.php')
+        .then(res => res.json())
+        .then(res => {
+            console.log('[AdminShell] Server session response:', res);
+            if (res.status !== 'logged_in') {
+                console.warn('[AdminShell] Not logged in. Redirecting to login page...');
+                localStorage.removeItem('admin_logged_in');
+                localStorage.removeItem('admin_username');
+                window.location.href = 'dang-nhap.html';
+                return;
+            }
+
+            const username = res.username || localUsername;
             const el = document.getElementById('adminUsername');
             const av = document.getElementById('userAvatar');
-            if (el) el.textContent = res.username;
-            if (av) av.textContent = res.username.charAt(0).toUpperCase();
-            localStorage.setItem('admin_username', res.username);
-        }
-    });
+            if (el) el.textContent = username;
+            if (av) av.textContent = username.charAt(0).toUpperCase();
+            localStorage.setItem('admin_logged_in', 'true');
+            localStorage.setItem('admin_username', username);
+            console.log('[AdminShell] Server session valid. User:', username);
+        })
+        .catch((err) => {
+            console.error('[AdminShell] check-session.php error:', err);
+            window.location.href = 'dang-nhap.html';
+        });
+})();
 
 // Global data
 let allOrders = [];
 let cancelRequests = [];
 let allCategories = [];
 let currentPage = 'dashboard';
+const ADMIN_HTML_BASE = '../../pages/admin';
+const ADMIN_JS_BASE = '../../assets/js/admin/pages';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
@@ -112,8 +142,8 @@ function loadPage(page) {
 
 function loadDashboardPage() {
     Promise.all([
-        fetch('pages/tong-quan.html').then(res => res.text()),
-        fetch('pages/dashboard.js').then(res => res.text())
+        fetch(`${ADMIN_HTML_BASE}/tong-quan.html`).then(res => res.text()),
+        fetch(`${ADMIN_JS_BASE}/dashboard.js`).then(res => res.text())
     ]).then(([html, script]) => {
         document.getElementById('pageContent').innerHTML = html;
         eval(script);
@@ -123,8 +153,8 @@ function loadDashboardPage() {
 
 function loadOrdersPage() {
     Promise.all([
-        fetch('pages/don-hang.html').then(res => res.text()),
-        fetch('pages/orders.js').then(res => res.text())
+        fetch(`${ADMIN_HTML_BASE}/don-hang.html`).then(res => res.text()),
+        fetch(`${ADMIN_JS_BASE}/orders.js`).then(res => res.text())
     ]).then(([html, script]) => {
         document.getElementById('pageContent').innerHTML = html;
         eval(script);
@@ -134,8 +164,8 @@ function loadOrdersPage() {
 
 function loadCancelRequestsPage() {
     Promise.all([
-        fetch('pages/yeu-cau-huy.html').then(res => res.text()),
-        fetch('pages/cancel-request.js').then(res => res.text())
+        fetch(`${ADMIN_HTML_BASE}/yeu-cau-huy.html`).then(res => res.text()),
+        fetch(`${ADMIN_JS_BASE}/cancel-request.js`).then(res => res.text())
     ]).then(([html, script]) => {
         document.getElementById('pageContent').innerHTML = html;
         eval(script);
@@ -145,8 +175,8 @@ function loadCancelRequestsPage() {
 
 function loadServicesPage() {
     Promise.all([
-        fetch('pages/dich-vu.html').then(res => res.text()),
-        fetch('pages/services.js').then(res => res.text())
+        fetch(`${ADMIN_HTML_BASE}/dich-vu.html`).then(res => res.text()),
+        fetch(`${ADMIN_JS_BASE}/services.js`).then(res => res.text())
     ]).then(([html, script]) => {
         document.getElementById('pageContent').innerHTML = html;
         eval(script);
@@ -156,8 +186,8 @@ function loadServicesPage() {
 
 function loadProvidersPage() {
     Promise.all([
-        fetch('pages/nha-cung-cap.html').then(res => res.text()),
-        fetch('pages/providers.js').then(res => res.text())
+        fetch(`${ADMIN_HTML_BASE}/nha-cung-cap.html`).then(res => res.text()),
+        fetch(`${ADMIN_JS_BASE}/providers.js`).then(res => res.text())
     ]).then(([html, script]) => {
         document.getElementById('pageContent').innerHTML = html;
         eval(script);
@@ -197,41 +227,115 @@ function getStatusBadge(status) {
     return `<span class="status-badge ${s.cls}">${s.text}</span>`;
 }
 
-// Load orders
-function loadAllOrders() {
-    return fetch('../../api/admin/orders/get-all.php')
-        .then(res => res.json())
-        .then(res => {
-            if (res.status === 'success') {
-                allOrders = res.data;
-            }
-            return allOrders;
+/**
+ * Gọi danh sách bản ghi từ KRUD API
+ * @param {string} table - Tên bảng cần lấy dữ liệu
+ * @returns {Promise<Object|Array>} Kết quả từ API
+ */
+async function fetchKrudList(table) {
+    try {
+        if (typeof window.krudList === 'function') {
+            return await window.krudList({ table: table });
+        }
+        // Fallback to direct fetch
+        const res = await fetch('https://api.dvqt.vn/list/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ table: table })
         });
+        const data = await res.json();
+        return data;
+    } catch(err) {
+        console.error(`fetchKrudList for ${table} failed:`, err);
+        throw err;
+    }
+}
+
+/**
+ * Tải toàn bộ đơn hàng và ánh xạ thông tin Nhà cung cấp
+ * @returns {Promise<Array>} Danh sách đơn hàng đã chuẩn hoá
+ */
+async function loadAllOrders() {
+    console.log('[AdminShell] loadAllOrders starting...');
+    if (typeof ensureAdminKrudClient !== 'function') {
+        console.error('ensureAdminKrudClient not found');
+        return [];
+    }
+    const viewUtils = window.ThoNhaOrderViewUtils;
+    if (!viewUtils) {
+        console.error('ThoNhaOrderViewUtils not loaded');
+        return [];
+    }
+    
+    try {
+        await ensureAdminKrudClient();
+        console.log('[AdminShell] KRUD client ensured. Fetching datlich_thonha...');
+        
+        const res = await fetchKrudList('datlich_thonha');
+        const rawRows = normalizeProviderRows(res);
+        console.log(`[AdminShell] Fetched ${rawRows.length} raw rows.`);
+
+        const providerIdSet = {};
+        rawRows.forEach(row => {
+            const pid = viewUtils.getProviderIdFromOrderRow(row);
+            if (pid) providerIdSet[pid] = true;
+        });
+
+        let providerMapById = {};
+        try {
+            console.log('[AdminShell] Fetching provider mapping...');
+            const pRes = await fetchKrudList('nhacungcap_thonha');
+            const providerRows = normalizeProviderRows(pRes);
+            providerMapById = viewUtils.buildProviderMapByIds(providerRows, providerIdSet);
+            console.log(`[AdminShell] Mapped ${Object.keys(providerMapById).length} providers.`);
+        } catch(e) { 
+            console.warn('[AdminShell] Could not load providers for mapping:', e);
+        }
+
+        allOrders = viewUtils.sortByCreatedDesc(rawRows.map((row, i) => {
+            return viewUtils.mapApiOrderBase(row, i, {
+                providerMapById: providerMapById,
+                includeRaw: true
+            });
+        }));
+        
+        console.log('[AdminShell] Order mapping complete. Total:', allOrders.length);
+        return allOrders;
+    } catch(err) {
+        console.error('[AdminShell] loadAllOrders CRITICAL error:', err);
+        return [];
+    }
 }
 
 // Load cancel requests
 function loadAllCancelRequests() {
     return fetch('../../api/admin/orders/get-cancel-requests.php')
-        .then(res => res.json())
-        .then(res => {
-            if (res.status === 'success') {
+        .then(res => res.text())
+        .then(text => {
+            let res;
+            try { res = JSON.parse(text); } catch(e) { return []; }
+            if (res && res.status === 'success') {
                 cancelRequests = res.data;
                 updateCancelBadge();
             }
             return cancelRequests;
-        });
+        })
+        .catch(err => { console.warn('Cancel requests API fail:', err); return []; });
 }
 
 // Load services
 function loadAllServices() {
     return fetch('../../api/admin/services/manage.php?action=get_all')
-        .then(res => res.json())
-        .then(res => {
-            if (res.status === 'success') {
+        .then(res => res.text())
+        .then(text => {
+            let res;
+            try { res = JSON.parse(text); } catch(e) { return []; }
+            if (res && res.status === 'success') {
                 allCategories = res.data;
             }
             return allCategories;
-        });
+        })
+        .catch(err => { console.warn('Services API fail:', err); return []; });
 }
 
 // Update cancel badge
@@ -247,17 +351,76 @@ function updateCancelBadge() {
     }
 }
 
+const ADMIN_PROVIDER_TABLE = 'nhacungcap_thonha';
+const ADMIN_KRUD_SCRIPT_URL = 'https://api.dvqt.vn/js/krud.js';
+let adminKrudPromise = null;
+
+function ensureAdminKrudClient() {
+    if (typeof window.krudList === 'function') {
+        return Promise.resolve(true);
+    }
+
+    if (adminKrudPromise) return adminKrudPromise;
+
+    adminKrudPromise = new Promise((resolve, reject) => {
+        const existing = document.querySelector(`script[src="${ADMIN_KRUD_SCRIPT_URL}"]`);
+        if (existing) {
+            if (typeof window.krudList === 'function') {
+                resolve(true);
+                return;
+            }
+            existing.addEventListener('load', () => resolve(true), { once: true });
+            existing.addEventListener('error', () => reject(new Error('Không tải được KRUD')), { once: true });
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = ADMIN_KRUD_SCRIPT_URL;
+        script.async = true;
+        script.onload = () => resolve(true);
+        script.onerror = () => reject(new Error('Không tải được KRUD'));
+        document.head.appendChild(script);
+    }).catch((err) => {
+        adminKrudPromise = null;
+        throw err;
+    });
+
+    return adminKrudPromise;
+}
+
+function normalizeProviderRows(res) {
+    if (Array.isArray(res)) return res;
+    if (!res || typeof res !== 'object') return [];
+    if (res.error) throw new Error(res.error);
+    if (res.success === false) throw new Error(res.message || 'Không lấy được dữ liệu nhà cung cấp');
+    if (Array.isArray(res.data)) return res.data;
+    if (Array.isArray(res.rows)) return res.rows;
+    if (Array.isArray(res.items)) return res.items;
+    if (Array.isArray(res.result)) return res.result;
+    return [];
+}
+
+function normalizeProviderStatus(value) {
+    const s = String(value || '').trim().toLowerCase();
+    if (!s) return 'pending';
+    if (['pending', 'cho_duyet', 'choduyet', 'new', 'waiting'].includes(s)) return 'pending';
+    if (['active', 'approved', 'hoatdong', 'hoat_dong', 'enabled'].includes(s)) return 'active';
+    if (['rejected', 'reject', 'tu_choi', 'tuchoi', 'declined'].includes(s)) return 'rejected';
+    if (['blocked', 'khoa', 'locked', 'disabled'].includes(s)) return 'blocked';
+    return s;
+}
+
 // Update provider pending badge
 function updateProviderBadge() {
-    fetch('../../api/admin/providers/manage.php?action=counts')
-        .then(r => r.json())
-        .then(res => {
-            if (res.status !== 'success') return;
+    ensureAdminKrudClient()
+        .then(() => window.krudList({ table: ADMIN_PROVIDER_TABLE }))
+        .then((res) => {
+            const rows = normalizeProviderRows(res);
+            const pending = rows.filter((item) => normalizeProviderStatus(item.trangthai || item.trang_thai || item.status) === 'pending').length;
             const badge = document.getElementById('providerBadge');
             if (!badge) return;
-            const n = res.data.pending || 0;
-            badge.textContent = n;
-            if (n > 0) { badge.classList.remove('hide'); }
+            badge.textContent = pending;
+            if (pending > 0) { badge.classList.remove('hide'); }
             else        { badge.classList.add('hide'); }
         })
         .catch(() => {});

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <script src="/ga.js"></script>
@@ -25,7 +25,7 @@
             <label class="form-label">Số điện thoại</label>
             <div class="input-group input-icon">
                 <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                <input type="tel" id="identifier" class="form-control" placeholder="0901234567" autocomplete="tel">
+                <input type="tel" id="identifier" class="form-control" placeholder="Nhập số điện thoại" autocomplete="tel">
             </div>
         </div>
 
@@ -58,7 +58,33 @@
         </div>
     </div>
 
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script>
+        /**
+         * ═══════════════════════════════════════════════════════════
+         * ĐĂNG NHẬP KHÁCH HÀNG — Luồng xử lý:
+         * ═══════════════════════════════════════════════════════════
+         *
+         * 1. User nhập SĐT + mật khẩu
+         * 2. JS gọi KRUD API (krudList) → lấy danh sách tài khoản
+         * 3. Tìm tài khoản theo SĐT → kiểm tra trạng thái + mật khẩu
+         * 4. Nếu hợp lệ:
+         *    a) Lưu thông tin vào localStorage (để dùng offline/nhanh)
+         *    b) Gọi PHP endpoint tạo session server-side (bảo mật hơn)
+         * 5. Chuyển hướng sang trang cá nhân
+         *
+         * Bảng KRUD:  "khachhang"
+         * PHP session: api/customer/auth/login.php
+         * ═══════════════════════════════════════════════════════════
+         */
+
+        /** @const {string} Tên bảng KRUD chứa tài khoản khách hàng */
+        const BANG_DANG_NHAP_KHACH_HANG = 'khachhang';
+
+        /** @const {string} URL endpoint PHP để tạo session server-side */
+        const PHP_LOGIN_URL = '../../api/customer/auth/login.php';
+
+        // ── Sự kiện UI cơ bản ──────────────────────────────────
         document.getElementById('togglePwd').addEventListener('click', function() {
             const input = document.getElementById('password');
             const icon  = document.getElementById('eyeIcon');
@@ -70,12 +96,113 @@
         document.getElementById('identifier').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
         document.getElementById('loginBtn').addEventListener('click', login);
 
-        function login() {
+        /**
+         * Chuẩn hoá SĐT: chỉ giữ lại chữ số.
+         * Ví dụ: "0901 234 567" → "0901234567"
+         * @param {string} value - SĐT gốc
+         * @returns {string} SĐT chỉ gồm chữ số
+         */
+        function normalizePhone(value) {
+            return String(value || '').replace(/\D/g, '');
+        }
+
+        /**
+         * Chuẩn hoá response từ KRUD API thành mảng rows.
+         * KRUD trả về dạng khác nhau tuỳ version → hàm này đảm bảo luôn có mảng.
+         * @param {*} res - Response gốc từ krudList()
+         * @returns {Array} Mảng các bản ghi tài khoản
+         */
+        function normalizeRows(res) {
+            if (Array.isArray(res)) return res;
+            if (!res || typeof res !== 'object') return [];
+            if (res.error) throw new Error(res.error);
+            if (res.success === false) throw new Error(res.message || 'Không lấy được dữ liệu tài khoản');
+            if (Array.isArray(res.data)) return res.data;
+            if (Array.isArray(res.rows)) return res.rows;
+            if (Array.isArray(res.items)) return res.items;
+            return [];
+        }
+
+        /**
+         * Hash SHA-256 phía client (dùng Web Crypto API).
+         * Fallback: trả plaintext nếu trình duyệt không hỗ trợ.
+         * @param {string} text - Chuỗi cần hash
+         * @returns {Promise<string>} Chuỗi hex SHA-256
+         */
+        async function sha256(text) {
+            if (!(window.crypto && window.crypto.subtle && window.TextEncoder)) {
+                return String(text || '');
+            }
+            const encoded = new TextEncoder().encode(String(text || ''));
+            const buffer = await window.crypto.subtle.digest('SHA-256', encoded);
+            return Array.from(new Uint8Array(buffer))
+                .map((b) => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        /**
+         * So khớp mật khẩu: hỗ trợ 2 format lưu trữ trong DB:
+         *   - "sha256$..." → so hash SHA-256
+         *   - plaintext    → so trực tiếp
+         * @param {string} inputPassword  - Mật khẩu user nhập
+         * @param {string} storedPassword - Mật khẩu lưu trong DB
+         * @returns {Promise<boolean>} true nếu khớp
+         */
+        async function matchPassword(inputPassword, storedPassword) {
+            const stored = String(storedPassword || '');
+            if (!stored) return false;
+            if (stored.startsWith('sha256$')) {
+                return stored === ('sha256$' + await sha256(inputPassword));
+            }
+            return stored === inputPassword;
+        }
+
+        /**
+         * Kiểm tra trạng thái tài khoản có được phép đăng nhập không.
+         * @param {string} status - Trạng thái: active|pending|blocked|rejected
+         * @returns {string} Chuỗi rỗng nếu OK, hoặc thông báo lỗi
+         */
+        function statusMessage(status) {
+            const s = String(status || '').toLowerCase();
+            if (!s || s === 'active') return '';
+            if (s === 'pending') return 'Tài khoản đang chờ xét duyệt';
+            if (s === 'blocked') return 'Tài khoản đã bị khóa';
+            if (s === 'rejected') return 'Tài khoản đã bị từ chối';
+            return 'Tài khoản hiện không thể đăng nhập';
+        }
+
+        /**
+         * Gọi PHP endpoint để tạo session server-side.
+         * Fire-and-forget: nếu lỗi thì bỏ qua (localStorage vẫn hoạt động).
+         * @param {Object} profile - { name, phone, address }
+         */
+        function syncPhpSession(profile) {
+            fetch(PHP_LOGIN_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(profile),
+            }).catch(() => {
+                // Bỏ qua lỗi PHP session — localStorage vẫn đủ dùng
+                console.warn('[login] Không tạo được PHP session, fallback localStorage');
+            });
+        }
+
+        /**
+         * Hàm chính: xử lý đăng nhập khách hàng.
+         *
+         * Bước 1: Validate input
+         * Bước 2: Gọi KRUD lấy danh sách tài khoản → tìm theo SĐT
+         * Bước 3: Kiểm tra trạng thái tài khoản + mật khẩu
+         * Bước 4: Lưu localStorage + tạo PHP session
+         * Bước 5: Redirect sang trang cá nhân
+         */
+        async function login() {
             const identifier = document.getElementById('identifier').value.trim();
             const password   = document.getElementById('password').value;
             const btn = document.getElementById('loginBtn');
             const msg = document.getElementById('msg');
 
+            // ── Bước 1: Validate input ──────────────────────────
             if (!identifier || !password) {
                 msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng nhập đầy đủ thông tin</span>';
                 return;
@@ -85,29 +212,55 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...';
             msg.innerHTML = '';
 
-            fetch('../../api/customer/auth/login.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ identifier, password })
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.status === 'success') {
-                    localStorage.setItem('customer_logged_in', 'true');
-                    localStorage.setItem('customer_name', res.name);
-                    msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';
-                    setTimeout(() => window.location.href = 'trang-ca-nhan.html', 700);
-                } else {
-                    msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (res.message || 'Đăng nhập thất bại') + '</span>';
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Đăng nhập';
+            try {
+                if (typeof krudList !== 'function') {
+                    throw new Error('Không tải được hàm krudList');
                 }
-            })
-            .catch(() => {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-wifi me-1"></i>Không kết nối được server</span>';
+
+                // ── Bước 2: Tìm tài khoản theo SĐT ────────────
+                const rows = normalizeRows(await krudList({ table: BANG_DANG_NHAP_KHACH_HANG }));
+                const phoneDigits = normalizePhone(identifier);
+                const account = rows.find((item) => normalizePhone(item.sodienthoai || item.so_dien_thoai || item.phone || '') === phoneDigits);
+
+                if (!account) {
+                    throw new Error('Không tìm thấy tài khoản với số điện thoại này');
+                }
+
+                // ── Bước 3: Kiểm tra trạng thái + mật khẩu ────
+                const allowMessage = statusMessage(account.trangthai || account.trang_thai || account.status);
+                if (allowMessage) {
+                    throw new Error(allowMessage);
+                }
+
+                const ok = await matchPassword(password, account.matkhau || account.mat_khau || account.password);
+                if (!ok) {
+                    throw new Error('Sai mật khẩu');
+                }
+
+                // ── Bước 4: Lưu localStorage + PHP session ─────
+                const name    = account.hovaten || account.ho_ten || account.name || 'Khách hàng';
+                const phone   = account.sodienthoai || account.so_dien_thoai || account.phone || identifier;
+                const address = account.dia_chi || account.address || '';
+
+                localStorage.setItem('customer_logged_in', 'true');
+                localStorage.setItem('customer_name', name);
+                localStorage.setItem('thonha_customer_profile_v1', JSON.stringify({
+                    name: name,
+                    phone: phone,
+                    address: address
+                }));
+
+                // Tạo PHP session phía server (fire-and-forget)
+                syncPhpSession({ name, phone, address });
+
+                // ── Bước 5: Redirect ────────────────────────────
+                msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';
+                setTimeout(() => window.location.href = 'trang-ca-nhan.html', 700);
+            } catch (err) {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (err && err.message ? err.message : 'Đăng nhập thất bại') + '</span>';
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Đăng nhập';
-            });
+            }
         }
     </script>
 </body>

@@ -1,12 +1,12 @@
 (function (global) {
     'use strict';
 
-    var ORDER_KEY = 'thonha_orders_v1';
     var CUSTOMER_KEY = 'thonha_customer_profile_v1';
     var PROVIDER_KEY = 'thonha_provider_profile_v1';
-    var CHANGE_KEY = 'thonha_orders_changed_at';
-    var SUBSIDY_RATE = 0.05;
 
+    /**
+     * Metadata cho các trạng thái đơn hàng (nhãn hiển thị).
+     */
     var STATUS_META = {
         new: { label: 'Chờ xác nhận' },
         confirmed: { label: 'Đã tiếp nhận' },
@@ -15,6 +15,9 @@
         cancel: { label: 'Đã hủy' }
     };
 
+    /**
+     * Dữ liệu giá mặc định cho một số dịch vụ phổ biến (Presets).
+     */
     var BOOKING_PRICING_PRESETS = {
         'Sửa máy giặt tại nhà': {
             servicePrice: 420000,
@@ -66,6 +69,11 @@
         }
     };
 
+    /**
+     * Lấy cấu hình giá mẫu dựa trên tên dịch vụ.
+     * @param {Object} order - Đối tượng đơn hàng.
+     * @returns {Object|null} Cấu trúc giá mẫu hoặc null.
+     */
     function getPresetBookingPricing(order) {
         var serviceName = String(order && order.service || '').trim();
         if (!serviceName || !BOOKING_PRICING_PRESETS[serviceName]) return null;
@@ -94,24 +102,20 @@
         };
     }
 
-    function nowIso() {
-        return new Date().toISOString();
-    }
-
+    /**
+     * Chỉ giữ lại các chữ số trong chuỗi.
+     * @param {string} value - Chuỗi đầu vào.
+     * @returns {string} Chuỗi số.
+     */
     function toDigits(value) {
         return String(value || '').replace(/\D/g, '');
     }
 
-    function toMoneyNumber(value) {
-        if (typeof value === 'number' && Number.isFinite(value)) {
-            return Math.round(value);
-        }
-
-        var digits = String(value || '').replace(/\D/g, '');
-        if (!digits) return 0;
-        return Number(digits);
-    }
-
+    /**
+     * Chuyển đổi giá trị thành số nguyên (tiền tệ) hoặc null nếu không hợp lệ.
+     * @param {any} value - Giá trị cần chuyển đổi.
+     * @returns {number|null} Số tiền đã làm tròn hoặc null.
+     */
     function toOptionalMoneyNumber(value) {
         if (value === null || value === undefined || value === '') {
             return null;
@@ -126,6 +130,12 @@
         return Number(digits);
     }
 
+    /**
+     * Lấy giá trị đầu tiên được định nghĩa từ danh sách các field.
+     * @param {Object} source - Đối thủ nguồn.
+     * @param {Array} keys - Danh sách các key cần kiểm tra.
+     * @returns {any|null} Giá trị tìm thấy hoặc null.
+     */
     function pickFirstDefined(source, keys) {
         if (!source) return null;
         for (var i = 0; i < keys.length; i += 1) {
@@ -137,6 +147,12 @@
         return null;
     }
 
+    /**
+     * Chuẩn hóa dữ liệu phí di chuyển từ bảng giá hoặc đơn hàng.
+     * @param {Object} order - Đơn hàng thô.
+     * @param {Object} bookingPricing - Cấu trúc giá hiện tại.
+     * @returns {Object|null} Cấu trúc phí di chuyển chuẩn hoá.
+     */
     function normalizeTravelPricing(order, bookingPricing) {
         var travelObj = bookingPricing && bookingPricing.travelFee && typeof bookingPricing.travelFee === 'object'
             ? bookingPricing.travelFee
@@ -194,6 +210,11 @@
         };
     }
 
+    /**
+     * Lấy cấu trúc chi phí chi tiết (breakdown) của đơn hàng.
+     * @param {Object} order - Đối tượng đơn hàng đã hoặc chưa ánh xạ.
+     * @returns {Object|null} Cấu trúc giá chi tiết.
+     */
     function getBookingPricing(order) {
         if (!order || typeof order !== 'object') return null;
 
@@ -265,6 +286,12 @@
         };
     }
 
+    /**
+     * Thử giải mã chuỗi JSON một cách an toàn.
+     * @param {string} raw - Chuỗi thô.
+     * @param {any} fallback - Giá trị dự phòng nếu lỗi.
+     * @returns {Object|any} Kết quả đã parse hoặc giá trị dự phòng.
+     */
     function safeParse(raw, fallback) {
         if (!raw) return fallback;
         try {
@@ -274,334 +301,56 @@
         }
     }
 
-    function sortByDateDesc(items) {
-        return items.slice().sort(function (a, b) {
-            return new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0);
-        });
-    }
-
-    function emitChange() {
-        localStorage.setItem(CHANGE_KEY, String(Date.now()));
-        global.dispatchEvent(new CustomEvent('thonha:orders-changed'));
-    }
-
-    function seedDataIfNeeded() {
-        var existing = safeParse(localStorage.getItem(ORDER_KEY), null);
-        if (Array.isArray(existing) && existing.length > 0) {
-            return;
-        }
-
-        var defaultProvider = {
-            id: 'provider-001',
-            name: 'Trần Quang Huy',
-            phone: '0912 334 455',
-            company: 'Thợ Nhà - Kỹ thuật nhanh'
-        };
-
-        var demoOrders = [
-            {
-                id: 'ord-001',
-                orderCode: 'THN-260401-001',
-                customer: { name: 'Nguyễn Thị Lan', phone: '0903 456 789' },
-                address: '12 Nguyễn Văn Đậu, Phường 5, Bình Thạnh, TP.HCM',
-                service: 'Sửa máy giặt tại nhà',
-                note: 'Máy không vắt, cần kiểm tra gấp buổi tối.',
-                estimated_price: 420000,
-                travel_fee: 30000,
-                inspection_fee: 0,
-                total_price: 450000,
-                status: 'new',
-                provider: null,
-                createdAt: '2026-03-30T08:20:00',
-                updatedAt: '2026-03-30T08:20:00'
-            },
-            {
-                id: 'ord-002',
-                orderCode: 'THN-260401-002',
-                customer: { name: 'Lê Minh Khang', phone: '0938 776 553' },
-                address: '89 Trường Chinh, Tân Bình, TP.HCM',
-                service: 'Vệ sinh máy lạnh',
-                note: 'Nhà có 2 máy lạnh cần vệ sinh.',
-                estimated_price: 0,
-                travel_fee_mode: 'per_km',
-                travel_fee_status: 'pending',
-                travel_fee: 0,
-                inspection_fee: 120000,
-                total_price: null,
-                status: 'new',
-                provider: null,
-                createdAt: '2026-03-31T10:00:00',
-                updatedAt: '2026-03-31T10:00:00'
-            },
-            {
-                id: 'ord-003',
-                orderCode: 'THN-260401-003',
-                customer: { name: 'Nguyễn Thị Lan', phone: '0903 456 789' },
-                address: '12 Nguyễn Văn Đậu, Phường 5, Bình Thạnh, TP.HCM',
-                service: 'Thông tắc bồn rửa',
-                note: 'Ưu tiên xử lý trước 18h.',
-                estimated_price: 250000,
-                travel_fee: 20000,
-                inspection_fee: 0,
-                total_price: 270000,
-                status: 'confirmed',
-                provider: defaultProvider,
-                assignedAt: '2026-03-29T09:10:00',
-                createdAt: '2026-03-29T08:45:00',
-                updatedAt: '2026-03-29T09:10:00'
-            },
-            {
-                id: 'ord-004',
-                orderCode: 'THN-260401-004',
-                customer: { name: 'Nguyễn Thị Lan', phone: '0903 456 789' },
-                address: '12 Nguyễn Văn Đậu, Phường 5, Bình Thạnh, TP.HCM',
-                service: 'Sửa ổ điện âm tường',
-                note: 'Ổ cắm phát tia lửa khi cắm thiết bị.',
-                estimated_price: 180000,
-                travel_fee_mode: 'per_km',
-                travel_fee_status: 'ok',
-                travel_fee: 40000,
-                travel_distance_km: 6.3,
-                inspection_fee: 0,
-                total_price: 220000,
-                status: 'doing',
-                provider: defaultProvider,
-                assignedAt: '2026-03-28T14:25:00',
-                createdAt: '2026-03-28T13:50:00',
-                updatedAt: '2026-03-28T15:30:00'
-            },
-            {
-                id: 'ord-005',
-                orderCode: 'THN-260401-005',
-                customer: { name: 'Nguyễn Thị Lan', phone: '0903 456 789' },
-                address: '12 Nguyễn Văn Đậu, Phường 5, Bình Thạnh, TP.HCM',
-                service: 'Lắp quạt trần',
-                note: 'Đã có quạt, cần mang thêm thang cao.',
-                estimated_price: 350000,
-                travel_fee: 25000,
-                inspection_fee: 0,
-                total_price: 375000,
-                status: 'done',
-                provider: defaultProvider,
-                assignedAt: '2026-03-25T08:10:00',
-                createdAt: '2026-03-25T07:45:00',
-                updatedAt: '2026-03-25T10:00:00'
-            },
-            {
-                id: 'ord-006',
-                orderCode: 'THN-260401-006',
-                customer: { name: 'Phạm Thu Hằng', phone: '0911 222 333' },
-                address: '44 Tô Hiến Thành, Quận 10, TP.HCM',
-                service: 'Sơn lại phòng ngủ',
-                note: 'Sơn màu sáng, thi công cuối tuần.',
-                estimated_price: 1800000,
-                travel_fee: 50000,
-                inspection_fee: 150000,
-                total_price: 1850000,
-                status: 'cancel',
-                provider: null,
-                createdAt: '2026-03-22T09:20:00',
-                updatedAt: '2026-03-22T11:00:00'
-            }
-        ];
-
-        localStorage.setItem(ORDER_KEY, JSON.stringify(demoOrders));
-
-        if (!localStorage.getItem(CUSTOMER_KEY)) {
-            localStorage.setItem(CUSTOMER_KEY, JSON.stringify({
-                name: 'Nguyễn Thị Lan',
-                phone: '0903 456 789',
-                address: '12 Nguyễn Văn Đậu, Phường 5, Bình Thạnh, TP.HCM'
-            }));
-        }
-
-        if (!localStorage.getItem(PROVIDER_KEY)) {
-            localStorage.setItem(PROVIDER_KEY, JSON.stringify(defaultProvider));
-        }
-
-        emitChange();
-    }
-
-    function readOrders() {
-        seedDataIfNeeded();
-        var parsed = safeParse(localStorage.getItem(ORDER_KEY), []);
-        return Array.isArray(parsed) ? parsed : [];
-    }
-
-    function writeOrders(orders) {
-        localStorage.setItem(ORDER_KEY, JSON.stringify(orders));
-        emitChange();
-    }
-
-    function getOrders() {
-        return sortByDateDesc(readOrders());
-    }
-
+    /**
+     * Lấy thông tin hồ sơ Khách hàng hiện tại.
+     * @returns {Object} Hồ sơ khách hàng.
+     */
     function getCustomerProfile() {
-        seedDataIfNeeded();
         var profile = safeParse(localStorage.getItem(CUSTOMER_KEY), null);
         if (profile && profile.name && profile.phone) {
             return profile;
         }
 
-        var fallbackOrder = getOrders().find(function (item) {
-            return item.customer && item.customer.phone;
-        });
-
-        return fallbackOrder
-            ? {
-                name: fallbackOrder.customer.name,
-                phone: fallbackOrder.customer.phone,
-                address: fallbackOrder.address || ''
-            }
-            : { name: 'Khách hàng', phone: '', address: '' };
+        return { name: 'Khách hàng', phone: '', address: '' };
     }
 
+    /**
+     * Lấy thông tin hồ sơ Nhà cung cấp hiện tại.
+     * @returns {Object} Hồ sơ thợ.
+     */
     function getProviderProfile() {
-        seedDataIfNeeded();
         var profile = safeParse(localStorage.getItem(PROVIDER_KEY), null);
         if (profile && profile.id) {
             return profile;
         }
+
+        var name = String(localStorage.getItem('provider_name') || '').trim();
+        var company = String(localStorage.getItem('provider_company') || '').trim();
+        var phone = String(localStorage.getItem('provider_phone') || '').trim();
+        var phoneDigits = toDigits(phone);
+
         return {
-            id: 'provider-001',
-            name: 'Trần Quang Huy',
-            phone: '0912 334 455',
-            company: 'Thợ Nhà - Kỹ thuật nhanh'
+            id: phoneDigits ? ('provider-' + phoneDigits) : '',
+            name: name || 'Nhà cung cấp',
+            phone: phone,
+            company: company || ''
         };
     }
 
+    /**
+     * Cập nhật hồ sơ Nhà cung cấp vào LocalStorage.
+     * @param {Object} profile - Hồ sơ mới.
+     */
     function setProviderProfile(profile) {
         if (!profile || !profile.id) return;
         localStorage.setItem(PROVIDER_KEY, JSON.stringify(profile));
     }
 
-    function getCustomerOrders(phone) {
-        var phoneDigits = toDigits(phone);
-        if (!phoneDigits) return getOrders();
-        return getOrders().filter(function (order) {
-            return toDigits(order.customer && order.customer.phone) === phoneDigits;
-        });
-    }
-
-    function getOpenRequests() {
-        return getOrders().filter(function (order) {
-            return order.status === 'new' && !order.provider;
-        });
-    }
-
-    function getProviderOrders(providerId) {
-        return getOrders().filter(function (order) {
-            return order.provider && order.provider.id === providerId;
-        });
-    }
-
-    function updateOrder(orderId, updater) {
-        var orders = readOrders();
-        var index = orders.findIndex(function (item) { return item.id === orderId; });
-        if (index < 0) {
-            return { ok: false, message: 'Không tìm thấy đơn hàng.' };
-        }
-
-        var nextOrder = updater(orders[index]);
-        if (!nextOrder) {
-            return { ok: false, message: 'Không thể cập nhật đơn hàng.' };
-        }
-
-        orders[index] = nextOrder;
-        writeOrders(orders);
-        return { ok: true, order: nextOrder };
-    }
-
-    function assignOrder(orderId, provider) {
-        return updateOrder(orderId, function (order) {
-            if (order.status === 'done' || order.status === 'cancel') return null;
-            if (order.provider && order.provider.id && order.provider.id !== provider.id) return null;
-
-            return Object.assign({}, order, {
-                status: order.status === 'new' ? 'confirmed' : order.status,
-                provider: {
-                    id: provider.id,
-                    name: provider.name,
-                    phone: provider.phone,
-                    company: provider.company
-                },
-                assignedAt: order.assignedAt || nowIso(),
-                updatedAt: nowIso()
-            });
-        });
-    }
-
-    function updateOrderStatus(orderId, nextStatus, providerId) {
-        if (!STATUS_META[nextStatus]) {
-            return { ok: false, message: 'Trạng thái không hợp lệ.' };
-        }
-
-        return updateOrder(orderId, function (order) {
-            if (providerId && (!order.provider || order.provider.id !== providerId)) return null;
-            if (order.status === 'done' || order.status === 'cancel') return null;
-            return Object.assign({}, order, {
-                status: nextStatus,
-                updatedAt: nowIso()
-            });
-        });
-    }
-
-    function updateOrderPricing(orderId, quotedCost, customerPhone) {
-        var amount = toMoneyNumber(quotedCost);
-        if (!amount || amount <= 0) {
-            return { ok: false, message: 'Chi phí không hợp lệ.' };
-        }
-
-        var phoneDigits = toDigits(customerPhone);
-        var orders = readOrders();
-        var index = orders.findIndex(function (item) { return item.id === orderId; });
-        if (index < 0) {
-            return { ok: false, message: 'Không tìm thấy đơn hàng.' };
-        }
-
-        var order = orders[index];
-        if (order.status !== 'done') {
-            return { ok: false, message: 'Chỉ nhập chi phí khi đơn đã hoàn thành.' };
-        }
-
-        if (phoneDigits && toDigits(order.customer && order.customer.phone) !== phoneDigits) {
-            return { ok: false, message: 'Bạn không có quyền cập nhật đơn này.' };
-        }
-
-        var subsidyAmount = Math.round(amount * SUBSIDY_RATE);
-        var finalCost = Math.max(amount - subsidyAmount, 0);
-
-        orders[index] = Object.assign({}, order, {
-            pricing: {
-                quotedCost: amount,
-                subsidyRate: SUBSIDY_RATE,
-                subsidyAmount: subsidyAmount,
-                finalCost: finalCost,
-                updatedAt: nowIso()
-            },
-            updatedAt: nowIso()
-        });
-
-        writeOrders(orders);
-        return { ok: true, order: orders[index] };
-    }
-
-    seedDataIfNeeded();
-
     global.ThoNhaOrderStore = {
-        changeKey: CHANGE_KEY,
         statusMeta: STATUS_META,
-        getOrders: getOrders,
         getBookingPricing: getBookingPricing,
         getCustomerProfile: getCustomerProfile,
         getProviderProfile: getProviderProfile,
-        setProviderProfile: setProviderProfile,
-        getCustomerOrders: getCustomerOrders,
-        getOpenRequests: getOpenRequests,
-        getProviderOrders: getProviderOrders,
-        assignOrder: assignOrder,
-        updateOrderStatus: updateOrderStatus,
-        updateOrderPricing: updateOrderPricing
+        setProviderProfile: setProviderProfile
     };
 })(window);
