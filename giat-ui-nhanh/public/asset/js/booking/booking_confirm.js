@@ -345,34 +345,30 @@
       }
     }
 
-    function parseJsonSafe(raw) {
-      try {
-        return raw ? JSON.parse(raw) : null;
-      } catch (_err) {
-        return null;
-      }
-    }
-
     function saveToGoogleSheet(data) {
-      return fetch(config.BOOKING_GOOGLE_SHEET_API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=UTF-8",
-        },
-        body: JSON.stringify(data),
-      }).then((response) => {
-        return response.text().then((raw) => {
-          const result = parseJsonSafe(raw);
+      if (typeof window.saveToGoogleSheet !== "function") {
+        return Promise.reject(new Error("driveUtil.js chưa được nạp."));
+      }
 
-          if (!response.ok || !result || result.success !== true) {
+      const sheetPayload = Object.assign({}, data, {
+        sheet_type: "Giặt Ủi Nhanh",
+      });
+
+      return Promise.resolve(window.saveToGoogleSheet(sheetPayload)).then(
+        (result) => {
+          const isSuccess =
+            result && (result.status === "success" || result.success === true);
+
+          if (!isSuccess) {
             const serverMessage =
-              (result && result.error) || raw || "Gửi dữ liệu thất bại";
-            throw new Error(`Sheet API ${response.status}: ${serverMessage}`);
+              (result && (result.error || result.message)) ||
+              "Gửi dữ liệu thất bại";
+            throw new Error(serverMessage);
           }
 
           return result;
-        });
-      });
+        },
+      );
     }
 
     function saveToKrudApi(data) {
