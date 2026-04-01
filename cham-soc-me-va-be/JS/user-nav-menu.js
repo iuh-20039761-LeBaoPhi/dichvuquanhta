@@ -35,6 +35,32 @@
 
   window.__markInSiteNavigation = markInSiteNavigationProgrammatically;
 
+  function clearClientAuthStorage() {
+    try {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('customer_logged_in');
+      localStorage.removeItem('customer_name');
+      localStorage.removeItem('profile');
+    } catch (e) {
+      // Ignore storage errors.
+    }
+  }
+
+  function isLogoutLink(target) {
+    var link = target && target.closest ? target.closest('a[href]') : null;
+    if (!link) return false;
+
+    var href = link.getAttribute('href') || '';
+    if (!href) return false;
+
+    try {
+      var targetUrl = new URL(href, window.location.href);
+      return /\/logout\.php$/i.test(targetUrl.pathname);
+    } catch (e) {
+      return /logout\.php(?:[?#].*)?$/i.test(href);
+    }
+  }
+
   function autoLogoutOnClose() {
     var hasUser = false;
     try {
@@ -44,14 +70,7 @@
     }
     if (!hasUser || isInSiteNavigation) return;
 
-    try {
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('customer_logged_in');
-      localStorage.removeItem('customer_name');
-      localStorage.removeItem('profile');
-    } catch (e) {
-      // Ignore storage errors.
-    }
+    clearClientAuthStorage();
   }
 
   function assetUrl(path) {
@@ -78,7 +97,7 @@
     if (invoiceLink) {
       var invoicePath = role === 'nhan_vien'
         ? 'nhan_vien/danh-sach-hoa-don.html'
-        : 'khach_hang/danh-sach-hoa-don.html';
+        : 'khach_hang/danh-sach-hoa-don.php';
       invoiceLink.setAttribute('href', invoicePath);
     }
   }
@@ -204,6 +223,9 @@
 
   // Mark normal in-site link navigation so close-tab logout does not run.
   document.addEventListener('click', function (event) {
+    if (isLogoutLink(event.target)) {
+      clearClientAuthStorage();
+    }
     markInSiteNavigation(event.target);
   }, true);
 

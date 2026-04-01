@@ -237,6 +237,30 @@
             return 'Tài khoản hiện không thể đăng nhập';
         }
 
+        async function saveLoginSession(userPayload) {
+            const response = await fetch('session_login.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(userPayload || {})
+            });
+
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (e) {
+                throw new Error('Không thể đọc phản hồi phiên đăng nhập');
+            }
+
+            if (!response.ok || !data || !data.success) {
+                throw new Error((data && data.message) ? data.message : 'Không thể lưu phiên đăng nhập');
+            }
+
+            return data;
+        }
+
         async function login() {
             const identifier = document.getElementById('identifier').value.trim();
             const password   = document.getElementById('password').value;
@@ -277,6 +301,19 @@
 
                 const name = account.hovaten || account.ho_ten || account.name || 'Khách hàng';
                 const phone = account.sodienthoai || account.so_dien_thoai || account.phone || identifier;
+
+                const userPayload = {
+                    id: account.id || account.ID || '',
+                    ten: name,
+                    sodienthoai: phone,
+                    vai_tro: account.vai_tro || account.role || 'khach_hang',
+                    anh_dai_dien: account.anh_dai_dien || account.avatar || '',
+                    dia_chi: account.dia_chi || account.address || ''
+                };
+
+                await saveLoginSession(userPayload);
+
+                localStorage.setItem('currentUser', JSON.stringify(userPayload));
 
                 localStorage.setItem('customer_logged_in', 'true');
                 localStorage.setItem('customer_name', name);
