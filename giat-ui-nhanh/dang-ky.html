@@ -221,6 +221,7 @@
                 id="customerSubmitBtn"
                 type="submit"
                 class="btn-login mt-2"
+                onclick="createProvider()"
               >
                 <span class="btn-text">Tạo tài khoản khách hàng</span>
               </button>
@@ -597,6 +598,7 @@
                 id="providerSubmitBtn"
                 type="submit"
                 class="btn-login mt-2"
+                onclick="createProvider()"
               >
                 <span class="btn-text">Tạo tài khoản nhà cung cấp</span>
               </button>
@@ -630,6 +632,7 @@
 
     <script src="public/asset/js/bootstrap.bundle.min.js"></script>
     <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script>
       WebFont.load({
         google: {
@@ -1330,6 +1333,71 @@
 
         syncFormView();
       })();
+    </script>
+    <script>
+      function createCustomer() {
+        document
+          .getElementById("providerForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const hovaten = document.getElementById("customerFullName").value;
+            const sodienthoai = document.getElementById("customerPhone").value;
+            const email = document.getElementById("customerEmail").value;
+            const matkhau = document.getElementById("customerPassword").value;
+
+            krud("insert", "khachhang", {
+              hovaten: hovaten,
+              sodienthoai: sodienthoai,
+              email: email,
+              matkhau: matkhau,
+            }).then((res) => {
+              document.getElementById("customerStatus").textContent =
+                "Đăng ký thành công!";
+              document
+                .getElementById("customerStatus")
+                .classList.remove("d-none");
+              document.getElementById("customerForm").reset();
+            });
+          });
+      }
+      function createProvider() {
+        document
+          .getElementById("providerForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const hovaten = document.getElementById("providerFullName").value;
+            const sodienthoai = document.getElementById("providerPhone").value;
+            const email = document.getElementById("providerEmail").value;
+            const matkhau = document.getElementById("providerPassword").value;
+            const cuahang = document.getElementById("serviceName").value;
+            const diachi = document.getElementById("serviceAddress").value;
+            const gioithieu = document.getElementById("serviceIntro").value;
+            const avatarFile = document.getElementById("avatarFile").files[0];
+            const cccdFront = document.getElementById("cccdFront").files[0];
+            const cccdBack = document.getElementById("cccdBack").files[0];
+            krud("insert", "nhacungcap_giatuinhanh", {
+              hovaten: hovaten,
+              sodienthoai: sodienthoai,
+              email: email,
+              matkhau: matkhau,
+              cuahang: cuahang,
+              diachi: diachi,
+              gioithieu: gioithieu,
+              avatar: avatarFile ? avatarFile.name : null,
+              cccdFront: cccdFront ? cccdFront.name : null,
+              cccdBack: cccdBack ? cccdBack.name : null,
+            }).then((res) => {
+              document.getElementById("providerStatus").textContent =
+                "Đăng ký thành công! Vui lòng chờ xét duyệt.";
+              document
+                .getElementById("providerStatus")
+                .classList.remove("d-none");
+              document.getElementById("customerForm").reset();
+            });
+          });
+      }
     </script>
   </body>
 </html>
