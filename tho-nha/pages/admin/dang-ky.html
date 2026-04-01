@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script src="/ga.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Dịch Vụ Quanh Ta - Thợ Nhà - Đăng Ký Quản Trị</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../../assets/css/auth.css">
+</head>
+<body>
+	<div class="auth-card">
+		<div class="brand">
+			<img src="../../assets/images/tho-nha-logo-thuong-hieu-cropped.jpg" alt="Thợ Nhà">
+			<span class="brand-name">Thợ Nhà</span>
+		</div>
+		<div style="text-align:center; margin-bottom:6px;">
+			<span class="role-badge"><i class="fas fa-user-shield"></i> Quản trị viên</span>
+		</div>
+		<p class="auth-subtitle">Tạo tài khoản admin để quản lý hệ thống</p>
+
+		<div class="row g-3">
+			<div class="col-12">
+				<label class="form-label">Email <span class="text-danger">*</span></label>
+				<div class="input-group input-icon">
+					<span class="input-group-text"><i class="fas fa-envelope"></i></span>
+					<input type="email" id="email" class="form-control" placeholder="Nhập email">
+				</div>
+			</div>
+
+			<div class="col-12">
+				<label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+				<div class="input-group input-icon">
+					<span class="input-group-text"><i class="fas fa-phone"></i></span>
+					<input type="tel" id="sodienthoai" class="form-control" placeholder="Nhập số điện thoại">
+				</div>
+			</div>
+
+			<div class="col-12">
+				<label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+				<div class="input-group input-icon">
+					<span class="input-group-text"><i class="fas fa-lock"></i></span>
+					<input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu" autocomplete="new-password">
+					<button class="btn toggle-pwd border" type="button" id="togglePwd">
+						<i class="fas fa-eye" id="eyeIcon"></i>
+					</button>
+				</div>
+			</div>
+
+			<div class="col-12">
+				<label class="form-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+				<div class="input-group input-icon">
+					<span class="input-group-text"><i class="fas fa-lock"></i></span>
+					<input type="password" id="confirm_password" class="form-control" placeholder="Nhập lại mật khẩu" autocomplete="new-password">
+				</div>
+			</div>
+		</div>
+
+		<button class="btn-submit mt-3" id="registerBtn">
+			<i class="fas fa-user-plus me-2"></i>Tạo tài khoản admin
+		</button>
+		<div id="msg"></div>
+
+		<div class="auth-links">
+			Đã có tài khoản? <a href="dang-nhap.html">Đăng nhập</a>
+			<span class="divider">|</span>
+			<a href="../../index.html"><i class="fas fa-arrow-left me-1"></i>Trang chủ</a>
+		</div>
+	</div>
+
+	<script src="https://api.dvqt.vn/js/krud.js"></script>
+	<script>
+		const BANG_ADMIN = 'admin';
+
+		document.getElementById('togglePwd').addEventListener('click', function() {
+			const pwd = document.getElementById('password');
+			const cpwd = document.getElementById('confirm_password');
+			const icon = document.getElementById('eyeIcon');
+			const nextType = pwd.type === 'password' ? 'text' : 'password';
+			pwd.type = nextType;
+			cpwd.type = nextType;
+			icon.className = nextType === 'text' ? 'fas fa-eye-slash' : 'fas fa-eye';
+		});
+
+		document.getElementById('registerBtn').addEventListener('click', register);
+
+		function normalizePhone(value) {
+			return String(value || '').replace(/\s+/g, '');
+		}
+
+		function isValidPhone(phone) {
+			return /^(0|\+84)[0-9]{9}$/.test(phone);
+		}
+
+		function isKrudSuccess(res) {
+			return !!res && !res.error && res.success !== false;
+		}
+
+		function register() {
+			const email = document.getElementById('email').value.trim();
+			const sodienthoai = normalizePhone(document.getElementById('sodienthoai').value);
+			const matkhau = document.getElementById('password').value;
+			const confirm = document.getElementById('confirm_password').value;
+			const btn = document.getElementById('registerBtn');
+			const msg = document.getElementById('msg');
+
+			if (!email || !sodienthoai || !matkhau || !confirm) {
+				msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng nhập đầy đủ thông tin</span>';
+				return;
+			}
+			if (matkhau.length < 6) {
+				msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu phải có ít nhất 6 ký tự</span>';
+				return;
+			}
+			if (matkhau !== confirm) {
+				msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu xác nhận không khớp</span>';
+				return;
+			}
+			if (!isValidPhone(sodienthoai)) {
+				msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Số điện thoại không hợp lệ</span>';
+				return;
+			}
+			if (typeof krud !== 'function') {
+				msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Không tải được hàm KRUD</span>';
+				return;
+			}
+
+			btn.disabled = true;
+			btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tạo tài khoản...';
+			msg.innerHTML = '';
+
+			krud('insert', BANG_ADMIN, {
+				email: email.toLowerCase(),
+				sodienthoai: sodienthoai,
+				matkhau: matkhau
+			})
+			.then((res) => {
+				console.log(res);
+				if (!isKrudSuccess(res)) {
+					throw new Error(res && (res.message || res.error) ? (res.message || res.error) : 'Tạo tài khoản thất bại');
+				}
+				msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Tạo tài khoản admin thành công! Đang chuyển hướng...</span>';
+				setTimeout(() => window.location.href = 'dang-nhap.html', 900);
+			})
+			.catch((err) => {
+				msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (err && err.message ? err.message : 'Không kết nối được server') + '</span>';
+				btn.disabled = false;
+				btn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Tạo tài khoản admin';
+			});
+		}
+	</script>
+</body>
+</html>

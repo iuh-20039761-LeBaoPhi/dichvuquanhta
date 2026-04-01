@@ -23,6 +23,8 @@ if ($statResult) {
 $search = trim((string) ($_GET['search'] ?? ''));
 $status = trim((string) ($_GET['status'] ?? ''));
 $issue = trim((string) ($_GET['issue'] ?? ''));
+$dateFrom = trim((string) ($_GET['date_from'] ?? ''));
+$dateTo = trim((string) ($_GET['date_to'] ?? ''));
 [$page, $limit, $offset] = admin_api_get_pagination(10, 100);
 
 $where = [];
@@ -30,10 +32,10 @@ $params = [];
 $types = '';
 
 if ($search !== '') {
-    $where[] = "(ma_don_hang LIKE ? OR ma_don_hang_khach LIKE ? OR ten_nguoi_gui LIKE ? OR so_dien_thoai_nguoi_gui LIKE ?)";
+    $where[] = "(ma_don_hang LIKE ? OR ma_don_hang_khach LIKE ? OR ten_nguoi_gui LIKE ? OR so_dien_thoai_nguoi_gui LIKE ? OR ten_nguoi_nhan LIKE ? OR so_dien_thoai_nguoi_nhan LIKE ?)";
     $term = '%' . $search . '%';
-    array_push($params, $term, $term, $term, $term);
-    $types .= 'ssss';
+    array_push($params, $term, $term, $term, $term, $term, $term);
+    $types .= 'ssssss';
 }
 
 if ($status !== '') {
@@ -44,6 +46,24 @@ if ($status !== '') {
 
 if ($issue === 'has_admin_note') {
     $where[] = "(ghi_chu_quan_tri IS NOT NULL AND ghi_chu_quan_tri != '')";
+}
+
+if ($dateFrom !== '') {
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateFrom)) {
+        admin_api_json(['success' => false, 'message' => 'Từ ngày không hợp lệ.'], 400);
+    }
+    $where[] = "DATE(tao_luc) >= ?";
+    $params[] = $dateFrom;
+    $types .= 's';
+}
+
+if ($dateTo !== '') {
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateTo)) {
+        admin_api_json(['success' => false, 'message' => 'Đến ngày không hợp lệ.'], 400);
+    }
+    $where[] = "DATE(tao_luc) <= ?";
+    $params[] = $dateTo;
+    $types .= 's';
 }
 
 $whereSql = empty($where) ? '' : (' WHERE ' . implode(' AND ', $where));
@@ -134,6 +154,8 @@ admin_api_json([
             'search' => $search,
             'status' => $status,
             'issue' => $issue,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
         ],
         'pagination' => [
             'page' => $page,

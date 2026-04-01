@@ -3,10 +3,14 @@
 
 (function() {
 
+const PROVIDER_TABLE = 'nhacungcap_thonha';
+const KRUD_SCRIPT_URL = 'https://api.dvqt.vn/js/krud.js';
+
 let providersData = [];
 let currentStatusFilter = '';
 let pendingAction = null;
 let pendingProviderId = null;
+let krudScriptPromise = null;
 
 const STATUS_CONFIG = {
     pending:  { label: 'Chờ duyệt',         cls: 'status-badge',  style: 'background:#fef3c7;color:#d97706;' },
@@ -18,7 +22,100 @@ const STATUS_CONFIG = {
 function fmtDate(d) {
     if (!d) return '—';
     const dt = new Date(d);
+    if (Number.isNaN(dt.getTime())) return '—';
     return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
+}
+
+function normalizeStatus(status) {
+    return normalizeProviderStatus(status);
+}
+
+function mapProviderRow(row) {
+    const raw = row || {};
+    return {
+        id: raw.id ?? raw.provider_id ?? raw.ma_nha_cung_cap,
+        full_name: raw.hovaten || raw.ho_ten || raw.full_name || raw.name || 'Không rõ',
+        email: raw.email || '',
+        phone: raw.sodienthoai || raw.so_dien_thoai || raw.phone || '',
+        company_name: raw.tencua_hang || raw.ten_cua_hang || raw.company_name || raw.company || '',
+        address: raw.diachi || raw.dia_chi || raw.address || '',
+        description: raw.motadichvu || raw.mo_ta_dich_vu || raw.description || '',
+        created_at: raw.ngaytao || raw.created_at || raw.created_date || '',
+        status: normalizeStatus(raw.trangthai || raw.trang_thai || raw.status),
+        rejection_reason: raw.rejection_reason || raw.lydotuchoi || raw.ly_do_tu_choi || raw.lydokhoa || raw.ly_do_khoa || '',
+        _raw: raw
+    };
+}
+
+function isKrudSuccess(res) {
+    return !!res && !res.error && res.success !== false;
+}
+
+function ensureKrudClient() {
+    return ensureAdminKrudClient();
+}
+
+function updateCounters() {
+    const counts = { pending: 0, active: 0, rejected: 0, blocked: 0 };
+
+    providersData.forEach((p) => {
+        const status = normalizeStatus(p.status);
+        if (Object.prototype.hasOwnProperty.call(counts, status)) {
+            counts[status] += 1;
+        }
+    });
+
+    const el = (id) => document.getElementById(id);
+    if (el('cnt-pending'))  el('cnt-pending').textContent = counts.pending;
+    if (el('cnt-active'))   el('cnt-active').textContent = counts.active;
+    if (el('cnt-rejected')) el('cnt-rejected').textContent = counts.rejected;
+    if (el('cnt-blocked'))  el('cnt-blocked').textContent = counts.blocked;
+
+    const sbBadge = document.getElementById('providerBadge');
+    if (sbBadge) {
+        sbBadge.textContent = counts.pending;
+        if (counts.pending > 0) sbBadge.classList.remove('hide');
+        else sbBadge.classList.add('hide');
+    }
+}
+
+function actionToStatus(action) {
+    if (action === 'approve' || action === 'unblock') return 'active';
+    if (action === 'reject') return 'rejected';
+    if (action === 'block') return 'blocked';
+    return null;
+}
+
+function detectReasonField(rawRow) {
+    const candidates = [
+        'lydotuchoi',
+        'ly_do_tu_choi',
+        'rejection_reason',
+        'lydokhoa',
+        'ly_do_khoa',
+        'ghichu',
+        'ghi_chu',
+        'note'
+    ];
+
+    for (const key of candidates) {
+        if (Object.prototype.hasOwnProperty.call(rawRow || {}, key)) {
+            return key;
+        }
+    }
+    return '';
+}
+
+function actionSuccessText(action) {
+    if (action === 'approve') return 'Đã duyệt tài khoản nhà cung cấp';
+    if (action === 'reject') return 'Đã từ chối tài khoản nhà cung cấp';
+    if (action === 'block') return 'Đã khóa tài khoản nhà cung cấp';
+    if (action === 'unblock') return 'Đã mở khóa tài khoản nhà cung cấp';
+    return 'Thao tác thành công';
+}
+
+function encodeOnclickId(id) {
+    return String(id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -39,40 +136,31 @@ function setupFilterButtons() {
 }
 
 // ── LOAD ──────────────────────────────────────────────────────────────────────
-function loadProviders() {
-    Promise.all([
-        fetch('../../api/admin/providers/manage.php?action=list').then(r => r.json()),
-        fetch('../../api/admin/providers/manage.php?action=counts').then(r => r.json())
-    ]).then(([listRes, cntRes]) => {
-        if (listRes.status === 'success') {
-            providersData = listRes.data;
-        }
-        if (cntRes.status === 'success') {
-            const c = cntRes.data;
-            const el = (id) => document.getElementById(id);
-            if (el('cnt-pending'))  el('cnt-pending').textContent  = c.pending;
-            if (el('cnt-active'))   el('cnt-active').textContent   = c.active;
-            if (el('cnt-rejected')) el('cnt-rejected').textContent = c.rejected;
-            if (el('cnt-blocked'))  el('cnt-blocked').textContent  = c.blocked;
-            // Update sidebar badge
-            const sbBadge = document.getElementById('providerBadge');
-            if (sbBadge) {
-                sbBadge.textContent = c.pending;
-                if (c.pending > 0) sbBadge.classList.remove('hide');
-                else sbBadge.classList.add('hide');
-            }
-        }
+async function loadProviders() {
+    const tbody = document.getElementById('providersBody');
+    if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><div class="spinner-border spinner-border-sm text-success"></div></td></tr>';
+    }
+
+    try {
+        await ensureAdminKrudClient();
+        const rows = normalizeProviderRows(await window.krudList({ table: PROVIDER_TABLE }));
+        providersData = rows.map(mapProviderRow).filter((item) => item.id !== undefined && item.id !== null && String(item.id).trim() !== '');
+        updateCounters();
         renderProviders();
-    }).catch(() => {
+    } catch (err) {
         document.getElementById('providersBody').innerHTML =
-            '<tr><td colspan="6" class="text-center text-danger py-4">Không tải được dữ liệu</td></tr>';
-    });
+            '<tr><td colspan="6" class="text-center text-danger py-4">Không tải được dữ liệu nhà cung cấp</td></tr>';
+        if (typeof toast === 'function') {
+            toast(err && err.message ? err.message : 'Không tải được dữ liệu nhà cung cấp');
+        }
+    }
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function renderProviders() {
     const filtered = currentStatusFilter
-        ? providersData.filter(p => p.status === currentStatusFilter)
+        ? providersData.filter(p => normalizeStatus(p.status) === currentStatusFilter)
         : providersData;
 
     const tbody = document.getElementById('providersBody');
@@ -82,7 +170,8 @@ function renderProviders() {
     }
 
     tbody.innerHTML = filtered.map(p => {
-        const sc = STATUS_CONFIG[p.status] || { label: p.status, style: '' };
+        const safeStatus = normalizeStatus(p.status);
+        const sc = STATUS_CONFIG[safeStatus] || { label: safeStatus, style: '' };
         const actions = buildActions(p);
         return `<tr>
             <td>
@@ -99,27 +188,29 @@ function renderProviders() {
 }
 
 function buildActions(p) {
-    const id = p.id;
-    let btns = `<button class="btn btn-sm btn-outline-secondary me-1 py-0 px-2" onclick="providerDetail(${id})" title="Chi tiết"><i class="fas fa-eye"></i></button>`;
+    const id = encodeOnclickId(p.id);
+    const safeStatus = normalizeStatus(p.status);
+    let btns = `<button class="btn btn-sm btn-outline-secondary me-1 py-0 px-2" onclick="providerDetail('${id}')" title="Chi tiết"><i class="fas fa-eye"></i></button>`;
 
-    if (p.status === 'pending') {
-        btns += `<button class="btn btn-sm btn-success me-1 py-0 px-2" onclick="doApprove(${id})" title="Duyệt"><i class="fas fa-check"></i></button>`;
-        btns += `<button class="btn btn-sm btn-danger py-0 px-2" onclick="doReject(${id})" title="Từ chối"><i class="fas fa-times"></i></button>`;
-    } else if (p.status === 'active') {
-        btns += `<button class="btn btn-sm btn-warning py-0 px-2" onclick="doBlock(${id})" title="Khóa"><i class="fas fa-lock"></i></button>`;
-    } else if (p.status === 'blocked') {
-        btns += `<button class="btn btn-sm btn-success py-0 px-2" onclick="doUnblock(${id})" title="Mở khóa"><i class="fas fa-lock-open"></i></button>`;
-    } else if (p.status === 'rejected') {
-        btns += `<button class="btn btn-sm btn-success py-0 px-2" onclick="doApprove(${id})" title="Duyệt lại"><i class="fas fa-check"></i></button>`;
+    if (safeStatus === 'pending') {
+        btns += `<button class="btn btn-sm btn-success me-1 py-0 px-2" onclick="doApprove('${id}')" title="Duyệt"><i class="fas fa-check"></i></button>`;
+        btns += `<button class="btn btn-sm btn-danger py-0 px-2" onclick="doReject('${id}')" title="Từ chối"><i class="fas fa-times"></i></button>`;
+    } else if (safeStatus === 'active') {
+        btns += `<button class="btn btn-sm btn-warning py-0 px-2" onclick="doBlock('${id}')" title="Khóa"><i class="fas fa-lock"></i></button>`;
+    } else if (safeStatus === 'blocked') {
+        btns += `<button class="btn btn-sm btn-success py-0 px-2" onclick="doUnblock('${id}')" title="Mở khóa"><i class="fas fa-lock-open"></i></button>`;
+    } else if (safeStatus === 'rejected') {
+        btns += `<button class="btn btn-sm btn-success py-0 px-2" onclick="doApprove('${id}')" title="Duyệt lại"><i class="fas fa-check"></i></button>`;
     }
     return btns;
 }
 
 // ── DETAIL ────────────────────────────────────────────────────────────────────
 function providerDetail(id) {
-    const p = providersData.find(x => x.id == id);
+    const p = providersData.find(x => String(x.id) === String(id));
     if (!p) return;
-    const sc = STATUS_CONFIG[p.status] || { label: p.status, style: '' };
+    const safeStatus = normalizeStatus(p.status);
+    const sc = STATUS_CONFIG[safeStatus] || { label: safeStatus, style: '' };
 
     document.getElementById('providerModalTitle').textContent = p.full_name;
     document.getElementById('providerModalBody').innerHTML = `
@@ -181,26 +272,45 @@ function submitReason() {
     callAction(pendingProviderId, pendingAction, reason);
 }
 
-function callAction(id, action, reason) {
-    const body = { provider_id: id };
-    if (reason) body.reason = reason;
+async function callAction(id, action, reason) {
+    const provider = providersData.find((item) => String(item.id) === String(id));
+    if (!provider) {
+        alert('Không tìm thấy nhà cung cấp cần cập nhật');
+        return;
+    }
 
-    fetch(`../../api/admin/providers/manage.php?action=${action}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-    })
-    .then(r => r.json())
-    .then(res => {
-        if (res.status === 'success') {
-            loadProviders();
-            // Show toast via shared utility if available
-            if (typeof toast === 'function') toast(res.message || 'Thành công!');
-        } else {
-            alert(res.message || 'Có lỗi xảy ra');
+    const nextStatus = actionToStatus(action);
+    if (!nextStatus) {
+        alert('Thao tác không hợp lệ');
+        return;
+    }
+
+    try {
+        await ensureKrudClient();
+
+        const updateData = { trangthai: nextStatus };
+        const reasonField = detectReasonField(provider._raw);
+        if (reasonField) {
+            if ((action === 'reject' || action === 'block') && reason) {
+                updateData[reasonField] = reason;
+            }
+            if (action === 'approve' || action === 'unblock') {
+                updateData[reasonField] = '';
+            }
         }
-    })
-    .catch(() => alert('Lỗi kết nối'));
+
+        const res = await window.krud('update', PROVIDER_TABLE, updateData, provider.id);
+        if (!isKrudSuccess(res)) {
+            throw new Error(res && (res.message || res.error) ? (res.message || res.error) : 'Cập nhật trạng thái thất bại');
+        }
+
+        await loadProviders();
+        if (typeof toast === 'function') {
+            toast(actionSuccessText(action));
+        }
+    } catch (err) {
+        alert(err && err.message ? err.message : 'Lỗi kết nối');
+    }
 }
 
 // ── EXPOSE GLOBALS (needed by eval + inline onclick) ──────────────────────────

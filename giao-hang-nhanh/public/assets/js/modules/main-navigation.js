@@ -8,6 +8,53 @@
     return window.GiaoHangNhanhCore || {};
   }
 
+  function getLocalSession() {
+    try {
+      const raw = window.localStorage.getItem("ghn-auth-session");
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function buildLocalNotifications() {
+    const session = getLocalSession();
+    if (!session) return [];
+
+    if (session.role === "shipper") {
+      return [
+        {
+          title: "Chế độ local",
+          body: "Thông báo realtime từ hệ thống cũ đã được tắt. Bạn vẫn có thể xem và cập nhật đơn trong portal nhà cung cấp.",
+        },
+      ];
+    }
+
+    return [
+      {
+        title: "Chế độ local",
+        body: "Thông báo realtime từ hệ thống cũ đã được tắt. Dữ liệu trong portal đang dùng local/mock để tiếp tục kiểm thử giao diện.",
+      },
+    ];
+  }
+
+  function renderLocalNotifications(root) {
+    if (!root) return;
+    const notifications = buildLocalNotifications();
+    if (!notifications.length) return;
+
+    root.innerHTML = notifications
+      .map(
+        (item) => `
+          <article class="notification-item">
+            <strong>${item.title}</strong>
+            <p>${item.body}</p>
+          </article>
+        `,
+      )
+      .join("");
+  }
+
   function closeAllDropdowns(root = document) {
     root.querySelectorAll(".has-submenu").forEach((item) => {
       item.classList.remove("open");
@@ -114,18 +161,8 @@
           adminNotifyDropdown.classList.add("open");
 
           const dropdownBody = adminNotifyDropdown.querySelector(".dropdown-body");
-          const core = getCore();
-          if (
-            dropdownBody &&
-            dropdownBody.querySelector(".empty-state") &&
-            typeof core.toApiUrl === "function"
-          ) {
-            fetch(core.toApiUrl("get_notifications_ajax.php"))
-              .then((response) => response.text())
-              .then((html) => {
-                if (html.trim()) dropdownBody.innerHTML = html;
-              })
-              .catch(() => {});
+          if (dropdownBody && dropdownBody.querySelector(".empty-state")) {
+            renderLocalNotifications(dropdownBody);
           }
         }
       });

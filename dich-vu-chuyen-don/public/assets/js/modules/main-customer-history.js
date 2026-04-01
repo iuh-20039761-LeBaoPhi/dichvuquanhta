@@ -288,10 +288,10 @@
 
   (async function bootstrapHistory() {
     try {
-      const result = await store.fetchHistoryFromApi?.();
+      const result = await store.fetchHistory?.();
       renderHistory(result || null);
     } catch (error) {
-      console.error("Cannot load customer history API:", error);
+      console.error("Cannot load customer history store:", error);
       renderHistory(null);
     }
   })();

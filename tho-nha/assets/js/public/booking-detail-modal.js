@@ -55,6 +55,7 @@ async function _bdLoadNavServices() {
 function _bdInitModalHandlers() {
     _bdSetupMedia();
     _bdSetupAddressListener();
+    _bdPrepareBookingAuthState();
 
     // Form submit → validate → show confirm
     const form = document.getElementById('bookingForm');
@@ -62,6 +63,7 @@ function _bdInitModalHandlers() {
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (!_bdRequireCustomerLogin()) return;
 
         // Lấy tên dịch vụ tuỳ theo mode
         let service = '';
@@ -97,6 +99,7 @@ function _bdInitModalHandlers() {
     const confirmBtn = document.getElementById('btnxacnhan');
     confirmBtn?.addEventListener('click', async function () {
         if (!_bdPendingData) return;
+        if (!_bdRequireCustomerLogin()) return;
         await _bdSubmitApi(_bdPendingData, this, (orderCode) => {
             alert(orderCode ? `✅ Đặt lịch thành công! Mã đơn: ${orderCode}` : '✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại sớm nhất.');
             const inst = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
@@ -183,6 +186,8 @@ async function _bdOpenModal(mode, prefill) {
             }
         }
     }
+
+    _bdPrepareBookingAuthState();
 
     // Dùng getInstance trước để tránh tạo trùng
     const existing = bootstrap.Modal.getInstance(modalEl);

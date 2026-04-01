@@ -19,6 +19,7 @@ function _bdScrollStandaloneTo(el) {
 function _bdInitStandalone() {
     _bdSetupMedia();
     _bdSetupAddressListener();
+    _bdPrepareBookingAuthState();
 
     // Load services.json vào dropdown
     _bdLoadStandaloneServices();
@@ -31,6 +32,7 @@ function _bdInitStandalone() {
     // Submit → validate → confirm
     form.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (!_bdRequireCustomerLogin()) return;
         const mainSel = document.getElementById('loaidichvu');
         const subSel  = document.getElementById('dichvucuthe');
         const service = (subSel?.value || '').trim();
@@ -63,6 +65,7 @@ function _bdInitStandalone() {
     const confirmBtn = document.getElementById('btnxacnhan');
     confirmBtn?.addEventListener('click', async function () {
         if (!_stPendingData) return;
+        if (!_bdRequireCustomerLogin()) return;
         await _bdSubmitApi(_stPendingData, this, (orderCode) => {
             alert(orderCode ? `✅ Đặt lịch thành công! Mã đơn: ${orderCode}` : '✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại sớm nhất.');
             form.reset();

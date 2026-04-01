@@ -302,6 +302,14 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         <input id="orders-search" type="text" name="search" placeholder="Mã đơn, tên, SĐT..." class="admin-input">
                     </div>
                     <div class="form-group">
+                        <label for="orders-date-from">Từ ngày</label>
+                        <input id="orders-date-from" type="date" name="date_from" class="admin-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="orders-date-to">Đến ngày</label>
+                        <input id="orders-date-to" type="date" name="date_to" class="admin-input">
+                    </div>
+                    <div class="form-group">
                         <label for="orders-status">Trạng thái</label>
                         <select id="orders-status" name="status" class="admin-select">
                             <option value="">-- Tất cả --</option>
@@ -332,10 +340,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     </main>
     <?php include __DIR__ . '/../includes/footer.php'; ?>
 
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script>
         (function () {
-            const apiUrl = "../api/orders.php";
-            const detailBaseUrl = "order_detail.php?id=";
+            const ordersTable = "giaohangnhanh_dat_lich";
+            const detailBaseUrl = "order_detail.php?code=";
             const tbody = document.getElementById("orders-table-body");
             const summary = document.getElementById("orders-summary");
             const pagination = document.getElementById("orders-pagination");
@@ -346,6 +355,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             const statShipping = document.getElementById("orders-stat-shipping");
             const statCompleted = document.getElementById("orders-stat-completed");
             const statCancelled = document.getElementById("orders-stat-cancelled");
+            const defaultLimit = 10;
 
             function escapeHtml(value) {
                 return String(value ?? "")
@@ -367,10 +377,161 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 return date.toLocaleDateString("vi-VN");
             }
 
+            function formatDateValue(value) {
+                if (!value) return "";
+                const date = new Date(value);
+                if (Number.isNaN(date.getTime())) return "";
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, "0");
+                const day = String(date.getDate()).padStart(2, "0");
+                return `${year}-${month}-${day}`;
+            }
+
+            function normalizeText(value) {
+                return String(value || "").replace(/\s+/g, " ").trim();
+            }
+
+            function normalizePhone(value) {
+                return String(value || "").replace(/[^\d]/g, "");
+            }
+
+            function getListFn() {
+                if (typeof window.krudList === "function") {
+                    return (payload) => window.krudList(payload);
+                }
+
+                if (typeof window.crud === "function") {
+                    return (payload) => window.crud("list", payload.table, {
+                        p: payload.page || 1,
+                        limit: payload.limit || 200,
+                    });
+                }
+
+                if (typeof window.krud === "function") {
+                    return (payload) => window.krud("list", payload.table, {
+                        p: payload.page || 1,
+                        limit: payload.limit || 200,
+                    });
+                }
+
+                return null;
+            }
+
+            function extractRows(payload, depth = 0) {
+                if (depth > 4 || payload == null) return [];
+                if (Array.isArray(payload)) return payload;
+                if (typeof payload !== "object") return [];
+
+                const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
+                for (const key of candidateKeys) {
+                    const value = payload[key];
+                    if (Array.isArray(value)) return value;
+                    const nested = extractRows(value, depth + 1);
+                    if (nested.length) return nested;
+                }
+
+                return [];
+            }
+
+            function normalizeStatus(rawStatus) {
+                const normalized = String(rawStatus || "").trim().toLowerCase();
+                if (["completed", "hoan_tat", "hoàn tất", "success", "delivered"].includes(normalized)) {
+                    return "completed";
+                }
+                if (["shipping", "dang_giao", "đang giao", "in_transit"].includes(normalized)) {
+                    return "shipping";
+                }
+                if (["cancelled", "canceled", "da_huy", "đã hủy"].includes(normalized)) {
+                    return "cancelled";
+                }
+                return "pending";
+            }
+
+            function getStatusLabel(status) {
+                const map = {
+                    pending: "Chờ xử lý",
+                    shipping: "Đang giao",
+                    completed: "Hoàn tất",
+                    cancelled: "Đã hủy",
+                };
+                return map[status] || "Chờ xử lý";
+            }
+
+            function getServiceLabel(value) {
+                const normalized = String(value || "").trim().toLowerCase();
+                const map = {
+                    standard: "Tiêu chuẩn",
+                    fast: "Nhanh",
+                    express: "Hỏa tốc",
+                    instant: "Ngay lập tức",
+                    giao_tieu_chuan: "Tiêu chuẩn",
+                    giao_nhanh: "Nhanh",
+                    giao_hoa_toc: "Hỏa tốc",
+                    giao_ngay_lap_tuc: "Ngay lập tức",
+                    tieuchuan: "Tiêu chuẩn",
+                    nhanh: "Nhanh",
+                    hoatoc: "Hỏa tốc",
+                    laptuc: "Ngay lập tức",
+                };
+                return map[normalized] || normalizeText(value) || "Chưa rõ";
+            }
+
+            function getPaymentStatusLabel(amount, status) {
+                if (Number(amount || 0) <= 0) return "Không COD";
+                return status === "completed" ? "Đã đối soát" : "Chưa hoàn tất";
+            }
+
+            function normalizeKrudOrder(row) {
+                const status = normalizeStatus(row.trang_thai || row.status);
+                const orderCode = normalizeText(
+                    row.ma_don_hang_noi_bo || row.order_code || row.ma_don_hang || row.id,
+                );
+                const createdAt = row.created_at || row.created_date || "";
+                const codAmount = Number(row.gia_tri_thu_ho_cod || row.cod_amount || row.cod_value || 0);
+                const shippingFee = Number(row.tong_cuoc || row.shipping_fee || row.total_fee || 0);
+
+                return {
+                    id: row.id || "",
+                    order_code: orderCode,
+                    client_order_code: normalizeText(row.ma_khach_tham_chieu || row.client_order_code || ""),
+                    sender_name: normalizeText(row.ho_ten_nguoi_gui || row.nguoi_gui_ho_ten || ""),
+                    sender_phone: normalizePhone(row.so_dien_thoai_nguoi_gui || row.nguoi_gui_so_dien_thoai || row.sender_phone || ""),
+                    receiver_name: normalizeText(row.ho_ten_nguoi_nhan || row.nguoi_nhan_ho_ten || ""),
+                    receiver_phone: normalizePhone(row.so_dien_thoai_nguoi_nhan || row.nguoi_nhan_so_dien_thoai || row.receiver_phone || ""),
+                    pickup_time: row.ngay_lay_hang || row.pickup_time || createdAt,
+                    service_label: normalizeText(row.ten_dich_vu) || getServiceLabel(row.dich_vu || row.service_type),
+                    shipping_fee: shippingFee,
+                    payment_status: codAmount > 0 && status === "completed" ? "paid" : "unpaid",
+                    payment_status_label: normalizeText(row.payment_status_label) || getPaymentStatusLabel(codAmount, status),
+                    status,
+                    status_label: normalizeText(row.status_label) || getStatusLabel(status),
+                    has_admin_note: Boolean(normalizeText(row.ghi_chu_admin || row.ghi_chu_quan_tri || row.admin_note)),
+                    created_at: createdAt,
+                };
+            }
+
+            async function listOrdersFromKrud() {
+                const listFn = getListFn();
+                if (!listFn) {
+                    throw new Error("Không tìm thấy hàm KRUD list.");
+                }
+
+                const response = await listFn({
+                    table: ordersTable,
+                    sort: { id: "desc" },
+                    page: 1,
+                    limit: 500,
+                });
+
+                return extractRows(response).map(normalizeKrudOrder);
+            }
+
             function getParamsFromLocation() {
                 const params = new URLSearchParams(window.location.search);
                 return {
                     search: params.get("search") || "",
+                    date_from: params.get("date_from") || "",
+                    date_to: params.get("date_to") || "",
                     status: params.get("status") || "",
                     issue: params.get("issue") || "",
                     page: Math.max(1, Number.parseInt(params.get("page") || "1", 10) || 1),
@@ -379,6 +540,8 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
             function syncForm(params) {
                 form.search.value = params.search;
+                form.date_from.value = params.date_from;
+                form.date_to.value = params.date_to;
                 form.status.value = params.status;
                 form.issue.value = params.issue;
             }
@@ -388,6 +551,10 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 url.searchParams.set("page", String(params.page || 1));
                 if (params.search) url.searchParams.set("search", params.search);
                 else url.searchParams.delete("search");
+                if (params.date_from) url.searchParams.set("date_from", params.date_from);
+                else url.searchParams.delete("date_from");
+                if (params.date_to) url.searchParams.set("date_to", params.date_to);
+                else url.searchParams.delete("date_to");
                 if (params.status) url.searchParams.set("status", params.status);
                 else url.searchParams.delete("status");
                 if (params.issue) url.searchParams.set("issue", params.issue);
@@ -401,6 +568,67 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 statShipping.textContent = ((stats.by_status && stats.by_status.shipping) || 0).toLocaleString("vi-VN");
                 statCompleted.textContent = ((stats.by_status && stats.by_status.completed) || 0).toLocaleString("vi-VN");
                 statCancelled.textContent = ((stats.by_status && stats.by_status.cancelled) || 0).toLocaleString("vi-VN");
+            }
+
+            function applyOrderFilters(orders, params) {
+                const search = normalizeText(params.search).toLowerCase();
+                const dateFrom = params.date_from || "";
+                const dateTo = params.date_to || "";
+
+                return (Array.isArray(orders) ? orders : []).filter((order) => {
+                    if (search) {
+                        const haystack = [
+                            order.order_code,
+                            order.client_order_code,
+                            order.sender_name,
+                            order.sender_phone,
+                            order.receiver_name,
+                            order.receiver_phone,
+                        ]
+                            .map((value) => String(value || "").toLowerCase())
+                            .join(" ");
+                        if (!haystack.includes(search)) return false;
+                    }
+
+                    if (params.status && order.status !== params.status) {
+                        return false;
+                    }
+
+                    if (params.issue === "has_admin_note" && !order.has_admin_note) {
+                        return false;
+                    }
+
+                    const orderDate = formatDateValue(order.created_at || order.pickup_time);
+                    if (dateFrom && orderDate && orderDate < dateFrom) {
+                        return false;
+                    }
+                    if (dateTo && orderDate && orderDate > dateTo) {
+                        return false;
+                    }
+                    if ((dateFrom || dateTo) && !orderDate) {
+                        return false;
+                    }
+
+                    return true;
+                });
+            }
+
+            function buildStats(orders) {
+                return orders.reduce((acc, order) => {
+                    acc.total += 1;
+                    if (acc.by_status[order.status] != null) {
+                        acc.by_status[order.status] += 1;
+                    }
+                    return acc;
+                }, {
+                    total: 0,
+                    by_status: {
+                        pending: 0,
+                        shipping: 0,
+                        completed: 0,
+                        cancelled: 0,
+                    },
+                });
             }
 
             function renderOrders(orders) {
@@ -441,7 +669,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                                 <span class="status-badge status-${escapeHtml(order.status)}">${escapeHtml(order.status_label)}</span>
                             </td>
                             <td data-label="Hành động" style="text-align:right;">
-                                <a href="${detailBaseUrl}${encodeURIComponent(order.id)}" class="btn-sm btn-view-site-pill" style="background:rgba(10,42,102,0.05); color:#0a2a66; display:inline-flex; align-items:center; gap:5px; width:100%; justify-content:center;">
+                                <a href="${detailBaseUrl}${encodeURIComponent(order.order_code)}" class="btn-sm btn-view-site-pill" style="background:rgba(10,42,102,0.05); color:#0a2a66; display:inline-flex; align-items:center; gap:5px; width:100%; justify-content:center;">
                                     <i class="fa-solid fa-eye"></i> Xem chi tiết
                                 </a>
                             </td>
@@ -487,37 +715,32 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             async function loadOrders(params) {
                 syncForm(params);
                 updateUrl(params);
-                summary.textContent = "Đang tải dữ liệu từ API...";
+                summary.textContent = "Đang tải dữ liệu từ KRUD...";
                 tbody.innerHTML = '<tr><td colspan="6" class="orders-loading">Đang tải danh sách đơn hàng...</td></tr>';
                 pagination.hidden = true;
 
-                const query = new URLSearchParams();
-                query.set("page", String(params.page || 1));
-                if (params.search) query.set("search", params.search);
-                if (params.status) query.set("status", params.status);
-                if (params.issue) query.set("issue", params.issue);
-
                 try {
-                    const response = await fetch(`${apiUrl}?${query.toString()}`, {
-                        credentials: "same-origin",
-                    });
-                    const result = await response.json();
-                    if (!response.ok || !result.success) {
-                        throw new Error(result.message || "Không thể tải dữ liệu đơn hàng.");
-                    }
+                    const allOrders = await listOrdersFromKrud();
+                    const filteredOrders = applyOrderFilters(allOrders, params);
+                    const stats = buildStats(filteredOrders);
+                    const totalRecords = filteredOrders.length;
+                    const currentPage = Math.max(1, Number(params.page || 1));
+                    const totalPages = Math.max(1, Math.ceil(totalRecords / defaultLimit));
+                    const safePage = Math.min(currentPage, totalPages);
+                    const startIndex = (safePage - 1) * defaultLimit;
+                    const pageOrders = filteredOrders.slice(startIndex, startIndex + defaultLimit);
 
-                    const data = result.data || {};
-                    renderStats(data.stats || {});
-                    renderOrders(data.orders || []);
-                    renderPagination(data.pagination || {}, params);
+                    renderStats(stats);
+                    renderOrders(pageOrders);
+                    renderPagination({
+                        page: safePage,
+                        total_pages: totalPages,
+                    }, { ...params, page: safePage });
 
-                    const totalRecords = Number((data.pagination && data.pagination.total_records) || 0);
-                    const currentPage = Number((data.pagination && data.pagination.page) || 1);
-                    const totalPages = Number((data.pagination && data.pagination.total_pages) || 1);
-                    summary.textContent = `Hiển thị ${Array.isArray(data.orders) ? data.orders.length : 0} đơn trên tổng ${totalRecords.toLocaleString("vi-VN")} đơn. Trang ${currentPage}/${totalPages}.`;
+                    summary.textContent = `Hiển thị ${pageOrders.length.toLocaleString("vi-VN")} đơn trên tổng ${totalRecords.toLocaleString("vi-VN")} đơn. Trang ${safePage}/${totalPages}.`;
                 } catch (error) {
                     summary.textContent = "Không tải được dữ liệu.";
-                    tbody.innerHTML = `<tr><td colspan="6" class="orders-empty">${escapeHtml(error.message || "Không thể tải dữ liệu đơn hàng.")}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="orders-empty">${escapeHtml(error.message || "Không thể tải dữ liệu đơn hàng từ KRUD.")}</td></tr>`;
                     pagination.hidden = true;
                 }
             }
@@ -526,6 +749,8 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 event.preventDefault();
                 loadOrders({
                     search: form.search.value.trim(),
+                    date_from: form.date_from.value,
+                    date_to: form.date_to.value,
                     status: form.status.value,
                     issue: form.issue.value,
                     page: 1,
@@ -533,7 +758,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             });
 
             resetBtn.addEventListener("click", () => {
-                loadOrders({ search: "", status: "", issue: "", page: 1 });
+                loadOrders({ search: "", date_from: "", date_to: "", status: "", issue: "", page: 1 });
             });
 
             loadOrders(getParamsFromLocation());

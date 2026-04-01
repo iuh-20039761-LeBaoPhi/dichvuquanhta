@@ -1,85 +1,7 @@
-// Orders Page Script
-
-let ordersTableBody = null;
-let detailModal = null;
-let statusModal = null;
-let allOrders = []; // ✅ THÊM DÒNG NÀY - Khai báo biến toàn cục
-
-// Helper functions
-function getStatusBadge(status) {
-    const statusMap = {
-        'new': '<span class="badge bg-primary">Chờ xác nhận</span>',
-        'confirmed': '<span class="badge bg-info">Đã xác nhận</span>',
-        'done': '<span class="badge bg-success">Hoàn thành</span>',
-        'cancel': '<span class="badge bg-danger">Đã hủy</span>'
-    };
-    return statusMap[status] || '<span class="badge bg-secondary">Không xác định</span>';
-}
-
-function formatCurrency(amount) {
-    if (!amount) return '0đ';
-    return parseInt(amount).toLocaleString('vi-VN') + 'đ';
-}
-
-function formatDateTime(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-}
-
-function formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-}
-
-// ✅ SỬA HÀM loadAllOrders - Lưu vào biến toàn cục
-// ✅ SỬA HÀM loadAllOrders - Thêm xử lý lỗi
-async function loadAllOrders() {
-    try {
-        const response = await fetch('../../api/admin/orders/get-all.php');
-        
-        // ✅ Kiểm tra response status
-        if (!response.ok) {
-            if (response.status === 401) {
-                alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!');
-                window.location.href = 'login.php'; // Chuyển về trang login
-                return [];
-            }
-            throw new Error('HTTP error ' + response.status);
-        }
-        
-        const data = await response.json();
-        
-        console.log('API Response:', data); // ✅ Debug
-        
-        if (data.status === 'success') {
-            allOrders = data.data || [];
-            console.log('Loaded orders count:', allOrders.length); // ✅ Debug
-            console.log('First order:', allOrders[0]); // ✅ Debug
-            return allOrders;
-        } else {
-            console.error('Load orders failed:', data.message);
-            alert('Lỗi: ' + data.message);
-            allOrders = [];
-            return [];
-        }
-    } catch (error) {
-        console.error('Load orders error:', error);
-        alert('Lỗi kết nối API: ' + error.message);
-        allOrders = [];
-        return [];
-    }
-}
-
+/**
+ * Khởi tạo dữ liệu và sự kiện cho trang Đơn hàng Admin.
+ * Thiết lập các modal Bootstrap và kích hoạt tải dữ liệu đơn hàng lần đầu.
+ */
 function initOrders() {
     // Chỉ initialize một lần
     if (window.ordersInitialized) return;
@@ -110,6 +32,11 @@ function initOrders() {
     }
 }
 
+/**
+ * Render danh sách đơn hàng ra bảng HTML.
+ * Áp dụng các định dạng badge trạng thái và ngày tháng từ shell.js.
+ * @param {Array} orders - Danh sách đơn hàng đã chuẩn hoá.
+ */
 function displayOrders(orders) {
     if (!ordersTableBody) return;
     
@@ -120,13 +47,13 @@ function displayOrders(orders) {
     
     ordersTableBody.innerHTML = orders.map(order => `
         <tr>
-            <td><strong class="text-primary">${order.order_code}</strong></td>
-            <td>${order.customer_name}</td>
-            <td>${order.phone}</td>
-            <td>${order.service_names || 'N/A'}</td>
-            <td>${order.address.substring(0, 30)}...</td>
+            <td><strong class="text-primary">${order.orderCode}</strong></td>
+            <td>${order.customer && order.customer.name ? order.customer.name : 'Khách'}</td>
+            <td>${order.customer && order.customer.phone ? order.customer.phone : ''}</td>
+            <td>${order.service || 'N/A'}</td>
+            <td>${(order.address || '').substring(0, 30)}...</td>
             <td>${getStatusBadge(order.status)}</td>
-            <td>${formatDate(order.created_at)}</td>
+            <td>${formatDate(order.createdAt)}</td>
             <td>
                 <button class="btn btn-sm btn-outline-primary" onclick="viewOrderDetail(${order.id})">
                     <i class="fas fa-eye"></i>
@@ -139,6 +66,10 @@ function displayOrders(orders) {
     `).join('');
 }
 
+/**
+ * Thiết lập các sự kiện cho bộ lọc, tìm kiếm và form cập nhật đơn hàng.
+ * Bao gồm xử lý gọi API cập nhật trạng thái qua KRUD client.
+ */
 function setupOrdersEvents() {
     // Filter button
     const filterBtn = document.getElementById('filterBtn');
@@ -150,11 +81,13 @@ function setupOrdersEvents() {
             let filtered = allOrders;
             
             if (search) {
-                filtered = filtered.filter(o => 
-                    o.order_code.toLowerCase().includes(search) ||
-                    o.phone.includes(search) ||
-                    o.customer_name.toLowerCase().includes(search)
-                );
+                filtered = filtered.filter(o => {
+                    const cPhone = o.customer && o.customer.phone ? String(o.customer.phone) : '';
+                    const cName = o.customer && o.customer.name ? o.customer.name.toLowerCase() : '';
+                    return (o.orderCode && o.orderCode.toLowerCase().includes(search)) ||
+                           cPhone.includes(search) ||
+                           cName.includes(search);
+                });
             }
             
             if (status) {
@@ -187,129 +120,136 @@ function setupOrdersEvents() {
                 return;
             }
             
-            const adminToken = localStorage.getItem('admin_token') || sessionStorage.getItem('admin_session');
+            if (typeof ensureAdminKrudClient !== 'function') return;
             
-            const requestData = { 
-                id: parseInt(orderId), 
-                status: newStatus 
-            };
-            
-            fetch('../../api/admin/orders/update-status.php', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + adminToken
-                },
-                body: JSON.stringify(requestData)
-            })
-            .then(res => {
-                if (!res.ok) {
-                    return res.text().then(text => {
-                        throw new Error('HTTP error ' + res.status + ': ' + text);
-                    });
-                }
-                return res.json();
-            })
-            .then(res => {
-                if (res.status === 'success') {
-                    alert('Cập nhật thành công!');
-                    if (statusModal) statusModal.hide();
-                    loadAllOrders().then(orders => displayOrders(orders));
-                } else {
-                    alert(res.message || 'Cập nhật thất bại');
-                }
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                alert('Lỗi: ' + err.message);
+            const btn = updateStatusForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Đang xử lý...';
+            btn.disabled = true;
+
+            ensureAdminKrudClient().then(() => {
+                // Sử dụng hàm window.krud('update', ...) chuẩn của thư viện krud.js
+                return window.krud('update', 'datlich_thonha', { trangthai: newStatus }, parseInt(orderId));
+            }).then(() => {
+                alert('Cập nhật trạng thái thành công!');
+                if (statusModal) statusModal.hide();
+                loadAllOrders().then(orders => displayOrders(orders));
+            }).catch(err => {
+                console.error('Update status error:', err);
+                alert('Lỗi cập nhật: ' + (err.message || 'Không xác định'));
+            }).finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             });
         });
     }
 }
 
-// Định nghĩa statusMap
-const statusMap = {
-    'new': { text: 'Chờ xác nhận', class: 'primary' },
-    'confirmed': { text: 'Đã xác nhận', class: 'info' },
-    'done': { text: 'Hoàn thành', class: 'success' },
-    'cancel': { text: 'Đã hủy', class: 'danger' }
+// Tách biệt với statusMap của shell.js và đưa ra scope window vì gọi từ inline event
+window.orderStatusMap = {
+    'new': { text: 'Chờ xác nhận', class: 'status-new' },
+    'confirmed': { text: 'Đã xác nhận', class: 'status-confirmed' },
+    'doing': { text: 'Đang thực hiện', class: 'status-doing' },
+    'done': { text: 'Hoàn thành', class: 'status-done' },
+    'cancel': { text: 'Đã hủy', class: 'status-cancel' }
 };
 
-// ✅ SỬA HÀM viewOrderDetail
+// ✅ SỬA HÀM viewOrderDetail ĐỂ HIỂN THỊ ĐẦY ĐỦ VÀ SANG TRỌNG NHƯ KHÁCH HÀNG/ĐỐI TÁC
+/**
+ * Xem chi tiết đơn hàng (Modal) - Bao gồm tính toán trợ giá cho Admin.
+ * Hiển thị thông tin Khách hàng, Địa điểm, Đối tác nhận đơn và Bảng kê chi phí.
+ * @param {number|string} orderId - ID của đơn hàng.
+ */
 window.viewOrderDetail = function(orderId) {
-    console.log('=== VIEW ORDER DETAIL ===');
-    console.log('Requested ID:', orderId, '(type:', typeof orderId + ')');
-    console.log('All orders count:', allOrders.length);
-    console.log('All order IDs:', allOrders.map(o => `${o.id} (${typeof o.id})`));
-    
-    // ✅ So sánh cả == (loose) để bắt cả string và number
     const order = allOrders.find(o => o.id == orderId);
     
     if (!order) {
-        console.error('❌ Order not found!');
-        console.error('Available IDs:', allOrders.map(o => o.id));
         alert('Không tìm thấy đơn hàng với ID: ' + orderId);
         return;
     }
     
-    console.log('✅ Order found:', order);
-    
-    const prices = order.prices ? order.prices.split(', ') : [];
-    const totalPrice = prices.reduce((sum, price) => sum + parseInt(price || 0), 0);
-    
     const detailContent = document.getElementById('orderDetailContent');
-    if (!detailContent) {
-        console.error('❌ Detail content element not found');
-        return;
+    if (!detailContent) return;
+    
+    const viewUtils = window.ThoNhaOrderViewUtils;
+    
+    let priceHtml = '';
+    if (viewUtils && order.bookingPricing) {
+        let pricingObj = order.bookingPricing;
+        if (typeof pricingObj === 'string') {
+            try { pricingObj = JSON.parse(pricingObj); } catch(e) {}
+        }
+        if (typeof pricingObj === 'object') {
+            priceHtml = viewUtils.renderOrderPrices(pricingObj);
+        }
+    }
+    
+    if (!priceHtml) {
+        const p = parseFloat(order.actualCost || 0);
+        priceHtml = p > 0 ? `<div class="alert alert-info py-2 mb-0">Tổng trị giá: <strong>${viewUtils ? viewUtils.formatCurrency(p) : p}</strong></div>` : `<div class="text-muted text-center p-3 border rounded bg-light">Chưa cấu hình chi phí</div>`;
+    }
+
+    let providerHtml = '<div class="text-muted"><i class="fas fa-info-circle"></i> Chưa nhận đơn</div>';
+    if (order.providerId && order.provider) {
+        providerHtml = `
+            <div class="p-3 bg-light rounded border border-primary border-opacity-25 mt-2">
+                <strong class="text-dark"><i class="fas fa-building text-primary"></i> ${order.provider.company || 'Đối tác Thợ Nhà'}</strong><br>
+                <div class="mt-2 text-secondary"><i class="fas fa-user-tie"></i> ${order.provider.name || 'N/A'}</div>
+                <div class="mt-1"><i class="fas fa-phone-alt text-success"></i> <a href="tel:${order.provider.phone}" class="text-decoration-none">${order.provider.phone || 'N/A'}</a></div>
+            </div>
+        `;
+    } else if (order.providerId) {
+         providerHtml = `<div class="text-muted mt-2"><i class="fas fa-spinner fa-spin"></i> Giao cho ID: ${order.providerId}</div>`;
     }
     
     detailContent.innerHTML = `
-        <div class="row g-3">
+        <div class="row g-4">
+            <div class="col-md-6 border-end">
+                <h6 class="text-primary mb-3 border-bottom pb-2 fw-bold"><i class="fas fa-user"></i> Khách hàng</h6>
+                <div class="mb-2"><strong>Mã đơn:</strong> <span class="badge bg-secondary px-2 py-1">${order.orderCode}</span></div>
+                <div class="mb-2"><strong>Họ tên:</strong> ${order.customer ? order.customer.name : 'N/A'}</div>
+                <div class="mb-2"><strong>Điện thoại:</strong> <a href="tel:${order.customer ? order.customer.phone : ''}" class="text-decoration-none">${order.customer ? order.customer.phone : 'N/A'}</a></div>
+                <div class="mb-2"><strong>Ngày đặt:</strong> ${formatDateTime(order.createdAt)}</div>
+                <div class="mb-2"><strong>Trạng thái:</strong> ${(window.orderStatusMap && window.orderStatusMap[order.status]) ? getStatusBadge(order.status) : order.status}</div>
+            </div>
+            
             <div class="col-md-6">
-                <strong>Mã đơn:</strong> ${order.order_code}
+                <h6 class="text-success mb-3 border-bottom pb-2 fw-bold"><i class="fas fa-briefcase"></i> Yêu cầu & Đối tác</h6>
+                <div class="mb-2"><strong>Dịch vụ:</strong> <span class="text-danger fw-bold">${order.service}</span></div>
+                <div class="mb-2"><strong>Địa chỉ:</strong> ${order.address}</div>
+                <div class="mb-2"><strong>Ghi chú:</strong> <span class="fst-italic">${order.note || '<span class="text-muted">Không có</span>'}</span></div>
+                <div class="mt-3">
+                    ${providerHtml}
+                </div>
             </div>
-            <div class="col-md-6">
-                <strong>Khách hàng:</strong> ${order.customer_name}
-            </div>
-            <div class="col-md-6">
-                <strong>Số điện thoại:</strong> ${order.phone}
-            </div>
-            <div class="col-md-6">
-                <strong>Trạng thái:</strong> <span class="badge bg-${statusMap[order.status]?.class || 'secondary'}">${statusMap[order.status]?.text || order.status}</span>
-            </div>
-            <div class="col-12">
-                <strong>Dịch vụ:</strong> ${order.service_names || 'N/A'}
-            </div>
-            <div class="col-12">
-                <strong>Địa chỉ:</strong> ${order.address}
-            </div>
-            <div class="col-12">
-                <strong>Ghi chú:</strong> ${order.note || 'Không có'}
-            </div>
-            <div class="col-md-6">
-                <strong>Tổng tiền:</strong> <span class="text-success">${formatCurrency(totalPrice)}</span>
-            </div>
-            <div class="col-md-6">
-                <strong>Ngày đặt:</strong> ${formatDateTime(order.created_at)}
+
+            <div class="col-12 mt-2">
+                <h6 class="text-secondary mb-3 border-bottom pb-2 fw-bold"><i class="fas fa-receipt"></i> Bảng tính chi phí</h6>
+                <div class="bg-white rounded p-1 mb-2">
+                    ${priceHtml}
+                </div>
+                ${order.actualCost > 0 ? `<div class="mt-2 text-end text-danger fw-bold fs-6">Chi phí thực tế: ${viewUtils ? viewUtils.formatCurrency(p) : p}</div>` : ''}
+                ${order.subsidyAmount > 0 ? `<div class="mt-1 text-end text-success fs-6">Trợ giá hệ thống: -${viewUtils ? viewUtils.formatCurrencyVn(order.subsidyAmount) : order.subsidyAmount}</div>` : ''}
+                ${order.customerPays > 0 ? `<div class="mt-2 text-end text-primary fw-bold fs-5 border-top pt-2">Khách thực trả: ${viewUtils ? viewUtils.formatCurrencyVn(order.customerPays) : order.customerPays}</div>` : ''}
             </div>
         </div>
     `;
     
     if (detailModal) {
-        console.log('✅ Showing modal...');
         detailModal.show();
     } else {
-        console.error('❌ Modal not initialized, trying to create...');
         const modalEl = document.getElementById('orderDetailModal');
         if (modalEl) {
             detailModal = new bootstrap.Modal(modalEl);
             detailModal.show();
-        } else {
-            console.error('❌ Modal element not found in DOM');
         }
     }
 }
 
+/**
+ * Hiển thị form cập nhật trạng thái đơn hàng (Modal).
+ * @param {number|string} orderId - ID đơn hàng cần cập nhật.
+ */
 window.updateOrderStatus = function(orderId) {
     const updateOrderIdInput = document.getElementById('updateOrderId');
     if (updateOrderIdInput) {

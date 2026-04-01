@@ -12,7 +12,6 @@
       : "./";
   const publicBase = `${projectBase}public/`;
   const assetsBase = `${publicBase}assets/`;
-  const apiBasePath = projectBase;
 
   function joinUrl(base, path) {
     if (!path) return base;
@@ -36,12 +35,6 @@
     if (/^(?:[a-z]+:)?\/\//i.test(path) || String(path).startsWith("/")) return path;
     const cleanedPath = String(path).replace(/^\.?\//, "").replace(/^assets\//, "");
     return joinUrl(assetsBase, cleanedPath);
-  }
-
-  function toApiUrl(path) {
-    if (!path) return path;
-    if (/^(?:[a-z]+:)?\/\//i.test(path) || String(path).startsWith("/")) return path;
-    return joinUrl(apiBasePath, path);
   }
 
   function showFieldError(input, message) {
@@ -161,11 +154,9 @@
     projectBase,
     publicBase,
     assetsBase,
-    apiBasePath,
     toProjectUrl,
     toPublicUrl,
     toAssetsUrl,
-    toApiUrl,
     showFieldError,
     clearFieldError,
     escapeHtml,

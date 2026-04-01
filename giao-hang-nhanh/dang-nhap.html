@@ -199,8 +199,7 @@
             bước đang thao tác sau khi đăng nhập thành công.
           </div>
           <div class="auth-note" style="background:#eff6ff; color:#1d4ed8;">
-            Quản trị viên đăng nhập tại
-            <a href="admin-giaohang/public/login.php" style="font-weight:700; color:inherit;">trang admin riêng</a>.
+            Khu quản trị nội bộ đang được tách riêng và sẽ được rà lại ở bước dọn backend tiếp theo.
           </div>
           <div class="auth-link">
             Chưa có tài khoản? <a id="lien-ket-dang-ky" href="dang-ky.html">Đăng ký ngay</a>
@@ -212,6 +211,8 @@
     <div id="site-footer"></div>
 
     <script src="public/assets/js/shared-layout.js"></script>
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script src="public/assets/js/local-auth.js"></script>
     <script>
       window.isLoggedIn = false;
       window.apiBasePath = "";
@@ -219,6 +220,7 @@
     <script src="public/assets/js/main.js" defer></script>
     <script>
       (function () {
+        const localAuth = window.GiaoHangNhanhLocalAuth || null;
         const form = document.getElementById("form-dang-nhap");
         const submitBtn = document.getElementById("nut-gui-dang-nhap");
         const msgBox = document.getElementById("thong-bao-dang-nhap");
@@ -240,6 +242,9 @@
         }
 
         function resolveDefaultPath(role) {
+          if (localAuth && typeof localAuth.getDashboardPath === "function") {
+            return localAuth.getDashboardPath(role);
+          }
           if (role === "shipper") return "public/nha-cung-cap/dashboard.html";
           return "public/khach-hang/dashboard.html";
         }
@@ -259,29 +264,32 @@
             return;
           }
 
+          if (!localAuth || typeof localAuth.login !== "function") {
+            showMessage("Không khởi tạo được luồng đăng nhập tài khoản.", "error");
+            return;
+          }
+
           submitBtn.disabled = true;
           submitBtn.textContent = "Đang đăng nhập...";
           msgBox.style.display = "none";
 
           try {
-            const response = await fetch("public/login_ajax.php", {
-              method: "POST",
-              body: formData,
-              credentials: "same-origin",
+            const result = await localAuth.login({
+              loginIdentifier: phone,
+              password,
             });
-            const data = await response.json();
 
-            if (!response.ok || data.status !== "success") {
-              showMessage(data.message || "Đăng nhập thất bại.", "error");
+            if (!result || result.status !== "success") {
+              showMessage((result && result.message) || "Đăng nhập thất bại.", "error");
               return;
             }
 
             showMessage("Đăng nhập thành công, đang chuyển trang...", "success");
             const safeRedirect = normalizeRedirect(redirectValue);
-            const userRole = data.user && data.user.role ? data.user.role : "";
+            const userRole = result.user && result.user.role ? result.user.role : "";
             window.location.href = safeRedirect || resolveDefaultPath(userRole);
           } catch (error) {
-            showMessage("Không thể kết nối đến máy chủ. Vui lòng thử lại.", "error");
+            showMessage("Không thể xử lý đăng nhập tài khoản. Vui lòng thử lại.", "error");
           } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = "Đăng nhập";

@@ -226,7 +226,6 @@ function loadPricingDataSync() {
           normalizeInstantSurchargeConfig(phiDichVuLapTuc);
         QUOTE_SHIPPING_DATA = {
           cities: parsed.BAOGIACHITIET.thanhpho,
-          legacyBangGia: parsed.BANGGIA, // Lưu lại để tra cứu phí vượt cân theo vùng
           domestic: {
             cityOptions: bd.danhsachthanhpho,
             volumeDivisor:
@@ -1092,24 +1091,13 @@ function calculateDomesticQuote(payload, options = {}) {
             : 1;
         basePricePerOrder = basePricePerOrder * sMul;
       } else {
-        // 3 gói bưu chính: dùng bảng giá cố định theo vùng địa lý
+        // 3 gói còn lại: dùng bảng giá cố định theo vùng địa lý
         const zonePrice = serviceConfig.base || {};
         basePricePerOrder =
           zonePrice[zoneKey] || zonePrice.same_district || 20000;
       }
 
-      // Cập nhật perHalfKg linh hoạt theo vùng từ section legacyBangGia (ViettelPost style)
-      let perHalfKg = serviceConfig.perHalfKg || 2000;
-      const bGia = QUOTE_SHIPPING_DATA.legacyBangGia || {};
-      const vungKey = zoneKey === "inter_city" ? "lientinh" : "cungtinh";
-      const sKey = serviceConfig.jsonKey || serviceType;
-      if (
-        bGia[vungKey] &&
-        bGia[vungKey][sKey] &&
-        bGia[vungKey][sKey].tieptheo
-      ) {
-        perHalfKg = bGia[vungKey][sKey].tieptheo;
-      }
+      const perHalfKg = serviceConfig.perHalfKg || 2000;
 
       const overweightFee = overweightSteps * perHalfKg;
       const volumeFee = volumetricExtraSteps * perHalfKg;

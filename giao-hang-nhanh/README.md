@@ -1,179 +1,242 @@
-# Giao Hàng Nhanh — Hệ thống quản lý vận chuyển
+# Giao Hàng Nhanh
 
-Nền tảng logistics và giao nhận hàng hóa xây dựng với kiến trúc **Frontend tĩnh (HTML/CSS/JS thuần)** kết hợp **Backend PHP + MySQL**. Hệ thống phục vụ ba nhóm người dùng: khách hàng, shipper và quản trị viên.
+Trạng thái hiện tại của nhánh này đã chuyển sang hướng:
 
----
+- Frontend tĩnh `HTML/CSS/JS`
+- Dùng `KRUD` để lưu và đọc dữ liệu chính
+- Giữ một phần `localStorage` để lưu session và làm fallback tạm thời
 
-## Cấu trúc Thư mục
-
-```
-giao-hang-nhanh/
-├── index.html                        # Trang chủ (Landing page)
-├── dang-nhap.html                    # Trang đăng nhập khách hàng
-├── dang-ky.html                      # Trang đăng ký khách hàng
-├── tra-cuu-gia.html                  # Trang tra cứu bảng giá
-├── tra-don-hang.html                 # Trang tra cứu đơn hàng
-├── dat-lich-giao-hang-nhanh.html     # Trang đặt lịch giao hàng (trang bọc)
-├── cam-nang.html                     # Danh sách cẩm nang
-├── cam-nang-chi-tiet.html            # Chi tiết cẩm nang
-├── huong-dan-dat-hang.html           # Hướng dẫn đặt hàng
-├── chinh-sach-van-chuyen.html        # Chính sách vận chuyển
-├── chinh-sach-bao-mat.html           # Chính sách bảo mật
-├── dieu-khoan-su-dung.html           # Điều khoản sử dụng
-├── README.md
-├── config/
-│   ├── db.php                        # Kết nối CSDL (dùng chung)
-│   └── settings_helper.php           # Helper đọc cấu hình từ DB
-├── includes/
-│   ├── header.html                   # Header dùng chung (load qua shared-layout.js)
-│   ├── footer.html                   # Footer dùng chung (load qua shared-layout.js)
-│   ├── header_admin.php              # Header dành cho Admin
-├── admin-giaohang/
-│   ├── api/
-│   │   ├── save_order.php           # API lưu đơn hàng (từ admin)
-│   │   ├── stats.php                # API thống kê dashboard admin
-│   │   ├── orders.php               # API danh sách đơn hàng admin
-│   │   ├── users.php                # API quản lý người dùng admin
-│   │   ├── settings.php             # API cài đặt hệ thống
-│   │   ├── shipper_detail.php       # API chi tiết hiệu suất shipper
-│   │   └── contacts.php             # API hòm thư liên hệ
-│   ├── config/db.php                # DB config riêng cho admin module
-│   ├── public/                      # Giao diện standalone cho admin
-│   └── database/giaohang.sql        # Schema CSDL
-├── khach-hang-giaohang/
-│   └── api/
-│       ├── customer_portal.php      # API JSON cho portal khách hàng
-│       ├── cancel_order_ajax.php    # API hủy đơn khách hàng
-│       └── get_notifications_ajax.php # API thông báo khách hàng
-├── nha-cung-cap-giaohang/
-│   └── api/                         # Backend nha cung cap (se tach them theo tung buoc)
-└── public/
-    ├── assets/
-    │   ├── css/
-    │   │   ├── styles.css            # Entry point CSS (dùng @import)
-    │   │   ├── admin.css             # Entry point CSS cho Admin
-    │   │   ├── shipper.css           # CSS riêng Shipper
-    │   │   ├── guide.css             # CSS trang hướng dẫn
-    │   │   ├── pages/dat-lich.css    # CSS trang đặt lịch
-    │   │   ├── base/                 # reset, typography, global
-    │   │   ├── components/           # buttons, forms, modal, cards, ui-kit
-    │   │   ├── layout/               # header, footer, navigation
-    │   │   └── pages/                # landing, auth, dashboard
-    │   ├── js/
-    │   │   ├── main.js               # Bootstrap loader — load dynamic modules
-    │   │   ├── main-core.js          # Core utilities (tính phí, toast, field error)
-    │   │   ├── shared-layout.js      # Inject header/footer, quản lý nav active
-    │   │   ├── pricing-data.js       # Dữ liệu & logic tính cước (nội địa + quốc tế)
-    │   │   ├── dat-lich.js           # Logic trang đặt lịch (bản đồ Leaflet)
-    │   │   ├── service-catalog.js    # Danh mục dịch vụ
-    │   │   ├── admin-stats.js        # Biểu đồ thống kê (Chart.js)
-    │   │   └── modules/
-    │   │       ├── main-navigation.js   # Điều hướng và mobile menu
-    │   │       ├── main-forms.js        # Mount partial form đặt lịch vào host
-    │   │       ├── main-landing.js      # Logic form tính cước trang chủ
-    │   │       └── main-tracking.js     # Tra cứu & hủy đơn hàng
-    │   ├── partials/
-    │   │   └── bieu-mau/
-    │   │       └── form-dat-lich-giao-hang.html # Partial form đặt lịch giao hàng
-    │   └── images/
-    ├── data/
-    │   ├── pricing-data.json        # Dữ liệu bảng giá
-    │   ├── form-dat-hang.json       # Cấu hình form đặt đơn
-    │   └── du-lieu-bai-viet.json    # Dữ liệu bài viết
-    ├── khach-hang/
-    │   ├── dashboard.html           # Dashboard khách hàng (HTML + JS + API)
-    │   ├── lich-su-don-hang.html    # Lịch sử đơn hàng khách
-    │   ├── chi-tiet-don-hang.html   # Chi tiết đơn hàng khách theo 3 tab
-    │   └── ho-so.html               # Hồ sơ khách hàng
-    ├── nha-cung-cap/
-    │   ├── dashboard.html           # Dashboard nhà cung cấp
-    │   ├── don-hang.html            # Danh sách đơn của nhà cung cấp
-    │   ├── chi-tiet-don-hang.html   # Chi tiết đơn của nhà cung cấp theo 3 tab
-    │   └── ho-so.html               # Hồ sơ nhà cung cấp
-    ├── cancel_order.php             # Xử lý hủy đơn
-    ├── dat-lich-ajax.php            # API xử lý đặt lịch giao hàng
-    ├── forgot_password_ajax.php     # API quên mật khẩu
-    ├── inquiry_ajax.php             # API liên hệ
-    ├── landing_data_ajax.php        # API dữ liệu landing
-    ├── login.php                    # Xử lý đăng nhập server-side
-    ├── login_ajax.php               # API đăng nhập
-    ├── logout.php                   # Đăng xuất
-    ├── notifications.php            # Trang thông báo
-    ├── register.php                 # Xử lý đăng ký server-side
-    ├── register_ajax.php            # API đăng ký
-    ├── tracking.php                 # Tra cứu đơn (server-side)
-    ├── tracking_ajax.php            # API tra cứu đơn
-    └── webhook_payment.php           # Webhook thanh toán ngân hàng
-```
+Không còn xem đây là hệ thống `PHP + MySQL` đầy đủ như README cũ nữa.
 
 ---
 
-## Luồng hoạt động theo vai trò
+## Bảng KRUD đang dùng
 
-### 👤 Khách vãng lai (Guest)
-- Xem giới thiệu dịch vụ tại `index.html`
-- Tra cứu cước phí tại `tra-cuu-gia.html`
-- Tra cứu đơn hàng tại `tra-don-hang.html`
-- Đặt lịch thử tại `dat-lich-giao-hang-nhanh.html`
-
-### 🛒 Khách hàng (Customer)
-- Đăng nhập → tạo đơn tại `dat-lich-giao-hang-nhanh.html`
-- Dashboard: `public/khach-hang/dashboard.html`
-- Quản lý đơn: `public/khach-hang/lich-su-don-hang.html`, `public/khach-hang/chi-tiet-don-hang.html`
-- Cập nhật hồ sơ tại `public/khach-hang/ho-so.html`
-- Màn chi tiết đơn hiển thị theo 3 tab: thông tin đặt dịch vụ, thông tin nhà cung cấp, thông tin khách hàng
-
-### 🚴 Shipper
-- Dashboard riêng: `public/nha-cung-cap/dashboard.html`
-- Quản lý đơn: `public/nha-cung-cap/don-hang.html`, `public/nha-cung-cap/chi-tiet-don-hang.html`
-- Cập nhật hồ sơ: `public/nha-cung-cap/ho-so.html`
-- Chi tiết đơn hiển thị theo 3 tab: thông tin đặt dịch vụ, thông tin khách hàng, thông tin của chính nhà cung cấp
-- Upload ảnh/video báo cáo công việc trực tiếp từ giao diện website
-
-### 🔧 Admin
-- Thống kê tổng quan: `admin-giaohang/api/stats.php`
-- Quản lý người dùng, đơn hàng, cài đặt hệ thống qua `admin-giaohang/api/*`
-- Phê duyệt shipper mới
-
----
-
-## Cơ chế kỹ thuật quan trọng
-
-### JS Module System
-`main.js` là **bootstrap loader** — tự động load tuần tự các module:
-```
-main-core.js → main-navigation.js → main-tracking.js → main-landing.js
-```
-Mỗi module có guard `if (window.__flag) return;` để tránh load lại.
-
-### Dynamic Header/Footer
-`shared-layout.js` dùng `XMLHttpRequest` đồng bộ để inject `includes/header.html` và `includes/footer.html` vào `#site-header` và `#site-footer`. Links được resolve tự động qua `data-layout-link` attribute tuỳ theo vị trí (root hay `/public/`).
-
-### Form đặt lịch theo pattern biểu mẫu
-`dat-lich-giao-hang-nhanh.html` hiện là **trang bọc**. Form thật được tách ra partial [form-dat-lich-giao-hang.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\partials\bieu-mau\form-dat-lich-giao-hang.html) và được mount bởi [main-forms.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\modules\main-forms.js).
-
-### CSS Architecture
-Entry points: `styles.css` (trang public) và `admin.css` (trang admin). Cả hai dùng `@import` để gộp các module CSS con.
-
-### Logic Tính Cước
-Module `pricing-data.js` xuất các hàm:
-- `calculateDomesticQuote(payload)` — tính cước nội địa theo km thực tế
-- `calculateInternationalQuote(payload)` — tính cước quốc tế theo zone
-- `buildDomesticPricingExplanation(payload, result)` — sinh giải thích chi tiết từng bước
-
-Phí = Phí cơ bản + Phí cân nặng + Phụ phí loại hàng + Phí COD + Phí Bảo hiểm.
-
----
-
-## API Endpoints (AJAX)
-
-| Endpoint | Mô tả |
+| Mục đích | Tên bảng |
 |---|---|
-| `login_ajax.php` | Đăng nhập, tạo session |
-| `register_ajax.php` | Đăng ký tài khoản |
-| `tracking_ajax.php` | Tra cứu hành trình đơn hàng |
-| `inquiry_ajax.php` | Gửi thắc mắc liên hệ |
-| `landing_data_ajax.php` | Dữ liệu động cho landing page |
-| `forgot_password_ajax.php` | Đặt lại mật khẩu |
-| `webhook_payment.php` | Webhook nhận thông báo thanh toán tự động |
+| Đơn đặt lịch giao hàng | `giaohangnhanh_dat_lich` |
+| Tài khoản khách hàng | `giaohangnhanh_customers` |
+| Tài khoản nhà cung cấp / shipper | `giaohangnhanh_shippers` |
 
+Lưu ý:
+
+- Tên bảng đang dùng dạng `_`, không dùng `-`
+- Mã đơn để khách tra cứu là `ma_don_hang_noi_bo`
+- `id` từ KRUD là `id` bản ghi, không dùng làm mã đơn hiển thị cho người dùng
+
+---
+
+## Tài khoản test
+
+### Khách hàng
+
+| ID | Họ tên | Email | Số điện thoại | Tài khoản | Mật khẩu | Ngày tạo |
+|---|---|---|---|---|---|---|
+| 1 | Test | `test@gmail.com` | `0901234567` | `0901234567` | `Aq123@cc` | tạo trong quá trình test |
+
+### Nhà cung cấp / shipper
+
+| ID | Họ tên | Email | Số điện thoại | CCCD | Phê duyệt | Mật khẩu |
+|---|---|---|---|---|---|---|
+| 1 | shipper01 | `shipper01@gmail.com` | `0901234568` | `001095000123` | Chưa phê duyệt | `Aq123@cc` |
+
+### Admin tạm thời
+
+| ID | Họ tên | Email | Số điện thoại | Tài khoản | Mật khẩu |
+|---|---|---|---|---|---|
+| 1 | Quan tri vien Giao Hang Nhanh | `admin01@giaohangnhanh.local` | `0901234569` | `admin01` | `Aq123@cc` |
+
+Ghi chú:
+
+- Đây là tài khoản test để kiểm tra luồng đăng ký / đăng nhập
+- Nếu dữ liệu KRUD thay đổi, ID thực tế có thể khác
+- Tài khoản admin ở trên đang là tài khoản JSON tạm, không đọc từ KRUD
+
+---
+
+## Chức năng đã nối KRUD
+
+### 1. Đăng ký tài khoản
+
+- File liên quan:
+  - [dang-ky.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\dang-ky.html)
+  - [local-auth.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\local-auth.js)
+- Khách hàng đăng ký sẽ `insert` vào `giaohangnhanh_customers`
+- Shipper đăng ký sẽ `insert` vào `giaohangnhanh_shippers`
+
+### 2. Đăng nhập tài khoản
+
+- File liên quan:
+  - [dang-nhap.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\dang-nhap.html)
+  - [local-auth.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\local-auth.js)
+- Đăng nhập hiện đang `list` dữ liệu từ KRUD rồi đối chiếu:
+  - số điện thoại
+  - username
+  - mật khẩu
+- Sau khi đăng nhập thành công vẫn lưu `session` vào local để dashboard hiện tại chạy tiếp
+
+### 3. Đặt lịch giao hàng
+
+- File liên quan:
+  - [dat-lich-giao-hang-nhanh.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\dat-lich-giao-hang-nhanh.html)
+  - [dat-lich.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\dat-lich.js)
+- Khi gửi đơn, hệ thống `insert` vào `giaohangnhanh_dat_lich`
+- Mã đơn khách nhìn thấy là `ma_don_hang_noi_bo`
+
+### 4. Test list KRUD
+
+- File liên quan:
+  - [test-krud-list.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\test-krud-list.html)
+- Đang test được 3 bảng:
+  - `giaohangnhanh_dat_lich`
+  - `giaohangnhanh_customers`
+  - `giaohangnhanh_shippers`
+
+### 4.1. Đăng nhập admin tạm thời
+
+- File liên quan:
+  - [admin-giaohang/public/login.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\login.php)
+- Tạm thời không dùng KRUD
+- Đăng nhập bằng so sánh tài khoản JSON nội bộ ngay trong file login
+- Sau khi đăng nhập thành công vẫn tạo PHP session để vào các trang admin cũ
+
+### 4.2. Quản lý bảng giá admin
+
+- File liên quan:
+  - [admin-giaohang/public/admin_pricing.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\admin_pricing.php)
+- Chạy theo kiểu `admin-only`
+- Đọc và ghi trực tiếp file:
+  - `public/data/pricing-data.json`
+- Hiện đã làm được:
+  - sửa giá 4 gói dịch vụ chính
+  - thêm phụ phí loại hàng
+  - sửa phụ phí loại hàng
+  - xóa phụ phí loại hàng
+
+### 5. Tra cứu đơn hàng
+
+- File liên quan:
+  - [tra-don-hang.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\tra-don-hang.html)
+  - [main-tracking.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\modules\main-tracking.js)
+- Đã tra cứu theo mã `ma_don_hang_noi_bo`
+- Đã ưu tiên đọc từ KRUD, sau đó mới fallback local/mock
+- Đã hiển thị:
+  - đơn đặt
+  - thanh toán
+  - thông tin khách hàng
+  - thông tin nhà cung cấp
+  - lịch sử xử lý
+
+### 6. Danh sách đơn hàng admin
+
+- File liên quan:
+  - [admin-giaohang/public/orders_manage.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\orders_manage.php)
+- Chạy theo kiểu `admin-only`
+- Đã đọc trực tiếp từ bảng KRUD:
+  - `giaohangnhanh_dat_lich`
+- Hiện đã có:
+  - hiển thị danh sách đơn hàng
+  - tìm kiếm theo mã đơn / tên / số điện thoại
+  - lọc theo `từ ngày`
+  - lọc theo `đến ngày`
+  - lọc theo trạng thái
+  - phân trang
+  - mở chi tiết đơn qua `ma_don_hang_noi_bo`
+
+---
+
+## Chức năng đang tạm vô hiệu hóa
+
+### 1. Kiểm tra shipper đã được duyệt mới cho đăng nhập
+
+- Trong [local-auth.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\local-auth.js) đang bật:
+  - `allowPendingShipperLogin = true`
+- Nghĩa là:
+  - shipper `is_approved = 0` vẫn đăng nhập được
+- Đây là trạng thái tạm để test
+
+### 2. Hiển thị mật khẩu plaintext trong trang test
+
+- Không bật
+- [test-krud-list.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\test-krud-list.html) chỉ hiển thị `Mat khau (an)`
+
+---
+
+## Chức năng chưa hoạt động hoàn chỉnh
+
+### 1. Hủy đơn hàng theo KRUD
+
+- Hiện tại trong [main-tracking.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\modules\main-tracking.js)
+- Luồng hủy đơn vẫn đang cập nhật local/mock
+- Chưa gọi `crud('update', 'giaohangnhanh_dat_lich', ...)`
+
+### 2. Dashboard khách hàng đọc dữ liệu thật từ KRUD
+
+- [dashboard.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\khach-hang\dashboard.html) chỉ là shell
+- [customer-portal.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\customer-portal.js) vẫn còn nhiều logic local/mock
+- Chưa chuyển hết sang `giaohangnhanh_dat_lich`
+
+### 3. Portal nhà cung cấp / shipper đọc và cập nhật KRUD
+
+- [shipper-portal.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\shipper-portal.js) vẫn chủ yếu dùng local/mock
+- Chưa có luồng KRUD chuẩn cho:
+  - nhận đơn
+  - cập nhật tiến độ
+  - cập nhật trạng thái đơn
+  - ghi chú shipper
+
+### 4. Admin mới theo KRUD
+
+- Chưa có trang admin mới chính thức
+- Luồng admin hiện tại đang đăng nhập bằng JSON tạm, chưa nối `giaohangnhanh_admins`
+- Màn admin hiện tại vẫn là cụm PHP cũ chạy bằng session localhost
+
+### 5. Dọn sạch fallback mock cũ
+
+- Một số luồng trong portal/tracking vẫn còn fallback local/mock để không vỡ giao diện
+- Cần dọn tiếp nếu muốn chạy `KRUD-only`
+
+---
+
+## Các file quan trọng cần biết
+
+### Auth
+
+- [dang-ky.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\dang-ky.html)
+- [dang-nhap.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\dang-nhap.html)
+- [local-auth.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\local-auth.js)
+- [admin-giaohang/public/login.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\login.php)
+
+### Đơn hàng
+
+- [dat-lich-giao-hang-nhanh.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\dat-lich-giao-hang-nhanh.html)
+- [dat-lich.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\dat-lich.js)
+- [tra-don-hang.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\tra-don-hang.html)
+- [main-tracking.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\modules\main-tracking.js)
+
+### Portal
+
+- [dashboard.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\khach-hang\dashboard.html)
+- [customer-portal.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\customer-portal.js)
+- [dashboard.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\nha-cung-cap\dashboard.html)
+- [shipper-portal.js](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\assets\js\shipper-portal.js)
+
+### Admin
+
+- [admin-giaohang/public/login.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\login.php)
+- [admin-giaohang/public/orders_manage.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\orders_manage.php)
+- [admin-giaohang/public/admin_pricing.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\admin_pricing.php)
+
+### Test dữ liệu
+
+- [test-krud-list.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\test-krud-list.html)
+
+---
+
+## Gợi ý thứ tự làm tiếp
+
+1. Chuyển dashboard khách hàng sang đọc `giaohangnhanh_dat_lich`
+2. Chuyển lịch sử đơn hàng khách hàng sang KRUD
+3. Nối hủy đơn sang `update` KRUD
+4. Chuyển portal nhà cung cấp sang KRUD
+5. Nếu cần, làm tiếp màn admin đọc trực tiếp KRUD thay cho cụm PHP tạm thời

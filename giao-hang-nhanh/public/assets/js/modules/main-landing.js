@@ -783,33 +783,15 @@
       btn.innerText = "Đang gửi...";
       btn.disabled = true;
       msgDiv.style.display = "none";
-
-      const formData = new FormData(inquiryForm);
-
-      fetch(core.toApiUrl("inquiry_ajax.php"), {
-        method: "POST",
-        body: formData,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          msgDiv.style.display = "block";
-          msgDiv.innerText = data.message;
-          msgDiv.style.color = data.status === "success" ? "green" : "red";
-
-          if (data.status === "success") {
-            inquiryForm.reset();
-          }
-          btn.innerText = originalText;
-          btn.disabled = false;
-        })
-        .catch((err) => {
-          console.error(err);
-          msgDiv.style.display = "block";
-          msgDiv.innerText = "Lỗi kết nối. Vui lòng thử lại.";
-          msgDiv.style.color = "red";
-          btn.innerText = originalText;
-          btn.disabled = false;
-        });
+      window.setTimeout(() => {
+        msgDiv.style.display = "block";
+        msgDiv.innerText =
+          "Yêu cầu của bạn đã được ghi nhận trong chế độ local. Nhóm sẽ nối API mới sau.";
+        msgDiv.style.color = "green";
+        inquiryForm.reset();
+        btn.innerText = originalText;
+        btn.disabled = false;
+      }, 350);
     });
   }
 

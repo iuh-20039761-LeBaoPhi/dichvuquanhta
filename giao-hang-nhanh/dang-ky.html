@@ -450,6 +450,8 @@
     <div id="site-footer"></div>
 
     <script src="public/assets/js/shared-layout.js"></script>
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script src="public/assets/js/local-auth.js"></script>
     <script>
       window.isLoggedIn = false;
       window.apiBasePath = "";
@@ -457,6 +459,7 @@
     <script src="public/assets/js/main.js" defer></script>
     <script>
       (function () {
+        const localAuth = window.GiaoHangNhanhLocalAuth || null;
         const form = document.getElementById("form-dang-ky");
         const submitBtn = document.getElementById("nut-gui-dang-ky");
         const msgBox = document.getElementById("thong-bao-dang-ky");
@@ -482,6 +485,24 @@
           msgBox.textContent = message;
           msgBox.className = "msg-box " + type;
           msgBox.style.display = "block";
+        }
+
+        function isValidEmail(value) {
+          return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+        }
+
+        function isValidPhone(value) {
+          return /^0[0-9]{9,10}$/.test(value);
+        }
+
+        function isStrongPassword(value) {
+          return (
+            value.length >= 8 &&
+            /[A-Z]/.test(value) &&
+            /[a-z]/.test(value) &&
+            /[0-9]/.test(value) &&
+            /[\W_]/.test(value)
+          );
         }
 
         function resetUploadNameLabels() {
@@ -558,27 +579,108 @@
         form.addEventListener("submit", async function (event) {
           event.preventDefault();
           const formData = new FormData(form);
+          const role = String(formData.get("vai_tro") || "customer").trim();
+          const fullname = String(formData.get("ho_ten") || "").trim();
+          const email = String(formData.get("email") || "").trim();
+          const phone = String(formData.get("so_dien_thoai") || "").trim();
+          const cccd = String(formData.get("so_cccd") || "").trim();
+          const password = String(formData.get("mat_khau") || "");
+          const confirmPassword = String(formData.get("xac_nhan_mat_khau") || "");
+          const shipperTermsAccepted = formData.has("shipper_dong_y_dieu_khoan");
+          const cccdFront = document.getElementById("anh-cccd-mat-truoc");
+          const cccdBack = document.getElementById("anh-cccd-mat-sau");
+          const avatar = document.getElementById("anh-dai-dien");
+
+          if (!localAuth || typeof localAuth.register !== "function") {
+            showMessage("Không khởi tạo được luồng đăng ký tài khoản.", "error");
+            return;
+          }
+
+          if (!password || !email || !phone || !fullname) {
+            showMessage("Vui lòng nhập đầy đủ thông tin.", "error");
+            return;
+          }
+
+          if (password !== confirmPassword) {
+            showMessage("Mật khẩu xác nhận không khớp.", "error");
+            return;
+          }
+
+          if (!isStrongPassword(password)) {
+            showMessage("Mật khẩu yếu. Yêu cầu: tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.", "error");
+            return;
+          }
+
+          if (!isValidEmail(email)) {
+            showMessage("Email không hợp lệ.", "error");
+            return;
+          }
+
+          if (!isValidPhone(phone)) {
+            showMessage("Số điện thoại không hợp lệ.", "error");
+            return;
+          }
+
+          if (fullname.length < 2) {
+            showMessage("Họ và tên quá ngắn.", "error");
+            return;
+          }
+
+          if (role !== "customer" && role !== "shipper") {
+            showMessage("Vai trò đăng ký không hợp lệ.", "error");
+            return;
+          }
+
+          if (role === "shipper" && !/^[0-9]{9,12}$/.test(cccd)) {
+            showMessage("Số CCCD/CMND không hợp lệ.", "error");
+            return;
+          }
+
+          if (role === "shipper" && !shipperTermsAccepted) {
+            showMessage("Bạn cần đồng ý điều khoản dành cho shipper.", "error");
+            return;
+          }
+
+          if (
+            role === "shipper" &&
+            (
+              !cccdFront?.files?.length ||
+              !cccdBack?.files?.length ||
+              !avatar?.files?.length
+            )
+          ) {
+            showMessage("Shipper cần tải đủ ảnh CCCD mặt trước, mặt sau và ảnh đại diện.", "error");
+            return;
+          }
 
           submitBtn.disabled = true;
           submitBtn.textContent = "Đang tạo tài khoản...";
           msgBox.style.display = "none";
 
           try {
-            const response = await fetch("public/register_ajax.php", {
-              method: "POST",
-              body: formData,
-              credentials: "same-origin",
+            const result = await localAuth.register({
+              role,
+              fullname,
+              email,
+              phone,
+              cccd,
+              password,
+              shipper_terms_accepted: shipperTermsAccepted,
+              files: {
+                cccd_front_name: cccdFront?.files?.[0]?.name || "",
+                cccd_back_name: cccdBack?.files?.[0]?.name || "",
+                avatar_name: avatar?.files?.[0]?.name || "",
+              },
             });
-            const data = await response.json();
 
-            if (!response.ok || data.status !== "success") {
-              showMessage(data.message || "Đăng ký thất bại.", "error");
+            if (!result || result.status !== "success") {
+              showMessage((result && result.message) || "Đăng ký thất bại.", "error");
               return;
             }
 
-            if (data.requires_approval) {
+            if (result.requires_approval) {
               showMessage(
-                data.message || "Tài khoản shipper đã được tạo và đang chờ phê duyệt.",
+                result.message || "Tài khoản shipper đã được tạo và đang chờ phê duyệt.",
                 "success",
               );
               setTimeout(function () {
@@ -591,7 +693,7 @@
             const safeRedirect = normalizeRedirect(redirectValue);
             window.location.href = safeRedirect || "public/khach-hang/dashboard.html";
           } catch (error) {
-            showMessage("Không thể kết nối đến máy chủ. Vui lòng thử lại.", "error");
+            showMessage("Không thể xử lý đăng ký tài khoản. Vui lòng thử lại.", "error");
           } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = "Đăng ký";

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <script src="/ga.js"></script>
@@ -32,21 +32,21 @@
                 <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
                 <div class="input-group input-icon">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input type="text" id="full_name" class="form-control" placeholder="Nguyễn Văn A">
+                    <input type="text" id="full_name" class="form-control" placeholder="Nhập tên">
                 </div>
             </div>
             <div class="col-sm-6">
                 <label class="form-label">Email <span class="text-danger">*</span></label>
                 <div class="input-group input-icon">
                     <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                    <input type="email" id="email" class="form-control" placeholder="example@email.com">
+                    <input type="email" id="email" class="form-control" placeholder="Nhập email">
                 </div>
             </div>
             <div class="col-sm-6">
                 <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                 <div class="input-group input-icon">
                     <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                    <input type="tel" id="sodienthoai" class="form-control" placeholder="0912 345 678">
+                    <input type="tel" id="sodienthoai" class="form-control" placeholder="Nhập số điện thoại">
                 </div>
             </div>
         </div>
@@ -57,14 +57,14 @@
                 <label class="form-label">Tên cửa hàng / Đội thợ <span class="text-danger">*</span></label>
                 <div class="input-group input-icon">
                     <span class="input-group-text"><i class="fas fa-store"></i></span>
-                    <input type="text" id="company_name" class="form-control" placeholder="Thợ Điện Nước Minh Tâm">
+                    <input type="text" id="company_name" class="form-control" placeholder="Nhập tên công ty/ đội thợ">
                 </div>
             </div>
             <div class="col-12">
                 <label class="form-label">Địa chỉ hoạt động</label>
                 <div class="input-group input-icon">
                     <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-                    <input type="text" id="address" class="form-control" placeholder="Quận Bình Thạnh, TP.HCM">
+                    <input type="text" id="address" class="form-control" placeholder="Nhập địa chỉ">
                 </div>
             </div>
             <div class="col-12">
@@ -147,7 +147,27 @@
         </div>
     </div>
 
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script>
+        /**
+         * ═══════════════════════════════════════════════════════════
+         * ĐĂNG KÝ NHÀ CUNG CẤP — Luồng xử lý:
+         * ═══════════════════════════════════════════════════════════
+         *
+         * 1. NCC nhập: họ tên, email, SĐT, tên cửa hàng, địa chỉ,
+         *    mô tả, ảnh đại diện, CCCD (trước/sau), mật khẩu
+         * 2. JS validate: trường bắt buộc, SĐT, MK ≥ 6 ký tự, CCCD
+         * 3. Gọi krud('insert') → tạo bản ghi mới với trạng thái "pending"
+         * 4. Nếu thành công: hiển thị thông báo chờ admin duyệt
+         *
+         *    ⚠️ KHÔNG auto-login: NCC cần admin xét duyệt trước.
+         *       Khi đăng nhập sau, trang dang-nhap.html sẽ tạo PHP session.
+         *
+         * Bảng KRUD:  "nhacungcap_thonha"
+         * ═══════════════════════════════════════════════════════════
+         */
+
+        // ── Toggle hiển thị mật khẩu ────────────────────────────
         document.getElementById('togglePwd').addEventListener('click', function() {
             const input = document.getElementById('password');
             const icon  = document.getElementById('eyeIcon');
@@ -155,8 +175,17 @@
             else { input.type = 'password'; icon.className = 'fas fa-eye'; }
         });
 
+        // ── Upload ảnh: trigger, preview, xoá ───────────────────
+
+        /** Mở dialog chọn file cho input ẩn */
         function triggerUpload(id) { document.getElementById(id).click(); }
 
+        /**
+         * Hiển thị preview ảnh sau khi chọn file.
+         * @param {HTMLInputElement} input    - Input file đã chọn
+         * @param {string}          zoneId   - ID của vùng upload
+         * @param {string}          previewId - ID của thẻ img preview
+         */
         function previewImg(input, zoneId, previewId) {
             const file = input.files[0];
             if (!file) return;
@@ -174,6 +203,16 @@
             reader.readAsDataURL(file);
         }
 
+        /**
+         * Xoá ảnh preview và reset input file.
+         * @param {Event}  e        - Click event (cần stopPropagation)
+         * @param {string} inputId  - ID input file
+         * @param {string} zoneId   - ID vùng upload
+         * @param {string} previewId - ID img preview
+         * @param {string} iconId   - ID icon placeholder
+         * @param {string} labelId  - ID label placeholder
+         * @param {string} rmId     - ID nút xoá
+         */
         function removeImg(e, inputId, zoneId, previewId, iconId, labelId, rmId) {
             e.stopPropagation();
             document.getElementById(inputId).value = '';
@@ -185,18 +224,83 @@
             document.getElementById(zoneId).classList.remove('has-file');
         }
 
+        /** @const {string} Tên bảng KRUD lưu tài khoản NCC */
+        const BANG_DANG_KY_NHA_CUNG_CAP = 'nhacungcap_thonha';
+
         document.getElementById('registerBtn').addEventListener('click', register);
 
+        /**
+         * Trả về thời điểm hiện tại theo format SQL.
+         * @returns {string} "YYYY-MM-DD HH:mm:ss"
+         */
+        function nowSql() {
+            const d = new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+        }
+
+        /**
+         * Chuẩn hoá SĐT: bỏ khoảng trắng.
+         * @param {string} value
+         * @returns {string}
+         */
+        function normalizePhone(value) {
+            return String(value || '').replace(/\s+/g, '');
+        }
+
+        /**
+         * Kiểm tra SĐT Việt Nam hợp lệ.
+         * @param {string} phone
+         * @returns {boolean}
+         */
+        function isValidPhone(phone) {
+            return /^(0|\+84)[0-9]{9}$/.test(phone);
+        }
+
+        /**
+         * Trích metadata file ảnh để lưu vào DB (không upload binary).
+         * @param {File|null} file
+         * @returns {{ ten: string|null, kich_thuoc: number|null, mime: string|null }}
+         */
+        function fileMeta(file) {
+            if (!file) return { ten: null, kich_thuoc: null, mime: null };
+            return {
+                ten: file.name || null,
+                kich_thuoc: Number(file.size || 0) || 0,
+                mime: file.type || null
+            };
+        }
+
+        /**
+         * Kiểm tra KRUD response có thành công không.
+         * @param {*} res
+         * @returns {boolean}
+         */
+        function isKrudSuccess(res) {
+            return !!res && !res.error && res.success !== false;
+        }
+
+        /**
+         * Hàm chính: xử lý đăng ký nhà cung cấp.
+         *
+         * Bước 1: Lấy giá trị form
+         * Bước 2: Validate (trường bắt buộc, SĐT, MK, CCCD)
+         * Bước 3: Chuẩn bị payload + metadata ảnh
+         * Bước 4: Gọi krud('insert') với trạng thái "pending"
+         * Bước 5: Hiển thị thông báo chờ duyệt (không auto-login)
+         */
         function register() {
+            // ── Bước 1: Lấy giá trị form ────────────────────────
             const full_name        = document.getElementById('full_name').value.trim();
             const email            = document.getElementById('email').value.trim();
-            const phone            = document.getElementById('sodienthoai').value.trim();
+            const phone            = normalizePhone(document.getElementById('sodienthoai').value);
             const password         = document.getElementById('password').value;
             const confirm_password = document.getElementById('confirm_password').value;
             const company_name     = document.getElementById('company_name').value.trim();
             const btn = document.getElementById('registerBtn');
             const msg = document.getElementById('msg');
 
+            // ── Bước 2: Validate ────────────────────────────────
             if (!full_name || !email || !phone || !password || !confirm_password || !company_name) {
                 msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng điền đầy đủ các trường bắt buộc (*)</span>';
                 return;
@@ -209,6 +313,10 @@
                 msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu xác nhận không khớp</span>';
                 return;
             }
+            if (!isValidPhone(phone)) {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Số điện thoại không hợp lệ</span>';
+                return;
+            }
             if (!document.getElementById('cccd_front').files[0] || !document.getElementById('cccd_back').files[0]) {
                 msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng tải lên ảnh CCCD mặt trước và mặt sau</span>';
                 return;
@@ -218,38 +326,61 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi đăng ký...';
             msg.innerHTML = '';
 
-            const fd = new FormData();
-            fd.append('full_name',    full_name);
-            fd.append('email',        email);
-            fd.append('phone',        phone);
-            fd.append('password',     password);
-            fd.append('company_name', company_name);
-            fd.append('address',      document.getElementById('address').value.trim());
-            fd.append('description',  document.getElementById('description').value.trim());
+            if (typeof krud !== 'function') {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Không tải được hàm KRUD</span>';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đăng ký';
+                return;
+            }
+
+            // ── Bước 3: Chuẩn bị payload + metadata ảnh ────────
             const avatarFile    = document.getElementById('avatar').files[0];
             const cccdFrontFile = document.getElementById('cccd_front').files[0];
             const cccdBackFile  = document.getElementById('cccd_back').files[0];
-            if (avatarFile)    fd.append('avatar',     avatarFile);
-            if (cccdFrontFile) fd.append('cccd_front', cccdFrontFile);
-            if (cccdBackFile)  fd.append('cccd_back',  cccdBackFile);
 
-            fetch('../../api/provider/auth/register.php', { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(res => {
-                if (res.status === 'success') {
-                    msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>' + res.message + '</span>';
+            const avatarMeta    = fileMeta(avatarFile);
+            const cccdFrontMeta = fileMeta(cccdFrontFile);
+            const cccdBackMeta  = fileMeta(cccdBackFile);
+
+            const payload = {
+                hovaten:               full_name,
+                email:                 email.toLowerCase(),
+                sodienthoai:           phone,
+                matkhau:               password,
+                tencua_hang:           company_name,
+                diachi:                document.getElementById('address').value.trim(),
+                motadichvu:            document.getElementById('description').value.trim(),
+                avatartenfile:         avatarMeta.ten,
+                avatarkich_thuoc:      avatarMeta.kich_thuoc,
+                avatarmime:            avatarMeta.mime,
+                cccdmattruoctenfile:   cccdFrontMeta.ten,
+                cccdmattruockichthuoc: cccdFrontMeta.kich_thuoc,
+                cccdmattruocmime:      cccdFrontMeta.mime,
+                cccdmatsautenfile:     cccdBackMeta.ten,
+                cccdmatsaukichthuoc:   cccdBackMeta.kich_thuoc,
+                cccdmatsaumime:        cccdBackMeta.mime,
+                trangthai:             'pending',   // ← Cần admin duyệt
+                ngaytao:               nowSql()
+            };
+
+            // ── Bước 4: Gọi KRUD insert ─────────────────────────
+            krud('insert', BANG_DANG_KY_NHA_CUNG_CAP, payload)
+                .then((res) => {
+                    console.log(res);
+                    if (!isKrudSuccess(res)) {
+                        throw new Error(res && (res.message || res.error) ? (res.message || res.error) : 'Đăng ký thất bại');
+                    }
+
+                    // ── Bước 5: Thông báo chờ duyệt ─────────────
+                    // ⚠️ Không auto-login: NCC cần admin duyệt trước
+                    msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng ký thành công, vui lòng chờ admin xét duyệt trong 24 giờ.</span>';
                     btn.innerHTML = '<i class="fas fa-check me-2"></i>Đã gửi đăng ký';
-                } else {
-                    msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (res.message || 'Đăng ký thất bại') + '</span>';
+                })
+                .catch((err) => {
+                    msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (err && err.message ? err.message : 'Không kết nối được server') + '</span>';
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đăng ký';
-                }
-            })
-            .catch(() => {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-wifi me-1"></i>Không kết nối được server</span>';
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đăng ký';
-            });
+                });
         }
     </script>
 </body>

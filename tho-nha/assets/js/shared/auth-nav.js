@@ -5,6 +5,103 @@
 (function () {
     'use strict';
 
+    function safeParse(raw, fallback) {
+        if (!raw) return fallback;
+        try {
+            return JSON.parse(raw);
+        } catch (_err) {
+            return fallback;
+        }
+    }
+
+    function ensureTrailingSlash(prefix) {
+        var p = String(prefix || './').trim();
+        if (!p) return './';
+        return p.endsWith('/') ? p : (p + '/');
+    }
+
+    function getBasePrefix() {
+        if (typeof window.BD_BASE === 'string' && window.BD_BASE.trim()) {
+            return ensureTrailingSlash(window.BD_BASE);
+        }
+
+        var path = String(window.location.pathname || '');
+        if (path.indexOf('/pages/public/') !== -1) return '../../';
+        if (path.indexOf('/partials/') !== -1) return '../';
+        return './';
+    }
+
+    function buildPathMaps(basePrefix) {
+        var base = ensureTrailingSlash(basePrefix);
+        return {
+            checkSessionUrl: base + 'api/public/check-session.php',
+            dashMap: {
+                customer: base + 'pages/customer/trang-ca-nhan.html',
+                provider: base + 'pages/provider/trang-ca-nhan.html',
+                admin: base + 'pages/admin/quan-tri.html'
+            },
+            logoutMap: {
+                customer: base + 'api/customer/auth/logout.php',
+                provider: base + 'api/provider/auth/logout.php',
+                admin: base + 'api/admin/auth/logout.php'
+            },
+            loginMap: {
+                customer: base + 'pages/customer/dang-nhap.html',
+                provider: base + 'pages/provider/dang-nhap.html',
+                admin: base + 'pages/admin/dang-nhap.html'
+            }
+        };
+    }
+
+    function detectLocalAuth() {
+        var adminLogged = localStorage.getItem('admin_logged_in') === 'true';
+        if (adminLogged) {
+            return {
+                logged_in: true,
+                role: 'admin',
+                name: String(localStorage.getItem('admin_username') || 'Admin')
+            };
+        }
+
+        var providerLogged = localStorage.getItem('provider_logged_in') === 'true';
+        if (providerLogged) {
+            var providerProfile = safeParse(localStorage.getItem('thonha_provider_profile_v1'), {});
+            return {
+                logged_in: true,
+                role: 'provider',
+                name: String(localStorage.getItem('provider_name') || providerProfile.name || providerProfile.company || 'Nhà cung cấp')
+            };
+        }
+
+        var customerLogged = localStorage.getItem('customer_logged_in') === 'true';
+        if (customerLogged) {
+            var customerProfile = safeParse(localStorage.getItem('thonha_customer_profile_v1'), {});
+            return {
+                logged_in: true,
+                role: 'customer',
+                name: String(localStorage.getItem('customer_name') || customerProfile.name || 'Khách hàng')
+            };
+        }
+
+        return null;
+    }
+
+    function clearLocalAuth() {
+        [
+            'customer_logged_in',
+            'customer_name',
+            'provider_logged_in',
+            'provider_name',
+            'provider_company',
+            'admin_logged_in',
+            'admin_username',
+            'thonha_customer_profile_v1',
+            'thonha_provider_profile_v1'
+        ].forEach(function (key) {
+            localStorage.removeItem(key);
+        });
+    }
+
     function initAuthNav() {
         const loadingEl = document.getElementById('auth-loading');
         if (!loadingEl || loadingEl.dataset.init) return; // Chặn double-init
@@ -17,89 +114,104 @@
         const mobileGuest   = document.getElementById('mobile-auth-guest');
         const mobileUser    = document.getElementById('mobile-auth-user');
 
-        fetch('../../api/public/check-session.php')
+        var paths = buildPathMaps(getBasePrefix());
+
+        function setLoadingOff() {
+            loadingEl.style.display = 'none';
+            if (loadingMobile) loadingMobile.style.display = 'none';
+        }
+
+        function applyGuestUi() {
+            if (guestEl) guestEl.style.display = '';
+            if (userEl) userEl.style.display = 'none';
+            if (mobileGuest) mobileGuest.style.display = '';
+            if (mobileUser) mobileUser.style.display = 'none';
+            if (avatarMobile) avatarMobile.style.display = 'none';
+        }
+
+        function bindLogout(linkEl, role) {
+            if (!linkEl) return;
+            linkEl.onclick = function (e) {
+                e.preventDefault();
+                clearLocalAuth();
+
+                var logoutUrl = paths.logoutMap[role] || paths.logoutMap.customer;
+                var loginUrl = paths.loginMap[role] || paths.loginMap.customer;
+
+                fetch(logoutUrl)
+                    .catch(function () { return null; })
+                    .finally(function () {
+                        window.location.href = loginUrl;
+                    });
+            };
+        }
+
+        function applyLoggedInUi(authData) {
+            var role = String(authData && authData.role || 'customer');
+            var name = String(authData && authData.name || 'User');
+            var initial = name.charAt(0).toUpperCase();
+
+            if (guestEl) guestEl.style.display = 'none';
+            if (mobileGuest) mobileGuest.style.display = 'none';
+
+            if (userEl) userEl.style.display = '';
+            const nameEl   = document.getElementById('auth-name');
+            const avatarEl = document.getElementById('auth-avatar');
+            if (nameEl) nameEl.textContent = name;
+            if (avatarEl) avatarEl.textContent = initial;
+
+            const dashLink = document.getElementById('auth-dashboard-link');
+            if (dashLink) dashLink.href = paths.dashMap[role] || paths.dashMap.customer;
+
+            const logoutLink = document.getElementById('auth-logout-link');
+            bindLogout(logoutLink, role);
+
+            if (avatarMobile) {
+                avatarMobile.textContent = initial;
+                avatarMobile.style.display = '';
+            }
+
+            if (mobileUser) mobileUser.style.display = '';
+            const mobileAvatarInner = document.getElementById('mobile-auth-avatar-inner');
+            const mobileNameEl      = document.getElementById('mobile-auth-name');
+            if (mobileAvatarInner) mobileAvatarInner.textContent = initial;
+            if (mobileNameEl) mobileNameEl.textContent = name;
+
+            const mobileDashLink = document.getElementById('mobile-auth-dashboard-link');
+            if (mobileDashLink) mobileDashLink.href = paths.dashMap[role] || paths.dashMap.customer;
+
+            const mobileLogout = document.getElementById('mobile-auth-logout-link');
+            bindLogout(mobileLogout, role);
+        }
+
+        fetch(paths.checkSessionUrl, { cache: 'no-store' })
             .then(r => r.json())
             .then(function (data) {
-                loadingEl.style.display = 'none';
-                if (loadingMobile) loadingMobile.style.display = 'none';
+                setLoadingOff();
 
-                var dashMap = {
-                    customer: '../../pages/customer/trang-ca-nhan.html',
-                    provider: '../../pages/provider/trang-ca-nhan.html',
-                    admin:    '../../pages/admin/quan-tri.html'
-                };
-                var logoutMap = {
-                    customer: '../../api/customer/auth/logout.php',
-                    provider: '../../api/provider/auth/logout.php',
-                    admin:    '../../api/admin/auth/logout.php'
-                };
-                var loginMap = {
-                    customer: '../../pages/customer/dang-nhap.html',
-                    provider: '../../pages/provider/dang-nhap.html',
-                    admin:    '../../pages/admin/dang-nhap.html'
-                };
+                if (data && data.logged_in) {
+                    applyLoggedInUi({
+                        role: data.role || 'customer',
+                        name: data.name || 'User'
+                    });
+                    return;
+                }
 
-                if (data.logged_in) {
-                    var initial = (data.name || 'U').charAt(0).toUpperCase();
-
-                    // ── Desktop ──
-                    if (userEl) userEl.style.display = '';
-                    var nameEl   = document.getElementById('auth-name');
-                    var avatarEl = document.getElementById('auth-avatar');
-                    if (nameEl)   nameEl.textContent  = data.name || '';
-                    if (avatarEl) avatarEl.textContent = initial;
-
-                    var dashLink = document.getElementById('auth-dashboard-link');
-                    if (dashLink) dashLink.href = dashMap[data.role] || dashMap.customer;
-
-                    var logoutLink = document.getElementById('auth-logout-link');
-                    if (logoutLink) {
-                        logoutLink.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            fetch(logoutMap[data.role] || logoutMap.customer)
-                                .then(function () {
-                                    window.location.href = loginMap[data.role] || loginMap.customer;
-                                });
-                        });
-                    }
-
-                    // ── Mobile topbar avatar ──
-                    if (avatarMobile) {
-                        avatarMobile.textContent = initial;
-                        avatarMobile.style.display = '';
-                    }
-
-                    // ── Mobile nav user ──
-                    if (mobileUser) mobileUser.style.display = '';
-                    var mobileAvatarInner = document.getElementById('mobile-auth-avatar-inner');
-                    var mobileNameEl      = document.getElementById('mobile-auth-name');
-                    if (mobileAvatarInner) mobileAvatarInner.textContent = initial;
-                    if (mobileNameEl)      mobileNameEl.textContent      = data.name || '';
-
-                    var mobileDashLink = document.getElementById('mobile-auth-dashboard-link');
-                    if (mobileDashLink) mobileDashLink.href = dashMap[data.role] || dashMap.customer;
-
-                    var mobileLogout = document.getElementById('mobile-auth-logout-link');
-                    if (mobileLogout) {
-                        mobileLogout.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            fetch(logoutMap[data.role] || logoutMap.customer)
-                                .then(function () {
-                                    window.location.href = loginMap[data.role] || loginMap.customer;
-                                });
-                        });
-                    }
-
+                var localAuth = detectLocalAuth();
+                if (localAuth) {
+                    applyLoggedInUi(localAuth);
                 } else {
-                    if (guestEl)    guestEl.style.display    = '';
-                    if (mobileGuest) mobileGuest.style.display = '';
+                    applyGuestUi();
                 }
             })
             .catch(function () {
-                loadingEl.style.display = 'none';
-                if (loadingMobile) loadingMobile.style.display = 'none';
-                if (guestEl)       guestEl.style.display       = '';
-                if (mobileGuest)   mobileGuest.style.display   = '';
+                setLoadingOff();
+                var localAuth = detectLocalAuth();
+                if (localAuth) {
+                    applyLoggedInUi(localAuth);
+                } else {
+                    applyGuestUi();
+                }
             });
     }
 

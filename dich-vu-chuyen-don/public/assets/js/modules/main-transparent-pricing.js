@@ -9,22 +9,17 @@
     {
       id: "cuoc-xe",
       ten: "Cước xe theo km",
-      mo_ta: "Phần có ở cả 3 nhóm dịch vụ, dựa trên số km di chuyển và giá mỗi km của loại xe bạn chọn.",
+      mo_ta: "Mức phí cốt lõi của tất cả dịch vụ, tính trên quãng đường di chuyển và loại xe bạn chọn.",
     },
     {
       id: "ho-tro",
-      ten: "Phụ phí checkbox",
-      mo_ta: "Chỉ tính khi bạn bật các hạng mục phát sinh như đóng gói, tháo lắp, pallet, xe nâng hoặc xe cẩu.",
-    },
-    {
-      id: "phu-phi",
-      ten: "Phụ phí điều kiện thực tế",
-      mo_ta: "Phát sinh theo điều kiện mặt bằng, thời tiết, khung giờ và các lưu ý đặc thù của đơn chuyển dọn.",
+      ten: "Phí dịch vụ chọn thêm",
+      mo_ta: "Chỉ cộng dồn khi bạn tích chọn các hạng mục hỗ trợ ngoài như: đóng gói, tháo lắp, xe nâng...",
     },
     {
       id: "thoi-diem",
-      ten: "Điều chỉnh theo thời điểm",
-      mo_ta: "Khung giờ tối, ban đêm, cuối tuần hoặc thời tiết xấu hiện đang hiển thị theo dạng phụ phí tham chiếu.",
+      ten: "Phí ngoài giờ / Thời tiết",
+      mo_ta: "Phụ phí ấn định (cộng thêm) nếu bạn yêu cầu phục vụ vào ban đêm, cuối tuần hoặc khi trời mưa.",
     },
   ];
 
@@ -89,81 +84,86 @@
     return content || core.escapeHtml(fallback || "Cần khảo sát để chốt");
   }
 
-  function renderDetailList(items) {
-    if (!Array.isArray(items) || !items.length) {
-      return '<li>Đang cập nhật chi tiết.</li>';
-    }
-
-    return items.map((item) => `<li>${item}</li>`).join("");
-  }
-
   function buildFormulaDetailPanel(data, groupId) {
-    return data
-      .map((item) => {
-        const serviceName = core.escapeHtml(item.ten_dich_vu || "");
-        let details = [];
+    const cards = data.map((item) => {
+      let details = [];
 
-        if (groupId === "cuoc-xe") {
-          const vehicles = core.getPricingVehicleEntries(item);
-          const vehicleLines = vehicles
-            .map((vehicle) => {
-              return `${core.escapeHtml(vehicle.ten_hien_thi)}: <strong>${core.escapeHtml(formatCurrency(vehicle.gia_moi_km) || "Cần xác nhận")}</strong>/km.`;
-            });
-
-          details = [
-            vehicles.length
-              ? `Giá xe tham khảo: ${vehicleLines.join(" ")}`
-              : "Giá xe được chốt theo loại xe phù hợp và quãng đường thực tế.",
-            "Tổng cước xe = số km di chuyển x giá mỗi km của loại xe đã chọn.",
-          ];
-        }
-
-        if (groupId === "ho-tro") {
-          const checkboxItems = core.getPricingCheckboxItems(item);
-          details = checkboxItems.length
-            ? checkboxItems.map((entry) => {
-                const price = formatCurrency(entry.don_gia);
-                return `${core.escapeHtml(entry.ten)}: <strong>${core.escapeHtml(price || "Cần xác nhận")}</strong>.`;
-              })
-            : ["Chỉ cộng thêm khi bạn chọn các hạng mục hỗ trợ ngoài cước xe theo km."];
-        }
-
-        if (groupId === "phu-phi") {
-          const extraParts = Array.isArray(getTransparentInfo(item).phan_phat_sinh)
-            ? getTransparentInfo(item).phan_phat_sinh
-            : [];
-          details = extraParts.length
-            ? extraParts.map(
-                (entry) =>
-                  `Có thể phát sinh với hạng mục <strong>${core.escapeHtml(String(entry || "").trim())}</strong> khi điều kiện thực tế yêu cầu.`,
-              )
-            : ["Phụ phí sẽ chốt theo điều kiện thực tế của đồ đạc và mặt bằng triển khai."];
-        }
-
-        if (groupId === "thoi-diem") {
-          const multiplierEntries = core.getPricingMultiplierEntries(item);
-          const note =
-            "Khung giờ và thời tiết được cộng trực tiếp như phụ phí cố định.";
-          details = multiplierEntries.length
-            ? [
-                ...multiplierEntries.map((entry) => {
-                  return `<strong>${core.escapeHtml(entry.title)}:</strong> ${core.escapeHtml(entry.value || "Cần xác nhận")} ${entry.note ? `, ${core.escapeHtml(entry.note)}` : ""}.`;
-                }),
-                core.escapeHtml(note),
-              ]
-            : [core.escapeHtml(note)];
-        }
-
-        return `
-          <div class="dong-giai-thich-cong-thuc">
-            <h3>${serviceName}</h3>
-            <ul class="danh-sach-giai-thich-cong-thuc">
-              ${renderDetailList(details)}
-            </ul>
+      if (groupId === "cuoc-xe") {
+        const vehicles = core.getPricingVehicleEntries(item);
+        details = vehicles.map(v => `
+          <div class="dong-gia-so-sanh">
+            <span class="ten-phi">${core.escapeHtml(v.ten_hien_thi)}</span>
+            <span class="muc-tien"><strong>${core.escapeHtml(formatCurrency(v.gia_moi_km) || "Cần xác nhận")}</strong>/km</span>
           </div>
-        `;
-      })
-      .join("");
+        `);
+      }
+
+      if (groupId === "ho-tro") {
+        const checkboxItems = core.getPricingCheckboxItems(item);
+        details = checkboxItems.length
+          ? checkboxItems.map(entry => `
+              <div class="dong-gia-so-sanh">
+                <span class="ten-phi">${core.escapeHtml(entry.ten)}</span>
+                <span class="muc-tien"><strong>+${core.escapeHtml(formatCurrency(entry.don_gia) || "Cần xác nhận")}</strong></span>
+              </div>
+            `)
+          : ['<div class="dong-gia-so-sanh"><span class="mo-ta-phu">Không có phụ phí mở rộng</span></div>'];
+      }
+
+      if (groupId === "thoi-diem") {
+        const multiplierEntries = core.getPricingMultiplierEntries(item);
+        details = multiplierEntries.length
+          ? multiplierEntries.map(entry => `
+              <div class="dong-gia-so-sanh">
+                <span class="ten-phi">${core.escapeHtml(entry.title)}</span>
+                <span class="muc-tien"><strong>+${core.escapeHtml(entry.value || "Cần xác nhận")}</strong></span>
+              </div>
+            `)
+          : ['<div class="dong-gia-so-sanh"><span class="mo-ta-phu">Không có phụ phí thời điểm</span></div>'];
+      }
+
+      return `
+        <div class="the-so-sanh-gia">
+          <div class="the-so-sanh-gia__dau">${core.escapeHtml(item.ten_dich_vu || "")}</div>
+          <div class="the-so-sanh-gia__noi-dung">
+            ${details.join("")}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    let commonNote = "";
+    if (groupId === "cuoc-xe") commonNote = "Tổng cước xe = Số km di chuyển x Giá mỗi km của loại xe đã chọn.";
+    if (groupId === "ho-tro") commonNote = "Chỉ phát sinh khi khách hàng yêu cầu thêm các dịch vụ hỗ trợ ngoài cước di chuyển cơ bản.";
+    if (groupId === "thoi-diem") commonNote = "Hệ số và phụ phí thời điểm sẽ được linh động cộng dồn một lần vào tổng hóa đơn cuối cùng.";
+
+    return `
+      <style>
+        .luoi-so-sanh-gia { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1rem; }
+        .the-so-sanh-gia { border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; }
+        .the-so-sanh-gia__dau { background: #f8fafc; padding: 1rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; text-align: center; color: #0f172a; font-size: 1.05rem; }
+        .the-so-sanh-gia__noi-dung { padding: 0.5rem 1.25rem; font-size: 0.95rem; line-height: 1.8; color: #334155; }
+        
+        .dong-gia-so-sanh { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px dashed #e2e8f0; }
+        .dong-gia-so-sanh:last-child { border-bottom: none; }
+        .ten-phi { color: #475569; padding-right: 1rem; }
+        .muc-tien { white-space: nowrap; color: #0f172a; text-align: right; }
+        .mo-ta-phu { color: #94a3b8; font-style: italic; width: 100%; text-align: center; }
+
+        .ghi-chu-chung-gia { margin-top: 1.25rem; background: #fefce8; color: #854d0e; font-style: italic; text-align: center; border: 1px solid #fef08a; border-radius: 8px; padding: 12px 16px; font-size: 0.95rem; }
+        @media (max-width: 768px) {
+          .luoi-so-sanh-gia { grid-template-columns: 1fr; gap: 1rem; }
+        }
+      </style>
+      <div class="bang-so-sanh-cong-thuc-wrapper" style="border: none; padding: 0; background: transparent; box-shadow: none;">
+        <div class="luoi-so-sanh-gia">
+          ${cards}
+        </div>
+        <div class="ghi-chu-chung-gia">
+          <strong>Ghi chú chung:</strong> ${core.escapeHtml(commonNote)}
+        </div>
+      </div>
+    `;
   }
 
   function buildQuickCompare(data) {
@@ -387,27 +387,17 @@
     const tabs = [
       {
         id: "so-sanh",
-        label: "So sánh nhanh",
+        label: "Tổng quan",
         content: buildQuickCompare(data),
       },
       {
         id: "cong-thuc",
-        label: "Công thức chung",
+        label: "Chi tiết giá & Phụ phí",
         content: buildCommonFormulaSection(data),
       },
       {
-        id: "phat-sinh",
-        label: "Theo từng dịch vụ",
-        content: buildServiceFormulaSection(data),
-      },
-      {
-        id: "phu-phi",
-        label: "Phụ phí",
-        content: buildSurchargeSection(data),
-      },
-      {
         id: "quyet-dinh",
-        label: "Khi nào khảo sát",
+        label: "Khi nào cần khảo sát?",
         content: buildDecisionSection(data),
       },
     ];

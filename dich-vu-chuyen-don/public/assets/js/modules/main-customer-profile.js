@@ -198,8 +198,8 @@
       }
 
       try {
-        if (store.updateProfileOnApi) {
-          const profile = await store.updateProfileOnApi({
+        if (store.updateProfile) {
+          const profile = await store.updateProfile({
             full_name: fullName,
             email: nextEmail,
             phone: nextPhone,
@@ -210,7 +210,7 @@
           return;
         }
       } catch (error) {
-        console.error("Cannot update customer profile API:", error);
+        console.error("Cannot update customer profile store:", error);
         showFeedback(profileFeedback, "error", error.message || "Không thể cập nhật hồ sơ khách hàng.");
         return;
       }
@@ -252,8 +252,8 @@
       }
 
       try {
-        if (store.changePasswordOnApi) {
-          await store.changePasswordOnApi({
+        if (store.changePassword) {
+          await store.changePassword({
             current_password: currentPassword,
             new_password: newPassword,
             confirm_password: confirmPassword,
@@ -263,7 +263,7 @@
           return;
         }
       } catch (error) {
-        console.error("Cannot change customer password API:", error);
+        console.error("Cannot change customer password store:", error);
         showFeedback(passwordFeedback, "error", error.message || "Không thể đổi mật khẩu.");
         return;
       }
@@ -275,10 +275,10 @@
 
   (async function bootstrapProfile() {
     try {
-      const profile = await store.fetchProfileFromApi?.();
+      const profile = await store.fetchProfile?.();
       renderProfile({ profile });
     } catch (error) {
-      console.error("Cannot load customer profile API:", error);
+      console.error("Cannot load customer profile store:", error);
       renderProfile(null);
     }
   })();
