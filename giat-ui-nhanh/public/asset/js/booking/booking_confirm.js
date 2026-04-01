@@ -345,14 +345,51 @@
       }
     }
 
+    function normalizeMoneyToNumber(value) {
+      if (typeof value === "number" && Number.isFinite(value)) {
+        return Math.round(value);
+      }
+
+      const raw = String(value == null ? "" : value).trim();
+      if (!raw) return 0;
+
+      const sign = raw.includes("-") ? -1 : 1;
+      const digits = raw.replace(/\D/g, "");
+      if (!digits) return 0;
+
+      return sign * Number(digits);
+    }
+
+    function buildBookingSheetPayload(formData) {
+      return {
+        sheet_type: "Giặt ủi nhanh",
+        created_at: "",
+        "Mã đơn": formData.order_code || "",
+        "Tên khách": formData.name || "",
+        "Số điện thoại": formData.phone || "",
+        "Địa chỉ": formData.address || "",
+        "Dịch vụ": formData.service_name || formData.service || "",
+        "Hình thức nhận/giao": formData.sub_service || "",
+        "Số lượng": formData.quantity || "",
+        "Giá dịch vụ": normalizeMoneyToNumber(formData.price),
+        "Tiền di chuyển": normalizeMoneyToNumber(formData.ship),
+        "Phụ phí giao/nhận": normalizeMoneyToNumber(
+          formData.shipping_surcharge,
+        ),
+        "Tổng tiền": normalizeMoneyToNumber(formData.total),
+        "Công việc": formData.work_items || "",
+        "Hóa chất hỗ trợ": formData.support_chemicals || "",
+        "Thời gian đặt": formData.booking_time || "",
+        "Ghi chú": formData.message || "",
+      };
+    }
+
     function saveToGoogleSheet(data) {
       if (typeof window.saveToGoogleSheet !== "function") {
         return Promise.reject(new Error("driveUtil.js chưa được nạp."));
       }
 
-      const sheetPayload = Object.assign({}, data, {
-        sheet_type: "Giặt Ủi Nhanh",
-      });
+      const sheetPayload = buildBookingSheetPayload(data);
 
       return Promise.resolve(window.saveToGoogleSheet(sheetPayload)).then(
         (result) => {
@@ -372,10 +409,6 @@
     }
 
     function saveToKrudApi(data) {
-      // if (typeof window.krud !== "function") {
-      //   return Promise.reject(new Error("KRUD API chưa được nạp."));
-      // }
-
       if (!config.BOOKING_KRUD_TABLE) {
         return Promise.reject(new Error("Thiếu cấu hình BOOKING_KRUD_TABLE."));
       }

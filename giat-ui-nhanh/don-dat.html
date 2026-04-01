@@ -399,6 +399,55 @@
           <li>
             <a href="dang-nhap.html" class="nav-link login-btn">Đăng nhập</a>
           </li>
+          <li>
+            <details class="auth-menu" aria-label="Khu vực tài khoản">
+              <summary class="auth-user-trigger" aria-label="Mở menu tài khoản">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6"
+                  />
+                </svg>
+              </summary>
+
+              <div
+                class="auth-user-dropdown"
+                role="menu"
+                aria-label="Tùy chọn tài khoản"
+              >
+                <a href="#" class="auth-logout-btn" role="menuitem">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 15a1 1 0 0 0 1-1v-3h-1v3H2V2h8v3h1V2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1z"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M6.146 11.354a.5.5 0 0 1 0-.708L8.793 8 6.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M9.5 8a.5.5 0 0 1 .5-.5H15a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"
+                    />
+                  </svg>
+                  Đăng xuất
+                </a>
+              </div>
+            </details>
+          </li>
         </ul>
         <button class="menu-toggle" id="menuToggle" aria-label="Menu">
           <svg
@@ -459,6 +508,7 @@
                 <thead class="table-success">
                   <tr>
                     <th>#</th>
+                    <th>Tên khách hàng</th>
                     <th>Dịch vụ</th>
                     <th>Gói</th>
                     <th>Ngày đặt</th>
@@ -469,7 +519,7 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td colspan="7" class="empty-row">Đang tải dữ liệu...</td>
+                    <td colspan="8" class="empty-row">Đang tải dữ liệu...</td>
                   </tr>
                 </tbody>
               </table>
@@ -541,6 +591,10 @@
                   </div>
                   <div class="info-item">
                     <b>Phí giao hàng:</b> <span id="modalShippingFee">-</span>
+                  </div>
+                  <div class="info-item">
+                    <b>Phụ phí giao hàng:</b>
+                    <span id="modalShippingSurcharge">-</span>
                   </div>
                   <div class="info-item">
                     <b>Tổng tiền:</b> <span id="modalTotalPrice">-</span>
@@ -829,6 +883,14 @@
     <script type="text/javascript" src="public/asset/js/script.js"></script>
     <script type="text/javascript" src="public/asset/js/booking.js"></script>
     <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
+    <script
+      type="text/javascript"
+      src="../public/asset/js/driveUtil.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="public/asset/js/auth-session.js"
+    ></script>
     <script>
       WebFont.load({
         google: {
@@ -992,6 +1054,10 @@
             transactionStatusEl.innerHTML = `<span class="payment-status-badge ${transactionStatusClass(order.transaction_status)}">${transactionStatusText(order.transaction_status)}</span>`;
           }
           setText("modalShippingFee", formatCurrency(getShippingFee(order)));
+          setText(
+            "modalShippingSurcharge",
+            formatCurrency(order.shippingSurcharge),
+          );
           setText("modalTotalPrice", formatCurrency(order.totalPrice));
           setText("modalNote", order.note || "Không có ghi chú.");
 
@@ -1030,7 +1096,7 @@
         function renderRows(orders) {
           if (!orders.length) {
             tableBody.innerHTML =
-              '<tr><td colspan="7" class="empty-row">Không có đơn phù hợp.</td></tr>';
+              '<tr><td colspan="8" class="empty-row">Không có đơn phù hợp.</td></tr>';
             return;
           }
 
@@ -1048,6 +1114,7 @@
               return `
                 <tr>
                   <td>${index + 1}</td>
+                  <td>${(order.customer && order.customer.name) || "-"}</td>
                   <td>${order.serviceName || "-"}</td>
                   <td>${order.transport_options || "-"}</td>
                   <td>${formatDate(order.orderDate)}</td>
@@ -1076,21 +1143,175 @@
           renderRows(filtered);
         }
 
-        fetch("public/order.json")
-          .then(function (response) {
-            if (!response.ok) {
-              throw new Error("Không thể tải dữ liệu đơn hàng");
-            }
-            return response.json();
-          })
-          .then(function (payload) {
-            allOrders = Array.isArray(payload.orders) ? payload.orders : [];
-            applyFilter();
-          })
-          .catch(function () {
+        function extractKrudRows(result) {
+          if (Array.isArray(result)) {
+            return result;
+          }
+          if (result && Array.isArray(result.data)) {
+            return result.data;
+          }
+          if (result && Array.isArray(result.items)) {
+            return result.items;
+          }
+          if (result && Array.isArray(result.rows)) {
+            return result.rows;
+          }
+          if (result && Array.isArray(result.result)) {
+            return result.result;
+          }
+          return [];
+        }
+
+        function toNumber(value) {
+          var normalized = String(value == null ? "" : value).replace(
+            /[^\d.-]/g,
+            "",
+          );
+          var number = Number(normalized);
+          return Number.isFinite(number) ? number : 0;
+        }
+
+        function normalizeOrderStatus(value) {
+          const status = String(value || "")
+            .trim()
+            .toLowerCase();
+
+          if (
+            status === "pending" ||
+            status === "new" ||
+            status === "moi" ||
+            status === "chờ xử lý" ||
+            status === "cho xu ly"
+          ) {
+            return "pending";
+          }
+
+          if (
+            status === "processing" ||
+            status === "đang xử lý" ||
+            status === "dang xu ly"
+          ) {
+            return "processing";
+          }
+
+          if (
+            status === "completed" ||
+            status === "hoàn thành" ||
+            status === "hoan thanh"
+          ) {
+            return "completed";
+          }
+
+          if (
+            status === "cancel" ||
+            status === "cancelled" ||
+            status === "đã hủy" ||
+            status === "da huy"
+          ) {
+            return "cancel";
+          }
+
+          return "pending";
+        }
+
+        function normalizePaymentStatus(value) {
+          const status = String(value || "")
+            .trim()
+            .toLowerCase();
+
+          if (
+            status === "paid" ||
+            status === "đã thanh toán" ||
+            status === "da thanh toan"
+          ) {
+            return "paid";
+          }
+
+          if (
+            status === "unpaid" ||
+            status === "chưa thanh toán" ||
+            status === "chua thanh toan"
+          ) {
+            return "unpaid";
+          }
+
+          return "unpaid";
+        }
+
+        function mapOrderFromKrud(row) {
+          const transportFee = toNumber(row.tiendichuyen || row.transportFee);
+          const shippingSurcharge = toNumber(
+            row.phuphigiaonhan || row.shippingSurcharge,
+          );
+
+          return {
+            rowId: row.id || "",
+            id: row.madonhang || row.id || "",
+            serviceName: row.dichvu || row.serviceName || "",
+            transport_options:
+              row.hinhthucnhangiao || row.transport_options || "",
+            orderDate:
+              row.thoigiandatdichvu || row.orderDate || row.created_at || "",
+            order_status: normalizeOrderStatus(
+              row.order_status || row.trangthai || row.status,
+            ),
+            transaction_status: normalizePaymentStatus(
+              row.transaction_status ||
+                row.trangthaithanhtoan ||
+                row.payment_status,
+            ),
+            transportFee: transportFee,
+            shippingSurcharge: shippingSurcharge,
+            shippingFee: transportFee + shippingSurcharge,
+            totalPrice: toNumber(row.tongtien || row.totalPrice),
+            work_items: row.danhsachcongviec || row.work_items || "",
+            support_chemicals:
+              row.danhsachhoachat || row.support_chemicals || "",
+            note: row.ghichu || row.note || "",
+            quantity: row.soluong || row.quantity || "",
+            customer: {
+              name: row.hovaten || "",
+              phone: row.sodienthoai || "",
+              email: row.email || "",
+              address: row.diachi || "",
+            },
+            provider: {
+              name: row.tennhacungcap || row.provider_name || "",
+              phone: row.sdt_ncc || row.provider_phone || "",
+              email: row.email_ncc || row.provider_email || "",
+              address: row.diachi_ncc || row.provider_address || "",
+            },
+          };
+        }
+
+        function loadOrdersFromKrud() {
+          if (typeof window.krudList !== "function") {
             tableBody.innerHTML =
-              '<tr><td colspan="7" class="empty-row">Không tải được dữ liệu từ order.json.</td></tr>';
-          });
+              '<tr><td colspan="8" class="empty-row">KRUD chưa sẵn sàng. Vui lòng tải lại trang.</td></tr>';
+            return;
+          }
+
+          tableBody.innerHTML =
+            '<tr><td colspan="8" class="empty-row">Đang tải dữ liệu...</td></tr>';
+
+          Promise.resolve(
+            window.krudList({
+              table: "datlich_giatuinhanh",
+            }),
+          )
+            .then(function (result) {
+              const rows = extractKrudRows(result);
+              allOrders = rows.map(mapOrderFromKrud);
+              applyFilter();
+            })
+            .catch(function (error) {
+              console.error("Lỗi tải đơn từ KRUD:", error);
+              tableBody.innerHTML =
+                '<tr><td colspan="8" class="empty-row">Không tải được dữ liệu từ bảng datlich_giatuinhanh.</td></tr>';
+            });
+        }
+
+        loadOrdersFromKrud();
 
         statusFilter.addEventListener("change", applyFilter);
 
