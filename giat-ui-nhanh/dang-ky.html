@@ -221,7 +221,7 @@
                 id="customerSubmitBtn"
                 type="submit"
                 class="btn-login mt-2"
-                onclick="createProvider()"
+                onclick="createCustomer()"
               >
                 <span class="btn-text">Tạo tài khoản khách hàng</span>
               </button>
@@ -1337,7 +1337,7 @@
     <script>
       function createCustomer() {
         document
-          .getElementById("providerForm")
+          .getElementById("customerForm")
           .addEventListener("submit", function (e) {
             e.preventDefault();
 
