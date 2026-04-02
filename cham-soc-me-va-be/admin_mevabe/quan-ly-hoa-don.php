@@ -1,0 +1,160 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/slidebar.php';
+require_once __DIR__ . '/get_hoadon.php';
+
+$admin = admin_require_login();
+
+$q = trim((string)($_GET['q'] ?? ''));
+$statusFilter = trim((string)($_GET['status'] ?? 'all'));
+$page = max(1, (int)($_GET['page'] ?? 1));
+
+$data = get_hoadon_data();
+$rows = $data['rows'] ?? [];
+$error = (string)($data['error'] ?? '');
+
+$filtered = array_values(array_filter($rows, static function (array $row) use ($q, $statusFilter): bool {
+	$statusMeta = hoadon_status_meta((string)($row['trangthai'] ?? ''));
+	if ($statusFilter !== 'all' && $statusMeta['key'] !== $statusFilter) {
+		return false;
+	}
+
+	if ($q !== '') {
+		$target = strtolower(implode(' ', [
+			(string)($row['id'] ?? ''),
+			(string)($row['hovaten'] ?? ''),
+			(string)($row['sodienthoai'] ?? ''),
+			(string)($row['dich_vu'] ?? ''),
+			(string)($row['goi_dich_vu'] ?? ''),
+		]));
+
+		return strpos($target, strtolower($q)) !== false;
+	}
+
+	return true;
+}));
+
+$perPage = 5;
+$totalFiltered = count($filtered);
+$totalPages = max(1, (int)ceil($totalFiltered / $perPage));
+$page = min($page, $totalPages);
+$offset = ($page - 1) * $perPage;
+$paginatedRows = array_slice($filtered, $offset, $perPage);
+
+$buildPageUrl = static function (int $targetPage) use ($q, $statusFilter): string {
+	$params = [
+		'q' => $q,
+		'status' => $statusFilter,
+		'page' => $targetPage,
+	];
+
+	return '?' . http_build_query($params);
+};
+
+admin_render_layout_start('Quan Ly Don Hang', 'orders', $admin);
+?>
+
+<div class="card border-0 shadow-sm mb-3">
+	<div class="card-body">
+		<form method="get" class="row g-2 align-items-end">
+			<div class="col-12 col-md-5 col-lg-4">
+				<label class="form-label mb-1">Tim kiem</label>
+				<input type="text" class="form-control" name="q" value="<?= admin_h($q) ?>" placeholder="Ma don, ten KH, SDT...">
+			</div>
+			<div class="col-6 col-md-4 col-lg-3">
+				<label class="form-label mb-1">Trang thai</label>
+				<select class="form-select" name="status">
+					<option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>Tat ca</option>
+					<option value="pending" <?= $statusFilter === 'pending' ? 'selected' : '' ?>>Cho xac nhan</option>
+					<option value="confirmed" <?= $statusFilter === 'confirmed' ? 'selected' : '' ?>>Da xac nhan</option>
+					<option value="in_progress" <?= $statusFilter === 'in_progress' ? 'selected' : '' ?>>Dang thuc hien</option>
+					<option value="completed" <?= $statusFilter === 'completed' ? 'selected' : '' ?>>Hoan thanh</option>
+					<option value="cancelled" <?= $statusFilter === 'cancelled' ? 'selected' : '' ?>>Da huy</option>
+				</select>
+			</div>
+			<div class="col-6 col-md-3 col-lg-2 d-grid">
+				<button class="btn btn-success" type="submit"><i class="bi bi-funnel me-1"></i>Loc</button>
+			</div>
+			<div class="col-12 col-lg-3 text-lg-end text-secondary small">
+				Tong: <strong><?= (int)$totalFiltered ?></strong> don hang
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="card border-0 shadow-sm">
+	<div class="card-body">
+		<?php if ($error !== ''): ?>
+			<div class="alert alert-warning mb-0"><?= admin_h($error) ?></div>
+		<?php else: ?>
+			<div class="table-responsive">
+				<table class="table table-hover align-middle mb-0">
+					<thead class="table-light">
+					<tr>
+						<th>Ma don</th>
+						<th>Khach hang</th>
+						<th>Dich vu</th>
+						<th>Tong tien</th>
+						<th>Trang thai</th>
+						<th>Ngay dat</th>
+						<th class="text-end">Hanh dong</th>
+					</tr>
+					</thead>
+					<tbody>
+					<?php if (!$paginatedRows): ?>
+						<tr><td colspan="7" class="text-center py-4 text-secondary">Khong co hoa don phu hop.</td></tr>
+					<?php else: ?>
+						<?php foreach ($paginatedRows as $row): ?>
+							<?php $meta = hoadon_status_meta((string)($row['trangthai'] ?? '')); ?>
+							<tr>
+								<td class="fw-semibold text-primary">#<?= admin_h((string)($row['id'] ?? '')) ?></td>
+								<td>
+									<div class="fw-semibold"><?= admin_h((string)($row['hovaten'] ?? 'N/A')) ?></div>
+									<div class="small text-secondary"><?= admin_h((string)($row['sodienthoai'] ?? '')) ?></div>
+								</td>
+								<td><?= admin_h((string)($row['dich_vu'] ?? 'N/A')) ?></td>
+								<td><?= admin_h((string)($row['tong_tien'] ?? '0')) ?></td>
+								<td><span class="badge rounded-pill <?= admin_h((string)$meta['badge']) ?>"><?= admin_h((string)$meta['text']) ?></span></td>
+								<td><?= admin_h((string)($row['created_date'] ?? $row['ngay_bat_dau'] ?? 'N/A')) ?></td>
+								<td class="text-end">
+									<a href="chi-tiet-hoa-don.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>" class="btn btn-sm btn-outline-primary">
+										<i class="bi bi-eye me-1"></i>Chi tiet
+									</a>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					<?php endif; ?>
+					</tbody>
+				</table>
+			</div>
+
+			<?php if ($totalFiltered > 0): ?>
+				<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-3">
+					<div class="small text-secondary">
+						Hien thi <?= (int)($offset + 1) ?> - <?= (int)min($offset + $perPage, $totalFiltered) ?> / <?= (int)$totalFiltered ?> don hang
+					</div>
+					<?php if ($totalPages > 1): ?>
+						<nav aria-label="Phan trang hoa don">
+							<ul class="pagination pagination-sm mb-0">
+								<li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+									<a class="page-link" href="<?= admin_h($buildPageUrl(max(1, $page - 1))) ?>">Truoc</a>
+								</li>
+								<?php for ($i = 1; $i <= $totalPages; $i++): ?>
+									<li class="page-item <?= $i === $page ? 'active' : '' ?>">
+										<a class="page-link" href="<?= admin_h($buildPageUrl($i)) ?>"><?= $i ?></a>
+									</li>
+								<?php endfor; ?>
+								<li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+									<a class="page-link" href="<?= admin_h($buildPageUrl(min($totalPages, $page + 1))) ?>">Sau</a>
+								</li>
+							</ul>
+						</nav>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+		<?php endif; ?>
+	</div>
+</div>
+
+<?php admin_render_layout_end(); ?>
