@@ -153,6 +153,13 @@
 
                     <form id="loginForm" novalidate>
                         <div class="mb-3">
+                            <label for="accountType" class="form-label fw-semibold">Loại tài khoản</label>
+                            <select id="accountType" class="form-control form-control-lg" required>
+                                <option value="khach_hang" selected>Khách hàng</option>
+                                <option value="nhan_vien">Nhân viên</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="identifier" class="form-label fw-semibold">Số điện thoại</label>
                             <input type="tel" class="form-control form-control-lg" id="identifier" placeholder="Nhập số điện thoại" required>
                         </div>
@@ -180,7 +187,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script>
-        const BANG_DANG_NHAP_KHACH_HANG = 'khachhang';
+        const BANG_DANG_NHAP = {
+            khach_hang: { table: 'khachhang', role: 'khach_hang' },
+            nhan_vien: { table: 'nhacungcap_mevabe', role: 'nhan_vien' }
+        };
 
         document.getElementById('togglePwd').addEventListener('click', function() {
             const input = document.getElementById('password');
@@ -237,14 +247,15 @@
             return 'Tài khoản hiện không thể đăng nhập';
         }
 
-        async function saveLoginSession(userPayload) {
-            const response = await fetch('session_login.php', {
+        // Luu thong tin dang nhap len session server dung chung.
+        async function saveLoginSession(loginPayload) {
+            const response = await fetch('session_auth.php?action=login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'same-origin',
-                body: JSON.stringify(userPayload || {})
+                body: JSON.stringify(loginPayload || {})
             });
 
             let data = null;
@@ -261,9 +272,15 @@
             return data;
         }
 
+        // Tra cau hinh bang dang nhap theo loai tai khoan.
+        function getLoginConfig(accountType) {
+            return BANG_DANG_NHAP[accountType] || BANG_DANG_NHAP.khach_hang;
+        }
+
         async function login() {
             const identifier = document.getElementById('identifier').value.trim();
             const password   = document.getElementById('password').value;
+            const accountType = document.getElementById('accountType').value;
             const btn = document.getElementById('loginBtn');
             const msg = document.getElementById('msg');
 
@@ -281,7 +298,8 @@
                     throw new Error('Không tải được hàm krudList');
                 }
 
-                const rows = normalizeRows(await krudList({ table: BANG_DANG_NHAP_KHACH_HANG }));
+                const loginConfig = getLoginConfig(accountType);
+                const rows = normalizeRows(await krudList({ table: loginConfig.table }));
                 const phoneDigits = normalizePhone(identifier);
                 const account = rows.find((item) => normalizePhone(item.sodienthoai || item.so_dien_thoai || item.phone || '') === phoneDigits);
 
@@ -301,26 +319,33 @@
 
                 const name = account.hovaten || account.ho_ten || account.name || 'Khách hàng';
                 const phone = account.sodienthoai || account.so_dien_thoai || account.phone || identifier;
-
-                const userPayload = {
-                    id: account.id || account.ID || '',
-                    ten: name,
+                const normalizedUser = {
+                    ...account,
+                    id: account.id || account.ID || account.ma || '',
+                    ten: account.ten || name,
                     sodienthoai: phone,
-                    vai_tro: account.vai_tro || account.role || 'khach_hang',
+                    vai_tro: loginConfig.role,
+                    loai_tai_khoan: accountType,
+                    bang_nguon: loginConfig.table,
                     anh_dai_dien: account.anh_dai_dien || account.avatar || '',
                     dia_chi: account.dia_chi || account.address || ''
                 };
 
-                await saveLoginSession(userPayload);
+                const sessionData = await saveLoginSession({
+                    loai_tai_khoan: accountType,
+                    bang_nguon: loginConfig.table,
+                    user: normalizedUser
+                });
+                const sessionUser = sessionData.user || normalizedUser;
 
-                localStorage.setItem('currentUser', JSON.stringify(userPayload));
+                localStorage.setItem('currentUser', JSON.stringify(sessionUser));
 
                 localStorage.setItem('customer_logged_in', 'true');
-                localStorage.setItem('customer_name', name);
+                localStorage.setItem('customer_name', sessionUser.ten || name);
                 localStorage.setItem('profile', JSON.stringify({
-                    name: name,
-                    phone: phone,
-                    address: account.dia_chi || account.address || ''
+                    name: sessionUser.ten || name,
+                    phone: sessionUser.sodienthoai || phone,
+                    address: sessionUser.dia_chi || ''
                 }));
 
                 msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';

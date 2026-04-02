@@ -2,13 +2,12 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../session_user.php';
-require_once __DIR__ . '/get-hoadonsdt.php';
+require_once __DIR__ . '/get-hoadon.php';
 require_once __DIR__ . '/header-shared.php';
 
-$sessionUser = session_user_require_customer('../login.html', 'khach_hang/danh-sach-hoa-don.php');
-$sessionPhone = (string)($sessionUser['sodienthoai'] ?? '');
+$sessionUser = session_user_require_employee('../login.html', 'nhan_vien/danh-sach-hoa-don.php');
 
-$result = getHoaDonBySessionSdt($sessionPhone);
+$result = getHoaDonData();
 $rows = $result['rows'] ?? [];
 $loadError = (string)($result['error'] ?? '');
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
@@ -19,27 +18,45 @@ $statusFilter = strtolower(trim((string)($_GET['status'] ?? 'all')));
 $serviceFilter = trim((string)($_GET['service'] ?? 'all'));
 $sortFilter = strtolower(trim((string)($_GET['sort'] ?? 'newest')));
 
-if (!in_array($statusFilter, ['all', 'pending', 'approved', 'received', 'rejected', 'cancelled', 'other'], true)) {
+if (!in_array($statusFilter, ['all', 'pending', 'approved', 'received', 'other'], true)) {
     $statusFilter = 'all';
 }
-if (!in_array($sortFilter, ['newest', 'oldest', 'status', 'amount'], true)) {
+if (!in_array($sortFilter, ['newest', 'oldest', 'status', 'customer'], true)) {
     $sortFilter = 'newest';
 }
 
-function esc(string $value): string
+function normalize_status_key(string $status): string
 {
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    $raw = strtolower(trim($status));
+
+    if (in_array($raw, ['da_nhan', 'da nhan', 'đã nhận', 'received'], true)) {
+        return 'received';
+    }
+    if (in_array($raw, ['approved', 'da_duyet', 'da duyet', 'đã duyệt', 'accepted'], true)) {
+        return 'approved';
+    }
+    if (in_array($raw, ['', 'pending', 'cho_duyet', 'cho duyet', 'chờ duyệt', 'waiting'], true)) {
+        return 'pending';
+    }
+
+    return 'other';
 }
 
-function money_text($value): string
+function status_meta(string $status): array
 {
-    $amount = (int)preg_replace('/\D+/', '', (string)$value);
-    return number_format($amount, 0, ',', '.') . ' VNĐ';
-}
+    $key = normalize_status_key($status);
 
-function money_number($value): int
-{
-    return (int)preg_replace('/\D+/', '', (string)$value);
+    if ($key === 'received') {
+        return ['key' => 'received', 'text' => 'Da nhan', 'class' => 'text-bg-success'];
+    }
+    if ($key === 'approved') {
+        return ['key' => 'approved', 'text' => 'Da duyet', 'class' => 'text-bg-info'];
+    }
+    if ($key === 'pending') {
+        return ['key' => 'pending', 'text' => 'Cho duyet', 'class' => 'text-bg-warning'];
+    }
+
+    return ['key' => 'other', 'text' => 'Khac', 'class' => 'text-bg-secondary'];
 }
 
 function contains_text(string $haystack, string $needle): bool
@@ -55,104 +72,49 @@ function contains_text(string $haystack, string $needle): bool
     return stripos($haystack, $needle) !== false;
 }
 
-function normalize_status_key(string $status): string
+function esc(string $value): string
 {
-    $raw = strtolower(trim($status));
-
-    if (in_array($raw, ['da_nhan', 'đã nhận', 'da nhan', 'received'], true)) {
-        return 'received';
-    }
-    if (in_array($raw, ['da_duyet', 'đã duyệt', 'da duyet', 'approved', 'hoan_thanh', 'completed'], true)) {
-        return 'approved';
-    }
-    if (in_array($raw, ['tu_choi', 'rejected'], true)) {
-        return 'rejected';
-    }
-    if (in_array($raw, ['huy_don', 'huy don', 'huy', 'đã hủy', 'da_huy', 'da huy', 'cancelled', 'canceled'], true)) {
-        return 'cancelled';
-    }
-    if (in_array($raw, ['', 'pending', 'cho_duyet', 'cho duyet', 'chờ duyệt', 'waiting'], true)) {
-        return 'pending';
-    }
-
-    return 'other';
-}
-
-function status_meta(string $status): array
-{
-    $key = normalize_status_key($status);
-
-    if ($key === 'received') {
-        return ['key' => 'received', 'text' => 'Da nhan', 'class' => 'text-bg-primary'];
-    }
-    if ($key === 'approved') {
-        return ['key' => 'approved', 'text' => 'Da duyet', 'class' => 'text-bg-info'];
-    }
-    if ($key === 'rejected') {
-        return ['key' => 'rejected', 'text' => 'Tu choi', 'class' => 'text-bg-danger'];
-    }
-    if ($key === 'cancelled') {
-        return ['key' => 'cancelled', 'text' => 'Da huy', 'class' => 'text-bg-secondary'];
-    }
-    if ($key === 'pending') {
-        return ['key' => 'pending', 'text' => 'Cho duyet', 'class' => 'text-bg-warning'];
-    }
-
-    return ['key' => 'other', 'text' => 'Khac', 'class' => 'text-bg-secondary'];
-}
-
-$employeesById = [];
-foreach (list_table_rows('nhacungcap_mevabe') as $employee) {
-    $employeeId = (int)($employee['id'] ?? 0);
-    if ($employeeId > 0) {
-        $employeesById[$employeeId] = $employee;
-    }
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
 $normalizedRows = [];
-$servicesMap = [];
+$serviceMap = [];
 
 foreach ($rows as $row) {
     if (!is_array($row)) {
         continue;
     }
 
-    $invoiceId = trim((string)($row['id'] ?? ''));
-    $serviceName = trim((string)($row['dich_vu'] ?? ''));
-    $packageName = trim((string)($row['goi_dich_vu'] ?? ''));
+    $id = trim((string)($row['id'] ?? ''));
+    $name = trim((string)($row['hovaten'] ?? ''));
+    $service = trim((string)($row['dich_vu'] ?? ''));
+    $package = trim((string)($row['goi_dich_vu'] ?? ''));
     $startDate = trim((string)($row['ngay_bat_dau'] ?? ''));
-    $customerName = trim((string)($row['hovaten'] ?? ''));
-    $rawStatus = trim((string)($row['trangthai'] ?? ''));
-    $amountValue = (string)($row['tong_tien'] ?? '0');
-    $employeeName = '';
+    $statusRaw = trim((string)($row['trangthai'] ?? ''));
+    $phone = trim((string)($row['sodienthoai'] ?? ''));
 
-    $supplierId = (int)($row['id_nhacungcap'] ?? 0);
-    if ($supplierId > 0 && isset($employeesById[$supplierId]) && is_array($employeesById[$supplierId])) {
-        $employeeName = trim((string)($employeesById[$supplierId]['hovaten'] ?? ''));
+    $meta = status_meta($statusRaw);
+
+    if ($service !== '') {
+        $serviceMap[$service] = $service;
     }
-
-    if ($serviceName !== '') {
-        $servicesMap[$serviceName] = $serviceName;
-    }
-
-    $meta = status_meta($rawStatus);
 
     $normalizedRows[] = [
-        'id' => $invoiceId,
-        'service' => $serviceName !== '' ? $serviceName : 'N/A',
-        'package' => $packageName !== '' ? $packageName : 'N/A',
+        'id' => $id,
+        'name' => $name !== '' ? $name : 'N/A',
+        'service' => $service !== '' ? $service : 'N/A',
+        'package' => $package !== '' ? $package : 'N/A',
         'startDate' => $startDate !== '' ? $startDate : 'N/A',
-        'customer' => $customerName !== '' ? $customerName : 'N/A',
-        'amountText' => money_text($amountValue),
-        'amountNumber' => money_number($amountValue),
+        'phone' => $phone,
+        'statusRaw' => $statusRaw,
         'statusKey' => (string)$meta['key'],
         'statusText' => (string)$meta['text'],
         'statusClass' => (string)$meta['class'],
-        'employee' => $employeeName,
+        'isReceived' => ((string)$meta['key'] === 'received'),
     ];
 }
 
-$services = array_values($servicesMap);
+$services = array_values($serviceMap);
 sort($services);
 
 $filteredRows = array_values(array_filter($normalizedRows, static function (array $item) use ($q, $statusFilter, $serviceFilter): bool {
@@ -165,17 +127,16 @@ $filteredRows = array_values(array_filter($normalizedRows, static function (arra
     }
 
     if ($q !== '') {
-        $target = implode(' ', [
+        $searchTarget = implode(' ', [
             $item['id'],
+            $item['name'],
             $item['service'],
             $item['package'],
-            $item['customer'],
-            $item['employee'],
+            $item['phone'],
             $item['startDate'],
-            $item['amountText'],
         ]);
 
-        if (!contains_text($target, $q)) {
+        if (!contains_text($searchTarget, $q)) {
             return false;
         }
     }
@@ -186,7 +147,7 @@ $filteredRows = array_values(array_filter($normalizedRows, static function (arra
 if ($sortFilter === 'oldest') {
     usort($filteredRows, static fn(array $a, array $b): int => ((int)$a['id']) <=> ((int)$b['id']));
 } elseif ($sortFilter === 'status') {
-    $order = ['pending' => 1, 'approved' => 2, 'received' => 3, 'rejected' => 4, 'other' => 5];
+    $order = ['pending' => 1, 'approved' => 2, 'received' => 3, 'other' => 4];
     usort($filteredRows, static function (array $a, array $b) use ($order): int {
         $left = $order[$a['statusKey']] ?? 99;
         $right = $order[$b['statusKey']] ?? 99;
@@ -195,14 +156,14 @@ if ($sortFilter === 'oldest') {
         }
         return $left <=> $right;
     });
-} elseif ($sortFilter === 'amount') {
-    usort($filteredRows, static fn(array $a, array $b): int => $b['amountNumber'] <=> $a['amountNumber']);
+} elseif ($sortFilter === 'customer') {
+    usort($filteredRows, static fn(array $a, array $b): int => strcasecmp($a['name'], $b['name']));
 } else {
     usort($filteredRows, static fn(array $a, array $b): int => ((int)$b['id']) <=> ((int)$a['id']));
 }
 
-$summaryPending = count(array_filter($normalizedRows, static fn(array $item): bool => $item['statusKey'] === 'pending'));
-$summaryReceived = count(array_filter($normalizedRows, static fn(array $item): bool => $item['statusKey'] === 'received'));
+$summaryPending = count(array_filter($normalizedRows, static fn(array $i): bool => $i['statusKey'] === 'pending'));
+$summaryReceived = count(array_filter($normalizedRows, static fn(array $i): bool => $i['statusKey'] === 'received'));
 $summaryTotal = count($normalizedRows);
 ?>
 <!DOCTYPE html>
@@ -214,7 +175,7 @@ $summaryTotal = count($normalizedRows);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <?php render_khach_hang_header_styles(); ?>
+    <?php render_nhan_vien_header_styles(); ?>
     <style>
         body {
             font-family: 'Be Vietnam Pro', sans-serif;
@@ -290,6 +251,11 @@ $summaryTotal = count($normalizedRows);
             font-weight: 700;
             border-radius: 999px;
         }
+        .action-group {
+            display: inline-flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
         .btn-action {
             min-width: 102px;
             height: 36px;
@@ -301,25 +267,25 @@ $summaryTotal = count($normalizedRows);
             font-weight: 600;
             font-size: 0.86rem;
         }
-        .action-group {
-            display: inline-flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .summary-note {
-            color: #64748b;
-            font-size: 0.92rem;
-        }
         .empty-row {
             text-align: center;
             color: #64748b;
             font-weight: 500;
         }
+        .summary-note {
+            color: #64748b;
+            font-size: 0.92rem;
+        }
+        @media (max-width: 992px) {
+            .btn-action {
+                min-width: 98px;
+            }
+        }
     </style>
 </head>
 <body>
 <main class="page-wrap">
-    <?php render_khach_hang_header($sessionUser, 'Danh sách hóa đơn khách hàng'); ?>
+    <?php render_nhan_vien_header($sessionUser, 'Quan ly hoa don nhan vien'); ?>
 
     <?php if ($flashMsg !== ''): ?>
         <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2" role="alert">
@@ -331,10 +297,10 @@ $summaryTotal = count($normalizedRows);
         <div class="card-body p-3 p-lg-4">
             <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-3">
                 <div>
-                    <h1 class="h4 fw-bold mb-1">Đơn hàng của bạn</h1>
-                    <p class="summary-note mb-0">Theo dõi, tìm kiếm, lọc hóa đơn.</p>
+                    <h1 class="h4 fw-bold mb-1">Danh sách hóa đơn</h1>
+                    <p class="summary-note mb-0">Theo dõi, lọc va xử lý công viêc.</p>
                 </div>
-                <div class="text-secondary small">Tổng hiển thị: <b><?= (int)count($filteredRows) ?></b> / <?= (int)$summaryTotal ?>Hóa đơn</div>
+                <div class="text-secondary small">Tổng hiển thị: <b><?= (int)count($filteredRows) ?></b> / <?= (int)$summaryTotal ?> hoa don</div>
             </div>
 
             <div class="row g-2 g-lg-3 mb-3">
@@ -353,10 +319,10 @@ $summaryTotal = count($normalizedRows);
                     <div class="stat-card">
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div>
-                                <div class="text-secondary small">Đã nhận</div>
-                                <div class="stat-value text-primary-emphasis"><?= (int)$summaryReceived ?></div>
+                                <div class="text-secondary small">Đã nhận việc</div>
+                                <div class="stat-value text-success-emphasis"><?= (int)$summaryReceived ?></div>
                             </div>
-                            <div class="stat-icon bg-primary-subtle text-primary-emphasis"><i class="bi bi-check2-circle"></i></div>
+                            <div class="stat-icon bg-success-subtle text-success-emphasis"><i class="bi bi-check2-circle"></i></div>
                         </div>
                     </div>
                 </div>
@@ -364,10 +330,10 @@ $summaryTotal = count($normalizedRows);
                     <div class="stat-card">
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div>
-                                <div class="text-secondary small">Tổng hóa đơn</div>
-                                <div class="stat-value text-success-emphasis"><?= (int)$summaryTotal ?></div>
+                                <div class="text-secondary small">Tổng công việc</div>
+                                <div class="stat-value text-primary"><?= (int)$summaryTotal ?></div>
                             </div>
-                            <div class="stat-icon bg-success-subtle text-success-emphasis"><i class="bi bi-receipt"></i></div>
+                            <div class="stat-icon bg-primary-subtle text-primary-emphasis"><i class="bi bi-collection"></i></div>
                         </div>
                     </div>
                 </div>
@@ -379,7 +345,7 @@ $summaryTotal = count($normalizedRows);
                         <label class="form-label small text-secondary mb-1">Tìm kiếm</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" name="q" value="<?= esc($q) ?>" placeholder="ID, dich vu, nhan vien...">
+                            <input type="text" class="form-control" name="q" value="<?= esc($q) ?>" placeholder="ID, khach hang, SDT...">
                         </div>
                     </div>
                     <div class="col-6 col-md-3 col-lg-2">
@@ -389,8 +355,6 @@ $summaryTotal = count($normalizedRows);
                             <option value="pending" <?= $statusFilter === 'pending' ? 'selected' : '' ?>>Chờ duyệt</option>
                             <option value="approved" <?= $statusFilter === 'approved' ? 'selected' : '' ?>>Đã duyệt</option>
                             <option value="received" <?= $statusFilter === 'received' ? 'selected' : '' ?>>Đã nhận</option>
-                            <option value="rejected" <?= $statusFilter === 'rejected' ? 'selected' : '' ?>>Từ chối</option>
-                            <option value="cancelled" <?= $statusFilter === 'cancelled' ? 'selected' : '' ?>>Da huy</option>
                             <option value="other" <?= $statusFilter === 'other' ? 'selected' : '' ?>>Khác</option>
                         </select>
                     </div>
@@ -409,7 +373,7 @@ $summaryTotal = count($normalizedRows);
                             <option value="newest" <?= $sortFilter === 'newest' ? 'selected' : '' ?>>Mới nhất</option>
                             <option value="oldest" <?= $sortFilter === 'oldest' ? 'selected' : '' ?>>Cũ nhất</option>
                             <option value="status" <?= $sortFilter === 'status' ? 'selected' : '' ?>>Theo trạng thái</option>
-                            <option value="amount" <?= $sortFilter === 'amount' ? 'selected' : '' ?>>Theo tổng tiền</option>
+                            <option value="customer" <?= $sortFilter === 'customer' ? 'selected' : '' ?>>Theo khách hàng</option>
                         </select>
                     </div>
                     <div class="col-6 col-md-3 col-lg-2 d-flex gap-2">
@@ -423,53 +387,49 @@ $summaryTotal = count($normalizedRows);
                 <div class="table-responsive">
                     <table class="table jobs-table align-middle">
                         <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Dịch vụ</th>
-                            <th>Gói</th>
-                            <th>Ngày bắt đâu</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Nhân viên</th>
-                            <th>Hành động</th>
-                        </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Khách hàng</th>
+                                <th>Dịch vụ</th>
+                                <th>Gói</th>
+                                <th>Ngay bắt đàu</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
                         </thead>
                         <tbody>
                         <?php if ($loadError !== ''): ?>
                             <tr>
-                                <td colspan="8" class="empty-row py-4">Loi tai du lieu: <?= esc($loadError) ?></td>
+                                <td colspan="7" class="empty-row py-4">Loi tai du lieu: <?= esc($loadError) ?></td>
                             </tr>
                         <?php elseif (!$filteredRows): ?>
                             <tr>
-                                <td colspan="8" class="empty-row py-4">Khong co hoa don phu hop bo loc.</td>
+                                <td colspan="7" class="empty-row py-4">Khong co hoa don phu hop bo loc.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($filteredRows as $item): ?>
                                 <tr>
                                     <td><span class="badge text-bg-light border id-badge"><?= esc($item['id']) ?></span></td>
                                     <td>
-                                        <div class="fw-semibold"><?= esc($item['service']) ?></div>
-                                        <div class="small text-secondary">Khach: <?= esc($item['customer']) ?></div>
+                                        <div class="fw-semibold"><?= esc($item['name']) ?></div>
+                                        <?php if ($item['phone'] !== ''): ?>
+                                            <div class="small text-secondary"><?= esc($item['phone']) ?></div>
+                                        <?php endif; ?>
                                     </td>
+                                    <td><?= esc($item['service']) ?></td>
                                     <td><?= esc($item['package']) ?></td>
                                     <td><?= esc($item['startDate']) ?></td>
-                                    <td class="fw-semibold text-danger-emphasis"><?= esc($item['amountText']) ?></td>
                                     <td><span class="badge rounded-pill <?= esc($item['statusClass']) ?>"><?= esc($item['statusText']) ?></span></td>
-                                    <td><?= esc($item['employee'] !== '' ? $item['employee'] : 'Chua co') ?></td>
                                     <td>
                                         <div class="action-group">
-                                            <?php if ((int)$item['id'] > 0 && $item['statusKey'] === 'pending'): ?>
-                                                <form method="post" action="xy-ly-huy.php" class="d-inline">
+                                            <?php if (!$item['isReceived']): ?>
+                                                <form method="post" action="xu-ly-nhan-viec.php" class="d-inline">
                                                     <input type="hidden" name="invoice_id" value="<?= esc($item['id']) ?>">
-                                                    <button type="submit" class="btn btn-outline-danger btn-action"><i class="bi bi-x-circle"></i>Huy don</button>
+                                                    <button type="submit" class="btn btn-success btn-action"><i class="bi bi-hand-thumbs-up"></i>Nhan viec</button>
                                                 </form>
                                             <?php endif; ?>
-
-                                            <?php if ((int)$item['id'] > 0): ?>
-                                                <a href="chi-tiet-hoa-don.php?id=<?= urlencode($item['id']) ?>" class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
-                                            <?php else: ?>
-                                                <button type="button" class="btn btn-outline-secondary btn-action" disabled>Khong co ID</button>
-                                            <?php endif; ?>
+                                            <a href="chi-tiet-hoa-don.php?id=<?= urlencode($item['id']) ?>" class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
+                                            <button type="button" class="btn btn-outline-secondary btn-action" disabled><i class="bi bi-cloud-upload"></i>Upload</button>
                                         </div>
                                     </td>
                                 </tr>
