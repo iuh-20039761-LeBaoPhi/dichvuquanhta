@@ -1,17 +1,14 @@
-﻿<?php
+<?php
 /**
- * Provider Logout â€” Huá»· PHP session nhÃ  cung cáº¥p
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- * ÄÆ°á»£c gá»i bá»Ÿi: auth-nav.js â†’ bindLogout()
- *
- * Method:  GET hoáº·c POST
- * Response: { "success": true, "message": "ÄÃ£ Ä‘Äƒng xuáº¥t" }
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * Provider Logout — Xóa PHP session cho Nhà cung cấp/Thợ
+ * ──────────────────────────────────────────────────────────
+ * Được gọi bởi: logoutProvider() -> shell.js (Provider)
+ * ──────────────────────────────────────────────────────────
  */
 
 require_once __DIR__ . '/../../../config/session-config.php';
 
+// Hủy toàn bộ dữ liệu xác thực
 clearAuthSession();
 
-jsonResponse(true, 'ÄÃ£ Ä‘Äƒng xuáº¥t');
-
+jsonResponse(true, 'Đăng xuất thành công');

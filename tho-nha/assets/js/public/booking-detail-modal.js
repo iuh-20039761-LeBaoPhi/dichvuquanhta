@@ -1,4 +1,4 @@
-﻿/**
+/**
  * booking-detail-modal.js
  * Modal mode handlers: lazy-load modal HTML, nav/detail mode setup, and modal form events.
  */
@@ -21,11 +21,39 @@ async function _bdLoadNavServices() {
     if (!mainSel || mainSel.options.length > 1) return;
     if (!_bdNavServices) {
         try {
-            const r = await fetch(_BD_BASE + 'data/services.json');
-            _bdNavServices = await r.json();
-        } catch { _bdNavServices = []; }
+            await new Promise(r => {
+                if (window.ThoNhaKrud) r();
+                else {
+                    const check = setInterval(() => {
+                        if (window.ThoNhaKrud) { clearInterval(check); r(); }
+                    }, 100);
+                }
+            });
+            const krud = window.ThoNhaKrud;
+            const [cats, svcs] = await Promise.all([
+                krud.listTable('danhmuc_thonha', { limit: 100 }),
+                krud.listTable('dichvu_thonha', { limit: 1000 })
+            ]);
+            
+            _bdNavServices = cats.map(c => ({
+                id: c.id,
+                name: c.ten_danhmuc,
+                items: svcs.filter(s => String(s.id_danhmuc) === String(c.id)).map(s => ({
+                    id: s.id,
+                    name: s.ten_dichvu,
+                    price: Number(s.gia_dichvu) || 0,
+                    // Giả định các config này sẽ được lấy từ bảng dịch vụ trong tương lai
+                    travelFee: { mode: 'fixed', amount: 30000, min: 20000, max: 150000 },
+                    surveyFee: { required: false, amount: 50000 }
+                }))
+            }));
+        } catch (err) {
+            console.error('Failed to load DB services:', err);
+            _bdNavServices = [];
+        }
     }
     _bdNavServices.forEach(cat => {
+        if (cat.items.length === 0) return; // Không hiện danh mục rỗng
         const opt = document.createElement('option');
         opt.value = cat.id; opt.textContent = cat.name;
         mainSel.appendChild(opt);
@@ -182,7 +210,7 @@ async function _bdOpenModal(mode, prefill) {
             if (selEl)   selEl.value   = prefill.name  || '';
             if (priceEl) priceEl.value = prefill.price ? Number(prefill.price).toLocaleString('vi-VN') + 'đ' : '';
             if (prefill.price) {
-                _bdSetBreakdown(parseInt(prefill.price) || 0, prefill.travelFee || null, prefill.surveyFee || null);
+                _bdSetBreakdown(parseInt(prefill.price) || 0, prefill.travelFee || null, prefill.surveyFee || null, prefill.catId || null, prefill.serviceId || null);
             }
         }
     }

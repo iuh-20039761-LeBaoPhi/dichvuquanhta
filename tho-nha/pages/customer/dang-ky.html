@@ -79,27 +79,12 @@
         </div>
     </div>
 
-    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script src="../../assets/js/shared/krud-helper.js"></script>
+    <script src="../../assets/js/shared/app-helper.js"></script>
     <script>
-        /**
-         * ═══════════════════════════════════════════════════════════
-         * ĐĂNG KÝ KHÁCH HÀNG — Luồng xử lý:
-         * ═══════════════════════════════════════════════════════════
-         *
-         * 1. User nhập: họ tên, email, SĐT, mật khẩu, xác nhận MK
-         * 2. JS validate: trường bắt buộc, SĐT hợp lệ, MK ≥ 6 ký tự, MK khớp
-         * 3. Gọi krud('insert') → tạo bản ghi mới trong bảng KRUD
-         * 4. Nếu thành công:
-         *    a) Lưu profile vào localStorage → tự động đăng nhập
-         *    b) Gọi PHP endpoint tạo session server-side
-         * 5. Redirect về trang chủ
-         *
-         * Bảng KRUD:  "khachhang"
-         * PHP session: api/customer/auth/login.php
-         * ═══════════════════════════════════════════════════════════
-         */
+        const btn = document.getElementById('registerBtn');
+        const msg = document.getElementById('msg');
 
-        // ── Toggle hiển thị mật khẩu ────────────────────────────
         document.getElementById('togglePwd').addEventListener('click', function() {
             const input = document.getElementById('password');
             const icon  = document.getElementById('eyeIcon');
@@ -107,166 +92,38 @@
             else { input.type = 'password'; icon.className = 'fas fa-eye'; }
         });
 
-        // ── Thanh đo độ mạnh mật khẩu ──────────────────────────
-        document.getElementById('password').addEventListener('input', function() {
-            const val = this.value;
-            const fill = document.getElementById('strengthFill');
-            let strength = 0;
-            if (val.length >= 6) strength++;   // Đủ dài
-            if (val.length >= 10) strength++;  // Rất dài
-            if (/[A-Z]/.test(val)) strength++; // Có chữ hoa
-            if (/[0-9]/.test(val)) strength++; // Có số
-            const colors = ['', '#e53e3e', '#ed8936', '#48bb78', '#11998e'];
-            const widths = ['0%', '25%', '50%', '75%', '100%'];
-            fill.style.width = widths[strength];
-            fill.style.background = colors[strength] || 'transparent';
-        });
+        async function register() {
+            const data = {
+                hovaten: document.getElementById('full_name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                sodienthoai: document.getElementById('sodienthoai').value.replace(/\s+/g, ''),
+                matkhau: document.getElementById('password').value
+            };
 
-        /** @const {string} Tên bảng KRUD lưu tài khoản khách hàng */
-        const BANG_DANG_KY_KHACH_HANG = 'khachhang';
-
-        /** @const {string} URL endpoint PHP để tạo session server-side */
-        const PHP_LOGIN_URL = '../../api/customer/auth/login.php';
-
-        document.getElementById('registerBtn').addEventListener('click', register);
-
-        /**
-         * Trả về thời điểm hiện tại theo format SQL: "YYYY-MM-DD HH:mm:ss"
-         * @returns {string}
-         */
-        function nowSql() {
-            const d = new Date();
-            const pad = (n) => String(n).padStart(2, '0');
-            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-        }
-
-        /**
-         * Chuẩn hoá SĐT: bỏ khoảng trắng để validate.
-         * @param {string} value
-         * @returns {string}
-         */
-        function normalizePhone(value) {
-            return String(value || '').replace(/\s+/g, '');
-        }
-
-        /**
-         * Kiểm tra SĐT Việt Nam hợp lệ (bắt đầu 0 hoặc +84, 10 hoặc 12 số).
-         * @param {string} phone
-         * @returns {boolean}
-         */
-        function isValidPhone(phone) {
-            return /^(0|\+84)[0-9]{9}$/.test(phone);
-        }
-
-        /**
-         * Kiểm tra KRUD response có thành công không.
-         * @param {*} res - Response từ krud()
-         * @returns {boolean}
-         */
-        function isKrudSuccess(res) {
-            return !!res && !res.error && res.success !== false;
-        }
-
-        /**
-         * Gọi PHP endpoint để tạo session server-side (tự động đăng nhập sau đăng ký).
-         * @param {Object} profile - { name, phone, address }
-         */
-        function syncPhpSession(profile) {
-            fetch(PHP_LOGIN_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(profile),
-            }).catch(() => {
-                console.warn('[register] Không tạo được PHP session');
-            });
-        }
-
-        /**
-         * Hàm chính: xử lý đăng ký tài khoản khách hàng.
-         *
-         * Bước 1: Lấy giá trị form
-         * Bước 2: Validate (trường bắt buộc, SĐT, mật khẩu)
-         * Bước 3: Gọi krud('insert') tạo bản ghi mới
-         * Bước 4: Lưu localStorage + PHP session (tự đăng nhập)
-         * Bước 5: Redirect về trang chủ
-         */
-        function register() {
-            // ── Bước 1: Lấy giá trị form ────────────────────────
-            const full_name        = document.getElementById('full_name').value.trim();
-            const email            = document.getElementById('email').value.trim();
-            const phone            = normalizePhone(document.getElementById('sodienthoai').value);
-            const password         = document.getElementById('password').value;
-            const confirm_password = document.getElementById('confirm_password').value;
-            const btn = document.getElementById('registerBtn');
-            const msg = document.getElementById('msg');
-
-            // ── Bước 2: Validate ────────────────────────────────
-            if (!full_name || !email || !phone || !password || !confirm_password) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng điền đầy đủ thông tin</span>';
-                return;
-            }
-            if (password.length < 6) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu phải có ít nhất 6 ký tự</span>';
-                return;
-            }
-            if (password !== confirm_password) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu xác nhận không khớp</span>';
-                return;
-            }
-            if (!isValidPhone(phone)) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Số điện thoại không hợp lệ</span>';
+            if (!data.hovaten || !data.sodienthoai || !data.matkhau) {
+                msg.innerHTML = '<span class="text-danger small">Vui lòng điền đủ các trường bắt buộc</span>';
                 return;
             }
 
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tạo tài khoản...';
-            msg.innerHTML = '';
 
-            if (typeof krud !== 'function') {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Không tải được hàm KRUD</span>';
+            try {
+                // Tóm gọn Insert -> Tự động đăng nhập
+                await ThoNhaApp.register('customer', data);
+                await ThoNhaApp.login('customer', data.sodienthoai, data.matkhau);
+                
+                msg.innerHTML = '<span class="text-success small">Đăng ký thành công! Đang chuyển hướng...</span>';
+                setTimeout(() => window.location.href = '../../index.html', 1000);
+            } catch (err) {
+                msg.innerHTML = '<span class="text-danger small">' + (err.message || 'Đăng ký thất bại') + '</span>';
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Tạo tài khoản';
-                return;
             }
-
-            // ── Bước 3: Gọi KRUD insert ─────────────────────────
-            const payload = {
-                hovaten:      full_name,
-                email:        email.toLowerCase(),
-                sodienthoai:  phone,
-                matkhau:      password,
-                created_date: nowSql()
-            };
-
-            krud('insert', BANG_DANG_KY_KHACH_HANG, payload)
-                .then((res) => {
-                    console.log(res);
-                    if (!isKrudSuccess(res)) {
-                        throw new Error(res && (res.message || res.error) ? (res.message || res.error) : 'Đăng ký thất bại');
-                    }
-
-                    // ── Bước 4: Lưu localStorage + PHP session ──
-                    localStorage.setItem('customer_logged_in', 'true');
-                    localStorage.setItem('customer_name', full_name);
-                    localStorage.setItem('thonha_customer_profile_v1', JSON.stringify({
-                        name: full_name,
-                        phone: phone,
-                        address: ''
-                    }));
-
-                    // Tạo PHP session (fire-and-forget)
-                    syncPhpSession({ name: full_name, phone, address: '' });
-
-                    // ── Bước 5: Redirect ─────────────────────────
-                    msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng ký thành công! Đang chuyển hướng...</span>';
-                    setTimeout(() => window.location.href = '../../index.html', 1000);
-                })
-                .catch((err) => {
-                    msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (err && err.message ? err.message : 'Không kết nối được server') + '</span>';
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Tạo tài khoản';
-                });
         }
+
+        btn.addEventListener('click', register);
+    </script>
     </script>
 </body>
 </html>

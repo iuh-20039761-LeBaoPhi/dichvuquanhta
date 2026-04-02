@@ -1,4 +1,4 @@
-﻿/**
+/**
  * booking-detail-standalone.js
  * Standalone page handlers for dat-lich.html.
  */
@@ -100,9 +100,38 @@ async function _bdLoadStandaloneServices() {
 
     let services = [];
     try {
-        const r = await fetch(_BD_BASE + 'data/services.json');
-        services = await r.json();
-    } catch { services = []; }
+        const krud = window.ThoNhaKrud;
+        if (!krud) throw new Error('KRUD not found');
+
+        // 1. Tải danh mục và dịch vụ từ Database
+        const [cats, svcs] = await Promise.all([
+            krud.listTable('danhmuc_thonha', { limit: 100, filter: "trang_thai='active'", sort: 'thu_tu ASC' }),
+            krud.listTable('dichvu_thonha',  { limit: 1000, filter: "trang_thai='active'" })
+        ]);
+
+        // 2. Map dữ liệu về cấu trúc cũ để tương thích với logic giao diện
+        services = cats.map(cat => {
+            const catItems = svcs.filter(s => String(s.id_danhmuc) === String(cat.id)).map(s => ({
+                id:           s.id,
+                name:         s.ten_dichvu,
+                price:        Number(s.gia_co_ban || 0),
+                desc:         s.mo_ta,
+                surveyFee:    s.phi_khao_sat ? { amount: Number(s.phi_khao_sat), required: String(s.yeu_cau_khao_sat) === '1' } : null,
+                travelFee:    null // Sẽ lấy mặc định từ hệ thống hoặc cat
+            }));
+
+            return {
+                id: cat.id,
+                name: cat.ten_danhmuc,
+                items: catItems,
+                travelFee: { mode: 'per_km', min: 20000, max: 150000 } // Default fallback
+            };
+        });
+
+    } catch (err) { 
+        console.error('Lỗi nạp dịch vụ từ DB:', err);
+        services = []; 
+    }
 
     services.forEach(cat => {
         const opt = document.createElement('option');
@@ -165,7 +194,7 @@ async function _bdLoadStandaloneServices() {
             if (!item) { if (priceEl) priceEl.value = ''; _bdHideBreakdown(); return; }
             const price = item.price || 0;
             if (priceEl) priceEl.value = price > 0 ? Number(price).toLocaleString('vi-VN') + 'đ' : '';
-            _bdSetBreakdown(price, item.travelFee || mainCat.travelFee || null, item.surveyFee || mainCat.surveyFee || null);
+            _bdSetBreakdown(price, item.travelFee || mainCat.travelFee || null, item.surveyFee || mainCat.surveyFee || null, mainCat.id, item.id);
         });
     }
 

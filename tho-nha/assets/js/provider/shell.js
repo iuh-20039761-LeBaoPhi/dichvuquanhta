@@ -6,28 +6,17 @@
      * Xác thực phiên đăng nhập của đối tác (Route Guard).
      * Kiểm tra trạng thái logged_in và vai trò provider từ server.
      */
-    function verifySession() {
-        var isLocalValid = localStorage.getItem('provider_logged_in') === 'true' || localStorage.getItem('thonha_provider_profile_v1');
-        if (!isLocalValid) {
+    async function verifySession() {
+        const session = await ThoNhaApp.checkSession();
+        if (!session || !session.logged_in || (session.role !== 'provider' && session.role !== 'admin')) {
             window.location.href = 'dang-nhap.html';
-            return;
         }
-        
-        fetch('../../api/public/check-session.php', { cache: 'no-store' })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.logged_in || data.role !== 'provider') {
-                    var keys = [
-                        'provider_logged_in', 'provider_name', 'provider_company', 'thonha_provider_profile_v1', 'tho_nha_provider_profile'
-                    ];
-                    keys.forEach(k => localStorage.removeItem(k));
-                    window.location.href = 'dang-nhap.html';
-                }
-            }).catch(() => {});
     }
-    verifySession();
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Đợi xác thực xong mới thực hiện các bước khác
+        await verifySession();
+
         const navBtns = document.querySelectorAll('#sidebarNav .nav-link[data-page]');
         const contentArea = document.getElementById('pageContent');
         let loadedPages = {};
@@ -42,7 +31,7 @@
             if (activeBtn) activeBtn.classList.add('active');
 
             if (Object.keys(loadedPages).length === 0) {
-                contentArea.innerHTML = '';
+                if (contentArea) contentArea.innerHTML = '';
             }
 
             Object.keys(loadedPages).forEach(id => {
@@ -56,7 +45,7 @@
 
             const wrapper = document.createElement('div');
             wrapper.innerHTML = '<div style="text-align:center; padding:50px; color:#64748b;"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>Đang tải dữ liệu...</div>';
-            contentArea.appendChild(wrapper);
+            if (contentArea) contentArea.appendChild(wrapper);
 
             fetch(`partials/${pageId}.html`)
                 .then(res => {
@@ -100,17 +89,204 @@
         }
 
         /**
-         * Hiển thị thông tin tài khoản thợ/đối tác lên giao diện.
+         * Hiển thị thông tin tài khoản thợ/đối tác lên giao diện hồ sơ.
          */
         function bindAccountInfo() {
             const profile = window.ThoNhaOrderStore ? window.ThoNhaOrderStore.getProviderProfile() : null;
-            if (profile) {
-                const n = document.getElementById('accName');
-                const p = document.getElementById('accPhone');
-                const c = document.getElementById('accCompany');
-                if(n) n.textContent = profile.name || 'Người phụ trách';
-                if(p) p.textContent = profile.phone || 'Chưa cập nhật';
-                if(c) c.textContent = profile.company || 'Đối tác Thợ Nhà';
+            if (!profile) return;
+
+            // Nạp thông tin văn bản
+            const n = document.getElementById('accName');
+            const p = document.getElementById('accPhone');
+            const c = document.getElementById('accCompany');
+            if(n) n.value = profile.name || '';
+            if(p) p.value = profile.phone || '';
+            if(c) c.value = profile.company || '';
+
+            // Nạp thông tin hình ảnh (xem trước)
+            const images = [
+                { id: 'avatar', url: profile.avatar },
+                { id: 'front',  url: profile.cccd_front },
+                { id: 'back',   url: profile.cccd_back }
+            ];
+
+            images.forEach(img => {
+                const prev = document.getElementById('acc-prev-' + img.id);
+                const ph = document.getElementById('acc-ph-' + img.id);
+                if (img.url && prev && ph) {
+                    prev.src = '../../uploads/providers/' + img.url;
+                    prev.style.display = 'block';
+                    ph.style.display = 'none';
+                    prev.onerror = function() { this.src = '../../assets/images/placeholder-image.png'; };
+                }
+            });
+
+            // --- KÍCH HOẠT CHỌN ẢNH (Vì script trong partial không tự chạy) ---
+            document.querySelectorAll('.profile-upload-zone').forEach(zone => {
+                zone.onclick = function() {
+                    const input = this.querySelector('input[type="file"]');
+                    if(input) input.click();
+                };
+            });
+
+            // Đưa hàm preview lên toàn cục để onchange của HTML gọi được
+            window.previewProfileImg = function(input, zoneId, prevId) {
+                if (!input.files || !input.files[0]) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const prev = document.getElementById(prevId);
+                    const ph = document.getElementById('acc-ph-' + zoneId.split('-').pop());
+                    if(prev) {
+                        prev.src = e.target.result;
+                        prev.style.display = 'block';
+                    }
+                    if(ph) ph.style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            };
+
+            // Ràng buộc nút lưu
+            const saveBtn = document.getElementById('saveProfileBtn');
+            if (saveBtn) {
+                saveBtn.onclick = handleSaveProfile;
+            }
+        }
+
+        /**
+         * Helper: Tải tệp vật lý lên server
+         */
+        async function uploadFile(file, newName, folder = 'providers') {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('name', newName); // Tên đích
+            formData.append('folder', folder);
+
+            const res = await fetch('../../api/public/upload.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await res.json();
+            if (!result.success) {
+                throw new Error(result.message || 'Lỗi tải tệp lên server');
+            }
+            return result;
+        }
+
+        /**
+         * Xử lý lưu thông tin hồ sơ mới
+         */
+        async function handleSaveProfile() {
+            const btn = document.getElementById('saveProfileBtn');
+            const msg = document.getElementById('saveMsg');
+            const profile = window.ThoNhaOrderStore.getProviderProfile();
+            
+            const newName = document.getElementById('accName').value.trim();
+            const newCompany = document.getElementById('accCompany').value.trim();
+            const oldPass = document.getElementById('oldPass').value;
+            const newPass = document.getElementById('newPass').value;
+            const confirmPass = document.getElementById('confirmNewPass').value;
+
+            if (newPass && !oldPass) {
+                msg.innerHTML = '<span class="text-danger small">Vui lòng nhập mật khẩu cũ để đổi mật khẩu mới.</span>';
+                return;
+            }
+
+            if (newPass && newPass !== confirmPass) {
+                msg.innerHTML = '<span class="text-danger small">Mật khẩu xác nhận không khớp.</span>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...';
+            msg.innerHTML = '';
+
+            try {
+                const krud = window.ThoNhaKrud;
+                if (!krud) throw new Error('Hệ thống chưa nạp thư viện cập nhật.');
+
+                // Lấy bản ghi thợ hiện tại từ database
+                const rows = await krud.listTable('nhacungcap_thonha');
+                const currentRecord = rows.find(r => String(r.id) === String(profile.id));
+                
+                if (!currentRecord) throw new Error('Không tìm thấy bản ghi nhà cung cấp.');
+
+                if (newPass) {
+                    const storedPass = String(currentRecord.matkhau || '');
+                    if (storedPass !== oldPass) {
+                        throw new Error('Mật khẩu cũ không chính xác.');
+                    }
+                }
+
+                const updateData = {
+                    hovaten: newName,
+                    tencua_hang: newCompany
+                };
+
+                if (newPass) updateData.matkhau = newPass;
+
+                // --- XỬ LÝ TẢI ẢNH VẬT LÝ ---
+                const fileFields = [
+                    { id: 'acc-avatar', key: 'avatar', prefix: 'avatar' },
+                    { id: 'acc-cccd-front', key: 'cccdmattruoc', prefix: 'cccd_front' },
+                    { id: 'acc-cccd-back', key: 'cccdmatsau', prefix: 'cccd_back' }
+                ];
+
+                for (const f of fileFields) {
+                    const input = document.getElementById(f.id);
+                    if (input && input.files && input.files[0]) {
+                        const file = input.files[0];
+                        const ext = file.name.split('.').pop();
+                        const targetName = `${f.prefix}_${profile.phone}.${ext}`;
+                        
+                        // Bước quan trọng: Tải ảnh thật lên thư mục uploads
+                        msg.innerHTML = `<span class="text-info small">Đang nạp ${f.prefix}...</span>`;
+                        await uploadFile(file, targetName, 'providers');
+
+                        // Cập nhật metadata vào database
+                        updateData[f.key + 'tenfile'] = targetName;
+                        updateData[f.key + 'kich_thuoc'] = file.size;
+                        updateData[f.key + 'mime'] = file.type;
+                    }
+                }
+                // ---------------------------
+                
+                await krud.updateRow('nhacungcap_thonha', profile.id, updateData);
+
+                // --- ĐỒNG BỘ SESSION PHP (Rất quan trọng để hiển thị ảnh mới ngay lập tức) ---
+                msg.innerHTML = '<span class="text-info small">Đang đồng bộ dữ liệu phiên...</span>';
+                try {
+                    await fetch('../../api/provider/auth/login.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id:      profile.id,
+                            name:    newName,
+                            phone:   profile.phone,
+                            company: newCompany,
+                            danh_muc_thuc_hien: currentRecord.danh_muc_thuc_hien,
+                            address: currentRecord.diachi,
+                            avatartenfile:       updateData.avatartenfile || currentRecord.avatartenfile,
+                            cccdmattruoctenfile: updateData.cccdmattruoctenfile || currentRecord.cccdmattruoctenfile,
+                            cccdmatsautenfile:   updateData.cccdmatsautenfile || currentRecord.cccdmatsautenfile
+                        })
+                    });
+                    // Refresh session cache lokal
+                    if (window.ThoNhaApp) await window.ThoNhaApp.checkSession(true);
+                } catch (e) {
+                    console.warn('Lỗi đồng bộ session:', e);
+                }
+                // -----------------------------------------------------------------------------
+                
+                // Clear trường pass
+                if (document.getElementById('oldPass')) document.getElementById('oldPass').value = '';
+                if (document.getElementById('newPass')) document.getElementById('newPass').value = '';
+                if (document.getElementById('confirmNewPass')) document.getElementById('confirmNewPass').value = '';
+
+            } catch (err) {
+                msg.innerHTML = '<span class="text-danger small">Lỗi: ' + (err.message || 'Không thể lưu hồ sơ') + '</span>';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-2"></i>Lưu thay đổi hồ sơ';
             }
         }
 
@@ -130,16 +306,11 @@
      */
     window.logoutProvider = function() {
         if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
-            var keys = [
-                'customer_logged_in', 'customer_name', 'thonha_customer_profile_v1', 'tho_nha_customer_profile',
-                'provider_logged_in', 'provider_name', 'provider_company', 'thonha_provider_profile_v1', 'tho_nha_provider_profile',
-                'admin_logged_in', 'admin_username'
-            ];
-            keys.forEach(function(k) { localStorage.removeItem(k); });
+            localStorage.clear();
             fetch('../../api/provider/auth/logout.php', { method: 'POST' }).then(() => {
-                window.location.href = '../dang-nhap.html';
+                window.location.href = 'dang-nhap.html';
             }).catch(() => {
-                window.location.href = '../dang-nhap.html';
+                window.location.href = 'dang-nhap.html';
             });
         }
     };

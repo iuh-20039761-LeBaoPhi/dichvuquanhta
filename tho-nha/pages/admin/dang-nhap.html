@@ -79,6 +79,17 @@
         /** @const {string} URL endpoint PHP để tạo session server-side */
         const PHP_LOGIN_URL = '../../api/admin/auth/login.php';
 
+        // Check if already logged in (Server session)
+        (async function checkAlreadyLoggedIn() {
+            try {
+                const res = await fetch('../../api/public/check-session.php');
+                const data = await res.json();
+                if (data && data.logged_in && data.role === 'admin') {
+                    window.location.href = 'quan-tri.html';
+                }
+            } catch (e) {}
+        })();
+
         // ── Sự kiện UI cơ bản ──────────────────────────────────
         document.getElementById('togglePwd').addEventListener('click', function() {
             const input = document.getElementById('password');
@@ -142,13 +153,13 @@
          * Fire-and-forget: lỗi thì bỏ qua, localStorage vẫn hoạt động.
          * @param {Object} profile - { email, name }
          */
-        function syncPhpSession(profile) {
-            fetch(PHP_LOGIN_URL, {
+        async function syncPhpSession(profile) {
+            return fetch(PHP_LOGIN_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(profile),
             }).catch(() => {
-                console.warn('[login] Không tạo được PHP session, fallback localStorage');
+                console.warn('[login] Không tạo được PHP session');
             });
         }
 
@@ -209,14 +220,9 @@
                     throw new Error('Sai mật khẩu');
                 }
 
-                // ── Bước 4: Lưu localStorage + PHP session ─────
-                const name = String(account.email || email);
-
-                localStorage.setItem('admin_logged_in', 'true');
-                localStorage.setItem('admin_username', name);
-
-                // Tạo PHP session phía server (fire-and-forget)
-                syncPhpSession({ email, name });
+                // ── Bước 4: Tạo PHP session ─────
+                // Tạo PHP session phía server (đợi phản hồi để đảm bảo session được thiết lập)
+                await syncPhpSession({ email, name: account.hovaten || account.name || email });
 
                 // ── Bước 5: Redirect ────────────────────────────
                 msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';

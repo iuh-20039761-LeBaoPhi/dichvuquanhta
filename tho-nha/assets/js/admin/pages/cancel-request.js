@@ -1,9 +1,15 @@
-// Cancel Requests Page Script
+window.initCancelRequests = function() {
+    if (window.cancelRequestsInitialized) return;
+    window.cancelRequestsInitialized = true;
 
-loadAllCancelRequests().then(requests => {
-    displayCancelRequests(requests);
-    setupCancelRequestsEvents();
-});
+    loadAllCancelRequests().then(requests => {
+        const tbody = document.getElementById('cancelRequestsTableBody');
+        if (tbody) {
+            displayCancelRequests(requests);
+            setupCancelRequestsEvents();
+        }
+    });
+};
 
 function displayCancelRequests(requests) {
     const tbody = document.getElementById('cancelRequestsTableBody');

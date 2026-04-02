@@ -13,9 +13,9 @@
 require_once __DIR__ . '/../../../config/session-config.php';
 
 // Kiểm tra phiên đăng nhập với role = 'admin'
-$res = checkLogin('admin');
+$auth = getAuthSession();
 
-if (!$res['logged_in']) {
+if (!$auth || $auth['role'] !== 'admin') {
     jsonResponse(true, 'User is NOT logged in or session expired', ['status' => 'logged_out']);
 }
 
@@ -23,6 +23,6 @@ if (!$res['logged_in']) {
 jsonResponse(true, 'Logged in', [
     'status'   => 'logged_in',
     'role'     => 'admin',
-    'username' => $res['username'],
-    'email'    => $res['email']
+    'username' => $auth['name'] ?? 'Admin',
+    'email'    => $auth['phone'] ?? ''
 ]);

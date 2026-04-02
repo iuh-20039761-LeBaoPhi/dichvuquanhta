@@ -3,147 +3,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultBox = document.getElementById('orderResult');
     const phoneInput = document.getElementById('orderPhone');
 
-    if (!form || !resultBox || !phoneInput) {
-        console.error('❌ Thiếu element form tra cứu');
-        return;
-    }
+    if (!form || !resultBox || !phoneInput) return;
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const phone = phoneInput.value.trim();
-        if (!phone) {
-            resultBox.innerHTML = `<div class="alert alert-warning">⚠️ Vui lòng nhập số điện thoại</div>`;
-            return;
-        }
+        if (!phone) return;
 
-        resultBox.innerHTML = `
-            <div class="text-center">
-                <div class="spinner-border text-primary"></div>
-                <p class="mt-2">Đang tra cứu...</p>
-            </div>
-        `;
+        resultBox.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
 
         try {
-            const res = await fetch(`${window.BD_BASE || '../../'}api/public/get-orders.php?phone=${encodeURIComponent(phone)}`);
-            const data = await res.json();
+            // Sử dụng ThoNhaApp để lấy đơn hàng theo SĐT
+            const orders = await ThoNhaApp.getOrders({ sodienthoai: phone });
 
-            console.log('API:', data);
-
-            if (data.status !== 'success' || !data.data.length) {
-                resultBox.innerHTML = `
-                    <div class="alert alert-warning">
-                        Không tìm thấy đơn hàng với số điện thoại <strong>${phone}</strong>
-                    </div>
-                `;
+            if (!orders || !orders.length) {
+                resultBox.innerHTML = `<div class="alert alert-warning">Không tìm thấy đơn hàng cho SĐT <strong>${phone}</strong></div>`;
                 return;
             }
 
-            let html = `
-                <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Mã đơn</th>
-                            <th>Dịch vụ</th>
-                            <th>Trạng thái</th>
-                            <th>Giá</th>
-                            <th>Ngày tạo</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+            let html = `<div class="table-responsive"><table class="table table-hover align-middle">
+                <thead class="table-light"><tr>
+                    <th>Mã đơn</th><th>Dịch vụ</th><th>Trạng thái</th><th>Tổng tiền</th><th>Ngày tạo</th>
+                </tr></thead><tbody>`;
 
-            data.data.forEach(order => {
-                // ✅ Kiểm tra xem đơn có thể hủy không
-                const canCancel = ['new', 'confirmed'].includes(order.status);
-                const isCancelled = order.status === 'cancel';
-                
-                html += `
-                    <tr>
-                        <td><strong>${order.order_code}</strong></td>
-                        <td>${order.service_names}</td>
-                        <td>${getStatusBadgeCustomer(order.status)}</td>
-                        <td><strong>${Number(order.prices).toLocaleString('vi-VN')} đ</strong></td>
-                        <td>${new Date(order.created_at).toLocaleString('vi-VN')}</td>
-                        <td class="text-center">
-                            ${canCancel ? `
-                                <button class="btn btn-sm btn-danger" onclick="requestCancelOrder(${order.id}, '${order.order_code}')">
-                                    <i class="fas fa-times-circle"></i> Yêu cầu hủy
-                                </button>
-                            ` : ''}
-                            ${isCancelled ? `
-                                <span class="badge bg-secondary">Đã hủy</span>
-                            ` : ''}
-                            ${order.status === 'done' ? `
-                                <span class="badge bg-success">Hoàn thành</span>
-                            ` : ''}
-                        </td>
-                    </tr>
-                `;
+            orders.forEach(order => {
+                html += `<tr>
+                    <td><strong>${order.madon || '---'}</strong></td>
+                    <td>${order.tendichvu || '---'}</td>
+                    <td>${getStatusBadge(order.trangthai)}</td>
+                    <td><strong>${Number(order.tongtien || 0).toLocaleString('vi-VN')}đ</strong></td>
+                    <td>${new Date(order.ngaytao).toLocaleDateString('vi-VN')}</td>
+                </tr>`;
             });
 
             html += '</tbody></table></div>';
-            resultBox.innerHTML = html; 
-
+            resultBox.innerHTML = html;
         } catch (err) {
-            console.error(err);
-            resultBox.innerHTML = `
-                <div class="alert alert-danger">
-                    ❌ Lỗi kết nối server
-                </div>
-            `;
+            resultBox.innerHTML = '<div class="alert alert-danger">Lỗi kết nối server</div>';
         }
     });
-});
 
-// ✅ HÀM TẠO BADGE TRẠNG THÁI CHO KHÁCH HÀNG
-function getStatusBadgeCustomer(status) {
-    const statusMap = {
-        'new': '<span class="badge bg-primary">Chờ xác nhận</span>',
-        'confirmed': '<span class="badge bg-info">Đã xác nhận</span>',
-        'done': '<span class="badge bg-success">Hoàn thành</span>',
-        'cancel': '<span class="badge bg-danger">Đã hủy</span>'
-    };
-    return statusMap[status] || '<span class="badge bg-secondary">Không xác định</span>';
-}
-
-// ✅ HÀM XỬ LÝ YÊU CẦU HỦY ĐỚN
-window.requestCancelOrder = async function(orderId, orderCode) {
-    // Xác nhận trước khi hủy
-    const confirm = window.confirm(
-        `Bạn có chắc muốn yêu cầu hủy đơn hàng ${orderCode}?\n\n` +
-        `⚠️ Lưu ý: Yêu cầu hủy sẽ được gửi đến quản trị viên để xem xét.`
-    );
-    
-    if (!confirm) return;
-
-    try {
-        const res = await fetch(`${window.BD_BASE || '../../'}api/customer/orders/request-cancel.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                order_id: orderId,
-                order_code: orderCode
-            })
-        });
-
-        const data = await res.json();
-
-        if (data.status === 'success') {
-            alert('✅ Yêu cầu hủy đơn hàng đã được gửi thành công!\n\nQuản trị viên sẽ xem xét và phản hồi sớm nhất.');
-            
-            // Reload lại danh sách đơn hàng
-            document.getElementById('viewOrderForm').dispatchEvent(new Event('submit'));
-        } else {
-            alert('❌ Lỗi: ' + (data.message || 'Không thể gửi yêu cầu hủy'));
-        }
-
-    } catch (err) {
-        console.error('Cancel order error:', err);
-        alert('❌ Lỗi kết nối server. Vui lòng thử lại sau.');
+    function getStatusBadge(status) {
+        const map = {
+            'new': '<span class="badge bg-primary">Mới</span>',
+            'confirmed': '<span class="badge bg-info">Đã xác nhận</span>',
+            'done': '<span class="badge bg-success">Hoàn thành</span>',
+            'cancel': '<span class="badge bg-danger">Đã hủy</span>'
+        };
+        return map[status] || '<span class="badge bg-secondary">Khác</span>';
     }
-}
+});

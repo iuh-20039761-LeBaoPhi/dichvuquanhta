@@ -6,28 +6,16 @@
      * Xác thực phiên đăng nhập của khách hàng (Route Guard).
      * Kiểm tra cả LocalStorage và Server Session (PHP).
      */
-    function verifySession() {
-        var isLocalValid = localStorage.getItem('customer_logged_in') === 'true' || localStorage.getItem('thonha_customer_profile_v1');
-        if (!isLocalValid) {
+    async function verifySession() {
+        const session = await ThoNhaApp.checkSession();
+        if (!session || !session.logged_in || session.role !== 'customer') {
             window.location.href = 'dang-nhap.html';
-            return;
         }
-        
-        fetch('../../api/public/check-session.php', { cache: 'no-store' })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.logged_in || data.role !== 'customer') {
-                    var keys = [
-                        'customer_logged_in', 'customer_name', 'thonha_customer_profile_v1', 'tho_nha_customer_profile'
-                    ];
-                    keys.forEach(k => localStorage.removeItem(k));
-                    window.location.href = 'dang-nhap.html';
-                }
-            }).catch(() => {});
     }
-    verifySession();
+    document.addEventListener('DOMContentLoaded', async function () {
+        // Chờ xác thực xong mới cho phép load trang con
+        await verifySession();
 
-    document.addEventListener('DOMContentLoaded', function () {
         const navBtns = document.querySelectorAll('#sidebarNav .nav-link[data-page]');
         const contentArea = document.getElementById('pageContent');
         let loadedPages = {};
@@ -43,7 +31,7 @@
 
             // Xóa rác tĩnh của file HTML cũ nếu browser lưu cache
             if (Object.keys(loadedPages).length === 0) {
-                contentArea.innerHTML = '';
+                if (contentArea) contentArea.innerHTML = '';
             }
 
             // Hide all pages
@@ -58,7 +46,7 @@
 
             const wrapper = document.createElement('div');
             wrapper.innerHTML = '<div style="text-align:center; padding:50px; color:#64748b;"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><br><br>Đang tải dữ liệu...</div>';
-            contentArea.appendChild(wrapper);
+            if (contentArea) contentArea.appendChild(wrapper);
 
             fetch(`partials/${pageId}.html`)
                 .then(res => {
@@ -133,12 +121,7 @@
      */
     window.logoutCustomer = function () {
         if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
-            var keys = [
-                'customer_logged_in', 'customer_name', 'thonha_customer_profile_v1', 'tho_nha_customer_profile',
-                'provider_logged_in', 'provider_name', 'provider_company', 'thonha_provider_profile_v1', 'tho_nha_provider_profile',
-                'admin_logged_in', 'admin_username'
-            ];
-            keys.forEach(function(k) { localStorage.removeItem(k); });
+            localStorage.clear(); // Clear all legacy
             fetch('../../api/customer/auth/logout.php', { method: 'POST' }).then(() => {
                 window.location.href = '../public/dich-vu.html';
             }).catch(() => {

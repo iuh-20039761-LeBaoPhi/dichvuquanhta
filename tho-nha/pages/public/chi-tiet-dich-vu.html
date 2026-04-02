@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <script src="/ga.js"></script>
@@ -306,15 +306,53 @@
         // booking-modal-container: booking-detail.js sẽ lazy-load modal vào đây khi click
         // (không preload để tránh conflict)
 
-        fetch('../../data/services.json')
-            .then(r => r.json())
-            .then(async SERVICES_DATA => {
+        async function loadDataFromDb() {
+            try {
+                // Đợi ThoNhaKrud sẵn sàng
+                while(!window.ThoNhaKrud) await new Promise(r => setTimeout(r, 100));
 
-        // ==================== INIT ====================
-        const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha';
-        const urlParams = new URLSearchParams(window.location.search);
-        const serviceId = parseInt(urlParams.get('id')) || 1;
-        const svc = SERVICES_DATA.find(s => s.id === serviceId) || SERVICES_DATA[0];
+                const urlParams = new URLSearchParams(window.location.search);
+                const reqId = parseInt(urlParams.get('id')) || 1;
+                const krud = window.ThoNhaKrud;
+                const [cats, svcs] = await Promise.all([
+                    krud.listTable('danhmuc_thonha', { limit: 100 }),
+                    krud.listTable('dichvu_thonha', { limit: 1000 })
+                ]);
+                const curCat = cats.find(c => c.id == reqId) || cats[0];
+                if (!curCat) throw new Error('Category not found');
+
+                const items = svcs.filter(s => {
+                    const svcCatId = String(s.id_danhmuc || '');
+                    const reqCatId = String(curCat.id || '');
+                    return svcCatId === reqCatId;
+                }).map(s => ({
+                    id: s.id,
+                    name: s.ten_dichvu,
+                    desc: s.mo_ta || s.mota_dichvu || 'Đội ngũ thợ tay nghề cao, phục vụ tận tâm.',
+                    price: Number(s.gia_co_ban || s.gia_dichvu || 0),
+                    duration: s.thoi_gian_uoc_tinh || '30-60 phút',
+                    warranty: '6-12 tháng',
+                    id_danhmuc: s.id_danhmuc,
+                    image: s.anh_dai_dien || s.anh_dichvu || '../../assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'
+                }));
+                return {
+                    id: curCat.id,
+                    name: curCat.ten_danhmuc,
+                    desc: curCat.mota_danhmuc,
+                    icon: 'fa-tools',
+                    image: items[0]?.image || '../../assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg',
+                    items: items,
+                    travelFee: { mode: 'fixed', min: 20000, max: 150000 },
+                    allCats: cats
+                };
+            } catch (err) { console.error('loadDataFromDb error:', err); return null; }
+        }
+
+        loadDataFromDb().then(async svc => {
+            if (!svc) return;
+            const SERVICES_DATA = svc.allCats;
+            const serviceId     = svc.id;
+            const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/tho-nha';
 
         // ===== SEO: Cập nhật meta tags theo từng dịch vụ =====
         const pageUrl  = `${SITE_BASE}/chi-tiet-dich-vu.html?id=${serviceId}`;
@@ -517,6 +555,8 @@
                                 initPrice)}
                         </div>
                         <button class="btn btn-gradient btn-sm booking-btn"
+                            data-service-id="${item.id}"
+                            data-cat-id="${item.id_danhmuc}"
                             data-service-name="${item.name}"
                             data-service-price="${initPrice}"
                             data-travel-fee='${JSON.stringify(item.travelFee || svc.travelFee || null)}'
@@ -574,20 +614,21 @@
         `;
 
         // Render related services
-        const related     = SERVICES_DATA.filter(s => s.id !== svc.id).slice(0, 3);
+        const related     = SERVICES_DATA.filter(s => String(s.id) !== String(svc.id)).slice(0, 3);
         const relatedGrid = document.getElementById('relatedGrid');
         related.forEach(rel => {
+            const relImg = '../../assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg';
             relatedGrid.insertAdjacentHTML('beforeend', `
                 <div class="col-md-4">
                     <div class="related-service" style="cursor:pointer;"
                          onclick="window.location.href='chi-tiet-dich-vu.html?id=${rel.id}'">
-                        <img src="${rel.image}" alt="${rel.name}">
+                        <img src="${relImg}" alt="${rel.ten_danhmuc}">
                         <div class="related-service-content">
                             <h5>
-                                <i class="fas ${rel.icon} me-2" style="color:var(--primary);"></i>
-                                ${rel.name}
+                                <i class="fas fa-tools me-2" style="color:var(--primary);"></i>
+                                ${rel.ten_danhmuc}
                             </h5>
-                            <p>Dịch vụ ${rel.name.toLowerCase()} chuyên nghiệp, uy tín</p>
+                            <p>Dịch vụ ${rel.ten_danhmuc.toLowerCase()} chuyên nghiệp, uy tín</p>
                             <div class="related-service-link">
                                 <span>Xem chi tiết</span>
                                 <i class="fas fa-arrow-right"></i>
@@ -636,6 +677,7 @@
     <script src="../../assets/js/public/map-picker.js"></script>
     <script>window.BD_BASE = '../../';</script>
     <script src="../../assets/js/shared/krud-helper.js"></script>
+    <script src="../../assets/js/shared/app-helper.js"></script>
     <script src="../../assets/js/public/booking-detail-shared.js"></script>
     <script src="../../assets/js/public/booking-detail-modal.js"></script>
     <script src="../../assets/js/public/booking-detail-standalone.js"></script>

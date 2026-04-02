@@ -1,13 +1,12 @@
 // Dashboard Page Script
 
-function initDashboard() {
+window.initDashboard = function() {
     if (window.dashboardInitialized) return;
     window.dashboardInitialized = true;
 
     loadAllOrders().then(orders => updateDashboardStats(orders));
-    loadAllCancelRequests();
     loadAllServices();
-}
+};
 
 function updateDashboardStats(orders) {
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -81,14 +80,8 @@ function displayStatusStatsChart(orders) {
 }
 
 function loadDashboardStats() {
-    if (cancelRequests.length > 0) {
-        const pending = cancelRequests.filter(r => r.cancel_status === 'pending').length;
-        const el = document.getElementById('dashCancelRequests');
-        if (el) el.textContent = pending;
-    }
-
     if (allCategories.length > 0) {
-        const total = allCategories.reduce((sum, cat) => sum + cat.services.length, 0);
+        const total = allCategories.reduce((sum, cat) => sum + (cat.services ? cat.services.length : 0), 0);
         const el = document.getElementById('dashTotalServices');
         if (el) el.textContent = total;
     }

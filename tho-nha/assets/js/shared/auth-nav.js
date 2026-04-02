@@ -53,53 +53,12 @@
         };
     }
 
-    function detectLocalAuth() {
-        var adminLogged = localStorage.getItem('admin_logged_in') === 'true';
-        if (adminLogged) {
-            return {
-                logged_in: true,
-                role: 'admin',
-                name: String(localStorage.getItem('admin_username') || 'Admin')
-            };
-        }
-
-        var providerLogged = localStorage.getItem('provider_logged_in') === 'true';
-        if (providerLogged) {
-            var providerProfile = safeParse(localStorage.getItem('thonha_provider_profile_v1'), {});
-            return {
-                logged_in: true,
-                role: 'provider',
-                name: String(localStorage.getItem('provider_name') || providerProfile.name || providerProfile.company || 'Nhà cung cấp')
-            };
-        }
-
-        var customerLogged = localStorage.getItem('customer_logged_in') === 'true';
-        if (customerLogged) {
-            var customerProfile = safeParse(localStorage.getItem('thonha_customer_profile_v1'), {});
-            return {
-                logged_in: true,
-                role: 'customer',
-                name: String(localStorage.getItem('customer_name') || customerProfile.name || 'Khách hàng')
-            };
-        }
-
-        return null;
-    }
-
     function clearLocalAuth() {
         [
-            'customer_logged_in',
-            'customer_name',
-            'provider_logged_in',
-            'provider_name',
-            'provider_company',
-            'admin_logged_in',
-            'admin_username',
-            'thonha_customer_profile_v1',
-            'thonha_provider_profile_v1'
-        ].forEach(function (key) {
-            localStorage.removeItem(key);
-        });
+            'customer_logged_in', 'customer_name', 'thonha_customer_profile_v1',
+            'provider_logged_in', 'provider_name', 'provider_company', 'thonha_provider_profile_v1',
+            'admin_logged_in', 'admin_username'
+        ].forEach(function (k) { localStorage.removeItem(k); });
     }
 
     function initAuthNav() {
@@ -149,6 +108,19 @@
         function applyLoggedInUi(authData) {
             var role = String(authData && authData.role || 'customer');
             var name = String(authData && authData.name || 'User');
+            
+            // Đồng bộ ngược lại LocalStorage cho các thư viện cũ
+            localStorage.setItem(role + '_logged_in', 'true');
+            localStorage.setItem(role + '_name', name);
+            if (authData.phone) {
+                // Nếu là customer, có thể lưu thêm profile giả lập để prefill form đặt lịch
+                if (role === 'customer') {
+                   localStorage.setItem('thonha_customer_profile_v1', JSON.stringify({
+                       name: name, phone: authData.phone, address: authData.address || ''
+                   }));
+                }
+            }
+            
             var initial = name.charAt(0).toUpperCase();
 
             if (guestEl) guestEl.style.display = 'none';
@@ -192,26 +164,17 @@
                 if (data && data.logged_in) {
                     applyLoggedInUi({
                         role: data.role || 'customer',
-                        name: data.name || 'User'
+                        name: data.name || 'User',
+                        phone: data.phone || '',
+                        address: (data.meta && data.meta.address) ? data.meta.address : ''
                     });
-                    return;
-                }
-
-                var localAuth = detectLocalAuth();
-                if (localAuth) {
-                    applyLoggedInUi(localAuth);
                 } else {
                     applyGuestUi();
                 }
             })
             .catch(function () {
                 setLoadingOff();
-                var localAuth = detectLocalAuth();
-                if (localAuth) {
-                    applyLoggedInUi(localAuth);
-                } else {
-                    applyGuestUi();
-                }
+                applyGuestUi();
             });
     }
 

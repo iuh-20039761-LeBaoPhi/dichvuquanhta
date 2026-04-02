@@ -9,6 +9,44 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/auth.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #mapPickerBox {
+            margin-top: 10px;
+            border: 1px solid var(--auth-border);
+            border-radius: var(--auth-radius-sm);
+            overflow: hidden;
+            display: none;
+            position: relative;
+        }
+        #mapPickerEl {
+            height: 250px;
+            width: 100%;
+        }
+        .map-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .btn-map-tool {
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 999px;
+            border: 1px solid var(--auth-primary);
+            background: #fff;
+            color: var(--auth-primary);
+            transition: all 0.2s;
+        }
+        .btn-map-tool:hover {
+            background: var(--auth-primary);
+            color: #fff;
+        }
+        .btn-map-tool.active {
+            background: var(--auth-primary);
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
     <div class="auth-card">
@@ -61,17 +99,36 @@
                 </div>
             </div>
             <div class="col-12">
-                <label class="form-label">Địa chỉ hoạt động</label>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label mb-0">Địa chỉ hoạt động</label>
+                    <div class="map-controls">
+                        <button type="button" class="btn-map-tool" id="toggleMapBtn" onclick="mapPicker.toggle()">
+                            <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
+                        </button>
+                        <button type="button" class="btn-map-tool" onclick="mapPicker.gps()">
+                            <i class="fas fa-location-crosshairs me-1"></i> GPS
+                        </button>
+                    </div>
+                </div>
                 <div class="input-group input-icon">
                     <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
                     <input type="text" id="address" class="form-control" placeholder="Nhập địa chỉ">
                 </div>
+                <div id="mapPickerBox">
+                    <div id="mapPickerEl"></div>
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Danh mục dịch vụ cung cấp (Có thể chọn nhiều) <span class="text-danger">*</span></label>
+                <div id="category_list" class="row g-2 p-1">
+                    <div class="col-12 text-muted small"><i class="fas fa-spinner fa-spin me-1"></i> Đang tải danh mục...</div>
+                </div>
             </div>
             <div class="col-12">
                 <label class="form-label">Giới thiệu về dịch vụ</label>
-                <div class="input-group input-icon" style="align-items:flex-start;">
-                    <span class="input-group-text" style="padding-top:12px;"><i class="fas fa-align-left"></i></span>
-                    <textarea id="description" class="form-control" rows="3" placeholder="Mô tả kinh nghiệm, chuyên môn và các dịch vụ bạn cung cấp..."></textarea>
+                <div class="position-relative">
+                    <i class="fas fa-align-left position-absolute" style="top: 14px; left: 16px; color: #94a3b8;"></i>
+                    <textarea id="description" class="form-control" rows="3" style="padding-left: 45px;" placeholder="Mô tả kinh nghiệm, chuyên môn và các dịch vụ bạn cung cấp..."></textarea>
                 </div>
             </div>
         </div>
@@ -147,7 +204,10 @@
         </div>
     </div>
 
-    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="../../assets/js/public/map-picker.js"></script>
+    <script src="../../assets/js/shared/krud-helper.js"></script>
+    <script src="../../assets/js/shared/app-helper.js"></script>
     <script>
         /**
          * ═══════════════════════════════════════════════════════════
@@ -229,6 +289,40 @@
 
         document.getElementById('registerBtn').addEventListener('click', register);
 
+        // ── Tải danh sách danh mục ────────────────────────────
+        (async function loadCategories() {
+            const listEl = document.getElementById('category_list');
+            try {
+                // Đợi krud-helper load xong
+                if (!window.ThoNhaKrud) {
+                    setTimeout(loadCategories, 500);
+                    return;
+                }
+                const krud = window.ThoNhaKrud;
+                const cats = await krud.listTable('danhmuc_thonha', { limit: 100 });
+                if (cats && cats.length > 0) {
+                    listEl.innerHTML = cats.map(c => `
+                        <div class="col-6">
+                            <label class="form-check h-100 p-2 border rounded bg-white shadow-sm d-flex align-items-center mb-0" for="cat_${c.id}" style="cursor:pointer; transition: all 0.2s;">
+                                <input class="form-check-input cat-checkbox ms-0 me-2 mt-0" type="checkbox" value="${c.id}" id="cat_${c.id}" style="cursor:pointer; flex-shrink:0;">
+                                <span class="small lh-sm text-dark mb-0" style="font-size: 0.78rem; user-select: none;">${c.ten_danhmuc}</span>
+                            </label>
+                            <style>
+                                label[for="cat_${c.id}"]:hover {
+                                    border-color: var(--auth-primary) !important;
+                                    background-color: #f0fdfa !important;
+                                }
+                            </style>
+                        </div>
+                    `).join('');
+                } else {
+                    listEl.innerHTML = '<div class="text-danger small">Chưa có danh mục.</div>';
+                }
+            } catch (e) {
+                listEl.innerHTML = '<div class="text-danger small">Lỗi tải danh mục.</div>';
+            }
+        })();
+
         /**
          * Trả về thời điểm hiện tại theo format SQL.
          * @returns {string} "YYYY-MM-DD HH:mm:ss"
@@ -289,7 +383,8 @@
          * Bước 4: Gọi krud('insert') với trạng thái "pending"
          * Bước 5: Hiển thị thông báo chờ duyệt (không auto-login)
          */
-        function register() {
+        async function register() {
+            const btn = document.getElementById('registerBtn');
             // ── Bước 1: Lấy giá trị form ────────────────────────
             const full_name        = document.getElementById('full_name').value.trim();
             const email            = document.getElementById('email').value.trim();
@@ -297,41 +392,38 @@
             const password         = document.getElementById('password').value;
             const confirm_password = document.getElementById('confirm_password').value;
             const company_name     = document.getElementById('company_name').value.trim();
-            const btn = document.getElementById('registerBtn');
             const msg = document.getElementById('msg');
+            const address = document.getElementById('address')?.value?.trim() || '';
+            const description = document.getElementById('description')?.value?.trim() || '';
+
+            // Lấy danh mục thợ chọn
+            const selectedCats = Array.from(document.querySelectorAll('.cat-checkbox:checked')).map(cb => cb.value);
 
             // ── Bước 2: Validate ────────────────────────────────
-            if (!full_name || !email || !phone || !password || !confirm_password || !company_name) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng điền đầy đủ các trường bắt buộc (*)</span>';
+            if (!full_name || !email || !phone || !password || !confirm_password || !company_name || selectedCats.length === 0) {
+                msg.innerHTML = '<div class="alert alert-warning small mt-3"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng điền đầy đủ và chọn ít nhất 1 danh mục</div>';
                 return;
             }
             if (password.length < 6) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu phải có ít nhất 6 ký tự</span>';
+                msg.innerHTML = '<div class="alert alert-danger small mt-3"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu phải có ít nhất 6 ký tự</div>';
                 return;
             }
             if (password !== confirm_password) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu xác nhận không khớp</span>';
+                msg.innerHTML = '<div class="alert alert-danger small mt-3"><i class="fas fa-exclamation-circle me-1"></i>Mật khẩu xác nhận không khớp</div>';
                 return;
             }
             if (!isValidPhone(phone)) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Số điện thoại không hợp lệ</span>';
+                msg.innerHTML = '<div class="alert alert-danger small mt-3"><i class="fas fa-exclamation-circle me-1"></i>Số điện thoại không hợp lệ</div>';
                 return;
             }
             if (!document.getElementById('cccd_front').files[0] || !document.getElementById('cccd_back').files[0]) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng tải lên ảnh CCCD mặt trước và mặt sau</span>';
+                msg.innerHTML = '<div class="alert alert-danger small mt-3"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng tải lên ảnh CCCD mặt trước và mặt sau</div>';
                 return;
             }
 
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi đăng ký...';
             msg.innerHTML = '';
-
-            if (typeof krud !== 'function') {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Không tải được hàm KRUD</span>';
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đăng ký';
-                return;
-            }
 
             // ── Bước 3: Chuẩn bị payload + metadata ảnh ────────
             const avatarFile    = document.getElementById('avatar').files[0];
@@ -342,14 +434,60 @@
             const cccdFrontMeta = fileMeta(cccdFrontFile);
             const cccdBackMeta  = fileMeta(cccdBackFile);
 
+            // --- ĐỔI TÊN TỆP THEO SĐT ---
+            const getExt = (f) => (f && f.name) ? f.name.split('.').pop() : '';
+            if (avatarFile) avatarMeta.ten = `avatar_${phone}.${getExt(avatarFile)}`;
+            if (cccdFrontFile) cccdFrontMeta.ten = `cccd_front_${phone}.${getExt(cccdFrontFile)}`;
+            if (cccdBackFile) cccdBackMeta.ten = `cccd_back_${phone}.${getExt(cccdBackFile)}`;
+            // ---------------------------
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang chuẩn bị...';
+
+            /**
+             * Helper: Tải tệp vật lý lên server
+             */
+            async function uploadFile(file, newName, folder = 'providers') {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('name', newName); 
+                formData.append('folder', folder);
+                const res = await fetch('../../api/public/upload.php', { method: 'POST', body: formData });
+                const result = await res.json();
+                if (!result.success) throw new Error(result.message || 'Lỗi tải tệp');
+                return result;
+            }
+
+            // ── Bước 4: Tải ảnh vật lý lên server ────────────────
+            try {
+                if (avatarFile) {
+                    msg.innerHTML = '<div class="alert alert-info small mt-3">Đang tải ảnh đại diện...</div>';
+                    await uploadFile(avatarFile, avatarMeta.ten, 'providers');
+                }
+                if (cccdFrontFile) {
+                    msg.innerHTML = '<div class="alert alert-info small mt-3">Đang tải CCCD mặt trước...</div>';
+                    await uploadFile(cccdFrontFile, cccdFrontMeta.ten, 'providers');
+                }
+                if (cccdBackFile) {
+                    msg.innerHTML = '<div class="alert alert-info small mt-3">Đang tải CCCD mặt sau...</div>';
+                    await uploadFile(cccdBackFile, cccdBackMeta.ten, 'providers');
+                }
+            } catch (err) {
+                msg.innerHTML = '<div class="alert alert-danger small mt-3">Lỗi tải ảnh: ' + err.message + '</div>';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đăng ký';
+                return;
+            }
+
             const payload = {
                 hovaten:               full_name,
                 email:                 email.toLowerCase(),
                 sodienthoai:           phone,
                 matkhau:               password,
                 tencua_hang:           company_name,
-                diachi:                document.getElementById('address').value.trim(),
-                motadichvu:            document.getElementById('description').value.trim(),
+                danh_muc_thuc_hien:    selectedCats.join(','),
+                diachi:                address,
+                motadichvu:            description,
                 avatartenfile:         avatarMeta.ten,
                 avatarkich_thuoc:      avatarMeta.kich_thuoc,
                 avatarmime:            avatarMeta.mime,
@@ -358,26 +496,25 @@
                 cccdmattruocmime:      cccdFrontMeta.mime,
                 cccdmatsautenfile:     cccdBackMeta.ten,
                 cccdmatsaukichthuoc:   cccdBackMeta.kich_thuoc,
-                cccdmatsaumime:        cccdBackMeta.mime,
-                trangthai:             'pending',   // ← Cần admin duyệt
-                ngaytao:               nowSql()
+                cccdmatsaumime:        cccdBackMeta.mime
             };
 
-            // ── Bước 4: Gọi KRUD insert ─────────────────────────
-            krud('insert', BANG_DANG_KY_NHA_CUNG_CAP, payload)
-                .then((res) => {
-                    console.log(res);
-                    if (!isKrudSuccess(res)) {
-                        throw new Error(res && (res.message || res.error) ? (res.message || res.error) : 'Đăng ký thất bại');
-                    }
+            // ── Bước 5: Gọi ThoNhaApp.register ──────────────────
+            if (typeof ThoNhaApp === 'undefined') {
+                msg.innerHTML = '<div class="alert alert-danger mt-3">Lỗi: Thư viện ứng dụng chưa tải xong.</div>';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đăng ký';
+                return;
+            }
 
+            ThoNhaApp.register('provider', payload)
+                .then(() => {
                     // ── Bước 5: Thông báo chờ duyệt ─────────────
-                    // ⚠️ Không auto-login: NCC cần admin duyệt trước
-                    msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng ký thành công, vui lòng chờ admin xét duyệt trong 24 giờ.</span>';
-                    btn.innerHTML = '<i class="fas fa-check me-2"></i>Đã gửi đăng ký';
+                    msg.innerHTML = '<div class="alert alert-success mt-3"><i class="fas fa-check-circle me-1"></i>Đăng ký thành công, vui lòng chờ admin xét duyệt trong 24 giờ.</div>';
+                    btn.innerHTML = '<i class="fas fa-check me-2"></i>Đã đăng ký';
                 })
                 .catch((err) => {
-                    msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (err && err.message ? err.message : 'Không kết nối được server') + '</span>';
+                    msg.innerHTML = '<div class="alert alert-danger mt-3"><i class="fas fa-times-circle me-1"></i>' + (err.message || 'Lỗi đăng ký') + '</div>';
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi đăng ký';
                 });

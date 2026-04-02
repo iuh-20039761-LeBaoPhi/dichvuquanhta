@@ -228,6 +228,8 @@ let _bdTravelDistKm   = 0;      // quãng đường (km)
 let _bdTravelTimer    = null;   // debounce handle
 let _bdCurPrice       = 0;      // giá dịch vụ hiện tại (để refresh)
 let _bdCurSurvey      = null;   // survey fee hiện tại (để refresh)
+let _bdCurCatId       = null;   // ID danh mục hiện tại
+let _bdCurServiceId   = null;   // ID dịch vụ hiện tại (nếu có 1 dịch vụ cụ thể)
 let _bdPendingCoords  = null;   // tọa độ chờ nếu user chọn map trước khi chọn dịch vụ
 
 /**
@@ -341,24 +343,29 @@ async function _bdTravelFromCoords(lat, lng) {
  * @param {number} price     - Giá dịch vụ cơ bản (VNĐ)
  * @param {Object} travelFee - Config phí di chuyển: { mode, pricePerKm, ... }
  * @param {Object} surveyFee - Config phí khảo sát: { required, amount }
+ * @param {string|number} [catId] - ID danh mục
+ * @param {string|number} [serviceId] - ID dịch vụ cụ thể
  */
-function _bdSetBreakdown(price, travelFee, surveyFee) {
+function _bdSetBreakdown(price, travelFee, surveyFee, catId, serviceId) {
     _bdCurPrice  = price || 0;
     _bdCurSurvey = surveyFee || null;
+    _bdCurCatId  = catId || null;
+    _bdCurServiceId = serviceId || null;
     const isPerKm = travelFee && travelFee.mode === 'per_km';
     _bdTravelCfg    = isPerKm ? travelFee : null;
     _bdTravelStatus = isPerKm ? 'idle' : 'na';
     _bdTravelAmt    = 0; _bdTravelDistKm = 0;
     clearTimeout(_bdTravelTimer);
     _bdUpdateBreakdown(price, travelFee, surveyFee);
-    // Nếu đã có tọa độ từ map picker → tính ngay (bỏ qua geocode)
+    /* 
+    Vô hiệu hóa tính toán km tự động tại bước đặt lịch (chờ Thợ nhận đơn mới tính thực tế)
     if (isPerKm && _bdPendingCoords) {
         _bdTravelFromCoords(_bdPendingCoords.lat, _bdPendingCoords.lng);
     } else {
-        // Nếu đã có địa chỉ nhập tay → tính ngay
         const addr = document.getElementById('diachi')?.value?.trim();
         if (isPerKm && addr) _bdStartTravelCalc();
     }
+    */
 }
 
 // Gắn listener địa chỉ — gọi 1 lần sau khi form có trong DOM
@@ -398,28 +405,20 @@ function _bdUpdateBreakdown(price, travelFee, surveyFee) {
 
     if (bdService) bdService.textContent = price > 0 ? _bdFmt(price) : 'Miễn phí';
 
-    // Hàng phí di chuyển
-    if (isPerKm) {
-        if (bdTravelRow) bdTravelRow.style.removeProperty('display');
-        if (bdTravel) {
-            if (_bdTravelStatus === 'loading') {
-                bdTravel.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width:11px;height:11px;border-width:2px;vertical-align:middle;"></span><em class="text-muted" style="font-size:0.82rem;">Đang tính...</em>';
-            } else if (_bdTravelStatus === 'ok') {
-                bdTravel.innerHTML = `${_bdFmt(_bdTravelAmt)} <small class="text-muted">(~${_bdTravelDistKm.toFixed(1)} km)</small>`;
-            } else if (_bdTravelStatus === 'error') {
-                bdTravel.innerHTML = '<span style="color:#ef4444;font-size:0.82rem;">Không tính được — thử lại sau</span>';
-            } else { // idle
-                bdTravel.innerHTML = '<em class="text-muted" style="font-size:0.82rem;">Nhập địa chỉ để tính phí</em>';
-            }
-        }
-    } else {
-        const tMax = effectiveTf ? (effectiveTf.max ?? effectiveTf.fixedAmount ?? 0) : 0;
-        const tMin = effectiveTf ? (effectiveTf.min ?? effectiveTf.fixedAmount ?? 0) : 0;
-        if (tMax > 0 && bdTravelRow && bdTravel) {
-            bdTravelRow.style.removeProperty('display');
+    // Phí di chuyển (Travel Fee Row)
+    if (bdTravelRow && bdTravel) {
+        bdTravelRow.style.removeProperty('display');
+        
+        // Luôn hiển thị khung giá tạm tính trong lúc đặt lịch (theo yêu cầu User)
+        const tMin = travelFee?.min || 20000;
+        const tMax = travelFee?.max || 150000;
+        
+        if (isPerKm) {
+            // Ngay cả mode per_km cũng hiện range khi đang đặt
+            bdTravel.innerHTML = `<span style="font-weight:600;">${_bdFmt(tMin)} – ${_bdFmt(tMax)}</span> <small class="text-muted">(tạm tính)</small>`;
+        } else {
+            // Chế độ cố định (fixed)
             bdTravel.textContent = tMin === tMax ? _bdFmt(tMin) : `${_bdFmt(tMin)} – ${_bdFmt(tMax)}`;
-        } else if (bdTravelRow) {
-            bdTravelRow.style.setProperty('display', 'none', 'important');
         }
     }
 
@@ -597,20 +596,12 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
         // Giá dịch vụ
         if (costBase) costBase.textContent = basePrice > 0 ? _bdFmt(basePrice) : 'Miễn phí';
 
-        // Phí di chuyển
+        // Phí di chuyển (Confirmation Row)
         if (costTravelRow && costTravel) {
-            if (isPerKm) {
-                costTravelRow.style.display = '';
-                if (travelOk) {
-                    costTravel.innerHTML = `${_bdFmt(_bdTravelAmt)}<span class="cfm-cost-sub">~${_bdTravelDistKm.toFixed(1)} km</span>`;
-                } else if (_bdTravelStatus === 'loading') {
-                    costTravel.innerHTML = '<em style="color:#94a3b8;font-size:0.82rem;">Đang tính...</em>';
-                } else {
-                    costTravel.innerHTML = '<em style="color:#94a3b8;font-size:0.82rem;">Chưa xác định</em>';
-                }
-            } else {
-                costTravelRow.style.display = 'none';
-            }
+            costTravelRow.style.display = '';
+            const tMin = _bdTravelCfg?.min || 20000;
+            const tMax = _bdTravelCfg?.max || 150000;
+            costTravel.innerHTML = `<span style="font-weight:600;">${_bdFmt(tMin)} – ${_bdFmt(tMax)}</span><span class="cfm-cost-sub">tạm tính</span>`;
         }
 
         // Phí khảo sát
@@ -623,16 +614,10 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
             }
         }
 
-        // Tổng
+        // Tổng tạm tính
         if (costTotal) {
-            const travel = travelOk ? _bdTravelAmt : 0;
-            const total  = basePrice + travel;
-            if (isPerKm && !travelOk) {
-                const baseLabel = basePrice > 0 ? _bdFmt(basePrice) : 'Miễn phí';
-                costTotal.innerHTML = `${baseLabel} <span style="font-size:0.78rem;font-weight:500;color:#94a3b8;">+ phí di chuyển</span>`;
-            } else {
-                costTotal.textContent = _bdFmt(total);
-            }
+            const baseLabel = basePrice > 0 ? _bdFmt(basePrice) : 'Miễn phí';
+            costTotal.innerHTML = `${baseLabel} <span style="font-size:0.78rem;font-weight:500;color:#94a3b8;">+ phí di chuyển</span>`;
         }
 
         // Ghi chú nhỏ
@@ -731,9 +716,8 @@ function _bdGetKrudHelper() {
  */
 function _bdBuildKrudBookingRecord(pendingData, orderCode) {
     const mediaStats = _bdGetMediaStats();
-    const basePrice = _bdToMoney(pendingData.estimated_price || _bdCurPrice || 0);
-    const travelFee = _bdTravelStatus === 'ok' ? _bdToMoney(_bdTravelAmt) : 0;
-    const surveyFee = (_bdCurSurvey && _bdCurSurvey.required) ? _bdToMoney(_bdCurSurvey.amount || 0) : 0;
+    const basePrice  = _bdToMoney(pendingData.estimated_price || _bdCurPrice || 0);
+    const surveyFee  = (_bdCurSurvey && _bdCurSurvey.required) ? _bdToMoney(_bdCurSurvey.amount || 0) : 0;
 
     const lat = Number(_bdPendingCoords?.lat);
     const lng = Number(_bdPendingCoords?.lng);
@@ -742,16 +726,19 @@ function _bdBuildKrudBookingRecord(pendingData, orderCode) {
         madon: orderCode,
         hoten: pendingData.name || '',
         sodienthoai: pendingData.phone || '',
+        id_danhmuc: pendingData.id_danhmuc || null,
+        id_dichvu: pendingData.id_dichvu || null,
+        id_dich_vu: pendingData.id_dichvu || null, // Bổ sung trường alias để đảm bảo lưu record thành công
         tendichvu: pendingData.service_id || '',
         thuonghieu: pendingData.selected_brand || '',
         diachi: pendingData.address || '',
         ghichu: pendingData.note || '',
         giadichvu: basePrice,
-        phidichuyen: travelFee,
-        quangduongkm: Number.isFinite(_bdTravelDistKm) && _bdTravelDistKm > 0 ? Number(_bdTravelDistKm.toFixed(2)) : null,
-        trangthaidichuyen: _bdTravelStatus || 'na',
+        phidichuyen: null,
+        quangduongkm: null,
+        trangthaidichuyen: 'waiting_provider',
         phikhaosat: surveyFee,
-        tongtien: basePrice + travelFee,
+        tongtien: basePrice + surveyFee, 
         soluongmedia: mediaStats.total,
         soluonganh: mediaStats.images,
         soluongvideo: mediaStats.videos,
@@ -778,16 +765,16 @@ function _bdRememberCustomerProfile(pendingData) {
 }
 
 /**
- * Tạo bản ghi đặt lịch mới qua KRUD helper → insertRow().
+ * Tạo bản ghi đặt lịch mới qua ThoNhaApp.
  * @param {Object} pendingData - Payload từ _bdBuildPendingData()
  * @returns {Promise<{orderCode: string, result: *}>}
  */
 async function _bdInsertBookingWithKrud(pendingData) {
-    const helper = _bdGetKrudHelper();
-
     const orderCode = _bdBuildOrderCode();
     const row = _bdBuildKrudBookingRecord(pendingData, orderCode);
-    const result = await helper.insertRow(_BD_KRUD_TABLE, row, _BD_KRUD_SCRIPT_URL);
+    
+    // Sử dụng ThoNhaApp để tạo đơn hàng
+    const result = await ThoNhaApp.createOrder(row);
 
     return { orderCode, result };
 }
@@ -872,7 +859,9 @@ function _bdBuildPendingData(service) {
         address:         (document.getElementById('diachi')?.value || '').trim(),
         note:            noteVal,
         selected_brand:  selectedBrandPayload,
-        estimated_price: priceRaw
+        estimated_price: priceRaw,
+        id_danhmuc:      _bdCurCatId,
+        id_dichvu:       _bdCurServiceId
     };
 }
 
@@ -1052,7 +1041,10 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
         const travelFee  = selectedItems[0].travelFee || catData.travelFee || null;
         const surveyItem = selectedItems.find(i => i.surveyFee);
         const surveyFee  = surveyItem ? surveyItem.surveyFee : null;
-        _bdSetBreakdown(totalPrice, travelFee, surveyFee);
+        
+        const catId = catData.id || null;
+        const serviceId = selectedItems.map(i => i.id).filter(id => id !== undefined && id !== null).join(',');
+        _bdSetBreakdown(totalPrice, travelFee, surveyFee, catId, serviceId);
     }
 
     items.forEach(item => {

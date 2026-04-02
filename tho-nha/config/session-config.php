@@ -38,15 +38,17 @@ header('Cache-Control: no-store, no-cache, must-revalidate');
 /**
  * Lưu thông tin đăng nhập vào PHP session.
  *
- * @param string $role  Vai trò: 'customer' | 'provider' | 'admin'
- * @param string $name  Tên hiển thị
- * @param string $phone SĐT hoặc email (dùng để định danh)
- * @param array  $extra Dữ liệu bổ sung tuỳ role (vd: company, address)
+ * @param string|int $id    ID thực tế trong cơ sở dữ liệu
+ * @param string     $role  Vai trò: 'customer' | 'provider' | 'admin'
+ * @param string     $name  Tên hiển thị
+ * @param string     $phone SĐT hoặc email (dùng để định danh)
+ * @param array      $extra Dữ liệu bổ sung tuỳ role (vd: company, address)
  */
-function setAuthSession(string $role, string $name, string $phone, array $extra = []): void
+function setAuthSession($id, string $role, string $name, string $phone, array $extra = []): void
 {
     $_SESSION['auth'] = [
         'logged_in' => true,
+        'id'        => $id,
         'role'      => $role,
         'name'      => $name,
         'phone'     => $phone,

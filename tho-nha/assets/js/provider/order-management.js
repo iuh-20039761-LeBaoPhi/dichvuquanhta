@@ -181,119 +181,22 @@ window.initProviderOrders = function() {
     }
 
     /**
-     * Điều chỉnh giao diện khi đang tải dữ liệu.
-     * @param {boolean} isLoading - Trạng thái loading.
-     */
-    function setLoadingState(isLoading) {
-        state.isLoading = !!isLoading;
-        if (!state.isLoading) return;
-
-        if (elements.openBody) {
-            elements.openBody.innerHTML = '<tr><td colspan="6" class="table-loading">Đang tải yêu cầu mới...</td></tr>';
-        }
-        if (elements.assignedBody) {
-            elements.assignedBody.innerHTML = '<tr><td colspan="5" class="table-loading">Đang tải đơn đã nhận...</td></tr>';
-        }
-        if (elements.openMobileList) {
-            elements.openMobileList.innerHTML = '<article class="mobile-card loading">Đang tải yêu cầu mới...</article>';
-        }
-        if (elements.assignedMobileList) {
-            elements.assignedMobileList.innerHTML = '<article class="mobile-card loading">Đang tải đơn đã nhận...</article>';
-        }
-        if (elements.openEmpty) elements.openEmpty.hidden = true;
-        if (elements.assignedEmpty) elements.assignedEmpty.hidden = true;
-    }
-
-    /**
-     * Lấy Helper KRUD.
-     */
-    function getKrudHelper() {
-        if (!window.ThoNhaKrud) {
-            throw new Error('Không tải được helper KRUD');
-        }
-        return window.ThoNhaKrud;
-    }
-
-    /**
-     * Tải toàn bộ dòng từ một bảng.
-     */
-    async function fetchTableRows(tableName) {
-        return getKrudHelper().listTable(tableName, null, KRUD_SCRIPT_URL);
-    }
-
-    /**
-     * Chuẩn hoá trạng thái từ API (pending -> new, active -> confirmed, etc.).
-     * @param {string} value - Giá trị trạng thái thô.
-     */
-    function normalizeStatus(value) {
-        var s = String(value || '').trim().toLowerCase();
-        if (!s) return 'new';
-        if (s === 'pending') return 'new';
-        if (s === 'active') return 'confirmed';
-        return s;
-    }
-
-    /**
-     * Tải map thông tin nhà cung cấp.
-     */
-    async function fetchProviderMapByIds(providerIdSet) {
-        var ids = Object.keys(providerIdSet || {});
-        if (!ids.length) return {};
-
-        var rows = await fetchTableRows(PROVIDER_TABLE);
-        return buildProviderMapByIds(rows, providerIdSet);
-    }
-
-    /**
-     * Ánh xạ dòng API thành Đơn hàng chuẩn của Đối tác.
-     * @param {Object} row - Dòng thô.
-     * @param {number} index - Index.
-     * @param {Object} providerCache - Cache thầu đơn.
-     * @param {Object} providerMapById - Map đối tác.
-     */
-    function mapApiOrder(row, index, providerCache, providerMapById) {
-        return mapApiOrderBase(row, index, {
-            providerMapById: providerMapById,
-            updatedAtFields: ['capnhatluc', 'updated_at', 'updatedAt'],
-            normalizeStatus: normalizeStatus,
-            defaultStatus: 'new',
-            includeRaw: true,
-            providerFallback: function (ctx) {
-                return getCachedAssignedProvider(providerCache, ctx.row.id, ctx.orderCode);
-            }
-        });
-    }
-
-    /**
-     * Tải dữ liệu toàn bộ đơn từ API.
-     */
-    async function fetchRemoteOrders() {
-        var rows = await fetchTableRows(KRUD_TABLE);
-        var providerIdSet = {};
-        rows.forEach(function (row) {
-            var providerId = getProviderIdFromOrderRow(row);
-            if (providerId) providerIdSet[providerId] = true;
-        });
-
-        var providerMapById = {};
-        try {
-            providerMapById = await fetchProviderMapByIds(providerIdSet);
-        } catch (err) {
-            console.warn('[provider-order] Không tải được bảng nhà cung cấp:', err);
-        }
-
-        var providerCache = readProviderAssignCache();
-        return sortByCreatedDesc(rows.map(function (row, index) {
-            return mapApiOrder(row, index, providerCache, providerMapById);
-        }));
-    }
-
-    /**
-     * Lọc đơn hàng mới (chưa có người nhận) từ state.
+     * Lọc đơn hàng mới (chưa có người nhận) và phù hợp với danh mục đối tác đã đăng ký.
      */
     function getOpenOrdersFromState() {
+        var providerCats = (provider && provider.categories) 
+            ? String(provider.categories).split(',').map(function(s) { return s.trim(); }).filter(Boolean) 
+            : [];
+
         return state.orders.filter(function (order) {
-            return order.status === 'new';
+            if (order.status !== 'new') return false;
+            
+            // Nếu không có thông tin danh mục đối tác đăng ký (ví dụ: thợ cũ hoặc admin), hiện hết
+            if (providerCats.length === 0) return true;
+            
+            // Chỉ hiện đơn có danh mục trùng với danh mục của đối tác
+            var orderCatId = String(order.id_danhmuc || '').trim();
+            return orderCatId !== '' && providerCats.indexOf(orderCatId) !== -1;
         });
     }
 
@@ -330,27 +233,6 @@ window.initProviderOrders = function() {
     }
 
     /**
-     * Kiểm tra xem lỗi trả về từ API có phải là lỗi thiếu cột hay không.
-     * @param {string} message - Msg lỗi.
-     */
-    function isMissingColumnError(message) {
-        var msg = String(message || '').toLowerCase();
-        return msg.indexOf('unknown column') !== -1
-            || msg.indexOf("doesn't exist") !== -1
-            || msg.indexOf('does not exist') !== -1
-            || msg.indexOf('invalid column') !== -1
-            || msg.indexOf('column not found') !== -1;
-    }
-
-    /**
-     * Kiểm tra xem lỗi có phải do thiếu cột id_nhacungcap hay không.
-     */
-    function isMissingProviderIdColumnError(message) {
-        var msg = String(message || '').toLowerCase();
-        return isMissingColumnError(msg) && msg.indexOf('id_nhacungcap') !== -1;
-    }
-
-    /**
      * Chọn một khóa (field) tồn tại trong object từ danh sách ứng viên.
      * @param {Object} raw - Dữ liệu thô.
      * @param {string[]} candidates - Danh sách các khóa khả thi.
@@ -367,84 +249,198 @@ window.initProviderOrders = function() {
     }
 
     /**
+     * Ánh xạ dòng API thành Đơn hàng chuẩn của Đối tác.
+     * @param {Object} row - Dòng thô.
+     * @param {number} index - Index.
+     * @param {Object} providerCache - Cache thầu đơn.
+     * @param {Object} providerMapById - Map đối tác.
+     */
+    function mapApiOrder(row, index, providerCache, providerMapById) {
+        function normalizeStatus(value) {
+            var s = String(value || '').trim().toLowerCase();
+            if (!s || s === 'pending') return 'new';
+            if (s === 'active') return 'confirmed';
+            return s;
+        }
+
+        return mapApiOrderBase(row, index, {
+            providerMapById: providerMapById,
+            updatedAtFields: ['capnhatluc', 'updated_at', 'updatedAt'],
+            normalizeStatus: normalizeStatus,
+            defaultStatus: 'new',
+            includeRaw: true,
+            providerFallback: function (ctx) {
+                return getCachedAssignedProvider(providerCache, ctx.row.id, ctx.orderCode);
+            }
+        });
+    }
+
+    /**
+     * Điều chỉnh giao diện khi đang tải dữ liệu.
+     * @param {boolean} isLoading - Trạng thái loading.
+     */
+    function setLoadingState(isLoading) {
+        state.isLoading = !!isLoading;
+        if (!state.isLoading) return;
+
+        if (elements.openBody) {
+            elements.openBody.innerHTML = '<tr><td colspan="6" class="table-loading">Đang tải yêu cầu mới...</td></tr>';
+        }
+        if (elements.assignedBody) {
+            elements.assignedBody.innerHTML = '<tr><td colspan="5" class="table-loading">Đang tải đơn đã nhận...</td></tr>';
+        }
+        if (elements.openMobileList) {
+            elements.openMobileList.innerHTML = '<article class="mobile-card loading">Đang tải yêu cầu mới...</article>';
+        }
+        if (elements.assignedMobileList) {
+            elements.assignedMobileList.innerHTML = '<article class="mobile-card loading">Đang tải đơn đã nhận...</article>';
+        }
+        if (elements.openEmpty) elements.openEmpty.hidden = true;
+        if (elements.assignedEmpty) elements.assignedEmpty.hidden = true;
+    }
+
+    /**
+     * Tải dữ liệu toàn bộ đơn từ API và ánh xạ Nhà cung cấp.
+     */
+    async function fetchRemoteOrders() {
+        // Tải đơn hàng và danh sách nhà cung cấp thông qua ThoNhaApp
+        const [ordersRaw, providers] = await Promise.all([
+            ThoNhaApp.getOrders(),
+            ThoNhaApp.getProviders()
+        ]);
+
+        const providerIdSet = {};
+        ordersRaw.forEach(row => {
+            const pid = getProviderIdFromOrderRow(row);
+            if (pid) providerIdSet[pid] = true;
+        });
+
+        const providerMap = buildProviderMapByIds(providers, providerIdSet);
+        const providerCache = readProviderAssignCache();
+
+        return sortByCreatedDesc(ordersRaw.map((row, index) => {
+            return mapApiOrder(row, index, providerCache, providerMap);
+        }));
+    }
+
+    /**
+     * Geocode địa chỉ văn bản → tọa độ lat/lng bằng Nominatim API.
+     */
+    async function _bdGeocode(address) {
+        if (!address) return null;
+        // Thêm User-Agent để tuân thủ chính sách của Nominatim (OpenStreetMap)
+        const url = 'https://nominatim.openstreetmap.org/search?' +
+            new URLSearchParams({ q: address, format: 'json', limit: 1 });
+        try {
+            const res = await fetch(url, { 
+                headers: { 
+                    'Accept-Language': 'vi',
+                    'User-Agent': 'ThoNha-Booking-App/1.0'
+                } 
+            });
+            const arr = await res.json();
+            if (!arr || !arr.length) return null;
+            return { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
+        } catch (e) {
+            console.warn('Geocode failed for:', address, e);
+            return null;
+        }
+    }
+
+    /**
+     * Tính quãng đường lái xe giữa 2 điểm bằng OSRM API.
+     */
+    async function _bdRoadDist(pLat, pLng, cLat, cLng) {
+        const url = `https://router.project-osrm.org/route/v1/driving/${pLng},${pLat};${cLng},${cLat}?overview=false`;
+        try {
+            const res  = await fetch(url);
+            if (!res.ok) return null;
+            const data = await res.json();
+            if (data.code !== 'Ok' || !data.routes?.length) return null;
+            return data.routes[0].distance / 1000; // meters → km
+        } catch (e) {
+            console.warn('Routing failed:', e);
+            return null;
+        }
+    }
+
+    /**
+     * Quy đổi quãng đường → phí di chuyển.
+     */
+    function _bdFeeFromDist(km) {
+        const pricePerKm = 10000;
+        let fee = Math.round(km * pricePerKm / 1000) * 1000;
+        fee = Math.max(fee, 20000);
+        fee = Math.min(fee, 150000);
+        return fee;
+    }
+
+    /**
      * Cập nhật trạng thái và thông tin nhà cung cấp thầu đơn lên API.
      * @param {string} action - 'accept', 'start', 'done'.
      * @param {Object} order - Đơn hàng.
      */
     async function updateRemoteOrder(action, order) {
-        var statusMap = {
-            accept: 'confirmed',
-            start: 'doing',
-            done: 'done'
-        };
-        var nextStatus = statusMap[action];
+        const statusMap = { accept: 'confirmed', start: 'doing', done: 'done' };
+        const nextStatus = statusMap[action];
         if (!nextStatus) throw new Error('Thao tác không hợp lệ');
 
-        var updateData = { trangthai: nextStatus };
-        var fallbackData = { trangthai: nextStatus };
-        var providerId = '';
-
+        const updateData = { trangthai: nextStatus };
+        
         if (action === 'accept') {
-            var providerIdKey = pickExistingKey(order._raw, ['id_nhacungcap', 'idnhacungcap', 'nhacungcapid', 'provider_id', 'providerId']);
-            var providerNameKey = pickExistingKey(order._raw, ['nhacungcapten', 'provider_name', 'providerName']);
-            var providerPhoneKey = pickExistingKey(order._raw, ['nhacungcapsdt', 'provider_phone', 'providerPhone']);
-            var providerCompanyKey = pickExistingKey(order._raw, ['nhacungcapcuahang', 'provider_company', 'providerCompany']);
+            const pid = String(provider.id || '').trim();
+            if (!pid) throw new Error('Không tìm thấy ID nhà cung cấp.');
+            updateData.id_nhacungcap = pid;
 
-            providerId = String(provider.id || '').trim();
-            if (!providerId) {
-                throw new Error('Không tìm thấy id nhà cung cấp. Vui lòng đăng nhập lại tài khoản nhà cung cấp.');
-            }
+            // --- TỰ ĐỘNG TÍNH PHÍ DI CHUYỂN ---
+            try {
+                const providerAddr = String(provider.address || '').trim();
+                const customerAddr = String(order.address || '').trim();
 
-            var providerName = String(provider.name || 'Nhà cung cấp');
-            var providerPhone = String(provider.phone || '');
-            var providerCompany = String(provider.company || '');
+                if (!providerAddr) {
+                    alert('Lưu ý: Bạn chưa cập nhật địa chỉ trong hồ sơ, phí di chuyển sẽ không được tính tự động.');
+                } else if (!customerAddr) {
+                    alert('Lưu ý: Khách hàng không để lại địa chỉ cụ thể, phí di chuyển sẽ không được tính tự động.');
+                } else {
+                    const [pCoord, cCoord] = await Promise.all([
+                        _bdGeocode(providerAddr),
+                        _bdGeocode(customerAddr)
+                    ]);
 
-            updateData.id_nhacungcap = providerId;
-            updateData.nhacungcapid = providerId;
-            updateData.nhacungcapten = providerName;
-            updateData.nhacungcapsdt = providerPhone;
-            updateData.nhacungcapcuahang = providerCompany;
+                    if (pCoord && cCoord) {
+                        const km = await _bdRoadDist(pCoord.lat, pCoord.lng, cCoord.lat, cCoord.lng);
+                        if (km !== null) {
+                            const fee = _bdFeeFromDist(km);
+                            updateData.phidichuyen = fee;
+                            updateData.quangduongkm = parseFloat(km.toFixed(2));
+                            updateData.trangthaidichuyen = 'ok';
 
-            if (providerIdKey && providerIdKey !== 'id_nhacungcap' && providerIdKey !== 'nhacungcapid') {
-                updateData[providerIdKey] = providerId;
-            }
-            if (providerNameKey && providerNameKey !== 'nhacungcapten') updateData[providerNameKey] = providerName;
-            if (providerPhoneKey && providerPhoneKey !== 'nhacungcapsdt') updateData[providerPhoneKey] = providerPhone;
-            if (providerCompanyKey && providerCompanyKey !== 'nhacungcapcuahang') updateData[providerCompanyKey] = providerCompany;
-
-            fallbackData.id_nhacungcap = providerId;
-            if (providerIdKey && providerIdKey !== 'id_nhacungcap') fallbackData[providerIdKey] = providerId;
-        }
-
-        var updatedAtKey = pickExistingKey(order._raw, ['capnhatluc', 'updated_at']);
-        if (updatedAtKey) {
-            var now = new Date();
-            var pad = function (n) { return String(n).padStart(2, '0'); };
-            var updatedAtValue =
-                now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + ' ' +
-                pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
-            updateData[updatedAtKey] = updatedAtValue;
-            fallbackData[updatedAtKey] = updatedAtValue;
-        }
-
-        var krudHelper = getKrudHelper();
-        try {
-            await krudHelper.updateRow(KRUD_TABLE, order.id, updateData, KRUD_SCRIPT_URL);
-        } catch (err) {
-            var errorMessage = err && err.message ? err.message : 'Không cập nhật được đơn hàng';
-            if (action === 'accept' && isMissingProviderIdColumnError(errorMessage)) {
-                throw new Error('Bảng datlich_thonha chưa có cột id_nhacungcap. Vui lòng thêm cột này trong database để lưu nhà cung cấp nhận đơn.');
-            }
-            if (action === 'accept' && isMissingColumnError(errorMessage)) {
-                try {
-                    await krudHelper.updateRow(KRUD_TABLE, order.id, fallbackData, KRUD_SCRIPT_URL);
-                    return;
-                } catch (fallbackErr) {
-                    throw new Error(fallbackErr && fallbackErr.message ? fallbackErr.message : 'Không cập nhật được đơn hàng');
+                            // Cập nhật tổng tiền (đơn gốc mới chỉ có base + survey)
+                            const currentTotal = Number(order._raw.tongtien || 0);
+                            updateData.tongtien = currentTotal + fee;
+                        } else {
+                            alert('Không tính được quãng đường đường bộ. Phí di chuyển sẽ được admin cập nhật sau.');
+                        }
+                    } else {
+                        alert('Không xác định được tọa độ địa chỉ. Phí di chuyển sẽ được admin cập nhật sau.');
+                    }
                 }
+            } catch (calcErr) {
+                console.error('Lỗi tính phí di chuyển:', calcErr);
             }
-            throw new Error(errorMessage);
+            // ---------------------------------
         }
+
+        // Cập nhật thời gian update
+        const updatedAtKey = pickExistingKey(order._raw, ['capnhatluc', 'updated_at']);
+        if (updatedAtKey) {
+            const now = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            updateData[updatedAtKey] = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        }
+
+        // Thực hiện cập nhật qua ThoNhaApp
+        return ThoNhaApp.updateOrder(order.id, updateData);
     }
 
     /**
@@ -455,11 +451,9 @@ window.initProviderOrders = function() {
         try {
             state.orders = await fetchRemoteOrders();
         } catch (err) {
-            console.error('[provider-order] Không tải được dữ liệu API:', err);
+            console.error('[provider-order] API Error:', err);
             state.orders = [];
-            if (showErrorAlert) {
-                alert('Không tải được dữ liệu từ api.dvqt.vn. Vui lòng thử lại sau.');
-            }
+            if (showErrorAlert) alert('Không tải được dữ liệu công việc.');
         } finally {
             setLoadingState(false);
             render();
@@ -796,18 +790,21 @@ window.initProviderOrders = function() {
      * Đổ thông tin thợ thầu vào giao diện hồ sơ.
      */
     function bindProviderProfile() {
-        if (elements.providerCompany) elements.providerCompany.textContent = profile.company || profile.name || 'Nhà cung cấp Thợ Nhà';
-        if (elements.providerName) elements.providerName.textContent = profile.name || 'Người dùng';
-        if (elements.providerPhone) elements.providerPhone.textContent = profile.phone || 'Chưa có SĐT';
+        if (!provider) return;
+        if (elements.providerCompany) elements.providerCompany.textContent = provider.company || provider.name || 'Nhà cung cấp Thợ Nhà';
+        if (elements.providerName) elements.providerName.textContent = provider.name || 'Người dùng';
+        if (elements.providerPhone) elements.providerPhone.textContent = provider.phone || 'Chưa có SĐT';
     }
 
     /**
      * Ràng buộc các sự kiện hệ thống (Làm mới).
      */
     function bindEvents() {
-        elements.refreshBtn.addEventListener('click', function () {
-            loadOrdersFromApi(true);
-        });
+        if (elements.refreshBtn) {
+            elements.refreshBtn.addEventListener('click', function () {
+                loadOrdersFromApi(true);
+            });
+        }
     }
 
     bindProviderProfile();

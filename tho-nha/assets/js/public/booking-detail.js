@@ -1,4 +1,4 @@
-﻿/**
+/**
  * booking-detail.js
  * Entry layer for booking interactions (card brand selection, booking button delegation, startup hooks).
  * Shared, modal, and standalone implementations are split into separate files.
@@ -90,6 +90,8 @@ document.addEventListener('click', async function (e) {
         await _bdOpenModal('detail', {
             name:      displayName,
             price:     bookBtn.getAttribute('data-service-price'),
+            serviceId: bookBtn.getAttribute('data-service-id'),
+            catId:     bookBtn.getAttribute('data-cat-id'),
             travelFee, surveyFee
         });
         return;

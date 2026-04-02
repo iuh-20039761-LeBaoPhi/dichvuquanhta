@@ -2,7 +2,7 @@
  * Khởi tạo dữ liệu và sự kiện cho trang Đơn hàng Admin.
  * Thiết lập các modal Bootstrap và kích hoạt tải dữ liệu đơn hàng lần đầu.
  */
-function initOrders() {
+window.initOrders = function() {
     // Chỉ initialize một lần
     if (window.ordersInitialized) return;
     window.ordersInitialized = true;
@@ -30,7 +30,7 @@ function initOrders() {
     } catch(e) {
         console.error('Orders init error:', e);
     }
-}
+};
 
 /**
  * Render danh sách đơn hàng ra bảng HTML.
@@ -45,25 +45,32 @@ function displayOrders(orders) {
         return;
     }
     
-    ordersTableBody.innerHTML = orders.map(order => `
-        <tr>
-            <td><strong class="text-primary">${order.orderCode}</strong></td>
-            <td>${order.customer && order.customer.name ? order.customer.name : 'Khách'}</td>
-            <td>${order.customer && order.customer.phone ? order.customer.phone : ''}</td>
-            <td>${order.service || 'N/A'}</td>
-            <td>${(order.address || '').substring(0, 30)}...</td>
-            <td>${getStatusBadge(order.status)}</td>
-            <td>${formatDate(order.createdAt)}</td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="viewOrderDetail(${order.id})">
-                    <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-success" onclick="updateOrderStatus(${order.id})">
-                    <i class="fas fa-edit"></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
+    ordersTableBody.innerHTML = orders.map(order => {
+        const viewUtils = window.ThoNhaOrderViewUtils;
+        const finalPrice = order.customerPays || order.actualCost || 0;
+        const providerName = (order.provider && order.provider.company) ? order.provider.company : (order.providerId ? 'ID: ' + order.providerId : '<em>Chưa nhận</em>');
+        
+        return `
+            <tr>
+                <td><strong class="text-primary">${order.orderCode}</strong></td>
+                <td>${order.customer && order.customer.name ? order.customer.name : 'Khách'}</td>
+                <td>${order.customer && order.customer.phone ? order.customer.phone : ''}</td>
+                <td><div class="small fw-bold">${order.service || 'N/A'}</div></td>
+                <td><div class="small text-muted">${providerName}</div></td>
+                <td><span class="text-danger fw-bold small">${viewUtils ? viewUtils.formatCurrencyVn(finalPrice) : finalPrice}</span></td>
+                <td>${getStatusBadge(order.status)}</td>
+                <td>${formatDate(order.createdAt)}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewOrderDetail(${order.id})">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="updateOrderStatus(${order.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 /**
@@ -126,8 +133,11 @@ function setupOrdersEvents() {
             const originalText = btn.innerHTML;
             btn.innerHTML = 'Đang xử lý...';
             btn.disabled = true;
+            
+            const krudHelper = window.ThoNhaKrud;
+            if (!krudHelper) return;
 
-            ensureAdminKrudClient().then(() => {
+            krudHelper.ensureKrudClient().then(() => {
                 // Sử dụng hàm window.krud('update', ...) chuẩn của thư viện krud.js
                 return window.krud('update', 'datlich_thonha', { trangthai: newStatus }, parseInt(orderId));
             }).then(() => {
@@ -185,8 +195,8 @@ window.viewOrderDetail = function(orderId) {
     }
     
     if (!priceHtml) {
-        const p = parseFloat(order.actualCost || 0);
-        priceHtml = p > 0 ? `<div class="alert alert-info py-2 mb-0">Tổng trị giá: <strong>${viewUtils ? viewUtils.formatCurrency(p) : p}</strong></div>` : `<div class="text-muted text-center p-3 border rounded bg-light">Chưa cấu hình chi phí</div>`;
+        const pVal = parseFloat(order.actualCost || 0);
+        priceHtml = pVal > 0 ? `<div class="alert alert-info py-2 mb-0">Tổng trị giá: <strong>${viewUtils ? viewUtils.formatCurrencyVn(pVal) : pVal}</strong></div>` : `<div class="text-muted text-center p-3 border rounded bg-light">Chưa cấu hình chi phí</div>`;
     }
 
     let providerHtml = '<div class="text-muted"><i class="fas fa-info-circle"></i> Chưa nhận đơn</div>';
@@ -222,15 +232,18 @@ window.viewOrderDetail = function(orderId) {
                     ${providerHtml}
                 </div>
             </div>
-
+ 
             <div class="col-12 mt-2">
                 <h6 class="text-secondary mb-3 border-bottom pb-2 fw-bold"><i class="fas fa-receipt"></i> Bảng tính chi phí</h6>
                 <div class="bg-white rounded p-1 mb-2">
                     ${priceHtml}
                 </div>
-                ${order.actualCost > 0 ? `<div class="mt-2 text-end text-danger fw-bold fs-6">Chi phí thực tế: ${viewUtils ? viewUtils.formatCurrency(p) : p}</div>` : ''}
-                ${order.subsidyAmount > 0 ? `<div class="mt-1 text-end text-success fs-6">Trợ giá hệ thống: -${viewUtils ? viewUtils.formatCurrencyVn(order.subsidyAmount) : order.subsidyAmount}</div>` : ''}
-                ${order.customerPays > 0 ? `<div class="mt-2 text-end text-primary fw-bold fs-5 border-top pt-2">Khách thực trả: ${viewUtils ? viewUtils.formatCurrencyVn(order.customerPays) : order.customerPays}</div>` : ''}
+                <div class="mt-2 p-3 bg-light rounded text-end border">
+                    <div class="mb-1 text-muted fs-6">Giá dịch vụ (tạm tính): <strong>${viewUtils ? viewUtils.formatCurrencyVn(order.estimated_price) : order.estimated_price}</strong></div>
+                    ${order.actualCost > 0 ? `<div class="mb-1 text-muted fs-6">Giá thợ báo thực tế: <strong>${viewUtils ? viewUtils.formatCurrencyVn(order.actualCost) : order.actualCost}</strong></div>` : ''}
+                    ${order.subsidyAmount > 0 ? `<div class="mb-2 text-success fs-6">Hệ thống giảm (Trợ giá): <strong>-${viewUtils ? viewUtils.formatCurrencyVn(order.subsidyAmount) : order.subsidyAmount}</strong></div>` : ''}
+                    <div class="text-primary fw-bold fs-5 border-top pt-2">Khách thực trả: ${viewUtils ? viewUtils.formatCurrencyVn(order.customerPays || order.actualCost || order.estimated_price) : (order.customerPays || order.actualCost || order.estimated_price)}</div>
+                </div>
             </div>
         </div>
     `;

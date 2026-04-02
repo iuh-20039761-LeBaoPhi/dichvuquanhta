@@ -1,22 +1,14 @@
-﻿<?php
+<?php
 /**
- * Customer Logout â€” Huá»· PHP session khÃ¡ch hÃ ng
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- * ÄÆ°á»£c gá»i bá»Ÿi: auth-nav.js â†’ bindLogout()
- *
- * Method:  GET hoáº·c POST
- * Response: { "success": true, "message": "ÄÃ£ Ä‘Äƒng xuáº¥t" }
- *
- * Luá»“ng:
- *   1. User click "ÄÄƒng xuáº¥t" trÃªn navbar
- *   2. auth-nav.js xoÃ¡ localStorage + gá»i fetch(logout.php)
- *   3. PHP huá»· session â†’ redirect vá» trang Ä‘Äƒng nháº­p
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * Customer Logout — Xóa PHP session cho khách hàng
+ * ──────────────────────────────────────────────────────────
+ * Được gọi bởi: ThoNhaApp.logout() -> app-helper.js
+ * ──────────────────────────────────────────────────────────
  */
 
 require_once __DIR__ . '/../../../config/session-config.php';
 
+// Hủy toàn bộ dữ liệu xác thực
 clearAuthSession();
 
-jsonResponse(true, 'ÄÃ£ Ä‘Äƒng xuáº¥t');
-
+jsonResponse(true, 'Đăng xuất thành công');

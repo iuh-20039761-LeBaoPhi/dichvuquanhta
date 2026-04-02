@@ -164,7 +164,7 @@
 
         var status = pickFirstDefined(bookingPricing, ['travelFeeStatus', 'travelStatus']);
         if (!status && travelObj) status = travelObj.status;
-        if (!status) status = pickFirstDefined(order, ['travel_fee_status', 'travelFeeStatus']);
+        if (!status) status = pickFirstDefined(order, ['trangthaidichuyen', 'travel_fee_status', 'travelFeeStatus']);
 
         var amount = toOptionalMoneyNumber(pickFirstDefined(bookingPricing, ['travelFeeAmount', 'travelAmount']));
         if (amount === null && travelObj) amount = toOptionalMoneyNumber(pickFirstDefined(travelObj, ['amount', 'fixedAmount']));
@@ -253,8 +253,8 @@
         var totalPending = false;
         if (totalEstimate === null) {
             var baseValue = servicePrice === null ? 0 : servicePrice;
-            if (travel && travel.mode === 'per_km' && travel.status !== 'ok') {
-                if (servicePrice !== null || travel.amount !== null) {
+            if ((travel && travel.mode === 'per_km' && travel.status !== 'ok') || (travel && travel.status === 'waiting_provider')) {
+                if (servicePrice !== null || travel.amount !== null || travel.status === 'waiting_provider') {
                     totalPending = true;
                 }
             } else if (servicePrice !== null || (travel && travel.amount !== null)) {
@@ -302,48 +302,47 @@
     }
 
     /**
-     * Lấy thông tin hồ sơ Khách hàng hiện tại.
-     * @returns {Object} Hồ sơ khách hàng.
+     * Lấy thông tin hồ sơ Khách hàng hiện tại từ Session.
      */
     function getCustomerProfile() {
-        var profile = safeParse(localStorage.getItem(CUSTOMER_KEY), null);
-        if (profile && profile.name && profile.phone) {
-            return profile;
+        if (window._thonha_session_cache && window._thonha_session_cache.role === 'customer') {
+            const s = window._thonha_session_cache;
+            return {
+                id: s.id,
+                name: s.name || 'Khách hàng',
+                phone: s.phone || '',
+                address: s.address || ''
+            };
         }
-
         return { name: 'Khách hàng', phone: '', address: '' };
     }
 
     /**
-     * Lấy thông tin hồ sơ Nhà cung cấp hiện tại.
-     * @returns {Object} Hồ sơ thợ.
+     * Lấy thông tin hồ sơ Nhà cung cấp hiện tại từ Session.
      */
     function getProviderProfile() {
-        var profile = safeParse(localStorage.getItem(PROVIDER_KEY), null);
-        if (profile && profile.id) {
-            return profile;
+        if (window._thonha_session_cache && (window._thonha_session_cache.role === 'provider' || window._thonha_session_cache.role === 'admin')) {
+            const s = window._thonha_session_cache;
+            return {
+                id: s.id || ('provider-' + toDigits(s.phone)),
+                name: s.name || 'Nhà cung cấp',
+                phone: s.phone || '',
+                company: (s.extra && s.extra.company) || s.company || '',
+                categories: (s.extra && s.extra.danh_muc_thuc_hien) || s.danh_muc_thuc_hien || s.categories || '',
+                address: (s.extra && s.extra.address) || s.address || '',
+                avatar: (s.extra && s.extra.avatartenfile) || s.avatartenfile || '',
+                cccd_front: (s.extra && s.extra.cccdmattruoctenfile) || s.cccdmattruoctenfile || '',
+                cccd_back: (s.extra && s.extra.cccdmatsautenfile) || s.cccdmatsautenfile || ''
+            };
         }
-
-        var name = String(localStorage.getItem('provider_name') || '').trim();
-        var company = String(localStorage.getItem('provider_company') || '').trim();
-        var phone = String(localStorage.getItem('provider_phone') || '').trim();
-        var phoneDigits = toDigits(phone);
-
-        return {
-            id: phoneDigits ? ('provider-' + phoneDigits) : '',
-            name: name || 'Nhà cung cấp',
-            phone: phone,
-            company: company || ''
-        };
+        return { name: 'Nhà cung cấp', phone: '', company: '', address: '' };
     }
 
     /**
-     * Cập nhật hồ sơ Nhà cung cấp vào LocalStorage.
-     * @param {Object} profile - Hồ sơ mới.
+     * Cập nhật hồ sơ Nhà cung cấp (Không còn dùng localStorage)
      */
     function setProviderProfile(profile) {
-        if (!profile || !profile.id) return;
-        localStorage.setItem(PROVIDER_KEY, JSON.stringify(profile));
+        if (profile) window._thonha_session_cache = Object.assign(window._thonha_session_cache || {}, profile);
     }
 
     global.ThoNhaOrderStore = {

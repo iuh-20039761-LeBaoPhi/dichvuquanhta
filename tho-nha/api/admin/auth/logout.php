@@ -1,17 +1,14 @@
-﻿<?php
+<?php
 /**
- * Admin Logout â€” Huá»· PHP session quáº£n trá»‹ viÃªn
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- * ÄÆ°á»£c gá»i bá»Ÿi: auth-nav.js â†’ bindLogout()
- *
- * Method:  GET hoáº·c POST
- * Response: { "success": true, "message": "ÄÃ£ Ä‘Äƒng xuáº¥t" }
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * Admin Logout — Xóa PHP session cho Quản trị viên
+ * ──────────────────────────────────────────────────────────
+ * Được gọi bởi: pages/admin/quan-tri.html
+ * ──────────────────────────────────────────────────────────
  */
 
 require_once __DIR__ . '/../../../config/session-config.php';
 
+// Hủy toàn bộ dữ liệu xác thực
 clearAuthSession();
 
-jsonResponse(true, 'ÄÃ£ Ä‘Äƒng xuáº¥t');
-
+jsonResponse(true, 'Đăng xuất Admin thành công');

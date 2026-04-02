@@ -336,6 +336,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="../../assets/js/public/map-picker.js"></script>
     <script src="../../assets/js/shared/krud-helper.js"></script>
+    <script src="../../assets/js/shared/app-helper.js"></script>
     <script src="../../assets/js/public/booking-detail-shared.js"></script>
     <script src="../../assets/js/public/booking-detail-modal.js"></script>
     <script src="../../assets/js/public/booking-detail-standalone.js"></script>
@@ -346,7 +347,7 @@
 
     <!-- Load Header & Footer -->
     <script>
-        fetch('../../partials/dau-trang.html')
+        fetch('../../partials/dau-trang.html?v=' + Date.now())
             .then(r => r.text())
             .then(html => {
                 document.getElementById('header-container').innerHTML = html;
@@ -365,25 +366,85 @@
                 });
             });
 
-        fetch('../../partials/chan-trang.html')
+        fetch('../../partials/chan-trang.html?v=' + Date.now())
             .then(r => r.text())
             .then(html => { document.getElementById('footer-container').innerHTML = html; });
     </script>
 
-    <!-- Service Card Click Handlers -->
+    <!-- Dynamic Services Loader -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Detail button: navigate to chi-tiet-dich-vu.html
-            document.querySelectorAll('.detail-btn').forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    const serviceCard = this.closest('.service-card');
-                    const serviceId = serviceCard.getAttribute('data-service-id');
-                    window.location.href = 'chi-tiet-dich-vu.html?id=' + serviceId;
-                });
-            });
-            // .booking-btn được xử lý bởi booking-detail.js (nav mode)
+        document.addEventListener('DOMContentLoaded', async function () {
+            const serviceGrid = document.getElementById('serviceGrid');
+            if (!serviceGrid) return;
+
+            // Hiển thị loading
+            serviceGrid.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Đang tải danh sách dịch vụ...</p>
+                </div>
+            `;
+
+            try {
+                // Đợi ThoNhaKrud sẵn sàng
+                while(!window.ThoNhaKrud) await new Promise(r => setTimeout(r, 100));
+                
+                const krud = window.ThoNhaKrud;
+                const [categories, services] = await Promise.all([
+                    krud.listTable('danhmuc_thonha', { limit: 100 }),
+                    krud.listTable('dichvu_thonha', { limit: 1000 })
+                ]);
+
+                if (!categories || categories.length === 0) {
+                    serviceGrid.innerHTML = '<div class="col-12 text-center py-5">Chưa có danh mục dịch vụ nào khả dụng hiện tại.</div>';
+                    return;
+                }
+
+                serviceGrid.innerHTML = categories.map(c => {
+                    // Ưu tiên ảnh của danh mục, nếu không có thì lấy ảnh của dịch vụ đầu tiên
+                    const firstSvcWithImg = services.find(s => String(s.id_danhmuc) === String(c.id) && s.anh_dichvu);
+                    const image = c.anh_dai_dien || (firstSvcWithImg ? firstSvcWithImg.anh_dichvu : '../../assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg');
+                    const icon = c.icon || 'fa-tools'; 
+
+                    return `
+                        <div class="col-lg-4 col-md-6 service-item">
+                            <div class="service-card" data-cat-id="${c.id}">
+                                <div class="service-image">
+                                    <img src="${image}" alt="${escapeHtml(c.ten_danhmuc)}" onerror="this.src='../../assets/images/tho-nha-hero-banner-tho-sua-chua-chuyen-nghiep.jpg'">
+                                    <div class="service-image-overlay"></div>
+                                    <div class="service-icon"><i class="fas ${icon}"></i></div>
+                                </div>
+                                <div class="service-content">
+                                    <h3 class="service-title">${escapeHtml(c.ten_danhmuc)}</h3>
+                                    <p class="service-description">
+                                        ${escapeHtml(c.mota_danhmuc || c.mo_ta || 'Dịch vụ chuyên nghiệp chăm sóc ngôi nhà bạn.')}
+                                    </p>
+                                    <div class="service-card-actions">
+                                        <button class="btn btn-gradient booking-btn" 
+                                            data-cat-id="${c.id}"
+                                            data-service-name="${escapeHtml(c.ten_danhmuc)}">
+                                            <i class="fas fa-calendar-check me-1"></i> Đặt lịch
+                                        </button>
+                                        <button class="btn btn-outline-gradient detail-btn" onclick="window.location.href='chi-tiet-dich-vu.html?id=${c.id}'">
+                                            <i class="fas fa-info-circle me-1"></i> Chi tiết
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+                serviceGrid.innerHTML = '<div class="col-12 text-center py-5 text-danger">Lỗi khi tải danh mục. Vui lòng thử lại sau.</div>';
+            }
         });
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
     </script>
 </body>
 </html>

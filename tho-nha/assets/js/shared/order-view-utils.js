@@ -97,18 +97,19 @@
     }
 
     /**
-     * Lấy ID nhà cung cấp từ các trường dữ liệu API khác nhau.
+     * Lấy ID nhà cung cấp từ các trường dữ liệu API. Ưu tiên id_nhacungcap.
      * @param {Object} row - Bản ghi dữ liệu thô.
      * @returns {string} ID nhà cung cấp.
      */
     function getProviderIdFromOrderRow(row) {
         var raw = row || {};
+        // Ưu tiên id_nhacungcap vì các trường cũ sẽ bị xóa khỏi database
         var value = raw.id_nhacungcap || raw.idnhacungcap || raw.nhacungcapid || raw.provider_id || raw.providerId || '';
         return String(value || '').trim();
     }
 
     /**
-     * Ánh xạ bản ghi tài khoản thợ từ bảng nhacungcap.
+     * Ánh xạ bản ghi tài khoản thợ từ bảng nhacungcap_thonha.
      * @param {Object} row - Dữ liệu thô.
      * @returns {Object|null} Đối tượng thợ chuẩn hoá.
      */
@@ -121,31 +122,30 @@
             id: providerId,
             name: raw.hovaten || raw.ho_ten || raw.name || 'Nhà cung cấp',
             phone: raw.sodienthoai || raw.so_dien_thoai || raw.phone || '',
-            company: raw.tencua_hang || raw.ten_cua_hang || raw.company || ''
+            company: raw.tencua_hang || raw.ten_cua_hang || raw.company || '',
+            categories: raw.danh_muc_thuc_hien || raw.categories || ''
         };
     }
 
     /**
-     * Ánh xạ thông tin thợ được nhúng trực tiếp trong bản ghi đơn hàng.
+     * Ánh xạ thông tin thợ giản lược từ ID có sẵn trong đơn hàng.
      * @param {Object} row - Dữ liệu thô của đơn hàng.
-     * @returns {Object|null} Đối tượng thợ giản lược.
+     * @returns {Object|null} Đối tượng thợ với ID.
      */
     function mapProviderInlineFromOrderRow(row) {
         var raw = row || {};
         var providerId = getProviderIdFromOrderRow(raw);
-        var providerName = raw.nhacungcapten || raw.provider_name || raw.providerName || '';
-        var providerPhone = raw.nhacungcapsdt || raw.provider_phone || raw.providerPhone || '';
-        var providerCompany = raw.nhacungcapcuahang || raw.provider_company || raw.providerCompany || '';
 
-        if (!providerId && !providerName && !providerPhone && !providerCompany) {
+        if (!providerId) {
             return null;
         }
 
+        // Chỉ trả về ID, thông tin chi tiết sẽ được lấy qua join/lookup bảng nhacungcap_thonha
         return {
-            id: String(providerId || providerPhone || providerName || ''),
-            name: providerName || 'Nhà cung cấp',
-            phone: providerPhone || '',
-            company: providerCompany || ''
+            id: providerId,
+            name: 'Nhà cung cấp',
+            phone: '',
+            company: ''
         };
     }
 
@@ -230,6 +230,8 @@
             note: note,
             selected_brand: raw.thuonghieu || raw.selected_brand || '',
             estimated_price: Number(raw.giadichvu || raw.estimated_price || 0) || 0,
+            id_danhmuc: raw.id_danhmuc || raw.id_danh_muc || null,
+            id_dichvu: raw.id_dichvu || raw.id_dich_vu || null,
             travel_fee: Number(raw.phidichuyen || raw.travel_fee || 0) || 0,
             travel_fee_status: raw.trangthaidichuyen || raw.travel_status || raw.travel_fee_status || null,
             travel_distance_km: Number(raw.quangduongkm || raw.travel_distance_km || 0) || null,
@@ -309,6 +311,10 @@
             return 'Chưa xác định';
         }
 
+        if (travel.status === 'waiting_provider') {
+            return 'Tạm tính 20.000 đ - 150.000 đ';
+        }
+
         var hasMin = Number.isFinite(Number(travel.min));
         var hasMax = Number.isFinite(Number(travel.max));
         var hasAmount = Number.isFinite(Number(travel.amount));
@@ -316,9 +322,9 @@
         if (hasMin && hasMax && Number(travel.min) !== Number(travel.max)) {
             return formatCurrencyVn(travel.min) + ' - ' + formatCurrencyVn(travel.max);
         }
-        if (hasAmount) return moneyOrFree(travel.amount);
-        if (hasMin) return moneyOrFree(travel.min);
-        if (hasMax) return moneyOrFree(travel.max);
+        if (hasAmount && Number(travel.amount) > 0) return moneyOrFree(travel.amount);
+        if (hasMin && Number(travel.min) > 0) return moneyOrFree(travel.min);
+        if (hasMax && Number(travel.max) > 0) return moneyOrFree(travel.max);
         return 'Không phát sinh';
     }
 

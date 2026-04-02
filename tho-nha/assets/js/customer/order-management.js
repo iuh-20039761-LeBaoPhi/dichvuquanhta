@@ -96,139 +96,84 @@ window.initCustomerOrders = function() {
     }
 
     /**
-     * Lấy đối tượng Helper KRUD từ window.
-     * @returns {Object} Đối tượng ThoNhaKrud.
-     */
-    function getKrudHelper() {
-        if (!window.ThoNhaKrud) {
-            throw new Error('Không tải được helper KRUD');
-        }
-        return window.ThoNhaKrud;
-    }
-
-    /**
-     * Tải toàn bộ các dòng từ một bảng.
-     * @param {string} tableName - Tên bảng.
-     * @returns {Promise<Array>} Danh sách dòng dữ liệu thô.
-     */
-    async function fetchTableRows(tableName) {
-        return getKrudHelper().listTable(tableName, null, KRUD_SCRIPT_URL);
-    }
-
-    /**
-     * Tải thông tin các nhà cung cấp dựa trên một tập hợp ID.
-     * @param {Object} providerIdSet - Object map chứa các ID nhà cung cấp { id: true }.
-     * @returns {Promise<Object>} Map thông tin nhà cung cấp { id: obj }.
-     */
-    async function fetchProviderMapByIds(providerIdSet) {
-        var ids = Object.keys(providerIdSet || {});
-        if (!ids.length) return {};
-
-        var rows = await fetchTableRows(PROVIDER_TABLE);
-        return buildProviderMapByIds(rows, providerIdSet);
-    }
-
-    /**
-     * Ánh xạ một dòng dữ liệu API thô thành đối tượng đơn hàng chuẩn cho Khách hàng.
-     * @param {Object} row - Dòng dữ liệu thô.
-     * @param {number} index - Chỉ số dòng.
-     * @param {Object} providerMapById - Map thông tin nhà cung cấp.
-     * @returns {Object} Đơn hàng chuẩn hoá.
-     */
-    function mapApiOrder(row, index, providerMapById) {
-        return mapApiOrderBase(row, index, {
-            providerMapById: providerMapById,
-            customerNameFallback: profile.name,
-            customerPhoneFallback: profile.phone,
-            updatedAtFields: ['updated_at', 'updatedAt'],
-            defaultStatus: 'new',
-            includeRaw: true
-        });
-    }
-
-    /**
-     * Cập nhật thông tin profile khách hàng (tên, sđt) nếu chưa có thông tin đầy đủ.
-     * @param {Array} orders - Danh sách đơn hàng đã tải.
-     */
-    function updateProfileFromOrders(orders) {
-        if (!orders || !orders.length) return;
-        var first = orders[0] || {};
-        var customer = first.customer || {};
-
-        if ((!profile.name || profile.name === 'Khách hàng') && customer.name) {
-            profile.name = customer.name;
-        }
-
-        if (!profile.phone && customer.phone) {
-            profile.phone = customer.phone;
-        }
-
-        if (!profile.address && first.address) {
-            profile.address = first.address;
-        }
-
-        bindProfile();
-    }
-
-    /**
-     * Tải đơn hàng từ API lọc theo số điện thoại (Digits).
-     * @param {string} phoneDigits - Chuỗi số điện thoại chỉ chứa số.
+     * Tải đơn hàng từ API và ánh xạ thông tin Nhà cung cấp.
+     * @param {string} phoneDigits - SĐT khách hàng (chỉ số).
      */
     async function fetchRemoteOrdersByPhone(phoneDigits) {
-        var rows = await fetchTableRows(KRUD_TABLE);
-        var filtered = rows;
+        // Tải đơn hàng và danh sách nhà cung cấp thông qua ThoNhaApp
+        const [ordersRaw, providers] = await Promise.all([
+            ThoNhaApp.getOrders(),
+            ThoNhaApp.getProviders()
+        ]);
 
-        if (phoneDigits) {
-            filtered = rows.filter(function (row) {
-                var rowPhone = row.sodienthoai || row.customer_phone || row.phone || '';
-                return toDigits(rowPhone) === phoneDigits;
-            });
-        }
+        // Lọc đơn theo SĐT khách hàng
+        const filtered = phoneDigits 
+            ? ordersRaw.filter(r => toDigits(r.sodienthoai || r.phone) === phoneDigits)
+            : ordersRaw;
 
-        var providerIdSet = {};
-        filtered.forEach(function (row) {
-            var providerId = getProviderIdFromOrderRow(row);
-            if (providerId) providerIdSet[providerId] = true;
+        // Xây dựng map nhà cung cấp để hiển thị thông tin chi tiết
+        const providerIdSet = {};
+        filtered.forEach(row => {
+            const pid = getProviderIdFromOrderRow(row);
+            if (pid) providerIdSet[pid] = true;
         });
+        const providerMap = buildProviderMapByIds(providers, providerIdSet);
 
-        var providerMapById = {};
-        try {
-            providerMapById = await fetchProviderMapByIds(providerIdSet);
-        } catch (err) {
-            console.warn('[customer-order] Không tải được bảng nhà cung cấp:', err);
-        }
-
-        return sortByCreatedDesc(filtered.map(function (row, index) {
-            return mapApiOrder(row, index, providerMapById);
+        // Ánh xạ về định dạng đơn hàng chuẩn UI
+        return sortByCreatedDesc(filtered.map((row, index) => {
+            return mapApiOrder(row, index, providerMap);
         }));
     }
 
     /**
-     * Lấy danh sách đơn hàng hiện tại trong state.
-     * @returns {Array} List đơn hàng.
+     * Lấy danh sách đơn hàng hiện tại từ State.
      */
     function getCurrentOrders() {
-        return Array.isArray(state.orders) ? state.orders : [];
+        return state.orders || [];
+    }
+
+    /**
+     * Cập nhật thông tin Profile khách hàng dựa trên dữ liệu đơn hàng gần nhất (nếu còn thiếu).
+     * @param {Array} orders - Danh sách đơn hàng.
+     */
+    function updateProfileFromOrders(orders) {
+        if (!orders.length || profile.name !== 'Khách hàng') return;
+        var lastOrder = orders[0];
+        if (lastOrder && lastOrder.customer) {
+            profile.name = lastOrder.customer.name || profile.name;
+            bindProfile();
+        }
+    }
+
+    /**
+     * Ánh xạ dòng API thành Đơn hàng chuẩn của Khách hàng.
+     * @param {Object} row - Dòng thô từ API.
+     * @param {number} index - Index.
+     * @param {Object} providerMapById - Map đối tác.
+     */
+    function mapApiOrder(row, index, providerMapById) {
+        return mapApiOrderBase(row, index, {
+            providerMapById: providerMapById,
+            updatedAtFields: ['capnhatluc', 'updated_at', 'updatedAt'],
+            defaultStatus: 'new',
+            includeRaw: true,
+            customerNameFallback: profile.name,
+            customerPhoneFallback: profile.phone
+        });
     }
 
     /**
      * Thực hiện tải dữ liệu từ API và cập nhật state/UI.
-     * @param {boolean} showErrorAlert - Có hiển thị thông báo nếu lỗi.
      */
     async function loadOrdersFromApi(showErrorAlert) {
         setLoadingState(true);
-        var phoneDigits = toDigits(profile.phone);
-
         try {
-            var remoteOrders = await fetchRemoteOrdersByPhone(phoneDigits);
-            state.orders = remoteOrders;
-            updateProfileFromOrders(remoteOrders);
+            state.orders = await fetchRemoteOrdersByPhone(toDigits(profile.phone));
+            updateProfileFromOrders(state.orders);
         } catch (err) {
-            console.error('[customer-order] Không tải được dữ liệu API:', err);
+            console.error('[customer-order] API Error:', err);
             state.orders = [];
-            if (showErrorAlert) {
-                alert('Không tải được dữ liệu từ api.dvqt.vn. Vui lòng thử lại sau.');
-            }
+            if (showErrorAlert) alert('Không tải được dữ liệu đơn hàng.');
         } finally {
             setLoadingState(false);
             render();
@@ -404,7 +349,13 @@ window.initCustomerOrders = function() {
             '<section class="detail-section">' +
                 '<h4>Trợ giá cho khách hàng</h4>' +
                 pricingMobile(order) +
-            '</section>';
+            '</section>' +
+            (order.status === 'new' ? 
+                '<div class="detail-actions-footer pt-3 mt-3 border-top d-flex justify-content-end">' +
+                    '<button class="btn btn-danger btn-sm" type="button" data-action="cancel-order" data-id="' + order.id + '" data-code="' + order.orderCode + '">' +
+                        '<i class="fas fa-times-circle me-1"></i> Hủy đơn hàng này' +
+                    '</button>' +
+                '</div>' : '');
     }
 
     /**
@@ -482,14 +433,13 @@ window.initCustomerOrders = function() {
             return;
         }
 
-        elements.emptyState.hidden = true;
         elements.orderBody.innerHTML = orders.map(function (order) {
             return '<tr>' +
                 '<td class="mono">' + escapeHtml(order.orderCode) + '</td>' +
                 '<td><strong>' + escapeHtml(order.service) + '</strong><span class="sub-note">' + escapeHtml(order.note || 'Không có ghi chú') + '</span></td>' +
                 '<td>' + formatDateTime(order.createdAt) + '</td>' +
                 '<td>' + statusBadge(order.status) + '</td>' +
-                '<td class="detail-cell">' + detailActionButton(order) + '</td>' +
+                '<td class="detail-cell">' + renderOrderActions(order) + '</td>' +
                 '</tr>';
         }).join('');
 
@@ -505,9 +455,40 @@ window.initCustomerOrders = function() {
                     '</div>' +
                     '<div class="mobile-row"><span>Ngày đặt</span><strong>' + formatDateTime(order.createdAt) + '</strong></div>' +
                     '<div class="mobile-row"><span>Trạng thái xử lý</span><strong>' + escapeHtml((store.statusMeta[order.status] || {}).label || 'N/A') + '</strong></div>' +
-                    '<div class="mobile-actions">' + detailActionButton(order) + '</div>' +
+                    '<div class="mobile-actions">' + renderOrderActions(order) + '</div>' +
                 '</article>';
         }).join('');
+    }
+
+    /**
+     * Render các nút thao tác cho đơn hàng.
+     * @param {Object} order - Đơn hàng.
+     */
+    function renderOrderActions(order) {
+        var html = buildDetailActionButton(order.id);
+        // Nếu đơn mới (chưa ai nhận) -> cho phép hủy
+        if (order.status === 'new') {
+            html += '<button class="btn-cancel-order ms-2" type="button" data-action="cancel-order" data-id="' + order.id + '" data-code="' + order.orderCode + '">Hủy đơn</button>';
+        }
+        return html;
+    }
+
+    /**
+     * Xử lý yêu cầu hủy đơn hàng từ khách hàng.
+     * @param {string|number} id - ID đơn hàng.
+     * @param {string} code - Mã đơn hàng.
+     */
+    async function handleCancelOrder(id, code) {
+        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng ' + code + '?')) return;
+        
+        try {
+            await ThoNhaApp.updateOrder(id, { trangthai: 'cancel' });
+            alert('Đã hủy đơn hàng thành công.');
+            closeOrderDetail(); // Đóng modal nếu đang mở
+            loadOrdersFromApi(true); // Tải lại danh sách
+        } catch (err) {
+            alert('Lỗi khi hủy đơn: ' + err.message);
+        }
     }
 
     /**
@@ -559,6 +540,12 @@ window.initCustomerOrders = function() {
             var detailTrigger = event.target.closest('button[data-action="view-detail"][data-id]');
             if (detailTrigger) {
                 openOrderDetail(detailTrigger.getAttribute('data-id'));
+                return;
+            }
+
+            var cancelTrigger = event.target.closest('button[data-action="cancel-order"][data-id]');
+            if (cancelTrigger) {
+                handleCancelOrder(cancelTrigger.getAttribute('data-id'), cancelTrigger.getAttribute('data-code'));
                 return;
             }
 
@@ -634,13 +621,12 @@ window.initCustomerOrders = function() {
                     khachthanhtoan: finalCost
                 };
 
-                var krudHelper = getKrudHelper();
                 var originalText = elements.submitCostBtn.textContent;
                 elements.submitCostBtn.textContent = 'Đang xử lý...';
                 elements.submitCostBtn.disabled = true;
 
                 try {
-                    await krudHelper.updateRow(KRUD_TABLE, order.id, updateData, KRUD_SCRIPT_URL);
+                    await ThoNhaApp.updateOrder(order.id, updateData);
                     elements.costModal.hidden = true;
                     if (!elements.detailModal || elements.detailModal.hidden) {
                         document.body.classList.remove('detail-modal-open');

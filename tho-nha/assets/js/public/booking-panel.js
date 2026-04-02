@@ -221,7 +221,9 @@
                     _bdSetBreakdown(
                         _prefillMeta.price,
                         _prefillMeta.travelFee || null,
-                        _prefillMeta.surveyFee || null
+                        _prefillMeta.surveyFee || null,
+                        _prefillMeta.catId || null,
+                        _prefillMeta.serviceId || null
                     );
                 }
             }
@@ -255,12 +257,43 @@
             }
         }
 
-        function doFetch(cb) {
+        async function doFetch(cb) {
             if (_services) { cb(_services); return; }
-            fetch(base + 'data/services.json')
-                .then(function (r) { return r.json(); })
-                .then(function (data) { _services = data; cb(data); })
-                .catch(function () {});
+            
+            const krud = window.ThoNhaKrud;
+            if (!krud) return;
+
+            try {
+                // Tải dữ liệu từ DB tương tự standalone mode
+                const [cats, svcs] = await Promise.all([
+                    krud.listTable('danhmuc_thonha', { limit: 100, filter: "trang_thai='active'", sort: 'thu_tu ASC' }),
+                    krud.listTable('dichvu_thonha',  { limit: 1000, filter: "trang_thai='active'" })
+                ]);
+
+                const mappedServices = cats.map(function(cat) {
+                    return {
+                        id: cat.id,
+                        name: cat.ten_danhmuc,
+                        items: svcs.filter(function(s) { 
+                            return String(s.id_danhmuc) === String(cat.id); 
+                        }).map(function(s) {
+                            return {
+                                id:    s.id,
+                                name:  s.ten_dichvu,
+                                price: Number(s.gia_co_ban || 0),
+                                travelFee: null,
+                                surveyFee: s.phi_khao_sat ? { amount: Number(s.phi_khao_sat), required: String(s.yeu_cau_khao_sat) === '1' } : null
+                            };
+                        }),
+                        travelFee: { mode: 'per_km', min: 20000, max: 150000 }
+                    };
+                });
+
+                _services = mappedServices;
+                cb(mappedServices);
+            } catch (e) {
+                console.error('Panel: Lỗi nạp dịch vụ từ DB:', e);
+            }
         }
 
         // Đợi dropdown #loaidichvu được populate (polling tối đa 2s)
@@ -385,6 +418,9 @@
         _prefillMeta = null;
         if (activeBrand || rawPrice || rawTravel || rawSurvey) {
             _prefillMeta = {};
+            _prefillMeta.serviceId = btn.getAttribute('data-service-id') || null;
+            _prefillMeta.catId     = btn.getAttribute('data-cat-id') || null;
+
             if (activeBrand) {
                 _prefillMeta.brand = activeBrand.getAttribute('data-brand') || '';
             }

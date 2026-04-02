@@ -1,42 +1,44 @@
-﻿<?php
+<?php
 /**
- * Provider Login â€” Táº¡o PHP session cho nhÃ  cung cáº¥p
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- * ÄÆ°á»£c gá»i bá»Ÿi: pages/provider/dang-nhap.html (sau khi KRUD validate OK)
+ * Provider Login — Tạo PHP session cho Nhà cung cấp/Thợ
+ * ──────────────────────────────────────────────────────────
+ * Được gọi bởi: pages/provider/dang-nhap.html
+ * (Sau khi giao diện đã xác thực thông qua KRUD API)
  *
  * Method:  POST
- * Body:    { "name": "...", "phone": "...", "company": "...", "id": "..." }
- * Response: { "success": true } hoáº·c { "success": false, "message": "..." }
- *
- * Luá»“ng:
- *   1. JS validate tÃ i khoáº£n qua KRUD API (client-side)
- *   2. KRUD OK + tráº¡ng thÃ¡i = active â†’ JS gá»i POST endpoint nÃ y
- *   3. PHP táº¡o session vá»›i role = "provider"
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * Body:    { "name": "...", "phone": "...", "company": "..." }
+ * Response: { "success": true }
+ * ──────────────────────────────────────────────────────────
  */
 
 require_once __DIR__ . '/../../../config/session-config.php';
 
+// ── Chỉ chấp nhận POST ─────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     jsonResponse(false, 'Method Not Allowed');
 }
 
+// ── Đọc dữ liệu JSON ────────────────────────────────────────
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input || empty($input['phone'])) {
-    jsonResponse(false, 'Thiáº¿u thÃ´ng tin Ä‘Äƒng nháº­p (phone)');
+    jsonResponse(false, 'Thiếu thông tin đăng nhập (phone)');
 }
 
-$name    = trim($input['name'] ?? 'NhÃ  cung cáº¥p');
+$name    = trim($input['name'] ?? 'Nhà cung cấp');
 $phone   = trim($input['phone'] ?? '');
 $company = trim($input['company'] ?? '');
-$id      = trim($input['id'] ?? '');
+$id      = $input['id'] ?? null;
 
-setAuthSession('provider', $name, $phone, [
+// ── Tạo session an toàn ─────────────────────────────────────
+setAuthSession($id, 'provider', $name, $phone, [
     'company' => $company,
-    'id'      => $id,
+    'danh_muc_thuc_hien' => $input['danh_muc_thuc_hien'] ?? '',
+    'address' => $input['address'] ?? '',
+    'avatartenfile' => $input['avatartenfile'] ?? '',
+    'cccdmattruoctenfile' => $input['cccdmattruoctenfile'] ?? '',
+    'cccdmatsautenfile' => $input['cccdmatsautenfile'] ?? '',
 ]);
 
-jsonResponse(true, 'ÄÄƒng nháº­p thÃ nh cÃ´ng');
-
+jsonResponse(true, 'Đăng nhập thành công');
