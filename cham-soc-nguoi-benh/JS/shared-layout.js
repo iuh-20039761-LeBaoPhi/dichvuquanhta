@@ -75,7 +75,7 @@
     if (!activeLink) return;
 
     activeLink.classList.add('active');
-    activeLink.style.color = '#007bff';
+    activeLink.style.color = '#f06292';
 
     var activeStyle = (document.body && document.body.getAttribute('data-nav-active-style')) || 'large';
     if (activeStyle === 'large') {
