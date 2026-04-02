@@ -8,61 +8,78 @@
   }
 
   var projectBase = getProjectBase();
+  var idleLogoutTimer = null;
+  var idleLogoutMs = 30 * 60 * 1000;
 
-  var isInSiteNavigation = false;
-
-  function apiUrl(path) {
-    return new URL('api/' + path, projectBase).href;
+  function authUrl(action) {
+    var query = action ? ('?action=' + encodeURIComponent(action)) : '';
+    return new URL('session_auth.php' + query, projectBase).href;
   }
 
-  function markInSiteNavigation(target) {
-    var link = target && target.closest ? target.closest('a[href]') : null;
-    if (!link) return;
+  // Backward-compatible hook for old code paths.
+  window.__markInSiteNavigation = function () {};
 
-    var href = link.getAttribute('href') || '';
-    if (!href || href.charAt(0) === '#') return;
-    if (href.indexOf('javascript:') === 0) return;
-    if (link.target && String(link.target).toLowerCase() === '_blank') return;
-
-    try {
-      var targetUrl = new URL(href, window.location.href);
-      if (targetUrl.origin !== window.location.origin) return;
-      isInSiteNavigation = true;
-    } catch (e) {
-      // Ignore malformed links.
-    }
-  }
-
-  function markInSiteNavigationProgrammatically() {
-    isInSiteNavigation = true;
-  }
-
-  window.__markInSiteNavigation = markInSiteNavigationProgrammatically;
-
-  function autoLogoutOnClose() {
-    var hasUser = false;
-    try {
-      hasUser = !!localStorage.getItem('currentUser');
-    } catch (e) {
-      hasUser = false;
-    }
-    if (!hasUser || isInSiteNavigation) return;
-
+  function clearClientAuthStorage() {
     try {
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('customer_logged_in');
+      localStorage.removeItem('customer_name');
+      localStorage.removeItem('profile');
     } catch (e) {
       // Ignore storage errors.
     }
+  }
 
-    var logoutUrl = apiUrl('logout.php');
+  // Gui lenh xoa session server khong chan dong trinh duyet.
+  function clearServerSession(action) {
+    var payload = JSON.stringify({ action: action || 'logout' });
+
     try {
       if (navigator.sendBeacon) {
-        navigator.sendBeacon(logoutUrl, new Blob([], { type: 'application/x-www-form-urlencoded;charset=UTF-8' }));
-      } else {
-        fetch(logoutUrl, { method: 'GET', keepalive: true });
+        var blob = new Blob([payload], { type: 'application/json' });
+        navigator.sendBeacon(authUrl(action || 'logout'), blob);
+        return;
       }
     } catch (e) {
-      // Ignore unload errors.
+      // Fallback to fetch below.
+    }
+
+    fetch(authUrl(action || 'logout'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'same-origin',
+      keepalive: true,
+      body: payload
+    }).catch(function () {
+      // Ignore logout transport errors.
+    });
+  }
+
+  function resetIdleLogoutTimer() {
+    if (idleLogoutTimer) {
+      clearTimeout(idleLogoutTimer);
+    }
+    idleLogoutTimer = setTimeout(function () {
+      clearClientAuthStorage();
+      clearServerSession('logout');
+      setLoggedOut();
+    }, idleLogoutMs);
+  }
+
+  function isLogoutLink(target) {
+    var link = target && target.closest ? target.closest('a[href]') : null;
+    if (!link) return false;
+
+    var href = link.getAttribute('href') || '';
+    if (!href) return false;
+
+    try {
+      var targetUrl = new URL(href, window.location.href);
+      return /\/logout\.php$/i.test(targetUrl.pathname);
+    } catch (e) {
+      return /logout\.php(?:[?#].*)?$/i.test(href);
     }
   }
 
@@ -81,6 +98,7 @@
     var invoiceLink = getEl('navInvoiceLink');
     var role = user && user.vai_tro ? String(user.vai_tro).toLowerCase() : '';
 
+    // Both customer and employee use the same profile modal/page.
     if (profileLink) {
       profileLink.setAttribute('href', 'khach_hang/profile.html');
       profileLink.setAttribute('data-profile-modal-src', 'khach_hang/profile.html');
@@ -88,13 +106,29 @@
 
     if (invoiceLink) {
       var invoicePath = role === 'nhan_vien'
-        ? 'nhan_vien/danh-sach-hoa-don.html'
-        : 'khach_hang/danh-sach-hoa-don.html';
+        ? 'nhan_vien/danh-sach-hoa-don.php'
+        : 'khach_hang/danh-sach-hoa-don.php';
       invoiceLink.setAttribute('href', invoicePath);
     }
   }
 
   var hasSyncedSession = false;
+
+  function cacheUser(user) {
+    if (!user) return;
+    try {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      localStorage.setItem('customer_logged_in', 'true');
+      localStorage.setItem('customer_name', user.ten || '');
+      localStorage.setItem('profile', JSON.stringify({
+        name: user.ten || '',
+        phone: user.sodienthoai || '',
+        address: user.dia_chi || ''
+      }));
+    } catch (e) {
+      // Ignore storage errors.
+    }
+  }
 
   function setLoggedOut() {
     var loginNavItem = getEl('loginNavItem');
@@ -102,6 +136,11 @@
 
     if (loginNavItem) loginNavItem.classList.remove('d-none');
     if (userMenuContainer) userMenuContainer.classList.add('d-none');
+
+    if (idleLogoutTimer) {
+      clearTimeout(idleLogoutTimer);
+      idleLogoutTimer = null;
+    }
 
     setMenuLinksByRole(null);
   }
@@ -127,24 +166,107 @@
     }
 
     setMenuLinksByRole(user);
+    resetIdleLogoutTimer();
+  }
+
+  function normalizeStoredUser(rawUser) {
+    if (!rawUser || typeof rawUser !== 'object') return null;
+
+    return {
+      ten: rawUser.ten || rawUser.hovaten || rawUser.ho_ten || rawUser.name || rawUser.customer_name || 'Tài khoản',
+      vai_tro: rawUser.vai_tro || rawUser.role || 'khach_hang',
+      anh_dai_dien: rawUser.anh_dai_dien || rawUser.avatar || rawUser.image || '',
+      sodienthoai: rawUser.sodienthoai || rawUser.so_dien_thoai || rawUser.phone || '',
+      dia_chi: rawUser.dia_chi || rawUser.address || ''
+    };
+  }
+
+  function getUserFromStorage() {
+    var currentUser = null;
+    var profile = null;
+    var customerName = '';
+    var customerLoggedIn = false;
+
+    try {
+      currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    } catch (e) {
+      currentUser = null;
+    }
+
+    try {
+      profile = JSON.parse(localStorage.getItem('profile') || 'null');
+    } catch (e) {
+      profile = null;
+    }
+
+    try {
+      customerName = localStorage.getItem('customer_name') || '';
+      customerLoggedIn = localStorage.getItem('customer_logged_in') === 'true';
+    } catch (e) {
+      customerName = '';
+      customerLoggedIn = false;
+    }
+
+    if (currentUser) {
+      return normalizeStoredUser(currentUser);
+    }
+
+    if (profile || customerLoggedIn || customerName) {
+      return normalizeStoredUser({
+        ten: (profile && (profile.name || profile.ten)) || customerName,
+        sodienthoai: profile && profile.phone ? profile.phone : '',
+        dia_chi: profile && profile.address ? profile.address : '',
+        vai_tro: 'khach_hang'
+      });
+    }
+
+    return null;
+  }
+
+  async function getUserFromServerSession() {
+    try {
+      var response = await fetch(authUrl('current'), {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
+
+      if (response.status === 401) {
+        return { status: 'unauthorized', user: null };
+      }
+
+      var data = await response.json();
+      if (!response.ok || !data || !data.success || !data.user) {
+        return { status: 'error', user: null };
+      }
+      return { status: 'ok', user: normalizeStoredUser(data.user) };
+    } catch (e) {
+      return { status: 'error', user: null };
+    }
   }
 
   async function syncFromSession() {
-    try {
-      var response = await fetch(apiUrl('get_profile.php'));
-      var data = await response.json();
+    var localUser = getUserFromStorage();
+    if (localUser) {
+      setLoggedIn(localUser);
+    } else {
+      setLoggedOut();
+    }
 
-      if (data.success && data.user) {
-        try {
-          localStorage.setItem('currentUser', JSON.stringify(data.user));
-        } catch (e) {
-          // Ignore storage errors.
-        }
-        setLoggedIn(data.user);
-      } else {
-        setLoggedOut();
-      }
-    } catch (e) {
+    var sessionResult = await getUserFromServerSession();
+    if (sessionResult.status === 'ok' && sessionResult.user) {
+      cacheUser(sessionResult.user);
+      setLoggedIn(sessionResult.user);
+      return;
+    }
+
+    if (sessionResult.status === 'unauthorized') {
+      clearClientAuthStorage();
+      setLoggedOut();
+      return;
+    }
+
+    if (!localUser) {
       setLoggedOut();
     }
   }
@@ -153,13 +275,7 @@
     var hasNavTargets = !!(getEl('loginNavItem') || getEl('userMenuContainer'));
     if (!hasNavTargets) return;
 
-    var cachedUser = null;
-    try {
-      cachedUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-    } catch (e) {
-      cachedUser = null;
-    }
-
+    var cachedUser = getUserFromStorage();
     if (cachedUser) {
       setLoggedIn(cachedUser);
     } else {
@@ -176,17 +292,30 @@
     initNavState();
   });
 
-  // Mark normal in-site link navigation so close-tab logout does not run.
+  // Chi xu ly logout khi nguoi dung bam link dang xuat.
   document.addEventListener('click', function (event) {
-    markInSiteNavigation(event.target);
+    if (isLogoutLink(event.target)) {
+      clearClientAuthStorage();
+      clearServerSession('logout');
+    }
   }, true);
-
-  // Auto logout when the user closes/leaves the page.
-  window.addEventListener('beforeunload', autoLogoutOnClose);
-  window.addEventListener('pagehide', autoLogoutOnClose);
 
   document.addEventListener('siteLayout:ready', function () {
     initNavState();
+  });
+
+  ['click', 'keydown', 'mousemove', 'scroll', 'touchstart'].forEach(function (eventName) {
+    document.addEventListener(eventName, function () {
+      var hasUser = false;
+      try {
+        hasUser = !!(localStorage.getItem('currentUser') || localStorage.getItem('customer_logged_in'));
+      } catch (e) {
+        hasUser = false;
+      }
+      if (hasUser) {
+        resetIdleLogoutTimer();
+      }
+    }, { passive: true });
   });
 
   window.addEventListener('auth:login-success', function (event) {

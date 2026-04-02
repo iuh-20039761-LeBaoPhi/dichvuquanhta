@@ -41,14 +41,26 @@
     };
   }
 
+  function setElementAndParentLiVisibility(element, visible, displayValue) {
+    if (!element) return;
+
+    element.style.display = visible ? displayValue : "none";
+
+    var parentLi = element.closest("li");
+    if (parentLi) {
+      parentLi.style.display = visible ? "" : "none";
+    }
+  }
+
   function setLoginVisibility(loginLinks, visible) {
     loginLinks.forEach(function (link) {
-      link.style.display = visible ? "inline-flex" : "none";
+      setElementAndParentLiVisibility(link, visible, "inline-flex");
     });
   }
 
   function setUserMenuState(userMenus, authenticated, user) {
     userMenus.forEach(function (menu) {
+      setElementAndParentLiVisibility(menu, Boolean(authenticated), "block");
       menu.classList.toggle("is-authenticated", Boolean(authenticated));
 
       if (!authenticated) {

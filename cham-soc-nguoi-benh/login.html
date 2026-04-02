@@ -10,37 +10,34 @@
             min-height: 100vh;
             margin: 0;
             background:
-                radial-gradient(circle at 20% 15%, rgba(148, 220, 255, 0.32), transparent 38%),
-                radial-gradient(circle at 75% 10%, rgba(111, 180, 255, 0.28), transparent 42%),
-                linear-gradient(145deg, #0b2f66 0%, #114b8a 35%, #1c6ab5 65%, #2f86d4 100%);
+                radial-gradient(circle at 20% 15%, rgba(255, 205, 226, 0.55), transparent 40%),
+                radial-gradient(circle at 75% 12%, rgba(255, 164, 201, 0.35), transparent 44%),
+                linear-gradient(145deg, #fff7fb 0%, #ffeaf5 45%, #ffd8eb 100%);
             font-family: "Quicksand", "Segoe UI", sans-serif;
         }
 
-        .modal-backdrop.show {
-            opacity: 0.45;
+        .login-page {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
         }
 
-        .modal-dialog.login-dialog {
-            max-width: 460px;
-        }
-
-        .modal-content.login-content {
-            background: transparent;
-            border: 0;
-            box-shadow: none;
+        .login-card {
+            width: min(460px, 100%);
         }
 
         .login-shell {
             border-radius: 18px;
             overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.26);
-            box-shadow: 0 24px 55px rgba(20, 0, 46, 0.48);
+            border: 2px solid rgba(255, 214, 233, 0.95);
+            box-shadow: 0 20px 48px rgba(179, 80, 126, 0.2);
             backdrop-filter: blur(2px);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 245, 251, 0.94));
         }
 
         .login-header {
-            background: linear-gradient(90deg, #7cc5ff 0%, #3d8fe6 45%, #1f6fc6 100%);
+            background: linear-gradient(90deg, #ffc8e5 0%, #ff9bca 52%, #ff86c0 100%);
             padding: 18px 22px;
         }
 
@@ -52,26 +49,21 @@
             text-transform: uppercase;
             font-size: clamp(1.7rem, 4.2vw, 2.35rem);
             text-align: center;
-            text-shadow: 0 3px 10px rgba(7, 45, 98, 0.55);
+            text-shadow: 0 2px 8px rgba(141, 55, 98, 0.45);
         }
 
         .login-body {
-            background: linear-gradient(180deg, rgba(44, 125, 210, 0.9) 0%, rgba(24, 92, 168, 0.92) 100%);
+            background: linear-gradient(180deg, #fff4fa 0%, #ffeaf5 100%);
             padding: 24px 24px 22px;
-            color: #eff7ff;
-        }
-
-        .login-body .btn-close {
-            filter: invert(1);
-            opacity: 0.9;
+            color: #7d3e60;
         }
 
         .login-body .text-secondary,
         .login-body .form-label,
         .login-body .form-text,
         .login-body .mb-0 {
-            color: rgba(243, 251, 255, 0.98) !important;
-            text-shadow: 0 1px 3px rgba(8, 45, 96, 0.45);
+            color: #8a4c6a !important;
+            text-shadow: none;
             font-size: 1.02rem;
             font-weight: 600;
         }
@@ -82,29 +74,29 @@
         }
 
         .login-body .form-control {
-            border: 2px solid rgba(154, 214, 255, 0.8);
+            border: 2px solid #f7bfd8;
             min-height: 48px;
             border-radius: 14px;
-            background: #f3faff;
-            color: #1f3f61;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px rgba(9, 61, 121, 0.16);
+            background: #ffffff;
+            color: #5f3650;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px rgba(194, 104, 145, 0.12);
             font-size: 1.02rem;
             font-weight: 600;
         }
 
         .login-body .form-control::placeholder {
-            color: #6d84a1;
+            color: #b48aa0;
             font-weight: 500;
         }
 
         .login-body .form-control:focus {
-            border-color: #79b7ff;
-            box-shadow: 0 0 0 0.2rem rgba(109, 181, 255, 0.32), 0 6px 14px rgba(9, 61, 121, 0.2);
+            border-color: #f29cc7;
+            box-shadow: 0 0 0 0.2rem rgba(242, 156, 199, 0.3), 0 6px 14px rgba(181, 90, 134, 0.16);
             background: #ffffff;
         }
 
         .btn-login {
-            background: linear-gradient(90deg, #4aa3ff 0%, #1f6fc6 100%);
+            background: linear-gradient(90deg, #ff9dc9 0%, #ff7eb8 100%);
             border: 0;
             color: #ffffff;
             border-radius: 999px;
@@ -112,7 +104,7 @@
             font-size: 1.08rem;
             font-weight: 800;
             letter-spacing: 0.4px;
-            text-shadow: 0 1px 2px rgba(7, 45, 98, 0.45);
+            text-shadow: 0 1px 2px rgba(125, 52, 89, 0.35);
             transition: transform 0.2s ease, filter 0.2s ease;
         }
 
@@ -123,174 +115,257 @@
         }
 
         .login-body .link-warning {
-            color: #d8ebff !important;
+            color: #d96599 !important;
             font-size: 1.15rem;
             font-weight: 900 !important;
             letter-spacing: 0.2px;
-            text-shadow: 0 2px 6px rgba(6, 54, 108, 0.55);
+            text-shadow: none;
         }
 
         .login-body .link-warning:hover {
-            color: #93c9ff !important;
+            color: #bf4d82 !important;
+        }
+
+        .login-body .input-group .btn {
+            border: 2px solid #f7bfd8;
+            border-left: 0;
+            color: #a05b7b;
+            background: #fff;
+        }
+
+        .login-body .input-group .btn:hover {
+            color: #854563;
+            background: #fff7fb;
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid min-vh-100"></div>
+    <main class="login-page">
+        <section class="login-card" aria-labelledby="loginPageTitle">
+            <div class="login-shell">
+                <div class="login-header">
+                    <h3 class="login-title" id="loginPageTitle">Đăng Nhập</h3>
+                </div>
+                <div class="login-body">
+                    <p class="text-secondary mb-3">Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.</p>
 
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <style>
-            #loginModal .modal-dialog.login-dialog {
-                max-width: 460px;
-            }
+                    <div id="alertContainer"></div>
 
-            #loginModal .modal-content.login-content {
-                background: transparent;
-                border: 0;
-                box-shadow: none;
-            }
-
-            #loginModal .login-shell {
-                border-radius: 18px;
-                overflow: hidden;
-                border: 2px solid rgba(255, 255, 255, 0.26);
-                box-shadow: 0 24px 55px rgba(20, 0, 46, 0.48);
-                backdrop-filter: blur(2px);
-                background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-            }
-
-            #loginModal .login-header {
-                background: linear-gradient(90deg, #7cc5ff 0%, #3d8fe6 45%, #1f6fc6 100%);
-                padding: 18px 22px;
-            }
-
-            #loginModal .login-title {
-                margin: 0;
-                color: #ffffff;
-                letter-spacing: 1px;
-                font-weight: 900;
-                text-transform: uppercase;
-                font-size: clamp(1.7rem, 4.2vw, 2.35rem);
-                text-align: center;
-                text-shadow: 0 3px 10px rgba(7, 45, 98, 0.55);
-            }
-
-            #loginModal .login-body {
-                background: linear-gradient(180deg, rgba(44, 125, 210, 0.9) 0%, rgba(24, 92, 168, 0.92) 100%);
-                padding: 24px 24px 22px;
-                color: #eff7ff;
-            }
-
-            #loginModal .login-body .btn-close {
-                filter: invert(1);
-                opacity: 0.9;
-            }
-
-            #loginModal .login-body .text-secondary,
-            #loginModal .login-body .form-label,
-            #loginModal .login-body .form-text,
-            #loginModal .login-body .mb-0 {
-                color: rgba(243, 251, 255, 0.98) !important;
-                text-shadow: 0 1px 3px rgba(8, 45, 96, 0.45);
-                font-size: 1.02rem;
-                font-weight: 600;
-            }
-
-            #loginModal .login-body .form-label {
-                font-weight: 700;
-                letter-spacing: 0.2px;
-            }
-
-            #loginModal .login-body .form-control {
-                border: 2px solid rgba(154, 214, 255, 0.8);
-                min-height: 48px;
-                border-radius: 14px;
-                background: #f3faff;
-                color: #1f3f61;
-                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px rgba(9, 61, 121, 0.16);
-                font-size: 1.02rem;
-                font-weight: 600;
-            }
-
-            #loginModal .login-body .form-control::placeholder {
-                color: #6d84a1;
-                font-weight: 500;
-            }
-
-            #loginModal .login-body .form-control:focus {
-                border-color: #79b7ff;
-                box-shadow: 0 0 0 0.2rem rgba(109, 181, 255, 0.32), 0 6px 14px rgba(9, 61, 121, 0.2);
-                background: #ffffff;
-            }
-
-            #loginModal .btn-login {
-                background: linear-gradient(90deg, #4aa3ff 0%, #1f6fc6 100%);
-                border: 0;
-                color: #ffffff;
-                border-radius: 999px;
-                min-height: 48px;
-                font-size: 1.08rem;
-                font-weight: 800;
-                letter-spacing: 0.4px;
-                text-shadow: 0 1px 2px rgba(7, 45, 98, 0.45);
-                transition: transform 0.2s ease, filter 0.2s ease;
-            }
-
-            #loginModal .btn-login:hover {
-                transform: translateY(-1px);
-                filter: brightness(1.04);
-                color: #ffffff;
-            }
-
-            #loginModal .login-body .link-warning {
-                color: #d8ebff !important;
-                font-size: 1.15rem;
-                font-weight: 900 !important;
-                letter-spacing: 0.2px;
-                text-shadow: 0 2px 6px rgba(6, 54, 108, 0.55);
-            }
-
-            #loginModal .login-body .link-warning:hover {
-                color: #93c9ff !important;
-            }
-        </style>
-        <div class="modal-dialog modal-dialog-centered login-dialog">
-            <div class="modal-content login-content">
-                <div class="login-shell">
-                    <div class="login-header">
-                        <h3 class="login-title" id="loginModalLabel">Đăng Nhập</h3>
-                    </div>
-                    <div class="login-body">
-                        <div class="d-flex justify-content-end mb-2">
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <form id="loginForm" novalidate>
+                        <div class="mb-3">
+                            <label for="accountType" class="form-label fw-semibold">Loại tài khoản</label>
+                            <select id="accountType" class="form-control form-control-lg" required>
+                                <option value="khach_hang" selected>Khách hàng</option>
+                                <option value="nhan_vien">Nhân viên</option>
+                            </select>
                         </div>
-
-                        <p class="text-secondary mb-3">Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.</p>
-
-                        <div id="alertContainer"></div>
-
-                        <form id="loginForm">
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Tên đăng nhập</label>
-                                <input type="text" class="form-control form-control-lg" id="username" required>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">Mật khẩu</label>
-                                <input type="password" class="form-control form-control-lg" id="password" required>
-                            </div>
-                            <button type="submit" class="btn btn-login btn-lg w-100">Đăng Nhập</button>
-                        </form>
-
-                        <div class="text-center mt-4">
-                            <p class="mb-0 text-secondary">Chưa có tài khoản? <a href="register.html" class="link-warning fw-semibold text-decoration-none">Đăng ký ngay</a></p>
+                        <div class="mb-3">
+                            <label for="identifier" class="form-label fw-semibold">Số điện thoại</label>
+                            <input type="tel" class="form-control form-control-lg" id="identifier" placeholder="Nhập số điện thoại" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold">Mật khẩu</label>
+                            <div class="input-group input-group-lg">
+                                <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu" required>
+                                <button type="button" class="btn btn-outline-secondary" id="togglePwd" aria-label="Hiện hoặc ẩn mật khẩu">
+                                    <i class="fas fa-eye" id="eyeIcon" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="msg" class="mb-3 small" aria-live="polite"></div>
+                        <button type="button" id="loginBtn" class="btn btn-login btn-lg w-100">Đăng Nhập</button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-0 text-secondary">Chưa có tài khoản? <a href="register.html" class="link-warning fw-semibold text-decoration-none">Đăng ký ngay</a></p>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="JS/login-modal-core.js"></script>
+        <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script>
+        const BANG_DANG_NHAP = {
+            khach_hang: { table: 'khachhang', role: 'khach_hang' },
+            nhan_vien: { table: 'nhacungcap_nguoibenh', role: 'nhan_vien' }
+        };
+
+        document.getElementById('togglePwd').addEventListener('click', function() {
+            const input = document.getElementById('password');
+            const icon  = document.getElementById('eyeIcon');
+            if (input.type === 'password') { input.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+            else { input.type = 'password'; icon.className = 'fas fa-eye'; }
+        });
+
+        document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+        document.getElementById('identifier').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+        document.getElementById('loginBtn').addEventListener('click', login);
+
+        function normalizePhone(value) {
+            return String(value || '').replace(/\D/g, '');
+        }
+
+        function normalizeRows(res) {
+            if (Array.isArray(res)) return res;
+            if (!res || typeof res !== 'object') return [];
+            if (res.error) throw new Error(res.error);
+            if (res.success === false) throw new Error(res.message || 'Không lấy được dữ liệu tài khoản');
+            if (Array.isArray(res.data)) return res.data;
+            if (Array.isArray(res.rows)) return res.rows;
+            if (Array.isArray(res.items)) return res.items;
+            return [];
+        }
+
+        async function sha256(text) {
+            if (!(window.crypto && window.crypto.subtle && window.TextEncoder)) {
+                return String(text || '');
+            }
+            const encoded = new TextEncoder().encode(String(text || ''));
+            const buffer = await window.crypto.subtle.digest('SHA-256', encoded);
+            return Array.from(new Uint8Array(buffer))
+                .map((b) => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        async function matchPassword(inputPassword, storedPassword) {
+            const stored = String(storedPassword || '');
+            if (!stored) return false;
+            if (stored.startsWith('sha256$')) {
+                return stored === ('sha256$' + await sha256(inputPassword));
+            }
+            return stored === inputPassword;
+        }
+
+        function statusMessage(status) {
+            const s = String(status || '').toLowerCase();
+            if (!s || s === 'active') return '';
+            if (s === 'pending') return 'Tài khoản đang chờ xét duyệt';
+            if (s === 'blocked') return 'Tài khoản đã bị khóa';
+            if (s === 'rejected') return 'Tài khoản đã bị từ chối';
+            return 'Tài khoản hiện không thể đăng nhập';
+        }
+
+        function isPendingStatus(status) {
+            const s = String(status || '').toLowerCase();
+            return ['pending', 'cho_duyet', 'cho duyet', 'chờ duyệt'].includes(s);
+        }
+
+        // Luu thong tin dang nhap len session server dung chung.
+        async function saveLoginSession(loginPayload) {
+            const response = await fetch('session_auth.php?action=login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(loginPayload || {})
+            });
+
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (e) {
+                throw new Error('Không thể đọc phản hồi phiên đăng nhập');
+            }
+
+            if (!response.ok || !data || !data.success) {
+                throw new Error((data && data.message) ? data.message : 'Không thể lưu phiên đăng nhập');
+            }
+
+            return data;
+        }
+
+        // Tra cau hinh bang dang nhap theo loai tai khoan.
+        function getLoginConfig(accountType) {
+            return BANG_DANG_NHAP[accountType] || BANG_DANG_NHAP.khach_hang;
+        }
+
+        async function login() {
+            const identifier = document.getElementById('identifier').value.trim();
+            const password   = document.getElementById('password').value;
+            const accountType = document.getElementById('accountType').value;
+            const btn = document.getElementById('loginBtn');
+            const msg = document.getElementById('msg');
+
+            if (!identifier || !password) {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng nhập đầy đủ thông tin</span>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...';
+            msg.innerHTML = '';
+
+            try {
+                if (typeof krudList !== 'function') {
+                    throw new Error('Không tải được hàm krudList');
+                }
+
+                const loginConfig = getLoginConfig(accountType);
+                const rows = normalizeRows(await krudList({ table: loginConfig.table }));
+                const phoneDigits = normalizePhone(identifier);
+                const account = rows.find((item) => normalizePhone(item.sodienthoai || item.so_dien_thoai || item.phone || '') === phoneDigits);
+
+                if (!account) {
+                    throw new Error('Không tìm thấy tài khoản với số điện thoại này');
+                }
+
+                const accountStatus = account.trangthai || account.trang_thai || account.status;
+                let allowMessage = statusMessage(accountStatus);
+                if (accountType === 'nhan_vien' && isPendingStatus(accountStatus)) {
+                    allowMessage = '';
+                }
+                if (allowMessage) {
+                    throw new Error(allowMessage);
+                }
+
+                const ok = await matchPassword(password, account.matkhau || account.mat_khau || account.password);
+                if (!ok) {
+                    throw new Error('Sai mật khẩu');
+                }
+
+                const name = account.hovaten || account.ho_ten || account.name || 'Khách hàng';
+                const phone = account.sodienthoai || account.so_dien_thoai || account.phone || identifier;
+                const normalizedUser = {
+                    ...account,
+                    id: account.id || account.ID || account.ma || '',
+                    ten: account.ten || name,
+                    sodienthoai: phone,
+                    trangthai: account.trangthai || account.trang_thai || account.status || '',
+                    vai_tro: loginConfig.role,
+                    loai_tai_khoan: accountType,
+                    bang_nguon: loginConfig.table,
+                    anh_dai_dien: account.anh_dai_dien || account.avatar || '',
+                    dia_chi: account.dia_chi || account.address || ''
+                };
+
+                const sessionData = await saveLoginSession({
+                    loai_tai_khoan: accountType,
+                    bang_nguon: loginConfig.table,
+                    user: normalizedUser
+                });
+                const sessionUser = sessionData.user || normalizedUser;
+
+                localStorage.setItem('currentUser', JSON.stringify(sessionUser));
+
+                localStorage.setItem('customer_logged_in', 'true');
+                localStorage.setItem('customer_name', sessionUser.ten || name);
+                localStorage.setItem('profile', JSON.stringify({
+                    name: sessionUser.ten || name,
+                    phone: sessionUser.sodienthoai || phone,
+                    address: sessionUser.dia_chi || ''
+                }));
+
+                msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';
+                setTimeout(() => window.location.href = 'index.html', 700);
+            } catch (err) {
+                msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (err && err.message ? err.message : 'Đăng nhập thất bại') + '</span>';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Đăng nhập';
+            }
+        }
+    </script>
 </body>
 </html>

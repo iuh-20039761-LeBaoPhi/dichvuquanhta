@@ -1,0 +1,137 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/slidebar.php';
+require_once __DIR__ . '/get_nhanvien.php';
+
+$admin = admin_require_login();
+
+$q = trim((string)($_GET['q'] ?? ''));
+$statusFilter = trim((string)($_GET['status'] ?? 'all'));
+
+$data = get_nhanvien_data();
+$rows = $data['rows'] ?? [];
+$error = (string)($data['error'] ?? '');
+
+$filtered = array_values(array_filter($rows, static function (array $row) use ($q, $statusFilter): bool {
+	$meta = nhanvien_status_meta((string)($row['trangthai'] ?? ''));
+	if ($statusFilter !== 'all' && $meta['key'] !== $statusFilter) {
+		return false;
+	}
+
+	if ($q !== '') {
+		$target = strtolower(implode(' ', [
+			(string)($row['id'] ?? ''),
+			(string)($row['hovaten'] ?? ''),
+			(string)($row['email'] ?? ''),
+			(string)($row['sodienthoai'] ?? ''),
+		]));
+		return strpos($target, strtolower($q)) !== false;
+	}
+
+	return true;
+}));
+
+$flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
+$flashMsg = trim((string)($_GET['msg'] ?? ''));
+
+admin_render_layout_start('Quan Ly Nhan Vien', 'employees', $admin);
+?>
+
+<?php if ($flashMsg !== ''): ?>
+	<div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2"><?= admin_h($flashMsg) ?></div>
+<?php endif; ?>
+
+<div class="card border-0 shadow-sm mb-3">
+	<div class="card-body">
+		<form method="get" class="row g-2 align-items-end">
+			<div class="col-12 col-md-5 col-lg-4">
+				<label class="form-label mb-1">Tim kiem</label>
+				<input type="text" class="form-control" name="q" value="<?= admin_h($q) ?>" placeholder="Ten, email, SDT...">
+			</div>
+			<div class="col-6 col-md-4 col-lg-3">
+				<label class="form-label mb-1">Trang thai</label>
+				<select class="form-select" name="status">
+					<option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>Tat ca</option>
+					<option value="pending" <?= $statusFilter === 'pending' ? 'selected' : '' ?>>Cho duyet</option>
+					<option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>Da duyet</option>
+					<option value="blocked" <?= $statusFilter === 'blocked' ? 'selected' : '' ?>>Bi khoa</option>
+					<option value="rejected" <?= $statusFilter === 'rejected' ? 'selected' : '' ?>>Tu choi</option>
+				</select>
+			</div>
+			<div class="col-6 col-md-3 col-lg-2 d-grid">
+				<button class="btn btn-success" type="submit"><i class="bi bi-funnel me-1"></i>Loc</button>
+			</div>
+			<div class="col-12 col-lg-3 text-lg-end text-secondary small">
+				Tong: <strong><?= (int)count($filtered) ?></strong> nhan vien
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="card border-0 shadow-sm">
+	<div class="card-body">
+		<?php if ($error !== ''): ?>
+			<div class="alert alert-warning mb-0"><?= admin_h($error) ?></div>
+		<?php else: ?>
+			<div class="table-responsive">
+				<table class="table table-hover align-middle mb-0">
+					<thead class="table-light">
+					<tr>
+						<th>ID</th>
+						<th>Ho ten</th>
+						<th>Email</th>
+						<th>So dien thoai</th>
+						<th>Trang thai</th>
+						<th>Ngay tao</th>
+						<th class="text-end">Hanh dong</th>
+					</tr>
+					</thead>
+					<tbody>
+					<?php if (!$filtered): ?>
+						<tr><td colspan="7" class="text-center py-4 text-secondary">Khong co du lieu nhan vien.</td></tr>
+					<?php else: ?>
+						<?php foreach ($filtered as $row): ?>
+							<?php $meta = nhanvien_status_meta((string)($row['trangthai'] ?? '')); ?>
+							<tr>
+								<td class="fw-semibold text-primary">#<?= admin_h((string)($row['id'] ?? '')) ?></td>
+								<td>
+									<div class="fw-semibold"><?= admin_h((string)($row['hovaten'] ?? 'N/A')) ?></div>
+									<div class="small text-secondary"><?= admin_h((string)($row['diachi'] ?? '')) ?></div>
+								</td>
+								<td><?= admin_h((string)($row['email'] ?? 'N/A')) ?></td>
+								<td><?= admin_h((string)($row['sodienthoai'] ?? 'N/A')) ?></td>
+								<td><span class="badge rounded-pill <?= admin_h((string)$meta['badge']) ?>"><?= admin_h((string)$meta['text']) ?></span></td>
+								<td><?= admin_h((string)($row['created_date'] ?? 'N/A')) ?></td>
+								<td class="text-end">
+									<div class="d-inline-flex gap-1 flex-wrap justify-content-end">
+										<a href="chi-tiet-nhan-vien.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>" class="btn btn-sm btn-outline-primary">
+											<i class="bi bi-eye me-1"></i>Chi tiet
+										</a>
+										<?php if (($meta['key'] ?? '') === 'pending'): ?>
+											<form method="post" action="duyet-nhan-vien.php" class="d-inline">
+												<input type="hidden" name="id" value="<?= admin_h((string)($row['id'] ?? '')) ?>">
+												<input type="hidden" name="return" value="quan-ly-nhan-vien.php">
+												<button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check2-circle me-1"></i>Duyet</button>
+											</form>
+										<?php endif; ?>
+										<?php if (($meta['key'] ?? '') !== 'blocked'): ?>
+											<form method="post" action="khoa-nhan-vien.php" class="d-inline" onsubmit="return confirm('Ban co chac chan muon khoa tai khoan nay?');">
+												<input type="hidden" name="id" value="<?= admin_h((string)($row['id'] ?? '')) ?>">
+												<input type="hidden" name="return" value="quan-ly-nhan-vien.php">
+												<button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-lock me-1"></i>Khoa</button>
+											</form>
+										<?php endif; ?>
+									</div>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					<?php endif; ?>
+					</tbody>
+				</table>
+			</div>
+		<?php endif; ?>
+	</div>
+</div>
+
+<?php admin_render_layout_end(); ?>

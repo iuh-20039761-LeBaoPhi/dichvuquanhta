@@ -387,7 +387,6 @@
           <li><a href="index.html#about" class="nav-link">Giới thiệu</a></li>
           <li><a href="dich-vu.html" class="nav-link">Dịch vụ</a></li>
           <li><a href="cam-nang.html" class="nav-link">Cẩm nang</a></li>
-          <li><a href="don-dat.html" class="nav-link">Đơn đặt</a></li>
           <li>
             <a
               class="nav-link"
@@ -421,6 +420,24 @@
                 role="menu"
                 aria-label="Tùy chọn tài khoản"
               >
+                <a href="don-dat.html" role="menuitem">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M14 4.5V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h7.5L14 4.5zM10.5 3a.5.5 0 0 0-.5.5V5h1.5L10.5 3z"
+                    />
+                    <path
+                      d="M4 7.5A.5.5 0 0 1 4.5 7h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 7.5m0 2A.5.5 0 0 1 4.5 9h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 9.5m0 2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5"
+                    />
+                  </svg>
+                  Đơn đặt
+                </a>
                 <a href="#" class="auth-logout-btn" role="menuitem">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -495,6 +512,12 @@
         <div class="schedule-layout">
           <article class="schedule-card orders-panel">
             <div class="orders-head">
+              <input
+                type="hidden"
+                id="sessionPhoneFilter"
+                name="sessionPhoneFilter"
+                value=""
+              />
               <select class="filter-select" id="statusFilter">
                 <option value="all">Tất cả trạng thái</option>
                 <option value="pending">Chờ xử lý</option>
@@ -590,10 +613,13 @@
                     <span id="modalTransactionStatus">-</span>
                   </div>
                   <div class="info-item">
-                    <b>Phí giao hàng:</b> <span id="modalShippingFee">-</span>
+                    <b>Giá dịch vụ:</b> <span id="modalServicePrice">-</span>
                   </div>
                   <div class="info-item">
-                    <b>Phụ phí giao hàng:</b>
+                    <b>Phí di chuyển:</b> <span id="modalShippingFee">-</span>
+                  </div>
+                  <div class="info-item">
+                    <b>Phụ phí di chuyển:</b>
                     <span id="modalShippingSurcharge">-</span>
                   </div>
                   <div class="info-item">
@@ -913,6 +939,8 @@
     <script>
       (function () {
         const statusFilter = document.getElementById("statusFilter");
+        const sessionPhoneFilterInput =
+          document.getElementById("sessionPhoneFilter");
         const tableBody = document.querySelector(".table tbody");
         const orderDetailModalElement =
           document.getElementById("orderDetailModal");
@@ -921,8 +949,61 @@
           : null;
         let allOrders = [];
 
-        if (!statusFilter || !tableBody) {
+        if (!statusFilter || !sessionPhoneFilterInput || !tableBody) {
           return;
+        }
+
+        function getSessionPhoneFromLogin() {
+          return fetch("public/asset/login-page.php", {
+            method: "GET",
+            credentials: "same-origin",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          })
+            .then(function (response) {
+              return response
+                .json()
+                .catch(function () {
+                  return null;
+                })
+                .then(function (result) {
+                  return {
+                    ok: response.ok,
+                    result: result,
+                  };
+                });
+            })
+            .then(function (payload) {
+              const result = payload && payload.result ? payload.result : null;
+
+              if (!result || result.loggedIn !== true) {
+                const redirectTarget =
+                  (result && result.redirect) || "index.html";
+                window.location.href = redirectTarget;
+                return "";
+              }
+
+              const phone = normalizePhone(
+                result &&
+                  result.user &&
+                  (result.user.user_tel ||
+                    result.user.sodienthoai ||
+                    result.user.phone),
+              );
+
+              sessionPhoneFilterInput.value = phone || "";
+              return phone || "";
+            })
+            .catch(function () {
+              window.location.href = "index.html";
+              return "";
+            });
+        }
+
+        function getHiddenSessionPhone() {
+          return normalizePhone(sessionPhoneFilterInput.value || "");
         }
 
         function formatDate(dateValue) {
@@ -989,23 +1070,25 @@
           return "payment-status-unknown";
         }
 
-        function formatCurrency(value) {
-          const number = Number(value || 0);
-          return number.toLocaleString("vi-VN") + "đ";
+        function toNumber(value) {
+          const normalized = String(value == null ? "" : value)
+            .replace(/[^\d.-]/g, "")
+            .trim();
+          const number = Number(normalized);
+          return Number.isFinite(number) ? number : 0;
         }
 
-        function getShippingFee(order) {
-          if (order && order.shippingFee != null) {
-            return Number(order.shippingFee || 0);
-          }
+        function formatCurrency(value) {
+          const number = toNumber(value);
+          return number.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+            maximumFractionDigits: 0,
+          });
+        }
 
-          const transportFee = Number(
-            order && order.transportFee ? order.transportFee : 0,
-          );
-          const shippingSurcharge = Number(
-            order && order.shippingSurcharge ? order.shippingSurcharge : 0,
-          );
-          return transportFee + shippingSurcharge;
+        function getTransportFee(order) {
+          return toNumber(order && order.transportFee ? order.transportFee : 0);
         }
 
         function setText(id, value) {
@@ -1053,7 +1136,8 @@
           if (transactionStatusEl) {
             transactionStatusEl.innerHTML = `<span class="payment-status-badge ${transactionStatusClass(order.transaction_status)}">${transactionStatusText(order.transaction_status)}</span>`;
           }
-          setText("modalShippingFee", formatCurrency(getShippingFee(order)));
+          setText("modalServicePrice", formatCurrency(order.servicePrice));
+          setText("modalShippingFee", formatCurrency(getTransportFee(order)));
           setText(
             "modalShippingSurcharge",
             formatCurrency(order.shippingSurcharge),
@@ -1162,15 +1246,6 @@
           return [];
         }
 
-        function toNumber(value) {
-          var normalized = String(value == null ? "" : value).replace(
-            /[^\d.-]/g,
-            "",
-          );
-          var number = Number(normalized);
-          return Number.isFinite(number) ? number : 0;
-        }
-
         function normalizeOrderStatus(value) {
           const status = String(value || "")
             .trim()
@@ -1238,37 +1313,44 @@
           return "unpaid";
         }
 
+        function normalizePhone(value) {
+          const phone = String(value || "")
+            .replace(/\s+/g, "")
+            .trim();
+
+          if (phone.indexOf("+84") === 0) {
+            return "0" + phone.slice(3);
+          }
+
+          if (phone.indexOf("84") === 0 && phone.length >= 11) {
+            return "0" + phone.slice(2);
+          }
+
+          return phone;
+        }
+
         function mapOrderFromKrud(row) {
-          const transportFee = toNumber(row.tiendichuyen || row.transportFee);
-          const shippingSurcharge = toNumber(
-            row.phuphigiaonhan || row.shippingSurcharge,
-          );
+          const transportFee = toNumber(row.tiendichuyen);
+          const shippingSurcharge = toNumber(row.phuphigiaonhan);
 
           return {
             rowId: row.id || "",
             id: row.madonhang || row.id || "",
-            serviceName: row.dichvu || row.serviceName || "",
-            transport_options:
-              row.hinhthucnhangiao || row.transport_options || "",
-            orderDate:
-              row.thoigiandatdichvu || row.orderDate || row.created_at || "",
+            serviceName: row.dichvu || "",
+            transport_options: row.hinhthucnhangiao || "",
+            orderDate: row.thoigiandatdichvu || "",
             order_status: normalizeOrderStatus(
-              row.order_status || row.trangthai || row.status,
+              row.trangthaidon || row.trangthai,
             ),
-            transaction_status: normalizePaymentStatus(
-              row.transaction_status ||
-                row.trangthaithanhtoan ||
-                row.payment_status,
-            ),
+            transaction_status: normalizePaymentStatus(row.trangthaithanhtoan),
+            servicePrice: toNumber(row.giadichvu),
             transportFee: transportFee,
             shippingSurcharge: shippingSurcharge,
-            shippingFee: transportFee + shippingSurcharge,
-            totalPrice: toNumber(row.tongtien || row.totalPrice),
-            work_items: row.danhsachcongviec || row.work_items || "",
-            support_chemicals:
-              row.danhsachhoachat || row.support_chemicals || "",
-            note: row.ghichu || row.note || "",
-            quantity: row.soluong || row.quantity || "",
+            totalPrice: toNumber(row.tongtien),
+            work_items: row.danhsachcongviec || "",
+            support_chemicals: row.danhsachhoachat || "",
+            note: row.ghichu || "",
+            quantity: row.soluong || "",
             customer: {
               name: row.hovaten || "",
               phone: row.sodienthoai || "",
@@ -1276,18 +1358,51 @@
               address: row.diachi || "",
             },
             provider: {
-              name: row.tennhacungcap || row.provider_name || "",
-              phone: row.sdt_ncc || row.provider_phone || "",
-              email: row.email_ncc || row.provider_email || "",
-              address: row.diachi_ncc || row.provider_address || "",
+              name: row.tennhacungcap || "",
+              phone: row.sdt_ncc || "",
+              email: row.email_ncc || "",
+              address: row.diachi_ncc || "",
             },
           };
         }
 
-        function loadOrdersFromKrud() {
+        function getRowFreshScore(row) {
+          if (!row || typeof row !== "object") {
+            return 0;
+          }
+
+          const dateCandidates = [row.thoigiancapnhat, row.thoigiandatdichvu];
+
+          for (let i = 0; i < dateCandidates.length; i += 1) {
+            const time = new Date(dateCandidates[i]).getTime();
+            if (Number.isFinite(time) && time > 0) {
+              return time;
+            }
+          }
+
+          const numericId = Number(row.id);
+          if (Number.isFinite(numericId) && numericId > 0) {
+            return numericId;
+          }
+
+          return 0;
+        }
+
+        function loadOrdersFromKrud(normalizedSessionPhone) {
           if (typeof window.krudList !== "function") {
             tableBody.innerHTML =
               '<tr><td colspan="8" class="empty-row">KRUD chưa sẵn sàng. Vui lòng tải lại trang.</td></tr>';
+            return;
+          }
+
+          const sessionPhone = normalizePhone(
+            normalizedSessionPhone || getHiddenSessionPhone(),
+          );
+
+          if (!sessionPhone) {
+            allOrders = [];
+            tableBody.innerHTML =
+              '<tr><td colspan="8" class="empty-row">Vui lòng đăng nhập để xem đơn đặt của bạn.</td></tr>';
             return;
           }
 
@@ -1297,10 +1412,29 @@
           Promise.resolve(
             window.krudList({
               table: "datlich_giatuinhanh",
+              where: [
+                {
+                  op: "AND",
+                  conditions: [
+                    {
+                      field: "sodienthoai",
+                      operator: "=",
+                      value: sessionPhone,
+                    },
+                  ],
+                },
+              ],
+              page: 1,
+              limit: 10,
             }),
           )
             .then(function (result) {
               const rows = extractKrudRows(result);
+
+              rows.sort(function (a, b) {
+                return getRowFreshScore(b) - getRowFreshScore(a);
+              });
+
               allOrders = rows.map(mapOrderFromKrud);
               applyFilter();
             })
@@ -1311,48 +1445,73 @@
             });
         }
 
-        loadOrdersFromKrud();
+        function bindEvents() {
+          statusFilter.addEventListener("change", applyFilter);
 
-        statusFilter.addEventListener("change", applyFilter);
-
-        tableBody.addEventListener("click", function (event) {
-          const target = event.target;
-          if (!(target instanceof HTMLElement)) {
-            return;
-          }
-          const action = target.getAttribute("data-action");
-          const orderId = target.getAttribute("data-order-id");
-          if (!orderId) {
-            return;
-          }
-
-          if (action === "cancel") {
-            const orderToCancel = allOrders.find(function (item) {
-              return item.id === orderId;
+          window.addEventListener("focus", function () {
+            getSessionPhoneFromLogin().then(function (phone) {
+              if (phone) {
+                loadOrdersFromKrud(phone);
+              }
             });
+          });
 
-            if (!orderToCancel || !isPendingOrder(orderToCancel)) {
+          document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState === "visible") {
+              getSessionPhoneFromLogin().then(function (phone) {
+                if (phone) {
+                  loadOrdersFromKrud(phone);
+                }
+              });
+            }
+          });
+
+          tableBody.addEventListener("click", function (event) {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) {
+              return;
+            }
+            const action = target.getAttribute("data-action");
+            const orderId = target.getAttribute("data-order-id");
+            if (!orderId) {
               return;
             }
 
-            const accepted = window.confirm(
-              `Bạn có chắc muốn hủy đơn ${orderId} không?`,
-            );
+            if (action === "cancel") {
+              const orderToCancel = allOrders.find(function (item) {
+                return item.id === orderId;
+              });
 
-            if (!accepted) {
+              if (!orderToCancel || !isPendingOrder(orderToCancel)) {
+                return;
+              }
+
+              const accepted = window.confirm(
+                `Bạn có chắc muốn hủy đơn ${orderId} không?`,
+              );
+
+              if (!accepted) {
+                return;
+              }
+
+              orderToCancel.order_status = "Cancel";
+              applyFilter();
               return;
             }
 
-            orderToCancel.order_status = "Cancel";
-            applyFilter();
-            return;
-          }
+            if (action === "view") {
+              const selectedOrder = allOrders.find(function (item) {
+                return item.id === orderId;
+              });
+              openOrderModal(selectedOrder);
+            }
+          });
+        }
 
-          if (action === "view") {
-            const selectedOrder = allOrders.find(function (item) {
-              return item.id === orderId;
-            });
-            openOrderModal(selectedOrder);
+        bindEvents();
+        getSessionPhoneFromLogin().then(function (phone) {
+          if (phone) {
+            loadOrdersFromKrud(phone);
           }
         });
       })();

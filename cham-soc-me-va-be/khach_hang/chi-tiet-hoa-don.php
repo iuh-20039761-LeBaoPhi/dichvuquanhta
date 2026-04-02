@@ -1,483 +1,316 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/invoice_krud_helpers.php';
+require_once __DIR__ . '/../session_user.php';
+require_once __DIR__ . '/get-hoadonsdt.php';
+require_once __DIR__ . '/header-shared.php';
+
+$sessionUser = session_user_require_customer('../login.html', 'khach_hang/chi-tiet-hoa-don.php' . (isset($_GET['id']) ? ('?id=' . urlencode((string)$_GET['id'])) : ''));
+$sessionPhone = (string)($sessionUser['sodienthoai'] ?? '');
 
 $invoiceId = (int)($_GET['id'] ?? 0);
-$returnPath = $invoiceId > 0
-    ? 'khach_hang/chi-tiet-hoa-don.php?id=' . $invoiceId
-    : 'khach_hang/chi-tiet-hoa-don.php';
-
-[$sessionUser, $sessionPhone] = require_customer_session($returnPath);
-
-$invoice = null;
-$loadError = '';
+$result = getHoaDonBySessionSdt($sessionPhone, $invoiceId > 0 ? $invoiceId : null);
+$invoice = $result['row'] ?? null;
+$loadError = (string)($result['error'] ?? '');
 
 if ($invoiceId <= 0) {
-    $loadError = 'Thieu ma hoa don de hien thi chi tiet.';
-} else {
-    [$invoices, $apiError] = fetch_customer_invoices_by_phone($sessionPhone);
-    if ($apiError !== '') {
-        $loadError = $apiError;
-    } else {
-        foreach ($invoices as $row) {
-            if ((int)($row['id'] ?? 0) === $invoiceId) {
-                $invoice = $row;
-                break;
-            }
-        }
-
-        if (!$invoice) {
-            $loadError = 'Khong tim thay hoa don hoac ban khong co quyen xem hoa don nay.';
-        }
-    }
+	$loadError = 'Thiếu mã hóa đơn để hiển thị chi tiết.';
+}
+if ($invoiceId > 0 && !$invoice && $loadError === '') {
+	$loadError = 'Không tìm thấy hóa đơn hoặc bạn không có quyền xem hóa đơn này.';
 }
 
-$statusMeta = invoice_status_meta($invoice['trang_thai'] ?? ($invoice['status'] ?? 'cho_duyet'));
-$employee = $invoice ? invoice_employee_data($invoice) : [
-    'ten' => 'N/A',
-    'so_dien_thoai' => 'N/A',
-    'email' => 'N/A',
-    'danh_gia' => '4.50',
-    'kinh_nghiem' => 'N/A',
-    'avatar' => '../assets/logomvb.png',
-];
-$workItems = $invoice ? invoice_work_items($invoice) : [];
-$mediaItems = $invoice ? invoice_media_items($invoice) : [];
-
-function invoice_value(array $invoice, string $key, string $fallback = 'N/A'): string
-{
-    $value = trim((string)($invoice[$key] ?? ''));
-    return $value !== '' ? $value : $fallback;
+$employeeProfile = null;
+if ($loadError === '' && is_array($invoice)) {
+	$employeeId = (int)($invoice['id_nhacungcap'] ?? 0);
+	$employeeProfile = $employeeId > 0 ? getNhanVienById($employeeId) : null;
 }
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi Tiet Hoa Don - He Thong Quan Ly Dich Vu</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            background: #f3f4f6;
-        }
-
-        .invoice-page-shell {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 20px 10px 36px;
-        }
-
-        .detail-top {
-            background: #e6c8cc;
-            border-radius: 14px 14px 0 0;
-            border-bottom: 1px solid rgba(138, 40, 40, 0.12);
-        }
-
-        .detail-title {
-            color: #591b1f;
-            font-weight: 800;
-            margin: 0;
-            font-size: clamp(1.3rem, 2.2vw, 1.9rem);
-        }
-
-        .detail-subtitle {
-            margin: 4px 0 0;
-            color: #68707a;
-            font-size: 0.96rem;
-        }
-
-        .detail-back-btn {
-            border: 1.5px solid #e35d66;
-            color: #e35d66;
-            font-weight: 700;
-            border-radius: 10px;
-            background: #fff6f7;
-        }
-
-        .detail-back-btn:hover {
-            color: #fff;
-            background: #e35d66;
-        }
-
-        .invoice-card,
-        .employee-card,
-        .media-card {
-            border: 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(24, 26, 27, 0.08);
-            overflow: hidden;
-            background: #fff;
-        }
-
-        .invoice-card-head {
-            background: linear-gradient(90deg, #dd3f33, #f15a3b);
-            color: #fff;
-            padding: 8px 14px;
-            font-weight: 800;
-            font-size: 1.15rem;
-        }
-
-        .employee-card-head {
-            background: #e7dcaf;
-            color: #7b5c00;
-            padding: 8px 14px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            border-bottom: 1px solid rgba(123, 92, 0, 0.2);
-        }
-
-        .media-card-head {
-            background: #e8c8cc;
-            color: #6a1f29;
-            padding: 8px 14px;
-            font-weight: 800;
-            font-size: 1.15rem;
-            border-bottom: 1px solid rgba(106, 31, 41, 0.2);
-        }
-
-        .invoice-content {
-            padding: 14px 16px 12px;
-        }
-
-        .detail-info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 28px;
-        }
-
-        .info-row {
-            display: grid;
-            grid-template-columns: 140px minmax(0, 1fr);
-            align-items: center;
-            gap: 8px;
-            min-height: 28px;
-        }
-
-        .info-label {
-            color: #8e1f1f;
-            font-weight: 800;
-            font-size: 1.02rem;
-        }
-
-        .info-value {
-            color: #2f3640;
-            word-break: break-word;
-        }
-
-        .status-pill {
-            border-radius: 999px;
-            font-weight: 800;
-            font-size: 0.8rem;
-            padding: 2px 10px;
-            display: inline-block;
-        }
-
-        .status-pill-default {
-            background: #d0d5dd;
-            color: #1f2937;
-        }
-
-        .status-pill-info {
-            background: #12b4da;
-            color: #083344;
-        }
-
-        .status-pill-warning {
-            background: #f6d365;
-            color: #78350f;
-        }
-
-        .status-pill-primary {
-            background: #7fb3ff;
-            color: #1e3a8a;
-        }
-
-        .status-pill-success {
-            background: #86efac;
-            color: #14532d;
-        }
-
-        .status-pill-danger {
-            background: #fca5a5;
-            color: #7f1d1d;
-        }
-
-        .work-block {
-            margin-top: 12px;
-            border: 1px solid #e9b949;
-            border-radius: 6px;
-            padding: 10px 14px 10px;
-            min-height: 124px;
-        }
-
-        .work-title {
-            font-weight: 800;
-            color: #8b6508;
-            margin-bottom: 8px;
-            font-size: 1.45rem;
-        }
-
-        .work-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .work-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            color: #2f3640;
-        }
-
-        .work-index {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #1d70ff;
-            color: #fff;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.78rem;
-            font-weight: 800;
-            flex: 0 0 22px;
-            margin-top: 1px;
-        }
-
-        .employee-content {
-            padding: 12px 14px;
-            min-height: 334px;
-        }
-
-        .employee-avatar {
-            width: 95px;
-            height: 95px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #ece7dc;
-            display: block;
-            margin: 4px auto 10px;
-            background: #f9fafb;
-        }
-
-        .employee-info {
-            display: grid;
-            gap: 5px;
-        }
-
-        .employee-row {
-            display: grid;
-            grid-template-columns: 112px minmax(0, 1fr);
-            gap: 6px;
-            align-items: center;
-        }
-
-        .employee-label {
-            color: #8e1f1f;
-            font-weight: 800;
-        }
-
-        .employee-value {
-            color: #2f3640;
-            min-width: 0;
-            word-break: break-word;
-        }
-
-        .rating-pill {
-            border-radius: 8px;
-            font-weight: 800;
-            background: #facc15;
-            color: #1f2937;
-            padding: 2px 8px;
-            display: inline-block;
-        }
-
-        .media-note {
-            color: #6b7280;
-            margin: 0;
-        }
-
-        .media-content {
-            padding: 14px;
-        }
-
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 12px;
-        }
-
-        .media-item {
-            border-radius: 8px;
-            overflow: hidden;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-        }
-
-        .media-item img,
-        .media-item video {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-            display: block;
-            background: #e5e7eb;
-        }
-
-        .media-empty {
-            padding: 20px;
-            text-align: center;
-            color: #6b7280;
-        }
-
-        @media (max-width: 991.98px) {
-            .detail-info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .info-row {
-                grid-template-columns: 126px minmax(0, 1fr);
-            }
-
-            .employee-content {
-                min-height: 0;
-            }
-
-            .media-item img,
-            .media-item video {
-                height: 230px;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .invoice-page-shell {
-                padding: 14px 8px 24px;
-            }
-
-            .info-row {
-                grid-template-columns: 110px minmax(0, 1fr);
-                gap: 6px;
-            }
-
-            .employee-row {
-                grid-template-columns: 100px minmax(0, 1fr);
-            }
-
-            .media-item img,
-            .media-item video {
-                height: 190px;
-            }
-        }
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Chi Tiết Hóa Đơn</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+	<?php render_khach_hang_header_styles(); ?>
+	<style>
+		body {
+			background: linear-gradient(180deg, #edf2f7 0%, #f8fafc 100%);
+			color: #1f2937;
+		}
+		.detail-wrap {
+			max-width: 1380px;
+			margin: 0 auto;
+			padding: 14px;
+		}
+		.top-head {
+			background: linear-gradient(90deg, #5178de, #7a4aa8);
+			color: #fff;
+			border-radius: 10px 10px 0 0;
+			padding: 10px 14px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+		.top-head h1 {
+			font-size: 1.35rem;
+			margin: 0;
+			font-weight: 800;
+		}
+		.sheet {
+			background: #f3f4f6;
+			border: 1px solid #d3d8de;
+			border-top: 0;
+			border-radius: 0 0 10px 10px;
+			padding: 10px;
+		}
+		.card-box {
+			border: 1px solid #cfd6dd;
+			border-radius: 6px;
+			background: #fff;
+			overflow: hidden;
+		}
+		.head-blue,
+		.head-green,
+		.head-cyan,
+		.head-yellow {
+			color: #fff;
+			font-weight: 800;
+			font-size: 1rem;
+			padding: 7px 12px;
+		}
+		.head-blue { background: #216de0; }
+		.head-green { background: #1d8a58; }
+		.head-cyan { background: #1cb5de; }
+		.head-yellow { background: #f4b400; color: #1f2937; }
+		.box-body {
+			padding: 12px;
+		}
+		.meta-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 8px 24px;
+		}
+		.meta-row {
+			line-height: 1.4;
+		}
+		.meta-row b {
+			font-weight: 800;
+		}
+		.status-pill {
+			display: inline-block;
+			border-radius: 999px;
+			padding: 2px 10px;
+			font-size: 12px;
+			font-weight: 800;
+			color: #fff;
+			background: #12b5dd;
+		}
+		.status-pending {
+			background: #fbbc04;
+			color: #1f2937;
+		}
+		.avatar {
+			width: 68px;
+			height: 68px;
+			border-radius: 50%;
+			margin: 0 auto 8px;
+			display: block;
+			border: 1px solid #d1d5db;
+			object-fit: cover;
+		}
+		.center-name {
+			text-align: center;
+			font-weight: 600;
+			margin-bottom: 10px;
+		}
+		.kv-list {
+			margin: 0;
+			padding-left: 16px;
+		}
+		.kv-table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 14px;
+		}
+		.kv-table th,
+		.kv-table td {
+			border: 1px solid #e5e7eb;
+			padding: 7px 8px;
+			vertical-align: top;
+		}
+		.kv-table th {
+			width: 35%;
+			background: #f8fafc;
+			font-weight: 700;
+		}
+		.media-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+			gap: 10px;
+		}
+		.media-grid img,
+		.media-grid video {
+			width: 100%;
+			height: 160px;
+			object-fit: cover;
+			border-radius: 6px;
+			border: 1px solid #e5e7eb;
+		}
+		@media (max-width: 991.98px) {
+			.meta-grid { grid-template-columns: 1fr; }
+		}
+	</style>
 </head>
-<body class="bg-body-tertiary">
-    <main class="invoice-page-shell">
-        <div class="detail-top px-3 px-md-4 py-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
-            <div>
-                <h1 class="detail-title"><i class="bi bi-receipt-cutoff me-2"></i>Chi Tiet Hoa Don</h1>
-                <p class="detail-subtitle">Thong tin chi tiet hoa don va tien do cong viec</p>
-            </div>
-            <a href="danh-sach-hoa-don.php" class="btn detail-back-btn fw-semibold">
-                <i class="bi bi-arrow-left me-1"></i>Quay Lai Danh Sach
-            </a>
-        </div>
+<body>
+<main class="detail-wrap">
+	<?php render_khach_hang_header($sessionUser, 'Chi tiet hoa don khach hang'); ?>
+	<div class="top-head">
+		<h1><i class="bi bi-file-earmark-text me-2"></i>Chi Tiết Hóa Đơn</h1>
+		<a href="danh-sach-hoa-don.php" class="btn btn-sm btn-outline-light"><i class="bi bi-x-lg"></i></a>
+	</div>
 
-        <div class="pt-3">
-            <?php if ($loadError !== ''): ?>
-                <div class="alert alert-warning mb-0"><?= h($loadError) ?></div>
-            <?php else: ?>
-                <div class="row g-3 align-items-start">
-                    <div class="col-12 col-lg-8">
-                        <div class="invoice-card">
-                            <div class="invoice-card-head">
-                                <i class="bi bi-file-earmark-text me-2"></i>
-                                Chi Tiet Hoa Don #<?= h((string)($invoice['id'] ?? 'N/A')) ?>
-                            </div>
-                            <div class="invoice-content">
-                                <div class="detail-info-grid">
-                                    <div>
-                                        <div class="info-row"><div class="info-label">Ten khach hang</div><div class="info-value"><?= h((string)($invoice['hovaten'] ?? ($invoice['ten_khach_hang'] ?? ($invoice['ten'] ?? 'N/A')))) ?></div></div>
-                                        <div class="info-row"><div class="info-label">So dien thoai</div><div class="info-value"><?= h((string)($invoice['sodienthoai'] ?? ($invoice['so_dien_thoai'] ?? ($invoice['dien_thoai'] ?? 'N/A')))) ?></div></div>
-                                        <div class="info-row"><div class="info-label">Dich vu</div><div class="info-value"><?= h((string)($invoice['dich_vu'] ?? 'N/A')) ?></div></div>
-                                        <div class="info-row"><div class="info-label">Goi dich vu</div><div class="info-value"><?= h((string)($invoice['goi_dich_vu'] ?? 'N/A')) ?></div></div>
-                                    </div>
-                                    <div>
-                                        <div class="info-row"><div class="info-label">Ngay bat dau</div><div class="info-value"><?= h((string)($invoice['ngay_bat_dau'] ?? 'N/A')) ?></div></div>
-                                        <div class="info-row"><div class="info-label">Gio bat dau</div><div class="info-value"><?= h((string)($invoice['gio_bat_dau'] ?? 'N/A')) ?></div></div>
-                                        <div class="info-row"><div class="info-label">Gia tien</div><div class="info-value"><?= h(format_money($invoice['tong_tien'] ?? ($invoice['gia_tien'] ?? 0))) ?></div></div>
-                                        <div class="info-row"><div class="info-label">Trang thai</div><div class="info-value"><span class="status-pill <?= h($statusMeta['class']) ?>"><?= h($statusMeta['text']) ?></span></div></div>
-                                    </div>
-                                </div>
+	<div class="sheet">
+		<?php if ($loadError !== ''): ?>
+			<div class="alert alert-warning mb-0"><?= htmlspecialchars($loadError, ENT_QUOTES, 'UTF-8') ?></div>
+		<?php else: ?>
+			<?php
+				$statusText = trim((string)($invoice['trangthai'] ?? ''));
+				if ($statusText === '') {
+					$statusText = 'Chờ duyệt';
+				}
 
-                                <div class="work-block">
-                                    <div class="work-title"><i class="bi bi-list-check me-2"></i>Cong viec</div>
-                                    <?php if (empty($workItems)): ?>
-                                        <p class="mb-0 text-muted">Chua co danh sach cong viec.</p>
-                                    <?php else: ?>
-                                        <ul class="work-list">
-                                            <?php foreach ($workItems as $idx => $item): ?>
-                                                <li class="work-item">
-                                                    <span class="work-index"><?= h((string)($idx + 1)) ?></span>
-                                                    <span><?= h($item) ?></span>
-                                                </li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+				$statusRaw = strtolower($statusText);
+				$statusClass = ' status-pending';
+				if (in_array($statusRaw, ['đã duyệt', 'da duyet', 'da_duyet', 'approved', 'đã nhận', 'da nhan', 'da_nhan', 'received'], true)) {
+					$statusClass = '';
+				}
 
-                    <div class="col-12 col-lg-4">
-                        <div class="employee-card">
-                            <div class="employee-card-head"><i class="bi bi-person-badge me-2"></i>Nhan Vien Thuc Hien</div>
-                            <div class="employee-content">
-                                <img class="employee-avatar" src="<?= h(invoice_asset_url($employee['avatar'])) ?>" alt="avatar nhan vien">
-                                <div class="employee-info">
-                                    <div class="employee-row"><div class="employee-label">Ho ten</div><div class="employee-value"><?= h($employee['ten']) ?></div></div>
-                                    <div class="employee-row"><div class="employee-label">So dien thoai</div><div class="employee-value"><?= h($employee['so_dien_thoai']) ?></div></div>
-                                    <div class="employee-row"><div class="employee-label">Email</div><div class="employee-value"><?= h($employee['email']) ?></div></div>
-                                    <div class="employee-row"><div class="employee-label">Danh gia</div><div class="employee-value"><span class="rating-pill"><i class="bi bi-star-fill me-1"></i><?= h($employee['danh_gia']) ?>/5.0</span></div></div>
-                                    <div class="employee-row"><div class="employee-label">Kinh nghiem</div><div class="employee-value"><?= h($employee['kinh_nghiem']) ?></div></div>
-                                </div>
-                                <hr class="my-3">
-                                <div class="fw-bold mb-1" style="color:#8b6508;"><i class="bi bi-camera-video-fill me-2"></i>Media Cua Nhan Vien</div>
-                                <p class="media-note">Chua co media cua nhan vien.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+				$invoiceIdText = trim((string)($invoice['id'] ?? ''));
+				$totalMoney = trim((string)($invoice['tong_tien'] ?? ''));
+				$serviceName = trim((string)($invoice['dich_vu'] ?? ''));
+				$packageName = trim((string)($invoice['goi_dich_vu'] ?? ''));
+				$note = trim((string)($invoice['ghi_chu'] ?? ''));
+				$requestExtra = trim((string)($invoice['yeu_cau_khac'] ?? ''));
+				$startDate = trim((string)($invoice['ngay_bat_dau'] ?? ''));
+				$endDate = trim((string)($invoice['ngay_ket_thuc'] ?? ''));
+				$workName = trim((string)($invoice['cong_viec'] ?? ''));
+				$supplierIdText = trim((string)($invoice['id_nhacungcap'] ?? ''));
 
-                <div class="media-card mt-3">
-                    <div class="media-card-head"><i class="bi bi-camera-video-fill me-2"></i>Hinh Anh & Video Cong Viec</div>
-                    <div class="media-content">
-                        <?php if (empty($mediaItems)): ?>
-                            <div class="media-empty">Chua co hinh anh hoac video cho hoa don nay.</div>
-                        <?php else: ?>
-                            <div class="media-grid">
-                                <?php foreach ($mediaItems as $media): ?>
-                                    <?php $asset = invoice_asset_url($media); ?>
-                                    <?php if ($asset === '') continue; ?>
-                                    <div class="media-item">
-                                        <?php if (preg_match('/\.(mp4|webm|ogg|mov)$/i', $asset)): ?>
-                                            <video src="<?= h($asset) ?>" controls playsinline></video>
-                                        <?php else: ?>
-                                            <img src="<?= h($asset) ?>" alt="media hoa don">
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-    </main>
+				$customerName = trim((string)($invoice['hovaten'] ?? ''));
+				$customerPhone = trim((string)($invoice['sodienthoai'] ?? ''));
+				$customerEmail = trim((string)($invoice['email'] ?? ''));
+				$customerAddress = trim((string)($invoice['diachi'] ?? ''));
+
+				$employeeSource = (is_array($employeeProfile) && $employeeProfile) ? $employeeProfile : [];
+				$employeeIdText = trim((string)($employeeSource['id'] ?? ''));
+				$employeeName = trim((string)($employeeSource['hovaten'] ?? ''));
+				$employeePhone = trim((string)($employeeSource['sodienthoai'] ?? ''));
+				$employeeEmail = trim((string)($employeeSource['email'] ?? ''));
+				$employeeCreatedDate = trim((string)($employeeSource['created_date'] ?? ''));
+				$employeeAvatar = '../assets/logomvb.png';
+
+				$displayOrDefault = static function (string $value, string $default = 'N/A'): string {
+					return $value !== '' ? $value : $default;
+				};
+
+				$mediaItems = [];
+				foreach (['yeu_cau_khac', 'ghi_chu', 'cong_viec'] as $mediaField) {
+					$text = trim((string)($invoice[$mediaField] ?? ''));
+					if ($text === '') {
+						continue;
+					}
+
+					$parts = preg_split('/[,\n]/', $text) ?: [];
+					foreach ($parts as $part) {
+						$part = trim($part);
+						if ($part === '') {
+							continue;
+						}
+						if (preg_match('/^https?:\/\/.*\.(jpg|jpeg|png|gif|webp|mp4|webm|ogg|mov)(\?.*)?$/i', $part)) {
+							$mediaItems[] = $part;
+						}
+					}
+				}
+
+				$mediaItems = array_values(array_unique($mediaItems));
+			?>
+
+			<div class="card-box mb-3">
+				<div class="head-blue"><i class="bi bi-file-earmark me-2"></i>Thông Tin Hóa Đơn</div>
+				<div class="box-body">
+					<div class="meta-grid">
+						<div class="meta-row"><b>Mã HĐ:</b> #<?= htmlspecialchars($displayOrDefault($invoiceIdText, ''), ENT_QUOTES, 'UTF-8') ?></div>
+						<div class="meta-row"><b>Tổng tiền:</b> <span style="color:#e53935;font-weight:800;"><?= htmlspecialchars($displayOrDefault($totalMoney), ENT_QUOTES, 'UTF-8') ?></span></div>
+						<div class="meta-row"><b>Dịch vụ:</b> <?= htmlspecialchars($displayOrDefault($serviceName), ENT_QUOTES, 'UTF-8') ?></div>
+						<div class="meta-row"><b>Trạng thái:</b> <span class="status-pill<?= $statusClass ?>"><?= htmlspecialchars($statusText, ENT_QUOTES, 'UTF-8') ?></span></div>
+						<div class="meta-row"><b>ID nhà cung cấp:</b> <?= htmlspecialchars($displayOrDefault($supplierIdText), ENT_QUOTES, 'UTF-8') ?></div>
+						<div class="meta-row"><b>Gói:</b> <?= htmlspecialchars($displayOrDefault($packageName), ENT_QUOTES, 'UTF-8') ?></div>
+						<div class="meta-row"><b>Ghi chú:</b> <?= htmlspecialchars($displayOrDefault($note, 'Không có'), ENT_QUOTES, 'UTF-8') ?></div>
+						
+						<div class="meta-row"><b>Yêu cầu thêm:</b> <?= htmlspecialchars($displayOrDefault($requestExtra, 'Không có'), ENT_QUOTES, 'UTF-8') ?></div>
+						<div class="meta-row"><b>Ngày bắt đầu:</b> <?= htmlspecialchars($displayOrDefault($startDate), ENT_QUOTES, 'UTF-8') ?></div>
+						<div class="meta-row"><b>Ngày kết thúc:</b> <?= htmlspecialchars($displayOrDefault($endDate), ENT_QUOTES, 'UTF-8') ?></div>
+						<div class="meta-row"><b>Công việc:</b> <?= htmlspecialchars($displayOrDefault($workName), ENT_QUOTES, 'UTF-8') ?></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row g-3 mb-3">
+				<div class="col-12 col-lg-6">
+					<div class="card-box h-100">
+						<div class="head-green"><i class="bi bi-person me-2"></i>Thông Tin Khách Hàng</div>
+						<div class="box-body">
+							<img class="avatar" src="../assets/logomvb.png" alt="avatar khách hàng">
+							<div class="center-name"><?= htmlspecialchars($displayOrDefault($customerName, 'Khách hàng'), ENT_QUOTES, 'UTF-8') ?></div>
+							<ul class="kv-list">
+								<li><b>SĐT:</b> <?= htmlspecialchars($displayOrDefault($customerPhone), ENT_QUOTES, 'UTF-8') ?></li>
+								<li><b>Email:</b> <?= htmlspecialchars($displayOrDefault($customerEmail), ENT_QUOTES, 'UTF-8') ?></li>
+								<li><b>Địa chỉ:</b> <?= htmlspecialchars($displayOrDefault($customerAddress), ENT_QUOTES, 'UTF-8') ?></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 col-lg-6">
+					<div class="card-box h-100">
+						<div class="head-cyan"><i class="bi bi-person-badge me-2"></i>Nhân Viên Phụ Trách</div>
+						<div class="box-body">
+							<img class="avatar" src="<?= htmlspecialchars($employeeAvatar, ENT_QUOTES, 'UTF-8') ?>" alt="avatar nhân viên">
+							<div class="center-name"><?= htmlspecialchars($displayOrDefault($employeeName, 'Chưa phân công'), ENT_QUOTES, 'UTF-8') ?></div>
+							<ul class="kv-list">
+								<li><b>ID:</b> <?= htmlspecialchars($displayOrDefault($employeeIdText), ENT_QUOTES, 'UTF-8') ?></li>
+								<li><b>SĐT:</b> <?= htmlspecialchars($displayOrDefault($employeePhone), ENT_QUOTES, 'UTF-8') ?></li>
+								<li><b>Email:</b> <?= htmlspecialchars($displayOrDefault($employeeEmail), ENT_QUOTES, 'UTF-8') ?></li>
+								<li><b>Ngày tạo:</b> <?= htmlspecialchars($displayOrDefault($employeeCreatedDate), ENT_QUOTES, 'UTF-8') ?></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card-box">
+				<div class="head-yellow"><i class="bi bi-camera-video me-2"></i>Hình Ảnh & Video Thực Tế</div>
+				<div class="box-body">
+					<?php if (!$mediaItems): ?>
+						<div class="text-center text-muted">Chưa có hình ảnh hoặc video minh chứng.</div>
+					<?php else: ?>
+						<div class="media-grid">
+							<?php foreach ($mediaItems as $asset): ?>
+								<?php if (preg_match('/\.(mp4|webm|ogg|mov)(\?.*)?$/i', $asset)): ?>
+									<video src="<?= htmlspecialchars($asset, ENT_QUOTES, 'UTF-8') ?>" controls playsinline></video>
+								<?php else: ?>
+									<img src="<?= htmlspecialchars($asset, ENT_QUOTES, 'UTF-8') ?>" alt="media hóa đơn">
+								<?php endif; ?>
+							<?php endforeach; ?>
+						</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		<?php endif; ?>
+	</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -381,6 +381,8 @@
         "Hóa chất hỗ trợ": formData.support_chemicals || "",
         "Thời gian đặt": formData.booking_time || "",
         "Ghi chú": formData.message || "",
+        "Trang thái đơn": "Pending",
+        "Trạng thái thanh toán": "Unpaid",
       };
     }
 
@@ -420,15 +422,17 @@
         dichvu: data.service_name || "",
         hinhthucnhangiao: data.sub_service || "",
         soluong: data.quantity || "",
-        giadichvu: data.price || "",
-        tiendichuyen: data.ship || "",
-        phuphigiaonhan: data.shipping_surcharge || "",
-        tongtien: data.total || "",
+        giadichvu: normalizeMoneyToNumber(data.price) || "",
+        tiendichuyen: normalizeMoneyToNumber(data.ship) || "",
+        phuphigiaonhan: normalizeMoneyToNumber(data.shipping_surcharge) || "",
+        tongtien: normalizeMoneyToNumber(data.total) || "",
         danhsachcongviec: data.work_items || "",
         danhsachhoachat: data.support_chemicals || "",
         thoigiandatdichvu: data.booking_time || "",
         diachi: data.address || "",
         ghichu: data.message || "",
+        trangthaidon: "Pending",
+        trangthaithanhtoan: "Unpaid",
       };
       console.log("Constructed KRUD payload:", dbPayload);
       return Promise.resolve(

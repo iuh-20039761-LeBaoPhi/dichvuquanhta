@@ -1169,43 +1169,76 @@ footer {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  min-width: 170px;
-  padding: 8px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid rgba(148, 163, 184, 0.26);
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14);
+  min-width: 210px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  gap: 8px;
+  flex-direction: column;
   z-index: 1010;
 }
 
 .auth-menu.is-open .auth-user-dropdown {
-  display: block;
+  display: flex;
 }
 
 .auth-menu[open] .auth-user-dropdown {
-  display: block;
+  display: flex;
 }
 
-.auth-logout-btn {
+.auth-user-dropdown a[role="menuitem"] {
   width: 100%;
-  border: 0;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  background: #fff7ed;
-  color: #c2410c;
+  background: #f8fafc;
+  color: #1f2a44;
   font-weight: 700;
   padding: 10px 12px;
   text-align: left;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
   text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.auth-user-dropdown a[role="menuitem"] svg {
+  flex: 0 0 auto;
+  color: currentColor;
+  opacity: 0.92;
+}
+
+.auth-user-dropdown a[role="menuitem"]:hover,
+.auth-user-dropdown a[role="menuitem"]:focus-visible {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #1d4ed8;
+  transform: translateX(1px);
+}
+
+.auth-user-dropdown a[role="menuitem"]:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.34);
+  outline-offset: 1px;
+}
+
+.auth-logout-btn {
+  border-color: #fed7aa !important;
+  background: #fff7ed !important;
+  color: #b45309;
 }
 
 .auth-logout-btn:hover,
 .auth-logout-btn:focus-visible {
-  background: #ffedd5;
+  background: #ffedd5 !important;
+  border-color: #fdba74 !important;
+  color: #9a3412;
 }
 
 .auth-logout-btn:focus-visible {
@@ -1223,6 +1256,7 @@ footer {
     left: 50%;
     right: auto;
     transform: translateX(-50%);
+    width: min(280px, calc(100vw - 32px));
   }
 }
 /* Responsive */
@@ -1262,7 +1296,7 @@ footer {
   }
 
   .nav-menu.active {
-    max-height: 450px;
+    min-height: 750px;
     opacity: 1;
     transform: translateY(0);
   }
