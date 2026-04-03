@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/slidebar.php';
 require_once __DIR__ . '/get_hoadon.php';
+require_once __DIR__ . '/xu-ly-phan-trang.php';
 
 $admin = admin_require_login();
 
 $q = trim((string)($_GET['q'] ?? ''));
 $statusFilter = trim((string)($_GET['status'] ?? 'all'));
-$page = max(1, (int)($_GET['page'] ?? 1));
 
 $data = get_hoadon_data();
 $rows = $data['rows'] ?? [];
@@ -35,22 +35,19 @@ $filtered = array_values(array_filter($rows, static function (array $row) use ($
 	return true;
 }));
 
-$perPage = 5;
-$totalFiltered = count($filtered);
-$totalPages = max(1, (int)ceil($totalFiltered / $perPage));
-$page = min($page, $totalPages);
-$offset = ($page - 1) * $perPage;
-$paginatedRows = array_slice($filtered, $offset, $perPage);
+[
+	'items' => $paginatedRows,
+	'page' => $page,
+	'perPage' => $perPage,
+	'offset' => $offset,
+	'totalItems' => $totalFiltered,
+	'totalPages' => $totalPages,
+] = pagination_array($filtered, pagination_get_page($_GET, 'page', 1), 5);
 
-$buildPageUrl = static function (int $targetPage) use ($q, $statusFilter): string {
-	$params = [
-		'q' => $q,
-		'status' => $statusFilter,
-		'page' => $targetPage,
-	];
-
-	return '?' . http_build_query($params);
-};
+$buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targetPage, [
+	'q' => $q,
+	'status' => $statusFilter,
+]);
 
 admin_render_layout_start('Quan Ly Don Hang', 'orders', $admin);
 ?>

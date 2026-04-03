@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/slidebar.php';
 require_once __DIR__ . '/get_nhanvien.php';
+require_once __DIR__ . '/xu-ly-phan-trang.php';
 
 $admin = admin_require_login();
 
@@ -31,6 +32,20 @@ $filtered = array_values(array_filter($rows, static function (array $row) use ($
 
 	return true;
 }));
+
+[
+	'items' => $paginatedRows,
+	'page' => $page,
+	'perPage' => $perPage,
+	'offset' => $offset,
+	'totalItems' => $totalFiltered,
+	'totalPages' => $totalPages,
+] = pagination_array($filtered, pagination_get_page($_GET, 'page', 1), 5);
+
+$buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targetPage, [
+	'q' => $q,
+	'status' => $statusFilter,
+]);
 
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
@@ -63,7 +78,7 @@ admin_render_layout_start('Quan Ly Nhan Vien', 'employees', $admin);
 				<button class="btn btn-success" type="submit"><i class="bi bi-funnel me-1"></i>Loc</button>
 			</div>
 			<div class="col-12 col-lg-3 text-lg-end text-secondary small">
-				Tong: <strong><?= (int)count($filtered) ?></strong> nhan vien
+				Tong: <strong><?= (int)$totalFiltered ?></strong> nhan vien
 			</div>
 		</form>
 	</div>
@@ -88,10 +103,10 @@ admin_render_layout_start('Quan Ly Nhan Vien', 'employees', $admin);
 					</tr>
 					</thead>
 					<tbody>
-					<?php if (!$filtered): ?>
+					<?php if (!$paginatedRows): ?>
 						<tr><td colspan="7" class="text-center py-4 text-secondary">Khong co du lieu nhan vien.</td></tr>
 					<?php else: ?>
-						<?php foreach ($filtered as $row): ?>
+						<?php foreach ($paginatedRows as $row): ?>
 							<?php $meta = nhanvien_status_meta((string)($row['trangthai'] ?? '')); ?>
 							<tr>
 								<td class="fw-semibold text-primary">#<?= admin_h((string)($row['id'] ?? '')) ?></td>
@@ -130,6 +145,31 @@ admin_render_layout_start('Quan Ly Nhan Vien', 'employees', $admin);
 					</tbody>
 				</table>
 			</div>
+
+			<?php if ($totalFiltered > 0): ?>
+				<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-3">
+					<div class="small text-secondary">
+						Hien thi <?= (int)($offset + 1) ?> - <?= (int)min($offset + $perPage, $totalFiltered) ?> / <?= (int)$totalFiltered ?> nhan vien
+					</div>
+					<?php if ($totalPages > 1): ?>
+						<nav aria-label="Phan trang nhan vien">
+							<ul class="pagination pagination-sm mb-0">
+								<li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+									<a class="page-link" href="<?= admin_h($buildPageUrl(max(1, $page - 1))) ?>">Truoc</a>
+								</li>
+								<?php for ($i = 1; $i <= $totalPages; $i++): ?>
+									<li class="page-item <?= $i === $page ? 'active' : '' ?>">
+										<a class="page-link" href="<?= admin_h($buildPageUrl($i)) ?>"><?= $i ?></a>
+									</li>
+								<?php endfor; ?>
+								<li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+									<a class="page-link" href="<?= admin_h($buildPageUrl(min($totalPages, $page + 1))) ?>">Sau</a>
+								</li>
+							</ul>
+						</nav>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
 		<?php endif; ?>
 	</div>
 </div>

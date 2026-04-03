@@ -1,28 +1,15 @@
 <?php
 session_start();
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/local_store.php';
 
 if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     header('Location: login.php');
     exit;
 }
 
-$userId = (int) ($_SESSION['user_id'] ?? 0);
-$stmt = $conn->prepare("SELECT noi_dung AS message, duong_dan AS link, tao_luc AS created_at FROM thong_bao WHERE nguoi_dung_id = ? ORDER BY tao_luc DESC LIMIT 100");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-$notifications = [];
-while ($row = $result->fetch_assoc()) {
-    $notifications[] = $row;
-}
-$stmt->close();
-
-$markRead = $conn->prepare("UPDATE thong_bao SET da_doc = 1 WHERE nguoi_dung_id = ? AND da_doc = 0");
-if ($markRead) {
-    $markRead->bind_param("i", $userId);
-    $markRead->execute();
-    $markRead->close();
+$notifications = admin_local_store_read('admin-notifications.json', []);
+if (!is_array($notifications)) {
+    $notifications = [];
 }
 ?>
 <!DOCTYPE html>
@@ -42,7 +29,7 @@ if ($markRead) {
         </div>
         <div class="admin-card">
             <?php if (empty($notifications)): ?>
-                <div class="empty-state">Không có thông báo nào.</div>
+                <div class="empty-state">Không có thông báo nào. Luồng thông báo cũ từ MySQL đã được tắt.</div>
             <?php else: ?>
                 <?php foreach ($notifications as $item): ?>
                     <a class="notification-page-item" href="<?php echo htmlspecialchars((string) (($item['link'] ?? '') ?: 'notifications.php'), ENT_QUOTES, 'UTF-8'); ?>">
@@ -56,4 +43,3 @@ if ($markRead) {
     <?php include __DIR__ . '/../includes/footer.php'; ?>
 </body>
 </html>
-

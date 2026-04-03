@@ -116,6 +116,18 @@
       : "Tiền mặt";
   }
 
+  function getPaymentStatusLabel(paymentStatus, fallback = "Chưa hoàn tất") {
+    const normalized = String(paymentStatus || "").toLowerCase();
+    if (!normalized) return fallback;
+    if (["paid", "completed", "done"].includes(normalized)) {
+      return "Đã hoàn tất";
+    }
+    if (["unpaid", "pending", "processing"].includes(normalized)) {
+      return "Chưa hoàn tất";
+    }
+    return paymentStatus || fallback;
+  }
+
   function getFeePayerLabel(feePayer) {
     return String(feePayer || "").toLowerCase() === "nhan"
       ? "Người nhận"
@@ -175,9 +187,7 @@
       item_name: item.item_name || item.ten_hang || "",
       quantity: Number(item.quantity ?? item.so_luong ?? 1),
       weight: Number(item.weight ?? item.can_nang ?? 0),
-      declared_value: Number(
-        item.declared_value ?? item.gia_tri_khai_bao ?? 0,
-      ),
+      declared_value: Number(item.declared_value ?? item.gia_tri_khai_bao ?? 0),
       length: Number(item.length ?? item.chieu_dai ?? 0),
       width: Number(item.width ?? item.chieu_rong ?? 0),
       height: Number(item.height ?? item.chieu_cao ?? 0),
@@ -208,9 +218,17 @@
       nextOrder.service_type,
       nextOrder.service_label || nextOrder.service_name,
     );
-    nextOrder.shipping_fee = Number(nextOrder.shipping_fee || nextOrder.total_fee || 0);
-    nextOrder.cod_amount = Number(nextOrder.cod_amount || nextOrder.cod_value || 0);
+    nextOrder.shipping_fee = Number(
+      nextOrder.shipping_fee || nextOrder.total_fee || 0,
+    );
+    nextOrder.cod_amount = Number(
+      nextOrder.cod_amount || nextOrder.cod_value || 0,
+    );
     nextOrder.created_at = nextOrder.created_at || new Date().toISOString();
+    nextOrder.payment_status_label = getPaymentStatusLabel(
+      nextOrder.payment_status_label || nextOrder.trang_thai_thanh_toan,
+      nextOrder.status === "completed" ? "Đã hoàn tất" : "Chưa hoàn tất",
+    );
     nextOrder.fee_breakdown = normalizeMockBreakdown(
       nextOrder.fee_breakdown || nextOrder.pricing_breakdown,
       nextOrder.shipping_fee,
@@ -218,12 +236,14 @@
     nextDetail.order = nextOrder;
     nextDetail.items = normalizeMockItems(nextDetail.items || []);
     nextDetail.logs = Array.isArray(nextDetail.logs) ? nextDetail.logs : [];
-    nextDetail.provider = nextDetail.provider && typeof nextDetail.provider === "object"
-      ? nextDetail.provider
-      : {};
-    nextDetail.customer = nextDetail.customer && typeof nextDetail.customer === "object"
-      ? nextDetail.customer
-      : {};
+    nextDetail.provider =
+      nextDetail.provider && typeof nextDetail.provider === "object"
+        ? nextDetail.provider
+        : {};
+    nextDetail.customer =
+      nextDetail.customer && typeof nextDetail.customer === "object"
+        ? nextDetail.customer
+        : {};
     return nextDetail;
   }
 
@@ -246,7 +266,9 @@
   }
 
   async function getAllOrderDetails() {
-    const localDetails = (readJson(storageKeys.orders, []) || []).map(normalizeLocalOrderDetail);
+    const localDetails = (readJson(storageKeys.orders, []) || []).map(
+      normalizeLocalOrderDetail,
+    );
     return localDetails.sort((left, right) => {
       const leftTime = new Date(left?.order?.created_at || 0).getTime();
       const rightTime = new Date(right?.order?.created_at || 0).getTime();
@@ -256,10 +278,18 @@
 
   function persistOrderDetail(detail) {
     const nextDetail = normalizeLocalOrderDetail(detail);
-    const current = (readJson(storageKeys.orders, []) || []).map(normalizeLocalOrderDetail);
-    const nextId = String(nextDetail?.order?.id || nextDetail?.order?.order_code || "").trim().toUpperCase();
+    const current = (readJson(storageKeys.orders, []) || []).map(
+      normalizeLocalOrderDetail,
+    );
+    const nextId = String(
+      nextDetail?.order?.id || nextDetail?.order?.order_code || "",
+    )
+      .trim()
+      .toUpperCase();
     const filtered = current.filter((item) => {
-      const itemId = String(item?.order?.id || item?.order?.order_code || "").trim().toUpperCase();
+      const itemId = String(item?.order?.id || item?.order?.order_code || "")
+        .trim()
+        .toUpperCase();
       return itemId !== nextId;
     });
     filtered.unshift(nextDetail);
@@ -281,8 +311,13 @@
   function saveAddressesForUser(userId, addresses) {
     const allAddresses = readJson(storageKeys.addresses, []);
     const nextAddresses = Array.isArray(allAddresses) ? allAddresses : [];
-    const preserved = nextAddresses.filter((item) => String(item.user_id || "") !== String(userId || ""));
-    writeJson(storageKeys.addresses, [...preserved, ...(Array.isArray(addresses) ? addresses : [])]);
+    const preserved = nextAddresses.filter(
+      (item) => String(item.user_id || "") !== String(userId || ""),
+    );
+    writeJson(storageKeys.addresses, [
+      ...preserved,
+      ...(Array.isArray(addresses) ? addresses : []),
+    ]);
   }
 
   function updateAuthStorage(mutator) {
@@ -290,30 +325,40 @@
     const authKeys = localAuth.storageKeys || {};
     const usersKey = authKeys.users;
     const sessionKey = authKeys.session;
-    const users = Array.isArray(readJson(usersKey, [])) ? readJson(usersKey, []) : [];
+    const users = Array.isArray(readJson(usersKey, []))
+      ? readJson(usersKey, [])
+      : [];
     const session = getCurrentSessionUser();
     if (!usersKey || !sessionKey || !session) return null;
 
-    const index = users.findIndex((item) => String(item.id || "") === String(session.id || ""));
+    const index = users.findIndex(
+      (item) => String(item.id || "") === String(session.id || ""),
+    );
     if (index === -1) return null;
 
-    const nextUser = mutator && typeof mutator === "function" ? mutator({ ...users[index] }) : users[index];
+    const nextUser =
+      mutator && typeof mutator === "function"
+        ? mutator({ ...users[index] })
+        : users[index];
     if (!nextUser) return null;
     users[index] = nextUser;
     writeJson(usersKey, users);
-    window.localStorage.setItem(sessionKey, JSON.stringify({
-      id: nextUser.id,
-      role: nextUser.role,
-      fullname: nextUser.fullname,
-      email: nextUser.email,
-      phone: nextUser.phone,
-      username: nextUser.username,
-      is_approved: nextUser.is_approved,
-      is_locked: nextUser.is_locked,
-      company_name: nextUser.company_name || "",
-      tax_code: nextUser.tax_code || "",
-      company_address: nextUser.company_address || "",
-    }));
+    window.localStorage.setItem(
+      sessionKey,
+      JSON.stringify({
+        id: nextUser.id,
+        role: nextUser.role,
+        fullname: nextUser.fullname,
+        email: nextUser.email,
+        phone: nextUser.phone,
+        username: nextUser.username,
+        is_approved: nextUser.is_approved,
+        is_locked: nextUser.is_locked,
+        company_name: nextUser.company_name || "",
+        tax_code: nextUser.tax_code || "",
+        company_address: nextUser.company_address || "",
+      }),
+    );
     return nextUser;
   }
 
@@ -384,9 +429,11 @@
         cleanup();
       });
 
-      dialog.querySelector("[data-dialog-close]")?.addEventListener("click", () => {
-        dialog.close("cancel");
-      });
+      dialog
+        .querySelector("[data-dialog-close]")
+        ?.addEventListener("click", () => {
+          dialog.close("cancel");
+        });
 
       document.body.appendChild(dialog);
       dialog.showModal();
@@ -414,7 +461,9 @@
     }
 
     if (action === "dashboard") {
-      const recentStatus = String(options?.params?.recent_status || "all").trim().toLowerCase();
+      const recentStatus = String(options?.params?.recent_status || "all")
+        .trim()
+        .toLowerCase();
       const filteredRecent =
         recentStatus && recentStatus !== "all"
           ? summaries.filter((item) => item.status === recentStatus)
@@ -423,8 +472,10 @@
         total: summaries.length,
         pending: summaries.filter((item) => item.status === "pending").length,
         shipping: summaries.filter((item) => item.status === "shipping").length,
-        completed: summaries.filter((item) => item.status === "completed").length,
-        cancelled: summaries.filter((item) => item.status === "cancelled").length,
+        completed: summaries.filter((item) => item.status === "completed")
+          .length,
+        cancelled: summaries.filter((item) => item.status === "cancelled")
+          .length,
         unpaid: 0,
       };
       return {
@@ -436,16 +487,22 @@
 
     if (action === "orders") {
       const params = options?.params || {};
-      const search = String(params.search || "").trim().toLowerCase();
-      const status = String(params.status || "").trim().toLowerCase();
+      const search = String(params.search || "")
+        .trim()
+        .toLowerCase();
+      const status = String(params.status || "")
+        .trim()
+        .toLowerCase();
       const dateFrom = String(params.date_from || "").trim();
       const dateTo = String(params.date_to || "").trim();
       const page = Math.max(Number(params.page || 1), 1);
       const pageSize = 6;
       const filtered = summaries.filter((item) => {
         if (status && item.status !== status) return false;
-        if (dateFrom && String(item.created_at || "").slice(0, 10) < dateFrom) return false;
-        if (dateTo && String(item.created_at || "").slice(0, 10) > dateTo) return false;
+        if (dateFrom && String(item.created_at || "").slice(0, 10) < dateFrom)
+          return false;
+        if (dateTo && String(item.created_at || "").slice(0, 10) > dateTo)
+          return false;
         if (!search) return true;
         const haystack = [
           item.order_code,
@@ -478,10 +535,16 @@
     }
 
     if (action === "order-detail") {
-      const orderId = String(options?.params?.id || "").trim().toUpperCase();
+      const orderId = String(options?.params?.id || "")
+        .trim()
+        .toUpperCase();
       const detail =
         allDetails.find((item) => {
-          const itemId = String(item?.order?.id || item?.order?.order_code || "").trim().toUpperCase();
+          const itemId = String(
+            item?.order?.id || item?.order?.order_code || "",
+          )
+            .trim()
+            .toUpperCase();
           return itemId === orderId;
         }) || null;
       if (!detail) {
@@ -495,11 +558,17 @@
 
     if (action === "cancel-order") {
       const formData = options.body;
-      const orderId = String(formData?.get("order_id") || "").trim().toUpperCase();
+      const orderId = String(formData?.get("order_id") || "")
+        .trim()
+        .toUpperCase();
       const reason = String(formData?.get("reason") || "").trim();
       const currentDetail =
         allDetails.find((item) => {
-          const itemId = String(item?.order?.id || item?.order?.order_code || "").trim().toUpperCase();
+          const itemId = String(
+            item?.order?.id || item?.order?.order_code || "",
+          )
+            .trim()
+            .toUpperCase();
           return itemId === orderId;
         }) || null;
       if (!currentDetail) {
@@ -510,7 +579,9 @@
       nextDetail.order.status_label = "Đã hủy";
       nextDetail.logs = [
         {
-          old_status_label: currentDetail.order.status_label || getStatusLabel(currentDetail.order.status),
+          old_status_label:
+            currentDetail.order.status_label ||
+            getStatusLabel(currentDetail.order.status),
           new_status_label: "Đã hủy",
           created_at: new Date().toISOString(),
           note: reason || "Khách hàng chủ động hủy đơn.",
@@ -523,12 +594,18 @@
 
     if (action === "submit-feedback") {
       const formData = options.body;
-      const orderId = String(formData?.get("order_id") || "").trim().toUpperCase();
+      const orderId = String(formData?.get("order_id") || "")
+        .trim()
+        .toUpperCase();
       const rating = Number(formData?.get("rating") || 0);
       const feedback = String(formData?.get("feedback") || "").trim();
       const currentDetail =
         allDetails.find((item) => {
-          const itemId = String(item?.order?.id || item?.order?.order_code || "").trim().toUpperCase();
+          const itemId = String(
+            item?.order?.id || item?.order?.order_code || "",
+          )
+            .trim()
+            .toUpperCase();
           return itemId === orderId;
         }) || null;
       if (!currentDetail) {
@@ -537,7 +614,10 @@
       const mediaFiles = formData?.getAll("media_files[]") || [];
       const feedbackMedia = mediaFiles.map((file, index) => ({
         name: file?.name || `feedback-${index + 1}`,
-        extension: String(file?.name || "").split(".").pop() || "file",
+        extension:
+          String(file?.name || "")
+            .split(".")
+            .pop() || "file",
         url: "#",
       }));
       const nextDetail = normalizeLocalOrderDetail(currentDetail);
@@ -553,7 +633,8 @@
         total: summaries.length,
         pending: summaries.filter((item) => item.status === "pending").length,
         shipping: summaries.filter((item) => item.status === "shipping").length,
-        completed: summaries.filter((item) => item.status === "completed").length,
+        completed: summaries.filter((item) => item.status === "completed")
+          .length,
       };
       return {
         status: "success",
@@ -574,11 +655,21 @@
       const formData = options.body;
       const updatedUser = updateAuthStorage((currentUser) => ({
         ...currentUser,
-        fullname: String(formData?.get("ho_ten") || currentUser.fullname || "").trim(),
-        phone: String(formData?.get("so_dien_thoai") || currentUser.phone || "").trim(),
-        company_name: String(formData?.get("ten_cong_ty") || currentUser.company_name || "").trim(),
-        tax_code: String(formData?.get("ma_so_thue") || currentUser.tax_code || "").trim(),
-        company_address: String(formData?.get("dia_chi_cong_ty") || currentUser.company_address || "").trim(),
+        fullname: String(
+          formData?.get("ho_ten") || currentUser.fullname || "",
+        ).trim(),
+        phone: String(
+          formData?.get("so_dien_thoai") || currentUser.phone || "",
+        ).trim(),
+        company_name: String(
+          formData?.get("ten_cong_ty") || currentUser.company_name || "",
+        ).trim(),
+        tax_code: String(
+          formData?.get("ma_so_thue") || currentUser.tax_code || "",
+        ).trim(),
+        company_address: String(
+          formData?.get("dia_chi_cong_ty") || currentUser.company_address || "",
+        ).trim(),
       }));
       if (!updatedUser) {
         throw new Error("Không thể cập nhật hồ sơ trong chế độ cục bộ.");
@@ -620,7 +711,9 @@
         so_dien_thoai: String(formData?.get("so_dien_thoai") || "").trim(),
         dia_chi: String(formData?.get("dia_chi") || "").trim(),
       };
-      const filtered = currentAddresses.filter((item) => String(item.id || "") !== String(addressId || ""));
+      const filtered = currentAddresses.filter(
+        (item) => String(item.id || "") !== String(addressId || ""),
+      );
       filtered.unshift(nextAddress);
       saveAddressesForUser(session.id, filtered);
       return { status: "success" };
@@ -660,6 +753,31 @@
       shell: document.getElementById("customer-shell"),
       content: document.getElementById("customer-page-content"),
     };
+  }
+
+  function redirectNonCustomer(session, page) {
+    const role = String(session?.role || "")
+      .trim()
+      .toLowerCase();
+    if (!role || role === "customer") return false;
+
+    if (role === "shipper") {
+      const targetByPage = {
+        dashboard: "../nha-cung-cap/dashboard.html",
+        orders: "../nha-cung-cap/don-hang.html",
+        profile: "../nha-cung-cap/ho-so.html",
+      };
+      const target = targetByPage[page] || "../nha-cung-cap/dashboard.html";
+      window.location.replace(target);
+      return true;
+    }
+
+    if (localAuth && typeof localAuth.getDashboardPath === "function") {
+      window.location.replace(`../../${localAuth.getDashboardPath(role)}`);
+      return true;
+    }
+
+    return false;
   }
 
   function getFirstName(user) {
@@ -730,15 +848,6 @@
                 <a class="${activeClass("orders")}" href="${routes.orders}">Lịch sử đơn hàng</a>
                 <a class="${activeClass("profile")}" href="${routes.profile}">Hồ sơ cá nhân</a>
               </nav>
-            </section>
-            <section class="customer-side-card">
-              <h2>Thông tin tài khoản</h2>
-              <dl class="customer-side-meta">
-                <div><dt>Tài khoản</dt><dd>${escapeHtml(user.username || "--")}</dd></div>
-                <div><dt>Họ tên</dt><dd>${escapeHtml(user.fullname || "--")}</dd></div>
-                <div><dt>Số điện thoại</dt><dd>${escapeHtml(user.phone || "--")}</dd></div>
-                <div><dt>Email</dt><dd>${escapeHtml(user.email || "--")}</dd></div>
-              </dl>
             </section>
           </aside>
           <main class="customer-portal-main" id="customer-page-content"></main>
@@ -851,7 +960,8 @@
     for (let page = 1; page <= totalPages; page += 1) {
       buttons.push(createLink(page, String(page), currentPage === page));
     }
-    if (currentPage < totalPages) buttons.push(createLink(currentPage + 1, "Sau"));
+    if (currentPage < totalPages)
+      buttons.push(createLink(currentPage + 1, "Sau"));
 
     return `<div class="customer-pagination">${buttons.join("")}</div>`;
   }
@@ -893,9 +1003,7 @@
       { label: "Điều chỉnh theo xe", value: breakdown.vehicle_fee || 0 },
       { label: "Phí COD", value: breakdown.cod_fee || 0 },
       { label: "Phí bảo hiểm", value: breakdown.insurance_fee || 0 },
-    ].filter((item, index) =>
-      index < 5 ? true : Number(item.value || 0) > 0,
-    );
+    ].filter((item, index) => (index < 5 ? true : Number(item.value || 0) > 0));
 
     if (!rows.length) {
       rows.push({
@@ -1011,19 +1119,16 @@
   function hasProviderInfo(provider) {
     return Boolean(
       provider?.shipper_id ||
-        provider?.shipper_name ||
-        provider?.fullname ||
-        provider?.phone ||
-        provider?.shipper_phone,
+      provider?.shipper_name ||
+      provider?.fullname ||
+      provider?.phone ||
+      provider?.shipper_phone,
     );
   }
 
   function getProviderDisplayName(provider) {
     return (
-      provider?.shipper_name ||
-      provider?.fullname ||
-      provider?.username ||
-      "--"
+      provider?.shipper_name || provider?.fullname || provider?.username || "--"
     );
   }
 
@@ -1120,7 +1225,9 @@
 
     const { content } = getPageRoot();
     const stats = data.stats || {};
-    const recentOrders = Array.isArray(data.recent_orders) ? data.recent_orders : [];
+    const recentOrders = Array.isArray(data.recent_orders)
+      ? data.recent_orders
+      : [];
     const recentStatusLabels = {
       all: "Tất cả",
       pending: "Chờ xử lý",
@@ -1129,7 +1236,8 @@
       cancelled: "Đã hủy",
     };
     const totalOrders = Number(stats.total || 0);
-    const activeOrders = Number(stats.pending || 0) + Number(stats.shipping || 0);
+    const activeOrders =
+      Number(stats.pending || 0) + Number(stats.shipping || 0);
     const kpiCards = [
       {
         label: "Tổng đơn",
@@ -1139,12 +1247,16 @@
       {
         label: "Đang giao",
         value: formatNumber(stats.shipping || 0),
-        hint: Number(stats.shipping || 0) ? "Đơn đang luân chuyển" : "Không có đơn đang giao",
+        hint: Number(stats.shipping || 0)
+          ? "Đơn đang luân chuyển"
+          : "Không có đơn đang giao",
       },
       {
         label: "Chờ xử lý",
         value: formatNumber(stats.pending || 0),
-        hint: Number(stats.pending || 0) ? "Cần theo dõi sớm" : "Hiện không có đơn chờ",
+        hint: Number(stats.pending || 0)
+          ? "Cần theo dõi sớm"
+          : "Hiện không có đơn chờ",
       },
     ];
     const heroState = Number(stats.shipping || 0)
@@ -1250,7 +1362,10 @@
     };
     const activeFilters = [];
     if (filters.search) activeFilters.push(`Từ khóa: ${filters.search}`);
-    if (filters.status) activeFilters.push(`Trạng thái: ${statusLabels[filters.status] || filters.status}`);
+    if (filters.status)
+      activeFilters.push(
+        `Trạng thái: ${statusLabels[filters.status] || filters.status}`,
+      );
     if (filters.date_from) activeFilters.push(`Từ ngày: ${filters.date_from}`);
     if (filters.date_to) activeFilters.push(`Đến ngày: ${filters.date_to}`);
     const currentPage = Number(pagination.page || 1);
@@ -1303,7 +1418,10 @@
           ${
             activeFilters.length
               ? activeFilters
-                  .map((item) => `<span class="customer-chip customer-chip-muted">${escapeHtml(item)}</span>`)
+                  .map(
+                    (item) =>
+                      `<span class="customer-chip customer-chip-muted">${escapeHtml(item)}</span>`,
+                  )
                   .join("")
               : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn hàng của bạn.</span>'
           }
@@ -1391,8 +1509,11 @@
     const customer = data.customer || {};
     const items = Array.isArray(data.items) ? data.items : [];
     const logs = Array.isArray(data.logs) ? data.logs : [];
-    const providerDisplayName = hasProviderInfo(provider) ? getProviderDisplayName(provider) : "Chưa gán";
-    const canSubmitFeedback = String(order.status || "").toLowerCase() === "completed";
+    const providerDisplayName = hasProviderInfo(provider)
+      ? getProviderDisplayName(provider)
+      : "Chưa gán";
+    const canSubmitFeedback =
+      String(order.status || "").toLowerCase() === "completed";
     const feedbackSummary = order.rating
       ? `Đã đánh giá ${escapeHtml(order.rating)} sao${order.feedback ? ` · ${escapeHtml(order.feedback)}` : ""}`
       : "Chưa có phản hồi nào cho đơn này.";
@@ -1438,14 +1559,43 @@
               ${
                 hasProviderInfo(provider)
                   ? renderInfoList([
-                      { label: "Mã nhà cung cấp", value: provider.shipper_id || provider.provider_id || "--" },
-                      { label: "Người phụ trách", value: getProviderDisplayName(provider) },
+                      {
+                        label: "Mã nhà cung cấp",
+                        value:
+                          provider.shipper_id || provider.provider_id || "--",
+                      },
+                      {
+                        label: "Người phụ trách",
+                        value: getProviderDisplayName(provider),
+                      },
                       { label: "Tài khoản", value: provider.username || "--" },
-                      { label: "Số điện thoại", value: provider.shipper_phone || provider.phone || "--" },
+                      {
+                        label: "Số điện thoại",
+                        value: provider.shipper_phone || provider.phone || "--",
+                      },
                       { label: "Email", value: provider.email || "--" },
-                      { label: "Phương tiện", value: provider.shipper_vehicle || provider.vehicle_type || order.vehicle_type || "--" },
-                      { label: "Khu vực phụ trách", value: provider.area_label || provider.region || provider.hub_label || provider.company_name || "--" },
-                      { label: "Ghi chú từ shipper", value: order.shipper_note || "Chưa có ghi chú từ shipper." },
+                      {
+                        label: "Phương tiện",
+                        value:
+                          provider.shipper_vehicle ||
+                          provider.vehicle_type ||
+                          order.vehicle_type ||
+                          "--",
+                      },
+                      {
+                        label: "Khu vực phụ trách",
+                        value:
+                          provider.area_label ||
+                          provider.region ||
+                          provider.hub_label ||
+                          provider.company_name ||
+                          "--",
+                      },
+                      {
+                        label: "Ghi chú từ shipper",
+                        value:
+                          order.shipper_note || "Chưa có ghi chú từ shipper.",
+                      },
                     ])
                   : '<div class="customer-empty">Đơn hàng chưa được gán nhà cung cấp cụ thể.</div>'
               }
@@ -1525,18 +1675,39 @@
                 { label: "Email", value: customer.email || "--" },
                 { label: "Công ty", value: customer.company_name || "--" },
                 { label: "Mã số thuế", value: customer.tax_code || "--" },
-                { label: "Địa chỉ công ty", value: customer.company_address || "--" },
+                {
+                  label: "Địa chỉ công ty",
+                  value: customer.company_address || "--",
+                },
               ])}
             </article>
             <article class="customer-info-card">
               <h3>Thông tin hóa đơn / bổ sung</h3>
               ${renderInfoList([
-                { label: "Xuất hóa đơn", value: customer.is_corporate ? "Có" : "Không" },
-                { label: "Tên đơn vị", value: customer.invoice?.company_name || "--" },
-                { label: "Email nhận hóa đơn", value: customer.invoice?.company_email || "--" },
-                { label: "Mã số thuế", value: customer.invoice?.company_tax_code || "--" },
-                { label: "Địa chỉ", value: customer.invoice?.company_address || "--" },
-                { label: "Tài khoản ngân hàng", value: customer.invoice?.company_bank_info || "--" },
+                {
+                  label: "Xuất hóa đơn",
+                  value: customer.is_corporate ? "Có" : "Không",
+                },
+                {
+                  label: "Tên đơn vị",
+                  value: customer.invoice?.company_name || "--",
+                },
+                {
+                  label: "Email nhận hóa đơn",
+                  value: customer.invoice?.company_email || "--",
+                },
+                {
+                  label: "Mã số thuế",
+                  value: customer.invoice?.company_tax_code || "--",
+                },
+                {
+                  label: "Địa chỉ",
+                  value: customer.invoice?.company_address || "--",
+                },
+                {
+                  label: "Tài khoản ngân hàng",
+                  value: customer.invoice?.company_bank_info || "--",
+                },
               ])}
             </article>
           </div>
@@ -1564,7 +1735,9 @@
       const captureImage = document.getElementById("feedback-capture-image");
       const captureVideo = document.getElementById("feedback-capture-video");
       const uploadInput = document.getElementById("feedback-upload");
-      const selectedFilesHost = document.getElementById("customer-selected-files");
+      const selectedFilesHost = document.getElementById(
+        "customer-selected-files",
+      );
 
       function refreshSelectedFiles() {
         if (!selectedFilesHost) return;
@@ -1610,7 +1783,6 @@
     }
 
     bindCancelButtons(content);
-
   }
 
   async function initProfile() {
@@ -1618,63 +1790,22 @@
     const data = await apiRequest("profile");
     const { content } = getPageRoot();
     const profile = data.profile || {};
-    const stats = data.stats || {};
-    const savedAddresses = Array.isArray(data.saved_addresses)
-      ? data.saved_addresses
-      : [];
-    const savedAddressMap = new Map(
-      savedAddresses.map((item) => [String(item.id), item]),
-    );
-
-    const savedAddressCards = savedAddresses.length
-      ? savedAddresses
-          .map(
-            (item) => `
-              <article class="customer-address-card">
-                <div class="customer-address-card-head">
-                  <div>
-                    <strong>${escapeHtml(item.name || "Địa chỉ đã lưu")}</strong>
-                    <span>${escapeHtml(item.phone || "--")}</span>
-                  </div>
-                  <div class="customer-address-card-actions">
-                    <button type="button" class="customer-btn customer-btn-ghost customer-btn-sm" data-address-edit="${item.id}">Sửa</button>
-                    <button type="button" class="customer-btn customer-btn-danger customer-btn-sm" data-address-delete="${item.id}">Xóa</button>
-                  </div>
-                </div>
-                <p>${escapeHtml(item.address || "--")}</p>
-                <small>Lưu lúc ${formatDateTime(item.created_at)}</small>
-              </article>
-            `,
-          )
-          .join("")
-      : '<div class="customer-empty">Chưa có địa chỉ nào được lưu. Địa chỉ mới nhất sẽ được tự điền khi bạn đặt đơn.</div>';
 
     content.innerHTML = `
       <section class="customer-panel">
         <div class="customer-panel-head">
           <div>
             <p class="customer-section-kicker">Hồ sơ cá nhân</p>
-            <h2>Cập nhật thông tin ngay trên giao diện khách hàng</h2>
+            <h2>Cập nhật thông tin cá nhân</h2>
           </div>
           <a href="${routes.orders}" class="customer-btn customer-btn-ghost">Xem lịch sử đơn</a>
         </div>
-        <div class="customer-detail-summary">
-          <article><span>Tổng đơn</span><strong>${formatNumber(stats.total || 0)}</strong></article>
-          <article><span>Chờ xử lý</span><strong>${formatNumber(stats.pending || 0)}</strong></article>
-          <article><span>Đang giao</span><strong>${formatNumber(stats.shipping || 0)}</strong></article>
-          <article><span>Hoàn tất</span><strong>${formatNumber(stats.completed || 0)}</strong></article>
-        </div>
         <div class="customer-detail-grid">
           <article class="customer-info-card">
-            <h3>Chỉnh sửa thông tin</h3>
+            <h3>Thông tin liên hệ</h3>
             <form id="customer-profile-form" class="customer-form-stack">
-              <label><span>Tên đăng nhập</span><input value="${escapeHtml(profile.username || "")}" disabled /></label>
-              <label><span>Email</span><input value="${escapeHtml(profile.email || "")}" disabled /></label>
               <label><span>Họ và tên</span><input name="ho_ten" value="${escapeHtml(profile.ho_ten || profile.fullname || "")}" required /></label>
               <label><span>Số điện thoại</span><input name="so_dien_thoai" value="${escapeHtml(profile.so_dien_thoai || profile.phone || "")}" required /></label>
-              <label><span>Tên công ty</span><input name="ten_cong_ty" value="${escapeHtml(profile.ten_cong_ty || profile.company_name || "")}" /></label>
-              <label><span>Mã số thuế</span><input name="ma_so_thue" value="${escapeHtml(profile.ma_so_thue || profile.tax_code || "")}" /></label>
-              <label><span>Địa chỉ công ty</span><textarea name="dia_chi_cong_ty" rows="4">${escapeHtml(profile.dia_chi_cong_ty || profile.company_address || "")}</textarea></label>
               <button class="customer-btn customer-btn-primary" type="submit">Lưu thông tin</button>
             </form>
           </article>
@@ -1689,32 +1820,6 @@
             </form>
           </article>
         </div>
-        <article class="customer-info-card customer-detail-grid--stack">
-          <div class="customer-panel-head">
-            <div>
-              <p class="customer-section-kicker">Sổ địa chỉ</p>
-              <h3>Quản lý địa chỉ đã lưu</h3>
-              <p class="customer-panel-subtext">Địa chỉ mới nhất sẽ được ưu tiên gợi ý lại khi bạn tạo đơn giao hàng mới.</p>
-            </div>
-            <span class="customer-panel-note">${formatNumber(savedAddresses.length)} địa chỉ</span>
-          </div>
-          <div class="customer-address-layout">
-            <div class="customer-address-list">
-              ${savedAddressCards}
-            </div>
-            <form id="customer-address-form" class="customer-form-stack customer-address-form">
-              <input type="hidden" name="dia_chi_id" id="customer-address-id" value="" />
-              <h3 id="customer-address-form-title">Thêm địa chỉ mới</h3>
-              <label><span>Tên gợi nhớ</span><input name="ten_goi_nho" id="customer-address-name" placeholder="Ví dụ: Kho chính, Văn phòng..." required /></label>
-              <label><span>Số điện thoại</span><input name="so_dien_thoai" id="customer-address-phone" inputmode="numeric" placeholder="Nhập số điện thoại liên hệ" required /></label>
-              <label><span>Địa chỉ</span><textarea name="dia_chi" id="customer-address-value" rows="4" placeholder="Nhập địa chỉ lấy hàng thường dùng" required></textarea></label>
-              <div class="customer-inline-actions">
-                <button class="customer-btn customer-btn-primary" type="submit" id="customer-address-submit">Lưu địa chỉ</button>
-                <button class="customer-btn customer-btn-ghost" type="button" id="customer-address-reset">Tạo mới</button>
-              </div>
-            </form>
-          </div>
-        </article>
       </section>
     `;
 
@@ -1743,7 +1848,9 @@
         event.preventDefault();
         const formData = new FormData(passwordForm);
         const newPassword = String(formData.get("mat_khau_moi") || "");
-        const confirmPassword = String(formData.get("xac_nhan_mat_khau_moi") || "");
+        const confirmPassword = String(
+          formData.get("xac_nhan_mat_khau_moi") || "",
+        );
 
         if (newPassword !== confirmPassword) {
           showToast("Xác nhận mật khẩu mới không khớp.", "error");
@@ -1762,86 +1869,6 @@
         }
       });
     }
-
-    const addressForm = document.getElementById("customer-address-form");
-    const addressIdInput = document.getElementById("customer-address-id");
-    const addressNameInput = document.getElementById("customer-address-name");
-    const addressPhoneInput = document.getElementById("customer-address-phone");
-    const addressValueInput = document.getElementById("customer-address-value");
-    const addressFormTitle = document.getElementById("customer-address-form-title");
-    const addressSubmit = document.getElementById("customer-address-submit");
-    const addressReset = document.getElementById("customer-address-reset");
-
-    const resetAddressForm = () => {
-      if (addressForm) addressForm.reset();
-      if (addressIdInput) addressIdInput.value = "";
-      if (addressFormTitle) addressFormTitle.textContent = "Thêm địa chỉ mới";
-      if (addressSubmit) addressSubmit.textContent = "Lưu địa chỉ";
-    };
-
-    if (addressReset) {
-      addressReset.addEventListener("click", resetAddressForm);
-    }
-
-    if (addressForm) {
-      addressForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        try {
-          await apiRequest("save-address", {
-            method: "POST",
-            body: new FormData(addressForm),
-          });
-          showToast("Đã lưu địa chỉ thành công.", "success");
-          window.setTimeout(() => {
-            window.location.reload();
-          }, 600);
-        } catch (error) {
-          showToast(error.message, "error");
-        }
-      });
-    }
-
-    content.querySelectorAll("[data-address-edit]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const item = savedAddressMap.get(String(button.dataset.addressEdit || ""));
-        if (!item) return;
-        if (addressIdInput) addressIdInput.value = item.id;
-        if (addressNameInput) addressNameInput.value = item.ten_goi_nho || item.name || "";
-        if (addressPhoneInput) addressPhoneInput.value = item.so_dien_thoai || item.phone || "";
-        if (addressValueInput) addressValueInput.value = item.dia_chi || item.address || "";
-        if (addressFormTitle) addressFormTitle.textContent = "Cập nhật địa chỉ";
-        if (addressSubmit) addressSubmit.textContent = "Cập nhật địa chỉ";
-        addressForm?.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-    });
-
-    content.querySelectorAll("[data-address-delete]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const addressId = String(button.dataset.addressDelete || "");
-        const item = savedAddressMap.get(addressId);
-        if (!item) return;
-        const confirmed = window.confirm(
-          `Xóa địa chỉ "${item.name || "Địa chỉ đã lưu"}"?`,
-        );
-        if (!confirmed) return;
-
-        const formData = new FormData();
-        formData.append("dia_chi_id", addressId);
-
-        try {
-          await apiRequest("delete-address", {
-            method: "POST",
-            body: formData,
-          });
-          showToast("Đã xóa địa chỉ đã lưu.", "success");
-          window.setTimeout(() => {
-            window.location.reload();
-          }, 600);
-        } catch (error) {
-          showToast(error.message, "error");
-        }
-      });
-    });
   }
 
   async function init() {
@@ -1849,6 +1876,9 @@
     if (!page) return;
 
     const sessionData = await getSessionData();
+    if (redirectNonCustomer(sessionData.user, page)) {
+      return;
+    }
     syncPublicHeader(sessionData.user || {});
     renderShell(sessionData.user || {}, page);
 

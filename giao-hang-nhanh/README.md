@@ -83,16 +83,7 @@ Ghi chú:
 - Khi gửi đơn, hệ thống `insert` vào `giaohangnhanh_dat_lich`
 - Mã đơn khách nhìn thấy là `ma_don_hang_noi_bo`
 
-### 4. Test list KRUD
-
-- File liên quan:
-  - [test-krud-list.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\test-krud-list.html)
-- Đang test được 3 bảng:
-  - `giaohangnhanh_dat_lich`
-  - `giaohangnhanh_customers`
-  - `giaohangnhanh_shippers`
-
-### 4.1. Đăng nhập admin tạm thời
+### 4. Đăng nhập admin tạm thời
 
 - File liên quan:
   - [admin-giaohang/public/login.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\login.php)
@@ -154,11 +145,6 @@ Ghi chú:
 - Nghĩa là:
   - shipper `is_approved = 0` vẫn đăng nhập được
 - Đây là trạng thái tạm để test
-
-### 2. Hiển thị mật khẩu plaintext trong trang test
-
-- Không bật
-- [test-krud-list.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\test-krud-list.html) chỉ hiển thị `Mat khau (an)`
 
 ---
 
@@ -226,12 +212,6 @@ Ghi chú:
 - [admin-giaohang/public/login.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\login.php)
 - [admin-giaohang/public/orders_manage.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\orders_manage.php)
 - [admin-giaohang/public/admin_pricing.php](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\admin-giaohang\public\admin_pricing.php)
-
-### Test dữ liệu
-
-- [test-krud-list.html](e:\Thực tập Keri\Task\GlobalCare\giao-hang-nhanh\public\test-krud-list.html)
-
----
 
 ## Gợi ý thứ tự làm tiếp
 

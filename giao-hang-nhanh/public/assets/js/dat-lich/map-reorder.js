@@ -458,6 +458,7 @@ async function restorePendingBookingDraft() {
   );
   const preferredMode =
     dichVuNoiBo === "instant" ? "instant" : "scheduled";
+  setPackageChoiceValue(dichVuNoiBo);
   setDeliveryMode(preferredMode, { render: false });
 
   const pickupDateInput = document.getElementById("ngay_lay_hang");
@@ -483,14 +484,9 @@ async function restorePendingBookingDraft() {
       : "auto";
   }
 
-  if (preferredMode === "instant") {
-    applyImmediateScheduleDefaults();
-    syncScheduleModeUI();
-  }
-
   await applyStoredDraftMarkers(payload);
 
-  selectedService = dichVuNoiBo ? { serviceType: dichVuNoiBo } : null;
+  selectedService = null;
   if (dichVuNoiBo) {
     renderServiceCards();
   }
@@ -605,7 +601,8 @@ async function applyReorderPrefill(data) {
     const internalServiceType = getInternalServiceType(
       data.dich_vu || data.service_type,
     );
-    selectedService = { serviceType: internalServiceType };
+    setPackageChoiceValue(internalServiceType);
+    selectedService = null;
     setDeliveryMode(
       internalServiceType === "instant" ? "instant" : "scheduled",
       { render: false },

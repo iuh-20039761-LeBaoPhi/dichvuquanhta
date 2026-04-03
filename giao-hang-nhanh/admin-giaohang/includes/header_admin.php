@@ -3,37 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (!isset($conn)) {
-    require_once __DIR__ . '/../config/db.php';
-}
-
-if (isset($_SESSION['user_id']) && isset($conn)) {
-    $stmtLock = $conn->prepare("SELECT bi_khoa AS is_locked FROM nguoi_dung WHERE id = ? LIMIT 1");
-    if ($stmtLock) {
-        $stmtLock->bind_param("i", $_SESSION['user_id']);
-        $stmtLock->execute();
-        $lockedRow = $stmtLock->get_result()->fetch_assoc();
-        $stmtLock->close();
-
-        if ($lockedRow && (int) ($lockedRow['is_locked'] ?? 0) === 1) {
-            echo '<script>alert("Tài khoản của bạn đã bị khóa."); window.location.href="logout.php";</script>';
-            exit;
-        }
-    }
-}
-
 $currentPage = basename($_SERVER['PHP_SELF'] ?? '');
 $unreadCount = 0;
-if (isset($_SESSION['user_id']) && isset($conn)) {
-    $stmtCount = $conn->prepare("SELECT COUNT(*) AS total FROM thong_bao WHERE nguoi_dung_id = ? AND da_doc = 0");
-    if ($stmtCount) {
-        $stmtCount->bind_param("i", $_SESSION['user_id']);
-        $stmtCount->execute();
-        $countRow = $stmtCount->get_result()->fetch_assoc();
-        $unreadCount = (int) ($countRow['total'] ?? 0);
-        $stmtCount->close();
-    }
-}
 ?>
 <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

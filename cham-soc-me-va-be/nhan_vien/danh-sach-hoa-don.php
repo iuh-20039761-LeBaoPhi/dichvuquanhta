@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../session_user.php';
 require_once __DIR__ . '/get-hoadon.php';
 require_once __DIR__ . '/header-shared.php';
-
+require_once __DIR__ . '/xu-ly-phan-trang.php';
 $sessionUser = session_user_require_employee('../login.html', 'nhan_vien/danh-sach-hoa-don.php');
 
 $employeeId = (int)($sessionUser['id'] ?? 0);
@@ -173,6 +173,23 @@ if ($sortFilter === 'oldest') {
     usort($filteredRows, static fn(array $a, array $b): int => ((int)$b['id']) <=> ((int)$a['id']));
 }
 
+[
+    'items' => $paginatedRows,
+    'page' => $page,
+    'perPage' => $perPage,
+    'totalItems' => $totalFiltered,
+    'totalPages' => $totalPages,
+    'from' => $from,
+    'to' => $to,
+] = pagination_array($filteredRows, pagination_get_page($_GET, 'page', 1), 5);
+
+$buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targetPage, [
+    'q' => $q,
+    'status' => $statusFilter,
+    'service' => $serviceFilter,
+    'sort' => $sortFilter,
+], 'page', 'danh-sach-hoa-don.php');
+
 $summaryPending = count(array_filter($normalizedRows, static fn(array $i): bool => $i['statusKey'] === 'pending'));
 $summaryReceived = count(array_filter($normalizedRows, static fn(array $i): bool => $i['statusKey'] === 'received'));
 $summaryTotal = count($normalizedRows);
@@ -314,7 +331,7 @@ $summaryTotal = count($normalizedRows);
                     <h1 class="h4 fw-bold mb-1">Danh sách hóa đơn</h1>
                     <p class="summary-note mb-0">Theo dõi, lọc va xử lý công viêc.</p>
                 </div>
-                <div class="text-secondary small">Tổng hiển thị: <b><?= (int)count($filteredRows) ?></b> / <?= (int)$summaryTotal ?> hoa don</div>
+                <div class="text-secondary small">Tổng hiển thị: <b><?= (int)$totalFiltered ?></b> / <?= (int)$summaryTotal ?> hoa don</div>
             </div>
 
             <div class="row g-2 g-lg-3 mb-3">
@@ -416,12 +433,12 @@ $summaryTotal = count($normalizedRows);
                             <tr>
                                 <td colspan="7" class="empty-row py-4">Loi tai du lieu: <?= esc($loadError) ?></td>
                             </tr>
-                        <?php elseif (!$filteredRows): ?>
+                        <?php elseif (!$paginatedRows): ?>
                             <tr>
                                 <td colspan="7" class="empty-row py-4">Khong co hoa don phu hop bo loc.</td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($filteredRows as $item): ?>
+                            <?php foreach ($paginatedRows as $item): ?>
                                 <tr>
                                     <td><span class="badge text-bg-light border id-badge"><?= esc($item['id']) ?></span></td>
                                     <td>
@@ -453,6 +470,29 @@ $summaryTotal = count($normalizedRows);
                     </table>
                 </div>
             </div>
+
+            <?php if ($loadError === '' && $totalFiltered > 0): ?>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-3">
+                    <div class="summary-note">Hien thi <?= (int)$from ?> - <?= (int)$to ?> / <?= (int)$totalFiltered ?> hoa don</div>
+                    <?php if ($totalPages > 1): ?>
+                        <nav aria-label="Phan trang hoa don nhan vien">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="<?= esc($buildPageUrl(max(1, $page - 1))) ?>">Truoc</a>
+                                </li>
+                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                    <li class="page-item <?= $i === $page ? 'active' : '' ?>">
+                                        <a class="page-link" href="<?= esc($buildPageUrl($i)) ?>"><?= $i ?></a>
+                                    </li>
+                                <?php endfor; ?>
+                                <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="<?= esc($buildPageUrl(min($totalPages, $page + 1))) ?>">Sau</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
             <?php endif; ?>
         </div>
     </section>

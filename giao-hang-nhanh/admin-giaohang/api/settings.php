@@ -3,26 +3,29 @@ require_once __DIR__ . '/admin_api_helper.php';
 
 admin_api_require_admin();
 
-function fetch_settings_map($conn) {
-    $settings = [];
-    $result = $conn->query("SELECT id, khoa_cai_dat AS setting_key, gia_tri_cai_dat AS setting_value FROM cai_dat_he_thong ORDER BY id ASC");
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $settings[$row['setting_key']] = [
-                'id' => intval($row['id'] ?? 0),
-                'key' => $row['setting_key'] ?? '',
-                'value' => $row['setting_value'] ?? '',
-            ];
-        }
-    }
-    return $settings;
+$defaults = [
+    'bank_id' => 'MB',
+    'bank_name' => 'Ngân hàng Quân Đội',
+    'bank_account_no' => '0333666999',
+    'bank_account_name' => 'GIAO HANG NHANH',
+    'qr_template' => 'compact',
+    'company_name' => 'Giao Hàng Nhanh',
+    'company_hotline' => '1900 1234',
+    'company_email' => 'support@giaohangnhanh.local',
+    'company_address' => '123 Nguyễn Huệ, TP. HCM',
+    'google_sheets_webhook_url' => '',
+];
+
+function fetch_settings_map() {
+    global $defaults;
+    return array_merge($defaults, admin_local_store_read('admin-settings.json', []));
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     admin_api_json([
         'success' => true,
         'data' => [
-            'settings' => fetch_settings_map($conn),
+            'settings' => fetch_settings_map(),
         ],
     ]);
 }
@@ -37,34 +40,19 @@ if (!is_array($settingsData) || empty($settingsData)) {
     admin_api_json(['success' => false, 'message' => 'Không có dữ liệu cài đặt hợp lệ.'], 400);
 }
 
-foreach ($settingsData as $key => $value) {
-    $settingKey = trim((string) $key);
-    if ($settingKey === '') {
-        continue;
-    }
-    $settingValue = is_scalar($value) ? trim((string) $value) : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+$settings = fetch_settings_map();
+foreach ($defaults as $key => $defaultValue) {
+    $settings[$key] = trim((string) ($settingsData[$key] ?? $settings[$key] ?? $defaultValue));
+}
 
-    $checkStmt = $conn->prepare("SELECT id FROM cai_dat_he_thong WHERE khoa_cai_dat = ? LIMIT 1");
-    $checkStmt->bind_param('s', $settingKey);
-    $checkStmt->execute();
-    $existing = $checkStmt->get_result()->fetch_assoc();
-    $checkStmt->close();
-
-    if ($existing) {
-        $stmt = $conn->prepare("UPDATE cai_dat_he_thong SET gia_tri_cai_dat = ? WHERE khoa_cai_dat = ?");
-        $stmt->bind_param('ss', $settingValue, $settingKey);
-    } else {
-        $stmt = $conn->prepare("INSERT INTO cai_dat_he_thong (khoa_cai_dat, gia_tri_cai_dat) VALUES (?, ?)");
-        $stmt->bind_param('ss', $settingKey, $settingValue);
-    }
-    $stmt->execute();
-    $stmt->close();
+if (!admin_local_store_write('admin-settings.json', $settings)) {
+    admin_api_json(['success' => false, 'message' => 'Không thể lưu cài đặt cục bộ.'], 500);
 }
 
 admin_api_json([
     'success' => true,
     'message' => 'Cập nhật cài đặt thành công.',
     'data' => [
-        'settings' => fetch_settings_map($conn),
+        'settings' => $settings,
     ],
 ]);

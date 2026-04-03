@@ -9,6 +9,11 @@ $statusMap = [
     2 => ['text' => 'Đã giải quyết', 'class' => 'completed', 'icon' => 'fa-check-double'],
 ];
 
+$messages = admin_local_store_read('contacts.json', []);
+if (!is_array($messages)) {
+    $messages = [];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $payload = admin_api_read_input();
     $id = intval($payload['id'] ?? 0);
@@ -19,21 +24,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         admin_api_json(['success' => false, 'message' => 'Dữ liệu cập nhật không hợp lệ.'], 400);
     }
 
-    $stmt = $conn->prepare("UPDATE lien_he SET trang_thai = ?, ghi_chu_quan_tri = ? WHERE id = ?");
-    $stmt->bind_param('isi', $status, $note, $id);
-    $stmt->execute();
-    $updated = $stmt->affected_rows;
-    $stmt->close();
-
-    if ($updated < 1) {
-            $checkStmt = $conn->prepare("SELECT id FROM lien_he WHERE id = ? LIMIT 1");
-        $checkStmt->bind_param('i', $id);
-        $checkStmt->execute();
-        $exists = $checkStmt->get_result()->fetch_assoc();
-        $checkStmt->close();
-        if (!$exists) {
-            admin_api_json(['success' => false, 'message' => 'Không tìm thấy liên hệ để cập nhật.'], 404);
+    $updated = false;
+    foreach ($messages as &$item) {
+        if (intval($item['id'] ?? 0) !== $id) {
+            continue;
         }
+        $item['status'] = $status;
+        $item['note_admin'] = $note;
+        $item['updated_at'] = date('c');
+        $updated = true;
+        break;
+    }
+    unset($item);
+
+    if (!$updated) {
+        admin_api_json(['success' => false, 'message' => 'Không tìm thấy liên hệ để cập nhật.'], 404);
+    }
+
+    if (!admin_local_store_write('contacts.json', $messages)) {
+        admin_api_json(['success' => false, 'message' => 'Không thể lưu dữ liệu liên hệ cục bộ.'], 500);
     }
 
     admin_api_json([
@@ -47,48 +56,27 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 $filterStatus = (string) ($_GET['status'] ?? 'all');
-[$page, $limit, $offset] = admin_api_get_pagination(20, 100);
-
-$whereSql = '';
-$params = [];
-$types = '';
 if ($filterStatus !== 'all') {
-    $statusValue = intval($filterStatus);
-    if (!array_key_exists($statusValue, $statusMap)) {
-        admin_api_json(['success' => false, 'message' => 'Bộ lọc trạng thái không hợp lệ.'], 400);
-    }
-    $whereSql = ' WHERE trang_thai = ?';
-    $params[] = $statusValue;
-    $types .= 'i';
+    $messages = array_values(array_filter($messages, function ($item) use ($filterStatus) {
+        return (string) intval($item['status'] ?? 0) === (string) $filterStatus;
+    }));
 }
 
-$countSql = "SELECT COUNT(*) AS total FROM lien_he" . $whereSql;
-$stmtCount = $conn->prepare($countSql);
-if ($types !== '') {
-    $stmtCount->bind_param($types, ...$params);
+usort($messages, function ($a, $b) {
+    return strcmp((string) ($b['created_at'] ?? ''), (string) ($a['created_at'] ?? ''));
+});
+
+$summary = ['all' => count($messages), '0' => 0, '1' => 0, '2' => 0];
+foreach ($messages as $row) {
+    $summary[(string) intval($row['status'] ?? 0)] += 1;
 }
-$stmtCount->execute();
-$countRow = $stmtCount->get_result()->fetch_assoc();
-$totalRecords = intval($countRow['total'] ?? 0);
-$stmtCount->close();
 
-$sql = "SELECT id, ten AS name, email, chu_de AS subject, noi_dung AS message, ghi_chu_quan_tri AS note_admin, trang_thai AS status, tao_luc AS created_at
-        FROM lien_he" . $whereSql . " ORDER BY tao_luc DESC LIMIT ? OFFSET ?";
-$paramsWithPage = $params;
-$paramsWithPage[] = $limit;
-$paramsWithPage[] = $offset;
-$typesWithPage = $types . 'ii';
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param($typesWithPage, ...$paramsWithPage);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$messages = [];
-while ($row = $result->fetch_assoc()) {
+[$page, $limit, $offset] = admin_api_get_pagination(20, 100);
+$pagedMessages = array_slice($messages, $offset, $limit);
+$normalized = array_map(function ($row) use ($statusMap) {
     $statusValue = intval($row['status'] ?? 0);
     $statusMeta = $statusMap[$statusValue] ?? $statusMap[0];
-    $messages[] = [
+    return [
         'id' => intval($row['id'] ?? 0),
         'name' => $row['name'] ?? '',
         'email' => $row['email'] ?? '',
@@ -101,34 +89,19 @@ while ($row = $result->fetch_assoc()) {
         'status_icon' => $statusMeta['icon'],
         'created_at' => admin_api_value_or_null($row['created_at'] ?? null),
     ];
-}
-$stmt->close();
-
-$summary = ['all' => 0, '0' => 0, '1' => 0, '2' => 0];
-$allCountResult = $conn->query("SELECT COUNT(*) AS total FROM lien_he");
-if ($allCountResult && $allCountRow = $allCountResult->fetch_assoc()) {
-    $summary['all'] = intval($allCountRow['total'] ?? 0);
-}
-$summaryResult = $conn->query("SELECT trang_thai AS status, COUNT(*) AS total FROM lien_he GROUP BY trang_thai");
-if ($summaryResult) {
-    while ($row = $summaryResult->fetch_assoc()) {
-        $summary[(string) intval($row['status'] ?? 0)] = intval($row['total'] ?? 0);
-    }
-}
+}, $pagedMessages);
 
 admin_api_json([
     'success' => true,
     'data' => [
-        'filters' => [
-            'status' => $filterStatus,
-        ],
+        'filters' => ['status' => $filterStatus],
         'summary' => $summary,
         'pagination' => [
             'page' => $page,
             'limit' => $limit,
-            'total_records' => $totalRecords,
-            'total_pages' => $limit > 0 ? intval(ceil($totalRecords / $limit)) : 0,
+            'total_records' => count($messages),
+            'total_pages' => $limit > 0 ? intval(ceil(count($messages) / $limit)) : 0,
         ],
-        'messages' => $messages,
+        'messages' => $normalized,
     ],
 ]);
