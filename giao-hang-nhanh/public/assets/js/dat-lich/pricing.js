@@ -417,16 +417,8 @@ function renderServiceCards(options = {}) {
   btn5.disabled = !selectedService;
   cap_nhat_hien_thi_tam_tinh_buoc_1(selectedService);
   if (selectedService) {
-    const pDate = document.getElementById("ngay_lay_hang").value;
-    const pSlotObj = getSelectedPickupSlot();
-    selectedService.estimate = calculateDynamicETA(
-      pDate,
-      pSlotObj ? pSlotObj.label : "",
-      selectedService.serviceType
-    );
-
     document.getElementById("hien_thi_thoi_gian_giao_du_kien").textContent =
-      selectedService.estimate;
+      selectedService.estimate || "—";
     etaPanel.classList.remove("is-hidden");
   }
 
@@ -475,7 +467,8 @@ function renderServiceCards(options = {}) {
       syncUrgentConditionVisibility(svc.serviceType);
       btn5.disabled = false;
       // Cập nhật ETA ở bước 3
-      document.getElementById("hien_thi_thoi_gian_giao_du_kien").textContent = svc.estimate;
+      document.getElementById("hien_thi_thoi_gian_giao_du_kien").textContent =
+        svc.estimate || "—";
       etaPanel.classList.remove("is-hidden");
     });
     container.appendChild(card);

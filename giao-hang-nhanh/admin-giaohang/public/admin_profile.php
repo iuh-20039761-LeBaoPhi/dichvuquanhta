@@ -1,98 +1,79 @@
 <?php
 session_start();
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/local_store.php';
 
-// Kiểm tra quyền Admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     header("Location: login.php");
     exit;
 }
 
-$user_id = $_SESSION['user_id'];
+$username = strtolower(trim((string) ($_SESSION['username'] ?? 'admin01')));
+$profiles = admin_local_store_read('admin-profiles.json', []);
+$stored = is_array($profiles[$username] ?? null) ? $profiles[$username] : [];
+
+$user = [
+    'username' => (string) ($_SESSION['username'] ?? 'admin01'),
+    'fullname' => (string) ($stored['fullname'] ?? ($_SESSION['fullname'] ?? 'Quan tri vien Giao Hang Nhanh')),
+    'email' => (string) ($stored['email'] ?? ($_SESSION['email'] ?? 'admin01@giaohangnhanh.local')),
+    'phone' => (string) ($stored['phone'] ?? ($_SESSION['phone'] ?? '0901234569')),
+    'role' => 'admin',
+];
+
 $msg = "";
 $error = "";
 
-// Xử lý cập nhật thông tin
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['update_info'])) {
         $fullname = trim((string) ($_POST['ho_ten'] ?? ($_POST['fullname'] ?? '')));
         $email = trim((string) ($_POST['email'] ?? ''));
         $phone = trim((string) ($_POST['so_dien_thoai'] ?? ($_POST['phone'] ?? '')));
 
-        if (empty($fullname) || empty($email)) {
+        if ($fullname === '' || $email === '') {
             $error = "Họ tên và Email không được để trống.";
         } else {
-            $stmt = $conn->prepare("UPDATE nguoi_dung SET ho_ten = ?, email = ?, so_dien_thoai = ? WHERE id = ?");
-            if ($stmt) {
-                $stmt->bind_param("sssi", $fullname, $email, $phone, $user_id);
-                if ($stmt->execute()) {
-                    $msg = "Cập nhật thông tin thành công!";
-                } else {
-                    $error = "Lỗi: " . $conn->error;
-                }
-                $stmt->close();
+            $profiles[$username] = array_merge($stored, [
+                'fullname' => $fullname,
+                'email' => $email,
+                'phone' => $phone,
+            ]);
+            if (admin_local_store_write('admin-profiles.json', $profiles)) {
+                $_SESSION['fullname'] = $fullname;
+                $_SESSION['email'] = $email;
+                $_SESSION['phone'] = $phone;
+                $user['fullname'] = $fullname;
+                $user['email'] = $email;
+                $user['phone'] = $phone;
+                $msg = "Cập nhật thông tin thành công!";
             } else {
-                $error = "Không thể chuẩn bị truy vấn cập nhật hồ sơ.";
+                $error = "Không thể lưu thông tin hồ sơ admin.";
             }
         }
     } elseif (isset($_POST['change_password'])) {
-        $current_pass = (string) ($_POST['mat_khau_hien_tai'] ?? ($_POST['current_password'] ?? ''));
-        $new_pass = (string) ($_POST['mat_khau_moi'] ?? ($_POST['new_password'] ?? ''));
-        $confirm_pass = (string) ($_POST['xac_nhan_mat_khau_moi'] ?? ($_POST['confirm_password'] ?? ''));
+        $currentPass = (string) ($_POST['mat_khau_hien_tai'] ?? '');
+        $newPass = (string) ($_POST['mat_khau_moi'] ?? '');
+        $confirmPass = (string) ($_POST['xac_nhan_mat_khau_moi'] ?? '');
+        $activePassword = (string) ($stored['password'] ?? 'Aq123@cc');
 
-        if (empty($current_pass) || empty($new_pass) || empty($confirm_pass)) {
+        if ($currentPass === '' || $newPass === '' || $confirmPass === '') {
             $error = "Vui lòng nhập đầy đủ thông tin mật khẩu.";
-        } elseif ($new_pass !== $confirm_pass) {
+        } elseif ($newPass !== $confirmPass) {
             $error = "Mật khẩu mới không khớp.";
+        } elseif ($currentPass !== $activePassword) {
+            $error = "Mật khẩu hiện tại không đúng.";
         } else {
-            $stmt = $conn->prepare("SELECT mat_khau AS password FROM nguoi_dung WHERE id = ?");
-            if ($stmt) {
-                $stmt->bind_param("i", $user_id);
-                $stmt->execute();
-                $res = $stmt->get_result();
-                $user_pass = $res->fetch_assoc();
-                $stmt->close();
-
-                if ($user_pass && password_verify($current_pass, (string) $user_pass['password'])) {
-                    $hashed_new = password_hash($new_pass, PASSWORD_DEFAULT);
-                    $stmt = $conn->prepare("UPDATE nguoi_dung SET mat_khau = ? WHERE id = ?");
-                    $stmt->bind_param("si", $hashed_new, $user_id);
-                    if ($stmt->execute()) {
-                        $msg = "Đổi mật khẩu thành công!";
-                    } else {
-                        $error = "Lỗi hệ thống.";
-                    }
-                    $stmt->close();
-                } else {
-                    $error = "Mật khẩu hiện tại không đúng.";
-                }
+            $profiles[$username] = array_merge($stored, [
+                'fullname' => $user['fullname'],
+                'email' => $user['email'],
+                'phone' => $user['phone'],
+                'password' => $newPass,
+            ]);
+            if (admin_local_store_write('admin-profiles.json', $profiles)) {
+                $msg = "Đổi mật khẩu thành công! Lần đăng nhập sau sẽ dùng mật khẩu mới.";
             } else {
-                $error = "Không thể chuẩn bị truy vấn đổi mật khẩu.";
+                $error = "Không thể lưu mật khẩu mới.";
             }
         }
     }
-}
-
-// Lấy thông tin user hiện tại để hiển thị lên form
-$user = null;
-try {
-    $stmt = $conn->prepare("SELECT id, ten_dang_nhap AS username, ho_ten AS fullname, email, so_dien_thoai AS phone, vai_tro AS role FROM nguoi_dung WHERE id = ?");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $user = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-} catch (Throwable $exception) {
-    $error = $exception->getMessage();
-}
-
-if (!$user) {
-    $user = [
-        'username' => '',
-        'fullname' => '',
-        'email' => '',
-        'phone' => '',
-        'role' => 'admin',
-    ];
 }
 ?>
 <!DOCTYPE html>
@@ -116,18 +97,17 @@ if (!$user) {
 
         <?php if ($msg): ?>
             <div class="status-badge status-active" style="width: 100%; margin-bottom: 25px; padding: 15px; border-radius: 12px;">
-                <i class="fa-solid fa-circle-check"></i> <?php echo $msg; ?>
+                <i class="fa-solid fa-circle-check"></i> <?php echo htmlspecialchars($msg, ENT_QUOTES, 'UTF-8'); ?>
             </div>
         <?php endif; ?>
         
         <?php if ($error): ?>
             <div class="status-badge status-cancelled" style="width: 100%; margin-bottom: 25px; padding: 15px; border-radius: 12px;">
-                <i class="fa-solid fa-triangle-exclamation"></i> <?php echo $error; ?>
+                <i class="fa-solid fa-triangle-exclamation"></i> <?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
             </div>
         <?php endif; ?>
 
         <div class="dashboard-layout">
-            <!-- Cột trái: Thông tin tài khoản -->
             <div class="admin-card">
                 <div class="admin-card-header">
                     <h3><i class="fa-solid fa-id-card"></i> Thông tin cơ bản</h3>
@@ -137,25 +117,25 @@ if (!$user) {
                     <div class="grid-responsive">
                         <div class="form-group">
                             <label>Tên đăng nhập (Username)</label>
-                            <input type="text" value="<?php echo htmlspecialchars($user['username']); ?>" class="admin-input" disabled>
+                            <input type="text" value="<?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?>" class="admin-input" disabled>
                         </div>
                         <div class="form-group">
                             <label>Họ và tên</label>
-                            <input type="text" name="ho_ten" value="<?php echo htmlspecialchars((string) ($user['fullname'] ?? '')); ?>" class="admin-input" required>
+                            <input type="text" name="ho_ten" value="<?php echo htmlspecialchars((string) ($user['fullname'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" class="admin-input" required>
                         </div>
                         <div class="form-group">
                             <label>Email liên lạc</label>
-                            <input type="email" name="email" value="<?php echo htmlspecialchars((string) ($user['email'] ?? '')); ?>" class="admin-input" required>
+                            <input type="email" name="email" value="<?php echo htmlspecialchars((string) ($user['email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" class="admin-input" required>
                         </div>
                         <div class="form-group">
                             <label>Số điện thoại</label>
-                            <input type="text" name="so_dien_thoai" value="<?php echo htmlspecialchars((string) ($user['phone'] ?? '')); ?>" class="admin-input">
+                            <input type="text" name="so_dien_thoai" value="<?php echo htmlspecialchars((string) ($user['phone'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" class="admin-input">
                         </div>
                         <div class="form-group">
                             <label>Vai trò hệ thống</label>
                             <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(10, 42, 102, 0.05); border-radius: 10px;">
                                 <span class="role-badge role-admin">Quản trị viên (Admin)</span>
-                                <small style="color: #64748b;">(Không thể thay đổi)</small>
+                                <small style="color: #64748b;">(Tài khoản quản trị tạm thời)</small>
                             </div>
                         </div>
                     </div>
@@ -168,7 +148,6 @@ if (!$user) {
                 </form>
             </div>
 
-            <!-- Cột phải: Bảo mật -->
             <aside>
                 <div class="admin-card" style="border-top: 4px solid #d9534f;">
                     <div class="admin-card-header">
@@ -203,7 +182,7 @@ if (!$user) {
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div style="font-size: 30px; color: #ff7a00;"><i class="fa-solid fa-circle-info"></i></div>
                         <div style="font-size: 13px; color: #64748b; line-height: 1.5;">
-                            Việc thay đổi mật khẩu thường xuyên giúp bảo vệ tài khoản quản trị của bạn an toàn hơn.
+                            Hồ sơ admin tạm thời đang lưu ở JSON nội bộ, không còn phụ thuộc MySQL cũ.
                         </div>
                     </div>
                 </div>
@@ -215,6 +194,3 @@ if (!$user) {
 </body>
 
 </html>
-
-
-

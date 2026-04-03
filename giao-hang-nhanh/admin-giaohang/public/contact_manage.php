@@ -1,42 +1,10 @@
 <?php
 session_start();
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/local_store.php';
 
-// Kiểm tra quyền Admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     header("Location: login.php");
     exit;
-}
-
-$msg = "";
-
-// Xử lý cập nhật trạng thái
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
-    $id = intval($_POST['id']);
-    $status = intval($_POST['status']);
-    $note = trim($_POST['note_admin']);
-
-    $stmt = $conn->prepare("UPDATE lien_he SET trang_thai = ?, ghi_chu_quan_tri = ? WHERE id = ?");
-    $stmt->bind_param("isi", $status, $note, $id);
-    if ($stmt->execute()) {
-        $msg = "Đã cập nhật trạng thái tin nhắn thành công!";
-    }
-}
-
-// Lấy danh sách tin nhắn
-$filter_status = $_GET['status'] ?? 'all';
-$sql = "SELECT id, ten AS name, email, chu_de AS subject, noi_dung AS message, trang_thai AS status, ghi_chu_quan_tri AS note_admin, tao_luc AS created_at FROM lien_he";
-if ($filter_status !== 'all') {
-    $sql .= " WHERE trang_thai = " . intval($filter_status);
-}
-$sql .= " ORDER BY tao_luc DESC";
-
-$messages = [];
-$res = $conn->query($sql);
-if ($res) {
-    while ($row = $res->fetch_assoc()) {
-        $messages[] = $row;
-    }
 }
 
 $status_map = [
@@ -44,6 +12,45 @@ $status_map = [
     1 => ['text' => 'Đang xử lý', 'class' => 'shipping', 'icon' => 'fa-spinner'],
     2 => ['text' => 'Đã giải quyết', 'class' => 'completed', 'icon' => 'fa-check-double'],
 ];
+
+$messages = admin_local_store_read('contacts.json', []);
+if (!is_array($messages)) {
+    $messages = [];
+}
+
+$msg = "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
+    $id = intval($_POST['id'] ?? 0);
+    $status = intval($_POST['status'] ?? 0);
+    $note = trim((string) ($_POST['note_admin'] ?? ''));
+
+    foreach ($messages as &$item) {
+        if (intval($item['id'] ?? 0) !== $id) {
+            continue;
+        }
+        $item['status'] = $status;
+        $item['note_admin'] = $note;
+        $item['updated_at'] = date('c');
+        $msg = "Đã cập nhật trạng thái tin nhắn thành công!";
+        break;
+    }
+    unset($item);
+
+    if ($msg !== '') {
+        admin_local_store_write('contacts.json', $messages);
+    }
+}
+
+$filter_status = $_GET['status'] ?? 'all';
+if ($filter_status !== 'all') {
+    $messages = array_values(array_filter($messages, function ($item) use ($filter_status) {
+        return (string) intval($item['status'] ?? 0) === (string) $filter_status;
+    }));
+}
+
+usort($messages, function ($a, $b) {
+    return strcmp((string) ($b['created_at'] ?? ''), (string) ($a['created_at'] ?? ''));
+});
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -54,46 +61,13 @@ $status_map = [
     <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .message-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            border-left: 4px solid #cbd5e1;
-            transition: all 0.3s ease;
-        }
-        .message-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
-        }
-        .message-card.status-0 { border-left-color: #3b82f6; } /* Mới */
-        .message-card.status-1 { border-left-color: #f59e0b; } /* Đang xử lý */
-        .message-card.status-2 { border-left-color: #10b981; } /* Đã xong */
-        
-        .filter-nav {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            background: #f1f5f9;
-            padding: 5px;
-            border-radius: 12px;
-            width: fit-content;
-        }
-        .filter-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .filter-btn.active {
-            background: #fff;
-            color: #0a2a66;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
+        .message-card { background:#fff; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-left:4px solid #cbd5e1; }
+        .message-card.status-0 { border-left-color:#3b82f6; }
+        .message-card.status-1 { border-left-color:#f59e0b; }
+        .message-card.status-2 { border-left-color:#10b981; }
+        .filter-nav { display:flex; gap:10px; margin-bottom:30px; background:#f1f5f9; padding:5px; border-radius:12px; width:fit-content; }
+        .filter-btn { padding:8px 16px; border-radius:8px; text-decoration:none; color:#64748b; font-weight:600; font-size:14px; transition:all 0.2s; }
+        .filter-btn.active { background:#fff; color:#0a2a66; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -111,49 +85,50 @@ $status_map = [
 
         <?php if ($msg): ?>
             <div class="status-badge status-active" style="width:100%; margin-bottom: 25px; padding: 12px;">
-                <i class="fa-solid fa-circle-check"></i> <?php echo $msg; ?>
+                <i class="fa-solid fa-circle-check"></i> <?php echo htmlspecialchars($msg, ENT_QUOTES, 'UTF-8'); ?>
             </div>
         <?php endif; ?>
 
         <?php if (empty($messages)): ?>
             <div class="admin-card" style="text-align: center; padding: 60px;">
                 <i class="fa-solid fa-folder-open" style="font-size: 48px; color: #cbd5e1; margin-bottom: 15px;"></i>
-                <p style="color: #64748b;">Hòm thư hiện tại đang trống.</p>
+                <p style="color: #64748b;">Chưa có tin liên hệ nào trong kho cục bộ.</p>
             </div>
         <?php else: ?>
             <div class="dashboard-layout" style="grid-template-columns: 1fr; gap: 0;">
                 <?php foreach ($messages as $m): ?>
-                    <div class="message-card status-<?php echo $m['status']; ?>">
+                    <?php $statusValue = intval($m['status'] ?? 0); $meta = $status_map[$statusValue] ?? $status_map[0]; ?>
+                    <div class="message-card status-<?php echo $statusValue; ?>">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
                             <div style="flex: 1;">
                                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                                    <span class="status-badge status-<?php echo $status_map[$m['status']]['class']; ?>" style="font-size: 11px;">
-                                        <i class="fa-solid <?php echo $status_map[$m['status']]['icon']; ?>"></i> <?php echo $status_map[$m['status']]['text']; ?>
+                                    <span class="status-badge status-<?php echo $meta['class']; ?>" style="font-size: 11px;">
+                                        <i class="fa-solid <?php echo $meta['icon']; ?>"></i> <?php echo $meta['text']; ?>
                                     </span>
-                                    <span style="color: #64748b; font-size: 13px;"><i class="fa-regular fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($m['created_at'])); ?></span>
+                                    <span style="color: #64748b; font-size: 13px;"><i class="fa-regular fa-clock"></i> <?php echo htmlspecialchars((string) ($m['created_at'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span>
                                 </div>
-                                <h3 style="font-size: 18px; color: #0a2a66; margin-bottom: 5px;"><?php echo htmlspecialchars($m['subject']); ?></h3>
+                                <h3 style="font-size: 18px; color: #0a2a66; margin-bottom: 5px;"><?php echo htmlspecialchars((string) ($m['subject'] ?? '(Không có tiêu đề)'), ENT_QUOTES, 'UTF-8'); ?></h3>
                                 <div style="font-size: 14px; margin-bottom: 15px;">
-                                    <strong style="color: #334155;"><?php echo htmlspecialchars($m['name']); ?></strong> 
-                                    <span style="color: #94a3b8; font-size: 12px; margin-left: 5px;">&lt;<?php echo htmlspecialchars($m['email']); ?>&gt;</span>
+                                    <strong style="color: #334155;"><?php echo htmlspecialchars((string) ($m['name'] ?? 'Khách hàng'), ENT_QUOTES, 'UTF-8'); ?></strong> 
+                                    <span style="color: #94a3b8; font-size: 12px; margin-left: 5px;">&lt;<?php echo htmlspecialchars((string) ($m['email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>&gt;</span>
                                 </div>
                                 <div style="background: #f8fafc; padding: 15px; border-radius: 8px; color: #475569; font-size: 14px; line-height: 1.6; border: 1px solid #f1f5f9; margin-bottom: 20px;">
-                                    <?php echo nl2br(htmlspecialchars($m['message'])); ?>
+                                    <?php echo nl2br(htmlspecialchars((string) ($m['message'] ?? ''), ENT_QUOTES, 'UTF-8')); ?>
                                 </div>
                                 
                                 <form method="POST" style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #edf2f7;">
-                                    <input type="hidden" name="id" value="<?php echo $m['id']; ?>">
+                                    <input type="hidden" name="id" value="<?php echo intval($m['id'] ?? 0); ?>">
                                     <div class="grid-responsive">
                                         <div class="form-group">
                                             <label>Ghi chú phản hồi / Xử lý</label>
-                                            <textarea name="note_admin" class="admin-input" rows="2" placeholder="Ghi lại nội dung đã phản hồi cho khách..."><?php echo htmlspecialchars($m['note_admin']); ?></textarea>
+                                            <textarea name="note_admin" class="admin-input" rows="2" placeholder="Ghi lại nội dung đã phản hồi cho khách..."><?php echo htmlspecialchars((string) ($m['note_admin'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea>
                                         </div>
                                         <div class="form-group">
                                             <label>Trạng thái</label>
                                             <select name="status" class="admin-select">
-                                                <option value="0" <?php echo $m['status'] == 0 ? 'selected' : ''; ?>>🆕 Mới nhận</option>
-                                                <option value="1" <?php echo $m['status'] == 1 ? 'selected' : ''; ?>>⏳ Đang xử lý</option>
-                                                <option value="2" <?php echo $m['status'] == 2 ? 'selected' : ''; ?>>✅ Đã giải quyết</option>
+                                                <option value="0" <?php echo $statusValue === 0 ? 'selected' : ''; ?>>🆕 Mới nhận</option>
+                                                <option value="1" <?php echo $statusValue === 1 ? 'selected' : ''; ?>>⏳ Đang xử lý</option>
+                                                <option value="2" <?php echo $statusValue === 2 ? 'selected' : ''; ?>>✅ Đã giải quyết</option>
                                             </select>
                                             <button type="submit" name="update_status" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">Lưu</button>
                                         </div>
@@ -169,6 +144,3 @@ $status_map = [
     <?php include __DIR__ . '/../includes/footer.php'; ?>
 </body>
 </html>
-
-
-

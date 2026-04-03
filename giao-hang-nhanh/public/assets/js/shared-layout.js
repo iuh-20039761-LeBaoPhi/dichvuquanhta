@@ -13,6 +13,7 @@
     : "./";
   const parentBase = projectBase.replace(/giao-hang-nhanh\/?$/i, "");
   const includesBase = `${projectBase}includes/`;
+  const authSessionKey = "ghn-auth-session";
 
   function loadPartial(url) {
     try {
@@ -74,6 +75,69 @@
       "svc-thue-xe": `${parentBase}thue-xe/views/pages/public/dich-vu.html`,
       "svc-sua-xe": `${parentBase}sua-xe-luu-dong/dich-vu.html`,
     };
+  }
+
+  function escapeHtml(text) {
+    return String(text ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function readLocalSession() {
+    try {
+      const raw = window.localStorage.getItem(authSessionKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function resolveAccountLinks(session) {
+    const role = String(session?.role || "").trim().toLowerCase();
+    if (role === "shipper") {
+      return {
+        dashboard: `${projectBase}public/nha-cung-cap/dashboard.html`,
+        profile: `${projectBase}public/nha-cung-cap/ho-so.html`,
+      };
+    }
+
+    return {
+      dashboard: `${projectBase}public/khach-hang/dashboard.html`,
+      profile: `${projectBase}public/khach-hang/ho-so.html`,
+    };
+  }
+
+  function syncAuthNav(root) {
+    if (!root) return;
+
+    const loginItem = root.querySelector("#nav-login-item");
+    const registerItem = root.querySelector("#nav-register-item");
+    if (!loginItem || !registerItem) return;
+
+    const session = readLocalSession();
+    if (!session) {
+      loginItem.innerHTML =
+        '<a data-layout-link="login" href="dang-nhap.html">Đăng nhập</a>';
+      registerItem.innerHTML =
+        '<a data-layout-link="register" href="dang-ky.html" class="btn-primary nav-auth-cta">Đăng ký</a>';
+      applyLinks(root, linkMap);
+      return;
+    }
+
+    const accountLinks = resolveAccountLinks(session);
+    const firstName = escapeHtml(
+      String(session.fullname || session.ho_ten || session.username || "Tài khoản")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(-1)[0] || "Tài khoản",
+    );
+
+    loginItem.innerHTML = `<a href="${accountLinks.dashboard}">Xin chào, ${firstName}</a>`;
+    registerItem.innerHTML = `<a href="${accountLinks.profile}" class="btn-primary nav-auth-cta">Tài khoản</a>`;
   }
 
   function applyLinks(root, linkMap) {
@@ -311,6 +375,7 @@
 
   if (headerHost) applyLinks(headerHost, linkMap);
   if (headerHost) applyActiveNav(headerHost);
+  if (headerHost) syncAuthNav(headerHost);
   if (footerHost) applyLinks(footerHost, linkMap);
   document.dispatchEvent(
     new CustomEvent("ghn:layout-ready", {
@@ -325,5 +390,17 @@
 
   window.addEventListener("hashchange", function () {
     if (headerHost) applyActiveNav(headerHost);
+  });
+
+  window.addEventListener("storage", function (event) {
+    if (event.key === authSessionKey && headerHost) {
+      syncAuthNav(headerHost);
+    }
+  });
+
+  document.addEventListener("ghn:auth-changed", function () {
+    if (headerHost) {
+      syncAuthNav(headerHost);
+    }
   });
 })(window, document);

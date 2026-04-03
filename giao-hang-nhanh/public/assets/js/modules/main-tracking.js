@@ -899,6 +899,13 @@
       });
   }
 
+  function buildStandaloneDetailUrl(code) {
+    const detailUrl = new URL("chi-tiet-don-hang.html", window.location.href);
+    detailUrl.searchParams.set("madonhang", code);
+    detailUrl.searchParams.set("viewer", "public");
+    return detailUrl.toString();
+  }
+
   window.trackOrder = function (event, type) {
     event.preventDefault();
 
@@ -933,8 +940,15 @@
     requestTrackingOrder(code)
       .then((order) => {
         spinner.style.display = "none";
-        resultDiv.innerHTML = renderTrackingResult(order);
         saveToHistory(code);
+        resultDiv.innerHTML = `
+          <div style="background:#eff6ff;border-left:4px solid #2563eb;padding:18px;border-radius:12px;margin-top:15px;text-align:left;">
+            <p style="margin:0;color:#1d4ed8;"><strong>Đang mở trang chi tiết đơn hàng...</strong></p>
+          </div>
+        `;
+        window.location.href = buildStandaloneDetailUrl(
+          order.order_code || order.id || code,
+        );
       })
       .catch((error) => {
         console.error("Error:", error);

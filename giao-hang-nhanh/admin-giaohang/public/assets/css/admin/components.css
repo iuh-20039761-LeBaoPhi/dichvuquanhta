@@ -99,13 +99,18 @@
 /* Modern Form Inputs */
 .form-control, .admin-input, .admin-select {
     width: 100%;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: 10px;
-    border: 1px solid #e0e6ed;
-    background: #ffffff;
+    border: 1px solid transparent; /* Hide border by default as suggested */
+    background: #f8fafc; /* Subtle background to define the input zone when no border */
     font-size: 14px;
     color: #1c1e21;
     transition: all 0.2s ease;
+}
+
+.form-control:hover, .admin-input:hover {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
 }
 
 .form-control:focus, .admin-input:focus, .admin-select:focus {

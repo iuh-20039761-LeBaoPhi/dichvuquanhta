@@ -95,6 +95,49 @@ function getLocalSession() {
   return readLocalJson("ghn-auth-session", null);
 }
 
+function syncBookingLoginState() {
+  const session = getLocalSession();
+  if (typeof window !== "undefined") {
+    window.isLoggedIn = !!session;
+  }
+  return session;
+}
+
+function buildBookingRedirectTarget() {
+  if (typeof window === "undefined") {
+    return `${getProjectBasePath()}dat-lich-giao-hang-nhanh.html`;
+  }
+
+  const pathname = String(window.location.pathname || "");
+  const search = String(window.location.search || "");
+  const hash = String(window.location.hash || "");
+  return `${pathname}${search}${hash}` || `${getProjectBasePath()}dat-lich-giao-hang-nhanh.html`;
+}
+
+function buildBookingLoginUrl() {
+  const loginUrl = new URL(resolveProjectHtmlUrl("dang-nhap.html"));
+  loginUrl.searchParams.set("redirect", buildBookingRedirectTarget());
+  return loginUrl.toString();
+}
+
+function requireBookingLogin(options = {}) {
+  const session = syncBookingLoginState();
+  if (session) return session;
+
+  if (options.saveDraft) {
+    try {
+      savePendingBookingDraft(options.payload || tao_du_lieu_gui());
+    } catch (error) {
+      console.warn("Không thể lưu nháp đơn hàng trước khi chuyển sang đăng nhập:", error);
+    }
+  }
+
+  if (typeof window !== "undefined") {
+    window.location.href = buildBookingLoginUrl();
+  }
+  return null;
+}
+
 function getLocalCustomerOrders() {
   const orders = readLocalJson(LOCAL_CUSTOMER_ORDER_STORAGE_KEY, []);
   return Array.isArray(orders) ? orders : [];
@@ -271,6 +314,11 @@ function buildLocalOrderDetail(payload, orderCode = buildGeneratedOrderCode()) {
       estimated_delivery: payload.du_kien_giao_hang || "",
       payment_status_label: "Chưa hoàn tất",
       khoang_cach_km: Number(payload.khoang_cach_km || 0),
+      ngayhuy: "",
+      thoidiemnhandon: "",
+      ngaynhan: "",
+      ngaybatdauthucte: "",
+      ngayhoanthanhthucte: "",
       fee_breakdown: pricingBreakdown,
       pricing_breakdown: pricingBreakdown,
       service_meta: {
@@ -722,6 +770,10 @@ const DEFAULT_URGENT_CONDITION = {
 
 // ========== INIT ==========
 document.addEventListener("DOMContentLoaded", () => {
+  if (!requireBookingLogin()) {
+    return;
+  }
+
   weatherQuoteState = createDefaultWeatherQuoteState();
   initMap();
   initAddressSearch("dia_chi_lay_hang", "goi_y_dia_chi_lay_hang", "pickup");
@@ -775,6 +827,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("btn_buoc_4_sang_5").addEventListener("click", () => {
     if (xac_thuc_buoc_4()) {
+      if (!requireBookingLogin({ saveDraft: true })) return;
       chuan_bi_xac_nhan();
       chuyen_den_buoc(5);
     }
@@ -810,7 +863,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (ok) {
           if (step === 3) renderServiceCards();
-          if (step === 5) chuan_bi_xac_nhan();
+          if (step === 5) {
+            if (!requireBookingLogin({ saveDraft: true })) return;
+            chuan_bi_xac_nhan();
+          }
           chuyen_den_buoc(step);
         }
       }
@@ -826,7 +882,6 @@ document.addEventListener("DOMContentLoaded", () => {
       requestPickupCurrentLocation({ showError: false, silent: true });
     }
   })();
-  setDeliveryMode("scheduled", { render: false });
 });
 
 function lay_buoc_hien_tai() {
@@ -877,6 +932,22 @@ function sanitizeWeatherUserNote(message) {
 
 function getDeliveryMode() {
   return deliveryMode || "scheduled";
+}
+
+function setPackageChoiceValue(serviceType) {
+  const select = document.getElementById("goi_cuoc");
+  const normalized = String(serviceType || "")
+    .trim()
+    .toLowerCase();
+  if (!select || !normalized) return false;
+
+  const hasOption = Array.from(select.options).some(
+    (option) => option.value === normalized,
+  );
+  if (!hasOption) return false;
+
+  select.value = normalized;
+  return true;
 }
 
 function initPackageChoiceControls() {

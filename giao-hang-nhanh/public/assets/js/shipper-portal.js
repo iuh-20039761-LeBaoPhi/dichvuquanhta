@@ -4,10 +4,11 @@
   const core = window.GiaoHangNhanhCore || {};
   const localAuth = window.GiaoHangNhanhLocalAuth || null;
   const routes = {
+    home: "../../index.html",
     login: "../../dang-nhap.html",
     dashboard: "dashboard.html",
     orders: "don-hang.html",
-    detail: "chi-tiet-don-hang.html",
+    detail: "../../chi-tiet-don-hang.html",
     profile: "ho-so.html",
     logout: "../../dang-nhap.html",
   };
@@ -41,6 +42,50 @@
         ? localAuth.getSession()
         : null;
     return session && typeof session === "object" ? session : null;
+  }
+
+  function normalizeText(value) {
+    return String(value || "").replace(/\s+/g, " ").trim();
+  }
+
+  function getKrudListFn() {
+    if (typeof window.krudList === "function") {
+      return (payload) => window.krudList(payload);
+    }
+
+    if (typeof window.crud === "function") {
+      return (payload) =>
+        window.crud("list", payload.table, {
+          p: payload.page || 1,
+          limit: payload.limit || 100,
+        });
+    }
+
+    if (typeof window.krud === "function") {
+      return (payload) =>
+        window.krud("list", payload.table, {
+          p: payload.page || 1,
+          limit: payload.limit || 100,
+        });
+    }
+
+    return null;
+  }
+
+  function extractRows(payload, depth = 0) {
+    if (depth > 4 || payload == null) return [];
+    if (Array.isArray(payload)) return payload;
+    if (typeof payload !== "object") return [];
+
+    const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
+    for (const key of candidateKeys) {
+      const value = payload[key];
+      if (Array.isArray(value)) return value;
+      const nested = extractRows(value, depth + 1);
+      if (nested.length) return nested;
+    }
+
+    return [];
   }
 
   function escapeHtml(value) {
@@ -82,10 +127,6 @@
       month: "2-digit",
       year: "numeric",
     });
-  }
-
-  function formatMultilineText(value) {
-    return escapeHtml(value ?? "--").replace(/\r?\n/g, "<br>");
   }
 
   function showToast(message, type) {
@@ -145,6 +186,18 @@
     )
       ? "Chuyển khoản"
       : "Tiền mặt";
+  }
+
+  function getPaymentStatusLabel(paymentStatus, fallback = "Chưa hoàn tất") {
+    const normalized = String(paymentStatus || "").toLowerCase();
+    if (!normalized) return fallback;
+    if (["paid", "completed", "done"].includes(normalized)) {
+      return "Đã hoàn tất";
+    }
+    if (["unpaid", "pending", "processing"].includes(normalized)) {
+      return "Chưa hoàn tất";
+    }
+    return paymentStatus || fallback;
   }
 
   function getFeePayerLabel(feePayer) {
@@ -207,6 +260,151 @@
     }));
   }
 
+  function parseJsonSafe(value, fallback) {
+    if (value == null || value === "") return fallback;
+    if (typeof value === "object") return value;
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function deriveStatusFromRecord(record) {
+    const cancelledAt = normalizeText(record.ngayhuy || "");
+    const completedAt = normalizeText(record.ngayhoanthanhthucte || "");
+    const startedAt = normalizeText(record.ngaybatdauthucte || "");
+    const acceptedAt = normalizeText(
+      record.thoidiemnhandon || record.ngaynhan || "",
+    );
+    if (cancelledAt) return "cancelled";
+    if (completedAt) return "completed";
+    if (startedAt) return "shipping";
+    if (acceptedAt) return "pending";
+    const normalized = String(record.trang_thai || record.status || "pending")
+      .trim()
+      .toLowerCase();
+    if (["completed", "delivered", "success"].includes(normalized)) return "completed";
+    if (["shipping", "in_transit"].includes(normalized)) return "shipping";
+    if (["cancelled", "canceled"].includes(normalized)) return "cancelled";
+    return "pending";
+  }
+
+  function normalizeKrudOrderDetail(record, session) {
+    const shippingFee = Number(
+      record.tong_cuoc ??
+        record.shipping_fee ??
+        record.total_fee ??
+        record.phi_van_chuyen ??
+        0,
+    );
+    const feeBreakdown = normalizeMockBreakdown(
+      parseJsonSafe(
+        record.chi_tiet_gia_cuoc_json ||
+          record.chi_tiet_gia_json ||
+          record.pricing_breakdown ||
+          {},
+        {},
+      ),
+      shippingFee,
+    );
+    const orderStatus = deriveStatusFromRecord(record);
+
+    return normalizeLocalOrderDetail(
+      {
+        order: {
+          id: record.id || record.ma_don_hang_noi_bo || record.ma_don_hang || "",
+          order_code:
+            record.ma_don_hang_noi_bo ||
+            record.ma_don_hang ||
+            record.order_code ||
+            record.id ||
+            "",
+          status: orderStatus,
+          status_label:
+            record.status_label ||
+            record.trang_thai_hien_thi ||
+            getStatusLabel(orderStatus),
+          service_type: record.dich_vu || record.loai_dich_vu || "",
+          service_label: record.ten_dich_vu || record.service_label || "",
+          shipping_fee: shippingFee,
+          cod_amount: Number(
+            record.gia_tri_thu_ho_cod ||
+              record.cod_amount ||
+              record.cod_value ||
+              0,
+          ),
+          created_at: record.created_at || record.created_date || "",
+          pickup_address: record.dia_chi_lay_hang || "",
+          delivery_address: record.dia_chi_giao_hang || "",
+          receiver_name:
+            record.ho_ten_nguoi_nhan || record.nguoi_nhan_ho_ten || "",
+          receiver_phone:
+            record.so_dien_thoai_nguoi_nhan ||
+            record.nguoi_nhan_so_dien_thoai ||
+            "",
+          sender_name:
+            record.ho_ten_nguoi_gui || record.nguoi_gui_ho_ten || "",
+          sender_phone:
+            record.so_dien_thoai_nguoi_gui ||
+            record.nguoi_gui_so_dien_thoai ||
+            "",
+          payment_method_label:
+            record.payment_method_label ||
+            getPaymentMethodLabel(record.phuong_thuc_thanh_toan),
+          payment_status_label:
+            getPaymentStatusLabel(
+              record.payment_status_label || record.trang_thai_thanh_toan,
+            ),
+          payer_label:
+            record.payer_label || getFeePayerLabel(record.nguoi_tra_cuoc),
+          fee_breakdown: feeBreakdown,
+          pricing_breakdown: feeBreakdown,
+          khoang_cach_km: Number(record.khoang_cach_km || record.distance_km || 0),
+          ngayhuy: record.ngayhuy || "",
+          thoidiemnhandon: record.thoidiemnhandon || record.ngaynhan || "",
+          ngaynhan: record.ngaynhan || record.thoidiemnhandon || "",
+          ngaybatdauthucte: record.ngaybatdauthucte || "",
+          ngayhoanthanhthucte: record.ngayhoanthanhthucte || "",
+        },
+        provider: {
+          ...buildProviderFromSession(session),
+          shipper_id: record.ncc_id || record.shipper_id || session?.id || "",
+          fullname:
+            record.nha_cung_cap_ho_ten ||
+            record.shipper_name ||
+            session?.fullname ||
+            "",
+          phone:
+            record.nha_cung_cap_so_dien_thoai ||
+            record.shipper_phone ||
+            session?.phone ||
+            "",
+          email: record.ncc_email || session?.email || "",
+          vehicle_type:
+            record.shipper_vehicle ||
+            record.vehicle_type ||
+            session?.vehicle_type ||
+            "",
+          shipper_vehicle:
+            record.shipper_vehicle ||
+            record.vehicle_type ||
+            session?.vehicle_type ||
+            "",
+          shipper_reports: parseJsonSafe(
+            record.shipper_reports_json || record.shipper_reports || [],
+            [],
+          ),
+          feedback_media: parseJsonSafe(
+            record.feedback_media_json || record.feedback_media || [],
+            [],
+          ),
+        },
+      },
+      session,
+    );
+  }
+
   function buildProviderFromSession(session) {
     const vehicle =
       session?.vehicle_type ||
@@ -250,9 +448,10 @@
     );
     nextOrder.cod_amount = Number(nextOrder.cod_amount || nextOrder.cod_value || 0);
     nextOrder.created_at = nextOrder.created_at || new Date().toISOString();
-    nextOrder.payment_status_label =
-      nextOrder.payment_status_label ||
-      (nextOrder.status === "completed" ? "Đã hoàn tất" : "Chưa hoàn tất");
+    nextOrder.payment_status_label = getPaymentStatusLabel(
+      nextOrder.payment_status_label,
+      nextOrder.status === "completed" ? "Đã hoàn tất" : "Chưa hoàn tất",
+    );
     nextOrder.fee_breakdown = normalizeMockBreakdown(
       nextOrder.fee_breakdown || nextOrder.pricing_breakdown,
       nextOrder.shipping_fee,
@@ -308,6 +507,43 @@
   }
 
   async function getAllOrderDetails(session) {
+    const listFn = getKrudListFn();
+    if (session && listFn) {
+      try {
+        const response = await listFn({
+          table: "giaohangnhanh_dat_lich",
+          page: 1,
+          limit: 500,
+        });
+        const rows = extractRows(response);
+        const sessionId = normalizeText(session.id || "");
+        const sessionUsername = normalizeText(session.username || "").toLowerCase();
+        const krudDetails = rows
+          .filter((row) => {
+            const shipperId = normalizeText(row.ncc_id || row.shipper_id || "");
+            const shipperName = normalizeText(
+              row.nha_cung_cap_ho_ten || row.shipper_name || "",
+            ).toLowerCase();
+            return (
+              (sessionId && shipperId === sessionId) ||
+              (sessionUsername && shipperName.includes(sessionUsername))
+            );
+          })
+          .map((detail) => normalizeKrudOrderDetail(detail, session));
+
+        if (krudDetails.length) {
+          krudDetails.forEach((detail) => persistOrderDetail(detail, session));
+          return krudDetails.sort((left, right) => {
+            const leftTime = new Date(left?.order?.created_at || 0).getTime();
+            const rightTime = new Date(right?.order?.created_at || 0).getTime();
+            return rightTime - leftTime;
+          });
+        }
+      } catch (error) {
+        console.warn("Không thể tải đơn NCC từ KRUD, fallback local:", error);
+      }
+    }
+
     const localDetails = (
       readJson(storageKeys.orders, []) || []
     ).map((detail) => normalizeLocalOrderDetail(detail, session));
@@ -526,144 +762,6 @@
       };
     }
 
-    if (action === "order-detail") {
-      const orderId = String(options.params?.id || "")
-        .trim()
-        .toUpperCase();
-      const detail = allDetails.find((item) => {
-        const itemId = String(
-          item?.order?.id || item?.order?.order_code || "",
-        )
-          .trim()
-          .toUpperCase();
-        return itemId === orderId;
-      });
-
-      if (!detail) {
-        throw new Error("Không tìm thấy đơn hàng phù hợp.");
-      }
-
-      const currentDetail = normalizeLocalOrderDetail(detail, session);
-      return {
-        status: "success",
-        order: currentDetail.order || {},
-        provider: {
-          ...(currentDetail.provider || {}),
-          stats,
-        },
-        customer: currentDetail.customer || {},
-        items: Array.isArray(currentDetail.items) ? currentDetail.items : [],
-        logs: Array.isArray(currentDetail.logs) ? currentDetail.logs : [],
-      };
-    }
-
-    if (action === "update-order") {
-      const formData = options.body;
-      const orderId = String(formData?.get("order_id") || "")
-        .trim()
-        .toUpperCase();
-      const currentDetail = allDetails.find((item) => {
-        const itemId = String(
-          item?.order?.id || item?.order?.order_code || "",
-        )
-          .trim()
-          .toUpperCase();
-        return itemId === orderId;
-      });
-
-      if (!currentDetail) {
-        throw new Error("Không tìm thấy đơn để cập nhật.");
-      }
-
-      const nextDetail = normalizeLocalOrderDetail(currentDetail, session);
-      const nextStatus = String(formData?.get("status") || "pending")
-        .trim()
-        .toLowerCase();
-      const shipperNote = String(formData?.get("shipper_note") || "").trim();
-      const cancelReason = String(formData?.get("cancel_reason") || "").trim();
-      const uploadedFiles = Array.from(
-        formData?.getAll("media_files[]") || [],
-      ).filter(
-        (file) =>
-          file &&
-          typeof file === "object" &&
-          typeof file.name === "string" &&
-          file.name,
-      );
-
-      const reportItems = uploadedFiles.map((file, index) => {
-        const name = String(file.name || `media-${index + 1}`);
-        const extension = name.includes(".")
-          ? name.split(".").pop().toLowerCase()
-          : "";
-        return {
-          id: `${Date.now()}_${index}`,
-          name,
-          extension,
-          url: "",
-          created_at: new Date().toISOString(),
-        };
-      });
-
-      const oldStatus = nextDetail.order.status;
-      const oldStatusLabel =
-        nextDetail.order.status_label || getStatusLabel(oldStatus);
-      const released = nextStatus === "decline";
-
-      nextDetail.order.shipper_note = shipperNote;
-      nextDetail.order.cancel_reason = cancelReason;
-      nextDetail.provider = {
-        ...buildProviderFromSession(session),
-        ...(nextDetail.provider || {}),
-      };
-      nextDetail.provider.shipper_reports = [
-        ...(Array.isArray(nextDetail.provider.shipper_reports)
-          ? nextDetail.provider.shipper_reports
-          : []),
-        ...reportItems,
-      ];
-
-      if (released) {
-        nextDetail.order.status = "pending";
-        nextDetail.order.status_label = "Chờ xử lý";
-      } else {
-        nextDetail.order.status = nextStatus;
-        nextDetail.order.status_label = getStatusLabel(nextStatus);
-      }
-
-      nextDetail.order.payment_status_label =
-        nextDetail.order.status === "completed"
-          ? "Đã hoàn tất"
-          : "Chưa hoàn tất";
-
-      nextDetail.logs = [
-        {
-          old_status_label: oldStatusLabel,
-          new_status_label: released
-            ? "Trả đơn về điều phối"
-            : nextDetail.order.status_label,
-          created_at: new Date().toISOString(),
-          note:
-            shipperNote ||
-            cancelReason ||
-            (released
-              ? "Nhà cung cấp từ chối nhận đơn và trả đơn về điều phối."
-              : `Nhà cung cấp cập nhật trạng thái sang ${nextDetail.order.status_label}.`),
-        },
-        ...(Array.isArray(nextDetail.logs) ? nextDetail.logs : []),
-      ];
-
-      persistOrderDetail(nextDetail, session);
-
-      return {
-        status: "success",
-        message: released
-          ? "Đã trả đơn về điều phối nội bộ."
-          : "Đã cập nhật đơn hàng.",
-        released,
-      };
-    }
-
     if (action === "profile") {
       return {
         status: "success",
@@ -835,21 +933,37 @@
                 <a class="${activeClass("profile")}" href="${routes.profile}">Hồ sơ cá nhân</a>
               </nav>
             </section>
-            <section class="customer-side-card">
-              <h2>Thông tin tài khoản</h2>
-              <dl class="customer-side-meta">
-                <div><dt>Tài khoản</dt><dd>${escapeHtml(user.username || "--")}</dd></div>
-                <div><dt>Họ tên</dt><dd>${escapeHtml(user.fullname || "--")}</dd></div>
-                <div><dt>Số điện thoại</dt><dd>${escapeHtml(user.phone || "--")}</dd></div>
-                <div><dt>Phương tiện</dt><dd>${escapeHtml(user.vehicle_type || "--")}</dd></div>
-              </dl>
-            </section>
           </aside>
           <main class="customer-portal-main" id="shipper-page-content"></main>
         </div>
       </div>
     `;
     bindLogoutActions(shell);
+  }
+
+  function redirectNonShipper(session, page) {
+    const role = String(session?.role || "")
+      .trim()
+      .toLowerCase();
+    if (!role || role === "shipper") return false;
+
+    if (role === "customer") {
+      const targetByPage = {
+        dashboard: "../khach-hang/dashboard.html",
+        orders: "../khach-hang/lich-su-don-hang.html",
+        profile: "../khach-hang/ho-so.html",
+      };
+      const target = targetByPage[page] || "../khach-hang/dashboard.html";
+      window.location.replace(target);
+      return true;
+    }
+
+    if (localAuth && typeof localAuth.getDashboardPath === "function") {
+      window.location.replace(`../../${localAuth.getDashboardPath(role)}`);
+      return true;
+    }
+
+    return false;
   }
 
   function renderLoading(message = "Đang tải dữ liệu...") {
@@ -881,27 +995,6 @@
     return `<span class="customer-status-badge status-${escapeHtml(status || "")}">${escapeHtml(label || status || "--")}</span>`;
   }
 
-  function getAvailableStatusOptions(currentStatus) {
-    const normalized = String(currentStatus || "").toLowerCase();
-    const map = {
-      pending: [
-        { value: "pending", label: "Giữ nguyên chờ xử lý" },
-        { value: "shipping", label: "Đang giao" },
-        { value: "cancelled", label: "Hủy đơn" },
-        { value: "decline", label: "Từ chối / trả đơn" },
-      ],
-      shipping: [
-        { value: "shipping", label: "Đang giao" },
-        { value: "completed", label: "Hoàn tất" },
-        { value: "cancelled", label: "Hủy đơn" },
-      ],
-      completed: [{ value: "completed", label: "Hoàn tất" }],
-      cancelled: [{ value: "cancelled", label: "Đã hủy" }],
-    };
-
-    return map[normalized] || [{ value: normalized || "pending", label: "Giữ nguyên trạng thái" }];
-  }
-
   function buildPagination(currentPage, totalPages) {
     if (!totalPages || totalPages <= 1) return "";
     const buttons = [];
@@ -921,22 +1014,6 @@
     return `<div class="customer-pagination">${buttons.join("")}</div>`;
   }
 
-  function renderFiles(items) {
-    if (!items || !items.length) {
-      return '<div class="customer-empty">Chưa có tệp nào được đính kèm.</div>';
-    }
-
-    return `<div class="customer-file-grid">${items
-      .map(
-        (item) => `
-      <a class="customer-file-card" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">
-        <span>${escapeHtml(item.name)}</span>
-        <small>${escapeHtml(item.extension || "tệp")}</small>
-      </a>`,
-      )
-      .join("")}</div>`;
-  }
-
   function renderInfoList(items) {
     return `<dl class="customer-info-list">${items
       .map(
@@ -947,176 +1024,6 @@
       </div>`,
       )
       .join("")}</dl>`;
-  }
-
-  function isImageExtension(extension) {
-    return ["jpg", "jpeg", "png", "webp", "gif", "bmp", "svg", "heic"].includes(
-      String(extension || "").toLowerCase(),
-    );
-  }
-
-  function isVideoExtension(extension) {
-    return ["mp4", "mov", "webm", "m4v", "avi", "mkv"].includes(
-      String(extension || "").toLowerCase(),
-    );
-  }
-
-  function renderOrderItemCards(items) {
-    if (!items || !items.length) {
-      return '<div class="customer-empty">Chưa có dữ liệu chi tiết mặt hàng.</div>';
-    }
-
-    return `<div class="customer-review-items">${items
-      .map(
-        (item, index) => `
-      <article class="customer-review-item">
-        <div class="customer-review-item-icon"><i class="fas fa-box"></i></div>
-        <div class="customer-review-item-body">
-          <strong>${escapeHtml(item.item_name || `Hàng hóa #${index + 1}`)}</strong>
-          <span>
-            Số lượng: <b>${formatNumber(item.quantity)}</b> ·
-            Nặng: <b>${escapeHtml(item.weight)} kg</b> ·
-            Khai giá: <b>${formatCurrency(item.declared_value)}</b>
-          </span>
-        </div>
-        <div class="customer-review-item-meta">
-          Kích thước<br />${escapeHtml(item.length)} x ${escapeHtml(item.width)} x ${escapeHtml(item.height)} cm
-        </div>
-      </article>`,
-      )
-      .join("")}</div>`;
-  }
-
-  function renderAttachmentPreview(items) {
-    if (!items || !items.length) {
-      return '<div class="customer-empty">Chưa có ảnh hoặc video đính kèm.</div>';
-    }
-
-    return `<div class="customer-review-media-grid">${items
-      .map((item) => {
-        const extension = String(item.extension || "").toLowerCase();
-        const rawUrl = String(item.url || "").trim();
-        const url = escapeHtml(rawUrl || "#");
-        const name = escapeHtml(item.name || "Tệp đính kèm");
-        const canPreview = Boolean(rawUrl);
-
-        if (isImageExtension(extension) && canPreview) {
-          return `
-            <a class="customer-review-media-card" href="${url}" target="_blank" rel="noreferrer">
-              <img class="customer-review-media-thumb" src="${url}" alt="${name}" />
-              <div class="customer-review-media-meta">
-                <strong>${name}</strong>
-                <span>Ảnh đính kèm</span>
-              </div>
-            </a>`;
-        }
-
-        if (isVideoExtension(extension) && canPreview) {
-          return `
-            <a class="customer-review-media-card" href="${url}" target="_blank" rel="noreferrer">
-              <video class="customer-review-media-thumb" src="${url}" preload="metadata" controls></video>
-              <div class="customer-review-media-meta">
-                <strong>${name}</strong>
-                <span>Video đính kèm</span>
-              </div>
-            </a>`;
-        }
-
-        return `
-          <a class="customer-review-media-card" href="${url}" target="_blank" rel="noreferrer">
-            <div class="customer-review-media-file">
-              <i class="fas fa-file-lines"></i>
-            </div>
-            <div class="customer-review-media-meta">
-              <strong>${name}</strong>
-              <span>${escapeHtml(extension || "Tệp")}</span>
-            </div>
-          </a>`;
-      })
-      .join("")}</div>`;
-  }
-
-  function renderMediaGallery(items, emptyMessage) {
-    if (!items || !items.length) {
-      return `<div class="customer-empty">${escapeHtml(
-        emptyMessage || "Chưa có ảnh hoặc video.",
-      )}</div>`;
-    }
-
-    return renderAttachmentPreview(items);
-  }
-
-  function renderBookingReview(order, items, attachments, logs) {
-    const serviceMeta = order.service_meta || {};
-    const distanceLabel =
-      Number(serviceMeta.distance_km || 0) > 0
-        ? `${Number(serviceMeta.distance_km).toLocaleString("vi-VN", {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2,
-          })} km`
-        : serviceMeta.distance_label || "--";
-    const pickupLabel = order.pickup_time
-      ? formatDateTime(order.pickup_time)
-      : serviceMeta.pickup_date || "--";
-
-    return `
-      <div class="customer-review-layout">
-        <section class="customer-review-block">
-          <h3><i class="fas fa-address-book"></i> Thông tin liên hệ</h3>
-          <div class="rv-row"><span class="rv-label">Người gửi</span><span class="rv-val">${escapeHtml(order.sender_name || "--")} · ${escapeHtml(order.sender_phone || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Người nhận</span><span class="rv-val">${escapeHtml(order.receiver_name || "--")} · ${escapeHtml(order.receiver_phone || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Lấy hàng tại</span><span class="rv-val">${escapeHtml(order.pickup_address || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Giao hàng đến</span><span class="rv-val">${escapeHtml(order.delivery_address || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Khoảng cách</span><span class="rv-val">${distanceLabel}</span></div>
-        </section>
-
-        <section class="customer-review-block customer-review-block--wide">
-          <h3><i class="fas fa-boxes-stacked"></i> Hàng hóa và đóng gói</h3>
-          ${renderOrderItemCards(items)}
-          <div class="rv-row"><span class="rv-label">Giá trị thu hộ (COD)</span><span class="rv-val">${order.cod_amount ? formatCurrency(order.cod_amount) : "Không có"}</span></div>
-          <div class="rv-row"><span class="rv-label">Ghi chú vận chuyển</span><span class="rv-val">${formatMultilineText(order.clean_note || "Không có")}</span></div>
-        </section>
-
-        <section class="customer-review-block customer-review-block--wide">
-          <h3><i class="fas fa-photo-film"></i> Media đính kèm</h3>
-          ${renderAttachmentPreview(attachments)}
-        </section>
-
-        <section class="customer-review-block">
-          <h3><i class="fas fa-calendar-check"></i> Lịch trình</h3>
-          <div class="rv-row"><span class="rv-label">Tạo đơn lúc</span><span class="rv-val">${formatDateTime(order.created_at)}</span></div>
-          <div class="rv-row"><span class="rv-label">Lấy hàng</span><span class="rv-val">${pickupLabel}</span></div>
-          <div class="rv-row"><span class="rv-label">Thời gian giao dự kiến</span><span class="rv-val">${escapeHtml(serviceMeta.estimated_eta || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Phương tiện</span><span class="rv-val">${escapeHtml(order.vehicle_type || serviceMeta.vehicle_label || "--")}</span></div>
-        </section>
-
-        <section class="customer-review-block">
-          <h3><i class="fas fa-circle-info"></i> Theo dõi đơn</h3>
-          <div class="rv-row"><span class="rv-label">Trạng thái hiện tại</span><span class="rv-val">${escapeHtml(order.status_label || order.status || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Mã đơn khách theo dõi</span><span class="rv-val">${escapeHtml(order.order_code || "--")}</span></div>
-          <div class="rv-row"><span class="rv-label">Bằng chứng giao hàng</span><span class="rv-val">${order.pod_image ? "Đã có" : "Chưa có"}</span></div>
-        </section>
-
-        <section class="customer-review-block customer-review-block--wide">
-          <h3><i class="fas fa-timeline"></i> Lịch sử xử lý</h3>
-          <div class="customer-timeline">
-            ${
-              logs.length
-                ? logs
-                    .map(
-                      (log) => `
-                <article class="customer-timeline-item">
-                  <strong>${escapeHtml(log.new_status_label)}</strong>
-                  <span>${formatDateTime(log.created_at)}</span>
-                  <p>${escapeHtml(log.note || `Cập nhật từ ${log.old_status_label} sang ${log.new_status_label}`)}</p>
-                </article>`,
-                    )
-                    .join("")
-                : '<div class="customer-empty">Chưa có lịch sử cập nhật trạng thái.</div>'
-            }
-          </div>
-        </section>
-      </div>`;
   }
 
   async function initDashboard() {
@@ -1261,7 +1168,7 @@
                     <span><b>Thời gian</b>${formatDateTime(order.created_at)}</span>
                   </div>
                   <div class="customer-order-actions customer-order-actions-compact">
-                    <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?id=${order.id}">Xem chi tiết</a>
+                    <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(order.order_code || order.id)}&viewer=shipper">Xem chi tiết</a>
                   </div>
                 </article>`,
                     )
@@ -1393,7 +1300,7 @@
                   <span><b>Tạo lúc</b>${formatDateTime(order.created_at)}</span>
                 </div>
                 <div class="customer-order-actions customer-order-actions-compact">
-                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?id=${order.id}">Xem chi tiết</a>
+                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(order.order_code || order.id)}&viewer=shipper">Xem chi tiết</a>
                 </div>
               </article>`,
                   )
@@ -1423,232 +1330,6 @@
         });
         url.searchParams.delete("page");
         window.location.href = url.toString();
-      });
-    }
-  }
-
-  async function initOrderDetail() {
-    renderLoading("Đang tải chi tiết đơn nhà cung cấp...");
-    const params = new URLSearchParams(window.location.search);
-    const orderId = params.get("id");
-
-    if (!orderId) {
-      throw new Error("Thiếu id đơn hàng.");
-    }
-
-    const data = await apiRequest("order-detail", { params: { id: orderId } });
-    const { content } = getPageRoot();
-    const order = data.order || {};
-    const provider = data.provider || {};
-    const customer = data.customer || {};
-    const items = Array.isArray(data.items) ? data.items : [];
-    const logs = Array.isArray(data.logs) ? data.logs : [];
-
-    content.innerHTML = `
-      <section class="customer-panel">
-        <div class="customer-panel-head">
-          <div>
-            <p class="customer-section-kicker">Chi tiết đơn của nhà cung cấp</p>
-            <h2>${escapeHtml(order.order_code || "--")}</h2>
-          </div>
-          <div class="customer-inline-actions">
-            ${createStatusBadge(order.status, order.status_label)}
-            <a class="customer-btn customer-btn-ghost" href="${routes.orders}">Về danh sách đơn</a>
-          </div>
-        </div>
-
-        <div class="customer-detail-summary">
-          <article><span>Người gửi</span><strong>${escapeHtml(order.sender_name || "--")}</strong></article>
-          <article><span>Người nhận</span><strong>${escapeHtml(order.receiver_name || "--")}</strong></article>
-          <article><span>Phương tiện</span><strong>${escapeHtml(order.vehicle_type || order.vehicle_label || "--")}</strong></article>
-          <article><span>COD</span><strong>${formatCurrency(order.cod_amount)}</strong></article>
-        </div>
-
-        <div class="customer-tab-switcher" id="shipper-tab-switcher">
-          <button type="button" class="is-active" data-tab="booking">Thông tin đặt dịch vụ</button>
-          <button type="button" data-tab="customer">Thông tin khách hàng</button>
-          <button type="button" data-tab="provider">Thông tin của chính nhà cung cấp</button>
-        </div>
-
-        <div class="customer-tab-panel is-active" data-panel="booking">
-          ${renderBookingReview(order, items, provider.attachments, logs)}
-        </div>
-
-        <div class="customer-tab-panel" data-panel="customer">
-          <div class="customer-detail-grid">
-            <article class="customer-info-card">
-              <h3>Thông tin khách hàng</h3>
-              ${renderInfoList([
-                { label: "Họ tên", value: customer.fullname || order.sender_name || "--" },
-                { label: "Tài khoản", value: customer.username || "--" },
-                { label: "Số điện thoại", value: customer.phone || order.sender_phone || "--" },
-                { label: "Email", value: customer.email || "--" },
-                { label: "Công ty", value: customer.company_name || "--" },
-                { label: "Mã số thuế", value: customer.tax_code || "--" },
-                { label: "Địa chỉ công ty", value: customer.company_address || "--" },
-              ])}
-            </article>
-            <article class="customer-info-card">
-              <h3>Thông tin hóa đơn và phản hồi</h3>
-              ${renderInfoList([
-                { label: "Tên đơn vị", value: customer.invoice?.company_name || "--" },
-                { label: "Email nhận hóa đơn", value: customer.invoice?.company_email || "--" },
-                { label: "Mã số thuế", value: customer.invoice?.company_tax_code || "--" },
-                { label: "Địa chỉ hóa đơn", value: customer.invoice?.company_address || "--" },
-                { label: "Ngân hàng", value: customer.invoice?.company_bank_info || "--" },
-                { label: "Khách đánh giá", value: order.rating ? `${order.rating}/5 sao` : "Chưa có" },
-                { label: "Nội dung phản hồi", value: order.feedback || "Chưa có phản hồi từ khách" },
-              ])}
-            </article>
-          </div>
-        </div>
-
-        <div class="customer-tab-panel" data-panel="provider">
-          <div class="customer-detail-grid">
-            <article class="customer-info-card">
-              <h3>Thông tin của chính nhà cung cấp</h3>
-              ${renderInfoList([
-                { label: "Họ tên", value: provider.fullname || "--" },
-                { label: "Tài khoản", value: provider.username || "--" },
-                { label: "Số điện thoại", value: provider.phone || "--" },
-                { label: "Email", value: provider.email || "--" },
-                { label: "Phương tiện", value: provider.vehicle_type || order.vehicle_type || "--" },
-              ])}
-              ${
-                order.pod_image
-                  ? `<div class="customer-media-preview"><img src="${escapeHtml(order.pod_image)}" alt="Bang chung giao hang ${escapeHtml(order.order_code || "")}" /></div>`
-                  : ""
-              }
-            </article>
-            <article class="customer-info-card">
-              <h3>Hiệu suất và báo cáo đã gửi</h3>
-              ${renderInfoList([
-                { label: "Tổng đơn được giao", value: formatNumber(provider.stats?.total || 0) },
-                { label: "Hoàn tất", value: formatNumber(provider.stats?.completed || 0) },
-                { label: "Đang giao", value: formatNumber(provider.stats?.shipping || 0) },
-                { label: "Tỷ lệ hoàn tất", value: `${provider.stats?.success_rate || 0}%` },
-              ])}
-              <h4 class="customer-subheading">Ảnh và video báo cáo</h4>
-              ${renderMediaGallery(provider.shipper_reports, "Chưa có ảnh hoặc video báo cáo nào.")}
-            </article>
-          </div>
-
-          <article class="customer-info-card">
-            <h3>Cập nhật tiến độ và báo cáo công việc</h3>
-            <form id="shipper-order-form" class="customer-form-stack">
-              <input type="hidden" name="order_id" value="${order.id}" />
-              <div class="customer-form-grid">
-                <label>
-                  <span>Trạng thái mới</span>
-                  <select name="status" required>
-                    ${getAvailableStatusOptions(order.status)
-                      .map(
-                        (option) =>
-                          `<option value="${escapeHtml(option.value)}" ${order.status === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`,
-                      )
-                      .join("")}
-                  </select>
-                </label>
-                <label class="customer-form-full">
-                  <span>Ghi chú nhà cung cấp</span>
-                  <textarea name="shipper_note" rows="4" placeholder="Mô tả tiến độ, tình trạng giao nhận hoặc vấn đề cần báo cáo.">${escapeHtml(order.shipper_note || "")}</textarea>
-                </label>
-                <label class="customer-form-full">
-                  <span>Lý do hủy đơn</span>
-                  <textarea name="cancel_reason" rows="3" placeholder="Chỉ nhập khi chọn trạng thái hủy đơn.">${escapeHtml(order.cancel_reason || "")}</textarea>
-                </label>
-              </div>
-              <div class="customer-media-actions">
-                <label class="customer-btn customer-btn-ghost">
-                  Chụp ảnh
-                  <input type="file" id="shipper-capture-image" accept="image/*" capture="environment" hidden />
-                </label>
-                <label class="customer-btn customer-btn-ghost">
-                  Quay video
-                  <input type="file" id="shipper-capture-video" accept="video/*" capture="environment" hidden />
-                </label>
-                <label class="customer-btn customer-btn-ghost">
-                  Tải ảnh/video
-                  <input type="file" id="shipper-upload" accept="image/*,video/*" multiple hidden />
-                </label>
-              </div>
-              <div class="customer-selected-files" id="shipper-selected-files">Chưa chọn tệp báo cáo nào.</div>
-              <div class="customer-hint-box">
-                Ảnh và video nhà cung cấp tải lên sẽ được lưu để quản lý theo dõi và để khách hàng xem lại quá trình làm việc thực tế.
-              </div>
-              <div class="customer-inline-actions">
-                <button class="customer-btn customer-btn-primary" type="submit">Lưu cập nhật đơn</button>
-              </div>
-            </form>
-          </article>
-        </div>
-      </section>
-    `;
-
-    const tabButtons = Array.from(document.querySelectorAll("[data-tab]"));
-    const tabPanels = Array.from(document.querySelectorAll("[data-panel]"));
-    tabButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const target = button.dataset.tab;
-        tabButtons.forEach((item) =>
-          item.classList.toggle("is-active", item === button),
-        );
-        tabPanels.forEach((panel) =>
-          panel.classList.toggle("is-active", panel.dataset.panel === target),
-        );
-      });
-    });
-
-    const captureImage = document.getElementById("shipper-capture-image");
-    const captureVideo = document.getElementById("shipper-capture-video");
-    const uploadInput = document.getElementById("shipper-upload");
-    const selectedFilesHost = document.getElementById("shipper-selected-files");
-    const updateForm = document.getElementById("shipper-order-form");
-
-    function refreshSelectedFiles() {
-      if (!selectedFilesHost) return;
-      const files = [];
-      [captureImage, captureVideo, uploadInput].forEach((input) => {
-        if (input && input.files) {
-          Array.from(input.files).forEach((file) => files.push(file.name));
-        }
-      });
-
-      selectedFilesHost.textContent = files.length
-        ? `Đã chọn: ${files.join(", ")}`
-        : "Chưa chọn tệp báo cáo nào.";
-    }
-
-    [captureImage, captureVideo, uploadInput].forEach((input) => {
-      if (input) input.addEventListener("change", refreshSelectedFiles);
-    });
-
-    if (updateForm) {
-      updateForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const formData = new FormData(updateForm);
-        [captureImage, captureVideo, uploadInput].forEach((input) => {
-          if (input && input.files) {
-            Array.from(input.files).forEach((file) =>
-              formData.append("media_files[]", file),
-            );
-          }
-        });
-
-        try {
-          const result = await apiRequest("update-order", {
-            method: "POST",
-            body: formData,
-          });
-          showToast(result.message || "Đã cập nhật đơn hàng.", "success");
-          if (result.released) {
-            window.location.href = routes.orders;
-            return;
-          }
-          window.location.reload();
-        } catch (error) {
-          showToast(error.message, "error");
-        }
       });
     }
   }
@@ -1799,7 +1480,20 @@
     const page = document.body.dataset.shipperPage;
     if (!page) return;
 
+    if (page === "detail") {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.has("viewer")) {
+        params.set("viewer", "shipper");
+      }
+      const query = params.toString();
+      window.location.href = `${routes.detail}${query ? `?${query}` : ""}`;
+      return;
+    }
+
     const sessionData = await apiRequest("session");
+    if (redirectNonShipper(sessionData.user, page)) {
+      return;
+    }
     syncPublicHeader(sessionData.user || {});
     renderShell(sessionData.user || {}, page);
 
@@ -1809,9 +1503,6 @@
         break;
       case "orders":
         await initOrders();
-        break;
-      case "detail":
-        await initOrderDetail();
         break;
       case "profile":
         await initProfile();

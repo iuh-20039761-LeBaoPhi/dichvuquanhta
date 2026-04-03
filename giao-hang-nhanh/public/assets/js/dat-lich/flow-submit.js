@@ -199,29 +199,6 @@ function xac_thuc_buoc_4() {
   return true;
 }
 
-// ========== FORMATTING ==========
-function calculateDynamicETA(pickupDateStr, pickupSlotStr, serviceType) {
-  if (!pickupDateStr) return "Chưa xác định ngày lấy hàng";
-  
-  const pickupAt = new Date(`${pickupDateStr}T12:00:00`);
-  if (isNaN(pickupAt.getTime())) return "Chưa xác định ngày lấy hàng";
-
-  if (serviceType === "instant") {
-    return `Giao trong vòng 2 tiếng kể từ khung giờ lấy hàng ${pickupSlotStr || "đã chọn"}`;
-  } else if (serviceType === "express") {
-    const d1 = new Date(pickupAt); d1.setDate(d1.getDate() + 2);
-    const d2 = new Date(pickupAt); d2.setDate(d2.getDate() + 3);
-    return `Từ ngày ${formatDateToDDMMYYYY(d1.toISOString().split('T')[0])} đến ${formatDateToDDMMYYYY(d2.toISOString().split('T')[0])}`;
-  } else if (serviceType === "fast") {
-    const d1 = new Date(pickupAt); d1.setDate(d1.getDate() + 4);
-    const d2 = new Date(pickupAt); d2.setDate(d2.getDate() + 5);
-    return `Từ ngày ${formatDateToDDMMYYYY(d1.toISOString().split('T')[0])} đến ${formatDateToDDMMYYYY(d2.toISOString().split('T')[0])}`;
-  } else {
-    const d1 = new Date(pickupAt); d1.setDate(d1.getDate() + 7);
-    return `Dự kiến giao ngày ${formatDateToDDMMYYYY(d1.toISOString().split('T')[0])}`;
-  }
-}
-
 function formatDateToDDMMYYYY(dateString) {
   if (!dateString) return "—";
   const parts = String(dateString).split("-");
@@ -372,7 +349,7 @@ function hien_thi_tai_len_xac_nhan() {
 
 function renderSubmitSuccessState(orderCode, messageHtml) {
   clearPendingBookingDraft();
-  const isLoggedIn = !!window.isLoggedIn;
+  const isLoggedIn = !!syncBookingLoginState();
   const secondaryAction = isLoggedIn
     ? `
       <a
@@ -390,8 +367,10 @@ function renderSubmitSuccessState(orderCode, messageHtml) {
     `;
 
   const container = document.getElementById("buoc_5");
+  if (!container) return;
+
   container.innerHTML = `
-    <div style="text-align: center; padding: 40px 20px;">
+    <div id="booking-success-state" tabindex="-1" style="text-align: center; padding: 40px 20px;">
       <div style="width: 80px; height: 80px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 24px;">
         <i class="fas fa-check-circle"></i>
       </div>
@@ -408,6 +387,12 @@ function renderSubmitSuccessState(orderCode, messageHtml) {
       </div>
     </div>
   `;
+
+  window.requestAnimationFrame(() => {
+    const successState = document.getElementById("booking-success-state");
+    successState?.focus({ preventScroll: true });
+    successState?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 }
 
 function getServiceStorageValue(serviceType) {
@@ -588,6 +573,11 @@ async function gui_don_hang() {
   btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang xử lý...`;
 
   const payload = tao_du_lieu_gui();
+  if (!requireBookingLogin({ saveDraft: true, payload })) {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    return;
+  }
   xoa_loi(5);
 
   try {
@@ -635,7 +625,7 @@ async function gui_don_hang() {
 
     renderSubmitSuccessState(
       localDetail.order.order_code || finalOrderCode || "GHN-00000000-0000000",
-      !!window.isLoggedIn
+      !!syncBookingLoginState()
         ? `Đơn hàng đã được tạo thành công. Bạn có thể theo dõi đơn ngay trong tài khoản của mình.${googleSheetWarning}`
         : `Đơn hàng đã được tạo thành công. Hãy lưu lại mã đơn để tra cứu sau.${googleSheetWarning}`,
     );

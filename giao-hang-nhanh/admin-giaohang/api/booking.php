@@ -421,7 +421,7 @@ function load_pricing_data_json() {
         return $cache;
     }
 
-    $path = __DIR__ . '/data/pricing-data.json';
+    $path = dirname(__DIR__, 2) . '/public/data/pricing-data.json';
     if (!is_file($path)) {
         $cache = [];
         return $cache;
@@ -442,10 +442,10 @@ function normalize_fee_rule_map(array $source, array $fallback) {
         $normalized[$key] = [
             'key' => $key,
             'label' => trim((string) ($value['ten'] ?? $value['label'] ?? ($fallback[$key]['ten'] ?? $key))),
-            'fixedFee' => floatval($value['phicodinh'] ?? $value['fixedFee'] ?? 0),
-            'multiplier' => floatval($value['heso'] ?? $value['multiplier'] ?? 1),
-            'start' => trim((string) ($value['batdau'] ?? $value['start'] ?? '')),
-            'end' => trim((string) ($value['ketthuc'] ?? $value['end'] ?? '')),
+            'phicodinh' => floatval($value['phicodinh'] ?? 0),
+            'heso' => floatval($value['heso'] ?? 1),
+            'batdau' => trim((string) ($value['batdau'] ?? '')),
+            'ketthuc' => trim((string) ($value['ketthuc'] ?? '')),
         ];
     }
     return $normalized;
@@ -722,7 +722,7 @@ function get_service_condition_fee_config($conditionKey) {
     $config = get_instant_surcharge_config();
     $weather = $config['weather'] ?? [];
     $normalizedKey = strtolower(trim((string) $conditionKey));
-    return $weather[$normalizedKey] ?? ($weather['macdinh'] ?? ['fixedFee' => 0, 'multiplier' => 1, 'label' => 'Điều kiện bình thường']);
+    return $weather[$normalizedKey] ?? ($weather['macdinh'] ?? ['phicodinh' => 0, 'heso' => 1, 'label' => 'Điều kiện bình thường']);
 }
 
 function get_instant_time_fee_config($pickupAtUnix) {
@@ -730,13 +730,13 @@ function get_instant_time_fee_config($pickupAtUnix) {
     $rules = array_values($config['time'] ?? []);
     $fallback = end($rules);
     if (!is_array($fallback)) {
-        $fallback = ['fixedFee' => 0, 'multiplier' => 1, 'label' => 'Khung thời gian hiện tại'];
+        $fallback = ['phicodinh' => 0, 'heso' => 1, 'label' => 'Khung thời gian hiện tại'];
     }
 
     $targetMinutes = intval(date('G', $pickupAtUnix)) * 60 + intval(date('i', $pickupAtUnix));
     foreach ($rules as $rule) {
-        $start = time_text_to_minutes($rule['start'] ?? '');
-        $end = time_text_to_minutes($rule['end'] ?? '');
+        $start = time_text_to_minutes($rule['batdau'] ?? '');
+        $end = time_text_to_minutes($rule['ketthuc'] ?? '');
         if ($start < 0 || $end < 0) {
             continue;
         }
@@ -763,9 +763,9 @@ function get_instant_time_fee_config($pickupAtUnix) {
 }
 
 function calculate_surcharge_fee($transportSubtotal, array $config) {
-    $multiplier = floatval($config['multiplier'] ?? 1);
-    $fixedFee = floatval($config['fixedFee'] ?? 0);
-    return ($transportSubtotal * max($multiplier - 1, 0)) + $fixedFee;
+    $heSo = floatval($config['heso'] ?? 1);
+    $phiCoDinh = floatval($config['phicodinh'] ?? 0);
+    return ($transportSubtotal * max($heSo - 1, 0)) + $phiCoDinh;
 }
 
 function apply_server_side_instant_pricing(&$data, &$shippingFee, $conn) {

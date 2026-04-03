@@ -288,6 +288,7 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
             const requestedCode = <?php echo json_encode($requestedCode, JSON_UNESCAPED_UNICODE); ?>;
             const requestedId = <?php echo json_encode($requestedId, JSON_UNESCAPED_UNICODE); ?>;
             const root = document.getElementById("admin-order-detail");
+            const standaloneDetailBaseUrl = "../../chi-tiet-don-hang.html?viewer=admin&madonhang=";
 
             function escapeHtml(value) {
                 return String(value ?? "")
@@ -320,6 +321,19 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
                 if (["shipping", "dang_giao", "đang giao", "in_transit"].includes(normalized)) return "shipping";
                 if (["cancelled", "canceled", "da_huy", "đã hủy"].includes(normalized)) return "cancelled";
                 return "pending";
+            }
+
+            function deriveStatus(row) {
+                const cancelledAt = normalizeText(row.ngayhuy || "");
+                const completedAt = normalizeText(row.ngayhoanthanhthucte || "");
+                const startedAt = normalizeText(row.ngaybatdauthucte || "");
+                const acceptedAt = normalizeText(row.thoidiemnhandon || row.ngaynhan || "");
+
+                if (cancelledAt) return "cancelled";
+                if (completedAt) return "completed";
+                if (startedAt) return "shipping";
+                if (acceptedAt) return "pending";
+                return normalizeStatus(row.trang_thai || row.status);
             }
 
             function statusLabel(status) {
@@ -420,7 +434,7 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
             }
 
             function normalizeOrder(row) {
-                const status = normalizeStatus(row.trang_thai || row.status);
+                const status = deriveStatus(row);
                 const pricingMeta = parseJsonObject(row.chi_tiet_gia_cuoc_json);
                 const items = parseJsonArray(row.mat_hang_json);
 
@@ -443,6 +457,7 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
                     paymentMethod: paymentMethodLabel(row.phuong_thuc_thanh_toan || row.payment_method),
                     feePayer: payerLabel(row.nguoi_tra_cuoc || row.fee_payer),
                     note: normalizeText(row.ghi_chu || row.notes || ""),
+                    cancelReason: normalizeText(row.ly_do_huy || row.cancel_reason || ""),
                     pickupDate: normalizeText(row.ngay_lay_hang || ""),
                     pickupSlot: normalizeText(row.ten_khung_gio_lay_hang || row.khung_gio_lay_hang || ""),
                     estimatedDelivery: normalizeText(row.du_kien_giao_hang || row.estimated_delivery || ""),
@@ -451,6 +466,10 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
                     customerUsername: normalizeText(row.customer_username || ""),
                     shipperName: normalizeText(row.nha_cung_cap_ho_ten || row.shipper_name || ""),
                     shipperPhone: normalizeText(row.nha_cung_cap_so_dien_thoai || row.shipper_phone || ""),
+                    acceptedAt: normalizeText(row.thoidiemnhandon || row.ngaynhan || ""),
+                    startedAt: normalizeText(row.ngaybatdauthucte || ""),
+                    completedAt: normalizeText(row.ngayhoanthanhthucte || ""),
+                    cancelledAt: normalizeText(row.ngayhuy || ""),
                     items,
                     logs: [],
                 };
@@ -463,6 +482,40 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
                     title: "Đơn hàng đã được tạo",
                     note: `Đơn ${order.code} đã được lưu lên KRUD với trạng thái ${order.statusLabel.toLowerCase()}.`,
                 });
+
+                if (order.acceptedAt) {
+                    logs.push({
+                        time: order.acceptedAt,
+                        title: "Đã có nhà cung cấp nhận đơn",
+                        note: order.shipperName
+                            ? `${order.shipperName}${order.shipperPhone ? ` - ${order.shipperPhone}` : ""}`
+                            : "Đơn đã được nhận và bắt đầu điều phối.",
+                    });
+                }
+
+                if (order.startedAt) {
+                    logs.push({
+                        time: order.startedAt,
+                        title: "Đã bắt đầu thực hiện",
+                        note: "Nhà cung cấp đã xác nhận bắt đầu xử lý đơn hàng.",
+                    });
+                }
+
+                if (order.completedAt) {
+                    logs.push({
+                        time: order.completedAt,
+                        title: "Đơn hàng hoàn tất",
+                        note: "Đơn hàng đã được chốt hoàn tất theo mốc thời gian thực tế.",
+                    });
+                }
+
+                if (order.cancelledAt) {
+                    logs.push({
+                        time: order.cancelledAt,
+                        title: "Đơn hàng đã hủy",
+                        note: order.cancelReason || "Đơn hàng đã được đánh dấu hủy.",
+                    });
+                }
 
                 if (order.shipperName) {
                     logs.push({
@@ -547,7 +600,12 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
                                 <h1>#${escapeHtml(order.code)}</h1>
                                 <p>Chi tiết đơn hàng admin đang đọc trực tiếp từ bảng KRUD <strong>${escapeHtml(tableName)}</strong>.</p>
                             </div>
-                            <span class="status-pill"><i class="fa-solid fa-circle"></i> ${escapeHtml(order.statusLabel)}</span>
+                            <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end;">
+                                <span class="status-pill"><i class="fa-solid fa-circle"></i> ${escapeHtml(order.statusLabel)}</span>
+                                <a href="${standaloneDetailBaseUrl}${encodeURIComponent(order.code)}" target="_blank" rel="noreferrer" class="status-pill" style="text-decoration:none;">
+                                    <i class="fa-solid fa-up-right-from-square"></i> Mở màn chi tiết chung
+                                </a>
+                            </div>
                         </div>
                         <div class="hero-grid">
                             <div class="hero-stat">
@@ -642,10 +700,26 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
                                     <small>Dự kiến giao</small>
                                     <strong>${escapeHtml(order.estimatedDelivery || "Chưa cập nhật")}</strong>
                                 </div>
+                                <div class="detail-item">
+                                    <small>Nhận đơn thực tế</small>
+                                    <strong>${escapeHtml(formatDateTime(order.acceptedAt, "Chưa cập nhật"))}</strong>
+                                </div>
+                                <div class="detail-item">
+                                    <small>Bắt đầu thực tế</small>
+                                    <strong>${escapeHtml(formatDateTime(order.startedAt, "Chưa cập nhật"))}</strong>
+                                </div>
+                                <div class="detail-item">
+                                    <small>Hoàn thành thực tế</small>
+                                    <strong>${escapeHtml(formatDateTime(order.completedAt, "Chưa cập nhật"))}</strong>
+                                </div>
+                                <div class="detail-item">
+                                    <small>Thời điểm hủy</small>
+                                    <strong>${escapeHtml(formatDateTime(order.cancelledAt, "Chưa hủy"))}</strong>
+                                </div>
                             </div>
 
                             <div class="detail-admin-note" style="margin-top:18px;">
-                                Phần xem chi tiết admin đã nối KRUD. Các thao tác sửa trạng thái, phân công nhà cung cấp và ghi chú nội bộ của trang này chưa được nối lại trên KRUD.
+                                Phần xem chi tiết admin đã nối KRUD và suy trạng thái theo các mốc thời gian thực tế. Các thao tác sửa trạng thái, phân công nhà cung cấp và ghi chú nội bộ của trang này chưa được nối lại trên KRUD.
                             </div>
                         </section>
 
