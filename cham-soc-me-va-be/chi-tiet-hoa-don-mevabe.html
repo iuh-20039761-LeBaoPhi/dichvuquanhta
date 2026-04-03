@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Chi tiet hoa don me va be</title>
+	<title>Chi tiết hóa đơn mẹ và bé</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -229,6 +229,100 @@
 			word-break: break-word;
 		}
 
+		#panelInvoice .info-grid {
+			gap: 8px;
+		}
+
+		#panelInvoice .field {
+			border: 1px solid #c8d7ea;
+			background: #dfe9f7;
+			border-radius: 8px;
+			padding: 8px 10px;
+		}
+
+		#panelInvoice .field-label {
+			color: #3f5f7d;
+			font-size: 10px;
+		}
+
+		#panelInvoice .field-value {
+			font-size: 13px;
+			font-weight: 700;
+			color: #1f3853;
+		}
+
+		#panelInvoice .field.full-width {
+			grid-column: 1 / -1;
+		}
+
+		#panelCustomer .info-grid,
+		#panelStaff .info-grid {
+			gap: 8px;
+		}
+
+		#panelCustomer .field,
+		#panelStaff .field {
+			border: 1px solid #c8d7ea;
+			background: #dfe9f7;
+			border-radius: 8px;
+			padding: 8px 10px;
+		}
+
+		#panelCustomer .field-label,
+		#panelStaff .field-label {
+			color: #3f5f7d;
+			font-size: 10px;
+		}
+
+		#panelCustomer .field-value,
+		#panelStaff .field-value {
+			font-size: 13px;
+			font-weight: 700;
+			color: #1f3853;
+		}
+
+		#panelCustomer .field.full-width,
+		#panelStaff .field.full-width {
+			grid-column: 1 / -1;
+		}
+
+		#panelInvoice #invoiceJob {
+			list-style: none;
+			margin: 0;
+			padding: 8px;
+			border-radius: 10px;
+			background: #d8f0de;
+			display: grid;
+			gap: 8px;
+			counter-reset: job-item;
+		}
+
+		#panelInvoice #invoiceJob li {
+			counter-increment: job-item;
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			font-size: 13px;
+			font-weight: 600;
+			line-height: 1.45;
+			color: #1f3853;
+		}
+
+		#panelInvoice #invoiceJob li::before {
+			content: counter(job-item);
+			flex: 0 0 22px;
+			height: 22px;
+			border-radius: 999px;
+			background: #22a06b;
+			color: #fff;
+			font-size: 12px;
+			font-weight: 800;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: 1px;
+		}
+
 		.status-list {
 			display: grid;
 			gap: 8px;
@@ -294,6 +388,152 @@
 
 		.progress-inner.danger {
 			background: linear-gradient(90deg, #df6a3e, #d14242);
+		}
+
+		#panelTime {
+			background: linear-gradient(180deg, #f8fbff 0%, #f2f7fd 100%);
+			border-color: #cddced;
+		}
+
+		#panelTime .panel-head {
+			margin-bottom: 2px;
+		}
+
+		#panelTime .panel-title {
+			font-size: 15px;
+		}
+
+		#panelTime .progress-wrap {
+			gap: 6px;
+		}
+
+		#panelTime .progress-meta {
+			font-size: 12px;
+			color: #3b5774;
+		}
+
+		#panelTime .progress-outer {
+			height: 21px;
+			border-radius: 999px;
+			background: #dce9f7;
+		}
+
+		#panelTime #badgeProgress {
+			display: none;
+		}
+
+		#panelTime #badgeTimeState:not(.success):not(.warning):not(.danger) {
+			background: #ffdce8;
+			color: #a43b5b;
+		}
+
+		.time-state-line {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			flex-wrap: wrap;
+		}
+
+		.time-state-label {
+			font-size: 12px;
+			font-weight: 800;
+			color: #4b617a;
+		}
+
+		.time-compare {
+			border: 1px solid #d3e0ef;
+			border-radius: 8px;
+			overflow: hidden;
+			background: #f7faff;
+		}
+
+		.time-compare-head {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			background: #e7eef8;
+			color: #2f4763;
+			font-size: 12px;
+			font-weight: 800;
+		}
+
+		.time-compare-head span {
+			padding: 7px 10px;
+		}
+
+		.time-compare-body {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.time-col {
+			border-right: 1px solid #dbe6f3;
+		}
+
+		.time-col:last-child {
+			border-right: 0;
+		}
+
+		.time-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 8px;
+			padding: 7px 10px;
+			border-top: 1px solid #e3ecf7;
+			font-size: 12px;
+		}
+
+		.time-item:first-child {
+			border-top: 0;
+		}
+
+		.time-item-label {
+			color: #5b738d;
+			font-weight: 700;
+		}
+
+		.time-item-value {
+			color: #1f3853;
+			font-weight: 800;
+		}
+
+		.time-note-row {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			font-size: 12px;
+			padding-top: 2px;
+		}
+
+		#panelTime .time-note-row .status-label {
+			font-size: 12px;
+			font-weight: 800;
+			color: #4f657d;
+		}
+
+		#panelTime .time-note-row .status-value {
+			font-size: 12px;
+			color: #1f3853;
+			font-weight: 700;
+			text-align: right;
+		}
+
+		#panelTime .hint {
+			font-size: 12px;
+			margin-top: -2px;
+		}
+
+		#panelTime .actions-prominent {
+			margin: 0;
+			gap: 8px;
+		}
+
+		#panelTime .actions-prominent .btn {
+			min-height: 34px;
+			padding: 8px 14px;
+			font-size: 13px;
+			border-radius: 8px;
 		}
 
 		.hint {
@@ -366,6 +606,23 @@
 			font-size: 15px;
 			font-weight: 800;
 			min-height: 46px;
+		}
+
+		.start-inline {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.start-inline-countdown {
+			font-size: 12px;
+			font-weight: 700;
+			color: #23527a;
+			background: #edf6ff;
+			border: 1px solid #c8e0f7;
+			border-radius: 999px;
+			padding: 8px 10px;
+			white-space: nowrap;
 		}
 
 		.btn {
@@ -450,123 +707,149 @@
 	<main class="page">
 		<section class="modal-card">
 			<header class="topbar">
-				<h1 class="topbar-title">Chi tiet hoa don me va be</h1>
+				<h1 class="topbar-title">Chi tiết hóa đơn mẹ và bé</h1>
 				<div class="topbar-meta">
-					<span class="chip" id="chipRole">Role: ...</span>
-					<span class="chip" id="chipOrder">Ma HD: ...</span>
+					<span class="chip" id="chipRole">Vai trò: ...</span>
+					<span class="chip" id="chipOrder">Mã HĐ: ...</span>
 				</div>
 			</header>
 
 			<div class="content">
-				<div id="stateMessage" class="state info">Dang tai du lieu...</div>
+				<div id="stateMessage" class="state info">Đang tải dữ liệu...</div>
 
 				<section id="mainGrid" class="grid hidden">
 					<article class="panel" id="panelInvoice">
 						<div class="panel-head">
-							<h2 class="panel-title">1. Thong tin hoa don</h2>
+							<h2 class="panel-title">1. Thông tin hóa đơn</h2>
 							<span id="badgeInvoiceStatus" class="badge">---</span>
 						</div>
 						<div class="info-grid">
-							<div class="field"><p class="field-label">Ma hoa don</p><p id="invoiceId" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Tong tien</p><p id="invoicePrice" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Dich vu</p><p id="invoiceService" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Goi dich vu</p><p id="invoicePackage" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Cong viec</p><p id="invoiceJob" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Yeu cau</p><p id="invoiceRequest" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Mã hóa đơn</p><p id="invoiceId" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Tổng tiền</p><p id="invoicePrice" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Dịch vụ</p><p id="invoiceService" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Gói dịch vụ</p><p id="invoicePackage" class="field-value">---</p></div>
+							<div class="field full-width"><p class="field-label">Địa chỉ</p><p id="invoiceAddress" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Yêu cầu</p><p id="invoiceRequest" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Ghi chú</p><p id="invoiceNote" class="field-value">---</p></div>
+							<div class="field full-width"><p class="field-label">Công việc</p><ol id="invoiceJob" class="field-value"><li>---</li></ol></div>
 						</div>
 					</article>
 					<article class="panel" id="panelTime">
 						<div class="panel-head">
-							<h2 class="panel-title">4 + 5. Trang thai, thoi gian va tien do</h2>
-							<span id="badgeTimeState" class="badge">---</span>
-						</div>
-						<div class="status-list">
-							<div class="status-row"><span class="status-label">Bat dau (ke hoach)</span><span id="timeStartPlan" class="status-value">---</span></div>
-							<div class="status-row"><span class="status-label">Ket thuc (ke hoach)</span><span id="timeEndPlan" class="status-value">---</span></div>
-							<div class="status-row"><span class="status-label">Bat dau thuc te</span><span id="timeStartReal" class="status-value">---</span></div>
-							<div class="status-row"><span class="status-label">Ket thuc thuc te</span><span id="timeEndReal" class="status-value">---</span></div>
-							<div class="status-row"><span class="status-label">Tinh trang hien tai</span><span id="timeCurrentState" class="status-value">---</span></div>
-							<div class="status-row"><span class="status-label">Ghi chu ngay</span><span id="timeDayHint" class="status-value">---</span></div>
-						</div>
-						<p id="timeMessage" class="hint">---</p>
-
-						<div class="actions actions-prominent">
-							<button id="btnClaim" class="btn btn-primary hidden" type="button">Nhan viec</button>
-							<button id="btnUnclaim" class="btn btn-danger hidden" type="button">Huy nhan viec</button>
-							<button id="btnStart" class="btn btn-success hidden" type="button">Bat dau</button>
-							<button id="btnPause" class="btn btn-warning hidden" type="button">Tam dung</button>
-							<button id="btnResume" class="btn btn-primary hidden" type="button">Tiep tuc</button>
-							<button id="btnEnd" class="btn btn-warning hidden" type="button">Ket thuc</button>
+							<h2 class="panel-title">4 + 5. Trạng thái, thời gian và tiến độ</h2>
 						</div>
 
 						<div class="progress-wrap">
 							<div class="progress-meta">
-								<span>Tien do thuc hien</span>
+								<span>Tiến độ thực hiện</span>
 								<span id="progressText">0%</span>
 							</div>
 							<div class="progress-outer">
 								<div id="progressBar" class="progress-inner"></div>
 							</div>
-							<p id="progressHint" class="hint">Du lieu tien do se duoc cap nhat theo thoi gian.</p>
+							<p id="progressHint" class="hint">Dữ liệu tiến độ sẽ được cập nhật theo thời gian.</p>
+						</div>
+
+						<div class="time-state-line">
+							<span class="time-state-label">Trạng thái:</span>
+							<span id="badgeTimeState" class="badge">---</span>
+							<span id="timeCurrentState" class="hidden">---</span>
+						</div>
+
+						<div class="time-compare">
+							<div class="time-compare-head">
+								<span>Thời gian dự kiến</span>
+								<span>Thời gian thực tế</span>
+							</div>
+							<div class="time-compare-body">
+								<div class="time-col">
+									<div class="time-item"><span class="time-item-label">Bắt đầu</span><span id="timeStartPlan" class="time-item-value">---</span></div>
+									<div class="time-item"><span class="time-item-label">Kết thúc</span><span id="timeEndPlan" class="time-item-value">---</span></div>
+								</div>
+								<div class="time-col">
+									<div class="time-item"><span class="time-item-label">Bắt đầu</span><span id="timeStartReal" class="time-item-value">---</span></div>
+									<div class="time-item"><span class="time-item-label">Kết thúc</span><span id="timeEndReal" class="time-item-value">---</span></div>
+								</div>
+							</div>
+						</div>
+
+						<div class="time-note-row">
+							<span class="status-label">Ghi chú ngày</span>
+							<span id="timeDayHint" class="status-value">---</span>
+						</div>
+						<p id="timeMessage" class="hint">---</p>
+
+						<div class="actions actions-prominent">
+							<button id="btnClaim" class="btn btn-primary hidden" type="button">Nhận việc</button>
+							<button id="btnUnclaim" class="btn btn-danger hidden" type="button">Hủy nhận việc</button>
+							<div class="start-inline">
+								<button id="btnStart" class="btn btn-success hidden" type="button">Bắt đầu</button>
+								<span id="startButtonCountdown" class="start-inline-countdown hidden">--</span>
+							</div>
+							<button id="btnPause" class="btn btn-warning hidden" type="button">Tạm dừng</button>
+							<button id="btnResume" class="btn btn-primary hidden" type="button">Tiếp tục</button>
+							<button id="btnEnd" class="btn btn-warning hidden" type="button">Kết thúc</button>
 						</div>
 
 						<div id="staffWorkForm" class="forms hidden">
-							<label class="field-label" for="staffNote">Ghi chu cong viec</label>
-							<textarea id="staffNote" class="textarea" placeholder="Nhap ghi chu cong viec..."></textarea>
-							<label class="field-label" for="staffMediaInput">Upload anh/video (nhan vien)</label>
+							<label class="field-label" for="staffNote">Ghi chú công việc</label>
+							<textarea id="staffNote" class="textarea" placeholder="Nhập ghi chú công việc..."></textarea>
+							<label class="field-label" for="staffMediaInput">Tải lên ảnh/video (nhân viên)</label>
 							<input id="staffMediaInput" class="file-input" type="file" accept="image/*,video/*" multiple>
-							<button id="btnSaveStaffLog" class="btn btn-light" type="button">Luu ghi chu va media</button>
+							<button id="btnSaveStaffLog" class="btn btn-light" type="button">Lưu ghi chú và minh chứng</button>
 						</div>
 
 						<div class="actions">
 							<span id="badgeProgress" class="badge">0%</span>
-							<button id="btnCancelService" class="btn btn-danger hidden" type="button">Huy dich vu</button>
+							<button id="btnCancelService" class="btn btn-danger hidden" type="button">Hủy dịch vụ</button>
 						</div>
 					</article>
 					<article class="panel" id="panelCustomer">
 						<div class="panel-head">
-							<h2 class="panel-title">2. Thong tin khach hang</h2>
-							<span class="badge success">Customer</span>
+							<h2 class="panel-title">2. Thông tin khách hàng</h2>
+							<span class="badge success">Khách hàng</span>
 						</div>
 						<div class="info-grid">
-							<div class="field"><p class="field-label">Ho va ten</p><p id="customerName" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">So dien thoai</p><p id="customerPhone" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Họ và tên</p><p id="customerName" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Số điện thoại</p><p id="customerPhone" class="field-value">---</p></div>
 							<div class="field"><p class="field-label">Email</p><p id="customerEmail" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Dia chi</p><p id="customerAddress" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Mat khau URL</p><p id="customerPassMask" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Quyen truy cap</p><p id="customerAccess" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Năm sinh</p><p id="customerBirthYear" class="field-value">---</p></div>
+							<div class="field full-width"><p class="field-label">Địa chỉ</p><p id="customerAddress" class="field-value">---</p></div>
 						</div>
 					</article>
 
 					<article class="panel" id="panelStaff">
 						<div class="panel-head">
-							<h2 class="panel-title">3. Nhan vien phu trach</h2>
-							<span id="badgeStaff" class="badge warning">Chua nhan</span>
+							<h2 class="panel-title">3. Nhân viên phụ trách</h2>
+							<span id="badgeStaff" class="badge warning">Chưa nhận</span>
 						</div>
 						<div class="info-grid">
-							<div class="field"><p class="field-label">ID nhan vien</p><p id="staffId" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Ho va ten</p><p id="staffName" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">So dien thoai</p><p id="staffPhone" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">ID nhân viên</p><p id="staffId" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Họ và tên</p><p id="staffName" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Số điện thoại</p><p id="staffPhone" class="field-value">---</p></div>
 							<div class="field"><p class="field-label">Email</p><p id="staffEmail" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Trang thai nhan viec</p><p id="staffState" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Dem nguoc bat dau</p><p id="startCountdown" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Ngày sinh</p><p id="staffBirthDate" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Kinh nghiệm</p><p id="staffExperience" class="field-value">---</p></div>
+							<div class="field full-width"><p class="field-label">Địa chỉ</p><p id="staffAddress" class="field-value">---</p></div>
+							<div class="field"><p class="field-label">Trạng thái nhận việc</p><p id="staffState" class="field-value">---</p></div>
+							<div class="field" id="staffCountdownField"><p class="field-label">Đếm ngược bắt đầu</p><p id="startCountdown" class="field-value">---</p></div>
 						</div>
 					</article>
 
 					<article class="panel panel-wide" id="panelMedia">
 						<div class="panel-head">
-							<h2 class="panel-title">6. Anh va danh gia</h2>
-							<span class="badge">Media</span>
+							<h2 class="panel-title">6. Ảnh và đánh giá</h2>
+							<span class="badge">Minh chứng</span>
 						</div>
 
 						<div class="media-grid" id="mediaGrid"></div>
 
 						<div id="customerReviewForm" class="forms hidden">
-							<label class="field-label" for="customerReview">Danh gia cua khach hang</label>
-							<textarea id="customerReview" class="textarea" placeholder="Nhap danh gia sau khi hoan thanh..."></textarea>
-							<label class="field-label" for="customerMediaInput">Upload anh/video (khach hang)</label>
+							<label class="field-label" for="customerReview">Đánh giá của khách hàng</label>
+							<textarea id="customerReview" class="textarea" placeholder="Nhập đánh giá sau khi hoàn thành..."></textarea>
+							<label class="field-label" for="customerMediaInput">Tải lên ảnh/video (khách hàng)</label>
 							<input id="customerMediaInput" class="file-input" type="file" accept="image/*,video/*" multiple>
-							<button id="btnSaveReview" class="btn btn-primary" type="button">Gui danh gia</button>
+							<button id="btnSaveReview" class="btn btn-primary" type="button">Gửi đánh giá</button>
 						</div>
 					</article>
 				</section>
@@ -579,6 +862,7 @@
 			params: { mahd: '', sodienthoai: '', password: '' },
 			role: '',
 			user: null,
+			customer: null,
 			order: null,
 			staff: null,
 			countdownTimer: null,
@@ -598,20 +882,25 @@
 			invoicePackage: document.getElementById('invoicePackage'),
 			invoiceJob: document.getElementById('invoiceJob'),
 			invoiceRequest: document.getElementById('invoiceRequest'),
+			invoiceAddress: document.getElementById('invoiceAddress'),
+			invoiceNote: document.getElementById('invoiceNote'),
 
 			customerName: document.getElementById('customerName'),
 			customerPhone: document.getElementById('customerPhone'),
 			customerEmail: document.getElementById('customerEmail'),
+			customerBirthYear: document.getElementById('customerBirthYear'),
 			customerAddress: document.getElementById('customerAddress'),
-			customerPassMask: document.getElementById('customerPassMask'),
-			customerAccess: document.getElementById('customerAccess'),
 
 			badgeStaff: document.getElementById('badgeStaff'),
 			staffId: document.getElementById('staffId'),
 			staffName: document.getElementById('staffName'),
 			staffPhone: document.getElementById('staffPhone'),
 			staffEmail: document.getElementById('staffEmail'),
+			staffBirthDate: document.getElementById('staffBirthDate'),
+			staffExperience: document.getElementById('staffExperience'),
+			staffAddress: document.getElementById('staffAddress'),
 			staffState: document.getElementById('staffState'),
+			staffCountdownField: document.getElementById('staffCountdownField'),
 			startCountdown: document.getElementById('startCountdown'),
 
 			badgeTimeState: document.getElementById('badgeTimeState'),
@@ -647,6 +936,7 @@
 			staffWorkForm: document.getElementById('staffWorkForm'),
 			staffNote: document.getElementById('staffNote'),
 			staffMediaInput: document.getElementById('staffMediaInput'),
+			startButtonCountdown: document.getElementById('startButtonCountdown'),
 			actionsProminent: document.querySelector('.actions.actions-prominent')
 		};
 
@@ -680,7 +970,10 @@
 			review: ['danhgia_khachhang', 'danh_gia', 'danhgia'],
 			customerMedia: ['minhchung_khachhang', 'media_khachhang'],
 			staffMedia: ['minhchung_nhanvien', 'media_nhanvien'],
-			staffNote: ['ghichu_nhanvien']
+			staffNote: ['ghichu_nhanvien'],
+			birthDate: ['ngaysinh', 'ngay_sinh', 'nam_sinh', 'date_of_birth'],
+			experience: ['kinhnghiem', 'kinh_nghiem', 'experience'],
+			customerBirthYear: ['namsinh', 'nam_sinh', 'ngaysinh', 'ngay_sinh', 'date_of_birth']
 		};
 
 		/*
@@ -862,7 +1155,7 @@
 			if (Array.isArray(res)) return res;
 			if (!res || typeof res !== 'object') return [];
 			if (res.error) throw new Error(String(res.error));
-			if (res.success === false) throw new Error(String(res.message || 'Khong lay du lieu duoc'));
+			if (res.success === false) throw new Error(String(res.message || 'Không lấy dữ liệu được'));
 			if (Array.isArray(res.data)) return res.data;
 			if (Array.isArray(res.rows)) return res.rows;
 			if (Array.isArray(res.items)) return res.items;
@@ -887,7 +1180,7 @@
 		// ===== 2) GOI API =====
 		async function getData(table, where = {}) {
 			if (typeof krudList !== 'function') {
-				throw new Error('Khong tai duoc ham krudList tu API');
+				throw new Error('Không tải được hàm krudList từ API');
 			}
 			const rows = normalizeRows(await krudList({ table }));
 			return rows.filter((row) => matchWhere(row, where));
@@ -895,11 +1188,11 @@
 
 		async function updateData(table, data, where = {}) {
 			if (typeof krud !== 'function') {
-				throw new Error('Khong tai duoc ham krud tu API');
+				throw new Error('Không tải được hàm krud từ API');
 			}
 			const targets = await getData(table, where);
 			if (!targets.length) {
-				return { success: false, message: 'Khong tim thay ban ghi de cap nhat' };
+				return { success: false, message: 'Không tìm thấy bản ghi để cập nhật' };
 			}
 
 			const results = [];
@@ -913,7 +1206,7 @@
 			const hasError = results.some((r) => !r || r.error || r.success === false);
 			return {
 				success: !hasError,
-				message: hasError ? 'Co ban ghi cap nhat that bai' : 'Cap nhat thanh cong',
+				message: hasError ? 'Có bản ghi cập nhật thất bại' : 'Cập nhật thành công',
 				results
 			};
 		}
@@ -924,7 +1217,7 @@
 			const pass = app.params.password;
 
 			if (!phone || !pass) {
-				throw new Error('Thieu sodienthoai hoac password trong URL');
+				throw new Error('Thiếu số điện thoại hoặc mật khẩu trong URL');
 			}
 
 			const [customerRows, staffRows] = await Promise.all([
@@ -964,11 +1257,11 @@
 		// ===== 4) LAY DU LIEU HOA DON =====
 		async function fetchOrder() {
 			const mahd = Number(app.params.mahd);
-			if (!mahd) throw new Error('Ma hoa don khong hop le');
+			if (!mahd) throw new Error('Mã hóa đơn không hợp lệ');
 
 			const rows = await getData('datlich_mevabe', { id: mahd });
 			const order = rows[0] || null;
-			if (!order) throw new Error('Khong tim thay hoa don');
+			if (!order) throw new Error('Không tìm thấy hóa đơn');
 
 			const orderPhone = normalizePhone(pick(order, fieldMap.phone, ''));
 			const userPhone = normalizePhone(pick(app.user, fieldMap.phone, ''));
@@ -978,6 +1271,9 @@
 			}
 
 			app.order = order;
+
+			const customerRows = orderPhone ? await getData('khachhang', { sodienthoai: orderPhone }) : [];
+			app.customer = customerRows[0] || null;
 
 			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
 			if (supplierId > 0) {
@@ -1051,7 +1347,7 @@
 		}
 
 		function isPausedStatus(rawStatus) {
-			return ['tạm dừng', 'tam dung', 'paused', 'pause'].includes(String(rawStatus || '').toLowerCase());
+			return ['tạm dừng', 'tam dung', 'paused', 'pause', 'dừng tạm thời', 'dung tam thoi', 'temporary_stop'].includes(String(rawStatus || '').toLowerCase());
 		}
 
 		function isTerminalStatus(rawStatus) {
@@ -1090,12 +1386,73 @@
 
 		function statusLabel(order) {
 			const raw = getStatusRaw(order);
-			if (!raw) return 'Cho xu ly';
-			if (['đã hủy', 'da huy', 'da_huy', 'huy_don', 'cancelled', 'canceled'].includes(raw)) return 'Da huy';
-			if (['đã hoàn thành', 'da hoan thanh', 'done', 'completed'].includes(raw)) return 'Da hoan thanh';
-			if (['đang thực hiện', 'dang thuc hien', 'in_progress'].includes(raw)) return 'Dang thuc hien';
-			if (['đã nhận', 'da nhan', 'assigned'].includes(raw)) return 'Da nhan';
+			if (!raw) return 'Chờ xử lý';
+			if (['đã hủy', 'da huy', 'da_huy', 'huy_don', 'cancelled', 'canceled'].includes(raw)) return 'Đã hủy';
+			if (['đã hoàn thành', 'da hoan thanh', 'done', 'completed'].includes(raw)) return 'Đã hoàn thành';
+			if (['đang thực hiện', 'dang thuc hien', 'in_progress'].includes(raw)) return 'Đang thực hiện';
+			if (['dừng tạm thời', 'dung tam thoi', 'temporary_stop'].includes(raw)) return 'Dừng tạm thời';
+			if (['đã nhận', 'da nhan', 'assigned'].includes(raw)) return 'Đã nhận';
 			return raw;
+		}
+
+		function roleLabel(role) {
+			if (role === 'customer') return 'Khách hàng';
+			if (role === 'staff') return 'Nhân viên';
+			return 'Không xác định';
+		}
+
+		function phaseLabel(phase) {
+			const raw = String(phase || '').toLowerCase();
+			if (raw === 'waiting') return 'Đang chờ';
+			if (raw === 'running') return 'Đang thực hiện';
+			if (raw === 'paused') return 'Tạm dừng';
+			if (raw === 'ended') return 'Đã kết thúc';
+			if (raw === 'unknown') return 'Chưa xác định';
+			return toText(phase, 'Chưa xác định');
+		}
+
+		function isSameDate(a, b) {
+			if (!(a instanceof Date) || Number.isNaN(a.getTime())) return false;
+			if (!(b instanceof Date) || Number.isNaN(b.getTime())) return false;
+			return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+		}
+
+		function getCountdownTargetToStartTime(order) {
+			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
+			if (supplierId <= 0) return null;
+
+			const schedule = getScheduleMeta(order);
+			if (!(schedule.startDate instanceof Date) || Number.isNaN(schedule.startDate.getTime())) {
+				return null;
+			}
+
+			const [sh, sm] = normalizeTimeText(schedule.startTime, '08:00').split(':').map(Number);
+			const now = new Date();
+			const today = new Date(now);
+			today.setHours(0, 0, 0, 0);
+
+			const startDateOnly = new Date(schedule.startDate);
+			startDateOnly.setHours(0, 0, 0, 0);
+
+			const endDateSrc = schedule.endDate instanceof Date && !Number.isNaN(schedule.endDate.getTime())
+				? schedule.endDate
+				: schedule.startDate;
+			const endDateOnly = new Date(endDateSrc);
+			endDateOnly.setHours(0, 0, 0, 0);
+
+			if (today.getTime() < startDateOnly.getTime()) {
+				const target = new Date(startDateOnly);
+				target.setHours(sh, sm, 0, 0);
+				return target;
+			}
+
+			if (today.getTime() > endDateOnly.getTime()) {
+				return null;
+			}
+
+			const targetToday = new Date(now);
+			targetToday.setHours(sh, sm, 0, 0);
+			return targetToday;
 		}
 
 		function setBadge(el, text, mode) {
@@ -1125,11 +1482,37 @@
 
 		function appendMediaFallback() {
 			const img = document.createElement('img');
-			img.alt = 'Chua co media';
+			img.alt = 'Chưa có minh chứng';
 			img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-				'<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><rect width="100%" height="100%" fill="#eef4fb"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#6f8193">Chua co anh/video</text></svg>'
+				'<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><rect width="100%" height="100%" fill="#eef4fb"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#6f8193">Chưa có ảnh/video</text></svg>'
 			);
 			dom.mediaGrid.appendChild(img);
+		}
+
+		function renderInvoiceJobList(rawJob) {
+			if (!dom.invoiceJob) return;
+			const parts = String(rawJob || '')
+				.replace(/\r/g, '\n')
+				.split(/\n+/)
+				.flatMap((line) => {
+					const trimmed = line.trim();
+					if (!trimmed) return [];
+					return trimmed.includes('.') ? trimmed.split(/\s*\.\s*/) : [trimmed];
+				})
+				.map((line) => line
+					.replace(/^\s*[\-\u2022\*]+\s*/, '')
+					.replace(/^\s*\d+\s*[\)\-:]*\s*/, '')
+					.replace(/^[\s,;:.]+/, '')
+					.trim())
+				.filter((line) => line && !/^\d+$/.test(line));
+
+			dom.invoiceJob.innerHTML = '';
+			const items = parts.length ? parts : ['Không có'];
+			items.forEach((text) => {
+				const li = document.createElement('li');
+				li.textContent = text;
+				dom.invoiceJob.appendChild(li);
+			});
 		}
 
 		function renderMedia(order) {
@@ -1151,7 +1534,7 @@
 				} else {
 					const img = document.createElement('img');
 					img.src = url;
-					img.alt = 'Media hoa don';
+					img.alt = 'Minh chứng hóa đơn';
 					img.loading = 'lazy';
 					dom.mediaGrid.appendChild(img);
 				}
@@ -1184,9 +1567,10 @@
 			const start = ranges.length ? ranges[0].start : null;
 			const end = ranges.length ? ranges[ranges.length - 1].end : null;
 			const { realStart, realEnd } = getRealDates(order);
+			const rawStatus = getStatusRaw(order);
 
 			let phase = 'unknown';
-			let message = 'Khong du du lieu thoi gian';
+			let message = 'Không đủ dữ liệu thời gian';
 			let dayHint = '---';
 			let nextStart = null;
 
@@ -1197,13 +1581,13 @@
 			if (start && !isStarted(start, now)) {
 				phase = 'waiting';
 				const left = diffTime(now, start);
-				message = 'Con ' + left.days + ' ngay ' + left.hours + ' gio ' + left.minutes + ' phut';
+				message = 'Còn ' + left.days + ' ngày ' + left.hours + ' giờ ' + left.minutes + ' phút';
 			} else if (start && end && isStarted(start, now) && !isEnded(end, now)) {
 				phase = 'running';
-				message = activeRange ? 'Dang thuc hien' : 'Tiep tuc vao ngay tiep theo';
+				message = activeRange ? 'Đang thực hiện' : 'Tiếp tục vào ngày tiếp theo';
 			} else if (end && isEnded(end, now)) {
 				phase = 'ended';
-				message = 'Da hoan thanh';
+				message = 'Đã hoàn thành';
 			}
 
 			const dateRangeText = schedule.startDate instanceof Date && !Number.isNaN(schedule.startDate.getTime())
@@ -1211,15 +1595,19 @@
 				: '---';
 
 			if (schedule.totalDays > 0) {
-				dayHint = 'Khoang ngay: ' + dateRangeText;
+				dayHint = 'Khoảng ngày: ' + dateRangeText;
 			}
 
 			if (realStart && !realEnd && phase === 'running') {
-				message = activeRange ? 'Dang thuc hien (da bat dau thuc te)' : message;
+				message = activeRange ? 'Đang thực hiện (đã bắt đầu thực tế)' : message;
+			}
+			if (realStart && !realEnd && isPausedStatus(rawStatus)) {
+				phase = 'paused';
+				message = 'Tạm dừng';
 			}
 			if (realEnd) {
 				phase = 'ended';
-				message = 'Da hoan thanh';
+				message = 'Đã hoàn thành';
 			}
 
 			return {
@@ -1297,10 +1685,12 @@
 			const now = new Date();
 			const hasPlanWindow = timeline.start instanceof Date && timeline.end instanceof Date;
 			const inCurrentWorkWindow = !!timeline.activeRange || (hasPlanWindow && now >= timeline.start && now < timeline.end);
-			const plannedEndRef = timeline.end instanceof Date ? timeline.end : null;
-			const beforePlannedEnd = plannedEndRef instanceof Date && now < plannedEndRef;
+			const isStartDateToday = isSameDate(timeline.startDateOnly, now);
+			const plannedEndRef = timeline.activeRange && timeline.activeRange.end instanceof Date
+				? timeline.activeRange.end
+				: (timeline.end instanceof Date ? timeline.end : null);
 			const remainToPlannedEndMs = plannedEndRef instanceof Date ? Math.max(0, plannedEndRef.getTime() - now.getTime()) : Infinity;
-			const nearPlannedEnd = remainToPlannedEndMs < 30 * 60 * 1000;
+			const nearPlannedEnd = remainToPlannedEndMs <= 30 * 60 * 1000;
 			const terminalStatus = isTerminalStatus(status);
 
 			dom.btnCancelService.classList.add('hidden');
@@ -1312,6 +1702,7 @@
 			dom.btnEnd.classList.add('hidden');
 			dom.customerReviewForm.classList.add('hidden');
 			dom.staffWorkForm.classList.add('hidden');
+			if (dom.startButtonCountdown) dom.startButtonCountdown.classList.add('hidden');
 			syncProminentActionsVisibility();
 
 			if (isCustomerRole()) {
@@ -1329,11 +1720,12 @@
 					dom.staffWorkForm.classList.remove('hidden');
 					if (canUnclaim && timeline.phase === 'waiting' && !work.realStart) dom.btnUnclaim.classList.remove('hidden');
 
-					// Nut Bat dau hien thi dung theo khung gio ke hoach cua don.
-					const canShowStart = !work.realStart && !work.realEnd && inCurrentWorkWindow;
+					// Trong ngay bat dau luon hien thi nut Bat dau, khong can doi den gio_bat_dau.
+					const canShowStart = !work.realStart && !work.realEnd && (isStartDateToday || inCurrentWorkWindow);
 
 					if (canShowStart) {
 						dom.btnStart.classList.remove('hidden');
+						if (dom.startButtonCountdown) dom.startButtonCountdown.classList.remove('hidden');
 					}
 
 					if (work.realStart && !work.realEnd) {
@@ -1357,57 +1749,72 @@
 			const user = app.user;
 			const status = statusLabel(order);
 
-			dom.chipRole.textContent = 'Role: ' + app.role;
-			dom.chipOrder.textContent = 'Ma HD: ' + toText(app.params.mahd);
+			dom.chipRole.textContent = 'Vai trò: ' + roleLabel(app.role);
+			dom.chipOrder.textContent = 'Mã HĐ: ' + toText(app.params.mahd);
 
 			dom.invoiceId.textContent = toText(pick(order, fieldMap.id, app.params.mahd));
 			dom.invoicePrice.textContent = money(pick(order, fieldMap.price, '0'));
-			dom.invoiceService.textContent = toText(pick(order, fieldMap.service, 'Chua ro'));
-			dom.invoicePackage.textContent = toText(pick(order, fieldMap.pack, 'Chua ro'));
-			dom.invoiceJob.textContent = toText(pick(order, fieldMap.job, 'Chua ro'));
-			dom.invoiceRequest.textContent = toText(pick(order, fieldMap.request, 'Khong co'));
+			dom.invoiceService.textContent = toText(pick(order, fieldMap.service, 'Chưa rõ'));
+			dom.invoicePackage.textContent = toText(pick(order, fieldMap.pack, 'Chưa rõ'));
+			renderInvoiceJobList(pick(order, fieldMap.job, ''));
+			dom.invoiceRequest.textContent = toText(pick(order, fieldMap.request, 'Không có'));
+			dom.invoiceAddress.textContent = toText(pick(order, fieldMap.address, '---'));
+			dom.invoiceNote.textContent = toText(pick(order, fieldMap.note, 'Không có'));
 			setBadge(dom.badgeInvoiceStatus, status, status.includes('huy') ? 'danger' : (status.includes('hoan') ? 'success' : 'warning'));
 
-			dom.customerName.textContent = toText(pick(order, fieldMap.name, pick(user, fieldMap.name, 'Khach hang')));
+			dom.customerName.textContent = toText(pick(order, fieldMap.name, pick(user, fieldMap.name, 'Khách hàng')));
 			dom.customerPhone.textContent = toText(pick(order, fieldMap.phone, app.params.sodienthoai));
-			dom.customerEmail.textContent = toText(pick(order, fieldMap.email, pick(user, fieldMap.email, '---')));
-			dom.customerAddress.textContent = toText(pick(order, fieldMap.address, pick(user, fieldMap.address, '---')));
-			dom.customerPassMask.textContent = maskPassword(app.params.password);
-			dom.customerAccess.textContent = app.role === 'customer' ? 'Khach hang dang xem dung hoa don' : 'Nhan vien dang xem hoa don';
+			const customerProfile = app.customer || (app.role === 'customer' ? user : null);
+			dom.customerEmail.textContent = toText(pick(order, fieldMap.email, pick(customerProfile, fieldMap.email, '---')));
+			dom.customerAddress.textContent = toText(pick(order, fieldMap.address, pick(customerProfile, fieldMap.address, '---')));
+			const customerBirthRaw = pick(customerProfile, fieldMap.customerBirthYear, pick(order, fieldMap.customerBirthYear, ''));
+			const customerBirthDate = parseDateFlexible(customerBirthRaw);
+			dom.customerBirthYear.textContent = /^\d{4}$/.test(String(customerBirthRaw || '').trim())
+				? String(customerBirthRaw).trim()
+				: (customerBirthDate instanceof Date && !Number.isNaN(customerBirthDate.getTime())
+					? String(customerBirthDate.getFullYear())
+					: toText(customerBirthRaw, '---'));
 
 			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
-			dom.staffId.textContent = supplierId > 0 ? String(supplierId) : 'Chua co nhan vien';
-			dom.staffName.textContent = toText(app.staff ? pick(app.staff, fieldMap.name, '') : '', 'Chua phan cong');
+			dom.staffId.textContent = supplierId > 0 ? String(supplierId) : 'Chưa có nhân viên';
+			dom.staffName.textContent = toText(app.staff ? pick(app.staff, fieldMap.name, '') : '', 'Chưa phân công');
 			dom.staffPhone.textContent = toText(app.staff ? pick(app.staff, fieldMap.phone, '') : '', '---');
 			dom.staffEmail.textContent = toText(app.staff ? pick(app.staff, fieldMap.email, '') : '', '---');
+			const staffBirthRaw = app.staff ? pick(app.staff, fieldMap.birthDate, '') : '';
+			const staffBirthDate = parseDateFlexible(staffBirthRaw);
+			dom.staffBirthDate.textContent = staffBirthDate instanceof Date && !Number.isNaN(staffBirthDate.getTime())
+				? formatDateOnly(staffBirthDate)
+				: toText(staffBirthRaw, '---');
+			dom.staffExperience.textContent = toText(app.staff ? pick(app.staff, fieldMap.experience, '') : '', 'Chưa cập nhật');
+			dom.staffAddress.textContent = toText(app.staff ? pick(app.staff, fieldMap.address, '') : '', 'Chưa cập nhật');
 			if (supplierId <= 0) {
-				dom.staffState.textContent = 'Chua co nguoi nhan';
+				dom.staffState.textContent = 'Chưa có người nhận';
 			} else if (isStaffRole() && isMine(order)) {
-				dom.staffState.textContent = 'Ban dang phu trach';
+				dom.staffState.textContent = 'Bạn đang phụ trách';
 			} else if (isStaffRole() && !isMine(order)) {
-				dom.staffState.textContent = 'Nhan vien khac dang phu trach';
+				dom.staffState.textContent = 'Nhân viên khác đang phụ trách';
 			} else {
-				dom.staffState.textContent = 'Da co nguoi nhan';
+				dom.staffState.textContent = 'Đã có người nhận';
 			}
-			setBadge(dom.badgeStaff, supplierId > 0 ? 'Da nhan' : 'Cho nhan', supplierId > 0 ? 'success' : 'warning');
+			setBadge(dom.badgeStaff, supplierId > 0 ? 'Đã nhận' : 'Chờ nhận', supplierId > 0 ? 'success' : 'warning');
 
 			const timeline = computeTimelineState(order);
 			dom.timeStartPlan.textContent = toText(timeline.planStartTime);
 			dom.timeEndPlan.textContent = toText(timeline.planEndTime);
 			dom.timeStartReal.textContent = formatDate(timeline.realStart);
 			dom.timeEndReal.textContent = formatDate(timeline.realEnd);
-			dom.timeCurrentState.textContent = timeline.phase;
+			dom.timeCurrentState.textContent = phaseLabel(timeline.phase);
 			dom.timeDayHint.textContent = timeline.dayHint;
 			dom.timeMessage.textContent = timeline.message;
 
-			const timeBadgeMode = timeline.phase === 'ended' ? 'success' : (timeline.phase === 'running' ? 'warning' : '');
-			setBadge(dom.badgeTimeState, timeline.phase.toUpperCase(), timeBadgeMode);
+			const timeBadgeMode = timeline.phase === 'ended' ? 'success' : ((timeline.phase === 'running' || timeline.phase === 'paused') ? 'warning' : '');
+			setBadge(dom.badgeTimeState, phaseLabel(timeline.phase), timeBadgeMode);
 
 			const progress = calcProgress(app.order);
 			dom.progressText.textContent = progress.toFixed(1) + '%';
 			dom.badgeProgress.textContent = progress.toFixed(1) + '%';
 			const remainingMin = timeline.end instanceof Date ? Math.max(0, Math.ceil((timeline.end.getTime() - Date.now()) / 60000)) : 0;
-			dom.progressHint.textContent = 'Tien do theo tung ngay, moi ngay la 1 ca ' + timeline.workTimeText + '. Khoang ngay ke hoach: ' + timeline.dateRangeText + '. Con lai den moc ket thuc ke hoach: ' + remainingMin + ' phut.';
+			dom.progressHint.textContent = 'Tiến độ theo từng ngày, mỗi ngày là 1 ca ' + timeline.workTimeText + '. Khoảng ngày kế hoạch: ' + timeline.dateRangeText + '. Còn lại đến mốc kết thúc kế hoạch: ' + remainingMin + ' phút.';
 			dom.progressBar.style.width = progress + '%';
 			dom.progressBar.classList.remove('warn', 'danger');
 			if (progress >= 50 && progress < 85) dom.progressBar.classList.add('warn');
@@ -1416,25 +1823,49 @@
 			renderMedia(order);
 			showActionButtons(timeline);
 			updateRealtimeCountdown(timeline);
-			showState('Tai du lieu thanh cong', 'info', true);
+			showState('Tải dữ liệu thành công', 'info', true);
 			showMain(true);
 		}
 
 		function updateRealtimeCountdown(timeline) {
 			clearInterval(app.countdownTimer);
 			const tick = () => {
-				const startDate = timeline && timeline.nextStart ? timeline.nextStart : (timeline ? timeline.start : null);
-				if (!(startDate instanceof Date)) {
-					dom.startCountdown.textContent = 'Khong co du lieu gio bat dau';
+				if (!app.order) return;
+				if (dom.staffCountdownField) dom.staffCountdownField.classList.remove('hidden');
+				const supplierId = Number(pick(app.order, fieldMap.supplierId, 0));
+				if (supplierId <= 0) {
+					dom.startCountdown.textContent = 'Chờ nhân viên nhận việc';
+					if (dom.startButtonCountdown) {
+						dom.startButtonCountdown.textContent = 'Chờ nhận việc';
+					}
 					return;
 				}
+
+				const startDate = getCountdownTargetToStartTime(app.order);
+				if (!(startDate instanceof Date) || Number.isNaN(startDate.getTime())) {
+					dom.startCountdown.textContent = 'Không có mốc giờ bắt đầu';
+					if (dom.startButtonCountdown) {
+						dom.startButtonCountdown.textContent = 'Không có giờ bắt đầu';
+					}
+					return;
+				}
+
 				const now = new Date();
 				if (now.getTime() >= startDate.getTime()) {
-					dom.startCountdown.textContent = 'Da den gio bat dau';
+					dom.startCountdown.textContent = 'Đã qua giờ bắt đầu';
+					if (dom.staffCountdownField) dom.staffCountdownField.classList.add('hidden');
+					if (dom.startButtonCountdown) {
+						dom.startButtonCountdown.textContent = 'Đã qua giờ bắt đầu';
+					}
 					return;
 				}
+
 				const left = diffTime(now, startDate);
-				dom.startCountdown.textContent = left.days + ' ngay ' + left.hours + ' gio ' + left.minutes + ' phut';
+				const text = left.days + ' ngày ' + left.hours + ' giờ ' + left.minutes + ' phút';
+				dom.startCountdown.textContent = text;
+				if (dom.startButtonCountdown) {
+					dom.startButtonCountdown.textContent = text;
+				}
 			};
 			tick();
 			app.countdownTimer = setInterval(tick, 1000);
@@ -1445,7 +1876,7 @@
 			const readers = arr.map((file) => new Promise((resolve, reject) => {
 				const fr = new FileReader();
 				fr.onload = () => resolve(String(fr.result || ''));
-				fr.onerror = () => reject(new Error('Doc file that bai: ' + file.name));
+				fr.onerror = () => reject(new Error('Đọc file thất bại: ' + file.name));
 				fr.readAsDataURL(file);
 			}));
 			return Promise.all(readers);
@@ -1454,7 +1885,7 @@
 		async function handleAction(action) {
 			if (!app.order) return;
 			const orderId = Number(pick(app.order, fieldMap.id, 0));
-			if (!orderId) throw new Error('Hoa don khong hop le');
+			if (!orderId) throw new Error('Hóa đơn không hợp lệ');
 
 			const myId = Number(pick(app.user, fieldMap.id, 0));
 			const now = nowSql();
@@ -1463,16 +1894,16 @@
 
 			if (action === 'cancel-service' || action === 'save-review') {
 				if (!isCustomerRole() || !isMyCustomerOrder(app.order)) {
-					throw new Error('Ban khong co quyen thuc hien thao tac khach hang');
+					throw new Error('Bạn không có quyền thực hiện thao tác khách hàng');
 				}
 			}
 
 			if (['claim-job', 'unclaim-job', 'start-work', 'pause-work', 'resume-work', 'end-work', 'save-staff-log'].includes(action)) {
 				if (!isStaffRole()) {
-					throw new Error('Ban khong co quyen thuc hien thao tac nhan vien');
+					throw new Error('Bạn không có quyền thực hiện thao tác nhân viên');
 				}
 				if (myId <= 0) {
-					throw new Error('Khong xac dinh duoc ID nhan vien trong phien dang nhap');
+					throw new Error('Không xác định được ID nhân viên trong phiên đăng nhập');
 				}
 			}
 
@@ -1482,18 +1913,18 @@
 
 			if (action === 'claim-job') {
 				if (assignedId > 0 && !mine) {
-					throw new Error('Hoa don da duoc nhan boi nhan vien khac');
+					throw new Error('Hóa đơn đã được nhận bởi nhân viên khác');
 				}
 				await updateData('datlich_mevabe', { id_nhacungcap: myId, trangthai: 'đã nhận', thoigian_nhanviec: now }, { id: orderId });
 			}
 
 			if (action === 'unclaim-job') {
-				if (!mine) throw new Error('Ban chi duoc huy nhan viec cua chinh minh');
+				if (!mine) throw new Error('Bạn chỉ được hủy nhận việc của chính mình');
 				await updateData('datlich_mevabe', { id_nhacungcap: '', trangthai: 'chờ nhận', thoigian_huy_nhanviec: now }, { id: orderId });
 			}
 
 			if (action === 'start-work') {
-				if (!mine) throw new Error('Ban chi duoc bat dau cong viec duoc phan cong cho minh');
+				if (!mine) throw new Error('Bạn chỉ được bắt đầu công việc được phân công cho mình');
 				const existingStart = parseDateFlexible(pick(app.order, fieldMap.actualStart, ''));
 				await updateData('datlich_mevabe', {
 					thoigian_batdau_thucte: existingStart ? pick(app.order, fieldMap.actualStart, '') : now,
@@ -1503,10 +1934,10 @@
 			}
 
 			if (action === 'pause-work') {
-				if (!mine) throw new Error('Ban chi duoc tam dung cong viec cua minh');
+				if (!mine) throw new Error('Bạn chỉ được tạm dừng công việc của mình');
 				const work = getWorkDurationMetrics(app.order);
 				if (!work.realStart || work.realEnd) {
-					throw new Error('Khong the tam dung khi chua bat dau hoac da ket thuc');
+					throw new Error('Không thể tạm dừng khi chưa bắt đầu hoặc đã kết thúc');
 				}
 				await updateData('datlich_mevabe', {
 					trangthai: 'tạm dừng',
@@ -1515,10 +1946,10 @@
 			}
 
 			if (action === 'resume-work') {
-				if (!mine) throw new Error('Ban chi duoc tiep tuc cong viec cua minh');
+				if (!mine) throw new Error('Bạn chỉ được tiếp tục công việc của mình');
 				const work = getWorkDurationMetrics(app.order);
 				if (!work.pauseAt) {
-					throw new Error('Khong tim thay moc tam dung de tiep tuc');
+					throw new Error('Không tìm thấy mốc tạm dừng để tiếp tục');
 				}
 				const extraPauseMs = Math.max(0, Date.now() - work.pauseAt.getTime());
 				await updateData('datlich_mevabe', {
@@ -1530,15 +1961,31 @@
 			}
 
 			if (action === 'end-work') {
-				if (!mine) throw new Error('Ban chi duoc ket thuc cong viec cua minh');
-				const timeline = computeTimelineState(app.order);
-				const nowTime = Date.now();
-				const plannedEndMs = timeline.end instanceof Date ? timeline.end.getTime() : 0;
-				const remainToPlannedEndMs = plannedEndMs > 0 ? Math.max(0, plannedEndMs - nowTime) : Infinity;
-				if (remainToPlannedEndMs >= 30 * 60 * 1000) {
-					throw new Error('Chi duoc ket thuc khi thoi gian ket thuc ke hoach con duoi 30 phut');
+				if (!mine) throw new Error('Bạn chỉ được kết thúc công việc của mình');
+				const schedule = getScheduleMeta(app.order);
+				const nowDateOnly = new Date();
+				nowDateOnly.setHours(0, 0, 0, 0);
+
+				const endDateRaw = schedule.endDate instanceof Date && !Number.isNaN(schedule.endDate.getTime())
+					? schedule.endDate
+					: schedule.startDate;
+				const endDateOnly = endDateRaw instanceof Date ? new Date(endDateRaw) : null;
+				if (!(endDateOnly instanceof Date) || Number.isNaN(endDateOnly.getTime())) {
+					throw new Error('Không xác định được ngày kết thúc kế hoạch');
 				}
-				await updateData('datlich_mevabe', { thoigian_ketthuc_thucte: now, trangthai: 'đã hoàn thành' }, { id: orderId });
+				endDateOnly.setHours(0, 0, 0, 0);
+
+				if (nowDateOnly.getTime() >= endDateOnly.getTime()) {
+					await updateData('datlich_mevabe', {
+						thoigian_ketthuc_thucte: now,
+						trangthai: 'đã hoàn thành'
+					}, { id: orderId });
+				} else {
+					await updateData('datlich_mevabe', {
+						trangthai: 'dừng tạm thời',
+						thoigian_tamdung: now
+					}, { id: orderId });
+				}
 			}
 
 			if (action === 'save-review') {
@@ -1552,7 +1999,7 @@
 			}
 
 			if (action === 'save-staff-log') {
-				if (!mine) throw new Error('Ban chi duoc cap nhat ghi chu cong viec cua minh');
+				if (!mine) throw new Error('Bạn chỉ được cập nhật ghi chú công việc của mình');
 				const note = dom.staffNote.value.trim();
 				const files = await filesToDataUrl(dom.staffMediaInput.files);
 				await updateData('datlich_mevabe', {
@@ -1580,11 +2027,11 @@
 
 		async function runAction(action) {
 			try {
-				showState('Dang cap nhat du lieu...', 'info', true);
+				showState('Đang cập nhật dữ liệu...', 'info', true);
 				await handleAction(action);
-				showState('Cap nhat thanh cong', 'info', true);
+				showState('Cập nhật thành công', 'info', true);
 			} catch (error) {
-				showState(error && error.message ? error.message : 'Khong the cap nhat du lieu', 'error', true);
+				showState(error && error.message ? error.message : 'Không thể cập nhật dữ liệu', 'error', true);
 			}
 		}
 
@@ -1598,7 +2045,7 @@
 		async function bootstrap() {
 			try {
 				readParams();
-				showState('Dang xac thuc...', 'info', true);
+				showState('Đang xác thực...', 'info', true);
 				await fetchUser();
 				await fetchOrder();
 				bindEvents();
