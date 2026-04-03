@@ -235,6 +235,85 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             margin-top: 10px;
         }
 
+        .users-pending-card {
+            margin-top: 18px;
+            padding: 20px;
+        }
+
+        .users-pending-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .users-pending-header h4 {
+            margin: 0;
+            font-size: 15px;
+            color: #0a2a66;
+        }
+
+        .users-pending-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: #fff4e6;
+            color: #b45309;
+            font-weight: 800;
+        }
+
+        .users-pending-note {
+            margin: 0 0 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #64748b;
+        }
+
+        .users-pending-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .users-pending-item {
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            background: #f8fafc;
+        }
+
+        .users-pending-item strong {
+            display: block;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .users-pending-item p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #64748b;
+        }
+
+        .users-pending-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        .users-pending-empty {
+            padding: 14px;
+            border-radius: 14px;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 13px;
+            text-align: center;
+        }
+
         .users-inline-actions {
             display: flex;
             justify-content: flex-end;
@@ -401,6 +480,19 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         </button>
                     </div>
                 </form>
+
+                <section class="users-pending-card" id="users-pending-card">
+                    <div class="users-pending-header">
+                        <h4><i class="fa-solid fa-user-clock"></i> Shipper web chờ duyệt</h4>
+                        <span class="users-pending-badge" id="users-pending-count">0</span>
+                    </div>
+                    <p class="users-pending-note">
+                        Khối này đọc trực tiếp từ bảng đăng ký web của shipper. Tài khoản chỉ hoạt động sau khi bấm duyệt tại đây.
+                    </p>
+                    <div id="users-pending-list" class="users-pending-list">
+                        <div class="users-pending-empty">Đang tải danh sách shipper chờ duyệt...</div>
+                    </div>
+                </section>
             </aside>
         </div>
     </main>
@@ -409,16 +501,24 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
     <div id="users-toast" class="users-toast"></div>
 
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script src="../../public/assets/js/local-auth.js"></script>
     <script>
         (function () {
-            const apiUrl = "../api/users.php";
+            const localAuth = window.GiaoHangNhanhLocalAuth || null;
             const currentAdminId = <?php echo (int) $_SESSION['user_id']; ?>;
+            const currentAdminUsername = <?php echo json_encode((string) ($_SESSION['username'] ?? 'admin01')); ?>;
+            const currentAdminName = <?php echo json_encode((string) ($_SESSION['fullname'] ?? 'Admin')); ?>;
+            const currentAdminEmail = <?php echo json_encode((string) ($_SESSION['email'] ?? '')); ?>;
+            const currentAdminPhone = <?php echo json_encode((string) ($_SESSION['phone'] ?? '')); ?>;
             const tbody = document.getElementById("users-table-body");
             const summary = document.getElementById("users-summary");
             const pagination = document.getElementById("users-pagination");
             const form = document.getElementById("users-filter-form");
             const resetBtn = document.getElementById("users-reset-btn");
             const toast = document.getElementById("users-toast");
+            const pendingList = document.getElementById("users-pending-list");
+            const pendingCount = document.getElementById("users-pending-count");
             const statTotal = document.getElementById("users-stat-total");
             const statCustomers = document.getElementById("users-stat-customers");
             const statShippers = document.getElementById("users-stat-shippers");
@@ -482,6 +582,103 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 statCustomers.textContent = customers.toLocaleString("vi-VN");
                 statShippers.textContent = shippers.toLocaleString("vi-VN");
                 statPendingShippers.textContent = pendingShippers.toLocaleString("vi-VN");
+            }
+
+            function buildSyntheticAdminUser() {
+                return {
+                    id: currentAdminId,
+                    username: currentAdminUsername || "admin01",
+                    fullname: currentAdminName || "Admin",
+                    phone: currentAdminPhone || "",
+                    email: currentAdminEmail || "",
+                    role: "admin",
+                    vehicle_type: "",
+                    created_at: "",
+                    is_locked: false,
+                    lock_reason: "",
+                    is_approved: true,
+                    status_label: "Hoạt động",
+                    source: "session",
+                };
+            }
+
+            async function listUsersFromKrud() {
+                const adminUser = buildSyntheticAdminUser();
+                if (!localAuth || typeof localAuth.listAllKrudUsers !== "function") {
+                    return [adminUser];
+                }
+
+                const users = await localAuth.listAllKrudUsers();
+                return [adminUser, ...users];
+            }
+
+            function renderPendingShippers(users) {
+                const list = Array.isArray(users) ? users : [];
+                pendingCount.textContent = list.length.toLocaleString("vi-VN");
+
+                if (!list.length) {
+                    pendingList.innerHTML = '<div class="users-pending-empty">Hiện không có shipper web nào chờ duyệt.</div>';
+                    return;
+                }
+
+                pendingList.innerHTML = list.map((user) => {
+                    const joined = formatDate(user.created_at);
+                    const phone = escapeHtml(user.phone || user.so_dien_thoai || "--");
+                    const email = escapeHtml(user.email || "--");
+                    const name = escapeHtml(user.fullname || user.ho_ten || user.username || "Shipper");
+                    const vehicle = escapeHtml(user.vehicle_type || user.loai_phuong_tien || "Chưa khai báo");
+
+                    return `
+                        <article class="users-pending-item">
+                            <strong>${name}</strong>
+                            <p>
+                                <i class="fa-solid fa-hashtag" style="width:14px;"></i> ID: #${escapeHtml(user.id)}<br>
+                                <i class="fa-solid fa-phone" style="width:14px;"></i> ${phone}<br>
+                                <i class="fa-regular fa-envelope" style="width:14px;"></i> ${email}<br>
+                                <i class="fa-solid fa-motorcycle" style="width:14px;"></i> ${vehicle}<br>
+                                <i class="fa-regular fa-calendar" style="width:14px;"></i> ${joined}
+                            </p>
+                            <div class="users-pending-actions">
+                                <button type="button" class="btn-primary" data-krud-approve-id="${escapeHtml(user.id)}">
+                                    <i class="fa-solid fa-check"></i> Duyệt tài khoản
+                                </button>
+                            </div>
+                        </article>
+                    `;
+                }).join("");
+            }
+
+            async function loadPendingShippers() {
+                if (!localAuth || typeof localAuth.listPendingShippers !== "function") {
+                    pendingList.innerHTML = '<div class="users-pending-empty">Không khởi tạo được luồng duyệt shipper web.</div>';
+                    pendingCount.textContent = "0";
+                    return;
+                }
+
+                try {
+                    const users = await localAuth.listPendingShippers();
+                    renderPendingShippers(users);
+                } catch (error) {
+                    pendingList.innerHTML = `<div class="users-pending-empty">${escapeHtml(error.message || "Không thể tải shipper web chờ duyệt.")}</div>`;
+                    pendingCount.textContent = "0";
+                }
+            }
+
+            async function approvePendingShipperFromKrud(userId) {
+                if (!localAuth || typeof localAuth.approveShipper !== "function") {
+                    throw new Error("Không khởi tạo được hành động duyệt shipper web.");
+                }
+
+                if (!window.confirm("Duyệt tài khoản shipper web này?")) {
+                    return;
+                }
+
+                const result = await localAuth.approveShipper(userId);
+                showToast(result.message || "Đã duyệt tài khoản shipper.", "success");
+                await loadPendingShippers();
+                if (lastParams) {
+                    loadUsers(lastParams);
+                }
             }
 
             function getParamsFromLocation() {
@@ -609,7 +806,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 pagination.appendChild(createButton("›", Math.min(totalPages, currentPage + 1), false, currentPage === totalPages));
             }
 
-            async function sendAction(action, userId) {
+            async function sendAction(action, userId, userRole) {
+                if (!localAuth) {
+                    showToast("Không khởi tạo được local auth admin helpers.", "error");
+                    return;
+                }
+
                 let reason = "";
                 if (action === "lock") {
                     const promptValue = window.prompt("Nhập lý do khóa tài khoản này:", "Vi phạm quy định");
@@ -628,21 +830,28 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 }
 
                 try {
-                    const response = await fetch(apiUrl, {
-                        method: "POST",
-                        credentials: "same-origin",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            action,
-                            id: userId,
-                            reason,
-                        }),
-                    });
-                    const result = await response.json();
-                    if (!response.ok || !result.success) {
-                        throw new Error(result.message || "Không thể cập nhật người dùng.");
+                    let result = null;
+
+                    if (action === "approve") {
+                        result = await localAuth.approveShipper(userId);
+                    } else if (action === "lock") {
+                        result = await localAuth.updateKrudUser(userId, userRole, {
+                            is_locked: 1,
+                            bi_khoa: 1,
+                            lock_reason: reason,
+                            ly_do_khoa: reason,
+                        });
+                    } else if (action === "unlock") {
+                        result = await localAuth.updateKrudUser(userId, userRole, {
+                            is_locked: 0,
+                            bi_khoa: 0,
+                            lock_reason: "",
+                            ly_do_khoa: "",
+                        });
+                    } else if (action === "delete") {
+                        result = await localAuth.deleteKrudUser(userId, userRole);
+                    } else {
+                        throw new Error("Hành động không hợp lệ.");
                     }
 
                     showToast(result.message || "Thao tác thành công.", "success");
@@ -658,35 +867,45 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 lastParams = { ...params };
                 syncForm(params);
                 updateUrl(params);
-                summary.textContent = "Đang tải dữ liệu người dùng từ API...";
+                summary.textContent = "Đang tải dữ liệu người dùng từ KRUD...";
                 tbody.innerHTML = '<tr><td colspan="7" class="users-loading">Đang tải danh sách người dùng...</td></tr>';
                 pagination.hidden = true;
 
-                const query = new URLSearchParams();
-                query.set("page", String(params.page || 1));
-                if (params.search) query.set("search", params.search);
-                if (params.role) query.set("role", params.role);
-                if (params.approval_status) query.set("approval_status", params.approval_status);
-
                 try {
-                    const response = await fetch(`${apiUrl}?${query.toString()}`, {
-                        credentials: "same-origin",
+                    const allUsers = await listUsersFromKrud();
+                    const search = String(params.search || "").trim().toLowerCase();
+                    const filteredUsers = allUsers.filter((user) => {
+                        if (params.role && user.role !== params.role) return false;
+                        if (params.approval_status === "pending" && !(user.role === "shipper" && !user.is_approved)) {
+                            return false;
+                        }
+                        if (!search) return true;
+
+                        const haystack = [
+                            user.username,
+                            user.fullname,
+                            user.email,
+                            user.phone,
+                        ]
+                            .map((value) => String(value || "").toLowerCase())
+                            .join(" ");
+                        return haystack.includes(search);
                     });
-                    const result = await response.json();
-                    if (!response.ok || !result.success) {
-                        throw new Error(result.message || "Không thể tải dữ liệu người dùng.");
-                    }
+                    const page = Math.max(1, Number(params.page || 1));
+                    const limit = 10;
+                    const totalRecords = filteredUsers.length;
+                    const totalPages = Math.max(1, Math.ceil(totalRecords / limit));
+                    const safePage = Math.min(page, totalPages);
+                    const start = (safePage - 1) * limit;
+                    const users = filteredUsers.slice(start, start + limit);
 
-                    const data = result.data || {};
-                    const users = Array.isArray(data.users) ? data.users : [];
                     renderUsers(users);
-                    renderPagination(data.pagination || {}, params);
-                    updateStats(users);
-
-                    const totalRecords = Number((data.pagination && data.pagination.total_records) || 0);
-                    const currentPage = Number((data.pagination && data.pagination.page) || 1);
-                    const totalPages = Number((data.pagination && data.pagination.total_pages) || 1);
-                    summary.textContent = `Hiển thị ${users.length} người dùng trên tổng ${totalRecords.toLocaleString("vi-VN")} bản ghi. Trang ${currentPage}/${totalPages}.`;
+                    renderPagination({
+                        page: safePage,
+                        total_pages: totalPages,
+                    }, { ...params, page: safePage });
+                    updateStats(filteredUsers);
+                    summary.textContent = `Hiển thị ${users.length} người dùng trên tổng ${totalRecords.toLocaleString("vi-VN")} bản ghi. Trang ${safePage}/${totalPages}.`;
                 } catch (error) {
                     summary.textContent = "Không tải được dữ liệu.";
                     tbody.innerHTML = `<tr><td colspan="7" class="users-empty">${escapeHtml(error.message || "Không thể tải dữ liệu người dùng.")}</td></tr>`;
@@ -712,10 +931,24 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             tbody.addEventListener("click", (event) => {
                 const button = event.target.closest("[data-user-action]");
                 if (!button) return;
-                sendAction(button.dataset.userAction, Number(button.dataset.userId));
+                const row = button.closest("tr");
+                const userRole = row?.querySelector("[data-user-role]")?.getAttribute("data-user-role") || button.dataset.userRole || "";
+                sendAction(button.dataset.userAction, Number(button.dataset.userId), userRole);
+            });
+
+            pendingList.addEventListener("click", async (event) => {
+                const button = event.target.closest("[data-krud-approve-id]");
+                if (!button) return;
+
+                try {
+                    await approvePendingShipperFromKrud(button.dataset.krudApproveId);
+                } catch (error) {
+                    showToast(error.message || "Không thể duyệt tài khoản shipper web.", "error");
+                }
             });
 
             loadUsers(getParamsFromLocation());
+            loadPendingShippers();
         })();
     </script>
 </body>

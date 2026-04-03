@@ -344,7 +344,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     <script>
         (function () {
             const ordersTable = "giaohangnhanh_dat_lich";
-            const detailBaseUrl = "order_detail.php?code=";
+            const standaloneDetailBaseUrl = "../../chi-tiet-don-hang.html?viewer=admin&madonhang=";
             const tbody = document.getElementById("orders-table-body");
             const summary = document.getElementById("orders-summary");
             const pagination = document.getElementById("orders-pagination");
@@ -447,6 +447,19 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 return "pending";
             }
 
+            function deriveStatus(row) {
+                const cancelledAt = normalizeText(row.ngayhuy || "");
+                const completedAt = normalizeText(row.ngayhoanthanhthucte || "");
+                const startedAt = normalizeText(row.ngaybatdauthucte || "");
+                const acceptedAt = normalizeText(row.thoidiemnhandon || row.ngaynhan || "");
+
+                if (cancelledAt) return "cancelled";
+                if (completedAt) return "completed";
+                if (startedAt) return "shipping";
+                if (acceptedAt) return "pending";
+                return normalizeStatus(row.trang_thai || row.status);
+            }
+
             function getStatusLabel(status) {
                 const map = {
                     pending: "Chờ xử lý",
@@ -482,7 +495,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             }
 
             function normalizeKrudOrder(row) {
-                const status = normalizeStatus(row.trang_thai || row.status);
+                const status = deriveStatus(row);
                 const orderCode = normalizeText(
                     row.ma_don_hang_noi_bo || row.order_code || row.ma_don_hang || row.id,
                 );
@@ -502,7 +515,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     service_label: normalizeText(row.ten_dich_vu) || getServiceLabel(row.dich_vu || row.service_type),
                     shipping_fee: shippingFee,
                     payment_status: codAmount > 0 && status === "completed" ? "paid" : "unpaid",
-                    payment_status_label: normalizeText(row.payment_status_label) || getPaymentStatusLabel(codAmount, status),
+                    payment_status_label: normalizeText(row.payment_status_label || row.trang_thai_thanh_toan) || getPaymentStatusLabel(codAmount, status),
                     status,
                     status_label: normalizeText(row.status_label) || getStatusLabel(status),
                     has_admin_note: Boolean(normalizeText(row.ghi_chu_admin || row.ghi_chu_quan_tri || row.admin_note)),
@@ -669,9 +682,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                                 <span class="status-badge status-${escapeHtml(order.status)}">${escapeHtml(order.status_label)}</span>
                             </td>
                             <td data-label="Hành động" style="text-align:right;">
-                                <a href="${detailBaseUrl}${encodeURIComponent(order.order_code)}" class="btn-sm btn-view-site-pill" style="background:rgba(10,42,102,0.05); color:#0a2a66; display:inline-flex; align-items:center; gap:5px; width:100%; justify-content:center;">
-                                    <i class="fa-solid fa-eye"></i> Xem chi tiết
-                                </a>
+                                <div style="display:grid; gap:8px;">
+                                    <a href="${standaloneDetailBaseUrl}${encodeURIComponent(order.order_code)}" class="btn-sm btn-view-site-pill" style="background:rgba(10,42,102,0.05); color:#0a2a66; display:inline-flex; align-items:center; gap:5px; width:100%; justify-content:center;">
+                                        <i class="fa-solid fa-eye"></i> Xem chi tiết
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     `;

@@ -79,93 +79,40 @@ function normalizeVehicleKey(key) {
   return VEHICLE_KEY_ALIASES[normalized] || normalized;
 }
 
-function buildDomesticVehicleOptions(
-  rawVehicles = [],
-  legacyHeSoXe = {},
-  legacyLabels = {},
-) {
-  const defaultVehicles = [
-    {
-      key: "xe_may",
-      label: "Xe máy trọng lượng ≤ 50kg",
-      he_so_xe: 1,
-      gia_co_ban: 6500,
-      phi_toi_thieu: 10000,
-      trong_luong_toi_da: 50,
-      description: "Đơn tối đa 50kg, áp dụng 6.500đ/km và giảm còn 5.000đ/km khi quá 20km.",
-    },
-    {
-      key: "xe_4_banh_nho",
-      label: "Xe 4 bánh nhỏ ≤ 500kg",
-      he_so_xe: 1,
-      gia_co_ban: 10000,
-      phi_toi_thieu: 50000,
-      trong_luong_toi_da: 500,
-      description: "Mức nền 10.000đ/km, phí tối thiểu 50.000đ.",
-    },
-    {
-      key: "xe_4_banh_vua",
-      label: "Xe 4 bánh vừa ≤ 1200kg",
-      he_so_xe: 1.25,
-      gia_co_ban: 10000,
-      phi_toi_thieu: 100000,
-      trong_luong_toi_da: 1200,
-      description: "Hệ số xe 1,25, tương đương khoảng 12.500đ/km.",
-    },
-    {
-      key: "xe_4_banh_lon",
-      label: "Xe tải ≤ 3500kg",
-      he_so_xe: 1.75,
-      gia_co_ban: 10000,
-      phi_toi_thieu: 150000,
-      trong_luong_toi_da: 3500,
-      description:
-        "Nhóm xe tải đến 3.500kg, hệ số xe 1,75, tương đương khoảng 17.500đ/km.",
-    },
-  ];
-  const vehicleMap = Object.fromEntries(
-    defaultVehicles.map((item) => [item.key, { ...item }]),
-  );
-  const sourceVehicles =
-    Array.isArray(rawVehicles) && rawVehicles.length
-      ? rawVehicles
-      : Object.keys({ ...legacyLabels, ...legacyHeSoXe }).map((key) => ({
-          key,
-          label: legacyLabels[key],
-          he_so_xe: legacyHeSoXe[key],
-        }));
+function buildDomesticVehicleOptions(rawVehicles = []) {
+  const vehicleMap = {};
+  const sourceVehicles = Array.isArray(rawVehicles) ? rawVehicles : [];
 
   sourceVehicles.forEach((item) => {
     const normalizedKey = normalizeVehicleKey(item?.key);
     if (!normalizedKey || normalizedKey === "auto") return;
 
-    const fallback = vehicleMap[normalizedKey] || {};
-    const parsedHeSoXe = Number(
-      item?.he_so_xe ?? item?.hesoxe ?? item?.he_so,
-    );
+    const parsedHeSoXe = Number(item?.he_so_xe ?? item?.he_so);
+    const parsedGiaCoBan = Number(item?.gia_co_ban);
+    const parsedPhiToiThieu = Number(item?.phi_toi_thieu);
+    const parsedTrongLuongToiDa = Number(item?.trong_luong_toi_da);
     vehicleMap[normalizedKey] = {
       key: normalizedKey,
-      label: item?.label || item?.ten || fallback.label || normalizedKey,
+      label: item?.label || item?.ten || normalizedKey,
       he_so_xe:
         Number.isFinite(parsedHeSoXe) && parsedHeSoXe > 0
           ? parsedHeSoXe
-          : fallback.he_so_xe || 1,
+          : 1,
       gia_co_ban:
-        Number(item?.gia_co_ban ?? item?.gia_coban) > 0
-          ? Number(item?.gia_co_ban ?? item?.gia_coban)
-          : fallback.gia_co_ban || 0,
+        Number.isFinite(parsedGiaCoBan) && parsedGiaCoBan > 0
+          ? parsedGiaCoBan
+          : 0,
       phi_toi_thieu:
-        Number(item?.phi_toi_thieu ?? item?.phitoithieu) > 0
-          ? Number(item?.phi_toi_thieu ?? item?.phitoithieu)
-          : fallback.phi_toi_thieu || 0,
+        Number.isFinite(parsedPhiToiThieu) && parsedPhiToiThieu > 0
+          ? parsedPhiToiThieu
+          : 0,
       trong_luong_toi_da:
-        Number(item?.trong_luong_toi_da ?? item?.trongluong_toida) > 0
-          ? Number(item?.trong_luong_toi_da ?? item?.trongluong_toida)
-          : fallback.trong_luong_toi_da || 0,
+        Number.isFinite(parsedTrongLuongToiDa) && parsedTrongLuongToiDa > 0
+          ? parsedTrongLuongToiDa
+          : 0,
       description:
         item?.description ||
         item?.mo_ta ||
-        fallback.description ||
         "Phần vận chuyển thay đổi theo hệ số phương tiện",
     };
   });
@@ -183,16 +130,12 @@ function buildDomesticVehicleOptions(
 }
 
 function getDisplayVehicleCatalog(data = {}) {
-  return Object.values(
-    buildDomesticVehicleOptions(
-      data.phuong_tien,
-      data.hesophuongtien,
-      data.tenphuongtien,
-    ),
-  ).filter((item) => item.key !== "auto");
+  return Object.values(buildDomesticVehicleOptions(data.phuong_tien)).filter(
+    (item) => item.key !== "auto",
+  );
 }
 
-let DOMESTIC_VEHICLE_OPTIONS = buildDomesticVehicleOptions();
+let DOMESTIC_VEHICLE_OPTIONS = buildDomesticVehicleOptions([]);
 
 function normalizeInstantSurchargeConfig(rawConfig = {}) {
   const weatherSource =
@@ -219,10 +162,10 @@ function normalizeInstantSurchargeConfig(rawConfig = {}) {
             (value && (value.ten || value.label)) ||
             (fallback[key] && fallback[key].ten) ||
             key,
-          fixedFee: (value && (value.phicodinh ?? value.fixedFee)) || 0,
-          multiplier: (value && (value.heso ?? value.multiplier)) || 1,
-          start: (value && (value.batdau || value.start)) || "",
-          end: (value && (value.ketthuc || value.end)) || "",
+          phicodinh: (value && value.phicodinh) || 0,
+          heso: (value && value.heso) || 1,
+          batdau: (value && value.batdau) || "",
+          ketthuc: (value && value.ketthuc) || "",
         },
       ]),
     );
@@ -259,11 +202,7 @@ function loadPricingDataSync() {
     xhr.send(null);
     if (xhr.status >= 200 && xhr.status < 300 && xhr.responseText) {
       const parsed = JSON.parse(xhr.responseText);
-      DOMESTIC_VEHICLE_OPTIONS = buildDomesticVehicleOptions(
-        parsed.phuong_tien,
-        parsed.hesophuongtien,
-        parsed.tenphuongtien,
-      );
+      DOMESTIC_VEHICLE_OPTIONS = buildDomesticVehicleOptions(parsed.phuong_tien);
 
       // Khôi phục mảng json cũ (English) nếu là phiên bản cũ
       if (parsed.SHIPPING_DATA) SHIPPING_DATA = parsed.SHIPPING_DATA;
@@ -310,26 +249,13 @@ function loadPricingDataSync() {
             ),
             goodsTypeMultiplier: normalizeItemTypeMap(bd.hesoloaihang || {}),
             distanceConfig: (function () {
-              // Hỗ trợ cả key mới (cauhinh_khoangcach) lẫn key cũ (distance_config)
-              const ck = bd.cauhinh_khoangcach;
-              const dc = bd.distance_config;
-              if (ck)
-                return {
-                  base_km: ck.km_coban || 3,
-                  base_price: ck.gia_coban || 20000,
-                  next_km_price: ck.gia_tiep_theo_km || 5000,
-                  long_distance_threshold: ck.nguong_xa || 50,
-                  long_distance_price: ck.gia_xa || 3500,
-                  base_included_weight: ck.can_mien_phi || 2,
-                  volume_divisor: ck.he_so_the_tich || 6000,
-                };
-              if (dc) return dc;
+              const ck = bd.cauhinh_khoangcach || {};
               return {
-                base_km: 3,
-                base_price: 20000,
-                next_km_price: 5000,
-                long_distance_threshold: 50,
-                long_distance_price: 3500,
+                gia_xe_may_gan: ck.gia_xe_may_gan || 6500,
+                nguong_xe_may_xa: ck.nguong_xe_may_xa || 20,
+                gia_xe_may_xa: ck.gia_xe_may_xa || 5000,
+                base_included_weight: ck.can_mien_phi || 2,
+                volume_divisor: ck.he_so_the_tich || 6000,
               };
             })(),
             insuranceFreeThreshold:
@@ -392,10 +318,6 @@ function loadPricingDataSync() {
                     thoigianTieuChuan.inter_city ||
                     "",
                 },
-                serviceMultiplier:
-                  bd.dichvu.tieuchuan.heso_dichvu !== undefined
-                    ? bd.dichvu.tieuchuan.heso_dichvu
-                    : 1,
                 appliesServiceFee: !!bd.dichvu.tieuchuan.ap_dung_phi_dich_vu,
               },
               fast: {
@@ -427,10 +349,6 @@ function loadPricingDataSync() {
                     thoigianNhanh.inter_city ||
                     "18-30 giờ",
                 },
-                serviceMultiplier:
-                  bd.dichvu.nhanh.heso_dichvu !== undefined
-                    ? bd.dichvu.nhanh.heso_dichvu
-                    : 1.25,
                 appliesServiceFee: !!bd.dichvu.nhanh.ap_dung_phi_dich_vu,
               },
               express: {
@@ -462,10 +380,6 @@ function loadPricingDataSync() {
                     thoigianHoaToc.inter_city ||
                     "12-24 giờ",
                 },
-                serviceMultiplier:
-                  bd.dichvu.hoatoc.heso_dichvu !== undefined
-                    ? bd.dichvu.hoatoc.heso_dichvu
-                    : 1.5,
                 appliesServiceFee: !!bd.dichvu.hoatoc.ap_dung_phi_dich_vu,
               },
               instant: {
@@ -502,11 +416,6 @@ function loadPricingDataSync() {
                   inter_city:
                     thoigianLapTuc.lien_tinh || thoigianLapTuc.inter_city || "",
                 },
-                serviceMultiplier:
-                  (bd.dichvu.laptuc &&
-                    bd.dichvu.laptuc.heso_dichvu !== undefined &&
-                    bd.dichvu.laptuc.heso_dichvu) ||
-                  1.5,
                 appliesServiceFee:
                   !bd.dichvu.laptuc ||
                   bd.dichvu.laptuc.ap_dung_phi_dich_vu !== false,
@@ -648,10 +557,10 @@ function getDomesticInstantTimeConfig(dateLike) {
   const fallback = rules[rules.length - 1] || {
     key: "default",
     label: "Tiêu chuẩn",
-    fixedFee: 0,
-    multiplier: 1,
-    start: "00:00",
-    end: "23:59",
+    phicodinh: 0,
+    heso: 1,
+    batdau: "00:00",
+    ketthuc: "23:59",
   };
 
   let targetMinutes = -1;
@@ -670,8 +579,8 @@ function getDomesticInstantTimeConfig(dateLike) {
 
   const matchedRule =
     rules.find((rule) => {
-      const start = timeTextToMinutes(rule.start);
-      const end = timeTextToMinutes(rule.end);
+      const start = timeTextToMinutes(rule.batdau);
+      const end = timeTextToMinutes(rule.ketthuc);
       if (start < 0 || end < 0) return false;
       if (end <= start) {
         return targetMinutes >= start || targetMinutes < end;
@@ -702,8 +611,8 @@ function getDomesticInstantWeatherConfig(conditionKey) {
     weatherMap.macdinh || {
       key: "macdinh",
       label: "Điều kiện bình thường",
-      fixedFee: 0,
-      multiplier: 1,
+      phicodinh: 0,
+      heso: 1,
     }
   );
 }
@@ -850,8 +759,8 @@ function getDomesticServiceConditionConfig(serviceType, conditionKey) {
   return {
     key: config.key || resolvedKey,
     label: config.label || "Điều kiện bình thường",
-    fixedFee: config.fixedFee || 0,
-    multiplier: config.multiplier || 1,
+    phicodinh: config.phicodinh || 0,
+    heso: config.heso || 1,
   };
 }
 
@@ -1016,18 +925,63 @@ function estimateDistance(fromCity, fromProv, toCity, toProv) {
 
 function lay_cau_hinh_xe_giao_ngay(khoa_xe) {
   const khoa_xe_hop_le = normalizeVehicleKey(khoa_xe);
-  return (
-    DOMESTIC_VEHICLE_OPTIONS[khoa_xe_hop_le] ||
-    DOMESTIC_VEHICLE_OPTIONS.xe_may
+  if (DOMESTIC_VEHICLE_OPTIONS[khoa_xe_hop_le]) {
+    return DOMESTIC_VEHICLE_OPTIONS[khoa_xe_hop_le];
+  }
+
+  const danhSachXe = Object.values(DOMESTIC_VEHICLE_OPTIONS || {}).filter(
+    (item) => item && item.key && item.key !== "auto",
   );
+  if (danhSachXe.length) {
+    return danhSachXe[0];
+  }
+
+  return {
+    key: khoa_xe_hop_le || "xe_may",
+    label: khoa_xe_hop_le || "xe_may",
+    he_so_xe: 1,
+    gia_co_ban: 0,
+    phi_toi_thieu: 0,
+    trong_luong_toi_da: 0,
+    description: "Chưa có cấu hình phương tiện trong pricing-data.json.",
+  };
+}
+
+function lay_danh_sach_xe_giao_ngay_theo_tai_trong() {
+  return Object.values(DOMESTIC_VEHICLE_OPTIONS || {})
+    .filter((item) => item && item.key && item.key !== "auto")
+    .sort((a, b) => {
+      const trongLuongA = toPositiveNumber(a?.trong_luong_toi_da, 0);
+      const trongLuongB = toPositiveNumber(b?.trong_luong_toi_da, 0);
+      return trongLuongA - trongLuongB;
+    });
+}
+
+function lay_cau_hinh_gia_xe_may_giao_ngay() {
+  const config = QUOTE_SHIPPING_DATA?.domestic?.distanceConfig || {};
+  const xeMay = DOMESTIC_VEHICLE_OPTIONS?.xe_may || {};
+  return {
+    don_gia_gan:
+      toPositiveNumber(config.gia_xe_may_gan, 0) ||
+      toPositiveNumber(xeMay.gia_co_ban, 0),
+    nguong_xa: toPositiveNumber(config.nguong_xe_may_xa, 0),
+    don_gia_xa: toPositiveNumber(config.gia_xe_may_xa, 0),
+  };
 }
 
 function goi_y_loai_xe_theo_trong_luong(trong_luong_hang) {
   const trong_luong = toPositiveNumber(trong_luong_hang, 0);
-  if (trong_luong <= 50) return lay_cau_hinh_xe_giao_ngay("xe_may");
-  if (trong_luong <= 500) return lay_cau_hinh_xe_giao_ngay("xe_4_banh_nho");
-  if (trong_luong <= 1200) return lay_cau_hinh_xe_giao_ngay("xe_4_banh_vua");
-  return lay_cau_hinh_xe_giao_ngay("xe_4_banh_lon");
+  const danhSachXe = lay_danh_sach_xe_giao_ngay_theo_tai_trong();
+  if (!danhSachXe.length) {
+    return lay_cau_hinh_xe_giao_ngay("xe_may");
+  }
+
+  const xePhuHop = danhSachXe.find((item) => {
+    const trongLuongToiDa = toPositiveNumber(item?.trong_luong_toi_da, 0);
+    return trongLuongToiDa > 0 && trong_luong <= trongLuongToiDa;
+  });
+
+  return xePhuHop || danhSachXe[danhSachXe.length - 1];
 }
 
 function chon_loai_xe_tinh_gia(
@@ -1055,20 +1009,25 @@ function lay_thong_so_xe_giao_ngay(xe_ap_dung, khoang_cach_km) {
     };
   }
 
-  if (khoang_cach_km > 20) {
+  const cau_hinh_xe_may = lay_cau_hinh_gia_xe_may_giao_ngay();
+  if (khoang_cach_km > cau_hinh_xe_may.nguong_xa) {
     return {
-      gia_co_ban: 5000,
+      gia_co_ban: cau_hinh_xe_may.don_gia_xa,
       he_so_xe: 1,
       cach_tinh_xe_may_duong_dai:
-        "Tuyen tren 20km dang ap dung don gia 5.000d/km de giu bang gia don gian va minh bach.",
+        `Tuyen tren ${cau_hinh_xe_may.nguong_xa}km dang ap dung don gia ${Math.round(
+          cau_hinh_xe_may.don_gia_xa,
+        ).toLocaleString("vi-VN")}d/km de giu bang gia don gian va minh bach.`,
     };
   }
 
   return {
-    gia_co_ban: 6500,
+    gia_co_ban: cau_hinh_xe_may.don_gia_gan,
     he_so_xe: 1,
     cach_tinh_xe_may_duong_dai:
-      "Tuyen den 20km dang ap dung don gia 6.500d/km cho xe may.",
+      `Tuyen den ${cau_hinh_xe_may.nguong_xa}km dang ap dung don gia ${Math.round(
+        cau_hinh_xe_may.don_gia_gan,
+      ).toLocaleString("vi-VN")}d/km cho xe may.`,
   };
 }
 
@@ -1187,16 +1146,16 @@ function tinh_gia_giao_hang_ngay_lap_tuc(thong_tin = {}) {
     ap_dung_phi_dich_vu && co_tinh_phi_thoi_gian
       ? Math.round(
           transportSubtotal *
-            Math.max((cau_hinh_khung_gio?.multiplier || 1) - 1, 0) +
-            (cau_hinh_khung_gio?.fixedFee || 0),
+            Math.max((cau_hinh_khung_gio?.heso || 1) - 1, 0) +
+            (cau_hinh_khung_gio?.phicodinh || 0),
         )
       : 0;
   const conditionFee =
     ap_dung_phi_dich_vu && co_tinh_phi_thoi_gian
       ? Math.round(
           transportSubtotal *
-            Math.max((cau_hinh_thoi_tiet?.multiplier || 1) - 1, 0) +
-            (cau_hinh_thoi_tiet?.fixedFee || 0),
+            Math.max((cau_hinh_thoi_tiet?.heso || 1) - 1, 0) +
+            (cau_hinh_thoi_tiet?.phicodinh || 0),
         )
       : 0;
   const serviceFee = timeFee + conditionFee;
@@ -1204,6 +1163,7 @@ function tinh_gia_giao_hang_ngay_lap_tuc(thong_tin = {}) {
     tong_gia_van_chuyen +
       goodsFee +
       serviceFee +
+      vehicleFee +
       phi_cod +
       phi_bao_hiem,
   );
@@ -1335,12 +1295,10 @@ function calculateDomesticQuote(payload, options = {}) {
         "",
     ).trim(),
     pickupSlotFixedFee: toPositiveNumber(
-      payload.phi_khung_gio || payload.pickupSlotFixedFee,
+      payload.phi_khung_gio,
     ),
     pickupSlotMultiplier:
-      toPositiveNumber(
-        payload.he_so_khung_gio || payload.pickupSlotMultiplier,
-      ) || 1,
+      toPositiveNumber(payload.he_so_khung_gio) || 1,
     pickupDate: String(
       payload.ngay_lay_hang || payload.pickupDate || "",
     ).trim(),
@@ -1516,8 +1474,8 @@ function calculateDomesticQuote(payload, options = {}) {
         serviceType,
         norm.serviceConditionKey,
       );
-      const pickupSlotMultiplier = timeConfig?.multiplier || 1;
-      const pickupSlotFixedFee = timeConfig?.fixedFee || 0;
+      const pickupSlotMultiplier = timeConfig?.heso || 1;
+      const pickupSlotFixedFee = timeConfig?.phicodinh || 0;
       const allowsServiceFee =
         includeTimeFee && serviceConfig.appliesServiceFee === true;
       const rawTimeFee =
@@ -1525,8 +1483,8 @@ function calculateDomesticQuote(payload, options = {}) {
         pickupSlotFixedFee;
       const timeFee = allowsServiceFee ? rawTimeFee : 0;
       const rawConditionFee =
-        transportSubtotal * Math.max((conditionConfig.multiplier || 1) - 1, 0) +
-        (conditionConfig.fixedFee || 0);
+        transportSubtotal * Math.max((conditionConfig.heso || 1) - 1, 0) +
+        (conditionConfig.phicodinh || 0);
       const conditionFee = allowsServiceFee ? rawConditionFee : 0;
       const serviceFee = timeFee + conditionFee;
       const transportWithServiceFee = transportSubtotal + serviceFee;
@@ -1971,6 +1929,7 @@ if (typeof window !== "undefined") {
   window.getDomesticInstantTimeConfig = getDomesticInstantTimeConfig;
   window.getDomesticInstantWeatherConfig = getDomesticInstantWeatherConfig;
   window.DOMESTIC_VEHICLE_OPTIONS = DOMESTIC_VEHICLE_OPTIONS;
+  window.lay_cau_hinh_gia_xe_may_giao_ngay = lay_cau_hinh_gia_xe_may_giao_ngay;
   window.lay_gioi_han_hang_hoa_xe_may = lay_gioi_han_hang_hoa_xe_may;
   window.kiem_tra_hang_hoa_xe_may = kiem_tra_hang_hoa_xe_may;
   window.loadPricingDataSync = loadPricingDataSync;

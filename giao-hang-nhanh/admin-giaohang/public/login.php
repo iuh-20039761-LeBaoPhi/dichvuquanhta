@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../config/local_store.php';
 
 $adminAccounts = json_decode(
     '[
@@ -15,6 +16,26 @@ $adminAccounts = json_decode(
     ]',
     true
 );
+
+$adminOverrides = admin_local_store_read('admin-profiles.json', []);
+if (is_array($adminOverrides)) {
+    foreach ($adminAccounts as &$account) {
+        $usernameKey = strtolower(trim((string) ($account['username'] ?? '')));
+        $override = is_array($adminOverrides[$usernameKey] ?? null)
+            ? $adminOverrides[$usernameKey]
+            : null;
+        if (!$override) {
+            continue;
+        }
+
+        foreach (['fullname', 'email', 'phone', 'password'] as $field) {
+            if (isset($override[$field]) && $override[$field] !== '') {
+                $account[$field] = (string) $override[$field];
+            }
+        }
+    }
+    unset($account);
+}
 
 $error = '';
 
@@ -211,9 +232,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn-primary" style="justify-content:center; flex:1 1 180px;">
                     Đăng nhập admin
                 </button>
-                <a class="btn-secondary" href="../../public/test-krud-list.html" style="flex:1 1 180px;">
-                    Xem dữ liệu KRUD
-                </a>
             </div>
 
             <p class="admin-login-card__meta">

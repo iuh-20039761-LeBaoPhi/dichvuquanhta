@@ -171,7 +171,6 @@
             "lientinh": 55000
           },
           "buoctiep": 8000,
-          "heso_dichvu": 1.5,
           "ap_dung_phi_dich_vu": true
         },
         "hoatoc": {
@@ -187,7 +186,6 @@
             "lientinh": 50000
           },
           "buoctiep": 3500,
-          "heso_dichvu": 1.5,
           "ap_dung_phi_dich_vu": true
         },
         "nhanh": {
@@ -203,7 +201,6 @@
             "lientinh": 40000
           },
           "buoctiep": 2500,
-          "heso_dichvu": 1.25,
           "ap_dung_phi_dich_vu": true
         },
         "tieuchuan": {
@@ -219,7 +216,6 @@
             "lientinh": 30000
           },
           "buoctiep": 2000,
-          "heso_dichvu": 1,
           "ap_dung_phi_dich_vu": true
         }
       },
@@ -338,11 +334,9 @@
         "congkenh": "Phương tiện đặc biệt chịu tải, quy trình bốc xếp riêng."
       },
       "cauhinh_khoangcach": {
-        "km_coban": 3,
-        "gia_coban": 16000,
-        "gia_tiep_theo_km": 4000,
-        "nguong_xa": 50,
-        "gia_xa": 3500,
+        "gia_xe_may_gan": 6500,
+        "nguong_xe_may_xa": 20,
+        "gia_xe_may_xa": 5000,
         "can_mien_phi": 2.0,
         "he_so_the_tich": 6000,
         "da_gom_vat": true

@@ -221,7 +221,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 <div class="stats-panel-head">
                     <div>
                         <h3>Đơn hàng và doanh thu 7 ngày gần nhất</h3>
-                        <p>Đọc từ API `stats.php` và render bằng Chart.js</p>
+                        <p>Đọc trực tiếp từ KRUD và render bằng Chart.js</p>
                     </div>
                 </div>
                 <div class="stats-panel-body">
@@ -280,12 +280,81 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
     <?php include __DIR__ . '/../includes/footer.php'; ?>
 
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script>
         (function () {
-            const apiUrl = "../api/stats.php";
+            const ordersTable = "giaohangnhanh_dat_lich";
+            const customersTable = "giaohangnhanh_customers";
+            const pageLimit = 200;
+            const maxPages = 10;
+
+            function getListFn() {
+                if (typeof window.krudList === "function") {
+                    return (payload) => window.krudList(payload);
+                }
+
+                if (typeof window.crud === "function") {
+                    return (payload) => window.crud("list", payload.table, {
+                        p: payload.page || 1,
+                        limit: payload.limit || pageLimit,
+                    });
+                }
+
+                if (typeof window.krud === "function") {
+                    return (payload) => window.krud("list", payload.table, {
+                        p: payload.page || 1,
+                        limit: payload.limit || pageLimit,
+                    });
+                }
+
+                return null;
+            }
+
+            function extractRows(payload, depth = 0) {
+                if (depth > 4 || payload == null) return [];
+                if (Array.isArray(payload)) return payload;
+                if (typeof payload !== "object") return [];
+
+                const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
+                for (const key of candidateKeys) {
+                    const value = payload[key];
+                    if (Array.isArray(value)) return value;
+                    const nested = extractRows(value, depth + 1);
+                    if (nested.length) return nested;
+                }
+
+                return [];
+            }
+
+            async function listAllRows(table) {
+                const listFn = getListFn();
+                if (!listFn) {
+                    throw new Error("Không tìm thấy hàm KRUD list.");
+                }
+
+                const rows = [];
+                for (let page = 1; page <= maxPages; page += 1) {
+                    const response = await listFn({
+                        table,
+                        sort: { id: "desc" },
+                        page,
+                        limit: pageLimit,
+                    });
+                    const batch = extractRows(response);
+                    if (!batch.length) break;
+                    rows.push(...batch);
+                    if (batch.length < pageLimit) break;
+                }
+
+                return rows;
+            }
 
             function formatMoney(value) {
                 return `${Math.round(Number(value) || 0).toLocaleString("vi-VN")}đ`;
+            }
+
+            function normalizeText(value) {
+                return String(value ?? "").replace(/\s+/g, " ").trim();
             }
 
             function escapeHtml(value) {
@@ -303,6 +372,158 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 el.className = className;
                 el.textContent = message;
                 el.hidden = false;
+            }
+
+            function toNumber(value, fallback = 0) {
+                const parsed = Number(value);
+                return Number.isFinite(parsed) ? parsed : fallback;
+            }
+
+            function normalizeStatus(rawStatus) {
+                const normalized = normalizeText(rawStatus).toLowerCase();
+                if (["completed", "hoan_tat", "hoàn tất", "success", "delivered"].includes(normalized)) {
+                    return "completed";
+                }
+                if (["shipping", "dang_giao", "đang giao", "in_transit"].includes(normalized)) {
+                    return "shipping";
+                }
+                if (["cancelled", "canceled", "da_huy", "đã hủy"].includes(normalized)) {
+                    return "cancelled";
+                }
+                return "pending";
+            }
+
+            function getServiceMeta(rawValue) {
+                const normalized = normalizeText(rawValue).toLowerCase();
+                const map = {
+                    standard: { key: "standard", label: "Tiêu chuẩn" },
+                    giao_tieu_chuan: { key: "standard", label: "Tiêu chuẩn" },
+                    tieuchuan: { key: "standard", label: "Tiêu chuẩn" },
+                    fast: { key: "fast", label: "Nhanh" },
+                    giao_nhanh: { key: "fast", label: "Nhanh" },
+                    nhanh: { key: "fast", label: "Nhanh" },
+                    express: { key: "express", label: "Hỏa tốc" },
+                    giao_hoa_toc: { key: "express", label: "Hỏa tốc" },
+                    hoatoc: { key: "express", label: "Hỏa tốc" },
+                    instant: { key: "instant", label: "Ngay lập tức" },
+                    giao_ngay_lap_tuc: { key: "instant", label: "Ngay lập tức" },
+                    laptuc: { key: "instant", label: "Ngay lập tức" },
+                };
+                return map[normalized] || {
+                    key: normalized || "khac",
+                    label: normalizeText(rawValue) || "Khác",
+                };
+            }
+
+            function getPackageMeta(rawValue) {
+                const normalized = normalizeText(rawValue).toLowerCase();
+                const map = {
+                    thuong: { key: "thuong", label: "Hàng thông thường" },
+                    "gia-tri-cao": { key: "gia-tri-cao", label: "Giá trị cao" },
+                    "de-vo": { key: "de-vo", label: "Dễ vỡ" },
+                    "mui-hoi": { key: "mui-hoi", label: "Có mùi hôi" },
+                    "chat-long": { key: "chat-long", label: "Chất lỏng" },
+                    "pin-lithium": { key: "pin-lithium", label: "Pin lithium" },
+                    "dong-lanh": { key: "dong-lanh", label: "Đông lạnh" },
+                    "cong-kenh": { key: "cong-kenh", label: "Cồng kềnh" },
+                };
+                return map[normalized] || {
+                    key: normalized || "khac",
+                    label: normalizeText(rawValue) || "Khác",
+                };
+            }
+
+            function parseJsonArray(value) {
+                if (Array.isArray(value)) return value;
+                if (typeof value !== "string") return [];
+                try {
+                    const parsed = JSON.parse(value);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+
+            function parseDate(value) {
+                const raw = normalizeText(value);
+                if (!raw) return null;
+                const parsed = new Date(raw);
+                return Number.isNaN(parsed.getTime()) ? null : parsed;
+            }
+
+            function formatDateKey(date) {
+                return [
+                    date.getFullYear(),
+                    String(date.getMonth() + 1).padStart(2, "0"),
+                    String(date.getDate()).padStart(2, "0"),
+                ].join("-");
+            }
+
+            function buildTimelineIndex() {
+                const result = {};
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                for (let i = 6; i >= 0; i -= 1) {
+                    const current = new Date(today);
+                    current.setDate(today.getDate() - i);
+                    result[formatDateKey(current)] = {
+                        label: `${String(current.getDate()).padStart(2, "0")}/${String(current.getMonth() + 1).padStart(2, "0")}`,
+                        orders: 0,
+                        revenue: 0,
+                    };
+                }
+
+                return result;
+            }
+
+            function getOrderItems(row) {
+                return parseJsonArray(row.mat_hang_json || row.mat_hang || row.items || []);
+            }
+
+            function normalizeOrder(row) {
+                const items = getOrderItems(row);
+                const primaryItem = items.find((item) => normalizeText(item?.loai_hang)) || items[0] || {};
+                const serviceMeta = getServiceMeta(row.ten_dich_vu || row.dich_vu || row.loai_dich_vu || row.service_type);
+                const packageMeta = getPackageMeta(primaryItem.loai_hang || row.loai_goi_hang || row.loai_hang);
+
+                return {
+                    id: normalizeText(row.id),
+                    createdAt: row.created_at || row.created_date || row.updated_at || "",
+                    totalFee: toNumber(row.tong_cuoc || row.shipping_fee || row.total_fee || 0),
+                    status: normalizeStatus(row.trang_thai || row.status),
+                    serviceKey: serviceMeta.key,
+                    serviceLabel: serviceMeta.label,
+                    packageKey: packageMeta.key,
+                    packageLabel: packageMeta.label,
+                    customerId: normalizeText(row.customer_id),
+                    customerUsername: normalizeText(row.customer_username),
+                    senderName: normalizeText(row.ho_ten_nguoi_gui || row.nguoi_gui_ho_ten || ""),
+                    senderPhone: normalizeText(row.so_dien_thoai_nguoi_gui || row.nguoi_gui_so_dien_thoai || ""),
+                };
+            }
+
+            function normalizeCustomer(row) {
+                return {
+                    id: normalizeText(row.id),
+                    username: normalizeText(row.username || row.ten_dang_nhap || ""),
+                    fullname: normalizeText(row.fullname || row.ho_ten || ""),
+                    phone: normalizeText(row.phone || row.so_dien_thoai || ""),
+                };
+            }
+
+            function buildCustomerLookup(customers) {
+                const byId = new Map();
+                const byUsername = new Map();
+                const byPhone = new Map();
+
+                customers.forEach((customer) => {
+                    if (customer.id) byId.set(customer.id, customer);
+                    if (customer.username) byUsername.set(customer.username.toLowerCase(), customer);
+                    if (customer.phone) byPhone.set(customer.phone.replace(/[^\d]/g, ""), customer);
+                });
+
+                return { byId, byUsername, byPhone };
             }
 
             function renderTopUsers(topUsers) {
@@ -339,15 +560,110 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 `;
             }
 
-            async function loadStats() {
-                try {
-                    const response = await fetch(apiUrl, { credentials: "same-origin" });
-                    const result = await response.json();
-                    if (!response.ok || !result.success) {
-                        throw new Error(result.message || "Không thể tải thống kê.");
+            function buildStatsData(orderRows, customerRows) {
+                const orders = orderRows.map(normalizeOrder);
+                const customers = customerRows.map(normalizeCustomer);
+                const timelineIndex = buildTimelineIndex();
+                const serviceMap = new Map();
+                const packageMap = new Map();
+                const customerLookup = buildCustomerLookup(customers);
+                const topUsersMap = new Map();
+                let revenue = 0;
+                let completedCount = 0;
+
+                orders.forEach((order) => {
+                    if (order.status === "completed") {
+                        revenue += order.totalFee;
+                        completedCount += 1;
                     }
 
-                    const data = result.data || {};
+                    const orderDate = parseDate(order.createdAt);
+                    if (orderDate) {
+                        const dateKey = formatDateKey(orderDate);
+                        if (timelineIndex[dateKey]) {
+                            timelineIndex[dateKey].orders += 1;
+                            if (order.status === "completed") {
+                                timelineIndex[dateKey].revenue += order.totalFee;
+                            }
+                        }
+                    }
+
+                    const currentService = serviceMap.get(order.serviceKey) || {
+                        key: order.serviceKey,
+                        label: order.serviceLabel,
+                        total: 0,
+                    };
+                    currentService.total += 1;
+                    serviceMap.set(order.serviceKey, currentService);
+
+                    const currentPackage = packageMap.get(order.packageKey) || {
+                        key: order.packageKey,
+                        label: order.packageLabel,
+                        total: 0,
+                    };
+                    currentPackage.total += 1;
+                    packageMap.set(order.packageKey, currentPackage);
+
+                    const phoneKey = order.senderPhone.replace(/[^\d]/g, "");
+                    const customer =
+                        customerLookup.byId.get(order.customerId) ||
+                        customerLookup.byUsername.get(order.customerUsername.toLowerCase()) ||
+                        customerLookup.byPhone.get(phoneKey) ||
+                        null;
+
+                    const userKey =
+                        order.customerId ||
+                        order.customerUsername.toLowerCase() ||
+                        phoneKey ||
+                        order.senderName.toLowerCase() ||
+                        `guest-${order.id}`;
+
+                    const currentUser = topUsersMap.get(userKey) || {
+                        id: customer?.id || order.customerId || userKey,
+                        fullname: customer?.fullname || order.senderName || "Khách hàng",
+                        username: customer?.username || order.customerUsername || "khach-le",
+                        total_orders: 0,
+                        total_spent: 0,
+                    };
+                    currentUser.total_orders += 1;
+                    if (order.status === "completed") {
+                        currentUser.total_spent += order.totalFee;
+                    }
+                    topUsersMap.set(userKey, currentUser);
+                });
+
+                return {
+                    kpi: {
+                        revenue,
+                        total_orders: orders.length,
+                        total_users: customers.length,
+                        completed_rate: orders.length ? Number(((completedCount / orders.length) * 100).toFixed(1)) : 0,
+                    },
+                    timeline: {
+                        labels: Object.values(timelineIndex).map((item) => item.label),
+                        orders: Object.values(timelineIndex).map((item) => item.orders),
+                        revenue: Object.values(timelineIndex).map((item) => item.revenue),
+                    },
+                    service_breakdown: Array.from(serviceMap.values()).sort((a, b) => b.total - a.total),
+                    package_breakdown: Array.from(packageMap.values()).sort((a, b) => b.total - a.total),
+                    top_users: Array.from(topUsersMap.values())
+                        .sort((a, b) => {
+                            if (b.total_orders !== a.total_orders) {
+                                return b.total_orders - a.total_orders;
+                            }
+                            return b.total_spent - a.total_spent;
+                        })
+                        .slice(0, 5),
+                };
+            }
+
+            async function loadStats() {
+                try {
+                    const [orderRows, customerRows] = await Promise.all([
+                        listAllRows(ordersTable),
+                        listAllRows(customersTable),
+                    ]);
+                    const data = buildStatsData(orderRows, customerRows);
                     const kpi = data.kpi || {};
                     document.getElementById("stats-kpi-revenue").textContent = formatMoney(kpi.revenue);
                     document.getElementById("stats-kpi-orders").textContent = Number(kpi.total_orders || 0).toLocaleString("vi-VN");
@@ -379,7 +695,8 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         window.renderAdminStatsCharts(window.chartData);
                     }
                 } catch (error) {
-                    setState("stats-revenue-state", error.message || "Không thể tải thống kê.", "stats-error");
+                    const errorMessage = error?.message || "Không thể tải thống kê từ KRUD.";
+                    setState("stats-revenue-state", errorMessage, "stats-error");
                     setState("stats-service-state", "Không thể tải biểu đồ dịch vụ.", "stats-error");
                     setState("stats-package-state", "Không thể tải biểu đồ hàng hóa.", "stats-error");
                     renderTopUsers([]);

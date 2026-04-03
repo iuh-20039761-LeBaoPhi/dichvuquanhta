@@ -3,25 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chi tiết đơn của nhà cung cấp | Giao Hàng Nhanh</title>
-    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico" />
-    <link rel="stylesheet" href="../assets/css/styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-      <script src="/ga.js"></script>
+    <title>Đang chuyển hướng | Giao Hàng Nhanh</title>
+    <script>
+      (function () {
+        const target = new URL("../../chi-tiet-don-hang.html", window.location.href);
+        const currentParams = new URLSearchParams(window.location.search);
+        currentParams.forEach((value, key) => {
+          target.searchParams.set(key, value);
+        });
+        if (!target.searchParams.has("viewer")) {
+          target.searchParams.set("viewer", "shipper");
+        }
+        window.location.replace(target.toString());
+      })();
+    </script>
   </head>
-  <body data-shipper-page="detail">
-    <div id="site-header"></div>
-    <main class="customer-portal-page-main">
-      <div class="container" id="shipper-shell"></div>
-    </main>
-    <div id="site-footer"></div>
-    <script src="../assets/js/shared-layout.js"></script>
-    <script src="../assets/js/local-auth.js"></script>
-    <script src="../assets/js/main-core.js"></script>
-    <script src="../assets/js/modules/main-navigation.js"></script>
-    <script src="../assets/js/shipper-portal.js"></script>
-  </body>
+  <body></body>
 </html>

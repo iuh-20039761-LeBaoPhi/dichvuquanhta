@@ -10,7 +10,7 @@
     customer: "giaohangnhanh_customers",
     shipper: "giaohangnhanh_shippers",
   };
-  const allowPendingShipperLogin = true;
+  const allowPendingShipperLogin = false;
 
   function safeParse(raw, fallback) {
     try {
@@ -70,8 +70,43 @@
       username: user.username,
       is_approved: user.is_approved,
       is_locked: user.is_locked,
+      vehicle_type: user.vehicle_type || user.shipper_vehicle || "",
+      shipper_vehicle: user.shipper_vehicle || user.vehicle_type || "",
+      bien_so: user.bien_so || user.license_plate || "",
+      license_plate: user.license_plate || user.bien_so || "",
+      address:
+        user.address ||
+        user.shipper_address ||
+        user.dia_chi ||
+        user.company_address ||
+        "",
+      shipper_address:
+        user.shipper_address ||
+        user.address ||
+        user.dia_chi ||
+        user.company_address ||
+        "",
+      dia_chi:
+        user.dia_chi ||
+        user.address ||
+        user.shipper_address ||
+        user.company_address ||
+        "",
+      company_address:
+        user.company_address ||
+        user.address ||
+        user.shipper_address ||
+        user.dia_chi ||
+        "",
     };
     writeJson(storageKeys.session, session);
+    document.dispatchEvent(
+      new CustomEvent("ghn:auth-changed", {
+        detail: {
+          session,
+        },
+      }),
+    );
     return session;
   }
 
@@ -83,6 +118,13 @@
   function clearSession() {
     try {
       window.localStorage.removeItem(storageKeys.session);
+      document.dispatchEvent(
+        new CustomEvent("ghn:auth-changed", {
+          detail: {
+            session: null,
+          },
+        }),
+      );
     } catch (error) {
       console.error("Cannot clear local auth session:", error);
     }
@@ -101,6 +143,30 @@
 
     if (typeof window.krud === "function") {
       return (tableName, data) => window.krud("insert", tableName, data);
+    }
+
+    return null;
+  }
+
+  function getKrudUpdateFn() {
+    if (typeof window.crud === "function") {
+      return (tableName, data, id) => window.crud("update", tableName, data, id);
+    }
+
+    if (typeof window.krud === "function") {
+      return (tableName, data, id) => window.krud("update", tableName, data, id);
+    }
+
+    return null;
+  }
+
+  function getKrudDeleteFn() {
+    if (typeof window.crud === "function") {
+      return (tableName, id) => window.crud("delete", tableName, { id });
+    }
+
+    if (typeof window.krud === "function") {
+      return (tableName, id) => window.krud("delete", tableName, { id });
     }
 
     return null;
@@ -188,6 +254,30 @@
       so_dien_thoai: normalizePhone(row.so_dien_thoai || row.phone),
       fullname: normalizeText(row.fullname || row.ho_ten),
       ho_ten: normalizeText(row.ho_ten || row.fullname),
+      address: normalizeText(
+        row.address ||
+          row.shipper_address ||
+          row.dia_chi ||
+          row.company_address,
+      ),
+      shipper_address: normalizeText(
+        row.shipper_address ||
+          row.address ||
+          row.dia_chi ||
+          row.company_address,
+      ),
+      dia_chi: normalizeText(
+        row.dia_chi ||
+          row.address ||
+          row.shipper_address ||
+          row.company_address,
+      ),
+      company_address: normalizeText(
+        row.company_address ||
+          row.address ||
+          row.shipper_address ||
+          row.dia_chi,
+      ),
       password: String(row.password || row.mat_khau || ""),
       mat_khau: String(row.mat_khau || row.password || ""),
       role,
@@ -223,6 +313,30 @@
       so_dien_thoai: phone,
       fullname,
       ho_ten: fullname,
+      address: normalizeText(
+        payload.address ||
+          payload.shipper_address ||
+          payload.dia_chi ||
+          payload.company_address,
+      ),
+      shipper_address: normalizeText(
+        payload.shipper_address ||
+          payload.address ||
+          payload.dia_chi ||
+          payload.company_address,
+      ),
+      dia_chi: normalizeText(
+        payload.dia_chi ||
+          payload.address ||
+          payload.shipper_address ||
+          payload.company_address,
+      ),
+      company_address: normalizeText(
+        payload.company_address ||
+          payload.address ||
+          payload.shipper_address ||
+          payload.dia_chi,
+      ),
       password: String(payload.password || ""),
       mat_khau: String(payload.password || ""),
       role,
@@ -298,6 +412,96 @@
     ]);
 
     return [...customers, ...shippers];
+  }
+
+  async function listPendingShippers() {
+    const users = await listKrudUsersByRole("shipper");
+    return users.filter((user) => Number(user.is_approved) !== 1);
+  }
+
+  async function approveShipper(userId) {
+    const normalizedId = String(userId || "").trim();
+    if (!normalizedId) {
+      throw new Error("Thiếu mã shipper để duyệt.");
+    }
+
+    const updateFn = getKrudUpdateFn();
+    if (!updateFn) {
+      throw new Error("Không tìm thấy hàm KRUD update.");
+    }
+
+    const pendingUsers = await listPendingShippers();
+    const targetUser = pendingUsers.find(
+      (user) => String(user.id || "") === normalizedId,
+    );
+
+    if (!targetUser) {
+      throw new Error("Không tìm thấy shipper đang chờ duyệt.");
+    }
+
+    await updateFn(
+      krudTables.shipper,
+      {
+        is_approved: 1,
+        da_phe_duyet: 1,
+        updated_at: new Date().toISOString(),
+      },
+      normalizedId,
+    );
+
+    return {
+      status: "success",
+      message: `Đã duyệt tài khoản shipper #${normalizedId}.`,
+      user: {
+        ...targetUser,
+        is_approved: 1,
+        da_phe_duyet: 1,
+      },
+    };
+  }
+
+  function inferKrudTableByRole(role) {
+    return String(role || "").trim().toLowerCase() === "shipper"
+      ? krudTables.shipper
+      : krudTables.customer;
+  }
+
+  async function updateKrudUser(userId, role, patch = {}) {
+    const normalizedId = String(userId || "").trim();
+    if (!normalizedId) {
+      throw new Error("Thiếu mã người dùng để cập nhật.");
+    }
+
+    const updateFn = getKrudUpdateFn();
+    if (!updateFn) {
+      throw new Error("Không tìm thấy hàm KRUD update.");
+    }
+
+    await updateFn(
+      inferKrudTableByRole(role),
+      {
+        ...patch,
+        updated_at: new Date().toISOString(),
+      },
+      normalizedId,
+    );
+
+    return { status: "success", message: "Đã cập nhật người dùng." };
+  }
+
+  async function deleteKrudUser(userId, role) {
+    const normalizedId = String(userId || "").trim();
+    if (!normalizedId) {
+      throw new Error("Thiếu mã người dùng để xóa.");
+    }
+
+    const deleteFn = getKrudDeleteFn();
+    if (!deleteFn) {
+      throw new Error("Không tìm thấy hàm KRUD delete.");
+    }
+
+    await deleteFn(inferKrudTableByRole(role), normalizedId);
+    return { status: "success", message: "Đã xóa người dùng." };
   }
 
   async function registerWithKrud(payload) {
@@ -537,6 +741,11 @@
     getSession,
     clearSession,
     getDashboardPath,
+    listAllKrudUsers,
+    listPendingShippers,
+    approveShipper,
+    updateKrudUser,
+    deleteKrudUser,
     register,
     login,
   };

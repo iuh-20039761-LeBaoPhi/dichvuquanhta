@@ -109,15 +109,19 @@ function renderDynamicData(data) {
     );
     if (distanceTable && domesticData.distanceConfig) {
       const xeMay = lay_cau_hinh_xe_giao_ngay("xe_may");
+      const cauHinhXeMay =
+        typeof lay_cau_hinh_gia_xe_may_giao_ngay === "function"
+          ? lay_cau_hinh_gia_xe_may_giao_ngay()
+          : { don_gia_gan: 6500, nguong_xa: 20, don_gia_xa: 5000 };
       distanceTable.innerHTML = `
                 <tr>
-                    <td><span class="zone-badge same-district">Đến 20km</span></td>
-                    <td><strong>${formatMoney(6500)} / km</strong></td>
+                    <td><span class="zone-badge same-district">Đến ${formatDistance(cauHinhXeMay.nguong_xa)}</span></td>
+                    <td><strong>${formatMoney(cauHinhXeMay.don_gia_gan)} / km</strong></td>
                     <td>Áp dụng cho xe máy, đơn gọn và tối đa 50kg</td>
                 </tr>
                 <tr>
-                    <td><span class="zone-badge same-city">Trên 20km</span></td>
-                    <td><strong>${formatMoney(5000)} / km</strong></td>
+                    <td><span class="zone-badge same-city">Trên ${formatDistance(cauHinhXeMay.nguong_xa)}</span></td>
+                    <td><strong>${formatMoney(cauHinhXeMay.don_gia_xa)} / km</strong></td>
                     <td>Giảm đơn giá để giữ bảng giá đơn giản và minh bạch</td>
                 </tr>
                 <tr>
