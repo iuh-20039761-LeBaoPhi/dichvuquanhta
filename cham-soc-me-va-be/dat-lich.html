@@ -81,6 +81,8 @@
       .service-work-box { border: 2px solid #4f9ddb; border-radius: 10px; padding: 10px; margin-bottom: 16px; background: #fafdff; }
       .service-work-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
       #serviceSelector { border-color: #b3c0ca; background: #f1f1f1; }
+      #serviceSelector option { white-space: normal; }
+      #serviceSelector.service-selector-open { height: auto; }
       #serviceJobs .list-group { gap: 2px; }
       #serviceJobs .list-group-item { border: 0; background: transparent; padding: 4px 0; border-radius: 0; }
       #serviceJobs .list-group-item-action:hover, #serviceJobs .list-group-item-action:focus { background: transparent; }
@@ -142,6 +144,37 @@
 
       @media (max-width: 575.98px) {
         .review-label { width: 110px; min-width: 110px; }
+
+        .service-work-box { overflow: visible; }
+        #serviceSelector {
+          min-height: 44px;
+          font-size: 0.98rem;
+        }
+        #serviceSelector.service-selector-open {
+          position: relative;
+          z-index: 30;
+          min-height: 176px;
+          padding: 6px;
+          border: 2px solid #6aa7d8;
+          border-radius: 12px;
+          /* background: #f8fcff; */
+        }
+        #serviceSelector.service-selector-open option {
+          padding: 10px 12px;
+          margin-bottom: 6px;
+          border: 1px solid #b9d7ef;
+          border-radius: 8px;
+          color: #050505;
+        }
+        #serviceSelector.service-selector-open option:last-child {
+          margin-bottom: 0;
+        }
+        #serviceSelector.service-selector-open option:checked {
+          /* background: #d8edff linear-gradient(0deg, #d8edff, #d8edff); */
+          border-color: #6ca8d9;
+          color: #000000;
+          font-weight: 700;
+        }
 
         .attachment-preview-split { grid-template-columns: 1fr; }
         .attachment-pane + .attachment-pane {
@@ -659,6 +692,29 @@
           return Math.round(val).toLocaleString('vi-VN') + ' đ';
         }
 
+        // Trên mobile: mở select theo dạng inline (size > 1) để tránh dropdown nổi đè.
+        function isSmallMobileViewport() {
+          return window.matchMedia('(max-width: 575.98px)').matches;
+        }
+
+        function collapseServiceSelectorInline() {
+          var selector = document.getElementById('serviceSelector');
+          if (!selector) return;
+          selector.size = 1;
+          selector.classList.remove('service-selector-open');
+        }
+
+        function expandServiceSelectorInline() {
+          var selector = document.getElementById('serviceSelector');
+          if (!selector || !isSmallMobileViewport()) return;
+
+          var optionCount = selector.options ? selector.options.length : 0;
+          if (optionCount <= 1) return;
+
+          selector.size = Math.min(Math.max(optionCount, 4), 7);
+          selector.classList.add('service-selector-open');
+        }
+
         // Tính khoảng cách chim bay (fallback).
         function haversineKm(from, to) {
           var R = 6371;
@@ -1086,6 +1142,7 @@
         function renderService(service) {
           CURRENT_SERVICE = service;
           $('#serviceSelector').val(String(service.id));
+          collapseServiceSelectorInline();
 
           var pkgHtml = '<div class="list-group">';
           service.pricing.forEach(function (p) {
@@ -1144,6 +1201,22 @@
         $(document).on('change', '#serviceSelector', function () {
           var service = SERVICES.find(function (s) { return String(s.id) === String($('#serviceSelector').val()); });
           if (service) renderService(service);
+          collapseServiceSelectorInline();
+          this.blur();
+        });
+
+        // Mobile: mở danh sách dịch vụ theo dạng inline để không tràn khung modal.
+        $(document).on('focus', '#serviceSelector', function () {
+          expandServiceSelectorInline();
+        });
+        $(document).on('blur', '#serviceSelector', function () {
+          collapseServiceSelectorInline();
+        });
+        $(document).on('click touchstart', function (e) {
+          if (!$(e.target).closest('#serviceSelector').length) collapseServiceSelectorInline();
+        });
+        $(window).on('resize orientationchange', function () {
+          if (!isSmallMobileViewport()) collapseServiceSelectorInline();
         });
 
         // Click lại radio để bỏ chọn.
