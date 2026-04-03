@@ -329,20 +329,78 @@
 			font-size: 13px;
 		}
 
-		#mediaGrid {
+		.review-split {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.review-box {
+			border: 1px solid #d6e4f2;
+			border-radius: 12px;
+			padding: 10px;
+			background: #f7fbff;
+			display: grid;
 			gap: 10px;
 		}
 
-		#mediaGrid img,
-		#mediaGrid video {
+		.review-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.review-title {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 800;
+			color: #15314f;
+		}
+
+		.review-display {
+			display: grid;
+			gap: 6px;
+			padding: 8px;
+			border-radius: 10px;
+			border: 1px dashed #c9dced;
+			background: #fff;
+		}
+
+		.review-text,
+		.review-time {
+			margin: 0;
+			font-size: 13px;
+			font-weight: 600;
+			color: #1f3853;
+			word-break: break-word;
+		}
+
+		.review-media-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+		}
+
+		.review-media-grid img,
+		.review-media-grid video {
 			width: 100%;
-			height: 140px;
+			height: 120px;
 			object-fit: cover;
 			border-radius: 10px;
 			border: 1px solid #dbe7f2;
 			background: #f4f8fc;
+		}
+
+		.media-empty {
+			grid-column: 1 / -1;
+			font-size: 12px;
+			font-weight: 700;
+			color: #5f7590;
+			background: #edf4fc;
+			border: 1px solid #d7e5f3;
+			padding: 8px 10px;
+			border-radius: 8px;
 		}
 
 		.hidden {
@@ -352,7 +410,8 @@
 		@media (max-width: 1060px) {
 			.grid,
 			.info-grid,
-			#mediaGrid {
+			.review-split,
+			.review-media-grid {
 				grid-template-columns: 1fr;
 			}
 
@@ -409,7 +468,7 @@
 					</article>
 					<article class="panel" id="panelTime" style="background:linear-gradient(180deg,#f8fbff 0%,#f2f7fd 100%);border-color:#cddced;">
 						<div class="panel-head" style="margin-bottom:2px;">
-							<h2 class="panel-title" style="font-size:15px;">4 + 5. Trạng thái, thời gian và tiến độ</h2>
+							<h2 class="panel-title" style="font-size:15px;">4. Trạng thái, thời gian và tiến độ</h2>
 						</div>
 
 						<div style="display:grid;gap:6px;">
@@ -515,14 +574,54 @@
 							<span class="badge">Minh chứng</span>
 						</div>
 
-						<div class="media-grid" id="mediaGrid"></div>
+						<div class="review-split">
+							<section class="review-box">
+								<div class="review-head">
+									<h3 class="review-title">Đánh giá khách hàng</h3>
+									<span id="badgeCustomerReview" class="badge warning">Chưa có</span>
+								</div>
 
-						<div id="customerReviewForm" class="forms d-grid gap-2 hidden">
-							<label class="field-label" for="customerReview">Đánh giá của khách hàng</label>
-							<textarea id="customerReview" class="form-control" style="min-height:84px;resize:vertical;" placeholder="Nhập đánh giá sau khi hoàn thành..."></textarea>
-							<label class="field-label" for="customerMediaInput">Tải lên ảnh/video (khách hàng)</label>
-							<input id="customerMediaInput" class="form-control" type="file" accept="image/*,video/*" multiple>
-							<button id="btnSaveReview" class="btn btn-primary btn-sm" type="button">Gửi đánh giá</button>
+								<div class="review-display">
+									<p class="field-label">Nội dung đánh giá</p>
+									<p id="customerReviewText" class="review-text">Chưa có đánh giá</p>
+									<p class="field-label">Thời gian gửi</p>
+									<p id="customerReviewTime" class="review-time">---</p>
+									<p class="field-label">Ảnh/video đánh giá</p>
+									<div id="customerReviewMediaGrid" class="review-media-grid"></div>
+								</div>
+
+								<div id="customerReviewForm" class="forms d-grid gap-2 hidden">
+									<label class="field-label" for="customerReview">Nhập đánh giá của khách hàng</label>
+									<textarea id="customerReview" class="form-control" style="min-height:84px;resize:vertical;" placeholder="Nhập đánh giá sau khi hoàn thành..."></textarea>
+									<label class="field-label" for="customerMediaInput">Tải lên ảnh/video đánh giá (khách hàng)</label>
+									<input id="customerMediaInput" class="form-control" type="file" accept="image/*,video/*" multiple>
+									<button id="btnSaveReview" class="btn btn-primary btn-sm" type="button">Lưu đánh giá khách hàng</button>
+								</div>
+							</section>
+
+							<section class="review-box">
+								<div class="review-head">
+									<h3 class="review-title">Đánh giá nhân viên</h3>
+									<span id="badgeStaffReview" class="badge warning">Chưa có</span>
+								</div>
+
+								<div class="review-display">
+									<p class="field-label">Nội dung đánh giá</p>
+									<p id="staffReviewText" class="review-text">Chưa có đánh giá</p>
+									<p class="field-label">Thời gian gửi</p>
+									<p id="staffReviewTime" class="review-time">---</p>
+									<p class="field-label">Ảnh/video đánh giá</p>
+									<div id="staffReviewMediaGrid" class="review-media-grid"></div>
+								</div>
+
+								<div id="staffReviewForm" class="forms d-grid gap-2 hidden">
+									<label class="field-label" for="staffReview">Nhập đánh giá của nhân viên</label>
+									<textarea id="staffReview" class="form-control" style="min-height:84px;resize:vertical;" placeholder="Nhập đánh giá sau khi hoàn thành..."></textarea>
+									<label class="field-label" for="staffReviewMediaInput">Tải lên ảnh/video đánh giá (nhân viên)</label>
+									<input id="staffReviewMediaInput" class="form-control" type="file" accept="image/*,video/*" multiple>
+									<button id="btnSaveStaffReview" class="btn btn-primary btn-sm" type="button">Lưu đánh giá nhân viên</button>
+								</div>
+							</section>
 						</div>
 					</article>
 				</section>
@@ -590,8 +689,6 @@
 			progressBar: document.getElementById('progressBar'),
 			progressHint: document.getElementById('progressHint'),
 
-			mediaGrid: document.getElementById('mediaGrid'),
-
 			btnClaim: document.getElementById('btnClaim'),
 			btnUnclaim: document.getElementById('btnUnclaim'),
 			btnStart: document.getElementById('btnStart'),
@@ -600,11 +697,24 @@
 			btnEnd: document.getElementById('btnEnd'),
 			btnCancelService: document.getElementById('btnCancelService'),
 			btnSaveReview: document.getElementById('btnSaveReview'),
+			btnSaveStaffReview: document.getElementById('btnSaveStaffReview'),
 			btnSaveStaffLog: document.getElementById('btnSaveStaffLog'),
 
+			badgeCustomerReview: document.getElementById('badgeCustomerReview'),
+			customerReviewText: document.getElementById('customerReviewText'),
+			customerReviewTime: document.getElementById('customerReviewTime'),
+			customerReviewMediaGrid: document.getElementById('customerReviewMediaGrid'),
 			customerReviewForm: document.getElementById('customerReviewForm'),
 			customerReview: document.getElementById('customerReview'),
 			customerMediaInput: document.getElementById('customerMediaInput'),
+
+			badgeStaffReview: document.getElementById('badgeStaffReview'),
+			staffReviewText: document.getElementById('staffReviewText'),
+			staffReviewTime: document.getElementById('staffReviewTime'),
+			staffReviewMediaGrid: document.getElementById('staffReviewMediaGrid'),
+			staffReviewForm: document.getElementById('staffReviewForm'),
+			staffReview: document.getElementById('staffReview'),
+			staffReviewMediaInput: document.getElementById('staffReviewMediaInput'),
 
 			staffWorkForm: document.getElementById('staffWorkForm'),
 			staffNote: document.getElementById('staffNote'),
@@ -640,8 +750,12 @@
 			actualEnd: ['thoigian_ketthuc_thucte'],
 			pauseAt: ['thoigian_tamdung', 'thoi_gian_tam_dung'],
 			pausedTotalMs: ['tong_thoigian_tam_dung_ms', 'tongthoigian_tamdung_ms'],
-			review: ['danhgia_khachhang', 'danh_gia', 'danhgia'],
-			customerMedia: ['minhchung_khachhang', 'media_khachhang'],
+			customerReview: ['danhgia_khachhang', 'danh_gia', 'danhgia'],
+			customerReviewMedia: ['minhchung_khachhang', 'media_khachhang'],
+			customerReviewTime: ['thoigian_danhgia', 'thoi_gian_danh_gia'],
+			staffReview: ['danhgia_nhanvien', 'danh_gia_nhan_vien', 'ghichu_nhanvien'],
+			staffReviewMedia: ['minhchung_danhgia_nhanvien', 'media_danhgia_nhanvien', 'minhchung_nhanvien', 'media_nhanvien'],
+			staffReviewTime: ['thoigian_danhgia_nhanvien', 'thoi_gian_danh_gia_nhan_vien', 'thoigian_capnhat_nhanvien'],
 			staffMedia: ['minhchung_nhanvien', 'media_nhanvien'],
 			staffNote: ['ghichu_nhanvien'],
 			birthDate: ['ngaysinh', 'ngay_sinh', 'nam_sinh', 'date_of_birth'],
@@ -1164,32 +1278,87 @@
 			if (mode) el.classList.add(mode);
 		}
 
-		function clearDynamicMedia() {
-			dom.mediaGrid.innerHTML = '';
-		}
-
-		function mediaListFromOrder(order) {
-			const mediaRaw = [];
-			for (const key of [...fieldMap.customerMedia, ...fieldMap.staffMedia]) {
-				const val = order[key];
-				if (!val) continue;
-				mediaRaw.push(String(val));
-			}
-			const combined = mediaRaw.join(',');
-			return combined
+		function parseMediaList(rawValue) {
+			return String(rawValue || '')
 				.split(/[\n,]+/)
-				.map((s) => s.trim())
+				.map((item) => item.trim())
 				.filter(Boolean)
-				.slice(0, 6);
+				.slice(0, 8);
 		}
 
-		function appendMediaFallback() {
-			const img = document.createElement('img');
-			img.alt = 'Chưa có minh chứng';
-			img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-				'<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><rect width="100%" height="100%" fill="#eef4fb"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#6f8193">Chưa có ảnh/video</text></svg>'
-			);
-			dom.mediaGrid.appendChild(img);
+		function hasReviewContent(text, mediaList) {
+			return String(text || '').trim() !== '' || (Array.isArray(mediaList) && mediaList.length > 0);
+		}
+
+		function renderReviewMediaGrid(container, urls) {
+			if (!container) return;
+			container.innerHTML = '';
+
+			if (!Array.isArray(urls) || !urls.length) {
+				const empty = document.createElement('div');
+				empty.className = 'media-empty';
+				empty.textContent = 'Chưa có ảnh/video';
+				container.appendChild(empty);
+				return;
+			}
+
+			urls.forEach((url) => {
+				const isVideo = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url) || url.startsWith('data:video');
+				if (isVideo) {
+					const video = document.createElement('video');
+					video.src = url;
+					video.controls = true;
+					video.playsInline = true;
+					container.appendChild(video);
+				} else {
+					const img = document.createElement('img');
+					img.src = url;
+					img.alt = 'Ảnh đánh giá';
+					img.loading = 'lazy';
+					container.appendChild(img);
+				}
+			});
+		}
+
+		function getReviewState(order) {
+			const customerText = String(pick(order, fieldMap.customerReview, '')).trim();
+			const customerMedia = parseMediaList(pick(order, fieldMap.customerReviewMedia, ''));
+			const customerTime = parseDateFlexible(pick(order, fieldMap.customerReviewTime, ''));
+
+			const staffText = String(pick(order, fieldMap.staffReview, '')).trim();
+			const staffMedia = parseMediaList(pick(order, fieldMap.staffReviewMedia, ''));
+			const staffTime = parseDateFlexible(pick(order, fieldMap.staffReviewTime, ''));
+
+			return {
+				customer: {
+					text: customerText,
+					media: customerMedia,
+					time: customerTime,
+					submitted: hasReviewContent(customerText, customerMedia)
+				},
+				staff: {
+					text: staffText,
+					media: staffMedia,
+					time: staffTime,
+					submitted: hasReviewContent(staffText, staffMedia)
+				}
+			};
+		}
+
+		function renderReviews(order) {
+			const reviews = getReviewState(order);
+
+			setText(dom.customerReviewText, toText(reviews.customer.text, 'Chưa có đánh giá'));
+			setText(dom.customerReviewTime, reviews.customer.time instanceof Date && !Number.isNaN(reviews.customer.time.getTime()) ? formatDate(reviews.customer.time) : '---');
+			renderReviewMediaGrid(dom.customerReviewMediaGrid, reviews.customer.media);
+			setBadge(dom.badgeCustomerReview, reviews.customer.submitted ? 'Đã có' : 'Chưa có', reviews.customer.submitted ? 'success' : 'warning');
+
+			setText(dom.staffReviewText, toText(reviews.staff.text, 'Chưa có đánh giá'));
+			setText(dom.staffReviewTime, reviews.staff.time instanceof Date && !Number.isNaN(reviews.staff.time.getTime()) ? formatDate(reviews.staff.time) : '---');
+			renderReviewMediaGrid(dom.staffReviewMediaGrid, reviews.staff.media);
+			setBadge(dom.badgeStaffReview, reviews.staff.submitted ? 'Đã có' : 'Chưa có', reviews.staff.submitted ? 'success' : 'warning');
+
+			return reviews;
 		}
 
 		function renderInvoiceJobList(rawJob) {
@@ -1215,32 +1384,6 @@
 				const li = document.createElement('li');
 				li.textContent = text;
 				dom.invoiceJob.appendChild(li);
-			});
-		}
-
-		function renderMedia(order) {
-			clearDynamicMedia();
-			const urls = mediaListFromOrder(order);
-			if (!urls.length) {
-				appendMediaFallback();
-				return;
-			}
-
-			urls.forEach((url) => {
-				const isVideo = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url) || url.startsWith('data:video');
-				if (isVideo) {
-					const video = document.createElement('video');
-					video.src = url;
-					video.controls = true;
-					video.playsInline = true;
-					dom.mediaGrid.appendChild(video);
-				} else {
-					const img = document.createElement('img');
-					img.src = url;
-					img.alt = 'Minh chứng hóa đơn';
-					img.loading = 'lazy';
-					dom.mediaGrid.appendChild(img);
-				}
 			});
 		}
 
@@ -1381,7 +1524,7 @@
 			return Math.min(100, totalProgress);
 		}
 
-		function showActionButtons(timeline) {
+		function showActionButtons(timeline, reviews) {
 			const order = app.order;
 			const status = getStatusRaw(order);
 			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
@@ -1399,6 +1542,7 @@
 			const remainToPlannedEndMs = plannedEndRef instanceof Date ? Math.max(0, plannedEndRef.getTime() - now.getTime()) : Infinity;
 			const nearPlannedEnd = remainToPlannedEndMs <= 30 * 60 * 1000;
 			const terminalStatus = isTerminalStatus(status);
+			const canSubmitReviewByPlan = timeline.end instanceof Date && now.getTime() >= timeline.end.getTime();
 
 			toggleManyHidden([
 				dom.btnCancelService,
@@ -1409,6 +1553,7 @@
 				dom.btnResume,
 				dom.btnEnd,
 				dom.customerReviewForm,
+				dom.staffReviewForm,
 				dom.staffWorkForm,
 				dom.startButtonCountdown
 			], true);
@@ -1418,7 +1563,9 @@
 				const notAssigned = supplierId <= 0;
 				const cancelled = ['da huy', 'đã hủy', 'huy_don', 'cancelled', 'canceled'].includes(status);
 				if (notAssigned && !cancelled) toggleHidden(dom.btnCancelService, false);
-				if (timeline.phase === 'ended') toggleHidden(dom.customerReviewForm, false);
+				if (canSubmitReviewByPlan && !reviews.customer.submitted && isMyCustomerOrder(order)) {
+					toggleHidden(dom.customerReviewForm, false);
+				}
 			}
 
 			if (isStaffRole()) {
@@ -1426,7 +1573,6 @@
 				if (noOneClaimed && !terminalStatus) toggleHidden(dom.btnClaim, false);
 
 				if (mine && !terminalStatus) {
-					toggleHidden(dom.staffWorkForm, false);
 					if (canUnclaim && timeline.phase === 'waiting' && !work.realStart) toggleHidden(dom.btnUnclaim, false);
 
 					// Trong ngay bat dau luon hien thi nut Bat dau, khong can doi den gio_bat_dau.
@@ -1446,6 +1592,10 @@
 							toggleHidden(dom.btnPause, false);
 						}
 					}
+				}
+
+				if (mine && canSubmitReviewByPlan && !reviews.staff.submitted) {
+					toggleHidden(dom.staffReviewForm, false);
 				}
 			}
 
@@ -1521,8 +1671,8 @@
 			if (progress >= 50 && progress < 85) dom.progressBar.classList.add('warn');
 			if (progress >= 85) dom.progressBar.classList.add('danger');
 
-			renderMedia(order);
-			showActionButtons(timeline);
+			const reviews = renderReviews(order);
+			showActionButtons(timeline, reviews);
 			updateRealtimeCountdown(timeline);
 			showState('Tải dữ liệu thành công', 'info', true);
 			showMain(true);
