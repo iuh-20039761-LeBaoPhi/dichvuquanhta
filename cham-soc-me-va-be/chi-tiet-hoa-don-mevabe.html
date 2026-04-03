@@ -668,7 +668,7 @@
 		 * - getData/updateData: Ham dung chung goi KRUD list/update.
 		 * - fetchUser: Xac thuc role customer/staff tu URL.
 		 * - fetchOrder: Lay hoa don va kiem tra quyen truy cap.
-		 * - maskPassword/money: Hien thi mat khau che va dinh dang tien.
+		 * - money/toBirthYearText/toBirthDateText: Dinh dang tien va thong tin ngay sinh.
 		 * - getScheduleMeta/getDailyRanges: Dung lich lam viec theo ngay.
 		 * - getRealDates/getStatusRaw: Lay moc thuc te va trang thai raw.
 		 * - toNumber/isPausedStatus: Tien ich so va trang thai tam dung.
@@ -711,6 +711,18 @@
 			return fallback;
 		}
 
+		function firstRow(rows) {
+			return Array.isArray(rows) && rows.length ? rows[0] : null;
+		}
+
+		function findUserByCredentials(rows, phoneNorm, passText) {
+			return firstRow((rows || []).filter((row) => {
+				const rowPhone = normalizePhone(pick(row, fieldMap.phone, ''));
+				const rowPass = String(pick(row, fieldMap.password, '')).trim();
+				return rowPhone === phoneNorm && rowPass === passText;
+			}));
+		}
+
 		function parseDateFlexible(input) {
 			if (!input) return null;
 			const str = String(input).trim();
@@ -723,6 +735,20 @@
 			}
 			const maybe = new Date(str.replace(' ', 'T'));
 			return Number.isNaN(maybe.getTime()) ? null : maybe;
+		}
+
+		function toBirthYearText(value) {
+			const raw = String(value || '').trim();
+			if (/^\d{4}$/.test(raw)) return raw;
+			const date = parseDateFlexible(raw);
+			if (date instanceof Date && !Number.isNaN(date.getTime())) return String(date.getFullYear());
+			return toText(raw, '---');
+		}
+
+		function toBirthDateText(value) {
+			const raw = String(value || '').trim();
+			const date = parseDateFlexible(raw);
+			return date instanceof Date && !Number.isNaN(date.getTime()) ? formatDateOnly(date) : toText(raw, '---');
 		}
 
 		function formatDateOnly(date) {
@@ -824,6 +850,23 @@
 			dom.mainGrid.classList.toggle('hidden', !visible);
 		}
 
+		function setText(el, text) {
+			if (el) el.textContent = text;
+		}
+
+		function toggleHidden(el, hidden = true) {
+			if (el) el.classList.toggle('hidden', hidden);
+		}
+
+		function toggleManyHidden(elements, hidden = true) {
+			elements.forEach((el) => toggleHidden(el, hidden));
+		}
+
+		function setStartCountdownText(text) {
+			setText(dom.startCountdown, text);
+			setText(dom.startButtonCountdown, text);
+		}
+
 		function normalizeRows(res) {
 			if (Array.isArray(res)) return res;
 			if (!res || typeof res !== 'object') return [];
@@ -857,6 +900,10 @@
 			}
 			const rows = normalizeRows(await krudList({ table }));
 			return rows.filter((row) => matchWhere(row, where));
+		}
+
+		async function getFirstData(table, where = {}) {
+			return firstRow(await getData(table, where));
 		}
 
 		async function updateData(table, data, where = {}) {
@@ -899,12 +946,9 @@
 			]);
 
 			const phoneNorm = normalizePhone(phone);
+			const passText = String(pass).trim();
 
-			const customer = customerRows.find((row) => {
-				const rowPhone = normalizePhone(pick(row, fieldMap.phone, ''));
-				const rowPass = String(pick(row, fieldMap.password, '')).trim();
-				return rowPhone === phoneNorm && rowPass === String(pass).trim();
-			});
+			const customer = findUserByCredentials(customerRows, phoneNorm, passText);
 
 			if (customer) {
 				app.role = 'customer';
@@ -912,11 +956,7 @@
 				return;
 			}
 
-			const staff = staffRows.find((row) => {
-				const rowPhone = normalizePhone(pick(row, fieldMap.phone, ''));
-				const rowPass = String(pick(row, fieldMap.password, '')).trim();
-				return rowPhone === phoneNorm && rowPass === String(pass).trim();
-			});
+			const staff = findUserByCredentials(staffRows, phoneNorm, passText);
 
 			if (staff) {
 				app.role = 'staff';
@@ -932,8 +972,7 @@
 			const mahd = Number(app.params.mahd);
 			if (!mahd) throw new Error('Mã hóa đơn không hợp lệ');
 
-			const rows = await getData('datlich_mevabe', { id: mahd });
-			const order = rows[0] || null;
+			const order = await getFirstData('datlich_mevabe', { id: mahd });
 			if (!order) throw new Error('Không tìm thấy hóa đơn');
 
 			const orderPhone = normalizePhone(pick(order, fieldMap.phone, ''));
@@ -945,23 +984,10 @@
 
 			app.order = order;
 
-			const customerRows = orderPhone ? await getData('khachhang', { sodienthoai: orderPhone }) : [];
-			app.customer = customerRows[0] || null;
+			app.customer = orderPhone ? await getFirstData('khachhang', { sodienthoai: orderPhone }) : null;
 
 			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
-			if (supplierId > 0) {
-				const staffRows = await getData('nhacungcap_mevabe', { id: supplierId });
-				app.staff = staffRows[0] || null;
-			} else {
-				app.staff = null;
-			}
-		}
-
-		function maskPassword(value) {
-			const s = String(value || '');
-			if (!s) return '---';
-			if (s.length <= 2) return '*'.repeat(s.length);
-			return s[0] + '*'.repeat(s.length - 2) + s[s.length - 1];
+			app.staff = supplierId > 0 ? await getFirstData('nhacungcap_mevabe', { id: supplierId }) : null;
 		}
 
 		function money(value) {
@@ -1021,6 +1047,10 @@
 
 		function isPausedStatus(rawStatus) {
 			return ['tạm dừng', 'tam dung', 'paused', 'pause', 'dừng tạm thời', 'dung tam thoi', 'temporary_stop'].includes(String(rawStatus || '').toLowerCase());
+		}
+
+		function isRunningStatus(rawStatus) {
+			return ['đang thực hiện', 'dang thuc hien', 'in_progress', 'in progress', 'running', 'resume'].includes(String(rawStatus || '').toLowerCase());
 		}
 
 		function isTerminalStatus(rawStatus) {
@@ -1274,6 +1304,10 @@
 			if (realStart && !realEnd && phase === 'running') {
 				message = activeRange ? 'Đang thực hiện (đã bắt đầu thực tế)' : message;
 			}
+			if (realStart && !realEnd && isRunningStatus(rawStatus)) {
+				phase = 'running';
+				message = activeRange ? 'Đang thực hiện (đã bắt đầu thực tế)' : 'Đang thực hiện';
+			}
 			if (realStart && !realEnd && isPausedStatus(rawStatus)) {
 				phase = 'paused';
 				message = 'Tạm dừng';
@@ -1366,48 +1400,50 @@
 			const nearPlannedEnd = remainToPlannedEndMs <= 30 * 60 * 1000;
 			const terminalStatus = isTerminalStatus(status);
 
-			dom.btnCancelService.classList.add('hidden');
-			dom.btnClaim.classList.add('hidden');
-			dom.btnUnclaim.classList.add('hidden');
-			dom.btnStart.classList.add('hidden');
-			dom.btnPause.classList.add('hidden');
-			dom.btnResume.classList.add('hidden');
-			dom.btnEnd.classList.add('hidden');
-			dom.customerReviewForm.classList.add('hidden');
-			dom.staffWorkForm.classList.add('hidden');
-			if (dom.startButtonCountdown) dom.startButtonCountdown.classList.add('hidden');
+			toggleManyHidden([
+				dom.btnCancelService,
+				dom.btnClaim,
+				dom.btnUnclaim,
+				dom.btnStart,
+				dom.btnPause,
+				dom.btnResume,
+				dom.btnEnd,
+				dom.customerReviewForm,
+				dom.staffWorkForm,
+				dom.startButtonCountdown
+			], true);
 			syncProminentActionsVisibility();
 
 			if (isCustomerRole()) {
 				const notAssigned = supplierId <= 0;
 				const cancelled = ['da huy', 'đã hủy', 'huy_don', 'cancelled', 'canceled'].includes(status);
-				if (notAssigned && !cancelled) dom.btnCancelService.classList.remove('hidden');
-				if (timeline.phase === 'ended') dom.customerReviewForm.classList.remove('hidden');
+				if (notAssigned && !cancelled) toggleHidden(dom.btnCancelService, false);
+				if (timeline.phase === 'ended') toggleHidden(dom.customerReviewForm, false);
 			}
 
 			if (isStaffRole()) {
 				const noOneClaimed = supplierId <= 0;
-				if (noOneClaimed && !terminalStatus) dom.btnClaim.classList.remove('hidden');
+				if (noOneClaimed && !terminalStatus) toggleHidden(dom.btnClaim, false);
 
 				if (mine && !terminalStatus) {
-					dom.staffWorkForm.classList.remove('hidden');
-					if (canUnclaim && timeline.phase === 'waiting' && !work.realStart) dom.btnUnclaim.classList.remove('hidden');
+					toggleHidden(dom.staffWorkForm, false);
+					if (canUnclaim && timeline.phase === 'waiting' && !work.realStart) toggleHidden(dom.btnUnclaim, false);
 
 					// Trong ngay bat dau luon hien thi nut Bat dau, khong can doi den gio_bat_dau.
 					const canShowStart = !work.realStart && !work.realEnd && (isStartDateToday || inCurrentWorkWindow);
 
 					if (canShowStart) {
-						dom.btnStart.classList.remove('hidden');
-						if (dom.startButtonCountdown) dom.startButtonCountdown.classList.remove('hidden');
+						toggleHidden(dom.btnStart, false);
+						toggleHidden(dom.startButtonCountdown, false);
 					}
 
 					if (work.realStart && !work.realEnd) {
 						if (nearPlannedEnd) {
-							dom.btnEnd.classList.remove('hidden');
+							toggleHidden(dom.btnEnd, false);
 						} else if (work.paused) {
-							dom.btnResume.classList.remove('hidden');
+							toggleHidden(dom.btnResume, false);
 						} else {
-							dom.btnPause.classList.remove('hidden');
+							toggleHidden(dom.btnPause, false);
 						}
 					}
 				}
@@ -1441,12 +1477,7 @@
 			dom.customerEmail.textContent = toText(pick(order, fieldMap.email, pick(customerProfile, fieldMap.email, '---')));
 			dom.customerAddress.textContent = toText(pick(order, fieldMap.address, pick(customerProfile, fieldMap.address, '---')));
 			const customerBirthRaw = pick(customerProfile, fieldMap.customerBirthYear, pick(order, fieldMap.customerBirthYear, ''));
-			const customerBirthDate = parseDateFlexible(customerBirthRaw);
-			dom.customerBirthYear.textContent = /^\d{4}$/.test(String(customerBirthRaw || '').trim())
-				? String(customerBirthRaw).trim()
-				: (customerBirthDate instanceof Date && !Number.isNaN(customerBirthDate.getTime())
-					? String(customerBirthDate.getFullYear())
-					: toText(customerBirthRaw, '---'));
+			dom.customerBirthYear.textContent = toBirthYearText(customerBirthRaw);
 
 			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
 			dom.staffId.textContent = supplierId > 0 ? String(supplierId) : 'Chưa có nhân viên';
@@ -1454,10 +1485,7 @@
 			dom.staffPhone.textContent = toText(app.staff ? pick(app.staff, fieldMap.phone, '') : '', '---');
 			dom.staffEmail.textContent = toText(app.staff ? pick(app.staff, fieldMap.email, '') : '', '---');
 			const staffBirthRaw = app.staff ? pick(app.staff, fieldMap.birthDate, '') : '';
-			const staffBirthDate = parseDateFlexible(staffBirthRaw);
-			dom.staffBirthDate.textContent = staffBirthDate instanceof Date && !Number.isNaN(staffBirthDate.getTime())
-				? formatDateOnly(staffBirthDate)
-				: toText(staffBirthRaw, '---');
+			dom.staffBirthDate.textContent = toBirthDateText(staffBirthRaw);
 			dom.staffExperience.textContent = toText(app.staff ? pick(app.staff, fieldMap.experience, '') : '', 'Chưa cập nhật');
 			dom.staffAddress.textContent = toText(app.staff ? pick(app.staff, fieldMap.address, '') : '', 'Chưa cập nhật');
 			if (supplierId <= 0) {
@@ -1504,41 +1532,31 @@
 			clearInterval(app.countdownTimer);
 			const tick = () => {
 				if (!app.order) return;
-				if (dom.staffCountdownField) dom.staffCountdownField.classList.remove('hidden');
+				toggleHidden(dom.staffCountdownField, false);
 				const supplierId = Number(pick(app.order, fieldMap.supplierId, 0));
 				if (supplierId <= 0) {
-					dom.startCountdown.textContent = 'Chờ nhân viên nhận việc';
-					if (dom.startButtonCountdown) {
-						dom.startButtonCountdown.textContent = 'Chờ nhận việc';
-					}
+					setText(dom.startCountdown, 'Chờ nhân viên nhận việc');
+					setText(dom.startButtonCountdown, 'Chờ nhận việc');
 					return;
 				}
 
 				const startDate = getCountdownTargetToStartTime(app.order);
 				if (!(startDate instanceof Date) || Number.isNaN(startDate.getTime())) {
-					dom.startCountdown.textContent = 'Không có mốc giờ bắt đầu';
-					if (dom.startButtonCountdown) {
-						dom.startButtonCountdown.textContent = 'Không có giờ bắt đầu';
-					}
+					setText(dom.startCountdown, 'Không có mốc giờ bắt đầu');
+					setText(dom.startButtonCountdown, 'Không có giờ bắt đầu');
 					return;
 				}
 
 				const now = new Date();
 				if (now.getTime() >= startDate.getTime()) {
-					dom.startCountdown.textContent = 'Đã qua giờ bắt đầu';
-					if (dom.staffCountdownField) dom.staffCountdownField.classList.add('hidden');
-					if (dom.startButtonCountdown) {
-						dom.startButtonCountdown.textContent = 'Đã qua giờ bắt đầu';
-					}
+					setStartCountdownText('Đã qua giờ bắt đầu');
+					toggleHidden(dom.staffCountdownField, true);
 					return;
 				}
 
 				const left = diffTime(now, startDate);
 				const text = left.days + ' ngày ' + left.hours + ' giờ ' + left.minutes + ' phút';
-				dom.startCountdown.textContent = text;
-				if (dom.startButtonCountdown) {
-					dom.startButtonCountdown.textContent = text;
-				}
+				setStartCountdownText(text);
 			};
 			tick();
 			app.countdownTimer = setInterval(tick, 1000);
@@ -1687,15 +1705,20 @@
 		}
 
 		function bindEvents() {
-			dom.btnCancelService.addEventListener('click', () => runAction('cancel-service'));
-			dom.btnClaim.addEventListener('click', () => runAction('claim-job'));
-			dom.btnUnclaim.addEventListener('click', () => runAction('unclaim-job'));
-			dom.btnStart.addEventListener('click', () => runAction('start-work'));
-			dom.btnPause.addEventListener('click', () => runAction('pause-work'));
-			dom.btnResume.addEventListener('click', () => runAction('resume-work'));
-			dom.btnEnd.addEventListener('click', () => runAction('end-work'));
-			dom.btnSaveReview.addEventListener('click', () => runAction('save-review'));
-			dom.btnSaveStaffLog.addEventListener('click', () => runAction('save-staff-log'));
+			[
+				[dom.btnCancelService, 'cancel-service'],
+				[dom.btnClaim, 'claim-job'],
+				[dom.btnUnclaim, 'unclaim-job'],
+				[dom.btnStart, 'start-work'],
+				[dom.btnPause, 'pause-work'],
+				[dom.btnResume, 'resume-work'],
+				[dom.btnEnd, 'end-work'],
+				[dom.btnSaveReview, 'save-review'],
+				[dom.btnSaveStaffLog, 'save-staff-log']
+			].forEach(([el, action]) => {
+				if (!el) return;
+				el.addEventListener('click', () => runAction(action));
+			});
 		}
 
 		async function runAction(action) {
