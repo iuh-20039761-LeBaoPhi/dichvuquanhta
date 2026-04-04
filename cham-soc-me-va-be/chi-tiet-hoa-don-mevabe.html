@@ -8,6 +8,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<script src="https://api.dvqt.vn/js/krud.js"></script>
 	<style>
 		:root {
@@ -58,7 +59,7 @@
 			background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
 			box-shadow: var(--shadow);
 			border: 1px solid rgba(16, 66, 113, 0.08);
-			overflow: hidden;
+			overflow: visible;
 			transform: translateY(8px);
 			opacity: 0;
 			animation: showCard 520ms var(--anim) forwards;
@@ -72,14 +73,45 @@
 		}
 
 		.topbar {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 10px;
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr) auto;
+			gap: 14px;
 			align-items: center;
-			justify-content: space-between;
 			padding: 20px 24px;
 			background: linear-gradient(100deg, #1170d8, #25b58b);
 			color: #fff;
+			position: sticky;
+			top: 0;
+			z-index: 50;
+			box-shadow: 0 10px 24px rgba(8, 48, 82, 0.25);
+		}
+
+		.topbar-logo {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 98px;
+			height: 66px;
+			padding: 6px;
+			border-radius: 14px;
+			border: 1px solid rgba(255, 255, 255, 0.34);
+			background: rgba(255, 255, 255, 0.14);
+			box-shadow: 0 10px 22px rgba(9, 48, 88, 0.2);
+			backdrop-filter: blur(4px);
+			transition: transform var(--anim), background var(--anim), border-color var(--anim);
+		}
+
+		.topbar-logo:hover {
+			transform: translateY(-2px);
+			background: rgba(255, 255, 255, 0.22);
+			border-color: rgba(255, 255, 255, 0.5);
+		}
+
+		.topbar-logo img {
+			width: 74px;
+			height: 50px;
+			object-fit: contain;
+			filter: drop-shadow(0 4px 8px rgba(5, 39, 72, 0.35));
 		}
 
 		.topbar-title {
@@ -87,6 +119,10 @@
 			font-size: clamp(1.05rem, 1.5vw, 1.5rem);
 			font-weight: 800;
 			letter-spacing: .2px;
+			text-align: center;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		.topbar-meta {
@@ -230,43 +266,308 @@
 			word-break: break-word;
 		}
 
-		#panelInvoice .info-grid,
-		#panelCustomer .info-grid,
-		#panelStaff .info-grid {
+		#panelInvoice {
+			padding: 0;
+			min-height: auto;
+			border: 0;
+			box-shadow: none;
+			background: transparent;
+		}
+
+		.invoice-hero {
+			border-radius: 16px 16px 0 0;
+			padding: 16px;
+			background: linear-gradient(115deg, #1f5ecf 0%, #0f8cd4 48%, #19a988 100%);
+			color: #fff;
+		}
+
+		.invoice-main {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 14px;
+			margin-bottom: 14px;
+		}
+
+		.invoice-headline {
+			display: grid;
+			gap: 10px;
+			flex: 1;
+		}
+
+		.invoice-title-line {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			flex-wrap: wrap;
+		}
+
+		.invoice-order-title {
+			margin: 0;
+			font-size: clamp(1.1rem, 2vw, 1.7rem);
+			font-weight: 800;
+		}
+
+		.invoice-status-badge {
+			display: inline-flex;
+			align-items: center;
+			padding: 5px 10px;
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 800;
+			background: rgba(255, 255, 255, 0.25);
+			border: 1px solid rgba(255, 255, 255, 0.35);
+			color: #fff;
+		}
+
+		.invoice-status-badge.success {
+			background: rgba(18, 128, 88, 0.36);
+		}
+
+		.invoice-status-badge.warning {
+			background: rgba(228, 154, 16, 0.34);
+		}
+
+		.invoice-status-badge.danger {
+			background: rgba(209, 66, 66, 0.45);
+		}
+
+		.invoice-subtitle {
+			margin: 0;
+			font-size: 19px;
+			font-weight: 600;
+			opacity: .95;
+		}
+
+		
+
+		.invoice-chip-btn {
+			display: inline-flex;
+			align-items: center;
+			padding: 7px 11px;
+			border-radius: 999px;
+			font-size: 12px;
+			font-weight: 700;
+			background: rgba(255, 255, 255, 0.12);
+			border: 1px solid rgba(255, 255, 255, 0.28);
+		}
+
+		.invoice-progress-ring {
+			--p: 0;
+			width: 122px;
+			height: 122px;
+			border-radius: 50%;
+			background: conic-gradient(#b4f3d2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.25) 0);
+			padding: 7px;
+			flex: 0 0 auto;
+		}
+
+		.invoice-progress-core {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			background: rgba(17, 72, 124, 0.44);
+			display: grid;
+			place-content: center;
+			text-align: center;
+			backdrop-filter: blur(4px);
+		}
+
+		.invoice-progress-core strong {
+			font-size: 34px;
+			line-height: 1;
+		}
+
+		.invoice-progress-core small {
+			font-size: 12px;
+			font-weight: 700;
+			opacity: .9;
+		}
+
+		.invoice-summary {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.invoice-item {
+			display: flex;
+			gap: 9px;
+			align-items: flex-start;
+			border: 1px solid rgba(214, 237, 255, 0.25);
+			background: rgba(27, 74, 130, 0.2);
+			border-radius: 12px;
+			padding: 10px 12px;
+			min-height: 96px;
+		}
+
+		.invoice-item-icon {
+			width: 27px;
+			height: 27px;
+			border-radius: 999px;
+			border: 1px solid rgba(255, 255, 255, 0.4);
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 11px;
+			font-weight: 800;
+			background: rgba(255, 255, 255, 0.1);
+			color: #fff;
+			flex: 0 0 27px;
+			margin-top: 2px;
+		}
+
+		.invoice-item-content {
+			display: grid;
+			gap: 2px;
+			min-width: 0;
+		}
+
+		.invoice-item-content p {
+			margin: 0;
+			font-size: 11px;
+			font-weight: 600;
+			opacity: .85;
+		}
+
+		.invoice-item-content h4 {
+			margin: 0;
+			font-size: clamp(1.05rem, 1.6vw, 1.9rem);
+			font-weight: 800;
+			line-height: 1.15;
+			word-break: break-word;
+		}
+
+		.invoice-item-content span {
+			font-size: 11px;
+			font-weight: 600;
+			opacity: .9;
+		}
+
+		#invoicePrice {
+			font-size: clamp(1.45rem, 2vw, 2.25rem);
+			line-height: 1.08;
+		}
+
+		#invoiceTimeRange {
+			font-size: clamp(1.2rem, 1.5vw, 1.75rem);
+		}
+
+		#invoiceDate {
+			display: inline-block;
+			margin-top: 2px;
+		}
+
+		.invoice-item.address #invoiceAddress {
+			font-size: clamp(0.9rem, 1.05vw, 1.1rem);
+			line-height: 1.35;
+			display: block;
+			white-space: normal;
+			overflow: visible;
+			word-break: break-word;
+		}
+
+		#panelJobs {
+			padding: 0;
+			overflow: hidden;
+			gap: 0;
+			border-color: #d7e7dc;
+		}
+
+		.jobs-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			padding: 12px 14px;
+			background: #f4f7fa;
+			border-bottom: 1px solid #deebf2;
+		}
+
+		.jobs-title {
+			margin: 0;
+			font-size: 27px;
+			font-weight: 800;
+			color: #213d57;
+		}
+
+		.job-count {
+			display: inline-flex;
+			align-items: center;
+			padding: 6px 10px;
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 800;
+			color: #138259;
+			background: #def8ea;
+			border: 1px solid #c0ead3;
+			white-space: nowrap;
+		}
+
+		.jobs-body {
+			padding: 12px;
+			background: #ecf8f1;
+		}
+
+		#panelJobs #invoiceJob {
+			background: transparent;
+			padding: 0;
+			margin: 0;
+			gap: 10px;
+		}
+
+		#panelJobs #invoiceJob li {
+			background: rgba(255, 255, 255, 0.35);
+			border: 1px solid #cfe9d9;
+			border-radius: 10px;
+			padding: 10px;
+		}
+
+		.jobs-meta {
+			padding: 10px;
+			border-top: 1px solid #deebf2;
+			background: #fff;
+		}
+
+		.invoice-extra {
+			border: 1px solid #c8d7ea;
+			border-top: 0;
+			border-radius: 0 0 14px 14px;
+			background: #fff;
+			padding: 12px;
+			display: grid;
+			gap: 10px;
+		}
+
+		.invoice-extra-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 8px;
 		}
 
-		#panelInvoice .field,
-		#panelCustomer .field,
-		#panelStaff .field {
+		.invoice-extra-item {
 			border: 1px solid #c8d7ea;
 			background: #dfe9f7;
 			border-radius: 8px;
 			padding: 8px 10px;
 		}
 
-		#panelInvoice .field-label,
-		#panelCustomer .field-label,
-		#panelStaff .field-label {
+		.invoice-extra-item.full-width {
+			grid-column: 1 / -1;
+		}
+
+		.invoice-extra .field-label {
 			color: #3f5f7d;
 			font-size: 10px;
 		}
 
-		#panelInvoice .field-value,
-		#panelCustomer .field-value,
-		#panelStaff .field-value {
+		.invoice-extra .field-value {
 			font-size: 13px;
 			font-weight: 700;
 			color: #1f3853;
 		}
 
-		#panelInvoice .field.full-width,
-		#panelCustomer .field.full-width,
-		#panelStaff .field.full-width {
-			grid-column: 1 / -1;
-		}
-
-		#panelInvoice #invoiceJob {
+		#invoiceJob {
 			list-style: none;
 			margin: 0;
 			padding: 8px;
@@ -277,7 +578,7 @@
 			counter-reset: job-item;
 		}
 
-		#panelInvoice #invoiceJob li {
+		#invoiceJob li {
 			counter-increment: job-item;
 			display: flex;
 			align-items: flex-start;
@@ -288,7 +589,7 @@
 			color: #1f3853;
 		}
 
-		#panelInvoice #invoiceJob li::before {
+		#invoiceJob li::before {
 			content: counter(job-item);
 			flex: 0 0 22px;
 			height: 22px;
@@ -301,6 +602,150 @@
 			align-items: center;
 			justify-content: center;
 			margin-top: 1px;
+		}
+
+		#panelCustomer,
+		#panelStaff {
+			padding: 0;
+			overflow: hidden;
+			gap: 0;
+			border-color: #dce8f1;
+		}
+
+		.profile-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px;
+			padding: 12px 14px;
+			border-bottom: 1px solid #e1edf6;
+			background: #f7fbff;
+		}
+
+		.profile-title {
+			margin: 0;
+			font-size: 18px;
+			font-weight: 800;
+			color: #213d57;
+		}
+
+		.profile-status {
+			border-radius: 999px;
+			padding: 5px 10px;
+			font-size: 11px;
+			font-weight: 800;
+		}
+
+		.profile-body {
+			padding: 14px;
+			display: grid;
+			grid-template-columns: 88px 1fr;
+			gap: 14px;
+			align-items: start;
+		}
+
+		.profile-avatar {
+			width: 88px;
+			height: 88px;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 3px solid #e2f1ff;
+			background: #d9e7f7;
+		}
+
+		.profile-main {
+			display: grid;
+			gap: 7px;
+		}
+
+		.profile-name {
+			margin: 0;
+			font-size: 22px;
+			font-weight: 800;
+			line-height: 1.25;
+			color: #1d3650;
+		}
+
+		.profile-rate {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 700;
+			color: #4d6175;
+		}
+
+		.profile-contact {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 700;
+			color: #2f4961;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			word-break: break-word;
+		}
+
+		.profile-contact span {
+			word-break: break-word;
+		}
+
+		.profile-rate .star {
+			color: #f2b019;
+			margin-right: 4px;
+		}
+
+		.profile-row {
+			margin: 0;
+			font-size: 15px;
+			font-weight: 700;
+			color: #2f4961;
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			word-break: break-word;
+		}
+
+		.profile-row::before,
+		.profile-contact::before {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 18px;
+			height: 18px;
+			border-radius: 999px;
+			background: #eaf4ff;
+			color: #4d92df;
+			font-size: 11px;
+			line-height: 1;
+			font-weight: 800;
+			flex: 0 0 18px;
+			margin-top: 1px;
+		}
+
+		.contact-email::before {
+			content: '✉';
+		}
+
+		.contact-phone::before {
+			content: '✆';
+		}
+
+		.contact-address::before {
+			content: '⌂';
+		}
+
+		.profile-foot {
+			padding: 0 14px 14px;
+		}
+
+		.profile-pill {
+			display: inline-flex;
+			align-items: center;
+			padding: 8px 12px;
+			border-radius: 10px;
+			background: #eef2f6;
+			font-size: 13px;
+			font-weight: 700;
+			color: #50657a;
 		}
 
 		.progress-inner {
@@ -410,9 +855,29 @@
 		@media (max-width: 1060px) {
 			.grid,
 			.info-grid,
+			.invoice-summary,
+			.invoice-extra-grid,
 			.review-split,
 			.review-media-grid {
 				grid-template-columns: 1fr;
+			}
+
+			.profile-body {
+				grid-template-columns: 1fr;
+			}
+
+			.invoice-main {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.invoice-progress-ring {
+				width: 105px;
+				height: 105px;
+			}
+
+			.invoice-item-content h4 {
+				font-size: 18px;
 			}
 
 			.panel {
@@ -430,7 +895,28 @@
 			}
 
 			.topbar {
-				padding: 14px;
+				grid-template-columns: auto minmax(0, 1fr) auto;
+				gap: 8px;
+				padding: 12px 10px;
+			}
+
+			.topbar-title {
+				font-size: 0.92rem;
+			}
+
+			.topbar-logo {
+				width: 72px;
+				height: 48px;
+				padding: 4px;
+			}
+
+			.topbar-logo img {
+				width: 54px;
+				height: 36px;
+			}
+
+			#invoiceProgressRing {
+				margin-inline: auto;
 			}
 		}
 	</style>
@@ -439,36 +925,85 @@
 	<main class="page">
 		<section class="modal-card">
 			<header class="topbar">
+				<a class="topbar-logo" href="#" aria-label="Trang chủ">
+					<img src="assets/logo.png" alt="Logo dịch vụ" />
+				</a>
 				<h1 class="topbar-title">Chi tiết hóa đơn mẹ và bé</h1>
-				<div class="topbar-meta">
-					<span class="chip" id="chipRole">Vai trò: ...</span>
-					<span class="chip" id="chipOrder">Mã HĐ: ...</span>
-				</div>
+				<a class="topbar-logo" href="#" aria-label="Trang dịch vụ mẹ và bé">
+					<img src="assets/logomvb.png" alt="Logo mẹ và bé" />
+				</a>
 			</header>
 
 			<div class="content">
 				<div id="stateMessage" class="state info">Đang tải dữ liệu...</div>
 
 				<section id="mainGrid" class="grid hidden">
-					<article class="panel" id="panelInvoice">
-						<div class="panel-head">
-							<h2 class="panel-title">1. Thông tin hóa đơn</h2>
-							<span id="badgeInvoiceStatus" class="badge">---</span>
+					<article class="panel panel-wide" id="panelInvoice">
+						<div class="invoice-hero">
+							<div class="invoice-main">
+								<div class="invoice-headline">
+									<div>
+										<div class="invoice-title-line">
+											<h2 class="invoice-order-title">Đơn #<span id="invoiceId">---</span></h2>
+											<span id="badgeInvoiceStatus" class="invoice-status-badge">---</span>
+										</div>
+										<p id="invoiceService" class="invoice-subtitle">---</p>
+									</div>
+									
+								</div>
+								<div id="invoiceProgressRing" class="invoice-progress-ring" style="--p:0;">
+									<div class="invoice-progress-core">
+										<strong id="invoiceProgressHero">0%</strong>
+										<small>Hoàn thành</small>
+									</div>
+								</div>
+							</div>
+
+							<div class="invoice-summary">
+								<div class="invoice-item">
+									<span class="invoice-item-icon"><i class="fa fa-usd" aria-hidden="true"></i></span>
+									<div class="invoice-item-content">
+										<p>Tổng tiền</p>
+										<h4 id="invoicePrice">---</h4>
+									</div>
+								</div>
+								<div class="invoice-item">
+									<span class="invoice-item-icon"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
+									<div class="invoice-item-content">
+										<p>Thời gian</p>
+										<h4 id="invoiceTimeRange">---</h4>
+										<span id="invoiceDate">---</span>
+									</div>
+								</div>
+								<div class="invoice-item address">
+									<span class="invoice-item-icon"><i class="fa fa-map-marker" aria-hidden="true"></i></span>
+									<div class="invoice-item-content">
+										<p>Địa chỉ</p>
+										<h4 id="invoiceAddress">---</h4>
+									</div>
+								</div>
+							</div>
 						</div>
-						<div class="info-grid">
-							<div class="field"><p class="field-label">Mã hóa đơn</p><p id="invoiceId" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Tổng tiền</p><p id="invoicePrice" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Dịch vụ</p><p id="invoiceService" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Gói dịch vụ</p><p id="invoicePackage" class="field-value">---</p></div>
-							<div class="field full-width"><p class="field-label">Địa chỉ</p><p id="invoiceAddress" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Yêu cầu</p><p id="invoiceRequest" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Ghi chú</p><p id="invoiceNote" class="field-value">---</p></div>
-							<div class="field full-width"><p class="field-label">Công việc</p><ol id="invoiceJob" class="field-value"><li>---</li></ol></div>
+
+					</article>
+
+					<article class="panel" id="panelJobs">
+						<div class="jobs-header">
+							<h2 class="jobs-title">Công việc cần thực hiện</h2>
+						</div>
+						<div class="jobs-body">
+							<ol id="invoiceJob" class="field-value"><li>---</li></ol>
+						</div>
+						<div class="jobs-meta invoice-extra-grid">
+							<!-- <div class="invoice-extra-item"><p class="field-label">Gói dịch vụ</p><p id="invoicePackage" class="field-value">---</p></div> -->
+							<div class="invoice-extra-item"><p class="field-label">Yêu cầu</p><p id="invoiceRequest" class="field-value">---</p></div>
+							<div class="invoice-extra-item"><p class="field-label">Ghi chú</p><p id="invoiceNote" class="field-value">---</p></div>
 						</div>
 					</article>
+
 					<article class="panel" id="panelTime" style="background:linear-gradient(180deg,#f8fbff 0%,#f2f7fd 100%);border-color:#cddced;">
 						<div class="panel-head" style="margin-bottom:2px;">
-							<h2 class="panel-title" style="font-size:15px;">4. Trạng thái, thời gian và tiến độ</h2>
+							<h2 class="panel-title" style="font-size:15px;">Trạng thái, thời gian và tiến độ</h2>
 						</div>
 
 						<div style="display:grid;gap:6px;">
@@ -518,15 +1053,13 @@
 								<button id="btnStart" class="btn btn-success btn-sm hidden" style="min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;" type="button">Bắt đầu</button>
 								<span id="startButtonCountdown" class="hidden" style="font-size:12px;font-weight:700;color:#23527a;background:#edf6ff;border:1px solid #c8e0f7;border-radius:999px;padding:8px 10px;white-space:nowrap;">--</span>
 							</div>
-							<button id="btnPause" class="btn btn-warning btn-sm hidden" style="color:#fff;min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;" type="button">Tạm dừng</button>
-							<button id="btnResume" class="btn btn-primary btn-sm hidden" style="min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;" type="button">Tiếp tục</button>
 							<button id="btnEnd" class="btn btn-warning btn-sm hidden" style="color:#fff;min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;" type="button">Kết thúc</button>
 						</div>
 
 						<div id="staffWorkForm" class="forms d-grid gap-2 hidden">
 							<label class="field-label" for="staffNote">Ghi chú công việc</label>
 							<textarea id="staffNote" class="form-control" style="min-height:84px;resize:vertical;" placeholder="Nhập ghi chú công việc..."></textarea>
-							<label class="field-label" for="staffMediaInput">Tải lên ảnh/video (nhân viên)</label>
+							<label class="field-label" for="staffMediaInput">Tải lên ảnh/video (nhà cung cấp)</label>
 							<input id="staffMediaInput" class="form-control" type="file" accept="image/*,video/*" multiple>
 							<button id="btnSaveStaffLog" class="btn btn-light btn-sm" type="button">Lưu ghi chú và minh chứng</button>
 						</div>
@@ -537,40 +1070,48 @@
 						</div>
 					</article>
 					<article class="panel" id="panelCustomer">
-						<div class="panel-head">
-							<h2 class="panel-title">2. Thông tin khách hàng</h2>
-							<span class="badge success">Khách hàng</span>
+						<div class="profile-head">
+							<h2 class="profile-title">Khách hàng</h2>
+							<span class="profile-status badge success">Khách hàng</span>
 						</div>
-						<div class="info-grid">
-							<div class="field"><p class="field-label">Họ và tên</p><p id="customerName" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Số điện thoại</p><p id="customerPhone" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Email</p><p id="customerEmail" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Năm sinh</p><p id="customerBirthYear" class="field-value">---</p></div>
-							<div class="field full-width"><p class="field-label">Địa chỉ</p><p id="customerAddress" class="field-value">---</p></div>
+						<div class="profile-body">
+							<img id="customerAvatar" class="profile-avatar" src="assets/logomvb.png" alt="Khách hàng">
+							<div class="profile-main">
+								<h3 id="customerCardName" class="profile-name">---</h3>
+								<p class="profile-contact contact-email"><span id="customerCardEmail">---</span></p>
+								<p id="customerCardPhone" class="profile-row fa fa-phone">---</p>
+								<p id="customerCardAddress" class="profile-row fa fa-map-marker">---</p>
+							</div>
+						</div>
+						<div class="profile-foot">
+							<span id="customerExtraPill" class="profile-pill">Năm sinh: ---</span>
 						</div>
 					</article>
 
 					<article class="panel" id="panelStaff">
-						<div class="panel-head">
-							<h2 class="panel-title">3. Nhân viên phụ trách</h2>
-							<span id="badgeStaff" class="badge warning">Chưa nhận</span>
+						<div class="profile-head">
+							<h2 class="profile-title">Nhà Cung Cấp phụ trách</h2>
+							<span id="badgeStaff" class="profile-status badge warning">Chưa nhận</span>
 						</div>
-						<div class="info-grid">
-							<div class="field"><p class="field-label">ID nhân viên</p><p id="staffId" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Họ và tên</p><p id="staffName" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Số điện thoại</p><p id="staffPhone" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Email</p><p id="staffEmail" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Ngày sinh</p><p id="staffBirthDate" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Kinh nghiệm</p><p id="staffExperience" class="field-value">---</p></div>
-							<div class="field full-width"><p class="field-label">Địa chỉ</p><p id="staffAddress" class="field-value">---</p></div>
-							<div class="field"><p class="field-label">Trạng thái nhận việc</p><p id="staffState" class="field-value">---</p></div>
-							<div class="field" id="staffCountdownField"><p class="field-label">Đếm ngược bắt đầu</p><p id="startCountdown" class="field-value">---</p></div>
+						<div class="profile-body">
+							<img id="staffAvatar" class="profile-avatar" src="assets/logomvb.png" alt="Nhà Cung Cấp">
+							<div class="profile-main">
+								<h3 id="staffCardName" class="profile-name">---</h3>
+								<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
+								<p id="staffCardEmail" class="profile-row contact-email">---</p>
+								<p id="staffCardPhone" class="profile-row fa fa-phone">---</p>
+								<p id="staffCardAddress" class="profile-row fa fa-map-marker">---</p>
+							</div>
+						</div>
+						<div class="profile-foot">
+							<span id="staffReceiveTime" class="profile-pill">Nhận việc: ---</span>
+							<span id="staffExpChip" class="profile-pill">Kinh nghiệm: ---</span>
 						</div>
 					</article>
 
 					<article class="panel panel-wide" id="panelMedia">
 						<div class="panel-head">
-							<h2 class="panel-title">6. Ảnh và đánh giá</h2>
+							<h2 class="panel-title">Ảnh và đánh giá</h2>
 							<span class="badge">Minh chứng</span>
 						</div>
 
@@ -601,7 +1142,7 @@
 
 							<section class="review-box">
 								<div class="review-head">
-									<h3 class="review-title">Đánh giá nhân viên</h3>
+									<h3 class="review-title">Đánh giá nhà cung cấp</h3>
 									<span id="badgeStaffReview" class="badge warning">Chưa có</span>
 								</div>
 
@@ -615,11 +1156,11 @@
 								</div>
 
 								<div id="staffReviewForm" class="forms d-grid gap-2 hidden">
-									<label class="field-label" for="staffReview">Nhập đánh giá của nhân viên</label>
+									<label class="field-label" for="staffReview">Nhập đánh giá của nhà cung cấp</label>
 									<textarea id="staffReview" class="form-control" style="min-height:84px;resize:vertical;" placeholder="Nhập đánh giá sau khi hoàn thành..."></textarea>
-									<label class="field-label" for="staffReviewMediaInput">Tải lên ảnh/video đánh giá (nhân viên)</label>
+									<label class="field-label" for="staffReviewMediaInput">Tải lên ảnh/video đánh giá (nhà cung cấp)</label>
 									<input id="staffReviewMediaInput" class="form-control" type="file" accept="image/*,video/*" multiple>
-									<button id="btnSaveStaffReview" class="btn btn-primary btn-sm" type="button">Lưu đánh giá nhân viên</button>
+									<button id="btnSaveStaffReview" class="btn btn-primary btn-sm" type="button">Lưu đánh giá nhà cung cấp</button>
 								</div>
 							</section>
 						</div>
@@ -629,1288 +1170,575 @@
 		</section>
 	</main>
 
+
 	<script>
-		const app = {
-			params: { mahd: '', sodienthoai: '', password: '' },
-			role: '',
-			user: null,
-			customer: null,
-			order: null,
-			staff: null,
-			countdownTimer: null,
-			nowTimer: null
-		};
+		(() => {
+			const TABLE_CUSTOMER = 'khachhang';
+			const TABLE_STAFF = 'nhacungcap_mevabe';
+			const TABLE_ORDER = 'datlich_mevabe';
 
-		const dom = {
-			stateMessage: document.getElementById('stateMessage'),
-			mainGrid: document.getElementById('mainGrid'),
-			chipRole: document.getElementById('chipRole'),
-			chipOrder: document.getElementById('chipOrder'),
-
-			badgeInvoiceStatus: document.getElementById('badgeInvoiceStatus'),
-			invoiceId: document.getElementById('invoiceId'),
-			invoicePrice: document.getElementById('invoicePrice'),
-			invoiceService: document.getElementById('invoiceService'),
-			invoicePackage: document.getElementById('invoicePackage'),
-			invoiceJob: document.getElementById('invoiceJob'),
-			invoiceRequest: document.getElementById('invoiceRequest'),
-			invoiceAddress: document.getElementById('invoiceAddress'),
-			invoiceNote: document.getElementById('invoiceNote'),
-
-			customerName: document.getElementById('customerName'),
-			customerPhone: document.getElementById('customerPhone'),
-			customerEmail: document.getElementById('customerEmail'),
-			customerBirthYear: document.getElementById('customerBirthYear'),
-			customerAddress: document.getElementById('customerAddress'),
-
-			badgeStaff: document.getElementById('badgeStaff'),
-			staffId: document.getElementById('staffId'),
-			staffName: document.getElementById('staffName'),
-			staffPhone: document.getElementById('staffPhone'),
-			staffEmail: document.getElementById('staffEmail'),
-			staffBirthDate: document.getElementById('staffBirthDate'),
-			staffExperience: document.getElementById('staffExperience'),
-			staffAddress: document.getElementById('staffAddress'),
-			staffState: document.getElementById('staffState'),
-			staffCountdownField: document.getElementById('staffCountdownField'),
-			startCountdown: document.getElementById('startCountdown'),
-
-			badgeTimeState: document.getElementById('badgeTimeState'),
-			timeStartPlan: document.getElementById('timeStartPlan'),
-			timeEndPlan: document.getElementById('timeEndPlan'),
-			timeStartReal: document.getElementById('timeStartReal'),
-			timeEndReal: document.getElementById('timeEndReal'),
-			timeCurrentState: document.getElementById('timeCurrentState'),
-			timeDayHint: document.getElementById('timeDayHint'),
-			timeMessage: document.getElementById('timeMessage'),
-
-			badgeProgress: document.getElementById('badgeProgress'),
-			progressText: document.getElementById('progressText'),
-			progressBar: document.getElementById('progressBar'),
-			progressHint: document.getElementById('progressHint'),
-
-			btnClaim: document.getElementById('btnClaim'),
-			btnUnclaim: document.getElementById('btnUnclaim'),
-			btnStart: document.getElementById('btnStart'),
-			btnPause: document.getElementById('btnPause'),
-			btnResume: document.getElementById('btnResume'),
-			btnEnd: document.getElementById('btnEnd'),
-			btnCancelService: document.getElementById('btnCancelService'),
-			btnSaveReview: document.getElementById('btnSaveReview'),
-			btnSaveStaffReview: document.getElementById('btnSaveStaffReview'),
-			btnSaveStaffLog: document.getElementById('btnSaveStaffLog'),
-
-			badgeCustomerReview: document.getElementById('badgeCustomerReview'),
-			customerReviewText: document.getElementById('customerReviewText'),
-			customerReviewTime: document.getElementById('customerReviewTime'),
-			customerReviewMediaGrid: document.getElementById('customerReviewMediaGrid'),
-			customerReviewForm: document.getElementById('customerReviewForm'),
-			customerReview: document.getElementById('customerReview'),
-			customerMediaInput: document.getElementById('customerMediaInput'),
-
-			badgeStaffReview: document.getElementById('badgeStaffReview'),
-			staffReviewText: document.getElementById('staffReviewText'),
-			staffReviewTime: document.getElementById('staffReviewTime'),
-			staffReviewMediaGrid: document.getElementById('staffReviewMediaGrid'),
-			staffReviewForm: document.getElementById('staffReviewForm'),
-			staffReview: document.getElementById('staffReview'),
-			staffReviewMediaInput: document.getElementById('staffReviewMediaInput'),
-
-			staffWorkForm: document.getElementById('staffWorkForm'),
-			staffNote: document.getElementById('staffNote'),
-			staffMediaInput: document.getElementById('staffMediaInput'),
-			startButtonCountdown: document.getElementById('startButtonCountdown'),
-			actionsProminent: document.querySelector('.actions.actions-prominent')
-		};
-
-		const fieldMap = {
-			id: ['id', 'ID'],
-			phone: ['sodienthoai', 'so_dien_thoai', 'phone'],
-			password: ['matkhau', 'mat_khau', 'password'],
-			name: ['hovaten', 'ho_ten', 'ten', 'name'],
-			email: ['email'],
-			address: ['diachi', 'dia_chi', 'address'],
-
-			status: ['trangthai', 'trang_thai', 'status'],
-			service: ['dich_vu', 'dichvu'],
-			pack: ['goi_dich_vu', 'goidichvu'],
-			job: ['cong_viec', 'congviec'],
-			request: ['yeu_cau_khac', 'yeucaukhac'],
-			note: ['ghi_chu', 'ghichu'],
-			price: ['tong_tien', 'tongtien'],
-
-			startDate: ['ngay_bat_dau', 'ngaybatdau'],
-			endDate: ['ngay_ket_thuc', 'ngayketthuc'],
-			startTime: ['gio_bat_dau', 'giobatdau'],
-			endTime: ['gio_ket_thuc', 'gioketthuc'],
-
-			supplierId: ['id_nhacungcap', 'id_nha_cung_cap'],
-			cancelTime: ['thoigian_huy'],
-			actualStart: ['thoigian_batdau_thucte'],
-			actualEnd: ['thoigian_ketthuc_thucte'],
-			pauseAt: ['thoigian_tamdung', 'thoi_gian_tam_dung'],
-			pausedTotalMs: ['tong_thoigian_tam_dung_ms', 'tongthoigian_tamdung_ms'],
-			customerReview: ['danhgia_khachhang', 'danh_gia', 'danhgia'],
-			customerReviewMedia: ['minhchung_khachhang', 'media_khachhang'],
-			customerReviewTime: ['thoigian_danhgia', 'thoi_gian_danh_gia'],
-			staffReview: ['danhgia_nhanvien', 'danh_gia_nhan_vien', 'ghichu_nhanvien'],
-			staffReviewMedia: ['minhchung_danhgia_nhanvien', 'media_danhgia_nhanvien', 'minhchung_nhanvien', 'media_nhanvien'],
-			staffReviewTime: ['thoigian_danhgia_nhanvien', 'thoi_gian_danh_gia_nhan_vien', 'thoigian_capnhat_nhanvien'],
-			staffMedia: ['minhchung_nhanvien', 'media_nhanvien'],
-			staffNote: ['ghichu_nhanvien'],
-			birthDate: ['ngaysinh', 'ngay_sinh', 'nam_sinh', 'date_of_birth'],
-			experience: ['kinhnghiem', 'kinh_nghiem', 'experience'],
-			customerBirthYear: ['namsinh', 'nam_sinh', 'ngaysinh', 'ngay_sinh', 'date_of_birth']
-		};
-
-		/*
-		 * Bang chu thich nhanh cho toan bo ham trong script:
-		 * - toText: Chuan hoa gia tri rong de hien thi.
-		 * - normalizePhone: Chuan hoa so dien thoai chi con so.
-		 * - pick: Lay gia tri theo danh sach key fallback.
-		 * - parseDateFlexible: Parse chuoi ngay/gio linh hoat.
-		 * - formatDateOnly: Format ngay dd/MM/yyyy.
-		 * - normalizeTimeText: Chuan hoa HH:mm tu chuoi gio.
-		 * - getTotalDays: Tinh tong so ngay lam viec.
-		 * - getDailyRange: Tao moc bat dau/ket thuc cho 1 ca theo ngay.
-		 * - nowSql: Tao timestamp theo dinh dang SQL.
-		 * - formatDate: Format datetime de hien thi.
-		 * - diffTime: Tinh chenhlech thoi gian.
-		 * - isStarted/isEnded: Kiem tra moc bat dau/ket thuc.
-		 * - showState/showMain: Dieu khien thong bao va an/hien grid chinh.
-		 * - normalizeRows/matchWhere: Chuan hoa va loc du lieu tu API.
-		 * - getData/updateData: Ham dung chung goi KRUD list/update.
-		 * - fetchUser: Xac thuc role customer/staff tu URL.
-		 * - fetchOrder: Lay hoa don va kiem tra quyen truy cap.
-		 * - money/toBirthYearText/toBirthDateText: Dinh dang tien va thong tin ngay sinh.
-		 * - getScheduleMeta/getDailyRanges: Dung lich lam viec theo ngay.
-		 * - getRealDates/getStatusRaw: Lay moc thuc te va trang thai raw.
-		 * - toNumber/isPausedStatus: Tien ich so va trang thai tam dung.
-		 * - isCustomerRole/isStaffRole/getAssignedStaffId/isMine/isMyCustomerOrder:
-		 *   bo ham quyen va doi tuong thao tac.
-		 * - syncProminentActionsVisibility: Tu dong an/ hien cum nut lon.
-		 * - statusLabel/setBadge: Chuan hoa nhan trang thai va mau badge.
-		 * - clearDynamicMedia/mediaListFromOrder/appendMediaFallback/renderMedia:
-		 *   render media linh hoat.
-		 * - getWorkDurationMetrics: Tinh thong tin runtime bat dau/tam dung/ket thuc.
-		 * - computeTimelineState: Dung trang thai thoi gian tong quan cua don.
-		 * - calcProgress: Tinh % tien do theo tung ngay.
-		 * - showActionButtons: Luat hien thi nut theo role + trang thai.
-		 * - renderUI: Do du lieu vao UI.
-		 * - updateRealtimeCountdown: Dem nguoc moc ca sap toi.
-		 * - filesToDataUrl: Chuyen file upload sang data URL.
-		 * - handleAction: Xu ly toan bo thao tac click nut.
-		 * - bindEvents: Gan event listener.
-		 * - runAction: Wrapper hien state khi goi action.
-		 * - readParams: Lay tham so URL.
-		 * - bootstrap: Khoi dong luong du lieu/ giao dien.
-		 */
-
-		function toText(value, fallback = '---') {
-			const v = value == null ? '' : String(value).trim();
-			return v === '' ? fallback : v;
-		}
-
-		function normalizePhone(value) {
-			return String(value || '').replace(/\D/g, '');
-		}
-
-		function pick(obj, keys, fallback = '') {
-			if (!obj || typeof obj !== 'object') return fallback;
-			for (const key of keys) {
-				if (Object.prototype.hasOwnProperty.call(obj, key) && obj[key] !== null && obj[key] !== undefined) {
-					return obj[key];
-				}
-			}
-			return fallback;
-		}
-
-		function firstRow(rows) {
-			return Array.isArray(rows) && rows.length ? rows[0] : null;
-		}
-
-		function findUserByCredentials(rows, phoneNorm, passText) {
-			return firstRow((rows || []).filter((row) => {
-				const rowPhone = normalizePhone(pick(row, fieldMap.phone, ''));
-				const rowPass = String(pick(row, fieldMap.password, '')).trim();
-				return rowPhone === phoneNorm && rowPass === passText;
-			}));
-		}
-
-		function parseDateFlexible(input) {
-			if (!input) return null;
-			const str = String(input).trim();
-			if (!str) return null;
-			if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return new Date(str + 'T00:00:00');
-			if (/^\d{2}:\d{2}(:\d{2})?$/.test(str)) {
-				const today = new Date();
-				const datePart = today.toISOString().slice(0, 10);
-				return new Date(datePart + 'T' + str);
-			}
-			const maybe = new Date(str.replace(' ', 'T'));
-			return Number.isNaN(maybe.getTime()) ? null : maybe;
-		}
-
-		function toBirthYearText(value) {
-			const raw = String(value || '').trim();
-			if (/^\d{4}$/.test(raw)) return raw;
-			const date = parseDateFlexible(raw);
-			if (date instanceof Date && !Number.isNaN(date.getTime())) return String(date.getFullYear());
-			return toText(raw, '---');
-		}
-
-		function toBirthDateText(value) {
-			const raw = String(value || '').trim();
-			const date = parseDateFlexible(raw);
-			return date instanceof Date && !Number.isNaN(date.getTime()) ? formatDateOnly(date) : toText(raw, '---');
-		}
-
-		function formatDateOnly(date) {
-			if (!date || Number.isNaN(date.getTime())) return '---';
-			const pad = (n) => String(n).padStart(2, '0');
-			return pad(date.getDate()) + '/' + pad(date.getMonth() + 1) + '/' + date.getFullYear();
-		}
-
-		function normalizeTimeText(value, fallback) {
-			const str = String(value || '').trim();
-			if (!str) return fallback;
-
-			const match = str.match(/(\d{1,2}):(\d{2})(?::\d{2})?/);
-			if (!match) return fallback;
-
-			const h = Number(match[1]);
-			const m = Number(match[2]);
-			if (!Number.isInteger(h) || !Number.isInteger(m) || h < 0 || h > 23 || m < 0 || m > 59) {
-				return fallback;
-			}
-
-			return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
-		}
-
-		// Lay so ngay lam (tinh ca ngay bat dau va ket thuc).
-		function getTotalDays(startDate, endDate) {
-			const s = parseDateFlexible(startDate);
-			const e = parseDateFlexible(endDate);
-			if (!(s instanceof Date) || Number.isNaN(s.getTime())) return 0;
-			if (!(e instanceof Date) || Number.isNaN(e.getTime())) return 0;
-			s.setHours(0, 0, 0, 0);
-			e.setHours(0, 0, 0, 0);
-			if (e.getTime() < s.getTime()) return 0;
-			return Math.floor((e.getTime() - s.getTime()) / 86400000) + 1;
-		}
-
-		// Tao moc gio lam viec trong mot ngay cu the.
-		function getDailyRange(date, startTime, endTime) {
-			const d = parseDateFlexible(date);
-			if (!(d instanceof Date) || Number.isNaN(d.getTime())) {
-				return { start: null, end: null };
-			}
-
-			const [sh, sm] = normalizeTimeText(startTime, '08:00').split(':').map(Number);
-			const [eh, em] = normalizeTimeText(endTime, '17:00').split(':').map(Number);
-
-			const start = new Date(d);
-			start.setHours(sh, sm, 0, 0);
-
-			const end = new Date(d);
-			end.setHours(eh, em, 0, 0);
-
-			// Neu gio ket thuc nho hon gio bat dau thi ca lam viec ket thuc vao ngay hom sau.
-			if (end.getTime() <= start.getTime()) {
-				end.setDate(end.getDate() + 1);
-			}
-
-			return { start, end };
-		}
-
-		function nowSql() {
-			const d = new Date();
-			const pad = (n) => String(n).padStart(2, '0');
-			return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' +
-				pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-		}
-
-		// ===== 1) LOGIC THOI GIAN =====
-		function formatDate(date) {
-			if (!date || Number.isNaN(date.getTime())) return '---';
-			const pad = (n) => String(n).padStart(2, '0');
-			return pad(date.getDate()) + '/' + pad(date.getMonth() + 1) + '/' + date.getFullYear() +
-				' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
-		}
-
-		function diffTime(from, to) {
-			if (!(from instanceof Date) || !(to instanceof Date)) return { totalMs: 0, days: 0, hours: 0, minutes: 0 };
-			const totalMs = Math.max(0, to.getTime() - from.getTime());
-			const days = Math.floor(totalMs / 86400000);
-			const hours = Math.floor((totalMs % 86400000) / 3600000);
-			const minutes = Math.floor((totalMs % 3600000) / 60000);
-			return { totalMs, days, hours, minutes };
-		}
-
-		function isStarted(startDate, now = new Date()) {
-			return startDate instanceof Date && now.getTime() >= startDate.getTime();
-		}
-
-		function isEnded(endDate, now = new Date()) {
-			return endDate instanceof Date && now.getTime() > endDate.getTime();
-		}
-
-		function showState(message, type = 'info', visible = true) {
-			dom.stateMessage.textContent = message;
-			dom.stateMessage.className = 'state ' + (type === 'error' ? 'error' : 'info') + (visible ? ' show' : '');
-		}
-
-		function showMain(visible) {
-			dom.mainGrid.classList.toggle('hidden', !visible);
-		}
-
-		function setText(el, text) {
-			if (el) el.textContent = text;
-		}
-
-		function toggleHidden(el, hidden = true) {
-			if (el) el.classList.toggle('hidden', hidden);
-		}
-
-		function toggleManyHidden(elements, hidden = true) {
-			elements.forEach((el) => toggleHidden(el, hidden));
-		}
-
-		function setStartCountdownText(text) {
-			setText(dom.startCountdown, text);
-			setText(dom.startButtonCountdown, text);
-		}
-
-		function normalizeRows(res) {
-			if (Array.isArray(res)) return res;
-			if (!res || typeof res !== 'object') return [];
-			if (res.error) throw new Error(String(res.error));
-			if (res.success === false) throw new Error(String(res.message || 'Không lấy dữ liệu được'));
-			if (Array.isArray(res.data)) return res.data;
-			if (Array.isArray(res.rows)) return res.rows;
-			if (Array.isArray(res.items)) return res.items;
-			return [];
-		}
-
-		function matchWhere(row, where) {
-			if (!where || typeof where !== 'object') return true;
-			const keys = Object.keys(where);
-			if (!keys.length) return true;
-			return keys.every((key) => {
-				const expected = where[key];
-				const actual = row ? row[key] : undefined;
-				if (expected == null || expected === '') return true;
-				if (key.toLowerCase().includes('phone') || key === 'sodienthoai') {
-					return normalizePhone(actual) === normalizePhone(expected);
-				}
-				return String(actual ?? '').trim() === String(expected).trim();
-			});
-		}
-
-		// ===== 2) GOI API =====
-		async function getData(table, where = {}) {
-			if (typeof krudList !== 'function') {
-				throw new Error('Không tải được hàm krudList từ API');
-			}
-			const rows = normalizeRows(await krudList({ table }));
-			return rows.filter((row) => matchWhere(row, where));
-		}
-
-		async function getFirstData(table, where = {}) {
-			return firstRow(await getData(table, where));
-		}
-
-		async function updateData(table, data, where = {}) {
-			if (typeof krud !== 'function') {
-				throw new Error('Không tải được hàm krud từ API');
-			}
-			const targets = await getData(table, where);
-			if (!targets.length) {
-				return { success: false, message: 'Không tìm thấy bản ghi để cập nhật' };
-			}
-
-			const results = [];
-			for (const row of targets) {
-				const rowId = Number(pick(row, fieldMap.id, 0));
-				if (!rowId) continue;
-				const res = await krud('update', table, data, rowId);
-				results.push(res);
-			}
-
-			const hasError = results.some((r) => !r || r.error || r.success === false);
-			return {
-				success: !hasError,
-				message: hasError ? 'Có bản ghi cập nhật thất bại' : 'Cập nhật thành công',
-				results
+			const app = {
+				params: {},
+				role: '',
+				user: null,
+				order: null,
+				staff: null,
+				stateTimer: null
 			};
-		}
 
-		// ===== 3) XAC THUC =====
-		async function fetchUser() {
-			const phone = app.params.sodienthoai;
-			const pass = app.params.password;
-
-			if (!phone || !pass) {
-				throw new Error('Thiếu số điện thoại hoặc mật khẩu trong URL');
-			}
-
-			const [customerRows, staffRows] = await Promise.all([
-				getData('khachhang'),
-				getData('nhacungcap_mevabe')
-			]);
-
-			const phoneNorm = normalizePhone(phone);
-			const passText = String(pass).trim();
-
-			const customer = findUserByCredentials(customerRows, phoneNorm, passText);
-
-			if (customer) {
-				app.role = 'customer';
-				app.user = customer;
-				return;
-			}
-
-			const staff = findUserByCredentials(staffRows, phoneNorm, passText);
-
-			if (staff) {
-				app.role = 'staff';
-				app.user = staff;
-				return;
-			}
-
-			throw new Error('Bạn không thể truy cập trang này');
-		}
-
-		// ===== 4) LAY DU LIEU HOA DON =====
-		async function fetchOrder() {
-			const mahd = Number(app.params.mahd);
-			if (!mahd) throw new Error('Mã hóa đơn không hợp lệ');
-
-			const order = await getFirstData('datlich_mevabe', { id: mahd });
-			if (!order) throw new Error('Không tìm thấy hóa đơn');
-
-			const orderPhone = normalizePhone(pick(order, fieldMap.phone, ''));
-			const userPhone = normalizePhone(pick(app.user, fieldMap.phone, ''));
-
-			if (app.role === 'customer' && orderPhone !== userPhone) {
-				throw new Error('Bạn không thể truy cập trang này');
-			}
-
-			app.order = order;
-
-			app.customer = orderPhone ? await getFirstData('khachhang', { sodienthoai: orderPhone }) : null;
-
-			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
-			app.staff = supplierId > 0 ? await getFirstData('nhacungcap_mevabe', { id: supplierId }) : null;
-		}
-
-		function money(value) {
-			const n = Number(String(value || '').replace(/[^0-9.-]/g, ''));
-			if (Number.isNaN(n)) return toText(value);
-			return n.toLocaleString('vi-VN') + ' VND';
-		}
-
-		function getScheduleMeta(order) {
-			const startDateRaw = pick(order, fieldMap.startDate, '');
-			const endDateRaw = pick(order, fieldMap.endDate, startDateRaw);
-			const startTime = normalizeTimeText(pick(order, fieldMap.startTime, '08:00'), '08:00');
-			const endTime = normalizeTimeText(pick(order, fieldMap.endTime, '17:00'), '17:00');
-
-			const startDate = parseDateFlexible(startDateRaw);
-			const endDate = parseDateFlexible(endDateRaw);
-			const totalDays = getTotalDays(startDateRaw, endDateRaw);
-
-			return { startDate, endDate, startTime, endTime, totalDays };
-		}
-
-		function getDailyRanges(order) {
-			const meta = getScheduleMeta(order);
-			const ranges = [];
-			if (!(meta.startDate instanceof Date) || Number.isNaN(meta.startDate.getTime())) {
-				return { ...meta, ranges };
-			}
-
-			for (let i = 0; i < meta.totalDays; i++) {
-				const currentDay = new Date(meta.startDate);
-				currentDay.setHours(0, 0, 0, 0);
-				currentDay.setDate(currentDay.getDate() + i);
-
-				const { start, end } = getDailyRange(currentDay, meta.startTime, meta.endTime);
-				if (start instanceof Date && end instanceof Date && end.getTime() > start.getTime()) {
-					ranges.push({ date: currentDay, start, end, index: i + 1 });
-				}
-			}
-
-			return { ...meta, ranges };
-		}
-
-		function getRealDates(order) {
-			const realStart = parseDateFlexible(pick(order, fieldMap.actualStart, ''));
-			const realEnd = parseDateFlexible(pick(order, fieldMap.actualEnd, ''));
-			return { realStart, realEnd };
-		}
-
-		function getStatusRaw(order) {
-			return String(pick(order, fieldMap.status, '')).trim().toLowerCase();
-		}
-
-		function toNumber(value, fallback = 0) {
-			const n = Number(value);
-			return Number.isFinite(n) ? n : fallback;
-		}
-
-		function isPausedStatus(rawStatus) {
-			return ['tạm dừng', 'tam dung', 'paused', 'pause', 'dừng tạm thời', 'dung tam thoi', 'temporary_stop'].includes(String(rawStatus || '').toLowerCase());
-		}
-
-		function isRunningStatus(rawStatus) {
-			return ['đang thực hiện', 'dang thuc hien', 'in_progress', 'in progress', 'running', 'resume'].includes(String(rawStatus || '').toLowerCase());
-		}
-
-		function isTerminalStatus(rawStatus) {
-			return ['đã hủy', 'da huy', 'da_huy', 'huy_don', 'cancelled', 'canceled', 'đã hoàn thành', 'da hoan thanh', 'done', 'completed'].includes(String(rawStatus || '').toLowerCase());
-		}
-
-		function isCustomerRole() {
-			return app.role === 'customer';
-		}
-
-		function isStaffRole() {
-			return app.role === 'staff';
-		}
-
-		function getAssignedStaffId(order) {
-			return Number(pick(order, fieldMap.supplierId, 0));
-		}
-
-		function isMine(order) {
-			const assigned = getAssignedStaffId(order);
-			const myId = Number(pick(app.user, fieldMap.id, 0));
-			return assigned > 0 && myId > 0 && assigned === myId;
-		}
-
-		function isMyCustomerOrder(order) {
-			const orderPhone = normalizePhone(pick(order, fieldMap.phone, ''));
-			const userPhone = normalizePhone(pick(app.user, fieldMap.phone, ''));
-			return orderPhone !== '' && orderPhone === userPhone;
-		}
-
-		function syncProminentActionsVisibility() {
-			if (!dom.actionsProminent) return;
-			const hasVisibleBtn = Array.from(dom.actionsProminent.querySelectorAll('button')).some((btn) => !btn.classList.contains('hidden'));
-			dom.actionsProminent.classList.toggle('hidden', !hasVisibleBtn);
-		}
-
-		function statusLabel(order) {
-			const raw = getStatusRaw(order);
-			if (!raw) return 'Chờ xử lý';
-			if (['đã hủy', 'da huy', 'da_huy', 'huy_don', 'cancelled', 'canceled'].includes(raw)) return 'Đã hủy';
-			if (['đã hoàn thành', 'da hoan thanh', 'done', 'completed'].includes(raw)) return 'Đã hoàn thành';
-			if (['đang thực hiện', 'dang thuc hien', 'in_progress'].includes(raw)) return 'Đang thực hiện';
-			if (['dừng tạm thời', 'dung tam thoi', 'temporary_stop'].includes(raw)) return 'Dừng tạm thời';
-			if (['đã nhận', 'da nhan', 'assigned'].includes(raw)) return 'Đã nhận';
-			return raw;
-		}
-
-		function roleLabel(role) {
-			if (role === 'customer') return 'Khách hàng';
-			if (role === 'staff') return 'Nhân viên';
-			return 'Không xác định';
-		}
-
-		function phaseLabel(phase) {
-			const raw = String(phase || '').toLowerCase();
-			if (raw === 'waiting') return 'Đang chờ';
-			if (raw === 'running') return 'Đang thực hiện';
-			if (raw === 'paused') return 'Tạm dừng';
-			if (raw === 'ended') return 'Đã kết thúc';
-			if (raw === 'unknown') return 'Chưa xác định';
-			return toText(phase, 'Chưa xác định');
-		}
-
-		function isSameDate(a, b) {
-			if (!(a instanceof Date) || Number.isNaN(a.getTime())) return false;
-			if (!(b instanceof Date) || Number.isNaN(b.getTime())) return false;
-			return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-		}
-
-		function getCountdownTargetToStartTime(order) {
-			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
-			if (supplierId <= 0) return null;
-
-			const schedule = getScheduleMeta(order);
-			if (!(schedule.startDate instanceof Date) || Number.isNaN(schedule.startDate.getTime())) {
-				return null;
-			}
-
-			const [sh, sm] = normalizeTimeText(schedule.startTime, '08:00').split(':').map(Number);
-			const now = new Date();
-			const today = new Date(now);
-			today.setHours(0, 0, 0, 0);
-
-			const startDateOnly = new Date(schedule.startDate);
-			startDateOnly.setHours(0, 0, 0, 0);
-
-			const endDateSrc = schedule.endDate instanceof Date && !Number.isNaN(schedule.endDate.getTime())
-				? schedule.endDate
-				: schedule.startDate;
-			const endDateOnly = new Date(endDateSrc);
-			endDateOnly.setHours(0, 0, 0, 0);
-
-			if (today.getTime() < startDateOnly.getTime()) {
-				const target = new Date(startDateOnly);
-				target.setHours(sh, sm, 0, 0);
-				return target;
-			}
-
-			if (today.getTime() > endDateOnly.getTime()) {
-				return null;
-			}
-
-			const targetToday = new Date(now);
-			targetToday.setHours(sh, sm, 0, 0);
-			return targetToday;
-		}
-
-		function setBadge(el, text, mode) {
-			el.textContent = text;
-			el.className = 'badge';
-			if (mode) el.classList.add(mode);
-		}
-
-		function parseMediaList(rawValue) {
-			return String(rawValue || '')
-				.split(/[\n,]+/)
-				.map((item) => item.trim())
-				.filter(Boolean)
-				.slice(0, 8);
-		}
-
-		function hasReviewContent(text, mediaList) {
-			return String(text || '').trim() !== '' || (Array.isArray(mediaList) && mediaList.length > 0);
-		}
-
-		function renderReviewMediaGrid(container, urls) {
-			if (!container) return;
-			container.innerHTML = '';
-
-			if (!Array.isArray(urls) || !urls.length) {
-				const empty = document.createElement('div');
-				empty.className = 'media-empty';
-				empty.textContent = 'Chưa có ảnh/video';
-				container.appendChild(empty);
-				return;
-			}
-
-			urls.forEach((url) => {
-				const isVideo = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url) || url.startsWith('data:video');
-				if (isVideo) {
-					const video = document.createElement('video');
-					video.src = url;
-					video.controls = true;
-					video.playsInline = true;
-					container.appendChild(video);
-				} else {
-					const img = document.createElement('img');
-					img.src = url;
-					img.alt = 'Ảnh đánh giá';
-					img.loading = 'lazy';
-					container.appendChild(img);
-				}
-			});
-		}
-
-		function getReviewState(order) {
-			const customerText = String(pick(order, fieldMap.customerReview, '')).trim();
-			const customerMedia = parseMediaList(pick(order, fieldMap.customerReviewMedia, ''));
-			const customerTime = parseDateFlexible(pick(order, fieldMap.customerReviewTime, ''));
-
-			const staffText = String(pick(order, fieldMap.staffReview, '')).trim();
-			const staffMedia = parseMediaList(pick(order, fieldMap.staffReviewMedia, ''));
-			const staffTime = parseDateFlexible(pick(order, fieldMap.staffReviewTime, ''));
-
-			return {
-				customer: {
-					text: customerText,
-					media: customerMedia,
-					time: customerTime,
-					submitted: hasReviewContent(customerText, customerMedia)
-				},
-				staff: {
-					text: staffText,
-					media: staffMedia,
-					time: staffTime,
-					submitted: hasReviewContent(staffText, staffMedia)
-				}
+			const $ = (id) => document.getElementById(id);
+			const toNum = (v) => Number(v || 0);
+			const now = () => new Date();
+			const nowSql = () => {
+				const d = now();
+				const p = (n) => String(n).padStart(2, '0');
+				return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 			};
-		}
-
-		function renderReviews(order) {
-			const reviews = getReviewState(order);
-
-			setText(dom.customerReviewText, toText(reviews.customer.text, 'Chưa có đánh giá'));
-			setText(dom.customerReviewTime, reviews.customer.time instanceof Date && !Number.isNaN(reviews.customer.time.getTime()) ? formatDate(reviews.customer.time) : '---');
-			renderReviewMediaGrid(dom.customerReviewMediaGrid, reviews.customer.media);
-			setBadge(dom.badgeCustomerReview, reviews.customer.submitted ? 'Đã có' : 'Chưa có', reviews.customer.submitted ? 'success' : 'warning');
-
-			setText(dom.staffReviewText, toText(reviews.staff.text, 'Chưa có đánh giá'));
-			setText(dom.staffReviewTime, reviews.staff.time instanceof Date && !Number.isNaN(reviews.staff.time.getTime()) ? formatDate(reviews.staff.time) : '---');
-			renderReviewMediaGrid(dom.staffReviewMediaGrid, reviews.staff.media);
-			setBadge(dom.badgeStaffReview, reviews.staff.submitted ? 'Đã có' : 'Chưa có', reviews.staff.submitted ? 'success' : 'warning');
-
-			return reviews;
-		}
-
-		function renderInvoiceJobList(rawJob) {
-			if (!dom.invoiceJob) return;
-			const parts = String(rawJob || '')
-				.replace(/\r/g, '\n')
-				.split(/\n+/)
-				.flatMap((line) => {
-					const trimmed = line.trim();
-					if (!trimmed) return [];
-					return trimmed.includes('.') ? trimmed.split(/\s*\.\s*/) : [trimmed];
-				})
-				.map((line) => line
-					.replace(/^\s*[\-\u2022\*]+\s*/, '')
-					.replace(/^\s*\d+\s*[\)\-:]*\s*/, '')
-					.replace(/^[\s,;:.]+/, '')
-					.trim())
-				.filter((line) => line && !/^\d+$/.test(line));
-
-			dom.invoiceJob.innerHTML = '';
-			const items = parts.length ? parts : ['Không có'];
-			items.forEach((text) => {
-				const li = document.createElement('li');
-				li.textContent = text;
-				dom.invoiceJob.appendChild(li);
-			});
-		}
-
-		// Lay thong tin runtime phuc vu nut Tam dung/Tiep tuc/Ket thuc.
-		function getWorkDurationMetrics(order) {
-			const realStart = parseDateFlexible(pick(order, fieldMap.actualStart, ''));
-			const realEnd = parseDateFlexible(pick(order, fieldMap.actualEnd, ''));
-			const pauseAt = parseDateFlexible(pick(order, fieldMap.pauseAt, ''));
-			const pausedTotalMs = Math.max(0, toNumber(pick(order, fieldMap.pausedTotalMs, 0), 0));
-
-			const rawStatus = getStatusRaw(order);
-			const paused = !realEnd && isPausedStatus(rawStatus);
-
-			return {
-				realStart,
-				realEnd,
-				pauseAt,
-				pausedTotalMs,
-				paused
+			const show = (el, ok = true) => el && el.classList.toggle('hidden', !ok);
+			const setText = (id, value) => {
+				const el = $(id);
+				if (el) el.textContent = value || '---';
 			};
-		}
-
-		function computeTimelineState(order) {
-			const now = new Date();
-			const schedule = getDailyRanges(order);
-			const ranges = schedule.ranges;
-			const start = ranges.length ? ranges[0].start : null;
-			const end = ranges.length ? ranges[ranges.length - 1].end : null;
-			const { realStart, realEnd } = getRealDates(order);
-			const rawStatus = getStatusRaw(order);
-
-			let phase = 'unknown';
-			let message = 'Không đủ dữ liệu thời gian';
-			let dayHint = '---';
-			let nextStart = null;
-
-			const activeRange = ranges.find((r) => now >= r.start && now <= r.end) || null;
-			const upcomingRange = ranges.find((r) => now < r.start) || null;
-			nextStart = upcomingRange ? upcomingRange.start : null;
-
-			if (start && !isStarted(start, now)) {
-				phase = 'waiting';
-				const left = diffTime(now, start);
-				message = 'Còn ' + left.days + ' ngày ' + left.hours + ' giờ ' + left.minutes + ' phút';
-			} else if (start && end && isStarted(start, now) && !isEnded(end, now)) {
-				phase = 'running';
-				message = activeRange ? 'Đang thực hiện' : 'Tiếp tục vào ngày tiếp theo';
-			} else if (end && isEnded(end, now)) {
-				phase = 'ended';
-				message = 'Đã hoàn thành';
-			}
-
-			const dateRangeText = schedule.startDate instanceof Date && !Number.isNaN(schedule.startDate.getTime())
-				? (formatDateOnly(schedule.startDate) + ' -> ' + formatDateOnly(schedule.endDate instanceof Date ? schedule.endDate : schedule.startDate))
-				: '---';
-
-			if (schedule.totalDays > 0) {
-				dayHint = 'Khoảng ngày: ' + dateRangeText;
-			}
-
-			if (realStart && !realEnd && phase === 'running') {
-				message = activeRange ? 'Đang thực hiện (đã bắt đầu thực tế)' : message;
-			}
-			if (realStart && !realEnd && isRunningStatus(rawStatus)) {
-				phase = 'running';
-				message = activeRange ? 'Đang thực hiện (đã bắt đầu thực tế)' : 'Đang thực hiện';
-			}
-			if (realStart && !realEnd && isPausedStatus(rawStatus)) {
-				phase = 'paused';
-				message = 'Tạm dừng';
-			}
-			if (realEnd) {
-				phase = 'ended';
-				message = 'Đã hoàn thành';
-			}
-
-			return {
-				phase,
-				message,
-				dayHint,
-				start,
-				end,
-				realStart,
-				realEnd,
-				nextStart,
-				activeRange,
-				workTimeText: schedule.startTime + ' -> ' + schedule.endTime,
-				planStartTime: schedule.startTime,
-				planEndTime: schedule.endTime,
-				dateRangeText,
-				startDateOnly: schedule.startDate,
-				endDateOnly: schedule.endDate
-			};
-		}
-
-		// Tinh tien do theo tung ngay: moi ngay la mot ca rieng.
-		function calcProgress(order) {
-			const startDate = pick(order, fieldMap.startDate, '');
-			const endDate = pick(order, fieldMap.endDate, '');
-			const startTime = normalizeTimeText(pick(order, fieldMap.startTime, '08:00'), '08:00');
-			const endTime = normalizeTimeText(pick(order, fieldMap.endTime, '17:00'), '17:00');
-
-			const totalDays = getTotalDays(startDate, endDate);
-			if (!totalDays) return 0;
-
-			const percentPerDay = 100 / totalDays;
-			let totalProgress = 0;
-			const now = new Date();
-
-			for (let i = 0; i < totalDays; i++) {
-				const currentDay = parseDateFlexible(startDate);
-				if (!(currentDay instanceof Date) || Number.isNaN(currentDay.getTime())) continue;
-				currentDay.setHours(0, 0, 0, 0);
-				currentDay.setDate(currentDay.getDate() + i);
-
-				const { start, end } = getDailyRange(currentDay, startTime, endTime);
-				if (!(start instanceof Date) || !(end instanceof Date)) continue;
-				const planDuration = end.getTime() - start.getTime();
-				if (planDuration <= 0) continue;
-
-				let dailyProgress = 0;
-
-				if (now < start) {
-					continue;
-				}
-
-				if (now > end) {
-					dailyProgress = percentPerDay;
-				} else {
-					const actualDuration = Math.max(0, now.getTime() - start.getTime());
-					const ratio = actualDuration / planDuration;
-					dailyProgress = percentPerDay * Math.min(ratio, 1);
-				}
-
-				totalProgress += dailyProgress;
-			}
-
-			return Math.min(100, totalProgress);
-		}
-
-		function showActionButtons(timeline, reviews) {
-			const order = app.order;
-			const status = getStatusRaw(order);
-			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
-			const myId = Number(pick(app.user, fieldMap.id, 0));
-			const mine = supplierId > 0 && supplierId === myId;
-			const canUnclaim = timeline.start instanceof Date && diffTime(new Date(), timeline.start).days > 3;
-			const work = getWorkDurationMetrics(order);
-			const now = new Date();
-			const hasPlanWindow = timeline.start instanceof Date && timeline.end instanceof Date;
-			const inCurrentWorkWindow = !!timeline.activeRange || (hasPlanWindow && now >= timeline.start && now < timeline.end);
-			const isStartDateToday = isSameDate(timeline.startDateOnly, now);
-			const plannedEndRef = timeline.activeRange && timeline.activeRange.end instanceof Date
-				? timeline.activeRange.end
-				: (timeline.end instanceof Date ? timeline.end : null);
-			const remainToPlannedEndMs = plannedEndRef instanceof Date ? Math.max(0, plannedEndRef.getTime() - now.getTime()) : Infinity;
-			const nearPlannedEnd = remainToPlannedEndMs <= 30 * 60 * 1000;
-			const terminalStatus = isTerminalStatus(status);
-			const canSubmitReviewByPlan = timeline.end instanceof Date && now.getTime() >= timeline.end.getTime();
-
-			toggleManyHidden([
-				dom.btnCancelService,
-				dom.btnClaim,
-				dom.btnUnclaim,
-				dom.btnStart,
-				dom.btnPause,
-				dom.btnResume,
-				dom.btnEnd,
-				dom.customerReviewForm,
-				dom.staffReviewForm,
-				dom.staffWorkForm,
-				dom.startButtonCountdown
-			], true);
-			syncProminentActionsVisibility();
-
-			if (isCustomerRole()) {
-				const notAssigned = supplierId <= 0;
-				const cancelled = ['da huy', 'đã hủy', 'huy_don', 'cancelled', 'canceled'].includes(status);
-				if (notAssigned && !cancelled) toggleHidden(dom.btnCancelService, false);
-				if (canSubmitReviewByPlan && !reviews.customer.submitted && isMyCustomerOrder(order)) {
-					toggleHidden(dom.customerReviewForm, false);
-				}
-			}
-
-			if (isStaffRole()) {
-				const noOneClaimed = supplierId <= 0;
-				if (noOneClaimed && !terminalStatus) toggleHidden(dom.btnClaim, false);
-
-				if (mine && !terminalStatus) {
-					if (canUnclaim && timeline.phase === 'waiting' && !work.realStart) toggleHidden(dom.btnUnclaim, false);
-
-					// Trong ngay bat dau luon hien thi nut Bat dau, khong can doi den gio_bat_dau.
-					const canShowStart = !work.realStart && !work.realEnd && (isStartDateToday || inCurrentWorkWindow);
-
-					if (canShowStart) {
-						toggleHidden(dom.btnStart, false);
-						toggleHidden(dom.startButtonCountdown, false);
-					}
-
-					if (work.realStart && !work.realEnd) {
-						if (nearPlannedEnd) {
-							toggleHidden(dom.btnEnd, false);
-						} else if (work.paused) {
-							toggleHidden(dom.btnResume, false);
-						} else {
-							toggleHidden(dom.btnPause, false);
-						}
-					}
-				}
-
-				if (mine && canSubmitReviewByPlan && !reviews.staff.submitted) {
-					toggleHidden(dom.staffReviewForm, false);
-				}
-			}
-
-			syncProminentActionsVisibility();
-		}
-
-		// ===== 5 + 6 + 7 + 8 + 9 + 10 =====
-		function renderUI() {
-			const order = app.order;
-			const user = app.user;
-			const status = statusLabel(order);
-
-			dom.chipRole.textContent = 'Vai trò: ' + roleLabel(app.role);
-			dom.chipOrder.textContent = 'Mã HĐ: ' + toText(app.params.mahd);
-
-			dom.invoiceId.textContent = toText(pick(order, fieldMap.id, app.params.mahd));
-			dom.invoicePrice.textContent = money(pick(order, fieldMap.price, '0'));
-			dom.invoiceService.textContent = toText(pick(order, fieldMap.service, 'Chưa rõ'));
-			dom.invoicePackage.textContent = toText(pick(order, fieldMap.pack, 'Chưa rõ'));
-			renderInvoiceJobList(pick(order, fieldMap.job, ''));
-			dom.invoiceRequest.textContent = toText(pick(order, fieldMap.request, 'Không có'));
-			dom.invoiceAddress.textContent = toText(pick(order, fieldMap.address, '---'));
-			dom.invoiceNote.textContent = toText(pick(order, fieldMap.note, 'Không có'));
-			setBadge(dom.badgeInvoiceStatus, status, status.includes('huy') ? 'danger' : (status.includes('hoan') ? 'success' : 'warning'));
-
-			dom.customerName.textContent = toText(pick(order, fieldMap.name, pick(user, fieldMap.name, 'Khách hàng')));
-			dom.customerPhone.textContent = toText(pick(order, fieldMap.phone, app.params.sodienthoai));
-			const customerProfile = app.customer || (app.role === 'customer' ? user : null);
-			dom.customerEmail.textContent = toText(pick(order, fieldMap.email, pick(customerProfile, fieldMap.email, '---')));
-			dom.customerAddress.textContent = toText(pick(order, fieldMap.address, pick(customerProfile, fieldMap.address, '---')));
-			const customerBirthRaw = pick(customerProfile, fieldMap.customerBirthYear, pick(order, fieldMap.customerBirthYear, ''));
-			dom.customerBirthYear.textContent = toBirthYearText(customerBirthRaw);
-
-			const supplierId = Number(pick(order, fieldMap.supplierId, 0));
-			dom.staffId.textContent = supplierId > 0 ? String(supplierId) : 'Chưa có nhân viên';
-			dom.staffName.textContent = toText(app.staff ? pick(app.staff, fieldMap.name, '') : '', 'Chưa phân công');
-			dom.staffPhone.textContent = toText(app.staff ? pick(app.staff, fieldMap.phone, '') : '', '---');
-			dom.staffEmail.textContent = toText(app.staff ? pick(app.staff, fieldMap.email, '') : '', '---');
-			const staffBirthRaw = app.staff ? pick(app.staff, fieldMap.birthDate, '') : '';
-			dom.staffBirthDate.textContent = toBirthDateText(staffBirthRaw);
-			dom.staffExperience.textContent = toText(app.staff ? pick(app.staff, fieldMap.experience, '') : '', 'Chưa cập nhật');
-			dom.staffAddress.textContent = toText(app.staff ? pick(app.staff, fieldMap.address, '') : '', 'Chưa cập nhật');
-			if (supplierId <= 0) {
-				dom.staffState.textContent = 'Chưa có người nhận';
-			} else if (isStaffRole() && isMine(order)) {
-				dom.staffState.textContent = 'Bạn đang phụ trách';
-			} else if (isStaffRole() && !isMine(order)) {
-				dom.staffState.textContent = 'Nhân viên khác đang phụ trách';
-			} else {
-				dom.staffState.textContent = 'Đã có người nhận';
-			}
-			setBadge(dom.badgeStaff, supplierId > 0 ? 'Đã nhận' : 'Chờ nhận', supplierId > 0 ? 'success' : 'warning');
-
-			const timeline = computeTimelineState(order);
-			dom.timeStartPlan.textContent = toText(timeline.planStartTime);
-			dom.timeEndPlan.textContent = toText(timeline.planEndTime);
-			dom.timeStartReal.textContent = formatDate(timeline.realStart);
-			dom.timeEndReal.textContent = formatDate(timeline.realEnd);
-			dom.timeCurrentState.textContent = phaseLabel(timeline.phase);
-			dom.timeDayHint.textContent = timeline.dayHint;
-			dom.timeMessage.textContent = timeline.message;
-
-			const timeBadgeMode = timeline.phase === 'ended' ? 'success' : ((timeline.phase === 'running' || timeline.phase === 'paused') ? 'warning' : '');
-			setBadge(dom.badgeTimeState, phaseLabel(timeline.phase), timeBadgeMode);
-
-			const progress = calcProgress(app.order);
-			dom.progressText.textContent = progress.toFixed(1) + '%';
-			dom.badgeProgress.textContent = progress.toFixed(1) + '%';
-			const remainingMin = timeline.end instanceof Date ? Math.max(0, Math.ceil((timeline.end.getTime() - Date.now()) / 60000)) : 0;
-			dom.progressHint.textContent = 'Tiến độ theo từng ngày, mỗi ngày là 1 ca ' + timeline.workTimeText + '. Khoảng ngày kế hoạch: ' + timeline.dateRangeText + '. Còn lại đến mốc kết thúc kế hoạch: ' + remainingMin + ' phút.';
-			dom.progressBar.style.width = progress + '%';
-			dom.progressBar.classList.remove('warn', 'danger');
-			if (progress >= 50 && progress < 85) dom.progressBar.classList.add('warn');
-			if (progress >= 85) dom.progressBar.classList.add('danger');
-
-			const reviews = renderReviews(order);
-			showActionButtons(timeline, reviews);
-			updateRealtimeCountdown(timeline);
-			showState('Tải dữ liệu thành công', 'info', true);
-			showMain(true);
-		}
-
-		function updateRealtimeCountdown(timeline) {
-			clearInterval(app.countdownTimer);
-			const tick = () => {
-				if (!app.order) return;
-				toggleHidden(dom.staffCountdownField, false);
-				const supplierId = Number(pick(app.order, fieldMap.supplierId, 0));
-				if (supplierId <= 0) {
-					setText(dom.startCountdown, 'Chờ nhân viên nhận việc');
-					setText(dom.startButtonCountdown, 'Chờ nhận việc');
-					return;
-				}
-
-				const startDate = getCountdownTargetToStartTime(app.order);
-				if (!(startDate instanceof Date) || Number.isNaN(startDate.getTime())) {
-					setText(dom.startCountdown, 'Không có mốc giờ bắt đầu');
-					setText(dom.startButtonCountdown, 'Không có giờ bắt đầu');
-					return;
-				}
-
-				const now = new Date();
-				if (now.getTime() >= startDate.getTime()) {
-					setStartCountdownText('Đã qua giờ bắt đầu');
-					toggleHidden(dom.staffCountdownField, true);
-					return;
-				}
-
-				const left = diffTime(now, startDate);
-				const text = left.days + ' ngày ' + left.hours + ' giờ ' + left.minutes + ' phút';
-				setStartCountdownText(text);
-			};
-			tick();
-			app.countdownTimer = setInterval(tick, 1000);
-		}
-
-		async function filesToDataUrl(files) {
-			const arr = Array.from(files || []).slice(0, 4);
-			const readers = arr.map((file) => new Promise((resolve, reject) => {
-				const fr = new FileReader();
-				fr.onload = () => resolve(String(fr.result || ''));
-				fr.onerror = () => reject(new Error('Đọc file thất bại: ' + file.name));
-				fr.readAsDataURL(file);
-			}));
-			return Promise.all(readers);
-		}
-
-		async function handleAction(action) {
-			if (!app.order) return;
-			const orderId = Number(pick(app.order, fieldMap.id, 0));
-			if (!orderId) throw new Error('Hóa đơn không hợp lệ');
-
-			const myId = Number(pick(app.user, fieldMap.id, 0));
-			const now = nowSql();
-			const assignedId = getAssignedStaffId(app.order);
-			const mine = assignedId > 0 && assignedId === myId;
-
-			if (action === 'cancel-service' || action === 'save-review') {
-				if (!isCustomerRole() || !isMyCustomerOrder(app.order)) {
-					throw new Error('Bạn không có quyền thực hiện thao tác khách hàng');
-				}
-			}
-
-			if (['claim-job', 'unclaim-job', 'start-work', 'pause-work', 'resume-work', 'end-work', 'save-staff-log'].includes(action)) {
-				if (!isStaffRole()) {
-					throw new Error('Bạn không có quyền thực hiện thao tác nhân viên');
-				}
-				if (myId <= 0) {
-					throw new Error('Không xác định được ID nhân viên trong phiên đăng nhập');
-				}
-			}
-
-			if (action === 'cancel-service') {
-				await updateData('datlich_mevabe', { trangthai: 'đã hủy', thoigian_huy: now }, { id: orderId });
-			}
-
-			if (action === 'claim-job') {
-				if (assignedId > 0 && !mine) {
-					throw new Error('Hóa đơn đã được nhận bởi nhân viên khác');
-				}
-				await updateData('datlich_mevabe', { id_nhacungcap: myId, trangthai: 'đã nhận', thoigian_nhanviec: now }, { id: orderId });
-			}
-
-			if (action === 'unclaim-job') {
-				if (!mine) throw new Error('Bạn chỉ được hủy nhận việc của chính mình');
-				await updateData('datlich_mevabe', { id_nhacungcap: '', trangthai: 'chờ nhận', thoigian_huy_nhanviec: now }, { id: orderId });
-			}
-
-			if (action === 'start-work') {
-				if (!mine) throw new Error('Bạn chỉ được bắt đầu công việc được phân công cho mình');
-				const existingStart = parseDateFlexible(pick(app.order, fieldMap.actualStart, ''));
-				await updateData('datlich_mevabe', {
-					thoigian_batdau_thucte: existingStart ? pick(app.order, fieldMap.actualStart, '') : now,
-					trangthai: 'đang thực hiện',
-					thoigian_tamdung: ''
-				}, { id: orderId });
-			}
-
-			if (action === 'pause-work') {
-				if (!mine) throw new Error('Bạn chỉ được tạm dừng công việc của mình');
-				const work = getWorkDurationMetrics(app.order);
-				if (!work.realStart || work.realEnd) {
-					throw new Error('Không thể tạm dừng khi chưa bắt đầu hoặc đã kết thúc');
-				}
-				await updateData('datlich_mevabe', {
-					trangthai: 'tạm dừng',
-					thoigian_tamdung: now
-				}, { id: orderId });
-			}
-
-			if (action === 'resume-work') {
-				if (!mine) throw new Error('Bạn chỉ được tiếp tục công việc của mình');
-				const work = getWorkDurationMetrics(app.order);
-				if (!work.pauseAt) {
-					throw new Error('Không tìm thấy mốc tạm dừng để tiếp tục');
-				}
-				const extraPauseMs = Math.max(0, Date.now() - work.pauseAt.getTime());
-				await updateData('datlich_mevabe', {
-					trangthai: 'đang thực hiện',
-					thoigian_tieptuc: now,
-					thoigian_tamdung: '',
-					tong_thoigian_tam_dung_ms: work.pausedTotalMs + extraPauseMs
-				}, { id: orderId });
-			}
-
-			if (action === 'end-work') {
-				if (!mine) throw new Error('Bạn chỉ được kết thúc công việc của mình');
-				const schedule = getScheduleMeta(app.order);
-				const nowDateOnly = new Date();
-				nowDateOnly.setHours(0, 0, 0, 0);
-
-				const endDateRaw = schedule.endDate instanceof Date && !Number.isNaN(schedule.endDate.getTime())
-					? schedule.endDate
-					: schedule.startDate;
-				const endDateOnly = endDateRaw instanceof Date ? new Date(endDateRaw) : null;
-				if (!(endDateOnly instanceof Date) || Number.isNaN(endDateOnly.getTime())) {
-					throw new Error('Không xác định được ngày kết thúc kế hoạch');
-				}
-				endDateOnly.setHours(0, 0, 0, 0);
-
-				if (nowDateOnly.getTime() >= endDateOnly.getTime()) {
-					await updateData('datlich_mevabe', {
-						thoigian_ketthuc_thucte: now,
-						trangthai: 'đã hoàn thành'
-					}, { id: orderId });
-				} else {
-					await updateData('datlich_mevabe', {
-						trangthai: 'dừng tạm thời',
-						thoigian_tamdung: now
-					}, { id: orderId });
-				}
-			}
-
-			if (action === 'save-review') {
-				const reviewText = dom.customerReview.value.trim();
-				const files = await filesToDataUrl(dom.customerMediaInput.files);
-				await updateData('datlich_mevabe', {
-					danhgia_khachhang: reviewText,
-					minhchung_khachhang: files.join(','),
-					thoigian_danhgia: now
-				}, { id: orderId });
-			}
-
-			if (action === 'save-staff-log') {
-				if (!mine) throw new Error('Bạn chỉ được cập nhật ghi chú công việc của mình');
-				const note = dom.staffNote.value.trim();
-				const files = await filesToDataUrl(dom.staffMediaInput.files);
-				await updateData('datlich_mevabe', {
-					ghichu_nhanvien: note,
-					minhchung_nhanvien: files.join(','),
-					thoigian_capnhat_nhanvien: now
-				}, { id: orderId });
-			}
-
-			await fetchOrder();
-			renderUI();
-		}
-
-		function bindEvents() {
-			[
-				[dom.btnCancelService, 'cancel-service'],
-				[dom.btnClaim, 'claim-job'],
-				[dom.btnUnclaim, 'unclaim-job'],
-				[dom.btnStart, 'start-work'],
-				[dom.btnPause, 'pause-work'],
-				[dom.btnResume, 'resume-work'],
-				[dom.btnEnd, 'end-work'],
-				[dom.btnSaveReview, 'save-review'],
-				[dom.btnSaveStaffLog, 'save-staff-log']
-			].forEach(([el, action]) => {
+			const setAvatar = (id, src, fallback = 'assets/logomvb.png') => {
+				const el = $(id);
 				if (!el) return;
-				el.addEventListener('click', () => runAction(action));
-			});
-		}
+				el.onerror = () => {
+					el.onerror = null;
+					el.src = fallback;
+				};
+				el.src = src || fallback;
+			};
+			const formatMoney = (value) => {
+				const n = Number(String(value || 0).replace(/[^\d.-]/g, ''));
+				if (!Number.isFinite(n)) return `${value || 0} VND`;
+				return `${n.toLocaleString('vi-VN')} VND`;
+			};
+			const formatInvoiceCode = (id) => {
+				const raw = String(id ?? '').trim();
+				if (!raw) return '---';
+				const n = Number(raw);
+				if (!Number.isFinite(n) || n < 0) return '---';
+				return String(Math.trunc(n)).padStart(7, '0');
+			};
 
-		async function runAction(action) {
-			try {
-				showState('Đang cập nhật dữ liệu...', 'info', true);
-				await handleAction(action);
-				showState('Cập nhật thành công', 'info', true);
-			} catch (error) {
-				showState(error && error.message ? error.message : 'Không thể cập nhật dữ liệu', 'error', true);
+			function parseDateTimeParts(value) {
+				const raw = String(value || '').trim();
+				if (!raw) return null;
+
+				const ymd = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?)?/);
+				if (ymd) {
+					return {
+						y: Number(ymd[1]),
+						m: Number(ymd[2]),
+						d: Number(ymd[3]),
+						h: Number(ymd[4] || 0),
+						min: Number(ymd[5] || 0),
+						s: Number(ymd[6] || 0),
+						hasDate: true,
+						hasTime: !!ymd[4]
+					};
+				}
+
+				const dmy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?)?/);
+				if (dmy) {
+					return {
+						y: Number(dmy[3]),
+						m: Number(dmy[2]),
+						d: Number(dmy[1]),
+						h: Number(dmy[4] || 0),
+						min: Number(dmy[5] || 0),
+						s: Number(dmy[6] || 0),
+						hasDate: true,
+						hasTime: !!dmy[4]
+					};
+				}
+
+				const hms = raw.match(/^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
+				if (hms) {
+					return {
+						y: 0,
+						m: 0,
+						d: 0,
+						h: Number(hms[1] || 0),
+						min: Number(hms[2] || 0),
+						s: Number(hms[3] || 0),
+						hasDate: false,
+						hasTime: true
+					};
+				}
+
+				return null;
 			}
-		}
 
-		function readParams() {
-			const qs = new URLSearchParams(window.location.search);
-			app.params.mahd = qs.get('mahd') || '';
-			app.params.sodienthoai = qs.get('sodienthoai') || '';
-			app.params.password = qs.get('password') || '';
-		}
+			function formatDateDisplay(value) {
+				if (!value) return '---';
+				const p = parseDateTimeParts(value);
+				if (!p || !p.hasDate) return String(value || '---');
+				return `${p.d}/${p.m}/${p.y}`;
+			}
 
-		async function bootstrap() {
-			try {
-				readParams();
-				showState('Đang xác thực...', 'info', true);
-				await fetchUser();
-				await fetchOrder();
-				bindEvents();
+			function formatTimeDisplay(value) {
+				if (!value) return '--:--:--';
+				const p = parseDateTimeParts(value);
+				if (!p || !p.hasTime) return String(value || '--:--:--');
+				return `${p.h}:${p.min}:${p.s}`;
+			}
+
+			function formatDateTimeDisplay(value) {
+				if (!value) return '---';
+				const p = parseDateTimeParts(value);
+				if (!p) return String(value || '---');
+				if (p.hasDate && p.hasTime) return `${p.d}/${p.m}/${p.y} ${p.h}:${p.min}:${p.s}`;
+				if (p.hasDate) return `${p.d}/${p.m}/${p.y}`;
+				if (p.hasTime) return `${p.h}:${p.min}:${p.s}`;
+				return String(value || '---');
+			}
+
+			const parseRows = (res) => {
+				if (Array.isArray(res)) return res;
+				if (Array.isArray(res?.data)) return res.data;
+				if (Array.isArray(res?.rows)) return res.rows;
+				if (Array.isArray(res?.items)) return res.items;
+				return [];
+			};
+
+			// Ham dung chung: lay du lieu theo bang.
+			async function getData(table) {
+				const result = typeof krudList === 'function'
+					? await krudList({ table })
+					: await krud('list', table, { p: 1, limit: 1000 });
+				return parseRows(result);
+			}
+
+			// Ham dung chung: update theo id trong where.
+			async function updateData(table, data, where) {
+				if (where?.id != null) return krud('update', table, data, where.id);
+				const rows = await getData(table);
+				const row = rows.find((x) => Object.keys(where || {}).every((k) => String(x[k] ?? '') === String(where[k] ?? '')));
+				if (!row) throw new Error('Khong tim thay ban ghi de cap nhat');
+				return krud('update', table, data, row.id);
+			}
+
+			function getUrlParams() {
+				const p = new URLSearchParams(window.location.search);
+				return {
+					mahd: p.get('mahd') || '',
+					sodienthoai: p.get('sodienthoai') || '',
+					password: p.get('password') || ''
+				};
+			}
+
+			function getPasswordValue(row) {
+				return String(row?.matkhau || row?.mat_khau || row?.password || '');
+			}
+
+			// Xac thuc va phan quyen.
+			async function fetchUser() {
+				const { sodienthoai, password } = app.params;
+				const [customers, staffs] = await Promise.all([getData(TABLE_CUSTOMER), getData(TABLE_STAFF)]);
+				const customer = customers.find((x) => String(x.sodienthoai || '') === sodienthoai && getPasswordValue(x) === password);
+				if (customer) return { role: 'customer', user: customer };
+				const staff = staffs.find((x) => String(x.sodienthoai || '') === sodienthoai && getPasswordValue(x) === password);
+				if (staff) return { role: 'staff', user: staff };
+				return null;
+			}
+
+			// Lay hoa don va nhan vien duoc gan (neu co).
+			async function fetchOrder() {
+				const rows = await getData(TABLE_ORDER);
+				const order = rows.find((x) => String(x.id) === String(app.params.mahd));
+				if (!order) throw new Error('Khong tim thay hoa don');
+
+				const today = parseDateOnly(nowSql());
+				const end = parseDateOnly(order.ngay_ket_thuc_kehoach);
+				if (end && today > end && String(order.trangthai || '').toLowerCase() !== 'hoàn thành') {
+					await updateData(TABLE_ORDER, { trangthai: 'hoàn thành' }, { id: order.id });
+					return fetchOrder();
+				}
+
+				let staff = null;
+				const idStaff = toNum(order.id_nhacungcap);
+				if (idStaff > 0) {
+					const staffs = await getData(TABLE_STAFF);
+					staff = staffs.find((x) => toNum(x.id) === idStaff) || null;
+				}
+				return { order, staff };
+			}
+
+			function parseDateOnly(dateStr) {
+				if (!dateStr) return null;
+				return new Date(`${String(dateStr).slice(0, 10)}T00:00:00`);
+			}
+
+			function parseTimeToHour(timeStr) {
+				const [h, m] = String(timeStr || '0:0').split(':').map(Number);
+				return (h || 0) + ((m || 0) / 60);
+			}
+
+			function diffDays(startDate, endDate) {
+				const s = parseDateOnly(startDate);
+				const e = parseDateOnly(endDate);
+				if (!s || !e) return 1;
+				const ms = e.getTime() - s.getTime();
+				return Math.max(1, Math.round(ms / 86400000));
+			}
+
+			function calcProgressDay(order) {
+				const plan = parseTimeToHour(order.gio_ket_thuc_kehoach) - parseTimeToHour(order.gio_bat_dau_kehoach);
+				const realStart = new Date(order.thoigian_batdau_thucte || '').getTime();
+				const realEnd = new Date(order.thoigian_ketthuc_thucte || '').getTime();
+				const real = (realEnd - realStart) / 3600000;
+				const days = diffDays(order.ngay_bat_dau_kehoach, order.ngay_ket_thuc_kehoach);
+				if (plan <= 0 || real <= 0) return 0;
+				const value = (real / plan) * (100 / days);
+				return Math.max(0, Math.min(100, value));
+			}
+
+			function statusBadgeClass(status) {
+				const s = String(status || '').toLowerCase();
+				if (s.includes('hủy')) return 'badge danger';
+				if (s.includes('hoàn thành')) return 'badge success';
+				if (s.includes('đang')) return 'badge warning';
+				return 'badge';
+			}
+
+			function renderJobList(value) {
+				const list = $('invoiceJob');
+				if (!list) return;
+				list.innerHTML = '';
+				const cleanJob = (text) => String(text || '')
+					.replace(/^[,;:.\-\s]+/, '')
+					.replace(/\s+/g, ' ')
+					.trim();
+				const raw = String(value || '').replace(/\r?\n/g, ' ').trim();
+				let jobs = raw
+					.split('.')
+					.map(cleanJob)
+					.filter(Boolean);
+
+				// Neu du lieu cu phan tach bang dau phay thi van ho tro.
+				if (!jobs.length && raw) {
+					jobs = raw.split(',').map(cleanJob).filter(Boolean);
+				}
+
+				(jobs.length ? jobs : ['---']).forEach((job) => {
+					const li = document.createElement('li');
+					li.textContent = job;
+					list.appendChild(li);
+				});
+			}
+
+			function parseMedia(raw) {
+				if (!raw) return [];
+				if (Array.isArray(raw)) return raw;
+				try {
+					const j = JSON.parse(raw);
+					return Array.isArray(j) ? j : [];
+				} catch {
+					return String(raw).split(',').map((x) => x.trim()).filter(Boolean);
+				}
+			}
+
+			function renderMedia(gridId, raw) {
+				const grid = $(gridId);
+				if (!grid) return;
+				grid.innerHTML = '';
+				const items = parseMedia(raw);
+				if (!items.length) {
+					const div = document.createElement('div');
+					div.className = 'media-empty';
+					div.textContent = 'Chưa có tệp';
+					grid.appendChild(div);
+					return;
+				}
+				items.forEach((src) => {
+					const isVideo = /^(data:video|https?:.*\.(mp4|webm|ogg|mov))/i.test(src);
+					const el = document.createElement(isVideo ? 'video' : 'img');
+					el.src = src;
+					if (isVideo) el.controls = true;
+					grid.appendChild(el);
+				});
+			}
+
+			function renderReview() {
+				const o = app.order;
+				const customerDone = !!o.danhgia_khachhang;
+				const staffDone = !!o.danhgia_nhanvien;
+
+				setText('customerReviewText', o.danhgia_khachhang || 'Chưa có đánh giá');
+				setText('customerReviewTime', formatDateTimeDisplay(o.thoigian_danhgia_khachhang));
+				setText('staffReviewText', o.danhgia_nhanvien || 'Chưa có đánh giá');
+				setText('staffReviewTime', formatDateTimeDisplay(o.thoigian_danhgia_nhanvien));
+				renderMedia('customerReviewMediaGrid', o.media_danhgia_khachhang);
+				renderMedia('staffReviewMediaGrid', o.media_danhgia_nhanvien);
+
+				$('badgeCustomerReview').textContent = customerDone ? 'Đã gửi' : 'Chưa có';
+				$('badgeCustomerReview').className = customerDone ? 'badge success' : 'badge warning';
+				$('badgeStaffReview').textContent = staffDone ? 'Đã gửi' : 'Chưa có';
+				$('badgeStaffReview').className = staffDone ? 'badge success' : 'badge warning';
+
+				const done = String(o.trangthai || '').toLowerCase().includes('hoàn thành');
+				show($('customerReviewForm'), done && app.role === 'customer' && !customerDone);
+				show($('staffReviewForm'), done && app.role === 'staff' && !staffDone);
+			}
+
+			function renderActionButtons() {
+				const o = app.order;
+				const isCustomer = app.role === 'customer';
+				const isStaff = app.role === 'staff';
+				const assigned = toNum(o.id_nhacungcap) > 0;
+				const isMyOrder = isStaff && toNum(o.id_nhacungcap) === toNum(app.user.id);
+				const statusText = String(o.trangthai || '').toLowerCase();
+				const isCanceled = statusText.includes('hủy');
+				const isCompleted = statusText.includes('hoàn thành');
+				const today = parseDateOnly(nowSql());
+				const startDate = parseDateOnly(o.ngay_bat_dau_kehoach);
+				const endDate = parseDateOnly(o.ngay_ket_thuc_kehoach);
+				const started = !!o.thoigian_batdau_thucte;
+				const ended = !!o.thoigian_ketthuc_thucte;
+				const canCustomerCancel = isCustomer && !isCanceled && !isCompleted && !started && !ended;
+
+				show($('btnCancelService'), canCustomerCancel);
+				show($('btnClaim'), isStaff && !assigned && !isCanceled && !isCompleted);
+				show($('btnUnclaim'), false);
+
+				const inPlanWindow = startDate && endDate && today >= startDate && today <= endDate;
+				show($('btnStart'), isMyOrder && inPlanWindow && (!started || ended) && !isCanceled && !isCompleted);
+				show($('btnEnd'), isMyOrder && started && !ended && !isCanceled && !isCompleted);
+				show($('staffWorkForm'), false);
+			}
+
+			function renderUI() {
+				const o = app.order;
+				const s = app.staff || {};
+				const invoiceCode = formatInvoiceCode(o.id || app.params.mahd);
+				const ratingValue = s.diem_danhgia || s.rating || '';
+				const ratingCount = s.so_danh_gia || s.review_count || '';
+				const ratingText = ratingValue ? `${ratingValue}${ratingCount ? ` (${ratingCount} đánh giá)` : ''}` : 'Chưa có đánh giá';
+				const supplierName = o.tenncc || s.hovaten || o.hotenncc || '---';
+				const supplierPhone = o.sdtncc || s.sodienthoai || o.sodienthoaincc || '---';
+				const supplierEmail = o.emailncc || s.email || '---';
+				const supplierAddress = o.diachincc || s.diachi || '---';
+				const supplierReceiveTime = formatDateTimeDisplay(o.ngaynhan);
+
+				setText('chipRole', `Vai trò: ${app.role === 'staff' ? 'Nhà Cung Cấp' : 'Khách hàng'}`);
+				setText('chipOrder', `Mã HĐ: ${invoiceCode}`);
+				setText('chipInvoiceCode', invoiceCode);
+				setText('invoiceId', invoiceCode);
+				setText('invoicePrice', formatMoney(o.tong_tien || o.tongtien || 0));
+				setText('invoiceService', o.dich_vu || o.dichvu || '---');
+				setText('invoicePackage', o.goi_dich_vu || o.goidichvu || '---');
+				setText('invoiceAddress', o.diachikhachhang || '---');
+				setText('invoiceTimeRange', `${formatTimeDisplay(o.gio_bat_dau_kehoach)} - ${formatTimeDisplay(o.gio_ket_thuc_kehoach)}`);
+				setText('invoiceDate', `${formatDateDisplay(o.ngay_bat_dau_kehoach)}${o.ngay_ket_thuc_kehoach ? ` -> ${formatDateDisplay(o.ngay_ket_thuc_kehoach)}` : ''}`);
+				setText('invoiceRequest', o.yeu_cau_khac || o.yeucaukhac || '---');
+				setText('invoiceNote', o.ghi_chu || o.ghichu || '---');
+				renderJobList(o.cong_viec || o.congviec || '');
+
+				setText('customerCardName', o.tenkhachhang || '---');
+				setText('customerCardPhone', o.sdtkhachhang || '---');
+				setText('customerCardEmail', o.emailkhachhang || '---');
+				setText('customerCardAddress', o.diachikhachhang || '---');
+				setText('customerExtraPill', `Năm sinh: ${o.ngaysinh || '---'}`);
+				setAvatar('customerAvatar', o.anh_dai_dien || app.user?.anh_dai_dien || app.user?.avatar || '');
+
+				setText('staffCardName', supplierName);
+				setText('staffRatingText', ratingText);
+				setText('staffCardEmail', supplierEmail);
+				setText('staffCardPhone', supplierPhone);
+				setText('staffCardAddress', supplierAddress);
+				setText('staffReceiveTime', `Nhận việc: ${supplierReceiveTime}`);
+				setText('staffExpChip', `Kinh nghiệm: ${s.kinh_nghiem || '---'}`);
+				setAvatar('staffAvatar', s.anh_dai_dien || s.avatar || '');
+
+				const status = o.trangthai || '---';
+				const invoiceStatusEl = $('badgeInvoiceStatus');
+				if (invoiceStatusEl) {
+					invoiceStatusEl.textContent = status;
+					invoiceStatusEl.className = 'invoice-status-badge';
+					if (String(status).toLowerCase().includes('hoàn thành')) invoiceStatusEl.classList.add('success');
+					if (String(status).toLowerCase().includes('đang')) invoiceStatusEl.classList.add('warning');
+					if (String(status).toLowerCase().includes('hủy')) invoiceStatusEl.classList.add('danger');
+				}
+				$('badgeTimeState').textContent = status;
+				$('badgeTimeState').className = statusBadgeClass(status);
+
+				setText('timeStartPlan', `${formatDateDisplay(o.ngay_bat_dau_kehoach)} ${formatTimeDisplay(o.gio_bat_dau_kehoach)}`.trim());
+				setText('timeEndPlan', `${formatDateDisplay(o.ngay_ket_thuc_kehoach)} ${formatTimeDisplay(o.gio_ket_thuc_kehoach)}`.trim());
+				setText('timeStartReal', formatDateTimeDisplay(o.thoigian_batdau_thucte));
+				setText('timeEndReal', formatDateTimeDisplay(o.thoigian_ketthuc_thucte));
+
+				const progress = Math.max(0, Math.min(100, toNum(o.tien_do || 0)));
+				$('progressBar').style.width = `${progress}%`;
+				setText('progressText', `${progress.toFixed(2)}%`);
+				setText('invoiceProgressHero', `${Math.round(progress)}%`);
+				const ring = $('invoiceProgressRing');
+				if (ring) ring.style.setProperty('--p', progress.toFixed(2));
+				setText('progressHint', 'Tiến độ cộng dồn theo từng ngày làm việc.');
+				setText('timeDayHint', `${formatDateDisplay(o.ngay_bat_dau_kehoach)} -> ${formatDateDisplay(o.ngay_ket_thuc_kehoach)}`);
+				setText('timeMessage', `Số ngày kế hoạch: ${diffDays(o.ngay_bat_dau_kehoach, o.ngay_ket_thuc_kehoach)} ngày`);
+
+				$('badgeStaff').textContent = toNum(o.id_nhacungcap) > 0 ? 'Đã nhận' : 'Chưa nhận';
+				$('badgeStaff').className = toNum(o.id_nhacungcap) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
+
+				renderActionButtons();
+				renderReview();
+			}
+
+			async function reloadOrder() {
+				const data = await fetchOrder();
+				app.order = data.order;
+				app.staff = data.staff;
 				renderUI();
-
-				// Re-render nhe theo chu ky de dong bo countdown/progress realtime.
-				clearInterval(app.nowTimer);
-				app.nowTimer = setInterval(() => {
-					if (app.order) renderUI();
-				}, 15000);
-			} catch (error) {
-				showMain(false);
-				const msg = error && error.message ? error.message : 'Bạn không thể truy cập trang này';
-				const showMsg = msg.includes('truy cập') ? msg : 'Bạn không thể truy cập trang này';
-				showState(showMsg, 'error', true);
 			}
-		}
 
-		bootstrap();
+			async function handleClaim() {
+				await updateData(TABLE_ORDER, {
+					id_nhacungcap: app.user.id,
+					ngaynhan: nowSql(),
+					tenncc: app.user.hovaten || '',
+					sdtncc: app.user.sodienthoai || '',
+					emailncc: app.user.email || '',
+					diachincc: app.user.diachi || '',
+					hotenncc: app.user.hovaten || '',
+					sodienthoaincc: app.user.sodienthoai || '',
+					nhacungcapnhan: app.user.hovaten || ''
+				}, { id: app.order.id });
+				await reloadOrder();
+			}
+
+			async function handleCancel() {
+				const o = app.order || {};
+				const statusText = String(o.trangthai || '').toLowerCase();
+				if (statusText.includes('hủy')) {
+					setState('Đơn đã được hủy trước đó', 'info');
+					return;
+				}
+				if (statusText.includes('hoàn thành') || o.thoigian_batdau_thucte || o.thoigian_ketthuc_thucte) {
+					throw new Error('Đơn đã bắt đầu hoặc hoàn thành nên không thể hủy');
+				}
+
+				const cancelAt = nowSql();
+				await updateData(TABLE_ORDER, {
+					trangthai: 'đã hủy',
+					thoigian_huy: cancelAt,
+					ngayhuy: cancelAt
+				}, { id: app.order.id });
+				await reloadOrder();
+			}
+
+			async function handleStart() {
+				await updateData(TABLE_ORDER, {
+					trangthai: 'đang thực hiện',
+					thoigian_batdau_thucte: nowSql(),
+					thoigian_ketthuc_thucte: ''
+				}, { id: app.order.id });
+				await reloadOrder();
+			}
+
+			async function handleEnd() {
+				const endAt = nowSql();
+				await updateData(TABLE_ORDER, {
+					trangthai: 'đã kết thúc',
+					thoigian_ketthuc_thucte: endAt
+				}, { id: app.order.id });
+
+				const latest = (await fetchOrder()).order;
+				const progressDay = calcProgressDay(latest);
+				const nextProgress = Math.min(100, toNum(latest.tien_do || 0) + progressDay);
+				await updateData(TABLE_ORDER, { tien_do: Number(nextProgress.toFixed(2)) }, { id: latest.id });
+				await reloadOrder();
+			}
+
+			function filesToDataUrls(fileList) {
+				const files = Array.from(fileList || []);
+				return Promise.all(files.map((file) => new Promise((resolve) => {
+					const reader = new FileReader();
+					reader.onload = () => resolve(reader.result);
+					reader.readAsDataURL(file);
+				})));
+			}
+
+			async function handleSaveCustomerReview() {
+				const text = $('customerReview').value.trim();
+				const media = await filesToDataUrls($('customerMediaInput').files);
+				await updateData(TABLE_ORDER, {
+					danhgia_khachhang: text,
+					media_danhgia_khachhang: JSON.stringify(media),
+					thoigian_danhgia_khachhang: nowSql()
+				}, { id: app.order.id });
+				await reloadOrder();
+			}
+
+			async function handleSaveStaffReview() {
+				const text = $('staffReview').value.trim();
+				const media = await filesToDataUrls($('staffReviewMediaInput').files);
+				await updateData(TABLE_ORDER, {
+					danhgia_nhanvien: text,
+					media_danhgia_nhanvien: JSON.stringify(media),
+					thoigian_danhgia_nhanvien: nowSql()
+				}, { id: app.order.id });
+				await reloadOrder();
+			}
+
+			async function handleAction(action) {
+				try {
+					if (action === 'claim') await handleClaim();
+					if (action === 'cancel') await handleCancel();
+					if (action === 'start') await handleStart();
+					if (action === 'end') await handleEnd();
+					if (action === 'saveCustomerReview') await handleSaveCustomerReview();
+					if (action === 'saveStaffReview') await handleSaveStaffReview();
+					setState('Đã cập nhật thành công', 'info');
+				} catch (e) {
+					setState(e.message || 'Có lỗi xảy ra', 'error');
+				}
+			}
+
+			function setState(text, type = 'info') {
+				const box = $('stateMessage');
+				box.textContent = text;
+				box.className = `state show ${type}`;
+				if (app.stateTimer) clearTimeout(app.stateTimer);
+				app.stateTimer = setTimeout(() => {
+					box.classList.remove('show');
+				}, 2000);
+			}
+
+			async function init() {
+				try {
+					app.params = getUrlParams();
+					if (!app.params.mahd || !app.params.sodienthoai || !app.params.password) {
+						throw new Error('Bạn không thể truy cập trang này');
+					}
+
+					const auth = await fetchUser();
+					if (!auth) throw new Error('Bạn không thể truy cập trang này');
+					app.role = auth.role;
+					app.user = auth.user;
+
+					const data = await fetchOrder();
+					app.order = data.order;
+					app.staff = data.staff;
+
+					renderUI();
+					show($('mainGrid'), true);
+					setState('Tải dữ liệu thành công', 'info');
+				} catch (e) {
+					show($('mainGrid'), false);
+					setState(e.message || 'Bạn không thể truy cập trang này', 'error');
+				}
+			}
+
+			$('btnClaim').addEventListener('click', () => handleAction('claim'));
+			$('btnCancelService').addEventListener('click', () => handleAction('cancel'));
+			$('btnStart').addEventListener('click', () => handleAction('start'));
+			$('btnEnd').addEventListener('click', () => handleAction('end'));
+			$('btnSaveReview').addEventListener('click', () => handleAction('saveCustomerReview'));
+			$('btnSaveStaffReview').addEventListener('click', () => handleAction('saveStaffReview'));
+
+			init();
+		})();
 	</script>
 </body>
 </html>
