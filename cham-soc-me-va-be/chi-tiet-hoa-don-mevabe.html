@@ -869,7 +869,6 @@
 					<article class="panel" id="panelJobs">
 						<div class="jobs-header">
 							<h2 class="jobs-title">Công việc cần thực hiện</h2>
-							<span id="jobCountBadge" class="job-count">0/0 đã hoàn thành</span>
 						</div>
 						<div class="jobs-body">
 							<ol id="invoiceJob" class="field-value"><li>---</li></ol>
@@ -978,11 +977,13 @@
 							<div class="profile-main">
 								<h3 id="staffCardName" class="profile-name">---</h3>
 								<p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p>
+								<p id="staffCardEmail" class="profile-row">---</p>
 								<p id="staffCardPhone" class="profile-row">---</p>
 								<p id="staffCardAddress" class="profile-row">---</p>
 							</div>
 						</div>
 						<div class="profile-foot">
+							<span id="staffReceiveTime" class="profile-pill">Nhận việc: ---</span>
 							<span id="staffExpChip" class="profile-pill">Kinh nghiệm: ---</span>
 						</div>
 					</article>
@@ -1091,6 +1092,79 @@
 				return `${n.toLocaleString('vi-VN')} VND`;
 			};
 
+			function parseDateTimeParts(value) {
+				const raw = String(value || '').trim();
+				if (!raw) return null;
+
+				const ymd = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?)?/);
+				if (ymd) {
+					return {
+						y: Number(ymd[1]),
+						m: Number(ymd[2]),
+						d: Number(ymd[3]),
+						h: Number(ymd[4] || 0),
+						min: Number(ymd[5] || 0),
+						s: Number(ymd[6] || 0),
+						hasDate: true,
+						hasTime: !!ymd[4]
+					};
+				}
+
+				const dmy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?)?/);
+				if (dmy) {
+					return {
+						y: Number(dmy[3]),
+						m: Number(dmy[2]),
+						d: Number(dmy[1]),
+						h: Number(dmy[4] || 0),
+						min: Number(dmy[5] || 0),
+						s: Number(dmy[6] || 0),
+						hasDate: true,
+						hasTime: !!dmy[4]
+					};
+				}
+
+				const hms = raw.match(/^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
+				if (hms) {
+					return {
+						y: 0,
+						m: 0,
+						d: 0,
+						h: Number(hms[1] || 0),
+						min: Number(hms[2] || 0),
+						s: Number(hms[3] || 0),
+						hasDate: false,
+						hasTime: true
+					};
+				}
+
+				return null;
+			}
+
+			function formatDateDisplay(value) {
+				if (!value) return '---';
+				const p = parseDateTimeParts(value);
+				if (!p || !p.hasDate) return String(value || '---');
+				return `${p.d}/${p.m}/${p.y}`;
+			}
+
+			function formatTimeDisplay(value) {
+				if (!value) return '--:--:--';
+				const p = parseDateTimeParts(value);
+				if (!p || !p.hasTime) return String(value || '--:--:--');
+				return `${p.h}:${p.min}:${p.s}`;
+			}
+
+			function formatDateTimeDisplay(value) {
+				if (!value) return '---';
+				const p = parseDateTimeParts(value);
+				if (!p) return String(value || '---');
+				if (p.hasDate && p.hasTime) return `${p.d}/${p.m}/${p.y} ${p.h}:${p.min}:${p.s}`;
+				if (p.hasDate) return `${p.d}/${p.m}/${p.y}`;
+				if (p.hasTime) return `${p.h}:${p.min}:${p.s}`;
+				return String(value || '---');
+			}
+
 			const parseRows = (res) => {
 				if (Array.isArray(res)) return res;
 				if (Array.isArray(res?.data)) return res.data;
@@ -1147,7 +1221,7 @@
 				if (!order) throw new Error('Khong tim thay hoa don');
 
 				const today = parseDateOnly(nowSql());
-				const end = parseDateOnly(order.ngay_ket_thuc);
+				const end = parseDateOnly(order.ngay_ket_thuc_kehoach);
 				if (end && today > end && String(order.trangthai || '').toLowerCase() !== 'hoàn thành') {
 					await updateData(TABLE_ORDER, { trangthai: 'hoàn thành' }, { id: order.id });
 					return fetchOrder();
@@ -1181,11 +1255,11 @@
 			}
 
 			function calcProgressDay(order) {
-				const plan = parseTimeToHour(order.gio_ket_thuc) - parseTimeToHour(order.gio_bat_dau);
+				const plan = parseTimeToHour(order.gio_ket_thuc_kehoach) - parseTimeToHour(order.gio_bat_dau_kehoach);
 				const realStart = new Date(order.thoigian_batdau_thucte || '').getTime();
 				const realEnd = new Date(order.thoigian_ketthuc_thucte || '').getTime();
 				const real = (realEnd - realStart) / 3600000;
-				const days = diffDays(order.ngay_bat_dau, order.ngay_ket_thuc);
+				const days = diffDays(order.ngay_bat_dau_kehoach, order.ngay_ket_thuc_kehoach);
 				if (plan <= 0 || real <= 0) return 0;
 				const value = (real / plan) * (100 / days);
 				return Math.max(0, Math.min(100, value));
@@ -1216,12 +1290,6 @@
 				// Neu du lieu cu phan tach bang dau phay thi van ho tro.
 				if (!jobs.length && raw) {
 					jobs = raw.split(',').map(cleanJob).filter(Boolean);
-				}
-
-				const countEl = $('jobCountBadge');
-				if (countEl) {
-					const total = jobs.length;
-					countEl.textContent = `${total}/${total} đã hoàn thành`;
 				}
 
 				(jobs.length ? jobs : ['---']).forEach((job) => {
@@ -1269,9 +1337,9 @@
 				const staffDone = !!o.danhgia_nhanvien;
 
 				setText('customerReviewText', o.danhgia_khachhang || 'Chưa có đánh giá');
-				setText('customerReviewTime', o.thoigian_danhgia_khachhang || '---');
+				setText('customerReviewTime', formatDateTimeDisplay(o.thoigian_danhgia_khachhang));
 				setText('staffReviewText', o.danhgia_nhanvien || 'Chưa có đánh giá');
-				setText('staffReviewTime', o.thoigian_danhgia_nhanvien || '---');
+				setText('staffReviewTime', formatDateTimeDisplay(o.thoigian_danhgia_nhanvien));
 				renderMedia('customerReviewMediaGrid', o.media_danhgia_khachhang);
 				renderMedia('staffReviewMediaGrid', o.media_danhgia_nhanvien);
 
@@ -1291,19 +1359,23 @@
 				const isStaff = app.role === 'staff';
 				const assigned = toNum(o.id_nhacungcap) > 0;
 				const isMyOrder = isStaff && toNum(o.id_nhacungcap) === toNum(app.user.id);
+				const statusText = String(o.trangthai || '').toLowerCase();
+				const isCanceled = statusText.includes('hủy');
+				const isCompleted = statusText.includes('hoàn thành');
 				const today = parseDateOnly(nowSql());
-				const startDate = parseDateOnly(o.ngay_bat_dau);
-				const endDate = parseDateOnly(o.ngay_ket_thuc);
-
-				show($('btnCancelService'), isCustomer && !assigned);
-				show($('btnClaim'), isStaff && !assigned);
-				show($('btnUnclaim'), false);
-
+				const startDate = parseDateOnly(o.ngay_bat_dau_kehoach);
+				const endDate = parseDateOnly(o.ngay_ket_thuc_kehoach);
 				const started = !!o.thoigian_batdau_thucte;
 				const ended = !!o.thoigian_ketthuc_thucte;
+				const canCustomerCancel = isCustomer && !isCanceled && !isCompleted && !started && !ended;
+
+				show($('btnCancelService'), canCustomerCancel);
+				show($('btnClaim'), isStaff && !assigned && !isCanceled && !isCompleted);
+				show($('btnUnclaim'), false);
+
 				const inPlanWindow = startDate && endDate && today >= startDate && today <= endDate;
-				show($('btnStart'), isMyOrder && inPlanWindow && (!started || ended));
-				show($('btnEnd'), isMyOrder && started && !ended);
+				show($('btnStart'), isMyOrder && inPlanWindow && (!started || ended) && !isCanceled && !isCompleted);
+				show($('btnEnd'), isMyOrder && started && !ended && !isCanceled && !isCompleted);
 				show($('staffWorkForm'), false);
 			}
 
@@ -1313,6 +1385,11 @@
 				const ratingValue = s.diem_danhgia || s.rating || '';
 				const ratingCount = s.so_danh_gia || s.review_count || '';
 				const ratingText = ratingValue ? `${ratingValue}${ratingCount ? ` (${ratingCount} đánh giá)` : ''}` : 'Chưa có đánh giá';
+				const supplierName = o.tenncc || s.hovaten || o.hotenncc || '---';
+				const supplierPhone = o.sdtncc || s.sodienthoai || o.sodienthoaincc || '---';
+				const supplierEmail = o.emailncc || s.email || '---';
+				const supplierAddress = o.diachincc || s.diachi || '---';
+				const supplierReceiveTime = formatDateTimeDisplay(o.ngaynhan);
 
 				setText('chipRole', `Vai trò: ${app.role === 'staff' ? 'Nhà Cung Cấp' : 'Khách hàng'}`);
 				setText('chipOrder', `Mã HĐ: ${o.id || app.params.mahd}`);
@@ -1321,24 +1398,26 @@
 				setText('invoicePrice', formatMoney(o.tong_tien || o.tongtien || 0));
 				setText('invoiceService', o.dich_vu || o.dichvu || '---');
 				setText('invoicePackage', o.goi_dich_vu || o.goidichvu || '---');
-				setText('invoiceAddress', o.diachi || '---');
-				setText('invoiceTimeRange', `${o.gio_bat_dau || '--:--'} - ${o.gio_ket_thuc || '--:--'}`);
-				setText('invoiceDate', `${o.ngay_bat_dau || '---'}${o.ngay_ket_thuc ? ` -> ${o.ngay_ket_thuc}` : ''}`);
+				setText('invoiceAddress', o.diachikhachhang || '---');
+				setText('invoiceTimeRange', `${formatTimeDisplay(o.gio_bat_dau_kehoach)} - ${formatTimeDisplay(o.gio_ket_thuc_kehoach)}`);
+				setText('invoiceDate', `${formatDateDisplay(o.ngay_bat_dau_kehoach)}${o.ngay_ket_thuc_kehoach ? ` -> ${formatDateDisplay(o.ngay_ket_thuc_kehoach)}` : ''}`);
 				setText('invoiceRequest', o.yeu_cau_khac || o.yeucaukhac || '---');
 				setText('invoiceNote', o.ghi_chu || o.ghichu || '---');
 				renderJobList(o.cong_viec || o.congviec || '');
 
-				setText('customerCardName', o.hovaten || '---');
-				setText('customerCardPhone', o.sodienthoai || '---');
-				setText('customerCardEmail', o.email || '---');
-				setText('customerCardAddress', o.diachi || '---');
+				setText('customerCardName', o.tenkhachhang || '---');
+				setText('customerCardPhone', o.sdtkhachhang || '---');
+				setText('customerCardEmail', o.emailkhachhang || '---');
+				setText('customerCardAddress', o.diachikhachhang || '---');
 				setText('customerExtraPill', `Năm sinh: ${o.ngaysinh || '---'}`);
 				setAvatar('customerAvatar', o.anh_dai_dien || app.user?.anh_dai_dien || app.user?.avatar || '');
 
-				setText('staffCardName', s.hovaten || o.hotenncc || '---');
+				setText('staffCardName', supplierName);
 				setText('staffRatingText', ratingText);
-				setText('staffCardPhone', s.sodienthoai || o.sodienthoaincc || '---');
-				setText('staffCardAddress', s.diachi || o.diachincc || '---');
+				setText('staffCardEmail', supplierEmail);
+				setText('staffCardPhone', supplierPhone);
+				setText('staffCardAddress', supplierAddress);
+				setText('staffReceiveTime', `Nhận việc: ${supplierReceiveTime}`);
 				setText('staffExpChip', `Kinh nghiệm: ${s.kinh_nghiem || '---'}`);
 				setAvatar('staffAvatar', s.anh_dai_dien || s.avatar || '');
 
@@ -1354,10 +1433,10 @@
 				$('badgeTimeState').textContent = status;
 				$('badgeTimeState').className = statusBadgeClass(status);
 
-				setText('timeStartPlan', `${o.ngay_bat_dau || '---'} ${o.gio_bat_dau || ''}`.trim());
-				setText('timeEndPlan', `${o.ngay_ket_thuc || '---'} ${o.gio_ket_thuc || ''}`.trim());
-				setText('timeStartReal', o.thoigian_batdau_thucte || '---');
-				setText('timeEndReal', o.thoigian_ketthuc_thucte || '---');
+				setText('timeStartPlan', `${formatDateDisplay(o.ngay_bat_dau_kehoach)} ${formatTimeDisplay(o.gio_bat_dau_kehoach)}`.trim());
+				setText('timeEndPlan', `${formatDateDisplay(o.ngay_ket_thuc_kehoach)} ${formatTimeDisplay(o.gio_ket_thuc_kehoach)}`.trim());
+				setText('timeStartReal', formatDateTimeDisplay(o.thoigian_batdau_thucte));
+				setText('timeEndReal', formatDateTimeDisplay(o.thoigian_ketthuc_thucte));
 
 				const progress = Math.max(0, Math.min(100, toNum(o.tien_do || 0)));
 				$('progressBar').style.width = `${progress}%`;
@@ -1366,8 +1445,8 @@
 				const ring = $('invoiceProgressRing');
 				if (ring) ring.style.setProperty('--p', progress.toFixed(2));
 				setText('progressHint', 'Tiến độ cộng dồn theo từng ngày làm việc.');
-				setText('timeDayHint', `${o.ngay_bat_dau || '---'} -> ${o.ngay_ket_thuc || '---'}`);
-				setText('timeMessage', `Số ngày kế hoạch: ${diffDays(o.ngay_bat_dau, o.ngay_ket_thuc)} ngày`);
+				setText('timeDayHint', `${formatDateDisplay(o.ngay_bat_dau_kehoach)} -> ${formatDateDisplay(o.ngay_ket_thuc_kehoach)}`);
+				setText('timeMessage', `Số ngày kế hoạch: ${diffDays(o.ngay_bat_dau_kehoach, o.ngay_ket_thuc_kehoach)} ngày`);
 
 				$('badgeStaff').textContent = toNum(o.id_nhacungcap) > 0 ? 'Đã nhận' : 'Chưa nhận';
 				$('badgeStaff').className = toNum(o.id_nhacungcap) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
@@ -1386,18 +1465,34 @@
 			async function handleClaim() {
 				await updateData(TABLE_ORDER, {
 					id_nhacungcap: app.user.id,
+					ngaynhan: nowSql(),
+					tenncc: app.user.hovaten || '',
+					sdtncc: app.user.sodienthoai || '',
+					emailncc: app.user.email || '',
+					diachincc: app.user.diachi || '',
 					hotenncc: app.user.hovaten || '',
 					sodienthoaincc: app.user.sodienthoai || '',
-					emailncc: app.user.email || '',
-					diachincc: app.user.diachi || ''
+					nhacungcapnhan: app.user.hovaten || ''
 				}, { id: app.order.id });
 				await reloadOrder();
 			}
 
 			async function handleCancel() {
+				const o = app.order || {};
+				const statusText = String(o.trangthai || '').toLowerCase();
+				if (statusText.includes('hủy')) {
+					setState('Đơn đã được hủy trước đó', 'info');
+					return;
+				}
+				if (statusText.includes('hoàn thành') || o.thoigian_batdau_thucte || o.thoigian_ketthuc_thucte) {
+					throw new Error('Đơn đã bắt đầu hoặc hoàn thành nên không thể hủy');
+				}
+
+				const cancelAt = nowSql();
 				await updateData(TABLE_ORDER, {
 					trangthai: 'đã hủy',
-					thoigian_huy: nowSql()
+					thoigian_huy: cancelAt,
+					ngayhuy: cancelAt
 				}, { id: app.order.id });
 				await reloadOrder();
 			}

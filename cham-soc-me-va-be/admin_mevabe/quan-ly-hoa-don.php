@@ -10,30 +10,9 @@ $admin = admin_require_login();
 $q = trim((string)($_GET['q'] ?? ''));
 $statusFilter = trim((string)($_GET['status'] ?? 'all'));
 
-$data = get_hoadon_data();
-$rows = $data['rows'] ?? [];
+$data = get_hoadon_list_view_data($q, $statusFilter);
+$filtered = $data['items'] ?? [];
 $error = (string)($data['error'] ?? '');
-
-$filtered = array_values(array_filter($rows, static function (array $row) use ($q, $statusFilter): bool {
-	$statusMeta = hoadon_status_meta((string)($row['trangthai'] ?? ''));
-	if ($statusFilter !== 'all' && $statusMeta['key'] !== $statusFilter) {
-		return false;
-	}
-
-	if ($q !== '') {
-		$target = strtolower(implode(' ', [
-			(string)($row['id'] ?? ''),
-			(string)($row['hovaten'] ?? ''),
-			(string)($row['sodienthoai'] ?? ''),
-			(string)($row['dich_vu'] ?? ''),
-			(string)($row['goi_dich_vu'] ?? ''),
-		]));
-
-		return strpos($target, strtolower($q)) !== false;
-	}
-
-	return true;
-}));
 
 [
 	'items' => $paginatedRows,
@@ -103,17 +82,17 @@ admin_render_layout_start('Quan Ly Don Hang', 'orders', $admin);
 						<tr><td colspan="7" class="text-center py-4 text-secondary">Khong co hoa don phu hop.</td></tr>
 					<?php else: ?>
 						<?php foreach ($paginatedRows as $row): ?>
-							<?php $meta = hoadon_status_meta((string)($row['trangthai'] ?? '')); ?>
+							<?php $meta = is_array($row['statusMeta'] ?? null) ? $row['statusMeta'] : hoadon_status_meta(''); ?>
 							<tr>
 								<td class="fw-semibold text-primary">#<?= admin_h((string)($row['id'] ?? '')) ?></td>
 								<td>
-									<div class="fw-semibold"><?= admin_h((string)($row['hovaten'] ?? 'N/A')) ?></div>
-									<div class="small text-secondary"><?= admin_h((string)($row['sodienthoai'] ?? '')) ?></div>
+									<div class="fw-semibold"><?= admin_h((string)($row['customerName'] ?? 'N/A')) ?></div>
+									<div class="small text-secondary"><?= admin_h((string)($row['customerPhone'] ?? '')) ?></div>
 								</td>
-								<td><?= admin_h((string)($row['dich_vu'] ?? 'N/A')) ?></td>
-								<td><?= admin_h((string)($row['tong_tien'] ?? '0')) ?></td>
+								<td><?= admin_h((string)($row['serviceName'] ?? 'N/A')) ?></td>
+								<td><?= admin_h((string)($row['priceText'] ?? '0')) ?></td>
 								<td><span class="badge rounded-pill <?= admin_h((string)$meta['badge']) ?>"><?= admin_h((string)$meta['text']) ?></span></td>
-								<td><?= admin_h((string)($row['created_date'] ?? $row['ngay_bat_dau'] ?? 'N/A')) ?></td>
+								<td><?= admin_h((string)($row['bookedAtText'] ?? 'N/A')) ?></td>
 								<td class="text-end">
 									<a href="chi-tiet-hoa-don.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>" class="btn btn-sm btn-outline-primary">
 										<i class="bi bi-eye me-1"></i>Chi tiet
