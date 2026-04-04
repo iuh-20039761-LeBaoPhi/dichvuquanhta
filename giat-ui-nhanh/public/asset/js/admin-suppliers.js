@@ -125,11 +125,11 @@
         color: "linear-gradient(135deg,#f43f5e,#f97316)",
       },
       {
-        label: "Có email",
+        label: "Tài khoản Pending",
         value: suppliers.filter(function (item) {
-          return String(item.email || "").trim() !== "";
+          return normalizeAccountStatus(item.trangthai) === "Pending";
         }).length,
-        icon: "fas fa-envelope-open-text",
+        icon: "fas fa-user-clock",
         color: "linear-gradient(135deg,#a78bfa,#c084fc)",
       },
     ];

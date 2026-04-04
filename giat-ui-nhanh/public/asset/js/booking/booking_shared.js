@@ -37,7 +37,7 @@
           x: "right",
           y: "top",
         },
-        duration: 3000,
+        duration: 2000,
       });
       return;
     }
@@ -49,7 +49,7 @@
         x: "right",
         y: "top",
       },
-      duration: 3000,
+      duration: 2000,
     });
   }
 

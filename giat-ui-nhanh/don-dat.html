@@ -530,7 +530,7 @@
               <table class="table">
                 <thead class="table-success">
                   <tr>
-                    <th>#</th>
+                    <th>Mã đơn</th>
                     <th>Tên khách hàng</th>
                     <th>Dịch vụ</th>
                     <th>Gói</th>
@@ -921,6 +921,10 @@
       type="text/javascript"
       src="public/asset/js/order-display-utils.js"
     ></script>
+    <script
+      type="text/javascript"
+      src="public/asset/js/order-shared-utils.js"
+    ></script>
     <script>
       WebFont.load({
         google: {
@@ -951,6 +955,8 @@
         const orderDetailModal = orderDetailModalElement
           ? new bootstrap.Modal(orderDetailModalElement)
           : null;
+        const shared = window.SharedOrderUtils;
+        const table = "datlich_giatuinhanh";
 
         let allOrders = [];
 
@@ -960,43 +966,18 @@
         }
 
         async function getSessionPhone() {
-          try {
-            const response = await fetch("public/session-user.php?action=get", {
-              method: "GET",
-              credentials: "same-origin",
-              headers: { "Content-Type": "application/json" },
-            });
-            const result = await response.json().catch(() => null);
-            const phone =
-              response.ok && result?.hasUser === true
-                ? String(result?.user?.user_tel || "").trim()
-                : "";
-            if (sessionPhoneFilter) sessionPhoneFilter.value = phone;
-            return phone;
-          } catch (_) {
-            if (sessionPhoneFilter) sessionPhoneFilter.value = "";
-            return "";
-          }
-        }
-
-        function extractRows(result) {
-          return (
-            result?.data ||
-            result?.rows ||
-            result?.items ||
-            result?.result ||
-            result ||
-            []
-          );
-        }
-
-        function getSupplierIdFromOrder(order) {
-          const supplierId = Number(
-            order?.idnhacungcap || order?.id_ncc || order?.manhacungcap,
-          );
-          return Number.isFinite(supplierId) && supplierId > 0
-            ? supplierId
-            : null;
+          const response = await fetch("public/session-user.php?action=get", {
+            method: "GET",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+          });
+          const result = await response.json().catch(() => null);
+          const phone =
+            response.ok && result?.hasUser === true
+              ? String(result?.user?.user_tel || "").trim()
+              : "";
+          if (sessionPhoneFilter) sessionPhoneFilter.value = phone;
+          return phone;
         }
 
         async function markOrderCanceled(orderId, canceledAt) {
@@ -1009,34 +990,8 @@
             ),
           );
           if (!result || result.success === false || result.error) {
-            throw new Error(
-              result?.message || result?.error || "Cập nhật thất bại",
-            );
+            throw new Error("Cập nhật thất bại");
           }
-        }
-
-        function normalizeOrderStatus(value) {
-          const row = value || {};
-          if (row.ngayhuy) return "cancel";
-          if (row.ngayhoanthanh) return "completed";
-          if (row.ngaynhan) return "processing";
-          if (row.thoigiandatdichvu) return "pending";
-          return "pending";
-        }
-
-        function getOrderStatusLabel(value) {
-          if (value === "processing") return "Đã nhận đơn";
-          if (value === "completed") return "Đã hoàn thành";
-          if (value === "cancel") return "Đã hủy";
-          return "Chờ nhận đơn";
-        }
-
-        function getPaymentStatusLabel(value) {
-          return String(value || "")
-            .trim()
-            .toLowerCase() === "paid"
-            ? "Đã thanh toán"
-            : "Chưa thanh toán";
         }
 
         function renderRows(rows) {
@@ -1047,24 +1002,19 @@
           }
 
           tableBody.innerHTML = rows
-            .map((row, index) => {
-              const status = normalizeOrderStatus(row);
-              const statusClass =
-                status === "processing" ||
-                status === "completed" ||
-                status === "cancel"
-                  ? `status-${status}`
-                  : "status-pending";
+            .map((row) => {
+              const status = shared.getOrderStatus(row);
+              const statusClass = shared.getOrderStatusClass(status);
               const canCancel = status === "pending";
 
               return `
             <tr>
-              <td>${index + 1}</td>
+              <td>${shared.formatOrderCode(row.id)}</td>
               <td>${row.hovaten || "-"}</td>
               <td>${row.dichvu || "-"}</td>
               <td>${row.hinhthucnhangiao || "-"}</td>
               <td>${row.thoigiandatdichvu || "-"}</td>
-              <td><span class="status-badge ${statusClass}">${getOrderStatusLabel(status)}</span></td>
+              <td><span class="status-badge ${statusClass}">${shared.getOrderStatusLabel(status)}</span></td>
               <td>${row.tennhacungcap || "Chưa có"}</td>
               <td>
                 <div class="action-wrap">
@@ -1085,17 +1035,20 @@
             return;
           }
           renderRows(
-            allOrders.filter((r) => normalizeOrderStatus(r) === value),
+            allOrders.filter((r) => shared.getOrderStatus(r) === value),
           );
+        }
+
+        function money(value) {
+          var n = Number(value);
+          if (!Number.isFinite(n)) n = 0;
+          return n.toLocaleString("vi-VN") + " đ";
         }
 
         function openOrderModal(order) {
           if (!order || !orderDetailModal) return;
 
-          setText(
-            "modalOrderId",
-            order.id ? String(order.id).padStart(7, "0") : "-",
-          );
+          setText("modalOrderId", shared.formatOrderCode(order.id));
           setText("modalServiceName", order.dichvu);
           setText("modalWorkItems", order.danhsachcongviec);
           setText("modalSupportChemicals", order.danhsachhoachat);
@@ -1104,16 +1057,16 @@
           setText("modalOrderDate", order.thoigiandatdichvu);
           setText(
             "modalOrderStatus",
-            getOrderStatusLabel(normalizeOrderStatus(order)),
+            shared.getOrderStatusLabel(shared.getOrderStatus(order)),
           );
           setText(
             "modalTransactionStatus",
-            getPaymentStatusLabel(order.trangthaithanhtoan),
+            shared.getPaymentStatusLabel(order.trangthaithanhtoan),
           );
-          setText("modalServicePrice", order.giadichvu);
-          setText("modalShippingFee", order.tiendichuyen);
-          setText("modalShippingSurcharge", order.phuphigiaonhan);
-          setText("modalTotalPrice", order.tongtien);
+          setText("modalServicePrice", money(order.giadichvu));
+          setText("modalShippingFee", money(order.tiendichuyen));
+          setText("modalShippingSurcharge", money(order.phuphigiaonhan));
+          setText("modalTotalPrice", money(order.tongtien));
           setText("modalNote", order.ghichu);
           setText("modalCustomerName", order.hovaten);
           setText("modalCustomerPhone", order.sodienthoai);
@@ -1128,76 +1081,19 @@
         }
 
         function loadOrders() {
+          if (!shared) {
+            tableBody.innerHTML =
+              '<tr><td colspan="8" class="empty-row">Thiếu file xử lý dùng chung.</td></tr>';
+            return;
+          }
+
           tableBody.innerHTML =
             '<tr><td colspan="8" class="empty-row">Đang tải dữ liệu...</td></tr>';
 
           getSessionPhone()
-            .then((phone) =>
-              Promise.all([
-                Promise.resolve(
-                  window.krudList({
-                    table: "datlich_giatuinhanh",
-                    where: [
-                      {
-                        conditions: [
-                          {
-                            field: "sodienthoai",
-                            operator: "=",
-                            value: phone,
-                          },
-                        ],
-                      },
-                    ],
-                    page: 1,
-                    limit: 10,
-                  }),
-                ),
-                Promise.resolve(
-                  window.krudList({
-                    table: "nhacungcap_giatuinhanh",
-                    page: 1,
-                    limit: 10,
-                  }),
-                ),
-              ]),
-            )
-            .then(([ordersResult, suppliersResult]) => {
-              const orders = Array.isArray(extractRows(ordersResult))
-                ? extractRows(ordersResult)
-                : [];
-              const suppliers = Array.isArray(extractRows(suppliersResult))
-                ? extractRows(suppliersResult)
-                : [];
-
-              const supplierById = new Map(
-                suppliers
-                  .filter((item) => Number(item?.id) > 0)
-                  .map((item) => [Number(item.id), item]),
-              );
-
-              allOrders = orders.map((order) => {
-                const supplierId = getSupplierIdFromOrder(order);
-                const supplier = supplierId
-                  ? supplierById.get(supplierId)
-                  : null;
-
-                return {
-                  ...order,
-                  tennhacungcap:
-                    order?.tennhacungcap ||
-                    supplier?.hovaten ||
-                    supplier?.hoten ||
-                    "",
-                  sdt_ncc:
-                    order?.sdt_ncc ||
-                    supplier?.sodienthoai ||
-                    supplier?.sdt ||
-                    "",
-                  email_ncc: order?.email_ncc || supplier?.email || "",
-                  diachi_ncc: order?.diachi_ncc || supplier?.diachi || "",
-                };
-              });
-
+            .then((phone) => shared.fetchOrdersByPhone(table, phone, 200))
+            .then((orders) => {
+              allOrders = Array.isArray(orders) ? orders : [];
               applyFilter();
             })
             .catch(() => {
@@ -1225,7 +1121,7 @@
 
           if (action === "cancel") {
             if (!order) return;
-            if (normalizeOrderStatus(order) !== "pending") {
+            if (shared.getOrderStatus(order) !== "pending") {
               window.alert("Chỉ hủy được đơn đang chờ nhận.");
               return;
             }

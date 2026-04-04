@@ -327,72 +327,12 @@
     </script>
     <script>
       (function () {
-        const SUPPLIER_TABLE = "nhacungcap_giatuinhanh";
-
         function redirectToLogin() {
           window.location.href = "dang-nhap-nha-cung-cap.html";
         }
 
         function redirectToIndex() {
           window.location.href = "index.html";
-        }
-
-        function normalizePhone(value) {
-          const phone = String(value || "")
-            .replace(/\s+/g, "")
-            .trim();
-
-          if (phone.indexOf("+84") === 0) {
-            return "0" + phone.slice(3);
-          }
-
-          if (phone.indexOf("84") === 0 && phone.length >= 11) {
-            return "0" + phone.slice(2);
-          }
-
-          return phone;
-        }
-
-        function extractFirstRecord(result) {
-          if (Array.isArray(result)) return result[0] || null;
-
-          const keys = ["data", "items", "rows", "result"];
-          for (let i = 0; i < keys.length; i += 1) {
-            const value = result && result[keys[i]];
-            if (Array.isArray(value) && value.length > 0) {
-              return value[0];
-            }
-          }
-
-          return null;
-        }
-
-        function getAccountStatus(row) {
-          const status = String((row && (row.trangthai || row.status)) || "")
-            .trim()
-            .toLowerCase();
-
-          if (
-            status === "active" ||
-            status === "approved" ||
-            status === "duyet" ||
-            status === "đã duyệt" ||
-            status === "da duyet"
-          ) {
-            return "active";
-          }
-
-          if (
-            status === "blocked" ||
-            status === "block" ||
-            status === "locked" ||
-            status === "khoa" ||
-            status === "khóa"
-          ) {
-            return "blocked";
-          }
-
-          return "pending";
         }
 
         function guardSupplierAccess() {
@@ -426,48 +366,23 @@
               }
 
               const user = result.user || {};
-              const sessionPhone = normalizePhone(
-                user.user_tel || user.sodienthoai || user.phone,
+              const supplierId = Number(
+                user.id || user.idnhacungcap || user.provider_id,
               );
 
-              if (!sessionPhone) {
+              if (!Number.isFinite(supplierId) || supplierId <= 0) {
                 redirectToLogin();
                 return false;
               }
 
-              if (typeof window.krudList !== "function") {
-                redirectToLogin();
+              if (
+                String(user.account_type || "").toLowerCase() !== "provider"
+              ) {
+                redirectToIndex();
                 return false;
               }
 
-              return Promise.resolve(
-                window.krudList({
-                  table: SUPPLIER_TABLE,
-                  where: [
-                    {
-                      field: "sodienthoai",
-                      operator: "=",
-                      value: sessionPhone,
-                    },
-                  ],
-                  limit: 1,
-                }),
-              ).then(function (supplierResult) {
-                const supplier = extractFirstRecord(supplierResult);
-
-                if (!supplier) {
-                  redirectToIndex();
-                  return false;
-                }
-
-                const status = getAccountStatus(supplier);
-                if (status !== "active") {
-                  redirectToLogin();
-                  return false;
-                }
-
-                return true;
-              });
+              return true;
             })
             .catch(function () {
               redirectToLogin();

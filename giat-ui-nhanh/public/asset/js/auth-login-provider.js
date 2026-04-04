@@ -144,10 +144,11 @@
 
   function mapSessionUser(row) {
     return {
-      id: row.id || "",
-      user_name: row.hovaten || row.ten || "Nhà cung cấp",
-      user_tel: row.sodienthoai || "",
-      user_email: row.email || "",
+      ...row,
+      id: row.id || row.idnhacungcap || row.provider_id || "",
+      user_name: row.user_name || row.hovaten || row.ten || "Nhà cung cấp",
+      user_tel: row.user_tel || row.sodienthoai || row.phone || "",
+      user_email: row.user_email || row.email || "",
       account_type: "provider",
     };
   }

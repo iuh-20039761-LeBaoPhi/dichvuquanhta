@@ -420,6 +420,10 @@
           );
         }
 
+        setTimeout(function () {
+          window.location.href = "don-dat.html";
+        }, 900);
+
         form.reset();
         clearConfirmMedia();
 

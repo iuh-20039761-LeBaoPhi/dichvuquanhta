@@ -59,17 +59,27 @@ if (!is_array($input) || !isset($input['user']) || !is_array($input['user'])) {
 
 $user = $input['user'];
 
-$sessionUser = [
-    'id' => isset($user['id']) ? (string) $user['id'] : '',
-    'user_name' => isset($user['user_name']) ? trim((string) $user['user_name']) : '',
-    'user_tel' => isset($user['user_tel']) ? trim((string) $user['user_tel']) : '',
-    'user_email' => isset($user['user_email']) ? trim((string) $user['user_email']) : '',
-    'account_type' => isset($user['account_type']) ? trim((string) $user['account_type']) : '',
-];
+$sessionUser = $user;
 
-if (!in_array($sessionUser['account_type'], ['provider', 'customer'], true)) {
-    $sessionUser['account_type'] = '';
-}
+$sessionUser['id'] = isset($sessionUser['id'])
+    ? (string) $sessionUser['id']
+    : (isset($sessionUser['makhachhang']) ? (string) $sessionUser['makhachhang'] : (isset($sessionUser['user_id']) ? (string) $sessionUser['user_id'] : (isset($sessionUser['provider_id']) ? (string) $sessionUser['provider_id'] : (isset($sessionUser['idnhacungcap']) ? (string) $sessionUser['idnhacungcap'] : ''))));
+
+$sessionUser['user_name'] = isset($sessionUser['user_name'])
+    ? trim((string) $sessionUser['user_name'])
+    : (isset($sessionUser['hovaten']) ? trim((string) $sessionUser['hovaten']) : (isset($sessionUser['ten']) ? trim((string) $sessionUser['ten']) : ''));
+
+$sessionUser['user_tel'] = isset($sessionUser['user_tel'])
+    ? trim((string) $sessionUser['user_tel'])
+    : (isset($sessionUser['sodienthoai']) ? trim((string) $sessionUser['sodienthoai']) : (isset($sessionUser['phone']) ? trim((string) $sessionUser['phone']) : ''));
+
+$sessionUser['user_email'] = isset($sessionUser['user_email'])
+    ? trim((string) $sessionUser['user_email'])
+    : (isset($sessionUser['email']) ? trim((string) $sessionUser['email']) : '');
+
+$sessionUser['account_type'] = isset($sessionUser['account_type'])
+    ? trim((string) $sessionUser['account_type'])
+    : '';
 
 if ($sessionUser['user_tel'] === '') {
     respond(400, [

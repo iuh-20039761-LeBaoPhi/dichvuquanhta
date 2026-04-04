@@ -1,15 +1,34 @@
 (function () {
   const KRUD_TABLE = "datlich_giatuinhanh";
+  const shared = window.SharedOrderUtils || {};
   let orders = [];
 
   const statusConfig = {
-    pending: { label: "Chờ nhận đơn", className: "status-pending" },
-    confirmed: { label: "Đã nhận đơn", className: "status-confirmed" },
-    completed: { label: "Đã hoàn thành", className: "status-completed" },
-    canceled: { label: "Đã hủy", className: "status-canceled" },
+    pending: {
+      label: "Chờ nhận đơn",
+      className: "status-pending",
+      barClass: "c-pending",
+    },
+    processing: {
+      label: "Đã nhận đơn",
+      className: "status-confirmed",
+      barClass: "c-confirmed",
+    },
+    completed: {
+      label: "Đã hoàn thành",
+      className: "status-completed",
+      barClass: "c-completed",
+    },
+    cancel: {
+      label: "Đã hủy",
+      className: "status-canceled",
+      barClass: "c-canceled",
+    },
   };
 
-  function extractKrudRows(result) {
+  function extractRows(result) {
+    if (typeof shared.extractRows === "function")
+      return shared.extractRows(result);
     if (Array.isArray(result)) return result;
     if (result && Array.isArray(result.data)) return result.data;
     if (result && Array.isArray(result.items)) return result.items;
@@ -18,12 +37,34 @@
     return [];
   }
 
-  function getOrderStatusFromDates(row) {
-    if (row && row.ngayhuy) return "canceled";
+  function getOrderStatus(row) {
+    if (typeof shared.getOrderStatus === "function")
+      return shared.getOrderStatus(row);
+    if (row && row.ngayhuy) return "cancel";
     if (row && row.ngayhoanthanh) return "completed";
-    if (row && row.ngaynhan) return "confirmed";
-    if (row && row.thoigiandatdichvu) return "pending";
+    if (row && row.ngaynhan) return "processing";
     return "pending";
+  }
+
+  function getPaymentStatusLabel(value) {
+    if (typeof shared.getPaymentStatusLabel === "function") {
+      return shared.getPaymentStatusLabel(value);
+    }
+    return String(value || "")
+      .trim()
+      .toLowerCase() === "paid"
+      ? "Đã thanh toán"
+      : "Chưa thanh toán";
+  }
+
+  function formatOrderCode(id) {
+    if (typeof shared.formatOrderCode === "function") {
+      return shared.formatOrderCode(id);
+    }
+    const num = Number(id);
+    return Number.isFinite(num) && num > 0
+      ? String(Math.floor(num)).padStart(7, "0")
+      : "-";
   }
 
   function parseTime(value) {
@@ -31,32 +72,20 @@
 
     const text = String(value).trim();
     const isoTime = new Date(text).getTime();
-    if (Number.isFinite(isoTime)) {
-      return isoTime;
-    }
+    if (Number.isFinite(isoTime) && isoTime > 0) return isoTime;
 
     const m = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
     if (!m) return 0;
 
-    const d = Number(m[1]);
-    const mo = Number(m[2]) - 1;
-    const y = Number(m[3]);
-    return new Date(y, mo, d).getTime();
+    return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1])).getTime();
   }
 
   function formatDate(value) {
-    const time = parseTime(value);
-    if (!time) return "--/--/----";
-    return new Date(time).toLocaleDateString("vi-VN");
+    const t = parseTime(value);
+    return t ? new Date(t).toLocaleDateString("vi-VN") : "--/--/----";
   }
 
-  function formatOrderCode(id) {
-    const num = Number(id);
-    if (!Number.isFinite(num) || num <= 0) return "Không có mã";
-    return String(Math.floor(num)).padStart(7, "0");
-  }
-
-  function mapOrderFromKrud(row) {
+  function mapOrder(row) {
     const rawDate =
       row.thoigiandatdichvu || row.ngaytao || row.created_at || "";
     return {
@@ -64,26 +93,26 @@
       code: formatOrderCode(row.id),
       customer: row.hovaten || row.tenkhachhang || row.hoten || "Khách hàng",
       service: row.dichvu || row.dichvuquantam || "Chưa cập nhật dịch vụ",
-      status: getOrderStatusFromDates(row),
+      status: getOrderStatus(row),
       date: formatDate(rawDate),
       raw: row,
-      _sortTime: parseTime(rawDate) || Number(row.id) || 0,
+      sortTime: parseTime(rawDate) || Number(row.id) || 0,
     };
   }
 
   function getStatusCounters() {
     return {
-      pending: orders.filter((order) => order.status === "pending").length,
-      confirmed: orders.filter((order) => order.status === "confirmed").length,
-      completed: orders.filter((order) => order.status === "completed").length,
-      canceled: orders.filter((order) => order.status === "canceled").length,
+      pending: orders.filter((o) => o.status === "pending").length,
+      processing: orders.filter((o) => o.status === "processing").length,
+      completed: orders.filter((o) => o.status === "completed").length,
+      cancel: orders.filter((o) => o.status === "cancel").length,
     };
   }
 
   function buildCards() {
-    const serviceSet = new Set(orders.map((order) => order.service));
-    const customerSet = new Set(orders.map((order) => order.customer));
-    const statusCounters = getStatusCounters();
+    const serviceSet = new Set(orders.map((o) => o.service));
+    const customerSet = new Set(orders.map((o) => o.customer));
+    const counters = getStatusCounters();
 
     return [
       {
@@ -94,19 +123,19 @@
       },
       {
         label: "Chờ nhận đơn",
-        value: statusCounters.pending,
+        value: counters.pending,
         icon: "fas fa-hourglass-half",
         color: "linear-gradient(135deg,#f59e0b,#fb7185)",
       },
       {
         label: "Đã nhận đơn",
-        value: statusCounters.confirmed,
+        value: counters.processing,
         icon: "fas fa-check-double",
         color: "linear-gradient(135deg,#0ea5e9,#06b6d4)",
       },
       {
         label: "Đã hoàn thành",
-        value: statusCounters.completed,
+        value: counters.completed,
         icon: "fas fa-check-circle",
         color: "linear-gradient(135deg,#34d399,#10b981)",
       },
@@ -138,21 +167,18 @@
       }),
     );
 
-    const rows = extractKrudRows(result);
-    orders = rows.map(mapOrderFromKrud).sort(function (a, b) {
-      return b._sortTime - a._sortTime;
-    });
+    orders = extractRows(result)
+      .map(mapOrder)
+      .sort((a, b) => b.sortTime - a.sortTime);
   }
 
   function renderStats() {
     const statsGrid = document.getElementById("statsGrid");
     if (!statsGrid) return;
 
-    const cards = buildCards();
-
-    statsGrid.innerHTML = cards
-      .map(function (card) {
-        return `
+    statsGrid.innerHTML = buildCards()
+      .map(
+        (card) => `
           <div class="col-12 col-sm-6 col-xl-3">
             <article class="metric-card h-100">
               <span class="metric-icon" style="background:${card.color}">
@@ -164,8 +190,8 @@
               </div>
             </article>
           </div>
-        `;
-      })
+        `,
+      )
       .join("");
   }
 
@@ -173,21 +199,16 @@
     const tbody = document.getElementById("recentOrdersBody");
     if (!tbody) return;
 
-    if (orders.length === 0) {
+    if (!orders.length) {
       tbody.innerHTML =
         '<tr><td colspan="6" class="text-center text-muted py-4">Chưa có dữ liệu đơn đặt.</td></tr>';
       return;
     }
 
-    const recentOrders = orders.slice(0, 6);
-
-    tbody.innerHTML = recentOrders
-      .map(function (order) {
-        const status = statusConfig[order.status] || {
-          label: "Không rõ",
-          className: "status-pending",
-        };
-
+    tbody.innerHTML = orders
+      .slice(0, 6)
+      .map((order) => {
+        const status = statusConfig[order.status] || statusConfig.pending;
         return `
           <tr>
             <td class="order-code">${order.code}</td>
@@ -212,7 +233,7 @@
     if (!tbody || !modalEl || !window.bootstrap) return;
 
     const modal = new window.bootstrap.Modal(modalEl);
-    const setText = function (id, value) {
+    const setText = (id, value) => {
       const el = document.getElementById(id);
       if (el) el.textContent = value || "-";
     };
@@ -221,20 +242,14 @@
       const button = event.target.closest(".btn-order-detail");
       if (!button) return;
 
-      const orderId = Number(button.getAttribute("data-order-id"));
-      const order = orders.find(function (item) {
-        return Number(item.id) === orderId;
-      });
+      const order = orders.find(
+        (item) =>
+          Number(item.id) === Number(button.getAttribute("data-order-id")),
+      );
       if (!order) return;
 
       const row = order.raw || {};
       const status = statusConfig[order.status] || statusConfig.pending;
-      const paymentStatus =
-        String(row.trangthaithanhtoan || "")
-          .trim()
-          .toLowerCase() === "paid"
-          ? "Đã thanh toán"
-          : "Chưa thanh toán";
 
       setText("adminDetailOrderCode", order.code);
       setText("adminDetailServiceName", row.dichvu || row.dichvuquantam);
@@ -254,7 +269,10 @@
         row.thoigiandatdichvu || row.ngaytao || row.created_at,
       );
       setText("adminDetailOrderStatus", status.label);
-      setText("adminDetailPaymentStatus", paymentStatus);
+      setText(
+        "adminDetailPaymentStatus",
+        getPaymentStatusLabel(row.trangthaithanhtoan),
+      );
       setText("adminDetailServicePrice", row.giadichvu);
       setText("adminDetailTransportFee", row.tiendichuyen);
       setText("adminDetailSurchargeFee", row.phuphigiaonhan);
@@ -279,16 +297,15 @@
     const box = document.getElementById("statusSummary");
     if (!box) return;
 
-    const statusCounters = getStatusCounters();
+    const counters = getStatusCounters();
     const total = orders.length || 1;
-    const statuses = ["pending", "confirmed", "completed", "canceled"];
+    const statuses = ["pending", "processing", "completed", "cancel"];
 
     box.innerHTML = statuses
-      .map(function (key) {
+      .map((key) => {
         const config = statusConfig[key];
-        const value = statusCounters[key] || 0;
+        const value = counters[key] || 0;
         const width = Math.round((value / total) * 100);
-
         return `
           <div class="status-item">
             <div class="status-row">
@@ -296,7 +313,7 @@
               <span class="status-count">${value}</span>
             </div>
             <div class="status-bar-track">
-              <div class="status-bar c-${key}" style="width:${width}%"></div>
+              <div class="status-bar ${config.barClass}" style="width:${width}%"></div>
             </div>
           </div>
         `;
@@ -307,12 +324,10 @@
   function renderLoadingState() {
     const tbody = document.getElementById("recentOrdersBody");
     const box = document.getElementById("statusSummary");
-
     if (tbody) {
       tbody.innerHTML =
         '<tr><td colspan="6" class="text-center text-muted py-4">Đang tải danh sách đơn đặt...</td></tr>';
     }
-
     if (box) {
       box.innerHTML = '<p class="text-muted mb-0">Đang tải thống kê...</p>';
     }
