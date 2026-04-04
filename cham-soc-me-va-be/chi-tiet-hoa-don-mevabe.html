@@ -8,6 +8,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<script src="https://api.dvqt.vn/js/krud.js"></script>
 	<style>
 		:root {
@@ -58,7 +59,7 @@
 			background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
 			box-shadow: var(--shadow);
 			border: 1px solid rgba(16, 66, 113, 0.08);
-			overflow: hidden;
+			overflow: visible;
 			transform: translateY(8px);
 			opacity: 0;
 			animation: showCard 520ms var(--anim) forwards;
@@ -72,14 +73,45 @@
 		}
 
 		.topbar {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 10px;
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr) auto;
+			gap: 14px;
 			align-items: center;
-			justify-content: space-between;
 			padding: 20px 24px;
 			background: linear-gradient(100deg, #1170d8, #25b58b);
 			color: #fff;
+			position: sticky;
+			top: 0;
+			z-index: 50;
+			box-shadow: 0 10px 24px rgba(8, 48, 82, 0.25);
+		}
+
+		.topbar-logo {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 98px;
+			height: 66px;
+			padding: 6px;
+			border-radius: 14px;
+			border: 1px solid rgba(255, 255, 255, 0.34);
+			background: rgba(255, 255, 255, 0.14);
+			box-shadow: 0 10px 22px rgba(9, 48, 88, 0.2);
+			backdrop-filter: blur(4px);
+			transition: transform var(--anim), background var(--anim), border-color var(--anim);
+		}
+
+		.topbar-logo:hover {
+			transform: translateY(-2px);
+			background: rgba(255, 255, 255, 0.22);
+			border-color: rgba(255, 255, 255, 0.5);
+		}
+
+		.topbar-logo img {
+			width: 74px;
+			height: 50px;
+			object-fit: contain;
+			filter: drop-shadow(0 4px 8px rgba(5, 39, 72, 0.35));
 		}
 
 		.topbar-title {
@@ -87,6 +119,10 @@
 			font-size: clamp(1.05rem, 1.5vw, 1.5rem);
 			font-weight: 800;
 			letter-spacing: .2px;
+			text-align: center;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		.topbar-meta {
@@ -303,11 +339,7 @@
 			opacity: .95;
 		}
 
-		.invoice-tools {
-			display: flex;
-			gap: 8px;
-			flex-wrap: wrap;
-		}
+		
 
 		.invoice-chip-btn {
 			display: inline-flex;
@@ -355,51 +387,84 @@
 		.invoice-summary {
 			display: grid;
 			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 10px;
+			gap: 12px;
 		}
 
 		.invoice-item {
 			display: flex;
-			gap: 10px;
-			align-items: center;
+			gap: 9px;
+			align-items: flex-start;
 			border: 1px solid rgba(214, 237, 255, 0.25);
 			background: rgba(27, 74, 130, 0.2);
 			border-radius: 12px;
-			padding: 10px;
+			padding: 10px 12px;
+			min-height: 96px;
 		}
 
 		.invoice-item-icon {
-			width: 30px;
-			height: 30px;
+			width: 27px;
+			height: 27px;
 			border-radius: 999px;
 			border: 1px solid rgba(255, 255, 255, 0.4);
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
-			font-size: 12px;
+			font-size: 11px;
 			font-weight: 800;
 			background: rgba(255, 255, 255, 0.1);
+			color: #fff;
+			flex: 0 0 27px;
+			margin-top: 2px;
+		}
+
+		.invoice-item-content {
+			display: grid;
+			gap: 2px;
+			min-width: 0;
 		}
 
 		.invoice-item-content p {
 			margin: 0;
-			font-size: 12px;
+			font-size: 11px;
 			font-weight: 600;
 			opacity: .85;
 		}
 
 		.invoice-item-content h4 {
-			margin: 2px 0 0;
-			font-size: 28px;
+			margin: 0;
+			font-size: clamp(1.05rem, 1.6vw, 1.9rem);
 			font-weight: 800;
-			line-height: 1.2;
+			line-height: 1.15;
 			word-break: break-word;
 		}
 
 		.invoice-item-content span {
-			font-size: 12px;
+			font-size: 11px;
 			font-weight: 600;
 			opacity: .9;
+		}
+
+		#invoicePrice {
+			font-size: clamp(1.45rem, 2vw, 2.25rem);
+			line-height: 1.08;
+		}
+
+		#invoiceTimeRange {
+			font-size: clamp(1.2rem, 1.5vw, 1.75rem);
+		}
+
+		#invoiceDate {
+			display: inline-block;
+			margin-top: 2px;
+		}
+
+		.invoice-item.address #invoiceAddress {
+			font-size: clamp(0.9rem, 1.05vw, 1.1rem);
+			line-height: 1.35;
+			display: block;
+			white-space: normal;
+			overflow: visible;
+			word-break: break-word;
 		}
 
 		#panelJobs {
@@ -608,6 +673,21 @@
 			color: #4d6175;
 		}
 
+		.profile-contact {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 700;
+			color: #2f4961;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			word-break: break-word;
+		}
+
+		.profile-contact span {
+			word-break: break-word;
+		}
+
 		.profile-rate .star {
 			color: #f2b019;
 			margin-right: 4px;
@@ -619,17 +699,38 @@
 			font-weight: 700;
 			color: #2f4961;
 			display: flex;
-			align-items: center;
+			align-items: flex-start;
 			gap: 8px;
+			word-break: break-word;
 		}
 
-		.profile-row::before {
-			content: '';
-			width: 8px;
-			height: 8px;
-			border-radius: 50%;
-			background: #6aa6e6;
-			flex: 0 0 8px;
+		.profile-row::before,
+		.profile-contact::before {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 18px;
+			height: 18px;
+			border-radius: 999px;
+			background: #eaf4ff;
+			color: #4d92df;
+			font-size: 11px;
+			line-height: 1;
+			font-weight: 800;
+			flex: 0 0 18px;
+			margin-top: 1px;
+		}
+
+		.contact-email::before {
+			content: '✉';
+		}
+
+		.contact-phone::before {
+			content: '✆';
+		}
+
+		.contact-address::before {
+			content: '⌂';
 		}
 
 		.profile-foot {
@@ -776,7 +877,7 @@
 			}
 
 			.invoice-item-content h4 {
-				font-size: 20px;
+				font-size: 18px;
 			}
 
 			.panel {
@@ -794,7 +895,24 @@
 			}
 
 			.topbar {
-				padding: 14px;
+				grid-template-columns: auto minmax(0, 1fr) auto;
+				gap: 8px;
+				padding: 12px 10px;
+			}
+
+			.topbar-title {
+				font-size: 0.92rem;
+			}
+
+			.topbar-logo {
+				width: 72px;
+				height: 48px;
+				padding: 4px;
+			}
+
+			.topbar-logo img {
+				width: 54px;
+				height: 36px;
 			}
 		}
 	</style>
@@ -803,11 +921,13 @@
 	<main class="page">
 		<section class="modal-card">
 			<header class="topbar">
+				<a class="topbar-logo" href="../index.html" aria-label="Trang chủ">
+					<img src="assets/logo.png" alt="Logo dịch vụ" />
+				</a>
 				<h1 class="topbar-title">Chi tiết hóa đơn mẹ và bé</h1>
-				<div class="topbar-meta">
-					<span class="chip" id="chipRole">Vai trò: ...</span>
-					<span class="chip" id="chipOrder">Mã HĐ: ...</span>
-				</div>
+				<a class="topbar-logo" href="index.html" aria-label="Trang dịch vụ mẹ và bé">
+					<img src="assets/logomvb.png" alt="Logo mẹ và bé" />
+				</a>
 			</header>
 
 			<div class="content">
@@ -825,10 +945,7 @@
 										</div>
 										<p id="invoiceService" class="invoice-subtitle">---</p>
 									</div>
-									<div class="invoice-tools">
-										<span class="invoice-chip-btn">Hỗ trợ</span>
-										<span class="invoice-chip-btn">Mã HĐ: <span id="chipInvoiceCode">---</span></span>
-									</div>
+									
 								</div>
 								<div id="invoiceProgressRing" class="invoice-progress-ring" style="--p:0;">
 									<div class="invoice-progress-core">
@@ -840,22 +957,22 @@
 
 							<div class="invoice-summary">
 								<div class="invoice-item">
-									<span class="invoice-item-icon">$</span>
+									<span class="invoice-item-icon"><i class="fa fa-usd" aria-hidden="true"></i></span>
 									<div class="invoice-item-content">
 										<p>Tổng tiền</p>
 										<h4 id="invoicePrice">---</h4>
 									</div>
 								</div>
 								<div class="invoice-item">
-									<span class="invoice-item-icon">T</span>
+									<span class="invoice-item-icon"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
 									<div class="invoice-item-content">
 										<p>Thời gian</p>
 										<h4 id="invoiceTimeRange">---</h4>
 										<span id="invoiceDate">---</span>
 									</div>
 								</div>
-								<div class="invoice-item">
-									<span class="invoice-item-icon">@</span>
+								<div class="invoice-item address">
+									<span class="invoice-item-icon"><i class="fa fa-map-marker" aria-hidden="true"></i></span>
 									<div class="invoice-item-content">
 										<p>Địa chỉ</p>
 										<h4 id="invoiceAddress">---</h4>
@@ -874,9 +991,9 @@
 							<ol id="invoiceJob" class="field-value"><li>---</li></ol>
 						</div>
 						<div class="jobs-meta invoice-extra-grid">
-							<div class="invoice-extra-item"><p class="field-label">Gói dịch vụ</p><p id="invoicePackage" class="field-value">---</p></div>
+							<!-- <div class="invoice-extra-item"><p class="field-label">Gói dịch vụ</p><p id="invoicePackage" class="field-value">---</p></div> -->
 							<div class="invoice-extra-item"><p class="field-label">Yêu cầu</p><p id="invoiceRequest" class="field-value">---</p></div>
-							<div class="invoice-extra-item full-width"><p class="field-label">Ghi chú</p><p id="invoiceNote" class="field-value">---</p></div>
+							<div class="invoice-extra-item"><p class="field-label">Ghi chú</p><p id="invoiceNote" class="field-value">---</p></div>
 						</div>
 					</article>
 
@@ -957,9 +1074,9 @@
 							<img id="customerAvatar" class="profile-avatar" src="assets/logomvb.png" alt="Khách hàng">
 							<div class="profile-main">
 								<h3 id="customerCardName" class="profile-name">---</h3>
-								<p class="profile-rate"><span class="star">★</span><span id="customerCardEmail">---</span></p>
-								<p id="customerCardPhone" class="profile-row">---</p>
-								<p id="customerCardAddress" class="profile-row">---</p>
+								<p class="profile-contact contact-email"><span id="customerCardEmail">---</span></p>
+								<p id="customerCardPhone" class="profile-row fa fa-phone">---</p>
+								<p id="customerCardAddress" class="profile-row fa fa-map-marker">---</p>
 							</div>
 						</div>
 						<div class="profile-foot">
@@ -976,10 +1093,10 @@
 							<img id="staffAvatar" class="profile-avatar" src="assets/logomvb.png" alt="Nhà Cung Cấp">
 							<div class="profile-main">
 								<h3 id="staffCardName" class="profile-name">---</h3>
-								<p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p>
-								<p id="staffCardEmail" class="profile-row">---</p>
-								<p id="staffCardPhone" class="profile-row">---</p>
-								<p id="staffCardAddress" class="profile-row">---</p>
+								<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
+								<p id="staffCardEmail" class="profile-row contact-email">---</p>
+								<p id="staffCardPhone" class="profile-row fa fa-phone">---</p>
+								<p id="staffCardAddress" class="profile-row fa fa-map-marker">---</p>
 							</div>
 						</div>
 						<div class="profile-foot">
@@ -1061,7 +1178,8 @@
 				role: '',
 				user: null,
 				order: null,
-				staff: null
+				staff: null,
+				stateTimer: null
 			};
 
 			const $ = (id) => document.getElementById(id);
@@ -1090,6 +1208,13 @@
 				const n = Number(String(value || 0).replace(/[^\d.-]/g, ''));
 				if (!Number.isFinite(n)) return `${value || 0} VND`;
 				return `${n.toLocaleString('vi-VN')} VND`;
+			};
+			const formatInvoiceCode = (id) => {
+				const raw = String(id ?? '').trim();
+				if (!raw) return '---';
+				const n = Number(raw);
+				if (!Number.isFinite(n) || n < 0) return '---';
+				return String(Math.trunc(n)).padStart(7, '0');
 			};
 
 			function parseDateTimeParts(value) {
@@ -1382,6 +1507,7 @@
 			function renderUI() {
 				const o = app.order;
 				const s = app.staff || {};
+				const invoiceCode = formatInvoiceCode(o.id || app.params.mahd);
 				const ratingValue = s.diem_danhgia || s.rating || '';
 				const ratingCount = s.so_danh_gia || s.review_count || '';
 				const ratingText = ratingValue ? `${ratingValue}${ratingCount ? ` (${ratingCount} đánh giá)` : ''}` : 'Chưa có đánh giá';
@@ -1392,9 +1518,9 @@
 				const supplierReceiveTime = formatDateTimeDisplay(o.ngaynhan);
 
 				setText('chipRole', `Vai trò: ${app.role === 'staff' ? 'Nhà Cung Cấp' : 'Khách hàng'}`);
-				setText('chipOrder', `Mã HĐ: ${o.id || app.params.mahd}`);
-				setText('chipInvoiceCode', o.id || app.params.mahd);
-				setText('invoiceId', o.id || app.params.mahd);
+				setText('chipOrder', `Mã HĐ: ${invoiceCode}`);
+				setText('chipInvoiceCode', invoiceCode);
+				setText('invoiceId', invoiceCode);
 				setText('invoicePrice', formatMoney(o.tong_tien || o.tongtien || 0));
 				setText('invoiceService', o.dich_vu || o.dichvu || '---');
 				setText('invoicePackage', o.goi_dich_vu || o.goidichvu || '---');
@@ -1569,6 +1695,10 @@
 				const box = $('stateMessage');
 				box.textContent = text;
 				box.className = `state show ${type}`;
+				if (app.stateTimer) clearTimeout(app.stateTimer);
+				app.stateTimer = setTimeout(() => {
+					box.classList.remove('show');
+				}, 2000);
 			}
 
 			async function init() {
