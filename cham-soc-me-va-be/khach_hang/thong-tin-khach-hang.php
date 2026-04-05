@@ -15,56 +15,9 @@ function esc_profile(string $value): string
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-/** Convert DB image path to browser source. */
-function profile_asset_url(string $path): string
-{
-    $value = trim(str_replace('\\', '/', $path));
-    if ($value === '') {
-        return '../assets/logomvb.png';
-    }
-
-    if (preg_match('/^(https?:)?\/\//i', $value) || strpos($value, 'data:image/') === 0) {
-        return $value;
-    }
-
-    if (strpos($value, '../') === 0 || strpos($value, './') === 0) {
-        return $value;
-    }
-
-    return '../' . ltrim($value, '/');
-}
-
-/** Read text field with fallback. */
-function profile_text(array $row, string $key, string $fallback = '-'): string
-{
-    $value = trim((string)($row[$key] ?? ''));
-    return $value !== '' ? $value : $fallback;
-}
-
 $customerResult = getKhachHangBySessionId($sessionUser['id'] ?? 0);
-$customer = is_array($customerResult['row'] ?? null) ? $customerResult['row'] : [];
+$customerData = is_array($customerResult['data'] ?? null) ? $customerResult['data'] : [];
 $loadError = (string)($customerResult['error'] ?? '');
-
-$customerId = (int)($customer['id'] ?? ($sessionUser['id'] ?? 0));
-$fullName = profile_text($customer, 'hovaten', profile_text($customer, 'ten', 'Khach hang'));
-$email = profile_text($customer, 'email');
-$phone = profile_text($customer, 'sodienthoai');
-$password = profile_text($customer, 'matkhau', '');
-$address = profile_text($customer, 'diachi');
-$birthDate = profile_text($customer, 'ngaysinh');
-$createdDate = profile_text($customer, 'created_date', profile_text($customer, 'created_at'));
-
-$avatarPath = trim((string)($customer['anh_dai_dien'] ?? ''));
-$cccdFrontPath = trim((string)($customer['cccd_mat_truoc'] ?? ''));
-$cccdBackPath = trim((string)($customer['cccd_mat_sau'] ?? ''));
-
-$avatarUrl = profile_asset_url($avatarPath);
-$cccdFrontUrl = profile_asset_url($cccdFrontPath);
-$cccdBackUrl = profile_asset_url($cccdBackPath);
-
-$statusRaw = strtolower(trim((string)($customer['trangthai'] ?? 'active')));
-$statusText = $statusRaw === 'pending' ? 'Dang cho duyet' : 'Dang hoat dong';
-$statusClass = $statusRaw === 'pending' ? ' pending' : '';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -269,11 +222,11 @@ $statusClass = $statusRaw === 'pending' ? ' pending' : '';
                 <div class="col-12 col-lg-4">
                     <div class="card-soft">
                         <div class="card-body text-center">
-                            <img class="avatar" src="<?= esc_profile($avatarUrl) ?>" alt="avatar khach hang">
-                            <div class="name"><?= esc_profile($fullName) ?></div>
-                            <div class="muted"><?= esc_profile($phone) ?></div>
+                            <img class="avatar" src="<?= esc_profile((string)($customerData['avatar_url'] ?? '../assets/logomvb.png')) ?>" alt="avatar khach hang">
+                            <div class="name"><?= esc_profile((string)($customerData['full_name_text'] ?? 'Khach hang')) ?></div>
+                            <div class="muted"><?= esc_profile((string)($customerData['phone_text'] ?? '-')) ?></div>
                             <div class="mt-2">
-                                <span class="status-pill<?= esc_profile($statusClass) ?>"><?= esc_profile($statusText) ?></span>
+                                <span class="status-pill<?= esc_profile((string)($customerData['status_class'] ?? '')) ?>"><?= esc_profile((string)($customerData['status_text'] ?? 'Dang hoat dong')) ?></span>
                             </div>
                             <div class="mt-3 d-grid gap-2">
                                 <a class="btn btn-primary btn-soft" href="sua-thong-tin-khach-hang.php">
@@ -297,23 +250,23 @@ $statusClass = $statusRaw === 'pending' ? ' pending' : '';
                             <div class="info-grid">
                                 <div class="info-item">
                                     <div class="info-label">Ho va ten</div>
-                                    <div class="info-value"><?= esc_profile($fullName) ?></div>
+                                    <div class="info-value"><?= esc_profile((string)($customerData['full_name_text'] ?? 'Khach hang')) ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">So dien thoai</div>
-                                    <div class="info-value"><?= esc_profile($phone) ?></div>
+                                    <div class="info-value"><?= esc_profile((string)($customerData['phone_text'] ?? '-')) ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Email</div>
-                                    <div class="info-value"><?= esc_profile($email) ?></div>
+                                    <div class="info-value"><?= esc_profile((string)($customerData['email_text'] ?? '-')) ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Dia chi</div>
-                                    <div class="info-value"><?= esc_profile($address) ?></div>
+                                    <div class="info-value"><?= esc_profile((string)($customerData['address_text'] ?? '-')) ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Ngay sinh</div>
-                                    <div class="info-value"><?= esc_profile($birthDate) ?></div>
+                                    <div class="info-value"><?= esc_profile((string)($customerData['birth_date_text'] ?? '-')) ?></div>
                                 </div>
                                 <!-- <div class="info-item">
                                     <div class="info-label">Mat khau</div>
@@ -333,7 +286,7 @@ $statusClass = $statusRaw === 'pending' ? ' pending' : '';
                                 </div> -->
                                 <div class="info-item">
                                     <div class="info-label">Ngay tao</div>
-                                    <div class="info-value"><?= esc_profile($createdDate) ?></div>
+                                    <div class="info-value"><?= esc_profile((string)($customerData['created_date_text'] ?? '-')) ?></div>
                                 </div>
                             </div>
 
@@ -341,24 +294,24 @@ $statusClass = $statusRaw === 'pending' ? ' pending' : '';
                                 <div class="col-12 col-md-4">
                                     <div class="media-item">
                                         <div class="small fw-semibold mb-2">Anh dai dien</div>
-                                        <a href="<?= esc_profile($avatarUrl) ?>" target="_blank" rel="noopener noreferrer">
-                                            <img src="<?= esc_profile($avatarUrl) ?>" alt="anh dai dien">
+                                        <a href="<?= esc_profile((string)($customerData['avatar_url'] ?? '../assets/logomvb.png')) ?>" target="_blank" rel="noopener noreferrer">
+                                            <img src="<?= esc_profile((string)($customerData['avatar_url'] ?? '../assets/logomvb.png')) ?>" alt="anh dai dien">
                                         </a>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="media-item">
                                         <div class="small fw-semibold mb-2">CCCD mat truoc</div>
-                                        <a href="<?= esc_profile($cccdFrontUrl) ?>" target="_blank" rel="noopener noreferrer">
-                                            <img src="<?= esc_profile($cccdFrontUrl) ?>" alt="cccd mat truoc">
+                                        <a href="<?= esc_profile((string)($customerData['cccd_front_url'] ?? '../assets/logomvb.png')) ?>" target="_blank" rel="noopener noreferrer">
+                                            <img src="<?= esc_profile((string)($customerData['cccd_front_url'] ?? '../assets/logomvb.png')) ?>" alt="cccd mat truoc">
                                         </a>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="media-item">
                                         <div class="small fw-semibold mb-2">CCCD mat sau</div>
-                                        <a href="<?= esc_profile($cccdBackUrl) ?>" target="_blank" rel="noopener noreferrer">
-                                            <img src="<?= esc_profile($cccdBackUrl) ?>" alt="cccd mat sau">
+                                        <a href="<?= esc_profile((string)($customerData['cccd_back_url'] ?? '../assets/logomvb.png')) ?>" target="_blank" rel="noopener noreferrer">
+                                            <img src="<?= esc_profile((string)($customerData['cccd_back_url'] ?? '../assets/logomvb.png')) ?>" alt="cccd mat sau">
                                         </a>
                                     </div>
                                 </div>

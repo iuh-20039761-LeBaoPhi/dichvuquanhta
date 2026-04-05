@@ -64,51 +64,125 @@ function kh_list_table_rows(string $table): array
 }
 
 /**
- * Lay thong tin 1 khach hang theo id.
- */
-function get_khach_hang_by_id(int $customerId): ?array
-{
-    if ($customerId <= 0) {
-        return null;
-    }
-
-    $rows = kh_list_table_rows('khachhang');
-    foreach ($rows as $row) {
-        if ((int)($row['id'] ?? 0) === $customerId) {
-            return $row;
-        }
-    }
-
-    return null;
-}
-
-/**
  * Ham dung chung: lay thong tin khach hang tu session id.
- * Tra ve bo ket qua gom success, error va row.
+ * Tra ve bo ket qua gom success, error, row va data da chuan hoa de render.
  */
 function getKhachHangBySessionId($sessionCustomerId): array
 {
+    $emptyData = [
+        'id' => 0,
+        'full_name' => '',
+        'email' => '',
+        'phone' => '',
+        'password' => '',
+        'address' => '',
+        'birth_date' => '',
+        'created_date' => '',
+        'avatar_path' => '',
+        'cccd_front_path' => '',
+        'cccd_back_path' => '',
+        'avatar_url' => '../assets/logomvb.png',
+        'cccd_front_url' => '../assets/logomvb.png',
+        'cccd_back_url' => '../assets/logomvb.png',
+        'status_raw' => 'active',
+        'status_text' => 'Dang hoat dong',
+        'status_class' => '',
+        'full_name_text' => 'Khach hang',
+        'email_text' => '-',
+        'phone_text' => '-',
+        'address_text' => '-',
+        'birth_date_text' => '-',
+        'created_date_text' => '-',
+    ];
+
     $customerId = (int)$sessionCustomerId;
     if ($customerId <= 0) {
         return [
             'success' => false,
             'error' => 'Khong tim thay id khach hang trong session.',
             'row' => null,
+            'data' => $emptyData,
         ];
     }
 
-    $customer = get_khach_hang_by_id($customerId);
-    if (!is_array($customer)) {
+    $rows = kh_list_table_rows('khachhang');
+    $customer = null;
+    foreach ($rows as $row) {
+        if ((int)($row['id'] ?? 0) === $customerId) {
+            $customer = $row;
+            break;
+        }
+    }
+
+    if (!is_array($customer) || $customer === []) {
         return [
             'success' => false,
             'error' => 'Khong tim thay du lieu khach hang trong bang khachhang.',
             'row' => null,
+            'data' => $emptyData,
         ];
     }
+
+    $pick = static function (array $row, array $keys, string $fallback = ''): string {
+        foreach ($keys as $key) {
+            $value = trim((string)($row[$key] ?? ''));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+        return $fallback;
+    };
+
+    $assetUrl = static function (string $path): string {
+        $value = trim(str_replace('\\', '/', $path));
+        if ($value === '') {
+            return '../assets/logomvb.png';
+        }
+
+        if (preg_match('/^(https?:)?\/\//i', $value) || strpos($value, 'data:image/') === 0) {
+            return $value;
+        }
+
+        if (strpos($value, '../') === 0 || strpos($value, './') === 0) {
+            return $value;
+        }
+
+        return '../' . ltrim($value, '/');
+    };
+
+    $statusRaw = strtolower(trim((string)($customer['trangthai'] ?? 'active')));
+
+    $data = [
+        'id' => (int)($customer['id'] ?? $customerId),
+        'full_name' => $pick($customer, ['hovaten', 'ten']),
+        'email' => $pick($customer, ['email']),
+        'phone' => $pick($customer, ['sodienthoai', 'so_dien_thoai']),
+        'password' => $pick($customer, ['matkhau', 'mat_khau']),
+        'address' => $pick($customer, ['diachi', 'dia_chi']),
+        'birth_date' => $pick($customer, ['ngaysinh', 'ngay_sinh']),
+        'created_date' => $pick($customer, ['created_date', 'created_at']),
+        'avatar_path' => $pick($customer, ['anh_dai_dien']),
+        'cccd_front_path' => $pick($customer, ['cccd_mat_truoc']),
+        'cccd_back_path' => $pick($customer, ['cccd_mat_sau']),
+        'status_raw' => $statusRaw,
+        'status_text' => $statusRaw === 'pending' ? 'Dang cho duyet' : 'Dang hoat dong',
+        'status_class' => $statusRaw === 'pending' ? ' pending' : '',
+    ];
+
+    $data['avatar_url'] = $assetUrl($data['avatar_path']);
+    $data['cccd_front_url'] = $assetUrl($data['cccd_front_path']);
+    $data['cccd_back_url'] = $assetUrl($data['cccd_back_path']);
+    $data['full_name_text'] = $data['full_name'] !== '' ? $data['full_name'] : 'Khach hang';
+    $data['email_text'] = $data['email'] !== '' ? $data['email'] : '-';
+    $data['phone_text'] = $data['phone'] !== '' ? $data['phone'] : '-';
+    $data['address_text'] = $data['address'] !== '' ? $data['address'] : '-';
+    $data['birth_date_text'] = $data['birth_date'] !== '' ? $data['birth_date'] : '-';
+    $data['created_date_text'] = $data['created_date'] !== '' ? $data['created_date'] : '-';
 
     return [
         'success' => true,
         'error' => '',
         'row' => $customer,
+        'data' => $data,
     ];
 }
