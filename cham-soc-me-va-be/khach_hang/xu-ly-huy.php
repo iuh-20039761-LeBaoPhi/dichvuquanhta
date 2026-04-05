@@ -42,12 +42,6 @@ function krud_call(array $payload): array
     return ['success' => true, 'message' => 'Huy don thanh cong.'];
 }
 
-function is_pending_status(string $status): bool
-{
-    $raw = strtolower(trim($status));
-    return in_array($raw, ['', 'pending', 'cho_duyet', 'cho duyet', 'chờ duyệt', 'waiting'], true);
-}
-
 function huy_hoa_don(int $invoiceId, string $sessionPhone): array
 {
     if ($invoiceId <= 0) {
@@ -60,8 +54,18 @@ function huy_hoa_don(int $invoiceId, string $sessionPhone): array
         return ['success' => false, 'message' => 'Khong tim thay hoa don hoac ban khong co quyen huy.'];
     }
 
-    if (!is_pending_status((string)($invoice['trangthai'] ?? ''))) {
-        return ['success' => false, 'message' => 'Chi co the huy hoa don dang cho duyet.'];
+    $hasSupplier = (int)($invoice['id_nhacungcap'] ?? 0) > 0
+        || trim((string)($invoice['tenncc'] ?? '')) !== ''
+        || trim((string)($invoice['hotenncc'] ?? '')) !== ''
+        || trim((string)($invoice['nhacungcapnhan'] ?? '')) !== '';
+
+    if ($hasSupplier) {
+        return ['success' => false, 'message' => 'Nha cung cap da nhan viec, khong the huy don.'];
+    }
+
+    $statusRaw = strtolower(trim((string)($invoice['trangthai'] ?? '')));
+    if (strpos($statusRaw, 'huy') !== false || strpos($statusRaw, 'cancel') !== false) {
+        return ['success' => false, 'message' => 'Hoa don da o trang thai huy.'];
     }
 
     return krud_call([
@@ -84,9 +88,20 @@ $invoiceId = (int)($_POST['invoice_id'] ?? 0);
 $sessionPhone = (string)($user['sodienthoai'] ?? '');
 $result = huy_hoa_don($invoiceId, $sessionPhone);
 
+$returnTo = trim((string)($_POST['return_to'] ?? 'danh-sach-hoa-don.php'));
+if (
+    $returnTo === ''
+    || preg_match('/^(https?:)?\/\//i', $returnTo)
+    || strpos($returnTo, '..') !== false
+) {
+    $returnTo = 'danh-sach-hoa-don.php';
+}
+
 $query = $result['success']
     ? '?ok=1&msg=' . rawurlencode((string)$result['message'])
     : '?ok=0&msg=' . rawurlencode((string)$result['message']);
 
-header('Location: danh-sach-hoa-don.php' . $query);
+$separator = strpos($returnTo, '?') === false ? '?' : '&';
+
+header('Location: ' . $returnTo . $separator . ltrim($query, '?'));
 exit;

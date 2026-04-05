@@ -241,8 +241,8 @@ $statusClass = $statusRaw === 'pending' ? ' pending' : '';
     </style>
 </head>
 <body>
-<main class="page-wrap">
-    <?php render_khach_hang_header($sessionUser, 'Thong tin khach hang'); ?>
+<?php render_khach_hang_header($sessionUser, 'Thong tin khach hang', 'profile'); ?>
+<div class="page-wrap">
 
     <?php if ($flashMsg !== ''): ?>
         <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2" role="alert">
@@ -369,7 +369,8 @@ $statusClass = $statusRaw === 'pending' ? ' pending' : '';
             </div>
         </div>
     </section>
-</main>
+</div>
+<?php render_khach_hang_layout_end(); ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

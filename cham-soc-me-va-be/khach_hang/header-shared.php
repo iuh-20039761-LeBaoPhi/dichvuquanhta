@@ -37,67 +37,207 @@ if (!function_exists('kh_avatar_path')) {
     }
 }
 
+if (!function_exists('kh_menu_link_class')) {
+    function kh_menu_link_class(string $activeKey, string $key): string
+    {
+        $base = 'list-group-item list-group-item-action d-flex align-items-center gap-2 rounded-3 mb-1 px-3 py-2 fw-semibold';
+        return $activeKey === $key ? $base . ' active' : $base;
+    }
+}
+
 if (!function_exists('render_khach_hang_header_styles')) {
     function render_khach_hang_header_styles(): void
     {
         ?>
         <style>
-            .kh-topbar {
-                background: linear-gradient(95deg, #0b4ea2 0%, #0e61c0 45%, #1a73e8 100%);
-                border-radius: 14px;
-                box-shadow: 0 10px 30px rgba(11, 78, 162, 0.24);
+            :root {
+                --kh-border: #dbe4f0;
+                --kh-title: #0f172a;
+                --kh-text: #334155;
+                --kh-sidebar-a: #0b2239;
+                --kh-sidebar-b: #123551;
+                --kh-accent: #16a34a;
             }
-            .kh-brand {
+
+            html,
+            body {
+                overflow-x: hidden;
+            }
+
+            body {
+                color: var(--kh-text);
+                scrollbar-gutter: stable;
+            }
+
+            .kh-admin-shell {
+                border: 1px solid var(--kh-border);
+                border-radius: 18px;
+                overflow: visible;
+                box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+                background: #ffffff;
+                --bs-gutter-x: 0;
+                margin-left: 0;
+                margin-right: 0;
+                align-items: flex-start;
+            }
+
+            .kh-admin-sidebar {
+                background: linear-gradient(180deg, var(--kh-sidebar-a), var(--kh-sidebar-b));
+                position: -webkit-sticky;
+                position: sticky;
+                top: 0;
+                z-index: 1020;
+                align-self: flex-start;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+
+            .kh-admin-sidebar::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 45%);
+                pointer-events: none;
+            }
+
+            .kh-admin-sidebar > * {
+                position: relative;
+                z-index: 1;
+            }
+
+            .kh-admin-brand {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #fff;
                 display: inline-flex;
                 align-items: center;
-                gap: 10px;
-                text-decoration: none;
+                justify-content: center;
+                box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+            }
+
+            .kh-admin-brand img {
+                width: 20px;
+                height: 20px;
+                object-fit: contain;
+            }
+
+            .kh-admin-menu-toggle {
+                width: 38px;
+                height: 38px;
+                padding: 0;
+                border-radius: 10px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .kh-admin-menu-toggle i {
+                font-size: 1.2rem;
+                line-height: 1;
+            }
+
+            .kh-admin-sidebar .list-group {
+                background: transparent;
+            }
+
+            .kh-admin-sidebar .list-group-item {
+                background: transparent;
+                color: rgba(241, 245, 249, 0.9);
+                transition: all 0.2s ease;
+                border: 0;
+            }
+
+            .kh-admin-sidebar .list-group-item:hover {
+                background: rgba(255, 255, 255, 0.12);
                 color: #fff;
-                font-weight: 700;
+                transform: translateX(2px);
+            }
+
+            .kh-admin-sidebar .list-group-item.active {
+                background: linear-gradient(90deg, #22c55e, var(--kh-accent));
+                color: #fff;
+                box-shadow: 0 8px 20px rgba(22, 163, 74, 0.35);
+            }
+
+            .kh-admin-main {
+                min-width: 0;
+                background: linear-gradient(180deg, #f9fbff, #f4f7fc);
+            }
+
+            .kh-admin-topbar {
+                background: linear-gradient(180deg, #ffffff, #f8fafc);
+                border-bottom: 1px solid var(--kh-border);
+            }
+
+            .kh-admin-title {
+                color: var(--kh-title);
                 letter-spacing: 0.2px;
             }
-            .kh-brand img {
-                width: 34px;
-                height: 34px;
-                border-radius: 8px;
-                object-fit: cover;
-                background: #fff;
-                padding: 3px;
-            }
-            .kh-title {
-                color: #e9f2ff;
-                font-size: 0.95rem;
-                margin: 0;
-                opacity: 0.95;
-            }
-            .kh-avatar-btn {
-                border: 1px solid rgba(255, 255, 255, 0.35);
-                color: #fff;
-                background: rgba(255, 255, 255, 0.12);
+
+            .kh-admin-avatar-btn {
+                border: 1px solid #dbe4f0;
+                color: #0f172a;
+                background: #f8fafc;
                 border-radius: 999px;
-                padding: 4px 10px 4px 4px;
+                padding: 3px 10px 3px 3px;
                 display: inline-flex;
                 align-items: center;
                 gap: 8px;
                 font-weight: 600;
             }
-            .kh-avatar-btn:hover {
-                background: rgba(255, 255, 255, 0.18);
-                color: #fff;
+
+            .kh-admin-avatar-btn:hover {
+                background: #f1f5f9;
+                color: #0f172a;
             }
-            .kh-avatar {
+
+            .kh-admin-avatar {
                 width: 30px;
                 height: 30px;
                 border-radius: 50%;
                 object-fit: cover;
-                border: 2px solid rgba(255, 255, 255, 0.65);
+                border: 2px solid #e2e8f0;
                 background: #fff;
             }
-            .kh-menu {
+
+            .kh-admin-menu {
                 min-width: 220px;
                 border: 0;
                 border-radius: 12px;
                 box-shadow: 0 12px 28px rgba(17, 24, 39, 0.18);
+            }
+
+            .kh-admin-page {
+                min-width: 0;
+            }
+
+            @media (max-width: 991.98px) {
+                .kh-admin-shell {
+                    border-radius: 12px;
+                }
+
+                .kh-admin-sidebar {
+                    position: relative;
+                    top: auto;
+                    min-height: auto;
+                    max-height: none;
+                    overflow: visible;
+                }
+
+                .kh-admin-sidebar-menu {
+                    margin-top: 0.5rem;
+                }
+            }
+
+            @media (min-width: 992px) {
+                .kh-admin-sidebar-menu.collapse {
+                    display: block !important;
+                    height: auto !important;
+                }
             }
         </style>
         <?php
@@ -105,9 +245,9 @@ if (!function_exists('render_khach_hang_header_styles')) {
 }
 
 if (!function_exists('render_khach_hang_header')) {
-    function render_khach_hang_header(array $user, string $title = 'Hoa don cua ban'): void
+    function render_khach_hang_header(array $user, string $title = 'Hoa don cua ban', string $activeKey = 'orders'): void
     {
-        $name = trim((string)($user['ten'] ?? 'Khach hang'));
+        $name = trim((string)($user['ten'] ?? $user['hovaten'] ?? 'Khach hang'));
         if ($name === '') {
             $name = 'Khach hang';
         }
@@ -120,33 +260,72 @@ if (!function_exists('render_khach_hang_header')) {
         $avatarEsc = kh_header_escape($avatar);
         $titleEsc = kh_header_escape($title);
         ?>
-        <header class="kh-topbar px-3 px-md-4 py-3 mb-3">
-            <div class="d-flex align-items-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <a class="kh-brand" href="../index.html">
-                        <img src="../assets/logomvb.png" alt="logo">
-                        <span>DVQT Chăm Sóc Mẹ và Bé</span>
-                    </a>
-                    <p class="kh-title d-none d-md-block"><?= $titleEsc ?></p>
-                </div>
-                <div class="dropdown">
-                    <button class="btn kh-avatar-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img class="kh-avatar" src="<?= $avatarEsc ?>" alt="avatar">
-                        <span class="d-none d-sm-inline"><?= $nameEsc ?></span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end kh-menu">
-                        <li class="px-3 py-2 border-bottom">
-                            <div class="fw-semibold"><?= $nameEsc ?></div>
-                            <div class="text-muted small"><?= $phoneEsc ?></div>
-                        </li>
-                        <li><a class="dropdown-item" href="../index.html"><i class="bi bi-house me-2"></i>Trang chu</a></li>
-                        <li><a class="dropdown-item" href="thong-tin-khach-hang.php"><i class="bi bi-person-circle me-2"></i>Thong tin ca nhan</a></li>
-                        <li><a class="dropdown-item" href="danh-sach-hoa-don.php"><i class="bi bi-receipt me-2"></i>Danh sach hoa don</a></li>
-                        <li><a class="dropdown-item text-danger" href="../logout.php"><i class="bi bi-box-arrow-right me-2"></i>Dang xuat</a></li>
-                    </ul>
-                </div>
+        <div class="container-fluid p-2 p-lg-3">
+            <div class="row min-vh-100 kh-admin-shell">
+                <aside class="col-12 col-lg-2 kh-admin-sidebar text-white p-3">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="kh-admin-brand">
+                                <img src="../assets/logomvb.png" alt="logo">
+                            </div>
+                            <div>
+                                <div class="fw-bold">Cham Soc Me va Be</div>
+                                <small class="text-secondary">CUSTOMER PANEL</small>
+                            </div>
+                        </div>
+                        <button
+                            class="btn btn-outline-light kh-admin-menu-toggle d-lg-none"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#khSidebarMenu"
+                            aria-expanded="false"
+                            aria-controls="khSidebarMenu"
+                        >
+                            <i class="bi bi-list"></i>
+                        </button>
+                    </div>
+
+                    <div id="khSidebarMenu" class="collapse kh-admin-sidebar-menu list-group list-group-flush mb-3">
+                        <a href="thong-tin-khach-hang.php" class="<?= kh_header_escape(kh_menu_link_class($activeKey, 'profile')) ?>"><i class="bi bi-person-vcard"></i>Thong tin ca nhan</a>
+                        <a href="danh-sach-hoa-don.php" class="<?= kh_header_escape(kh_menu_link_class($activeKey, 'orders')) ?>"><i class="bi bi-receipt"></i>Danh sach hoa don</a>
+                        <a href="../index.html" class="<?= kh_header_escape(kh_menu_link_class($activeKey, 'home')) ?>"><i class="bi bi-house"></i>Trang chu</a>
+                        <a href="../logout.php" class="list-group-item list-group-item-action d-flex align-items-center gap-2 rounded-3 mt-2 px-3 py-2 fw-semibold"><i class="bi bi-box-arrow-right"></i>Dang xuat</a>
+                    </div>
+                </aside>
+
+                <section class="col-12 col-lg-10 p-0 d-flex flex-column kh-admin-main">
+                    <header class="kh-admin-topbar px-3 py-2 d-flex align-items-center justify-content-between">
+                        <h1 class="h5 kh-admin-title fw-bold mb-0"><?= $titleEsc ?></h1>
+                        <div class="dropdown">
+                            <button class="btn kh-admin-avatar-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img class="kh-admin-avatar" src="<?= $avatarEsc ?>" alt="avatar">
+                                <span class="d-none d-sm-inline"><?= $nameEsc ?></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end kh-admin-menu">
+                                <li class="px-3 py-2 border-bottom">
+                                    <div class="fw-semibold"><?= $nameEsc ?></div>
+                                    <div class="text-muted small"><?= $phoneEsc ?></div>
+                                </li>
+                                <li><a class="dropdown-item" href="thong-tin-khach-hang.php"><i class="bi bi-person-circle me-2"></i>Thong tin ca nhan</a></li>
+                                <li><a class="dropdown-item" href="danh-sach-hoa-don.php"><i class="bi bi-receipt me-2"></i>Danh sach hoa don</a></li>
+                                <li><a class="dropdown-item" href="../index.html"><i class="bi bi-house me-2"></i>Trang chu</a></li>
+                                <li><a class="dropdown-item text-danger" href="../logout.php"><i class="bi bi-box-arrow-right me-2"></i>Dang xuat</a></li>
+                            </ul>
+                        </div>
+                    </header>
+                    <main class="flex-grow-1 p-3 kh-admin-page">
+        <?php
+    }
+}
+
+if (!function_exists('render_khach_hang_layout_end')) {
+    function render_khach_hang_layout_end(): void
+    {
+        ?>
+                    </main>
+                </section>
             </div>
-        </header>
+        </div>
         <?php
     }
 }

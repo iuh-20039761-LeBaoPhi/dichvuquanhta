@@ -79,6 +79,37 @@ if (!function_exists('hoadon_format_datetime')) {
     }
 }
 
+if (!function_exists('hoadon_parse_date_ymd')) {
+    function hoadon_parse_date_ymd(string $value): string
+    {
+        $raw = trim($value);
+        if ($raw === '') {
+            return '';
+        }
+
+        if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T]\d{1,2}(?::\d{1,2})?(?::\d{1,2})?)?$/', $raw, $x)) {
+            $y = (int)$x[1];
+            $m = (int)$x[2];
+            $d = (int)$x[3];
+            return checkdate($m, $d, $y) ? sprintf('%04d-%02d-%02d', $y, $m, $d) : '';
+        }
+
+        if (preg_match('/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+\d{1,2}(?::\d{1,2})?(?::\d{1,2})?)?$/', $raw, $x)) {
+            $d = (int)$x[1];
+            $m = (int)$x[2];
+            $y = (int)$x[3];
+            return checkdate($m, $d, $y) ? sprintf('%04d-%02d-%02d', $y, $m, $d) : '';
+        }
+
+        $timestamp = strtotime($raw);
+        if ($timestamp === false) {
+            return '';
+        }
+
+        return date('Y-m-d', $timestamp);
+    }
+}
+
 if (!function_exists('hoadon_parse_jobs')) {
     function hoadon_parse_jobs(string $jobsRaw): array
     {
@@ -301,6 +332,7 @@ if (!function_exists('hoadon_build_list_item')) {
         $customerPhone = hoadon_get_first($row, ['sdtkhachhang', 'sodienthoai'], '');
         $serviceName = hoadon_get_first($row, ['dich_vu', 'dichvu'], 'N/A');
         $packageName = hoadon_get_first($row, ['goi_dich_vu', 'goidichvu'], 'N/A');
+        $bookedAtRaw = hoadon_get_first($row, ['ngaydat', 'created_date', 'ngay_bat_dau_kehoach', 'ngay_bat_dau'], '');
 
         return [
             'id' => (int)($row['id'] ?? 0),
@@ -310,7 +342,8 @@ if (!function_exists('hoadon_build_list_item')) {
             'serviceName' => $serviceName,
             'packageName' => $packageName,
             'priceText' => hoadon_get_first($row, ['tong_tien', 'tongtien'], '0'),
-            'bookedAtText' => hoadon_format_datetime(hoadon_get_first($row, ['ngaydat', 'created_date', 'ngay_bat_dau_kehoach', 'ngay_bat_dau'], ''), 'auto'),
+            'bookedAtText' => hoadon_format_datetime($bookedAtRaw, 'auto'),
+            'bookedDateYmd' => hoadon_parse_date_ymd($bookedAtRaw),
             'searchText' => strtolower(implode(' ', [
                 (string)($row['id'] ?? ''),
                 $customerName,
@@ -323,7 +356,7 @@ if (!function_exists('hoadon_build_list_item')) {
 }
 
 if (!function_exists('get_hoadon_list_view_data')) {
-    function get_hoadon_list_view_data(string $q = '', string $statusFilter = 'all'): array
+    function get_hoadon_list_view_data(string $q = '', string $statusFilter = 'all', string $dateFrom = '', string $dateTo = ''): array
     {
         $result = get_hoadon_data();
         if (($result['error'] ?? '') !== '') {
@@ -331,6 +364,12 @@ if (!function_exists('get_hoadon_list_view_data')) {
         }
 
         $qLower = strtolower(trim($q));
+        $dateFromYmd = hoadon_parse_date_ymd($dateFrom);
+        $dateToYmd = hoadon_parse_date_ymd($dateTo);
+        if ($dateFromYmd !== '' && $dateToYmd !== '' && $dateFromYmd > $dateToYmd) {
+            [$dateFromYmd, $dateToYmd] = [$dateToYmd, $dateFromYmd];
+        }
+
         $items = [];
         foreach (($result['rows'] ?? []) as $row) {
             if (!is_array($row)) {
@@ -343,6 +382,15 @@ if (!function_exists('get_hoadon_list_view_data')) {
             }
 
             if ($qLower !== '' && strpos((string)$item['searchText'], $qLower) === false) {
+                continue;
+            }
+
+            $bookedDateYmd = (string)($item['bookedDateYmd'] ?? '');
+            if ($dateFromYmd !== '' && ($bookedDateYmd === '' || $bookedDateYmd < $dateFromYmd)) {
+                continue;
+            }
+
+            if ($dateToYmd !== '' && ($bookedDateYmd === '' || $bookedDateYmd > $dateToYmd)) {
                 continue;
             }
 

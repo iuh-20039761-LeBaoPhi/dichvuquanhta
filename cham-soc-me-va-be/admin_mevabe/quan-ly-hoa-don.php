@@ -9,8 +9,30 @@ $admin = admin_require_login();
 
 $q = trim((string)($_GET['q'] ?? ''));
 $statusFilter = trim((string)($_GET['status'] ?? 'all'));
+$dateFrom = trim((string)($_GET['date_from'] ?? ''));
+$dateTo = trim((string)($_GET['date_to'] ?? ''));
 
-$data = get_hoadon_list_view_data($q, $statusFilter);
+$normalizeDateInput = static function (string $value): string {
+	if ($value === '') {
+		return '';
+	}
+
+	$dt = DateTimeImmutable::createFromFormat('Y-m-d', $value);
+	$errors = DateTimeImmutable::getLastErrors();
+	if (!$dt || (($errors['warning_count'] ?? 0) > 0) || (($errors['error_count'] ?? 0) > 0)) {
+		return '';
+	}
+
+	return $dt->format('Y-m-d');
+};
+
+$dateFrom = $normalizeDateInput($dateFrom);
+$dateTo = $normalizeDateInput($dateTo);
+if ($dateFrom !== '' && $dateTo !== '' && $dateFrom > $dateTo) {
+	[$dateFrom, $dateTo] = [$dateTo, $dateFrom];
+}
+
+$data = get_hoadon_list_view_data($q, $statusFilter, $dateFrom, $dateTo);
 $filtered = $data['items'] ?? [];
 $error = (string)($data['error'] ?? '');
 
@@ -26,6 +48,8 @@ $error = (string)($data['error'] ?? '');
 $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targetPage, [
 	'q' => $q,
 	'status' => $statusFilter,
+	'date_from' => $dateFrom,
+	'date_to' => $dateTo,
 ]);
 
 admin_render_layout_start('Quan Ly Don Hang', 'orders', $admin);
@@ -34,11 +58,11 @@ admin_render_layout_start('Quan Ly Don Hang', 'orders', $admin);
 <div class="card border-0 shadow-sm mb-3">
 	<div class="card-body">
 		<form method="get" class="row g-2 align-items-end">
-			<div class="col-12 col-md-5 col-lg-4">
+			<div class="col-12 col-md-4 col-lg-3">
 				<label class="form-label mb-1">Tim kiem</label>
 				<input type="text" class="form-control" name="q" value="<?= admin_h($q) ?>" placeholder="Ma don, ten KH, SDT...">
 			</div>
-			<div class="col-6 col-md-4 col-lg-3">
+			<div class="col-6 col-md-3 col-lg-2">
 				<label class="form-label mb-1">Trang thai</label>
 				<select class="form-select" name="status">
 					<option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>Tat ca</option>
@@ -49,10 +73,18 @@ admin_render_layout_start('Quan Ly Don Hang', 'orders', $admin);
 					<option value="cancelled" <?= $statusFilter === 'cancelled' ? 'selected' : '' ?>>Da huy</option>
 				</select>
 			</div>
-			<div class="col-6 col-md-3 col-lg-2 d-grid">
+			<div class="col-6 col-md-2 col-lg-2">
+				<label class="form-label mb-1">Tu ngay</label>
+				<input type="date" class="form-control" name="date_from" value="<?= admin_h($dateFrom) ?>">
+			</div>
+			<div class="col-6 col-md-2 col-lg-2">
+				<label class="form-label mb-1">Den ngay</label>
+				<input type="date" class="form-control" name="date_to" value="<?= admin_h($dateTo) ?>">
+			</div>
+			<div class="col-6 col-md-1 col-lg-1 d-grid">
 				<button class="btn btn-success" type="submit"><i class="bi bi-funnel me-1"></i>Loc</button>
 			</div>
-			<div class="col-12 col-lg-3 text-lg-end text-secondary small">
+			<div class="col-12 col-lg-2 text-lg-end text-secondary small">
 				Tong: <strong><?= (int)$totalFiltered ?></strong> don hang
 			</div>
 		</form>

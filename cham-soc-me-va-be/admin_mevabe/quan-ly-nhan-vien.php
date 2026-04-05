@@ -50,7 +50,7 @@ $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targ
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
 
-admin_render_layout_start('Quan Ly Nhan Vien', 'employees', $admin);
+admin_render_layout_start('Quan Ly nhà cung cấp', 'employees', $admin);
 ?>
 
 <?php if ($flashMsg !== ''): ?>
@@ -78,7 +78,7 @@ admin_render_layout_start('Quan Ly Nhan Vien', 'employees', $admin);
 				<button class="btn btn-success" type="submit"><i class="bi bi-funnel me-1"></i>Loc</button>
 			</div>
 			<div class="col-12 col-lg-3 text-lg-end text-secondary small">
-				Tong: <strong><?= (int)$totalFiltered ?></strong> nhan vien
+				Tong: <strong><?= (int)$totalFiltered ?></strong> nhà cung cấp
 			</div>
 		</form>
 	</div>
@@ -104,7 +104,7 @@ admin_render_layout_start('Quan Ly Nhan Vien', 'employees', $admin);
 					</thead>
 					<tbody>
 					<?php if (!$paginatedRows): ?>
-						<tr><td colspan="7" class="text-center py-4 text-secondary">Khong co du lieu nhan vien.</td></tr>
+						<tr><td colspan="7" class="text-center py-4 text-secondary">Khong co du lieu nhà cung cấp.</td></tr>
 					<?php else: ?>
 						<?php foreach ($paginatedRows as $row): ?>
 							<?php $meta = nhanvien_status_meta((string)($row['trangthai'] ?? '')); ?>
@@ -149,10 +149,10 @@ admin_render_layout_start('Quan Ly Nhan Vien', 'employees', $admin);
 			<?php if ($totalFiltered > 0): ?>
 				<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-3">
 					<div class="small text-secondary">
-						Hien thi <?= (int)($offset + 1) ?> - <?= (int)min($offset + $perPage, $totalFiltered) ?> / <?= (int)$totalFiltered ?> nhan vien
+						Hien thi <?= (int)($offset + 1) ?> - <?= (int)min($offset + $perPage, $totalFiltered) ?> / <?= (int)$totalFiltered ?> nhà cung cấp
 					</div>
 					<?php if ($totalPages > 1): ?>
-						<nav aria-label="Phan trang nhan vien">
+						<nav aria-label="Phan trang nhà cung cấp">
 							<ul class="pagination pagination-sm mb-0">
 								<li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
 									<a class="page-link" href="<?= admin_h($buildPageUrl(max(1, $page - 1))) ?>">Truoc</a>
