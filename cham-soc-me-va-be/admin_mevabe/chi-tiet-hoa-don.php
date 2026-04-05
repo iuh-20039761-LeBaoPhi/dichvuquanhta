@@ -7,11 +7,53 @@ require_once __DIR__ . '/get_hoadon.php';
 $admin = admin_require_login();
 $id = (int)($_GET['id'] ?? 0);
 
-$detail = get_hoadon_detail_view_data($id);
+$detail = get_hoadon_by_id($id);
 $row = $detail['row'] ?? null;
 $error = (string)($detail['error'] ?? '');
-$viewData = is_array($detail['view'] ?? null) ? $detail['view'] : [];
-extract($viewData, EXTR_SKIP);
+
+$statusText = trim((string)($row['trangthai'] ?? ''));
+if ($statusText === '') {
+	$statusText = 'N/A';
+}
+
+$statusRaw = function_exists('mb_strtolower') ? mb_strtolower($statusText, 'UTF-8') : strtolower($statusText);
+
+$progressValue = (float)str_replace(',', '.', (string)($row['tien_do'] ?? '0'));
+if (!is_finite($progressValue)) {
+	$progressValue = 0.0;
+}
+$progressValue = max(0.0, min(100.0, $progressValue));
+$progressText = rtrim(rtrim(number_format($progressValue, 2, '.', ''), '0'), '.');
+if ($progressText === '') {
+	$progressText = '0';
+}
+
+$jobItems = [];
+$jobsRaw = trim((string)($row['cong_viec'] ?? ''));
+if ($jobsRaw !== '') {
+	$parts = preg_split('/\s*[\.\x{3002}]\s*/u', $jobsRaw) ?: [];
+	foreach ($parts as $part) {
+		$text = trim((string)$part);
+		$text = preg_replace('/^[,;:\-\s]+/u', '', $text) ?? $text;
+		if ($text !== '') {
+			$jobItems[] = $text;
+		}
+	}
+}
+if (!$jobItems) {
+	$jobItems = ['Chua cap nhat cong viec'];
+}
+
+$hasStart = trim((string)($row['thoigian_batdau_thucte'] ?? '')) !== '';
+$hasEnd = trim((string)($row['thoigian_ketthuc_thucte'] ?? '')) !== '';
+$isDone = $hasEnd || strpos($statusRaw, 'hoan thanh') !== false;
+$isRunning = !$isDone && (strpos($statusRaw, 'dang') !== false || strpos($statusRaw, 'in progress') !== false);
+
+$supplierAssigned =
+	(int)($row['id_nhacungcap'] ?? 0) > 0
+	|| trim((string)($row['tenncc'] ?? '')) !== ''
+	|| trim((string)($row['hotenncc'] ?? '')) !== ''
+	|| trim((string)($row['nhacungcapnhan'] ?? '')) !== '';
 
 admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 ?>
@@ -632,7 +674,7 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 						Đơn #<?= admin_h(str_pad((string)($row['id'] ?? ''), 7, '0', STR_PAD_LEFT)) ?>
 						<span class="od-status-pill"><?= admin_h($statusText !== '' ? $statusText : 'N/A') ?></span>
 					</h3>
-					<p class="od-service"><?= admin_h($serviceName) ?></p>
+					<p class="od-service"><?= admin_h(trim((string)($row['dich_vu'] ?? '')) !== '' ? (string)$row['dich_vu'] : 'N/A') ?></p>
 				</div>
 				<div class="od-progress-ring" style="--p:<?= admin_h($progressText) ?>;">
 					<div class="od-progress-core">
@@ -647,22 +689,22 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 						<span class="od-box-icon"><i class="bi bi-currency-dollar"></i></span>
 						<p class="od-box-label">Tổng tiền</p>
 					</div>
-					<p class="od-box-value od-box-value--price"><?= admin_h($priceText) ?></p>
+					<p class="od-box-value od-box-value--price"><?= admin_h(trim((string)($row['tong_tien'] ?? '')) !== '' ? (string)$row['tong_tien'] : '0') ?></p>
 				</div>
 				<div class="od-box">
 					<div class="od-box-head">
 						<span class="od-box-icon"><i class="bi bi-clock"></i></span>
 						<p class="od-box-label">Thời gian</p>
 					</div>
-					<p class="od-box-value od-box-value--time"><?= admin_h($timeRange) ?></p>
-					<p class="od-box-sub"><?= admin_h($dateRange) ?></p>
+					<p class="od-box-value od-box-value--time"><?= admin_h((trim((string)($row['gio_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['gio_bat_dau_kehoach'] : '--:--:--') . ' - ' . (trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : '--:--:--')) ?></p>
+					<p class="od-box-sub"><?= admin_h((trim((string)($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['ngay_bat_dau_kehoach'] : '---') . (trim((string)($row['ngay_ket_thuc_kehoach'] ?? '')) !== '' ? (' -> ' . (string)$row['ngay_ket_thuc_kehoach']) : '')) ?></p>
 				</div>
 				<div class="od-box">
 					<div class="od-box-head">
 						<span class="od-box-icon"><i class="bi bi-geo-alt"></i></span>
 						<p class="od-box-label">Địa chỉ</p>
 					</div>
-					<p class="od-box-value od-box-value--address"><?= admin_h($address) ?></p>
+					<p class="od-box-value od-box-value--address"><?= admin_h(trim((string)($row['diachikhachhang'] ?? '')) !== '' ? (string)$row['diachikhachhang'] : 'N/A') ?></p>
 				</div>
 			</div>
 		</article>
@@ -670,7 +712,6 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 		<article class="od-card">
 			<div class="od-panel-head">
 				<h4 class="od-panel-title">Công việc cần thực hiện</h4>
-				<!-- <span class="od-job-count"><?= admin_h((string)$jobCount) ?>/<?= admin_h((string)$jobCount) ?> đã hoàn thành</span> -->
 			</div>
 			<div class="od-jobs-body">
 				<ol class="od-jobs-list">
@@ -682,15 +723,15 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 			<div class="od-jobs-foot">
 				<div class="od-mini">
 					<p class="k">Gói dịch vụ</p>
-					<p class="v"><?= admin_h($packageName) ?></p>
+					<p class="v"><?= admin_h(trim((string)($row['goi_dich_vu'] ?? '')) !== '' ? (string)$row['goi_dich_vu'] : 'N/A') ?></p>
 				</div>
 				<div class="od-mini">
 					<p class="k">Yêu cầu</p>
-					<p class="v"><?= admin_h($requestText !== '' ? $requestText : 'Không có') ?></p>
+					<p class="v"><?= admin_h(trim((string)($row['yeu_cau_khac'] ?? '')) !== '' ? (string)$row['yeu_cau_khac'] : 'Khong co') ?></p>
 				</div>
 				<div class="od-mini" style="grid-column:1/-1;">
 					<p class="k">Ghi chú</p>
-					<p class="v"><?= admin_h($noteText !== '' ? $noteText : 'Không có') ?></p>
+					<p class="v"><?= admin_h(trim((string)($row['ghi_chu'] ?? '')) !== '' ? (string)$row['ghi_chu'] : 'Khong co') ?></p>
 				</div>
 			</div>
 		</article>
@@ -698,7 +739,7 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 		<article class="od-card">
 			<div class="od-panel-head">
 				<h4 class="od-panel-title">Tiến độ thực hiện</h4>
-				<span class="od-job-count">Cập nhật: <?= admin_h($updatedAtDisplay) ?></span>
+				<span class="od-job-count">Cập nhật: <?= admin_h(trim((string)($row['thoigian_ketthuc_thucte'] ?? '')) !== '' ? (string)$row['thoigian_ketthuc_thucte'] : (trim((string)($row['thoigian_batdau_thucte'] ?? '')) !== '' ? (string)$row['thoigian_batdau_thucte'] : (trim((string)($row['ngaydat'] ?? '')) !== '' ? (string)$row['ngaydat'] : 'N/A'))) ?></span>
 			</div>
 			<div class="od-progress-body">
 				<div class="od-progress-top">
@@ -706,14 +747,14 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 					<span><?= admin_h($progressText) ?>%</span>
 				</div>
 				<div class="od-progress-track"><div class="od-progress-fill" style="width:<?= admin_h($progressText) ?>%;"></div></div>
-				<p class="od-progress-note">Tiến độ theo từng ngày, mỗi ngày là 1 ca <?= admin_h($timeRange) ?>. Khoảng ngày kế hoạch: <?= admin_h($dateRange) ?>.</p>
+				<p class="od-progress-note">Tiến độ theo từng ngày, mỗi ngày là 1 ca <?= admin_h((trim((string)($row['gio_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['gio_bat_dau_kehoach'] : '--:--:--') . ' - ' . (trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : '--:--:--')) ?>. Khoảng ngày kế hoạch: <?= admin_h((trim((string)($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['ngay_bat_dau_kehoach'] : '---') . (trim((string)($row['ngay_ket_thuc_kehoach'] ?? '')) !== '' ? (' -> ' . (string)$row['ngay_ket_thuc_kehoach']) : '')) ?>.</p>
 				<ul class="od-timeline">
-					<li class="<?= $hasStart ? 'done' : 'pending' ?>">Bắt đầu ca <span><?= admin_h($startRealDisplay) ?></span></li>
-					<li class="<?= $isRunning ? 'active' : ($hasEnd ? 'done' : 'pending') ?>">Đang thực hiện <span><?= admin_h($timeRange) ?></span></li>
-					<li class="<?= $hasEnd ? 'done' : 'pending' ?>">Chuẩn bị kết thúc <span><?= admin_h($timeEndDisplay) ?></span></li>
-					<li class="<?= $isDone ? 'done' : 'pending' ?>">Hoàn thành <span><?= admin_h($endRealDisplay) ?></span></li>
+					<li class="<?= $hasStart ? 'done' : 'pending' ?>">Bắt đầu ca <span><?= admin_h(trim((string)($row['thoigian_batdau_thucte'] ?? '')) !== '' ? (string)$row['thoigian_batdau_thucte'] : ((trim((string)($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['ngay_bat_dau_kehoach'] : 'N/A') . ' ' . (trim((string)($row['gio_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['gio_bat_dau_kehoach'] : '--:--:--'))) ?></span></li>
+					<li class="<?= $isRunning ? 'active' : ($hasEnd ? 'done' : 'pending') ?>">Đang thực hiện <span><?= admin_h((trim((string)($row['gio_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['gio_bat_dau_kehoach'] : '--:--:--') . ' - ' . (trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : '--:--:--')) ?></span></li>
+					<li class="<?= $hasEnd ? 'done' : 'pending' ?>">Chuẩn bị kết thúc <span><?= admin_h(trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : 'N/A') ?></span></li>
+					<li class="<?= $isDone ? 'done' : 'pending' ?>">Hoàn thành <span><?= admin_h(trim((string)($row['thoigian_ketthuc_thucte'] ?? '')) !== '' ? (string)$row['thoigian_ketthuc_thucte'] : ((trim((string)($row['ngay_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['ngay_ket_thuc_kehoach'] : 'N/A') . ' ' . (trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : '--:--:--'))) ?></span></li>
 				</ul>
-				<div class="od-next">Ca tiếp theo<br>Khoảng ngày: <?= admin_h($dateRange) ?></div>
+				<div class="od-next">Ca tiếp theo<br>Khoảng ngày: <?= admin_h((trim((string)($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['ngay_bat_dau_kehoach'] : '---') . (trim((string)($row['ngay_ket_thuc_kehoach'] ?? '')) !== '' ? (' -> ' . (string)$row['ngay_ket_thuc_kehoach']) : '')) ?></div>
 			</div>
 		</article>
 
@@ -723,15 +764,15 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 				<span class="od-job-count" style="background:#e8f7ff;color:#1c6aa8;border-color:#d0eafb;">Khách hàng</span>
 			</div>
 			<div class="od-profile-body">
-				<img class="od-avatar" src="<?= admin_h($customerAvatar !== '' ? $customerAvatar : '../assets/logomvb.png') ?>" alt="Khách hàng">
+				<img class="od-avatar" src="<?= admin_h(trim((string)($row['anh_dai_dien'] ?? '')) !== '' ? (string)$row['anh_dai_dien'] : '../assets/logomvb.png') ?>" alt="Khách hàng">
 				<div>
-					<p class="od-name"><?= admin_h($customerName) ?></p>
-					<p class="od-info-row"><i class="bi bi-envelope"></i><?= admin_h($customerEmail) ?></p>
-					<p class="od-info-row"><i class="bi bi-telephone"></i><?= admin_h($customerPhone) ?></p>
-					<p class="od-info-row"><i class="bi bi-geo-alt"></i><?= admin_h($customerAddress) ?></p>
+					<p class="od-name"><?= admin_h(trim((string)($row['tenkhachhang'] ?? '')) !== '' ? (string)$row['tenkhachhang'] : 'N/A') ?></p>
+					<p class="od-info-row"><i class="bi bi-envelope"></i><?= admin_h(trim((string)($row['emailkhachhang'] ?? '')) !== '' ? (string)$row['emailkhachhang'] : 'N/A') ?></p>
+					<p class="od-info-row"><i class="bi bi-telephone"></i><?= admin_h(trim((string)($row['sdtkhachhang'] ?? '')) !== '' ? (string)$row['sdtkhachhang'] : 'N/A') ?></p>
+					<p class="od-info-row"><i class="bi bi-geo-alt"></i><?= admin_h(trim((string)($row['diachikhachhang'] ?? '')) !== '' ? (string)$row['diachikhachhang'] : 'N/A') ?></p>
 				</div>
 			</div>
-			<div class="od-profile-foot"><span class="od-exp">Ngày tạo: <?= admin_h($createdDateDisplay) ?></span></div>
+			<div class="od-profile-foot"><span class="od-exp">Ngày tạo: <?= admin_h(trim((string)($row['ngaydat'] ?? '')) !== '' ? (string)$row['ngaydat'] : (trim((string)($row['created_date'] ?? '')) !== '' ? (string)$row['created_date'] : 'N/A')) ?></span></div>
 		</article>
 
 		<article class="od-card">
@@ -740,34 +781,33 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 				<span class="od-job-count" style="<?= $supplierAssigned ? 'background:#def8ea;color:#138259;border-color:#c4edd5;' : 'background:#fff4df;color:#996316;border-color:#f0ddb4;' ?>"><?= $supplierAssigned ? 'Đã nhận' : 'Chưa nhận' ?></span>
 			</div>
 			<div class="od-profile-body">
-				<img class="od-avatar" src="<?= admin_h($supplierAvatar !== '' ? $supplierAvatar : '../assets/logomvb.png') ?>" alt="Nhà Cung Cấp">
+				<img class="od-avatar" src="<?= admin_h(trim((string)($row['avatar_ncc'] ?? '')) !== '' ? (string)$row['avatar_ncc'] : '../assets/logomvb.png') ?>" alt="Nhà Cung Cấp">
 				<div>
-					<p class="od-name"><?= admin_h($supplierName !== '' ? $supplierName : 'Chưa phân công') ?></p>
-					<!-- <p class="od-rating"><i class="bi bi-star-fill"></i><?= admin_h($supplierRatingText) ?></p> -->
-					<p class="od-info-row"><i class="bi bi-envelope"></i><?= admin_h($supplierEmail !== '' ? $supplierEmail : 'N/A') ?></p>
-					<p class="od-info-row"><i class="bi bi-telephone"></i><?= admin_h($supplierPhone !== '' ? $supplierPhone : 'N/A') ?></p>
-					<p class="od-info-row"><i class="bi bi-geo-alt"></i><?= admin_h($supplierAddress !== '' ? $supplierAddress : 'N/A') ?></p>
+					<p class="od-name"><?= admin_h(trim((string)($row['tenncc'] ?? '')) !== '' ? (string)$row['tenncc'] : (trim((string)($row['hotenncc'] ?? '')) !== '' ? (string)$row['hotenncc'] : (trim((string)($row['nhacungcapnhan'] ?? '')) !== '' ? (string)$row['nhacungcapnhan'] : 'Chua phan cong'))) ?></p>
+					<p class="od-info-row"><i class="bi bi-envelope"></i><?= admin_h(trim((string)($row['emailncc'] ?? '')) !== '' ? (string)$row['emailncc'] : 'N/A') ?></p>
+					<p class="od-info-row"><i class="bi bi-telephone"></i><?= admin_h(trim((string)($row['sdtncc'] ?? '')) !== '' ? (string)$row['sdtncc'] : (trim((string)($row['sodienthoaincc'] ?? '')) !== '' ? (string)$row['sodienthoaincc'] : 'N/A')) ?></p>
+					<p class="od-info-row"><i class="bi bi-geo-alt"></i><?= admin_h(trim((string)($row['diachincc'] ?? '')) !== '' ? (string)$row['diachincc'] : 'N/A') ?></p>
 				</div>
 			</div>
 			<div class="od-profile-foot d-flex flex-wrap" style="gap:8px;">
-				<span class="od-exp">Nhận việc: <?= admin_h($supplierReceivedAtDisplay) ?></span>
-				<span class="od-exp">Kinh nghiệm: <?= admin_h($supplierExp !== '' ? $supplierExp : 'Không có') ?></span>
+				<span class="od-exp">Nhận việc: <?= admin_h(trim((string)($row['ngaynhan'] ?? '')) !== '' ? (string)$row['ngaynhan'] : '---') ?></span>
+				<span class="od-exp">Kinh nghiệm: <?= admin_h(trim((string)($row['kinh_nghiem_ncc'] ?? '')) !== '' ? (string)$row['kinh_nghiem_ncc'] : (trim((string)($row['kinhnghiemncc'] ?? '')) !== '' ? (string)$row['kinhnghiemncc'] : 'Khong co')) ?></span>
 			</div>
 		</article>
 
 		<article class="od-card">
 			<div class="od-profile-head">
 				<h4 class="od-profile-title">Đánh giá khách hàng</h4>
-				<span class="od-job-count" style="background:#fff4df;color:#996316;border-color:#f0ddb4;"><?= $reviewCustomer !== '' ? 'Đã có' : 'Chưa có' ?></span>
+				<span class="od-job-count" style="background:#fff4df;color:#996316;border-color:#f0ddb4;"><?= trim((string)($row['danhgia_khachhang'] ?? '')) !== '' ? 'Đã có' : 'Chưa có' ?></span>
 			</div>
 			<div class="od-review-body">
 				<div class="od-review-box">
 					<p class="od-review-label">Nội dung đánh giá</p>
-					<p class="od-review-value"><?= admin_h($reviewCustomer !== '' ? $reviewCustomer : 'Chưa có đánh giá') ?></p>
+					<p class="od-review-value"><?= admin_h(trim((string)($row['danhgia_khachhang'] ?? '')) !== '' ? (string)$row['danhgia_khachhang'] : 'Chua co danh gia') ?></p>
 				</div>
 				<div class="od-review-box">
 					<p class="od-review-label">Thời gian gửi</p>
-					<p class="od-review-value"><?= admin_h($reviewCustomerAtDisplay) ?></p>
+					<p class="od-review-value"><?= admin_h(trim((string)($row['thoigian_danhgia_khachhang'] ?? '')) !== '' ? (string)$row['thoigian_danhgia_khachhang'] : '---') ?></p>
 				</div>
 			</div>
 		</article>
@@ -775,16 +815,16 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 		<article class="od-card">
 			<div class="od-profile-head">
 				<h4 class="od-profile-title">Đánh giá nhà cung cấp</h4>
-				<span class="od-job-count" style="background:#fff4df;color:#996316;border-color:#f0ddb4;"><?= $reviewSupplier !== '' ? 'Đã có' : 'Chưa có' ?></span>
+				<span class="od-job-count" style="background:#fff4df;color:#996316;border-color:#f0ddb4;"><?= trim((string)($row['danhgia_nhanvien'] ?? '')) !== '' ? 'Đã có' : 'Chưa có' ?></span>
 			</div>
 			<div class="od-review-body">
 				<div class="od-review-box">
 					<p class="od-review-label">Nội dung đánh giá</p>
-					<p class="od-review-value"><?= admin_h($reviewSupplier !== '' ? $reviewSupplier : 'Chưa có đánh giá') ?></p>
+					<p class="od-review-value"><?= admin_h(trim((string)($row['danhgia_nhanvien'] ?? '')) !== '' ? (string)$row['danhgia_nhanvien'] : 'Chua co danh gia') ?></p>
 				</div>
 				<div class="od-review-box">
 					<p class="od-review-label">Thời gian gửi</p>
-					<p class="od-review-value"><?= admin_h($reviewSupplierAtDisplay) ?></p>
+					<p class="od-review-value"><?= admin_h(trim((string)($row['thoigian_danhgia_nhanvien'] ?? '')) !== '' ? (string)$row['thoigian_danhgia_nhanvien'] : '---') ?></p>
 				</div>
 			</div>
 		</article>
