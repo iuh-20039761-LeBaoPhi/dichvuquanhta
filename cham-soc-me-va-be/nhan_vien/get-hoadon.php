@@ -1,6 +1,89 @@
 <?php
 declare(strict_types=1);
 
+const DATLICH_MEVABE_FIXED_COLUMNS = [
+    'id',
+    'trangthai',
+    'dich_vu',
+    'goi_dich_vu',
+    'ngayhuy',
+    'tien_do',
+    'tenkhachhang',
+    'sdtkhachhang',
+    'emailkhachhang',
+    'diachikhachhang',
+    'ngay_bat_dau_kehoach',
+    'ngay_ket_thuc_kehoach',
+    'gio_bat_dau_kehoach',
+    'gio_ket_thuc_kehoach',
+    'ngaydat',
+    'ngaynhan',
+    'tenncc',
+    'sdtncc',
+    'emailncc',
+    'diachincc',
+    'hotenncc',
+    'sodienthoaincc',
+    'cong_viec',
+    'tong_tien',
+    'yeu_cau_khac',
+    'ghi_chu',
+    'thoigian_batdau_thucte',
+    'thoigian_ketthuc_thucte',
+];
+
+function lower_text(string $value): string
+{
+    $trimmed = trim($value);
+    return function_exists('mb_strtolower') ? mb_strtolower($trimmed, 'UTF-8') : strtolower($trimmed);
+}
+
+function normalize_phone_digits(string $value): string
+{
+    return preg_replace('/\D+/', '', $value) ?? '';
+}
+
+function pick_fixed_invoice_columns(array $row): array
+{
+    $picked = [];
+    foreach (DATLICH_MEVABE_FIXED_COLUMNS as $column) {
+        $picked[$column] = $row[$column] ?? '';
+    }
+    return $picked;
+}
+
+function invoice_has_supplier_assignment(array $invoice): bool
+{
+    foreach (['tenncc', 'hotenncc', 'sdtncc', 'sodienthoaincc', 'emailncc', 'diachincc'] as $key) {
+        if (trim((string)($invoice[$key] ?? '')) !== '') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function invoice_assigned_to_employee(array $invoice, array $employee = []): bool
+{
+    $supplierPhone = normalize_phone_digits((string)($invoice['sdtncc'] ?? ''));
+    if ($supplierPhone === '') {
+        $supplierPhone = normalize_phone_digits((string)($invoice['sodienthoaincc'] ?? ''));
+    }
+
+    $employeePhone = normalize_phone_digits((string)($employee['sodienthoai'] ?? ''));
+    if ($supplierPhone !== '' && $employeePhone !== '' && $supplierPhone === $employeePhone) {
+        return true;
+    }
+
+    $supplierName = lower_text((string)($invoice['tenncc'] ?? ''));
+    if ($supplierName === '') {
+        $supplierName = lower_text((string)($invoice['hotenncc'] ?? ''));
+    }
+
+    $employeeName = lower_text((string)($employee['ten'] ?? ''));
+    return $supplierName !== '' && $employeeName !== '' && $supplierName === $employeeName;
+}
+
 /**
  * Ham duy nhat dung chung: lay toan bo hoa don bang datlich_mevabe,
  * va co the loc 1 hoa don theo id khi can cho trang chi tiet.
@@ -118,6 +201,7 @@ function getHoaDonData(?int $invoiceId = null): array
     }
 
     $rows = array_values(array_filter($rows, static fn($item): bool => is_array($item)));
+    $rows = array_map(static fn(array $item): array => pick_fixed_invoice_columns($item), $rows);
 
     usort($rows, static function (array $a, array $b): int {
         $idA = (int)($a['id'] ?? 0);
@@ -159,7 +243,7 @@ function invoice_is_cancelled(array $invoice): bool
 }
 
 /** Hoa don hop le voi nhan vien: chua ai nhan hoac do chinh nhan vien da nhan. */
-function invoice_in_employee_scope(array $invoice, int $employeeId): bool
+function invoice_in_employee_scope(array $invoice, int $employeeId, array $employee = []): bool
 {
     if ($employeeId <= 0) {
         return false;
@@ -169,14 +253,17 @@ function invoice_in_employee_scope(array $invoice, int $employeeId): bool
         return false;
     }
 
-    $assignedId = (int)($invoice['id_nhacungcap'] ?? 0);
-    return $assignedId <= 0 || $assignedId === $employeeId;
+    if (!invoice_has_supplier_assignment($invoice)) {
+        return true;
+    }
+
+    return invoice_assigned_to_employee($invoice, $employee);
 }
 
 /** Loc danh sach hoa don theo pham vi duoc xem cua nhan vien. */
-function filter_invoices_for_employee(array $rows, int $employeeId): array
+function filter_invoices_for_employee(array $rows, int $employeeId, array $employee = []): array
 {
-    return array_values(array_filter($rows, static function ($item) use ($employeeId): bool {
-        return is_array($item) && invoice_in_employee_scope($item, $employeeId);
+    return array_values(array_filter($rows, static function ($item) use ($employeeId, $employee): bool {
+        return is_array($item) && invoice_in_employee_scope($item, $employeeId, $employee);
     }));
 }

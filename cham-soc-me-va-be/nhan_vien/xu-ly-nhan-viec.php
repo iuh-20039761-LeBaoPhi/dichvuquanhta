@@ -44,7 +44,7 @@ function krudCall(array $payload): array
 }
 
 /** Ham nhan viec: cap nhat id_nhacungcap va trang thai hoa don. */
-function nhanViecHoaDon(int $invoiceId, int $nhanVienId): array
+function nhanViecHoaDon(int $invoiceId, int $nhanVienId, array $sessionUser = []): array
 {
     if ($invoiceId <= 0 || $nhanVienId <= 0) {
         return ['success' => false, 'message' => 'Du lieu nhan viec khong hop le.'];
@@ -57,12 +57,11 @@ function nhanViecHoaDon(int $invoiceId, int $nhanVienId): array
         return ['success' => false, 'message' => 'Khong tim thay hoa don can nhan viec.'];
     }
 
-    if (!invoice_in_employee_scope($invoice, $nhanVienId)) {
+    if (!invoice_in_employee_scope($invoice, $nhanVienId, $sessionUser)) {
         return ['success' => false, 'message' => 'Hoa don nay da duoc nhan boi nhan vien khac.'];
     }
 
-    $assignedId = (int)($invoice['id_nhacungcap'] ?? 0);
-    if ($assignedId === $nhanVienId) {
+    if (invoice_has_supplier_assignment($invoice) && invoice_assigned_to_employee($invoice, $sessionUser)) {
         return ['success' => true, 'message' => 'Hoa don nay ban da nhan truoc do.'];
     }
 
@@ -99,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $invoiceId = (int)($_POST['invoice_id'] ?? 0);
 $employeeId = (int)($user['id'] ?? 0);
-$result = nhanViecHoaDon($invoiceId, $employeeId);
+$result = nhanViecHoaDon($invoiceId, $employeeId, $user);
 
 $query = $result['success']
     ? '?ok=1&msg=' . rawurlencode($result['message'])

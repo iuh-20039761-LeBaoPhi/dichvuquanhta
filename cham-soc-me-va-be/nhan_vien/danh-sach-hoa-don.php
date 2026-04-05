@@ -17,7 +17,7 @@ $loadError = '';
 if ($isEmployeeApproved) {
     $result = getHoaDonData();
     $loadError = (string)($result['error'] ?? '');
-    $rows = filter_invoices_for_employee($result['rows'] ?? [], $employeeId);
+    $rows = filter_invoices_for_employee($result['rows'] ?? [], $employeeId, $sessionUser);
 }
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
@@ -86,65 +86,43 @@ function esc(string $value): string
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-$normalizedRows = [];
+function invoice_text(array $row, string $key, string $default = ''): string
+{
+    $value = trim((string)($row[$key] ?? ''));
+    return $value !== '' ? $value : $default;
+}
+
 $serviceMap = [];
 
 foreach ($rows as $row) {
-    if (!is_array($row)) {
-        continue;
-    }
-
-    $id = trim((string)($row['id'] ?? ''));
-    $name = trim((string)($row['hovaten'] ?? ''));
-    $service = trim((string)($row['dich_vu'] ?? ''));
-    $package = trim((string)($row['goi_dich_vu'] ?? ''));
-    $startDate = trim((string)($row['ngay_bat_dau'] ?? ''));
-    $statusRaw = trim((string)($row['trangthai'] ?? ''));
-    $phone = trim((string)($row['sodienthoai'] ?? ''));
-    $assignedId = (int)($row['id_nhacungcap'] ?? 0);
-
-    $meta = status_meta($statusRaw);
-
+    $service = invoice_text($row, 'dich_vu', '');
     if ($service !== '') {
         $serviceMap[$service] = $service;
     }
-
-    $normalizedRows[] = [
-        'id' => $id,
-        'name' => $name !== '' ? $name : 'N/A',
-        'service' => $service !== '' ? $service : 'N/A',
-        'package' => $package !== '' ? $package : 'N/A',
-        'startDate' => $startDate !== '' ? $startDate : 'N/A',
-        'phone' => $phone,
-        'statusRaw' => $statusRaw,
-        'statusKey' => (string)$meta['key'],
-        'statusText' => (string)$meta['text'],
-        'statusClass' => (string)$meta['class'],
-        'isReceived' => ((string)$meta['key'] === 'received'),
-        'assignedId' => $assignedId,
-    ];
 }
 
 $services = array_values($serviceMap);
 sort($services);
 
-$filteredRows = array_values(array_filter($normalizedRows, static function (array $item) use ($q, $statusFilter, $serviceFilter): bool {
-    if ($statusFilter !== 'all' && $item['statusKey'] !== $statusFilter) {
+$filteredRows = array_values(array_filter($rows, static function (array $item) use ($q, $statusFilter, $serviceFilter): bool {
+    $statusKey = (string)(status_meta(invoice_text($item, 'trangthai'))['key'] ?? 'other');
+
+    if ($statusFilter !== 'all' && $statusKey !== $statusFilter) {
         return false;
     }
 
-    if ($serviceFilter !== 'all' && $item['service'] !== $serviceFilter) {
+    if ($serviceFilter !== 'all' && invoice_text($item, 'dich_vu', 'N/A') !== $serviceFilter) {
         return false;
     }
 
     if ($q !== '') {
         $searchTarget = implode(' ', [
-            $item['id'],
-            $item['name'],
-            $item['service'],
-            $item['package'],
-            $item['phone'],
-            $item['startDate'],
+            invoice_text($item, 'id'),
+            invoice_text($item, 'tenkhachhang'),
+            invoice_text($item, 'dich_vu'),
+            invoice_text($item, 'goi_dich_vu'),
+            invoice_text($item, 'sdtkhachhang'),
+            invoice_text($item, 'ngay_bat_dau_kehoach'),
         ]);
 
         if (!contains_text($searchTarget, $q)) {
@@ -156,21 +134,21 @@ $filteredRows = array_values(array_filter($normalizedRows, static function (arra
 }));
 
 if ($sortFilter === 'oldest') {
-    usort($filteredRows, static fn(array $a, array $b): int => ((int)$a['id']) <=> ((int)$b['id']));
+    usort($filteredRows, static fn(array $a, array $b): int => ((int)invoice_text($a, 'id')) <=> ((int)invoice_text($b, 'id')));
 } elseif ($sortFilter === 'status') {
     $order = ['pending' => 1, 'approved' => 2, 'received' => 3, 'other' => 4];
     usort($filteredRows, static function (array $a, array $b) use ($order): int {
-        $left = $order[$a['statusKey']] ?? 99;
-        $right = $order[$b['statusKey']] ?? 99;
+        $left = $order[normalize_status_key(invoice_text($a, 'trangthai'))] ?? 99;
+        $right = $order[normalize_status_key(invoice_text($b, 'trangthai'))] ?? 99;
         if ($left === $right) {
-            return ((int)$b['id']) <=> ((int)$a['id']);
+            return ((int)invoice_text($b, 'id')) <=> ((int)invoice_text($a, 'id'));
         }
         return $left <=> $right;
     });
 } elseif ($sortFilter === 'customer') {
-    usort($filteredRows, static fn(array $a, array $b): int => strcasecmp($a['name'], $b['name']));
+    usort($filteredRows, static fn(array $a, array $b): int => strcasecmp(invoice_text($a, 'tenkhachhang'), invoice_text($b, 'tenkhachhang')));
 } else {
-    usort($filteredRows, static fn(array $a, array $b): int => ((int)$b['id']) <=> ((int)$a['id']));
+    usort($filteredRows, static fn(array $a, array $b): int => ((int)invoice_text($b, 'id')) <=> ((int)invoice_text($a, 'id')));
 }
 
 [
@@ -190,9 +168,9 @@ $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targ
     'sort' => $sortFilter,
 ], 'page', 'danh-sach-hoa-don.php');
 
-$summaryPending = count(array_filter($normalizedRows, static fn(array $i): bool => $i['statusKey'] === 'pending'));
-$summaryReceived = count(array_filter($normalizedRows, static fn(array $i): bool => $i['statusKey'] === 'received'));
-$summaryTotal = count($normalizedRows);
+$summaryPending = count(array_filter($rows, static fn(array $i): bool => normalize_status_key(invoice_text($i, 'trangthai')) === 'pending'));
+$summaryReceived = count(array_filter($rows, static fn(array $i): bool => normalize_status_key(invoice_text($i, 'trangthai')) === 'received'));
+$summaryTotal = count($rows);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -312,8 +290,8 @@ $summaryTotal = count($normalizedRows);
     </style>
 </head>
 <body>
-<main class="page-wrap">
-    <?php render_nhan_vien_header($sessionUser, 'Quan ly hoa don nhan vien'); ?>
+<?php render_nhan_vien_header($sessionUser, 'Quan ly hoa don nhan vien', 'orders'); ?>
+<div class="page-wrap">
 
     <?php if ($flashMsg !== ''): ?>
         <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2" role="alert">
@@ -439,27 +417,38 @@ $summaryTotal = count($normalizedRows);
                             </tr>
                         <?php else: ?>
                             <?php foreach ($paginatedRows as $item): ?>
+                                <?php
+                                    $itemId = invoice_text($item, 'id', 'N/A');
+                                    $customerName = invoice_text($item, 'tenkhachhang', 'N/A');
+                                    $customerPhone = invoice_text($item, 'sdtkhachhang');
+                                    $serviceName = invoice_text($item, 'dich_vu', 'N/A');
+                                    $packageName = invoice_text($item, 'goi_dich_vu', 'N/A');
+                                    $startDate = invoice_text($item, 'ngay_bat_dau_kehoach', 'N/A');
+                                    $meta = status_meta(invoice_text($item, 'trangthai'));
+                                    $isReceived = ((string)($meta['key'] ?? 'other') === 'received');
+                                    $isAssigned = invoice_has_supplier_assignment($item);
+                                ?>
                                 <tr>
-                                    <td><span class="badge text-bg-light border id-badge"><?= esc($item['id']) ?></span></td>
+                                    <td><span class="badge text-bg-light border id-badge"><?= esc($itemId) ?></span></td>
                                     <td>
-                                        <div class="fw-semibold"><?= esc($item['name']) ?></div>
-                                        <?php if ($item['phone'] !== ''): ?>
-                                            <div class="small text-secondary"><?= esc($item['phone']) ?></div>
+                                        <div class="fw-semibold"><?= esc($customerName) ?></div>
+                                        <?php if ($customerPhone !== ''): ?>
+                                            <div class="small text-secondary"><?= esc($customerPhone) ?></div>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?= esc($item['service']) ?></td>
-                                    <td><?= esc($item['package']) ?></td>
-                                    <td><?= esc($item['startDate']) ?></td>
-                                    <td><span class="badge rounded-pill <?= esc($item['statusClass']) ?>"><?= esc($item['statusText']) ?></span></td>
+                                    <td><?= esc($serviceName) ?></td>
+                                    <td><?= esc($packageName) ?></td>
+                                    <td><?= esc($startDate) ?></td>
+                                    <td><span class="badge rounded-pill <?= esc((string)($meta['class'] ?? 'text-bg-secondary')) ?>"><?= esc((string)($meta['text'] ?? 'Khac')) ?></span></td>
                                     <td>
                                         <div class="action-group">
-                                            <?php if (!$item['isReceived'] && (int)$item['assignedId'] <= 0): ?>
+                                            <?php if (!$isReceived && !$isAssigned): ?>
                                                 <form method="post" action="xu-ly-nhan-viec.php" class="d-inline">
-                                                    <input type="hidden" name="invoice_id" value="<?= esc($item['id']) ?>">
+                                                    <input type="hidden" name="invoice_id" value="<?= esc($itemId) ?>">
                                                     <button type="submit" class="btn btn-success btn-action"><i class="bi bi-hand-thumbs-up"></i>Nhan viec</button>
                                                 </form>
                                             <?php endif; ?>
-                                            <a href="chi-tiet-hoa-don.php?id=<?= urlencode($item['id']) ?>" class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
+                                            <a href="chi-tiet-hoa-don.php?id=<?= urlencode($itemId) ?>" class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
                                             <button type="button" class="btn btn-outline-secondary btn-action" disabled><i class="bi bi-cloud-upload"></i>Upload</button>
                                         </div>
                                     </td>
@@ -496,7 +485,8 @@ $summaryTotal = count($normalizedRows);
             <?php endif; ?>
         </div>
     </section>
-</main>
+</div>
+<?php render_nhan_vien_layout_end(); ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
