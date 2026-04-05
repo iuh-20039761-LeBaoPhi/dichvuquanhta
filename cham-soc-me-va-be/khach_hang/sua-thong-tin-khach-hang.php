@@ -152,9 +152,33 @@ $isDisabled = $loadError !== '';
             font-weight: 600;
             padding: 8px 14px;
         }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .action-buttons .btn-soft {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
         @media (max-width: 991.98px) {
             .preview-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 575.98px) {
+            .action-buttons {
+                flex-wrap: nowrap;
+            }
+            .action-buttons .btn-soft {
+                flex: 1 1 0;
+                min-width: 0;
+                min-height: 44px;
+                padding: 8px 10px;
+                font-size: 0.92rem;
+                white-space: nowrap;
             }
         }
     </style>
@@ -237,12 +261,12 @@ $isDisabled = $loadError !== '';
                     </div>
                 </div>
 
-                <div class="d-flex flex-wrap gap-2 mt-4">
+                <div class="action-buttons">
                     <button type="submit" class="btn btn-primary btn-soft" <?= $isDisabled ? 'disabled' : '' ?>>
-                        <i class="bi bi-check2-circle me-1"></i> Luu thay doi
+                        <i class="bi bi-check2-circle me-1"></i> Lưu
                     </button>
                     <a class="btn btn-outline-secondary btn-soft" href="thong-tin-khach-hang.php">
-                        <i class="bi bi-arrow-left me-1"></i> Quay lai thong tin
+                        <i class="bi bi-arrow-left me-1"></i> Quay lai
                     </a>
                 </div>
             </form>
