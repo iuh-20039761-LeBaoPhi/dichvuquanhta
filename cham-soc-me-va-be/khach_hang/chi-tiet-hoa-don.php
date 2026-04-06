@@ -20,9 +20,120 @@ if ($invoiceId > 0 && !$invoice && $loadError === '') {
     $loadError = 'Không tìm thấy hóa đơn hoặc bạn không có quyền xem hóa đơn này.';
 }
 
-$invoiceRow = is_array($invoice) ? $invoice : [];
-$templateData = build_mevabe_invoice_detail_template_data($invoiceRow, $sessionUser);
-extract($templateData, EXTR_OVERWRITE);
+$invoice = is_array($invoice) ? $invoice : [];
+
+$idNumber = (int)($invoice['id'] ?? 0);
+$invoiceCode = $idNumber > 0 ? ('#' . str_pad((string)$idNumber, 6, '0', STR_PAD_LEFT)) : '---';
+
+$statusText = trim((string)($invoice['trangthai'] ?? ''));
+if ($statusText === '') {
+    $statusText = 'Chờ xác nhận';
+}
+
+$statusRaw = function_exists('mb_strtolower') ? mb_strtolower($statusText, 'UTF-8') : strtolower($statusText);
+$stateClass = 'warning';
+if (strpos($statusRaw, 'hủy') !== false || strpos($statusRaw, 'huy') !== false || strpos($statusRaw, 'cancel') !== false) {
+    $stateClass = 'danger';
+} elseif (strpos($statusRaw, 'hoàn thành') !== false || strpos($statusRaw, 'hoan thanh') !== false || strpos($statusRaw, 'kết thúc') !== false || strpos($statusRaw, 'ket thuc') !== false) {
+    $stateClass = 'success';
+}
+
+$progress = (float)str_replace(',', '.', (string)($invoice['tien_do'] ?? '0'));
+if (!is_finite($progress)) {
+    $progress = 0.0;
+}
+$progress = max(0.0, min(100.0, $progress));
+$progressText = number_format($progress, 2, '.', '');
+
+$serviceName = trim((string)($invoice['dich_vu'] ?? ''));
+if ($serviceName === '') {
+    $serviceName = '---';
+}
+
+$totalMoneyText = trim((string)($invoice['tong_tien'] ?? ''));
+if ($totalMoneyText === '') {
+    $totalMoneyText = '0';
+}
+
+$planStartDate = trim((string)($invoice['ngay_bat_dau_kehoach'] ?? ''));
+$planEndDate = trim((string)($invoice['ngay_ket_thuc_kehoach'] ?? ''));
+$planStartTime = trim((string)($invoice['gio_bat_dau_kehoach'] ?? ''));
+$planEndTime = trim((string)($invoice['gio_ket_thuc_kehoach'] ?? ''));
+
+$planStartDateTimeText = trim($planStartDate . ' ' . $planStartTime);
+$planEndDateTimeText = trim($planEndDate . ' ' . $planEndTime);
+$planStartDateTimeText = $planStartDateTimeText !== '' ? $planStartDateTimeText : '---';
+$planEndDateTimeText = $planEndDateTimeText !== '' ? $planEndDateTimeText : '---';
+
+$planTimeRangeText = ($planStartTime !== '' ? $planStartTime : '---') . ' - ' . ($planEndTime !== '' ? $planEndTime : '---');
+$planDayRangeText = ($planStartDate !== '' ? $planStartDate : '---') . ' -> ' . ($planEndDate !== '' ? $planEndDate : '---');
+
+$realStartText = trim((string)($invoice['thoigian_batdau_thucte'] ?? ''));
+$realEndText = trim((string)($invoice['thoigian_ketthuc_thucte'] ?? ''));
+$realStartText = $realStartText !== '' ? $realStartText : '---';
+$realEndText = $realEndText !== '' ? $realEndText : '---';
+
+$dayHintText = $planDayRangeText;
+
+$daysPlan = 0;
+if (
+    preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $planStartDate)
+    && preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $planEndDate)
+) {
+    $startDt = DateTimeImmutable::createFromFormat('Y-m-d', $planStartDate);
+    $endDt = DateTimeImmutable::createFromFormat('Y-m-d', $planEndDate);
+    if ($startDt && $endDt) {
+        $daysPlan = (int)$startDt->diff($endDt)->format('%a') + 1;
+    }
+}
+
+$addressText = trim((string)($invoice['diachikhachhang'] ?? ''));
+if ($addressText === '') {
+    $addressText = '---';
+}
+
+$requestExtra = trim((string)($invoice['yeu_cau_khac'] ?? ''));
+if ($requestExtra === '') {
+    $requestExtra = '---';
+}
+
+$note = trim((string)($invoice['ghi_chu'] ?? ''));
+if ($note === '') {
+    $note = '---';
+}
+
+$jobsRaw = trim((string)($invoice['cong_viec'] ?? ''));
+$jobs = [];
+if ($jobsRaw !== '') {
+    $jobsJson = json_decode($jobsRaw, true);
+    if (is_array($jobsJson)) {
+        foreach ($jobsJson as $job) {
+            $jobText = trim((string)$job);
+            if ($jobText !== '') {
+                $jobs[] = $jobText;
+            }
+        }
+    } else {
+        $parts = preg_split('/\s*[\.\x{3002}\r\n;]+\s*/u', $jobsRaw) ?: [];
+        foreach ($parts as $part) {
+            $jobText = trim((string)$part);
+            if ($jobText !== '') {
+                $jobs[] = $jobText;
+            }
+        }
+    }
+}
+if (!$jobs) {
+    $jobs = ['---'];
+}
+
+$staffAssigned =
+    trim((string)($invoice['tenncc'] ?? '')) !== ''
+    || trim((string)($invoice['hotenncc'] ?? '')) !== ''
+    || (int)($invoice['id_nhacungcap'] ?? 0) > 0
+    || trim((string)($invoice['nhacungcapnhan'] ?? '')) !== '';
+
+$canCancel = !$staffAssigned && $stateClass !== 'danger';
 
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
@@ -658,16 +769,16 @@ $flashMsg = trim((string)($_GET['msg'] ?? ''));
                     </div>
                     <div class="person-card">
                         <div class="person-head">
-                            <img class="avatar" src="<?= htmlspecialchars($customerAvatar, ENT_QUOTES, 'UTF-8') ?>" alt="avatar khách hàng">
-                            <h3 class="person-name"><?= htmlspecialchars($customerName, ENT_QUOTES, 'UTF-8') ?></h3>
+                            <img class="avatar" src="<?= htmlspecialchars(trim((string)($sessionUser['anh_dai_dien'] ?? '')) !== '' ? (string)$sessionUser['anh_dai_dien'] : '../assets/logomvb.png', ENT_QUOTES, 'UTF-8') ?>" alt="avatar khách hàng">
+                            <h3 class="person-name"><?= htmlspecialchars(trim((string)($invoice['tenkhachhang'] ?? '')) !== '' ? (string)$invoice['tenkhachhang'] : 'Khách hàng', ENT_QUOTES, 'UTF-8') ?></h3>
                         </div>
                         <div class="person-items">
-                            <p class="person-row"><i class="bi bi-envelope-fill"></i><span><?= htmlspecialchars($customerEmail, ENT_QUOTES, 'UTF-8') ?></span></p>
-                            <p class="person-row"><i class="bi bi-telephone-fill"></i><span><?= htmlspecialchars($customerPhone, ENT_QUOTES, 'UTF-8') ?></span></p>
-                            <p class="person-row"><i class="bi bi-geo-alt-fill"></i><span><?= htmlspecialchars($customerAddress, ENT_QUOTES, 'UTF-8') ?></span></p>
+                            <p class="person-row"><i class="bi bi-envelope-fill"></i><span><?= htmlspecialchars(trim((string)($invoice['emailkhachhang'] ?? '')) !== '' ? (string)$invoice['emailkhachhang'] : '---', ENT_QUOTES, 'UTF-8') ?></span></p>
+                            <p class="person-row"><i class="bi bi-telephone-fill"></i><span><?= htmlspecialchars(trim((string)($invoice['sdtkhachhang'] ?? '')) !== '' ? (string)$invoice['sdtkhachhang'] : '---', ENT_QUOTES, 'UTF-8') ?></span></p>
+                            <p class="person-row"><i class="bi bi-geo-alt-fill"></i><span><?= htmlspecialchars(trim((string)($invoice['diachikhachhang'] ?? '')) !== '' ? (string)$invoice['diachikhachhang'] : '---', ENT_QUOTES, 'UTF-8') ?></span></p>
                         </div>
                         <div class="person-foot">
-                            <span class="chip">Năm sinh: <?= htmlspecialchars($customerBirth, ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="chip">Năm sinh: <?= htmlspecialchars(trim((string)($sessionUser['ngaysinh'] ?? '')) !== '' ? (string)$sessionUser['ngaysinh'] : '---', ENT_QUOTES, 'UTF-8') ?></span>
                         </div>
                     </div>
                 </article>
@@ -679,17 +790,17 @@ $flashMsg = trim((string)($_GET['msg'] ?? ''));
                     </div>
                     <div class="person-card">
                         <div class="person-head">
-                            <img class="avatar" src="<?= htmlspecialchars($staffAvatar, ENT_QUOTES, 'UTF-8') ?>" alt="avatar nhà cung cấp">
-                            <h3 class="person-name"><?= htmlspecialchars($staffName, ENT_QUOTES, 'UTF-8') ?></h3>
+                            <img class="avatar" src="<?= htmlspecialchars(trim((string)($invoice['avatar_ncc'] ?? '')) !== '' ? (string)$invoice['avatar_ncc'] : '../assets/logomvb.png', ENT_QUOTES, 'UTF-8') ?>" alt="avatar nhà cung cấp">
+                            <h3 class="person-name"><?= htmlspecialchars(trim((string)($invoice['tenncc'] ?? '')) !== '' ? (string)$invoice['tenncc'] : (trim((string)($invoice['hotenncc'] ?? '')) !== '' ? (string)$invoice['hotenncc'] : '---'), ENT_QUOTES, 'UTF-8') ?></h3>
                         </div>
                         <div class="person-items">
-                            <p class="person-row"><i class="bi bi-envelope-fill"></i><span><?= htmlspecialchars($staffEmail, ENT_QUOTES, 'UTF-8') ?></span></p>
-                            <p class="person-row"><i class="bi bi-telephone-fill"></i><span><?= htmlspecialchars($staffPhone, ENT_QUOTES, 'UTF-8') ?></span></p>
-                            <p class="person-row"><i class="bi bi-geo-alt-fill"></i><span><?= htmlspecialchars($staffAddress, ENT_QUOTES, 'UTF-8') ?></span></p>
+                            <p class="person-row"><i class="bi bi-envelope-fill"></i><span><?= htmlspecialchars(trim((string)($invoice['emailncc'] ?? '')) !== '' ? (string)$invoice['emailncc'] : '---', ENT_QUOTES, 'UTF-8') ?></span></p>
+                            <p class="person-row"><i class="bi bi-telephone-fill"></i><span><?= htmlspecialchars(trim((string)($invoice['sdtncc'] ?? '')) !== '' ? (string)$invoice['sdtncc'] : (trim((string)($invoice['sodienthoaincc'] ?? '')) !== '' ? (string)$invoice['sodienthoaincc'] : '---'), ENT_QUOTES, 'UTF-8') ?></span></p>
+                            <p class="person-row"><i class="bi bi-geo-alt-fill"></i><span><?= htmlspecialchars(trim((string)($invoice['diachincc'] ?? '')) !== '' ? (string)$invoice['diachincc'] : '---', ENT_QUOTES, 'UTF-8') ?></span></p>
                         </div>
                         <div class="person-foot">
-                            <span class="chip">Nhận việc: <?= htmlspecialchars($staffReceiveAt, ENT_QUOTES, 'UTF-8') ?></span>
-                            <span class="chip">Kinh nghiệm: <?= htmlspecialchars($staffExp, ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="chip">Nhận việc: <?= htmlspecialchars(trim((string)($invoice['ngaynhan'] ?? '')) !== '' ? (string)$invoice['ngaynhan'] : '---', ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="chip">Kinh nghiệm: ---</span>
                         </div>
                     </div>
                 </article>
@@ -703,27 +814,16 @@ $flashMsg = trim((string)($_GET['msg'] ?? ''));
                         <section class="review-box">
                             <div class="review-head">
                                 <h3 class="review-title">Đánh giá khách hàng</h3>
-                                <span class="chip <?= $customerReviewText !== '' ? 'success' : 'warning' ?>"><?= $customerReviewText !== '' ? 'Đã có' : 'Chưa có' ?></span>
+                                <span class="chip warning">Chưa có</span>
                             </div>
                             <div class="review-body">
                                 <p class="label-xs">Nội dung đánh giá</p>
-                                <p class="review-text"><?= htmlspecialchars($customerReviewText !== '' ? $customerReviewText : 'Chưa có đánh giá', ENT_QUOTES, 'UTF-8') ?></p>
+                                <p class="review-text">Chưa có đánh giá</p>
                                 <p class="label-xs">Thời gian gửi</p>
-                                <p class="review-text"><?= htmlspecialchars($customerReviewTime, ENT_QUOTES, 'UTF-8') ?></p>
+                                <p class="review-text">---</p>
                                 <p class="label-xs">Ảnh/video đánh giá</p>
                                 <div class="media-grid">
-                                    <?php if (!$customerReviewMedia): ?>
-                                        <div class="media-empty">Chưa có tệp</div>
-                                    <?php else: ?>
-                                        <?php foreach ($customerReviewMedia as $media): ?>
-                                            <?php $isVideo = preg_match('/^(data:video|https?:.*\.(mp4|webm|ogg|mov)|.*\.(mp4|webm|ogg|mov))$/i', $media) === 1; ?>
-                                            <?php if ($isVideo): ?>
-                                                <video src="<?= htmlspecialchars($media, ENT_QUOTES, 'UTF-8') ?>" controls playsinline></video>
-                                            <?php else: ?>
-                                                <img src="<?= htmlspecialchars($media, ENT_QUOTES, 'UTF-8') ?>" alt="media đánh giá khách hàng">
-                                            <?php endif; ?>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
+                                    <div class="media-empty">Chưa có tệp</div>
                                 </div>
                             </div>
                         </section>
@@ -731,27 +831,16 @@ $flashMsg = trim((string)($_GET['msg'] ?? ''));
                         <section class="review-box">
                             <div class="review-head">
                                 <h3 class="review-title">Đánh giá nhà cung cấp</h3>
-                                <span class="chip <?= $staffReviewText !== '' ? 'success' : 'warning' ?>"><?= $staffReviewText !== '' ? 'Đã có' : 'Chưa có' ?></span>
+                                <span class="chip warning">Chưa có</span>
                             </div>
                             <div class="review-body">
                                 <p class="label-xs">Nội dung đánh giá</p>
-                                <p class="review-text"><?= htmlspecialchars($staffReviewText !== '' ? $staffReviewText : 'Chưa có đánh giá', ENT_QUOTES, 'UTF-8') ?></p>
+                                <p class="review-text">Chưa có đánh giá</p>
                                 <p class="label-xs">Thời gian gửi</p>
-                                <p class="review-text"><?= htmlspecialchars($staffReviewTime, ENT_QUOTES, 'UTF-8') ?></p>
+                                <p class="review-text">---</p>
                                 <p class="label-xs">Ảnh/video đánh giá</p>
                                 <div class="media-grid">
-                                    <?php if (!$staffReviewMedia): ?>
-                                        <div class="media-empty">Chưa có tệp</div>
-                                    <?php else: ?>
-                                        <?php foreach ($staffReviewMedia as $media): ?>
-                                            <?php $isVideo = preg_match('/^(data:video|https?:.*\.(mp4|webm|ogg|mov)|.*\.(mp4|webm|ogg|mov))$/i', $media) === 1; ?>
-                                            <?php if ($isVideo): ?>
-                                                <video src="<?= htmlspecialchars($media, ENT_QUOTES, 'UTF-8') ?>" controls playsinline></video>
-                                            <?php else: ?>
-                                                <img src="<?= htmlspecialchars($media, ENT_QUOTES, 'UTF-8') ?>" alt="media đánh giá nhà cung cấp">
-                                            <?php endif; ?>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
+                                    <div class="media-empty">Chưa có tệp</div>
                                 </div>
                             </div>
                         </section>

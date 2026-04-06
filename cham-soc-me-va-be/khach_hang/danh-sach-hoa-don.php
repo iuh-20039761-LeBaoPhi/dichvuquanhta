@@ -19,10 +19,28 @@ $q = trim((string)($_GET['q'] ?? ''));
 $statusFilter = trim((string)($_GET['status'] ?? 'all'));
 $serviceFilter = trim((string)($_GET['service'] ?? 'all'));
 
-$listViewData = build_mevabe_invoice_list_view_data(is_array($rows) ? $rows : []);
-$viewRows = is_array($listViewData['rows'] ?? null) ? $listViewData['rows'] : [];
-$services = is_array($listViewData['services'] ?? null) ? $listViewData['services'] : [];
-$statuses = is_array($listViewData['statuses'] ?? null) ? $listViewData['statuses'] : [];
+$rows = is_array($rows) ? $rows : [];
+$servicesMap = [];
+$statusesMap = [];
+foreach ($rows as $row) {
+    if (!is_array($row)) {
+        continue;
+    }
+
+    $service = trim((string)($row['dich_vu'] ?? ''));
+    $status = trim((string)($row['trangthai'] ?? ''));
+    if ($service !== '') {
+        $servicesMap[$service] = $service;
+    }
+    if ($status !== '') {
+        $statusesMap[$status] = $status;
+    }
+}
+
+$services = array_values($servicesMap);
+$statuses = array_values($statusesMap);
+sort($services);
+sort($statuses);
 
 function esc(string $value): string
 {
@@ -49,25 +67,29 @@ if ($statusFilter !== 'all' && !in_array($statusFilter, $statuses, true)) {
     $statusFilter = 'all';
 }
 
-$filteredRows = array_values(array_filter($viewRows, static function (array $item) use ($q, $statusFilter, $serviceFilter): bool {
-    if ($statusFilter !== 'all' && $item['status'] !== $statusFilter) {
+$filteredRows = array_values(array_filter($rows, static function (array $item) use ($q, $statusFilter, $serviceFilter): bool {
+    $status = trim((string)($item['trangthai'] ?? ''));
+    $service = trim((string)($item['dich_vu'] ?? ''));
+
+    if ($statusFilter !== 'all' && $status !== $statusFilter) {
         return false;
     }
 
-    if ($serviceFilter !== 'all' && $item['service'] !== $serviceFilter) {
+    if ($serviceFilter !== 'all' && $service !== $serviceFilter) {
         return false;
     }
 
     if ($q !== '') {
         $target = implode(' ', [
-            $item['id'],
-            $item['service'],
-            $item['package'],
-            $item['customer'],
-            $item['employee'],
-            $item['startDate'],
-            $item['status'],
-            $item['amount'],
+            (string)($item['id'] ?? ''),
+            (string)($item['dich_vu'] ?? ''),
+            (string)($item['goi_dich_vu'] ?? ''),
+            (string)($item['tenkhachhang'] ?? ''),
+            (string)($item['tenncc'] ?? $item['hotenncc'] ?? ''),
+            (string)($item['ngay_bat_dau_kehoach'] ?? ''),
+            (string)($item['gio_bat_dau_kehoach'] ?? ''),
+            (string)($item['trangthai'] ?? ''),
+            (string)($item['tong_tien'] ?? ''),
         ]);
 
         if (!contains_text($target, $q)) {
@@ -94,7 +116,7 @@ $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targ
     'service' => $serviceFilter,
 ], 'page', 'danh-sach-hoa-don.php');
 
-$summaryTotal = count($viewRows);
+$summaryTotal = count($rows);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -266,28 +288,42 @@ $summaryTotal = count($viewRows);
                             </tr>
                         <?php else: ?>
                             <?php foreach ($paginatedRows as $item): ?>
+                                <?php
+                                    $itemId = (int)($item['id'] ?? 0);
+                                    $service = trim((string)($item['dich_vu'] ?? ''));
+                                    $customer = trim((string)($item['tenkhachhang'] ?? ''));
+                                    $package = trim((string)($item['goi_dich_vu'] ?? ''));
+                                    $startDate = trim((string)($item['ngay_bat_dau_kehoach'] ?? ''));
+                                    $startTime = trim((string)($item['gio_bat_dau_kehoach'] ?? ''));
+                                    $status = trim((string)($item['trangthai'] ?? ''));
+                                    $amount = trim((string)($item['tong_tien'] ?? ''));
+                                    $employee = trim((string)($item['tenncc'] ?? ''));
+                                    if ($employee === '') {
+                                        $employee = trim((string)($item['hotenncc'] ?? ''));
+                                    }
+                                ?>
                                 <tr>
-                                    <td><span class="badge text-bg-light border id-badge"><?= esc($item['id']) ?></span></td>
+                                    <td><span class="badge text-bg-light border id-badge"><?= esc((string)$itemId) ?></span></td>
                                     <td>
-                                        <div class="fw-semibold"><?= esc($item['service']) ?></div>
-                                        <div class="small text-secondary">Khách: <?= esc($item['customer']) ?></div>
+                                        <div class="fw-semibold"><?= esc($service !== '' ? $service : '---') ?></div>
+                                        <div class="small text-secondary">Khách: <?= esc($customer !== '' ? $customer : '---') ?></div>
                                     </td>
-                                    <td><?= esc($item['package']) ?></td>
-                                    <td><?= esc($item['startDate']) ?></td>
-                                    <td class="fw-semibold text-danger-emphasis"><?= esc($item['amount']) ?></td>
-                                    <td><span class="badge rounded-pill text-bg-light border text-dark"><?= esc($item['status']) ?></span></td>
-                                    <td><?= esc($item['employee'] !== '' ? $item['employee'] : 'Chưa có') ?></td>
+                                    <td><?= esc($package !== '' ? $package : '---') ?></td>
+                                    <td><?= esc(trim($startDate . ' ' . $startTime) !== '' ? trim($startDate . ' ' . $startTime) : '---') ?></td>
+                                    <td class="fw-semibold text-danger-emphasis"><?= esc($amount !== '' ? $amount : '0') ?></td>
+                                    <td><span class="badge rounded-pill text-bg-light border text-dark"><?= esc($status !== '' ? $status : 'Chờ xác nhận') ?></span></td>
+                                    <td><?= esc($employee !== '' ? $employee : 'Chưa có') ?></td>
                                     <td>
                                         <div class="action-group">
-                                            <?php if ((int)$item['id'] > 0 && mevabe_status_is_pending($item['status'])): ?>
+                                            <?php if ($itemId > 0 && mevabe_status_is_pending($status)): ?>
                                                 <form method="post" action="xu-ly-huy.php" class="d-inline">
-                                                    <input type="hidden" name="invoice_id" value="<?= esc($item['id']) ?>">
+                                                    <input type="hidden" name="invoice_id" value="<?= esc((string)$itemId) ?>">
                                                     <button type="submit" class="btn btn-outline-danger btn-action"><i class="bi bi-x-circle"></i>Hủy đơn</button>
                                                 </form>
                                             <?php endif; ?>
 
-                                            <?php if ((int)$item['id'] > 0): ?>
-                                                <a href="chi-tiet-hoa-don.php?id=<?= urlencode($item['id']) ?>" class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiết</a>
+                                            <?php if ($itemId > 0): ?>
+                                                <a href="chi-tiet-hoa-don.php?id=<?= urlencode((string)$itemId) ?>" class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiết</a>
                                             <?php else: ?>
                                                 <button type="button" class="btn btn-outline-secondary btn-action" disabled>Không có ID</button>
                                             <?php endif; ?>

@@ -23,109 +23,73 @@ $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
 
 $q = trim((string)($_GET['q'] ?? ''));
-$statusFilter = strtolower(trim((string)($_GET['status'] ?? 'all')));
+$statusFilter = trim((string)($_GET['status'] ?? 'all'));
 $serviceFilter = trim((string)($_GET['service'] ?? 'all'));
 $sortFilter = strtolower(trim((string)($_GET['sort'] ?? 'newest')));
 
-if (!in_array($statusFilter, ['all', 'pending', 'approved', 'received', 'other'], true)) {
-    $statusFilter = 'all';
-}
 if (!in_array($sortFilter, ['newest', 'oldest', 'status', 'customer'], true)) {
     $sortFilter = 'newest';
 }
 
-function normalize_status_key(string $status): string
-{
-    $raw = strtolower(trim($status));
-
-    if (in_array($raw, ['da_nhan', 'da nhan', 'đã nhận', 'received'], true)) {
-        return 'received';
-    }
-    if (in_array($raw, ['approved', 'da_duyet', 'da duyet', 'đã duyệt', 'accepted'], true)) {
-        return 'approved';
-    }
-    if (in_array($raw, ['', 'pending', 'cho_duyet', 'cho duyet', 'chờ duyệt', 'waiting'], true)) {
-        return 'pending';
-    }
-
-    return 'other';
-}
-
-function status_meta(string $status): array
-{
-    $key = normalize_status_key($status);
-
-    if ($key === 'received') {
-        return ['key' => 'received', 'text' => 'Da nhan', 'class' => 'text-bg-success'];
-    }
-    if ($key === 'approved') {
-        return ['key' => 'approved', 'text' => 'Da duyet', 'class' => 'text-bg-info'];
-    }
-    if ($key === 'pending') {
-        return ['key' => 'pending', 'text' => 'Cho duyet', 'class' => 'text-bg-warning'];
-    }
-
-    return ['key' => 'other', 'text' => 'Khac', 'class' => 'text-bg-secondary'];
-}
-
-function contains_text(string $haystack, string $needle): bool
-{
-    if ($needle === '') {
-        return true;
-    }
-
-    if (function_exists('mb_stripos')) {
-        return mb_stripos($haystack, $needle, 0, 'UTF-8') !== false;
-    }
-
-    return stripos($haystack, $needle) !== false;
-}
-
-function esc(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
-
-function invoice_text(array $row, string $key, string $default = ''): string
-{
-    $value = trim((string)($row[$key] ?? ''));
-    return $value !== '' ? $value : $default;
-}
-
 $serviceMap = [];
+$statusMap = [];
 
 foreach ($rows as $row) {
-    $service = invoice_text($row, 'dich_vu', '');
+    $service = trim((string)($row['dich_vu'] ?? ''));
     if ($service !== '') {
         $serviceMap[$service] = $service;
     }
+
+    $status = trim((string)($row['trangthai'] ?? ''));
+    if ($status === '') {
+        $status = 'chờ duyệt';
+    }
+    $statusMap[$status] = $status;
 }
 
 $services = array_values($serviceMap);
 sort($services);
 
-$filteredRows = array_values(array_filter($rows, static function (array $item) use ($q, $statusFilter, $serviceFilter): bool {
-    $statusKey = (string)(status_meta(invoice_text($item, 'trangthai'))['key'] ?? 'other');
+$statuses = array_values($statusMap);
+sort($statuses);
 
-    if ($statusFilter !== 'all' && $statusKey !== $statusFilter) {
+if ($statusFilter !== 'all' && !isset($statusMap[$statusFilter])) {
+    $statusFilter = 'all';
+}
+if ($serviceFilter !== 'all' && !isset($serviceMap[$serviceFilter])) {
+    $serviceFilter = 'all';
+}
+
+$filteredRows = array_values(array_filter($rows, static function (array $item) use ($q, $statusFilter, $serviceFilter): bool {
+    $status = trim((string)($item['trangthai'] ?? ''));
+    if ($status === '') {
+        $status = 'chờ duyệt';
+    }
+    $service = trim((string)($item['dich_vu'] ?? ''));
+
+    if ($statusFilter !== 'all' && $status !== $statusFilter) {
         return false;
     }
 
-    if ($serviceFilter !== 'all' && invoice_text($item, 'dich_vu', 'N/A') !== $serviceFilter) {
+    if ($serviceFilter !== 'all' && $service !== $serviceFilter) {
         return false;
     }
 
     if ($q !== '') {
         $searchTarget = implode(' ', [
-            invoice_text($item, 'id'),
-            invoice_text($item, 'tenkhachhang'),
-            invoice_text($item, 'dich_vu'),
-            invoice_text($item, 'goi_dich_vu'),
-            invoice_text($item, 'sdtkhachhang'),
-            invoice_text($item, 'ngay_bat_dau_kehoach'),
+            (string)($item['id'] ?? ''),
+            (string)($item['tenkhachhang'] ?? ''),
+            (string)($item['dich_vu'] ?? ''),
+            (string)($item['goi_dich_vu'] ?? ''),
+            (string)($item['sdtkhachhang'] ?? ''),
+            (string)($item['ngay_bat_dau_kehoach'] ?? ''),
         ]);
 
-        if (!contains_text($searchTarget, $q)) {
+        if (function_exists('mb_stripos')) {
+            if (mb_stripos($searchTarget, $q, 0, 'UTF-8') === false) {
+                return false;
+            }
+        } elseif (stripos($searchTarget, $q) === false) {
             return false;
         }
     }
@@ -134,21 +98,21 @@ $filteredRows = array_values(array_filter($rows, static function (array $item) u
 }));
 
 if ($sortFilter === 'oldest') {
-    usort($filteredRows, static fn(array $a, array $b): int => ((int)invoice_text($a, 'id')) <=> ((int)invoice_text($b, 'id')));
+    usort($filteredRows, static fn(array $a, array $b): int => ((int)($a['id'] ?? 0)) <=> ((int)($b['id'] ?? 0)));
 } elseif ($sortFilter === 'status') {
-    $order = ['pending' => 1, 'approved' => 2, 'received' => 3, 'other' => 4];
-    usort($filteredRows, static function (array $a, array $b) use ($order): int {
-        $left = $order[normalize_status_key(invoice_text($a, 'trangthai'))] ?? 99;
-        $right = $order[normalize_status_key(invoice_text($b, 'trangthai'))] ?? 99;
-        if ($left === $right) {
-            return ((int)invoice_text($b, 'id')) <=> ((int)invoice_text($a, 'id'));
+    usort($filteredRows, static function (array $a, array $b): int {
+        $left = (string)($a['trangthai'] ?? '');
+        $right = (string)($b['trangthai'] ?? '');
+        $statusCompare = strcasecmp($left, $right);
+        if ($statusCompare === 0) {
+            return ((int)($b['id'] ?? 0)) <=> ((int)($a['id'] ?? 0));
         }
-        return $left <=> $right;
+        return $statusCompare;
     });
 } elseif ($sortFilter === 'customer') {
-    usort($filteredRows, static fn(array $a, array $b): int => strcasecmp(invoice_text($a, 'tenkhachhang'), invoice_text($b, 'tenkhachhang')));
+    usort($filteredRows, static fn(array $a, array $b): int => strcasecmp((string)($a['tenkhachhang'] ?? ''), (string)($b['tenkhachhang'] ?? '')));
 } else {
-    usort($filteredRows, static fn(array $a, array $b): int => ((int)invoice_text($b, 'id')) <=> ((int)invoice_text($a, 'id')));
+    usort($filteredRows, static fn(array $a, array $b): int => ((int)($b['id'] ?? 0)) <=> ((int)($a['id'] ?? 0)));
 }
 
 [
@@ -168,8 +132,8 @@ $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targ
     'sort' => $sortFilter,
 ], 'page', 'danh-sach-hoa-don.php');
 
-$summaryPending = count(array_filter($rows, static fn(array $i): bool => normalize_status_key(invoice_text($i, 'trangthai')) === 'pending'));
-$summaryReceived = count(array_filter($rows, static fn(array $i): bool => normalize_status_key(invoice_text($i, 'trangthai')) === 'received'));
+$summaryPending = count(array_filter($rows, static fn(array $i): bool => trim((string)($i['trangthai'] ?? '')) === '' || trim((string)($i['trangthai'] ?? '')) === 'chờ duyệt'));
+$summaryReceived = count(array_filter($rows, static fn(array $i): bool => trim((string)($i['trangthai'] ?? '')) === 'đã nhận'));
 $summaryTotal = count($rows);
 ?>
 <!DOCTYPE html>
@@ -295,7 +259,7 @@ $summaryTotal = count($rows);
 
     <?php if ($flashMsg !== ''): ?>
         <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2" role="alert">
-            <?= esc($flashMsg) ?>
+            <?= htmlspecialchars($flashMsg, ENT_QUOTES, 'UTF-8') ?>
         </div>
     <?php endif; ?>
 
@@ -354,17 +318,16 @@ $summaryTotal = count($rows);
                         <label class="form-label small text-secondary mb-1">Tìm kiếm</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" name="q" value="<?= esc($q) ?>" placeholder="ID, khach hang, SDT...">
+                            <input type="text" class="form-control" name="q" value="<?= htmlspecialchars($q, ENT_QUOTES, 'UTF-8') ?>" placeholder="ID, khach hang, SDT...">
                         </div>
                     </div>
                     <div class="col-6 col-md-3 col-lg-2">
                         <label class="form-label small text-secondary mb-1">Trạng thái</label>
                         <select class="form-select" name="status">
                             <option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>Tất cả</option>
-                            <option value="pending" <?= $statusFilter === 'pending' ? 'selected' : '' ?>>Chờ duyệt</option>
-                            <option value="approved" <?= $statusFilter === 'approved' ? 'selected' : '' ?>>Đã duyệt</option>
-                            <option value="received" <?= $statusFilter === 'received' ? 'selected' : '' ?>>Đã nhận</option>
-                            <option value="other" <?= $statusFilter === 'other' ? 'selected' : '' ?>>Khác</option>
+                            <?php foreach ($statuses as $statusOption): ?>
+                                <option value="<?= htmlspecialchars($statusOption, ENT_QUOTES, 'UTF-8') ?>" <?= $statusFilter === $statusOption ? 'selected' : '' ?>><?= htmlspecialchars($statusOption, ENT_QUOTES, 'UTF-8') ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="col-6 col-md-3 col-lg-3">
@@ -372,7 +335,7 @@ $summaryTotal = count($rows);
                         <select class="form-select" name="service">
                             <option value="all">Tất cả</option>
                             <?php foreach ($services as $serviceOption): ?>
-                                <option value="<?= esc($serviceOption) ?>" <?= $serviceFilter === $serviceOption ? 'selected' : '' ?>><?= esc($serviceOption) ?></option>
+                                <option value="<?= htmlspecialchars($serviceOption, ENT_QUOTES, 'UTF-8') ?>" <?= $serviceFilter === $serviceOption ? 'selected' : '' ?>><?= htmlspecialchars($serviceOption, ENT_QUOTES, 'UTF-8') ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -409,7 +372,7 @@ $summaryTotal = count($rows);
                         <tbody>
                         <?php if ($loadError !== ''): ?>
                             <tr>
-                                <td colspan="7" class="empty-row py-4">Loi tai du lieu: <?= esc($loadError) ?></td>
+                                <td colspan="7" class="empty-row py-4">Loi tai du lieu: <?= htmlspecialchars($loadError, ENT_QUOTES, 'UTF-8') ?></td>
                             </tr>
                         <?php elseif (!$paginatedRows): ?>
                             <tr>
@@ -418,37 +381,45 @@ $summaryTotal = count($rows);
                         <?php else: ?>
                             <?php foreach ($paginatedRows as $item): ?>
                                 <?php
-                                    $itemId = invoice_text($item, 'id', 'N/A');
-                                    $customerName = invoice_text($item, 'tenkhachhang', 'N/A');
-                                    $customerPhone = invoice_text($item, 'sdtkhachhang');
-                                    $serviceName = invoice_text($item, 'dich_vu', 'N/A');
-                                    $packageName = invoice_text($item, 'goi_dich_vu', 'N/A');
-                                    $startDate = invoice_text($item, 'ngay_bat_dau_kehoach', 'N/A');
-                                    $meta = status_meta(invoice_text($item, 'trangthai'));
-                                    $isReceived = ((string)($meta['key'] ?? 'other') === 'received');
+                                    $itemId = (int)($item['id'] ?? 0);
+                                    $statusValue = trim((string)($item['trangthai'] ?? ''));
+                                    if ($statusValue === '') {
+                                        $statusValue = 'chờ duyệt';
+                                    }
+                                    $badgeClass = 'text-bg-secondary';
+                                    if ($statusValue === 'chờ duyệt') {
+                                        $badgeClass = 'text-bg-warning';
+                                    } elseif ($statusValue === 'đã duyệt') {
+                                        $badgeClass = 'text-bg-info';
+                                    } elseif ($statusValue === 'đã nhận') {
+                                        $badgeClass = 'text-bg-success';
+                                    }
+                                    $isReceived = ($statusValue === 'đã nhận');
                                     $isAssigned = invoice_has_supplier_assignment($item);
                                 ?>
                                 <tr>
-                                    <td><span class="badge text-bg-light border id-badge"><?= esc($itemId) ?></span></td>
+                                    <td><span class="badge text-bg-light border id-badge"><?= htmlspecialchars((string)($item['id'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></span></td>
                                     <td>
-                                        <div class="fw-semibold"><?= esc($customerName) ?></div>
-                                        <?php if ($customerPhone !== ''): ?>
-                                            <div class="small text-secondary"><?= esc($customerPhone) ?></div>
+                                        <div class="fw-semibold"><?= htmlspecialchars((string)($item['tenkhachhang'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></div>
+                                        <?php if (trim((string)($item['sdtkhachhang'] ?? '')) !== ''): ?>
+                                            <div class="small text-secondary"><?= htmlspecialchars((string)($item['sdtkhachhang'] ?? ''), ENT_QUOTES, 'UTF-8') ?></div>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?= esc($serviceName) ?></td>
-                                    <td><?= esc($packageName) ?></td>
-                                    <td><?= esc($startDate) ?></td>
-                                    <td><span class="badge rounded-pill <?= esc((string)($meta['class'] ?? 'text-bg-secondary')) ?>"><?= esc((string)($meta['text'] ?? 'Khac')) ?></span></td>
+                                    <td><?= htmlspecialchars((string)($item['dich_vu'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></td>
+                                    <td><?= htmlspecialchars((string)($item['goi_dich_vu'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></td>
+                                    <td><?= htmlspecialchars((string)($item['ngay_bat_dau_kehoach'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?></td>
+                                    <td><span class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span></td>
                                     <td>
                                         <div class="action-group">
                                             <?php if (!$isReceived && !$isAssigned): ?>
-                                                <form method="post" action="xu-ly-nhan-viec.php" class="d-inline">
-                                                    <input type="hidden" name="invoice_id" value="<?= esc($itemId) ?>">
+                                                <form method="post" action="xu-ly-cong-viec.php" class="d-inline">
+                                                    <input type="hidden" name="invoice_id" value="<?= $itemId ?>">
+                                                    <input type="hidden" name="action" value="claim">
+                                                    <input type="hidden" name="return_to" value="danh-sach-hoa-don.php">
                                                     <button type="submit" class="btn btn-success btn-action"><i class="bi bi-hand-thumbs-up"></i>Nhan viec</button>
                                                 </form>
                                             <?php endif; ?>
-                                            <a href="chi-tiet-hoa-don.php?id=<?= urlencode($itemId) ?>" class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
+                                            <a href="chi-tiet-hoa-don.php?id=<?= urlencode((string)$itemId) ?>" class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
                                             <button type="button" class="btn btn-outline-secondary btn-action" disabled><i class="bi bi-cloud-upload"></i>Upload</button>
                                         </div>
                                     </td>
@@ -467,15 +438,15 @@ $summaryTotal = count($rows);
                         <nav aria-label="Phan trang hoa don nhan vien">
                             <ul class="pagination pagination-sm mb-0">
                                 <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="<?= esc($buildPageUrl(max(1, $page - 1))) ?>">Truoc</a>
+                                    <a class="page-link" href="<?= htmlspecialchars($buildPageUrl(max(1, $page - 1)), ENT_QUOTES, 'UTF-8') ?>">Truoc</a>
                                 </li>
                                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                     <li class="page-item <?= $i === $page ? 'active' : '' ?>">
-                                        <a class="page-link" href="<?= esc($buildPageUrl($i)) ?>"><?= $i ?></a>
+                                        <a class="page-link" href="<?= htmlspecialchars($buildPageUrl($i), ENT_QUOTES, 'UTF-8') ?>"><?= $i ?></a>
                                     </li>
                                 <?php endfor; ?>
                                 <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="<?= esc($buildPageUrl(min($totalPages, $page + 1))) ?>">Sau</a>
+                                    <a class="page-link" href="<?= htmlspecialchars($buildPageUrl(min($totalPages, $page + 1)), ENT_QUOTES, 'UTF-8') ?>">Sau</a>
                                 </li>
                             </ul>
                         </nav>

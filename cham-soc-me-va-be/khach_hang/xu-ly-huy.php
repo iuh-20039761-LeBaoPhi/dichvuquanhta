@@ -73,7 +73,7 @@ function huy_hoa_don(int $invoiceId, string $sessionPhone): array
         'table' => 'datlich_mevabe',
         'id' => $invoiceId,
         'data' => [
-            'trangthai' => 'huy_don',
+            'trangthai' => 'hủy đơn',
         ],
     ]);
 }

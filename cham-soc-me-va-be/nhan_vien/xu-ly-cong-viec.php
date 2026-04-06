@@ -111,75 +111,6 @@ function calc_progress_increment(array $invoice, string $endAt): float
     return max(0.0, min(100.0, $value));
 }
 
-function work_format_date_display(string $raw, string $default = '---'): string
-{
-    $value = trim($raw);
-    if ($value === '') {
-        return $default;
-    }
-
-    if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $value, $m)) {
-        return (int)$m[3] . '/' . (int)$m[2] . '/' . (int)$m[1];
-    }
-
-    return $value;
-}
-
-function work_format_time_display(string $raw, string $default = '---'): string
-{
-    $value = trim($raw);
-    if ($value === '') {
-        return $default;
-    }
-
-    if (preg_match('/^(\d{1,2}):(\d{1,2})(?::\d{1,2})?$/', $value, $m)) {
-        return str_pad((string)(int)$m[1], 2, '0', STR_PAD_LEFT)
-            . ':' . str_pad((string)(int)$m[2], 2, '0', STR_PAD_LEFT)
-            . ':0';
-    }
-
-    return $value;
-}
-
-function work_format_datetime_display(string $raw, string $default = '---'): string
-{
-    $value = trim($raw);
-    if ($value === '') {
-        return $default;
-    }
-
-    if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/', $value, $m)) {
-        $date = (int)$m[3] . '/' . (int)$m[2] . '/' . (int)$m[1];
-        $time = isset($m[4])
-            ? (int)$m[4] . ':' . (int)$m[5] . ':' . (int)($m[6] ?? 0)
-            : '0:0:0';
-        return $date . ' ' . $time;
-    }
-
-    return $value;
-}
-
-function work_parse_jobs(string $value): array
-{
-    $raw = trim($value);
-    if ($raw === '') {
-        return ['---'];
-    }
-
-    $parts = preg_split('/\s*[\.\r\n;]+\s*/u', $raw) ?: [];
-    $jobs = [];
-
-    foreach ($parts as $part) {
-        $text = trim((string)$part);
-        $text = preg_replace('/^[,;:\-\.\s]+/u', '', $text) ?? $text;
-        if ($text !== '') {
-            $jobs[] = $text;
-        }
-    }
-
-    return $jobs ?: ['---'];
-}
-
 function work_parse_media(string $raw): array
 {
     $value = trim($raw);
@@ -202,94 +133,6 @@ function work_parse_media(string $raw): array
     }
 
     return array_values(array_unique($items));
-}
-
-function build_invoice_work_view_data(array $invoice, array $sessionUser = []): array
-{
-    $idNumber = (int)($invoice['id'] ?? 0);
-    $invoiceCode = $idNumber > 0 ? ('#' . str_pad((string)$idNumber, 6, '0', STR_PAD_LEFT)) : '---';
-
-    $statusText = row_text($invoice, 'trangthai', 'Chờ xác nhận');
-    $statusLower = lower_text_simple($statusText);
-    $isCancelled = status_is_cancelled($statusLower);
-    $isCompleted = status_is_completed($statusLower);
-    $stateClass = $isCancelled ? 'danger' : ($isCompleted ? 'success' : 'warning');
-
-    $progress = (float)str_replace(',', '.', row_text($invoice, 'tien_do', '0'));
-    if (!is_finite($progress)) {
-        $progress = 0.0;
-    }
-    $progress = max(0.0, min(100.0, $progress));
-
-    $planStartDateRaw = row_text($invoice, 'ngay_bat_dau_kehoach');
-    $planEndDateRaw = row_text($invoice, 'ngay_ket_thuc_kehoach');
-    $planStartTimeRaw = row_text($invoice, 'gio_bat_dau_kehoach');
-    $planEndTimeRaw = row_text($invoice, 'gio_ket_thuc_kehoach');
-
-    $planStartDateText = work_format_date_display($planStartDateRaw);
-    $planEndDateText = work_format_date_display($planEndDateRaw);
-    $planStartTimeText = work_format_time_display($planStartTimeRaw);
-    $planEndTimeText = work_format_time_display($planEndTimeRaw);
-
-    $planTimeRangeText = $planStartTimeText . ' - ' . $planEndTimeText;
-    $planDayRangeText = $planStartDateText . ' -> ' . $planEndDateText;
-
-    $staffAssigned = invoice_has_supplier_assignment($invoice);
-    $isMyOrder = $staffAssigned && invoice_assigned_to_employee($invoice, $sessionUser);
-
-    $started = row_text($invoice, 'thoigian_batdau_thucte') !== '';
-    $ended = row_text($invoice, 'thoigian_ketthuc_thucte') !== '';
-    $inPlanWindow = in_plan_window($planStartDateRaw, $planEndDateRaw);
-
-    $proofMedia = array_merge(
-        work_parse_media(row_text($invoice, 'yeu_cau_khac')),
-        work_parse_media(row_text($invoice, 'ghi_chu'))
-    );
-
-    return [
-        'idNumber' => $idNumber,
-        'invoiceCode' => $invoiceCode,
-        'statusText' => $statusText,
-        'stateClass' => $stateClass,
-
-        'progress' => $progress,
-        'progressText' => number_format($progress, 2, '.', ''),
-        'totalMoneyText' => row_text($invoice, 'tong_tien', '0'),
-        'serviceName' => row_text($invoice, 'dich_vu', '---'),
-        'addressText' => row_text($invoice, 'diachikhachhang', '---'),
-
-        'planTimeRangeText' => $planTimeRangeText,
-        'planDayRangeText' => $planDayRangeText,
-        'planStartDateTimeText' => trim($planStartDateText . ' ' . $planStartTimeText),
-        'planEndDateTimeText' => trim($planEndDateText . ' ' . $planEndTimeText),
-        'realStartText' => work_format_datetime_display(row_text($invoice, 'thoigian_batdau_thucte')),
-        'realEndText' => work_format_datetime_display(row_text($invoice, 'thoigian_ketthuc_thucte')),
-        'daysPlan' => plan_days($planStartDateRaw, $planEndDateRaw),
-
-        'jobs' => work_parse_jobs(row_text($invoice, 'cong_viec')),
-        'requestExtra' => row_text($invoice, 'yeu_cau_khac', '---'),
-        'note' => row_text($invoice, 'ghi_chu', '---'),
-
-        'customerName' => row_text($invoice, 'tenkhachhang', 'Khách hàng'),
-        'customerPhone' => row_text($invoice, 'sdtkhachhang', '---'),
-        'customerEmail' => row_text($invoice, 'emailkhachhang', '---'),
-        'customerAddress' => row_text($invoice, 'diachikhachhang', '---'),
-        'customerAvatar' => '../assets/logomvb.png',
-
-        'staffAssigned' => $staffAssigned,
-        'staffName' => row_text($invoice, 'tenncc', row_text($invoice, 'hotenncc', ($isMyOrder ? row_text($sessionUser, 'ten', '---') : '---'))),
-        'staffPhone' => row_text($invoice, 'sdtncc', row_text($invoice, 'sodienthoaincc', ($isMyOrder ? row_text($sessionUser, 'sodienthoai', '---') : '---'))),
-        'staffEmail' => row_text($invoice, 'emailncc', '---'),
-        'staffAddress' => row_text($invoice, 'diachincc', '---'),
-        'staffReceiveAt' => work_format_datetime_display(row_text($invoice, 'ngaynhan')),
-        'staffAvatar' => '../assets/logomvb.png',
-
-        'canClaim' => !$staffAssigned && !$isCancelled && !$isCompleted,
-        'canStart' => $isMyOrder && $inPlanWindow && (!$started || $ended) && !$isCancelled && !$isCompleted,
-        'canEnd' => $isMyOrder && $started && !$ended && !$isCancelled && !$isCompleted,
-
-        'proofMedia' => array_values(array_unique($proofMedia)),
-    ];
 }
 
 function safe_return_to(string $returnTo, int $invoiceId): string
@@ -428,20 +271,19 @@ function handle_work_action_request(): void
             redirect_back($returnTo, false, 'Hoa don nay da duoc nhan boi nhan vien khac.');
         }
 
-        $employeeName = row_text($user, 'ten', row_text($user, 'hovaten', ''));
+        $employeeName = row_text($user, 'ten');
         $employeePhone = row_text($user, 'sodienthoai');
         $employeeEmail = row_text($user, 'email');
-        $employeeAddress = row_text($user, 'dia_chi');
+        $employeeAddress = row_text($user, 'diachi');
+        $employeeAvatar = row_text($user, 'anh_dai_dien');
 
         $updateResult = update_invoice($invoiceId, [
-            'id_nhacungcap' => $employeeId,
             'ngaynhan' => now_sql(),
             'tenncc' => $employeeName,
             'sdtncc' => $employeePhone,
             'emailncc' => $employeeEmail,
             'diachincc' => $employeeAddress,
-            'hotenncc' => $employeeName,
-            'sodienthoaincc' => $employeePhone,
+            'avatar_ncc' => $employeeAvatar,
             'trangthai' => 'đã nhận',
         ]);
 

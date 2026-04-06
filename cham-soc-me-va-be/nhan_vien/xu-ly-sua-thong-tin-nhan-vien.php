@@ -50,26 +50,6 @@ function krud_call(array $payload): array
     return ['success' => true, 'message' => 'Cap nhat thanh cong.'];
 }
 
-/** Chuan hoa duong dan anh luu trong DB. */
-function normalize_db_path(string $value): string
-{
-    $path = trim(str_replace('\\', '/', $value));
-    if ($path === '') {
-        return '';
-    }
-
-    if (strpos($path, '../') === 0) {
-        $path = substr($path, 3);
-    }
-
-    if (strpos($path, './') === 0) {
-        $path = substr($path, 2);
-    }
-
-    $path = ltrim($path, '/');
-    return str_replace('..', '', $path);
-}
-
 /** Upload 1 anh neu nguoi dung chon file moi, neu khong thi giu file cu. */
 function upload_or_keep_image(string $inputName, string $targetDir, string $currentPath): array
 {
@@ -109,9 +89,8 @@ function upload_or_keep_image(string $inputName, string $targetDir, string $curr
         return ['success' => false, 'message' => 'Dinh dang anh khong hop le: ' . $inputName];
     }
 
-    $safeDir = normalize_db_path($targetDir);
-    $baseDir = dirname(__DIR__);
-    $absoluteDir = $baseDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $safeDir);
+    $safeDir = trim(str_replace('\\', '/', $targetDir), '/');
+    $absoluteDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $safeDir);
 
     if (!is_dir($absoluteDir) && !mkdir($absoluteDir, 0775, true) && !is_dir($absoluteDir)) {
         return ['success' => false, 'message' => 'Khong tao duoc thu muc upload'];
@@ -146,9 +125,9 @@ $email = trim((string)($_POST['email'] ?? ''));
 $address = trim((string)($_POST['diachi'] ?? ''));
 $birthDate = trim((string)($_POST['ngaysinh'] ?? ''));
 $experience = trim((string)($_POST['kinh_nghiem'] ?? ''));
-$existingAvatar = normalize_db_path((string)($_POST['existing_anh_dai_dien'] ?? ''));
-$existingFront = normalize_db_path((string)($_POST['existing_cccd_mat_truoc'] ?? ''));
-$existingBack = normalize_db_path((string)($_POST['existing_cccd_mat_sau'] ?? ''));
+$existingAvatar = trim((string)($_POST['existing_anh_dai_dien'] ?? ''));
+$existingFront = trim((string)($_POST['existing_cccd_mat_truoc'] ?? ''));
+$existingBack = trim((string)($_POST['existing_cccd_mat_sau'] ?? ''));
 
 if ($fullName === '' || mb_strlen($fullName, 'UTF-8') > 120) {
     redirect_with_message(false, 'Ho va ten khong hop le.');

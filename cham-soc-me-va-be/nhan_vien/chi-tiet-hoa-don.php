@@ -37,9 +37,58 @@ if (!$isEmployeeApproved) {
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
 
-$row = is_array($invoice) ? $invoice : [];
-$viewData = build_invoice_work_view_data($row, $sessionUser);
-extract($viewData, EXTR_OVERWRITE);
+function jobs_from_dot(string $value): array
+{
+	$items = [];
+	foreach (explode('.', $value) as $part) {
+		$job = trim($part);
+		$job = preg_replace('/^[,;]+/u', '', $job) ?? $job;
+		$job = trim($job);
+		if ($job !== '') {
+			$items[] = $job;
+		}
+	}
+
+	return $items ?: ['---'];
+}
+
+$hoadon = is_array($invoice) ? $invoice : [];
+$idNumber = (int)($hoadon['id'] ?? 0);
+
+$progressText = trim((string)($hoadon['tien_do'] ?? '0'));
+if ($progressText === '') {
+	$progressText = '0';
+}
+
+$progressValue = (float)str_replace(',', '.', $progressText);
+if (!is_finite($progressValue)) {
+	$progressValue = 0.0;
+}
+$progressValue = max(0.0, min(100.0, $progressValue));
+
+$statusLower = lower_text_simple((string)($hoadon['trangthai'] ?? ''));
+$isCancelled = status_is_cancelled($statusLower);
+$isCompleted = status_is_completed($statusLower);
+$stateClass = $isCancelled ? 'danger' : ($isCompleted ? 'success' : 'warning');
+
+$staffAssigned = invoice_has_supplier_assignment($hoadon);
+$isMyOrder = $staffAssigned && invoice_assigned_to_employee($hoadon, $sessionUser);
+
+$started = trim((string)($hoadon['thoigian_batdau_thucte'] ?? '')) !== '';
+$ended = trim((string)($hoadon['thoigian_ketthuc_thucte'] ?? '')) !== '';
+$inPlanWindow = in_plan_window(
+	(string)($hoadon['ngay_bat_dau_kehoach'] ?? ''),
+	(string)($hoadon['ngay_ket_thuc_kehoach'] ?? '')
+);
+
+$canClaim = !$staffAssigned && !$isCancelled && !$isCompleted;
+$canStart = $isMyOrder && $inPlanWindow && (!$started || $ended) && !$isCancelled && !$isCompleted;
+$canEnd = $isMyOrder && $started && !$ended && !$isCancelled && !$isCompleted;
+
+$proofMedia = array_values(array_unique(array_merge(
+	work_parse_media((string)($hoadon['yeu_cau_khac'] ?? '')),
+	work_parse_media((string)($hoadon['ghi_chu'] ?? ''))
+)));
 
 $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 ?>
@@ -561,11 +610,11 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 			<div class="hero-box">
 				<div class="hero-top">
 					<div>
-						<h1 class="hero-title">Đơn <?= htmlspecialchars($invoiceCode, ENT_QUOTES, 'UTF-8') ?> <span class="hero-status"><?= htmlspecialchars($statusText, ENT_QUOTES, 'UTF-8') ?></span></h1>
-						<p class="hero-subtitle"><?= htmlspecialchars($serviceName, ENT_QUOTES, 'UTF-8') ?></p>
+						<h1 class="hero-title">Đơn #<?= htmlspecialchars((string)($hoadon['id'] ?? '---'), ENT_QUOTES, 'UTF-8') ?> <span class="hero-status"><?= htmlspecialchars((string)($hoadon['trangthai'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></span></h1>
+						<p class="hero-subtitle"><?= htmlspecialchars((string)($hoadon['dich_vu'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></p>
 					</div>
 					<div class="hero-progress">
-						<strong><?= (int)round($progress) ?>%</strong>
+						<strong><?= (int)round($progressValue) ?>%</strong>
 						<small>Hoàn thành</small>
 					</div>
 				</div>
@@ -573,16 +622,16 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 				<div class="hero-stats">
 					<article class="hero-stat">
 						<p class="label"><i class="bi bi-cash-coin"></i>Tổng tiền</p>
-						<p class="value"><?= htmlspecialchars($totalMoneyText, ENT_QUOTES, 'UTF-8') ?></p>
+						<p class="value"><?= htmlspecialchars((string)($hoadon['tong_tien'] ?? '0'), ENT_QUOTES, 'UTF-8') ?></p>
 					</article>
 					<article class="hero-stat">
 						<p class="label"><i class="bi bi-clock"></i>Thời gian</p>
-						<p class="value"><?= htmlspecialchars($planTimeRangeText, ENT_QUOTES, 'UTF-8') ?></p>
-						<p class="sub"><?= htmlspecialchars($planDayRangeText, ENT_QUOTES, 'UTF-8') ?></p>
+						<p class="value"><?= htmlspecialchars(trim((string)($hoadon['gio_bat_dau_kehoach'] ?? '') . ' - ' . (string)($hoadon['gio_ket_thuc_kehoach'] ?? '')), ENT_QUOTES, 'UTF-8') ?></p>
+						<p class="sub"><?= htmlspecialchars(trim((string)($hoadon['ngay_bat_dau_kehoach'] ?? '') . ' -> ' . (string)($hoadon['ngay_ket_thuc_kehoach'] ?? '')), ENT_QUOTES, 'UTF-8') ?></p>
 					</article>
 					<article class="hero-stat">
 						<p class="label"><i class="bi bi-geo-alt"></i>Địa chỉ</p>
-						<p class="value"><?= htmlspecialchars($addressText, ENT_QUOTES, 'UTF-8') ?></p>
+						<p class="value"><?= htmlspecialchars((string)($hoadon['diachikhachhang'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></p>
 					</article>
 				</div>
 			</div>
@@ -593,18 +642,18 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 						<h2 class="panel-title">Công việc cần thực hiện</h2>
 					</div>
 					<ol class="jobs-list">
-						<?php foreach ($jobs as $job): ?>
+						<?php foreach (jobs_from_dot((string)($hoadon['cong_viec'] ?? '')) as $job): ?>
 							<li><?= htmlspecialchars($job, ENT_QUOTES, 'UTF-8') ?></li>
 						<?php endforeach; ?>
 					</ol>
 					<div class="jobs-meta">
 						<div class="jobs-meta-item">
 							<p class="label-xs">Yêu cầu</p>
-							<p class="value-sm"><?= htmlspecialchars($requestExtra, ENT_QUOTES, 'UTF-8') ?></p>
+							<p class="value-sm"><?= htmlspecialchars((string)($hoadon['yeu_cau_khac'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></p>
 						</div>
 						<div class="jobs-meta-item">
 							<p class="label-xs">Ghi chú</p>
-							<p class="value-sm"><?= htmlspecialchars($note, ENT_QUOTES, 'UTF-8') ?></p>
+							<p class="value-sm"><?= htmlspecialchars((string)($hoadon['ghi_chu'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></p>
 						</div>
 					</div>
 				</article>
@@ -619,13 +668,13 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 							<span><?= htmlspecialchars($progressText, ENT_QUOTES, 'UTF-8') ?>%</span>
 						</div>
 						<div class="progress-wrap">
-							<div class="progress-bar <?= $stateClass === 'danger' ? 'danger' : '' ?>" style="width: <?= htmlspecialchars($progressText, ENT_QUOTES, 'UTF-8') ?>%;"></div>
+							<div class="progress-bar <?= $stateClass === 'danger' ? 'danger' : '' ?>" style="width: <?= htmlspecialchars((string)$progressValue, ENT_QUOTES, 'UTF-8') ?>%;"></div>
 						</div>
 						<p class="muted-note">Tiến độ cộng dồn theo từng ngày làm việc.</p>
 
 						<div class="status-line">
 							<span>Trạng thái:</span>
-							<span class="chip <?= htmlspecialchars($stateClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusText, ENT_QUOTES, 'UTF-8') ?></span>
+							<span class="chip <?= htmlspecialchars($stateClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string)($hoadon['trangthai'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></span>
 						</div>
 
 						<table class="time-table">
@@ -639,27 +688,27 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 							<tbody>
 								<tr>
 									<td>Bắt đầu</td>
-									<td><?= htmlspecialchars($planStartDateTimeText, ENT_QUOTES, 'UTF-8') ?></td>
-									<td><?= htmlspecialchars($realStartText, ENT_QUOTES, 'UTF-8') ?></td>
+									<td><?= htmlspecialchars(trim((string)($hoadon['ngay_bat_dau_kehoach'] ?? '') . ' ' . (string)($hoadon['gio_bat_dau_kehoach'] ?? '')), ENT_QUOTES, 'UTF-8') ?></td>
+									<td><?= htmlspecialchars((string)($hoadon['thoigian_batdau_thucte'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></td>
 								</tr>
 								<tr>
 									<td>Kết thúc</td>
-									<td><?= htmlspecialchars($planEndDateTimeText, ENT_QUOTES, 'UTF-8') ?></td>
-									<td><?= htmlspecialchars($realEndText, ENT_QUOTES, 'UTF-8') ?></td>
+									<td><?= htmlspecialchars(trim((string)($hoadon['ngay_ket_thuc_kehoach'] ?? '') . ' ' . (string)($hoadon['gio_ket_thuc_kehoach'] ?? '')), ENT_QUOTES, 'UTF-8') ?></td>
+									<td><?= htmlspecialchars((string)($hoadon['thoigian_ketthuc_thucte'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></td>
 								</tr>
 							</tbody>
 						</table>
 
 						<div class="status-line">
 							<span>Ghi chú ngày</span>
-							<span><?= htmlspecialchars($planDayRangeText, ENT_QUOTES, 'UTF-8') ?></span>
+							<span><?= htmlspecialchars(trim((string)($hoadon['ngay_bat_dau_kehoach'] ?? '') . ' -> ' . (string)($hoadon['ngay_ket_thuc_kehoach'] ?? '')), ENT_QUOTES, 'UTF-8') ?></span>
 						</div>
-						<p class="muted-note">Số ngày kế hoạch: <?= (int)$daysPlan ?> ngày</p>
+						<p class="muted-note">Ngày đặt đơn: <?= htmlspecialchars((string)($hoadon['ngaydat'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></p>
 
 						<div class="d-flex flex-wrap align-items-center gap-2 mt-1">
 							<?php if ($canClaim): ?>
 								<form method="post" action="xu-ly-cong-viec.php" class="d-inline">
-									<input type="hidden" name="invoice_id" value="<?= (int)$idNumber ?>">
+									<input type="hidden" name="invoice_id" value="<?= (int)($hoadon['id'] ?? 0) ?>">
 									<input type="hidden" name="action" value="claim">
 									<input type="hidden" name="return_to" value="<?= htmlspecialchars($actionReturn, ENT_QUOTES, 'UTF-8') ?>">
 									<button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-hand-thumbs-up me-1"></i>Nhận việc</button>
@@ -668,7 +717,7 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 
 							<?php if ($canStart): ?>
 								<form method="post" action="xu-ly-cong-viec.php" class="d-inline">
-									<input type="hidden" name="invoice_id" value="<?= (int)$idNumber ?>">
+									<input type="hidden" name="invoice_id" value="<?= (int)($hoadon['id'] ?? 0) ?>">
 									<input type="hidden" name="action" value="start">
 									<input type="hidden" name="return_to" value="<?= htmlspecialchars($actionReturn, ENT_QUOTES, 'UTF-8') ?>">
 									<button type="submit" class="btn btn-success btn-sm"><i class="bi bi-play-fill me-1"></i>Bắt đầu</button>
@@ -677,7 +726,7 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 
 							<?php if ($canEnd): ?>
 								<form method="post" action="xu-ly-cong-viec.php" class="d-inline">
-									<input type="hidden" name="invoice_id" value="<?= (int)$idNumber ?>">
+									<input type="hidden" name="invoice_id" value="<?= (int)($hoadon['id'] ?? 0) ?>">
 									<input type="hidden" name="action" value="end">
 									<input type="hidden" name="return_to" value="<?= htmlspecialchars($actionReturn, ENT_QUOTES, 'UTF-8') ?>">
 									<button type="submit" class="btn btn-warning btn-sm text-white"><i class="bi bi-stop-fill me-1"></i>Kết thúc</button>
@@ -698,16 +747,13 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 					</div>
 					<div class="person-card">
 						<div class="person-head">
-							<img class="avatar" src="<?= htmlspecialchars($customerAvatar, ENT_QUOTES, 'UTF-8') ?>" alt="avatar khách hàng">
-							<h3 class="person-name"><?= htmlspecialchars($customerName, ENT_QUOTES, 'UTF-8') ?></h3>
+							<img class="avatar" src="../assets/logomvb.png" alt="avatar khách hàng">
+							<h3 class="person-name"><?= htmlspecialchars((string)($hoadon['tenkhachhang'] ?? 'Khách hàng'), ENT_QUOTES, 'UTF-8') ?></h3>
 						</div>
 						<div class="person-items">
-							<p class="person-row"><i class="bi bi-envelope-fill"></i><span><?= htmlspecialchars($customerEmail, ENT_QUOTES, 'UTF-8') ?></span></p>
-							<p class="person-row"><i class="bi bi-telephone-fill"></i><span><?= htmlspecialchars($customerPhone, ENT_QUOTES, 'UTF-8') ?></span></p>
-							<p class="person-row"><i class="bi bi-geo-alt-fill"></i><span><?= htmlspecialchars($customerAddress, ENT_QUOTES, 'UTF-8') ?></span></p>
-						</div>
-						<div class="person-foot">
-							<span class="chip">Năm sinh: ---</span>
+							<p class="person-row"><i class="bi bi-envelope-fill"></i><span><?= htmlspecialchars((string)($hoadon['emailkhachhang'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></span></p>
+							<p class="person-row"><i class="bi bi-telephone-fill"></i><span><?= htmlspecialchars((string)($hoadon['sdtkhachhang'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></span></p>
+							<p class="person-row"><i class="bi bi-geo-alt-fill"></i><span><?= htmlspecialchars((string)($hoadon['diachikhachhang'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></span></p>
 						</div>
 					</div>
 				</article>
@@ -719,17 +765,16 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 					</div>
 					<div class="person-card">
 						<div class="person-head">
-							<img class="avatar" src="<?= htmlspecialchars($staffAvatar, ENT_QUOTES, 'UTF-8') ?>" alt="avatar nhà cung cấp">
-							<h3 class="person-name"><?= htmlspecialchars($staffName, ENT_QUOTES, 'UTF-8') ?></h3>
+							<img class="avatar" src="../<?= htmlspecialchars((string)($hoadon['avatar_ncc'] ?? 'assets/logomvb.png'), ENT_QUOTES, 'UTF-8') ?>" alt="avatar nhà cung cấp">
+							<h3 class="person-name"><?= htmlspecialchars((string)($hoadon['tenncc'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></h3>
 						</div>
 						<div class="person-items">
-							<p class="person-row"><i class="bi bi-envelope-fill"></i><span><?= htmlspecialchars($staffEmail, ENT_QUOTES, 'UTF-8') ?></span></p>
-							<p class="person-row"><i class="bi bi-telephone-fill"></i><span><?= htmlspecialchars($staffPhone, ENT_QUOTES, 'UTF-8') ?></span></p>
-							<p class="person-row"><i class="bi bi-geo-alt-fill"></i><span><?= htmlspecialchars($staffAddress, ENT_QUOTES, 'UTF-8') ?></span></p>
+							<p class="person-row"><i class="bi bi-envelope-fill"></i><span><?= htmlspecialchars((string)($hoadon['emailncc'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></span></p>
+							<p class="person-row"><i class="bi bi-telephone-fill"></i><span><?= htmlspecialchars((string)($hoadon['sdtncc'] ??  '---'), ENT_QUOTES, 'UTF-8') ?></span></p>
+							<p class="person-row"><i class="bi bi-geo-alt-fill"></i><span><?= htmlspecialchars((string)($hoadon['diachincc'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></span></p>
 						</div>
 						<div class="person-foot">
-							<span class="chip">Nhận việc: <?= htmlspecialchars($staffReceiveAt, ENT_QUOTES, 'UTF-8') ?></span>
-							<span class="chip">Kinh nghiệm: ---</span>
+							<span class="chip">Nhận việc: <?= htmlspecialchars((string)($hoadon['ngaynhan'] ?? '---'), ENT_QUOTES, 'UTF-8') ?></span>
 						</div>
 					</div>
 				</article>

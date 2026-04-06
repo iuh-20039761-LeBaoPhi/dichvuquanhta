@@ -42,49 +42,6 @@ if (!function_exists('get_nhanvien_by_id')) {
     }
 }
 
-if (!function_exists('nhanvien_status_key')) {
-    function nhanvien_status_key(string $status): string
-    {
-        $raw = strtolower(trim($status));
-
-        if (in_array($raw, ['', 'pending', 'cho_duyet', 'cho duyet', 'chờ duyệt', 'waiting'], true)) {
-            return 'pending';
-        }
-        if (in_array($raw, ['active', 'approved', 'da_duyet', 'da duyet', 'đã duyệt'], true)) {
-            return 'active';
-        }
-        if (in_array($raw, ['blocked', 'khoa', 'bi_khoa', 'bi khoa'], true)) {
-            return 'blocked';
-        }
-        if (in_array($raw, ['rejected', 'tu_choi', 'tu choi'], true)) {
-            return 'rejected';
-        }
-
-        return 'other';
-    }
-}
-
-if (!function_exists('nhanvien_status_meta')) {
-    function nhanvien_status_meta(string $status): array
-    {
-        $key = nhanvien_status_key($status);
-        if ($key === 'pending') {
-            return ['key' => $key, 'text' => 'Cho duyet', 'badge' => 'text-bg-warning'];
-        }
-        if ($key === 'active') {
-            return ['key' => $key, 'text' => 'Da duyet', 'badge' => 'text-bg-success'];
-        }
-        if ($key === 'blocked') {
-            return ['key' => $key, 'text' => 'Bi khoa', 'badge' => 'text-bg-secondary'];
-        }
-        if ($key === 'rejected') {
-            return ['key' => $key, 'text' => 'Tu choi', 'badge' => 'text-bg-danger'];
-        }
-
-        return ['key' => $key, 'text' => 'Khac', 'badge' => 'text-bg-dark'];
-    }
-}
-
 if (!function_exists('duyet_nhan_vien')) {
     function duyet_nhan_vien(int $id): array
     {

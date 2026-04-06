@@ -15,8 +15,8 @@ $rows = $data['rows'] ?? [];
 $error = (string)($data['error'] ?? '');
 
 $filtered = array_values(array_filter($rows, static function (array $row) use ($q, $statusFilter): bool {
-	$meta = nhanvien_status_meta((string)($row['trangthai'] ?? ''));
-	if ($statusFilter !== 'all' && $meta['key'] !== $statusFilter) {
+	$status = trim((string)($row['trangthai'] ?? ''));
+	if ($statusFilter !== 'all' && $status !== $statusFilter) {
 		return false;
 	}
 
@@ -26,6 +26,7 @@ $filtered = array_values(array_filter($rows, static function (array $row) use ($
 			(string)($row['hovaten'] ?? ''),
 			(string)($row['email'] ?? ''),
 			(string)($row['sodienthoai'] ?? ''),
+			(string)($row['trangthai'] ?? ''),
 		]));
 		return strpos($target, strtolower($q)) !== false;
 	}
@@ -107,7 +108,16 @@ admin_render_layout_start('Quan Ly nhà cung cấp', 'employees', $admin);
 						<tr><td colspan="7" class="text-center py-4 text-secondary">Khong co du lieu nhà cung cấp.</td></tr>
 					<?php else: ?>
 						<?php foreach ($paginatedRows as $row): ?>
-							<?php $meta = nhanvien_status_meta((string)($row['trangthai'] ?? '')); ?>
+							<?php
+							$status = trim((string)($row['trangthai'] ?? ''));
+							$badge = match ($status) {
+								'pending' => 'text-bg-warning',
+								'active' => 'text-bg-success',
+								'blocked' => 'text-bg-secondary',
+								'rejected' => 'text-bg-danger',
+								default => 'text-bg-dark',
+							};
+							?>
 							<tr>
 								<td class="fw-semibold text-primary">#<?= admin_h((string)($row['id'] ?? '')) ?></td>
 								<td>
@@ -116,21 +126,21 @@ admin_render_layout_start('Quan Ly nhà cung cấp', 'employees', $admin);
 								</td>
 								<td><?= admin_h((string)($row['email'] ?? 'N/A')) ?></td>
 								<td><?= admin_h((string)($row['sodienthoai'] ?? 'N/A')) ?></td>
-								<td><span class="badge rounded-pill <?= admin_h((string)$meta['badge']) ?>"><?= admin_h((string)$meta['text']) ?></span></td>
+								<td><span class="badge rounded-pill <?= admin_h($badge) ?>"><?= admin_h($status !== '' ? $status : 'N/A') ?></span></td>
 								<td><?= admin_h((string)($row['created_date'] ?? 'N/A')) ?></td>
 								<td class="text-end">
 									<div class="d-inline-flex gap-1 flex-wrap justify-content-end">
 										<a href="chi-tiet-nhan-vien.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>" class="btn btn-sm btn-outline-primary">
 											<i class="bi bi-eye me-1"></i>Chi tiet
 										</a>
-										<?php if (($meta['key'] ?? '') === 'pending'): ?>
+										<?php if ($status === 'pending'): ?>
 											<form method="post" action="duyet-nhan-vien.php" class="d-inline">
 												<input type="hidden" name="id" value="<?= admin_h((string)($row['id'] ?? '')) ?>">
 												<input type="hidden" name="return" value="quan-ly-nhan-vien.php">
 												<button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check2-circle me-1"></i>Duyet</button>
 											</form>
 										<?php endif; ?>
-										<?php if (($meta['key'] ?? '') !== 'blocked'): ?>
+										<?php if ($status !== 'blocked'): ?>
 											<form method="post" action="khoa-nhan-vien.php" class="d-inline" onsubmit="return confirm('Ban co chac chan muon khoa tai khoan nay?');">
 												<input type="hidden" name="id" value="<?= admin_h((string)($row['id'] ?? '')) ?>">
 												<input type="hidden" name="return" value="quan-ly-nhan-vien.php">

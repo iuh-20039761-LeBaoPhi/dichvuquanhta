@@ -15,57 +15,29 @@ function esc_nv(string $value): string
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-/** Convert DB image path to browser source. */
-function nv_asset_url(string $path): string
-{
-    $value = trim(str_replace('\\', '/', $path));
-    if ($value === '') {
-        return '../assets/logomvb.png';
-    }
-
-    if (preg_match('/^(https?:)?\/\//i', $value) || strpos($value, 'data:image/') === 0) {
-        return $value;
-    }
-
-    if (strpos($value, '../') === 0 || strpos($value, './') === 0) {
-        return $value;
-    }
-
-    return '../' . ltrim($value, '/');
-}
-
-/** Read text field with fallback. */
-function nv_text(array $row, string $key, string $fallback = '-'): string
-{
-    $value = trim((string)($row[$key] ?? ''));
-    return $value !== '' ? $value : $fallback;
-}
-
 $employeeResult = getNhanVienBySessionId($sessionUser['id'] ?? 0);
-$employee = is_array($employeeResult['row'] ?? null) ? $employeeResult['row'] : [];
 $loadError = (string)($employeeResult['error'] ?? '');
+$row = is_array($employeeResult['row'] ?? null) ? $employeeResult['row'] : [];
 
-$employeeId = (int)($employee['id'] ?? ($sessionUser['id'] ?? 0));
-$fullName = nv_text($employee, 'hovaten', nv_text($employee, 'ten', 'Nhan vien'));
-$email = nv_text($employee, 'email');
-$phone = nv_text($employee, 'sodienthoai');
-$password = nv_text($employee, 'matkhau', '');
-$address = nv_text($employee, 'diachi');
-$birthDate = nv_text($employee, 'ngaysinh');
-$experience = nv_text($employee, 'kinh_nghiem', 'Chua cap nhat');
-$createdDate = nv_text($employee, 'created_date', nv_text($employee, 'created_at'));
+$avatar = trim((string)($row['anh_dai_dien'] ?? ''));
+$cccdFront = trim((string)($row['cccd_mat_truoc'] ?? ''));
+$cccdBack = trim((string)($row['cccd_mat_sau'] ?? ''));
+$statusText = trim((string)($row['trangthai'] ?? ''));
 
-$avatarPath = trim((string)($employee['anh_dai_dien'] ?? ''));
-$cccdFrontPath = trim((string)($employee['cccd_mat_truoc'] ?? ''));
-$cccdBackPath = trim((string)($employee['cccd_mat_sau'] ?? ''));
+if ($avatar === '') {
+    $avatar = '../assets/logomvb.png';
+}
+if ($cccdFront === '') {
+    $cccdFront = '../assets/logomvb.png';
+}
+if ($cccdBack === '') {
+    $cccdBack = '../assets/logomvb.png';
+}
+if ($statusText === '') {
+    $statusText = 'Dang hoat dong';
+}
 
-$avatarUrl = nv_asset_url($avatarPath);
-$cccdFrontUrl = nv_asset_url($cccdFrontPath);
-$cccdBackUrl = nv_asset_url($cccdBackPath);
-
-$statusRaw = strtolower(trim((string)($employee['trangthai'] ?? 'active')));
-$statusText = $statusRaw === 'pending' ? 'Dang cho duyet' : ($statusRaw === 'blocked' ? 'Bi khoa' : 'Dang hoat dong');
-$statusClass = $statusRaw === 'pending' ? ' pending' : '';
+$statusClass = strtolower($statusText) === 'pending' ? ' pending' : '';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -248,9 +220,9 @@ $statusClass = $statusRaw === 'pending' ? ' pending' : '';
                 <div class="col-12 col-lg-4">
                     <div class="card-soft">
                         <div class="card-body text-center">
-                            <img class="avatar" src="<?= esc_nv($avatarUrl) ?>" alt="avatar nhan vien">
-                            <div class="name"><?= esc_nv($fullName) ?></div>
-                            <div class="muted"><?= esc_nv($phone) ?></div>
+                            <img class="avatar" src="../<?= esc_nv($avatar) ?>" alt="avatar nhan vien">
+                            <div class="name"><?= esc_nv((string)($row['hovaten'] ?? 'Nhan vien')) ?></div>
+                            <div class="muted"><?= esc_nv((string)($row['sodienthoai'] ?? '-')) ?></div>
                             <div class="mt-2">
                                 <span class="status-pill<?= esc_nv($statusClass) ?>"><?= esc_nv($statusText) ?></span>
                             </div>
@@ -277,27 +249,27 @@ $statusClass = $statusRaw === 'pending' ? ' pending' : '';
                             <div class="info-grid">
                                 <div class="info-item">
                                     <div class="info-label">Ho va ten</div>
-                                    <div class="info-value"><?= esc_nv($fullName) ?></div>
+                                    <div class="info-value"><?= esc_nv((string)($row['hovaten'] ?? 'Nhan vien')) ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">So dien thoai</div>
-                                    <div class="info-value"><?= esc_nv($phone) ?></div>
+                                    <div class="info-value"><?= esc_nv((string)($row['sodienthoai'] ?? '-')) ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Email</div>
-                                    <div class="info-value"><?= esc_nv($email) ?></div>
+                                    <div class="info-value"><?= esc_nv((string)($row['email'] ?? '-')) ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Dia chi</div>
-                                    <div class="info-value"><?= esc_nv($address) ?></div>
+                                    <div class="info-value"><?= esc_nv((string)($row['diachi'] ?? '-')) ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Ngay sinh</div>
-                                    <div class="info-value"><?= esc_nv($birthDate) ?></div>
+                                    <div class="info-value"><?= esc_nv((string)($row['ngaysinh'] ?? '-')) ?></div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Mo ta kinh nghiem</div>
-                                    <div class="info-value"><?= esc_nv($experience) ?></div>
+                                    <div class="info-value"><?= esc_nv((string)($row['kinh_nghiem'] ?? '-')) ?></div>
                                 </div>
                             </div>
 
@@ -305,24 +277,24 @@ $statusClass = $statusRaw === 'pending' ? ' pending' : '';
                                 <div class="col-12 col-md-4">
                                     <div class="media-item">
                                         <div class="small fw-semibold mb-2">Anh dai dien</div>
-                                        <a href="<?= esc_nv($avatarUrl) ?>" target="_blank" rel="noopener noreferrer">
-                                            <img src="<?= esc_nv($avatarUrl) ?>" alt="anh dai dien">
+                                        <a href="<?= esc_nv($avatar) ?>" target="_blank" rel="noopener noreferrer">
+                                            <img src="../<?= esc_nv($avatar) ?>" alt="anh dai dien">
                                         </a>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="media-item">
                                         <div class="small fw-semibold mb-2">CCCD mat truoc</div>
-                                        <a href="<?= esc_nv($cccdFrontUrl) ?>" target="_blank" rel="noopener noreferrer">
-                                            <img src="<?= esc_nv($cccdFrontUrl) ?>" alt="cccd mat truoc">
+                                        <a href="<?= esc_nv($cccdFront) ?>" target="_blank" rel="noopener noreferrer">
+                                            <img src="../<?= esc_nv($cccdFront) ?>" alt="cccd mat truoc">
                                         </a>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="media-item">
                                         <div class="small fw-semibold mb-2">CCCD mat sau</div>
-                                        <a href="<?= esc_nv($cccdBackUrl) ?>" target="_blank" rel="noopener noreferrer">
-                                            <img src="<?= esc_nv($cccdBackUrl) ?>" alt="cccd mat sau">
+                                        <a href="<?= esc_nv($cccdBack) ?>" target="_blank" rel="noopener noreferrer">
+                                            <img src="../<?= esc_nv($cccdBack) ?>" alt="cccd mat sau">
                                         </a>
                                     </div>
                                 </div>

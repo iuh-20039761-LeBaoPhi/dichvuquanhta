@@ -11,45 +11,27 @@ function esc_edit(string $value): string
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-/** Map DB path to browser path. */
-function asset_url(string $path): string
-{
-    $value = trim(str_replace('\\', '/', $path));
-    if ($value === '') {
-        return '../assets/logomvb.png';
-    }
-
-    if (preg_match('/^(https?:)?\/\//i', $value) || strpos($value, 'data:image/') === 0) {
-        return $value;
-    }
-
-    if (strpos($value, '../') === 0 || strpos($value, './') === 0) {
-        return $value;
-    }
-
-    return '../' . ltrim($value, '/');
-}
-
 $sessionUser = session_user_require_employee('../login.html', 'nhan_vien/sua-thong-tin-nhan-vien.php');
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
 
-$employeeId = (int)($sessionUser['id'] ?? 0);
-$load = getNhanVienBySessionId($employeeId);
-$employee = is_array($load['row'] ?? null) ? $load['row'] : [];
+$load = getNhanVienBySessionId($sessionUser['id'] ?? 0);
 $loadError = (string)($load['error'] ?? '');
+$row = is_array($load['row'] ?? null) ? $load['row'] : [];
 
-$fullName = trim((string)($employee['hovaten'] ?? ''));
-$email = trim((string)($employee['email'] ?? ''));
-$phone = trim((string)($employee['sodienthoai'] ?? ''));
-$password = trim((string)($employee['matkhau'] ?? ''));
-$address = trim((string)($employee['diachi'] ?? ''));
-$birthDate = trim((string)($employee['ngaysinh'] ?? ''));
-$experience = trim((string)($employee['kinh_nghiem'] ?? ''));
+$avatar = trim((string)($row['anh_dai_dien'] ?? ''));
+$cccdFront = trim((string)($row['cccd_mat_truoc'] ?? ''));
+$cccdBack = trim((string)($row['cccd_mat_sau'] ?? ''));
 
-$avatarPath = trim((string)($employee['anh_dai_dien'] ?? ''));
-$cccdFrontPath = trim((string)($employee['cccd_mat_truoc'] ?? ''));
-$cccdBackPath = trim((string)($employee['cccd_mat_sau'] ?? ''));
+if ($avatar === '') {
+    $avatar = '../assets/logomvb.png';
+}
+if ($cccdFront === '') {
+    $cccdFront = '../assets/logomvb.png';
+}
+if ($cccdBack === '') {
+    $cccdBack = '../assets/logomvb.png';
+}
 
 $isDisabled = $loadError !== '';
 ?>
@@ -180,42 +162,38 @@ $isDisabled = $loadError !== '';
         </div>
         <div class="edit-body">
             <form class="form-box" method="post" action="xu-ly-sua-thong-tin-nhan-vien.php" enctype="multipart/form-data">
-                <input type="hidden" name="existing_anh_dai_dien" value="<?= esc_edit($avatarPath) ?>">
-                <input type="hidden" name="existing_cccd_mat_truoc" value="<?= esc_edit($cccdFrontPath) ?>">
-                <input type="hidden" name="existing_cccd_mat_sau" value="<?= esc_edit($cccdBackPath) ?>">
+                <input type="hidden" name="existing_anh_dai_dien" value="<?= esc_edit((string)($row['anh_dai_dien'] ?? '')) ?>">
+                <input type="hidden" name="existing_cccd_mat_truoc" value="<?= esc_edit((string)($row['cccd_mat_truoc'] ?? '')) ?>">
+                <input type="hidden" name="existing_cccd_mat_sau" value="<?= esc_edit((string)($row['cccd_mat_sau'] ?? '')) ?>">
 
                 <div class="row g-3">
-                    <!-- <div class="col-12 col-md-6">
-                        <label class="form-label">ID nhan vien</label>
-                        <input type="text" class="form-control" value="<?= (int)$employeeId ?>" readonly>
-                    </div> -->
                     <div class="col-12 col-md-6">
                         <label for="hovaten" class="form-label">Ho va ten *</label>
-                        <input type="text" class="form-control" id="hovaten" name="hovaten" maxlength="120" required value="<?= esc_edit($fullName) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <input type="text" class="form-control" id="hovaten" name="hovaten" maxlength="120" required value="<?= esc_edit((string)($row['hovaten'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12 col-md-6">
                         <label for="sodienthoai" class="form-label">So dien thoai *</label>
-                        <input type="text" class="form-control" id="sodienthoai" name="sodienthoai" maxlength="20" required value="<?= esc_edit($phone) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <input type="text" class="form-control" id="sodienthoai" name="sodienthoai" maxlength="20" required value="<?= esc_edit((string)($row['sodienthoai'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12 col-md-6">
                         <label for="email" class="form-label">Email *</label>
-                        <input type="email" class="form-control" id="email" name="email" maxlength="150" required value="<?= esc_edit($email) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <input type="email" class="form-control" id="email" name="email" maxlength="150" required value="<?= esc_edit((string)($row['email'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12">
                         <label for="diachi" class="form-label">Dia chi *</label>
-                        <input type="text" class="form-control" id="diachi" name="diachi" maxlength="255" required value="<?= esc_edit($address) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <input type="text" class="form-control" id="diachi" name="diachi" maxlength="255" required value="<?= esc_edit((string)($row['diachi'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12 col-md-6">
                         <label for="matkhau" class="form-label">Mat khau *</label>
-                        <input type="text" class="form-control" id="matkhau" name="matkhau" minlength="6" maxlength="255" required value="<?= esc_edit($password) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <input type="text" class="form-control" id="matkhau" name="matkhau" minlength="6" maxlength="255" required value="<?= esc_edit((string)($row['matkhau'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12 col-md-6">
                         <label for="ngaysinh" class="form-label">Ngay sinh *</label>
-                        <input type="date" class="form-control" id="ngaysinh" name="ngaysinh" required value="<?= esc_edit($birthDate) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <input type="date" class="form-control" id="ngaysinh" name="ngaysinh" required value="<?= esc_edit((string)($row['ngaysinh'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12">
                         <label for="kinh_nghiem" class="form-label">Mo ta kinh nghiem *</label>
-                        <textarea class="form-control" id="kinh_nghiem" name="kinh_nghiem" rows="3" required <?= $isDisabled ? 'disabled' : '' ?>><?= esc_edit($experience) ?></textarea>
+                        <textarea class="form-control" id="kinh_nghiem" name="kinh_nghiem" rows="3" required <?= $isDisabled ? 'disabled' : '' ?>><?= esc_edit((string)($row['kinh_nghiem'] ?? '')) ?></textarea>
                     </div>
                     <div class="col-12 col-md-4">
                         <label for="anh_dai_dien" class="form-label">Anh dai dien moi</label>
@@ -234,18 +212,15 @@ $isDisabled = $loadError !== '';
                 <div class="preview-grid">
                     <div class="preview-card">
                         <div class="small fw-semibold">Anh dai dien hien tai</div>
-                        <img src="<?= esc_edit(asset_url($avatarPath)) ?>" alt="anh dai dien">
-                        <!-- <div class="path-text"><?= esc_edit($avatarPath !== '' ? $avatarPath : '-') ?></div> -->
+                        <img src="../<?= esc_edit($avatar) ?>" alt="anh dai dien">
                     </div>
                     <div class="preview-card">
                         <div class="small fw-semibold">CCCD mat truoc hien tai</div>
-                        <img src="<?= esc_edit(asset_url($cccdFrontPath)) ?>" alt="cccd mat truoc">
-                        <!-- <div class="path-text"><?= esc_edit($cccdFrontPath !== '' ? $cccdFrontPath : '-') ?></div> -->
+                        <img src="../<?= esc_edit($cccdFront) ?>" alt="cccd mat truoc">
                     </div>
                     <div class="preview-card">
                         <div class="small fw-semibold">CCCD mat sau hien tai</div>
-                        <img src="<?= esc_edit(asset_url($cccdBackPath)) ?>" alt="cccd mat sau">
-                        <!-- <div class="path-text"><?= esc_edit($cccdBackPath !== '' ? $cccdBackPath : '-') ?></div> -->
+                        <img src="../<?= esc_edit($cccdBack) ?>" alt="cccd mat sau">
                     </div>
                 </div>
 

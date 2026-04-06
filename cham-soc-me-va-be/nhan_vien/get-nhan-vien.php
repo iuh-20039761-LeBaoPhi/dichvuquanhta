@@ -1,17 +1,14 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Goi API list de lay danh sach ban ghi theo bang.
- * Tra ve mang row da duoc chuan hoa.
- */
 function nv_list_table_rows(string $table): array
 {
-    $url = 'https://api.dvqt.vn/list/';
     $payload = json_encode(['table' => $table], JSON_UNESCAPED_UNICODE);
     if ($payload === false) {
         return [];
     }
+
+    $url = 'https://api.dvqt.vn/list/';
 
     $raw = false;
     if (function_exists('curl_init')) {
@@ -47,14 +44,7 @@ function nv_list_table_rows(string $table): array
         return [];
     }
 
-    $rows = $decoded;
-    if (isset($decoded['data']) && is_array($decoded['data'])) {
-        $rows = $decoded['data'];
-    } elseif (isset($decoded['rows']) && is_array($decoded['rows'])) {
-        $rows = $decoded['rows'];
-    } elseif (isset($decoded['items']) && is_array($decoded['items'])) {
-        $rows = $decoded['items'];
-    }
+    $rows = $decoded['data'] ?? $decoded['rows'] ?? $decoded['items'] ?? $decoded;
 
     if (!is_array($rows)) {
         return [];
@@ -63,52 +53,19 @@ function nv_list_table_rows(string $table): array
     return array_values(array_filter($rows, static fn($row): bool => is_array($row)));
 }
 
-/**
- * Lay thong tin 1 nhan vien theo id.
- */
-function get_nhan_vien_by_id(int $employeeId): ?array
+function getNhanVienBySessionId($sessionEmployeeId): array
 {
+    $employeeId = (int)$sessionEmployeeId;
     if ($employeeId <= 0) {
-        return null;
+        return ['success' => false, 'error' => 'Khong tim thay id nhan vien trong session.', 'row' => []];
     }
 
     $rows = nv_list_table_rows('nhacungcap_mevabe');
     foreach ($rows as $row) {
         if ((int)($row['id'] ?? 0) === $employeeId) {
-            return $row;
+            return ['success' => true, 'error' => '', 'row' => $row];
         }
     }
 
-    return null;
-}
-
-/**
- * Ham dung chung: lay thong tin nhan vien tu session id.
- * Tra ve bo ket qua gom success, error va row.
- */
-function getNhanVienBySessionId($sessionEmployeeId): array
-{
-    $employeeId = (int)$sessionEmployeeId;
-    if ($employeeId <= 0) {
-        return [
-            'success' => false,
-            'error' => 'Khong tim thay id nhan vien trong session.',
-            'row' => null,
-        ];
-    }
-
-    $employee = get_nhan_vien_by_id($employeeId);
-    if (!is_array($employee)) {
-        return [
-            'success' => false,
-            'error' => 'Khong tim thay du lieu nhan vien trong bang nhacungcap_mevabe.',
-            'row' => null,
-        ];
-    }
-
-    return [
-        'success' => true,
-        'error' => '',
-        'row' => $employee,
-    ];
+    return ['success' => false, 'error' => 'Khong tim thay du lieu nhan vien trong bang nhacungcap_mevabe.', 'row' => []];
 }
