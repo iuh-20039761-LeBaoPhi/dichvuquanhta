@@ -8,11 +8,42 @@
      * Dựa trên nền tảng thư viện dvqt-krud.js
      */
 
+    /**
+     * Tự động xác định BASE PATH của dự án
+     * Giúp code hoạt động đúng dù folder gốc là /Test/, /MyProject/ hay /
+     */
+    const getBaseUrl = () => {
+        let base = '/Test'; // Mặc định cũ
+        try {
+            // Thử lấy từ script src của chính nó (dvqt-app.js)
+            const scripts = document.getElementsByTagName('script');
+            for (let i = 0; i < scripts.length; i++) {
+                const src = scripts[i].src;
+                if (src.includes('/public/asset/js/dvqt-app.js')) {
+                    const url = new URL(src);
+                    const path = url.pathname;
+                    const idx = path.indexOf('/public/asset/js/dvqt-app.js');
+                    if (idx !== -1) {
+                        base = path.substring(0, idx);
+                        if (base === '') base = ''; // Root
+                        break;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('[DVQTApp] Không thể tự động xác định Base URL, dùng mặc định /Test');
+        }
+        // Đảm bảo không có slash ở cuối nếu không phải root
+        return base.replace(/\/$/, '');
+    };
+
+    const ROOT_URL = getBaseUrl();
+
     const API_CONFIG = {
         TABLE_CUSTOMER: 'khachhang',
-        TABLE_PROVIDER: '', // Cần được truyền vào từ dịch vụ con
+        TABLE_PROVIDER: '', 
         TABLE_ORDER: '',
-        API_BASE: '/Test/public/api/' // Sử dụng đường dẫn tuyệt đối từ web root
+        API_BASE: ROOT_URL + '/public/api/' 
     };
 
     /**
@@ -39,9 +70,7 @@
 
         /** Sinh đường dẫn API linh hoạt */
         getApiPath: (suffix) => {
-            // Nếu đang chạy local trên XAMPP với folder /Test/
-            const base = window.location.origin + '/Test/public/api/';
-            return base + suffix;
+            return window.location.origin + ROOT_URL + '/public/api/' + suffix;
         }
     };
 
@@ -289,7 +318,8 @@
         },
 
         // Tiện ích export helpers nếu cần (như getApiPath)
-        getApiPath: (suffix) => Utils.getApiPath(suffix)
+        getApiPath: (suffix) => Utils.getApiPath(suffix),
+        ROOT_URL: ROOT_URL
     };
 
     // Export đối tượng global duy nhất
