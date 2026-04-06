@@ -31,7 +31,7 @@ async function checkAlreadyLoggedIn() {
             };
             window.location.href = redirects[session.role] || '../index.html';
         }
-    } catch (e) {}
+    } catch (e) { }
 }
 
 /* ============================
@@ -73,18 +73,25 @@ async function login() {
         // Lấy tham số dịch vụ trên URL (ví dụ: ?service=thonha)
         const urlParams = new URLSearchParams(window.location.search);
         let service = urlParams.get('service');
-        if (service) service = service.trim().toLowerCase(); 
-        
+        if (service) service = service.trim().toLowerCase();
+
         console.log('Current Login Context:', { service, role: _currentRole }); // Hỗ trợ debug cho user
         const providerTableMap = {
             'thonha': 'nhacungcap_thonha',
             'mevabe': 'nhacungcap_mevabe',
+            'nguoibenh': 'nhacungcap_nguoibenh',
+            'nguoigia': 'nhacungcap_nguoigia',
             'donvesinh': 'nhacungcap_donvesinh',
+            'vuonnha': 'nhacungcap_vuonnha',
+            'giatuinhanh': 'nhacungcap_giatuinhanh',
             'thuexe': 'nhacungcap_thuexe',
-            'giatuinhanh': 'nhacungcap_giatuinhanh'
+            'suaxe': 'nhacungcap_suaxe',
+            'giaohangnhanh': 'nhacungcap_giaohangnhanh',
+            'chuyendon': 'nhacungcap_chuyendon',
+            'laixeho': 'nhacungcap_laixeho'
         };
-        // Mặc định kiểm tra bảng thuexe hoặc thonha nếu không rõ dịch vụ
-        const pTable = providerTableMap[service] || 'nhacungcap_thonha';
+        // Tự động nhận diện bảng nếu không có trong map (nhacungcap_...)
+        const pTable = providerTableMap[service] || (service ? ('nhacungcap_' + service.replace(/-/g, '_')) : 'nhacungcap_thonha');
 
         await DVQTApp.login(_currentRole, phone, password, pTable);
 
@@ -96,25 +103,35 @@ async function login() {
         const root = (typeof DVQTApp !== 'undefined' && DVQTApp.ROOT_URL !== undefined) ? DVQTApp.ROOT_URL : '/Test';
 
         if (!service || service === 'dvqt') {
-            // Đăng nhập từ trang chủ DVQT -> Quay về trang chủ DVQT
             target = root + '/index.html';
         } else {
-            // Đăng nhập từ dự án con (thonha, thuexe, ...)
             const serviceHomes = {
                 'thonha': root + '/tho-nha/index.html',
                 'thuexe': root + '/thue-xe/index.html',
-                'giatuinhanh': root + '/giat-ui-nhanh/index.html'
+                'giatuinhanh': root + '/giat-ui-nhanh/index.html',
+                'mevabe': root + '/cham-soc-me-va-be/index.html',
+                'nguoibenh': root + '/cham-soc-nguoi-benh/index.html',
+                'nguoigia': root + '/cham-soc-nguoi-gia/index.html',
+                'donvesinh': root + '/dich-vu-don-ve-sinh/index.html',
+                'vuonnha': root + '/cham-soc-vuon-nha/index.html',
+                'giaohangnhanh': root + '/giao-hang-nhanh/index.html',
+                'suaxe': root + '/sua-xe-luu-dong/index.html',
+                'chuyendon': root + '/dich-vu-chuyen-don/index.html',
+                'laixeho': root + '/dich-vu-lai-xe-ho/index.html'
             };
             const serviceDashboards = {
                 'thonha': root + '/tho-nha/pages/provider/trang-ca-nhan.html',
                 'thuexe': root + '/thue-xe/views/pages/provider/bang-dieu-khien.html',
-                'giatuinhanh': root + '/giat-ui-nhanh/nha-cung-cap.html'
+                'giatuinhanh': root + '/giat-ui-nhanh/nha-cung-cap.html',
+                'mevabe': root + '/cham-soc-me-va-be/index.html', // Cập nhật sau nếu có dash riêng
+                'nguoibenh': root + '/cham-soc-nguoi-benh/index.html',
+                'nguoigia': root + '/cham-soc-nguoi-gia/index.html'
             };
 
             if (_currentRole === 'customer') {
-                target = serviceHomes[service] || root + '/index.html';
+                target = serviceHomes[service] || (root + '/index.html');
             } else {
-                target = serviceDashboards[service] || root + '/index.html';
+                target = serviceDashboards[service] || serviceHomes[service] || (root + '/index.html');
             }
         }
 

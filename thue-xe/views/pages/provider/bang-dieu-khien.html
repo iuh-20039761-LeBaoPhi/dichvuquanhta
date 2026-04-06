@@ -170,28 +170,19 @@
     </div>
 </div>
 
+<!-- Tích hợp hệ thống dùng chung DVQT -->
+<script src="../../public/asset/js/dvqt-krud.js"></script>
+<script src="../../public/asset/js/dvqt-app.js"></script>
+
 <script>
 let providerCars = [];
 let providerBookings = [];
 
-function resolveAppBase() {
-    const path = window.location.pathname || '';
-    const lower = path.toLowerCase();
-    const thueXeIndex = lower.indexOf('/thue-xe/');
-    if (thueXeIndex !== -1) {
-        const prefix = path.slice(0, thueXeIndex + '/thue-xe/'.length);
-        return window.location.origin + prefix;
-    }
-    if (lower.startsWith('/globalcare/')) {
-        return window.location.origin + '/GlobalCare/thue-xe/';
-    }
-    return window.location.origin + '/thue-xe/';
-}
-
-const APP_BASE = resolveAppBase();
+// Tự động tìm đường dẫn gốc
+const ROOT = (typeof DVQTApp !== 'undefined' && DVQTApp.ROOT_URL !== undefined) ? DVQTApp.ROOT_URL : '/Test';
 
 function appUrl(relativePath) {
-    return new URL(relativePath.replace(/^\/+/, ''), APP_BASE).toString();
+    return ROOT + '/thue-xe/' + relativePath.replace(/^\/+/, '');
 }
 
 function fmtPrice(n) { return Number(n || 0).toLocaleString('vi-VN') + ' đ'; }
@@ -214,17 +205,26 @@ function getBookingStatusMeta(status) {
     return { label: 'Đã hủy', badgeClass: 'badge-paused' };
 }
 
+// KIỂM TRA SESSION VÀ QUYỀN TRUY CẬP TRUNG TÂM
 async function ensureProviderLogin() {
     try {
-        const response = await fetch(appUrl('controllers/provider/auth-controller.php?action=checkLogin'));
-        const data = await response.json();
-        if (!data.success) {
-            window.location.href = appUrl('views/pages/provider/dang-nhap.html?redirect=' + encodeURIComponent('controllers/provider/dashboard-controller.php'));
+        const session = await DVQTApp.checkSession();
+        if (!session.logged_in || session.role !== 'provider') {
+            window.location.href = ROOT + '/public/dang-nhap.html?service=thuexe';
             return null;
         }
-        return data;
+
+        // Kiểm tra quyền "Nhà cung cấp Thuê xe"
+        const hasAccess = await DVQTApp.checkAccess('nhacungcap_thuexe', session.phone);
+        if (!hasAccess) {
+            alert("Tài khoản của bạn chưa đăng ký làm đối tác Thuê Xe!");
+            window.location.href = ROOT + '/index.html';
+            return null;
+        }
+
+        return session;
     } catch (error) {
-        window.location.href = appUrl('views/pages/provider/dang-nhap.html?redirect=' + encodeURIComponent('controllers/provider/dashboard-controller.php'));
+        window.location.href = ROOT + '/public/dang-nhap.html?service=thuexe';
         return null;
     }
 }
@@ -316,11 +316,9 @@ function closeSidebar() {
     document.querySelector('.sidebar').classList.remove('open');
     document.getElementById('sidebarOverlay').classList.remove('show');
 }
-function logout() {
-    fetch(appUrl('controllers/provider/auth-controller.php?action=logout'))
-        .then(() => {
-            window.location.href = appUrl('views/pages/provider/dang-nhap.html');
-        });
+async function logout() {
+    await DVQTApp.logout();
+    window.location.href = ROOT + '/public/dang-nhap.html?service=thuexe';
 }
 
 (async function initProviderDashboard() {

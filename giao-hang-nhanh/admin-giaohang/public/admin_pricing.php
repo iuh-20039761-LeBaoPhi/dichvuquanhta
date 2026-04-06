@@ -488,6 +488,118 @@ function handle_save_vehicles_action(array $pricingData, array $submittedVehicle
     return action_result(true, 'Đã cập nhật cấu hình phương tiện.', $pricingData, 'Không thể lưu cấu hình phương tiện.');
 }
 
+function handle_save_vehicle_row_action(array $pricingData, array $submittedVehicle, $originalKey)
+{
+    $vehicles = normalize_vehicle_configs($pricingData['phuong_tien'] ?? []);
+    $originalKey = trim((string) $originalKey);
+    $index = null;
+
+    foreach ($vehicles as $i => $vehicle) {
+        if (($vehicle['key'] ?? '') === $originalKey) {
+            $index = $i;
+            break;
+        }
+    }
+
+    if ($index === null) {
+        return action_result(false, 'Không tìm thấy phương tiện cần cập nhật.');
+    }
+
+    $nextKey = trim((string) ($submittedVehicle['key'] ?? $originalKey));
+    $nextLabel = trim((string) ($submittedVehicle['label'] ?? ($vehicles[$index]['label'] ?? $nextKey)));
+    $heSoXe = to_float_number($submittedVehicle['he_so_xe'] ?? ($vehicles[$index]['he_so_xe'] ?? 1), 2);
+    $giaCoBan = to_int_price($submittedVehicle['gia_co_ban'] ?? ($vehicles[$index]['gia_co_ban'] ?? 0));
+    $phiToiThieu = to_int_price($submittedVehicle['phi_toi_thieu'] ?? ($vehicles[$index]['phi_toi_thieu'] ?? 0));
+    $trongLuong = to_float_number($submittedVehicle['trong_luong_toi_da'] ?? ($vehicles[$index]['trong_luong_toi_da'] ?? 0), 2);
+
+    if ($nextKey === '') {
+        return action_result(false, 'Mã phương tiện không được để trống.');
+    }
+    if ($nextLabel === '') {
+        return action_result(false, 'Tên hiển thị phương tiện không được để trống.');
+    }
+    if ($heSoXe < 1) {
+        return action_result(false, 'Hệ số xe phải từ 1 trở lên.');
+    }
+    if ($giaCoBan <= 0 || $phiToiThieu < 0 || $trongLuong <= 0) {
+        return action_result(false, 'Giá cơ bản, phí tối thiểu và tải trọng tối đa của phương tiện phải hợp lệ.');
+    }
+
+    foreach ($vehicles as $i => $vehicle) {
+        if ($i === $index) {
+            continue;
+        }
+        if (($vehicle['key'] ?? '') === $nextKey) {
+            return action_result(false, 'Mã phương tiện bị trùng, vui lòng kiểm tra lại.');
+        }
+    }
+
+    $vehicles[$index] = [
+        'key' => $nextKey,
+        'label' => $nextLabel,
+        'he_so_xe' => $heSoXe,
+        'gia_co_ban' => $giaCoBan,
+        'phi_toi_thieu' => $phiToiThieu,
+        'trong_luong_toi_da' => $trongLuong,
+        'description' => trim((string) ($submittedVehicle['description'] ?? ($vehicles[$index]['description'] ?? ''))),
+    ];
+
+    if (!find_vehicle_config($vehicles, 'xe_may')) {
+        return action_result(false, 'Cần giữ lại cấu hình xe_may để tính Giao ngay.');
+    }
+
+    $pricingData['phuong_tien'] = array_values($vehicles);
+    return action_result(true, 'Đã cập nhật phương tiện.', $pricingData, 'Không thể cập nhật phương tiện.');
+}
+
+function handle_save_goods_fee_row_action(array $pricingData, array $submittedRow, $originalKey)
+{
+    $domestic = $pricingData['BAOGIACHITIET']['noidia'] ?? [];
+    $goodsFees = $domestic['philoaihang'] ?? [];
+    $goodsLabels = $domestic['tenloaihang'] ?? [];
+    $goodsDescriptions = $domestic['motaloaihang'] ?? [];
+    $goodsMultipliers = $domestic['hesoloaihang'] ?? [];
+
+    $originalKey = sanitize_price_key($originalKey);
+    if ($originalKey === '' || !isset($goodsFees[$originalKey])) {
+        return action_result(false, 'Không tìm thấy loại hàng cần cập nhật.');
+    }
+
+    $nextKey = sanitize_price_key($submittedRow['key'] ?? $originalKey);
+    $nextLabel = trim((string) ($submittedRow['label'] ?? ($goodsLabels[$originalKey] ?? $nextKey)));
+    $nextHeSo = to_float_number($submittedRow['he_so'] ?? ($goodsMultipliers[$originalKey] ?? 1), 3);
+
+    if ($nextKey === '') {
+        return action_result(false, 'Mã loại hàng không được để trống.');
+    }
+    if ($nextLabel === '') {
+        return action_result(false, 'Tên hiển thị của loại hàng không được để trống.');
+    }
+    if ($nextHeSo < 1) {
+        return action_result(false, 'Hệ số loại hàng phải từ 1 trở lên.');
+    }
+    if ($nextKey !== $originalKey && isset($goodsFees[$nextKey])) {
+        return action_result(false, 'Mã loại hàng này đã tồn tại.');
+    }
+
+    $nextFee = to_int_price($submittedRow['fee'] ?? $goodsFees[$originalKey]);
+    $nextDescription = trim((string) ($submittedRow['description'] ?? ($goodsDescriptions[$originalKey] ?? '')));
+
+    unset($goodsFees[$originalKey], $goodsLabels[$originalKey], $goodsDescriptions[$originalKey], $goodsMultipliers[$originalKey]);
+    $goodsFees[$nextKey] = $nextFee;
+    $goodsLabels[$nextKey] = $nextLabel;
+    $goodsDescriptions[$nextKey] = $nextDescription;
+    $goodsMultipliers[$nextKey] = $nextHeSo;
+
+    $domestic['philoaihang'] = $goodsFees;
+    $domestic['tenloaihang'] = $goodsLabels;
+    $domestic['motaloaihang'] = $goodsDescriptions;
+    $domestic['hesoloaihang'] = $goodsMultipliers;
+    $pricingData['BAOGIACHITIET']['noidia'] = $domestic;
+
+    return action_result(true, 'Đã cập nhật loại phụ phí.', $pricingData, 'Không thể cập nhật loại phụ phí.');
+}
+
 function dispatch_pricing_action($action, array $post, array $pricingData, array $serviceMeta, array $scheduledServiceMeta, $instantServiceKey)
 {
     switch ($action) {
@@ -507,6 +619,10 @@ function dispatch_pricing_action($action, array $post, array $pricingData, array
             return handle_save_cod_insurance_action($pricingData, $post['cod_insurance'] ?? []);
         case 'save_vehicles':
             return handle_save_vehicles_action($pricingData, $post['vehicles'] ?? []);
+        case 'save_vehicle_row':
+            return handle_save_vehicle_row_action($pricingData, $post['vehicle_row'] ?? [], $post['original_vehicle_key'] ?? '');
+        case 'save_goods_fee_row':
+            return handle_save_goods_fee_row_action($pricingData, $post['goods_row'] ?? [], $post['original_goods_key'] ?? '');
         default:
             return action_result(false, 'Hành động cập nhật không hợp lệ.');
     }
@@ -579,11 +695,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
         <div class="pricing-shell">
             <div class="pricing-brief">
                 <p class="pricing-note">
-                    Chỉnh trực tiếp file <code>public/data/pricing-data.json</code>. Ba gói theo vùng dùng giá cố định, còn <strong>Giao ngay</strong> tính theo km xe máy và tham chiếu thêm cấu hình phương tiện ở dưới.
+                    Chỉnh bảng giá đang dùng trong <code>public/data/pricing-data.json</code>. Ba gói chính dùng giá cố định theo vùng, còn <strong>Giao ngay</strong> lấy đơn giá theo km và cấu hình phương tiện.
                 </p>
             </div>
-            <div class="pricing-layout">
-                <div class="pricing-content">
+            <div class="pricing-content">
         <div class="pricing-tabs">
             <div class="pricing-tabs__label">Mục chỉnh giá</div>
             <nav class="pricing-nav pricing-nav--tabs">
@@ -596,32 +711,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
             </nav>
         </div>
         <div class="pricing-grid">
+            <?php $instantConfig = $serviceConfigs[$instantServiceKey] ?? []; ?>
+
             <section class="pricing-card" id="section-vung">
                 <div class="pricing-card__head">
                     <div>
                         <h3>Bảng giá dịch vụ chính</h3>
-                        <p class="pricing-section__desc">Ba gói này dùng giá cố định theo vùng. Khác với Giao ngay, phần này hiện không tính thêm theo cân nặng hoặc theo km.</p>
+                        <div class="pricing-section-meta">
+                            <p class="pricing-section-meta__item"><span>Chỉnh gì</span>Giá cố định của 3 gói theo vùng giao hàng.</p>
+                            <p class="pricing-section-meta__item"><span>Ảnh hưởng tới đâu</span>Cước nền của Tiêu chuẩn, Nhanh và Hỏa tốc.</p>
+                        </div>
                     </div>
+                    <button type="button" class="btn-secondary pricing-open-btn" data-open-modal="modal-services"><i class="fa-solid fa-pen-to-square"></i> Chỉnh toàn bộ</button>
                 </div>
                 <div class="pricing-card__body">
-                    <div class="pricing-explainer-grid">
-                        <article class="pricing-explainer-card">
-                            <h4>Giá nền theo vùng</h4>
-                            <p><strong>Nội quận</strong>, <strong>Nội thành</strong> và <strong>Liên tỉnh</strong> là giá mở đầu của từng gói.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Phần không áp dụng</h4>
-                            <p>Ba gói này hiện không cộng thêm theo cân nặng. Nếu cần tốc độ và công thức linh hoạt hơn thì dùng tab <strong>Giao ngay</strong>.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Phụ phí khác</h4>
-                            <p>Khung giờ, thời tiết, COD, bảo hiểm, loại hàng và điều chỉnh xe nằm ở các tab bên cạnh, không nhập chung ở đây.</p>
-                        </article>
-                    </div>
-                    <form method="post" onsubmit="return confirm('Lưu thay đổi cho 3 gói dịch vụ chính?');">
-                        <input type="hidden" name="action" value="save_services">
-                        <div class="pricing-table-wrap">
-                        <table class="pricing-table pricing-table--services">
+                    <div class="pricing-table-wrap">
+                        <table class="pricing-table pricing-summary-table pricing-table--services">
                             <thead>
                                 <tr>
                                     <th>Dịch vụ</th>
@@ -629,6 +734,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                                     <th>Nội quận</th>
                                     <th>Nội thành</th>
                                     <th>Liên tỉnh</th>
+                                    <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -637,19 +743,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                                     <?php $base = $config['coban'] ?? []; ?>
                                     <tr>
                                         <td><strong><?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?></strong></td>
-                                        <td><input class="admin-input" type="text" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][ten]" value="<?php echo htmlspecialchars((string) ($config['ten'] ?? $serviceLabel), ENT_QUOTES, 'UTF-8'); ?>"></td>
-                                        <td><input class="admin-input" type="number" min="0" step="1000" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][cungquan]" value="<?php echo htmlspecialchars((string) ($base['cungquan'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
-                                        <td><input class="admin-input" type="number" min="0" step="1000" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][khacquan]" value="<?php echo htmlspecialchars((string) ($base['khacquan'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
-                                        <td><input class="admin-input" type="number" min="0" step="1000" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][lientinh]" value="<?php echo htmlspecialchars((string) ($base['lientinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                        <td><?php echo htmlspecialchars((string) ($config['ten'] ?? $serviceLabel), ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($base['cungquan'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                        <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($base['khacquan'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                        <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($base['lientinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                        <td><button type="button" class="pricing-action-btn" data-open-modal="modal-service-<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>">Chi tiết</button></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
-                        </div>
-                        <div class="pricing-actions">
-                            <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu bảng giá dịch vụ</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </section>
 
@@ -657,29 +760,317 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                 <div class="pricing-card__head">
                     <div>
                         <h3>Cấu hình Giao ngay</h3>
-                        <p class="pricing-section__desc">Tab này chỉ chỉnh phần đơn giá xe máy theo km của Giao ngay. Công thức đầy đủ của Giao ngay được ghép từ nhiều tab khác nhau, nên nếu nhìn riêng tab này sẽ có cảm giác thiếu.</p>
+                        <div class="pricing-section-meta">
+                            <p class="pricing-section-meta__item"><span>Chỉnh gì</span>Đơn giá gần, ngưỡng xa và đơn giá xa của xe máy.</p>
+                            <p class="pricing-section-meta__item"><span>Ảnh hưởng tới đâu</span>Phần cước vận chuyển chính của dịch vụ Giao ngay.</p>
+                        </div>
                     </div>
-                    <p class="pricing-section__hint">
-                        Phí tối thiểu xe máy chỉnh trong phần <strong>Phương tiện</strong>.<br>
-                        Công thức đang dùng: <strong>max(phí tối thiểu, km × đơn giá xe máy × hệ số xăng)</strong>.
-                    </p>
+                    <button type="button" class="btn-secondary pricing-open-btn" data-open-modal="modal-instant"><i class="fa-solid fa-pen-to-square"></i> Chỉnh chi tiết</button>
                 </div>
                 <div class="pricing-card__body">
-                    <div class="pricing-explainer-grid">
-                        <article class="pricing-explainer-card">
-                            <h4>Tab này chỉnh gì</h4>
-                            <p>Chỉ chỉnh <strong>đơn giá xe máy gần</strong>, <strong>ngưỡng chuyển giá</strong> và <strong>đơn giá xe máy xa</strong>.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Tab khác ảnh hưởng gì</h4>
-                            <p><strong>Phương tiện</strong> quyết định phí tối thiểu và hệ số xe. <strong>Phụ phí dịch vụ</strong> quyết định khung giờ và thời tiết.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Phần cộng thêm</h4>
-                            <p><strong>COD / bảo hiểm</strong> và <strong>Phụ phí loại hàng</strong> vẫn cộng vào tổng cước sau khi tính phần vận chuyển chính.</p>
-                        </article>
+                    <p class="pricing-section__hint pricing-section__hint--inline">
+                        Phí tối thiểu xe máy chỉnh ở tab <strong>Phương tiện</strong>. Công thức hiện dùng: <strong>max(phí tối thiểu, km × đơn giá xe máy × hệ số xăng)</strong>.
+                    </p>
+                    <div class="pricing-table-wrap">
+                        <table class="pricing-table pricing-summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Tên hiển thị</th>
+                                    <th>Đơn giá gần</th>
+                                    <th>Ngưỡng xa</th>
+                                    <th>Đơn giá xa</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><?php echo htmlspecialchars((string) ($instantConfig['ten'] ?? $serviceMeta[$instantServiceKey]), ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($instantNearPrice), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                    <td><?php echo htmlspecialchars((string) $instantFarThreshold, ENT_QUOTES, 'UTF-8'); ?> km</td>
+                                    <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($instantFarPrice), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                    <td><button type="button" class="pricing-action-btn" data-open-modal="modal-instant">Chi tiết</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <?php $instantConfig = $serviceConfigs[$instantServiceKey] ?? []; ?>
+                </div>
+            </section>
+
+            <section class="pricing-card" id="section-service-fee">
+                <div class="pricing-card__head">
+                    <div>
+                        <h3>Phụ phí dịch vụ</h3>
+                        <div class="pricing-section-meta">
+                            <p class="pricing-section-meta__item"><span>Chỉnh gì</span>Phí cố định và hệ số theo khung giờ, điều kiện giao.</p>
+                            <p class="pricing-section-meta__item"><span>Ảnh hưởng tới đâu</span>Phần phụ phí cộng thêm vào cước vận chuyển.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-secondary pricing-open-btn" data-open-modal="modal-service-fees"><i class="fa-solid fa-pen-to-square"></i> Chỉnh toàn bộ</button>
+                </div>
+                <div class="pricing-card__body">
+                    <div class="pricing-summary-group">
+                        <div class="pricing-summary-group__head">
+                            <h4>Khung giờ</h4>
+                            <span><?php echo count((array) ($serviceFeeConfig['thoigian'] ?? [])); ?> mục</span>
+                        </div>
+                        <div class="pricing-table-wrap">
+                            <table class="pricing-table pricing-summary-table pricing-table--service-fees">
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>Bắt đầu</th>
+                                        <th>Kết thúc</th>
+                                        <th>Phí cố định</th>
+                                        <th>Hệ số</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach (($serviceFeeConfig['thoigian'] ?? []) as $timeKey => $timeConfig): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars((string) ($timeConfig['ten'] ?? $timeKey), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><?php echo htmlspecialchars((string) ($timeConfig['batdau'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><?php echo htmlspecialchars((string) ($timeConfig['ketthuc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($timeConfig['phicodinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                            <td><?php echo htmlspecialchars((string) ($timeConfig['heso'] ?? 1), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><button type="button" class="pricing-action-btn" data-open-modal="modal-time-<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>">Chi tiết</button></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="pricing-summary-group">
+                        <div class="pricing-summary-group__head">
+                            <h4>Điều kiện giao</h4>
+                            <span><?php echo count((array) ($serviceFeeConfig['thoitiet'] ?? [])); ?> mục</span>
+                        </div>
+                        <div class="pricing-table-wrap">
+                            <table class="pricing-table pricing-summary-table pricing-table--service-fees">
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>Phí cố định</th>
+                                        <th>Hệ số</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach (($serviceFeeConfig['thoitiet'] ?? []) as $weatherKey => $weatherConfig): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars((string) ($weatherConfig['ten'] ?? $weatherKey), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($weatherConfig['phicodinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                            <td><?php echo htmlspecialchars((string) ($weatherConfig['heso'] ?? 1), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><button type="button" class="pricing-action-btn" data-open-modal="modal-weather-<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>">Chi tiết</button></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pricing-card" id="section-cod">
+                <div class="pricing-card__head">
+                    <div>
+                        <h3>COD / bảo hiểm</h3>
+                        <div class="pricing-section-meta">
+                            <p class="pricing-section-meta__item"><span>Chỉnh gì</span>Ngưỡng miễn phí, tỷ lệ và mức tối thiểu cho COD, bảo hiểm.</p>
+                            <p class="pricing-section-meta__item"><span>Ảnh hưởng tới đâu</span>Các khoản thu hộ và bảo hiểm trong breakdown đơn hàng.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-secondary pricing-open-btn" data-open-modal="modal-cod"><i class="fa-solid fa-pen-to-square"></i> Chỉnh chi tiết</button>
+                </div>
+                <div class="pricing-card__body">
+                    <p class="pricing-section__hint pricing-section__hint--inline">
+                        Tỷ lệ nhập dưới dạng số thập phân. Ví dụ <strong>0.012</strong> tương đương <strong>1.2%</strong>.
+                    </p>
+                    <div class="pricing-table-wrap">
+                        <table class="pricing-table pricing-summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Loại</th>
+                                    <th>Ngưỡng miễn phí</th>
+                                    <th>Tỷ lệ</th>
+                                    <th>Tối thiểu</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>COD</td>
+                                    <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview(($codInsuranceConfig['thuho']['nguong'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                    <td><?php echo htmlspecialchars(number_format(((float) ($codInsuranceConfig['thuho']['kieu'] ?? 0)) * 100, 2), ENT_QUOTES, 'UTF-8'); ?>%</td>
+                                    <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview(($codInsuranceConfig['thuho']['toithieu'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                    <td><button type="button" class="pricing-action-btn" data-open-modal="modal-cod-row">Chi tiết</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Bảo hiểm</td>
+                                    <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview(($codInsuranceConfig['baohiem']['nguong'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                    <td><?php echo htmlspecialchars(number_format(((float) ($codInsuranceConfig['baohiem']['kieu'] ?? 0)) * 100, 2), ENT_QUOTES, 'UTF-8'); ?>%</td>
+                                    <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview(($codInsuranceConfig['baohiem']['toithieu'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                    <td><button type="button" class="pricing-action-btn" data-open-modal="modal-insurance-row">Chi tiết</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pricing-card pricing-card--wide" id="section-vehicle">
+                <div class="pricing-card__head">
+                    <div>
+                        <h3>Phương tiện</h3>
+                        <div class="pricing-section-meta">
+                            <p class="pricing-section-meta__item"><span>Chỉnh gì</span>Giá cơ bản, hệ số xe, phí tối thiểu và tải trọng.</p>
+                            <p class="pricing-section-meta__item"><span>Ảnh hưởng tới đâu</span>Giá theo phương tiện, nhất là xe máy và xe 4 bánh.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-secondary pricing-open-btn" data-open-modal="modal-vehicles"><i class="fa-solid fa-pen-to-square"></i> Chỉnh toàn bộ</button>
+                </div>
+                <div class="pricing-card__body">
+                    <div class="pricing-table-wrap">
+                        <table class="pricing-table pricing-summary-table pricing-table--vehicles">
+                            <thead>
+                                <tr>
+                                    <th>Mã</th>
+                                    <th>Tên hiển thị</th>
+                                    <th>Tải trọng tối đa</th>
+                                    <th>Giá cơ bản</th>
+                                    <th>Hệ số xe</th>
+                                    <th>Đơn giá thực tế/km</th>
+                                    <th>Phí tối thiểu</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($vehicleConfigs as $vehicleIndex => $vehicle): ?>
+                                    <?php $donGiaKm = round((float) ($vehicle['gia_co_ban'] ?? 0) * (float) ($vehicle['he_so_xe'] ?? 1)); ?>
+                                    <tr>
+                                        <td><strong><?php echo htmlspecialchars((string) ($vehicle['key'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong></td>
+                                        <td><?php echo htmlspecialchars((string) ($vehicle['label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td><?php echo htmlspecialchars((string) ($vehicle['trong_luong_toi_da'] ?? 0), ENT_QUOTES, 'UTF-8'); ?> kg</td>
+                                        <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($vehicle['gia_co_ban'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                        <td><?php echo htmlspecialchars((string) ($vehicle['he_so_xe'] ?? 1), ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($donGiaKm), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                        <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($vehicle['phi_toi_thieu'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                        <td><button type="button" class="pricing-action-btn" data-open-modal="modal-vehicle-<?php echo htmlspecialchars((string) ($vehicle['key'] ?? $vehicleIndex), ENT_QUOTES, 'UTF-8'); ?>">Chi tiết</button></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pricing-card" id="section-goods">
+                <div class="pricing-card__head">
+                    <div>
+                        <h3>Phụ phí loại hàng</h3>
+                        <div class="pricing-section-meta">
+                            <p class="pricing-section-meta__item"><span>Chỉnh gì</span>Phụ phí, hệ số và mô tả của từng loại hàng.</p>
+                            <p class="pricing-section-meta__item"><span>Ảnh hưởng tới đâu</span>Khoản cộng thêm theo loại hàng trong breakdown cước.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-secondary pricing-open-btn" data-open-modal="modal-goods"><i class="fa-solid fa-pen-to-square"></i> Chỉnh toàn bộ</button>
+                </div>
+                <div class="pricing-card__body">
+                    <p class="pricing-section__hint pricing-section__hint--inline">
+                        Hệ số lớn hơn <strong>1</strong> sẽ cộng thêm theo phần trăm trên cước vận chuyển chính.
+                    </p>
+                    <div class="pricing-table-wrap">
+                        <table class="pricing-table pricing-summary-table pricing-table--goods">
+                            <thead>
+                                <tr>
+                                    <th>Mã</th>
+                                    <th>Tên hiển thị</th>
+                                    <th>Phụ phí</th>
+                                    <th>Hệ số</th>
+                                    <th>Mô tả</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($goodsFees as $goodsKey => $goodsFee): ?>
+                                    <tr>
+                                        <td><strong><?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?></strong></td>
+                                        <td><?php echo htmlspecialchars((string) ($goodsLabels[$goodsKey] ?? $goodsKey), ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($goodsFee), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                        <td><?php echo htmlspecialchars((string) ($goodsMultipliers[$goodsKey] ?? 1), ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td class="pricing-cell-muted"><?php echo htmlspecialchars((string) ($goodsDescriptions[$goodsKey] ?? 'Chưa có mô tả'), ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td><button type="button" class="pricing-action-btn" data-open-modal="modal-goods-<?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?>">Chi tiết</button></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="pricing-modal" data-modal="modal-services" hidden>
+            <div class="pricing-modal__backdrop" data-close-modal></div>
+            <div class="pricing-modal__dialog pricing-modal__dialog--lg" role="dialog" aria-modal="true" aria-labelledby="modal-services-title">
+                <div class="pricing-modal__head">
+                    <div>
+                        <h3 id="modal-services-title">Chỉnh bảng giá dịch vụ chính</h3>
+                        <p>Nhập giá cố định cho 3 gói theo vùng giao hàng.</p>
+                    </div>
+                    <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="pricing-modal__body">
+                    <form method="post" onsubmit="return confirm('Lưu thay đổi cho 3 gói dịch vụ chính?');">
+                        <input type="hidden" name="action" value="save_services">
+                        <div class="pricing-table-wrap">
+                            <table class="pricing-table pricing-table--services">
+                                <thead>
+                                    <tr>
+                                        <th>Dịch vụ</th>
+                                        <th>Tên hiển thị</th>
+                                        <th>Nội quận</th>
+                                        <th>Nội thành</th>
+                                        <th>Liên tỉnh</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($scheduledServiceMeta as $serviceKey => $serviceLabel): ?>
+                                        <?php $config = $serviceConfigs[$serviceKey] ?? []; ?>
+                                        <?php $base = $config['coban'] ?? []; ?>
+                                        <tr>
+                                            <td><strong><?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?></strong></td>
+                                            <td><input class="admin-input" type="text" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][ten]" value="<?php echo htmlspecialchars((string) ($config['ten'] ?? $serviceLabel), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="number" min="0" step="1000" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][cungquan]" value="<?php echo htmlspecialchars((string) ($base['cungquan'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="number" min="0" step="1000" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][khacquan]" value="<?php echo htmlspecialchars((string) ($base['khacquan'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="number" min="0" step="1000" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][lientinh]" value="<?php echo htmlspecialchars((string) ($base['lientinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pricing-actions">
+                            <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu bảng giá dịch vụ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="pricing-modal" data-modal="modal-instant" hidden>
+            <div class="pricing-modal__backdrop" data-close-modal></div>
+            <div class="pricing-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-instant-title">
+                <div class="pricing-modal__head">
+                    <div>
+                        <h3 id="modal-instant-title">Chỉnh cấu hình Giao ngay</h3>
+                        <p>Điều chỉnh đơn giá km của xe máy cho Giao ngay.</p>
+                    </div>
+                    <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="pricing-modal__body">
+                    <p class="pricing-section__hint pricing-section__hint--inline">
+                        Phí tối thiểu xe máy chỉnh ở tab <strong>Phương tiện</strong>. Công thức hiện dùng: <strong>max(phí tối thiểu, km × đơn giá xe máy × hệ số xăng)</strong>.
+                    </p>
                     <form method="post" onsubmit="return confirm('Lưu thay đổi cho cấu hình Giao ngay?');">
                         <input type="hidden" name="action" value="save_instant_service">
                         <div class="pricing-add-grid">
@@ -705,121 +1096,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                         </div>
                     </form>
                 </div>
-            </section>
+            </div>
+        </div>
 
-            <section class="pricing-card" id="section-service-fee">
-                <div class="pricing-card__head">
+        <div class="pricing-modal" data-modal="modal-service-fees" hidden>
+            <div class="pricing-modal__backdrop" data-close-modal></div>
+            <div class="pricing-modal__dialog pricing-modal__dialog--lg" role="dialog" aria-modal="true" aria-labelledby="modal-service-fees-title">
+                <div class="pricing-modal__head">
                     <div>
-                        <h3>Phụ phí dịch vụ</h3>
-                        <p class="pricing-section__desc">Một bộ phụ phí thời gian và điều kiện giao đang được dùng để tính thêm cho các gói theo cấu hình hiện hành.</p>
+                        <h3 id="modal-service-fees-title">Chỉnh phụ phí dịch vụ</h3>
+                        <p>Cập nhật khung giờ và điều kiện giao áp vào cước vận chuyển.</p>
                     </div>
+                    <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <div class="pricing-card__body">
-                    <div class="pricing-explainer-grid">
-                        <article class="pricing-explainer-card">
-                            <h4>Phí cố định</h4>
-                            <p>Khoản cộng thẳng vào đơn khi rơi vào khung giờ hoặc điều kiện đó.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Hệ số</h4>
-                            <p>Nhân theo phần cước vận chuyển tạm tính. Ví dụ <strong>1.10</strong> nghĩa là cộng thêm khoảng <strong>10%</strong>.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Thứ tự áp dụng</h4>
-                            <p>Hệ thống tính trên phần vận chuyển và phụ phí hàng hóa trước, rồi mới cộng COD, bảo hiểm và điều chỉnh phương tiện.</p>
-                        </article>
-                    </div>
+                <div class="pricing-modal__body">
                     <form method="post" onsubmit="return confirm('Lưu thay đổi phụ phí dịch vụ?');">
                         <input type="hidden" name="action" value="save_service_fees">
-                        <div class="pricing-table-wrap">
-                        <table class="pricing-table pricing-table--service-fees">
-                            <thead>
-                                <tr>
-                                    <th>Khung giờ</th>
-                                    <th>Bắt đầu</th>
-                                    <th>Kết thúc</th>
-                                    <th>Phí cố định</th>
-                                    <th>Hệ số</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach (($serviceFeeConfig['thoigian'] ?? []) as $timeKey => $timeConfig): ?>
-                                    <tr>
-                                        <td>
-                                            <input class="admin-input" type="text" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][ten]" value="<?php echo htmlspecialchars((string) ($timeConfig['ten'] ?? $timeKey), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="time" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][batdau]" value="<?php echo htmlspecialchars((string) ($timeConfig['batdau'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="time" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][ketthuc]" value="<?php echo htmlspecialchars((string) ($timeConfig['ketthuc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="1000" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][phicodinh]" value="<?php echo htmlspecialchars((string) ($timeConfig['phicodinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="0.01" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][heso]" value="<?php echo htmlspecialchars((string) ($timeConfig['heso'] ?? 1), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                        <div class="pricing-summary-group">
+                            <div class="pricing-summary-group__head">
+                                <h4>Khung giờ</h4>
+                            </div>
+                            <div class="pricing-table-wrap">
+                                <table class="pricing-table pricing-table--service-fees">
+                                    <thead>
+                                        <tr>
+                                            <th>Khung giờ</th>
+                                            <th>Bắt đầu</th>
+                                            <th>Kết thúc</th>
+                                            <th>Phí cố định</th>
+                                            <th>Hệ số</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach (($serviceFeeConfig['thoigian'] ?? []) as $timeKey => $timeConfig): ?>
+                                            <tr>
+                                                <td><input class="admin-input" type="text" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][ten]" value="<?php echo htmlspecialchars((string) ($timeConfig['ten'] ?? $timeKey), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                                <td><input class="admin-input" type="time" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][batdau]" value="<?php echo htmlspecialchars((string) ($timeConfig['batdau'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                                <td><input class="admin-input" type="time" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][ketthuc]" value="<?php echo htmlspecialchars((string) ($timeConfig['ketthuc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                                <td><input class="admin-input" type="number" min="0" step="1000" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][phicodinh]" value="<?php echo htmlspecialchars((string) ($timeConfig['phicodinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                                <td><input class="admin-input" type="number" min="0" step="0.01" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][heso]" value="<?php echo htmlspecialchars((string) ($timeConfig['heso'] ?? 1), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-
                         <div class="pricing-divider"></div>
-
-                        <div class="pricing-table-wrap">
-                        <table class="pricing-table pricing-table--service-fees">
-                            <thead>
-                                <tr>
-                                    <th>Điều kiện giao</th>
-                                    <th>Phí cố định</th>
-                                    <th>Hệ số</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach (($serviceFeeConfig['thoitiet'] ?? []) as $weatherKey => $weatherConfig): ?>
-                                    <tr>
-                                        <td>
-                                            <input class="admin-input" type="text" name="service_weather[<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>][ten]" value="<?php echo htmlspecialchars((string) ($weatherConfig['ten'] ?? $weatherKey), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="1000" name="service_weather[<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>][phicodinh]" value="<?php echo htmlspecialchars((string) ($weatherConfig['phicodinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="0.01" name="service_weather[<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>][heso]" value="<?php echo htmlspecialchars((string) ($weatherConfig['heso'] ?? 1), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                        <div class="pricing-summary-group">
+                            <div class="pricing-summary-group__head">
+                                <h4>Điều kiện giao</h4>
+                            </div>
+                            <div class="pricing-table-wrap">
+                                <table class="pricing-table pricing-table--service-fees">
+                                    <thead>
+                                        <tr>
+                                            <th>Điều kiện giao</th>
+                                            <th>Phí cố định</th>
+                                            <th>Hệ số</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach (($serviceFeeConfig['thoitiet'] ?? []) as $weatherKey => $weatherConfig): ?>
+                                            <tr>
+                                                <td><input class="admin-input" type="text" name="service_weather[<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>][ten]" value="<?php echo htmlspecialchars((string) ($weatherConfig['ten'] ?? $weatherKey), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                                <td><input class="admin-input" type="number" min="0" step="1000" name="service_weather[<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>][phicodinh]" value="<?php echo htmlspecialchars((string) ($weatherConfig['phicodinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                                <td><input class="admin-input" type="number" min="0" step="0.01" name="service_weather[<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>][heso]" value="<?php echo htmlspecialchars((string) ($weatherConfig['heso'] ?? 1), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-
                         <div class="pricing-actions">
                             <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu phụ phí dịch vụ</button>
                         </div>
                     </form>
                 </div>
-            </section>
+            </div>
+        </div>
 
-            <section class="pricing-card" id="section-cod">
-                <div class="pricing-card__head">
+        <div class="pricing-modal" data-modal="modal-cod" hidden>
+            <div class="pricing-modal__backdrop" data-close-modal></div>
+            <div class="pricing-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-cod-title">
+                <div class="pricing-modal__head">
                     <div>
-                        <h3>COD / bảo hiểm</h3>
-                        <p class="pricing-section__desc">Các mức này dùng chung cho thu hộ và bảo hiểm, giúp đồng bộ phần phụ phí giữa các gói cước.</p>
+                        <h3 id="modal-cod-title">Chỉnh COD và bảo hiểm</h3>
+                        <p>Thiết lập ngưỡng miễn phí, tỷ lệ và mức tối thiểu.</p>
                     </div>
+                    <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <div class="pricing-card__body">
-                    <div class="pricing-explainer-grid">
-                        <article class="pricing-explainer-card">
-                            <h4>Tỷ lệ nhập dạng số thập phân</h4>
-                            <p>Ví dụ <strong>0.012</strong> tương đương <strong>1.2%</strong>, còn <strong>0.005</strong> tương đương <strong>0.5%</strong>.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Ngưỡng miễn phí</h4>
-                            <p>Nếu giá trị COD hoặc khai giá chưa vượt ngưỡng, hệ thống sẽ không tính phí.</p>
-                        </article>
-                    </div>
+                <div class="pricing-modal__body">
+                    <p class="pricing-section__hint pricing-section__hint--inline">
+                        Tỷ lệ nhập dưới dạng số thập phân. Ví dụ <strong>0.012</strong> tương đương <strong>1.2%</strong>.
+                    </p>
                     <form method="post" onsubmit="return confirm('Lưu thay đổi COD và bảo hiểm?');">
                         <input type="hidden" name="action" value="save_cod_insurance">
                         <div class="pricing-add-grid">
@@ -853,34 +1222,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                         </div>
                     </form>
                 </div>
-            </section>
+            </div>
+        </div>
 
-            <section class="pricing-card pricing-card--wide" id="section-vehicle">
-                <div class="pricing-card__head">
+        <div class="pricing-modal" data-modal="modal-vehicles" hidden>
+            <div class="pricing-modal__backdrop" data-close-modal></div>
+            <div class="pricing-modal__dialog pricing-modal__dialog--xl" role="dialog" aria-modal="true" aria-labelledby="modal-vehicles-title">
+                <div class="pricing-modal__head">
                     <div>
-                        <h3>Phương tiện</h3>
-                        <p class="pricing-section__desc">Đây là nguồn cấu hình thật cho xe 4 bánh và phí tối thiểu của từng nhóm. Đơn giá thực tế mỗi km được tính bằng giá cơ bản × hệ số xe.</p>
+                        <h3 id="modal-vehicles-title">Chỉnh cấu hình phương tiện</h3>
+                        <p>Giá cơ bản, hệ số xe, phí tối thiểu và tải trọng được chỉnh tại đây.</p>
                     </div>
+                    <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <div class="pricing-card__body">
-                    <div class="pricing-explainer-grid">
-                        <article class="pricing-explainer-card">
-                            <h4>Giá cơ bản</h4>
-                            <p>Mức giá nền theo km của từng nhóm xe trước khi nhân hệ số.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Hệ số xe</h4>
-                            <p>Dùng để tăng giá theo loại xe. <strong>Đơn giá thực tế/km = giá cơ bản × hệ số xe</strong>.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Phí tối thiểu</h4>
-                            <p>Quan trọng với Giao ngay vì công thức luôn chốt theo <strong>max(phí tối thiểu, cước km)</strong>.</p>
-                        </article>
-                    </div>
+                <div class="pricing-modal__body">
                     <form method="post" onsubmit="return confirm('Lưu thay đổi cấu hình phương tiện?');">
                         <input type="hidden" name="action" value="save_vehicles">
                         <?php if (!$vehicleConfigs): ?>
-                            <p class="pricing-section__hint" style="margin-bottom:16px;">
+                            <p class="pricing-section__hint pricing-section__hint--inline">
                                 File <code>pricing-data.json</code> hiện chưa có cấu hình phương tiện. Hãy thêm dữ liệu xe trực tiếp vào JSON trước, hoặc lưu lại từ một nguồn đã có dữ liệu hợp lệ.
                             </p>
                         <?php endif; ?>
@@ -888,129 +1247,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                             Kéo ngang bảng để xem đủ tất cả cột. Riêng cột <strong>Mô tả</strong> đã được nới rộng để đọc nội dung dài dễ hơn.
                         </p>
                         <div class="pricing-table-wrap">
-                        <table class="pricing-table pricing-table--vehicles">
-                            <thead>
-                                <tr>
-                                    <th>Mã</th>
-                                    <th>Tên hiển thị</th>
-                                    <th>Tải trọng tối đa</th>
-                                    <th>Giá cơ bản</th>
-                                    <th>Hệ số xe</th>
-                                    <th>Đơn giá thực tế/km</th>
-                                    <th>Phí tối thiểu</th>
-                                    <th>Mô tả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($vehicleConfigs as $vehicleIndex => $vehicle): ?>
-                                    <?php $donGiaKm = round((float) ($vehicle['gia_co_ban'] ?? 0) * (float) ($vehicle['he_so_xe'] ?? 1)); ?>
+                            <table class="pricing-table pricing-table--vehicles">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <input class="admin-input" type="text" name="vehicles[<?php echo $vehicleIndex; ?>][key]" value="<?php echo htmlspecialchars((string) ($vehicle['key'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="text" name="vehicles[<?php echo $vehicleIndex; ?>][label]" value="<?php echo htmlspecialchars((string) ($vehicle['label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="0.1" name="vehicles[<?php echo $vehicleIndex; ?>][trong_luong_toi_da]" value="<?php echo htmlspecialchars((string) ($vehicle['trong_luong_toi_da'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="500" name="vehicles[<?php echo $vehicleIndex; ?>][gia_co_ban]" value="<?php echo htmlspecialchars((string) ($vehicle['gia_co_ban'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="0.05" name="vehicles[<?php echo $vehicleIndex; ?>][he_so_xe]" value="<?php echo htmlspecialchars((string) ($vehicle['he_so_xe'] ?? 1), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <strong><?php echo htmlspecialchars(format_money_preview($donGiaKm), ENT_QUOTES, 'UTF-8'); ?></strong>
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="1000" name="vehicles[<?php echo $vehicleIndex; ?>][phi_toi_thieu]" value="<?php echo htmlspecialchars((string) ($vehicle['phi_toi_thieu'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <textarea class="admin-input pricing-textarea" rows="2" name="vehicles[<?php echo $vehicleIndex; ?>][description]"><?php echo htmlspecialchars((string) ($vehicle['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea>
-                                        </td>
+                                        <th>Mã</th>
+                                        <th>Tên hiển thị</th>
+                                        <th>Tải trọng tối đa</th>
+                                        <th>Giá cơ bản</th>
+                                        <th>Hệ số xe</th>
+                                        <th>Đơn giá thực tế/km</th>
+                                        <th>Phí tối thiểu</th>
+                                        <th>Mô tả</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($vehicleConfigs as $vehicleIndex => $vehicle): ?>
+                                        <?php $donGiaKm = round((float) ($vehicle['gia_co_ban'] ?? 0) * (float) ($vehicle['he_so_xe'] ?? 1)); ?>
+                                        <tr>
+                                            <td><input class="admin-input" type="text" name="vehicles[<?php echo $vehicleIndex; ?>][key]" value="<?php echo htmlspecialchars((string) ($vehicle['key'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="text" name="vehicles[<?php echo $vehicleIndex; ?>][label]" value="<?php echo htmlspecialchars((string) ($vehicle['label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="number" min="0" step="0.1" name="vehicles[<?php echo $vehicleIndex; ?>][trong_luong_toi_da]" value="<?php echo htmlspecialchars((string) ($vehicle['trong_luong_toi_da'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="number" min="0" step="500" name="vehicles[<?php echo $vehicleIndex; ?>][gia_co_ban]" value="<?php echo htmlspecialchars((string) ($vehicle['gia_co_ban'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="number" min="0" step="0.05" name="vehicles[<?php echo $vehicleIndex; ?>][he_so_xe]" value="<?php echo htmlspecialchars((string) ($vehicle['he_so_xe'] ?? 1), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><strong><?php echo htmlspecialchars(format_money_preview($donGiaKm), ENT_QUOTES, 'UTF-8'); ?></strong></td>
+                                            <td><input class="admin-input" type="number" min="0" step="1000" name="vehicles[<?php echo $vehicleIndex; ?>][phi_toi_thieu]" value="<?php echo htmlspecialchars((string) ($vehicle['phi_toi_thieu'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><textarea class="admin-input pricing-textarea" rows="2" name="vehicles[<?php echo $vehicleIndex; ?>][description]"><?php echo htmlspecialchars((string) ($vehicle['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
                         <div class="pricing-actions">
                             <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu phương tiện</button>
                         </div>
                     </form>
                 </div>
-            </section>
+            </div>
+        </div>
 
-            <section class="pricing-card" id="section-goods">
-                <div class="pricing-card__head">
+        <div class="pricing-modal" data-modal="modal-goods" hidden>
+            <div class="pricing-modal__backdrop" data-close-modal></div>
+            <div class="pricing-modal__dialog pricing-modal__dialog--lg" role="dialog" aria-modal="true" aria-labelledby="modal-goods-title">
+                <div class="pricing-modal__head">
                     <div>
-                        <h3>Phụ phí loại hàng</h3>
-                        <p class="pricing-section__desc">Danh sách này áp trực tiếp vào phần phụ phí loại hàng trong breakdown. Có thể thêm loại mới mà không phải sửa lại calculator.</p>
+                        <h3 id="modal-goods-title">Chỉnh phụ phí loại hàng</h3>
+                        <p>Quản lý phụ phí, hệ số và mô tả của từng loại hàng.</p>
                     </div>
+                    <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <div class="pricing-card__body">
-                    <div class="pricing-explainer-grid">
-                        <article class="pricing-explainer-card">
-                            <h4>Phụ phí</h4>
-                            <p>Khoản cộng cố định theo từng loại hàng, thường tính theo số kiện.</p>
-                        </article>
-                        <article class="pricing-explainer-card">
-                            <h4>Hệ số</h4>
-                            <p>Nếu lớn hơn <strong>1</strong>, hệ thống cộng thêm phần trăm trên cước vận chuyển chính của đơn.</p>
-                        </article>
-                    </div>
+                <div class="pricing-modal__body">
+                    <p class="pricing-section__hint pricing-section__hint--inline">
+                        Hệ số lớn hơn <strong>1</strong> sẽ cộng thêm theo phần trăm trên cước vận chuyển chính.
+                    </p>
                     <form method="post" onsubmit="return confirm('Lưu thay đổi phụ phí loại hàng?');">
                         <input type="hidden" name="action" value="save_goods_fees">
                         <div class="pricing-table-wrap">
-                        <table class="pricing-table pricing-table--goods">
-                            <thead>
-                                <tr>
-                                    <th>Mã</th>
-                                    <th>Tên hiển thị</th>
-                                    <th>Phụ phí</th>
-                                    <th>Hệ số</th>
-                                    <th>Mô tả</th>
-                                    <th style="width: 68px;">Xóa</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $goodsRowIndex = 0; ?>
-                                <?php foreach ($goodsFees as $goodsKey => $goodsFee): ?>
+                            <table class="pricing-table pricing-table--goods">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <input class="admin-input" type="text" name="goods[<?php echo $goodsRowIndex; ?>][key]" value="<?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="text" name="goods[<?php echo $goodsRowIndex; ?>][label]" value="<?php echo htmlspecialchars((string) ($goodsLabels[$goodsKey] ?? $goodsKey), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="1000" name="goods[<?php echo $goodsRowIndex; ?>][fee]" value="<?php echo htmlspecialchars((string) $goodsFee, ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="number" min="0" step="0.1" name="goods[<?php echo $goodsRowIndex; ?>][he_so]" value="<?php echo htmlspecialchars((string) ($goodsMultipliers[$goodsKey] ?? 1), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <input class="admin-input" type="text" name="goods[<?php echo $goodsRowIndex; ?>][description]" value="<?php echo htmlspecialchars((string) ($goodsDescriptions[$goodsKey] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </td>
-                                        <td>
-                                            <button class="pricing-inline-delete" type="submit" onclick="if (!confirm('Xóa loại phụ phí này?')) { return false; } this.form.action.value='delete_goods_fee'; this.form.delete_key.value='<?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?>';">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        </td>
+                                        <th>Mã</th>
+                                        <th>Tên hiển thị</th>
+                                        <th>Phụ phí</th>
+                                        <th>Hệ số</th>
+                                        <th>Mô tả</th>
+                                        <th style="width: 68px;">Xóa</th>
                                     </tr>
-                                    <?php $goodsRowIndex++; ?>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <?php $goodsRowIndex = 0; ?>
+                                    <?php foreach ($goodsFees as $goodsKey => $goodsFee): ?>
+                                        <tr>
+                                            <td><input class="admin-input" type="text" name="goods[<?php echo $goodsRowIndex; ?>][key]" value="<?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="text" name="goods[<?php echo $goodsRowIndex; ?>][label]" value="<?php echo htmlspecialchars((string) ($goodsLabels[$goodsKey] ?? $goodsKey), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="number" min="0" step="1000" name="goods[<?php echo $goodsRowIndex; ?>][fee]" value="<?php echo htmlspecialchars((string) $goodsFee, ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="number" min="0" step="0.1" name="goods[<?php echo $goodsRowIndex; ?>][he_so]" value="<?php echo htmlspecialchars((string) ($goodsMultipliers[$goodsKey] ?? 1), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td><input class="admin-input" type="text" name="goods[<?php echo $goodsRowIndex; ?>][description]" value="<?php echo htmlspecialchars((string) ($goodsDescriptions[$goodsKey] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"></td>
+                                            <td>
+                                                <button class="pricing-inline-delete" type="submit" onclick="if (!confirm('Xóa loại phụ phí này?')) { return false; } this.form.action.value='delete_goods_fee'; this.form.delete_key.value='<?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?>';">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <?php $goodsRowIndex++; ?>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
                         <input type="hidden" name="delete_key" value="">
                         <div class="pricing-actions">
                             <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu phụ phí loại hàng</button>
                         </div>
                     </form>
-
                     <div class="pricing-divider"></div>
-
                     <form method="post" onsubmit="return confirm('Thêm loại phụ phí mới?');">
                         <input type="hidden" name="action" value="add_goods_fee">
                         <div class="pricing-add-grid">
@@ -1040,12 +1368,303 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                         </div>
                     </form>
                 </div>
-            </section>
-
+            </div>
         </div>
+
+        <?php foreach ($scheduledServiceMeta as $serviceKey => $serviceLabel): ?>
+            <?php $config = $serviceConfigs[$serviceKey] ?? []; ?>
+            <?php $base = $config['coban'] ?? []; ?>
+            <div class="pricing-modal" data-modal="modal-service-<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                <div class="pricing-modal__backdrop" data-close-modal></div>
+                <div class="pricing-modal__dialog" role="dialog" aria-modal="true">
+                    <div class="pricing-modal__head">
+                        <div>
+                            <h3><?php echo htmlspecialchars((string) ($config['ten'] ?? $serviceLabel), ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p>Chỉnh riêng gói dịch vụ này.</p>
+                        </div>
+                        <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="pricing-modal__body">
+                        <form method="post" onsubmit="return confirm('Lưu thay đổi cho gói dịch vụ này?');">
+                            <input type="hidden" name="action" value="save_services">
+                            <div class="pricing-add-grid">
+                                <div class="form-group">
+                                    <label>Tên hiển thị</label>
+                                    <input class="admin-input" type="text" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][ten]" value="<?php echo htmlspecialchars((string) ($config['ten'] ?? $serviceLabel), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nội quận</label>
+                                    <input class="admin-input" type="number" min="0" step="1000" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][cungquan]" value="<?php echo htmlspecialchars((string) ($base['cungquan'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nội thành</label>
+                                    <input class="admin-input" type="number" min="0" step="1000" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][khacquan]" value="<?php echo htmlspecialchars((string) ($base['khacquan'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Liên tỉnh</label>
+                                    <input class="admin-input" type="number" min="0" step="1000" name="services[<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>][lientinh]" value="<?php echo htmlspecialchars((string) ($base['lientinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                            </div>
+                            <div class="pricing-actions">
+                                <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu gói này</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+
+        <?php foreach (($serviceFeeConfig['thoigian'] ?? []) as $timeKey => $timeConfig): ?>
+            <div class="pricing-modal" data-modal="modal-time-<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                <div class="pricing-modal__backdrop" data-close-modal></div>
+                <div class="pricing-modal__dialog" role="dialog" aria-modal="true">
+                    <div class="pricing-modal__head">
+                        <div>
+                            <h3><?php echo htmlspecialchars((string) ($timeConfig['ten'] ?? $timeKey), ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p>Chỉnh riêng khung giờ này.</p>
+                        </div>
+                        <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="pricing-modal__body">
+                        <form method="post" onsubmit="return confirm('Lưu thay đổi cho khung giờ này?');">
+                            <input type="hidden" name="action" value="save_service_fees">
+                            <div class="pricing-add-grid">
+                                <div class="form-group">
+                                    <label>Tên khung giờ</label>
+                                    <input class="admin-input" type="text" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][ten]" value="<?php echo htmlspecialchars((string) ($timeConfig['ten'] ?? $timeKey), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Bắt đầu</label>
+                                    <input class="admin-input" type="time" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][batdau]" value="<?php echo htmlspecialchars((string) ($timeConfig['batdau'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Kết thúc</label>
+                                    <input class="admin-input" type="time" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][ketthuc]" value="<?php echo htmlspecialchars((string) ($timeConfig['ketthuc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phí cố định</label>
+                                    <input class="admin-input" type="number" min="0" step="1000" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][phicodinh]" value="<?php echo htmlspecialchars((string) ($timeConfig['phicodinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Hệ số</label>
+                                    <input class="admin-input" type="number" min="0" step="0.01" name="service_time[<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>][heso]" value="<?php echo htmlspecialchars((string) ($timeConfig['heso'] ?? 1), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                            </div>
+                            <div class="pricing-actions">
+                                <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu khung giờ</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+
+        <?php foreach (($serviceFeeConfig['thoitiet'] ?? []) as $weatherKey => $weatherConfig): ?>
+            <div class="pricing-modal" data-modal="modal-weather-<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                <div class="pricing-modal__backdrop" data-close-modal></div>
+                <div class="pricing-modal__dialog" role="dialog" aria-modal="true">
+                    <div class="pricing-modal__head">
+                        <div>
+                            <h3><?php echo htmlspecialchars((string) ($weatherConfig['ten'] ?? $weatherKey), ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p>Chỉnh riêng điều kiện giao này.</p>
+                        </div>
+                        <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="pricing-modal__body">
+                        <form method="post" onsubmit="return confirm('Lưu thay đổi cho điều kiện giao này?');">
+                            <input type="hidden" name="action" value="save_service_fees">
+                            <div class="pricing-add-grid">
+                                <div class="form-group">
+                                    <label>Tên điều kiện</label>
+                                    <input class="admin-input" type="text" name="service_weather[<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>][ten]" value="<?php echo htmlspecialchars((string) ($weatherConfig['ten'] ?? $weatherKey), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phí cố định</label>
+                                    <input class="admin-input" type="number" min="0" step="1000" name="service_weather[<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>][phicodinh]" value="<?php echo htmlspecialchars((string) ($weatherConfig['phicodinh'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Hệ số</label>
+                                    <input class="admin-input" type="number" min="0" step="0.01" name="service_weather[<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>][heso]" value="<?php echo htmlspecialchars((string) ($weatherConfig['heso'] ?? 1), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                            </div>
+                            <div class="pricing-actions">
+                                <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu điều kiện</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+
+        <div class="pricing-modal" data-modal="modal-cod-row" hidden>
+            <div class="pricing-modal__backdrop" data-close-modal></div>
+            <div class="pricing-modal__dialog" role="dialog" aria-modal="true">
+                <div class="pricing-modal__head">
+                    <div>
+                        <h3>Chi tiết COD</h3>
+                        <p>Chỉnh riêng cấu hình COD.</p>
+                    </div>
+                    <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="pricing-modal__body">
+                    <form method="post" onsubmit="return confirm('Lưu thay đổi cấu hình COD?');">
+                        <input type="hidden" name="action" value="save_cod_insurance">
+                        <div class="pricing-add-grid">
+                            <div class="form-group">
+                                <label>Ngưỡng COD miễn phí</label>
+                                <input class="admin-input" type="number" min="0" step="1000" name="cod_insurance[cod_nguong]" value="<?php echo htmlspecialchars((string) (($codInsuranceConfig['thuho']['nguong'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>Tỷ lệ COD</label>
+                                <input class="admin-input" type="number" min="0" step="0.0001" name="cod_insurance[cod_kieu]" value="<?php echo htmlspecialchars((string) (($codInsuranceConfig['thuho']['kieu'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>COD tối thiểu</label>
+                                <input class="admin-input" type="number" min="0" step="1000" name="cod_insurance[cod_toithieu]" value="<?php echo htmlspecialchars((string) (($codInsuranceConfig['thuho']['toithieu'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                        </div>
+                        <div class="pricing-actions">
+                            <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu COD</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+
+        <div class="pricing-modal" data-modal="modal-insurance-row" hidden>
+            <div class="pricing-modal__backdrop" data-close-modal></div>
+            <div class="pricing-modal__dialog" role="dialog" aria-modal="true">
+                <div class="pricing-modal__head">
+                    <div>
+                        <h3>Chi tiết bảo hiểm</h3>
+                        <p>Chỉnh riêng cấu hình bảo hiểm.</p>
+                    </div>
+                    <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="pricing-modal__body">
+                    <form method="post" onsubmit="return confirm('Lưu thay đổi cấu hình bảo hiểm?');">
+                        <input type="hidden" name="action" value="save_cod_insurance">
+                        <div class="pricing-add-grid">
+                            <div class="form-group">
+                                <label>Ngưỡng bảo hiểm</label>
+                                <input class="admin-input" type="number" min="0" step="1000" name="cod_insurance[insurance_nguong]" value="<?php echo htmlspecialchars((string) (($codInsuranceConfig['baohiem']['nguong'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>Tỷ lệ bảo hiểm</label>
+                                <input class="admin-input" type="number" min="0" step="0.0001" name="cod_insurance[insurance_kieu]" value="<?php echo htmlspecialchars((string) (($codInsuranceConfig['baohiem']['kieu'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label>Bảo hiểm tối thiểu</label>
+                                <input class="admin-input" type="number" min="0" step="1000" name="cod_insurance[insurance_toithieu]" value="<?php echo htmlspecialchars((string) (($codInsuranceConfig['baohiem']['toithieu'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                        </div>
+                        <div class="pricing-actions">
+                            <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu bảo hiểm</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <?php foreach ($vehicleConfigs as $vehicleIndex => $vehicle): ?>
+            <div class="pricing-modal" data-modal="modal-vehicle-<?php echo htmlspecialchars((string) ($vehicle['key'] ?? $vehicleIndex), ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                <div class="pricing-modal__backdrop" data-close-modal></div>
+                <div class="pricing-modal__dialog" role="dialog" aria-modal="true">
+                    <div class="pricing-modal__head">
+                        <div>
+                            <h3><?php echo htmlspecialchars((string) ($vehicle['label'] ?? $vehicle['key'] ?? 'Phương tiện'), ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p>Chỉnh riêng cấu hình phương tiện này.</p>
+                        </div>
+                        <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="pricing-modal__body">
+                        <form method="post" onsubmit="return confirm('Lưu thay đổi phương tiện này?');">
+                            <input type="hidden" name="action" value="save_vehicle_row">
+                            <input type="hidden" name="original_vehicle_key" value="<?php echo htmlspecialchars((string) ($vehicle['key'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                            <div class="pricing-add-grid">
+                                <div class="form-group">
+                                    <label>Mã</label>
+                                    <input class="admin-input" type="text" name="vehicle_row[key]" value="<?php echo htmlspecialchars((string) ($vehicle['key'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Tên hiển thị</label>
+                                    <input class="admin-input" type="text" name="vehicle_row[label]" value="<?php echo htmlspecialchars((string) ($vehicle['label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Tải trọng tối đa</label>
+                                    <input class="admin-input" type="number" min="0" step="0.1" name="vehicle_row[trong_luong_toi_da]" value="<?php echo htmlspecialchars((string) ($vehicle['trong_luong_toi_da'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Giá cơ bản</label>
+                                    <input class="admin-input" type="number" min="0" step="500" name="vehicle_row[gia_co_ban]" value="<?php echo htmlspecialchars((string) ($vehicle['gia_co_ban'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Hệ số xe</label>
+                                    <input class="admin-input" type="number" min="0" step="0.05" name="vehicle_row[he_so_xe]" value="<?php echo htmlspecialchars((string) ($vehicle['he_so_xe'] ?? 1), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phí tối thiểu</label>
+                                    <input class="admin-input" type="number" min="0" step="1000" name="vehicle_row[phi_toi_thieu]" value="<?php echo htmlspecialchars((string) ($vehicle['phi_toi_thieu'] ?? 0), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label>Mô tả</label>
+                                    <textarea class="admin-input pricing-textarea" rows="2" name="vehicle_row[description]"><?php echo htmlspecialchars((string) ($vehicle['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                </div>
+                            </div>
+                            <div class="pricing-actions">
+                                <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu phương tiện này</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+
+        <?php foreach ($goodsFees as $goodsKey => $goodsFee): ?>
+            <div class="pricing-modal" data-modal="modal-goods-<?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                <div class="pricing-modal__backdrop" data-close-modal></div>
+                <div class="pricing-modal__dialog" role="dialog" aria-modal="true">
+                    <div class="pricing-modal__head">
+                        <div>
+                            <h3><?php echo htmlspecialchars((string) ($goodsLabels[$goodsKey] ?? $goodsKey), ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p>Chỉnh riêng loại phụ phí này.</p>
+                        </div>
+                        <button type="button" class="pricing-modal__close" aria-label="Đóng" data-close-modal><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="pricing-modal__body">
+                        <form method="post" onsubmit="return confirm('Lưu thay đổi loại phụ phí này?');">
+                            <input type="hidden" name="action" value="save_goods_fee_row">
+                            <input type="hidden" name="original_goods_key" value="<?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?>">
+                            <div class="pricing-add-grid">
+                                <div class="form-group">
+                                    <label>Mã loại hàng</label>
+                                    <input class="admin-input" type="text" name="goods_row[key]" value="<?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Tên hiển thị</label>
+                                    <input class="admin-input" type="text" name="goods_row[label]" value="<?php echo htmlspecialchars((string) ($goodsLabels[$goodsKey] ?? $goodsKey), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phụ phí</label>
+                                    <input class="admin-input" type="number" min="0" step="1000" name="goods_row[fee]" value="<?php echo htmlspecialchars((string) $goodsFee, ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Hệ số</label>
+                                    <input class="admin-input" type="number" min="0" step="0.1" name="goods_row[he_so]" value="<?php echo htmlspecialchars((string) ($goodsMultipliers[$goodsKey] ?? 1), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label>Mô tả</label>
+                                    <input class="admin-input" type="text" name="goods_row[description]" value="<?php echo htmlspecialchars((string) ($goodsDescriptions[$goodsKey] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                            </div>
+                            <div class="pricing-actions">
+                                <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu loại này</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </main>
 
     <?php include __DIR__ . '/../includes/footer.php'; ?>
@@ -1053,6 +1672,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
         (function () {
             const tabs = Array.from(document.querySelectorAll("[data-pricing-tab]"));
             const sections = Array.from(document.querySelectorAll(".pricing-card[id]"));
+            const modalOpeners = Array.from(document.querySelectorAll("[data-open-modal]"));
+            const modalClosers = Array.from(document.querySelectorAll("[data-close-modal]"));
+            const modals = Array.from(document.querySelectorAll("[data-modal]"));
+            let activeModal = null;
+
             if (!tabs.length || !sections.length) return;
 
             function activateSection(id, syncHash = true) {
@@ -1075,11 +1699,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                 }
             }
 
+            function openModal(id) {
+                const modal = modals.find((item) => item.dataset.modal === id);
+                if (!modal) return;
+                modal.hidden = false;
+                document.body.classList.add("pricing-modal-open");
+                activeModal = modal;
+            }
+
+            function closeModal(modal) {
+                const target = modal || activeModal;
+                if (!target) return;
+                target.hidden = true;
+                if (activeModal === target) {
+                    activeModal = null;
+                }
+                if (!modals.some((item) => !item.hidden)) {
+                    document.body.classList.remove("pricing-modal-open");
+                }
+            }
+
             tabs.forEach((tab) => {
                 tab.addEventListener("click", (event) => {
                     event.preventDefault();
                     activateSection(tab.dataset.pricingTab || "");
                 });
+            });
+
+            modalOpeners.forEach((button) => {
+                button.addEventListener("click", () => {
+                    openModal(button.dataset.openModal || "");
+                });
+            });
+
+            modalClosers.forEach((button) => {
+                button.addEventListener("click", () => {
+                    closeModal(button.closest("[data-modal]"));
+                });
+            });
+
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "Escape") {
+                    closeModal();
+                }
             });
 
             const initialId = (window.location.hash || "").replace(/^#/, "");

@@ -22,10 +22,6 @@
     background: #fffaf5;
 }
 
-.pricing-layout {
-    display: block;
-}
-
 .pricing-nav {
     display: flex;
     flex-wrap: wrap;
@@ -89,43 +85,26 @@
     padding: 0;
 }
 
-.pricing-section {
-    padding: 28px 0;
-}
-
-.pricing-section + .pricing-section {
-    border-top: 1px solid #eaf0f6;
-}
-
-.pricing-section__eyebrow {
-    margin: 0 0 8px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #ff7a00;
-}
-
-.pricing-section__head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 16px;
-}
-
-.pricing-section__title {
-    margin: 0;
-    color: #0a2a66;
-    font-size: 22px;
-    line-height: 1.2;
-}
-
-.pricing-section__desc {
-    margin: 8px 0 0;
-    color: #475569;
-    line-height: 1.6;
+.pricing-section-meta {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
     max-width: 760px;
+}
+
+.pricing-section-meta__item {
+    margin: 0;
+    color: #475569;
+    line-height: 1.55;
+    font-size: 14px;
+}
+
+.pricing-section-meta__item span {
+    display: inline-block;
+    min-width: 102px;
+    margin-right: 8px;
+    color: #0a2a66;
+    font-weight: 700;
 }
 
 .pricing-section__hint {
@@ -141,16 +120,13 @@
     max-width: 520px;
 }
 
-.pricing-form-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+.pricing-section__hint--inline {
+    margin: 0 0 14px;
+    max-width: 760px;
 }
 
 .pricing-grid {
     display: block;
-    gap: 18px;
-    max-width: none;
 }
 
 .pricing-card {
@@ -185,34 +161,6 @@
 
 .pricing-card__body {
     padding: 0;
-}
-
-.pricing-explainer-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.pricing-explainer-card {
-    padding: 14px 16px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    background: #f8fbff;
-}
-
-.pricing-explainer-card h4 {
-    margin: 0 0 6px;
-    color: #0a2a66;
-    font-size: 14px;
-    line-height: 1.35;
-}
-
-.pricing-explainer-card p {
-    margin: 0;
-    color: #475569;
-    font-size: 13px;
-    line-height: 1.6;
 }
 
 .pricing-table {
@@ -346,17 +294,158 @@
     cursor: pointer;
 }
 
-.pricing-list {
-    margin: 8px 0 0;
-    padding-left: 18px;
-    color: #475569;
-    line-height: 1.7;
-}
-
 .pricing-divider {
     height: 1px;
     background: #edf2f7;
     margin: 20px 0;
+}
+
+.pricing-open-btn {
+    justify-self: start;
+}
+
+.pricing-summary-group + .pricing-summary-group {
+    margin-top: 18px;
+}
+
+.pricing-summary-group__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.pricing-summary-group__head h4 {
+    margin: 0;
+    color: #0a2a66;
+    font-size: 16px;
+}
+
+.pricing-summary-group__head span {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.pricing-summary-table td {
+    color: #334155;
+}
+
+.pricing-value {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid #dbe3f0;
+    color: #0a2a66;
+    font-weight: 700;
+}
+
+.pricing-cell-muted {
+    color: #64748b;
+}
+
+.pricing-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid #d7e2ef;
+    border-radius: 10px;
+    background: #fff;
+    color: #0a2a66;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pricing-action-btn:hover {
+    border-color: #bfd5f5;
+    background: #f8fbff;
+}
+
+.pricing-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+}
+
+.pricing-modal[hidden] {
+    display: none !important;
+}
+
+.pricing-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.pricing-modal__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(760px, calc(100vw - 32px));
+    max-height: calc(100vh - 40px);
+    margin: 20px auto;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.24);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.pricing-modal__dialog--lg {
+    width: min(1020px, calc(100vw - 32px));
+}
+
+.pricing-modal__dialog--xl {
+    width: min(1240px, calc(100vw - 24px));
+}
+
+.pricing-modal__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #eaf0f6;
+}
+
+.pricing-modal__head h3 {
+    margin: 0;
+    color: #0a2a66;
+    font-size: 22px;
+}
+
+.pricing-modal__head p {
+    margin: 6px 0 0;
+    color: #64748b;
+    line-height: 1.55;
+}
+
+.pricing-modal__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #d7e2ef;
+    border-radius: 10px;
+    background: #fff;
+    color: #475569;
+    cursor: pointer;
+}
+
+.pricing-modal__body {
+    padding: 20px 24px 24px;
+    overflow: auto;
+}
+
+body.pricing-modal-open {
+    overflow: hidden;
 }
 
 .pricing-alert {
@@ -382,27 +471,40 @@
     color: #b91c1c;
 }
 
-@media (max-width: 1200px) {
-    .pricing-layout {
-        display: block;
-    }
-}
-
 @media (max-width: 900px) {
     .admin-container {
         padding: 18px;
-    }
-
-    .pricing-explainer-grid {
-        grid-template-columns: 1fr;
     }
 
     .pricing-add-grid {
         grid-template-columns: 1fr;
     }
 
+    .pricing-card__head {
+        grid-template-columns: 1fr;
+    }
+
+    .pricing-modal__dialog,
+    .pricing-modal__dialog--lg,
+    .pricing-modal__dialog--xl {
+        width: calc(100vw - 16px);
+        max-height: calc(100vh - 16px);
+        margin: 8px auto;
+        border-radius: 18px;
+    }
+
+    .pricing-modal__head,
+    .pricing-modal__body {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
     .pricing-section__hint {
         min-width: 0;
         width: 100%;
+    }
+
+    .pricing-section-meta__item span {
+        min-width: 92px;
     }
 }

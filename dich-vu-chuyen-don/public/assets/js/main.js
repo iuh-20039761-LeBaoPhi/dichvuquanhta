@@ -13,6 +13,7 @@
   const modulePaths = [
     "main-core.js",
     "modules/main-navigation.js",
+    "modules/main-services-hub.js",
     "modules/main-landing.js",
     "modules/main-news.js",
     "modules/main-pricing.js",

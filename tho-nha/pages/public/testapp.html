@@ -1,0 +1,100 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test KRUD Insert & List</title>
+</head>
+<body>
+
+<h2>Insert Customer</h2>
+
+<form id="formInsert">
+    <label>Họ và tên:</label><br>
+    <input type="text" id="hovaten" required><br><br>
+
+    <label>Số điện thoại:</label><br>
+    <input type="text" id="sodienthoai" required><br><br>
+
+    <button type="submit">Insert</button>
+</form>
+
+<hr>
+
+<h3>Kết quả Insert:</h3>
+<pre id="resultInsert">{}</pre>
+
+<hr>
+
+<h2>Danh sách Customers</h2>
+<button id="btnLoadList">Load List</button>
+
+<table border="1" cellpadding="5" cellspacing="0" id="tblList">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ và tên</th>
+            <th>Số điện thoại</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<!-- IMPORT krud.js -->
+<script src="https://api.dvqt.vn/js/krud.js"></script>
+
+<script>
+// ===== Insert =====
+document.getElementById("formInsert").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const hovaten = document.getElementById("hovaten").value;
+    const sodienthoai = document.getElementById("sodienthoai").value;
+
+    krud("insert", "customers", {
+        hovaten: hovaten,
+        sodienthoai: sodienthoai
+    })
+    .then(res => {
+        document.getElementById("resultInsert").textContent = JSON.stringify(res, null, 2);
+        // Load lại danh sách sau khi insert
+        loadList();
+    });
+});
+
+// ===== Load List =====
+document.getElementById("btnLoadList").addEventListener("click", loadList);
+
+function loadList() {
+    // payload cơ bản
+    const payload = {
+        table: "customers",
+        page: 1,
+        limit: 50,
+        sort: { id: "desc" }  // sắp xếp id giảm dần
+    };
+
+    krudList(payload).then(res => {
+        const tbody = document.querySelector("#tblList tbody");
+        tbody.innerHTML = ""; // xóa bảng cũ
+
+        if (res.success && Array.isArray(res.data)) {
+            res.data.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${row.id}</td>
+                    <td>${row.hovaten}</td>
+                    <td>${row.sodienthoai}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="3">No data</td></tr>`;
+        }
+    });
+}
+
+// ===== Tự load list khi mở trang =====
+loadList();
+</script>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
   {
     "id": "chuyen_nha",
     "ten_dich_vu": "Chuyển Nhà Trọn Gói",
-    "duong_dan_chi_tiet": "public/trang/dich-vu/chuyen-nha.html",
+    "duong_dan_chi_tiet": "dich-vu-chuyen-don.html#chuyen-nha",
     "thong_tin_minh_bach": {
       "mo_ta_ngan": "Căn hộ, nhà phố, phòng trọ hoặc chung cư cần chuyển đồ sinh hoạt và nội thất gia đình.",
       "phu_hop_khi": "Phù hợp khi bạn cần xe, nhân công, đóng gói, tháo lắp và sắp xếp lại tại nhà mới.",
@@ -154,7 +154,7 @@
   {
     "id": "chuyen_van_phong",
     "ten_dich_vu": "Chuyển Văn Phòng Công Ty",
-    "duong_dan_chi_tiet": "public/trang/dich-vu/chuyen-van-phong.html",
+    "duong_dan_chi_tiet": "dich-vu-chuyen-don.html#chuyen-van-phong",
     "thong_tin_minh_bach": {
       "mo_ta_ngan": "Văn phòng công ty cần di dời hồ sơ, bàn ghế, máy tính, server và thiết bị vận hành.",
       "phu_hop_khi": "Phù hợp khi bạn cần di dời có kế hoạch, kiểm soát tài liệu và giữ nhịp vận hành ổn định.",
@@ -315,7 +315,7 @@
   {
     "id": "chuyen_kho_bai",
     "ten_dich_vu": "Chuyển Kho Bãi",
-    "duong_dan_chi_tiet": "public/trang/dich-vu/chuyen-kho-bai.html",
+    "duong_dan_chi_tiet": "dich-vu-chuyen-don.html#chuyen-kho-bai",
     "thong_tin_minh_bach": {
       "mo_ta_ngan": "Kho hàng, nhà xưởng hoặc mô hình logistics cần xe tải, xe nâng, xe cẩu và kiểm kê chặt chẽ.",
       "phu_hop_khi": "Phù hợp khi bạn cần di dời pallet, kiện hàng nặng, máy móc và gia cố hàng hóa trước khi chuyển.",
