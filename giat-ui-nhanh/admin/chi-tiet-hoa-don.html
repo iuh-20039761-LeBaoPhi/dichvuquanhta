@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Giặt Ủi Nhanh - Khách hàng - Chi tiết hóa đơn</title>
+    <title>Giặt Ủi Nhanh - Admin - Chi tiết hóa đơn</title>
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
   </head>
-  <body data-role="customer" data-page="detail">
+  <body data-role="admin" data-page="detail">
     <div class="admin-shell">
       <div
         id="asideMount"
         data-aside-src="partials/aside.html"
         data-logo-src="../public/asset/image/logo-giat-ui-nhanh.png"
-        data-logout-href="../dang-nhap.html"
+        data-logout-href="dang-nhap-admin.html"
         data-logout-api="../public/logout.php"
       ></div>
 
@@ -36,8 +36,8 @@
 
           <div class="topbar-actions">
             <div class="admin-chip">
-              <span class="admin-avatar">K</span>
-              <span class="admin-email">khachhang@giatuinhanh.vn</span>
+              <span class="admin-avatar">A</span>
+              <span class="admin-email">admin@giatuinhanh.vn</span>
             </div>
           </div>
         </header>
@@ -50,7 +50,7 @@
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb panel-breadcrumb">
                   <li class="breadcrumb-item">
-                    <a href="../index.html">Trang chủ</a>
+                    <a href="index.html">Trang quản trị</a>
                   </li>
                   <li class="breadcrumb-item">
                     <a href="danh-sach-hoa-don.html">Danh sách hóa đơn</a>

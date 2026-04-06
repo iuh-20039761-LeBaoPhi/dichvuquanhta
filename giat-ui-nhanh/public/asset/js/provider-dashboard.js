@@ -69,7 +69,7 @@
   function statusFromDates(row) {
     if (row && row.ngayhoanthanh) return "completed";
     if (row && row.ngaynhan) return "processing";
-    if (row && row.thoigiandatdichvu) return "pending";
+    if (row && row.ngaydat) return "pending";
     return "pending";
   }
 
@@ -135,7 +135,7 @@
   }
 
   function mapOrder(row) {
-    var rawDate = row.thoigiandatdichvu || row.ngaytao || row.created_at || "";
+    var rawDate = row.ngaydat || row.ngaytao || row.created_at || "";
     return {
       id: Number(row.id) || 0,
       code: resolveOrderDisplayCode(row),
@@ -401,7 +401,7 @@
 
     setText(
       "detailBookingDate",
-      formatDate(order.thoigiandatdichvu || order.ngaytao || order.created_at),
+      formatDate(order.ngaydat || order.ngaytao || order.created_at),
     );
     setText("detailOrderStatus", stLabel);
     setPaymentBadge(order.trangthaithanhtoan);

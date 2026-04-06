@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Giặt Ủi Nhanh - Nhà cung cấp - Danh sách hóa đơn</title>
+    <title>Giặt Ủi Nhanh - Admin - Danh sách hóa đơn</title>
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
   </head>
-  <body data-role="provider" data-page="list">
+  <body data-role="admin" data-page="list">
     <div class="admin-shell">
       <div
         id="asideMount"
         data-aside-src="partials/aside.html"
         data-logo-src="../public/asset/image/logo-giat-ui-nhanh.png"
-        data-logout-href="../dang-nhap-nha-cung-cap.html"
+        data-logout-href="dang-nhap-admin.html"
         data-logout-api="../public/logout.php"
       ></div>
 
@@ -31,13 +31,13 @@
             >
               <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
-            <h2>Hóa đơn nhà cung cấp</h2>
+            <h2>Quản lý hóa đơn</h2>
           </div>
 
           <div class="topbar-actions">
             <div class="admin-chip">
-              <span class="admin-avatar">N</span>
-              <span class="admin-email">nhacungcap@giatuinhanh.vn</span>
+              <span class="admin-avatar">A</span>
+              <span class="admin-email">admin@giatuinhanh.vn</span>
             </div>
           </div>
         </header>
@@ -47,7 +47,7 @@
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb panel-breadcrumb">
                 <li class="breadcrumb-item">
-                  <a href="../index.html">Trang chủ</a>
+                  <a href="index.html">Trang quản trị</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">
                   Danh sách hóa đơn
@@ -56,8 +56,7 @@
             </nav>
             <h1 class="page-title">Danh sách hóa đơn</h1>
             <p class="page-subtitle">
-              Theo dõi tiến độ xử lý đơn, xác nhận và cập nhật trạng thái hoàn
-              thành.
+              Theo dõi trạng thái hóa đơn và tra cứu thông tin chi tiết.
             </p>
           </div>
 
@@ -66,8 +65,8 @@
           <article class="panel-card mt-3">
             <div class="panel-head">
               <h3>
-                <i class="fas fa-inbox" aria-hidden="true"></i>
-                Đơn khách yêu cầu
+                <i class="fas fa-filter" aria-hidden="true"></i>
+                Bộ lọc hóa đơn
               </h3>
               <span class="record-count" id="ordersCount">0 đơn</span>
             </div>
@@ -86,6 +85,19 @@
                       type="text"
                       placeholder="Ví dụ: 0000012"
                     />
+                  </div>
+
+                  <div>
+                    <label class="form-label" for="filterStatus"
+                      >Trạng thái</label
+                    >
+                    <select class="form-select" id="filterStatus" name="status">
+                      <option value="all">Tất cả</option>
+                      <option value="pending">Chờ xử lý</option>
+                      <option value="processing">Đang thực hiện</option>
+                      <option value="completed">Hoàn thành</option>
+                      <option value="canceled">Đã hủy</option>
+                    </select>
                   </div>
 
                   <div>
@@ -155,129 +167,6 @@
               </nav>
             </div>
           </article>
-
-          <article class="panel-card mt-3">
-            <div class="panel-head">
-              <h3>
-                <i class="fas fa-tasks" aria-hidden="true"></i>
-                Đơn phụ trách xử lý
-              </h3>
-              <span class="record-count" id="providerAssignedCount">0 đơn</span>
-            </div>
-
-            <div class="p-3 border-bottom">
-              <form
-                id="providerAssignedFilterForm"
-                class="filter-form"
-                novalidate
-              >
-                <div class="filter-grid">
-                  <div>
-                    <label class="form-label" for="providerFilterOrderCode"
-                      >Mã đơn</label
-                    >
-                    <input
-                      class="form-control"
-                      id="providerFilterOrderCode"
-                      name="orderCode"
-                      type="text"
-                      placeholder="Ví dụ: 0000012"
-                    />
-                  </div>
-
-                  <div>
-                    <label class="form-label" for="providerFilterStatus"
-                      >Trạng thái</label
-                    >
-                    <select
-                      class="form-select"
-                      id="providerFilterStatus"
-                      name="status"
-                    >
-                      <option value="all">Tất cả</option>
-                      <option value="processing">Đang thực hiện</option>
-                      <option value="completed">Hoàn thành</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label class="form-label" for="providerFilterFromDate"
-                      >Từ ngày</label
-                    >
-                    <input
-                      class="form-control"
-                      id="providerFilterFromDate"
-                      name="fromDate"
-                      type="date"
-                    />
-                  </div>
-
-                  <div>
-                    <label class="form-label" for="providerFilterToDate"
-                      >Đến ngày</label
-                    >
-                    <input
-                      class="form-control"
-                      id="providerFilterToDate"
-                      name="toDate"
-                      type="date"
-                    />
-                  </div>
-                </div>
-
-                <div class="filter-actions mt-3">
-                  <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search" aria-hidden="true"></i>
-                    Tìm kiếm
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    id="providerFilterReset"
-                  >
-                    Đặt lại
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div class="table-responsive">
-              <table class="table table-hover align-middle mb-0 order-table">
-                <thead>
-                  <tr>
-                    <th>Mã đơn</th>
-                    <th>Khách hàng</th>
-                    <th>Dịch vụ</th>
-                    <th>Ngày nhận</th>
-                    <th>Trạng thái</th>
-                    <th>Tổng tiền</th>
-                    <th>Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody id="providerAssignedTableBody">
-                  <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">
-                      Chưa có đơn phụ trách xử lý.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div
-              class="panel-foot d-flex flex-wrap align-items-center justify-content-between gap-2"
-            >
-              <p class="empty-hint" id="providerAssignedEmptyHint">
-                Hiển thị 0/0 đơn
-              </p>
-              <nav aria-label="Phân trang đơn phụ trách">
-                <ul
-                  class="pagination mb-0"
-                  id="providerAssignedPagination"
-                ></ul>
-              </nav>
-            </div>
-          </article>
         </section>
       </main>
     </div>
@@ -286,7 +175,6 @@
     <script src="../public/asset/js/admin-layout.js"></script>
     <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script src="../public/asset/js/order-shared-utils.js"></script>
-    <script src="../public/asset/js/provider-order-accept.js"></script>
     <script src="../public/asset/js/order-panel-pages.js"></script>
     <script src="../public/asset/js/plugin/webfont/webfont.min.js"></script>
     <script>

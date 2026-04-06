@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giặt Ủi Nhanh - Chi tiết hóa đơn</title>
+    <link rel="stylesheet" href="public/asset/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="public/asset/css/order-panel.css" />
+    <link
+      rel="stylesheet"
+      href="public/asset/css/order-detail-standalone.css"
+    />
+  </head>
+  <body class="order-standalone-page">
+    <header class="standalone-header">
+      <div class="standalone-header-inner">
+        <img
+          class="standalone-logo"
+          src="public/asset/image/logo-dich-vu-quanh-ta.png"
+          alt="Logo dịch vụ"
+        />
+        <div class="standalone-title-wrap">
+          <h1 class="standalone-title">Chi tiết hóa đơn mẹ và bé</h1>
+          <p class="standalone-subtitle">
+            Tra cứu bằng mã hóa đơn và thông tin đăng nhập
+          </p>
+        </div>
+        <img
+          class="standalone-logo"
+          src="public/asset/image/logo-giat-ui-nhanh.png"
+          alt="Logo giặt ủi nhanh"
+        />
+      </div>
+    </header>
+
+    <main class="standalone-content">
+      <div class="standalone-topline">
+        <p class="standalone-chip mb-0">
+          Quyền truy cập: <b id="accessRole">---</b>
+          <span>|</span>
+          SĐT: <span id="accessPhone">---</span>
+        </p>
+      </div>
+
+      <article
+        class="panel-card not-found d-none"
+        id="detailStateNotFound"
+        role="status"
+        aria-live="polite"
+      >
+        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+        <h3 id="detailErrorTitle">Không thể truy cập hóa đơn</h3>
+        <p id="detailErrorMessage">Vui lòng kiểm tra lại đường dẫn truy cập.</p>
+      </article>
+
+      <div class="order-detail-shell" id="detailStateFound">
+        <article class="invoice-hero">
+          <div class="invoice-hero-top">
+            <div>
+              <div class="invoice-code-line">
+                <h3 class="invoice-code">
+                  Đơn <span id="heroOrderCode">#-------</span>
+                </h3>
+                <span class="invoice-status-chip" id="heroStatusBadge"
+                  >Đang xử lý</span
+                >
+              </div>
+              <p class="invoice-service" id="heroServiceName">
+                Dịch vụ giặt ủi
+              </p>
+              <div class="invoice-service-meta">
+                <p class="invoice-service-meta-item">
+                  Giá dịch vụ: <strong id="heroServiceFee">0 VND</strong>
+                </p>
+                <p class="invoice-service-meta-item">
+                  Chi phí giao nhận:
+                  <strong id="heroTransportFee">0 VND</strong>
+                </p>
+                <p class="invoice-service-meta-item">
+                  Phụ phí: <strong id="heroSurchargeFee">0 VND</strong>
+                </p>
+                <p class="invoice-service-meta-item">
+                  Ngày đặt lịch: <strong id="heroBookingDate">---</strong>
+                </p>
+              </div>
+            </div>
+
+            <div class="hero-progress">
+              <div class="hero-progress-ring" id="heroProgressRing">
+                <div class="hero-progress-content">
+                  <strong id="heroProgressPercent">0%</strong>
+                  <small>Hoàn thành</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="invoice-hero-kpis">
+            <article class="hero-kpi">
+              <p class="hero-kpi-label">Tổng tiền</p>
+              <p class="hero-kpi-value" id="heroTotalAmount">0 VND</p>
+            </article>
+
+            <article class="hero-kpi">
+              <p class="hero-kpi-label">Hình thức giao nhận</p>
+              <p class="hero-kpi-value" id="heroTimeRange">---</p>
+              <p class="hero-kpi-sub d-none" id="heroDateRange"></p>
+            </article>
+
+            <article class="hero-kpi">
+              <p class="hero-kpi-label">Địa chỉ</p>
+              <p class="hero-kpi-value" id="heroAddress">---</p>
+              <p class="hero-kpi-sub">Khu vực phục vụ</p>
+            </article>
+          </div>
+        </article>
+
+        <div class="invoice-main-grid">
+          <article class="invoice-panel">
+            <div class="invoice-panel-head">
+              <h3 class="invoice-panel-title">Công việc cần thực hiện</h3>
+            </div>
+            <div class="invoice-panel-body">
+              <ol class="task-list" id="detailTasksList"></ol>
+
+              <div class="task-note-grid">
+                <article class="task-note-box">
+                  <p class="task-note-label">Ghi chú</p>
+                  <p class="task-note-value" id="detailNote">---</p>
+                </article>
+                <article class="task-note-box">
+                  <p class="task-note-label">Hóa chất sử dụng</p>
+                  <p class="task-note-value" id="detailChemicals">
+                    Không sử dụng
+                  </p>
+                </article>
+              </div>
+            </div>
+          </article>
+
+          <article class="invoice-panel">
+            <div class="invoice-panel-head">
+              <h3 class="invoice-panel-title">
+                Trạng thái, thời gian và tiến độ
+              </h3>
+              <span class="panel-chip">Theo dõi</span>
+            </div>
+            <div class="invoice-panel-body">
+              <div class="progress-row">
+                <span>Tiến độ thực hiện</span>
+                <b id="detailProgressText">0.00%</b>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" id="detailProgressBar"></div>
+              </div>
+
+              <p class="timeline-note" id="detailTimelineSummary">---</p>
+              <div class="status-line">
+                <span>Trạng thái:</span>
+                <b id="detailStatusText">---</b>
+              </div>
+
+              <div class="time-grid">
+                <article class="time-box">
+                  <h4>Thời gian thực hiện</h4>
+                  <div class="time-item">
+                    <span>Ngày nhận</span>
+                    <b id="detailExecutionStart">---</b>
+                  </div>
+                  <div class="time-item">
+                    <span>Ngày hoàn thành</span>
+                    <b id="detailExecutionEnd">---</b>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="identity-grid">
+          <article class="identity-card">
+            <div class="identity-head">
+              <h3>Khách hàng</h3>
+              <span class="panel-chip">Khách hàng</span>
+            </div>
+            <div class="identity-body">
+              <div class="identity-main">
+                <span class="avatar-badge" id="customerAvatarBadge">KH</span>
+                <div>
+                  <h4 class="identity-name" id="detailCustomerName">---</h4>
+                  <div class="identity-contacts">
+                    <p>
+                      <i class="fas fa-envelope" aria-hidden="true"></i>
+                      <span id="detailCustomerEmail">---</span>
+                    </p>
+                    <p>
+                      <i class="fas fa-phone" aria-hidden="true"></i>
+                      <span id="detailCustomerPhone">---</span>
+                    </p>
+                    <p>
+                      <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                      <span id="detailCustomerAddress">---</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="identity-card">
+            <div class="identity-head">
+              <h3>Nhà Cung Cấp phụ trách</h3>
+              <span class="panel-chip warn" id="providerStateChip"
+                >Chưa nhận</span
+              >
+            </div>
+            <div class="identity-body">
+              <div class="identity-main">
+                <span class="avatar-badge" id="providerAvatarBadge">NCC</span>
+                <div>
+                  <h4 class="identity-name" id="detailProviderName">---</h4>
+                  <div class="identity-contacts">
+                    <p>
+                      <i class="fas fa-envelope" aria-hidden="true"></i>
+                      <span id="detailProviderEmail">---</span>
+                    </p>
+                    <p>
+                      <i class="fas fa-phone" aria-hidden="true"></i>
+                      <span id="detailProviderPhone">---</span>
+                    </p>
+                    <p>
+                      <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                      <span id="detailProviderAddress">---</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <article class="invoice-panel">
+          <div class="invoice-panel-head">
+            <h3 class="invoice-panel-title">Ảnh và đánh giá</h3>
+            <span class="panel-chip">Minh chứng</span>
+          </div>
+          <div class="invoice-panel-body">
+            <div class="review-grid">
+              <article class="review-card">
+                <div class="review-card-head">
+                  <h4>Đánh giá khách hàng</h4>
+                  <span class="panel-chip warn">Chưa có</span>
+                </div>
+                <div class="review-card-body">
+                  <p class="review-label">Nội dung đánh giá</p>
+                  <p class="review-value" id="reviewCustomerText">
+                    Chưa có đánh giá
+                  </p>
+                  <p class="review-label">Thời gian gửi</p>
+                  <p class="review-value" id="reviewCustomerDate">---</p>
+                  <p class="review-label">Ảnh/video đánh giá</p>
+                  <div class="review-file" id="reviewCustomerFile">
+                    Chưa có tệp
+                  </div>
+                </div>
+              </article>
+
+              <article class="review-card">
+                <div class="review-card-head">
+                  <h4>Đánh giá nhà cung cấp</h4>
+                  <span class="panel-chip warn">Chưa có</span>
+                </div>
+                <div class="review-card-body">
+                  <p class="review-label">Nội dung đánh giá</p>
+                  <p class="review-value" id="reviewProviderText">
+                    Chưa có đánh giá
+                  </p>
+                  <p class="review-label">Thời gian gửi</p>
+                  <p class="review-value" id="reviewProviderDate">---</p>
+                  <p class="review-label">Ảnh/video đánh giá</p>
+                  <div class="review-file" id="reviewProviderFile">
+                    Chưa có tệp
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </article>
+
+        <section class="standalone-action d-none" id="detailActionBar">
+          <p class="standalone-action-meta mb-0" id="detailActionHint">---</p>
+          <button
+            type="button"
+            class="btn btn-outline-danger"
+            id="detailActionBtn"
+          >
+            Cập nhật trạng thái
+          </button>
+        </section>
+        <div
+          class="alert d-none standalone-alert"
+          id="detailActionAlert"
+          role="alert"
+        ></div>
+      </div>
+    </main>
+
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script src="public/asset/js/order-shared-utils.js"></script>
+    <script src="public/asset/js/order-detail-standalone.js"></script>
+    <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+      WebFont.load({
+        google: {
+          families: ["Public Sans:300,400,500,600,700"],
+        },
+        custom: {
+          families: [
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+            "simple-line-icons",
+          ],
+          urls: ["public/asset/css/fonts.min.css"],
+        },
+        active: function () {
+          sessionStorage.fonts = true;
+        },
+      });
+    </script>
+  </body>
+</html>

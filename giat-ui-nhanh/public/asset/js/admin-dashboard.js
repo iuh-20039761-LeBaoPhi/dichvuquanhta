@@ -5,17 +5,17 @@
 
   const statusConfig = {
     pending: {
-      label: "Chờ nhận đơn",
+      label: "Chờ xử lý",
       className: "status-pending",
       barClass: "c-pending",
     },
     processing: {
-      label: "Đã nhận đơn",
+      label: "Đang thực hiện",
       className: "status-confirmed",
       barClass: "c-confirmed",
     },
     completed: {
-      label: "Đã hoàn thành",
+      label: "Hoàn thành",
       className: "status-completed",
       barClass: "c-completed",
     },
@@ -46,15 +46,14 @@
     return "pending";
   }
 
-  function getPaymentStatusLabel(value) {
-    if (typeof shared.getPaymentStatusLabel === "function") {
-      return shared.getPaymentStatusLabel(value);
-    }
-    return String(value || "")
-      .trim()
-      .toLowerCase() === "paid"
-      ? "Đã thanh toán"
-      : "Chưa thanh toán";
+  function toNumber(value) {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : 0;
+  }
+
+  function formatCurrency(value) {
+    const amount = toNumber(value);
+    return amount.toLocaleString("vi-VN") + " đ";
   }
 
   function formatOrderCode(id) {
@@ -86,15 +85,24 @@
   }
 
   function mapOrder(row) {
-    const rawDate =
-      row.thoigiandatdichvu || row.ngaytao || row.created_at || "";
+    const rawDate = row.ngaydat || row.ngaytao || row.created_at || "";
+    const totalAmount = toNumber(row.tongtien);
+
+    const fallbackTotal =
+      toNumber(row.giadichvu) +
+      toNumber(row.tiendichuyen) +
+      toNumber(row.phuphigiaonhan);
+
     return {
       id: Number(row.id) || 0,
       code: formatOrderCode(row.id),
-      customer: row.hovaten || row.tenkhachhang || row.hoten || "Khách hàng",
+      customerName:
+        row.hovaten || row.tenkhachhang || row.hoten || "Khách hàng",
+      customerPhone: row.sodienthoai || row.phone || "",
       service: row.dichvu || row.dichvuquantam || "Chưa cập nhật dịch vụ",
       status: getOrderStatus(row),
       date: formatDate(rawDate),
+      total: totalAmount > 0 ? totalAmount : fallbackTotal,
       raw: row,
       sortTime: parseTime(rawDate) || Number(row.id) || 0,
     };
@@ -110,31 +118,31 @@
   }
 
   function buildCards() {
-    const serviceSet = new Set(orders.map((o) => o.service));
-    const customerSet = new Set(orders.map((o) => o.customer));
     const counters = getStatusCounters();
+    const serviceSet = new Set(orders.map((o) => o.service));
+    const customerSet = new Set(orders.map((o) => o.customerName));
 
     return [
       {
-        label: "Tổng đơn hàng",
+        label: "Tổng đơn",
         value: orders.length,
-        icon: "fas fa-shopping-basket",
+        icon: "fas fa-boxes",
         color: "linear-gradient(135deg,#10b981,#22c55e)",
       },
       {
-        label: "Chờ nhận đơn",
+        label: "Chờ xử lý",
         value: counters.pending,
         icon: "fas fa-hourglass-half",
         color: "linear-gradient(135deg,#f59e0b,#fb7185)",
       },
       {
-        label: "Đã nhận đơn",
+        label: "Đang thực hiện",
         value: counters.processing,
-        icon: "fas fa-check-double",
+        icon: "fas fa-spinner",
         color: "linear-gradient(135deg,#0ea5e9,#06b6d4)",
       },
       {
-        label: "Đã hoàn thành",
+        label: "Hoàn thành",
         value: counters.completed,
         icon: "fas fa-check-circle",
         color: "linear-gradient(135deg,#34d399,#10b981)",
@@ -201,7 +209,7 @@
 
     if (!orders.length) {
       tbody.innerHTML =
-        '<tr><td colspan="6" class="text-center text-muted py-4">Chưa có dữ liệu đơn đặt.</td></tr>';
+        '<tr><td colspan="7" class="text-center text-muted py-4">Chưa có dữ liệu đơn đặt.</td></tr>';
       return;
     }
 
@@ -212,85 +220,25 @@
         return `
           <tr>
             <td class="order-code">${order.code}</td>
-            <td>${order.customer}</td>
-            <td>${order.service}</td>
-            <td><span class="status-pill ${status.className}">${status.label}</span></td>
-            <td>${order.date}</td>
             <td>
-              <button type="button" class="btn btn-sm btn-primary btn-order-detail" data-order-id="${order.id}">
+              <div class="customer-block">
+                <strong>${order.customerName}</strong>
+                <span>${order.customerPhone || "--"}</span>
+              </div>
+            </td>
+            <td><p class="service-text mb-0">${order.service}</p></td>
+            <td>${order.date}</td>
+            <td><span class="status-pill ${status.className}">${status.label}</span></td>
+            <td>${formatCurrency(order.total)}</td>
+            <td>
+              <a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=${order.id}">
                 Xem chi tiết
-              </button>
+              </a>
             </td>
           </tr>
         `;
       })
       .join("");
-  }
-
-  function bindOrderDetailAction() {
-    const tbody = document.getElementById("recentOrdersBody");
-    const modalEl = document.getElementById("adminOrderDetailModal");
-    if (!tbody || !modalEl || !window.bootstrap) return;
-
-    const modal = new window.bootstrap.Modal(modalEl);
-    const setText = (id, value) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = value || "-";
-    };
-
-    tbody.addEventListener("click", function (event) {
-      const button = event.target.closest(".btn-order-detail");
-      if (!button) return;
-
-      const order = orders.find(
-        (item) =>
-          Number(item.id) === Number(button.getAttribute("data-order-id")),
-      );
-      if (!order) return;
-
-      const row = order.raw || {};
-      const status = statusConfig[order.status] || statusConfig.pending;
-
-      setText("adminDetailOrderCode", order.code);
-      setText("adminDetailServiceName", row.dichvu || row.dichvuquantam);
-      setText("adminDetailWorkItems", row.danhsachcongviec);
-      setText("adminDetailChemicals", row.danhsachhoachat);
-      setText(
-        "adminDetailTransport",
-        row.hinhthucnhangiao || row.phuongthucgiaonhan,
-      );
-      setText(
-        "adminDetailQuantity",
-        row.soluong || row.khoiluong || row.quantity,
-      );
-
-      setText(
-        "adminDetailOrderDate",
-        row.thoigiandatdichvu || row.ngaytao || row.created_at,
-      );
-      setText("adminDetailOrderStatus", status.label);
-      setText(
-        "adminDetailPaymentStatus",
-        getPaymentStatusLabel(row.trangthaithanhtoan),
-      );
-      setText("adminDetailServicePrice", row.giadichvu);
-      setText("adminDetailTransportFee", row.tiendichuyen);
-      setText("adminDetailSurchargeFee", row.phuphigiaonhan);
-      setText("adminDetailTotal", row.tongtien);
-      setText("adminDetailNote", row.ghichu);
-
-      setText("adminDetailCustomerName", row.hovaten || row.tenkhachhang);
-      setText("adminDetailCustomerPhone", row.sodienthoai || row.phone);
-      setText("adminDetailCustomerEmail", row.email);
-      setText("adminDetailCustomerAddress", row.diachi);
-
-      setText("adminDetailSupplierName", row.tennhacungcap);
-      setText("adminDetailSupplierPhone", row.sdt_ncc);
-      setText("adminDetailSupplierEmail", row.email_ncc);
-      setText("adminDetailSupplierAddress", row.diachi_ncc);
-
-      modal.show();
-    });
   }
 
   function renderStatusSummary() {
@@ -326,7 +274,7 @@
     const box = document.getElementById("statusSummary");
     if (tbody) {
       tbody.innerHTML =
-        '<tr><td colspan="6" class="text-center text-muted py-4">Đang tải danh sách đơn đặt...</td></tr>';
+        '<tr><td colspan="7" class="text-center text-muted py-4">Đang tải danh sách đơn đặt...</td></tr>';
     }
     if (box) {
       box.innerHTML = '<p class="text-muted mb-0">Đang tải thống kê...</p>';
@@ -334,7 +282,6 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    bindOrderDetailAction();
     renderLoadingState();
 
     loadOrders()

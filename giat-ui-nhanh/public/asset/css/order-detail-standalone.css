@@ -1,0 +1,138 @@
+body.order-standalone-page {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fdf3f7 0%, #fffaf4 48%, #f7fbff 100%);
+  color: #1f2f46;
+  font-family: "Public Sans", "Segoe UI", Arial, sans-serif;
+}
+
+.standalone-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: linear-gradient(135deg, #d93d97 0%, #e4709f 50%, #f2bc8f 100%);
+  box-shadow: 0 10px 22px rgba(157, 62, 112, 0.28);
+}
+
+.standalone-header-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  min-height: 82px;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.standalone-logo {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  padding: 5px;
+  object-fit: contain;
+}
+
+.standalone-title-wrap {
+  text-align: center;
+  color: #fff;
+}
+
+.standalone-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.standalone-subtitle {
+  margin: 3px 0 0;
+  font-size: 0.86rem;
+  opacity: 0.95;
+}
+
+.standalone-content {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 14px 12px 28px;
+}
+
+.standalone-topline {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.standalone-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid #e4d7e2;
+  background: #ffffff;
+  padding: 6px 11px;
+  color: #324b69;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.standalone-chip b {
+  color: #b7347a;
+}
+
+.standalone-action {
+  margin-top: 2px;
+  border: 1px solid #f0dce6;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(25, 38, 65, 0.06);
+  padding: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.standalone-action-meta {
+  color: #5f7592;
+  font-size: 0.87rem;
+  margin: 0;
+}
+
+.standalone-action .btn {
+  min-width: 165px;
+}
+
+.standalone-alert {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .standalone-header-inner {
+    min-height: 72px;
+    padding: 8px 10px;
+    grid-template-columns: 46px 1fr 46px;
+  }
+
+  .standalone-logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+  }
+
+  .standalone-title {
+    font-size: 1.02rem;
+  }
+
+  .standalone-subtitle {
+    font-size: 0.76rem;
+  }
+
+  .standalone-content {
+    padding: 10px 8px 22px;
+  }
+}

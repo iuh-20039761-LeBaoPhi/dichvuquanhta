@@ -718,6 +718,19 @@
   flex: 0 0 auto;
 }
 
+.avatar-badge.has-image {
+  padding: 0;
+  overflow: hidden;
+  background: #dce8f3;
+}
+
+.avatar-badge .avatar-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
 .identity-name {
   margin: 0;
   font-size: 1.55rem;

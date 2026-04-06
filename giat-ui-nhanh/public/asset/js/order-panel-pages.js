@@ -3,9 +3,13 @@
 
   var PAGE_SIZE = 6;
   var BOOKING_TABLE = "datlich_giatuinhanh";
+  var CUSTOMER_TABLE = "khachhang";
+  var PROVIDER_TABLE = "nhacungcap_giatuinhanh";
   var SESSION_ENDPOINT = "../public/session-user.php?action=get";
+  var ADMIN_SESSION_ENDPOINT = "../public/session-admin.php?action=get";
   var CUSTOMER_LOGIN_PAGE = "../dang-nhap.html";
   var PROVIDER_LOGIN_PAGE = "../dang-nhap-nha-cung-cap.html";
+  var ADMIN_LOGIN_PAGE = "dang-nhap-admin.html";
   var PROVIDER_DASHBOARD_PAGE = "../nha-cung-cap.html";
   var shared = window.SharedOrderUtils || {};
 
@@ -45,6 +49,7 @@
     var role = String(
       document.body.getAttribute("data-role") || "",
     ).toLowerCase();
+    if (role === "admin") return "admin";
     return role === "provider" ? "provider" : "customer";
   }
 
@@ -192,6 +197,118 @@
     return Number.isFinite(n) ? n : 0;
   }
 
+  function pickFirstValue(values) {
+    var items = Array.isArray(values) ? values : [];
+    for (var i = 0; i < items.length; i += 1) {
+      var text = String(items[i] == null ? "" : items[i]).trim();
+      if (text) return text;
+    }
+    return "";
+  }
+
+  function normalizeAvatarCandidates(rawValue, kind) {
+    var text = String(rawValue == null ? "" : rawValue).trim();
+    if (!text) return [];
+
+    var lower = text.toLowerCase();
+    if (lower.indexOf("javascript:") === 0) return [];
+
+    var candidates = [];
+    var encodedText =
+      text.indexOf("/") >= 0 ? encodeURI(text) : encodeURIComponent(text);
+
+    if (
+      lower.indexOf("http://") === 0 ||
+      lower.indexOf("https://") === 0 ||
+      lower.indexOf("data:") === 0 ||
+      lower.indexOf("blob:") === 0
+    ) {
+      candidates.push(encodedText);
+      return candidates;
+    }
+
+    if (text.charAt(0) === "/") {
+      candidates.push(encodedText);
+      return candidates;
+    }
+
+    if (text.indexOf("../") === 0 || text.indexOf("./") === 0) {
+      candidates.push(encodedText);
+      return candidates;
+    }
+
+    candidates.push(encodedText);
+
+    if (
+      text.indexOf("public/") === 0 ||
+      text.indexOf("asset/") === 0 ||
+      text.indexOf("uploads/") === 0
+    ) {
+      candidates.push("../" + encodedText);
+    }
+
+    if (text.indexOf("/") < 0) {
+      if (kind === "provider") {
+        candidates.push(
+          "../public/asset/image/upload/nhacungcap/" + encodeURIComponent(text),
+        );
+      }
+      if (kind === "customer") {
+        candidates.push(
+          "../public/asset/image/upload/khachhang/" + encodeURIComponent(text),
+        );
+      }
+      candidates.push("../uploads/" + encodeURIComponent(text));
+      candidates.push("../public/uploads/" + encodeURIComponent(text));
+    }
+
+    return candidates.filter(function (value, index, list) {
+      return value && list.indexOf(value) === index;
+    });
+  }
+
+  function renderAvatarBadge(id, avatarValue, fallbackText, kind) {
+    var node = document.getElementById(id);
+    if (!node) return;
+
+    var fallback = String(fallbackText || "--").trim() || "--";
+    var candidates = normalizeAvatarCandidates(avatarValue, kind);
+
+    node.classList.remove("has-image");
+    node.textContent = fallback;
+
+    if (!candidates.length) return;
+
+    var probe = new Image();
+    var index = 0;
+
+    function tryNext() {
+      if (index >= candidates.length) {
+        node.classList.remove("has-image");
+        node.textContent = fallback;
+        return;
+      }
+
+      var src = candidates[index];
+      index += 1;
+
+      probe.onload = function () {
+        var image = document.createElement("img");
+        image.className = "avatar-image";
+        image.src = src;
+        image.alt = fallback;
+        node.textContent = "";
+        node.appendChild(image);
+        node.classList.add("has-image");
+      };
+
+      probe.onerror = tryNext;
+      probe.src = src;
+    }
+
+    tryNext();
+  }
+
   function normalizeAccountType(value) {
     var type = String(value || "")
       .trim()
@@ -253,7 +370,7 @@
 
   function mapDbOrderToPanelOrder(row) {
     var createdAt =
-      (row && (row.thoigiandatdichvu || row.ngaytao || row.created_at)) ||
+      (row && (row.ngaydat || row.ngaytao || row.created_at)) ||
       new Date().toISOString();
     var updatedAt =
       (row &&
@@ -288,21 +405,86 @@
       status: status,
       customer: {
         id: toNumber(
-          row && (row.idkhachhang || row.makhachhang || row.user_id),
+          row &&
+            (row.idkhachhang ||
+              row.makhachhang ||
+              row.user_id ||
+              (row.khachhang &&
+                (row.khachhang.id ||
+                  row.khachhang.makhachhang ||
+                  row.khachhang.user_id))),
         ),
-        name: (row && row.hovaten) || "Khách hàng",
-        phone: (row && row.sodienthoai) || "",
-        email: (row && row.email) || "",
-        address: (row && row.diachi) || "",
+        name:
+          (row && row.hovaten) ||
+          (row && row.khachhang && row.khachhang.hovaten) ||
+          (row && row.khachhang && row.khachhang.user_name) ||
+          "Khách hàng",
+        phone:
+          (row && row.sodienthoai) ||
+          (row && row.khachhang && row.khachhang.sodienthoai) ||
+          (row && row.khachhang && row.khachhang.user_tel) ||
+          "",
+        email:
+          (row && row.email) ||
+          (row && row.khachhang && row.khachhang.email) ||
+          (row && row.khachhang && row.khachhang.user_email) ||
+          "",
+        address:
+          (row && row.diachi) ||
+          (row && row.khachhang && row.khachhang.diachi) ||
+          "",
+        avatar: pickFirstValue([
+          row && row.avatar_kh,
+          row && row.avatar_khachhang,
+          row && row.avatar_customer,
+          row && row.customer_avatar,
+          row && row.avatartenfile,
+          row && row.khachhang && row.khachhang.avatar,
+          row && row.khachhang && row.khachhang.avatar_kh,
+          row && row.khachhang && row.khachhang.avatartenfile,
+        ]),
       },
       provider: {
         id: toNumber(
-          row && (row.idnhacungcap || row.id_ncc || row.manhacungcap),
+          row &&
+            (row.idnhacungcap ||
+              row.id_ncc ||
+              row.manhacungcap ||
+              row.provider_id ||
+              (row.nhacungcap &&
+                (row.nhacungcap.id ||
+                  row.nhacungcap.idnhacungcap ||
+                  row.nhacungcap.provider_id ||
+                  row.nhacungcap.manhacungcap))),
         ),
-        name: (row && row.tennhacungcap) || "Chưa phân công",
-        phone: (row && row.sdt_ncc) || "",
-        email: (row && row.email_ncc) || "",
-        address: (row && row.diachi_ncc) || "",
+        name:
+          (row && row.tennhacungcap) ||
+          (row && row.nhacungcap && row.nhacungcap.hovaten) ||
+          (row && row.nhacungcap && row.nhacungcap.user_name) ||
+          "Chưa phân công",
+        phone:
+          (row && row.sdt_ncc) ||
+          (row && row.nhacungcap && row.nhacungcap.sodienthoai) ||
+          (row && row.nhacungcap && row.nhacungcap.user_tel) ||
+          "",
+        email:
+          (row && row.email_ncc) ||
+          (row && row.nhacungcap && row.nhacungcap.email) ||
+          (row && row.nhacungcap && row.nhacungcap.user_email) ||
+          "",
+        address:
+          (row && row.diachi_ncc) ||
+          (row && row.nhacungcap && row.nhacungcap.diachi) ||
+          "",
+        avatar: pickFirstValue([
+          row && row.avatar_ncc,
+          row && row.avatar_nhacungcap,
+          row && row.provider_avatar,
+          row && row.avatar,
+          row && row.nhacungcap && row.nhacungcap.avatar,
+          row && row.nhacungcap && row.nhacungcap.avatar_ncc,
+          row && row.nhacungcap && row.nhacungcap.avatartenfile,
+        ]),
       },
       raw: row || null,
       items: [
@@ -366,36 +548,89 @@
       });
   }
 
+  function getSessionAdmin() {
+    return fetch(ADMIN_SESSION_ENDPOINT, {
+      method: "GET",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then(function (response) {
+        if (!response.ok) return null;
+        return response.json().catch(function () {
+          return null;
+        });
+      })
+      .then(function (result) {
+        if (!result || result.hasAdmin !== true || !result.admin) return null;
+        return result.admin;
+      })
+      .catch(function () {
+        return null;
+      });
+  }
+
   function syncCustomerChip(user) {
     var emailNode = document.querySelector(".admin-chip .admin-email");
     var avatarNode = document.querySelector(".admin-chip .admin-avatar");
+    var displayName =
+      String(
+        user.user_name ||
+          user.hovaten ||
+          user.hoten ||
+          user.name ||
+          user.full_name ||
+          user.display_name ||
+          "",
+      ).trim() ||
+      String(user.user_email || "").trim() ||
+      String(user.user_tel || "").trim() ||
+      "Khách hàng";
+
     if (emailNode) {
-      emailNode.textContent =
-        String(user.user_email || "").trim() ||
-        String(user.user_tel || "").trim() ||
-        "Khách hàng";
+      emailNode.textContent = displayName;
     }
     if (avatarNode) {
-      avatarNode.textContent = initialsOf(
-        user.user_name || user.hovaten || "Khách hàng",
-        "KH",
-      );
+      avatarNode.textContent = initialsOf(displayName, "KH");
     }
   }
 
   function syncProviderChip(user) {
     var emailNode = document.querySelector(".admin-chip .admin-email");
     var avatarNode = document.querySelector(".admin-chip .admin-avatar");
+    var displayName =
+      String(
+        user.user_name ||
+          user.hovaten ||
+          user.hoten ||
+          user.tennhacungcap ||
+          user.name ||
+          user.full_name ||
+          user.display_name ||
+          "",
+      ).trim() ||
+      String(user.user_email || "").trim() ||
+      String(user.user_tel || "").trim() ||
+      "Nhà cung cấp";
+
+    if (emailNode) {
+      emailNode.textContent = displayName;
+    }
+    if (avatarNode) {
+      avatarNode.textContent = initialsOf(displayName, "NCC");
+    }
+  }
+
+  function syncAdminChip(admin) {
+    var emailNode = document.querySelector(".admin-chip .admin-email");
+    var avatarNode = document.querySelector(".admin-chip .admin-avatar");
     if (emailNode) {
       emailNode.textContent =
-        String(user.user_email || "").trim() ||
-        String(user.user_tel || "").trim() ||
-        "Nhà cung cấp";
+        String((admin && admin.email) || "").trim() || "admin@giatuinhanh.vn";
     }
     if (avatarNode) {
       avatarNode.textContent = initialsOf(
-        user.user_name || user.hovaten || "Nhà cung cấp",
-        "NCC",
+        String((admin && admin.email) || "Admin").trim(),
+        "AD",
       );
     }
   }
@@ -433,7 +668,12 @@
 
     var providerId = resolveProviderId(user);
 
-    return Promise.resolve(shared.fetchAllOrders(BOOKING_TABLE, 500, 1))
+    return Promise.resolve(
+      shared.fetchAllOrders(BOOKING_TABLE, 500, 1, {
+        customerTable: CUSTOMER_TABLE,
+        providerTable: PROVIDER_TABLE,
+      }),
+    )
       .then(function (rows) {
         var pendingOrders = [];
         var assignedOrders = [];
@@ -496,7 +736,36 @@
     }
 
     return Promise.resolve(
-      shared.fetchOrdersByPhone(BOOKING_TABLE, user && user.user_tel, 500),
+      shared.fetchOrdersByPhone(BOOKING_TABLE, user && user.user_tel, 500, {
+        customerTable: CUSTOMER_TABLE,
+        providerTable: PROVIDER_TABLE,
+      }),
+    )
+      .then(function (rows) {
+        return (rows || []).map(mapDbOrderToPanelOrder).sort(function (a, b) {
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        });
+      })
+      .catch(function () {
+        return [];
+      });
+  }
+
+  function loadAdminOrders() {
+    if (
+      typeof shared.fetchAllOrders !== "function" ||
+      typeof window.krudList !== "function"
+    ) {
+      return Promise.resolve([]);
+    }
+
+    return Promise.resolve(
+      shared.fetchAllOrders(BOOKING_TABLE, 500, 1, {
+        customerTable: CUSTOMER_TABLE,
+        providerTable: PROVIDER_TABLE,
+      }),
     )
       .then(function (rows) {
         return (rows || []).map(mapDbOrderToPanelOrder).sort(function (a, b) {
@@ -693,6 +962,26 @@
       button.textContent = button.dataset.originalText || "Nhận đơn";
     }
 
+    function setActionButtonLoading(
+      button,
+      isLoading,
+      fallbackText,
+      loadingText,
+    ) {
+      if (!button) return;
+      if (isLoading) {
+        if (!button.dataset.originalText) {
+          button.dataset.originalText = button.textContent || fallbackText;
+        }
+        button.disabled = true;
+        button.textContent = loadingText;
+        return;
+      }
+
+      button.disabled = false;
+      button.textContent = button.dataset.originalText || fallbackText;
+    }
+
     function handleAcceptOrder(orderId) {
       if (
         window.ProviderOrderAccept &&
@@ -704,6 +993,45 @@
       return Promise.reject(
         new Error("Chưa sẵn sàng chức năng nhận đơn. Vui lòng tải lại trang."),
       );
+    }
+
+    function handleCompleteOrder(orderId) {
+      if (typeof shared.completeProviderOrder === "function") {
+        return shared.completeProviderOrder(orderId, BOOKING_TABLE);
+      }
+      if (typeof shared.updateOrder === "function") {
+        return shared.updateOrder(BOOKING_TABLE, orderId, {
+          ngayhoanthanh: new Date().toISOString(),
+          trangthaithanhtoan: "Paid",
+        });
+      }
+      return Promise.reject(
+        new Error("Chưa sẵn sàng chức năng hoàn thành đơn."),
+      );
+    }
+
+    function handleCancelOrder(orderId) {
+      if (typeof shared.updateOrder !== "function") {
+        return Promise.reject(new Error("Chưa sẵn sàng chức năng hủy đơn."));
+      }
+      return shared.updateOrder(BOOKING_TABLE, orderId, {
+        ngayhuy: new Date().toISOString(),
+      });
+    }
+
+    function patchOrderLocally(orderId, updater) {
+      function patchList(list) {
+        (list || []).forEach(function (item) {
+          if (Number(item.id) !== Number(orderId)) return;
+          updater(item);
+        });
+      }
+
+      patchList(state.all);
+      patchList(state.filtered);
+      patchList(assignedState.all);
+      patchList(assignedState.filtered);
+      patchList(statsOrders);
     }
 
     function refreshProviderOrders() {
@@ -791,6 +1119,23 @@
       assignedTbody.innerHTML = pageItems
         .map(function (order) {
           var meta = statusMeta(order.status);
+          var actionHtml =
+            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+            order.id +
+            '">Xem chi tiết</a>';
+
+          if (String(order.status || "") === "processing") {
+            actionHtml =
+              '<div class="d-flex gap-2 flex-wrap">' +
+              '<button type="button" class="btn btn-sm btn-success btn-complete-order" data-order-id="' +
+              order.id +
+              '">Hoàn thành</button>' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              order.id +
+              '">Xem chi tiết</a>' +
+              "</div>";
+          }
+
           return (
             "<tr>" +
             '<td class="order-code">' +
@@ -815,9 +1160,9 @@
             "<td>" +
             formatCurrency(calculateTotal(order)) +
             "</td>" +
-            '<td><a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
-            order.id +
-            '">Xem chi tiết</a></td>' +
+            "<td>" +
+            actionHtml +
+            "</td>" +
             "</tr>"
           );
         })
@@ -844,12 +1189,31 @@
             order.id +
             '">Xem chi tiết</a>';
 
+          var canCancelCustomerOrder =
+            role === "customer" &&
+            !hasDateValue(
+              (order && order.receivedAt) ||
+                (order && order.raw && order.raw.ngaynhan),
+            ) &&
+            String(order.status || "") !== "completed" &&
+            String(order.status || "") !== "canceled";
+
           if (role === "provider" && String(order.status) === "pending") {
             actionHtml =
               '<div class="d-flex gap-2 flex-wrap">' +
               '<button type="button" class="btn btn-sm btn-primary btn-accept-order" data-order-id="' +
               order.id +
               '">Nhận đơn</button>' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              order.id +
+              '">Xem chi tiết</a>' +
+              "</div>";
+          } else if (canCancelCustomerOrder) {
+            actionHtml =
+              '<div class="d-flex gap-2 flex-wrap">' +
+              '<button type="button" class="btn btn-sm btn-outline-danger btn-cancel-order" data-order-id="' +
+              order.id +
+              '">Hủy đơn</button>' +
               '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
               order.id +
               '">Xem chi tiết</a>' +
@@ -977,10 +1341,14 @@
 
     function applyFilter() {
       var codeNode = document.getElementById("filterOrderCode");
+      var statusNode = document.getElementById("filterStatus");
       var fromNode = document.getElementById("filterFromDate");
       var toNode = document.getElementById("filterToDate");
 
       var codeText = String((codeNode && codeNode.value) || "")
+        .trim()
+        .toLowerCase();
+      var status = String((statusNode && statusNode.value) || "all")
         .trim()
         .toLowerCase();
       var fromDate = (fromNode && fromNode.value) || "";
@@ -996,11 +1364,14 @@
           !codeText ||
           orderCode(order.id).toLowerCase().indexOf(codeText) !== -1;
 
+        var statusMatched =
+          !statusNode || status === "all" || order.status === status;
+
         var orderTime = new Date(order.createdAt).getTime();
         var fromMatched = fromTime == null || orderTime >= fromTime;
         var toMatched = toTime == null || orderTime <= toTime;
 
-        return codeMatched && fromMatched && toMatched;
+        return codeMatched && statusMatched && fromMatched && toMatched;
       });
 
       state.page = 1;
@@ -1135,6 +1506,85 @@
           })
           .finally(function () {
             setAcceptButtonLoading(button, false);
+          });
+      });
+    }
+
+    if (tbody && role === "customer") {
+      tbody.addEventListener("click", function (event) {
+        var button = event.target.closest(".btn-cancel-order");
+        if (!button) return;
+
+        var orderId = Number(button.getAttribute("data-order-id"));
+        if (!Number.isFinite(orderId) || orderId <= 0) {
+          window.alert("Không xác định được mã đơn hàng.");
+          return;
+        }
+
+        if (!window.confirm("Bạn có chắc muốn hủy đơn này?")) {
+          return;
+        }
+
+        setActionButtonLoading(button, true, "Hủy đơn", "Đang hủy...");
+        handleCancelOrder(orderId)
+          .then(function () {
+            var canceledAt = new Date().toISOString();
+            patchOrderLocally(orderId, function (order) {
+              order.status = "canceled";
+              order.updatedAt = canceledAt;
+              if (order.raw && typeof order.raw === "object") {
+                order.raw.ngayhuy = canceledAt;
+              }
+            });
+
+            applyFilter();
+            renderStats(state.all, role);
+          })
+          .catch(function (error) {
+            window.alert(
+              (error && error.message) ||
+                "Không thể hủy đơn. Vui lòng thử lại.",
+            );
+          })
+          .finally(function () {
+            setActionButtonLoading(button, false, "Hủy đơn", "Đang hủy...");
+          });
+      });
+    }
+
+    if (assignedTbody && role === "provider") {
+      assignedTbody.addEventListener("click", function (event) {
+        var button = event.target.closest(".btn-complete-order");
+        if (!button) return;
+
+        var orderId = Number(button.getAttribute("data-order-id"));
+        if (!Number.isFinite(orderId) || orderId <= 0) {
+          window.alert("Không xác định được mã đơn hàng.");
+          return;
+        }
+
+        if (!window.confirm("Xác nhận hoàn thành đơn này?")) {
+          return;
+        }
+
+        setActionButtonLoading(button, true, "Hoàn thành", "Đang cập nhật...");
+        handleCompleteOrder(orderId)
+          .then(function () {
+            return refreshProviderOrders();
+          })
+          .catch(function (error) {
+            window.alert(
+              (error && error.message) ||
+                "Không thể cập nhật hoàn thành. Vui lòng thử lại.",
+            );
+          })
+          .finally(function () {
+            setActionButtonLoading(
+              button,
+              false,
+              "Hoàn thành",
+              "Đang cập nhật...",
+            );
           });
       });
     }
@@ -1286,7 +1736,7 @@
     }
   }
 
-  function initDetailPage(role, sourceOrders) {
+  function initDetailPage(role, sourceOrders, currentUser) {
     var orderId = parseQueryId();
     var allOrders = Array.isArray(sourceOrders) ? sourceOrders : [];
     var order = null;
@@ -1300,6 +1750,24 @@
     if (!order) {
       showNotFound(orderId);
       return;
+    }
+
+    if (role === "customer" && !(order.customer && order.customer.avatar)) {
+      order.customer.avatar = pickFirstValue([
+        currentUser && currentUser.avatar,
+        currentUser && currentUser.user_avatar,
+        currentUser && currentUser.photo,
+        currentUser && currentUser.image,
+      ]);
+    }
+
+    if (role === "provider" && !(order.provider && order.provider.avatar)) {
+      order.provider.avatar = pickFirstValue([
+        currentUser && currentUser.avatar,
+        currentUser && currentUser.user_avatar,
+        currentUser && currentUser.photo,
+        currentUser && currentUser.image,
+      ]);
     }
 
     var meta = statusMeta(order.status);
@@ -1367,16 +1835,22 @@
     setText("heroServiceFee", formatCurrencyVnd(serviceFeeAmount));
     setText("heroTransportFee", formatCurrencyVnd(transportFeeAmount));
     setText("heroSurchargeFee", formatCurrencyVnd(surchargeFeeAmount));
+    setText("heroBookingDate", formatDateTime(order.createdAt));
     setText("heroTotalAmount", formatCurrencyVnd(total));
     setText("heroTimeRange", deliveryMethodText);
-    setText(
-      "heroDateRange",
-      executionStartValue || executionEndValue
-        ? formatDateTime(executionStartValue) +
-            " - " +
-            formatDateTime(executionEndValue)
-        : "Chưa có ngày nhận/hoàn thành",
-    );
+    var heroDateRangeNode = document.getElementById("heroDateRange");
+    if (heroDateRangeNode) {
+      if (executionStartValue || executionEndValue) {
+        heroDateRangeNode.textContent =
+          formatDateTime(executionStartValue) +
+          " - " +
+          formatDateTime(executionEndValue);
+        heroDateRangeNode.classList.remove("d-none");
+      } else {
+        heroDateRangeNode.textContent = "";
+        heroDateRangeNode.classList.add("d-none");
+      }
+    }
     setText("heroAddress", safeText(order.customer && order.customer.address));
 
     setText("detailProgressText", progressValue.toFixed(2) + "%");
@@ -1400,23 +1874,19 @@
     setText("detailExecutionStart", formatDateTime(executionStartValue));
     setText("detailExecutionEnd", formatDateTime(executionEndValue));
 
-    setText(
+    renderAvatarBadge(
       "customerAvatarBadge",
+      order.customer && order.customer.avatar,
       initialsOf(order.customer && order.customer.name, "KH"),
+      "customer",
     );
-    setText(
+    renderAvatarBadge(
       "providerAvatarBadge",
+      order.provider && order.provider.avatar,
       initialsOf(order.provider && order.provider.name, "NCC"),
+      "provider",
     );
     setText("providerStateChip", providerStateText);
-    setText(
-      "providerStaffMeta",
-      "Nhân viên: " + (statusLower === "pending" ? "---" : "2"),
-    );
-    setText(
-      "providerExpMeta",
-      "Kinh nghiệm: " + (statusLower === "pending" ? "---" : "3+ năm"),
-    );
 
     setText("reviewCustomerText", "Chưa có đánh giá");
     setText("reviewCustomerDate", "---");
@@ -1506,6 +1976,17 @@
       }
     }
 
+    if (role === "admin") {
+      var admin = await getSessionAdmin();
+      if (!admin) {
+        window.location.href = ADMIN_LOGIN_PAGE;
+        return;
+      }
+
+      syncAdminChip(admin);
+      sourceOrders = await loadAdminOrders();
+    }
+
     if (pageType === "list") {
       initListPage(role, sourceOrders);
       return;
@@ -1517,6 +1998,7 @@
         role === "provider" && sourceOrders && !Array.isArray(sourceOrders)
           ? sourceOrders.allOrders
           : sourceOrders,
+        user,
       );
     }
   }
@@ -1524,7 +2006,11 @@
   function start() {
     init().catch(function () {
       window.location.href =
-        getRole() === "provider" ? PROVIDER_LOGIN_PAGE : CUSTOMER_LOGIN_PAGE;
+        getRole() === "provider"
+          ? PROVIDER_LOGIN_PAGE
+          : getRole() === "admin"
+            ? ADMIN_LOGIN_PAGE
+            : CUSTOMER_LOGIN_PAGE;
     });
   }
 

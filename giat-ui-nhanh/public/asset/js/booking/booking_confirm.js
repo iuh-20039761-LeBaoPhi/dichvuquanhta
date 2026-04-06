@@ -60,6 +60,26 @@
       return text || "-";
     }
 
+    function formatBookingTimeForPreview(rawValue) {
+      const text = String(rawValue || "").trim();
+      if (!text) return "";
+
+      // Input datetime-local returns yyyy-mm-ddTHH:MM; display it in vi-VN.
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(text)) {
+        const date = new Date(text);
+        if (Number.isFinite(date.getTime())) {
+          return date.toLocaleString("vi-VN");
+        }
+      }
+
+      const parsed = new Date(text);
+      if (Number.isFinite(parsed.getTime())) {
+        return parsed.toLocaleString("vi-VN");
+      }
+
+      return text;
+    }
+
     function clearConfirmMedia() {
       confirmMediaUrls.forEach((url) => URL.revokeObjectURL(url));
       confirmMediaUrls.length = 0;
@@ -194,16 +214,14 @@
       data.transport_option = data.hinhthucnhangiao || "";
 
       const rawBookingTime = String(data.thoigiandatdichvu || "").trim();
-      const bookingTimeDisplay = rawBookingTime
-        ? new Date(rawBookingTime).toLocaleString("vi-VN")
-        : "";
+      const bookingTimeDisplay = formatBookingTimeForPreview(rawBookingTime);
+      data.ngaydat = rawBookingTime;
       data.booking_time = rawBookingTime;
 
       return {
         data,
         preview: {
           name: data.name,
-          orderCode: "Sẽ tạo sau khi lưu",
           phone: data.phone,
           address: data.address,
           bookingTime: bookingTimeDisplay,
@@ -224,7 +242,6 @@
     function renderConfirmModal(preview) {
       const fields = {
         confirmName: preview.name,
-        confirmOrderCode: preview.orderCode,
         confirmPhone: preview.phone,
         confirmAddress: preview.address,
         confirmBookingTime: preview.bookingTime,
@@ -249,7 +266,8 @@
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (typeof utils.fillBookingTimeNow === "function") {
-        utils.fillBookingTimeNow(true);
+        // Only auto-fill when user left the field empty.
+        utils.fillBookingTimeNow(false);
       }
 
       const isLoggedIn = await isUserLoggedInForBooking();
@@ -313,7 +331,7 @@
     function buildBookingSheetPayload(formData) {
       return {
         sheet_type: "Giặt ủi nhanh",
-        created_at: "",
+        created_at: formData.created_at || new Date().toISOString(),
         "Tên khách": formData.name || "",
         "Số điện thoại": formData.phone || "",
         "Địa chỉ": formData.address || "",
@@ -330,7 +348,7 @@
         "Tổng tiền": normalizeMoneyToNumber(formData.total),
         "Công việc": formData.work_items || "",
         "Hóa chất hỗ trợ": formData.support_chemicals || "",
-        "Thời gian đặt": formData.booking_time || "",
+        "Ngày đặt": formData.booking_time || "",
         "Ghi chú": formData.message || "",
         "Trạng thái thanh toán": "Unpaid",
       };
@@ -377,7 +395,8 @@
         tongtien: normalizeMoneyToNumber(data.total) || "",
         danhsachcongviec: data.work_items || "",
         danhsachhoachat: data.support_chemicals || "",
-        thoigiandatdichvu: data.booking_time || "",
+        ngaydat: data.booking_time || "",
+        ngaytao: data.created_at || new Date().toISOString(),
         diachi: data.address || "",
         lat_kh: data.lat_kh || "",
         lng_kh: data.lng_kh || "",
@@ -407,6 +426,8 @@
 
       try {
         const { data } = collectBookingData();
+        const createdAtNow = new Date().toISOString();
+        data.created_at = createdAtNow;
 
         await Promise.all([saveToGoogleSheet(data), saveToKrudApi(data)]);
 

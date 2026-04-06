@@ -6,6 +6,7 @@
     <title>Giặt Ủi Nhanh - Admin Dashboard</title>
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
+    <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
   </head>
   <body>
     <div class="admin-shell">
@@ -54,14 +55,17 @@
                   </h3>
                 </div>
                 <div class="table-responsive">
-                  <table class="table table-hover align-middle mb-0">
+                  <table
+                    class="table table-hover align-middle mb-0 order-table"
+                  >
                     <thead>
                       <tr>
                         <th>Mã đơn</th>
                         <th>Khách hàng</th>
                         <th>Dịch vụ</th>
+                        <th>Ngày tạo</th>
                         <th>Trạng thái</th>
-                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
                         <th>Thao tác</th>
                       </tr>
                     </thead>
@@ -239,6 +243,20 @@
       });
     </script>
     <script>
+      function renderAdminLoginInfo(admin) {
+        const email = String((admin && admin.email) || "").trim();
+        const emailNode = document.querySelector(".admin-chip .admin-email");
+        const avatarNode = document.querySelector(".admin-chip .admin-avatar");
+
+        if (emailNode) {
+          emailNode.textContent = email || "admin@giatuinhanh.vn";
+        }
+
+        if (avatarNode) {
+          avatarNode.textContent = email ? email.charAt(0).toUpperCase() : "A";
+        }
+      }
+
       async function checkAdminLogin() {
         try {
           const res = await fetch("../public/session-admin.php?action=get", {
@@ -248,7 +266,10 @@
           const data = await res.json().catch(() => null);
           if (!res.ok || !data || data.hasAdmin !== true) {
             window.location.href = "dang-nhap-admin.html";
+            return;
           }
+
+          renderAdminLoginInfo(data.admin || null);
         } catch (_) {
           window.location.href = "dang-nhap-admin.html";
         }

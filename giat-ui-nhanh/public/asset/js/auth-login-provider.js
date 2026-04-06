@@ -277,7 +277,7 @@
       setStatus("Đăng nhập thành công! Đang chuyển trang...", false);
 
       setTimeout(function () {
-        window.location.href = "nha-cung-cap.html";
+        window.location.href = "nhacungcap/danh-sach-hoa-don.html";
       }, 600);
     } catch (error) {
       setStatus(
