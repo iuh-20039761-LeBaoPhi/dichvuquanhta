@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <script src="/ga.js"></script>
@@ -188,6 +188,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Tích hợp hệ thống dùng chung DVQT -->
+<script src="../../public/asset/js/dvqt-krud.js"></script>
+<script src="../../public/asset/js/dvqt-app.js"></script>
+
 <script>
 const STATUS_MAP = {
     pending:   { label: 'Chờ xác nhận', cls: 'badge-pending',   icon: 'fa-clock' },
@@ -199,24 +203,11 @@ const STATUS_MAP = {
 let allBookings = [];
 let currentFilter = 'all';
 
-function resolveAppBase() {
-    const path = window.location.pathname || '';
-    const lower = path.toLowerCase();
-    const thueXeIndex = lower.indexOf('/thue-xe/');
-    if (thueXeIndex !== -1) {
-        const prefix = path.slice(0, thueXeIndex + '/thue-xe/'.length);
-        return window.location.origin + prefix;
-    }
-    if (lower.startsWith('/globalcare/')) {
-        return window.location.origin + '/GlobalCare/thue-xe/';
-    }
-    return window.location.origin + '/thue-xe/';
-}
-
-const APP_BASE = resolveAppBase();
+// Tự động tìm đường dẫn gốc
+const ROOT = (typeof DVQTApp !== 'undefined' && DVQTApp.ROOT_URL !== undefined) ? DVQTApp.ROOT_URL : '/Test';
 
 function appUrl(relativePath) {
-    return new URL(relativePath.replace(/^\/+/, ''), APP_BASE).toString();
+    return ROOT + '/thue-xe/' + relativePath.replace(/^\/+/, '');
 }
 
 function fmtDate(d) {
@@ -226,16 +217,24 @@ function fmtDate(d) {
 }
 function fmtPrice(n) { return Number(n).toLocaleString('vi-VN') + ' đ'; }
 
-fetch(appUrl('controllers/customer/auth-controller.php?action=checkLogin'))
-    .then(r => r.json())
-    .then(res => {
-        if (!res.success) { window.location.href = appUrl('views/pages/customer/dang-nhap.html'); return; }
-        document.getElementById('welcomeName').textContent   = res.name;
-        document.getElementById('sidebarName').textContent   = res.name;
-        document.getElementById('sidebarAvatar').textContent = res.name.charAt(0).toUpperCase();
+// KIỂM TRA SESSION DÙNG CHUNG
+async function initSession() {
+    try {
+        const session = await DVQTApp.checkSession();
+        if (!session.logged_in || session.role !== 'customer') {
+            window.location.href = ROOT + '/public/dang-nhap.html?service=thuexe';
+            return;
+        }
+        
+        document.getElementById('welcomeName').textContent   = session.name;
+        document.getElementById('sidebarName').textContent   = session.name;
+        document.getElementById('sidebarAvatar').textContent = (session.name || 'U').charAt(0).toUpperCase();
         loadBookings();
-    })
-    .catch(() => { window.location.href = appUrl('views/pages/customer/dang-nhap.html'); });
+    } catch (e) {
+        window.location.href = ROOT + '/public/dang-nhap.html?service=thuexe';
+    }
+}
+initSession();
 
 function loadBookings() {
     fetch(appUrl('controllers/customer/bookings-controller.php?action=getMyBookings'))
@@ -343,9 +342,9 @@ function showDetail(b) {
     new bootstrap.Modal(document.getElementById('detailModal')).show();
 }
 
-function logout() {
-    fetch(appUrl('controllers/customer/auth-controller.php?action=logout'))
-    .then(() => { window.location.href = appUrl('views/pages/customer/dang-nhap.html'); });
+async function logout() {
+    await DVQTApp.logout();
+    window.location.href = ROOT + '/public/dang-nhap.html?service=thuexe';
 }
 </script>
 </body>
