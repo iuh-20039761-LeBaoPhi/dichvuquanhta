@@ -53,44 +53,20 @@
         </div>
     </div>
 
-    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script src="../../../public/asset/js/dvqt-krud.js"></script>
+    <script src="../../../public/asset/js/dvqt-app.js"></script>
     <script>
-        /**
-         * ═══════════════════════════════════════════════════════════
-         * ĐĂNG NHẬP ADMIN — Luồng xử lý:
-         * ═══════════════════════════════════════════════════════════
-         *
-         * 1. Admin nhập email + mật khẩu
-         * 2. JS gọi krudList() → lấy danh sách admin từ bảng KRUD
-         * 3. Tìm admin theo email → kiểm tra mật khẩu
-         * 4. Nếu hợp lệ:
-         *    a) Lưu vào localStorage (dùng nhanh cho UI)
-         *    b) Gọi PHP endpoint tạo session server-side
-         * 5. Chuyển hướng sang trang quản trị
-         *
-         * Bảng KRUD:  "admin"
-         * PHP session: api/admin/auth/login.php
-         * ═══════════════════════════════════════════════════════════
-         */
-
-        /** @const {string} Tên bảng KRUD chứa tài khoản admin */
-        const BANG_DANG_NHAP_ADMIN = 'admin';
-
-        /** @const {string} URL endpoint PHP để tạo session server-side */
-        const PHP_LOGIN_URL = '../../api/admin/auth/login.php';
-
         // Check if already logged in (Server session)
         (async function checkAlreadyLoggedIn() {
-            try {
-                const res = await fetch('../../api/public/check-session.php');
-                const data = await res.json();
+            if (window.DVQTApp && window.DVQTApp.checkSession) {
+                const data = await window.DVQTApp.checkSession();
                 if (data && data.logged_in && data.role === 'admin') {
                     window.location.href = 'quan-tri.html';
                 }
-            } catch (e) {}
+            }
         })();
 
-        // ── Sự kiện UI cơ bản ──────────────────────────────────
+        // UI Events
         document.getElementById('togglePwd').addEventListener('click', function() {
             const input = document.getElementById('password');
             const icon  = document.getElementById('eyeIcon');
@@ -101,134 +77,29 @@
         document.getElementById('username').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
         document.getElementById('loginBtn').addEventListener('click', login);
 
-        /**
-         * Chuẩn hoá response từ KRUD API thành mảng rows.
-         * @param {*} res - Response gốc từ krudList()
-         * @returns {Array} Mảng các bản ghi admin
-         */
-        function normalizeRows(res) {
-            if (Array.isArray(res)) return res;
-            if (!res || typeof res !== 'object') return [];
-            if (res.error) throw new Error(res.error);
-            if (res.success === false) throw new Error(res.message || 'Không lấy được dữ liệu tài khoản admin');
-            if (Array.isArray(res.data)) return res.data;
-            if (Array.isArray(res.rows)) return res.rows;
-            if (Array.isArray(res.items)) return res.items;
-            return [];
-        }
-
-        /**
-         * Hash SHA-256 phía client (Web Crypto API).
-         * @param {string} text - Chuỗi cần hash
-         * @returns {Promise<string>} Chuỗi hex SHA-256
-         */
-        async function sha256(text) {
-            if (!(window.crypto && window.crypto.subtle && window.TextEncoder)) {
-                return String(text || '');
-            }
-            const encoded = new TextEncoder().encode(String(text || ''));
-            const buffer = await window.crypto.subtle.digest('SHA-256', encoded);
-            return Array.from(new Uint8Array(buffer))
-                .map((b) => b.toString(16).padStart(2, '0'))
-                .join('');
-        }
-
-        /**
-         * So khớp mật khẩu: hỗ trợ format "sha256$..." hoặc plaintext.
-         * @param {string} inputPassword  - Mật khẩu user nhập
-         * @param {string} storedPassword - Mật khẩu lưu trong DB
-         * @returns {Promise<boolean>} true nếu khớp
-         */
-        async function matchPassword(inputPassword, storedPassword) {
-            const stored = String(storedPassword || '');
-            if (!stored) return false;
-            if (stored.startsWith('sha256$')) {
-                return stored === ('sha256$' + await sha256(inputPassword));
-            }
-            return stored === inputPassword;
-        }
-
-        /**
-         * Gọi PHP endpoint để tạo session server-side.
-         * Fire-and-forget: lỗi thì bỏ qua, localStorage vẫn hoạt động.
-         * @param {Object} profile - { email, name }
-         */
-        async function syncPhpSession(profile) {
-            return fetch(PHP_LOGIN_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(profile),
-            }).catch(() => {
-                console.warn('[login] Không tạo được PHP session');
-            });
-        }
-
-        /**
-         * Hàm chính: xử lý đăng nhập admin.
-         *
-         * Bước 1: Validate input
-         * Bước 2: Gọi KRUD lấy danh sách admin → tìm theo email
-         * Bước 3: Kiểm tra mật khẩu
-         * Bước 4: Lưu localStorage + tạo PHP session
-         * Bước 5: Redirect sang trang quản trị
-         */
         async function login() {
-            const email    = document.getElementById('username').value.trim().toLowerCase();
+            const email    = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const btn = document.getElementById('loginBtn');
             const msg = document.getElementById('msg');
 
-            // ── Bước 1: Validate input ──────────────────────────
             if (!email || !password) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng nhập đầy đủ thông tin</span>';
+                msg.innerHTML = '<span class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Vui lòng nhập đầy đủ thông tin</span>';
                 return;
             }
 
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
             msg.innerHTML = '';
 
             try {
-                /**
-                 * Bổ sung cơ chế gọi API linh hoạt
-                 */
-                async function fetchAdmins() {
-                    if (typeof krudList === 'function') {
-                        return await krudList({ table: BANG_DANG_NHAP_ADMIN });
-                    }
-                    // Fallback to fetch
-                    const res = await fetch('https://api.dvqt.vn/list/', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ table: BANG_DANG_NHAP_ADMIN })
-                    });
-                    return await res.json();
-                }
+                // Sử dụng hàm đăng nhập dùng chung của DVQT cho role 'admin'
+                await window.DVQTApp.login('admin', email, password, 'admin');
 
-                // ── Bước 2: Tìm admin theo email ───────────────
-                const result = await fetchAdmins();
-                const rows = normalizeRows(result);
-                const account = rows.find((item) => String(item.email || '').trim().toLowerCase() === email);
-
-                if (!account) {
-                    throw new Error('Không tìm thấy tài khoản admin với email này');
-                }
-
-                // ── Bước 3: Kiểm tra mật khẩu ──────────────────
-                const ok = await matchPassword(password, account.matkhau || account.mat_khau || account.password);
-                if (!ok) {
-                    throw new Error('Sai mật khẩu');
-                }
-
-                // ── Bước 4: Tạo PHP session ─────
-                // Tạo PHP session phía server (đợi phản hồi để đảm bảo session được thiết lập)
-                await syncPhpSession({ email, name: account.hovaten || account.name || email });
-
-                // ── Bước 5: Redirect ────────────────────────────
-                msg.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';
-                setTimeout(() => window.location.href = 'quan-tri.html', 700);
+                msg.innerHTML = '<span class="text-success small"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';
+                setTimeout(() => window.location.href = 'quan-tri.html', 800);
             } catch (err) {
-                msg.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + (err && err.message ? err.message : 'Đăng nhập thất bại') + '</span>';
+                msg.innerHTML = '<span class="text-danger small"><i class="fas fa-times-circle me-1"></i>' + (err.message || 'Đăng nhập thất bại') + '</span>';
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Đăng nhập';
             }

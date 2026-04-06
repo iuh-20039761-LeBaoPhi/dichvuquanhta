@@ -100,7 +100,7 @@ async function _bdLoadStandaloneServices() {
 
     let services = [];
     try {
-        const krud = window.ThoNhaKrud;
+        const krud = window.DVQTKrud;
         if (!krud) throw new Error('KRUD not found');
 
         // 1. Tải danh mục và dịch vụ từ Database
@@ -124,7 +124,12 @@ async function _bdLoadStandaloneServices() {
                 id: cat.id,
                 name: cat.ten_danhmuc,
                 items: catItems,
-                travelFee: { mode: 'per_km', min: 20000, max: 150000 } // Default fallback
+                travelFee: { 
+                    mode: 'per_km', 
+                    min: 20000, 
+                    max: 150000,
+                    pricePerKm: { baseKm: 2, basePrice: 20000, extraPrice: 12000 }
+                }
             };
         });
 

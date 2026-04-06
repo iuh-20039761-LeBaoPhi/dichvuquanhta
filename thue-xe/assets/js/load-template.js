@@ -1,4 +1,4 @@
-﻿function loadHeader() {
+function loadHeader() {
     // Inject CSS vào head ngay lập tức nếu trang chưa có (tránh FOUC)
     if (!document.querySelector('link[href*="bootstrap.min.css"]')) {
         [
@@ -38,54 +38,86 @@ function initAuthNav() {
     const guestEl   = document.getElementById('auth-guest');
     const userEl    = document.getElementById('auth-user');
 
-    fetch('controllers/check-session.php')
-        .then(r => r.json())
-        .then(data => {
-            if (loadingEl) loadingEl.style.display = 'none';
+    const checkSessionHandler = (data) => {
+        if (loadingEl) loadingEl.style.display = 'none';
 
-            if (data.logged_in) {
-                if (userEl) userEl.style.display = '';
+        if (data && data.logged_in) {
+            if (userEl) userEl.style.display = '';
 
-                const nameEl   = document.getElementById('auth-name');
-                const avatarEl = document.getElementById('auth-avatar');
-                if (nameEl)   nameEl.textContent  = data.name;
-                if (avatarEl) avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
+            const nameEl   = document.getElementById('auth-name');
+            const avatarEl = document.getElementById('auth-avatar');
+            if (nameEl)   nameEl.textContent  = data.name;
+            if (avatarEl) avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
 
-                const dashMap = {
-                    customer: 'controllers/customer/dashboard-controller.php',
-                    provider: 'controllers/provider/dashboard-controller.php',
-                    admin:    'admin/index.php'
-                };
-                const logoutMap = {
-                    customer: 'controllers/customer/auth-controller.php?action=logout',
-                    provider: 'controllers/provider/auth-controller.php?action=logout',
-                    admin:    'admin/index.php?action=logout'
-                };
-                const loginMap = {
-                    customer: 'views/pages/customer/dang-nhap.html',
-                    provider: 'views/pages/provider/dang-nhap.html',
-                    admin:    'admin/index.php'
-                };
+            const dashMap = {
+                customer: 'views/pages/customer/bang-dieu-khien.html',
+                provider: 'views/pages/provider/bang-dieu-khien.html',
+                admin:    'admin/index.php'
+            };
+            const logoutMap = {
+                customer: '../../public/api/auth/logout.php',
+                provider: '../../public/api/auth/logout.php',
+                admin:    'admin/index.php?action=logout'
+            };
+            const loginMap = {
+                customer: '../../public/dang-nhap.html?service=thuexe',
+                provider: '../../public/dang-nhap.html?service=thuexe',
+                admin:    'admin/index.php'
+            };
 
-                const dashLink = document.getElementById('auth-dashboard-link');
-                if (dashLink) dashLink.href = dashMap[data.role] || 'controllers/customer/dashboard-controller.php';
-
-                const logoutLink = document.getElementById('auth-logout-link');
-                if (logoutLink) {
-                    logoutLink.addEventListener('click', function(e) {
+            const dashLink = document.getElementById('auth-dashboard-link');
+            if (dashLink) {
+                const dashUrl = dashMap[data.role] || dashMap.customer;
+                dashLink.onclick = async function(e) {
+                    if (data.role === 'provider') {
                         e.preventDefault();
-                        fetch(logoutMap[data.role] || 'controllers/customer/auth-controller.php?action=logout')
-                            .then(() => { window.location.href = loginMap[data.role] || 'views/pages/customer/dang-nhap.html'; });
-                    });
-                }
-            } else {
-                if (guestEl) guestEl.style.display = '';
+                        try {
+                            const hasAccess = await window.DVQTApp.checkAccess('nhacungcap_thuexe', data.phone || '');
+                            if (hasAccess) {
+                                window.location.href = dashUrl;
+                            } else {
+                                alert("Tài khoản của bạn chưa đăng ký làm nhà cung cấp của dịch vụ này!");
+                            }
+                        } catch (err) {
+                            window.location.href = dashUrl;
+                        }
+                    } else {
+                        dashLink.href = dashUrl;
+                    }
+                };
             }
-        })
-        .catch(() => {
+
+            const logoutLink = document.getElementById('auth-logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    if (window.DVQTApp && window.DVQTApp.logout) {
+                        await window.DVQTApp.logout();
+                    } else {
+                        await fetch(logoutMap[data.role] || '../../public/api/auth/logout.php').catch(() => null);
+                    }
+                    window.location.href = loginMap[data.role] || 'views/pages/customer/dang-nhap.html';
+                });
+            }
+        } else {
+            if (guestEl) guestEl.style.display = '';
+        }
+    };
+
+    if (window.DVQTApp && window.DVQTApp.checkSession) {
+        window.DVQTApp.checkSession().then(checkSessionHandler).catch(() => {
             if (loadingEl) loadingEl.style.display = 'none';
             if (guestEl)   guestEl.style.display   = '';
         });
+    } else {
+        fetch('controllers/check-session.php')
+            .then(r => r.json())
+            .then(checkSessionHandler)
+            .catch(() => {
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (guestEl)   guestEl.style.display   = '';
+            });
+    }
 }
 
 function injectBaseSEO() {

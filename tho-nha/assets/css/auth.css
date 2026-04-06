@@ -3,19 +3,19 @@
    ==================================================== */
 
 :root {
-    --auth-primary: #11998e;
-    --auth-primary-dark: #0d7a70;
-    --auth-secondary: #38ef7d;
-    --auth-accent: #ffc857;
-    --auth-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    --auth-bg: linear-gradient(140deg, #e8f8f5 0%, #d8f5ea 46%, #b7ebd1 100%);
-    --auth-text: #1a2332;
-    --auth-muted: #617085;
-    --auth-border: #d8e4ea;
-    --auth-soft: #f4fbf8;
-    --auth-danger: #dc3545;
-    --auth-success: #198754;
-    --auth-shadow: 0 26px 60px rgba(7, 55, 56, 0.2);
+    --auth-primary: #06b6d4;
+    --auth-primary-dark: #2563eb;
+    --auth-secondary: #38bdf8;
+    --auth-accent: #22d3ee;
+    --auth-gradient: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+    --auth-bg: linear-gradient(140deg, #f0f9ff 0%, #e0f2fe 46%, #bae6fd 100%);
+    --auth-text: #0f172a;
+    --auth-muted: #64748b;
+    --auth-border: #e2e8f0;
+    --auth-soft: #f0faff;
+    --auth-danger: #ef4444;
+    --auth-success: #22c55e;
+    --auth-shadow: 0 26px 60px rgba(15, 23, 42, 0.15);
     --auth-radius: 24px;
     --auth-radius-sm: 12px;
 }
@@ -25,7 +25,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
     min-height: 100vh;
     margin: 0;
     color: var(--auth-text);
@@ -51,7 +51,7 @@ body::after {
 body::before {
     width: 360px;
     height: 360px;
-    background: radial-gradient(circle, rgba(255, 200, 87, 0.36) 0%, rgba(255, 200, 87, 0) 70%);
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0) 70%);
     top: -90px;
     right: -70px;
 }
@@ -59,7 +59,7 @@ body::before {
 body::after {
     width: 420px;
     height: 420px;
-    background: radial-gradient(circle, rgba(17, 153, 142, 0.22) 0%, rgba(17, 153, 142, 0) 72%);
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0) 72%);
     bottom: -160px;
     left: -120px;
 }

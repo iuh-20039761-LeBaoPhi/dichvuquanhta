@@ -33,7 +33,7 @@
     }
 
     async function refreshData() {
-        const krud = window.ThoNhaKrud;
+        const krud = window.DVQTKrud;
         if (!krud) return;
 
         try {
@@ -239,7 +239,7 @@
 
     window.deleteRow = async (table, id) => {
         if (!confirm('Xác nhận xóa? Dữ liệu đã xóa không thể khôi phục.')) return;
-        const krud = window.ThoNhaKrud;
+        const krud = window.DVQTKrud;
         try {
             await krud.runAction('delete', table, {}, id);
             showNotify('Đã xóa dữ liệu thành công!');
@@ -276,7 +276,7 @@
      * Hàm xử lý chung việc gửi dữ liệu lên server
      */
     async function handleSubmit(form, table, modalId) {
-        const krud = window.ThoNhaKrud;
+        const krud = window.DVQTKrud;
         if (!krud) return;
 
         const formData = new FormData(form);

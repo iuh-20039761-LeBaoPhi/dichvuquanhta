@@ -308,12 +308,12 @@
 
         async function loadDataFromDb() {
             try {
-                // Đợi ThoNhaKrud sẵn sàng
-                while(!window.ThoNhaKrud) await new Promise(r => setTimeout(r, 100));
+                // Đợi DVQTKrud sẵn sàng
+                while(!window.DVQTKrud) await new Promise(r => setTimeout(r, 100));
 
                 const urlParams = new URLSearchParams(window.location.search);
                 const reqId = parseInt(urlParams.get('id')) || 1;
-                const krud = window.ThoNhaKrud;
+                const krud = window.DVQTKrud;
                 const [cats, svcs] = await Promise.all([
                     krud.listTable('danhmuc_thonha', { limit: 100 }),
                     krud.listTable('dichvu_thonha', { limit: 1000 })
@@ -674,10 +674,10 @@
     </script>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="../../assets/js/public/map-picker.js"></script>
+    <script src="../../../public/asset/js/dvqt-map.js"></script>
     <script>window.BD_BASE = '../../';</script>
-    <script src="../../assets/js/shared/krud-helper.js"></script>
-    <script src="../../assets/js/shared/app-helper.js"></script>
+    <script src="../../../public/asset/js/dvqt-krud.js"></script>
+    <script src="../../../public/asset/js/dvqt-app.js"></script>
     <script src="../../assets/js/public/booking-detail-shared.js"></script>
     <script src="../../assets/js/public/booking-detail-modal.js"></script>
     <script src="../../assets/js/public/booking-detail-standalone.js"></script>

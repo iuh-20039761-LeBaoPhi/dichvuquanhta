@@ -171,79 +171,78 @@
     }
 
     /**
+     * Suy luận trạng thái đơn hàng dựa trên các mốc thời gian (Priority-based).
+     * @param {Object} row - Dữ liệu thô từ API.
+     * @returns {string} Trạng thái suy luận.
+     */
+    function deriveStatusFromDates(row) {
+        if (row.ngayhuy) return 'cancel';
+        if (row.ngayhoanthanhthucte) return 'done';
+        if (row.ngaythuchienthucte) return 'doing';
+        if (row.ngaynhan) return 'confirmed';
+        if (row.ngaydat) return 'new';
+        // Fallback
+        return row.trangthai || row.status || 'new';
+    }
+
+    /**
      * Ánh xạ dữ liệu API đơn hàng thành đối tượng chuẩn (Universal Order Object).
      * @param {Object} row - Dữ liệu thô từ API.
      * @param {number} index - Chỉ số đơn hàng trong danh sách.
-     * @param {Object} options - Các tuỳ chọn bổ sung (mapping, fallback).
+     * @param {Object} options - Các tuỳ chọn bổ sung.
      * @returns {Object} Đối tượng đơn hàng đã chuẩn hoá.
      */
     function mapApiOrderBase(row, index, options) {
         var raw = row || {};
         var opts = options || {};
-        var createdAt = normalizeDateTime(raw.ngaytao || raw.created_at || raw.createdAt || raw.created_at_utc) || nowIsoFallback();
 
-        var updatedAtValue = null;
-        var updatedAtFields = Array.isArray(opts.updatedAtFields)
-            ? opts.updatedAtFields
-            : ['updated_at', 'updatedAt'];
-        for (var i = 0; i < updatedAtFields.length; i += 1) {
-            var field = updatedAtFields[i];
-            if (raw[field]) {
-                updatedAtValue = raw[field];
-                break;
-            }
-        }
-        var updatedAt = normalizeDateTime(updatedAtValue) || createdAt;
+        // Logic trạng thái mới: Suy luận từ các cột thời gian
+        var status = deriveStatusFromDates(raw);
 
-        var serviceName = raw.tendichvu || raw.service_name || raw.service || raw.service_id || (opts.defaultServiceName || 'Dịch vụ tại nhà');
-        var note = raw.ghichu || raw.note || '';
-        var orderCode = raw.madon || raw.order_code || raw.orderCode || ('TN-REMOTE-' + String(Number(index || 0) + 1).padStart(4, '0'));
-        var statusRaw = raw.trangthai || raw.status || opts.defaultStatus || 'new';
-        var status = typeof opts.normalizeStatus === 'function' ? opts.normalizeStatus(statusRaw, raw) : statusRaw;
-        var providerId = getProviderIdFromOrderRow(raw);
-        var providerFromId = providerId && opts.providerMapById && opts.providerMapById[providerId]
-            ? opts.providerMapById[providerId]
-            : null;
-        var providerFromOrder = mapProviderInlineFromOrderRow(raw);
-        var provider = providerFromId || providerFromOrder;
+        var createdAt = normalizeDateTime(raw.ngaydat) || nowIsoFallback();
+        // Cập nhật là chính nó nếu không dùng cột cập nhật riêng
+        var updatedAt = createdAt;
 
-        if (!provider && typeof opts.providerFallback === 'function') {
-            provider = opts.providerFallback({
-                row: raw,
-                index: index,
-                orderCode: orderCode,
-                providerId: providerId,
-                providerFromId: providerFromId,
-                providerFromOrder: providerFromOrder
-            });
-        }
+        var serviceName = raw.tendichvu || raw.ten_dich_vu || raw.service_name || raw.service || (opts.defaultServiceName || 'Dịch vụ tại nhà');
+
+        // Milestone ID & Code
+        var rawId = raw.id || raw.ID || 0;
+        var orderCode = String(rawId).padStart(7, '0');
 
         var order = {
-            id: String(raw.id !== undefined && raw.id !== null ? raw.id : (raw.madon || raw.order_code || ('remote-' + index))),
+            id: String(rawId),
             orderCode: orderCode,
             customer: {
-                name: raw.hoten || raw.customer_name || raw.name || opts.customerNameFallback || 'Khách hàng',
-                phone: raw.sodienthoai || raw.customer_phone || raw.phone || opts.customerPhoneFallback || ''
+                name: raw.tenkhachhang || raw.ten_kh || raw.customer_name || 'Khách hàng',
+                phone: raw.sdtkhachhang || raw.sdt_kh || raw.customer_phone || '',
+                address: raw.diachikhachhang || raw.dia_chi_kh || raw.customer_address || '',
+                email: raw.emailkhachhang || raw.email_kh || ''
             },
-            address: raw.diachi || raw.address || '',
+            address: raw.diachikhachhang || raw.dia_chi_kh || raw.address || '',
             service: serviceName,
-            note: note,
-            selected_brand: raw.thuonghieu || raw.selected_brand || '',
-            estimated_price: Number(raw.giadichvu || raw.estimated_price || 0) || 0,
-            id_danhmuc: raw.id_danhmuc || raw.id_danh_muc || null,
-            id_dichvu: raw.id_dichvu || raw.id_dich_vu || null,
-            travel_fee: Number(raw.phidichuyen || raw.travel_fee || 0) || 0,
-            travel_fee_status: raw.trangthaidichuyen || raw.travel_status || raw.travel_fee_status || null,
-            travel_distance_km: Number(raw.quangduongkm || raw.travel_distance_km || 0) || null,
-            inspection_fee: Number(raw.phikhaosat || raw.inspection_fee || 0) || 0,
-            total_price: Number(raw.tongtien || raw.total_price || 0) || 0,
-            status: status || opts.defaultStatus || 'new',
-            provider: provider,
-            // Subsidy feature fields
-            actualCost: Number(raw.chiphithucte || raw.chi_phi_thuc_te || 0) || 0,
-            subsidyAmount: Number(raw.sotientrogia || raw.so_tien_tro_gia || 0) || 0,
-            customerPays: Number(raw.khachthanhtoan || raw.khach_thanh_toan || 0) || 0,
-            bookingPricing: raw.booking_pricing || raw.bookingPricing || null,
+            note: raw.ghichu || raw.ghi_chu || raw.note || '',
+            status: status,
+            // Mốc thời gian thực tế
+            dates: {
+                ordered: raw.ngaydat || raw.ngay_dat || raw.created_at || null,
+                cancelled: raw.ngayhuy || null,
+                accepted: raw.ngaynhan || null,
+                started: raw.ngaythuchienthucte || null,
+                completed: raw.ngayhoanthanhthucte || null
+            },
+            // Thông tin NCC thực hiện
+            provider: {
+                id: getProviderIdFromOrderRow(raw),
+                name: raw.tenncc || 'Nhà cung cấp',
+                phone: raw.sdtncc || '',
+                address: raw.diachincc || '',
+                email: raw.emailncc || ''
+            },
+            estimated_price: Number(raw.giadichvu || raw.gia_dich_vu || 0),
+            actualCost: Number(raw.chiphithucte || raw.chiphi_thuc_te || 0),
+            subsidyAmount: Number(raw.sotientrogia || raw.tro_gia || 0),
+            customerPays: Number(raw.khachthanhtoan || raw.khach_tra || 0),
+            total_price: Number(raw.tongtien || raw.tong_tien || raw.total_price || 0),
             createdAt: createdAt,
             updatedAt: updatedAt
         };
@@ -348,25 +347,45 @@
      */
     function buildBookingCostSummary(order, getBookingPricing) {
         var bookingPricing = typeof getBookingPricing === 'function' ? getBookingPricing(order) : null;
+
+        // Nếu không có cấu trúc bookingPricing từ Modal, hãy tự tạo từ data đơn hàng
         if (!bookingPricing) {
-            return '<span class="booking-missing">Chưa có dữ liệu chi phí từ modal đặt lịch.</span>';
+            bookingPricing = {
+                hasServicePrice: (order.estimated_price > 0),
+                servicePrice: order.estimated_price,
+                travel: {
+                    mode: 'fixed',
+                    amount: order._raw.phidichuyen || 0,
+                    distanceKm: order._raw.quangduongkm || 0
+                },
+                survey: {
+                    required: (order.actualCost > 0 || order._raw.phikhaosat > 0),
+                    amount: order._raw.phikhaosat || 0
+                },
+                totalEstimate: order.total_price,
+                note: order.note
+            };
         }
 
         var survey = bookingPricing.survey || { required: false, amount: 0 };
         var serviceText = bookingPricing.hasServicePrice
             ? moneyOrFree(bookingPricing.servicePrice)
-            : 'Chưa cập nhật';
-        var travelText = getTravelFeeText(bookingPricing);
+            : (order.estimated_price > 0 ? moneyOrFree(order.estimated_price) : 'Chưa cập nhật');
+
+        // Travel fee text
+        var tAmt = Number(bookingPricing.travel.amount || 0);
+        var travelText = tAmt > 0 ? formatCurrencyVn(tAmt) : 'Chưa cập nhật';
+        if (bookingPricing.travel.distanceKm > 0) {
+            travelText += ' (~' + Number(bookingPricing.travel.distanceKm).toFixed(1) + ' km)';
+        }
+
         var surveyText = survey.required && Number(survey.amount) > 0
             ? formatCurrencyVn(survey.amount) + ' (nếu không sửa)'
             : 'Không phát sinh';
 
-        var totalText = 'Chưa cập nhật';
-        if (bookingPricing.totalPending) {
-            totalText = 'Giá dịch vụ + phí di chuyển';
-        } else if (Number.isFinite(Number(bookingPricing.totalEstimate))) {
-            totalText = moneyOrFree(bookingPricing.totalEstimate);
-        }
+        var totalText = order.total_price > 0
+            ? formatCurrencyVn(order.total_price)
+            : (bookingPricing.totalEstimate > 0 ? moneyOrFree(bookingPricing.totalEstimate) : 'Đang tính...');
 
         var noteHtml = bookingPricing.note
             ? '<p class="booking-note-inline">' + escapeHtml(bookingPricing.note) + '</p>'

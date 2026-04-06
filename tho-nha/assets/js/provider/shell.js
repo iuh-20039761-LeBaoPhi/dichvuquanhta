@@ -7,7 +7,7 @@
      * Kiểm tra trạng thái logged_in và vai trò provider từ server.
      */
     async function verifySession() {
-        const session = await ThoNhaApp.checkSession();
+        const session = await DVQTApp.checkSession();
         if (!session || !session.logged_in || (session.role !== 'provider' && session.role !== 'admin')) {
             window.location.href = 'dang-nhap.html';
         }
@@ -88,6 +88,15 @@
             }
         }
 
+        // ── BIẾN TOÀN CỤC CHO MAP PICKER (PROVIDER PROFILE) ──
+        let nccLat = null;
+        let nccLng = null;
+        window._bdTravelFromCoords = function(lat, lng) {
+            nccLat = lat;
+            nccLng = lng;
+            console.log('Provider Profile GPS Captured:', lat, lng);
+        };
+
         /**
          * Hiển thị thông tin tài khoản thợ/đối tác lên giao diện hồ sơ.
          */
@@ -99,9 +108,16 @@
             const n = document.getElementById('accName');
             const p = document.getElementById('accPhone');
             const c = document.getElementById('accCompany');
+            const a = document.getElementById('accAddress'); // Địa chỉ đã được thêm vào HTML
+
             if(n) n.value = profile.name || '';
             if(p) p.value = profile.phone || '';
             if(c) c.value = profile.company || '';
+            if(a) a.value = profile.address || '';
+
+            // Nạp tọa độ hiện có (nếu có)
+            nccLat = profile.maplat || null;
+            nccLng = profile.maplng || null;
 
             // Nạp thông tin hình ảnh (xem trước)
             const images = [
@@ -182,6 +198,7 @@
             
             const newName = document.getElementById('accName').value.trim();
             const newCompany = document.getElementById('accCompany').value.trim();
+            const newAddress = document.getElementById('accAddress').value.trim();
             const oldPass = document.getElementById('oldPass').value;
             const newPass = document.getElementById('newPass').value;
             const confirmPass = document.getElementById('confirmNewPass').value;
@@ -201,7 +218,7 @@
             msg.innerHTML = '';
 
             try {
-                const krud = window.ThoNhaKrud;
+                const krud = window.DVQTKrud;
                 if (!krud) throw new Error('Hệ thống chưa nạp thư viện cập nhật.');
 
                 // Lấy bản ghi thợ hiện tại từ database
@@ -219,7 +236,10 @@
 
                 const updateData = {
                     hovaten: newName,
-                    tencua_hang: newCompany
+                    tencua_hang: newCompany,
+                    diachi: newAddress,
+                    maplat: nccLat,
+                    maplng: nccLng
                 };
 
                 if (newPass) updateData.matkhau = newPass;
@@ -255,23 +275,28 @@
                 // --- ĐỒNG BỘ SESSION PHP (Rất quan trọng để hiển thị ảnh mới ngay lập tức) ---
                 msg.innerHTML = '<span class="text-info small">Đang đồng bộ dữ liệu phiên...</span>';
                 try {
-                    await fetch('../../api/provider/auth/login.php', {
+                    await fetch('../../../public/api/auth/login-session.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            id:      profile.id,
-                            name:    newName,
-                            phone:   profile.phone,
-                            company: newCompany,
-                            danh_muc_thuc_hien: currentRecord.danh_muc_thuc_hien,
-                            address: currentRecord.diachi,
-                            avatartenfile:       updateData.avatartenfile || currentRecord.avatartenfile,
-                            cccdmattruoctenfile: updateData.cccdmattruoctenfile || currentRecord.cccdmattruoctenfile,
-                            cccdmatsautenfile:   updateData.cccdmatsautenfile || currentRecord.cccdmatsautenfile
+                            role:  'provider',
+                            id:    profile.id,
+                            name:  newName,
+                            phone: profile.phone,
+                            extra: {
+                                company: newCompany,
+                                address: newAddress,
+                                danh_muc: currentRecord.danh_muc_thuc_hien,
+                                maplat:  nccLat || currentRecord.maplat,
+                                maplng:  nccLng || currentRecord.maplng,
+                                avatartenfile:       updateData.avatartenfile || currentRecord.avatartenfile,
+                                cccdmattruoctenfile: updateData.cccdmattruoctenfile || currentRecord.cccdmattruoctenfile,
+                                cccdmatsautenfile:   updateData.cccdmatsautenfile || currentRecord.cccdmatsautenfile
+                            }
                         })
                     });
                     // Refresh session cache lokal
-                    if (window.ThoNhaApp) await window.ThoNhaApp.checkSession(true);
+                    if (window.DVQTApp) await window.DVQTApp.checkSession(true);
                 } catch (e) {
                     console.warn('Lỗi đồng bộ session:', e);
                 }
@@ -306,12 +331,14 @@
      */
     window.logoutProvider = function() {
         if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
-            localStorage.clear();
-            fetch('../../api/provider/auth/logout.php', { method: 'POST' }).then(() => {
+            if (window.DVQTApp && window.DVQTApp.logout) {
+                window.DVQTApp.logout().then(() => {
+                    window.location.href = 'dang-nhap.html';
+                });
+            } else {
+                localStorage.clear();
                 window.location.href = 'dang-nhap.html';
-            }).catch(() => {
-                window.location.href = 'dang-nhap.html';
-            });
+            }
         }
     };
 })();

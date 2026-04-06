@@ -53,7 +53,7 @@
      * Tải và hiển thị danh sách Nhà cung cấp.
      */
     async function loadProviders() {
-        const krud = window.ThoNhaKrud;
+        const krud = window.DVQTKrud;
         if (!krud) return;
 
         const tbody = document.getElementById('providersBody');
@@ -152,6 +152,7 @@
                     <span class="d-block mb-1 text-muted small text-uppercase fw-bold" style="font-size:0.7rem;letter-spacing:0.5px;">Thông tin cơ bản</span>
                     <div class="p-3 bg-light rounded border small">
                         <div class="mb-2"><strong>Địa chỉ:</strong> ${p.address}</div>
+                        <div class="mb-2 text-primary"><strong>Tọa độ GPS:</strong> ${p._raw && p._raw.maplat ? `${p._raw.maplat}, ${p._raw.maplng}` : '<span class="text-muted italic">Chưa có tọa độ</span>'}</div>
                         <div class="mb-0"><strong>Mô tả dịch vụ:</strong> ${p.description}</div>
                     </div>
                 </div>
@@ -200,7 +201,7 @@
     window.handleProviderAction = async (id, status, reason = '') => {
         if (!confirm('Xác nhận thực hiện thao tác này?')) return;
         
-        const krud = window.ThoNhaKrud;
+        const krud = window.DVQTKrud;
         try {
             const data = { trangthai: status };
             if (reason) data.lydotuchoi = reason;

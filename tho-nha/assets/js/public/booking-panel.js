@@ -50,10 +50,12 @@
         'max-height:calc(82dvh - 58px)!important;overflow-y:auto!important}',
         '}',
 
-        /* Desktop */
-        '@media(min-width:576px){',
-        '#bpModal .modal-dialog{max-width:min(680px,94vw)}',
-        '}'
+        /* Confirm screen service price alignment */
+        '.cfm-service-list { list-style:none; padding:0; margin:0; }',
+        '.cfm-service-list li { display:flex; align-items:center; gap:10px; margin-bottom:8px; border-bottom:1px dashed #f1f5f9; padding-bottom:6px; }',
+        '.cfm-svc-content { flex: 1; display:flex; align-items:center; }',
+        '.cfm-svc-price { margin-left: auto; color: #11998e; font-weight: 700; font-size: 0.95rem; }',
+        '.cfm-svc-brand { font-size: 0.75rem; color: #11998e; background: #e6fffa; padding: 2px 8px; border-radius: 4px; margin-left: 8px; font-weight: normal; }',
     ].join('');
 
     /* ------------------------------------------------------------------ */
@@ -177,7 +179,7 @@
         function tryMapPicker() {
             if (window.mapPicker) { callback(); return; }
             var s = document.createElement('script');
-            s.src = base + 'assets/js/public/map-picker.js';
+            s.src = base + '../public/asset/js/dvqt-map.js';
             s.onload  = callback;
             s.onerror = callback;
             document.head.appendChild(s);
@@ -260,7 +262,7 @@
         async function doFetch(cb) {
             if (_services) { cb(_services); return; }
             
-            const krud = window.ThoNhaKrud;
+            const krud = window.DVQTKrud;
             if (!krud) return;
 
             try {
@@ -285,7 +287,12 @@
                                 surveyFee: s.phi_khao_sat ? { amount: Number(s.phi_khao_sat), required: String(s.yeu_cau_khao_sat) === '1' } : null
                             };
                         }),
-                        travelFee: { mode: 'per_km', min: 20000, max: 150000 }
+                        travelFee: { 
+                            mode: 'per_km', 
+                            min: 20000, 
+                            max: 150000,
+                            pricePerKm: { baseKm: 2, basePrice: 20000, extraPrice: 12000 }
+                        }
                     };
                 });
 

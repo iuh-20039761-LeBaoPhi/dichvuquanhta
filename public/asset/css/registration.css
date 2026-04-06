@@ -1,0 +1,200 @@
+/* ====================================================
+   Dịch Vụ Quanh Ta – Registration Page CSS
+   Bổ sung auth.css – Single page layout
+   ==================================================== */
+
+/* Card rộng hơn cho form đầy đủ */
+.auth-card { max-width: 620px; }
+
+/* === Avatar Upload === */
+.avatar-upload {
+    width: 100px; height: 100px; margin: 0 auto 8px;
+    border-radius: 50%; border: 3px dashed #bae6fd;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; overflow: hidden;
+    background: #f0f9ff; transition: all 0.25s;
+}
+.avatar-upload:hover { border-color: var(--auth-primary); background: #e0f2fe; }
+.avatar-upload img {
+    width: 100%; height: 100%; object-fit: cover;
+    border-radius: 50%; display: none;
+}
+.avatar-upload .avatar-placeholder { text-align: center; color: #06b6d4; }
+.avatar-upload .avatar-placeholder i { font-size: 1.6rem; display: block; margin-bottom: 2px; }
+.avatar-upload .avatar-placeholder span { font-size: 0.68rem; color: #64748b; }
+.avatar-upload.has-file img { display: block; }
+.avatar-upload.has-file .avatar-placeholder { display: none; }
+
+/* === CCCD Upload === */
+.cccd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cccd-zone {
+    border: 2px dashed #bae6fd; border-radius: var(--auth-radius-sm);
+    padding: 14px 10px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: #f0f9ff;
+    position: relative; overflow: hidden; min-height: 90px;
+}
+.cccd-zone:hover { border-color: var(--auth-primary); background: #e0f2fe; }
+.cccd-zone.has-file { border-color: var(--auth-primary); border-style: solid; }
+.cccd-zone i { font-size: 1.4rem; color: #06b6d4; display: block; margin-bottom: 4px; }
+.cccd-zone span { font-size: 0.72rem; color: #475569; font-weight: 500; }
+.cccd-zone img {
+    width: 100%; height: 80px; object-fit: cover;
+    border-radius: 6px; display: none;
+}
+.cccd-zone.has-file img { display: block; }
+.cccd-zone.has-file i,
+.cccd-zone.has-file span { display: none; }
+.cccd-zone .remove-btn {
+    position: absolute; top: 4px; right: 4px;
+    background: #ef4444; color: #fff; border: none;
+    border-radius: 50%; width: 20px; height: 20px;
+    font-size: 10px; cursor: pointer; display: none;
+    align-items: center; justify-content: center; padding: 0; z-index: 2;
+}
+.cccd-zone.has-file .remove-btn { display: flex; }
+
+/* === Service Toggle Button === */
+.svc-toggle-wrap { margin-top: 4px; }
+
+.svc-toggle-btn {
+    width: 100%; display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; border-radius: var(--auth-radius-sm);
+    border: 1.5px solid #e2e8f0; background: #fff;
+    cursor: pointer; transition: all 0.25s;
+    font-family: inherit;
+}
+.svc-toggle-btn:hover {
+    border-color: var(--auth-primary);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.04), rgba(6, 182, 212, 0.03));
+}
+.svc-toggle-btn.open {
+    border-color: var(--auth-primary);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(6, 182, 212, 0.04));
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+}
+
+.svc-toggle-left {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; font-size: 0.92rem; color: var(--auth-text);
+}
+.svc-toggle-left i {
+    color: var(--auth-primary); font-size: 1rem;
+}
+
+.svc-toggle-badge {
+    margin-left: auto;
+    font-size: 0.72rem; font-weight: 700;
+    padding: 4px 12px; border-radius: 999px;
+    background: #f1f5f9; color: var(--auth-muted);
+    transition: all 0.25s;
+}
+.svc-toggle-badge.provider {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(6, 182, 212, 0.12));
+    color: var(--auth-primary-dark);
+}
+
+.svc-toggle-arrow {
+    color: #94a3b8; font-size: 0.75rem;
+    transition: transform 0.3s ease;
+    margin-left: 8px;
+}
+.svc-toggle-btn.open .svc-toggle-arrow {
+    transform: rotate(180deg);
+}
+
+/* === Service Collapse Panel === */
+.svc-collapse {
+    display: none; padding: 16px;
+    border: 1.5px solid var(--auth-primary);
+    border-top: none;
+    border-radius: 0 0 var(--auth-radius-sm) var(--auth-radius-sm);
+    background: linear-gradient(180deg, rgba(6, 182, 212, 0.03), #fff 40%);
+    animation: slideDown 0.3s ease;
+}
+.svc-collapse.open { display: block; }
+
+@keyframes slideDown {
+    from { opacity: 0; max-height: 0; }
+    to   { opacity: 1; max-height: 600px; }
+}
+
+/* === Service Checkbox Grid === */
+.svc-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.svc-check {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    border: 1.5px solid #f1f5f9; background: #fff;
+    cursor: pointer; transition: all 0.2s; user-select: none;
+}
+.svc-check:hover { border-color: var(--auth-primary); background: #f0f9ff; }
+.svc-check.checked {
+    border-color: var(--auth-primary);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(6, 182, 212, 0.05));
+}
+.svc-check input[type="checkbox"] { display: none; }
+.svc-check .svc-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.88rem; color: #fff; flex-shrink: 0;
+}
+.svc-check .svc-label {
+    font-size: 0.82rem; font-weight: 600; color: var(--auth-text);
+    flex: 1;
+}
+.svc-check .svc-checkmark {
+    width: 20px; height: 20px; border-radius: 5px;
+    border: 2px solid #cbd5e1;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+}
+.svc-check .svc-checkmark i { display: none; font-size: 0.65rem; color: #fff; }
+.svc-check.checked .svc-checkmark {
+    background: var(--auth-gradient); border-color: var(--auth-primary);
+}
+.svc-check.checked .svc-checkmark i { display: block; }
+
+.svc-hint {
+    text-align: center; font-size: 0.76rem; color: var(--auth-muted);
+    margin: 8px 0 0;
+}
+.svc-hint i { color: var(--auth-primary); }
+
+/* === Map Area === */
+.map-area { margin-top: 8px; }
+.map-btns { display: flex; gap: 8px; }
+.map-btns button {
+    flex: 1; padding: 9px 8px; border: none; border-radius: var(--auth-radius-sm);
+    font-weight: 600; font-size: 0.82rem;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    cursor: pointer; transition: all 0.2s;
+}
+.map-btns .btn-map-toggle { background: var(--auth-gradient); color: #fff; }
+.map-btns .btn-map-toggle:hover { opacity: 0.9; }
+.map-btns .btn-gps { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+.map-btns .btn-gps:hover { opacity: 0.9; }
+#regMapBox { display: none; border-radius: var(--auth-radius-sm); overflow: hidden; margin-top: 8px; }
+#regMapEl { height: 240px; }
+.coord-info {
+    display: flex; gap: 8px; margin-top: 6px;
+    font-size: 0.75rem; color: var(--auth-muted);
+}
+.coord-info span { background: #f0f4f7; padding: 3px 8px; border-radius: 5px; }
+
+/* === Password Strength === */
+.pwd-rules { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.pwd-rule {
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 999px;
+    background: #f0f4f7; color: #94a3b8; transition: all 0.2s;
+}
+.pwd-rule.pass { background: rgba(25,135,84,0.1); color: var(--auth-success); }
+.pwd-rule.pass::before { content: '✓ '; }
+
+/* === Responsive === */
+@media (max-width: 500px) {
+    .cccd-grid { grid-template-columns: 1fr; }
+    .svc-grid { grid-template-columns: 1fr; }
+}

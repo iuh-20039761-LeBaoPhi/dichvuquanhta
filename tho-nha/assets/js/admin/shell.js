@@ -3,7 +3,7 @@
 // Check login
 async function checkAdminLogin() {
     try {
-        const session = await ThoNhaApp.checkSession();
+        const session = await DVQTApp.checkSession();
         if (!session || !session.logged_in || session.role !== 'admin') {
             window.location.href = 'dang-nhap.html';
             return;
@@ -52,11 +52,15 @@ function setupNavigation() {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (confirm('Bạn có chắc muốn đăng xuất?')) {
-                localStorage.removeItem('admin_logged_in');
-                localStorage.removeItem('admin_username');
-                fetch('../../api/admin/auth/logout.php')
-                    .then(() => window.location.href = 'dang-nhap.html')
-                    .catch(() => window.location.href = 'dang-nhap.html');
+                if (window.DVQTApp && window.DVQTApp.logout) {
+                    window.DVQTApp.logout().then(() => {
+                        window.location.href = 'dang-nhap.html';
+                    });
+                } else {
+                    localStorage.removeItem('admin_logged_in');
+                    localStorage.removeItem('admin_username');
+                    window.location.href = 'dang-nhap.html';
+                }
             }
         });
     }
@@ -147,15 +151,22 @@ function getStatusBadge(status) {
 }
 
 /**
- * Tóm gọn việc lấy danh sách đơn dành cho Admin.
+ * Tóm gọn việc lấy danh sách đơn dành cho Admin thông qua Siêu Module.
  */
 async function loadAllOrders() {
-    const krudHelper = window.ThoNhaKrud;
+    const krudHelper = window.DVQTKrud;
     const viewUtils = window.ThoNhaOrderViewUtils;
+    const orderService = window.ThoNhaOrderService;
     if (!krudHelper || !viewUtils) return [];
 
     try {
-        const rawRows = await krudHelper.listTable('datlich_thonha');
+        // Sử dụng Siêu Module Milestone để lấy đơn hàng
+        let rawRows = [];
+        if (orderService) {
+            rawRows = await orderService.getOrders('admin');
+        } else {
+            rawRows = await krudHelper.listTable('datlich_thonha');
+        }
         
         const providerIdSet = {};
         rawRows.forEach(row => {
@@ -184,7 +195,7 @@ async function loadAllOrders() {
 }
 
 async function loadAllServices() {
-    const krud = window.ThoNhaKrud;
+    const krud = window.DVQTKrud;
     if (!krud) return [];
     try {
         allCategories = await krud.listTable('danhmuc_thonha');
@@ -203,7 +214,7 @@ function normalizeProviderStatus(value) {
 }
 
 function updateProviderBadge() {
-    const krudHelper = window.ThoNhaKrud;
+    const krudHelper = window.DVQTKrud;
     if (!krudHelper) return;
 
     krudHelper.listTable('nhacungcap_thonha')

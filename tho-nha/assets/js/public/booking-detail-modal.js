@@ -22,14 +22,14 @@ async function _bdLoadNavServices() {
     if (!_bdNavServices) {
         try {
             await new Promise(r => {
-                if (window.ThoNhaKrud) r();
+                if (window.DVQTKrud) r();
                 else {
                     const check = setInterval(() => {
-                        if (window.ThoNhaKrud) { clearInterval(check); r(); }
+                        if (window.DVQTKrud) { clearInterval(check); r(); }
                     }, 100);
                 }
             });
-            const krud = window.ThoNhaKrud;
+            const krud = window.DVQTKrud;
             const [cats, svcs] = await Promise.all([
                 krud.listTable('danhmuc_thonha', { limit: 100 }),
                 krud.listTable('dichvu_thonha', { limit: 1000 })

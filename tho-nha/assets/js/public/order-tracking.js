@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
         resultBox.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
 
         try {
-            // Sử dụng ThoNhaApp để lấy đơn hàng theo SĐT
-            const orders = await ThoNhaApp.getOrders({ sodienthoai: phone });
+            // Sử dụng DVQTApp để lấy đơn hàng theo SĐT
+            const orders = await DVQTApp.getOrders({ sodienthoai: phone }, 'datlich_thonha');
 
             if (!orders || !orders.length) {
                 resultBox.innerHTML = `<div class="alert alert-warning">Không tìm thấy đơn hàng cho SĐT <strong>${phone}</strong></div>`;

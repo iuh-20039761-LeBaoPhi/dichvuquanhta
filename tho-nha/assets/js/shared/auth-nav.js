@@ -41,13 +41,13 @@
                 admin: base + 'pages/admin/quan-tri.html'
             },
             logoutMap: {
-                customer: base + 'api/customer/auth/logout.php',
-                provider: base + 'api/provider/auth/logout.php',
+                customer: base + '../public/api/auth/logout.php',
+                provider: base + '../public/api/auth/logout.php',
                 admin: base + 'api/admin/auth/logout.php'
             },
             loginMap: {
-                customer: base + 'pages/customer/dang-nhap.html',
-                provider: base + 'pages/provider/dang-nhap.html',
+                customer: base + '../public/dang-nhap.html?service=thonha',
+                provider: base + '../public/dang-nhap.html?service=thonha',
                 admin: base + 'pages/admin/dang-nhap.html'
             }
         };
@@ -88,35 +88,60 @@
             if (avatarMobile) avatarMobile.style.display = 'none';
         }
 
+        function bindDashboard(linkEl, role, phone, serviceTable) {
+            if (!linkEl) return;
+            const dashUrl = paths.dashMap[role] || paths.dashMap.customer;
+            
+            linkEl.onclick = async function(e) {
+                if (role === 'provider' && serviceTable) {
+                    e.preventDefault();
+                    try {
+                        const hasAccess = await window.DVQTApp.checkAccess(serviceTable, phone);
+                        if (hasAccess) {
+                            window.location.href = dashUrl;
+                        } else {
+                            alert("Tài khoản của bạn chưa đăng ký làm nhà cung cấp của dịch vụ này!");
+                        }
+                    } catch (err) {
+                        console.error('Access check failed:', err);
+                        window.location.href = dashUrl; // Fallback
+                    }
+                } else {
+                    // Mặc định cho customer hoặc role khác
+                    linkEl.href = dashUrl;
+                }
+            };
+        }
+
         function bindLogout(linkEl, role) {
             if (!linkEl) return;
-            linkEl.onclick = function (e) {
+            linkEl.onclick = async function (e) {
                 e.preventDefault();
                 clearLocalAuth();
 
-                var logoutUrl = paths.logoutMap[role] || paths.logoutMap.customer;
-                var loginUrl = paths.loginMap[role] || paths.loginMap.customer;
+                if (window.DVQTApp && window.DVQTApp.logout) {
+                    await window.DVQTApp.logout();
+                } else {
+                    var logoutUrl = paths.logoutMap[role] || paths.logoutMap.customer;
+                    await fetch(logoutUrl).catch(() => null);
+                }
 
-                fetch(logoutUrl)
-                    .catch(function () { return null; })
-                    .finally(function () {
-                        window.location.href = loginUrl;
-                    });
+                window.location.href = paths.loginMap[role] || paths.loginMap.customer;
             };
         }
 
         function applyLoggedInUi(authData) {
             var role = String(authData && authData.role || 'customer');
             var name = String(authData && authData.name || 'User');
+            var phone = authData.phone || '';
             
             // Đồng bộ ngược lại LocalStorage cho các thư viện cũ
             localStorage.setItem(role + '_logged_in', 'true');
             localStorage.setItem(role + '_name', name);
-            if (authData.phone) {
-                // Nếu là customer, có thể lưu thêm profile giả lập để prefill form đặt lịch
+            if (phone) {
                 if (role === 'customer') {
                    localStorage.setItem('thonha_customer_profile_v1', JSON.stringify({
-                       name: name, phone: authData.phone, address: authData.address || ''
+                       name: name, phone: phone, address: authData.address || ''
                    }));
                 }
             }
@@ -132,8 +157,11 @@
             if (nameEl) nameEl.textContent = name;
             if (avatarEl) avatarEl.textContent = initial;
 
+            // Đăng ký bảng NCC cho Thợ Nhà
+            const serviceTable = 'nhacungcap_thonha';
+
             const dashLink = document.getElementById('auth-dashboard-link');
-            if (dashLink) dashLink.href = paths.dashMap[role] || paths.dashMap.customer;
+            bindDashboard(dashLink, role, phone, serviceTable);
 
             const logoutLink = document.getElementById('auth-logout-link');
             bindLogout(logoutLink, role);
@@ -150,17 +178,15 @@
             if (mobileNameEl) mobileNameEl.textContent = name;
 
             const mobileDashLink = document.getElementById('mobile-auth-dashboard-link');
-            if (mobileDashLink) mobileDashLink.href = paths.dashMap[role] || paths.dashMap.customer;
+            bindDashboard(mobileDashLink, role, phone, serviceTable);
 
             const mobileLogout = document.getElementById('mobile-auth-logout-link');
             bindLogout(mobileLogout, role);
         }
 
-        fetch(paths.checkSessionUrl, { cache: 'no-store' })
-            .then(r => r.json())
-            .then(function (data) {
+        if (window.DVQTApp && window.DVQTApp.checkSession) {
+            window.DVQTApp.checkSession().then(function (data) {
                 setLoadingOff();
-
                 if (data && data.logged_in) {
                     applyLoggedInUi({
                         role: data.role || 'customer',
@@ -171,11 +197,33 @@
                 } else {
                     applyGuestUi();
                 }
-            })
-            .catch(function () {
+            }).catch(function () {
                 setLoadingOff();
                 applyGuestUi();
             });
+        } else {
+            // Fallback for legacy
+            fetch(paths.checkSessionUrl, { cache: 'no-store' })
+                .then(r => r.json())
+                .then(function (data) {
+                    setLoadingOff();
+
+                    if (data && data.logged_in) {
+                        applyLoggedInUi({
+                            role: data.role || 'customer',
+                            name: data.name || 'User',
+                            phone: data.phone || '',
+                            address: (data.meta && data.meta.address) ? data.meta.address : ''
+                        });
+                    } else {
+                        applyGuestUi();
+                    }
+                })
+                .catch(function () {
+                    setLoadingOff();
+                    applyGuestUi();
+                });
+        }
     }
 
     // Chạy ngay nếu header đã có sẵn, hoặc dùng MutationObserver đợi header inject

@@ -1,0 +1,67 @@
+/* ====================================================
+   Dịch Vụ Quanh Ta – Login Page CSS
+   Bổ sung auth.css
+   ==================================================== */
+
+/* Role selector tabs */
+.role-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+    background: #f0f4f7;
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.role-tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--auth-muted);
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s;
+    font-family: inherit;
+}
+
+.role-tab:hover {
+    color: var(--auth-text);
+}
+
+.role-tab.active {
+    background: #fff;
+    color: var(--auth-primary-dark);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.role-tab i {
+    font-size: 0.92rem;
+}
+
+/* Login success animation */
+@keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.login-success {
+    animation: successPulse 0.5s ease;
+}
+
+/* Provider notice */
+.provider-notice {
+    display: none;
+    margin-bottom: 16px;
+}
+
+.provider-notice.show {
+    display: block;
+}

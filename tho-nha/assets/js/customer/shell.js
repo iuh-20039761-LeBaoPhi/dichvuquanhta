@@ -7,7 +7,7 @@
      * Kiểm tra cả LocalStorage và Server Session (PHP).
      */
     async function verifySession() {
-        const session = await ThoNhaApp.checkSession();
+        const session = await DVQTApp.checkSession();
         if (!session || !session.logged_in || session.role !== 'customer') {
             window.location.href = 'dang-nhap.html';
         }
@@ -121,12 +121,14 @@
      */
     window.logoutCustomer = function () {
         if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
-            localStorage.clear(); // Clear all legacy
-            fetch('../../api/customer/auth/logout.php', { method: 'POST' }).then(() => {
+            if (window.DVQTApp && window.DVQTApp.logout) {
+                window.DVQTApp.logout().then(() => {
+                    window.location.href = '../public/dich-vu.html';
+                });
+            } else {
+                localStorage.clear();
                 window.location.href = '../public/dich-vu.html';
-            }).catch(() => {
-                window.location.href = '../public/dich-vu.html';
-            });
+            }
         }
     };
 })();

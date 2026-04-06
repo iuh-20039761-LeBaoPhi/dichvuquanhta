@@ -16,60 +16,6 @@
     };
 
     /**
-     * Dữ liệu giá mặc định cho một số dịch vụ phổ biến (Presets).
-     */
-    var BOOKING_PRICING_PRESETS = {
-        'Sửa máy giặt tại nhà': {
-            servicePrice: 420000,
-            travel: { mode: 'fixed', status: 'ok', amount: 30000, min: 30000, max: 30000, distanceKm: null },
-            survey: { required: false, amount: 0 },
-            totalEstimate: 450000,
-            totalPending: false,
-            note: ''
-        },
-        'Vệ sinh máy lạnh': {
-            servicePrice: 0,
-            travel: { mode: 'per_km', status: 'pending', amount: null, min: null, max: null, distanceKm: null },
-            survey: { required: true, amount: 120000 },
-            totalEstimate: null,
-            totalPending: true,
-            note: 'Phí khảo sát được miễn nếu đồng ý sửa chữa.'
-        },
-        'Thông tắc bồn rửa': {
-            servicePrice: 250000,
-            travel: { mode: 'fixed', status: 'ok', amount: 20000, min: 20000, max: 20000, distanceKm: null },
-            survey: { required: false, amount: 0 },
-            totalEstimate: 270000,
-            totalPending: false,
-            note: ''
-        },
-        'Sửa ổ điện âm tường': {
-            servicePrice: 180000,
-            travel: { mode: 'per_km', status: 'ok', amount: 40000, min: 40000, max: 40000, distanceKm: 6.3 },
-            survey: { required: false, amount: 0 },
-            totalEstimate: 220000,
-            totalPending: false,
-            note: ''
-        },
-        'Lắp quạt trần': {
-            servicePrice: 350000,
-            travel: { mode: 'fixed', status: 'ok', amount: 25000, min: 25000, max: 25000, distanceKm: null },
-            survey: { required: false, amount: 0 },
-            totalEstimate: 375000,
-            totalPending: false,
-            note: ''
-        },
-        'Sơn lại phòng ngủ': {
-            servicePrice: 1800000,
-            travel: { mode: 'fixed', status: 'ok', amount: 50000, min: 50000, max: 50000, distanceKm: null },
-            survey: { required: true, amount: 150000 },
-            totalEstimate: 1850000,
-            totalPending: false,
-            note: 'Phí khảo sát được miễn nếu đồng ý sửa chữa.'
-        }
-    };
-
-    /**
      * Lấy cấu hình giá mẫu dựa trên tên dịch vụ.
      * @param {Object} order - Đối tượng đơn hàng.
      * @returns {Object|null} Cấu trúc giá mẫu hoặc null.
@@ -305,8 +251,8 @@
      * Lấy thông tin hồ sơ Khách hàng hiện tại từ Session.
      */
     function getCustomerProfile() {
-        if (window._thonha_session_cache && window._thonha_session_cache.role === 'customer') {
-            const s = window._thonha_session_cache;
+        const s = window._dvqt_session_cache || window._thonha_session_cache;
+        if (s && s.role === 'customer') {
             return {
                 id: s.id,
                 name: s.name || 'Khách hàng',
@@ -321,8 +267,8 @@
      * Lấy thông tin hồ sơ Nhà cung cấp hiện tại từ Session.
      */
     function getProviderProfile() {
-        if (window._thonha_session_cache && (window._thonha_session_cache.role === 'provider' || window._thonha_session_cache.role === 'admin')) {
-            const s = window._thonha_session_cache;
+        const s = window._dvqt_session_cache || window._thonha_session_cache;
+        if (s && (s.role === 'provider' || s.role === 'admin')) {
             return {
                 id: s.id || ('provider-' + toDigits(s.phone)),
                 name: s.name || 'Nhà cung cấp',

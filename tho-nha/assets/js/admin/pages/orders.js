@@ -33,123 +33,73 @@ window.initOrders = function() {
 };
 
 /**
- * Render danh sách đơn hàng ra bảng HTML.
- * Áp dụng các định dạng badge trạng thái và ngày tháng từ shell.js.
- * @param {Array} orders - Danh sách đơn hàng đã chuẩn hoá.
+ * Render danh sách đơn hàng ra bảng HTML thông qua Siêu Module Milestone.
  */
 function displayOrders(orders) {
     if (!ordersTableBody) return;
     
-    if (orders.length === 0) {
-        ordersTableBody.innerHTML = '<tr><td colspan="8" class="text-center">Không có đơn hàng</td></tr>';
-        return;
+    if (window.ThoNhaOrderUI) {
+        window.ThoNhaOrderUI.renderList(orders, 'admin', {
+            body: ordersTableBody,
+            empty: null // Milestone Admin không cần hiện empty card phức tạp
+        });
     }
-    
-    ordersTableBody.innerHTML = orders.map(order => {
-        const viewUtils = window.ThoNhaOrderViewUtils;
-        const finalPrice = order.customerPays || order.actualCost || 0;
-        const providerName = (order.provider && order.provider.company) ? order.provider.company : (order.providerId ? 'ID: ' + order.providerId : '<em>Chưa nhận</em>');
-        
-        return `
-            <tr>
-                <td><strong class="text-primary">${order.orderCode}</strong></td>
-                <td>${order.customer && order.customer.name ? order.customer.name : 'Khách'}</td>
-                <td>${order.customer && order.customer.phone ? order.customer.phone : ''}</td>
-                <td><div class="small fw-bold">${order.service || 'N/A'}</div></td>
-                <td><div class="small text-muted">${providerName}</div></td>
-                <td><span class="text-danger fw-bold small">${viewUtils ? viewUtils.formatCurrencyVn(finalPrice) : finalPrice}</span></td>
-                <td>${getStatusBadge(order.status)}</td>
-                <td>${formatDate(order.createdAt)}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-primary" onclick="viewOrderDetail(${order.id})">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-success" onclick="updateOrderStatus(${order.id})">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-    }).join('');
 }
 
 /**
- * Thiết lập các sự kiện cho bộ lọc, tìm kiếm và form cập nhật đơn hàng.
- * Bao gồm xử lý gọi API cập nhật trạng thái qua KRUD client.
+ * Thiết lập các sự kiện cho bộ lọc, tìm kiếm.
  */
 function setupOrdersEvents() {
-    // Filter button
     const filterBtn = document.getElementById('filterBtn');
     if (filterBtn) {
         filterBtn.addEventListener('click', function() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const status = document.getElementById('statusFilter').value;
             
-            let filtered = allOrders;
-            
-            if (search) {
-                filtered = filtered.filter(o => {
-                    const cPhone = o.customer && o.customer.phone ? String(o.customer.phone) : '';
-                    const cName = o.customer && o.customer.name ? o.customer.name.toLowerCase() : '';
-                    return (o.orderCode && o.orderCode.toLowerCase().includes(search)) ||
-                           cPhone.includes(search) ||
-                           cName.includes(search);
-                });
-            }
-            
-            if (status) {
-                filtered = filtered.filter(o => o.status === status);
-            }
+            let filtered = allOrders.filter(o => {
+                const matchStatus = !status || o.status === status;
+                const matchSearch = !search || 
+                    (o.orderCode && o.orderCode.toLowerCase().includes(search)) || 
+                    (o.customer && o.customer.phone && o.customer.phone.includes(search)) || 
+                    (o.customer && o.customer.name && o.customer.name.toLowerCase().includes(search)) ||
+                    (o.service && o.service.toLowerCase().includes(search));
+                    
+                return matchStatus && matchSearch;
+            });
             
             displayOrders(filtered);
         });
     }
     
-    // Refresh button
     const refreshBtn = document.getElementById('refreshBtn');
     if (refreshBtn) {
-        refreshBtn.addEventListener('click', function() {
-            loadAllOrders().then(orders => displayOrders(orders));
-        });
+        refreshBtn.addEventListener('click', () => loadAllOrders().then(displayOrders));
     }
     
-    // Update status form
-    const updateStatusForm = document.getElementById('updateStatusForm');
-    if (updateStatusForm) {
-        updateStatusForm.addEventListener('submit', function(e) {
+    // Form cập nhật trạng thái Milestone
+    const updateForm = document.getElementById('updateStatusForm');
+    if (updateForm) {
+        updateForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const orderId = document.getElementById('updateOrderId').value;
+            const id = document.getElementById('updateOrderId').value;
             const newStatus = document.getElementById('newStatus').value;
             
-            if (!orderId || !newStatus) {
-                alert('Vui lòng chọn trạng thái mới');
-                return;
-            }
-            
-            if (typeof ensureAdminKrudClient !== 'function') return;
-            
-            const btn = updateStatusForm.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'Đang xử lý...';
-            btn.disabled = true;
-            
-            const krudHelper = window.ThoNhaKrud;
-            if (!krudHelper) return;
+            let payload = {};
+            const d = new Date();
+            const vnDate = new Date(d.toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}));
+            const pad = (n) => String(n).padStart(2, '0');
+            const nowStr = `${vnDate.getFullYear()}-${pad(vnDate.getMonth() + 1)}-${pad(vnDate.getDate())} ${pad(vnDate.getHours())}:${pad(vnDate.getMinutes())}:${pad(vnDate.getSeconds())}`;
 
-            krudHelper.ensureKrudClient().then(() => {
-                // Sử dụng hàm window.krud('update', ...) chuẩn của thư viện krud.js
-                return window.krud('update', 'datlich_thonha', { trangthai: newStatus }, parseInt(orderId));
-            }).then(() => {
-                alert('Cập nhật trạng thái thành công!');
+            if (newStatus === 'new') payload = { ngayhuy: null, ngaynhan: null, ngaythuchienthucte: null, ngayhoanthanhthucte: null };
+            else if (newStatus === 'confirmed') payload = { ngaynhan: nowStr };
+            else if (newStatus === 'doing') payload = { ngaythuchienthucte: nowStr };
+            else if (newStatus === 'done') payload = { ngayhoanthanhthucte: nowStr };
+            else if (newStatus === 'cancel') payload = { ngayhuy: nowStr };
+
+            window.DVQTKrud.updateRow('datlich_thonha', id, payload).then(() => {
+                alert('Cập nhật thành công!');
                 if (statusModal) statusModal.hide();
-                loadAllOrders().then(orders => displayOrders(orders));
-            }).catch(err => {
-                console.error('Update status error:', err);
-                alert('Lỗi cập nhật: ' + (err.message || 'Không xác định'));
-            }).finally(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                loadAllOrders().then(displayOrders);
             });
         });
     }
@@ -164,90 +114,11 @@ window.orderStatusMap = {
     'cancel': { text: 'Đã hủy', class: 'status-cancel' }
 };
 
-// ✅ SỬA HÀM viewOrderDetail ĐỂ HIỂN THỊ ĐẦY ĐỦ VÀ SANG TRỌNG NHƯ KHÁCH HÀNG/ĐỐI TÁC
 /**
- * Xem chi tiết đơn hàng (Modal) - Bao gồm tính toán trợ giá cho Admin.
- * Hiển thị thông tin Khách hàng, Địa điểm, Đối tác nhận đơn và Bảng kê chi phí.
- * @param {number|string} orderId - ID của đơn hàng.
+ * Xem chi tiết đơn hàng (Modal) chuẩn Milestone.
  */
 window.viewOrderDetail = function(orderId) {
     const order = allOrders.find(o => o.id == orderId);
-    
-    if (!order) {
-        alert('Không tìm thấy đơn hàng với ID: ' + orderId);
-        return;
-    }
-    
-    const detailContent = document.getElementById('orderDetailContent');
-    if (!detailContent) return;
-    
-    const viewUtils = window.ThoNhaOrderViewUtils;
-    
-    let priceHtml = '';
-    if (viewUtils && order.bookingPricing) {
-        let pricingObj = order.bookingPricing;
-        if (typeof pricingObj === 'string') {
-            try { pricingObj = JSON.parse(pricingObj); } catch(e) {}
-        }
-        if (typeof pricingObj === 'object') {
-            priceHtml = viewUtils.renderOrderPrices(pricingObj);
-        }
-    }
-    
-    if (!priceHtml) {
-        const pVal = parseFloat(order.actualCost || 0);
-        priceHtml = pVal > 0 ? `<div class="alert alert-info py-2 mb-0">Tổng trị giá: <strong>${viewUtils ? viewUtils.formatCurrencyVn(pVal) : pVal}</strong></div>` : `<div class="text-muted text-center p-3 border rounded bg-light">Chưa cấu hình chi phí</div>`;
-    }
-
-    let providerHtml = '<div class="text-muted"><i class="fas fa-info-circle"></i> Chưa nhận đơn</div>';
-    if (order.providerId && order.provider) {
-        providerHtml = `
-            <div class="p-3 bg-light rounded border border-primary border-opacity-25 mt-2">
-                <strong class="text-dark"><i class="fas fa-building text-primary"></i> ${order.provider.company || 'Đối tác Thợ Nhà'}</strong><br>
-                <div class="mt-2 text-secondary"><i class="fas fa-user-tie"></i> ${order.provider.name || 'N/A'}</div>
-                <div class="mt-1"><i class="fas fa-phone-alt text-success"></i> <a href="tel:${order.provider.phone}" class="text-decoration-none">${order.provider.phone || 'N/A'}</a></div>
-            </div>
-        `;
-    } else if (order.providerId) {
-         providerHtml = `<div class="text-muted mt-2"><i class="fas fa-spinner fa-spin"></i> Giao cho ID: ${order.providerId}</div>`;
-    }
-    
-    detailContent.innerHTML = `
-        <div class="row g-4">
-            <div class="col-md-6 border-end">
-                <h6 class="text-primary mb-3 border-bottom pb-2 fw-bold"><i class="fas fa-user"></i> Khách hàng</h6>
-                <div class="mb-2"><strong>Mã đơn:</strong> <span class="badge bg-secondary px-2 py-1">${order.orderCode}</span></div>
-                <div class="mb-2"><strong>Họ tên:</strong> ${order.customer ? order.customer.name : 'N/A'}</div>
-                <div class="mb-2"><strong>Điện thoại:</strong> <a href="tel:${order.customer ? order.customer.phone : ''}" class="text-decoration-none">${order.customer ? order.customer.phone : 'N/A'}</a></div>
-                <div class="mb-2"><strong>Ngày đặt:</strong> ${formatDateTime(order.createdAt)}</div>
-                <div class="mb-2"><strong>Trạng thái:</strong> ${(window.orderStatusMap && window.orderStatusMap[order.status]) ? getStatusBadge(order.status) : order.status}</div>
-            </div>
-            
-            <div class="col-md-6">
-                <h6 class="text-success mb-3 border-bottom pb-2 fw-bold"><i class="fas fa-briefcase"></i> Yêu cầu & Đối tác</h6>
-                <div class="mb-2"><strong>Dịch vụ:</strong> <span class="text-danger fw-bold">${order.service}</span></div>
-                <div class="mb-2"><strong>Địa chỉ:</strong> ${order.address}</div>
-                <div class="mb-2"><strong>Ghi chú:</strong> <span class="fst-italic">${order.note || '<span class="text-muted">Không có</span>'}</span></div>
-                <div class="mt-3">
-                    ${providerHtml}
-                </div>
-            </div>
- 
-            <div class="col-12 mt-2">
-                <h6 class="text-secondary mb-3 border-bottom pb-2 fw-bold"><i class="fas fa-receipt"></i> Bảng tính chi phí</h6>
-                <div class="bg-white rounded p-1 mb-2">
-                    ${priceHtml}
-                </div>
-                <div class="mt-2 p-3 bg-light rounded text-end border">
-                    <div class="mb-1 text-muted fs-6">Giá dịch vụ (tạm tính): <strong>${viewUtils ? viewUtils.formatCurrencyVn(order.estimated_price) : order.estimated_price}</strong></div>
-                    ${order.actualCost > 0 ? `<div class="mb-1 text-muted fs-6">Giá thợ báo thực tế: <strong>${viewUtils ? viewUtils.formatCurrencyVn(order.actualCost) : order.actualCost}</strong></div>` : ''}
-                    ${order.subsidyAmount > 0 ? `<div class="mb-2 text-success fs-6">Hệ thống giảm (Trợ giá): <strong>-${viewUtils ? viewUtils.formatCurrencyVn(order.subsidyAmount) : order.subsidyAmount}</strong></div>` : ''}
-                    <div class="text-primary fw-bold fs-5 border-top pt-2">Khách thực trả: ${viewUtils ? viewUtils.formatCurrencyVn(order.customerPays || order.actualCost || order.estimated_price) : (order.customerPays || order.actualCost || order.estimated_price)}</div>
-                </div>
-            </div>
-        </div>
-    `;
-    
     if (detailModal) {
         detailModal.show();
     } else {

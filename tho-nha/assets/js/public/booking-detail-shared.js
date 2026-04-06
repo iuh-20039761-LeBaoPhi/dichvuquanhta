@@ -88,9 +88,10 @@ function _bdIsCustomerLoggedIn() {
     }
 }
 
-// Tạo URL trang đăng nhập khách hàng theo base path hiện tại.
+// Tạo URL trang đăng nhập dùng chung, kèm redirect quay lại trang hiện tại.
 function _bdGetCustomerLoginUrl() {
-    return _BD_BASE + 'pages/customer/dang-nhap.html';
+    const redirect = encodeURIComponent(window.location.href);
+    return _BD_BASE + '../public/dang-nhap.html?redirect=' + redirect;
 }
 
 // Hiển thị banner trạng thái đăng nhập trên form đặt lịch.
@@ -232,110 +233,65 @@ let _bdCurCatId       = null;   // ID danh mục hiện tại
 let _bdCurServiceId   = null;   // ID dịch vụ hiện tại (nếu có 1 dịch vụ cụ thể)
 let _bdPendingCoords  = null;   // tọa độ chờ nếu user chọn map trước khi chọn dịch vụ
 
-/**
- * Geocode địa chỉ văn bản → tọa độ lat/lng bằng Nominatim API.
- * @param {string} address - Địa chỉ cần tìm (VD: "123 Nguyễn Du, Q1")
- * @returns {Promise<{lat: number, lng: number}|null>} null nếu không tìm thấy
- */
-async function _bdGeocode(address) {
-    const url = 'https://nominatim.openstreetmap.org/search?' +
-        new URLSearchParams({ q: address + ', TP.HCM, Việt Nam', format: 'json', limit: 1, countrycodes: 'vn' });
-    const res = await fetch(url, { headers: { 'Accept-Language': 'vi' } });
-    const arr = await res.json();
-    if (!arr.length) return null;
-    return { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
-}
+// Mọi logic Geocode và bắt sự kiện gõ phím đã được chuyển sang map-picker.js
 
-/**
- * Tính quãng đường lái xe giữa 2 điểm bằng OSRM API.
- * @param {number} pLat - Latitude nhà cung cấp
- * @param {number} pLng - Longitude nhà cung cấp
- * @param {number} cLat - Latitude khách hàng
- * @param {number} cLng - Longitude khách hàng
- * @returns {Promise<number|null>} Khoảng cách km, null nếu lỗi
- */
-async function _bdRoadDist(pLat, pLng, cLat, cLng) {
-    // OSRM dùng lng,lat (không phải lat,lng)
-    const url = `https://router.project-osrm.org/route/v1/driving/${pLng},${pLat};${cLng},${cLat}?overview=false`;
-    const res  = await fetch(url);
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (data.code !== 'Ok' || !data.routes?.length) return null;
-    return data.routes[0].distance / 1000; // meters → km
-}
-
-/**
- * Quy đổi quãng đường → phí di chuyển theo config dịch vụ.
- * Phí = km × pricePerKm, làm tròn 1.000đ, clamp [minFee, maxFee].
- * @param {number} km  - Khoảng cách (km)
- * @param {Object} cfg - { pricePerKm, minFee?, maxFee? }
- * @returns {number} Phí di chuyển (VNĐ)
- */
-function _bdFeeFromDist(km, cfg) {
-    let fee = Math.round(km * cfg.pricePerKm / 1000) * 1000; // làm tròn 1,000đ
-    if (cfg.minFee) fee = Math.max(fee, cfg.minFee);
-    if (cfg.maxFee) fee = Math.min(fee, cfg.maxFee);
-    return fee;
-}
-
-// Render lại breakdown dựa trên state hiện tại.
-function _bdRefreshBreakdown() {
-    _bdUpdateBreakdown(_bdCurPrice, _bdTravelCfg, _bdCurSurvey);
-}
-
-// Debounce thao tác tính phí di chuyển từ địa chỉ nhập tay.
-function _bdStartTravelCalc() {
-    if (!_bdTravelCfg || _bdTravelCfg.mode !== 'per_km') return;
-    clearTimeout(_bdTravelTimer);
-    const addr = document.getElementById('diachi')?.value?.trim();
-    if (!addr) {
-        _bdTravelStatus = 'idle'; _bdTravelAmt = 0; _bdTravelDistKm = 0;
-        _bdRefreshBreakdown(); return;
-    }
-    _bdTravelStatus = 'loading';
-    _bdRefreshBreakdown();
-    _bdTravelTimer = setTimeout(_bdDoTravelCalc, 800);
-}
-
-// Thực thi geocode + route để cập nhật phí di chuyển theo km.
-async function _bdDoTravelCalc() {
-    if (!_bdTravelCfg) return;
-    const addr = document.getElementById('diachi')?.value?.trim();
-    if (!addr) { _bdTravelStatus = 'idle'; _bdRefreshBreakdown(); return; }
-    try {
-        const c = await _bdGeocode(addr);
-        if (!c) throw new Error('geocode');
-        const km = await _bdRoadDist(_bdTravelCfg.providerLat, _bdTravelCfg.providerLng, c.lat, c.lng);
-        if (km === null) throw new Error('route');
-        _bdTravelDistKm = km;
-        _bdTravelAmt    = _bdFeeFromDist(km, _bdTravelCfg);
-        _bdTravelStatus = 'ok';
-    } catch {
-        _bdTravelStatus = 'error';
-    }
-    _bdRefreshBreakdown();
-}
-
-// Gọi trực tiếp từ map-picker khi đã có tọa độ — bỏ qua geocoding
-// Tính phí di chuyển trực tiếp từ tọa độ map picker.
-async function _bdTravelFromCoords(lat, lng) {
-    // Lưu tọa độ để dùng khi dịch vụ được chọn sau
+async function _bdTravelFromCoords(inLat, inLng) {
+    const lat = Number(inLat);
+    const lng = Number(inLng);
     _bdPendingCoords = { lat, lng };
     if (!_bdTravelCfg || _bdTravelCfg.mode !== 'per_km') return;
-    clearTimeout(_bdTravelTimer); // huỷ debounce đang chờ
+    
     _bdTravelStatus = 'loading';
     _bdRefreshBreakdown();
+
     try {
-        const km = await _bdRoadDist(_bdTravelCfg.providerLat, _bdTravelCfg.providerLng, lat, lng);
-        if (km === null) throw new Error('route');
-        _bdTravelDistKm = km;
-        _bdTravelAmt    = _bdFeeFromDist(km, _bdTravelCfg);
-        _bdTravelStatus = 'ok';
-    } catch {
+        // Tận dụng logic tính khoảng cách từ dvqt-map.js — Chỉnh sửa: Không lọc theo catId nữa để tìm thợ gần nhất toàn hệ thống
+        const result = await mapPicker.calculateDistance(lat, lng, 'nhacungcap_thonha', null);
+        if (result && result.km != null) {
+            // Sau khi có khoảng cách, Thợ Nhà tự tính phí theo config riêng
+            const feeResult = _bdCalculateTravelFee(result.km, _bdTravelCfg);
+            _bdTravelAmt    = feeResult.amt;
+            _bdTravelDistKm = result.km;
+            _bdTravelStatus = 'ok';
+            console.log('Travel fee calculated in ThoNha logic:', feeResult);
+        } else {
+            console.warn('No provider matched for distance calculation.');
+            _bdTravelStatus = 'na';
+        }
+    } catch (e) {
+        console.error('Calculation error:', e);
         _bdTravelStatus = 'error';
     }
     _bdRefreshBreakdown();
 }
+
+/**
+ * LOGIC TÍNH PHÍ ĐẶC THÙ CỦA THỢ NHÀ
+ * @param {number} km - Khoảng cách (km)
+ * @param {Object} config - Config phí (per_km)
+ */
+function _bdCalculateTravelFee(km, config) {
+    const dist = Number(km) || 0;
+    const baseKm = Number(config.pricePerKm?.baseKm || 0);
+    const baseP  = Number(config.pricePerKm?.basePrice || 0);
+    const extraP = Number(config.pricePerKm?.extraPrice || (config.pricePerKm || 0));
+
+    let fee = dist <= baseKm ? baseP : baseP + (dist - baseKm) * extraP;
+    if (config.min && fee < config.min) fee = config.min;
+    if (config.max && fee > config.max) fee = config.max;
+
+    const amtRounded = Math.round(fee / 1000) * 1000;
+    return { amt: amtRounded, km: dist };
+}
+
+/** 
+ * Tìm nhà cung cấp gần nhất phù hợp (Hàm fallback để tương thích mã cũ) 
+ */
+async function _bdFindNearestProvider(lat, lng, catId) {
+    const res = await mapPicker.calculateDistance(lat, lng, 'nhacungcap_thonha', catId);
+    return res ? res.provider : null;
+}
+window._bdTravelFromCoords = _bdTravelFromCoords;
 
 /**
  * Thiết lập state breakdown khi người dùng đổi dịch vụ.
@@ -349,32 +305,46 @@ async function _bdTravelFromCoords(lat, lng) {
 function _bdSetBreakdown(price, travelFee, surveyFee, catId, serviceId) {
     _bdCurPrice  = price || 0;
     _bdCurSurvey = surveyFee || null;
+    
+    // Tự động nhận diện mã danh mục từ dropdown
+    if (!catId) {
+        catId = document.getElementById('loaidichvu')?.value || null;
+    }
+    
     _bdCurCatId  = catId || null;
     _bdCurServiceId = serviceId || null;
+    
+    console.log('catId set to', _bdCurCatId, 'for pricing calculation.');
+
     const isPerKm = travelFee && travelFee.mode === 'per_km';
     _bdTravelCfg    = isPerKm ? travelFee : null;
     _bdTravelStatus = isPerKm ? 'idle' : 'na';
     _bdTravelAmt    = 0; _bdTravelDistKm = 0;
     clearTimeout(_bdTravelTimer);
-    _bdUpdateBreakdown(price, travelFee, surveyFee);
-    /* 
-    Vô hiệu hóa tính toán km tự động tại bước đặt lịch (chờ Thợ nhận đơn mới tính thực tế)
+    _bdUpdateBreakdown(_bdCurPrice, _bdTravelCfg, _bdCurSurvey);
+    // Khi set breakdown, gọi tính phí ngay nếu đã có tọa độ chờ
     if (isPerKm && _bdPendingCoords) {
         _bdTravelFromCoords(_bdPendingCoords.lat, _bdPendingCoords.lng);
-    } else {
-        const addr = document.getElementById('diachi')?.value?.trim();
-        if (isPerKm && addr) _bdStartTravelCalc();
+    } else if (isPerKm && !_bdPendingCoords) {
+        // Dự phòng: Nếu chưa có tọa độ, thử lấy từ ô địa chỉ đang gõ
+        const addr = document.getElementById('diachi')?.value;
+        if (addr && addr.length > 5) {
+            console.log('Forced geocoding for travel fee...');
+            _bdGeocodeFromAddress(addr);
+        }
     }
-    */
 }
 
-// Gắn listener địa chỉ — gọi 1 lần sau khi form có trong DOM
-// Khởi tạo listener địa chỉ để tự động tính phí theo km.
+/**
+ * Cập nhật lại giao diện Breakdown với các biến state hiện tại.
+ */
+function _bdRefreshBreakdown() {
+    _bdUpdateBreakdown(_bdCurPrice, _bdTravelCfg, _bdCurSurvey);
+}
+
+// Listener đã được map-picker.js đảm nhiệm
 function _bdSetupAddressListener() {
-    const addrEl = document.getElementById('diachi');
-    if (!addrEl || addrEl._bdListened) return;
-    addrEl._bdListened = true;
-    addrEl.addEventListener('input', _bdStartTravelCalc);
+    // Để trống để tránh lỗi khi các file cũ gọi tới
 }
 
 // Dùng chung cho cả modal và standalone (cùng ID trong DOM)
@@ -414,8 +384,11 @@ function _bdUpdateBreakdown(price, travelFee, surveyFee) {
         const tMax = travelFee?.max || 150000;
         
         if (isPerKm) {
-            // Ngay cả mode per_km cũng hiện range khi đang đặt
-            bdTravel.innerHTML = `<span style="font-weight:600;">${_bdFmt(tMin)} – ${_bdFmt(tMax)}</span> <small class="text-muted">(tạm tính)</small>`;
+            if (_bdTravelStatus === 'ok' && _bdTravelAmt > 0) {
+                bdTravel.innerHTML = `<div style="text-align:right;"><span style="font-weight:700; color:#11998e;">${_bdFmt(_bdTravelAmt)}</span><br><small class="text-muted" style="font-size:0.75rem;">(từ thợ gần nhất)</small></div>`;
+            } else {
+                bdTravel.innerHTML = `<div style="text-align:right;"><span style="font-weight:600;">${_bdFmt(tMin)} – ${_bdFmt(tMax)}</span><br><small class="text-muted" style="font-size:0.75rem;">(tạm tính)</small></div>`;
+            }
         } else {
             // Chế độ cố định (fixed)
             bdTravel.textContent = tMin === tMax ? _bdFmt(tMin) : `${_bdFmt(tMin)} – ${_bdFmt(tMax)}`;
@@ -552,11 +525,25 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
         .replace(/'/g, '&#39;');
     const renderServiceHtml = (raw) => {
         const txt = String(raw || '').trim();
-        const m = txt.match(/^(.*)\(([^()]+)\)\s*$/);
-        if (!m) return esc(txt);
-        const svcName = esc(m[1].trim());
-        const brand = esc(m[2].trim());
-        return `${svcName} <span class="cfm-svc-brand">${brand}</span>`;
+        // Milestone: Regex thông minh để tách Tên + Thương hiệu ra riêng, Giá ra riêng
+        let labelSide = txt;
+        let priceSide = '';
+
+        const m = txt.match(/^(.*?)\s*–\s*(.*)$/);
+        if (m) {
+            labelSide = m[1].trim();
+            priceSide = m[2].trim();
+        }
+
+        const mB = labelSide.match(/^(.*)\(([^()]+)\)\s*$/);
+        let finalLabel = esc(labelSide);
+        if (mB) {
+            finalLabel = `${esc(mB[1].trim())} <span class="cfm-svc-brand">${esc(mB[2].trim())}</span>`;
+        }
+
+        return priceSide 
+            ? `<div class="cfm-svc-content">${finalLabel}</div> <span class="cfm-svc-price">${esc(priceSide)}</span>`
+            : `<div class="cfm-svc-content">${finalLabel}</div>`;
     };
     if (cfName)  cfName.textContent  = name;
     if (cfPhone) cfPhone.textContent = phone;
@@ -567,7 +554,7 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
         cfSvc.innerHTML = normalized.length
             ? '<ul class="cfm-service-list">' +
                 normalized.map((s, i) =>
-                    `<li><span class="cfm-svc-num">${i + 1}</span><span>${renderServiceHtml(s)}</span></li>`
+                    `<li><span class="cfm-svc-num">${i + 1}</span>${renderServiceHtml(s)}</li>`
                 ).join('') + '</ul>'
             : '';
     }
@@ -597,11 +584,14 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
         if (costBase) costBase.textContent = basePrice > 0 ? _bdFmt(basePrice) : 'Miễn phí';
 
         // Phí di chuyển (Confirmation Row)
+        const tAmt = (_bdTravelStatus === 'ok') ? _bdTravelAmt : (_bdTravelCfg?.min || 25000);
         if (costTravelRow && costTravel) {
             costTravelRow.style.display = '';
-            const tMin = _bdTravelCfg?.min || 20000;
-            const tMax = _bdTravelCfg?.max || 150000;
-            costTravel.innerHTML = `<span style="font-weight:600;">${_bdFmt(tMin)} – ${_bdFmt(tMax)}</span><span class="cfm-cost-sub">tạm tính</span>`;
+            if (_bdTravelStatus === 'ok') {
+                costTravel.innerHTML = `<span style="font-weight:600;">${_bdFmt(tAmt)}</span><span class="cfm-cost-sub">từ thợ gần nhất</span>`;
+            } else {
+                costTravel.innerHTML = `<span style="font-weight:600;">${_bdFmt(tAmt)}</span><span class="cfm-cost-sub">dự kiến</span>`;
+            }
         }
 
         // Phí khảo sát
@@ -614,21 +604,24 @@ function _bdFillConfirm(name, phone, service, address, noteRaw) {
             }
         }
 
-        // Tổng tạm tính
+        // Tổng tạm tính (Cộng dồn Milestone)
         if (costTotal) {
-            const baseLabel = basePrice > 0 ? _bdFmt(basePrice) : 'Miễn phí';
-            costTotal.innerHTML = `${baseLabel} <span style="font-size:0.78rem;font-weight:500;color:#94a3b8;">+ phí di chuyển</span>`;
+            const finalTotal = basePrice + tAmt;
+            costTotal.innerHTML = `${_bdFmt(finalTotal)}`;
         }
 
         // Ghi chú nhỏ
         if (costNote) {
-            if (survey > 0) {
-                costNote.style.display = '';
-                costNote.innerHTML = '<i class="fas fa-info-circle me-1"></i>Phí khảo sát được miễn nếu đồng ý sửa. Giá chính xác xác nhận sau khi thợ khảo sát.';
-            } else {
-                costNote.style.display = '';
-                costNote.innerHTML = '<i class="fas fa-info-circle me-1"></i>Giá chính xác xác nhận sau khi thợ khảo sát thực tế.';
+            let noteLabel = '<i class="fas fa-info-circle me-1"></i>';
+            if (_bdTravelStatus !== 'ok') {
+                noteLabel += 'Phí di chuyển tạm tính theo thợ gần nhất. ';
             }
+            if (survey > 0) {
+                costNote.innerHTML = noteLabel + 'Phí khảo sát được miễn nếu đồng ý sửa. Giá chính xác xác nhận sau khi thợ khảo sát.';
+            } else {
+                costNote.innerHTML = noteLabel + 'Giá chính xác xác nhận sau khi thợ khảo sát thực tế.';
+            }
+            costNote.style.display = '';
         }
     } else if (costSection) {
         costSection.style.display = 'none';
@@ -666,20 +659,12 @@ function _bdPad2(n) {
     return String(n).padStart(2, '0');
 }
 
-// Sinh mã đơn hàng theo định dạng TN-YYYYMMDD-XXXX.
-function _bdBuildOrderCode() {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = _bdPad2(now.getMonth() + 1);
-    const d = _bdPad2(now.getDate());
-    const suffix = Math.floor(Math.random() * 9000) + 1000;
-    return `TN-${y}${m}${d}-${suffix}`;
-}
-
 // Trả về thời gian hiện tại theo định dạng datetime SQL.
 function _bdNowSql() {
     const d = new Date();
-    return `${d.getFullYear()}-${_bdPad2(d.getMonth() + 1)}-${_bdPad2(d.getDate())} ${_bdPad2(d.getHours())}:${_bdPad2(d.getMinutes())}:${_bdPad2(d.getSeconds())}`;
+    // Milestone: Ép giờ Việt Nam GMT+7
+    const vnNow = new Date(d.toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}));
+    return `${vnNow.getFullYear()}-${_bdPad2(vnNow.getMonth() + 1)}-${_bdPad2(vnNow.getDate())} ${_bdPad2(vnNow.getHours())}:${_bdPad2(vnNow.getMinutes())}:${_bdPad2(vnNow.getSeconds())}`;
 }
 
 // Ép giá trị tiền về số nguyên hợp lệ, mặc định 0 nếu không hợp lệ.
@@ -702,10 +687,10 @@ function _bdGetMediaStats() {
 
 // Lấy helper KRUD toàn cục và báo lỗi nếu chưa load script.
 function _bdGetKrudHelper() {
-    if (!window.ThoNhaKrud) {
-        throw new Error('Không tải được helper KRUD');
+    if (!window.DVQTKrud) {
+        throw new Error('Không tải được bộ thư viện DVQTKrud dùng chung');
     }
-    return window.ThoNhaKrud;
+    return window.DVQTKrud;
 }
 
 /**
@@ -714,7 +699,7 @@ function _bdGetKrudHelper() {
  * @param {string} orderCode   - Mã đơn hàng
  * @returns {Object} Row object sẵn sàng insert vào KRUD
  */
-function _bdBuildKrudBookingRecord(pendingData, orderCode) {
+function _bdBuildKrudBookingRecord(pendingData) {
     const mediaStats = _bdGetMediaStats();
     const basePrice  = _bdToMoney(pendingData.estimated_price || _bdCurPrice || 0);
     const surveyFee  = (_bdCurSurvey && _bdCurSurvey.required) ? _bdToMoney(_bdCurSurvey.amount || 0) : 0;
@@ -723,30 +708,31 @@ function _bdBuildKrudBookingRecord(pendingData, orderCode) {
     const lng = Number(_bdPendingCoords?.lng);
 
     return {
-        madon: orderCode,
-        hoten: pendingData.name || '',
-        sodienthoai: pendingData.phone || '',
+        // Chỉ lưu vào các cột Milestone mới
+        tenkhachhang: pendingData.name || '',
+        sdtkhachhang: pendingData.phone || '',
+        diachikhachhang: pendingData.address || '',
+        emailkhachhang: pendingData.email || '',
+        
         id_danhmuc: pendingData.id_danhmuc || null,
         id_dichvu: pendingData.id_dichvu || null,
-        id_dich_vu: pendingData.id_dichvu || null, // Bổ sung trường alias để đảm bảo lưu record thành công
         tendichvu: pendingData.service_id || '',
         thuonghieu: pendingData.selected_brand || '',
-        diachi: pendingData.address || '',
         ghichu: pendingData.note || '',
         giadichvu: basePrice,
-        phidichuyen: null,
-        quangduongkm: null,
-        trangthaidichuyen: 'waiting_provider',
+        phidichuyen: _bdToMoney(_bdTravelAmt),
+        quangduongkm: _bdTravelDistKm ? Number(_bdTravelDistKm.toFixed(2)) : null,
+        trangthaidichuyen: _bdTravelStatus === 'ok' ? 'calculated' : 'waiting_provider',
         phikhaosat: surveyFee,
-        tongtien: basePrice + surveyFee, 
+        tongtien: basePrice + surveyFee + _bdToMoney(_bdTravelAmt), 
         soluongmedia: mediaStats.total,
         soluonganh: mediaStats.images,
         soluongvideo: mediaStats.videos,
         maplat: Number.isFinite(lat) ? Number(lat.toFixed(7)) : null,
         maplng: Number.isFinite(lng) ? Number(lng.toFixed(7)) : null,
-        nguontrang: window.location.pathname || '',
-        trangthai: 'new',
-        ngaytao: _bdNowSql()
+        
+        // Mốc thời gian đặt đơn duy nhất
+        ngaydat: _bdNowSql()
     };
 }
 
@@ -770,11 +756,13 @@ function _bdRememberCustomerProfile(pendingData) {
  * @returns {Promise<{orderCode: string, result: *}>}
  */
 async function _bdInsertBookingWithKrud(pendingData) {
-    const orderCode = _bdBuildOrderCode();
-    const row = _bdBuildKrudBookingRecord(pendingData, orderCode);
+    const row = _bdBuildKrudBookingRecord(pendingData);
     
-    // Sử dụng ThoNhaApp để tạo đơn hàng
-    const result = await ThoNhaApp.createOrder(row);
+    // Sử dụng DVQTApp để tạo đơn hàng (Buộc phải truyền tên bảng 'datlich_thonha')
+    const result = await DVQTApp.createOrder(row, 'datlich_thonha');
+    
+    const newId = (result && result.data && result.data.id) || (result && result.id) || 0;
+    const orderCode = String(newId).padStart(7, '0');
 
     return { orderCode, result };
 }
@@ -917,8 +905,10 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
     // Tạo nhãn hiển thị dịch vụ kèm thương hiệu đã chọn.
     function _serviceLabel(item) {
         const brand = selectedBrands[item.name];
-        if (brand && brand.name) return `${item.name} (${brand.name})`;
-        return item.name;
+        const p = _effectiveItemPrice(item);
+        const pS = p > 0 ? `${Number(p).toLocaleString('vi-VN')}đ` : 'Miễn phí';
+        if (brand && brand.name) return `${item.name} (${brand.name}) – ${pS}`;
+        return `${item.name} – ${pS}`;
     }
 
     // Lấy giá cuối cùng của dịch vụ theo thương hiệu đang chọn.
