@@ -1,0 +1,231 @@
+{
+  "section": {
+    "eyebrow": "Ba nhóm dịch vụ chính",
+    "title": "Xem liền mạch toàn bộ dịch vụ thay vì phải đổi tab",
+    "description": "Trang này được trình bày theo từng khối dịch vụ xếp dọc để bạn đọc và so sánh dễ hơn. Giá tham khảo vẫn được tách riêng sang trang bảng giá để tránh lặp nội dung."
+  },
+  "services": [
+    {
+      "id": "chuyen-nha",
+      "label": "Chuyển Nhà Trọn Gói",
+      "title": "Thay bạn đóng gói, vận chuyển và sắp xếp lại tại nơi ở mới",
+      "summary": "Phù hợp cho căn hộ, nhà phố, phòng trọ hoặc chung cư cần di dời đồ sinh hoạt và nội thất gia đình theo phương án gọn, rõ, ít phát sinh.",
+      "image": "images/chuyendon-nha-o.png",
+      "image_alt": "Dịch vụ chuyển nhà trọn gói",
+      "image_caption": "Đội xe chuyển nhà đi cùng phương án đóng gói và bọc lót tại chỗ.",
+      "facts": [
+        { "label": "Phù hợp", "value": "Căn hộ, nhà phố, phòng trọ, chung cư." },
+        { "label": "Điểm mạnh", "value": "Bọc lót, tháo lắp, sắp xếp lại tại nhà mới." },
+        { "label": "Lưu ý", "value": "Nên khảo sát trước nếu có hẻm nhỏ, nhiều tầng hoặc đồ dễ vỡ." }
+      ],
+      "scope_title": "Phạm vi hỗ trợ chính",
+      "scope": [
+        "Khảo sát khối lượng đồ và điều kiện mặt bằng.",
+        "Điều phối xe theo quãng đường và tải trọng phù hợp.",
+        "Đóng gói, bọc lót, tháo lắp theo yêu cầu thực tế.",
+        "Hỗ trợ đưa đồ vào đúng vị trí ở địa điểm mới."
+      ],
+      "decision_cards": [
+        {
+          "title": "Khi nào nên khảo sát trước",
+          "body": "Nhiều tầng không có thang máy, có đồ giá trị cao, đồ dễ vỡ, đồ cồng kềnh hoặc lối vào xe tải khó tiếp cận."
+        },
+        {
+          "title": "Khi nào có thể đặt lịch ngay",
+          "body": "Bạn đã rõ địa chỉ hai đầu, số tầng, loại xe cần dùng và không có hạng mục kỹ thuật đặc biệt ngoài gói cơ bản."
+        }
+      ],
+      "items_title": "Các hạng mục thường dùng",
+      "items": [
+        {
+          "title": "Cước xe theo km",
+          "description": "Điều phối xe theo quãng đường và tải trọng phù hợp với quy mô đồ đạc."
+        },
+        {
+          "title": "Đóng gói đồ đạc",
+          "description": "Áp dụng khi khách cần thùng carton, màng PE và chống sốc cho đồ dễ hư hại."
+        },
+        {
+          "title": "Xử lý đồ cồng kềnh",
+          "description": "Phù hợp cho tủ lớn, giường, bàn ăn hoặc thiết bị khó di chuyển qua lối hẹp."
+        },
+        {
+          "title": "Hỗ trợ tháo lắp kỹ thuật",
+          "description": "Dùng khi cần tháo lắp nội thất hoặc các thiết bị gia đình trước khi vận chuyển."
+        }
+      ],
+      "benefits_title": "Lợi ích nổi bật",
+      "benefits": [
+        "Đóng gói chuyên nghiệp",
+        "Vận chuyển an toàn",
+        "Xe tải đa kích thước",
+        "Tiết kiệm thời gian"
+      ],
+      "service_items_title": "Hạng mục có thể triển khai",
+      "service_items": [
+        "Xe tải vận chuyển",
+        "Nhân công bốc xếp",
+        "Đóng gói đồ đạc",
+        "Tháo lắp nội thất",
+        "Hỗ trợ tháo lắp kỹ thuật",
+        "Sắp xếp tại nhà mới"
+      ],
+      "cta": {
+        "survey_label": "Khảo sát chuyển nhà",
+        "survey_url": "khao-sat.html?dich-vu=chuyen_nha",
+        "booking_label": "Đặt lịch chuyển nhà",
+        "booking_url": "dat-lich.html?dich-vu=chuyen_nha",
+        "pricing_label": "Xem bảng giá",
+        "pricing_url": "bang-gia-chuyen-don.html"
+      }
+    },
+    {
+      "id": "chuyen-van-phong",
+      "label": "Chuyển Văn Phòng Công Ty",
+      "title": "Di dời gọn, đúng kế hoạch và giảm tối đa gián đoạn vận hành",
+      "summary": "Dành cho văn phòng cần chuyển bàn ghế, hồ sơ, máy tính, server và thiết bị vận hành với thứ tự bàn giao rõ ràng.",
+      "image": "images/chuyendon-van-phong.png",
+      "image_alt": "Dịch vụ chuyển văn phòng công ty",
+      "image_caption": "Phù hợp cho doanh nghiệp cần di dời có kế hoạch và hạn chế gián đoạn.",
+      "facts": [
+        { "label": "Phù hợp", "value": "Văn phòng nhỏ, sàn lớn, mô hình nhiều phòng ban." },
+        { "label": "Điểm mạnh", "value": "Kiểm soát hồ sơ, thiết bị IT, có thể làm ngoài giờ." },
+        { "label": "Lưu ý", "value": "Nên chuẩn bị trước sơ đồ chỗ ngồi, server và khu vực cần bảo mật." }
+      ],
+      "scope_title": "Phạm vi hỗ trợ chính",
+      "scope": [
+        "Khảo sát mặt bằng và điều kiện ra vào của tòa nhà.",
+        "Phân loại hồ sơ, thiết bị và nhóm tài sản theo phòng ban.",
+        "Điều phối xe, nhân công và lịch thực hiện ngoài giờ nếu cần.",
+        "Bàn giao theo đúng thứ tự ưu tiên của doanh nghiệp."
+      ],
+      "decision_cards": [
+        {
+          "title": "Khi nào nên khảo sát trước",
+          "body": "Có server, thiết bị IT nhạy cảm, tài liệu bảo mật, tòa nhà giới hạn giờ ra vào hoặc yêu cầu làm ngoài giờ hành chính."
+        },
+        {
+          "title": "Khi nào có thể đặt lịch ngay",
+          "body": "Bạn đã rõ sơ đồ di dời, số lượng bàn ghế thiết bị, điều kiện tòa nhà và không có phát sinh kỹ thuật đặc biệt."
+        }
+      ],
+      "items_title": "Các hạng mục thường dùng",
+      "items": [
+        {
+          "title": "Cước xe theo km",
+          "description": "Chọn xe theo quy mô văn phòng, tải trọng và quãng đường di chuyển thực tế."
+        },
+        {
+          "title": "Đóng gói hồ sơ",
+          "description": "Dành cho tài liệu cần phân loại rõ, tránh thất lạc khi di dời nhiều phòng ban."
+        },
+        {
+          "title": "Bảo vệ thiết bị IT",
+          "description": "Ưu tiên với máy tính, màn hình, máy in, server và thiết bị dễ va đập."
+        },
+        {
+          "title": "Tháo lắp nội thất",
+          "description": "Áp dụng khi cần xử lý bàn module, tủ hồ sơ lớn hoặc thiết bị cố định trong văn phòng."
+        }
+      ],
+      "benefits_title": "Lợi ích nổi bật",
+      "benefits": [
+        "Phân loại khoa học",
+        "Bảo mật thông tin",
+        "An toàn thiết bị IT",
+        "Hạn chế gián đoạn"
+      ],
+      "service_items_title": "Hạng mục có thể triển khai",
+      "service_items": [
+        "Cung cấp xe tải",
+        "Đóng gói hồ sơ, tài liệu",
+        "Bảo vệ thiết bị IT",
+        "Tháo lắp nội thất văn phòng",
+        "Vận chuyển thiết bị nặng",
+        "Lắp đặt tại văn phòng mới"
+      ],
+      "cta": {
+        "survey_label": "Khảo sát chuyển văn phòng",
+        "survey_url": "khao-sat.html?dich-vu=chuyen_van_phong",
+        "booking_label": "Đặt lịch chuyển văn phòng",
+        "booking_url": "dat-lich.html?dich-vu=chuyen_van_phong",
+        "pricing_label": "Xem bảng giá",
+        "pricing_url": "bang-gia-chuyen-don.html"
+      }
+    },
+    {
+      "id": "chuyen-kho-bai",
+      "label": "Chuyển Kho Bãi",
+      "title": "Di dời pallet, máy móc và hàng nặng bằng phương án triển khai rõ ràng",
+      "summary": "Phù hợp cho kho thường, kho logistics, nhà xưởng và các lô hàng cồng kềnh cần kết hợp xe tải, xe nâng hoặc xe cẩu.",
+      "image": "images/chuyendon-kho-bai.png",
+      "image_alt": "Dịch vụ chuyển kho bãi",
+      "image_caption": "Thích hợp cho hàng pallet, máy móc và các đợt di dời theo từng khu vực kho.",
+      "facts": [
+        { "label": "Phù hợp", "value": "Kho thường, kho logistics, nhà xưởng, pallet hàng." },
+        { "label": "Điểm mạnh", "value": "Phối hợp nhân công, xe tải, xe nâng hoặc xe cẩu." },
+        { "label": "Lưu ý", "value": "Cần thống kê khối lượng hàng và điều kiện bốc xếp trước khi chốt lịch." }
+      ],
+      "scope_title": "Phạm vi hỗ trợ chính",
+      "scope": [
+        "Khảo sát tải trọng, tuyến xe và mặt bằng nâng hạ.",
+        "Kiểm kê khu vực kho và lên thứ tự bốc xếp theo lô hàng.",
+        "Điều phối xe tải, xe nâng hoặc xe cẩu theo từng giai đoạn.",
+        "Bàn giao theo khu vực hoặc theo mã hàng để dễ kiểm soát."
+      ],
+      "decision_cards": [
+        {
+          "title": "Khi nào nên khảo sát trước",
+          "body": "Hàng có tải trọng lớn, cần xe nâng hoặc xe cẩu, có nhiều khu kho, có điều kiện bốc xếp phức tạp hoặc cần chia ca."
+        },
+        {
+          "title": "Khi nào có thể đặt lịch ngay",
+          "body": "Bạn đã có thống kê cơ bản về loại hàng, điều kiện lên xuống hàng và không cần thiết bị nâng hạ đặc thù ngoài gói chuẩn."
+        }
+      ],
+      "items_title": "Các hạng mục thường dùng",
+      "items": [
+        {
+          "title": "Xe tải và xe thùng kín",
+          "description": "Triển khai theo từng đợt hàng với tải trọng và tuyến đường phù hợp."
+        },
+        {
+          "title": "Luân chuyển pallet",
+          "description": "Phù hợp cho kho cần bốc xếp, kiểm kê và di chuyển hàng theo lô."
+        },
+        {
+          "title": "Thiết bị nâng hạ",
+          "description": "Áp dụng khi có máy móc, kiện nặng hoặc khu vực xếp dỡ khó thao tác thủ công."
+        },
+        {
+          "title": "Điều phối theo khu vực kho",
+          "description": "Giúp chia đợt di dời rõ ràng, hạn chế dồn ứ và sai lệch khi bàn giao."
+        }
+      ],
+      "benefits_title": "Lợi ích nổi bật",
+      "benefits": [
+        "Xử lý khối lượng lớn",
+        "Tối ưu chi phí",
+        "Thiết bị chuyên dụng",
+        "Quy trình khoa học"
+      ],
+      "service_items_title": "Hạng mục có thể triển khai",
+      "service_items": [
+        "Xe tải và xe thùng kín",
+        "Luân chuyển hàng pallet",
+        "Thuê xe nâng - xe cẩu",
+        "Nhân công bốc xếp",
+        "Đóng gói và gia cố",
+        "Kiểm kê và bàn giao"
+      ],
+      "cta": {
+        "survey_label": "Khảo sát chuyển kho bãi",
+        "survey_url": "khao-sat.html?dich-vu=chuyen_kho_bai",
+        "booking_label": "Đặt lịch chuyển kho bãi",
+        "booking_url": "dat-lich.html?dich-vu=chuyen_kho_bai",
+        "pricing_label": "Xem bảng giá",
+        "pricing_url": "bang-gia-chuyen-don.html"
+      }
+    }
+  ]
+}

@@ -10,8 +10,8 @@ Project hiện ưu tiên `UI / CSS / nội dung / SEO / điều hướng / trả
 ## Phạm vi hiện tại
 
 - Landing page riêng cho chuyển dọn
-- Trang hub dịch vụ riêng
-- 3 trang dịch vụ chi tiết
+- Một trang dịch vụ duy nhất, đổi nội dung theo từng nhóm nhu cầu
+- 3 URL dịch vụ cũ giữ lại để chuyển hướng mềm
 - Trang bảng giá tham khảo
 - Cụm cẩm nang và trang chi tiết bài viết
 - Trang chính sách
@@ -85,7 +85,7 @@ dich-vu-chuyen-don/
 | Trang | Vai trò |
 |---|---|
 | `index.html` | Landing page của dịch vụ chuyển dọn |
-| `dich-vu-chuyen-don.html` | Trang hub dịch vụ, dẫn về 3 nhóm dịch vụ |
+| `dich-vu-chuyen-don.html` | Trang dịch vụ duy nhất, chuyển nội dung trong cùng trang theo 3 nhóm nhu cầu |
 | `bang-gia-chuyen-don.html` | Trang bảng giá tham khảo và minh bạch thông tin |
 | `khao-sat.html` | Trang khảo sát riêng |
 | `dat-lich.html` | Trang đặt lịch riêng |
@@ -93,9 +93,9 @@ dich-vu-chuyen-don/
 | `dang-ky.html` | Trang đăng ký, chọn vai trò khách hàng hoặc đối tác cung ứng |
 | `cam-nang.html` | Danh sách cẩm nang |
 | `chinh-sach-va-dieu-khoan.html` | Trang chính sách và điều khoản |
-| `public/trang/dich-vu/chuyen-nha.html` | Trang chi tiết chuyển nhà |
-| `public/trang/dich-vu/chuyen-van-phong.html` | Trang chi tiết chuyển văn phòng công ty |
-| `public/trang/dich-vu/chuyen-kho-bai.html` | Trang chi tiết chuyển kho bãi |
+| `public/trang/dich-vu/chuyen-nha.html` | URL cũ, chuyển hướng về tab chuyển nhà trên trang dịch vụ |
+| `public/trang/dich-vu/chuyen-van-phong.html` | URL cũ, chuyển hướng về tab chuyển văn phòng trên trang dịch vụ |
+| `public/trang/dich-vu/chuyen-kho-bai.html` | URL cũ, chuyển hướng về tab chuyển kho bãi trên trang dịch vụ |
 | `public/trang/noi-dung/cam-nang-chi-tiet.html` | Trang chi tiết bài viết |
 
 ## Form khảo sát
@@ -170,7 +170,8 @@ Chưa có:
 
 - Cấu trúc thư mục đã được sắp lại theo hướng dễ bảo trì hơn
 - Menu `Dịch vụ` trỏ sang `dich-vu-chuyen-don.html`
-- Cụm bảng giá đã tách thành trang riêng
+- Cụm bảng giá là nơi hiển thị giá tham khảo chính
+- Trang dịch vụ đã được gom lại để tránh lặp nội dung giữa 3 nhóm nhu cầu
 - Form khảo sát và đặt lịch đã có bố cục riêng, không còn phụ thuộc landing
 - Khu vực tài khoản đã có giao diện hoàn chỉnh, validate client-side và lưu dữ liệu demo cục bộ
 - Footer hiện không chứa link auth, auth được gom trong menu `Tài khoản`

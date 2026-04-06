@@ -18,9 +18,9 @@
   const servicePageKeyByFile = {
     "dich-vu-chuyen-don.html": "services",
     "bang-gia-chuyen-don.html": "pricing",
-    "chuyen-nha.html": "moving-house",
-    "chuyen-kho-bai.html": "moving-warehouse",
-    "chuyen-van-phong.html": "moving-office",
+    "chuyen-nha.html": "services",
+    "chuyen-kho-bai.html": "services",
+    "chuyen-van-phong.html": "services",
     "cam-nang.html": "news",
     "cam-nang-chi-tiet.html": "news",
     "khao-sat.html": "survey",
@@ -58,14 +58,6 @@
   }
 
   function buildLinkMap() {
-    const hasPricingSection = [
-      "chuyen-nha.html",
-      "chuyen-kho-bai.html",
-      "chuyen-van-phong.html",
-    ].includes(currentPage);
-    const pricingLink = hasPricingSection
-      ? "#pricing-reference"
-      : `${projectBase}bang-gia-chuyen-don.html`;
     const servicesLink = `${projectBase}dich-vu-chuyen-don.html`;
 
     return {
@@ -75,7 +67,7 @@
       home: `${projectBase}index.html#hero`,
       about: `${projectBase}index.html#hero`,
       services: servicesLink,
-      pricing: pricingLink,
+      pricing: `${projectBase}bang-gia-chuyen-don.html`,
       contact: `${projectBase}index.html#contact`,
       survey: `${projectBase}khao-sat.html`,
       booking: `${projectBase}dat-lich.html`,
@@ -87,9 +79,9 @@
       "login-provider": `${projectBase}dang-nhap.html?vai-tro=doi-tac`,
       "register-provider": `${projectBase}dang-ky.html?vai-tro=doi-tac`,
       policy: `${projectBase}chinh-sach-va-dieu-khoan.html`,
-      "moving-house": `${publicBase}trang/dich-vu/chuyen-nha.html`,
-      "moving-warehouse": `${publicBase}trang/dich-vu/chuyen-kho-bai.html`,
-      "moving-office": `${publicBase}trang/dich-vu/chuyen-van-phong.html`,
+      "moving-house": `${servicesLink}#chuyen-nha`,
+      "moving-warehouse": `${servicesLink}#chuyen-kho-bai`,
+      "moving-office": `${servicesLink}#chuyen-van-phong`,
       "news": `${projectBase}cam-nang.html`,
       "brandLogo": `${publicBase}assets/images/favicon.png`,
 
@@ -163,17 +155,7 @@
     }
   }
 
-  const PROMO_POPUP_ALLOWED_PAGES = new Set([
-    "",
-    "index.html",
-    "dich-vu-chuyen-don.html",
-    "bang-gia-chuyen-don.html",
-    "dat-lich.html",
-    "khao-sat.html",
-    "chuyen-nha.html",
-    "chuyen-kho-bai.html",
-    "chuyen-van-phong.html",
-  ]);
+  const PROMO_POPUP_ALLOWED_PAGES = new Set();
   const PROMO_POPUP_STORAGE_KEY = "moving_promo_popup_seen_date_v1";
 
   function getVietnamDateToken() {

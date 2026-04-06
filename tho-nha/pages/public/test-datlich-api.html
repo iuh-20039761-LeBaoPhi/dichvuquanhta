@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API datlich_thonha</title>
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --card: #ffffff;
+            --line: #d9e2ec;
+            --text: #102a43;
+            --muted: #486581;
+            --primary: #0b7285;
+            --danger: #b42318;
+            --ok: #027a48;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .page {
+            max-width: 1350px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        p {
+            margin: 6px 0;
+            color: var(--muted);
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .row input {
+            flex: 1;
+            min-width: 220px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+
+        .row button {
+            border: 0;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .row button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .status {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .status.ok { color: var(--ok); }
+        .status.err { color: var(--danger); }
+
+        .table-wrap {
+            overflow: auto;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1450px;
+            background: #fff;
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--line);
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8fafc;
+            white-space: nowrap;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .mono {
+            font-family: Consolas, Menlo, monospace;
+            font-size: 12px;
+        }
+
+        pre {
+            margin: 0;
+            max-height: 300px;
+            overflow: auto;
+            background: #0b1f33;
+            color: #d9e2ec;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="card">
+            <h1>Test API bang datlich_thonha</h1>
+            <p>Trang nay dung de kiem tra cac don da dat tu modal dat lich va trang dat-lich.html.</p>
+            <div class="row">
+                <input id="tableName" type="text" value="datlich_thonha" aria-label="Ten bang">
+                <input id="orderFilter" type="text" placeholder="Loc theo ma don (madon)">
+                <input id="phoneFilter" type="text" placeholder="Loc theo so dien thoai (sodienthoai)">
+                <button id="loadBtn" type="button">Tai du lieu</button>
+            </div>
+            <div id="status" class="status"></div>
+        </div>
+
+        <div class="card">
+            <div class="muted" id="summary">Chua co du lieu.</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ma don</th>
+                            <th>Ho ten</th>
+                            <th>So dien thoai</th>
+                            <th>Ten dich vu</th>
+                            <th>Thuong hieu</th>
+                            <th>Dia chi</th>
+                            <th>Gia dich vu</th>
+                            <th>Phi di chuyen</th>
+                            <th>Phi khao sat</th>
+                            <th>Tong tien</th>
+                            <th>Trang thai</th>
+                            <th>Ngay tao</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                        <tr><td colspan="13" class="muted">Nhan "Tai du lieu" de bat dau.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <p class="muted">Raw response:</p>
+            <pre id="raw">{}</pre>
+        </div>
+    </div>
+
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script>
+        const btn = document.getElementById('loadBtn');
+        const tableInput = document.getElementById('tableName');
+        const orderFilterInput = document.getElementById('orderFilter');
+        const phoneFilterInput = document.getElementById('phoneFilter');
+        const statusEl = document.getElementById('status');
+        const summaryEl = document.getElementById('summary');
+        const tbody = document.getElementById('tbody');
+        const raw = document.getElementById('raw');
+
+        function setStatus(text, isError) {
+            statusEl.textContent = text;
+            statusEl.className = 'status ' + (isError ? 'err' : 'ok');
+        }
+
+        function escapeHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function toDigits(value) {
+            return String(value || '').replace(/\D/g, '');
+        }
+
+        function toMoney(value) {
+            const num = Number(value || 0);
+            if (!Number.isFinite(num)) return '0';
+            return Math.round(num).toLocaleString('vi-VN');
+        }
+
+        function normalizeRows(res) {
+            if (Array.isArray(res)) return res;
+            if (!res || typeof res !== 'object') return [];
+            if (res.error) throw new Error(res.error);
+            if (res.success === false) throw new Error(res.message || 'API tra ve loi');
+            if (Array.isArray(res.data)) return res.data;
+            if (Array.isArray(res.rows)) return res.rows;
+            if (Array.isArray(res.items)) return res.items;
+            if (Array.isArray(res.result)) return res.result;
+            return [];
+        }
+
+        function normalizeOrderRow(r) {
+            return {
+                id: r.id,
+                madon: r.madon || r.order_code || '',
+                hoten: r.hoten || r.customer_name || '',
+                sodienthoai: r.sodienthoai || r.customer_phone || '',
+                tendichvu: r.tendichvu || r.service_name || '',
+                thuonghieu: r.thuonghieu || r.selected_brand || '',
+                diachi: r.diachi || r.address || '',
+                giadichvu: Number(r.giadichvu || r.estimated_price || 0) || 0,
+                phidichuyen: Number(r.phidichuyen || r.travel_fee || 0) || 0,
+                phikhaosat: Number(r.phikhaosat || r.inspection_fee || 0) || 0,
+                tongtien: Number(r.tongtien || r.total_price || 0) || 0,
+                trangthai: r.trangthai || r.status || 'new',
+                ngaytao: r.ngaytao || r.created_at || ''
+            };
+        }
+
+        function applyFilters(rows) {
+            const orderFilter = String(orderFilterInput.value || '').trim().toLowerCase();
+            const phoneFilter = toDigits(phoneFilterInput.value || '');
+
+            return rows.filter((r) => {
+                const orderOk = !orderFilter || String(r.madon || '').toLowerCase().includes(orderFilter);
+                const phoneOk = !phoneFilter || toDigits(r.sodienthoai).includes(phoneFilter);
+                return orderOk && phoneOk;
+            });
+        }
+
+        function renderRows(rows) {
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="13" class="muted">Khong co du lieu khop bo loc.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = rows.map((r) => {
+                return '' +
+                    '<tr>' +
+                        '<td>' + escapeHtml(r.id) + '</td>' +
+                        '<td class="mono">' + escapeHtml(r.madon) + '</td>' +
+                        '<td>' + escapeHtml(r.hoten) + '</td>' +
+                        '<td>' + escapeHtml(r.sodienthoai) + '</td>' +
+                        '<td>' + escapeHtml(r.tendichvu) + '</td>' +
+                        '<td>' + escapeHtml(r.thuonghieu) + '</td>' +
+                        '<td>' + escapeHtml(r.diachi) + '</td>' +
+                        '<td>' + escapeHtml(toMoney(r.giadichvu)) + ' đ</td>' +
+                        '<td>' + escapeHtml(toMoney(r.phidichuyen)) + ' đ</td>' +
+                        '<td>' + escapeHtml(toMoney(r.phikhaosat)) + ' đ</td>' +
+                        '<td><strong>' + escapeHtml(toMoney(r.tongtien)) + ' đ</strong></td>' +
+                        '<td>' + escapeHtml(r.trangthai) + '</td>' +
+                        '<td>' + escapeHtml(r.ngaytao) + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        async function fetchRows(table) {
+            if (typeof krudList === 'function') {
+                return await krudList({ table: table });
+            }
+
+            const res = await fetch('https://api.dvqt.vn/list/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ table: table })
+            });
+            return await res.json();
+        }
+
+        async function loadData() {
+            const table = (tableInput.value || '').trim();
+            if (!table) {
+                setStatus('Vui long nhap ten bang.', true);
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Dang tai...';
+            setStatus('Dang goi API...', false);
+
+            try {
+                const result = await fetchRows(table);
+                raw.textContent = JSON.stringify(result, null, 2);
+                const rows = normalizeRows(result).map(normalizeOrderRow);
+                const filteredRows = applyFilters(rows);
+                renderRows(filteredRows);
+                summaryEl.textContent = 'Tong so dong: ' + rows.length + ' | Sau loc: ' + filteredRows.length;
+                setStatus('Tai du lieu thanh cong.', false);
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="13" class="muted">Khong tai duoc du lieu.</td></tr>';
+                summaryEl.textContent = 'Khong co du lieu.';
+                setStatus('Loi: ' + (err && err.message ? err.message : 'Khong xac dinh'), true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Tai du lieu';
+            }
+        }
+
+        btn.addEventListener('click', loadData);
+        orderFilterInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') loadData();
+        });
+        phoneFilterInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') loadData();
+        });
+    </script>
+</body>
+</html>

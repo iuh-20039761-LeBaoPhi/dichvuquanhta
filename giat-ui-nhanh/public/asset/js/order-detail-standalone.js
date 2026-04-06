@@ -118,6 +118,17 @@
     return text || "---";
   }
 
+  function getPaymentStatusLabel(value) {
+    if (typeof shared.getPaymentStatusLabel === "function") {
+      return shared.getPaymentStatusLabel(value);
+    }
+    return String(value || "")
+      .trim()
+      .toLowerCase() === "paid"
+      ? "Đã thanh toán"
+      : "Chưa thanh toán";
+  }
+
   function initialsOf(name, fallback) {
     var text = String(name || "").trim();
     if (!text) return fallback || "--";
@@ -503,7 +514,6 @@
         row.avatar_ncc,
         row.avatar_nhacungcap,
         row.provider_avatar,
-        row.avatar,
         provider.avatar,
         provider.avatar_ncc,
         provider.avatartenfile,
@@ -511,6 +521,47 @@
     }
 
     return row;
+  }
+
+  function hasAssignedProviderRow(row) {
+    var providerId = normalizeId(
+      row.idnhacungcap ||
+        row.id_ncc ||
+        row.manhacungcap ||
+        row.provider_id ||
+        (row.nhacungcap &&
+          (row.nhacungcap.id ||
+            row.nhacungcap.idnhacungcap ||
+            row.nhacungcap.provider_id ||
+            row.nhacungcap.manhacungcap)),
+    );
+
+    if (!providerId || providerId === "0") return false;
+
+    var providerName = pickFirstValue([
+      row.tennhacungcap,
+      row.nhacungcap && row.nhacungcap.hovaten,
+      row.nhacungcap && row.nhacungcap.user_name,
+    ]);
+    var providerPhone = normalizePhone(
+      row.sdt_ncc ||
+        row.sodienthoai_ncc ||
+        row.phone_ncc ||
+        (row.nhacungcap &&
+          (row.nhacungcap.sodienthoai ||
+            row.nhacungcap.user_tel ||
+            row.nhacungcap.sdt)),
+    );
+    var providerEmail = String(
+      row.email_ncc ||
+        (row.nhacungcap &&
+          (row.nhacungcap.email || row.nhacungcap.user_email)) ||
+        "",
+    )
+      .trim()
+      .toLowerCase();
+
+    return Boolean(providerName || providerPhone || providerEmail);
   }
 
   function mapOrderView(row) {
@@ -527,6 +578,7 @@
     var transportFee = toNumber(row.tiendichuyen);
     var surchargeFee = toNumber(row.phuphigiaonhan);
     var totalAmount = toNumber(row.tongtien);
+    var hasAssignedProvider = hasAssignedProviderRow(row);
 
     var qty = toNumber(row.soluong);
     if (qty <= 0) qty = 1;
@@ -556,6 +608,12 @@
       serviceFee: serviceFee,
       transportFee: transportFee,
       surchargeFee: surchargeFee,
+      paymentStatus:
+        row.trangthaithanhtoan ||
+        row.trang_thai_thanh_toan ||
+        row.payment_status ||
+        row.paymentStatus ||
+        "Unpaid",
       customer: {
         id: toNumber(
           row.idkhachhang ||
@@ -596,45 +654,52 @@
         ]),
       },
       provider: {
-        id: toNumber(
-          row.idnhacungcap ||
-            row.id_ncc ||
-            row.manhacungcap ||
-            row.provider_id ||
+        id: hasAssignedProvider
+          ? toNumber(
+              row.idnhacungcap ||
+                row.id_ncc ||
+                row.manhacungcap ||
+                row.provider_id ||
+                (row.nhacungcap &&
+                  (row.nhacungcap.id ||
+                    row.nhacungcap.idnhacungcap ||
+                    row.nhacungcap.provider_id ||
+                    row.nhacungcap.manhacungcap)),
+            )
+          : 0,
+        name: hasAssignedProvider
+          ? row.tennhacungcap ||
             (row.nhacungcap &&
-              (row.nhacungcap.id ||
-                row.nhacungcap.idnhacungcap ||
-                row.nhacungcap.provider_id ||
-                row.nhacungcap.manhacungcap)),
-        ),
-        name:
-          row.tennhacungcap ||
-          (row.nhacungcap &&
-            (row.nhacungcap.hovaten || row.nhacungcap.user_name)) ||
-          "Chưa phân công",
-        phone:
-          row.sdt_ncc ||
-          (row.nhacungcap &&
-            (row.nhacungcap.sodienthoai ||
-              row.nhacungcap.user_tel ||
-              row.nhacungcap.sdt)) ||
-          "",
-        email:
-          row.email_ncc ||
-          (row.nhacungcap &&
-            (row.nhacungcap.email || row.nhacungcap.user_email)) ||
-          "",
-        address:
-          row.diachi_ncc || (row.nhacungcap && row.nhacungcap.diachi) || "",
-        avatar: pickFirstValue([
-          row.avatar_ncc,
-          row.avatar_nhacungcap,
-          row.provider_avatar,
-          row.avatar,
-          row.nhacungcap && row.nhacungcap.avatar,
-          row.nhacungcap && row.nhacungcap.avatar_ncc,
-          row.nhacungcap && row.nhacungcap.avatartenfile,
-        ]),
+              (row.nhacungcap.hovaten || row.nhacungcap.user_name)) ||
+            "Chưa phân công"
+          : "Chưa phân công",
+        phone: hasAssignedProvider
+          ? row.sdt_ncc ||
+            (row.nhacungcap &&
+              (row.nhacungcap.sodienthoai ||
+                row.nhacungcap.user_tel ||
+                row.nhacungcap.sdt)) ||
+            ""
+          : "",
+        email: hasAssignedProvider
+          ? row.email_ncc ||
+            (row.nhacungcap &&
+              (row.nhacungcap.email || row.nhacungcap.user_email)) ||
+            ""
+          : "",
+        address: hasAssignedProvider
+          ? row.diachi_ncc || (row.nhacungcap && row.nhacungcap.diachi) || ""
+          : "",
+        avatar: hasAssignedProvider
+          ? pickFirstValue([
+              row.avatar_ncc,
+              row.avatar_nhacungcap,
+              row.provider_avatar,
+              row.nhacungcap && row.nhacungcap.avatar,
+              row.nhacungcap && row.nhacungcap.avatar_ncc,
+              row.nhacungcap && row.nhacungcap.avatartenfile,
+            ])
+          : "",
       },
       raw: row,
       items: [
@@ -837,20 +902,13 @@
     setText("heroTransportFee", formatCurrencyVnd(order.transportFee));
     setText("heroSurchargeFee", formatCurrencyVnd(order.surchargeFee));
     setText("heroBookingDate", formatDateTime(order.createdAt));
+    setText("heroPaymentStatus", getPaymentStatusLabel(order.paymentStatus));
     setText("heroTotalAmount", formatCurrencyVnd(total));
     setText("heroTimeRange", safeText(order.deliveryMethod));
     var heroDateRangeNode = document.getElementById("heroDateRange");
     if (heroDateRangeNode) {
-      if (order.receivedAt || order.completedAt) {
-        heroDateRangeNode.textContent =
-          formatDateTime(order.receivedAt) +
-          " - " +
-          formatDateTime(order.completedAt);
-        heroDateRangeNode.classList.remove("d-none");
-      } else {
-        heroDateRangeNode.textContent = "";
-        heroDateRangeNode.classList.add("d-none");
-      }
+      heroDateRangeNode.textContent = "";
+      heroDateRangeNode.classList.add("d-none");
     }
     setText("heroAddress", safeText(order.customer && order.customer.address));
     setText("heroProgressPercent", Math.round(progressValue) + "%");
@@ -921,9 +979,23 @@
       initialsOf(order.customer && order.customer.name, "KH"),
       "customer",
     );
+
+    var canShowProviderAvatar =
+      Number(order && order.provider && order.provider.id) > 0 &&
+      String((order && order.provider && order.provider.name) || "")
+        .trim()
+        .toLowerCase() !== "chưa phân công" &&
+      Boolean(
+        String((order && order.provider && order.provider.name) || "").trim() ||
+        String(
+          (order && order.provider && order.provider.phone) || "",
+        ).trim() ||
+        String((order && order.provider && order.provider.email) || "").trim(),
+      );
+
     renderAvatarBadge(
       "providerAvatarBadge",
-      order.provider && order.provider.avatar,
+      canShowProviderAvatar ? order.provider && order.provider.avatar : "",
       initialsOf(order.provider && order.provider.name, "NCC"),
       "provider",
     );

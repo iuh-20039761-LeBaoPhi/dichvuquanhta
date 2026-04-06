@@ -38,6 +38,23 @@ function initAuthNav() {
     const guestEl   = document.getElementById('auth-guest');
     const userEl    = document.getElementById('auth-user');
 
+    // Helper: Tìm Base URL của hệ thống (Ví dụ: /Test)
+    const getRoot = () => {
+        if (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) return window.DVQTApp.ROOT_URL;
+        // Tự detect nếu chưa nạp DVQTApp
+        const path = window.location.pathname;
+        const idx = path.indexOf('/thue-xe/');
+        if (idx !== -1) return path.substring(0, idx);
+        return '/Test';
+    };
+    const ROOT = getRoot();
+
+    // 1. Cập nhật các link dành cho khách (Guest)
+    const loginLink = document.getElementById('auth-login-link');
+    const regLink   = document.getElementById('auth-register-link');
+    if (loginLink) loginLink.href = ROOT + '/public/dang-nhap.html?service=thuexe';
+    if (regLink)   regLink.href   = ROOT + '/public/dang-ky.html?service=thuexe';
+
     const checkSessionHandler = (data) => {
         if (loadingEl) loadingEl.style.display = 'none';
 
@@ -49,21 +66,16 @@ function initAuthNav() {
             if (nameEl)   nameEl.textContent  = data.name;
             if (avatarEl) avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
 
+            // 2. Cấu hình Dashboard cục bộ của module Thuê xe
             const dashMap = {
                 customer: 'views/pages/customer/bang-dieu-khien.html',
                 provider: 'views/pages/provider/bang-dieu-khien.html',
                 admin:    'admin/index.php'
             };
-            const logoutMap = {
-                customer: '../../public/api/auth/logout.php',
-                provider: '../../public/api/auth/logout.php',
-                admin:    'admin/index.php?action=logout'
-            };
-            const loginMap = {
-                customer: '../../public/dang-nhap.html?service=thuexe',
-                provider: '../../public/dang-nhap.html?service=thuexe',
-                admin:    'admin/index.php'
-            };
+            
+            // 3. Đường dẫn API và Đăng xuất về hệ thống chung
+            const logoutApi = ROOT + '/public/api/auth/logout.php';
+            const loginUrl  = ROOT + '/public/dang-nhap.html?service=thuexe';
 
             const dashLink = document.getElementById('auth-dashboard-link');
             if (dashLink) {
@@ -94,9 +106,9 @@ function initAuthNav() {
                     if (window.DVQTApp && window.DVQTApp.logout) {
                         await window.DVQTApp.logout();
                     } else {
-                        await fetch(logoutMap[data.role] || '../../public/api/auth/logout.php').catch(() => null);
+                        await fetch(logoutApi).catch(() => null);
                     }
-                    window.location.href = loginMap[data.role] || 'views/pages/customer/dang-nhap.html';
+                    window.location.href = loginUrl;
                 });
             }
         } else {
@@ -110,6 +122,7 @@ function initAuthNav() {
             if (guestEl)   guestEl.style.display   = '';
         });
     } else {
+        // Fallback kiểm tra session cục bộ (thường là PHP)
         fetch('controllers/check-session.php')
             .then(r => r.json())
             .then(checkSessionHandler)

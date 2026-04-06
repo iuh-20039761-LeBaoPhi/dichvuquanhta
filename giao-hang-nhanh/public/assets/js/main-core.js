@@ -156,6 +156,129 @@
       .replace(/'/g, "&#039;");
   }
 
+  function normalizeText(value) {
+    return String(value ?? "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function normalizePhone(value) {
+    return String(value ?? "").replace(/\D/g, "");
+  }
+
+  function normalizeServiceType(value) {
+    const normalized = normalizeText(value).toLowerCase();
+    const map = {
+      giao_ngay_lap_tuc: "instant",
+      giao_hoa_toc: "express",
+      giao_nhanh: "fast",
+      giao_tieu_chuan: "standard",
+    };
+    return map[normalized] || normalized;
+  }
+
+  function getServiceLabel(serviceType, fallbackLabel = "") {
+    if (normalizeText(fallbackLabel)) return fallbackLabel;
+    const normalized = normalizeServiceType(serviceType);
+    if (normalized === "instant") return "Giao ngay lập tức";
+    if (normalized === "express") return "Giao hàng hỏa tốc";
+    if (normalized === "fast") return "Giao hàng nhanh";
+    if (normalized === "standard") return "Giao hàng tiêu chuẩn";
+    return "--";
+  }
+
+  function getPaymentMethodLabel(value, fallback = "") {
+    const normalized = normalizeText(value).toLowerCase();
+    if (!normalized) return normalizeText(fallback) || "--";
+    if (["tien_mat", "cash"].includes(normalized)) return "Tiền mặt";
+    if (
+      ["chuyen_khoan", "bank", "bank_transfer", "transfer"].includes(normalized)
+    ) {
+      return "Chuyển khoản";
+    }
+    return fallback || value;
+  }
+
+  function getPaymentStatusLabel(value, fallback = "Chưa hoàn tất") {
+    const normalized = normalizeText(value).toLowerCase();
+    if (!normalized) return fallback;
+    if (["paid", "completed", "done"].includes(normalized)) {
+      return "Đã hoàn tất";
+    }
+    if (["unpaid", "pending", "processing"].includes(normalized)) {
+      return "Chưa hoàn tất";
+    }
+    return value || fallback;
+  }
+
+  function getFeePayerLabel(value) {
+    return normalizeText(value).toLowerCase() === "nhan"
+      ? "Người nhận"
+      : "Người gửi";
+  }
+
+  function getStatusLabel(value) {
+    const rawStatus =
+      value && typeof value === "object"
+        ? value.status || value.status_label || ""
+        : value;
+    const normalized = normalizeText(rawStatus).toLowerCase();
+    if (["completed", "delivered", "success"].includes(normalized)) {
+      return "Hoàn tất";
+    }
+    if (["shipping", "in_transit"].includes(normalized)) {
+      return "Đang giao";
+    }
+    if (["cancelled", "canceled"].includes(normalized)) {
+      return "Đã hủy";
+    }
+    if (["accepted", "assigned"].includes(normalized)) {
+      return "Đã nhận đơn";
+    }
+    return "Chờ xử lý";
+  }
+
+  function getKrudListFn() {
+    if (typeof window.krudList === "function") {
+      return (payload) => window.krudList(payload);
+    }
+
+    if (typeof window.crud === "function") {
+      return (payload) =>
+        window.crud("list", payload.table, {
+          p: payload.page || 1,
+          limit: payload.limit || 100,
+        });
+    }
+
+    if (typeof window.krud === "function") {
+      return (payload) =>
+        window.krud("list", payload.table, {
+          p: payload.page || 1,
+          limit: payload.limit || 100,
+        });
+    }
+
+    return null;
+  }
+
+  function extractRows(payload, depth = 0) {
+    if (depth > 4 || payload == null) return [];
+    if (Array.isArray(payload)) return payload;
+    if (typeof payload !== "object") return [];
+
+    const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
+    for (const key of candidateKeys) {
+      if (!(key in payload)) continue;
+      const value = payload[key];
+      if (Array.isArray(value)) return value;
+      const nested = extractRows(value, depth + 1);
+      if (nested.length) return nested;
+    }
+
+    return [];
+  }
+
   function toPositiveNumber(value, fallback = 0) {
     const parsed = parseFloat(value);
     if (!Number.isFinite(parsed) || parsed < 0) return fallback;
@@ -400,6 +523,74 @@
     };
   }
 
+  function formatNumber(value) {
+    return Number(value || 0).toLocaleString("vi-VN");
+  }
+
+  function formatCurrency(value) {
+    return `${formatNumber(value)}đ`;
+  }
+
+  function formatDateTime(value) {
+    if (!value) return "--";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return escapeHtml(value);
+    return date.toLocaleString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  function formatDateOnly(value) {
+    if (!value) return "--";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return escapeHtml(value);
+    return date.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  }
+
+  function createStatusBadge(status, label) {
+    return `<span class="customer-status-badge status-${escapeHtml(status || "")}">${escapeHtml(label || status || "--")}</span>`;
+  }
+
+  function renderLoading(message = "Đang tải dữ liệu...") {
+    const root = document.getElementById("shipper-page-content") || document.getElementById("customer-page-content");
+    if (!root) return;
+    root.innerHTML = `
+      <div class="customer-loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>${escapeHtml(message)}</span>
+      </div>
+    `;
+  }
+
+  function renderError(error, message = "Đã có lỗi xảy ra khi tải dữ liệu.") {
+    const root = document.getElementById("shipper-page-content") || document.getElementById("customer-page-content");
+    if (!root) return;
+    console.error("Portal Error:", error);
+    root.innerHTML = `
+      <div class="customer-error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>${escapeHtml(message)}</p>
+        <small>${escapeHtml(error?.message || String(error))}</small>
+        <button class="customer-btn customer-btn-primary" onclick="window.location.reload()">Thử lại</button>
+      </div>
+    `;
+  }
+
+  async function apiRequest(action, options = {}) {
+    if (typeof window.requestLocalData === "function") {
+      return window.requestLocalData(action, options);
+    }
+    throw new Error("Hệ thống dữ liệu (requestLocalData) chưa được khởi tạo.");
+  }
+
   window.GiaoHangNhanhCore = {
     inPublicDir,
     apiBasePath,
@@ -412,8 +603,26 @@
     showFieldError,
     clearFieldError,
     escapeHtml,
+    normalizeText,
+    normalizePhone,
     showToast,
     getShippingFeeDetails,
+    formatNumber,
+    formatCurrency,
+    formatDateTime,
+    formatDateOnly,
+    extractRows,
+    getKrudListFn,
+    getStatusLabel,
+    normalizeServiceType,
+    getServiceLabel,
+    getPaymentMethodLabel,
+    getPaymentStatusLabel,
+    getFeePayerLabel,
+    createStatusBadge,
+    renderLoading,
+    renderError,
+    apiRequest
   };
 
   window.getShippingFeeDetails = getShippingFeeDetails;

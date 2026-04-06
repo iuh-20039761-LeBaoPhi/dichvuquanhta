@@ -51,158 +51,8 @@
           từng loại mặt hàng của bạn.
         </p>
 
-        <div class="service-grid">
-          <!-- GIAO NGAY LẬP TỨC (FEATURED) -->
-          <article class="service-card service-card--featured">
-            <div class="service-card-head">
-              <div class="service-card-icon">🛵</div>
-              <h3>Giao Ngay Lập Tức</h3>
-            </div>
-            <p class="service-card-slogan">
-              "Đi lấy là đi giao ngay, giống mô hình giao tức thời."
-            </p>
-            <ul class="service-card-details">
-              <li>
-                <strong>Phạm vi:</strong>
-                <span>Nội thành và tuyến cần xử lý ngay.</span>
-              </li>
-              <li>
-                <strong>Ưu tiên:</strong>
-                <span>Tính thời gian từ lúc lấy hàng đến lúc giao xong.</span>
-              </li>
-              <li>
-                <strong>Phù hợp:</strong>
-                <span
-                  >Đơn gấp như giao tài liệu hoặc hàng cần có ngay lập
-                  tức.</span
-                >
-              </li>
-
-            </ul>
-            <div class="service-card-actions">
-              <a
-                href="dat-lich-giao-hang-nhanh.html"
-                class="service-action-btn service-action-primary"
-                >Đặt đơn ngay</a
-              >
-              <a
-                href="tra-cuu-gia.html"
-                class="service-action-btn service-action-outline"
-                style="border-color: #fff; color: #fff; background: transparent"
-                >Tính cước ngay</a
-              >
-            </div>
-          </article>
-
-          <!-- GIAO HÀNG HỎA TỐC -->
-          <article class="service-card">
-            <div class="service-card-head">
-              <div class="service-card-icon">🚀</div>
-              <h3>Giao hàng Hỏa tốc</h3>
-            </div>
-            <p class="service-card-slogan">"Ưu tiên cao nhất cho đơn gấp."</p>
-            <ul class="service-card-details">
-              <li>
-                <strong>Phạm vi:</strong>
-                <span>Nội thành và các tuyến ưu tiên.</span>
-              </li>
-              <li>
-                <strong>Ưu tiên:</strong>
-                <span>Điều phối gấp, rút ngắn thời gian chờ.</span>
-              </li>
-              <li>
-                <strong>Phù hợp:</strong>
-                <span>Tài liệu gấp, hàng cần giao ngay.</span>
-              </li>
-
-            </ul>
-            <div class="service-card-actions">
-              <a
-                href="dat-lich-giao-hang-nhanh.html"
-                class="service-action-btn service-action-primary"
-                >Đặt đơn ngay</a
-              >
-              <a
-                href="tra-cuu-gia.html"
-                class="service-action-btn service-action-outline"
-                >Tính cước ngay</a
-              >
-            </div>
-          </article>
-
-          <!-- GIAO HÀNG NHANH -->
-          <article class="service-card">
-            <div class="service-card-head">
-              <div class="service-card-icon">⚡</div>
-              <h3>Giao hàng Nhanh</h3>
-            </div>
-            <p class="service-card-slogan">
-              "Rút ngắn thời gian giao trong ngày."
-            </p>
-            <ul class="service-card-details">
-              <li>
-                <strong>Phạm vi:</strong>
-                <span>Nội thành, ngoại thành, liên tỉnh.</span>
-              </li>
-              <li>
-                <strong>Ưu tiên:</strong>
-                <span>Đơn cần giao sớm, xử lý linh hoạt.</span>
-              </li>
-              <li>
-                <strong>Phù hợp:</strong>
-                <span>Hàng cần đến tay khách trong ngày.</span>
-              </li>
-            </ul>
-            <div class="service-card-actions">
-              <a
-                href="dat-lich-giao-hang-nhanh.html"
-                class="service-action-btn service-action-primary"
-                >Đặt đơn ngay</a
-              >
-              <a
-                href="tra-cuu-gia.html"
-                class="service-action-btn service-action-outline"
-                >Tính cước ngay</a
-              >
-            </div>
-          </article>
-
-          <!-- GIAO HÀNG TIÊU CHUẨN -->
-          <article class="service-card">
-            <div class="service-card-head">
-              <div class="service-card-icon">📦</div>
-              <h3>Giao hàng Tiêu chuẩn</h3>
-            </div>
-            <p class="service-card-slogan">
-              "Cân bằng tốt giữa tốc độ và chi phí."
-            </p>
-            <ul class="service-card-details">
-              <li>
-                <strong>Phạm vi:</strong>
-                <span>Nội thành, ngoại thành, liên tỉnh.</span>
-              </li>
-              <li>
-                <strong>Ưu tiên:</strong>
-                <span>Thời gian giao ổn định theo lịch trình.</span>
-              </li>
-              <li>
-                <strong>Phù hợp:</strong>
-                <span>Shop online và cá nhân gửi hàng hằng ngày.</span>
-              </li>
-            </ul>
-            <div class="service-card-actions">
-              <a
-                href="dat-lich-giao-hang-nhanh.html"
-                class="service-action-btn service-action-primary"
-                >Đặt đơn ngay</a
-              >
-              <a
-                href="tra-cuu-gia.html"
-                class="service-action-btn service-action-outline"
-                >Tính cước ngay</a
-              >
-            </div>
-          </article>
+        <div class="service-grid" id="danhsachdichvucontainer">
+          <!-- Dữ liệu sẽ được render từ public/data/dsdichvugiaohang.json qua file render-services.js -->
         </div>
       </div>
     </section>
@@ -225,6 +75,7 @@
     <div id="site-footer"></div>
 
     <script src="public/assets/js/shared-layout.js"></script>
+    <script src="public/assets/js/render-services.js"></script>
     <script src="public/assets/js/main.js" defer></script>
   </body>
 </html>

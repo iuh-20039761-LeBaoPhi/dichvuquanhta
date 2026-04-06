@@ -282,6 +282,99 @@
     };
   }
 
+  function getBookingPricingBreakdown(scope) {
+    const lineSelector =
+      "[data-chi-tiet-gia-chot-dat-lich] .muc-chi-tiet-gia-chot-dat-lich";
+    const nodes = Array.from(scope.querySelectorAll(lineSelector));
+
+    return nodes
+      .map((node) => {
+        const label = String(
+          node.querySelector(".muc-chi-tiet-gia-chot-dat-lich__hang span")
+            ?.textContent || "",
+        ).trim();
+        const amount = String(
+          node.querySelector(".muc-chi-tiet-gia-chot-dat-lich__hang strong")
+            ?.textContent || "",
+        ).trim();
+        const detail = String(node.querySelector("p")?.textContent || "").trim();
+
+        if (!label && !amount && !detail) return null;
+
+        return {
+          label,
+          amount,
+          detail,
+        };
+      })
+      .filter(Boolean);
+  }
+
+  function buildBookingSheetPayload(scope, payload, remoteId) {
+    const weatherLabel = getSelectedLabel(
+      scope.querySelector("#thoi-tiet-du-kien-dat-lich"),
+    );
+    const pricingTimeLabel = getBookingPricingTimeLabel(
+      scope.querySelector("[data-khung-gio-tinh-gia]")?.value || "",
+    );
+    const pricingBreakdown = getBookingPricingBreakdown(scope);
+
+    return {
+      sheet_type: "Dịch vụ Chuyển Dọn",
+      created_at: payload.created_at || new Date().toISOString(),
+      "Mã yêu cầu": payload.ma_yeu_cau_noi_bo || "",
+      "ID KRUD": String(remoteId || "").trim(),
+      "Người liên hệ": payload.ho_ten || "",
+      "Số điện thoại": payload.so_dien_thoai || "",
+      Email: payload.customer_email || "",
+      "Đơn vị / công ty": payload.ten_cong_ty || "",
+      "Loại dịch vụ": payload.ten_dich_vu || payload.loai_dich_vu || "",
+      "Loại xe": payload.ten_loai_xe || payload.loai_xe || "",
+      "Địa chỉ điểm đi": payload.dia_chi_di || "",
+      "Địa chỉ điểm đến": payload.dia_chi_den || "",
+      "Ngày thực hiện": payload.ngay_thuc_hien || "",
+      "Khung giờ thực hiện":
+        payload.ten_khung_gio_thuc_hien || payload.khung_gio_thuc_hien || "",
+      "Khung giờ tính giá": pricingTimeLabel || "",
+      "Thời tiết dự kiến": weatherLabel || payload.thoi_tiet_du_kien || "",
+      "Khoảng cách (km)": Number(payload.khoang_cach_km || 0),
+      "Điều kiện tiếp cận": payload.dieu_kien_tiep_can || "",
+      "Chi tiết dịch vụ": payload.chi_tiet_dich_vu || "",
+      "Tổng tạm tính": Number(payload.tong_tam_tinh || 0),
+      "Ảnh đính kèm": payload.anh_dinh_kem || "",
+      "Video đính kèm": payload.video_dinh_kem || "",
+      "Chi tiết giá": pricingBreakdown
+        .map((item) => [item.label, item.amount, item.detail].filter(Boolean).join(": "))
+        .join(" | "),
+      pricing_breakdown_json: JSON.stringify(pricingBreakdown),
+      "Ghi chú": payload.ghi_chu || "",
+      du_lieu_form_json: payload.du_lieu_form_json || "",
+    };
+  }
+
+  async function saveBookingToGoogleSheet(scope, payload, remoteId) {
+    if (typeof window.saveToGoogleSheet !== "function") {
+      throw new Error("driveUtil.js chưa được nạp.");
+    }
+
+    const sheetPayload = buildBookingSheetPayload(scope, payload, remoteId);
+    const result = await Promise.resolve(window.saveToGoogleSheet(sheetPayload));
+    const isSuccess =
+      result && (result.status === "success" || result.success === true);
+
+    if (!isSuccess) {
+      throw new Error(
+        (result && (result.error || result.message)) ||
+          "Gửi dữ liệu Google Sheet thất bại.",
+      );
+    }
+
+    return {
+      result,
+      payload: sheetPayload,
+    };
+  }
+
   async function insertBookingToKrud(scope, portalStore) {
     const insertFn = getBookingInsertFn();
     if (!insertFn) {
@@ -469,6 +562,11 @@
       renderBookingMediaReview,
       renderBookingPricing,
     };
+  }
+
+  function validateBookingBeforeSubmit(scope) {
+    if (!bookingWizardModule?.validateAll) return true;
+    return bookingWizardModule.validateAll(scope, getBookingWizardDeps());
   }
 
   function getSurveyFormDeps() {
@@ -969,6 +1067,7 @@
       event.preventDefault();
 
       syncPhoneFieldValidity(scope);
+      if (formType === "dat-lich" && !validateBookingBeforeSubmit(scope)) return;
       if (!form.reportValidity()) return;
 
       syncSubmitState(true, "Đang ghi nhận...");
@@ -990,6 +1089,23 @@
         try {
           if (formType === "dat-lich") {
             const bookingResult = await insertBookingToKrud(scope, portalStore);
+            let sheetSyncNote = "";
+
+            try {
+              await saveBookingToGoogleSheet(
+                scope,
+                bookingResult.payload,
+                bookingResult.remoteId,
+              );
+              sheetSyncNote = " Đã đồng bộ Google Sheets.";
+            } catch (sheetError) {
+              console.warn(
+                "Không thể đồng bộ Google Sheet cho form đặt lịch chuyển dọn:",
+                sheetError,
+              );
+              sheetSyncNote =
+                " Yêu cầu đã lưu KRUD nhưng chưa đồng bộ Google Sheets.";
+            }
 
             if (historyPayload && requestHistoryModule?.persistPayload) {
               await requestHistoryModule.persistPayload(
@@ -1009,7 +1125,7 @@
 
             notice.classList.remove("is-pending", "is-error");
             notice.classList.add("is-success");
-            notice.textContent = `Đặt lịch thành công. Mã yêu cầu: ${bookingResult.payload.ma_yeu_cau_noi_bo}.${bookingResult.remoteId ? ` ID KRUD: ${bookingResult.remoteId}.` : ""}`;
+            notice.textContent = `Đặt lịch thành công. Mã yêu cầu: ${bookingResult.payload.ma_yeu_cau_noi_bo}.${bookingResult.remoteId ? ` ID KRUD: ${bookingResult.remoteId}.` : ""}${sheetSyncNote}`;
           } else {
             if (historyPayload && requestHistoryModule?.persistPayload) {
               await requestHistoryModule.persistPayload(historyPayload, portalStore);
