@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../session_user.php';
 require_once __DIR__ . '/get-hoadonsdt.php';
+require_once __DIR__ . '/xu-ly-huy.php';
 require_once __DIR__ . '/header-shared.php';
 require_once __DIR__ . '/xu-ly-phan-trang.php';
 
@@ -12,6 +13,7 @@ $sessionPhone = (string)($sessionUser['sodienthoai'] ?? '');
 $result = getHoaDonBySessionSdt($sessionPhone);
 $rows = $result['rows'] ?? [];
 $loadError = (string)($result['error'] ?? '');
+$rows = is_array($rows) ? mevabe_refresh_invoice_rows($rows) : [];
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
 
@@ -301,6 +303,7 @@ $summaryTotal = count($rows);
                                     if ($employee === '') {
                                         $employee = trim((string)($item['hotenncc'] ?? ''));
                                     }
+                                    $cancelCheck = mevabe_can_cancel_invoice($item);
                                 ?>
                                 <tr>
                                     <td><span class="badge text-bg-light border id-badge"><?= esc((string)$itemId) ?></span></td>
@@ -315,8 +318,9 @@ $summaryTotal = count($rows);
                                     <td><?= esc($employee !== '' ? $employee : 'Chưa có') ?></td>
                                     <td>
                                         <div class="action-group">
-                                            <?php if ($itemId > 0 && mevabe_status_is_pending($status)): ?>
+                                            <?php if ($itemId > 0 && (($cancelCheck['ok'] ?? false) === true)): ?>
                                                 <form method="post" action="xu-ly-huy.php" class="d-inline">
+                                                    <input type="hidden" name="action" value="cancel">
                                                     <input type="hidden" name="invoice_id" value="<?= esc((string)$itemId) ?>">
                                                     <button type="submit" class="btn btn-outline-danger btn-action"><i class="bi bi-x-circle"></i>Hủy đơn</button>
                                                 </form>

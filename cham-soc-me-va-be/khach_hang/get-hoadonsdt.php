@@ -110,14 +110,3 @@ function getHoaDonBySessionSdt(string $sessionPhone, ?int $invoiceId = null): ar
         'row' => $matchedRow,
     ];
 }
-
-function mevabe_status_is_pending(string $status): bool
-{
-    $raw = trim($status);
-    if ($raw === '') {
-        return true;
-    }
-
-    $lower = function_exists('mb_strtolower') ? mb_strtolower($raw, 'UTF-8') : strtolower($raw);
-    return in_array($lower, ['chờ duyệt', 'cho duyet', 'chờ xác nhận', 'cho xac nhan', 'chờ nhận đơn', 'cho nhan don', 'pending', 'waiting', 'moi_tao', 'mới tạo'], true);
-}

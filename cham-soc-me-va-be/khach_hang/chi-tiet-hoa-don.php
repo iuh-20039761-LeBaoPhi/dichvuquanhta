@@ -3,7 +3,45 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../session_user.php';
 require_once __DIR__ . '/get-hoadonsdt.php';
+require_once __DIR__ . '/xu-ly-huy.php';
 require_once __DIR__ . '/header-shared.php';
+
+function mevabe_parse_media_paths(string $raw): array
+{
+    $raw = trim($raw);
+    if ($raw === '') {
+        return [];
+    }
+
+    $paths = [];
+    $decoded = json_decode($raw, true);
+    if (is_array($decoded)) {
+        foreach ($decoded as $item) {
+            $path = trim((string)$item);
+            if ($path !== '') {
+                $paths[] = $path;
+            }
+        }
+    } else {
+        $parts = preg_split('/\s*[\r\n,;|]+\s*/', $raw) ?: [];
+        foreach ($parts as $item) {
+            $path = trim((string)$item);
+            if ($path !== '') {
+                $paths[] = $path;
+            }
+        }
+    }
+
+    return array_values(array_unique($paths));
+}
+
+function mevabe_media_is_video(string $path): bool
+{
+    $pathPart = parse_url($path, PHP_URL_PATH);
+    $normalized = is_string($pathPart) && $pathPart !== '' ? $pathPart : $path;
+    $ext = strtolower((string)pathinfo($normalized, PATHINFO_EXTENSION));
+    return in_array($ext, ['mp4', 'webm', 'ogg', 'mov'], true);
+}
 
 $sessionUser = session_user_require_customer('../login.html', 'khach_hang/chi-tiet-hoa-don.php' . (isset($_GET['id']) ? ('?id=' . urlencode((string)$_GET['id'])) : ''));
 $sessionPhone = (string)($sessionUser['sodienthoai'] ?? '');
@@ -21,6 +59,9 @@ if ($invoiceId > 0 && !$invoice && $loadError === '') {
 }
 
 $invoice = is_array($invoice) ? $invoice : [];
+if ($invoice) {
+    $invoice = mevabe_refresh_invoice_row($invoice);
+}
 
 $idNumber = (int)($invoice['id'] ?? 0);
 $invoiceCode = $idNumber > 0 ? ('#' . str_pad((string)$idNumber, 6, '0', STR_PAD_LEFT)) : '---';
@@ -109,6 +150,7 @@ if ($jobsRaw !== '') {
     if (is_array($jobsJson)) {
         foreach ($jobsJson as $job) {
             $jobText = trim((string)$job);
+            $jobText = ltrim($jobText, ", \t\n\r\0\x0B");
             if ($jobText !== '') {
                 $jobs[] = $jobText;
             }
@@ -117,6 +159,7 @@ if ($jobsRaw !== '') {
         $parts = preg_split('/\s*[\.\x{3002}\r\n;]+\s*/u', $jobsRaw) ?: [];
         foreach ($parts as $part) {
             $jobText = trim((string)$part);
+            $jobText = ltrim($jobText, ", \t\n\r\0\x0B");
             if ($jobText !== '') {
                 $jobs[] = $jobText;
             }
@@ -133,7 +176,22 @@ $staffAssigned =
     || (int)($invoice['id_nhacungcap'] ?? 0) > 0
     || trim((string)($invoice['nhacungcapnhan'] ?? '')) !== '';
 
-$canCancel = !$staffAssigned && $stateClass !== 'danger';
+$cancelCheck = mevabe_can_cancel_invoice($invoice);
+$canCancel = (($cancelCheck['ok'] ?? false) === true);
+
+$customerReviewText = trim((string)($invoice['danhgia_khachhang'] ?? ''));
+$customerReviewTime = trim((string)($invoice['thoigian_danhgia_khachhang'] ?? ''));
+$customerReviewMedia = mevabe_parse_media_paths((string)($invoice['media_danhgia_khachhang'] ?? ''));
+$customerReviewHasData = $customerReviewText !== '' || $customerReviewTime !== '' || $customerReviewMedia !== [];
+
+$supplierReviewText = trim((string)($invoice['danhgia_nhanvien'] ?? ''));
+$supplierReviewTime = trim((string)($invoice['thoigian_danhgia_nhanvien'] ?? ''));
+$supplierReviewMedia = mevabe_parse_media_paths((string)($invoice['media_danhgia_nhanvien'] ?? ''));
+$supplierReviewHasData = $supplierReviewText !== '' || $supplierReviewTime !== '' || $supplierReviewMedia !== [];
+
+$reviewCheck = mevabe_can_customer_review($invoice);
+$canReview = (($reviewCheck['ok'] ?? false) === true);
+$reviewBlockedMessage = trim((string)($reviewCheck['message'] ?? ''));
 
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
@@ -754,6 +812,7 @@ $flashMsg = trim((string)($_GET['msg'] ?? ''));
                         <p class="muted-note">Số ngày kế hoạch: <?= (int)$daysPlan ?> ngày</p>
                         <?php if ($canCancel && $idNumber > 0): ?>
                             <form method="post" action="xu-ly-huy.php" onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
+                                <input type="hidden" name="action" value="cancel">
                                 <input type="hidden" name="invoice_id" value="<?= (int)$idNumber ?>">
                                 <input type="hidden" name="return_to" value="<?= htmlspecialchars('chi-tiet-hoa-don.php?id=' . $idNumber, ENT_QUOTES, 'UTF-8') ?>">
                                 <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-x-circle me-1"></i>Hủy đơn</button>
@@ -814,33 +873,68 @@ $flashMsg = trim((string)($_GET['msg'] ?? ''));
                         <section class="review-box">
                             <div class="review-head">
                                 <h3 class="review-title">Đánh giá khách hàng</h3>
-                                <span class="chip warning">Chưa có</span>
+                                <span class="chip <?= $customerReviewHasData ? 'success' : 'warning' ?>"><?= $customerReviewHasData ? 'Đã có' : 'Chưa có' ?></span>
                             </div>
                             <div class="review-body">
                                 <p class="label-xs">Nội dung đánh giá</p>
-                                <p class="review-text">Chưa có đánh giá</p>
+                                <p class="review-text"><?= htmlspecialchars($customerReviewText !== '' ? $customerReviewText : 'Chưa có đánh giá', ENT_QUOTES, 'UTF-8') ?></p>
                                 <p class="label-xs">Thời gian gửi</p>
-                                <p class="review-text">---</p>
+                                <p class="review-text"><?= htmlspecialchars($customerReviewTime !== '' ? $customerReviewTime : '---', ENT_QUOTES, 'UTF-8') ?></p>
                                 <p class="label-xs">Ảnh/video đánh giá</p>
                                 <div class="media-grid">
-                                    <div class="media-empty">Chưa có tệp</div>
+                                    <?php if (!$customerReviewMedia): ?>
+                                        <div class="media-empty">Chưa có tệp</div>
+                                    <?php else: ?>
+                                        <?php foreach ($customerReviewMedia as $mediaPath): ?>
+                                            <?php if (mevabe_media_is_video($mediaPath)): ?>
+                                                <video controls preload="metadata" src="<?= htmlspecialchars($mediaPath, ENT_QUOTES, 'UTF-8') ?>"></video>
+                                            <?php else: ?>
+                                                <img src="<?= htmlspecialchars($mediaPath, ENT_QUOTES, 'UTF-8') ?>" alt="media đánh giá khách hàng">
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </div>
+
+                                <?php if ($canReview && $idNumber > 0): ?>
+                                    <form method="post" action="xu-ly-huy.php" enctype="multipart/form-data" class="mt-2 d-grid gap-2">
+                                        <input type="hidden" name="action" value="save_review">
+                                        <input type="hidden" name="invoice_id" value="<?= (int)$idNumber ?>">
+                                        <input type="hidden" name="return_to" value="<?= htmlspecialchars('chi-tiet-hoa-don.php?id=' . $idNumber, ENT_QUOTES, 'UTF-8') ?>">
+                                        <textarea name="review_text" class="form-control form-control-sm" rows="3" placeholder="Nhập nội dung đánh giá"><?= htmlspecialchars($customerReviewText, ENT_QUOTES, 'UTF-8') ?></textarea>
+                                        <input type="file" name="review_media[]" class="form-control form-control-sm" accept="image/*,video/*" multiple>
+                                        <div>
+                                            <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-save me-1"></i>Lưu đánh giá</button>
+                                        </div>
+                                    </form>
+                                <?php elseif (!$customerReviewHasData && $reviewBlockedMessage !== ''): ?>
+                                    <p class="muted-note mb-0"><?= htmlspecialchars($reviewBlockedMessage, ENT_QUOTES, 'UTF-8') ?></p>
+                                <?php endif; ?>
                             </div>
                         </section>
 
                         <section class="review-box">
                             <div class="review-head">
                                 <h3 class="review-title">Đánh giá nhà cung cấp</h3>
-                                <span class="chip warning">Chưa có</span>
+                                <span class="chip <?= $supplierReviewHasData ? 'success' : 'warning' ?>"><?= $supplierReviewHasData ? 'Đã có' : 'Chưa có' ?></span>
                             </div>
                             <div class="review-body">
                                 <p class="label-xs">Nội dung đánh giá</p>
-                                <p class="review-text">Chưa có đánh giá</p>
+                                <p class="review-text"><?= htmlspecialchars($supplierReviewText !== '' ? $supplierReviewText : 'Chưa có đánh giá', ENT_QUOTES, 'UTF-8') ?></p>
                                 <p class="label-xs">Thời gian gửi</p>
-                                <p class="review-text">---</p>
+                                <p class="review-text"><?= htmlspecialchars($supplierReviewTime !== '' ? $supplierReviewTime : '---', ENT_QUOTES, 'UTF-8') ?></p>
                                 <p class="label-xs">Ảnh/video đánh giá</p>
                                 <div class="media-grid">
-                                    <div class="media-empty">Chưa có tệp</div>
+                                    <?php if (!$supplierReviewMedia): ?>
+                                        <div class="media-empty">Chưa có tệp</div>
+                                    <?php else: ?>
+                                        <?php foreach ($supplierReviewMedia as $mediaPath): ?>
+                                            <?php if (mevabe_media_is_video($mediaPath)): ?>
+                                                <video controls preload="metadata" src="<?= htmlspecialchars($mediaPath, ENT_QUOTES, 'UTF-8') ?>"></video>
+                                            <?php else: ?>
+                                                <img src="<?= htmlspecialchars($mediaPath, ENT_QUOTES, 'UTF-8') ?>" alt="media đánh giá nhà cung cấp">
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </section>

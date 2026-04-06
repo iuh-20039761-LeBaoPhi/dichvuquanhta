@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../session_user.php';
 require_once __DIR__ . '/get-hoadon.php';
+require_once __DIR__ . '/xu-ly-cong-viec.php';
 require_once __DIR__ . '/header-shared.php';
 require_once __DIR__ . '/xu-ly-phan-trang.php';
 $sessionUser = session_user_require_employee('../login.html', 'nhan_vien/danh-sach-hoa-don.php');
@@ -411,16 +412,7 @@ $summaryTotal = count($rows);
                                     <td><span class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span></td>
                                     <td>
                                         <div class="action-group">
-                                            <?php if (!$isReceived && !$isAssigned): ?>
-                                                <form method="post" action="xu-ly-cong-viec.php" class="d-inline">
-                                                    <input type="hidden" name="invoice_id" value="<?= $itemId ?>">
-                                                    <input type="hidden" name="action" value="claim">
-                                                    <input type="hidden" name="return_to" value="danh-sach-hoa-don.php">
-                                                    <button type="submit" class="btn btn-success btn-action"><i class="bi bi-hand-thumbs-up"></i>Nhan viec</button>
-                                                </form>
-                                            <?php endif; ?>
                                             <a href="chi-tiet-hoa-don.php?id=<?= urlencode((string)$itemId) ?>" class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
-                                            <button type="button" class="btn btn-outline-secondary btn-action" disabled><i class="bi bi-cloud-upload"></i>Upload</button>
                                         </div>
                                     </td>
                                 </tr>

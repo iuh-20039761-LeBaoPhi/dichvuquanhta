@@ -14,23 +14,29 @@ $isEmployeeApproved = employee_account_is_approved($employeeStatus);
 $invoiceId = (int)($_GET['id'] ?? 0);
 $invoice = null;
 $loadError = '';
+$pageNotice = '';
 
 if (!$isEmployeeApproved) {
 	$loadError = 'Tài khoản của bạn đang chờ duyệt';
 } elseif ($invoiceId <= 0) {
 	$loadError = 'Thiếu mã hóa đơn để hiển thị chi tiết.';
 } else {
-	$result = getHoaDonData($invoiceId);
-	$invoice = $result['row'] ?? null;
-	$loadError = (string)($result['error'] ?? '');
+	$invoice = work_reload_order($invoiceId);
 
-	if (!is_array($invoice) && $loadError === '') {
+	if (!is_array($invoice)) {
 		$loadError = 'Không tìm thấy hóa đơn tương ứng.';
 	}
 
 	if (is_array($invoice) && !invoice_in_employee_scope($invoice, $sessionEmployeeId, $sessionUser)) {
 		$invoice = null;
 		$loadError = 'Bạn không có quyền xem hóa đơn này.';
+	}
+
+	if (is_array($invoice)) {
+		$statusLowerForNotice = lower_text_simple((string)($invoice['trangthai'] ?? ''));
+		if (!invoice_has_supplier_assignment($invoice) && status_is_overdue($statusLowerForNotice)) {
+			$pageNotice = 'Đơn hàng quá hạn';
+		}
 	}
 }
 
@@ -68,8 +74,9 @@ $progressValue = max(0.0, min(100.0, $progressValue));
 
 $statusLower = lower_text_simple((string)($hoadon['trangthai'] ?? ''));
 $isCancelled = status_is_cancelled($statusLower);
+$isOverdue = status_is_overdue($statusLower);
 $isCompleted = status_is_completed($statusLower);
-$stateClass = $isCancelled ? 'danger' : ($isCompleted ? 'success' : 'warning');
+$stateClass = ($isCancelled || $isOverdue) ? 'danger' : ($isCompleted ? 'success' : 'warning');
 
 $staffAssigned = invoice_has_supplier_assignment($hoadon);
 $isMyOrder = $staffAssigned && invoice_assigned_to_employee($hoadon, $sessionUser);
@@ -81,14 +88,44 @@ $inPlanWindow = in_plan_window(
 	(string)($hoadon['ngay_ket_thuc_kehoach'] ?? '')
 );
 
-$canClaim = !$staffAssigned && !$isCancelled && !$isCompleted;
-$canStart = $isMyOrder && $inPlanWindow && (!$started || $ended) && !$isCancelled && !$isCompleted;
-$canEnd = $isMyOrder && $started && !$ended && !$isCancelled && !$isCompleted;
+$claimCheck = work_can_claim_invoice($hoadon);
+$canClaim = (($claimCheck['ok'] ?? false) === true);
+
+$startCheck = work_can_start_invoice($hoadon, $sessionUser);
+$canStart = (($startCheck['ok'] ?? false) === true) && $isMyOrder && $inPlanWindow;
+
+$endCheck = work_can_end_invoice($hoadon, $sessionUser);
+$canEnd = (($endCheck['ok'] ?? false) === true) && $isMyOrder && $started && !$ended;
+
+$actionMessage = '';
+if (!$canClaim && !$canStart && !$canEnd) {
+	$actionMessage = (string)($claimCheck['message'] ?? '');
+	if ($actionMessage === '') {
+		$actionMessage = (string)($startCheck['message'] ?? '');
+	}
+	if ($actionMessage === '') {
+		$actionMessage = (string)($endCheck['message'] ?? '');
+	}
+}
 
 $proofMedia = array_values(array_unique(array_merge(
 	work_parse_media((string)($hoadon['yeu_cau_khac'] ?? '')),
 	work_parse_media((string)($hoadon['ghi_chu'] ?? ''))
 )));
+
+$customerReviewText = trim((string)($hoadon['danhgia_khachhang'] ?? ''));
+$customerReviewTime = trim((string)($hoadon['thoigian_danhgia_khachhang'] ?? ''));
+$customerReviewMedia = work_parse_media((string)($hoadon['media_danhgia_khachhang'] ?? ''));
+$customerReviewHasData = $customerReviewText !== '' || $customerReviewTime !== '' || $customerReviewMedia !== [];
+
+$staffReviewText = trim((string)($hoadon['danhgia_nhanvien'] ?? ''));
+$staffReviewTime = trim((string)($hoadon['thoigian_danhgia_nhanvien'] ?? ''));
+$staffReviewMedia = work_parse_media((string)($hoadon['media_danhgia_nhanvien'] ?? ''));
+$staffReviewHasData = $staffReviewText !== '' || $staffReviewTime !== '' || $staffReviewMedia !== [];
+
+$staffReviewCheck = work_can_staff_review($hoadon, $sessionUser);
+$canStaffReview = (($staffReviewCheck['ok'] ?? false) === true);
+$staffReviewBlockedMessage = trim((string)($staffReviewCheck['message'] ?? ''));
 
 $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 ?>
@@ -602,6 +639,9 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 	<?php if ($flashMsg !== ''): ?>
 		<div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> mb-3"><?= htmlspecialchars($flashMsg, ENT_QUOTES, 'UTF-8') ?></div>
 	<?php endif; ?>
+	<?php if ($pageNotice !== ''): ?>
+		<div class="alert alert-warning mb-3"><?= htmlspecialchars($pageNotice, ENT_QUOTES, 'UTF-8') ?></div>
+	<?php endif; ?>
 
 	<?php if ($loadError !== ''): ?>
 		<div class="alert alert-warning mb-3"><?= htmlspecialchars($loadError, ENT_QUOTES, 'UTF-8') ?></div>
@@ -707,7 +747,7 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 
 						<div class="d-flex flex-wrap align-items-center gap-2 mt-1">
 							<?php if ($canClaim): ?>
-								<form method="post" action="xu-ly-cong-viec.php" class="d-inline">
+								<form method="post" action="xu-ly-cong-viec.php" class="d-inline" onsubmit="return confirm('Bạn xác nhận nhận việc cho đơn này?');">
 									<input type="hidden" name="invoice_id" value="<?= (int)($hoadon['id'] ?? 0) ?>">
 									<input type="hidden" name="action" value="claim">
 									<input type="hidden" name="return_to" value="<?= htmlspecialchars($actionReturn, ENT_QUOTES, 'UTF-8') ?>">
@@ -716,7 +756,7 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 							<?php endif; ?>
 
 							<?php if ($canStart): ?>
-								<form method="post" action="xu-ly-cong-viec.php" class="d-inline">
+								<form method="post" action="xu-ly-cong-viec.php" class="d-inline" onsubmit="return confirm('Bạn xác nhận bắt đầu công việc?');">
 									<input type="hidden" name="invoice_id" value="<?= (int)($hoadon['id'] ?? 0) ?>">
 									<input type="hidden" name="action" value="start">
 									<input type="hidden" name="return_to" value="<?= htmlspecialchars($actionReturn, ENT_QUOTES, 'UTF-8') ?>">
@@ -725,7 +765,7 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 							<?php endif; ?>
 
 							<?php if ($canEnd): ?>
-								<form method="post" action="xu-ly-cong-viec.php" class="d-inline">
+								<form method="post" action="xu-ly-cong-viec.php" class="d-inline" onsubmit="return confirm('Bạn xác nhận kết thúc công việc?');">
 									<input type="hidden" name="invoice_id" value="<?= (int)($hoadon['id'] ?? 0) ?>">
 									<input type="hidden" name="action" value="end">
 									<input type="hidden" name="return_to" value="<?= htmlspecialchars($actionReturn, ENT_QUOTES, 'UTF-8') ?>">
@@ -734,7 +774,7 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 							<?php endif; ?>
 
 							<?php if (!$canClaim && !$canStart && !$canEnd): ?>
-								<span class="muted-note">Không có thao tác khả dụng cho trạng thái hiện tại.</span>
+								<span class="muted-note"><?= htmlspecialchars($actionMessage !== '' ? $actionMessage : 'Không có thao tác khả dụng cho trạng thái hiện tại.', ENT_QUOTES, 'UTF-8') ?></span>
 							<?php endif; ?>
 						</div>
 					</div>
@@ -788,38 +828,68 @@ $actionReturn = 'chi-tiet-hoa-don.php?id=' . $idNumber;
 						<section class="review-box">
 							<div class="review-head">
 								<h3 class="review-title">Đánh giá khách hàng</h3>
-								<span class="chip warning">Chưa có</span>
+								<span class="chip <?= $customerReviewHasData ? 'success' : 'warning' ?>"><?= $customerReviewHasData ? 'Đã có' : 'Chưa có' ?></span>
 							</div>
 							<div class="review-body">
 								<p class="label-xs">Nội dung đánh giá</p>
-								<p class="review-text">Chưa có đánh giá</p>
+								<p class="review-text"><?= htmlspecialchars($customerReviewText !== '' ? $customerReviewText : 'Chưa có đánh giá', ENT_QUOTES, 'UTF-8') ?></p>
 								<p class="label-xs">Thời gian gửi</p>
-								<p class="review-text">---</p>
+								<p class="review-text"><?= htmlspecialchars($customerReviewTime !== '' ? $customerReviewTime : '---', ENT_QUOTES, 'UTF-8') ?></p>
 								<p class="label-xs">Ảnh/video đánh giá</p>
 								<div class="media-grid">
-									<div class="media-empty">Chưa có tệp</div>
+									<?php if (!$customerReviewMedia): ?>
+										<div class="media-empty">Chưa có tệp</div>
+									<?php else: ?>
+										<?php foreach ($customerReviewMedia as $media): ?>
+											<?php if (work_media_is_video($media)): ?>
+												<video src="<?= htmlspecialchars($media, ENT_QUOTES, 'UTF-8') ?>" controls playsinline></video>
+											<?php else: ?>
+												<img src="<?= htmlspecialchars($media, ENT_QUOTES, 'UTF-8') ?>" alt="media đánh giá khách hàng">
+											<?php endif; ?>
+										<?php endforeach; ?>
+									<?php endif; ?>
 								</div>
 							</div>
 						</section>
 
 						<section class="review-box">
 							<div class="review-head">
-								<h3 class="review-title">Đánh giá nhà cung cấp</h3>
-								<span class="chip warning">Chưa có</span>
+								<h3 class="review-title">Đánh giá nhân viên</h3>
+								<?php if ($staffReviewHasData): ?>
+									<span class="chip success">Đã có</span>
+								<?php elseif ($canStaffReview): ?>
+									<span class="chip">Được đánh giá</span>
+								<?php else: ?>
+									<span class="chip warning">Chưa có</span>
+								<?php endif; ?>
 							</div>
 							<div class="review-body">
 								<p class="label-xs">Nội dung đánh giá</p>
-								<p class="review-text">Chưa có đánh giá</p>
+								<p class="review-text"><?= htmlspecialchars($staffReviewText !== '' ? $staffReviewText : 'Chưa có đánh giá', ENT_QUOTES, 'UTF-8') ?></p>
 								<p class="label-xs">Thời gian gửi</p>
-								<p class="review-text">---</p>
+								<p class="review-text"><?= htmlspecialchars($staffReviewTime !== '' ? $staffReviewTime : '---', ENT_QUOTES, 'UTF-8') ?></p>
+								<?php if ($canStaffReview && !$staffReviewHasData): ?>
+									<form method="post" action="xu-ly-cong-viec.php" class="d-grid gap-2" onsubmit="return confirm('Bạn xác nhận lưu đánh giá nhân viên?');">
+										<input type="hidden" name="invoice_id" value="<?= (int)$idNumber ?>">
+										<input type="hidden" name="action" value="save_review">
+										<input type="hidden" name="return_to" value="<?= htmlspecialchars($actionReturn, ENT_QUOTES, 'UTF-8') ?>">
+										<label class="label-xs mb-0" for="review_text">Nội dung</label>
+										<textarea class="form-control form-control-sm" id="review_text" name="review_text" rows="3" placeholder="Nhập nội dung đánh giá"></textarea>
+										<label class="label-xs mb-0" for="review_media">Media</label>
+										<textarea class="form-control form-control-sm" id="review_media" name="review_media" rows="2" placeholder="Dán URL ảnh/video, cách nhau dấu phẩy hoặc xuống dòng"></textarea>
+										<button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-save me-1"></i>Lưu đánh giá</button>
+									</form>
+								<?php elseif (!$staffReviewHasData && $staffReviewBlockedMessage !== ''): ?>
+									<p class="muted-note"><?= htmlspecialchars($staffReviewBlockedMessage, ENT_QUOTES, 'UTF-8') ?></p>
+								<?php endif; ?>
 								<p class="label-xs">Ảnh/video minh chứng</p>
 								<div class="media-grid">
-									<?php if (!$proofMedia): ?>
+									<?php $staffMediaForRender = $staffReviewMedia ?: $proofMedia; ?>
+									<?php if (!$staffMediaForRender): ?>
 										<div class="media-empty">Chưa có tệp</div>
 									<?php else: ?>
-										<?php foreach ($proofMedia as $media): ?>
-											<?php $isVideo = preg_match('/\.(mp4|webm|ogg|mov)(\?.*)?$/i', $media) === 1; ?>
-											<?php if ($isVideo): ?>
+										<?php foreach ($staffMediaForRender as $media): ?>
+											<?php if (work_media_is_video($media)): ?>
 												<video src="<?= htmlspecialchars($media, ENT_QUOTES, 'UTF-8') ?>" controls playsinline></video>
 											<?php else: ?>
 												<img src="<?= htmlspecialchars($media, ENT_QUOTES, 'UTF-8') ?>" alt="media minh chứng">

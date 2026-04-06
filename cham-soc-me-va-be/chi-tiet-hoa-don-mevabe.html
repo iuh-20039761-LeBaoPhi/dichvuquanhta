@@ -852,6 +852,293 @@
 			display: none !important;
 		}
 
+		:root {
+			--bg: #fff6fb;
+			--surface: #ffffff;
+			--surface-soft: #fff1f8;
+			--text: #3d2333;
+			--muted: #8b5f74;
+			--primary: #e45a97;
+			--success: #d94a8a;
+			--warning: #f08ab6;
+			--danger: #c93b78;
+			--border: #f0d4e3;
+			--shadow: 0 20px 45px rgba(196, 83, 138, 0.18);
+			--accent-peach: #ffd6b9;
+			--accent-lavender: #e5d8ff;
+			--accent-mint: #cff5e8;
+			--accent-rose: #f7a7c8;
+		}
+
+		html,
+		body {
+			background:
+				radial-gradient(circle at 20% -10%, #ffdceb 0, transparent 42%),
+				radial-gradient(circle at 95% 120%, #ffe8f5 0, transparent 38%),
+				radial-gradient(circle at 85% 15%, rgba(229, 216, 255, 0.5) 0, transparent 35%),
+				radial-gradient(circle at 8% 88%, rgba(255, 214, 185, 0.45) 0, transparent 30%),
+				var(--bg);
+		}
+
+		.modal-card {
+			background: linear-gradient(180deg, #ffffff 0%, #fff8fc 62%, #fff3f9 100%);
+			border: 1px solid rgba(200, 88, 143, 0.2);
+			box-shadow: 0 24px 48px rgba(196, 83, 138, 0.18), 0 6px 20px rgba(138, 170, 209, 0.12);
+		}
+
+		.topbar {
+			background: linear-gradient(102deg, #d94788 0%, #ef86b4 58%, #ffc4a9 100%) !important;
+			box-shadow: 0 10px 24px rgba(169, 63, 114, 0.3);
+		}
+
+		.topbar-logo {
+			border-color: rgba(255, 255, 255, 0.42);
+			background: rgba(255, 255, 255, 0.2);
+			box-shadow: 0 10px 22px rgba(166, 58, 110, 0.24);
+		}
+
+		.topbar-logo:hover {
+			background: rgba(255, 255, 255, 0.3);
+			border-color: rgba(255, 255, 255, 0.56);
+		}
+
+		.chip {
+			background: rgba(255, 255, 255, 0.24);
+			border-color: rgba(255, 255, 255, 0.45);
+		}
+
+		.panel {
+			border-color: #f1d5e4;
+			box-shadow: 0 12px 26px rgba(194, 83, 137, 0.12), 0 2px 8px rgba(168, 187, 224, 0.1);
+		}
+
+		.panel-title,
+		.jobs-title,
+		.profile-title,
+		.review-title {
+			color: #6f2d52;
+		}
+
+		.badge {
+			background: #ffe6f2;
+			color: #a83f72;
+			border: 1px solid #f7c8de;
+		}
+
+		.badge.success {
+			background: linear-gradient(135deg, #ffe3f1, #dff8ef);
+			color: #8a3462;
+		}
+
+		.badge.warning {
+			background: linear-gradient(135deg, #ffe9f4, #ffe9d5);
+			color: #ad4f7e;
+		}
+
+		.badge.danger {
+			background: #ffd7e8;
+			color: #9e2f61;
+		}
+
+		.invoice-hero {
+			background: linear-gradient(118deg, #d94d8b 0%, #ea73a7 48%, #f3a5c5 72%, #ffd1b4 100%);
+		}
+
+		.invoice-progress-ring {
+			background: conic-gradient(from -90deg, #6ee9c5 calc(var(--p) * 1%), rgba(255, 255, 255, 0.34) 0);
+			border: 2px solid rgba(255, 255, 255, 0.46);
+			box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 22px rgba(122, 34, 82, 0.28);
+		}
+
+		.invoice-progress-core {
+			background:
+				radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0) 44%),
+				linear-gradient(150deg, rgba(113, 61, 103, 0.94) 0%, rgba(83, 54, 112, 0.93) 100%);
+			border: 2px solid rgba(255, 255, 255, 0.35);
+			box-shadow: inset 0 8px 14px rgba(255, 255, 255, 0.12);
+			color: #fff;
+		}
+
+		.invoice-progress-core strong {
+			color: #ffffff;
+			text-shadow: 0 2px 8px rgba(40, 14, 38, 0.35);
+		}
+
+		.invoice-progress-core small {
+			color: #f9f3ff;
+		}
+
+		.invoice-item {
+			border-color: rgba(255, 227, 239, 0.6);
+			background: rgba(129, 31, 80, 0.22);
+		}
+
+		.invoice-extra {
+			border-color: #f1d5e4;
+			background: linear-gradient(180deg, #fff9fc 0%, #fff5fb 100%);
+		}
+
+		.invoice-extra-item {
+			border-color: #f1d5e4;
+			background: #ffeef7;
+		}
+
+		#panelJobs {
+			border-color: #efcadb;
+		}
+
+		.jobs-header {
+			background: linear-gradient(135deg, #fff2f9 0%, #ffe9f5 65%, #ffe8d8 100%);
+			border-bottom-color: #f2d7e5;
+		}
+
+		.jobs-body {
+			background: linear-gradient(180deg, #fff0f7 0%, #fff4fb 70%, #fff7ee 100%);
+		}
+
+		#panelJobs #invoiceJob li {
+			background: rgba(255, 255, 255, 0.65);
+			border-color: #f1d5e4;
+		}
+
+		.jobs-meta {
+			border-top-color: #f2d7e5;
+			background: #fff9fc;
+		}
+
+		#invoiceJob {
+			background: linear-gradient(145deg, #ffe7f3 0%, #f7ecff 100%);
+		}
+
+		#invoiceJob li {
+			color: #6d2f50;
+		}
+
+		#invoiceJob li::before {
+			background: #de4f90;
+		}
+
+		#panelCustomer,
+		#panelStaff {
+			border-color: #efd3e2;
+		}
+
+		.profile-head {
+			border-bottom-color: #f2dbe7;
+			background: linear-gradient(135deg, #fff6fb 0%, #fff1f8 55%, #f6efff 100%);
+		}
+
+		.profile-avatar {
+			border-color: #f6d6e6;
+			background: #fdeaf4;
+		}
+
+		.profile-name,
+		.profile-contact,
+		.profile-row {
+			color: #633148;
+		}
+
+		.profile-row::before,
+		.profile-contact::before {
+			background: #ffe7f3;
+			color: #d24f8f;
+		}
+
+		.profile-pill {
+			background: linear-gradient(135deg, #fff0f7 0%, #ffeef8 65%, #eaf8f3 100%);
+			color: #8e4467;
+			border: 1px solid #f0d0e0;
+		}
+
+		#panelTime {
+			background: linear-gradient(180deg, #fff8fc 0%, #fff1f8 58%, #f0fbf6 100%) !important;
+			border-color: #efd1e1 !important;
+		}
+
+		.progress-inner {
+			background: linear-gradient(90deg, #d94688 0%, #ea6fa5 55%, #77e2c0 100%);
+			box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(165, 53, 113, 0.26);
+		}
+
+		.progress-inner.warn {
+			background: linear-gradient(90deg, #ec6aa2, #f4a9c9, #ffd9b1);
+		}
+
+		.progress-inner.danger {
+			background: linear-gradient(90deg, #cc3f79, #e06799);
+		}
+
+		#progressText {
+			color: #8c2f63;
+			font-weight: 900;
+			letter-spacing: 0.2px;
+		}
+
+		#progressHint {
+			color: #7f3f60;
+			font-weight: 700;
+		}
+
+		#panelTime #badgeTimeState:not(.success):not(.warning):not(.danger) {
+			background: #ffe1ef;
+			color: #9f3d68;
+		}
+
+		.hint,
+		.review-text,
+		.review-time {
+			color: #7c4760;
+		}
+
+		.review-box {
+			border-color: #efd1e1;
+			background: linear-gradient(180deg, #fff7fc 0%, #fff7fe 68%, #f6f1ff 100%);
+		}
+
+		.review-display {
+			border-color: #f1d4e3;
+			background: #fff;
+		}
+
+		.media-empty {
+			background: linear-gradient(135deg, #fff0f8 0%, #ecfbf5 100%);
+			border-color: #f2d4e3;
+			color: #8d4d6b;
+		}
+
+		.btn.btn-primary,
+		.btn.btn-success,
+		.btn.btn-warning,
+		.btn.btn-danger {
+			border: 0;
+			box-shadow: 0 8px 18px rgba(193, 71, 130, 0.2);
+		}
+
+		.btn.btn-primary {
+			background: linear-gradient(135deg, #d94d8b 0%, #ea79ab 58%, #f3adc9 100%) !important;
+		}
+
+		.btn.btn-success {
+			background: linear-gradient(135deg, #cf4a85 0%, #e57aa8 55%, #b7ebd8 100%) !important;
+		}
+
+		.btn.btn-warning {
+			background: linear-gradient(135deg, #e56fa7, #f2a4c6) !important;
+			color: #fff !important;
+		}
+
+		.btn.btn-danger {
+			background: linear-gradient(135deg, #c93b78, #e774a5) !important;
+		}
+
+		.btn.btn-primary:hover,
+		.btn.btn-success:hover,
+		.btn.btn-warning:hover,
+		.btn.btn-danger:hover {
+			filter: brightness(0.96);
+		}
+
 		@media (max-width: 1060px) {
 			.grid,
 			.info-grid,
@@ -1007,11 +1294,11 @@
 						</div>
 
 						<div style="display:grid;gap:6px;">
-							<div class="d-flex justify-content-between align-items-center fw-bold" style="gap:10px;font-size:12px;color:#3b5774;">
+							<div class="d-flex justify-content-between align-items-center fw-bold" style="gap:10px;font-size:12px;color:#8a3d64;">
 								<span>Tiến độ thực hiện</span>
 								<span id="progressText">0%</span>
 							</div>
-							<div style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:#dce9f7;border:1px solid #d8e2ee;">
+							<div style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#f8dce9 0%,#f4d4e4 100%);border:1px solid #ecbfd5;box-shadow:inset 0 1px 2px rgba(255,255,255,0.55);">
 								<div id="progressBar" class="progress-inner"></div>
 							</div>
 							<p id="progressHint" class="hint" style="font-size:12px;margin-top:-2px;">Dữ liệu tiến độ sẽ được cập nhật theo thời gian.</p>
@@ -1176,13 +1463,15 @@
 			const TABLE_CUSTOMER = 'khachhang';
 			const TABLE_STAFF = 'nhacungcap_mevabe';
 			const TABLE_ORDER = 'datlich_mevabe';
+			const REVIEW_UPLOAD_API = 'upload-review-media.php';
 
 			const app = {
 				params: {},
 				role: '',
-				user: null,
-				order: null,
-				staff: null,
+				$user: null,
+				$khachhang: [],
+				$nhacungcap_mevabe: [],
+				$datlich_mevabe: null,
 				stateTimer: null
 			};
 
@@ -1270,6 +1559,17 @@
 				return null;
 			}
 
+			function buildPlanDateTime(dateValue, timeValue, endOfDay = false) {
+				const d = parseDateTimeParts(dateValue);
+				if (!d || !d.hasDate) return null;
+
+				const t = parseDateTimeParts(timeValue);
+				const h = t && t.hasTime ? t.h : (endOfDay ? 23 : 0);
+				const min = t && t.hasTime ? t.min : (endOfDay ? 59 : 0);
+				const s = t && t.hasTime ? t.s : (endOfDay ? 59 : 0);
+				return new Date(d.y, d.m - 1, d.d, h, min, s);
+			}
+
 			function formatDateDisplay(value) {
 				if (!value) return '---';
 				const p = parseDateTimeParts(value);
@@ -1294,29 +1594,23 @@
 				return String(value || '---');
 			}
 
-			const parseRows = (res) => {
-				if (Array.isArray(res)) return res;
-				if (Array.isArray(res?.data)) return res.data;
-				if (Array.isArray(res?.rows)) return res.rows;
-				if (Array.isArray(res?.items)) return res.items;
-				return [];
-			};
-
-			// Ham dung chung: lay du lieu theo bang.
-			async function getData(table) {
+			async function listTableRows(tableName) {
 				const result = typeof krudList === 'function'
-					? await krudList({ table })
-					: await krud('list', table, { p: 1, limit: 1000 });
-				return parseRows(result);
+					? await krudList({ table: tableName })
+					: await krud('list', tableName, { p: 1, limit: 1000 });
+
+				if (Array.isArray(result)) return result;
+				if (Array.isArray(result?.data)) return result.data;
+				if (Array.isArray(result?.rows)) return result.rows;
+				if (Array.isArray(result?.items)) return result.items;
+				if (result?.error) throw new Error(result.error);
+				if (result?.success === false) throw new Error(result.message || `Không lấy được dữ liệu bảng ${tableName}`);
+				return [];
 			}
 
-			// Ham dung chung: update theo id trong where.
-			async function updateData(table, data, where) {
-				if (where?.id != null) return krud('update', table, data, where.id);
-				const rows = await getData(table);
-				const row = rows.find((x) => Object.keys(where || {}).every((k) => String(x[k] ?? '') === String(where[k] ?? '')));
-				if (!row) throw new Error('Khong tim thay ban ghi de cap nhat');
-				return krud('update', table, data, row.id);
+			async function updateById(tableName, id, data) {
+				if (id == null || id === '') throw new Error('Thiếu id để cập nhật dữ liệu');
+				return krud('update', tableName, data, id);
 			}
 
 			function getUrlParams() {
@@ -1328,41 +1622,79 @@
 				};
 			}
 
-			function getPasswordValue(row) {
-				return String(row?.matkhau || row?.mat_khau || row?.password || '');
+			async function loadAuthTables() {
+				const [$khachhang, $nhacungcap_mevabe] = await Promise.all([
+					listTableRows(TABLE_CUSTOMER),
+					listTableRows(TABLE_STAFF)
+				]);
+				app.$khachhang = $khachhang;
+				app.$nhacungcap_mevabe = $nhacungcap_mevabe;
 			}
 
-			// Xac thuc va phan quyen.
-			async function fetchUser() {
+			function findAuthUser() {
 				const { sodienthoai, password } = app.params;
-				const [customers, staffs] = await Promise.all([getData(TABLE_CUSTOMER), getData(TABLE_STAFF)]);
-				const customer = customers.find((x) => String(x.sodienthoai || '') === sodienthoai && getPasswordValue(x) === password);
-				if (customer) return { role: 'customer', user: customer };
-				const staff = staffs.find((x) => String(x.sodienthoai || '') === sodienthoai && getPasswordValue(x) === password);
-				if (staff) return { role: 'staff', user: staff };
+				const $khachhang = app.$khachhang.find((row) => (
+					String(row.sodienthoai || '') === sodienthoai
+					&& String(row.matkhau || row.mat_khau || row.password || '') === password
+				));
+				if ($khachhang) return { role: 'customer', $user: $khachhang };
+
+				const $nhacungcap_mevabe = app.$nhacungcap_mevabe.find((row) => (
+					String(row.sodienthoai || '') === sodienthoai
+					&& String(row.matkhau || row.mat_khau || row.password || '') === password
+				));
+				if ($nhacungcap_mevabe) return { role: 'staff', $user: $nhacungcap_mevabe };
+
 				return null;
 			}
 
-			// Lay hoa don va nhan vien duoc gan (neu co).
-			async function fetchOrder() {
-				const rows = await getData(TABLE_ORDER);
-				const order = rows.find((x) => String(x.id) === String(app.params.mahd));
-				if (!order) throw new Error('Khong tim thay hoa don');
+			async function applyAutoOrderStatusRules($datlich_mevabe) {
+				const status = String($datlich_mevabe.trangthai || '').toLowerCase();
+				const hasStaff = toNum($datlich_mevabe.id_nhacungcap) > 0;
+				const startPlanAt = buildPlanDateTime($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.gio_bat_dau_kehoach);
+				const endPlanAt = buildPlanDateTime($datlich_mevabe.ngay_ket_thuc_kehoach, $datlich_mevabe.gio_ket_thuc_kehoach, true);
+				const isCanceled = status.includes('hủy');
+				const isOverdue = status.includes('quá hạn');
+				const isCompleted = status.includes('hoàn thành');
+				const needOverdue = !hasStaff
+					&& !!startPlanAt
+					&& now().getTime() > startPlanAt.getTime()
+					&& !isCanceled
+					&& !isOverdue
+					&& !isCompleted;
+				const needComplete = hasStaff
+					&& !!endPlanAt
+					&& now().getTime() > endPlanAt.getTime()
+					&& !isCanceled
+					&& !isOverdue
+					&& !isCompleted;
 
-				const today = parseDateOnly(nowSql());
-				const end = parseDateOnly(order.ngay_ket_thuc_kehoach);
-				if (end && today > end && String(order.trangthai || '').toLowerCase() !== 'hoàn thành') {
-					await updateData(TABLE_ORDER, { trangthai: 'hoàn thành' }, { id: order.id });
-					return fetchOrder();
+				if (needOverdue) {
+					await updateById(TABLE_ORDER, $datlich_mevabe.id, { trangthai: 'quá hạn' });
+					return { ...$datlich_mevabe, trangthai: 'quá hạn' };
 				}
 
-				let staff = null;
-				const idStaff = toNum(order.id_nhacungcap);
-				if (idStaff > 0) {
-					const staffs = await getData(TABLE_STAFF);
-					staff = staffs.find((x) => toNum(x.id) === idStaff) || null;
+				if (needComplete) {
+					await updateById(TABLE_ORDER, $datlich_mevabe.id, { trangthai: 'hoàn thành' });
+					return { ...$datlich_mevabe, trangthai: 'hoàn thành' };
 				}
-				return { order, staff };
+
+				return $datlich_mevabe;
+			}
+
+			async function loadOrderById() {
+				const $datlich_mevabe_rows = await listTableRows(TABLE_ORDER);
+				const $datlich_mevabe = $datlich_mevabe_rows.find((row) => String(row.id) === String(app.params.mahd));
+				if (!$datlich_mevabe) throw new Error('Không tìm thấy hóa đơn');
+
+				app.$datlich_mevabe = await applyAutoOrderStatusRules($datlich_mevabe);
+			}
+
+			function getAssignedStaffRow() {
+				if (!app.$datlich_mevabe) return null;
+				const idStaff = toNum(app.$datlich_mevabe.id_nhacungcap);
+				if (idStaff <= 0) return null;
+				return app.$nhacungcap_mevabe.find((row) => toNum(row.id) === idStaff) || null;
 			}
 
 			function parseDateOnly(dateStr) {
@@ -1383,12 +1715,12 @@
 				return Math.max(1, Math.round(ms / 86400000));
 			}
 
-			function calcProgressDay(order) {
-				const plan = parseTimeToHour(order.gio_ket_thuc_kehoach) - parseTimeToHour(order.gio_bat_dau_kehoach);
-				const realStart = new Date(order.thoigian_batdau_thucte || '').getTime();
-				const realEnd = new Date(order.thoigian_ketthuc_thucte || '').getTime();
+			function calcProgressDay($datlich_mevabe) {
+				const plan = parseTimeToHour($datlich_mevabe.gio_ket_thuc_kehoach) - parseTimeToHour($datlich_mevabe.gio_bat_dau_kehoach);
+				const realStart = new Date($datlich_mevabe.thoigian_batdau_thucte || '').getTime();
+				const realEnd = new Date($datlich_mevabe.thoigian_ketthuc_thucte || '').getTime();
 				const real = (realEnd - realStart) / 3600000;
-				const days = diffDays(order.ngay_bat_dau_kehoach, order.ngay_ket_thuc_kehoach);
+				const days = diffDays($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.ngay_ket_thuc_kehoach);
 				if (plan <= 0 || real <= 0) return 0;
 				const value = (real / plan) * (100 / days);
 				return Math.max(0, Math.min(100, value));
@@ -1396,10 +1728,38 @@
 
 			function statusBadgeClass(status) {
 				const s = String(status || '').toLowerCase();
-				if (s.includes('hủy')) return 'badge danger';
+				if (s.includes('hủy') || s.includes('quá hạn')) return 'badge danger';
 				if (s.includes('hoàn thành')) return 'badge success';
 				if (s.includes('đang')) return 'badge warning';
 				return 'badge';
+			}
+
+			function isReviewLockedByDeadline($datlich_mevabe) {
+				if (!$datlich_mevabe) return true;
+				const status = String($datlich_mevabe.trangthai || '').toLowerCase();
+				const endPlanAt = buildPlanDateTime($datlich_mevabe.ngay_ket_thuc_kehoach, $datlich_mevabe.gio_ket_thuc_kehoach, true);
+				if (!endPlanAt) return false;
+
+				const isCanceled = status.includes('hủy');
+				const isOverdue = status.includes('quá hạn');
+				const noStaff = toNum($datlich_mevabe.id_nhacungcap) <= 0;
+				return now().getTime() > endPlanAt.getTime() && (isCanceled || isOverdue || noStaff);
+			}
+
+			function canSubmitCustomerReview() {
+				const $datlich_mevabe = app.$datlich_mevabe;
+				if (!$datlich_mevabe) return false;
+				const isCompleted = String($datlich_mevabe.trangthai || '').toLowerCase().includes('hoàn thành');
+				return isCompleted && !isReviewLockedByDeadline($datlich_mevabe);
+			}
+
+			function canSubmitStaffReview() {
+				const $datlich_mevabe = app.$datlich_mevabe;
+				if (!$datlich_mevabe) return false;
+				const isCompleted = String($datlich_mevabe.trangthai || '').toLowerCase().includes('hoàn thành');
+				const isAssignedStaff = toNum($datlich_mevabe.id_nhacungcap) > 0
+					&& toNum($datlich_mevabe.id_nhacungcap) === toNum(app.$user?.id);
+				return isCompleted && isAssignedStaff && !isReviewLockedByDeadline($datlich_mevabe);
 			}
 
 			function renderJobList(value) {
@@ -1452,7 +1812,7 @@
 					return;
 				}
 				items.forEach((src) => {
-					const isVideo = /^(data:video|https?:.*\.(mp4|webm|ogg|mov))/i.test(src);
+					const isVideo = /(^data:video)|(\.(mp4|webm|ogg|mov)(\?.*)?$)/i.test(String(src || ''));
 					const el = document.createElement(isVideo ? 'video' : 'img');
 					el.src = src;
 					if (isVideo) el.controls = true;
@@ -1460,224 +1820,310 @@
 				});
 			}
 
-			function renderReview() {
-				const o = app.order;
-				const customerDone = !!o.danhgia_khachhang;
-				const staffDone = !!o.danhgia_nhanvien;
+			function renderLocalMedia(gridId, fileList) {
+				const grid = $(gridId);
+				if (!grid) return;
+				grid.innerHTML = '';
+				const files = Array.from(fileList || []);
+				if (!files.length) {
+					const div = document.createElement('div');
+					div.className = 'media-empty';
+					div.textContent = 'Chưa có tệp';
+					grid.appendChild(div);
+					return;
+				}
+				files.forEach((file) => {
+					const url = URL.createObjectURL(file);
+					const isVideo = String(file.type || '').startsWith('video/');
+					const el = document.createElement(isVideo ? 'video' : 'img');
+					el.src = url;
+					if (isVideo) {
+						el.controls = true;
+						el.onloadeddata = () => URL.revokeObjectURL(url);
+					} else {
+						el.onload = () => URL.revokeObjectURL(url);
+					}
+					grid.appendChild(el);
+				});
+			}
 
-				setText('customerReviewText', o.danhgia_khachhang || 'Chưa có đánh giá');
-				setText('customerReviewTime', formatDateTimeDisplay(o.thoigian_danhgia_khachhang));
-				setText('staffReviewText', o.danhgia_nhanvien || 'Chưa có đánh giá');
-				setText('staffReviewTime', formatDateTimeDisplay(o.thoigian_danhgia_nhanvien));
-				renderMedia('customerReviewMediaGrid', o.media_danhgia_khachhang);
-				renderMedia('staffReviewMediaGrid', o.media_danhgia_nhanvien);
+			function bindReviewPreview(inputId, gridId, mediaColumn) {
+				const input = $(inputId);
+				if (!input) return;
+				input.addEventListener('change', () => {
+					if (input.files && input.files.length) {
+						renderLocalMedia(gridId, input.files);
+						return;
+					}
+					renderMedia(gridId, (app.$datlich_mevabe || {})[mediaColumn]);
+				});
+			}
+
+			function renderReview() {
+				const $datlich_mevabe = app.$datlich_mevabe;
+				if (!$datlich_mevabe) return;
+				const customerDone = !!$datlich_mevabe.danhgia_khachhang;
+				const staffDone = !!$datlich_mevabe.danhgia_nhanvien;
+
+				setText('customerReviewText', $datlich_mevabe.danhgia_khachhang || 'Chưa có đánh giá');
+				setText('customerReviewTime', formatDateTimeDisplay($datlich_mevabe.thoigian_danhgia_khachhang));
+				setText('staffReviewText', $datlich_mevabe.danhgia_nhanvien || 'Chưa có đánh giá');
+				setText('staffReviewTime', formatDateTimeDisplay($datlich_mevabe.thoigian_danhgia_nhanvien));
+				renderMedia('customerReviewMediaGrid', $datlich_mevabe.media_danhgia_khachhang);
+				renderMedia('staffReviewMediaGrid', $datlich_mevabe.media_danhgia_nhanvien);
 
 				$('badgeCustomerReview').textContent = customerDone ? 'Đã gửi' : 'Chưa có';
 				$('badgeCustomerReview').className = customerDone ? 'badge success' : 'badge warning';
 				$('badgeStaffReview').textContent = staffDone ? 'Đã gửi' : 'Chưa có';
 				$('badgeStaffReview').className = staffDone ? 'badge success' : 'badge warning';
 
-				const done = String(o.trangthai || '').toLowerCase().includes('hoàn thành');
-				show($('customerReviewForm'), done && app.role === 'customer' && !customerDone);
-				show($('staffReviewForm'), done && app.role === 'staff' && !staffDone);
+				show($('customerReviewForm'), app.role === 'customer' && canSubmitCustomerReview() && !customerDone);
+				show($('staffReviewForm'), app.role === 'staff' && canSubmitStaffReview() && !staffDone);
 			}
 
 			function renderActionButtons() {
-				const o = app.order;
+				const $datlich_mevabe = app.$datlich_mevabe;
+				if (!$datlich_mevabe) return;
 				const isCustomer = app.role === 'customer';
 				const isStaff = app.role === 'staff';
-				const assigned = toNum(o.id_nhacungcap) > 0;
-				const isMyOrder = isStaff && toNum(o.id_nhacungcap) === toNum(app.user.id);
-				const statusText = String(o.trangthai || '').toLowerCase();
+				const assigned = toNum($datlich_mevabe.id_nhacungcap) > 0;
+				const isMyOrder = isStaff && toNum($datlich_mevabe.id_nhacungcap) === toNum(app.$user.id);
+				const statusText = String($datlich_mevabe.trangthai || '').toLowerCase();
 				const isCanceled = statusText.includes('hủy');
+				const isOverdue = statusText.includes('quá hạn');
 				const isCompleted = statusText.includes('hoàn thành');
+				const startPlanAt = buildPlanDateTime($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.gio_bat_dau_kehoach);
+				const canCancelByTime = !!startPlanAt && now().getTime() < startPlanAt.getTime();
+				const canClaimByTime = !!startPlanAt && now().getTime() < startPlanAt.getTime();
 				const today = parseDateOnly(nowSql());
-				const startDate = parseDateOnly(o.ngay_bat_dau_kehoach);
-				const endDate = parseDateOnly(o.ngay_ket_thuc_kehoach);
-				const started = !!o.thoigian_batdau_thucte;
-				const ended = !!o.thoigian_ketthuc_thucte;
-				const canCustomerCancel = isCustomer && !isCanceled && !isCompleted && !started && !ended;
+				const startDate = parseDateOnly($datlich_mevabe.ngay_bat_dau_kehoach);
+				const endDate = parseDateOnly($datlich_mevabe.ngay_ket_thuc_kehoach);
+				const started = !!$datlich_mevabe.thoigian_batdau_thucte;
+				const ended = !!$datlich_mevabe.thoigian_ketthuc_thucte;
+				const canCustomerCancel = isCustomer && canCancelByTime && !isCanceled && !isCompleted && !isOverdue && !started && !ended;
 
 				show($('btnCancelService'), canCustomerCancel);
-				show($('btnClaim'), isStaff && !assigned && !isCanceled && !isCompleted);
+				show($('btnClaim'), isStaff && canClaimByTime && !assigned && !isCanceled && !isCompleted && !isOverdue);
 				show($('btnUnclaim'), false);
 
 				const inPlanWindow = startDate && endDate && today >= startDate && today <= endDate;
-				show($('btnStart'), isMyOrder && inPlanWindow && (!started || ended) && !isCanceled && !isCompleted);
-				show($('btnEnd'), isMyOrder && started && !ended && !isCanceled && !isCompleted);
+				show($('btnStart'), isMyOrder && inPlanWindow && (!started || ended) && !isCanceled && !isCompleted && !isOverdue);
+				show($('btnEnd'), isMyOrder && started && !ended && !isCanceled && !isCompleted && !isOverdue);
 				show($('staffWorkForm'), false);
 			}
 
 			function renderUI() {
-				const o = app.order;
-				const s = app.staff || {};
-				const invoiceCode = formatInvoiceCode(o.id || app.params.mahd);
-				const ratingValue = s.diem_danhgia || s.rating || '';
-				const ratingCount = s.so_danh_gia || s.review_count || '';
-				const ratingText = ratingValue ? `${ratingValue}${ratingCount ? ` (${ratingCount} đánh giá)` : ''}` : 'Chưa có đánh giá';
-				const supplierName = o.tenncc || s.hovaten || o.hotenncc || '---';
-				const supplierPhone = o.sdtncc || s.sodienthoai || o.sodienthoaincc || '---';
-				const supplierEmail = o.emailncc || s.email || '---';
-				const supplierAddress = o.diachincc || s.diachi || '---';
-				const supplierReceiveTime = formatDateTimeDisplay(o.ngaynhan);
+				const $datlich_mevabe = app.$datlich_mevabe || {};
+				const $nhacungcap_mevabe = getAssignedStaffRow() || {};
+				const invoiceCode = formatInvoiceCode($datlich_mevabe.id || app.params.mahd);
 
-				setText('chipRole', `Vai trò: ${app.role === 'staff' ? 'Nhà Cung Cấp' : 'Khách hàng'}`);
-				setText('chipOrder', `Mã HĐ: ${invoiceCode}`);
-				setText('chipInvoiceCode', invoiceCode);
 				setText('invoiceId', invoiceCode);
-				setText('invoicePrice', formatMoney(o.tong_tien || o.tongtien || 0));
-				setText('invoiceService', o.dich_vu || o.dichvu || '---');
-				setText('invoicePackage', o.goi_dich_vu || o.goidichvu || '---');
-				setText('invoiceAddress', o.diachikhachhang || '---');
-				setText('invoiceTimeRange', `${formatTimeDisplay(o.gio_bat_dau_kehoach)} - ${formatTimeDisplay(o.gio_ket_thuc_kehoach)}`);
-				setText('invoiceDate', `${formatDateDisplay(o.ngay_bat_dau_kehoach)}${o.ngay_ket_thuc_kehoach ? ` -> ${formatDateDisplay(o.ngay_ket_thuc_kehoach)}` : ''}`);
-				setText('invoiceRequest', o.yeu_cau_khac || o.yeucaukhac || '---');
-				setText('invoiceNote', o.ghi_chu || o.ghichu || '---');
-				renderJobList(o.cong_viec || o.congviec || '');
+				setText('invoicePrice', formatMoney($datlich_mevabe.tong_tien || 0));
+				setText('invoiceService', $datlich_mevabe.dich_vu || '---');
+				setText('invoiceAddress', $datlich_mevabe.diachikhachhang || '---');
+				setText('invoiceTimeRange', `${formatTimeDisplay($datlich_mevabe.gio_bat_dau_kehoach)} - ${formatTimeDisplay($datlich_mevabe.gio_ket_thuc_kehoach)}`);
+				setText('invoiceDate', `${formatDateDisplay($datlich_mevabe.ngay_bat_dau_kehoach)}${$datlich_mevabe.ngay_ket_thuc_kehoach ? ` -> ${formatDateDisplay($datlich_mevabe.ngay_ket_thuc_kehoach)}` : ''}`);
+				setText('invoiceRequest', $datlich_mevabe.yeu_cau_khac || '---');
+				setText('invoiceNote', $datlich_mevabe.ghi_chu || '---');
+				renderJobList($datlich_mevabe.cong_viec || '');
 
-				setText('customerCardName', o.tenkhachhang || '---');
-				setText('customerCardPhone', o.sdtkhachhang || '---');
-				setText('customerCardEmail', o.emailkhachhang || '---');
-				setText('customerCardAddress', o.diachikhachhang || '---');
-				setText('customerExtraPill', `Năm sinh: ${o.ngaysinh || '---'}`);
-				setAvatar('customerAvatar', o.anh_dai_dien || app.user?.anh_dai_dien || app.user?.avatar || '');
+				setText('customerCardName', $datlich_mevabe.tenkhachhang || '---');
+				setText('customerCardPhone', $datlich_mevabe.sdtkhachhang || '---');
+				setText('customerCardEmail', $datlich_mevabe.emailkhachhang || '---');
+				setText('customerCardAddress', $datlich_mevabe.diachikhachhang || '---');
+				setText('customerExtraPill', `Năm sinh: ${$datlich_mevabe.ngaysinh || '---'}`);
+				setAvatar('customerAvatar', $datlich_mevabe.anh_dai_dien || app.$user?.anh_dai_dien || app.$user?.avatar || '');
 
-				setText('staffCardName', supplierName);
-				setText('staffRatingText', ratingText);
-				setText('staffCardEmail', supplierEmail);
-				setText('staffCardPhone', supplierPhone);
-				setText('staffCardAddress', supplierAddress);
-				setText('staffReceiveTime', `Nhận việc: ${supplierReceiveTime}`);
-				setText('staffExpChip', `Kinh nghiệm: ${s.kinh_nghiem || '---'}`);
-				setAvatar('staffAvatar', s.anh_dai_dien || s.avatar || '');
+				setText('staffCardName', $datlich_mevabe.tenncc || '---');
+				setText('staffCardEmail', $datlich_mevabe.emailncc || '---');
+				setText('staffCardPhone',$datlich_mevabe.sdtncc|| '---');
+				setText('staffCardAddress', $datlich_mevabe.diachincc || '---');
+				setText('staffReceiveTime', `Nhận việc: ${formatDateTimeDisplay($datlich_mevabe.ngaynhan)}`);
+				setText('staffExpChip', `Kinh nghiệm: ${$nhacungcap_mevabe.kinh_nghiem || '---'}`);
+				setAvatar('staffAvatar', $nhacungcap_mevabe.anh_dai_dien || $nhacungcap_mevabe.avatar || '');
 
-				const status = o.trangthai || '---';
+				const status = $datlich_mevabe.trangthai || '---';
 				const invoiceStatusEl = $('badgeInvoiceStatus');
 				if (invoiceStatusEl) {
 					invoiceStatusEl.textContent = status;
 					invoiceStatusEl.className = 'invoice-status-badge';
 					if (String(status).toLowerCase().includes('hoàn thành')) invoiceStatusEl.classList.add('success');
 					if (String(status).toLowerCase().includes('đang')) invoiceStatusEl.classList.add('warning');
-					if (String(status).toLowerCase().includes('hủy')) invoiceStatusEl.classList.add('danger');
+					if (String(status).toLowerCase().includes('hủy') || String(status).toLowerCase().includes('quá hạn')) invoiceStatusEl.classList.add('danger');
 				}
 				$('badgeTimeState').textContent = status;
 				$('badgeTimeState').className = statusBadgeClass(status);
 
-				setText('timeStartPlan', `${formatDateDisplay(o.ngay_bat_dau_kehoach)} ${formatTimeDisplay(o.gio_bat_dau_kehoach)}`.trim());
-				setText('timeEndPlan', `${formatDateDisplay(o.ngay_ket_thuc_kehoach)} ${formatTimeDisplay(o.gio_ket_thuc_kehoach)}`.trim());
-				setText('timeStartReal', formatDateTimeDisplay(o.thoigian_batdau_thucte));
-				setText('timeEndReal', formatDateTimeDisplay(o.thoigian_ketthuc_thucte));
+				setText('timeStartPlan', `${formatDateDisplay($datlich_mevabe.ngay_bat_dau_kehoach)} ${formatTimeDisplay($datlich_mevabe.gio_bat_dau_kehoach)}`.trim());
+				setText('timeEndPlan', `${formatDateDisplay($datlich_mevabe.ngay_ket_thuc_kehoach)} ${formatTimeDisplay($datlich_mevabe.gio_ket_thuc_kehoach)}`.trim());
+				setText('timeStartReal', formatDateTimeDisplay($datlich_mevabe.thoigian_batdau_thucte));
+				setText('timeEndReal', formatDateTimeDisplay($datlich_mevabe.thoigian_ketthuc_thucte));
 
-				const progress = Math.max(0, Math.min(100, toNum(o.tien_do || 0)));
+				const progress = Math.max(0, Math.min(100, toNum($datlich_mevabe.tien_do || 0)));
 				$('progressBar').style.width = `${progress}%`;
 				setText('progressText', `${progress.toFixed(2)}%`);
 				setText('invoiceProgressHero', `${Math.round(progress)}%`);
 				const ring = $('invoiceProgressRing');
 				if (ring) ring.style.setProperty('--p', progress.toFixed(2));
 				setText('progressHint', 'Tiến độ cộng dồn theo từng ngày làm việc.');
-				setText('timeDayHint', `${formatDateDisplay(o.ngay_bat_dau_kehoach)} -> ${formatDateDisplay(o.ngay_ket_thuc_kehoach)}`);
-				setText('timeMessage', `Số ngày kế hoạch: ${diffDays(o.ngay_bat_dau_kehoach, o.ngay_ket_thuc_kehoach)} ngày`);
+				setText('timeDayHint', `${formatDateDisplay($datlich_mevabe.ngay_bat_dau_kehoach)} -> ${formatDateDisplay($datlich_mevabe.ngay_ket_thuc_kehoach)}`);
+				setText('timeMessage', `Số ngày kế hoạch: ${diffDays($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.ngay_ket_thuc_kehoach)} ngày`);
 
-				$('badgeStaff').textContent = toNum(o.id_nhacungcap) > 0 ? 'Đã nhận' : 'Chưa nhận';
-				$('badgeStaff').className = toNum(o.id_nhacungcap) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
+				$('badgeStaff').textContent = toNum($datlich_mevabe.id_nhacungcap) > 0 ? 'Đã nhận' : 'Chưa nhận';
+				$('badgeStaff').className = toNum($datlich_mevabe.id_nhacungcap) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
 
 				renderActionButtons();
 				renderReview();
 			}
 
 			async function reloadOrder() {
-				const data = await fetchOrder();
-				app.order = data.order;
-				app.staff = data.staff;
+				await loadOrderById();
 				renderUI();
 			}
 
 			async function handleClaim() {
-				await updateData(TABLE_ORDER, {
-					id_nhacungcap: app.user.id,
+				const $datlich_mevabe = app.$datlich_mevabe || {};
+				const statusText = String($datlich_mevabe.trangthai || '').toLowerCase();
+				if (statusText.includes('quá hạn')) {
+					throw new Error('Đơn hàng quá hạn, không thể nhận việc');
+				}
+
+				const startPlanAt = buildPlanDateTime($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.gio_bat_dau_kehoach);
+				if (startPlanAt && now().getTime() >= startPlanAt.getTime()) {
+					if (toNum($datlich_mevabe.id_nhacungcap) <= 0 && !statusText.includes('hủy') && !statusText.includes('hoàn thành')) {
+						await updateById(TABLE_ORDER, $datlich_mevabe.id, { trangthai: 'quá hạn' });
+						await reloadOrder();
+					}
+					throw new Error('Đơn hàng quá hạn, không thể nhận việc');
+				}
+
+				await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
+					id_nhacungcap: app.$user.id,
 					ngaynhan: nowSql(),
-					tenncc: app.user.hovaten || '',
-					sdtncc: app.user.sodienthoai || '',
-					emailncc: app.user.email || '',
-					diachincc: app.user.diachi || '',
-					hotenncc: app.user.hovaten || '',
-					sodienthoaincc: app.user.sodienthoai || '',
-					nhacungcapnhan: app.user.hovaten || ''
-				}, { id: app.order.id });
+					tenncc: app.$user.hovaten || '',
+					sdtncc: app.$user.sodienthoai || '',
+					emailncc: app.$user.email || '',
+					diachincc: app.$user.diachi || '',
+					hotenncc: app.$user.hovaten || '',
+					sodienthoaincc: app.$user.sodienthoai || '',
+					nhacungcapnhan: app.$user.hovaten || ''
+				});
 				await reloadOrder();
 			}
 
 			async function handleCancel() {
-				const o = app.order || {};
-				const statusText = String(o.trangthai || '').toLowerCase();
+				const $datlich_mevabe = app.$datlich_mevabe || {};
+				const statusText = String($datlich_mevabe.trangthai || '').toLowerCase();
 				if (statusText.includes('hủy')) {
 					setState('Đơn đã được hủy trước đó', 'info');
 					return;
 				}
-				if (statusText.includes('hoàn thành') || o.thoigian_batdau_thucte || o.thoigian_ketthuc_thucte) {
+				if (statusText.includes('quá hạn')) {
+					setState('Đơn đã quá hạn nên không thể hủy', 'info');
+					return;
+				}
+
+				const hasStaff = toNum($datlich_mevabe.id_nhacungcap) > 0;
+				const startPlanAt = buildPlanDateTime($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.gio_bat_dau_kehoach);
+				if (startPlanAt && now().getTime() >= startPlanAt.getTime()) {
+					if (!hasStaff && !statusText.includes('hoàn thành')) {
+						await updateById(TABLE_ORDER, app.$datlich_mevabe.id, { trangthai: 'quá hạn' });
+						await reloadOrder();
+						setState('Đã qua giờ bắt đầu, đơn tự động chuyển quá hạn', 'info');
+						return;
+					}
+					throw new Error('Đã qua giờ bắt đầu kế hoạch nên không thể hủy đơn');
+				}
+
+				if (statusText.includes('hoàn thành') || $datlich_mevabe.thoigian_batdau_thucte || $datlich_mevabe.thoigian_ketthuc_thucte) {
 					throw new Error('Đơn đã bắt đầu hoặc hoàn thành nên không thể hủy');
 				}
 
 				const cancelAt = nowSql();
-				await updateData(TABLE_ORDER, {
+				await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
 					trangthai: 'đã hủy',
 					thoigian_huy: cancelAt,
 					ngayhuy: cancelAt
-				}, { id: app.order.id });
+				});
 				await reloadOrder();
 			}
 
 			async function handleStart() {
-				await updateData(TABLE_ORDER, {
+				await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
 					trangthai: 'đang thực hiện',
 					thoigian_batdau_thucte: nowSql(),
 					thoigian_ketthuc_thucte: ''
-				}, { id: app.order.id });
+				});
 				await reloadOrder();
 			}
 
 			async function handleEnd() {
 				const endAt = nowSql();
-				await updateData(TABLE_ORDER, {
+				await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
 					trangthai: 'đã kết thúc',
 					thoigian_ketthuc_thucte: endAt
-				}, { id: app.order.id });
+				});
 
-				const latest = (await fetchOrder()).order;
-				const progressDay = calcProgressDay(latest);
-				const nextProgress = Math.min(100, toNum(latest.tien_do || 0) + progressDay);
-				await updateData(TABLE_ORDER, { tien_do: Number(nextProgress.toFixed(2)) }, { id: latest.id });
+				await loadOrderById();
+				const progressDay = calcProgressDay(app.$datlich_mevabe);
+				const nextProgress = Math.min(100, toNum(app.$datlich_mevabe.tien_do || 0) + progressDay);
+				await updateById(TABLE_ORDER, app.$datlich_mevabe.id, { tien_do: Number(nextProgress.toFixed(2)) });
 				await reloadOrder();
 			}
 
-			function filesToDataUrls(fileList) {
+			async function uploadReviewMedia(reviewRole, fileList) {
 				const files = Array.from(fileList || []);
-				return Promise.all(files.map((file) => new Promise((resolve) => {
-					const reader = new FileReader();
-					reader.onload = () => resolve(reader.result);
-					reader.readAsDataURL(file);
-				})));
+				if (!files.length) return [];
+
+				const formData = new FormData();
+				formData.append('review_role', reviewRole);
+				files.forEach((file) => formData.append('media_files[]', file));
+
+				const response = await fetch(REVIEW_UPLOAD_API, {
+					method: 'POST',
+					body: formData
+				});
+				const result = await response.json();
+				if (!result?.success) {
+					throw new Error(result?.message || 'Upload ảnh/video thất bại');
+				}
+				return Array.isArray(result?.data?.paths) ? result.data.paths : [];
 			}
 
 			async function handleSaveCustomerReview() {
+				if (!canSubmitCustomerReview()) {
+					throw new Error('Đơn này không đủ điều kiện để khách hàng đánh giá');
+				}
 				const text = $('customerReview').value.trim();
-				const media = await filesToDataUrls($('customerMediaInput').files);
-				await updateData(TABLE_ORDER, {
+				const mediaInput = $('customerMediaInput');
+				const uploaded = await uploadReviewMedia('khachhang', mediaInput.files);
+				const media = uploaded.length ? uploaded : parseMedia(app.$datlich_mevabe.media_danhgia_khachhang);
+				await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
 					danhgia_khachhang: text,
 					media_danhgia_khachhang: JSON.stringify(media),
 					thoigian_danhgia_khachhang: nowSql()
-				}, { id: app.order.id });
+				});
+				mediaInput.value = '';
 				await reloadOrder();
 			}
 
 			async function handleSaveStaffReview() {
+				if (toNum(app.$datlich_mevabe?.id_nhacungcap) !== toNum(app.$user?.id)) {
+					throw new Error('Chỉ nhân viên đã nhận công việc mới được đánh giá');
+				}
+				if (!canSubmitStaffReview()) {
+					throw new Error('Đơn này không đủ điều kiện để nhân viên đánh giá');
+				}
 				const text = $('staffReview').value.trim();
-				const media = await filesToDataUrls($('staffReviewMediaInput').files);
-				await updateData(TABLE_ORDER, {
+				const mediaInput = $('staffReviewMediaInput');
+				const uploaded = await uploadReviewMedia('nhacungcap', mediaInput.files);
+				const media = uploaded.length ? uploaded : parseMedia(app.$datlich_mevabe.media_danhgia_nhanvien);
+				await updateById(TABLE_ORDER, app.$datlich_mevabe.id, {
 					danhgia_nhanvien: text,
 					media_danhgia_nhanvien: JSON.stringify(media),
 					thoigian_danhgia_nhanvien: nowSql()
-				}, { id: app.order.id });
+				});
+				mediaInput.value = '';
 				await reloadOrder();
 			}
 
@@ -1712,30 +2158,40 @@
 						throw new Error('Bạn không thể truy cập trang này');
 					}
 
-					const auth = await fetchUser();
+					await loadAuthTables();
+					const auth = findAuthUser();
 					if (!auth) throw new Error('Bạn không thể truy cập trang này');
 					app.role = auth.role;
-					app.user = auth.user;
+					app.$user = auth.$user;
 
-					const data = await fetchOrder();
-					app.order = data.order;
-					app.staff = data.staff;
+					await loadOrderById();
 
 					renderUI();
 					show($('mainGrid'), true);
-					setState('Tải dữ liệu thành công', 'info');
+					const statusText = String(app.$datlich_mevabe?.trangthai || '').toLowerCase();
+					const noStaff = toNum(app.$datlich_mevabe?.id_nhacungcap) <= 0;
+					const showOverdueForStaff = app.role === 'staff' && noStaff && statusText.includes('quá hạn');
+					setState(showOverdueForStaff ? 'Đơn hàng quá hạn' : 'Tải dữ liệu thành công', 'info');
 				} catch (e) {
 					show($('mainGrid'), false);
 					setState(e.message || 'Bạn không thể truy cập trang này', 'error');
 				}
 			}
 
-			$('btnClaim').addEventListener('click', () => handleAction('claim'));
-			$('btnCancelService').addEventListener('click', () => handleAction('cancel'));
-			$('btnStart').addEventListener('click', () => handleAction('start'));
-			$('btnEnd').addEventListener('click', () => handleAction('end'));
-			$('btnSaveReview').addEventListener('click', () => handleAction('saveCustomerReview'));
-			$('btnSaveStaffReview').addEventListener('click', () => handleAction('saveStaffReview'));
+			function bindClick(id, action) {
+				const el = $(id);
+				if (!el) return;
+				el.addEventListener('click', () => handleAction(action));
+			}
+
+			bindClick('btnClaim', 'claim');
+			bindClick('btnCancelService', 'cancel');
+			bindClick('btnStart', 'start');
+			bindClick('btnEnd', 'end');
+			bindClick('btnSaveReview', 'saveCustomerReview');
+			bindClick('btnSaveStaffReview', 'saveStaffReview');
+			bindReviewPreview('customerMediaInput', 'customerReviewMediaGrid', 'media_danhgia_khachhang');
+			bindReviewPreview('staffReviewMediaInput', 'staffReviewMediaGrid', 'media_danhgia_nhanvien');
 
 			init();
 		})();
