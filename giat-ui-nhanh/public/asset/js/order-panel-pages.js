@@ -1942,6 +1942,14 @@
     setText("heroTransportFee", formatCurrencyVnd(transportFeeAmount));
     setText("heroSurchargeFee", formatCurrencyVnd(surchargeFeeAmount));
     setText("heroBookingDate", formatDateTime(order.createdAt));
+    setText(
+      "heroReceivedDate",
+      executionStartValue ? formatDateTime(executionStartValue) : "---",
+    );
+    setText(
+      "heroCompletedDate",
+      executionEndValue ? formatDateTime(executionEndValue) : "---",
+    );
     setText("heroPaymentStatus", getPaymentStatusLabel(order.paymentStatus));
     setText("heroTotalAmount", formatCurrencyVnd(total));
     setText("heroTimeRange", deliveryMethodText);
@@ -1970,8 +1978,6 @@
       "detailActualEnd",
       formatDateTime(order.completedAt || schedule.actualEnd),
     );
-    setText("detailExecutionStart", formatDateTime(executionStartValue));
-    setText("detailExecutionEnd", formatDateTime(executionEndValue));
 
     renderAvatarBadge(
       "customerAvatarBadge",

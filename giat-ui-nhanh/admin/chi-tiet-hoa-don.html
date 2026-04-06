@@ -102,23 +102,37 @@
                     Chăm sóc bé tại nhà
                   </p>
                   <div class="invoice-service-meta">
-                    <p class="invoice-service-meta-item">
-                      Giá dịch vụ: <strong id="heroServiceFee">0 VND</strong>
-                    </p>
-                    <p class="invoice-service-meta-item">
-                      Chi phí giao nhận:
-                      <strong id="heroTransportFee">0 VND</strong>
-                    </p>
-                    <p class="invoice-service-meta-item">
-                      Phụ phí: <strong id="heroSurchargeFee">0 VND</strong>
-                    </p>
-                    <p class="invoice-service-meta-item">
-                      Ngày đặt lịch: <strong id="heroBookingDate">---</strong>
-                    </p>
-                    <p class="invoice-service-meta-item">
-                      Trạng thái thanh toán:
-                      <strong id="heroPaymentStatus">---</strong>
-                    </p>
+                    <div class="invoice-service-meta-col">
+                      <p class="invoice-service-meta-item">
+                        Giá dịch vụ: <strong id="heroServiceFee">0 VND</strong>
+                      </p>
+                      <p class="invoice-service-meta-item">
+                        Chi phí giao nhận:
+                        <strong id="heroTransportFee">0 VND</strong>
+                      </p>
+                      <p class="invoice-service-meta-item">
+                        Phụ phí: <strong id="heroSurchargeFee">0 VND</strong>
+                      </p>
+                      <p class="invoice-service-meta-item">
+                        Trạng thái thanh toán:
+                        <strong id="heroPaymentStatus">---</strong>
+                      </p>
+                    </div>
+
+                    <div
+                      class="invoice-service-meta-col invoice-service-meta-col-dates"
+                    >
+                      <p class="invoice-service-meta-item">
+                        Ngày đặt lịch: <strong id="heroBookingDate">---</strong>
+                      </p>
+                      <p class="invoice-service-meta-item">
+                        Ngày nhận: <strong id="heroReceivedDate">---</strong>
+                      </p>
+                      <p class="invoice-service-meta-item">
+                        Ngày hoàn thành:
+                        <strong id="heroCompletedDate">---</strong>
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -195,20 +209,6 @@
                   <div class="status-line">
                     <span>Trạng thái:</span>
                     <b id="detailStatusText">---</b>
-                  </div>
-
-                  <div class="time-grid">
-                    <article class="time-box">
-                      <h4>Thời gian thực hiện</h4>
-                      <div class="time-item">
-                        <span>Ngày nhận</span>
-                        <b id="detailExecutionStart">---</b>
-                      </div>
-                      <div class="time-item">
-                        <span>Ngày hoàn thành</span>
-                        <b id="detailExecutionEnd">---</b>
-                      </div>
-                    </article>
                   </div>
                 </div>
               </article>
@@ -341,7 +341,7 @@
     <script src="../public/asset/js/bootstrap.bundle.min.js"></script>
     <script src="../public/asset/js/admin-layout.js"></script>
     <script src="https://api.dvqt.vn/js/krud.js"></script>
-    <script src="../public/asset/js/order-shared-utils.js"></script>
+    <script src="../../public/asset/js/order-shared-utils.js"></script>
     <script src="../public/asset/js/order-panel-pages.js"></script>
     <script src="../public/asset/js/plugin/webfont/webfont.min.js"></script>
     <script>

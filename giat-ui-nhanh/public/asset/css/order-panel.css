@@ -309,7 +309,18 @@
 .invoice-service-meta {
   margin-top: 6px;
   display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 6px 18px;
+}
+
+.invoice-service-meta-col {
+  display: grid;
   gap: 2px;
+}
+
+.invoice-service-meta-col-dates {
+  border-left: 1px solid rgba(255, 255, 255, 0.28);
+  padding-left: 12px;
 }
 
 .invoice-service-meta-item {
@@ -860,6 +871,18 @@ select:focus-visible {
   .task-note-grid,
   .time-grid {
     grid-template-columns: 1fr;
+  }
+
+  .invoice-service-meta {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .invoice-service-meta-col-dates {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.28);
+    padding-left: 0;
+    padding-top: 6px;
   }
 }
 

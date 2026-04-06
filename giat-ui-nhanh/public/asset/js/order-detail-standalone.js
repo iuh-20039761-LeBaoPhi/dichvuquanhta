@@ -902,6 +902,14 @@
     setText("heroTransportFee", formatCurrencyVnd(order.transportFee));
     setText("heroSurchargeFee", formatCurrencyVnd(order.surchargeFee));
     setText("heroBookingDate", formatDateTime(order.createdAt));
+    setText(
+      "heroReceivedDate",
+      order.receivedAt ? formatDateTime(order.receivedAt) : "---",
+    );
+    setText(
+      "heroCompletedDate",
+      order.completedAt ? formatDateTime(order.completedAt) : "---",
+    );
     setText("heroPaymentStatus", getPaymentStatusLabel(order.paymentStatus));
     setText("heroTotalAmount", formatCurrencyVnd(total));
     setText("heroTimeRange", safeText(order.deliveryMethod));
@@ -919,8 +927,6 @@
       "detailTimelineSummary",
       "Tiến độ sẽ được cập nhật theo từng mốc xử lý.",
     );
-    setText("detailExecutionStart", formatDateTime(order.receivedAt));
-    setText("detailExecutionEnd", formatDateTime(order.completedAt));
 
     setText("detailCustomerName", order.customer && order.customer.name);
     setText("detailCustomerPhone", order.customer && order.customer.phone);
