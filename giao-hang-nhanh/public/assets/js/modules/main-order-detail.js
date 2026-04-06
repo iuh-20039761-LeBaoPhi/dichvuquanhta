@@ -29,21 +29,24 @@
       return false;
     }
   }
+  const escapeHtml =
+    typeof core.escapeHtml === "function"
+      ? (value) => core.escapeHtml(value)
+      : (value) =>
+          String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  function normalizeText(value) {
-    return String(value || "")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
+  const normalizeText =
+    typeof core.normalizeText === "function"
+      ? (value) => core.normalizeText(value)
+      : (value) =>
+          String(value || "")
+            .replace(/\s+/g, " ")
+            .trim();
 
   function normalizeMultilineText(value) {
     return String(value || "")
@@ -51,31 +54,20 @@
       .trim();
   }
 
-  function formatCurrency(value) {
-    return `${Number(value || 0).toLocaleString("vi-VN")}đ`;
-  }
+  const formatCurrency =
+    typeof core.formatCurrency === "function"
+      ? (value) => core.formatCurrency(value)
+      : (value) => `${Number(value || 0).toLocaleString("vi-VN")}đ`;
 
-  function getPaymentMethodLabel(value, fallback = "") {
-    const normalized = normalizeText(value).toLowerCase();
-    if (!normalized) return normalizeText(fallback) || "--";
-    if (["tien_mat", "cash"].includes(normalized)) return "Tiền mặt";
-    if (["chuyen_khoan", "bank", "bank_transfer", "transfer"].includes(normalized)) {
-      return "Chuyển khoản";
-    }
-    return fallback || value;
-  }
+  const getPaymentMethodLabel =
+    typeof core.getPaymentMethodLabel === "function"
+      ? (value, fallback = "") => core.getPaymentMethodLabel(value, fallback)
+      : (value, fallback = "") => fallback || value || "--";
 
-  function getPaymentStatusLabel(value, fallback = "") {
-    const normalized = normalizeText(value).toLowerCase();
-    if (!normalized) return normalizeText(fallback) || "Chưa hoàn tất";
-    if (["paid", "completed", "done"].includes(normalized)) {
-      return "Đã hoàn tất";
-    }
-    if (["unpaid", "pending", "processing"].includes(normalized)) {
-      return "Chưa hoàn tất";
-    }
-    return fallback || value;
-  }
+  const getPaymentStatusLabel =
+    typeof core.getPaymentStatusLabel === "function"
+      ? (value, fallback = "") => core.getPaymentStatusLabel(value, fallback)
+      : (value, fallback = "") => fallback || value || "Chưa hoàn tất";
 
   function formatOrderDateCode(value = new Date()) {
     const date = value instanceof Date ? value : new Date(value);
@@ -121,13 +113,10 @@
     }
   }
 
-  function showToast(message, type = "info") {
-    if (core && typeof core.showToast === "function") {
-      core.showToast(message, type);
-      return;
-    }
-    window.alert(message);
-  }
+  const showToast =
+    core && typeof core.showToast === "function"
+      ? (message, type = "info") => core.showToast(message, type)
+      : (message) => window.alert(message);
 
   function getRoot() {
     return document.getElementById("standalone-order-detail-root");
@@ -230,9 +219,11 @@
     return "Chưa xử lý";
   }
 
-  function getStatusBadge(status, label) {
-    return `<span class="customer-status-badge status-${escapeHtml(status)}">${escapeHtml(label)}</span>`;
-  }
+  const getStatusBadge =
+    typeof core.createStatusBadge === "function"
+      ? (status, label) => core.createStatusBadge(status, label)
+      : (status, label) =>
+          `<span class="customer-status-badge status-${escapeHtml(status)}">${escapeHtml(label)}</span>`;
 
   function normalizeBreakdown(rawBreakdown, shippingFee) {
     const breakdown = rawBreakdown || {};
@@ -509,29 +500,32 @@
     return normalized;
   }
 
-  function getKrudListFn() {
-    if (typeof window.krudList === "function") {
-      return (payload) => window.krudList(payload);
-    }
+  const getKrudListFn =
+    typeof core.getKrudListFn === "function"
+      ? () => core.getKrudListFn()
+      : () => {
+          if (typeof window.krudList === "function") {
+            return (payload) => window.krudList(payload);
+          }
 
-    if (typeof window.crud === "function") {
-      return (payload) =>
-        window.crud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 100,
-        });
-    }
+          if (typeof window.crud === "function") {
+            return (payload) =>
+              window.crud("list", payload.table, {
+                p: payload.page || 1,
+                limit: payload.limit || 100,
+              });
+          }
 
-    if (typeof window.krud === "function") {
-      return (payload) =>
-        window.krud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 100,
-        });
-    }
+          if (typeof window.krud === "function") {
+            return (payload) =>
+              window.krud("list", payload.table, {
+                p: payload.page || 1,
+                limit: payload.limit || 100,
+              });
+          }
 
-    return null;
-  }
+          return null;
+        };
 
   function getKrudUpdateFn() {
     if (typeof window.crud === "function") {
@@ -547,28 +541,31 @@
     return null;
   }
 
-  function extractRows(payload, depth = 0) {
-    if (depth > 4 || payload == null) return [];
-    if (Array.isArray(payload)) return payload;
-    if (typeof payload !== "object") return [];
+  const extractRows =
+    typeof core.extractRows === "function"
+      ? (payload, depth = 0) => core.extractRows(payload, depth)
+      : function extractRowsFallback(payload, depth = 0) {
+          if (depth > 4 || payload == null) return [];
+          if (Array.isArray(payload)) return payload;
+          if (typeof payload !== "object") return [];
 
-    const candidateKeys = [
-      "data",
-      "items",
-      "rows",
-      "list",
-      "result",
-      "payload",
-    ];
-    for (const key of candidateKeys) {
-      const value = payload[key];
-      if (Array.isArray(value)) return value;
-      const nested = extractRows(value, depth + 1);
-      if (nested.length) return nested;
-    }
+          const candidateKeys = [
+            "data",
+            "items",
+            "rows",
+            "list",
+            "result",
+            "payload",
+          ];
+          for (const key of candidateKeys) {
+            const value = payload[key];
+            if (Array.isArray(value)) return value;
+            const nested = extractRowsFallback(value, depth + 1);
+            if (nested.length) return nested;
+          }
 
-    return [];
-  }
+          return [];
+        };
 
   async function findKrudRecord(identifier) {
     const listFn = getKrudListFn();
@@ -666,11 +663,10 @@
           "Tiền mặt",
         payment_method:
           record.payment_method || record.phuong_thuc_thanh_toan || "",
-        payment_status_label:
-          getPaymentStatusLabel(
-            record.payment_status_label || record.trang_thai_thanh_toan,
-            "Chưa hoàn tất",
-          ),
+        payment_status_label: getPaymentStatusLabel(
+          record.payment_status_label || record.trang_thai_thanh_toan,
+          "Chưa hoàn tất",
+        ),
         clean_note: record.ghi_chu || record.clean_note || "",
         cancel_reason: record.ly_do_huy || record.cancel_reason || "",
         rating: Number(record.danh_gia_so_sao || record.rating || 0),
@@ -828,194 +824,6 @@
     }
 
     return buttons.join("");
-  }
-
-  function renderInfoRow(label, value, options = {}) {
-    const safeLabel = options.labelHtml ? label || "--" : escapeHtml(label);
-    const safeValue = options.valueHtml ? value || "--" : escapeHtml(value || "--");
-    const valueTag = options.valueTag || "strong";
-    return `
-      <div class="standalone-order-info-row">
-        <span>${safeLabel}</span>
-        <${valueTag} class="standalone-order-info-value">${safeValue}</${valueTag}>
-      </div>
-    `;
-  }
-
-  function renderFeeSummaryRows(order) {
-    const breakdown = order?.fee_breakdown || {};
-    const rows = [
-      renderInfoRow("Phí vận chuyển", formatCurrency(breakdown.base_price)),
-    ];
-
-    [
-      ["Phụ phí loại hàng", breakdown.goods_fee],
-      ["Phụ phí khung giờ", breakdown.time_fee],
-      ["Phụ phí thời tiết", breakdown.condition_fee],
-      ["Điều chỉnh theo xe", breakdown.vehicle_fee],
-      ["Phí COD", breakdown.cod_fee],
-      ["Phí bảo hiểm", breakdown.insurance_fee],
-    ].forEach(([label, value]) => {
-      if (Number(value || 0) <= 0) return;
-      rows.push(renderInfoRow(label, formatCurrency(value)));
-    });
-
-    rows.push(
-      renderInfoRow(
-        "Tổng cộng",
-        formatCurrency(breakdown.total_fee || order.shipping_fee),
-        {
-          valueHtml: true,
-          valueTag: "div",
-        },
-      ),
-    );
-    rows.push(renderInfoRow("Thanh toán", order.payment_method_label));
-    rows.push(
-      renderInfoRow(
-        "Trạng thái thanh toán",
-        order.payment_status_label || "Chưa hoàn tất",
-      ),
-    );
-
-    return rows.join("");
-  }
-
-  function getProviderAddress(provider, session) {
-    return (
-      pickFirstText(
-        provider?.shipper_address,
-        provider?.address,
-        provider?.dia_chi,
-        provider?.company_address,
-        provider?.full_address,
-        provider?.area_label,
-        provider?.region,
-        provider?.hub_label,
-        provider?.company_name,
-        session?.shipper_address,
-        session?.address,
-        session?.dia_chi,
-        session?.company_address,
-      ) || "Chưa cập nhật"
-    );
-  }
-
-  function renderItems(items) {
-    if (!items.length) {
-      return '<div class="standalone-order-muted">Chưa có danh sách hàng hóa chi tiết.</div>';
-    }
-
-    return `<div class="standalone-order-items">${items
-      .map(
-        (item, index) => `
-          <article class="standalone-order-item">
-            <div class="standalone-order-item-icon">
-              <i class="fa-solid fa-box"></i>
-            </div>
-            <div class="standalone-order-item-body">
-              <div class="standalone-order-item-top">
-                <div>
-                  <strong>${escapeHtml(item.ten_hang || `Hàng hóa #${index + 1}`)}</strong>
-                  <div class="standalone-order-muted">${escapeHtml(item.loai_hang || "Hàng hóa tổng hợp")}</div>
-                </div>
-                <div class="standalone-order-item-meta">
-                  <span>SL: ${escapeHtml(item.so_luong)}</span>
-                  <span>${escapeHtml(item.can_nang)} kg</span>
-                  <span>${formatCurrency(item.gia_tri_khai_bao)}</span>
-                </div>
-              </div>
-              <div class="standalone-order-item-note">
-                ${escapeHtml(item.ghi_chu_dong_goi || "Không có ghi chú đóng gói riêng cho mặt hàng này.")}
-              </div>
-            </div>
-          </article>`,
-      )
-      .join("")}</div>`;
-  }
-
-  function buildTimeline(detail) {
-    const order = detail.order || {};
-    const milestones = getMilestones(order);
-    const timeline = [];
-    const pushItem = (time, title, note) => {
-      if (!normalizeText(time)) return;
-      timeline.push({
-        time,
-        title,
-        note,
-      });
-    };
-
-    pushItem(
-      order.created_at,
-      "Đơn được tạo",
-      "Hệ thống đã ghi nhận đơn hàng.",
-    );
-    pushItem(
-      milestones.acceptedAt,
-      "Đã có nhà cung cấp nhận đơn",
-      "Thông tin NCC và thời điểm nhận đơn đã được cập nhật.",
-    );
-    pushItem(
-      milestones.startedAt,
-      "Bắt đầu thực hiện",
-      "Nhà cung cấp đã xác nhận bắt đầu giao đơn thực tế.",
-    );
-    pushItem(
-      milestones.completedAt,
-      "Hoàn thành đơn hàng",
-      "Đơn hàng đã được chốt hoàn tất.",
-    );
-    pushItem(
-      milestones.cancelledAt,
-      "Đơn hàng bị hủy",
-      order.cancel_reason || "Khách hàng đã hủy đơn.",
-    );
-
-    (Array.isArray(detail.logs) ? detail.logs : []).forEach((log) => {
-      timeline.push({
-        time: log.created_at || "",
-        title: log.new_status_label || "Cập nhật đơn hàng",
-        note:
-          log.note ||
-          `Cập nhật từ ${log.old_status_label || "--"} sang ${log.new_status_label || "--"}`,
-      });
-    });
-
-    const unique = [];
-    const seen = new Set();
-    timeline
-      .filter((item) => normalizeText(item.time) || normalizeText(item.title))
-      .sort((left, right) => {
-        const leftTime = new Date(left.time || 0).getTime();
-        const rightTime = new Date(right.time || 0).getTime();
-        return leftTime - rightTime;
-      })
-      .forEach((item) => {
-        const signature = `${item.time}|${item.title}|${item.note}`;
-        if (seen.has(signature)) return;
-        seen.add(signature);
-        unique.push(item);
-      });
-
-    if (!unique.length) {
-      return '<div class="standalone-order-muted">Chưa có nhật ký xử lý cho đơn hàng này.</div>';
-    }
-
-    return `<div class="standalone-order-timeline">${unique
-      .map(
-        (item, index) => `
-          <article class="standalone-order-timeline-item">
-            <div class="standalone-order-timeline-dot ${index === unique.length - 1 ? "is-active" : ""}"></div>
-            <div class="standalone-order-timeline-content">
-              <small>${formatDateTime(item.time)}</small>
-              <strong>${escapeHtml(item.title || "--")}</strong>
-              <p>${escapeHtml(item.note || "Không có ghi chú bổ sung.")}</p>
-            </div>
-          </article>`,
-      )
-      .join("")}</div>`;
   }
 
   function isImageExtension(extension) {
@@ -1178,592 +986,55 @@
     return Boolean(normalized && normalized !== "#");
   }
 
-  function renderAttachmentGallery(items, emptyMessage) {
-    const mediaItems = Array.isArray(items) ? items : [];
-    if (!mediaItems.length) {
-      return `<div class="standalone-order-muted">${escapeHtml(emptyMessage)}</div>`;
-    }
-
-    return `<div class="standalone-order-media-grid">${mediaItems
-      .map((item) => {
-        const extension = String(item.extension || "").toLowerCase();
-        const rawUrl = normalizeText(item.url || "");
-        const url = escapeHtml(rawUrl || "#");
-        const name = escapeHtml(item.name || "Tệp đính kèm");
-        const canPreview = hasPreviewableUrl(rawUrl);
-
-        if (isImageExtension(extension) && canPreview) {
-          return `
-            <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-              <img src="${url}" alt="${name}" />
-              <strong>${name}</strong>
-              <span>Ảnh đính kèm</span>
-            </a>
-          `;
-        }
-
-        if (isVideoExtension(extension) && canPreview) {
-          return `
-            <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-              <video src="${url}" controls preload="metadata"></video>
-              <strong>${name}</strong>
-              <span>Video đính kèm</span>
-            </a>
-          `;
-        }
-
-        return `
-          <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-            <div class="standalone-order-item-icon">
-              <i class="fa-solid fa-file-lines"></i>
-            </div>
-            <strong>${name}</strong>
-            <span>${escapeHtml(extension || "Tệp đính kèm")}</span>
-          </a>
-        `;
-      })
-      .join("")}</div>`;
+  const orderDetailActionsFactory = window.GiaoHangNhanhOrderDetailActions;
+  if (typeof orderDetailActionsFactory !== "function") {
+    throw new Error("Không tìm thấy action handler cho trang chi tiết đơn hàng.");
   }
 
-  function hasFeedbackContent(detail) {
-    const order = detail?.order || {};
-    const provider = detail?.provider || {};
-    return Boolean(
-      Number(order.rating || 0) > 0 ||
-      normalizeMultilineText(order.feedback || "") ||
-      (Array.isArray(provider.feedback_media) &&
-        provider.feedback_media.length),
-    );
+  const orderDetailRendererFactory = window.GiaoHangNhanhOrderDetailRender;
+  if (typeof orderDetailRendererFactory !== "function") {
+    throw new Error("Không tìm thấy renderer cho trang chi tiết đơn hàng.");
   }
 
-  function hasShipperNoteContent(detail) {
-    const order = detail?.order || {};
-    const provider = detail?.provider || {};
-    return Boolean(
-      normalizeMultilineText(order.shipper_note || "") ||
-      (Array.isArray(provider.shipper_reports) &&
-        provider.shipper_reports.length),
-    );
-  }
-
-  function shouldShowFeedbackBlock(detail, viewer) {
-    if (viewer === "public") return false;
-    return viewer === "customer" || hasFeedbackContent(detail);
-  }
-
-  function canSubmitFeedback(detail, viewer) {
-    const status = deriveStatusKey(detail?.order || {});
-    return viewer === "customer" && status === "completed";
-  }
-
-  function shouldShowShipperNoteBlock(detail, viewer) {
-    return viewer !== "public";
-  }
-
-  function canSubmitShipperNote(detail, viewer) {
-    const milestones = getMilestones(detail?.order || {});
-    return (
-      viewer === "shipper" &&
-      !milestones.cancelledAt &&
-      Boolean(
-        milestones.acceptedAt || milestones.startedAt || milestones.completedAt,
-      )
-    );
-  }
-
-  function renderRatingStars(rating) {
-    const safeRating = Math.max(0, Math.min(5, Number(rating || 0)));
-    return `<div class="standalone-order-rating-stars" aria-label="Đánh giá ${safeRating} trên 5 sao">${[
-      1, 2, 3, 4, 5,
-    ]
-      .map(
-        (star) =>
-          `<i class="fa-${star <= safeRating ? "solid" : "regular"} fa-star"></i>`,
-      )
-      .join("")}</div>`;
-  }
-
-  function renderFeedbackBlock(detail, viewer) {
-    if (!shouldShowFeedbackBlock(detail, viewer)) return "";
-
-    const order = detail.order || {};
-    const provider = detail.provider || {};
-    const canSubmit = canSubmitFeedback(detail, viewer);
-    const hasFeedback = hasFeedbackContent(detail);
-    const feedbackMedia = Array.isArray(provider.feedback_media)
-      ? provider.feedback_media
-      : [];
-
-    return `
-      <section class="standalone-order-block">
-        <div class="standalone-order-block-header">
-          <p class="standalone-order-block-kicker">Vùng 5</p>
-          <h2>Phản hồi khách hàng</h2>
-          <p>Khối phản hồi gồm nội dung đánh giá và hình ảnh hoặc video thực tế từ khách hàng.</p>
-        </div>
-        <div class="standalone-order-side-stack">
-          <article class="standalone-order-subcard">
-            <div class="standalone-order-subcard-head">
-              <strong>Tóm tắt phản hồi</strong>
-              ${Number(order.rating || 0) > 0 ? renderRatingStars(order.rating) : '<span class="standalone-order-chip">Chưa có sao</span>'}
-            </div>
-            <p class="standalone-order-note-text">${escapeHtml(order.feedback || (canSubmit ? "Khách hàng có thể nhập phản hồi và đính kèm hình ảnh/video thực tế." : "Chưa có phản hồi từ khách hàng."))}</p>
-            ${renderAttachmentGallery(feedbackMedia, "Chưa có media phản hồi từ khách hàng.")}
-          </article>
-          <article class="standalone-order-subcard">
-            <div class="standalone-order-subcard-head">
-              <strong>Thao tác phản hồi</strong>
-              <span class="standalone-order-chip">${escapeHtml(viewer === "customer" ? "Khách hàng" : "Chỉ xem")}</span>
-            </div>
-            ${
-              canSubmit
-                ? `<form id="standalone-feedback-form" class="standalone-order-form">
-                    <label class="standalone-order-field">
-                      <span>Đánh giá dịch vụ</span>
-                      <select name="rating" required>
-                        <option value="">Chọn số sao</option>
-                        ${[1, 2, 3, 4, 5]
-                          .map(
-                            (star) =>
-                              `<option value="${star}" ${Number(order.rating || 0) === star ? "selected" : ""}>${star} sao</option>`,
-                          )
-                          .join("")}
-                      </select>
-                    </label>
-                    <label class="standalone-order-field">
-                      <span>Nội dung phản hồi</span>
-                      <textarea name="feedback" rows="5" placeholder="Mô tả chất lượng phục vụ hoặc vấn đề phát sinh.">${escapeHtml(order.feedback || "")}</textarea>
-                    </label>
-                    <div class="standalone-order-upload-grid">
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-image">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
-                        <strong>Chụp hoặc gửi ảnh phản hồi</strong>
-                        <span class="standalone-order-upload-copy">Dùng để gửi ảnh thực tế, hiện trạng đơn hàng và chất lượng phục vụ.</span>
-                        <input type="file" name="feedback_media_image" accept="image/*" capture="environment" multiple hidden />
-                        <span id="standalone-feedback-image-files" class="standalone-order-upload-meta">Chưa chọn ảnh phản hồi.</span>
-                      </label>
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-video">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
-                        <strong>Gửi video phản hồi</strong>
-                        <span class="standalone-order-upload-copy">Dùng để quay rõ quá trình giao hàng hoặc vấn đề phát sinh thực tế.</span>
-                        <input type="file" name="feedback_media_video" accept="video/*" capture="environment" multiple hidden />
-                        <span id="standalone-feedback-video-files" class="standalone-order-upload-meta">Chưa chọn video phản hồi.</span>
-                      </label>
-                    </div>
-                    <div class="standalone-order-inline-actions">
-                      <button class="customer-btn customer-btn-primary" type="submit">Lưu phản hồi</button>
-                    </div>
-                  </form>`
-                : `<div class="standalone-order-note-panel">
-                    <p>${escapeHtml(
-                      viewer === "customer"
-                        ? "Chỉ có thể gửi phản hồi khi đơn hàng đã hoàn thành."
-                        : hasFeedback
-                          ? "Phản hồi của khách đang ở chế độ chỉ xem."
-                          : "Chưa có phản hồi khách hàng cho đơn này.",
-                    )}</p>
-                  </div>`
-            }
-          </article>
-        </div>
-      </section>
-    `;
-  }
-
-  function renderShipperNoteBlock(detail, viewer) {
-    if (!shouldShowShipperNoteBlock(detail, viewer)) return "";
-
-    const order = detail.order || {};
-    const provider = detail.provider || {};
-    const canSubmit = canSubmitShipperNote(detail, viewer);
-    const reports = Array.isArray(provider.shipper_reports)
-      ? provider.shipper_reports
-      : [];
-
-    return `
-      <section class="standalone-order-block">
-        <div class="standalone-order-block-header">
-          <p class="standalone-order-block-kicker">Vùng 6</p>
-          <h2>Ghi chú nhà cung cấp</h2>
-          <p>Khối cập nhật hiện trường của nhà cung cấp gồm ghi chú xử lý và hình ảnh hoặc video báo cáo.</p>
-        </div>
-        <div class="standalone-order-side-stack">
-          <article class="standalone-order-subcard">
-            <div class="standalone-order-subcard-head">
-              <strong>Ghi chú hiện có</strong>
-              <span class="standalone-order-chip">${escapeHtml(viewer === "shipper" ? "Có thể cập nhật" : "Chỉ xem")}</span>
-            </div>
-            <p class="standalone-order-note-text">${escapeHtml(order.shipper_note || "Nhà cung cấp chưa cập nhật ghi chú xử lý cho đơn hàng này.")}</p>
-            ${renderAttachmentGallery(reports, "Chưa có media báo cáo từ nhà cung cấp.")}
-          </article>
-          <article class="standalone-order-subcard">
-            <div class="standalone-order-subcard-head">
-              <strong>Thao tác ghi chú</strong>
-              <span class="standalone-order-chip">${escapeHtml(viewer === "shipper" ? "Nhà cung cấp" : "Bị khóa")}</span>
-            </div>
-            ${
-              canSubmit
-                ? `<form id="standalone-shipper-note-form" class="standalone-order-form">
-                    <label class="standalone-order-field">
-                      <span>Ghi chú xử lý</span>
-                      <textarea name="shipper_note" rows="5" placeholder="Cập nhật tiến độ, vấn đề hiện trường hoặc lưu ý khi giao hàng.">${escapeHtml(order.shipper_note || "")}</textarea>
-                    </label>
-                    <div class="standalone-order-upload-grid">
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-image">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
-                        <strong>Chụp hoặc gửi ảnh báo cáo</strong>
-                        <span class="standalone-order-upload-copy">Dùng để gửi ảnh hiện trường, tình trạng đơn hàng và xác nhận giao.</span>
-                        <input type="file" name="shipper_media_image" accept="image/*" capture="environment" multiple hidden />
-                        <span id="standalone-shipper-image-files" class="standalone-order-upload-meta">Chưa chọn ảnh báo cáo.</span>
-                      </label>
-                      <label class="standalone-order-upload-zone standalone-order-upload-zone-video">
-                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
-                        <strong>Gửi video báo cáo</strong>
-                        <span class="standalone-order-upload-copy">Dùng để quay rõ hiện trạng giao hàng hoặc vấn đề phát sinh thực tế.</span>
-                        <input type="file" name="shipper_media_video" accept="video/*" capture="environment" multiple hidden />
-                        <span id="standalone-shipper-video-files" class="standalone-order-upload-meta">Chưa chọn video báo cáo.</span>
-                      </label>
-                    </div>
-                    <div class="standalone-order-inline-actions">
-                      <button class="customer-btn customer-btn-primary" type="submit">Lưu ghi chú NCC</button>
-                    </div>
-                  </form>`
-                : `<div class="standalone-order-note-panel">
-                    <p>${escapeHtml(
-                      viewer === "shipper"
-                        ? "Chỉ có thể thêm ghi chú sau khi đơn đã được nhận."
-                        : hasShipperNoteContent(detail)
-                          ? "Ghi chú của nhà cung cấp đang ở chế độ chỉ xem."
-                          : "Chưa có ghi chú nào từ nhà cung cấp.",
-                    )}</p>
-                  </div>`
-            }
-          </article>
-        </div>
-      </section>
-    `;
-  }
-
-  function render(detail, viewer, session) {
-    const root = getRoot();
-    if (!root) return;
-
-    const order = detail.order || {};
-    const customer = detail.customer || {};
-    const provider = detail.provider || {};
-    const distanceLabel =
-      Number(order.khoang_cach_km || 0) > 0
-        ? `${Number(order.khoang_cach_km).toLocaleString("vi-VN", {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2,
-          })} km`
-        : "--";
-    const providerName =
-      provider.shipper_name ||
-      provider.fullname ||
-      (viewer === "shipper" && session
-        ? session.fullname || session.username || ""
-        : "") ||
-      "Chưa có nhà cung cấp nhận đơn";
-    const providerPhone =
-      provider.shipper_phone || provider.phone || "Chưa cập nhật";
-    const providerAddress = getProviderAddress(provider, session);
-    const providerVehicle =
-      provider.shipper_vehicle || provider.vehicle_type || "Chưa cập nhật";
-    const providerPlate = provider.bien_so || provider.license_plate || "";
-    const providerMetaLine = `
-      <span>${escapeHtml(providerPhone || "Chưa cập nhật")}</span>
-      <span>${escapeHtml(providerAddress)}</span>
-    `;
-
-    root.innerHTML = `
-      <div class="standalone-order-layout">
-        <section class="standalone-order-unified-card">
-          <header class="standalone-order-card-header">
-            <div class="standalone-order-card-header-main">
-              <div class="standalone-order-brand">
-                <img class="standalone-order-brand-logo" src="public/assets/images/logo-dich-vu-quanh-ta.png" alt="Dịch Vụ Quanh Ta" />
-                <div class="standalone-order-card-title">
-                  <p class="standalone-order-card-kicker">Chi tiết đơn hàng</p>
-                  <h1>${escapeHtml(order.order_code || "--")}</h1>
-                </div>
-                <img class="standalone-order-brand-logo standalone-order-brand-logo-service" src="public/assets/images/favicon.png" alt="Logo Giao Hàng Nhanh" />
-              </div>
-              <div class="standalone-order-header-meta">
-                <div class="standalone-order-viewer">
-                  <i class="fa-solid fa-user-shield"></i>
-                  <span>${escapeHtml(viewer === "shipper" ? "Nhà cung cấp" : viewer === "customer" ? "Khách hàng" : "Xem trực tiếp")}</span>
-                </div>
-                ${getStatusBadge(order.status, order.status_label)}
-              </div>
-            </div>
-            <div class="standalone-order-card-toolbar">
-              <div class="standalone-order-card-meta">
-                <div class="standalone-order-meta-pill">
-                  <i class="fa-solid fa-clock"></i>
-                  <span>Tạo lúc ${formatDateTime(order.created_at)}</span>
-                </div>
-                <div class="standalone-order-meta-pill">
-                  <i class="fa-solid fa-wave-square"></i>
-                  <span>Trạng thái thực tế: ${escapeHtml(order.status_label)}</span>
-                </div>
-              </div>
-              <div class="standalone-order-actions-group">
-                ${buildActionButtons(detail, viewer)}
-              </div>
-            </div>
-          </header>
-
-          <div class="standalone-order-grid">
-            <section class="standalone-order-block">
-              <div class="standalone-order-block-header">
-                <p class="standalone-order-block-kicker">Vùng 1</p>
-                <h2>Nội dung công việc</h2>
-                <p>Khối tổng quan đơn hàng được chia 2 cột gồm thông tin lộ trình và chi phí tổng quan.</p>
-              </div>
-              <div class="standalone-order-summary-grid">
-                <div class="standalone-order-panel">
-                  <div class="standalone-order-panel-head">
-                    <strong>Thông tin đơn hàng</strong>
-                  </div>
-                  <div class="standalone-order-info-list">
-                  ${renderInfoRow("Mã đơn hàng", order.order_code || "--")}
-                  ${renderInfoRow("Gói dịch vụ", order.service_label || order.service_name || "--")}
-                  ${renderInfoRow("Điểm lấy hàng", order.pickup_address || "--")}
-                  ${renderInfoRow("Điểm giao hàng", order.delivery_address || "--")}
-                  ${renderInfoRow("Tổng quãng đường", distanceLabel)}
-                  </div>
-                </div>
-                <div class="standalone-order-panel" id="order-summary-fees">
-                  <div class="standalone-order-panel-head">
-                    <strong>Chi phí tổng quan</strong>
-                  </div>
-                  <div class="standalone-order-info-list">
-                  ${renderFeeSummaryRows(order)}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="standalone-order-block">
-              <div class="standalone-order-block-header">
-                <p class="standalone-order-block-kicker">Vùng 2</p>
-                <h2>Thông tin khách hàng</h2>
-                <p>Người gửi và người nhận được đặt chung trong một card để đối chiếu nhanh khi xử lý đơn.</p>
-              </div>
-              <div class="standalone-order-panel">
-                <div class="standalone-order-contact-grid">
-                  <div class="standalone-order-info-list">
-                    <div class="standalone-order-subsection-title">Người gửi</div>
-                    ${renderInfoRow("Người gửi", order.sender_name || customer.fullname || "--")}
-                    ${renderInfoRow("Số điện thoại", order.sender_phone || customer.phone || "--")}
-                  </div>
-                  <div class="standalone-order-info-list">
-                    <div class="standalone-order-subsection-title">Người nhận</div>
-                    ${renderInfoRow("Người nhận", order.receiver_name || "--")}
-                    ${renderInfoRow("Số điện thoại", order.receiver_phone || "--")}
-                  </div>
-                  <div class="standalone-order-contact-note">
-                    <div class="standalone-order-subsection-title">Ghi chú vận chuyển</div>
-                    <div class="standalone-order-note-panel">
-                      <p>${escapeHtml(order.clean_note || "Không có ghi chú")}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="standalone-order-block">
-              <div class="standalone-order-block-header">
-                <p class="standalone-order-block-kicker">Vùng 3</p>
-                <h2>Nội dung hàng hóa</h2>
-                <p>Danh sách mặt hàng và lưu ý đóng gói được trình bày theo từng item card riêng biệt.</p>
-              </div>
-              ${renderItems(detail.items || [])}
-            </section>
-
-            <section class="standalone-order-block">
-              <div class="standalone-order-block-header">
-                <p class="standalone-order-block-kicker">Vùng 4</p>
-                <h2>Thông tin nhà cung cấp và trạng thái</h2>
-                <p>Khối này gom thông tin shipper, timeline trạng thái và media POD trong cùng một vùng thông tin.</p>
-              </div>
-              <div class="standalone-order-provider-grid">
-                <article class="standalone-order-provider-card">
-                  <div class="standalone-order-provider-head">
-                    <div class="standalone-order-provider-avatar">
-                      ${
-                        normalizeText(provider.avatar || provider.photo || "")
-                          ? `<img src="${escapeHtml(provider.avatar || provider.photo)}" alt="${escapeHtml(providerName)}" />`
-                          : escapeHtml(providerName.charAt(0) || "N")
-                      }
-                    </div>
-                    <div>
-                      <strong>${escapeHtml(providerName)}</strong>
-                      ${providerMetaLine}
-                    </div>
-                  </div>
-                  <div class="standalone-order-provider-pills">
-                    <span>Loại xe: ${escapeHtml(providerVehicle)}</span>
-                    <span>Biển số: ${escapeHtml(providerPlate || "Chưa cập nhật")}</span>
-                    <span>Nhận đơn: ${formatDateTime(getMilestones(order).acceptedAt)}</span>
-                  </div>
-                </article>
-
-                <article class="standalone-order-timeline-card">
-                  <div class="standalone-order-panel-head">
-                    <strong>Timeline trạng thái</strong>
-                    <p>Lịch sử trạng thái được suy ra từ các mốc thời gian và nhật ký thao tác hiện có.</p>
-                  </div>
-                  ${buildTimeline(detail)}
-                </article>
-
-                <article class="standalone-order-media-card">
-                  <div class="standalone-order-panel-head">
-                    <strong>Media bằng chứng giao hàng</strong>
-                    <p>Hiển thị ảnh POD gắn với đơn hàng sau khi giao thành công.</p>
-                  </div>
-                  ${renderMedia(detail)}
-                </article>
-              </div>
-            </section>
-
-            ${renderFeedbackBlock(detail, viewer)}
-            ${renderShipperNoteBlock(detail, viewer)}
-          </div>
-        </section>
-      </div>
-    `;
-
-    root.querySelectorAll("[data-order-action]").forEach((button) => {
-      button.addEventListener("click", handleActionClick);
-    });
-
-    bindFeedbackForm(root);
-    bindShipperNoteForm(root);
-  }
-
-  function bindFileSummary(input, host, emptyMessage) {
-    if (!input || !host) return;
-
-    const refresh = () => {
-      const files = input.files ? Array.from(input.files) : [];
-      host.textContent = files.length
-        ? `Đã chọn: ${files.map((file) => file.name).join(", ")}`
-        : emptyMessage;
-    };
-
-    input.addEventListener("change", refresh);
-    refresh();
-  }
-
-  function collectFiles(...inputs) {
-    return inputs.flatMap((input) =>
-      input?.files ? Array.from(input.files) : [],
-    );
-  }
-
-  function bindFeedbackForm(root) {
-    const form = root.querySelector("#standalone-feedback-form");
-    if (!form) return;
-
-    const imageInput = form.querySelector('input[name="feedback_media_image"]');
-    const videoInput = form.querySelector('input[name="feedback_media_video"]');
-    const imageSummary = root.querySelector("#standalone-feedback-image-files");
-    const videoSummary = root.querySelector("#standalone-feedback-video-files");
-    bindFileSummary(imageInput, imageSummary, "Chưa chọn ảnh phản hồi.");
-    bindFileSummary(videoInput, videoSummary, "Chưa chọn video phản hồi.");
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      try {
-        const formData = new FormData(form);
-        const rating = Number(formData.get("rating") || 0);
-        const feedback = normalizeMultilineText(formData.get("feedback") || "");
-        const files = collectFiles(imageInput, videoInput);
-        const nextDetail = normalizeDetail(currentDetail);
-        const orderRef =
-          nextDetail.order?.order_code || nextDetail.order?.id || "";
-        const nextFeedbackMedia = files.length
-          ? await uploadOrderMedia(orderRef, files, "feedback")
-          : Array.isArray(nextDetail.provider?.feedback_media)
-            ? nextDetail.provider.feedback_media
-            : [];
-
-        nextDetail.order.rating = rating;
-        nextDetail.order.feedback = feedback;
-        nextDetail.provider = {
-          ...(nextDetail.provider || {}),
-          feedback_media: nextFeedbackMedia,
-        };
-
-        currentDetail = await persistDetail(nextDetail);
-        showToast("Đã lưu phản hồi khách hàng.", "success");
+  let render = null;
+  let renderState = null;
+  const orderDetailActions = orderDetailActionsFactory({
+    normalizeMultilineText,
+    normalizeDetail,
+    uploadOrderMedia,
+    showToast,
+    buildShipperSnapshot,
+    persistDetail,
+    getCurrentDetail: () => currentDetail,
+    setCurrentDetail: (detail) => {
+      currentDetail = detail;
+    },
+    getCurrentViewer: () => currentViewer,
+    getCurrentSession: () => currentSession,
+    rerender: () => {
+      if (typeof render === "function") {
         render(currentDetail, currentViewer, currentSession);
-      } catch (error) {
-        console.error("Cannot save feedback:", error);
-        showToast(
-          error?.message || "Không thể lưu phản hồi khách hàng lúc này.",
-          "error",
-        );
       }
-    });
-  }
-
-  function bindShipperNoteForm(root) {
-    const form = root.querySelector("#standalone-shipper-note-form");
-    if (!form) return;
-
-    const imageInput = form.querySelector('input[name="shipper_media_image"]');
-    const videoInput = form.querySelector('input[name="shipper_media_video"]');
-    const imageSummary = root.querySelector("#standalone-shipper-image-files");
-    const videoSummary = root.querySelector("#standalone-shipper-video-files");
-    bindFileSummary(imageInput, imageSummary, "Chưa chọn ảnh báo cáo.");
-    bindFileSummary(videoInput, videoSummary, "Chưa chọn video báo cáo.");
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      try {
-        const formData = new FormData(form);
-        const shipperNote = normalizeMultilineText(
-          formData.get("shipper_note") || "",
-        );
-        const files = collectFiles(imageInput, videoInput);
-        const nextDetail = normalizeDetail(currentDetail);
-        const orderRef =
-          nextDetail.order?.order_code || nextDetail.order?.id || "";
-        const existingReports = Array.isArray(
-          nextDetail.provider?.shipper_reports,
-        )
-          ? nextDetail.provider.shipper_reports
-          : [];
-        const uploadedReports = files.length
-          ? await uploadOrderMedia(orderRef, files, "shipper")
-          : [];
-
-        nextDetail.order.shipper_note = shipperNote;
-        nextDetail.provider = {
-          ...(nextDetail.provider || {}),
-          ...buildShipperSnapshot(nextDetail),
-          shipper_reports: files.length
-            ? [...existingReports, ...uploadedReports]
-            : existingReports,
-        };
-
-        currentDetail = await persistDetail(nextDetail);
-        showToast("Đã lưu ghi chú nhà cung cấp.", "success");
-        render(currentDetail, currentViewer, currentSession);
-      } catch (error) {
-        console.error("Cannot save shipper note:", error);
-        showToast(
-          error?.message || "Không thể lưu ghi chú nhà cung cấp lúc này.",
-          "error",
-        );
-      }
-    });
-  }
+    },
+  });
+  ({ render, renderState } = orderDetailRendererFactory({
+    getRoot,
+    escapeHtml,
+    formatCurrency,
+    formatDateTime,
+    normalizeText,
+    normalizeMultilineText,
+    getMilestones,
+    deriveStatusKey,
+    buildActionButtons,
+    pickFirstText,
+    isImageExtension,
+    isVideoExtension,
+    hasPreviewableUrl,
+    bindFeedbackForm: orderDetailActions.bindFeedbackForm,
+    bindShipperNoteForm: orderDetailActions.bindShipperNoteForm,
+    handleActionClick,
+  }));
 
   function appendLog(detail, payload) {
     const nextDetail = normalizeDetail(detail);
@@ -2047,20 +1318,6 @@
         "error",
       );
     }
-  }
-
-  function renderState(message, type = "loading") {
-    const root = getRoot();
-    if (!root) return;
-
-    const className =
-      type === "error"
-        ? "standalone-order-error"
-        : type === "empty"
-          ? "standalone-order-empty"
-          : "standalone-order-loader";
-
-    root.innerHTML = `<div class="${className}"><span>${escapeHtml(message)}</span></div>`;
   }
 
   async function loadDetail(identifier) {

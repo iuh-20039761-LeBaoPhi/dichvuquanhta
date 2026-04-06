@@ -44,113 +44,82 @@
         : null;
     return session && typeof session === "object" ? session : null;
   }
-
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  function formatCurrency(value) {
-    return `${Number(value || 0).toLocaleString("vi-VN")}đ`;
-  }
-
-  function formatNumber(value) {
-    return Number(value || 0).toLocaleString("vi-VN");
-  }
-
-  function formatDateTime(value) {
-    if (!value) return "--";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return escapeHtml(value);
-    return date.toLocaleString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
-
-  function formatDateOnly(value) {
-    if (!value) return "--";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return escapeHtml(value);
-    return date.toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  }
-
-  function normalizeServiceType(value) {
-    const normalized = String(value || "").toLowerCase();
-    const map = {
-      giao_ngay_lap_tuc: "instant",
-      giao_hoa_toc: "express",
-      giao_nhanh: "fast",
-      giao_tieu_chuan: "standard",
-    };
-    return map[normalized] || normalized;
-  }
-
-  function getServiceLabel(serviceType, fallbackLabel) {
-    if (fallbackLabel) return fallbackLabel;
-    const normalized = normalizeServiceType(serviceType);
-    if (normalized === "instant") return "Giao ngay lập tức";
-    if (normalized === "express") return "Giao hàng hỏa tốc";
-    if (normalized === "fast") return "Giao hàng nhanh";
-    if (normalized === "standard") return "Giao hàng tiêu chuẩn";
-    return "--";
-  }
-
-  function getPaymentMethodLabel(paymentMethod) {
-    const normalized = String(paymentMethod || "").toLowerCase();
-    return ["bank", "bank_transfer", "transfer", "chuyen_khoan"].includes(
-      normalized,
-    )
-      ? "Chuyển khoản"
-      : "Tiền mặt";
-  }
-
-  function getPaymentStatusLabel(paymentStatus, fallback = "Chưa hoàn tất") {
-    const normalized = String(paymentStatus || "").toLowerCase();
-    if (!normalized) return fallback;
-    if (["paid", "completed", "done"].includes(normalized)) {
-      return "Đã hoàn tất";
-    }
-    if (["unpaid", "pending", "processing"].includes(normalized)) {
-      return "Chưa hoàn tất";
-    }
-    return paymentStatus || fallback;
-  }
-
-  function getFeePayerLabel(feePayer) {
-    return String(feePayer || "").toLowerCase() === "nhan"
-      ? "Người nhận"
-      : "Người gửi";
-  }
-
-  function getStatusLabel(status) {
-    const normalized = String(status || "").toLowerCase();
-    if (
-      normalized === "completed" ||
-      normalized === "delivered" ||
-      normalized === "success"
-    ) {
-      return "Hoàn tất";
-    }
-    if (normalized === "shipping" || normalized === "in_transit") {
-      return "Đang giao";
-    }
-    if (normalized === "cancelled" || normalized === "canceled") {
-      return "Đã hủy";
-    }
-    return "Chờ xử lý";
-  }
+  const escapeHtml =
+    typeof core.escapeHtml === "function"
+      ? (value) => core.escapeHtml(value)
+      : (value) =>
+          String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+  const formatCurrency =
+    typeof core.formatCurrency === "function"
+      ? (value) => core.formatCurrency(value)
+      : (value) => `${Number(value || 0).toLocaleString("vi-VN")}đ`;
+  const formatNumber =
+    typeof core.formatNumber === "function"
+      ? (value) => core.formatNumber(value)
+      : (value) => Number(value || 0).toLocaleString("vi-VN");
+  const formatDateTime =
+    typeof core.formatDateTime === "function"
+      ? (value) => core.formatDateTime(value)
+      : (value) => {
+          if (!value) return "--";
+          const date = new Date(value);
+          if (Number.isNaN(date.getTime())) return escapeHtml(value);
+          return date.toLocaleString("vi-VN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        };
+  const formatDateOnly =
+    typeof core.formatDateOnly === "function"
+      ? (value) => core.formatDateOnly(value)
+      : (value) => {
+          if (!value) return "--";
+          const date = new Date(value);
+          if (Number.isNaN(date.getTime())) return escapeHtml(value);
+          return date.toLocaleDateString("vi-VN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          });
+        };
+  const getServiceLabel =
+    typeof core.getServiceLabel === "function"
+      ? (serviceType, fallbackLabel) =>
+          core.getServiceLabel(serviceType, fallbackLabel)
+      : (serviceType, fallbackLabel) => fallbackLabel || "--";
+  const getPaymentMethodLabel =
+    typeof core.getPaymentMethodLabel === "function"
+      ? (paymentMethod) => core.getPaymentMethodLabel(paymentMethod)
+      : (paymentMethod) =>
+          ["bank", "bank_transfer", "transfer", "chuyen_khoan"].includes(
+            String(paymentMethod || "").toLowerCase(),
+          )
+            ? "Chuyển khoản"
+            : "Tiền mặt";
+  const getPaymentStatusLabel =
+    typeof core.getPaymentStatusLabel === "function"
+      ? (paymentStatus, fallback = "Chưa hoàn tất") =>
+          core.getPaymentStatusLabel(paymentStatus, fallback)
+      : (paymentStatus, fallback = "Chưa hoàn tất") => paymentStatus || fallback;
+  const getFeePayerLabel =
+    typeof core.getFeePayerLabel === "function"
+      ? (feePayer) => core.getFeePayerLabel(feePayer)
+      : (feePayer) =>
+          String(feePayer || "").toLowerCase() === "nhan"
+            ? "Người nhận"
+            : "Người gửi";
+  const getStatusLabel =
+    typeof core.getStatusLabel === "function"
+      ? (status) => core.getStatusLabel(status)
+      : (status) => String(status || "") || "Chờ xử lý";
 
   function normalizeMockBreakdown(rawBreakdown, shippingFee) {
     const breakdown = rawBreakdown || {};
@@ -792,13 +761,42 @@
     const loginItem = document.getElementById("nav-login-item");
     const registerItem = document.getElementById("nav-register-item");
     const firstName = escapeHtml(getFirstName(user) || "Khách hàng");
+    const accountSummary = escapeHtml(
+      String(user?.phone || "").trim() ||
+        String(user?.email || "").trim() ||
+        "Khu vực khách hàng",
+    );
 
     if (loginItem) {
-      loginItem.innerHTML = `<a href="${routes.dashboard}">Xin chào, ${firstName}</a>`;
+      loginItem.className = "dropdown has-submenu customer-nav-dropdown";
+      loginItem.innerHTML = `
+        <a href="${routes.dashboard}">Xin chào, ${firstName}</a>
+        <ul class="dropdown-menu customer-nav-dropdown-menu">
+          <li class="customer-nav-dropdown-summary">
+            <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
+            <div class="customer-nav-dropdown-user">
+              <strong>${firstName}</strong>
+              <span>${accountSummary}</span>
+            </div>
+          </li>
+          <li><a href="${routes.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
+          <li><a href="${routes.orders}"><i class="fas fa-box"></i> Lịch sử đơn hàng</a></li>
+          <li><a href="${routes.profile}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>
+          <li class="customer-nav-logout-wrapper"><a href="${routes.logout}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
+        </ul>
+      `;
+
+      if (
+        window.GiaoHangNhanhNavigation &&
+        typeof window.GiaoHangNhanhNavigation.init === "function"
+      ) {
+        window.GiaoHangNhanhNavigation.init(loginItem);
+      }
     }
 
     if (registerItem) {
-      registerItem.innerHTML = `<a href="${routes.profile}" class="btn-primary nav-auth-cta">Tài khoản</a>`;
+      registerItem.innerHTML = "";
+      registerItem.hidden = true;
     }
   }
 
@@ -820,38 +818,9 @@
     const { shell } = getPageRoot();
     if (!shell) return;
 
-    const activeClass = (page) => (page === activePage ? "is-active" : "");
-    const firstName = getFirstName(user) || "Khách hàng";
-
     shell.innerHTML = `
-      <div class="customer-portal-shell">
-        <section class="customer-portal-topbar">
-          <div>
-            <p class="customer-portal-eyebrow">Khu vực khách hàng</p>
-            <h1 class="customer-portal-title">Xin chào, ${escapeHtml(firstName)}</h1>
-            <p class="customer-portal-subtitle">
-              Quản lý lịch sử đơn hàng và cập nhật hồ sơ cá nhân
-              ngay trên giao diện website.
-            </p>
-          </div>
-          <div class="customer-portal-top-actions">
-            <a href="${routes.booking}" class="customer-btn customer-btn-primary">Tạo đơn mới</a>
-            <a href="${routes.logout}" class="customer-btn customer-btn-ghost" data-local-logout="1">Đăng xuất</a>
-          </div>
-        </section>
-        <div class="customer-portal-layout">
-          <aside class="customer-portal-sidebar">
-            <section class="customer-side-card">
-              <h2>Menu cá nhân</h2>
-              <nav class="customer-side-nav">
-                <a class="${activeClass("dashboard")}" href="${routes.dashboard}">Tổng quan</a>
-                <a class="${activeClass("orders")}" href="${routes.orders}">Lịch sử đơn hàng</a>
-                <a class="${activeClass("profile")}" href="${routes.profile}">Hồ sơ cá nhân</a>
-              </nav>
-            </section>
-          </aside>
-          <main class="customer-portal-main" id="customer-page-content"></main>
-        </div>
+      <div class="customer-portal-shell customer-portal-shell--simple">
+        <main class="customer-portal-main" id="customer-page-content"></main>
       </div>
     `;
     bindLogoutActions(shell);
@@ -882,9 +851,11 @@
     }
   }
 
-  function createStatusBadge(status, label) {
-    return `<span class="customer-status-badge status-${escapeHtml(status || "")}">${escapeHtml(label || status || "--")}</span>`;
-  }
+  const createStatusBadge =
+    typeof core.createStatusBadge === "function"
+      ? (status, label) => core.createStatusBadge(status, label)
+      : (status, label) =>
+          `<span class="customer-status-badge status-${escapeHtml(status || "")}">${escapeHtml(label || status || "--")}</span>`;
 
   function isOrderCancelable(order) {
     if (!order) return false;
@@ -949,6 +920,7 @@
   function buildPagination(currentPage, totalPages) {
     if (!totalPages || totalPages <= 1) return "";
     const buttons = [];
+    const isCompactPagination = window.matchMedia("(max-width: 640px)").matches;
 
     const createLink = (page, label, active = false) => {
       const url = new URL(window.location.href);
@@ -957,9 +929,18 @@
     };
 
     if (currentPage > 1) buttons.push(createLink(currentPage - 1, "Trước"));
-    for (let page = 1; page <= totalPages; page += 1) {
+    const pages = isCompactPagination
+      ? (() => {
+          if (totalPages <= 2)
+            return Array.from({ length: totalPages }, (_, i) => i + 1);
+          if (currentPage <= 1) return [1, 2];
+          if (currentPage >= totalPages) return [totalPages - 1, totalPages];
+          return [currentPage, currentPage + 1];
+        })()
+      : Array.from({ length: totalPages }, (_, i) => i + 1);
+    pages.forEach((page) => {
       buttons.push(createLink(page, String(page), currentPage === page));
-    }
+    });
     if (currentPage < totalPages)
       buttons.push(createLink(currentPage + 1, "Sau"));
 
@@ -1228,79 +1209,91 @@
     const recentOrders = Array.isArray(data.recent_orders)
       ? data.recent_orders
       : [];
-    const recentStatusLabels = {
-      all: "Tất cả",
-      pending: "Chờ xử lý",
-      shipping: "Đang giao",
-      completed: "Hoàn tất",
-      cancelled: "Đã hủy",
-    };
     const totalOrders = Number(stats.total || 0);
-    const activeOrders =
-      Number(stats.pending || 0) + Number(stats.shipping || 0);
+    const shippingOrders = Number(stats.shipping || 0);
+    const pendingOrders = Number(stats.pending || 0);
+    const completedOrders = Number(stats.completed || 0);
+    const activeOrders = pendingOrders + shippingOrders;
     const kpiCards = [
       {
         label: "Tổng đơn",
         value: formatNumber(totalOrders),
         hint: totalOrders ? "Toàn bộ đơn đã tạo" : "Chưa phát sinh đơn mới",
+        className: "customer-kpi-card-total",
       },
       {
-        label: "Đang giao",
-        value: formatNumber(stats.shipping || 0),
-        hint: Number(stats.shipping || 0)
-          ? "Đơn đang luân chuyển"
-          : "Không có đơn đang giao",
+        label: "Cần theo dõi",
+        value: formatNumber(activeOrders),
+        hint: activeOrders
+          ? "Đơn chờ xử lý hoặc đang giao"
+          : "Không có đơn cần xử lý ngay",
+        className:
+          shippingOrders > 0
+            ? "customer-kpi-card-shipping"
+            : "customer-kpi-card-pending",
       },
       {
-        label: "Chờ xử lý",
-        value: formatNumber(stats.pending || 0),
-        hint: Number(stats.pending || 0)
-          ? "Cần theo dõi sớm"
-          : "Hiện không có đơn chờ",
+        label: "Đơn đã hoàn tất",
+        value: formatNumber(completedOrders),
+        hint: completedOrders ? "Đã giao thành công" : "Chưa có đơn hoàn tất",
+        className: "customer-kpi-card-completed",
       },
     ];
-    const heroState = Number(stats.shipping || 0)
-      ? `${formatNumber(stats.shipping || 0)} đơn đang giao`
-      : Number(stats.pending || 0)
-        ? `${formatNumber(stats.pending || 0)} đơn chờ xử lý`
+    const heroState = shippingOrders
+      ? `${formatNumber(shippingOrders)} đơn đang giao`
+      : pendingOrders
+        ? `${formatNumber(pendingOrders)} đơn chờ xử lý`
         : "Chưa có đơn cần theo dõi ngay";
     const recentOrdersPreview = recentOrders.slice(0, 3);
+    const summaryText = activeOrders
+      ? "Tập trung vào các đơn đang di chuyển hoặc còn chờ xác nhận để xử lý nhanh hơn."
+      : totalOrders
+        ? "Mọi đơn gần đây đang ở trạng thái ổn định. Bạn có thể mở lịch sử để xem lại chi tiết."
+        : "Bạn chưa có đơn nào. Tạo đơn mới khi cần gửi hàng để bắt đầu theo dõi tại đây.";
 
     content.innerHTML = `
-      <section class="customer-dashboard-hero">
-        <div class="customer-dashboard-hero-copy">
-          <p class="customer-section-kicker">Bảng điều khiển khách hàng</p>
-          <h2>Theo dõi đơn hàng của bạn trong một màn hình</h2>
-          <p class="customer-dashboard-hero-state">${escapeHtml(heroState)}</p>
-          <p class="customer-dashboard-hero-text">Mở nhanh lịch sử đơn, kiểm tra tiến độ gần nhất và đi tiếp tới thao tác cần làm ngay.</p>
+      <section class="customer-panel customer-panel-overview">
+        <div class="customer-panel-head">
+          <div>
+            <p class="customer-section-kicker">Tổng quan đơn hàng</p>
+            <h2>Tóm tắt nhanh để theo dõi</h2>
+            <p class="customer-panel-subtext">${escapeHtml(heroState)}. ${escapeHtml(summaryText)}</p>
+          </div>
+          <div class="customer-inline-actions">
+            <span class="customer-panel-note">${activeOrders ? "Cần theo dõi" : "Ổn định"}</span>
+            <a href="${routes.booking}" class="customer-btn customer-btn-primary" style="box-shadow: 0 4px 15px rgba(255, 122, 0, 0.3);">
+              <i class="fas fa-plus"></i> Tạo Đơn Mới
+            </a>
+          </div>
         </div>
-        <div class="customer-dashboard-hero-actions">
-          <a href="${routes.booking}" class="customer-btn customer-btn-primary">Tạo đơn mới</a>
-          <a href="${routes.orders}" class="customer-btn customer-btn-ghost">Lịch sử đơn</a>
-        </div>
-      </section>
-      <section class="customer-dashboard-stats">
         <div class="customer-kpi-grid customer-kpi-grid-dashboard">
           ${kpiCards
             .map(
               (item) => `
-            <article class="customer-kpi-card">
+            <article class="customer-kpi-card ${item.className || ""}">
               <span>${escapeHtml(item.label)}</span>
               <strong>${item.value}</strong>
               <small>${escapeHtml(item.hint)}</small>
             </article>`,
             )
             .join("")}
-        </div>
+          </div>
       </section>
       <section class="customer-panel customer-panel-orders customer-panel-orders-main">
-          <div class="customer-panel-head">
+          <div class="customer-panel-head customer-panel-head-dashboard">
             <div>
               <p class="customer-section-kicker">Đơn gần đây</p>
-              <h2>3 đơn gần nhất cần bạn theo dõi</h2>
-              <p class="customer-panel-subtext">Tập trung vào các đơn vừa tạo hoặc đang thay đổi trạng thái.</p>
+              <h2>Đơn gần nhất cần bạn theo dõi</h2>
+              <p class="customer-panel-subtext">Giữ lại danh sách ngắn để bạn nhìn ra ngay đơn mới hoặc đơn vừa đổi trạng thái.</p>
             </div>
-            <a href="${routes.orders}" class="customer-btn customer-btn-ghost customer-btn-sm">Xem tất cả</a>
+            
+            <div class="customer-inline-actions customer-inline-actions-dashboard">
+              <form action="${routes.orders}" method="GET" class="customer-quick-search">
+                <input type="text" name="search" placeholder="Nhập mã đơn, SĐT..." required />
+                <button type="submit" class="customer-btn customer-btn-primary customer-btn-sm" style="min-width: 44px; padding: 0;"><i class="fas fa-search"></i></button>
+              </form>
+              <a href="${routes.orders}" class="customer-btn customer-btn-ghost customer-btn-sm">Xem tất cả</a>
+            </div>
           </div>
           <div class="customer-list customer-list-compact">
             ${
@@ -1379,18 +1372,17 @@
         <div class="customer-panel-head">
           <div>
             <p class="customer-section-kicker">Lịch sử đơn hàng</p>
-            <h2>Tra cứu và xem lại đơn theo trạng thái</h2>
-            <p class="customer-panel-subtext">Trang ${formatNumber(currentPage)} / ${formatNumber(totalPages)} · ${formatNumber(totalResults)} đơn phù hợp với bộ lọc hiện tại.</p>
+            <h2>Tìm và lọc đơn</h2>
+            <p class="customer-panel-subtext">Trang ${formatNumber(currentPage)}/${formatNumber(totalPages)} · ${formatNumber(totalResults)} đơn</p>
           </div>
-          <span class="customer-panel-note">Quản lý tập trung</span>
         </div>
 
-        <form id="customer-order-filter" class="customer-filter-form customer-filter-form-compact">
-          <label>
-            <span>Tìm mã đơn / người nhận</span>
-            <input type="text" name="search" value="${escapeHtml(filters.search || "")}" placeholder="ORD..., tên người nhận, số điện thoại" />
+        <form id="customer-order-filter" class="customer-filter-form customer-filter-form-compact customer-filter-form-orders">
+          <label class="customer-filter-field-search">
+            <span>Tìm nhanh</span>
+            <input type="text" name="search" value="${escapeHtml(filters.search || "")}" placeholder="Mã đơn, người nhận, SĐT" />
           </label>
-          <label>
+          <label class="customer-filter-field-status">
             <span>Trạng thái</span>
             <select name="status">
               <option value="">Tất cả</option>
@@ -1400,17 +1392,17 @@
               <option value="cancelled" ${filters.status === "cancelled" ? "selected" : ""}>Đã hủy</option>
             </select>
           </label>
-          <label>
+          <label class="customer-filter-field-date">
             <span>Từ ngày</span>
             <input type="date" name="date_from" value="${escapeHtml(filters.date_from || "")}" />
           </label>
-          <label>
+          <label class="customer-filter-field-date">
             <span>Đến ngày</span>
             <input type="date" name="date_to" value="${escapeHtml(filters.date_to || "")}" />
           </label>
           <div class="customer-inline-actions customer-filter-actions">
-            <button type="submit" class="customer-btn customer-btn-primary">Lọc dữ liệu</button>
-            <a href="${routes.orders}" class="customer-btn customer-btn-ghost">Đặt lại bộ lọc</a>
+            <button type="submit" class="customer-btn customer-btn-primary">Lọc</button>
+            <a href="${routes.orders}" class="customer-btn customer-btn-ghost">Đặt lại</a>
           </div>
         </form>
 
@@ -1420,10 +1412,10 @@
               ? activeFilters
                   .map(
                     (item) =>
-                      `<span class="customer-chip customer-chip-muted">${escapeHtml(item)}</span>`,
+                      `<span class="customer-active-filter-text">${escapeHtml(item)}</span>`,
                   )
                   .join("")
-              : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn hàng của bạn.</span>'
+              : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn.</span>'
           }
         </div>
 
@@ -1437,15 +1429,15 @@
                 <div class="customer-order-topline">
                   <div class="customer-order-heading">
                     <p class="customer-order-code">${escapeHtml(order.order_code)}</p>
-                    <p class="customer-order-dest">Từ ${escapeHtml(order.pickup_address)} đến ${escapeHtml(order.delivery_address)}</p>
+                    <p class="customer-order-dest">${escapeHtml(order.pickup_address)} → ${escapeHtml(order.delivery_address)}</p>
                   </div>
                   ${createStatusBadge(order.status, order.status_label)}
                 </div>
                 <div class="customer-order-meta customer-order-meta-compact customer-order-meta-history">
                   <span><b>Dịch vụ</b>${escapeHtml(order.service_label || "--")}</span>
-                  <span><b>Phí ship</b>${formatCurrency(order.shipping_fee)}</span>
+                  <span><b>Ship</b>${formatCurrency(order.shipping_fee)}</span>
                   <span><b>COD</b>${formatCurrency(order.cod_amount)}</span>
-                  <span><b>Tạo lúc</b>${formatDateTime(order.created_at)}</span>
+                  <span><b>Tạo</b>${formatDateTime(order.created_at)}</span>
                 </div>
                 <div class="customer-order-actions customer-order-actions-compact">
                   ${renderCancelButton(order, true)}
@@ -1791,34 +1783,91 @@
     const { content } = getPageRoot();
     const profile = data.profile || {};
 
+    const name = profile.ho_ten || profile.fullname || "Khách hàng";
+    const phone = profile.so_dien_thoai || profile.phone || "Chưa cập nhật";
+    const initial = name.charAt(0);
+
     content.innerHTML = `
-      <section class="customer-panel">
-        <div class="customer-panel-head">
-          <div>
-            <p class="customer-section-kicker">Hồ sơ cá nhân</p>
-            <h2>Cập nhật thông tin cá nhân</h2>
+      <section class="customer-portal-profile">
+        <!-- Hero Section with Avatar -->
+        <div class="customer-profile-hero">
+          <div class="customer-profile-avatar-wrapper">
+            <div class="customer-profile-avatar-large">${initial}</div>
           </div>
-          <a href="${routes.orders}" class="customer-btn customer-btn-ghost">Xem lịch sử đơn</a>
+          <div class="customer-profile-hero-info">
+            <h2>${escapeHtml(name)}</h2>
+            <p><i class="fas fa-id-badge"></i> ${escapeHtml(profile.username || "Tài khoản khách")}</p>
+          </div>
         </div>
-        <div class="customer-detail-grid">
-          <article class="customer-info-card">
-            <h3>Thông tin liên hệ</h3>
+
+        <div class="customer-profile-sections">
+          <!-- Personal Info Card -->
+          <div class="customer-profile-card">
+            <div class="customer-profile-card-head">
+              <i class="fas fa-user-gear"></i>
+              <h3>Thông tin liên hệ</h3>
+            </div>
             <form id="customer-profile-form" class="customer-form-stack">
-              <label><span>Họ và tên</span><input name="ho_ten" value="${escapeHtml(profile.ho_ten || profile.fullname || "")}" required /></label>
-              <label><span>Số điện thoại</span><input name="so_dien_thoai" value="${escapeHtml(profile.so_dien_thoai || profile.phone || "")}" required /></label>
-              <button class="customer-btn customer-btn-primary" type="submit">Lưu thông tin</button>
+              <div class="customer-form-row">
+                <div class="customer-form-group">
+                  <span>Họ và tên</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-user"></i>
+                    <input name="ho_ten" value="${escapeHtml(name)}" required />
+                  </div>
+                </div>
+                <div class="customer-form-group">
+                  <span>Số điện thoại</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-phone"></i>
+                    <input name="so_dien_thoai" value="${escapeHtml(phone)}" required />
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: 8px;">
+                <button class="customer-btn customer-btn-primary" type="submit">
+                  <i class="fas fa-floppy-disk"></i> Lưu thay đổi
+                </button>
+              </div>
             </form>
-          </article>
-          <article class="customer-info-card">
-            <h3>Đổi mật khẩu</h3>
+          </div>
+
+          <!-- Security Card -->
+          <div class="customer-profile-card customer-password-card">
+            <div class="customer-profile-card-head">
+              <i class="fas fa-shield-halved"></i>
+              <h3>Bảo mật tài khoản</h3>
+            </div>
             <form id="customer-password-form" class="customer-form-stack">
-              <label><span>Mật khẩu hiện tại</span><input name="mat_khau_hien_tai" type="password" autocomplete="current-password" required /></label>
-              <label><span>Mật khẩu mới</span><input name="mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required /></label>
-              <label><span>Xác nhận mật khẩu mới</span><input name="xac_nhan_mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required /></label>
-              <small class="customer-form-helper">Mật khẩu mới cần ít nhất 8 ký tự và khác mật khẩu hiện tại.</small>
-              <button class="customer-btn customer-btn-primary" type="submit">Cập nhật mật khẩu</button>
+              <div class="customer-form-group">
+                <span>Mật khẩu hiện tại</span>
+                <div class="customer-form-field">
+                  <i class="fas fa-key"></i>
+                  <input name="mat_khau_hien_tai" type="password" autocomplete="current-password" required placeholder="••••••••" />
+                </div>
+              </div>
+              <div class="customer-form-row">
+                <div class="customer-form-group">
+                  <span>Mật khẩu mới</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-lock"></i>
+                    <input name="mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required placeholder="Nhập mật khẩu mới" />
+                  </div>
+                </div>
+                <div class="customer-form-group">
+                  <span>Xác nhận mật khẩu</span>
+                  <div class="customer-form-field">
+                    <i class="fas fa-lock-open"></i>
+                    <input name="xac_nhan_mat_khau_moi" type="password" minlength="8" autocomplete="new-password" required placeholder="Cùng mật khẩu mới" />
+                  </div>
+                </div>
+              </div>
+              <p class="customer-form-helper" style="margin: 0 0 16px;"><i class="fas fa-circle-info"></i> Mật khẩu mới cần ít nhất 8 ký tự.</p>
+              <button class="customer-btn customer-btn-ghost" type="submit">
+                Cập nhật mật khẩu
+              </button>
             </form>
-          </article>
+          </div>
         </div>
       </section>
     `;
@@ -1880,6 +1929,7 @@
       return;
     }
     syncPublicHeader(sessionData.user || {});
+    bindLogoutActions(document);
     renderShell(sessionData.user || {}, page);
 
     switch (page) {

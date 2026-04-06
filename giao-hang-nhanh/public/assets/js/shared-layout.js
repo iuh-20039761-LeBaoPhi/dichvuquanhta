@@ -78,6 +78,9 @@
   }
 
   function escapeHtml(text) {
+    if (window.GiaoHangNhanhCore?.escapeHtml) {
+      return window.GiaoHangNhanhCore.escapeHtml(text);
+    }
     return String(text ?? "")
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -135,9 +138,29 @@
         .filter(Boolean)
         .slice(-1)[0] || "Tài khoản",
     );
+    const accountSummary = escapeHtml(
+      String(session.phone || "").trim() || String(session.email || "").trim() || "Khu vực cá nhân"
+    );
 
-    loginItem.innerHTML = `<a href="${accountLinks.dashboard}">Xin chào, ${firstName}</a>`;
-    registerItem.innerHTML = `<a href="${accountLinks.profile}" class="btn-primary nav-auth-cta">Tài khoản</a>`;
+    loginItem.className = "dropdown has-submenu customer-nav-dropdown";
+    loginItem.innerHTML = `
+      <a href="${accountLinks.dashboard}">Xin chào, ${firstName}</a>
+      <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
+        <li class="customer-nav-dropdown-summary">
+          <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
+          <div class="customer-nav-dropdown-user">
+            <strong>${firstName}</strong>
+            <span>${accountSummary}</span>
+          </div>
+        </li>
+        <li><a href="${accountLinks.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
+        <li><a href="${projectBase}public/khach-hang/lich-su-don-hang.html"><i class="fas fa-box"></i> Lịch sử đơn hàng</a></li>
+        <li><a href="${accountLinks.profile}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>
+        <li class="customer-nav-logout-wrapper"><a href="${projectBase}dang-nhap.html" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
+      </ul>
+    `;
+    registerItem.innerHTML = "";
+    registerItem.hidden = true;
   }
 
   function applyLinks(root, linkMap) {
