@@ -25,11 +25,47 @@ async function checkAlreadyLoggedIn() {
     try {
         const session = await DVQTApp.checkSession();
         if (session && session.logged_in) {
-            const redirects = {
-                customer: '../tho-nha/pages/customer/trang-ca-nhan.html',
-                provider: '../tho-nha/pages/provider/trang-ca-nhan.html',
+            // Lấy service từ URL để biết cần quay về đâu
+            const urlParams = new URLSearchParams(window.location.search);
+            const service = urlParams.get('service');
+            const root = (typeof DVQTApp !== 'undefined' && DVQTApp.ROOT_URL !== undefined) ? DVQTApp.ROOT_URL : '/Test';
+
+            // Nếu không có service cụ thể, về trang chủ tổng
+            if (!service || service === 'dvqt') {
+                window.location.href = root + '/index.html';
+                return;
+            }
+
+            // Danh sách đích đến (Đồng bộ với logic login bên dưới)
+            const serviceHomes = {
+                'thonha': root + '/tho-nha/index.html',
+                'thuexe': root + '/thue-xe/index.html',
+                'giatuinhanh': root + '/giat-ui-nhanh/index.html',
+                'mevabe': root + '/cham-soc-me-va-be/index.html',
+                'nguoibenh': root + '/cham-soc-nguoi-benh/index.html',
+                'nguoigia': root + '/cham-soc-nguoi-gia/index.html',
+                'donvesinh': root + '/dich-vu-don-ve-sinh/index.html',
+                'vuonnha': root + '/cham-soc-vuon-nha/index.html',
+                'giaohangnhanh': root + '/giao-hang-nhanh/index.html',
+                'suaxe': root + '/sua-xe-luu-dong/index.html',
+                'chuyendon': root + '/dich-vu-chuyen-don/index.html',
+                'laixeho': root + '/dich-vu-lai-xe-ho/index.html'
             };
-            window.location.href = redirects[session.role] || '../index.html';
+
+            const serviceDashboards = {
+                'thonha': root + '/tho-nha/pages/provider/trang-ca-nhan.html',
+                'thuexe': root + '/thue-xe/views/pages/provider/bang-dieu-khien.html',
+                'giatuinhanh': root + '/giat-ui-nhanh/nha-cung-cap.html'
+            };
+
+            let target = '';
+            if (session.role === 'customer') {
+                target = serviceHomes[service] || (root + '/index.html');
+            } else {
+                target = serviceDashboards[service] || serviceHomes[service] || (root + '/index.html');
+            }
+
+            window.location.href = target;
         }
     } catch (e) { }
 }
