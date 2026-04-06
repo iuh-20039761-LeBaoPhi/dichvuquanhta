@@ -273,6 +273,140 @@ $summaryTotal = count($rows);
             }
         }
     </style>
+    <style>
+        body {
+            background: linear-gradient(180deg, #fff6fb 0%, #ffeff8 48%, #fff9fc 100%);
+            color: #6a3f59;
+        }
+
+        .panel-soft {
+            border: 1px solid #f2c6de;
+            border-radius: 16px;
+            box-shadow: 0 14px 34px rgba(151, 61, 107, 0.16);
+            background: #fff9fd;
+        }
+
+        .stat-card {
+            border-color: #f1c6dc;
+            background: linear-gradient(180deg, #fff9fd, #fff2f9);
+            box-shadow: 0 8px 20px rgba(151, 61, 107, 0.09);
+        }
+
+        .filter-box {
+            border-color: #f1c7dd;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #fff8fc, #fff2f9);
+            box-shadow: 0 8px 18px rgba(155, 65, 112, 0.08);
+        }
+
+        .table-wrap {
+            border-color: #f1c4dc;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 10px 22px rgba(151, 61, 107, 0.1);
+        }
+
+        .jobs-table {
+            --bs-table-hover-bg: #fff1f8;
+        }
+
+        .jobs-table thead th {
+            background: linear-gradient(135deg, #ffe8f3 0%, #ffeff8 100%);
+            color: #8a3260;
+            border-bottom-color: #f3cbe0;
+        }
+
+        .jobs-table tbody td {
+            border-color: #f7dae9;
+        }
+
+        .id-badge {
+            background: #ffeaf5 !important;
+            border-color: #f2bed9 !important;
+            color: #8f2f61 !important;
+        }
+
+        .summary-note,
+        .empty-row,
+        .text-secondary,
+        .form-label.small.text-secondary {
+            color: #925b7c !important;
+        }
+
+        .badge.rounded-pill.text-bg-warning,
+        .badge.rounded-pill.text-bg-info,
+        .badge.rounded-pill.text-bg-success,
+        .badge.rounded-pill.text-bg-secondary {
+            border: 1px solid #f1bfd9;
+            background: #fff1f8 !important;
+            color: #8d325f !important;
+        }
+
+        .btn-primary {
+            border-color: #ef9fc7;
+            background: linear-gradient(135deg, #ea73ad, #cd5a92);
+            box-shadow: 0 8px 18px rgba(205, 90, 146, 0.24);
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            border-color: #e58ab8;
+            background: linear-gradient(135deg, #de63a1, #bf4d86);
+        }
+
+        .btn-outline-secondary {
+            color: #8c3160;
+            border-color: #ebb3d1;
+            background: #fff7fb;
+        }
+
+        .btn-outline-secondary:hover,
+        .btn-outline-secondary:focus {
+            color: #fff;
+            border-color: #ca5a90;
+            background: #ca5a90;
+        }
+
+        .form-control,
+        .form-select,
+        .input-group-text {
+            border-color: #f0c5db;
+            background: #fffbfd;
+            color: #744360;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #e18bb8;
+            box-shadow: 0 0 0 0.2rem rgba(225, 139, 184, 0.2);
+        }
+
+        .pagination .page-link {
+            color: #8c3462;
+            border-color: #f1c5dc;
+            background: #fff9fc;
+        }
+
+        .pagination .page-item.active .page-link {
+            border-color: #ce5e95;
+            background: #ce5e95;
+            color: #fff;
+        }
+
+        .alert-success {
+            color: #1f6148;
+            background: #e9f8f1;
+            border-color: #9dd9be;
+            box-shadow: 0 8px 16px rgba(31, 97, 72, 0.08);
+        }
+
+        .alert-warning {
+            color: #7b2f53;
+            background: #fff1f8;
+            border-color: #efbdd7;
+            box-shadow: 0 8px 16px rgba(123, 47, 83, 0.08);
+        }
+    </style>
 </head>
 <body>
 <?php render_nhan_vien_header($sessionUser, 'Quan ly hoa don nhan vien', 'orders'); ?>
@@ -302,7 +436,7 @@ $summaryTotal = count($rows);
                     <div class="stat-card">
                         <div class="d-flex align-items-center justify-content-between gap-3">
                             <div>
-                                <div class="text-secondary small">Đang chờ duyệt</div>
+                                <div class="text-secondary small">Đang chờ nhận</div>
                                 <div class="stat-value text-warning-emphasis"><?= (int)$summaryPending ?></div>
                             </div>
                             <div class="stat-icon bg-warning-subtle text-warning-emphasis"><i class="bi bi-hourglass-split"></i></div>

@@ -654,6 +654,235 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 	}
 </style>
 
+<style>
+	:root {
+		--rose-50: #fff5fb;
+		--rose-100: #ffe8f3;
+		--rose-200: #ffd4e8;
+		--rose-300: #f6bad7;
+		--rose-400: #ea93bd;
+		--rose-500: #d46da0;
+		--rose-600: #bd4f87;
+		--rose-700: #8f2f61;
+		--accent-peach-100: #fff0e6;
+		--accent-peach-200: #f5d6c2;
+		--rose-shadow: rgba(151, 61, 107, 0.2);
+	}
+
+	.admin-main,
+	.admin-main > main {
+		background: linear-gradient(140deg, #fff1f9 0%, #ffe7f2 52%, #fff6fb 100%) !important;
+	}
+
+	.od-title,
+	.od-panel-title,
+	.od-profile-title {
+		color: var(--rose-700) !important;
+	}
+
+	.od-chip,
+	.od-job-count {
+		background: #ffeaf4 !important;
+		color: var(--rose-700) !important;
+		border-color: var(--rose-300) !important;
+	}
+
+	.od-back-btn {
+		background: linear-gradient(135deg, #ef7eb4, #cb5c93) !important;
+		border-color: #f2a7cb !important;
+		box-shadow: 0 8px 20px rgba(208, 92, 145, 0.3) !important;
+	}
+
+	.od-back-btn:hover {
+		background: linear-gradient(135deg, #e96ca8, #bb4c86) !important;
+	}
+
+	.od-alert {
+		background: #fff0f8 !important;
+		border-color: var(--rose-300) !important;
+		color: var(--rose-700) !important;
+		box-shadow: 0 8px 20px rgba(141, 47, 97, 0.08) !important;
+	}
+
+	.od-card {
+		border-color: var(--rose-300) !important;
+		border-radius: 14px !important;
+		box-shadow: 0 12px 28px var(--rose-shadow) !important;
+	}
+
+	.od-hero {
+		background: linear-gradient(98deg, #cc4a86 0%, #e96aa5 48%, #f39a92 100%) !important;
+		border: 1px solid rgba(255, 220, 239, 0.8) !important;
+		box-shadow: 0 18px 38px rgba(157, 57, 109, 0.34) !important;
+	}
+
+	.od-status-pill,
+	.od-tool {
+		background: rgba(255, 239, 248, 0.24) !important;
+		border-color: rgba(255, 242, 250, 0.62) !important;
+	}
+
+	.od-progress-ring {
+		background: conic-gradient(#ffd4e8 calc(var(--p) * 1%), rgba(255, 233, 244, 0.36) 0) !important;
+	}
+
+	.od-progress-core {
+		background: rgba(141, 47, 97, 0.6) !important;
+	}
+
+	.od-box {
+		border-color: rgba(255, 220, 239, 0.7) !important;
+		background: rgba(154, 61, 108, 0.28) !important;
+	}
+
+	.od-box-icon {
+		background: rgba(255, 245, 251, 0.24) !important;
+		border-color: rgba(255, 241, 249, 0.62) !important;
+	}
+
+	.od-panel-head,
+	.od-profile-head {
+		border-bottom-color: var(--rose-300) !important;
+		background: linear-gradient(135deg, var(--rose-100), #ffedf7) !important;
+	}
+
+	.od-jobs-body {
+		background: linear-gradient(180deg, #fff7fc 0%, #ffeef7 100%) !important;
+	}
+
+	.od-jobs-list li {
+		background: rgba(255, 255, 255, 0.72) !important;
+		border-color: #f4c5de !important;
+		color: #6f3456 !important;
+	}
+
+	.od-jobs-list li::before {
+		background: var(--rose-600) !important;
+	}
+
+	.od-jobs-foot {
+		border-top-color: var(--rose-300) !important;
+		background: #fff9fd !important;
+	}
+
+	.od-mini {
+		border-color: #f3c4dd !important;
+		background: linear-gradient(135deg, #ffe9f4, #fff2f9) !important;
+		box-shadow: 0 4px 12px rgba(160, 65, 113, 0.08) !important;
+	}
+
+	.od-mini .k {
+		color: #95537a !important;
+	}
+
+	.od-mini .v {
+		color: #722f56 !important;
+	}
+
+	.od-progress-top {
+		color: #864a6f !important;
+	}
+
+	.od-progress-track {
+		background: #fde4f1 !important;
+		border: 1px solid #f5c2dc !important;
+	}
+
+	.od-progress-fill {
+		background: linear-gradient(90deg, #d25f98, #f4938e) !important;
+	}
+
+	.od-progress-note {
+		color: #8a5b77 !important;
+	}
+
+	.od-timeline li {
+		color: #6f3558 !important;
+	}
+
+	.od-timeline li::before {
+		border-color: #ebb1cf !important;
+	}
+
+	.od-timeline li.done::before,
+	.od-timeline li.active::before {
+		border-color: var(--rose-600) !important;
+		background: var(--rose-600) !important;
+	}
+
+	.od-timeline li span {
+		color: #99617f !important;
+	}
+
+	.od-next {
+		border-color: #f4bfdc !important;
+		background: linear-gradient(135deg, #fff2fa 0%, #ffe9f5 100%) !important;
+		color: #7f3f66 !important;
+	}
+
+	.od-avatar {
+		border-color: #f7c8df !important;
+		background: #fdebf5 !important;
+		box-shadow: 0 8px 16px rgba(171, 76, 122, 0.18) !important;
+	}
+
+	.od-name {
+		color: #7a345b !important;
+	}
+
+	.od-rating {
+		color: #8c5a78 !important;
+	}
+
+	.od-info-row {
+		color: #784062 !important;
+	}
+
+	.od-info-row i {
+		color: #d770a5 !important;
+	}
+
+	.od-exp {
+		background: #ffeaf4 !important;
+		color: #8d4c72 !important;
+		border: 1px solid #f3c0db !important;
+	}
+
+	.od-review-box {
+		border-color: #f2c3dd !important;
+		background: linear-gradient(180deg, #fff8fc, #fff0f8) !important;
+		box-shadow: 0 5px 14px rgba(160, 63, 111, 0.08) !important;
+	}
+
+	.od-review-label {
+		color: #9b5c80 !important;
+	}
+
+	.od-review-value {
+		color: #74385b !important;
+	}
+
+	/* Override inline badge colors without changing layout */
+	.od-grid > article:nth-of-type(4) .od-profile-head .od-job-count {
+		background: #ffe9f3 !important;
+		color: #943764 !important;
+		border-color: #f5c2dd !important;
+	}
+
+	.od-grid > article:nth-of-type(5) .od-profile-head .od-job-count {
+		background: #ffe6f2 !important;
+		color: #943664 !important;
+		border-color: #f3bed9 !important;
+	}
+
+	.od-grid > article:nth-of-type(6) .od-profile-head .od-job-count,
+	.od-grid > article:nth-of-type(7) .od-profile-head .od-job-count {
+		background: #f7eeff !important;
+		color: #6d4ca1 !important;
+		border-color: #ddd0f7 !important;
+	}
+</style>
+
 <div class="od-head">
 	<!-- <h2 class="od-title">Chi tiết hóa đơn mẹ và bé</h2> -->
 	<div class="od-head-actions">

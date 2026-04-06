@@ -51,12 +51,12 @@ if (!function_exists('render_nhan_vien_header_styles')) {
         ?>
         <style>
             :root {
-                --nv-border: #dbe4f0;
-                --nv-title: #0f172a;
-                --nv-text: #334155;
-                --nv-sidebar-a: #0b2239;
-                --nv-sidebar-b: #123551;
-                --nv-accent: #16a34a;
+                --nv-border: #f1c3dc;
+                --nv-title: #7a2f58;
+                --nv-text: #6b3e58;
+                --nv-sidebar-a: #8f2f61;
+                --nv-sidebar-b: #c24b87;
+                --nv-accent: #e76fa8;
             }
 
             html,
@@ -67,13 +67,14 @@ if (!function_exists('render_nhan_vien_header_styles')) {
             body {
                 color: var(--nv-text);
                 scrollbar-gutter: stable;
+                background: linear-gradient(180deg, #fff5fb 0%, #ffeef7 48%, #fff9fc 100%);
             }
 
             .nv-admin-shell {
                 border: 1px solid var(--nv-border);
                 border-radius: 18px;
                 overflow: visible;
-                box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+                box-shadow: 0 16px 40px rgba(157, 57, 109, 0.16);
                 background: #ffffff;
                 --bs-gutter-x: 0;
                 margin-left: 0;
@@ -99,7 +100,7 @@ if (!function_exists('render_nhan_vien_header_styles')) {
                 content: '';
                 position: absolute;
                 inset: 0;
-                background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 45%);
+                background: radial-gradient(circle at top left, rgba(255, 209, 231, 0.35), transparent 48%);
                 pointer-events: none;
             }
 
@@ -116,7 +117,7 @@ if (!function_exists('render_nhan_vien_header_styles')) {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+                box-shadow: 0 8px 18px rgba(143, 47, 97, 0.28);
             }
 
             .nv-admin-brand img {
@@ -158,18 +159,18 @@ if (!function_exists('render_nhan_vien_header_styles')) {
             }
 
             .nv-admin-sidebar .list-group-item.active {
-                background: linear-gradient(90deg, #22c55e, var(--nv-accent));
+                background: linear-gradient(90deg, #f08ab8, var(--nv-accent));
                 color: #fff;
-                box-shadow: 0 8px 20px rgba(22, 163, 74, 0.35);
+                box-shadow: 0 8px 22px rgba(212, 109, 160, 0.42);
             }
 
             .nv-admin-main {
                 min-width: 0;
-                background: linear-gradient(180deg, #f9fbff, #f4f7fc);
+                background: linear-gradient(180deg, #fff8fc, #fff1f9);
             }
 
             .nv-admin-topbar {
-                background: linear-gradient(180deg, #ffffff, #f8fafc);
+                background: linear-gradient(180deg, #ffffff, #fff3fa);
                 border-bottom: 1px solid var(--nv-border);
             }
 
@@ -179,9 +180,9 @@ if (!function_exists('render_nhan_vien_header_styles')) {
             }
 
             .nv-admin-avatar-btn {
-                border: 1px solid #dbe4f0;
-                color: #0f172a;
-                background: #f8fafc;
+                border: 1px solid #f2c6de;
+                color: #7a2f58;
+                background: #fff7fb;
                 border-radius: 999px;
                 padding: 3px 10px 3px 3px;
                 display: inline-flex;
@@ -191,8 +192,8 @@ if (!function_exists('render_nhan_vien_header_styles')) {
             }
 
             .nv-admin-avatar-btn:hover {
-                background: #f1f5f9;
-                color: #0f172a;
+                background: #ffeaf4;
+                color: #6d284f;
             }
 
             .nv-admin-avatar {
@@ -200,7 +201,7 @@ if (!function_exists('render_nhan_vien_header_styles')) {
                 height: 30px;
                 border-radius: 50%;
                 object-fit: cover;
-                border: 2px solid #e2e8f0;
+                border: 2px solid #f4cade;
                 background: #fff;
             }
 
@@ -208,7 +209,7 @@ if (!function_exists('render_nhan_vien_header_styles')) {
                 min-width: 220px;
                 border: 0;
                 border-radius: 12px;
-                box-shadow: 0 12px 28px rgba(17, 24, 39, 0.18);
+                box-shadow: 0 14px 30px rgba(144, 55, 101, 0.2);
             }
 
             .nv-admin-page {

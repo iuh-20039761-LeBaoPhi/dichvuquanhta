@@ -190,6 +190,124 @@ $statusClass = strtolower($statusText) === 'pending' ? ' pending' : '';
             }
         }
     </style>
+    <style>
+        body {
+            background:
+                radial-gradient(1200px 500px at 10% -10%, #ffe1f1 0%, transparent 55%),
+                radial-gradient(900px 440px at 100% 0%, #ffeede 0%, transparent 52%),
+                linear-gradient(180deg, #fff4fb 0%, #fff9fc 100%);
+            color: #6b3e58;
+        }
+
+        .profile-shell {
+            border-color: #f1c5dc;
+            border-radius: 20px;
+            box-shadow: 0 18px 45px rgba(156, 65, 113, 0.16);
+            background: #fff9fd;
+        }
+
+        .profile-head {
+            background: linear-gradient(110deg, #c14b84 0%, #e16ca4 68%, #f39a90 100%);
+            border-bottom: 1px solid #f4cade;
+        }
+
+        .card-soft {
+            border-color: #f1c7dd;
+            background: #fff;
+            box-shadow: 0 10px 24px rgba(156, 65, 113, 0.12);
+        }
+
+        .avatar {
+            border-color: #f8cee2;
+            box-shadow: 0 10px 22px rgba(195, 75, 132, 0.28);
+        }
+
+        .name,
+        .info-value,
+        h2.h5 {
+            color: #7a345a;
+        }
+
+        .muted,
+        .info-label,
+        .path-text {
+            color: #95627f;
+        }
+
+        .status-pill {
+            border-color: #f2bfd9;
+            background: #ffe9f4;
+            color: #8d2f61;
+        }
+
+        .status-pill.pending {
+            border-color: #f2d2bc;
+            background: #fff1e7;
+            color: #9d5d2a;
+        }
+
+        .info-item {
+            border-color: #f1c8dd;
+            background: #fff6fb;
+            box-shadow: 0 6px 14px rgba(151, 61, 107, 0.08);
+        }
+
+        .media-item {
+            border-color: #f1c7dd;
+            background: #fff8fc;
+        }
+
+        .media-item img {
+            border-color: #f0c6dc;
+            box-shadow: 0 8px 18px rgba(151, 61, 107, 0.12);
+        }
+
+        .btn-primary {
+            border-color: #ef9fc7;
+            background: linear-gradient(135deg, #eb76af, #cd5d94);
+            box-shadow: 0 8px 18px rgba(205, 93, 148, 0.24);
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            border-color: #e58fb9;
+            background: linear-gradient(135deg, #df66a4, #bf4f87);
+        }
+
+        .btn-outline-secondary {
+            color: #8d335f;
+            border-color: #ebb5d2;
+            background: #fff9fc;
+        }
+
+        .btn-outline-secondary:hover,
+        .btn-outline-secondary:focus {
+            color: #fff;
+            border-color: #cb5f94;
+            background: #cb5f94;
+        }
+
+        .alert-success {
+            color: #1f6148;
+            background: #e9f8f1;
+            border-color: #9dd9be;
+            box-shadow: 0 8px 16px rgba(31, 97, 72, 0.08);
+        }
+
+        .alert-warning {
+            color: #7d2e53;
+            background: #fff1f8;
+            border-color: #efbdd7;
+            box-shadow: 0 8px 16px rgba(125, 46, 83, 0.08);
+        }
+
+        .alert-danger {
+            color: #9b355d;
+            background: #ffe8f0;
+            border-color: #f4bfd2;
+            box-shadow: 0 8px 16px rgba(155, 53, 93, 0.1);
+        }
+    </style>
 </head>
 <body>
 <?php render_nhan_vien_header($sessionUser, 'Thong tin nhan vien', 'profile'); ?>

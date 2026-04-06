@@ -719,6 +719,248 @@ $flashMsg = trim((string)($_GET['msg'] ?? ''));
             }
         }
     </style>
+    <style>
+        :root {
+            --rose-50: #fff5fb;
+            --rose-100: #ffe9f4;
+            --rose-200: #ffd8ea;
+            --rose-300: #f3bdd7;
+            --rose-500: #d46b9f;
+            --rose-700: #8d2f60;
+            --peach-100: #fff1e8;
+            --peach-300: #f6d5c4;
+        }
+
+        body {
+            background: linear-gradient(180deg, #fff6fb 0%, #ffeef8 45%, #fff9fc 100%);
+            color: #6b3d58;
+        }
+
+        .detail-shell {
+            border-color: var(--rose-300);
+            background: #fff9fd;
+            box-shadow: 0 14px 34px rgba(151, 61, 107, 0.18);
+            border-radius: 16px;
+        }
+
+        .hero-box {
+            background: linear-gradient(95deg, #bf467f 0%, #e16aa3 58%, #f39a91 100%);
+            border-bottom: 1px solid rgba(255, 218, 236, 0.9);
+        }
+
+        .hero-status,
+        .hero-stat {
+            border-color: rgba(255, 236, 246, 0.68);
+            background: rgba(255, 246, 251, 0.18);
+        }
+
+        .hero-progress {
+            border-color: rgba(255, 236, 246, 0.88);
+            background: rgba(255, 238, 247, 0.28);
+            box-shadow: 0 8px 20px rgba(126, 30, 74, 0.2);
+        }
+
+        .panel {
+            border-color: var(--rose-300);
+            background: #fff8fc;
+            box-shadow: 0 10px 24px rgba(156, 65, 113, 0.12);
+            border-radius: 14px;
+        }
+
+        .panel-head {
+            background: linear-gradient(135deg, var(--rose-100), #ffeff8);
+            border-bottom-color: var(--rose-300);
+        }
+
+        .panel-title {
+            color: var(--rose-700);
+        }
+
+        .chip {
+            background: #ffe9f4;
+            color: #8d2f60;
+            border-color: #f1bfd8;
+        }
+
+        .chip.success {
+            background: #ffe2f0;
+            color: #8a2d5c;
+            border-color: #efb9d4;
+        }
+
+        .chip.warning {
+            background: var(--peach-100);
+            color: #9f5e2b;
+            border-color: var(--peach-300);
+        }
+
+        .chip.danger {
+            background: #ffe4ea;
+            color: #af355f;
+            border-color: #f6bfd0;
+        }
+
+        .jobs-list li {
+            border-color: #f1c2db;
+            background: #fff1f8;
+            color: #6e3a5a;
+        }
+
+        .jobs-list li::before {
+            background: var(--rose-500);
+        }
+
+        .jobs-meta {
+            border-top-color: #f0c5dc;
+        }
+
+        .jobs-meta-item {
+            border-color: #f1c8dd;
+            background: linear-gradient(135deg, #ffeaf5, #fff2fa);
+        }
+
+        .label-xs {
+            color: #9a5b80;
+        }
+
+        .value-sm {
+            color: #6f3558;
+        }
+
+        .progress-head {
+            color: #8a4f73;
+        }
+
+        .progress-wrap {
+            border-color: #f1c6dc;
+            background: #fce4f1;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #cf5f98, #f08f8e);
+        }
+
+        .progress-bar.danger {
+            background: linear-gradient(90deg, #e16b9a, #cf4d79);
+        }
+
+        .time-table {
+            border-color: #f1c8dd;
+        }
+
+        .time-table th,
+        .time-table td {
+            border-bottom-color: #f4d3e5;
+            color: #744161;
+        }
+
+        .time-table th {
+            background: #ffeaf5;
+        }
+
+        .status-line {
+            color: #7f4a6f;
+        }
+
+        .muted-note {
+            color: #9a6785;
+        }
+
+        .avatar {
+            border-color: #f4c6de;
+            box-shadow: 0 8px 16px rgba(169, 73, 121, 0.2);
+        }
+
+        .person-name {
+            color: #7c345a;
+        }
+
+        .person-row {
+            color: #764363;
+        }
+
+        .person-row i {
+            color: #d26da2;
+        }
+
+        .review-box {
+            border-color: #f0c4dc;
+            background: #fff9fd;
+            box-shadow: 0 8px 18px rgba(156, 65, 113, 0.09);
+        }
+
+        .review-head {
+            background: #ffeef8;
+            border-bottom-color: #f1c7dd;
+        }
+
+        .review-title,
+        .review-text {
+            color: #6f3658;
+        }
+
+        .media-grid img,
+        .media-grid video {
+            border-color: #f0c7dc;
+            box-shadow: 0 6px 14px rgba(151, 61, 107, 0.1);
+        }
+
+        .media-empty {
+            border-color: #eebed8;
+            color: #8d5779;
+            background: #fff4fa;
+        }
+
+        .alert-success {
+            color: #1f6148;
+            background: #e9f8f1;
+            border-color: #9dd9be;
+            box-shadow: 0 8px 18px rgba(31, 97, 72, 0.08);
+        }
+
+        .alert-warning {
+            color: #7d2d53;
+            background: #fff1f8;
+            border-color: #f1bfd8;
+            box-shadow: 0 8px 18px rgba(125, 45, 83, 0.08);
+        }
+
+        .btn-primary {
+            border-color: #f29ac5;
+            background: linear-gradient(135deg, #eb76af, #cf5e96);
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            border-color: #ea8ebb;
+            background: linear-gradient(135deg, #e066a5, #bf4f88);
+        }
+
+        .btn-outline-danger {
+            color: #a63a61;
+            border-color: #e7a8c3;
+            background: #fff7fb;
+        }
+
+        .btn-outline-danger:hover,
+        .btn-outline-danger:focus {
+            color: #fff;
+            border-color: #cc5b91;
+            background: #cc5b91;
+        }
+
+        .form-control,
+        .form-control-sm {
+            border-color: #efc5db;
+            background: #fffbfd;
+        }
+
+        .form-control:focus,
+        .form-control-sm:focus {
+            border-color: #e38ab8;
+            box-shadow: 0 0 0 0.2rem rgba(227, 138, 184, 0.2);
+        }
+    </style>
 </head>
 <body>
 <?php render_khach_hang_header($sessionUser, 'Chi tiet hoa don khach hang', 'orders'); ?>
