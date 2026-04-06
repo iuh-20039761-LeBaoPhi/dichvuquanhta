@@ -46,7 +46,7 @@
           <div class="row g-3 stats-grid" id="statsGrid"></div>
 
           <div class="row g-3 mt-1">
-            <div class="col-12 col-xl-8">
+            <div class="col-12 col-xl-9">
               <article class="panel-card h-100">
                 <div class="panel-head">
                   <h3>
@@ -75,7 +75,7 @@
               </article>
             </div>
 
-            <div class="col-12 col-xl-4">
+            <div class="col-12 col-xl-3">
               <article class="panel-card h-100">
                 <div class="panel-head">
                   <h3>
@@ -89,132 +89,6 @@
           </div>
         </section>
       </main>
-    </div>
-
-    <div
-      class="modal fade"
-      id="adminOrderDetailModal"
-      tabindex="-1"
-      aria-labelledby="adminOrderDetailModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="adminOrderDetailModalLabel">
-              Chi tiết đơn đặt
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="admin-order-summary-card">
-              <div class="admin-order-summary-grid">
-                <div class="admin-summary-section">
-                  <h6>Đơn đặt</h6>
-                  <div class="admin-info-item">
-                    <b>Mã đơn:</b> <span id="adminDetailOrderCode">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Dịch vụ cụ thể:</b>
-                    <span id="adminDetailServiceName">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Công việc thực hiện:</b>
-                    <span id="adminDetailWorkItems">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Hóa chất hỗ trợ:</b>
-                    <span id="adminDetailChemicals">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Hình thức giao nhận:</b>
-                    <span id="adminDetailTransport">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Số lượng:</b> <span id="adminDetailQuantity">-</span>
-                  </div>
-                </div>
-
-                <div class="admin-summary-section">
-                  <h6>Thanh toán</h6>
-                  <div class="admin-info-item">
-                    <b>Ngày đặt:</b> <span id="adminDetailOrderDate">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Trạng thái đơn:</b>
-                    <span id="adminDetailOrderStatus">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Trạng thái thanh toán:</b>
-                    <span id="adminDetailPaymentStatus">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Giá dịch vụ:</b>
-                    <span id="adminDetailServicePrice">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Phí di chuyển:</b>
-                    <span id="adminDetailTransportFee">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Phụ phí di chuyển:</b>
-                    <span id="adminDetailSurchargeFee">-</span>
-                  </div>
-                  <div class="admin-info-item">
-                    <b>Tổng tiền:</b> <span id="adminDetailTotal">-</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="admin-summary-note">
-                <div class="admin-info-item">
-                  <b>Ghi chú:</b> <span id="adminDetailNote">-</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="admin-order-modal-grid mt-3">
-              <div class="admin-order-info-card">
-                <h6>Thông tin khách hàng</h6>
-                <div class="admin-info-item">
-                  <b>Họ tên:</b> <span id="adminDetailCustomerName">-</span>
-                </div>
-                <div class="admin-info-item">
-                  <b>Số điện thoại:</b>
-                  <span id="adminDetailCustomerPhone">-</span>
-                </div>
-                <div class="admin-info-item">
-                  <b>Email:</b> <span id="adminDetailCustomerEmail">-</span>
-                </div>
-                <div class="admin-info-item">
-                  <b>Địa chỉ:</b> <span id="adminDetailCustomerAddress">-</span>
-                </div>
-              </div>
-              <div class="admin-order-info-card">
-                <h6>Thông tin nhà cung cấp</h6>
-                <div class="admin-info-item">
-                  <b>Họ tên:</b> <span id="adminDetailSupplierName">-</span>
-                </div>
-                <div class="admin-info-item">
-                  <b>Số điện thoại:</b>
-                  <span id="adminDetailSupplierPhone">-</span>
-                </div>
-                <div class="admin-info-item">
-                  <b>Email:</b> <span id="adminDetailSupplierEmail">-</span>
-                </div>
-                <div class="admin-info-item">
-                  <b>Địa chỉ:</b> <span id="adminDetailSupplierAddress">-</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <script src="../public/asset/js/bootstrap.bundle.min.js"></script>
