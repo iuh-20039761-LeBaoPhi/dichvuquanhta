@@ -141,6 +141,17 @@
     return text || "---";
   }
 
+  function getPaymentStatusLabel(value) {
+    if (shared && typeof shared.getPaymentStatusLabel === "function") {
+      return shared.getPaymentStatusLabel(value);
+    }
+    return String(value || "")
+      .trim()
+      .toLowerCase() === "paid"
+      ? "Đã thanh toán"
+      : "Chưa thanh toán";
+  }
+
   function escapeHtml(value) {
     return String(value == null ? "" : value)
       .replace(/&/g, "&amp;")
@@ -204,6 +215,61 @@
       if (text) return text;
     }
     return "";
+  }
+
+  function hasAssignedProviderRow(row) {
+    var providerId = String(
+      (row &&
+        (row.idnhacungcap ||
+          row.id_ncc ||
+          row.manhacungcap ||
+          row.provider_id ||
+          (row.nhacungcap &&
+            (row.nhacungcap.id ||
+              row.nhacungcap.idnhacungcap ||
+              row.nhacungcap.provider_id ||
+              row.nhacungcap.manhacungcap)))) ||
+        "",
+    ).trim();
+
+    if (!providerId || providerId === "0") return false;
+
+    var providerName = pickFirstValue([
+      row && row.tennhacungcap,
+      row && row.nhacungcap && row.nhacungcap.hovaten,
+      row && row.nhacungcap && row.nhacungcap.user_name,
+    ]);
+
+    var providerPhone = String(
+      (row &&
+        (row.sdt_ncc ||
+          row.sodienthoai_ncc ||
+          row.phone_ncc ||
+          (row.nhacungcap &&
+            (row.nhacungcap.sodienthoai ||
+              row.nhacungcap.user_tel ||
+              row.nhacungcap.sdt)))) ||
+        "",
+    )
+      .replace(/\s+/g, "")
+      .trim();
+    if (providerPhone.indexOf("+84") === 0)
+      providerPhone = "0" + providerPhone.slice(3);
+    if (providerPhone.indexOf("84") === 0 && providerPhone.length >= 11) {
+      providerPhone = "0" + providerPhone.slice(2);
+    }
+
+    var providerEmail = String(
+      (row &&
+        (row.email_ncc ||
+          (row.nhacungcap &&
+            (row.nhacungcap.email || row.nhacungcap.user_email)))) ||
+        "",
+    )
+      .trim()
+      .toLowerCase();
+
+    return Boolean(providerName || providerPhone || providerEmail);
   }
 
   function normalizeAvatarCandidates(rawValue, kind) {
@@ -396,6 +462,7 @@
     var transportFee = toNumber(row && row.tiendichuyen);
     var surchargeFee = toNumber(row && row.phuphigiaonhan);
     var totalAmount = toNumber(row && row.tongtien);
+    var hasAssignedProvider = hasAssignedProviderRow(row);
 
     return {
       id: toNumber(row && row.id),
@@ -445,46 +512,61 @@
         ]),
       },
       provider: {
-        id: toNumber(
-          row &&
-            (row.idnhacungcap ||
-              row.id_ncc ||
-              row.manhacungcap ||
-              row.provider_id ||
-              (row.nhacungcap &&
-                (row.nhacungcap.id ||
-                  row.nhacungcap.idnhacungcap ||
-                  row.nhacungcap.provider_id ||
-                  row.nhacungcap.manhacungcap))),
-        ),
-        name:
-          (row && row.tennhacungcap) ||
-          (row && row.nhacungcap && row.nhacungcap.hovaten) ||
-          (row && row.nhacungcap && row.nhacungcap.user_name) ||
-          "Chưa phân công",
-        phone:
-          (row && row.sdt_ncc) ||
-          (row && row.nhacungcap && row.nhacungcap.sodienthoai) ||
-          (row && row.nhacungcap && row.nhacungcap.user_tel) ||
-          "",
-        email:
-          (row && row.email_ncc) ||
-          (row && row.nhacungcap && row.nhacungcap.email) ||
-          (row && row.nhacungcap && row.nhacungcap.user_email) ||
-          "",
-        address:
-          (row && row.diachi_ncc) ||
-          (row && row.nhacungcap && row.nhacungcap.diachi) ||
-          "",
-        avatar: pickFirstValue([
-          row && row.avatar_ncc,
-          row && row.avatar_nhacungcap,
-          row && row.provider_avatar,
-          row && row.avatar,
-          row && row.nhacungcap && row.nhacungcap.avatar,
-          row && row.nhacungcap && row.nhacungcap.avatar_ncc,
-          row && row.nhacungcap && row.nhacungcap.avatartenfile,
-        ]),
+        id: hasAssignedProvider
+          ? toNumber(
+              row &&
+                (row.idnhacungcap ||
+                  row.id_ncc ||
+                  row.manhacungcap ||
+                  row.provider_id ||
+                  (row.nhacungcap &&
+                    (row.nhacungcap.id ||
+                      row.nhacungcap.idnhacungcap ||
+                      row.nhacungcap.provider_id ||
+                      row.nhacungcap.manhacungcap))),
+            )
+          : 0,
+        name: hasAssignedProvider
+          ? (row && row.tennhacungcap) ||
+            (row &&
+              row.nhacungcap &&
+              (row.nhacungcap.hovaten || row.nhacungcap.user_name)) ||
+            "Chưa phân công"
+          : "Chưa phân công",
+        phone: hasAssignedProvider
+          ? (row && row.sdt_ncc) ||
+            (row && row.sodienthoai_ncc) ||
+            (row && row.phone_ncc) ||
+            (row &&
+              row.nhacungcap &&
+              (row.nhacungcap.sodienthoai ||
+                row.nhacungcap.user_tel ||
+                row.nhacungcap.sdt)) ||
+            ""
+          : "",
+        email: hasAssignedProvider
+          ? (row && row.email_ncc) ||
+            (row &&
+              row.nhacungcap &&
+              (row.nhacungcap.email || row.nhacungcap.user_email)) ||
+            ""
+          : "",
+        address: hasAssignedProvider
+          ? (row && row.diachi_ncc) ||
+            (row && row.address_ncc) ||
+            (row && row.nhacungcap && row.nhacungcap.diachi) ||
+            ""
+          : "",
+        avatar: hasAssignedProvider
+          ? pickFirstValue([
+              row && row.avatar_ncc,
+              row && row.avatar_nhacungcap,
+              row && row.provider_avatar,
+              row && row.nhacungcap && row.nhacungcap.avatar,
+              row && row.nhacungcap && row.nhacungcap.avatar_ncc,
+              row && row.nhacungcap && row.nhacungcap.avatartenfile,
+            ])
+          : "",
       },
       raw: row || null,
       items: [
@@ -502,6 +584,13 @@
       serviceFee: servicePrice,
       transportFee: transportFee,
       surchargeFee: surchargeFee,
+      paymentStatus:
+        (row &&
+          (row.trangthaithanhtoan ||
+            row.trang_thai_thanh_toan ||
+            row.payment_status ||
+            row.paymentStatus)) ||
+        "Unpaid",
       deliveryMethod:
         (row &&
           (row.hinhthucnhangiao ||
@@ -1761,7 +1850,24 @@
       ]);
     }
 
-    if (role === "provider" && !(order.provider && order.provider.avatar)) {
+    var hasProviderIdentityInOrder =
+      Number(order && order.provider && order.provider.id) > 0 &&
+      String((order && order.provider && order.provider.name) || "")
+        .trim()
+        .toLowerCase() !== "chưa phân công" &&
+      Boolean(
+        String((order && order.provider && order.provider.name) || "").trim() ||
+        String(
+          (order && order.provider && order.provider.phone) || "",
+        ).trim() ||
+        String((order && order.provider && order.provider.email) || "").trim(),
+      );
+
+    if (
+      role === "provider" &&
+      hasProviderIdentityInOrder &&
+      !(order.provider && order.provider.avatar)
+    ) {
       order.provider.avatar = pickFirstValue([
         currentUser && currentUser.avatar,
         currentUser && currentUser.user_avatar,
@@ -1836,20 +1942,13 @@
     setText("heroTransportFee", formatCurrencyVnd(transportFeeAmount));
     setText("heroSurchargeFee", formatCurrencyVnd(surchargeFeeAmount));
     setText("heroBookingDate", formatDateTime(order.createdAt));
+    setText("heroPaymentStatus", getPaymentStatusLabel(order.paymentStatus));
     setText("heroTotalAmount", formatCurrencyVnd(total));
     setText("heroTimeRange", deliveryMethodText);
     var heroDateRangeNode = document.getElementById("heroDateRange");
     if (heroDateRangeNode) {
-      if (executionStartValue || executionEndValue) {
-        heroDateRangeNode.textContent =
-          formatDateTime(executionStartValue) +
-          " - " +
-          formatDateTime(executionEndValue);
-        heroDateRangeNode.classList.remove("d-none");
-      } else {
-        heroDateRangeNode.textContent = "";
-        heroDateRangeNode.classList.add("d-none");
-      }
+      heroDateRangeNode.textContent = "";
+      heroDateRangeNode.classList.add("d-none");
     }
     setText("heroAddress", safeText(order.customer && order.customer.address));
 
@@ -1882,7 +1981,7 @@
     );
     renderAvatarBadge(
       "providerAvatarBadge",
-      order.provider && order.provider.avatar,
+      hasProviderIdentityInOrder ? order.provider && order.provider.avatar : "",
       initialsOf(order.provider && order.provider.name, "NCC"),
       "provider",
     );

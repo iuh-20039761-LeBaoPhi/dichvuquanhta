@@ -10,8 +10,8 @@ body.order-standalone-page {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: linear-gradient(135deg, #d93d97 0%, #e4709f 50%, #f2bc8f 100%);
-  box-shadow: 0 10px 22px rgba(157, 62, 112, 0.28);
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  box-shadow: 0 10px 22px rgba(59, 130, 246, 0.5);
 }
 
 .standalone-header-inner {
