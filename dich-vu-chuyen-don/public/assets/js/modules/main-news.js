@@ -15,9 +15,9 @@
   const publicBase = core.publicBase || `${projectBase}public/`;
   const articleListUrl = `${projectBase}cam-nang.html`;
   const articleDetailBaseUrl = `${publicBase}trang/noi-dung/cam-nang-chi-tiet.html`;
-  const movingHouseUrl = `${publicBase}trang/dich-vu/chuyen-nha.html`;
-  const movingOfficeUrl = `${publicBase}trang/dich-vu/chuyen-van-phong.html`;
-  const movingWarehouseUrl = `${publicBase}trang/dich-vu/chuyen-kho-bai.html`;
+  const movingHouseUrl = `${projectBase}dich-vu-chuyen-don.html#chuyen-nha`;
+  const movingOfficeUrl = `${projectBase}dich-vu-chuyen-don.html#chuyen-van-phong`;
+  const movingWarehouseUrl = `${projectBase}dich-vu-chuyen-don.html#chuyen-kho-bai`;
 
   function toPublicUrl(path) {
     if (!path) return path;

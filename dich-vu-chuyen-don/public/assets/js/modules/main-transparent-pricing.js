@@ -180,7 +180,7 @@
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">So sánh nhanh</span>
           <h2>Ba nhóm dịch vụ khác nhau ở phụ phí và phạm vi hỗ trợ</h2>
-          <p>Bạn có thể nhìn nhanh đơn giá theo km, nhóm hạng mục chính và đi tiếp sang đúng trang dịch vụ khi cần xem sâu hơn.</p>
+          <p>Bạn có thể nhìn nhanh đơn giá theo km, nhóm hạng mục chính và mở đúng nội dung trên trang dịch vụ duy nhất khi cần xem sâu hơn.</p>
         </div>
         <div class="luoi-so-sanh-dich-vu">
           ${data
@@ -202,7 +202,7 @@
                   <ul class="danh-sach-tom-tat">
                     ${hangMuc}
                   </ul>
-                  <a class="link-phu-bang-gia" href="${core.escapeHtml(item.duong_dan_chi_tiet || "#")}">Xem bảng giá chi tiết ở trang dịch vụ</a>
+                  <a class="link-phu-bang-gia" href="${core.escapeHtml(core.toProjectUrl(item.duong_dan_chi_tiet || "#"))}">Xem mô tả dịch vụ</a>
                 </article>
               `;
             })

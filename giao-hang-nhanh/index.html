@@ -491,7 +491,7 @@
           });
         }
 
-        function renderAuthUi(isLoggedIn, role) {
+        function renderAuthUi(isLoggedIn, role, sessionData) {
           const navLoginItem = document.getElementById("nav-login-item");
           const navRegisterItem = document.getElementById("nav-register-item");
           const contactPrimary = document.getElementById("contact-primary-btn");
@@ -501,13 +501,35 @@
           const logoutUrl = toPublicUrl("dang-nhap.html");
           const loginUrl = toPublicUrl("dang-nhap.html");
           const registerUrl = toPublicUrl("dang-ky.html");
+          const bookingUrl = toPublicUrl("dat-lich-giao-hang-nhanh.html");
 
           if (isLoggedIn) {
+            const sessionUser = sessionData || (typeof window.GiaoHangNhanhLocalAuth !== "undefined" ? window.GiaoHangNhanhLocalAuth.getSession() : {});
+            const firstName = (sessionUser && (sessionUser.fullname || sessionUser.ho_ten || sessionUser.username)) || "Khách hàng";
+            const accountSummary = (sessionUser && (sessionUser.phone || sessionUser.email)) || "Khu vực cá nhân";
+
             if (navLoginItem) {
-              navLoginItem.innerHTML = `<a href="${dashboardUrl}">Trang quản lý</a>`;
+              navLoginItem.className = "dropdown has-submenu customer-nav-dropdown";
+              navLoginItem.innerHTML = `
+                <a href="${dashboardUrl}">Xin chào, ${firstName}</a>
+                <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
+                  <li class="customer-nav-dropdown-summary">
+                    <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
+                    <div class="customer-nav-dropdown-user">
+                      <strong>${firstName}</strong>
+                      <span>${accountSummary}</span>
+                    </div>
+                  </li>
+                  <li><a href="${dashboardUrl}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
+                  <li><a href="${toPublicUrl("khach-hang/lich-su-don-hang.html")}"><i class="fas fa-box"></i> Lịch sử đơn hàng</a></li>
+                  <li><a href="${toPublicUrl("khach-hang/ho-so.html")}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>
+                  <li class="customer-nav-logout-wrapper"><a href="${logoutUrl}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
+                </ul>
+              `;
             }
             if (navRegisterItem) {
-              navRegisterItem.innerHTML = `<a href="${logoutUrl}" class="btn-primary nav-auth-cta" data-local-logout="1">Đăng xuất</a>`;
+              navRegisterItem.innerHTML = "";
+              navRegisterItem.hidden = true;
             }
             if (contactSecondary) {
               contactSecondary.href = logoutUrl;
@@ -549,7 +571,7 @@
               ? localAuth.getSession()
               : null;
             window.isLoggedIn = !!session;
-            renderAuthUi(window.isLoggedIn, session?.role || "guest");
+            renderAuthUi(window.isLoggedIn, session?.role || "guest", session);
           } catch (error) {
             console.error("Cannot bootstrap landing page", error);
           }

@@ -1,0 +1,38 @@
+[
+  {
+    "ten": "Giao Ngay Lập Tức",
+    "bieutuong": "🛵",
+    "khauhieu": "Đi lấy là đi giao ngay, giống mô hình giao tức thời.",
+    "phamvi": "Tuyến nội thành bán kính ngắn (giá cước tính linh hoạt theo từng km thực tế).",
+    "uutien": "Tính thời gian từ lúc lấy hàng đến lúc giao xong.",
+    "phuhopcho": "Đơn gấp như giao tài liệu hoặc hàng cần có ngay lập tức.",
+    "mota": "Dịch vụ đặc biệt ưu tiên tốc độ, shipper sau khi nhận hàng sẽ di chuyển thẳng đến điểm giao, không qua trung chuyển kho bãi."
+  },
+  {
+    "ten": "Giao hàng Hỏa tốc",
+    "bieutuong": "🚀",
+    "khauhieu": "Ưu tiên cao nhất cho đơn gấp.",
+    "phamvi": "Nội thành và các tuyến ưu tiên.",
+    "uutien": "Điều phối gấp, rút ngắn thời gian chờ.",
+    "phuhopcho": "Tài liệu gấp, hàng cần giao ngay.",
+    "mota": "Dịch vụ hỏa tốc được thiết kế để xử lý các đơn hàng cần giao nhận trong thời gian cực ngắn tại các khu vực trung tâm."
+  },
+  {
+    "ten": "Giao hàng Nhanh",
+    "bieutuong": "⚡",
+    "khauhieu": "Rút ngắn thời gian giao trong ngày.",
+    "phamvi": "Nội thành, ngoại thành, liên tỉnh.",
+    "uutien": "Đơn cần giao sớm, xử lý linh hoạt.",
+    "phuhopcho": "Hàng cần đến tay khách trong ngày.",
+    "mota": "Lựa chọn tối ưu cho các đơn hàng cần tốc độ vận chuyển nhanh chóng, đảm bảo hàng đến tay người nhận sớm nhất có thể."
+  },
+  {
+    "ten": "Giao hàng Tiêu chuẩn",
+    "bieutuong": "📦",
+    "khauhieu": "Cân bằng tốt giữa tốc độ và chi phí.",
+    "phamvi": "Nội thành, ngoại thành, liên tỉnh.",
+    "uutien": "Thời gian giao ổn định theo lịch trình.",
+    "phuhopcho": "Shop online và cá nhân gửi hàng hằng ngày.",
+    "mota": "Dịch vụ tiết kiệm phù hợp cho các nhu cầu gửi hàng thông thường, cân đối hoàn hảo giữa chi phí vận hành và tốc độ giao nhận."
+  }
+]
