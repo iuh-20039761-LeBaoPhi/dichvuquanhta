@@ -271,7 +271,7 @@
       }
 
       const isLoggedIn = await isUserLoggedInForBooking();
-      if (!isLoggedIn) {
+      if (!isLoggedIn && !hasStandaloneAuthorizedAccess()) {
         hideBookingStep();
         window.location.href = "dang-nhap.html";
         return;
@@ -311,6 +311,15 @@
       } catch (_error) {
         return false;
       }
+    }
+
+    function hasStandaloneAuthorizedAccess() {
+      if (!document.body.classList.contains("booking-standalone")) {
+        return false;
+      }
+
+      const accessState = window.BookingAccessState;
+      return Boolean(accessState && accessState.isAuthenticated === true);
     }
 
     function normalizeMoneyToNumber(value) {

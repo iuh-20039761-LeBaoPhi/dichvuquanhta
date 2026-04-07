@@ -1270,89 +1270,90 @@
       });
     </script>
     <script>
-      (function () {
-        function redirectToIndex() {
-          window.location.href = "index.html";
-        }
+      // (function () {
+      //   function redirectToIndex() {
+      //     window.location.href = "index.html";
+      //   }
 
-        function normalizePhone(value) {
-          const phone = String(value || "")
-            .replace(/\s+/g, "")
-            .trim();
+      //   function normalizePhone(value) {
+      //     const phone = String(value || "")
+      //       .replace(/\s+/g, "")
+      //       .trim();
 
-          if (phone.indexOf("+84") === 0) {
-            return "0" + phone.slice(3);
-          }
+      //     if (phone.indexOf("+84") === 0) {
+      //       return "0" + phone.slice(3);
+      //     }
 
-          if (phone.indexOf("84") === 0 && phone.length >= 11) {
-            return "0" + phone.slice(2);
-          }
+      //     if (phone.indexOf("84") === 0 && phone.length >= 11) {
+      //       return "0" + phone.slice(2);
+      //     }
 
-          return phone;
-        }
+      //     return phone;
+      //   }
 
-        function guardAndFillSessionUser() {
-          return fetch("public/asset/login-page.php", {
-            method: "GET",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          })
-            .then(function (response) {
-              return response
-                .json()
-                .catch(function () {
-                  return null;
-                })
-                .then(function (result) {
-                  return {
-                    ok: response.ok,
-                    result: result,
-                  };
-                });
-            })
-            .then(function (payload) {
-              const result = payload && payload.result ? payload.result : null;
+      //   function guardAndFillSessionUser() {
+      //     return fetch("public/asset/login-page.php", {
+      //       method: "GET",
+      //       credentials: "same-origin",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         Accept: "application/json",
+      //       },
+      //     })
+      //       .then(function (response) {
+      //         return response
+      //           .json()
+      //           .catch(function () {
+      //             return null;
+      //           })
+      //           .then(function (result) {
+      //             return {
+      //               ok: response.ok,
+      //               result: result,
+      //             };
+      //           });
+      //       })
+      //       .then(function (payload) {
+      //         const result = payload && payload.result ? payload.result : null;
 
-              if (!result || result.loggedIn !== true) {
-                const redirectTarget =
-                  (result && result.redirect) || "index.html";
-                window.location.href = redirectTarget;
-                return false;
-              }
+      //         if (!result || result.loggedIn !== true) {
+      //           const redirectTarget =
+      //             (result && result.redirect) || "index.html";
+      //           window.location.href = redirectTarget;
+      //           return false;
+      //         }
 
-              const user = result.user || {};
-              const nameInput = document.getElementById("hotenkhachhang");
-              const phoneInput = document.getElementById("sodienthoaikhachhang");
+      //         const user = result.user || {};
+      //         const nameInput = document.getElementById("hotenkhachhang");
+      //         const phoneInput = document.getElementById("sodienthoaikhachhang");
 
-              if (nameInput && !nameInput.value && user.user_name) {
-                nameInput.value = String(user.user_name).trim();
-              }
+      //         if (nameInput && !nameInput.value && user.user_name) {
+      //           nameInput.value = String(user.user_name).trim();
+      //         }
 
-              if (phoneInput) {
-                const phone = normalizePhone(
-                  user.user_tel || user.sodienthoai || user.phone,
-                );
-                if (phone) {
-                  phoneInput.value = phone;
-                  phoneInput.dispatchEvent(
-                    new Event("input", { bubbles: true }),
-                  );
-                }
-              }
+      //         if (phoneInput) {
+      //           const phone = normalizePhone(
+      //             user.user_tel || user.sodienthoai || user.phone,
+      //           );
+      //           if (phone) {
+      //             phoneInput.value = phone;
+      //             phoneInput.dispatchEvent(
+      //               new Event("input", { bubbles: true }),
+      //             );
+      //           }
+      //         }
 
-              return true;
-            })
-            .catch(function () {
-              redirectToIndex();
-              return false;
-            });
-        }
+      //         return true;
+      //       })
+      //       .catch(function () {
+      //         redirectToIndex();
+      //         return false;
+      //       });
+      //   }
 
-        guardAndFillSessionUser();
-      })();
+      //   guardAndFillSessionUser();
+      // })();
+    
     </script>
   </body>
 </html>

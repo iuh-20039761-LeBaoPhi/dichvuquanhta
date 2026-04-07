@@ -855,7 +855,7 @@
     }
 
     return Promise.resolve(
-      shared.fetchOrdersByPhone(BOOKING_TABLE, user && user.user_tel, 500, {
+      shared.fetchOrdersByPhone(BOOKING_TABLE, user && user.user_tel, 10, {
         customerTable: CUSTOMER_TABLE,
         providerTable: PROVIDER_TABLE,
       }),
