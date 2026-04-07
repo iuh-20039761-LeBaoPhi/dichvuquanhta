@@ -45,11 +45,12 @@ if (!function_exists('admin_menu_link_class')) {
 if (!function_exists('admin_render_layout_start')) {
     function admin_render_layout_start(string $title, string $activeKey, array $admin): void
     {
-        $name = trim((string)($admin['name'] ?? $admin['ten'] ?? 'Admin'));
-        $email = trim((string)($admin['email'] ?? 'admin@example.com'));
+        $name = trim((string) ($admin['name'] ?? $admin['ten'] ?? 'Admin'));
+        $email = trim((string) ($admin['email'] ?? 'admin@example.com'));
         ?>
         <!DOCTYPE html>
         <html lang="vi">
+
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,7 +122,7 @@ if (!function_exists('admin_render_layout_start')) {
                     pointer-events: none;
                 }
 
-                .admin-sidebar > * {
+                .admin-sidebar>* {
                     position: relative;
                     z-index: 1;
                 }
@@ -248,52 +249,57 @@ if (!function_exists('admin_render_layout_start')) {
                 }
             </style>
         </head>
+
         <body>
-        <div class="container-fluid p-2 p-lg-3">
-            <div class="row min-vh-100 admin-shell">
-                <aside class="col-12 col-lg-2 admin-sidebar text-white p-3">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="admin-brand-logo">
-                                <img src="../assets/logomvb.png" alt="logo">
+            <div class="container-fluid p-2 p-lg-3">
+                <div class="row min-vh-100 admin-shell">
+                    <aside class="col-12 col-lg-2 admin-sidebar text-white p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="admin-brand-logo">
+                                    <img src="../assets/logomvb.png" alt="logo">
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Chăm Sóc Mẹ và Bé</div>
+                                    <small class="text-secondary">ADMIN PANEL</small>
+                                </div>
                             </div>
-                            <div>
-                                <div class="fw-bold">Chăm Sóc Mẹ và Bé</div>
-                                <small class="text-secondary">ADMIN PANEL</small>
+                            <button class="btn btn-outline-light admin-menu-toggle d-lg-none" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#adminSidebarMenu" aria-expanded="false"
+                                aria-controls="adminSidebarMenu">
+                                <i class="bi bi-list"></i>
+                            </button>
+                        </div>
+
+                        <div id="adminSidebarMenu" class="collapse admin-sidebar-menu list-group list-group-flush mb-3">
+                            <a href="index.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'dashboard')) ?>"><i
+                                    class="bi bi-speedometer2"></i>Tong quan</a>
+                            <a href="quan-ly-hoa-don.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'orders')) ?>"><i
+                                    class="bi bi-receipt"></i>Quan ly don hang</a>
+                            <a href="quan-ly-dich-vu.php"
+                                class="<?= admin_h(admin_menu_link_class($activeKey, 'services')) ?>"><i
+                                    class="bi bi-grid"></i>Quan ly dich vu</a>
+                            <a href="quan-ly-nhan-vien.php"
+                                class="<?= admin_h(admin_menu_link_class($activeKey, 'employees')) ?>"><i
+                                    class="bi bi-people"></i>Quan ly nhan vien</a>
+                            <a href="logout.php"
+                                class="list-group-item list-group-item-action d-flex align-items-center gap-2 border-0 rounded-3 mt-2 px-3 py-2 fw-semibold"><i
+                                    class="bi bi-box-arrow-right"></i>Dang xuat</a>
+                        </div>
+
+                    </aside>
+
+                    <section class="col-12 col-lg-10 p-0 d-flex flex-column admin-main">
+                        <header class="admin-topbar px-3 py-2 d-flex align-items-center justify-content-between">
+                            <h1 class="h5 admin-page-title fw-bold mb-0"><?= admin_h($title) ?></h1>
+                            <div class="d-flex align-items-center gap-2">
+
+                                <span
+                                    class="badge bg-success-subtle text-success-emphasis px-3 py-2 rounded-pill border border-success-subtle"><?= admin_h($name !== '' ? $name : $email) ?></span>
                             </div>
-                        </div>
-                        <button
-                            class="btn btn-outline-light admin-menu-toggle d-lg-none"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#adminSidebarMenu"
-                            aria-expanded="false"
-                            aria-controls="adminSidebarMenu"
-                        >
-                            <i class="bi bi-list"></i>
-                        </button>
-                    </div>
-
-                    <div id="adminSidebarMenu" class="collapse admin-sidebar-menu list-group list-group-flush mb-3">
-                        <a href="index.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'dashboard')) ?>"><i class="bi bi-speedometer2"></i>Tong quan</a>
-                        <a href="quan-ly-hoa-don.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'orders')) ?>"><i class="bi bi-receipt"></i>Quan ly don hang</a>
-                        <a href="quan-ly-dich-vu.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'services')) ?>"><i class="bi bi-grid"></i>Quan ly dich vu</a>
-                        <a href="quan-ly-nhan-vien.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'employees')) ?>"><i class="bi bi-people"></i>Quan ly nhan vien</a>
-                        <a href="logout.php" class="list-group-item list-group-item-action d-flex align-items-center gap-2 border-0 rounded-3 mt-2 px-3 py-2 fw-semibold"><i class="bi bi-box-arrow-right"></i>Dang xuat</a>
-                    </div>
-
-                </aside>
-
-                <section class="col-12 col-lg-10 p-0 d-flex flex-column admin-main">
-                    <header class="admin-topbar px-3 py-2 d-flex align-items-center justify-content-between">
-                        <h1 class="h5 admin-page-title fw-bold mb-0"><?= admin_h($title) ?></h1>
-                        <div class="d-flex align-items-center gap-2">
-                
-                            <span class="badge bg-success-subtle text-success-emphasis px-3 py-2 rounded-pill border border-success-subtle"><?= admin_h($name !== '' ? $name : $email) ?></span>
-                        </div>
-                    </header>
-                    <main class="flex-grow-1 p-3">
-        <?php
+                        </header>
+                        <main class="flex-grow-1 p-3">
+                            <?php
     }
 }
 
@@ -301,12 +307,13 @@ if (!function_exists('admin_render_layout_end')) {
     function admin_render_layout_end(): void
     {
         ?>
-                    </main>
-                </section>
+                        </main>
+                    </section>
+                </div>
             </div>
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         </body>
+
         </html>
         <?php
     }

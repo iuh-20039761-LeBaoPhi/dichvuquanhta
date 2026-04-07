@@ -244,7 +244,7 @@ admin_render_layout_start('Tong Quan', 'dashboard', $admin);
 								<?php $meta = hoadon_status_meta((string)($order['trangthai'] ?? '')); ?>
 								<tr>
 									<td class="fw-semibold text-primary"><?= admin_h((string)($order['id'] ?? 'N/A')) ?></td>
-									<td><?= admin_h((string)($order['hovaten'] ?? 'N/A')) ?></td>
+									<td><?= admin_h((string)($order['tenkhachhang'] ?? 'N/A')) ?></td>
 									<td><?= admin_h((string)($order['dich_vu'] ?? 'N/A')) ?></td>
 									<td><span class="badge rounded-pill <?= admin_h((string)$meta['badge']) ?>"><?= admin_h((string)$meta['text']) ?></span></td>
 									<td><?= admin_h((string)($order['created_date'] ?? $order['ngay_bat_dau'] ?? 'N/A')) ?></td>
