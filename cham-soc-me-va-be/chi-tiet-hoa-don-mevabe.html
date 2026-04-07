@@ -1256,10 +1256,14 @@
 										<p id="invoiceService" class="invoice-subtitle">---</p>
 									</div>
 								</div>
-								<div class="actions d-flex flex-wrap align-items-center" style="gap:8px; margin-left: auto;">
-									<button id="btnHdrClaim" class="btn btn-primary btn-sm hidden" type="button">Nhận việc</button>
-									<button id="btnHdrStart" class="btn btn-success btn-sm hidden" type="button">Bắt đầu dịch vụ</button>
-									<button id="btnHdrEnd" class="btn btn-warning btn-sm hidden" style="color:#fff;" type="button">Hoàn thành dịch vụ</button>
+								<div class="actions d-flex flex-wrap align-items-center"
+									style="gap:8px; margin-left: auto;">
+									<button id="btnHdrClaim" class="btn btn-primary btn-sm hidden" type="button">Nhận
+										việc</button>
+									<button id="btnHdrStart" class="btn btn-success btn-sm hidden" type="button">Bắt đầu
+										dịch vụ</button>
+									<button id="btnHdrEnd" class="btn btn-warning btn-sm hidden" style="color:#fff;"
+										type="button">Hoàn thành dịch vụ</button>
 								</div>
 								<div id="invoiceProgressRing" class="invoice-progress-ring" style="--p:0;">
 									<div class="invoice-progress-core">
@@ -1389,12 +1393,9 @@
 
 						<div class="actions actions-prominent d-flex flex-wrap align-items-center"
 							style="gap:8px;margin:0;">
-							<button id="btnClaim" class="btn btn-primary btn-sm hidden"
+							<!-- <button id="btnUnclaim" class="btn btn-danger btn-sm hidden"
 								style="min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;"
-								type="button">Nhận việc</button>
-							<button id="btnUnclaim" class="btn btn-danger btn-sm hidden"
-								style="min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;"
-								type="button">Hủy nhận việc</button>
+								type="button">Hủy nhận việc</button> -->
 							<div class="d-inline-flex align-items-center" style="gap:8px;">
 								<button id="btnStart" class="btn btn-success btn-sm hidden"
 									style="min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;"
@@ -1411,9 +1412,6 @@
 							<label class="field-label" for="staffNote">Ghi chú công việc</label>
 							<textarea id="staffNote" class="form-control" style="min-height:84px;resize:vertical;"
 								placeholder="Nhập ghi chú công việc..."></textarea>
-							<label class="field-label" for="staffMediaInput">Tải lên ảnh/video (nhà cung cấp)</label>
-							<input id="staffMediaInput" class="form-control" type="file" accept="image/*,video/*"
-								multiple>
 							<button id="btnSaveStaffLog" class="btn btn-light btn-sm" type="button">Lưu ghi chú và minh
 								chứng</button>
 						</div>
@@ -1969,12 +1967,12 @@
 				const canClaim = isStaff && !assigned && !isCancel && !isDone && !isOver && (startVal && now() < startVal);
 				const started = !!$.thoigian_batdau_thucte, ended = !!$.thoigian_ketthuc_thucte;
 
-				show(el('btnClaim'), canClaim); show(el('btnHdrClaim'), canClaim);
+				show(el('btnHdrClaim'), canClaim);
 				const canStart = isMe && assigned && !started && !isCancel && !isDone && !isOver;
 				show(el('btnStart'), canStart); show(el('btnHdrStart'), canStart);
 				const canEnd = isMe && started && !ended && !isCancel && !isDone && !isOver;
 				show(el('btnEnd'), canEnd); show(el('btnHdrEnd'), canEnd);
-				show(el('btnCancelService'), isCust && (startVal && now() < startVal.getTime()-3600000) && !isCancel && !isDone && !started);
+				show(el('btnCancelService'), isCust && (startVal && now() < startVal.getTime() - 3600000) && !isCancel && !isDone && !started);
 				show(el('staffWorkForm'), false);
 			}
 
@@ -2251,7 +2249,6 @@
 				el.addEventListener('click', () => handleAction(action));
 			}
 
-			bindClick('btnClaim', 'claim');
 			bindClick('btnHdrClaim', 'claim');
 			bindClick('btnCancelService', 'cancel');
 			bindClick('btnStart', 'start');
