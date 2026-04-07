@@ -6,16 +6,17 @@
      * Tóm gọn các thao tác nghiệp vụ chính (Đăng nhập, Đăng ký, Đặt lịch, Xem đơn)
      * Dùng chung cho toàn bộ hệ thống Dịch Vụ Quanh Ta.
      * Dựa trên nền tảng thư viện dvqt-krud.js
+     * 
+     * PHIÊN BẢN MỚI: Tất cả người dùng nằm trong bảng duy nhất "nguoidung".
+     * Không phân chia customer/provider. Cột id_dichvu quyết định vai trò.
      */
 
     /**
      * Tự động xác định BASE PATH của dự án
-     * Giúp code hoạt động đúng dù folder gốc là /Test/, /MyProject/ hay /
      */
     const getBaseUrl = () => {
-        let base = '/Test'; // Mặc định cũ
+        let base = '/Test';
         try {
-            // Thử lấy từ script src của chính nó (dvqt-app.js)
             const scripts = document.getElementsByTagName('script');
             for (let i = 0; i < scripts.length; i++) {
                 const src = scripts[i].src;
@@ -25,7 +26,7 @@
                     const idx = path.indexOf('/public/asset/js/dvqt-app.js');
                     if (idx !== -1) {
                         base = path.substring(0, idx);
-                        if (base === '') base = ''; // Root
+                        if (base === '') base = '';
                         break;
                     }
                 }
@@ -33,17 +34,15 @@
         } catch (e) {
             console.warn('[DVQTApp] Không thể tự động xác định Base URL, dùng mặc định /Test');
         }
-        // Đảm bảo không có slash ở cuối nếu không phải root
         return base.replace(/\/$/, '');
     };
 
     const ROOT_URL = getBaseUrl();
 
     const API_CONFIG = {
-        TABLE_CUSTOMER: 'khachhang',
-        TABLE_PROVIDER: '', 
+        TABLE_USER: 'nguoidung',
         TABLE_ORDER: '',
-        API_BASE: ROOT_URL + '/public/api/' 
+        API_BASE: ROOT_URL + '/public/api/'
     };
 
     /**
@@ -52,6 +51,17 @@
     const Utils = {
         /** Chuẩn hóa số điện thoại (chỉ giữ lại số) */
         normalizePhone: (p) => String(p || '').replace(/\D/g, ''),
+
+        /** Tiện ích Cookie */
+        setCookie: (name, value, days = 7) => {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`;
+        },
+        getCookie: (name) => {
+            const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+            return v ? v[2] : null;
+        },
 
         /** Lấy thời gian hiện tại theo định dạng SQL (YYYY-MM-DD HH:mm:ss) theo múi giờ VN */
         nowSql: () => {
@@ -76,150 +86,115 @@
 
     const DVQTCore = {
         /**
-         * Xử lý ĐĂNG NHẬP (Dùng chung cho cả Khách hàng và Nhà cung cấp)
-         * @param {string} role - 'customer' hoặc 'provider'
+         * Xử lý ĐĂNG NHẬP (Đơn giản hoá)
+         * Chỉ cần SĐT + Mật khẩu → gọi krudList bảng nguoidung → so khớp → lưu localStorage.
          * @param {string} phone - Số điện thoại
          * @param {string} password - Mật khẩu
-         * @param {string} providerTable - Tên bảng NCC nếu role là provider
          * @returns {Promise<Object>} Thông tin profile người dùng
          */
-        login: async (role, phone, password, providerTable) => {
-            const table = (role === 'customer') ? API_CONFIG.TABLE_CUSTOMER : (providerTable || role);
-            if (!table) throw new Error('Tên bảng xác thực không được để trống.');
-
+        login: async (phone, password) => {
             const krudHelper = Utils.getKrudHelper();
+            await krudHelper.ensureNguoidungTable();
 
-            // 1. Tìm tài khoản
-            const rows = await krudHelper.listTable(table);
-            console.log(`[DVQTApp] Data from table "${table}":`, rows);
-            
+            // 1. Lấy danh sách từ bảng nguoidung
+            const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER);
+            console.log(`[DVQTApp] Data from table "${API_CONFIG.TABLE_USER}":`, rows);
+
+            // 2. Tìm user theo SĐT
             const user = rows.find(r => {
-                const input = phone.toLowerCase().trim();
-                if (role === 'admin') {
-                    // Admin: Cho phép dùng Email hoặc SĐT
-                    const dbEmail = (r.email || r.username || '').toLowerCase().trim();
-                    const dbPhone = Utils.normalizePhone(r.sodienthoai || r.phone);
-                    return dbEmail === input || dbPhone === Utils.normalizePhone(input);
-                } else {
-                    // Khách hàng & NCC: Chỉ dùng SĐT
-                    const dbPhone = Utils.normalizePhone(r.sodienthoai || r.phone);
-                    return dbPhone === Utils.normalizePhone(input);
-                }
+                const dbPhone = Utils.normalizePhone(r.sodienthoai || r.phone);
+                return dbPhone === Utils.normalizePhone(phone);
             });
 
             if (!user) throw new Error('Tài khoản không tồn tại trên hệ thống');
 
-            // 2. Kiểm tra mật khẩu
+            // 3. So khớp mật khẩu (đơn giản, plain text)
             const stored = String(user.matkhau || user.password || user.mat_khau || '');
-            const isMatch = stored.startsWith('sha256$') ? (stored === 'sha256$' + password) : (stored === password);
-            if (!isMatch) throw new Error('Mật khẩu không chính xác');
-
-            // 3. Kiểm tra trạng thái tài khoản (chỉ với provider)
-            if (role === 'provider') {
-                const status = String(user.trangthai || '').toLowerCase();
-                if (status === 'pending') throw new Error('Tài khoản đang chờ duyệt.');
-                if (status === 'locked' || status === 'banned') throw new Error('Tài khoản đã bị khóa.');
-            }
+            if (stored !== password) throw new Error('Mật khẩu không chính xác');
 
             // 4. Chuẩn bị thông tin profile
             const profile = {
                 id: user.id,
                 name: user.hovaten || user.name || 'Người dùng',
                 phone: user.sodienthoai || user.phone || phone,
+                email: user.email || '',
+                address: user.diachi || user.dia_chi || user.address || '',
+                id_dichvu: user.id_dichvu || 0,
                 company: user.tencua_hang || user.company || '',
                 danh_muc_thuc_hien: user.danh_muc_thuc_hien || '',
-                address: user.diachi || user.dia_chi || user.address || '',
                 avatartenfile: user.avatartenfile || '',
                 cccdmattruoctenfile: user.cccdmattruoctenfile || '',
                 cccdmatsautenfile: user.cccdmatsautenfile || ''
             };
 
-            // 5. Đồng bộ Session lên Server (PHP)
-            const sessionRes = await fetch(Utils.getApiPath('auth/login-session.php'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    role: role,
-                    id: profile.id,
-                    name: profile.name,
-                    phone: profile.phone,
-                    extra: {
-                        address: profile.address,
-                        company: profile.company
-                    }
-                })
-            });
-            const sData = await sessionRes.json();
-            if (!sData.success) {
-                throw new Error(sData.message || 'Lỗi hệ thống khi tạo phiên làm việc');
-            }
+            // 5. Lưu vào Cookie & LocalStorage
+            Utils.setCookie('dvqt_u', phone);
+            Utils.setCookie('dvqt_p', password);
 
-            // 6. Cập nhật cache local
-            global._dvqt_session_cache = null;
-
-            // 7. Lưu vào LocalStorage (Dùng cho cả DVQT và dự án con)
-            if (role === 'customer') {
-                localStorage.setItem('customer_logged_in', 'true');
-                localStorage.setItem('customer_id', profile.id);
-                localStorage.setItem('dvqt_customer_profile', JSON.stringify(profile));
-            } else if (role === 'provider') {
-                localStorage.setItem('provider_logged_in', 'true');
-                localStorage.setItem('provider_id', profile.id);
-                localStorage.setItem('dvqt_provider_profile', JSON.stringify(profile));
-            } else if (role === 'admin') {
-                localStorage.setItem('admin_logged_in', 'true');
-                localStorage.setItem('admin_username', profile.name);
-            }
+            localStorage.setItem('dvqt_logged_in', 'true');
+            localStorage.setItem('dvqt_user_id', profile.id);
+            localStorage.setItem('dvqt_user_profile', JSON.stringify(profile));
 
             return profile;
         },
 
         /**
-         * Kiểm tra trạng thái đăng nhập (Gọi API Server)
-         * @param {boolean} forceRefresh - Nếu true sẽ bỏ qua cache và gọi lại Server
-         * @returns {Promise<Object>} Trạng thái session (logged_in, role, user_id, ...)
+         * Kiểm tra trạng thái & Tự động đăng nhập
+         * Thứ tự ưu tiên: URL params (u/p) > Cookies (dvqt_u/p) > LocalStorage
+         * @returns {Promise<Object>} Trạng thái đăng nhập
          */
-        checkSession: async (forceRefresh = false) => {
-            if (!forceRefresh && global._dvqt_session_cache && global._dvqt_session_cache.logged_in) {
-                return global._dvqt_session_cache;
+        checkSession: async () => {
+            const params = new URLSearchParams(window.location.search);
+            let u = params.get('u') || params.get('username');
+            let p = params.get('p') || params.get('pass');
+
+            if (!u || !p) {
+                u = Utils.getCookie('dvqt_u');
+                p = Utils.getCookie('dvqt_p');
             }
 
-            const checkPath = Utils.getApiPath('public/check-session.php');
-            try {
-                const res = await fetch(checkPath, { cache: 'no-store' });
-                const data = await res.json();
-
-                if (data && data.logged_in) {
-                    global._dvqt_session_cache = data;
-                } else {
-                    global._dvqt_session_cache = null;
+            if (u && p) {
+                try {
+                    // Thử đăng nhập tự động bằng credential tìm thấy
+                    const profile = await DVQTCore.login(u, p);
+                    return { logged_in: true, ...profile, profile };
+                } catch (e) {
+                    console.warn('[DVQTApp] Auto-login failed:', e.message);
                 }
-                return data;
-            } catch (e) {
-                console.warn('Không thể kiểm tra phiên đăng nhập:', e);
-                global._dvqt_session_cache = null;
             }
-            return { logged_in: false };
+
+            // Fallback về localStorage cũ
+            const loggedIn = localStorage.getItem('dvqt_logged_in') === 'true';
+            if (!loggedIn) return { logged_in: false };
+
+            try {
+                const profile = JSON.parse(localStorage.getItem('dvqt_user_profile') || '{}');
+                return {
+                    logged_in: true,
+                    user_id: profile.id || localStorage.getItem('dvqt_user_id'),
+                    name: profile.name || '',
+                    phone: profile.phone || '',
+                    id_dichvu: profile.id_dichvu || 0,
+                    profile: profile
+                };
+            } catch (e) {
+                return { logged_in: false };
+            }
         },
 
         /**
          * Xử lý ĐĂNG KÝ tài khoản mới
-         * @param {string} role - 'customer' hoặc 'provider'
-         * @param {Object} data - Dữ liệu đăng ký
-         * @param {string} providerTable - Tên bảng NCC nếu role là provider
+         * @param {Object} data - Dữ liệu đăng ký (bao gồm id_dichvu)
          */
-        register: async (role, data, providerTable) => {
-            const table = role === 'customer' ? API_CONFIG.TABLE_CUSTOMER : (providerTable || API_CONFIG.TABLE_PROVIDER);
-            if (!table) throw new Error('Tên bảng người cung cấp không được để trống.');
-
+        register: async (data) => {
             const krudHelper = Utils.getKrudHelper();
-
+            await krudHelper.ensureNguoidungTable();
             const payload = {
                 ...data,
                 created_date: Utils.nowSql(),
-                trangthai: (role === 'customer' ? 'active' : 'pending')
+                trangthai: 'active'
             };
-            return krudHelper.insertRow(table, payload);
+            return krudHelper.insertRow(API_CONFIG.TABLE_USER, payload);
         },
 
         /**
@@ -253,27 +228,17 @@
         },
 
         /**
-         * Lấy danh sách Nhà cung cấp (NCC)
-         * @param {string} providerTable - Tên bảng NCC của dịch vụ con (VD: nhacungcap_thonha)
+         * Lấy danh sách Nhà cung cấp từ bảng nguoidung theo id_dichvu
+         * @param {number} idDichvu - ID dịch vụ (1-11)
          * @returns {Promise<Array>}
          */
-        getProviders: async (providerTable) => {
+        getProviders: async (idDichvu) => {
             const krudHelper = Utils.getKrudHelper();
-            if (!providerTable) throw new Error('Tên bảng nhà cung cấp không được để trống.');
-            return krudHelper.listTable(providerTable);
-        },
-
-        /**
-         * Kiểm tra quyền truy cập của NCC vào một dịch vụ cụ thể
-         * @param {string} tableName - Bảng NCC của dịch vụ con (VD: nhacungcap_mevabe)
-         * @param {string} phone - Số điện thoại NCC cần kiểm tra
-         * @returns {Promise<boolean>}
-         */
-        checkAccess: async (tableName, phone) => {
-            const krudHelper = Utils.getKrudHelper();
-            const rows = await krudHelper.listTable(tableName);
-            const provider = rows.find(r => Utils.normalizePhone(r.sodienthoai) === Utils.normalizePhone(phone));
-            return !!provider;
+            const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER);
+            return rows.filter(r => {
+                const ids = String(r.id_dichvu || '0').split(',');
+                return ids.includes(String(idDichvu));
+            });
         },
 
         /**
@@ -287,39 +252,61 @@
             const table = orderTable || API_CONFIG.TABLE_ORDER;
             if (!table) throw new Error('Tên bảng đơn hàng cần cập nhật không được để trống.');
 
-            return krudHelper.insertRow(table, data, id);
+            return krudHelper.updateRow(table, id, data);
         },
 
         /**
-         * Xử lý ĐĂNG XUẤT chính thức
-         * @returns {Promise<boolean>}
+         * Xử lý ĐĂNG XUẤT
+         * @returns {boolean}
          */
-        logout: async () => {
-            try {
-                const logoutPath = Utils.getApiPath('auth/logout.php');
-                const res = await fetch(logoutPath);
-                const data = await res.json();
+        /**
+         * Auth Guard: Chốt chặn bảo mật đơn giản
+         * Kiểm tra nếu chưa đăng nhập thì đuổi về trang login.
+         * Nếu tự động đăng nhập thành công từ URL/Cookie thì đẩy vào trang cá nhân.
+         */
+        initAuthGuard: async () => {
+            const session = await DVQTCore.checkSession();
+            const isLoginPage = window.location.pathname.includes('dang-nhap.html');
 
-                if (data.success) {
-                    // Xóa cache và localStorage
-                    global._dvqt_session_cache = null;
-                    localStorage.removeItem('customer_logged_in');
-                    localStorage.removeItem('customer_id');
-                    localStorage.removeItem('dvqt_customer_profile');
-                    localStorage.removeItem('provider_logged_in');
-                    localStorage.removeItem('provider_id');
-                    localStorage.removeItem('dvqt_provider_profile');
-                    return true;
+            if (session.logged_in) {
+                // Nếu đang ở trang login mà đã login rồi -> bay vào trang cá nhân
+                if (isLoginPage) {
+                    const target = session.id_dichvu && session.id_dichvu !== '0' 
+                        ? 'tho-nha/pages/provider/trang-ca-nhan.html' 
+                        : 'app.html'; // Hoặc trang cá nhân khách hàng
+                    window.location.href = ROOT_URL + '/' + target;
                 }
-            } catch (e) {
-                console.warn('Lỗi khi thực hiện đăng xuất:', e);
+            } else {
+                // Nếu chưa login mà không phải trang login -> đuổi về login
+                if (!isLoginPage && !window.location.pathname.includes('dang-ky.html')) {
+                    window.location.href = ROOT_URL + '/public/dang-nhap.html';
+                }
             }
-            return false;
+            return session;
         },
 
-        // Tiện ích export helpers nếu cần (như getApiPath)
+        logout: () => {
+            Utils.setCookie('dvqt_u', '', -1);
+            Utils.setCookie('dvqt_p', '', -1);
+            localStorage.removeItem('dvqt_logged_in');
+            localStorage.removeItem('dvqt_user_id');
+            localStorage.removeItem('dvqt_user_profile');
+            // Xóa luôn các key cũ nếu còn sót
+            localStorage.removeItem('customer_logged_in');
+            localStorage.removeItem('customer_id');
+            localStorage.removeItem('dvqt_customer_profile');
+            localStorage.removeItem('provider_logged_in');
+            localStorage.removeItem('provider_id');
+            localStorage.removeItem('dvqt_provider_profile');
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            return true;
+        },
+
+        // Tiện ích export
         getApiPath: (suffix) => Utils.getApiPath(suffix),
-        ROOT_URL: ROOT_URL
+        ROOT_URL: ROOT_URL,
+        TABLE_USER: API_CONFIG.TABLE_USER
     };
 
     // Export đối tượng global duy nhất

@@ -42,12 +42,8 @@ const ThoNhaOrderService = (() => {
             const rowOwner = String(r.id_nhacungcap || '').trim();
             // Điều kiện 1: Đơn đã nhận (Trùng ID thợ)
             if (rowOwner === providerId) return true;
-            
-            // Điều kiện 2: Đơn chưa có người nhận (id_nhacungcap rỗng) AND thuộc danh mục thợ có thể làm
-            const isUnclaimed = !rowOwner;
-            const categoryMatch = cats.includes(String(r.id_danhmuc));
-            
-            return isUnclaimed && categoryMatch;
+            // Điều kiện 2: Đơn chưa có người nhận (không kiểm tra danh mục nữa)
+            return !rowOwner;
         });
     }
 
@@ -97,8 +93,10 @@ const ThoNhaOrderService = (() => {
                 console.log(`[OrderService] Provider ID: ${pId}, Categories:`, cats);
                 filtered = rows.filter(r => {
                     const owner = String(r.id_nhacungcap || '').trim();
+                    // Hiển thị đơn mình đã nhận
                     if (owner === pId) return true;
-                    return !owner && cats.includes(String(r.id_danhmuc));
+                    // Hiển thị đơn chưa có ai nhận (bỏ qua id_danhmuc)
+                    return !owner;
                 });
                 break;
             case 'customer': 

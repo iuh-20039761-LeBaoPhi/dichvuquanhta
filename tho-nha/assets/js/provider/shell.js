@@ -8,8 +8,17 @@
      */
     async function verifySession() {
         const session = await DVQTApp.checkSession();
-        if (!session || !session.logged_in || (session.role !== 'provider' && session.role !== 'admin')) {
-            window.location.href = 'dang-nhap.html';
+        if (!session || !session.logged_in) {
+            window.location.href = '../../public/dang-nhap.html';
+            return;
+        }
+
+        const ids = String(session.id_dichvu || '0').split(',');
+        const isThoNhaProvider = ids.includes('9') || session.role === 'admin';
+
+        if (!isThoNhaProvider) {
+            // Nếu không phải thợ nhà thì chuyển sang trang Khách hàng
+            window.location.href = '../customer/trang-ca-nhan.html';
         }
     }
 
@@ -333,11 +342,11 @@
         if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
             if (window.DVQTApp && window.DVQTApp.logout) {
                 window.DVQTApp.logout().then(() => {
-                    window.location.href = 'dang-nhap.html';
+                    window.location.href = '../../index.html';
                 });
             } else {
                 localStorage.clear();
-                window.location.href = 'dang-nhap.html';
+                window.location.href = '../../index.html';
             }
         }
     };

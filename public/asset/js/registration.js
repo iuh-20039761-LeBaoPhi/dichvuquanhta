@@ -1,27 +1,28 @@
 /**
  * registration.js – Đăng ký tài khoản dùng chung cho Dịch Vụ Quanh Ta.
- * Single-page form + collapsible service selector.
+ * Lưu tất cả vào 1 bảng duy nhất: nguoidung
+ * Cột id_dichvu: 0 = Khách hàng, "1,2,3..." = Chuỗi ID dịch vụ cách nhau bởi dấu phẩy.
  */
 'use strict';
 
 /* ================================================================
-   CẤU HÌNH DỊCH VỤ – Thêm/bớt ở đây, hệ thống tự render.
+   CẤU HÌNH DỊCH VỤ – id_dichvu tương ứng từ 1 đến 11
    ================================================================ */
 const REG_SERVICES = [
-    { key: 'mevabe',       name: 'Chăm sóc mẹ và bé',   table: 'nhacungcap_mevabe',       icon: 'fas fa-baby',          color: '#ec4899' },
-    { key: 'nguoibenh',    name: 'Chăm sóc người bệnh',  table: 'nhacungcap_nguoibenh',    icon: 'fas fa-hospital-user', color: '#ef4444' },
-    { key: 'nguoigia',     name: 'Chăm sóc người già',    table: 'nhacungcap_nguoigia',     icon: 'fas fa-person-cane',   color: '#f97316' },
-    { key: 'vuonnha',      name: 'Làm vườn',              table: 'nhacungcap_vuonnha',      icon: 'fas fa-leaf',          color: '#22c55e' },
-    { key: 'donvesinh',    name: 'Dọn vệ sinh',           table: 'nhacungcap_donvesinh',    icon: 'fas fa-broom',         color: '#14b8a6' },
-    { key: 'laixeho',      name: 'Lái xe hộ',             table: 'nhacungcap_laixeho',      icon: 'fas fa-car',           color: '#3b82f6' },
-    { key: 'giaohangnhanh',name: 'Giao hàng nhanh',       table: 'nhacungcap_giaohangnhanh',icon: 'fas fa-truck-fast',    color: '#6366f1' },
-    { key: 'suaxe',        name: 'Sửa xe',                table: 'nhacungcap_suaxe',        icon: 'fas fa-motorcycle',    color: '#8b5cf6' },
-    { key: 'thonha',       name: 'Thợ nhà',               table: 'nhacungcap_thonha',       icon: 'fas fa-tools',         color: '#11998e' },
-    { key: 'thuexe',       name: 'Thuê xe',               table: 'nhacungcap_thuexe',       icon: 'fas fa-key',           color: '#0ea5e9' },
-    { key: 'giatuinhanh',   name: 'Giặt ủi nhanh',         table: 'nhacungcap_giatuinhanh',  icon: 'fas fa-tshirt',        color: '#f43f5e' },
+    { id: 1,  key: 'mevabe',        name: 'Chăm sóc mẹ và bé',   icon: 'fas fa-baby',          color: '#ec4899' },
+    { id: 2,  key: 'nguoibenh',     name: 'Chăm sóc người bệnh',  icon: 'fas fa-hospital-user', color: '#ef4444' },
+    { id: 3,  key: 'nguoigia',      name: 'Chăm sóc người già',    icon: 'fas fa-person-cane',   color: '#f97316' },
+    { id: 4,  key: 'vuonnha',       name: 'Làm vườn',              icon: 'fas fa-leaf',          color: '#22c55e' },
+    { id: 5,  key: 'donvesinh',     name: 'Dọn vệ sinh',           icon: 'fas fa-broom',         color: '#14b8a6' },
+    { id: 6,  key: 'laixeho',       name: 'Lái xe hộ',             icon: 'fas fa-car',           color: '#3b82f6' },
+    { id: 7,  key: 'giaohangnhanh', name: 'Giao hàng nhanh',       icon: 'fas fa-truck-fast',    color: '#6366f1' },
+    { id: 8,  key: 'suaxe',         name: 'Sửa xe',                icon: 'fas fa-motorcycle',    color: '#8b5cf6' },
+    { id: 9,  key: 'thonha',        name: 'Thợ nhà',               icon: 'fas fa-tools',         color: '#11998e' },
+    { id: 10, key: 'thuexe',        name: 'Thuê xe',               icon: 'fas fa-key',           color: '#0ea5e9' },
+    { id: 11, key: 'giatuinhanh',   name: 'Giặt ủi nhanh',        icon: 'fas fa-tshirt',        color: '#f43f5e' },
 ];
 
-let _selectedServices = new Set();
+let _selectedServiceIds = new Set(); // Chứa các ID dịch vụ đã chọn
 
 /* ================================================================
    TOGGLE SERVICES PANEL
@@ -41,7 +42,7 @@ function toggleServices() {
 }
 
 /* ================================================================
-   RENDER SERVICE GRID
+   RENDER SERVICE GRID – Cho phép chọn nhiều dịch vụ
    ================================================================ */
 function renderServiceGrid() {
     const grid = document.getElementById('svcGrid');
@@ -51,7 +52,7 @@ function renderServiceGrid() {
         const label = document.createElement('label');
         label.className = 'svc-check';
         label.innerHTML = `
-            <input type="checkbox" value="${svc.key}" data-table="${svc.table}">
+            <input type="checkbox" name="reg_service" value="${svc.id}" data-key="${svc.key}">
             <span class="svc-icon" style="background:${svc.color};">
                 <i class="${svc.icon}"></i>
             </span>
@@ -61,8 +62,13 @@ function renderServiceGrid() {
 
         const cb = label.querySelector('input[type="checkbox"]');
         cb.addEventListener('change', () => {
-            label.classList.toggle('checked', cb.checked);
-            cb.checked ? _selectedServices.add(svc.key) : _selectedServices.delete(svc.key);
+            if (cb.checked) {
+                label.classList.add('checked');
+                _selectedServiceIds.add(svc.id);
+            } else {
+                label.classList.remove('checked');
+                _selectedServiceIds.delete(svc.id);
+            }
             _updateServiceCount();
         });
 
@@ -73,21 +79,21 @@ function renderServiceGrid() {
 function _updateServiceCount() {
     const badge = document.getElementById('svcBadge');
     const countEl = document.getElementById('svcSelectedCount');
-    const n = _selectedServices.size;
+    const n = _selectedServiceIds.size;
 
     if (n === 0) {
-        badge.textContent = 'Khách hàng';
+        badge.textContent = '';
         badge.classList.remove('provider');
         if (countEl) countEl.innerHTML = '';
     } else {
         badge.textContent = `${n} dịch vụ`;
         badge.classList.add('provider');
         if (countEl) {
-            const names = Array.from(_selectedServices).map(k => {
-                const s = REG_SERVICES.find(r => r.key === k);
-                return s ? s.name : k;
+            const names = Array.from(_selectedServiceIds).map(id => {
+                const s = REG_SERVICES.find(r => r.id === id);
+                return s ? s.name : id;
             });
-            countEl.innerHTML = `<i class="fas fa-check-circle me-1" style="color:var(--auth-primary);"></i> ${names.join(', ')}`;
+            countEl.innerHTML = `<i class="fas fa-check-circle me-1" style="color:var(--auth-primary);"></i> Đã chọn: ${names.join(', ')}`;
         }
     }
 }
@@ -197,7 +203,7 @@ function _validate() {
 }
 
 /* ================================================================
-   SUBMIT
+   SUBMIT – Lưu tất cả vào bảng nguoidung
    ================================================================ */
 async function regSubmit() {
     const msg = document.getElementById('msg');
@@ -228,8 +234,11 @@ async function regSubmit() {
         const krud = window.DVQTKrud;
         if (!krud) throw new Error('Hệ thống chưa sẵn sàng. Vui lòng tải lại trang.');
 
-        // Kiểm tra trùng SĐT
-        const existing = await krud.listTable('khachhang');
+        // Đảm bảo bảng nguoidung tồn tại
+        await krud.ensureNguoidungTable();
+
+        // Kiểm tra trùng SĐT trong bảng nguoidung
+        const existing = await krud.listTable('nguoidung');
         const pNorm = phone.replace(/\D/g, '');
         if (existing.find(r => String(r.sodienthoai || r.phone || '').replace(/\D/g, '') === pNorm)) {
             throw new Error('SĐT đã được đăng ký. Vui lòng đăng nhập hoặc dùng SĐT khác.');
@@ -241,50 +250,50 @@ async function regSubmit() {
         const p = n => String(n).padStart(2, '0');
         const created = `${vn.getFullYear()}-${p(vn.getMonth()+1)}-${p(vn.getDate())} ${p(vn.getHours())}:${p(vn.getMinutes())}:${p(vn.getSeconds())}`;
 
-        const baseData = {
-            hovaten: name, sodienthoai: phone, email, diachi: addr,
-            matkhau: pwd, maplat: lat, maplng: lng, created_date: created,
+        // Chuỗi id_dichvu (ví dụ: "1,2,3" hoặc "0")
+        const idDichvuStr = _selectedServiceIds.size > 0 
+            ? Array.from(_selectedServiceIds).sort((a,b) => a-b).join(',') 
+            : '0';
+
+        // Lưu vào bảng nguoidung với id_dichvu
+        const userData = {
+            hovaten: name,
+            sodienthoai: phone,
+            email,
+            diachi: addr,
+            matkhau: pwd,
+            maplat: lat,
+            maplng: lng,
+            created_date: created,
             avatartenfile: avatarFile ? avatarFile.name : '',
             cccdmattruoctenfile: cccdFront ? cccdFront.name : '',
             cccdmatsautenfile: cccdBack ? cccdBack.name : '',
+            id_dichvu: idDichvuStr, 
+            trangthai: 'active'
         };
 
-        const isProvider = _selectedServices.size > 0;
+        await krud.insertRow('nguoidung', userData);
 
+        const isProvider = idDichvuStr !== '0';
         if (!isProvider) {
-            await krud.insertRow('khachhang', { ...baseData, trangthai: 'active' });
-            
+            msg.innerHTML = '<span class="text-success small"><i class="fas fa-check-circle me-1"></i>Đăng ký thành công! Đang chuyển hướng về trang đăng nhập...</span>';
             const urlParams = new URLSearchParams(window.location.search);
             const service = urlParams.get('service') || 'dvqt';
-            
-            msg.innerHTML = '<span class="text-success small"><i class="fas fa-check-circle me-1"></i>Đăng ký thành công! Đang chuyển hướng về trang đăng nhập...</span>';
-
-            // Dẫn về trang đăng nhập, giữ nguyên tham số service
             const target = 'dang-nhap.html?service=' + service;
-
             setTimeout(() => window.location.href = target, 1500);
         } else {
-            const keys = Array.from(_selectedServices);
-            const names = keys.map(k => REG_SERVICES.find(r => r.key === k)?.name || k);
-            const provData = {
-                ...baseData, trangthai: 'pending',
-                danh_muc_thuc_hien: names.join(', '),
-                loai_hinh_kinh_doanh: keys.join(','),
-            };
-
-            await Promise.all(keys.map(key => {
-                const svc = REG_SERVICES.find(r => r.key === key);
-                return svc ? krud.insertRow(svc.table, { ...provData }).catch(e => console.warn(`Insert ${svc.table}:`, e)) : null;
-            }));
-
             msg.innerHTML = `
                 <div class="info-box" style="margin-top:12px; text-align:center;">
                     <i class="fas fa-check-circle" style="color:var(--auth-success); font-size:1.4rem; display:block; margin-bottom:6px;"></i>
                     <strong>Đăng ký nhà cung cấp thành công!</strong><br>
-                    <span style="font-size:0.82rem;">Chờ Admin duyệt (thường trong 24h).<br>
-                    Đã đăng ký: <strong>${names.join(', ')}</strong></span>
+                    <span style="font-size:0.82rem;">Tài khoản của bạn đã sẵn sàng.<br>
+                    Dịch vụ: <strong>${Array.from(_selectedServiceIds).map(id => REG_SERVICES.find(r => r.id === id)?.name).join(', ')}</strong></span>
                 </div>`;
-            btn.style.display = 'none';
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const service = urlParams.get('service') || 'dvqt';
+            const target = 'dang-nhap.html?service=' + service;
+            setTimeout(() => window.location.href = target, 2500);
         }
     } catch (e) {
         console.error('Registration error:', e);
@@ -302,4 +311,5 @@ document.addEventListener('DOMContentLoaded', () => {
     regUpload.init();
     initPasswordUtils();
     initMapHook();
+    _updateServiceCount(); // Để mặc định là Khách hàng
 });

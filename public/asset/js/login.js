@@ -1,74 +1,9 @@
 /**
  * login.js – Logic đăng nhập dùng chung cho Dịch Vụ Quanh Ta.
- * Hỗ trợ 2 role: customer / provider, chuyển đổi bằng tab.
+ * Đơn giản: Lấy SĐT + Mật khẩu → gọi krudList bảng nguoidung → so khớp → lưu localStorage.
+ * Không phân chia role, không gọi PHP session.
  */
 'use strict';
-
-let _currentRole = 'customer';
-
-/* ============================
-   ROLE SWITCHER
-   ============================ */
-function switchRole(role) {
-    _currentRole = role;
-    document.querySelectorAll('.role-tab').forEach(t => {
-        t.classList.toggle('active', t.dataset.role === role);
-    });
-    document.getElementById('providerNotice').classList.toggle('show', role === 'provider');
-    document.getElementById('msg').innerHTML = '';
-}
-
-/* ============================
-   CHECK SESSION – Tự redirect nếu đã login
-   ============================ */
-async function checkAlreadyLoggedIn() {
-    try {
-        const session = await DVQTApp.checkSession();
-        if (session && session.logged_in) {
-            // Lấy service từ URL để biết cần quay về đâu
-            const urlParams = new URLSearchParams(window.location.search);
-            const service = urlParams.get('service');
-            const root = (typeof DVQTApp !== 'undefined' && DVQTApp.ROOT_URL !== undefined) ? DVQTApp.ROOT_URL : '/Test';
-
-            // Nếu không có service cụ thể, về trang chủ tổng
-            if (!service || service === 'dvqt') {
-                window.location.href = root + '/index.html';
-                return;
-            }
-
-            // Danh sách đích đến (Đồng bộ với logic login bên dưới)
-            const serviceHomes = {
-                'thonha': root + '/tho-nha/index.html',
-                'thuexe': root + '/thue-xe/index.html',
-                'giatuinhanh': root + '/giat-ui-nhanh/index.html',
-                'mevabe': root + '/cham-soc-me-va-be/index.html',
-                'nguoibenh': root + '/cham-soc-nguoi-benh/index.html',
-                'nguoigia': root + '/cham-soc-nguoi-gia/index.html',
-                'donvesinh': root + '/dich-vu-don-ve-sinh/index.html',
-                'vuonnha': root + '/cham-soc-vuon-nha/index.html',
-                'giaohangnhanh': root + '/giao-hang-nhanh/index.html',
-                'suaxe': root + '/sua-xe-luu-dong/index.html',
-                'chuyendon': root + '/dich-vu-chuyen-don/index.html',
-                'laixeho': root + '/dich-vu-lai-xe-ho/index.html'
-            };
-
-            const serviceDashboards = {
-                'thonha': root + '/tho-nha/pages/provider/trang-ca-nhan.html',
-                'thuexe': root + '/thue-xe/views/pages/provider/bang-dieu-khien.html',
-                'giatuinhanh': root + '/giat-ui-nhanh/nha-cung-cap.html'
-            };
-
-            let target = '';
-            if (session.role === 'customer') {
-                target = serviceHomes[service] || (root + '/index.html');
-            } else {
-                target = serviceDashboards[service] || serviceHomes[service] || (root + '/index.html');
-            }
-
-            window.location.href = target;
-        }
-    } catch (e) { }
-}
 
 /* ============================
    TOGGLE PASSWORD
@@ -88,7 +23,7 @@ function initTogglePassword() {
 }
 
 /* ============================
-   LOGIN
+   LOGIN – Đơn giản hoá
    ============================ */
 async function login() {
     const msg = document.getElementById('msg');
@@ -106,41 +41,60 @@ async function login() {
     msg.innerHTML = '';
 
     try {
-        // Lấy tham số dịch vụ trên URL (ví dụ: ?service=thonha)
-        const urlParams = new URLSearchParams(window.location.search);
-        let service = urlParams.get('service');
-        if (service) service = service.trim().toLowerCase();
+        const krud = window.DVQTKrud;
+        if (!krud) throw new Error('Hệ thống chưa sẵn sàng. Vui lòng tải lại trang.');
 
-        console.log('Current Login Context:', { service, role: _currentRole }); // Hỗ trợ debug cho user
-        const providerTableMap = {
-            'thonha': 'nhacungcap_thonha',
-            'mevabe': 'nhacungcap_mevabe',
-            'nguoibenh': 'nhacungcap_nguoibenh',
-            'nguoigia': 'nhacungcap_nguoigia',
-            'donvesinh': 'nhacungcap_donvesinh',
-            'vuonnha': 'nhacungcap_vuonnha',
-            'giatuinhanh': 'nhacungcap_giatuinhanh',
-            'thuexe': 'nhacungcap_thuexe',
-            'suaxe': 'nhacungcap_suaxe',
-            'giaohangnhanh': 'nhacungcap_giaohangnhanh',
-            'chuyendon': 'nhacungcap_chuyendon',
-            'laixeho': 'nhacungcap_laixeho'
+        // 1. Đảm bảo bảng nguoidung tồn tại
+        await krud.ensureNguoidungTable();
+
+        // 2. Lấy toàn bộ danh sách từ bảng nguoidung
+        const rows = await krud.listTable('nguoidung');
+
+        // 2. Tìm user theo SĐT
+        const phoneNorm = phone.replace(/\D/g, '');
+        const user = rows.find(r => {
+            const dbPhone = String(r.sodienthoai || r.phone || '').replace(/\D/g, '');
+            return dbPhone === phoneNorm;
+        });
+
+        if (!user) throw new Error('Tài khoản không tồn tại trên hệ thống.');
+
+        // 3. So khớp mật khẩu
+        const stored = String(user.matkhau || user.password || user.mat_khau || '');
+        if (stored !== password) throw new Error('Mật khẩu không chính xác.');
+
+        // 4. Lưu thông tin vào localStorage
+        const profile = {
+            id: user.id,
+            name: user.hovaten || user.name || 'Người dùng',
+            phone: user.sodienthoai || user.phone || phone,
+            email: user.email || '',
+            address: user.diachi || user.dia_chi || user.address || '',
+            id_dichvu: user.id_dichvu || 0,
+            avatartenfile: user.avatartenfile || '',
+            cccdmattruoctenfile: user.cccdmattruoctenfile || '',
+            cccdmatsautenfile: user.cccdmatsautenfile || ''
         };
-        // Tự động nhận diện bảng nếu không có trong map (nhacungcap_...)
-        const pTable = providerTableMap[service] || (service ? ('nhacungcap_' + service.replace(/-/g, '_')) : 'nhacungcap_thonha');
 
-        await DVQTApp.login(_currentRole, phone, password, pTable);
+        localStorage.setItem('dvqt_logged_in', 'true');
+        localStorage.setItem('dvqt_user_id', profile.id);
+        localStorage.setItem('dvqt_user_profile', JSON.stringify(profile));
 
+        // 5. Hiển thị thành công
         document.querySelector('.auth-card').classList.add('login-success');
         msg.innerHTML = '<span class="text-success small"><i class="fas fa-check-circle me-1"></i>Đăng nhập thành công!</span>';
 
-        // 1. Phân loại đích đến dựa trên service và role
-        let target = '';
+        // 6. Điều hướng
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUrl = urlParams.get('redirect');
+        const service = urlParams.get('service');
         const root = (typeof DVQTApp !== 'undefined' && DVQTApp.ROOT_URL !== undefined) ? DVQTApp.ROOT_URL : '/Test';
 
-        if (!service || service === 'dvqt') {
-            target = root + '/index.html';
-        } else {
+        let target = root + '/index.html'; // Mặc định về trang chủ
+
+        if (redirectUrl) {
+            target = decodeURIComponent(redirectUrl);
+        } else if (service) {
             const serviceHomes = {
                 'thonha': root + '/tho-nha/index.html',
                 'thuexe': root + '/thue-xe/index.html',
@@ -155,27 +109,11 @@ async function login() {
                 'chuyendon': root + '/dich-vu-chuyen-don/index.html',
                 'laixeho': root + '/dich-vu-lai-xe-ho/index.html'
             };
-            const serviceDashboards = {
-                'thonha': root + '/tho-nha/pages/provider/trang-ca-nhan.html',
-                'thuexe': root + '/thue-xe/views/pages/provider/bang-dieu-khien.html',
-                'giatuinhanh': root + '/giat-ui-nhanh/nha-cung-cap.html',
-                'mevabe': root + '/cham-soc-me-va-be/index.html', // Cập nhật sau nếu có dash riêng
-                'nguoibenh': root + '/cham-soc-nguoi-benh/index.html',
-                'nguoigia': root + '/cham-soc-nguoi-gia/index.html'
-            };
-
-            if (_currentRole === 'customer') {
-                target = serviceHomes[service] || (root + '/index.html');
-            } else {
-                target = serviceDashboards[service] || serviceHomes[service] || (root + '/index.html');
-            }
+            target = serviceHomes[service] || target;
         }
 
-        const redirectUrl = urlParams.get('redirect');
-
         setTimeout(() => {
-            // Ưu tiên redirectUrl nếu có, nếu không thì theo target đã tính toán
-            window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : target;
+            window.location.href = target;
         }, 800);
 
     } catch (err) {
@@ -189,9 +127,38 @@ async function login() {
    INIT
    ============================ */
 document.addEventListener('DOMContentLoaded', () => {
-    checkAlreadyLoggedIn();
-    initTogglePassword();
+    // Kiểm tra đã đăng nhập chưa (dựa vào localStorage)
+    if (localStorage.getItem('dvqt_logged_in') === 'true') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUrl = urlParams.get('redirect');
+        const service = urlParams.get('service');
+        const root = (typeof DVQTApp !== 'undefined' && DVQTApp.ROOT_URL !== undefined) ? DVQTApp.ROOT_URL : '/Test';
 
+        let target = root + '/index.html';
+        if (redirectUrl) {
+            target = decodeURIComponent(redirectUrl);
+        } else if (service) {
+            const serviceHomes = {
+                'thonha': root + '/tho-nha/index.html',
+                'thuexe': root + '/thue-xe/index.html',
+                'giatuinhanh': root + '/giat-ui-nhanh/index.html',
+                'mevabe': root + '/cham-soc-me-va-be/index.html',
+                'nguoibenh': root + '/cham-soc-nguoi-benh/index.html',
+                'nguoigia': root + '/cham-soc-nguoi-gia/index.html',
+                'donvesinh': root + '/dich-vu-don-ve-sinh/index.html',
+                'vuonnha': root + '/cham-soc-vuon-nha/index.html',
+                'giaohangnhanh': root + '/giao-hang-nhanh/index.html',
+                'suaxe': root + '/sua-xe-luu-dong/index.html',
+                'chuyendon': root + '/dich-vu-chuyen-don/index.html',
+                'laixeho': root + '/dich-vu-lai-xe-ho/index.html'
+            };
+            target = serviceHomes[service] || target;
+        }
+        window.location.href = target;
+        return;
+    }
+
+    initTogglePassword();
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('login_phone').addEventListener('keydown', e => {
         if (e.key === 'Enter') document.getElementById('login_password').focus();

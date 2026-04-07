@@ -1,5 +1,5 @@
 /**
- * Khởi tạo dữ liệu và sự kiện cho trang Đơn hàng Đối tác (Thợ)
+ * Khởi tạo dữ liệu và sự kiện cho trang Đơn hàng Đối tác (Thợ Nhà)
  */
 window.initProviderOrders = function() {
     'use strict';
@@ -8,126 +8,119 @@ window.initProviderOrders = function() {
     window._providerOrdersInit = true;
 
     var store = window.ThoNhaOrderStore;
-    var viewUtils = window.ThoNhaOrderViewUtils;
     var ui = window.ThoNhaOrderUI;
-    if (!store || !viewUtils || !ui) return console.error('[ProviderOrder] Missing dependencies!');
+    if (!store || !ui) return console.error('[ProviderOrder] Missing dependencies!');
 
     var state = {
         filter: 'all',
         keyword: '',
         selectedOrderId: null,
-        orders: [],
         isLoading: false
     };
 
-    var provider = store.getProviderProfile();
-    var elements = {
-        openBody: document.getElementById('openRequestBody'),
-        assignedBody: document.getElementById('assignedOrderBody'),
-        openMobileList: document.getElementById('openMobileList'),
-        assignedMobileList: document.getElementById('assignedMobileList'),
-        openEmpty: document.getElementById('openEmptyState'),
-        assignedEmpty: document.getElementById('assignedEmptyState'),
-        refreshBtn: document.getElementById('refreshProviderBtn'),
-        detailModal: document.getElementById('providerDetailModal'),
-        detailBody: document.getElementById('providerDetailBody'),
-        detailCode: document.getElementById('providerDetailCode'),
-        statOpen: document.getElementById('statOpen'),
-        statAssigned: document.getElementById('statAssigned'),
-        statDoing: document.getElementById('statDoing'),
-        statDone: document.getElementById('statDone')
-    };
-
-    function setLoadingState(isLoading) {
-        state.isLoading = !!isLoading;
-        if (state.isLoading) {
-            if (elements.openBody) elements.openBody.innerHTML = '<tr><td colspan="6" class="table-loading">Đang tải yêu cầu Milestone...</td></tr>';
-            if (elements.assignedBody) elements.assignedBody.innerHTML = '<tr><td colspan="5" class="table-loading">Đang tải đơn đã nhận Milestone...</td></tr>';
-        }
+    function getElements() {
+        return {
+            listContainer: document.getElementById('providerListSection'),
+            detailContainer: document.getElementById('providerDetailSection'),
+            openBody: document.getElementById('openRequestBody'),
+            assignedBody: document.getElementById('assignedOrderBody'),
+            openMobileList: document.getElementById('openMobileList'),
+            assignedMobileList: document.getElementById('assignedMobileList'),
+            openEmpty: document.getElementById('openEmptyState'),
+            assignedEmpty: document.getElementById('assignedEmptyState'),
+            refreshBtn: document.getElementById('refreshProviderBtn'),
+            statOpen: document.getElementById('statOpen'),
+            statAssigned: document.getElementById('statAssigned'),
+            statDoing: document.getElementById('statDoing'),
+            statDone: document.getElementById('statDone')
+        };
     }
 
     async function loadOrdersFromApi(showErrorAlert) {
-        setLoadingState(true);
+        state.isLoading = true;
+        const els = getElements();
+        if (els.openBody) els.openBody.innerHTML = '<tr><td colspan="6" class="table-loading">Đang tải yêu cầu...</td></tr>';
+        if (els.assignedBody) els.assignedBody.innerHTML = '<tr><td colspan="5" class="table-loading">Đang tải đơn đã nhận...</td></tr>';
+        
         try {
-            const orders = await window.ThoNhaOrderService.getOrders('provider', provider);
-            state.orders = orders || [];
+            const currentProvider = store.getProviderProfile();
+            const orders = await window.ThoNhaOrderService.getOrders('provider', currentProvider);
+            console.log('[ProviderOrder] Loaded from API:', orders.length);
+            store.setOrders(orders);
         } catch (err) {
             console.error('[provider-order] API Error:', err);
-            state.orders = [];
             if (showErrorAlert) alert('Không tải được danh sách công việc.');
         } finally {
-            setLoadingState(false);
+            state.isLoading = false;
             render();
         }
     }
 
     function render() {
-        const orders = state.orders || [];
+        const els = getElements();
+        const orders = store.getOrders();
         
         // Chia đơn: Mới (chờ thầu) vs Đã nhận
         const openOrders = orders.filter(o => o.status === 'new');
         const assignedOrders = orders.filter(o => o.status !== 'new' && o.status !== 'cancel');
 
         // Cập nhật thống kê
-        if (elements.statOpen) elements.statOpen.textContent = openOrders.length;
-        if (elements.statAssigned) elements.statAssigned.textContent = assignedOrders.length;
-        if (elements.statDoing) elements.statDoing.textContent = assignedOrders.filter(o => o.status === 'doing').length;
-        if (elements.statDone) elements.statDone.textContent = assignedOrders.filter(o => o.status === 'done').length;
+        if (els.statOpen) els.statOpen.textContent = openOrders.length;
+        if (els.statAssigned) els.statAssigned.textContent = assignedOrders.length;
+        if (els.statDoing) els.statDoing.textContent = assignedOrders.filter(o => o.status === 'doing').length;
+        if (els.statDone) els.statDone.textContent = assignedOrders.filter(o => o.status === 'done').length;
 
-        // Vẽ qua UI Composer
+        // Vẽ danh sách
         ui.renderList(openOrders, 'provider', {
-            body: elements.openBody,
-            mobile: elements.openMobileList,
-            empty: elements.openEmpty
+            body: els.openBody,
+            mobile: els.openMobileList,
+            empty: els.openEmpty
         });
         ui.renderList(assignedOrders, 'provider', {
-            body: elements.assignedBody,
-            mobile: elements.assignedMobileList,
-            empty: elements.assignedEmpty
+            body: els.assignedBody,
+            mobile: els.assignedMobileList,
+            empty: els.assignedEmpty
         });
 
-        // Cập nhật chi tiết nếu đang mở
-        if (state.selectedOrderId && elements.detailBody) {
+        // SPA Detail View Handling
+        if (state.selectedOrderId) {
             const order = orders.find(o => o.id === state.selectedOrderId);
             if (order) {
-                elements.detailBody.innerHTML = ui.renderDetails(order, 'provider', provider);
-                if (elements.detailCode) elements.detailCode.textContent = order.orderCode;
-                renderActionButtons(order);
+                if (els.listContainer) els.listContainer.hidden = true;
+                if (els.detailContainer) {
+                    els.detailContainer.hidden = false;
+                    ui.renderDetails(order, 'provider', els.detailContainer);
+                }
+            } else {
+                state.selectedOrderId = null;
+                showList(els);
             }
+        } else {
+            showList(els);
         }
     }
 
-    function renderActionButtons(order) {
-        const area = document.getElementById('providerActionArea');
-        if (!area) return;
-
-        let html = '';
-        if (order.status === 'new') {
-            html = `<button class="btn btn-primary w-100 py-3 fw-bold" data-action="accept-order" data-id="${order.id}">NHẬN ĐƠN HÀNG NÀY</button>`;
-        } else if (order.status === 'confirmed') {
-            html = `<button class="btn btn-warning w-100 py-3 fw-bold" data-action="start-order" data-id="${order.id}">BẮT ĐẦU THỰC HIỆN</button>`;
-        } else if (order.status === 'doing') {
-            html = `<button class="btn btn-success w-100 py-3 fw-bold" data-action="complete-order" data-id="${order.id}">XÁC NHẬN HOÀN THÀNH</button>`;
-        }
-        area.innerHTML = html;
+    function showList(els) {
+        const e = els || getElements();
+        if (e.listContainer) e.listContainer.hidden = false;
+        if (e.detailContainer) e.detailContainer.hidden = true;
     }
 
     async function handleProviderAction(id, actionType) {
-        const order = state.orders.find(o => o.id === String(id));
-        if (!order) return;
-
         let payload = {};
         const d = new Date();
         const vnDate = new Date(d.toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}));
         const pad = (n) => String(n).padStart(2, '0');
         const nowStr = `${vnDate.getFullYear()}-${pad(vnDate.getMonth() + 1)}-${pad(vnDate.getDate())} ${pad(vnDate.getHours())}:${pad(vnDate.getMinutes())}:${pad(vnDate.getSeconds())}`;
         
+        const currentProvider = store.getProviderProfile();
+
         if (actionType === 'accept-order') {
             if (!confirm('Xác nhận nhận đơn hàng này?')) return;
             payload = {
-                id_nhacungcap: provider.id,
-                tenncc: provider.name,
-                sdtncc: provider.phone,
+                id_nhacungcap: currentProvider.id,
+                tenncc: currentProvider.name,
+                sdtncc: currentProvider.phone,
                 ngaynhan: nowStr 
             };
         } else if (actionType === 'start-order') {
@@ -155,28 +148,28 @@ window.initProviderOrders = function() {
             const id = btn.dataset.id;
 
             if (action === 'view-detail') {
+                e.preventDefault();
                 state.selectedOrderId = id;
                 render();
-                if (elements.detailModal) elements.detailModal.hidden = false;
-                document.body.classList.add('detail-modal-open');
+                return;
+            }
+
+            if (action === 'back-to-list') {
+                e.preventDefault();
+                state.selectedOrderId = null;
+                render();
                 return;
             }
 
             if (['accept-order', 'start-order', 'complete-order'].includes(action)) {
+                e.preventDefault();
                 handleProviderAction(id, action);
-                return;
-            }
-            
-            if (action === 'close-detail') {
-                state.selectedOrderId = null;
-                if (elements.detailModal) elements.detailModal.hidden = true;
-                document.body.classList.remove('detail-modal-open');
-                return;
             }
         });
 
-        if (elements.refreshBtn) {
-            elements.refreshBtn.addEventListener('click', () => loadOrdersFromApi(true));
+        const els = getElements();
+        if (els.refreshBtn) {
+            els.refreshBtn.addEventListener('click', () => loadOrdersFromApi(true));
         }
     }
 

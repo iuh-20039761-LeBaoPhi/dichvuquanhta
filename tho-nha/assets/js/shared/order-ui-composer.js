@@ -98,61 +98,41 @@ const ThoNhaOrderUI = (() => {
     }
 
     /**
-     * Vẽ nội dung chi tiết 
+     * Tải và Hiển thị nội dung chi tiết đơn hàng (Premium v4.1).
+     * @param {Object} order - Dữ liệu đơn hàng đã chuẩn hoá.
+     * @param {string} role - Vai trò người dùng (admin, provider, customer).
+     * @param {HTMLElement} container - Vùng chứa nội dung chi tiết.
      */
-    function renderDetails(order, role, profile) {
-        const customerName = order.customer.name || 'Khách hàng';
-        const providerName = order.provider.company || order.provider.name || 'Nhà cung cấp';
+    async function renderDetails(order, role, container) {
+        if (!container) return;
 
-        let actionHtml = '';
-        if (role === 'customer' && order.status === 'new') {
-            actionHtml = `<button class="btn btn-danger w-100" data-action="cancel-order" data-id="${order.id}" data-code="${order.orderCode}">Hủy đơn hàng này</button>`;
-        } else if (role === 'provider') {
-            // Logic nút bấm cho thợ (Accept, Start, Done) - sẽ được handle tại file riêng
-            actionHtml = `<div class="provider-actions" id="providerActionArea"></div>`;
+        // Xóa nội dung cũ và hiện loading
+        container.innerHTML = '<div style="text-align:center; padding:100px; color:#64748b;"><i class="fas fa-spinner fa-spin fa-3x"></i><br><br>Đang tải chi tiết hóa đơn...</div>';
+
+        try {
+            // 1. Tải Partial HTML (nếu chưa có trong cache toàn cục)
+            // Lưu ý: Đường dẫn relative có thể thay đổi tùy vị trí file gọi, nên dùng đường dẫn tuyệt đối hoặc logic fallback
+            let partialPath = '../../partials/chi-tiet-hoa-don-tho-nha.html';
+            
+            // Tạm thời fetch để lấy content
+            const response = await fetch(partialPath).catch(() => fetch('/tho-nha/partials/chi-tiet-hoa-don-tho-nha.html'));
+            if (!response || !response.ok) throw new Error('Không thể nạp giao diện chi tiết.');
+            const template = await response.text();
+
+            // 2. Inject HTML vào container
+            container.innerHTML = template;
+
+            // 3. Gọi Renderer riêng biệt để đổ dữ liệu (Premium Logic)
+            if (window.ThoNhaOrderDetailRenderer) {
+                window.ThoNhaOrderDetailRenderer.render(order, role, container);
+            } else {
+                console.error('[OrderUI] ThoNhaOrderDetailRenderer missing!');
+                container.innerHTML = '<div class="alert alert-danger">Lỗi hệ thống: Không tìm thấy bộ dựng giao diện chi tiết.</div>';
+            }
+        } catch (err) {
+            console.error('[OrderUI] RenderDetail Error:', err);
+            container.innerHTML = `<div class="alert alert-danger">Lỗi tải dữ liệu: ${err.message}</div>`;
         }
-
-        return `
-            <section class="detail-section">
-                <h4>Thông tin định danh </h4>
-                <div class="detail-grid">
-                    ${utils.buildDetailRow('Mã đơn', order.orderCode)}
-                    ${utils.buildDetailRow('Ngày đặt', utils.formatDateTime(order.createdAt))}
-                    <div class="detail-row"><span>Trạng thái</span>${utils.buildStatusBadge(order.status)}</div>
-                </div>
-            </section>
-            <section class="detail-section">
-                <h4>Đối tượng </h4>
-                <div class="detail-grid">
-                    ${utils.buildDetailRow('Khách hàng', customerName)}
-                    ${utils.buildDetailRow('Liên hệ', order.customer.phone)}
-                    ${utils.buildDetailRow('Địa chỉ', order.address)}
-                </div>
-            </section>
-            <section class="detail-section">
-                <h4>Dịch vụ & Thợ thầu</h4>
-                <div class="detail-grid">
-                    ${utils.buildDetailRow('Dịch vụ', order.service)}
-                    ${utils.buildDetailRow('Đơn vị thầu', providerName)}
-                    ${utils.buildDetailRow('SĐT thợ', order.provider.phone)}
-                </div>
-            </section>
-            <section class="detail-section">
-                <h4>Nhật ký mốc thời gian </h4>
-                <div class="detail-grid">
-                    ${utils.buildDetailRow('Ngày dự kiến', utils.formatDateTime(order.dates.ordered))}
-                    ${order.dates.accepted ? utils.buildDetailRow('Thợ nhận đơn', utils.formatDateTime(order.dates.accepted)) : ''}
-                    ${order.dates.started ? utils.buildDetailRow('Bắt đầu làm', utils.formatDateTime(order.dates.started)) : ''}
-                    ${order.dates.completed ? utils.buildDetailRow('Hoàn thành', utils.formatDateTime(order.dates.completed)) : ''}
-                    ${order.dates.cancelled ? utils.buildDetailRow('Ngày hủy đơn', utils.formatDateTime(order.dates.cancelled)) : ''}
-                </div>
-            </section>
-            <section class="detail-section">
-                <h4>Chi phí </h4>
-                ${utils.buildBookingCostSummary(order)}
-            </section>
-            <div class="mt-4">${actionHtml}</div>
-        `;
     }
 
     return { renderList, renderDetails };

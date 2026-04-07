@@ -178,7 +178,7 @@
     function deriveStatusFromDates(row) {
         if (row.ngayhuy) return 'cancel';
         if (row.ngayhoanthanhthucte) return 'done';
-        if (row.ngaythuchienthucte) return 'doing';
+        if (row.ngaybatdauthucte || row.ngaythuchienthucte) return 'doing';
         if (row.ngaynhan) return 'confirmed';
         if (row.ngaydat) return 'new';
         // Fallback
@@ -227,7 +227,7 @@
                 ordered: raw.ngaydat || raw.ngay_dat || raw.created_at || null,
                 cancelled: raw.ngayhuy || null,
                 accepted: raw.ngaynhan || null,
-                started: raw.ngaythuchienthucte || null,
+                started: raw.ngaybatdauthucte || raw.ngaythuchienthucte || null,
                 completed: raw.ngayhoanthanhthucte || null
             },
             // Thông tin NCC thực hiện
@@ -268,14 +268,22 @@
     }
 
     /**
-     * Tạo HTML nút bấm xem chi tiết đơn hàng.
+     * Tạo HTML nút bấm xem chi tiết đơn hàng (Link tới trang riêng).
      * @param {string|number} orderId - ID đơn hàng.
      * @param {string} [label] - Nhãn nút bấm.
      * @returns {string} HTML button.
      */
     function buildDetailActionButton(orderId, label) {
         var buttonLabel = label || 'Xem chi tiết';
-        return '<button class="btn-detail" type="button" data-action="view-detail" data-id="' + escapeHtml(orderId) + '">' + escapeHtml(buttonLabel) + '</button>';
+        var url = 'chi-tiet-hoa-don-tho-nha.html?id=' + orderId;
+        
+        // Nếu đang ở trong thư mục sâu (như pages/admin), cần điều chỉnh đường dẫn
+        var depth = window.location.pathname.split('/').length;
+        if (depth > 5) { // Ví dụ: /tho-nha/pages/admin/quan-tri.html -> length là 6
+            url = '../../chi-tiet-hoa-don-tho-nha.html?id=' + orderId;
+        }
+
+        return '<a href="' + url + '" class="btn-detail" data-action="view-detail" data-id="' + escapeHtml(orderId) + '" style="text-decoration:none;">' + escapeHtml(buttonLabel) + '</a>';
     }
 
     /**

@@ -1,69 +1,71 @@
+<!-- Tho Nha Customer Order Management (Premium v4.1) -->
+<div class="invoice-page-container">
+    <section class="invoice-sidebar" aria-label="Bộ lọc nhanh">
+        <header class="sidebar-head">
+            <h3><i class="fa-solid fa-filter"></i> Phân loại</h3>
+        </header>
+        <div class="sidebar-body">
+            <button class="sidebar-item active" id="filter-all">
+                <div class="sidebar-item-info"><span>Tất cả đơn hàng</span><b id="stat-all-count">0</b></div>
+            </button>
+            <button class="sidebar-item" id="filter-new">
+                <div class="sidebar-item-info"><span>Chờ xác nhận</span><b id="stat-new-count">0</b></div>
+            </button>
+            <button class="sidebar-item" id="filter-doing">
+                <div class="sidebar-item-info"><span>Đang thực hiện</span><b id="stat-doing-count">0</b></div>
+            </button>
+            <button class="sidebar-item" id="filter-done">
+                <div class="sidebar-item-info"><span>Đã hoàn thành</span><b id="stat-done-count">0</b></div>
+            </button>
+        </div>
+    </section>
 
-<div class="dash-header">
-    <h2><i class="fa-solid fa-receipt"></i> Theo dõi đơn đã đặt</h2>
-    <button id="refreshOrdersBtn" class="btn-refresh"><i class="fa-solid fa-rotate"></i> Làm mới</button>
-</div>
-<div class="invoice-page-shell" style="margin:0; width:100%;">
-    <section class="invoice-card">
-        <section class="stats-grid" aria-label="Thống kê đơn hàng">
-            <article class="stat-card">
-                <span class="stat-icon blue"><i class="fa-solid fa-receipt"></i></span>
-                <div><p class="stat-label">Tổng đơn</p><h2 id="statTotal">0</h2></div>
-            </article>
-            <article class="stat-card">
-                <span class="stat-icon amber"><i class="fa-solid fa-hourglass-half"></i></span>
-                <div><p class="stat-label">Chờ xử lý</p><h2 id="statNew">0</h2></div>
-            </article>
-            <article class="stat-card">
-                <span class="stat-icon violet"><i class="fa-solid fa-screwdriver-wrench"></i></span>
-                <div><p class="stat-label">Đang xử lý</p><h2 id="statProgress">0</h2></div>
-            </article>
-            <article class="stat-card">
-                <span class="stat-icon green"><i class="fa-solid fa-circle-check"></i></span>
-                <div><p class="stat-label">Hoàn thành</p><h2 id="statDone">0</h2></div>
-            </article>
-        </section>
-
-        <section class="invoice-toolbar" aria-label="Bộ lọc đơn hàng">
+    <section class="invoice-main">
+        <section class="invoice-toolbar">
             <label class="search-wrap" for="searchInput">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input id="searchInput" type="text" placeholder="Tìm theo mã đơn, dịch vụ...">
             </label>
-            <div class="filter-wrap" role="tablist" aria-label="Lọc trạng thái đơn">
-                <button class="filter-btn active" type="button" data-filter="all">Tất cả</button>
-                <button class="filter-btn" type="button" data-filter="new">Mới tạo</button>
-                <button class="filter-btn" type="button" data-filter="confirmed">Đã nhận</button>
-                <button class="filter-btn" type="button" data-filter="doing">Đang làm</button>
-                <button class="filter-btn" type="button" data-filter="done">Hoàn thành</button>
-                <button class="filter-btn" type="button" data-filter="cancel">Đã hủy</button>
-            </div>
         </section>
 
-        <section class="invoice-content" aria-label="Danh sách đơn">
-            <div class="desktop-table-wrap">
-                <table class="invoice-table">
-                    <thead><tr><th>Mã đơn</th><th>Dịch vụ</th><th>Ngày đặt</th><th>Trạng thái</th><th>Quản lý</th></tr></thead>
-                    <tbody id="customerOrderBody"><tr><td colspan="5" class="table-loading">Đang tải dữ liệu...</td></tr></tbody>
-                </table>
+        <!-- Order List Section (Default) -->
+        <div id="orderListSection">
+            <div class="dash-header">
+                <h2><i class="fa-solid fa-file-invoice"></i> Lịch sử đặt lịch cá nhân</h2>
+                <button id="refreshCustomerBtn" class="btn-refresh"><i class="fa-solid fa-rotate"></i> Làm mới đơn</button>
             </div>
-            <div class="mobile-list" id="customerMobileList"></div>
-            <div id="customerEmptyState" class="empty-state" hidden><i class="fa-regular fa-folder-open"></i><h4>Chưa có đơn phù hợp</h4></div>
-        </section>
+
+            <div class="invoice-page-shell" style="margin:0; width:100%;">
+                <section class="invoice-card">
+                    <header class="board-header">
+                        <div><h3>Danh sách đơn hàng Thợ Nhà</h3></div>
+                    </header>
+                    <div class="desktop-table-wrap">
+                        <table class="invoice-table">
+                            <thead><tr><th>Mã đơn</th><th>Dịch vụ</th><th>Địa chỉ</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                            <tbody id="customerOrderBody"><tr><td colspan="5" class="table-loading">Đang tải đơn hàng...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="mobile-list" id="customerMobileList"></div>
+                    <div id="customerEmptyState" class="empty-state" hidden><i class="fa-regular fa-face-smile"></i><h4>Chưa có đơn hàng nào</h4></div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Order Detail Section (Hidden by Default) -->
+        <div id="orderDetailSection" hidden>
+            <div class="mb-4 d-flex justify-content-between align-items-center">
+                <button class="back-btn btn btn-outline-secondary px-3 py-2 fw-bold" data-action="back-to-list" style="border-radius:12px; border: 2px solid #e2e8f0; color: #4b5563; background: #fff;">
+                    <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
+                </button>
+                <div class="text-muted small">Xem chi tiết đơn hàng #ThoNha</div>
+            </div>
+            <!-- ThoNhaOrderUI.renderDetails will inject content here -->
+        </div>
     </section>
 </div>
 
-<!-- Modals -->
-<div id="orderDetailModal" class="order-detail-modal" hidden>
-    <button class="order-detail-backdrop" type="button" data-action="close-detail"></button>
-    <section class="order-detail-dialog" role="dialog" aria-modal="true">
-        <header class="order-detail-head">
-            <div><h3 id="orderDetailTitle">Chi tiết đơn đã đặt</h3><p id="orderDetailCode" class="order-detail-code"></p></div>
-            <button class="detail-close-btn" type="button" data-action="close-detail">×</button>
-        </header>
-        <div id="orderDetailBody" class="order-detail-body"></div>
-    </section>
-</div>
-
+<!-- Modal Nhập Phí (Giữ lại nếu cần) -->
 <div id="costInputModal" class="order-detail-modal" hidden>
     <button class="order-detail-backdrop" type="button" data-action="close-cost"></button>
     <section class="order-detail-dialog" role="dialog" aria-modal="true" style="max-width: 400px; padding: 20px;">
@@ -72,12 +74,10 @@
             <button type="button" style="background:none; border:none; font-size:1.5rem; cursor:pointer;" data-action="close-cost">&times;</button>
         </header>
         <div style="margin-bottom: 20px;">
-            <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 10px;">Nhập số tiền thợ đã thu để hệ thống tính trợ giá 5%.</p>
-            <input type="number" id="actualCostInput" placeholder="VD: 500000" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem;">
+            <input type="number" id="actualCostInput" placeholder="VD: 500000" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
         </div>
         <div style="display:flex; justify-content:flex-end; gap: 10px;">
-            <button type="button" data-action="close-cost" style="padding: 8px 16px; border-radius: 6px; background: #e5e7eb; border: none; cursor: pointer; font-weight: 500;">Hủy</button>
-            <button type="button" id="submitCostBtn" style="padding: 8px 16px; border-radius: 6px; background: #10b981; color: #fff; border: none; font-weight: 600; cursor: pointer;">Xác nhận gửi</button>
+            <button type="button" id="submitCostBtn" class="btn btn-success">Xác nhận gửi</button>
         </div>
     </section>
 </div>

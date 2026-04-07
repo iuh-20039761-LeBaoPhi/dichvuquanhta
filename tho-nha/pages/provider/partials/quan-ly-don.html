@@ -1,67 +1,74 @@
+<!-- Tho Nha Provider Order Management (Premium v4.1) -->
+<div class="invoice-page-container">
+    <div id="providerListSection">
+        <div class="dash-header">
+            <h2><i class="fa-solid fa-briefcase"></i> Theo dõi & Nhận đơn cung cấp</h2>
+            <button id="refreshProviderBtn" class="btn-refresh"><i class="fa-solid fa-rotate"></i> Làm mới đơn</button>
+        </div>
+        
+        <div class="invoice-page-shell" style="margin:0; width:100%;">
+            <section class="invoice-card">
+                <!-- Stats Grid -->
+                <section class="stats-grid mb-4" aria-label="Thống kê đơn hàng">
+                    <article class="stat-card">
+                        <span class="stat-icon blue"><i class="fa-solid fa-bullhorn"></i></span>
+                        <div><p class="stat-label">Đơn mới & Chờ nhận</p><h2 id="statOpen">0</h2></div>
+                    </article>
+                    <article class="stat-card">
+                        <span class="stat-icon sky"><i class="fa-solid fa-clipboard-list"></i></span>
+                        <div><p class="stat-label">Đơn bạn nhận</p><h2 id="statAssigned">0</h2></div>
+                    </article>
+                    <article class="stat-card">
+                        <span class="stat-icon amber"><i class="fa-solid fa-person-digging"></i></span>
+                        <div><p class="stat-label">Đang làm</p><h2 id="statDoing">0</h2></div>
+                    </article>
+                    <article class="stat-card">
+                        <span class="stat-icon green"><i class="fa-solid fa-circle-check"></i></span>
+                        <div><p class="stat-label">Hoàn thành</p><h2 id="statDone">0</h2></div>
+                    </article>
+                </section>
 
-<div class="dash-header">
-    <h2><i class="fa-solid fa-briefcase"></i> Theo dõi & Nhận đơn cung cấp</h2>
-<button id="refreshProviderBtn" class="btn-refresh"><i class="fa-solid fa-rotate"></i> Làm mới</button>
-</div>
-<div class="invoice-page-shell" style="margin:0; width:100%;">
-    <section class="invoice-card">
-        <section class="stats-grid" aria-label="Thống kê đơn hàng">
-            <article class="stat-card">
-                <span class="stat-icon blue"><i class="fa-solid fa-bullhorn"></i></span>
-                <div><p class="stat-label">Đơn mới & Chờ nhận</p><h2 id="statOpen">0</h2></div>
-            </article>
-            <article class="stat-card">
-                <span class="stat-icon sky"><i class="fa-solid fa-clipboard-list"></i></span>
-                <div><p class="stat-label">Đơn bạn nhận</p><h2 id="statAssigned">0</h2></div>
-            </article>
-            <article class="stat-card">
-                <span class="stat-icon amber"><i class="fa-solid fa-person-digging"></i></span>
-                <div><p class="stat-label">Đang làm</p><h2 id="statDoing">0</h2></div>
-            </article>
-            <article class="stat-card">
-                <span class="stat-icon green"><i class="fa-solid fa-circle-check"></i></span>
-                <div><p class="stat-label">Hoàn thành</p><h2 id="statDone">0</h2></div>
-            </article>
-        </section>
+                <!-- Open Orders Section -->
+                <section class="order-board mb-4" aria-label="Đơn đang yêu cầu">
+                    <header class="board-header">
+                        <div><h3><i class="fa-solid fa-inbox"></i> Đơn khách hàng yêu cầu mới (Click để nhận)</h3></div>
+                    </header>
+                    <div class="desktop-table-wrap">
+                        <table class="invoice-table">
+                            <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Dịch vụ yêu cầu</th><th>Ngày đặt</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                            <tbody id="openRequestBody"><tr><td colspan="6" class="table-loading">Đang tải yêu cầu mới...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="mobile-list" id="openMobileList"></div>
+                    <div id="openEmptyState" class="empty-state" hidden><i class="fa-regular fa-face-smile"></i><h4>Hiện chưa có đơn mới</h4></div>
+                </section>
 
-        <section class="order-board" aria-label="Đơn đang yêu cầu">
-            <header class="board-header">
-                <div><h3><i class="fa-solid fa-inbox"></i> Đơn khách hàng yêu cầu mới tinh (Click để nhận)</h3></div>
-            </header>
-            <div class="desktop-table-wrap">
-                <table class="invoice-table">
-                    <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Dịch vụ yêu cầu</th><th>Ngày đặt</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
-                    <tbody id="openRequestBody"><tr><td colspan="6" class="table-loading">Đang tải yêu cầu mới...</td></tr></tbody>
-                </table>
-            </div>
-            <div class="mobile-list" id="openMobileList"></div>
-            <div id="openEmptyState" class="empty-state" hidden><i class="fa-regular fa-face-smile"></i><h4>Hiện chưa có đơn mới</h4></div>
-        </section>
+                <!-- Assigned Orders Section -->
+                <section class="order-board secondary" aria-label="Đơn đã nhận">
+                    <header class="board-header">
+                        <div><h3><i class="fa-solid fa-list-check"></i> Đơn bạn đang phụ trách xử lý</h3></div>
+                    </header>
+                    <div class="desktop-table-wrap">
+                        <table class="invoice-table">
+                            <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Dịch vụ</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                            <tbody id="assignedOrderBody"><tr><td colspan="5" class="table-loading">Đang tải đơn đã nhận...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="mobile-list" id="assignedMobileList"></div>
+                    <div id="assignedEmptyState" class="empty-state" hidden><i class="fa-regular fa-clipboard"></i><h4>Bạn chưa nhận đơn nào</h4></div>
+                </section>
+            </section>
+        </div>
+    </div>
 
-        <section class="order-board secondary" aria-label="Đơn đã nhận">
-            <header class="board-header">
-                <div><h3><i class="fa-solid fa-list-check"></i> Đơn bạn đang phụ trách xử lý</h3></div>
-            </header>
-            <div class="desktop-table-wrap">
-                <table class="invoice-table">
-                    <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Dịch vụ</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
-                    <tbody id="assignedOrderBody"><tr><td colspan="5" class="table-loading">Đang tải đơn đã nhận...</td></tr></tbody>
-                </table>
-            </div>
-            <div class="mobile-list" id="assignedMobileList"></div>
-            <div id="assignedEmptyState" class="empty-state" hidden><i class="fa-regular fa-clipboard"></i><h4>Bạn chưa nhận đơn nào</h4></div>
-        </section>
-    </section>
-</div>
-
-<!-- Modals -->
-<div id="providerDetailModal" class="order-detail-modal" hidden>
-    <button class="order-detail-backdrop" type="button" data-action="close-detail"></button>
-    <section class="order-detail-dialog" role="dialog" aria-modal="true">
-        <header class="order-detail-head">
-            <div><h3 id="providerDetailTitle">Chi tiết đơn dịch vụ</h3><p id="providerDetailCode" class="order-detail-code"></p></div>
-            <button class="detail-close-btn" type="button" data-action="close-detail">×</button>
-        </header>
-        <div id="providerDetailBody" class="order-detail-body"></div>
-    </section>
+    <!-- Order Detail Section (Hidden by Default) -->
+    <div id="providerDetailSection" hidden>
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <button class="back-btn btn btn-outline-secondary px-3 py-2 fw-bold" data-action="back-to-list" style="border-radius:12px; border: 2px solid #e2e8f0; color: #4b5563; background: #fff;">
+                <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
+            </button>
+            <div class="text-muted small">Cung cấp dịch vụ chuyên nghiệp #ThoNha</div>
+        </div>
+        <!-- ThoNhaOrderUI.renderDetails will inject content here -->
+    </div>
 </div>

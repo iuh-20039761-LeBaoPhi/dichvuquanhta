@@ -1,0 +1,145 @@
+/* ==========================================================================
+   THO NHA - UNIFIED ORDER PANEL & COMPONENT SYSTEM (v4.2 Premium)
+   Final synchronization for Admin, Provider, and Customer modules.
+   ========================================================================= */
+
+/* 1. Reset & Tooling */
+.dash-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; margin-bottom: 0.5rem; }
+.dash-header h2 { margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--admin-text); display: flex; align-items: center; gap: 12px; }
+.dash-header h2 i { color: var(--admin-primary); background: rgba(16, 185, 129, 0.1); width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 1.25rem; }
+
+/* 2. Layout Containers */
+.invoice-page-shell { width: 100%; margin-top: 8px; }
+.invoice-card { background: var(--admin-panel); border: 1px solid var(--admin-border); border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; margin-bottom: 30px; }
+
+/* 3. Toolbar & Filters */
+.invoice-toolbar { padding: 22px 24px; border-bottom: 1px solid var(--admin-border); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; background: #fff; }
+.search-wrap { flex: 1; min-width: 280px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--admin-border); border-radius: 50px; padding: 0 18px; background: #f8fafc; transition: all 0.2s; }
+.search-wrap i { color: var(--admin-muted); }
+.search-wrap input { width: 100%; border: 0; outline: 0; background: transparent; padding: 12px 0; font-size: 0.95rem; color: var(--admin-text); }
+.search-wrap:focus-within { border-color: var(--admin-primary); background: #fff; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
+
+.filter-wrap { display: flex; flex-wrap: wrap; gap: 10px; }
+.filter-btn { border: 1px solid var(--admin-border); border-radius: 50px; background: #fff; color: var(--admin-muted); font-size: 0.85rem; font-weight: 700; padding: 10px 20px; cursor: pointer; transition: all 0.2s; }
+.filter-btn:hover { background: #f1f5f9; color: var(--admin-text); border-color: #cbd5e1; }
+.filter-btn.active { background: var(--admin-primary) !important; color: #fff !important; border-color: var(--admin-primary) !important; box-shadow: 0 8px 18px rgba(16, 185, 129, 0.2); }
+
+.btn-refresh { border: none; border-radius: 50px; background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-2)); color: #fff; padding: 10px 24px; font-size: 0.88rem; font-weight: 800; cursor: pointer; box-shadow: 0 8px 18px rgba(16, 185, 129, 0.2); transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-refresh:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(16, 185, 129, 0.35); }
+
+/* 4. Statistics Grid Icons */
+.stats-grid { padding: 24px; border-bottom: 1px solid var(--admin-border); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; background: #fff; }
+.stat-icon.green  { background: linear-gradient(135deg, #10b981, #059669); }
+.stat-icon.amber  { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.stat-icon.blue   { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.stat-icon.sky    { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+.stat-icon.violet { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.stat-icon.rose   { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+
+/* 5. Unified Modern Table (invoice-table) */
+.desktop-table-wrap { width: 100%; overflow-x: auto; }
+.invoice-table { width: 100%; border-collapse: collapse; margin: 0; min-width: 850px; }
+.invoice-table thead th { background: #f8fafc; padding: 18px 24px; text-transform: uppercase; font-size: 0.75rem; font-weight: 800; color: var(--admin-muted); letter-spacing: 0.08em; border-bottom: 2px solid var(--admin-border); border-top: 1px solid var(--admin-border); text-align: left; }
+.invoice-table tbody td { padding: 20px 24px; vertical-align: middle; border-bottom: 1px solid var(--admin-border); font-size: 0.95rem; color: #334155; line-height: 1.5; }
+.invoice-table tbody tr:last-child td { border-bottom: none; }
+.invoice-table tbody tr:hover { background: #fdfdfd; }
+
+/* 6. Specific Cell Formatting */
+.mono { color: var(--admin-primary); font-weight: 800; font-size: 0.88rem; white-space: nowrap; }
+.mono strong { color: var(--admin-primary); }
+.sub-note { display: block; margin-top: 4px; color: var(--admin-muted); font-size: 0.82rem; font-weight: 500; font-style: normal; line-height: 1.4; }
+.table-loading { text-align: center; padding: 60px !important; color: var(--admin-muted); font-weight: 600; }
+
+/* 7. Action Components */
+.btn-detail { border: 1px solid var(--admin-border); border-radius: 12px; background: #fff; color: var(--admin-text); font-size: 0.82rem; font-weight: 800; padding: 8px 16px; transition: all 0.2s; white-space: nowrap; cursor: pointer; }
+.btn-detail:hover { background: var(--admin-primary); color: #fff; border-color: var(--admin-primary); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
+
+/* 8. Status Badges Re-sync */
+.status-cell { white-space: nowrap; }
+.status-badge { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 50px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+.status-new { background: #fef3c7; color: #92400e; }
+.status-confirmed, .status-assigned { background: #dbeafe; color: #1e40af; }
+.status-doing, .status-processing, .status-working { background: #ede9fe; color: #5b21b6; }
+.status-done, .status-completed { background: #d1fae5; color: #065f46; }
+.status-cancel, .status-canceled { background: #fee2e2; color: #b91c1c; }
+
+/* 9. Provider Board Styles */
+.order-board { margin-top: 2rem; background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid var(--admin-border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+.board-header { padding: 22px 24px; background: #f8fafc; border-bottom: 1px solid var(--admin-border); }
+.board-header h3 { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--admin-text); display: flex; align-items: center; gap: 12px; }
+.board-header h3 i { color: var(--admin-primary); }
+
+/* 10. Empty States */
+.empty-state { padding: 80px 20px; text-align: center; color: var(--admin-muted); display: block !important; border: 1px dashed var(--admin-border); margin: 24px; border-radius: 20px; }
+.empty-state i { font-size: 3.5rem; margin-bottom: 16px; opacity: 0.2; display: block; }
+.empty-state h4 { margin: 0; font-weight: 800; font-size: 1.2rem; color: #64748b; }
+
+/* 11. Modal Overrides */
+.order-detail-modal { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; visibility: visible !important; }
+.order-detail-modal[hidden] { display: none !important; }
+.order-detail-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); border: none; cursor: pointer; width: 100%; height: 100%; }
+.order-detail-dialog { position: relative; z-index: 10; width: 100%; max-width: 1140px; max-height: calc(100vh - 40px); background: #fff; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; display: flex; flex-direction: column; animation: modalIn 0.3s ease-out; }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.order-detail-head { padding: 22px 24px; border-bottom: 1px solid var(--admin-border); background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
+.order-detail-head h3 { margin: 0; font-size: 1.3rem; font-weight: 800; color: #1e293b; }
+.order-detail-body { padding: 24px; overflow-y: auto; flex: 1; background: #fff; }
+.detail-close-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--admin-border); background: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.detail-close-btn:hover { background: #f1f5f9; transform: rotate(90deg); }
+
+.detail-section { background: #f8fafc; border-radius: 16px; padding: 22px; border: 1px solid var(--admin-border); margin-bottom: 20px; }
+.detail-section h4 { margin: 0 0 16px; font-size: 0.9rem; font-weight: 800; text-transform: uppercase; color: var(--admin-primary); letter-spacing: 0.08em; }
+.detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed var(--admin-border); gap: 12px; }
+.detail-row:last-child { border: none; }
+.detail-row span { color: var(--admin-muted); font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
+.detail-row strong { color: var(--admin-text); font-weight: 700; font-size: 0.95rem; text-align: right; line-height: 1.4; }
+.detail-note { margin-top: 12px; padding: 12px; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 10px; color: #92400e; font-size: 0.9rem; line-height: 1.5; }
+
+/* 12. Mobile Cards (Premium Redesign) */
+.mobile-list { display: none; flex-direction: column; gap: 16px; padding: 20px; background: #f8fafc; }
+.mobile-card { background: #fff; border: 1px solid var(--admin-border); border-radius: 20px; padding: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+.mobile-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; gap: 10px; }
+.mobile-title { margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--admin-text); line-height: 1.3; }
+.mobile-code { margin: 4px 0 0; color: var(--admin-primary); font-weight: 700; font-size: 0.82rem; }
+.mobile-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--admin-border); font-size: 0.88rem; }
+.mobile-row span { color: var(--admin-muted); font-weight: 600; }
+.mobile-row strong { font-weight: 700; text-align: right; max-width: 65%; color: var(--admin-text); }
+.mobile-actions { margin-top: 14px; display: flex; justify-content: flex-end; }
+
+/* 12. Modern Navigation Sidebar (Phân loại) */
+.invoice-sidebar { width: 280px; flex-shrink: 0; background: #fff; border-right: 1px solid var(--admin-border); }
+.sidebar-head { padding: 24px; border-bottom: 1px solid var(--admin-border); }
+.sidebar-head h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--admin-text); display: flex; align-items: center; gap: 10px; }
+.sidebar-head h3 i { color: var(--admin-primary); }
+
+.sidebar-body { padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.sidebar-item { 
+    display: flex; align-items: center; justify-content: space-between; 
+    padding: 12px 16px; border-radius: 12px; border: none; background: transparent; 
+    color: var(--admin-muted); cursor: pointer; transition: all 0.2s; text-align: left;
+    width: 100%;
+}
+.sidebar-item:hover { background: #f8fafc; color: var(--admin-text); }
+.sidebar-item-info { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.sidebar-item span { font-size: 0.9rem; font-weight: 600; }
+.sidebar-item b { font-size: 0.8rem; background: #f1f5f9; padding: 2px 8px; border-radius: 50px; color: var(--admin-muted); }
+
+.sidebar-item.active { background: rgba(16, 185, 129, 0.1); color: var(--admin-primary); }
+.sidebar-item.active b { background: var(--admin-primary); color: #fff; }
+
+/* KPI Icon Layout Support */
+.hero-kpi-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.hero-kpi-icon { font-size: 1.25rem; opacity: 0.3; transition: 0.2s; }
+.hero-kpi:hover .hero-kpi-icon { opacity: 0.8; transform: scale(1.1); }
+
+@media (max-width: 992px) {
+    .invoice-page-container { flex-direction: column; }
+    .invoice-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--admin-border); }
+    .sidebar-body { flex-direction: row; overflow-x: auto; padding: 12px; }
+    .sidebar-item { white-space: nowrap; width: auto; }
+}
+
+@media (max-width: 768px) {
+    .desktop-table-wrap { display: none; }
+    .mobile-list { display: flex; }
+}

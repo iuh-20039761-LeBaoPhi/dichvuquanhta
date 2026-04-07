@@ -5,17 +5,18 @@
 (function() {
     'use strict';
 
-    const PROVIDER_TABLE = 'nhacungcap_thonha';
+    const PROVIDER_TABLE = 'nguoidung';
     let providersData = [];
     let currentStatusFilter = '';
     let pendingAction = null;
     let pendingProviderId = null;
+    let currentRoleFilter = ''; 
 
     const STATUS_CONFIG = {
-        pending:  { label: 'Chờ duyệt',         cls: 'status-badge',  style: 'background:#fef3c7;color:#d97706;' },
-        active:   { label: 'Đang hoạt động',     cls: 'status-badge',  style: 'background:#dcfce7;color:#15803d;' },
-        rejected: { label: 'Đã từ chối',         cls: 'status-badge',  style: 'background:#fee2e2;color:#dc2626;' },
-        blocked:  { label: 'Đã khóa',            cls: 'status-badge',  style: 'background:#f1f5f9;color:#64748b;' },
+        active:   { label: 'Hoạt động',     cls: 'status-badge',  style: 'background:#dcfce7;color:#15803d;' },
+        blocked:  { label: 'Đã khóa',        cls: 'status-badge',  style: 'background:#f1f5f9;color:#64748b;' },
+        pending:  { label: 'Chờ duyệt',      cls: 'status-badge',  style: 'background:#fef3c7;color:#d97706;' },
+        rejected: { label: 'Đã từ chối',     cls: 'status-badge',  style: 'background:#fee2e2;color:#dc2626;' },
     };
 
     /**
@@ -32,6 +33,7 @@
             return s || 'pending';
         };
 
+        const isProvider = raw.id_dichvu && raw.id_dichvu !== '0';
         return {
             id: raw.id,
             full_name: raw.hovaten || raw.name || 'N/A',
@@ -42,6 +44,8 @@
             description: raw.motadichvu || raw.description || '',
             status: normalizeStatus(raw.trangthai || raw.status),
             rejection_reason: raw.lydotuchoi || raw.rejection_reason || '',
+            role: isProvider ? 'Nhà cung cấp' : 'Khách hàng',
+            isProvider: isProvider,
             avatar: raw.avatartenfile || '',
             cccd_front: raw.cccdmattruoctenfile || '',
             cccd_back: raw.cccdmatsautenfile || '',
@@ -73,9 +77,12 @@
      * Vẽ bảng danh sách.
      */
     function renderProviders() {
-        const filtered = currentStatusFilter
+        let filtered = currentStatusFilter
             ? providersData.filter(p => p.status === currentStatusFilter)
             : providersData;
+        
+        if (currentRoleFilter === 'customer') filtered = filtered.filter(p => !p.isProvider);
+        if (currentRoleFilter === 'provider') filtered = filtered.filter(p => p.isProvider);
 
         const tbody = document.getElementById('providersBody');
         if (!tbody) return;
@@ -88,10 +95,11 @@
         tbody.innerHTML = filtered.map(p => {
             const sc = STATUS_CONFIG[p.status] || { label: p.status, style: '' };
             const actions = buildActions(p);
+            const roleBadge = p.isProvider ? 'bg-primary' : 'bg-info';
             return `<tr>
-                <td><strong>${p.full_name}</strong><br><small class="text-muted">${p.email}</small></td>
-                <td>${p.phone}</td>
-                <td>${p.company_name}</td>
+                <td><strong>${p.full_name}</strong><br><small class="text-muted">${p.phone}</small></td>
+                <td><span class="badge ${roleBadge}">${p.role}</span></td>
+                <td>${p.isProvider ? (p.company_name || '<small class="text-muted italic">Cá nhân</small>') : '<span class="text-muted">-</span>'}</td>
                 <td><span class="badge" style="${sc.style}">${sc.label}</span></td>
                 <td>${actions}</td>
             </tr>`;
@@ -99,18 +107,11 @@
     }
 
     function buildActions(p) {
-        let btns = `<button class="btn btn-sm btn-light me-1" onclick="providerDetail('${p.id}')"><i class="fas fa-eye"></i></button>`;
-        if (p.status === 'pending' || p.status === 'rejected') {
-            btns += `<button class="btn btn-sm btn-success me-1" onclick="handleProviderAction('${p.id}', 'active')"><i class="fas fa-check"></i></button>`;
-        }
-        if (p.status === 'pending') {
-            btns += `<button class="btn btn-sm btn-danger me-1" onclick="openReasonModal('${p.id}', 'rejected')"><i class="fas fa-times"></i></button>`;
-        }
-        if (p.status === 'active') {
-            btns += `<button class="btn btn-sm btn-warning me-1" onclick="openReasonModal('${p.id}', 'blocked')"><i class="fas fa-lock"></i></button>`;
-        }
+        let btns = `<button class="btn btn-sm btn-light me-1" onclick="providerDetail('${p.id}')" title="Xem chi tiết"><i class="fas fa-eye"></i></button>`;
         if (p.status === 'blocked') {
-            btns += `<button class="btn btn-sm btn-success me-1" onclick="handleProviderAction('${p.id}', 'active')"><i class="fas fa-lock-open"></i></button>`;
+            btns += `<button class="btn btn-sm btn-outline-success me-1" onclick="handleProviderAction('${p.id}', 'active')" title="Mở khóa tài khoản"><i class="fas fa-unlock"></i></button>`;
+        } else {
+            btns += `<button class="btn btn-sm btn-outline-danger me-1" onclick="openReasonModal('${p.id}', 'blocked')" title="Khóa tài khoản"><i class="fas fa-lock"></i></button>`;
         }
         return btns;
     }
@@ -217,7 +218,16 @@
         loadProviders();
         document.querySelectorAll('.provider-filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                currentStatusFilter = btn.dataset.status === 'all' ? '' : btn.dataset.status;
+                document.querySelectorAll('.provider-filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                if (btn.dataset.role) {
+                    currentRoleFilter = btn.dataset.role === 'all' ? '' : btn.dataset.role;
+                    currentStatusFilter = '';
+                } else {
+                    currentStatusFilter = btn.dataset.status === 'all' ? '' : btn.dataset.status;
+                    currentRoleFilter = '';
+                }
                 renderProviders();
             });
         });

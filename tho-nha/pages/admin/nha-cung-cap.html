@@ -1,9 +1,10 @@
 <div class="filter-section d-flex align-items-center gap-3 mb-4 flex-wrap">
-    <button class="btn btn-sm btn-outline-secondary px-3 provider-filter-btn active" data-status="">Tất cả</button>
-    <button class="btn btn-sm px-3 provider-filter-btn" data-status="pending" style="background:#fef3c7;color:#d97706;border-color:#fde68a;">Chờ duyệt <span id="cnt-pending" class="badge ms-1" style="background:#d97706;">0</span></button>
-    <button class="btn btn-sm px-3 provider-filter-btn" data-status="active" style="background:#dcfce7;color:#15803d;border-color:#bbf7d0;">Đang hoạt động <span id="cnt-active" class="badge ms-1" style="background:#15803d;">0</span></button>
-    <button class="btn btn-sm px-3 provider-filter-btn" data-status="rejected" style="background:#fee2e2;color:#dc2626;border-color:#fecaca;">Từ chối <span id="cnt-rejected" class="badge ms-1" style="background:#dc2626;">0</span></button>
-    <button class="btn btn-sm px-3 provider-filter-btn" data-status="blocked" style="background:#f1f5f9;color:#475569;border-color:#e2e8f0;">Đã khóa <span id="cnt-blocked" class="badge ms-1" style="background:#475569;">0</span></button>
+    <button class="btn btn-sm btn-outline-secondary px-3 provider-filter-btn active" data-role="all">Tất cả tài khoản</button>
+    <button class="btn btn-sm btn-outline-primary px-3 provider-filter-btn" data-role="provider">Nhà cung cấp</button>
+    <button class="btn btn-sm btn-outline-info px-3 provider-filter-btn" data-role="customer">Khách hàng</button>
+    <span class="vr mx-2"></span>
+    <button class="btn btn-sm px-3 provider-filter-btn" data-status="active" style="background:#dcfce7;color:#15803d;border-color:#bbf7d0;">Đang hoạt động</button>
+    <button class="btn btn-sm px-3 provider-filter-btn" data-status="blocked" style="background:#f1f5f9;color:#475569;border-color:#e2e8f0;">Đã khóa</button>
 </div>
 
 <div class="table-container">
@@ -11,10 +12,9 @@
         <table class="table table-hover" id="providersTable">
             <thead>
                 <tr>
-                    <th>Nhà cung cấp</th>
-                    <th>Liên hệ</th>
+                    <th>Người dùng</th>
+                    <th>Vai trò</th>
                     <th>Công ty / Đội thợ</th>
-                    <th>Ngày đăng ký</th>
                     <th>Trạng thái</th>
                     <th>Thao tác</th>
                 </tr>

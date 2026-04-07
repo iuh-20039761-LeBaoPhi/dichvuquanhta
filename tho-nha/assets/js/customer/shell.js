@@ -8,8 +8,18 @@
      */
     async function verifySession() {
         const session = await DVQTApp.checkSession();
-        if (!session || !session.logged_in || session.role !== 'customer') {
-            window.location.href = 'dang-nhap.html';
+        if (!session || !session.logged_in) {
+            window.location.href = '../../public/dang-nhap.html';
+            return;
+        }
+
+        const ids = String(session.id_dichvu || '0').split(',');
+        const isThoNhaProvider = ids.includes('9') || session.role === 'admin';
+
+        if (isThoNhaProvider) {
+            // Nếu là thợ hoặc admin thì chuyển sang trang NCC (nếu muốn) 
+            // Ở đây user yêu cầu: id=9 sang trang NCC
+            window.location.href = '../provider/trang-ca-nhan.html';
         }
     }
     document.addEventListener('DOMContentLoaded', async function () {
@@ -123,11 +133,11 @@
         if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
             if (window.DVQTApp && window.DVQTApp.logout) {
                 window.DVQTApp.logout().then(() => {
-                    window.location.href = '../public/dich-vu.html';
+                    window.location.href = '../../index.html';
                 });
             } else {
                 localStorage.clear();
-                window.location.href = '../public/dich-vu.html';
+                window.location.href = '../../index.html';
             }
         }
     };

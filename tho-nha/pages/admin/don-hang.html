@@ -1,82 +1,80 @@
-<!-- Filters -->
-<div class="filter-section">
-    <div class="row g-3">
-        <div class="col-md-3">
-            <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm theo mã đơn, SĐT...">
+<!-- Tho Nha Admin Order Management (Premium v4.1) -->
+<div class="invoice-page-container">
+    <div id="adminListSection">
+        <!-- Filters -->
+        <div class="filter-section mb-4">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm theo mã đơn, SĐT...">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="statusFilter">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="new">Chờ xác nhận</option>
+                        <option value="confirmed">Đã xác nhận</option>
+                        <option value="doing">Đang thực hiện</option>
+                        <option value="done">Hoàn thành</option>
+                        <option value="cancel">Đã hủy</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-gradient w-100" id="filterBtn">
+                        <i class="fas fa-filter"></i> Lọc
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="col-md-2">
-            <select class="form-select" id="statusFilter">
-                <option value="">Tất cả trạng thái</option>
-                <option value="new">Chờ xác nhận</option>
-                <option value="confirmed">Đã xác nhận</option>
-                <option value="doing">Đang thực hiện</option>
-                <option value="done">Hoàn thành</option>
-                <option value="cancel">Đã hủy</option>
-            </select>
+
+        <!-- Orders Table -->
+        <div class="table-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Danh sách đơn hàng hệ thống</h5>
+                <button class="btn btn-gradient" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Làm mới
+                </button>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>SĐT</th>
+                            <th>Dịch vụ</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Giá</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày đặt</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr>
+                            <td colspan="9" class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="col-md-2">
-            <button class="btn btn-gradient w-100" id="filterBtn">
-                <i class="fas fa-filter"></i> Lọc
+    </div>
+
+    <!-- Order Detail Section (Hidden by Default) -->
+    <div id="adminDetailSection" hidden>
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <button class="back-btn btn btn-outline-secondary px-3 py-2 fw-bold" data-action="back-to-list" style="border-radius:12px; border: 2px solid #e2e8f0; color: #4b5563; background: #fff;">
+                <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách đơn
             </button>
+            <div class="text-muted small">Quản trị viên đang xem chi tiết hệ thống #ThoNha</div>
         </div>
+        <!-- ThoNhaOrderUI.renderDetails will inject content here -->
     </div>
 </div>
 
-<!-- Orders Table -->
-<div class="table-container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0"><i class="fas fa-list"></i> Danh sách đơn hàng</h5>
-        <button class="btn btn-gradient" id="refreshBtn">
-            <i class="fas fa-sync-alt"></i> Làm mới
-        </button>
-    </div>
-    
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Mã đơn</th>
-                    <th>Khách hàng</th>
-                    <th>SĐT</th>
-                    <th>Dịch vụ</th>
-                    <th>Nhà cung cấp</th>
-                    <th>Giá</th>
-                    <th>Trạng thái</th>
-                    <th>Ngày đặt</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody id="ordersTableBody">
-                <tr>
-                    <td colspan="8" class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Đang tải...</span>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Modal Chi Tiết Đơn Hàng -->
-<div class="modal fade" id="orderDetailModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Chi Tiết Đơn Hàng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="orderDetailContent">
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Cập Nhật Trạng Thái -->
+<!-- Modal Cập Nhật Trạng Thái (Giữ nguyên vì Admin cần form này) -->
 <div class="modal fade" id="updateStatusModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content" style="border-radius: 20px; overflow: hidden;">
             <div class="modal-header">
                 <h5 class="modal-title">Cập Nhật Trạng Thái</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -85,7 +83,7 @@
                 <form id="updateStatusForm">
                     <input type="hidden" id="updateOrderId">
                     <div class="mb-3">
-                        <label class="form-label">Trạng thái mới</label>
+                        <label class="form-label">Chọn trạng thái mới</label>
                         <select class="form-select" id="newStatus" required>
                             <option value="">-- Chọn trạng thái --</option>
                             <option value="new">Chờ xác nhận</option>
@@ -95,9 +93,7 @@
                             <option value="cancel">Đã hủy</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-gradient w-100">
-                        Cập nhật
-                    </button>
+                    <button type="submit" class="btn btn-gradient w-100 py-2">Cập nhật đơn hàng</button>
                 </form>
             </div>
         </div>

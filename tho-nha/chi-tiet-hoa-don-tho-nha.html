@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thợ Nhà - Chi tiết hóa đơn dịch vụ</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/admin-dashboard.css?v=1.4" />
+    <link rel="stylesheet" href="assets/css/order-panel.css?v=1.4" />
+    <link rel="stylesheet" href="assets/css/order-detail-custom.css?v=1.4" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body.order-standalone-page {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 48%, #f8fafc 100%);
+            color: #1e293b;
+            font-family: "Public Sans", sans-serif;
+        }
+
+        .standalone-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #10b981, #059669);
+            /* Emerald Gradient */
+            box-shadow: 0 10px 22px rgba(16, 185, 129, 0.3);
+            color: #fff;
+        }
+
+        .standalone-header-inner {
+            max-width: 1240px;
+            margin: 0 auto;
+            min-height: 82px;
+            padding: 10px 16px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .standalone-logo {
+            width: 58px;
+            height: 58px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.14);
+            padding: 5px;
+            object-fit: contain;
+        }
+
+        .standalone-title-wrap {
+            text-align: center;
+        }
+
+        .standalone-title {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+        }
+
+        .standalone-subtitle {
+            margin: 3px 0 0;
+            font-size: 0.86rem;
+            opacity: 0.95;
+        }
+
+        .standalone-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 15px 60px;
+        }
+
+        .standalone-topline {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #10b981;
+        }
+
+        .standalone-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            padding: 8px 16px;
+            color: #475569;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .standalone-chip b {
+            color: #10b981;
+        }
+
+        /* Loading & Error States */
+        .state-container {
+            text-align: center;
+            padding: 100px 20px;
+            background: #fff;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #cbd5e1;
+        }
+
+        .not-found {
+            color: #ef4444;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        /* Ẩn thanh điều hướng con vì trang độc lập đã có toolbar riêng */
+        #detailContainer .detail-nav {
+            display: none !important;
+        }
+
+        .standalone-content {
+            margin-top: -20px;
+        }
+    </style>
+</head>
+
+<body class="order-standalone-page">
+    <header class="standalone-header">
+        <div class="standalone-header-inner">
+            <img class="standalone-logo" src="../public/asset/image/logo-dich-vu-quanh-ta.png" alt="Logo DVQT" />
+            <div class="standalone-title-wrap">
+                <h1 class="standalone-title">Chi tiết hóa đơn Thợ Nhà</h1>
+                <p class="standalone-subtitle">Hệ thống quản lý dịch vụ tại gia chuyên nghiệp</p>
+            </div>
+            <img class="standalone-logo" src="assets/images/tho-nha-logo-thuong-hieu-cropped.jpg" alt="Logo Thợ Nhà" />
+        </div>
+    </header>
+
+    <main class="standalone-content">
+        <div class="standalone-topline">
+            <a href="javascript:history.back()" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+            <p class="standalone-chip mb-0">
+                Quyền truy cập: <b id="accessRole">---</b>
+                <span class="mx-2" style="opacity:0.3">|</span>
+                Đang xem đơn: <span id="accessCode" class="text-primary">#-------</span>
+            </p>
+        </div>
+
+        <!-- 1. Loading State -->
+        <div id="stateLoading" class="state-container">
+            <i class="fas fa-spinner fa-spin state-icon"></i>
+            <h3>Đang tải dữ liệu...</h3>
+            <p>Vui lòng đợi trong giây lát</p>
+        </div>
+
+        <!-- 2. Error State -->
+        <div id="stateError" class="state-container not-found" hidden>
+            <i class="fas fa-exclamation-triangle state-icon"></i>
+            <h3 id="errorTitle">Không tìm thấy hóa đơn</h3>
+            <p id="errorMessage">Vui lòng kiểm tra lại mã đơn hàng hoặc quyền truy cập của bạn.</p>
+            <a href="pages/customer/trang-ca-nhan.html" class="btn btn-primary mt-4 px-4 py-2"
+                style="border-radius:50px;">Về trang cá nhân</a>
+        </div>
+
+        <!-- 3. Success Content (The Partial) -->
+        <div id="stateSuccess" hidden>
+            <!-- Đây là cấu trúc partial chi-tiet-hoa-don-tho-nha.html sẽ được inject vào đây -->
+            <div id="detailContainer"></div>
+        </div>
+    </main>
+
+    <!-- JS Dependencies -->
+    <script src="../public/asset/js/dvqt-krud.js"></script>
+    <script src="../public/asset/js/dvqt-app.js"></script>
+    <script src="assets/js/shared/order-store.js"></script>
+    <script src="assets/js/shared/order-view-utils.js"></script>
+    <script src="assets/js/shared/order-service.js"></script>
+    <script src="assets/js/shared/order-detail-renderer.js"></script>
+
+    <!-- Setup logic for standalone page -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const stateLoading = document.getElementById('stateLoading');
+            const stateError = document.getElementById('stateError');
+            const stateSuccess = document.getElementById('stateSuccess');
+            const detailContainer = document.getElementById('detailContainer');
+
+            // 1. Lấy tham số truy cập từ URL (Bám sát yêu cầu: ID/MAHD + SĐT + Pass)
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('id') || urlParams.get('mahd'); // Chấp nhận cả id và mahd
+            const custPhone = urlParams.get('sdtkhachhang');
+            const nccPhone = urlParams.get('sdtncc');
+            const password = urlParams.get('password');
+
+            if (!orderId) {
+                showError('Missing Order ID', 'Vui lòng cung cấp mã đơn hàng.');
+                return;
+            }
+
+            try {
+                // 2. Xác thực quyền truy cập (Cross-check bảng đơn và bảng tài khoản theo Phone/ID)
+                let accessGranted = false;
+                let identifiedRole = 'guest';
+                let session = await DVQTApp.checkSession();
+
+                // Nếu đã có session admin, cho phép xem luôn
+                if (session && session.logged_in && session.role === 'admin') {
+                    accessGranted = true;
+                    identifiedRole = 'admin';
+                } else if (password && (custPhone || nccPhone)) {
+                    // Xác thực qua tham số URL như yêu cầu
+                    const krud = window.DVQTKrud;
+                    const phone = (custPhone || nccPhone).replace(/\D/g, '');
+
+                    // Lấy toàn bộ đơn hàng để tìm chính xác ID (vì table list có thể lọc)
+                    const rows = await krud.listTable('datlich_thonha');
+                    const rawOrder = rows.find(o => String(o.id) === orderId);
+
+                    if (!rawOrder) throw new Error('Không tìm thấy đơn hàng này trên hệ thống.');
+
+                    if (custPhone) {
+                        // Kiểm tra SĐT khách trên đơn datlich_thonha
+                        const dbCustPhone = String(rawOrder.sdtkhachhang || rawOrder.sodienthoai || '').replace(/\D/g, '');
+                        if (dbCustPhone.slice(-9) !== phone.slice(-9)) throw new Error('Số điện thoại khách hàng không khớp với dữ liệu trên đơn.');
+
+                        // Kiểm tra Password ở bảng khachhang ứng với số điện thoại đó
+                        const userRows = await krud.listTable('khachhang');
+                        const user = userRows.find(u => String(u.sodienthoai || u.phone || '').replace(/\D/g, '').slice(-9) === phone.slice(-9));
+                        if (!user) throw new Error('Tài khoản khách hàng không tồn tại trên hệ thống.');
+
+                        const dbPass = user.matkhau || user.password || '';
+                        if (dbPass !== password && dbPass !== 'sha256$' + password) throw new Error('Mật khẩu khách hàng không đúng.');
+
+                        accessGranted = true;
+                        identifiedRole = 'customer';
+                        session = { logged_in: true, role: 'customer', id: user.id, name: user.hovaten || user.name, phone: phone };
+                    } else if (nccPhone) {
+                        // Kiểm tra SĐT NCC trên đơn datlich_thonha
+                        const dbNccPhone = String(rawOrder.sdtncc || '').replace(/\D/g, '');
+                        if (dbNccPhone.slice(-9) !== phone.slice(-9)) throw new Error('Số điện thoại thợ/nhà cung cấp không khớp với dữ liệu trên đơn.');
+
+                        // Kiểm tra Password ở bảng nhacungcap_thonha
+                        const userRows = await krud.listTable('nhacungcap_thonha');
+                        const user = userRows.find(u => String(u.sodienthoai || u.phone || '').replace(/\D/g, '').slice(-9) === phone.slice(-9));
+                        if (!user) throw new Error('Tài khoản nhà cung cấp không tồn tại trên hệ thống.');
+
+                        const dbPass = user.matkhau || user.password || '';
+                        if (dbPass !== password && dbPass !== 'sha256$' + password) throw new Error('Mật khẩu nhà cung cấp không đúng.');
+
+                        accessGranted = true;
+                        identifiedRole = 'provider';
+                        session = { logged_in: true, role: 'provider', id: user.id, name: user.hovaten || user.name, phone: phone };
+                    }
+                }
+
+                if (!accessGranted) {
+                    throw new Error('Hóa đơn này được bảo mật. Bạn cần đăng nhập đúng tài khoản hoặc cung cấp link xác thực hợp lệ để xem.');
+                }
+
+                // 3. Tải Partial HTML (Premium Partial)
+                const partialRes = await fetch('partials/chi-tiet-hoa-don-tho-nha.html');
+                if (!partialRes.ok) throw new Error('Không thể nạp giao diện mẫu.');
+                const template = await partialRes.text();
+                detailContainer.innerHTML = template;
+
+                // 4. Lấy dữ liệu cuối cùng sau khi xác thực
+                const krud = window.DVQTKrud;
+                const rows = await krud.listTable('datlich_thonha');
+                const orderRaw = rows.find(o => String(o.id) === orderId);
+
+                const providers = await DVQTApp.getProviders('nhacungcap_thonha');
+                const providerMap = ThoNhaOrderViewUtils.buildProviderMapByIds(providers, {});
+                const orderMapped = ThoNhaOrderViewUtils.mapApiOrderBase(orderRaw, 0, {
+                    providerMapById: providerMap,
+                    includeRaw: true
+                });
+
+                // 5. Render dữ liệu qua Renderer trung tâm
+                ThoNhaOrderDetailRenderer.render(orderMapped, identifiedRole, detailContainer);
+
+                // Hiển thị vai trò truy cập
+                document.getElementById('accessRole').textContent = identifiedRole.toUpperCase();
+                document.getElementById('accessCode').textContent = '#' + orderMapped.orderCode;
+
+                // 6. Gắn sự kiện hành động (Hủy, Nhận, Hoàn thành...)
+                setupActionHandlers(orderMapped, identifiedRole, session);
+
+                // Hoàn tất
+                stateLoading.hidden = true;
+                stateSuccess.hidden = false;
+
+            } catch (err) {
+                console.error('[StandaloneDetail] Access Denied:', err);
+                showError('Truy cập bị từ chối', err.message);
+            }
+        });
+
+        function showError(title, message) {
+            const stateLoading = document.getElementById('stateLoading');
+            const stateError = document.getElementById('stateError');
+            stateLoading.hidden = true;
+            stateError.hidden = false;
+            document.getElementById('errorTitle').textContent = title;
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function setupActionHandlers(order, role, session) {
+            document.addEventListener('click', async (e) => {
+                const btn = e.target.closest('[data-action]');
+                if (!btn) return;
+
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+                
+                // 1. Chặn Admin không được xóa hay sửa trong trang này
+                if (role === 'admin' && (action === 'delete-order' || action === 'edit-order')) {
+                    alert('Quyền Admin: Bạn chỉ được phép xem thông tin trong trang này.');
+                    return;
+                }
+
+                const d = new Date();
+                const vnDate = new Date(d.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+                const pad = (n) => String(n).padStart(2, '0');
+                const nowStr = `${vnDate.getFullYear()}-${pad(vnDate.getMonth() + 1)}-${pad(vnDate.getDate())} ${pad(vnDate.getHours())}:${pad(vnDate.getMinutes())}:${pad(vnDate.getSeconds())}`;
+
+                try {
+                    let payload = {};
+                    
+                    // --- 1. Xử lý Trợ giá (Chỉ khách hàng) ---
+                    if (action === 'submit-actual-price') {
+                        const price = Number(document.getElementById('inputActualPrice').value);
+                        if (!price || price <= 0) return alert('Vui lòng nhập giá thực tế hợp lệ.');
+                        
+                        const subsidy = Math.round(price * 0.05); // Trợ giá 5%
+                        const final = price - subsidy;
+                        
+                        if (!confirm(`Xác nhận: Giá báo ${price.toLocaleString()}đ.\nTrợ giá (5%): ${subsidy.toLocaleString()}đ.\nKhách trả: ${final.toLocaleString()}đ.\nĐồng ý?`)) return;
+
+                        payload = {
+                            chiphithucte: price,
+                            sotientrogia: subsidy,
+                            khachthanhtoan: final
+                        };
+                    } 
+                    // --- 2. Xử lý Đánh giá Khách hàng ---
+                    else if (action === 'submit-customer-feedback') {
+                        const text = document.getElementById('inputCustFeedback').value.trim();
+                        const fileInput = document.getElementById('fileCustEvidence');
+                        if (!text) return alert('Vui lòng nhập nội dung đánh giá.');
+
+                        payload = { danhgiakhachhang: text };
+                        if (fileInput.files && fileInput.files[0]) {
+                            const file = fileInput.files[0];
+                            const targetName = `evid_kh_${id}_${Date.now()}.${file.name.split('.').pop()}`;
+                            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải ảnh...';
+                            await uploadEvidence(file, targetName);
+                            payload.hinhanhminhchung_kh = targetName;
+                        }
+                    }
+                    // --- 3. Xử lý Báo cáo NCC ---
+                    else if (action === 'submit-provider-feedback') {
+                        const text = document.getElementById('inputProviderFeedback').value.trim();
+                        const fileInput = document.getElementById('fileProviderEvidence');
+                        if (!text) return alert('Vui lòng nhập nội dung báo cáo.');
+
+                        payload = { danhgiancc: text };
+                        if (fileInput.files && fileInput.files[0]) {
+                            const file = fileInput.files[0];
+                            const targetName = `evid_ncc_${id}_${Date.now()}.${file.name.split('.').pop()}`;
+                            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải ảnh...';
+                            await uploadEvidence(file, targetName);
+                            payload.hinhanhminhchung_ncc = targetName;
+                        }
+                    }
+                    // --- Các hành động trạng thái cũ ---
+                    else if (action === 'cancel-order') {
+                        if (role !== 'customer') return;
+                        const raw = order._raw || {};
+                        if (raw.id_nhacungcap || raw.sdtncc) {
+                            alert('Không thể hủy đơn hàng đã có thợ nhận. Vui lòng liên hệ tổng đài.');
+                            return;
+                        }
+                        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) return;
+                        payload = { ngayhuy: nowStr };
+                    } 
+                    else if (action === 'accept-order') {
+                        if (role !== 'provider') return;
+                        if (!confirm('Xác nhận nhận đơn hàng này?')) return;
+                        payload = {
+                            id_nhacungcap: session.id,
+                            tenncc: session.name || session.hovaten,
+                            sdtncc: session.phone || session.sodienthoai,
+                            ngaynhan: nowStr 
+                        };
+                    } 
+                    else if (action === 'start-order') {
+                        if (role !== 'provider') return;
+                        payload = { 
+                            ngaybatdauthucte: nowStr,
+                            ngaythuchienthucte: nowStr 
+                        };
+                    } 
+                    else if (action === 'complete-order') {
+                        if (role !== 'provider') return;
+                        if (!confirm('Xác nhận đã hoàn thành công việc?')) return;
+                        payload = { ngayhoanthanhthucte: nowStr }; 
+                    }
+
+                    if (Object.keys(payload).length > 0) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+                        await DVQTApp.updateOrder(id, payload, 'datlich_thonha');
+                        alert('Thao tác thành công!');
+                        location.reload();
+                    }
+                } catch (err) {
+                    alert('Lỗi: ' + err.message);
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        /**
+         * Helper: Tải ảnh minh chứng lên server (Dùng chung)
+         */
+        async function uploadEvidence(file, targetName) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('name', targetName);
+            formData.append('folder', 'evidence'); // Thư mục lưu ảnh minh chứng
+
+            const res = await fetch('../public/api/public/upload.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await res.json();
+            if (!result.success) throw new Error(result.message || 'Không thể tải ảnh lên');
+            return result;
+        }
+    </script>
+</body>
+
+</html>

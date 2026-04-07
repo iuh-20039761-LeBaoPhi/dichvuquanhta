@@ -1,4 +1,9 @@
-// ==================== CORE FUNCTIONS ====================
+'use strict';
+
+// Global shared variables
+window.allOrders = [];
+window.allCategories = [];
+window.allProviders = [];
 
 // Check login
 async function checkAdminLogin() {
@@ -10,7 +15,7 @@ async function checkAdminLogin() {
         }
 
         const username = session.name || 'Admin';
-        const el = document.getElementById('adminUsername');
+        const el = document.getElementById('adminUsernameDisplay');
         const av = document.getElementById('userAvatar');
         if (el) el.textContent = username;
         if (av) av.textContent = username.charAt(0).toUpperCase();
@@ -29,7 +34,7 @@ const ADMIN_JS_BASE = '../../assets/js/admin/pages';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    setupNavigation();
+    // Note: Navigation setup moved to quan-tri.html sidebar loader
     loadPage('dashboard');
 });
 
@@ -57,7 +62,6 @@ function setupNavigation() {
                         window.location.href = 'dang-nhap.html';
                     });
                 } else {
-                    localStorage.removeItem('admin_logged_in');
                     localStorage.removeItem('admin_username');
                     window.location.href = 'dang-nhap.html';
                 }
@@ -74,7 +78,7 @@ function loadPage(page) {
         window[p + 'Initialized'] = false;
     });
 
-    document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
     const linkEl = document.getElementById(page + 'Link');
     if (linkEl) linkEl.classList.add('active');
 
@@ -84,7 +88,8 @@ function loadPage(page) {
         services: 'Quản Lý Dịch Vụ',
         providers: 'Quản Lý Nhà Cung Cấp'
     };
-    document.getElementById('pageTitle').textContent = titles[page] || 'Admin';
+    const titleEl = document.getElementById('pageTitleDisplay');
+    if (titleEl) titleEl.textContent = titles[page] || 'Admin';
 
     const scriptFiles = {
         dashboard: 'dashboard.js',
@@ -187,6 +192,10 @@ async function loadAllOrders() {
             });
         }));
         
+        if (window.ThoNhaOrderStore) {
+            window.ThoNhaOrderStore.setOrders(allOrders);
+        }
+        
         return allOrders;
     } catch(err) {
         console.error('loadAllOrders fail:', err);
@@ -217,13 +226,13 @@ function updateProviderBadge() {
     const krudHelper = window.DVQTKrud;
     if (!krudHelper) return;
 
-    krudHelper.listTable('nhacungcap_thonha')
+    krudHelper.listTable('nguoidung')
         .then((rows) => {
-            const pending = rows.filter(item => normalizeProviderStatus(item.trangthai || item.status) === 'pending').length;
+            const blocked = rows.filter(item => (item.trangthai || item.status) === 'blocked').length;
             const badge = document.getElementById('providerBadge');
             if (!badge) return;
-            badge.textContent = pending;
-            pending > 0 ? badge.classList.remove('hide') : badge.classList.add('hide');
+            badge.textContent = blocked;
+            blocked > 0 ? badge.classList.remove('hide') : badge.classList.add('hide');
         })
         .catch(() => {});
 }

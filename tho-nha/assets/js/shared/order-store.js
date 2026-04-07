@@ -288,7 +288,28 @@
      * Cập nhật hồ sơ Nhà cung cấp (Không còn dùng localStorage)
      */
     function setProviderProfile(profile) {
-        if (profile) window._thonha_session_cache = Object.assign(window._thonha_session_cache || {}, profile);
+        if (profile) {
+            window._dvqt_session_cache = Object.assign(window._dvqt_session_cache || {}, profile);
+            window._thonha_session_cache = Object.assign(window._thonha_session_cache || {}, profile);
+        }
+    }
+
+    var _orders = [];
+
+    /**
+     * Cập nhật danh sách đơn hàng đã chuẩn hóa.
+     * @param {Array} orders - Danh sách đơn hàng mới.
+     */
+    function setOrders(orders) {
+        _orders = Array.isArray(orders) ? orders : [];
+    }
+
+    /**
+     * Lấy danh sách đơn hàng hiện có.
+     * @returns {Array} Danh sách đơn hàng.
+     */
+    function getOrders() {
+        return _orders;
     }
 
     global.ThoNhaOrderStore = {
@@ -296,6 +317,8 @@
         getBookingPricing: getBookingPricing,
         getCustomerProfile: getCustomerProfile,
         getProviderProfile: getProviderProfile,
-        setProviderProfile: setProviderProfile
+        setProviderProfile: setProviderProfile,
+        setOrders: setOrders,
+        getOrders: getOrders
     };
 })(window);
