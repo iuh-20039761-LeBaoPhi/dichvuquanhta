@@ -68,6 +68,7 @@
       phone: user.phone,
       so_dien_thoai: user.so_dien_thoai || user.phone,
       username: user.username,
+      password: user.password || user.mat_khau || "",
       is_approved: user.is_approved,
       is_locked: user.is_locked,
       vehicle_type: user.vehicle_type || user.shipper_vehicle || "",

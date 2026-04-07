@@ -66,6 +66,14 @@
     );
   }
 
+  function getUrlAccessCredentials() {
+    const params = getDetailQueryParams();
+    const username = normalizeText(params.get("username") || "");
+    const password = String(params.get("password") || "");
+    if (!username || !password) return null;
+    return { username, password };
+  }
+
   async function ensureUrlAccessSession() {
     const session = getCurrentSessionUser();
     if (session) return session;
@@ -103,6 +111,81 @@
       return localAuth.normalizePhone(value);
     }
     return String(value ?? "").replace(/\D/g, "");
+  }
+
+  function findStoredAuthUser(session) {
+    if (!session || !localAuth?.storageKeys?.users) return null;
+    const users = readJson(localAuth.storageKeys.users, []);
+    if (!Array.isArray(users) || !users.length) return null;
+
+    const sessionId = normalizeText(session.id || "");
+    const sessionUsername = normalizeText(session.username || "").toLowerCase();
+    const sessionPhone = normalizePhone(
+      session.phone || session.so_dien_thoai || "",
+    );
+    const sessionEmail = normalizeText(session.email || "").toLowerCase();
+
+    return (
+      users.find((user) => {
+        const userId = normalizeText(user.id || user.remote_id || "");
+        const userUsername = normalizeText(
+          user.username || user.phone || user.so_dien_thoai || "",
+        ).toLowerCase();
+        const userPhone = normalizePhone(user.phone || user.so_dien_thoai || "");
+        const userEmail = normalizeText(user.email || "").toLowerCase();
+
+        return (
+          (sessionId && userId === sessionId) ||
+          (sessionUsername && userUsername === sessionUsername) ||
+          (sessionPhone && userPhone === sessionPhone) ||
+          (sessionEmail && userEmail === sessionEmail)
+        );
+      }) || null
+    );
+  }
+
+  function getAccessCredentials(sessionOverride = null) {
+    const fromUrl = getUrlAccessCredentials();
+    if (fromUrl) return fromUrl;
+
+    const session = sessionOverride || getCurrentSessionUser();
+    if (!session) return null;
+
+    const storedUser = findStoredAuthUser(session);
+    const username = normalizeText(
+      session.username ||
+        session.phone ||
+        session.so_dien_thoai ||
+        storedUser?.username ||
+        storedUser?.phone ||
+        storedUser?.so_dien_thoai ||
+        "",
+    );
+    const password = String(
+      session.password ||
+        storedUser?.password ||
+        storedUser?.mat_khau ||
+        "",
+    );
+
+    if (!username || !password) return null;
+    return { username, password };
+  }
+
+  function buildOrderDetailUrl(order, sessionOverride = null) {
+    const detailUrl = new URL(routes.detail, window.location.href);
+    const identifier = normalizeText(order?.order_code || order?.id || "");
+    if (identifier) {
+      detailUrl.searchParams.set("madonhang", identifier);
+    }
+
+    const access = getAccessCredentials(sessionOverride);
+    if (access) {
+      detailUrl.searchParams.set("username", access.username);
+      detailUrl.searchParams.set("password", access.password);
+    }
+
+    return detailUrl.toString();
   }
 
   function formatOrderDateCode(value = new Date()) {
@@ -909,6 +992,7 @@
         email: nextUser.email,
         phone: nextUser.phone,
         username: nextUser.username,
+        password: nextUser.password || nextUser.mat_khau || "",
         is_approved: nextUser.is_approved,
         is_locked: nextUser.is_locked,
         company_name: nextUser.company_name || "",
@@ -2071,7 +2155,7 @@
                   </div>
                   <div class="customer-order-actions customer-order-actions-compact">
                     ${renderCancelButton(order, true)}
-                    <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(order.order_code || order.id || "")}">Xem chi tiết</a>
+                    <a class="customer-btn customer-btn-primary customer-btn-sm" href="${buildOrderDetailUrl(order)}">Xem chi tiết</a>
                   </div>
                 </article>`,
                     )
@@ -2195,7 +2279,7 @@
                 </div>
                 <div class="customer-order-actions customer-order-actions-compact">
                   ${renderCancelButton(order, true)}
-                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(order.order_code || order.id || "")}">Xem chi tiết</a>
+                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${buildOrderDetailUrl(order)}">Xem chi tiết</a>
                 </div>
               </article>`,
                   )
