@@ -1145,11 +1145,21 @@
 
 			.grid,
 			.info-grid,
-			.invoice-summary,
 			.invoice-extra-grid,
 			.review-split,
 			.review-media-grid {
 				grid-template-columns: 1fr;
+			}
+
+			.invoice-summary {
+				grid-template-columns: 1fr;
+				gap: 6px;
+			}
+
+			.invoice-item {
+				width: 100%;
+				min-height: auto;
+				padding: 8px 12px;
 			}
 
 			.profile-body {
@@ -1176,9 +1186,17 @@
 				align-items: flex-start;
 			}
 
+			.invoice-main .actions {
+				margin: auto !important;
+				justify-content: center;
+				width: 100%;
+				order: 0;
+			}
+
 			.invoice-progress-ring {
 				width: 105px;
 				height: 105px;
+				order: 1;
 			}
 
 			.invoice-item-content h4 {
@@ -1236,7 +1254,7 @@
 				</a>
 				<h1 class="topbar-title">Chi tiết hóa đơn mẹ và bé</h1>
 				<a class="topbar-logo" href="#" aria-label="Trang dịch vụ mẹ và bé">
-					<img src="assets/logomvb.png" alt="Logo mẹ và bé" />
+					<img src="assets/logomvb1.png" alt="Logo mẹ và bé" />
 				</a>
 			</header>
 
@@ -1345,10 +1363,36 @@
 								được cập nhật theo thời gian.</p>
 						</div>
 
+						<div
+							style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;margin-bottom:8px;">
+							<div
+								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:800;">
+								<span style="padding:7px 10px;">Ngày bắt đầu dự kiến</span>
+								<span style="padding:7px 10px;">Ngày kết thúc dự kiến</span>
+							</div>
+							<div
+								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));font-size:12px;font-weight:700;">
+								<span id="dateStartPlan"
+									style="padding:7px 10px;border-right:1px solid #efd3e9;color:#1f3853;">---</span>
+								<span id="dateEndPlan" style="padding:7px 10px;color:#1f3853;">---</span>
+							</div>
+						</div>
+
 						<div class="d-flex align-items-center flex-wrap" style="gap:8px;">
 							<span style="font-size:12px;font-weight:800;color:#000000;">Trạng thái:</span>
 							<span id="badgeTimeState" class="badge">---</span>
 							<span id="timeCurrentState" class="hidden">---</span>
+
+							<div class="actions d-flex align-items-center ms-auto" style="gap:8px;">
+								<button id="btnStart" class="btn btn-success btn-sm hidden"
+									style="min-height:32px;padding:4px 12px;font-size:12px;border-radius:8px;"
+									type="button">Bắt đầu</button>
+								<span id="startButtonCountdown" class="hidden"
+									style="font-size:11px;font-weight:700;color:#23527a;background:#edf6ff;border:1px solid #c8e0f7;border-radius:999px;padding:4px 8px;white-space:nowrap;">--</span>
+								<button id="btnEnd" class="btn btn-warning btn-sm hidden"
+									style="color:#fff;min-height:32px;padding:4px 12px;font-size:12px;border-radius:8px;"
+									type="button">Kết thúc</button>
+							</div>
 						</div>
 
 						<div style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;">
@@ -1383,30 +1427,9 @@
 							</div>
 						</div>
 
-						<div class="d-flex justify-content-between align-items-center"
-							style="gap:10px;font-size:12px;padding-top:2px;">
-							<span style="font-size:12px;font-weight:800;color:#000000;">Ghi chú ngày</span>
-							<span id="timeDayHint"
-								style="font-size:12px;color:#000000;font-weight:700;text-align:right;">---</span>
-						</div>
 						<p id="timeMessage" class="hint" style="font-size:12px;margin-top:-2px;">---</p>
 
-						<div class="actions actions-prominent d-flex flex-wrap align-items-center"
-							style="gap:8px;margin:0;">
-							<!-- <button id="btnUnclaim" class="btn btn-danger btn-sm hidden"
-								style="min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;"
-								type="button">Hủy nhận việc</button> -->
-							<div class="d-inline-flex align-items-center" style="gap:8px;">
-								<button id="btnStart" class="btn btn-success btn-sm hidden"
-									style="min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;"
-									type="button">Bắt đầu</button>
-								<span id="startButtonCountdown" class="hidden"
-									style="font-size:12px;font-weight:700;color:#23527a;background:#edf6ff;border:1px solid #c8e0f7;border-radius:999px;padding:8px 10px;white-space:nowrap;">--</span>
-							</div>
-							<button id="btnEnd" class="btn btn-warning btn-sm hidden"
-								style="color:#fff;min-height:34px;padding:8px 14px;font-size:13px;border-radius:8px;"
-								type="button">Kết thúc</button>
-						</div>
+
 
 						<div id="staffWorkForm" class="forms d-grid gap-2 hidden">
 							<label class="field-label" for="staffNote">Ghi chú công việc trong ngày</label>
@@ -1415,7 +1438,23 @@
 							<button id="btnSaveStaffLog" class="btn btn-light btn-sm" type="button">Lưu ghi chú</button>
 						</div>
 
-						<div id="workHistoryTable" style="margin-top:4px;"></div>
+						<div id="workHistoryTable" style="margin-top:4px;">
+							<div id="workHistoryContent" style="overflow-x:auto;margin-top:4px;" class="hidden">
+								<table style="width:100%;border-collapse:collapse;font-size:12px;">
+									<thead>
+										<tr style="background:#e779c1;color:#000;">
+											<th style="padding:6px 8px;text-align:left;">Ngày làm</th>
+											<th style="padding:6px 8px;text-align:left;">Bắt đầu</th>
+											<th style="padding:6px 8px;text-align:left;">Kết thúc</th>
+											<th style="padding:6px 8px;text-align:left;">Ghi chú</th>
+										</tr>
+									</thead>
+									<tbody id="workHistoryBody"></tbody>
+								</table>
+							</div>
+							<p id="workHistoryEmpty" style="font-size:12px;color:#8b5f74;margin:0;">Chưa có lịch sử làm
+								việc.</p>
+						</div>
 
 						<div class="actions d-flex flex-wrap align-items-center mt-auto" style="gap:8px;">
 							<span id="badgeProgress" class="badge" style="display:none;">0%</span>
@@ -2029,7 +2068,7 @@
 					const history = app.$workHistory || [];
 					// Theo yêu cầu: nếu có bất kỳ bản ghi nào của ngày hôm nay (trùng ngay_lam) thì không hiện btnStart
 					const hasRecordToday = history.some(r => (r.ngay_lam || '').slice(0, 10) === todayStr);
-					
+
 					// Tìm bản ghi đã bắt đầu làm việc trong ngày hôm nay (có giờ bắt đầu)
 					const logToday = history.find(r => (r.ngay_lam || '').slice(0, 10) === todayStr && r.gio_bat_dau_trong_ngay);
 					const todayStarted = !!logToday;
@@ -2098,7 +2137,8 @@
 				const totalDayCount = Math.max(1, diffDays($datlich_mevabe.ngay_bat_dau_kehoach, $datlich_mevabe.ngay_ket_thuc_kehoach) + 1);
 				const perDayPct = (100 / totalDayCount).toFixed(2);
 				setText('progressHint', `Mỗi ngày cộng ${perDayPct}% (tổng ${totalDayCount} ngày). Tiến độ cộng dồn theo từng ngày làm việc.`);
-				setText('timeDayHint', `${formatDateDisplay($datlich_mevabe.ngay_bat_dau_kehoach)} -> ${formatDateDisplay($datlich_mevabe.ngay_ket_thuc_kehoach)}`);
+				setText('dateStartPlan', formatDateDisplay($datlich_mevabe.ngay_bat_dau_kehoach));
+				setText('dateEndPlan', formatDateDisplay($datlich_mevabe.ngay_ket_thuc_kehoach));
 				setText('timeMessage', `Số ngày kế hoạch: ${totalDayCount} ngày`);
 				// Render bảng lịch sử làm việc (staff xem)
 				if (app.role === 'staff') renderWorkHistoryTable();
@@ -2114,8 +2154,11 @@
 			// RENDER BẢNG LỊCH SỬ LÀM VIỆC
 			// =============================================
 			function renderWorkHistoryTable() {
-				const container = document.getElementById('workHistoryTable');
-				if (!container) return;
+				const emptyMsg = document.getElementById('workHistoryEmpty');
+				const content = document.getElementById('workHistoryContent');
+				const body = document.getElementById('workHistoryBody');
+				if (!body) return;
+
 				const rawRows = app.$workHistory || [];
 				const endPlanTime = app.$datlich_mevabe ? app.$datlich_mevabe.gio_ket_thuc_kehoach : '';
 
@@ -2133,34 +2176,30 @@
 				const rows = Object.values(groups).sort((a, b) => a.ngay_lam > b.ngay_lam ? -1 : 1);
 
 				if (!rows.length) {
-					container.innerHTML = '<p style="font-size:12px;color:#8b5f74;margin:0;">Chưa có lịch sử làm việc.</p>';
+					if (emptyMsg) emptyMsg.classList.remove('hidden');
+					if (content) content.classList.add('hidden');
 					return;
 				}
-				let html = `<div style="overflow-x:auto;margin-top:4px;">
-					<table style="width:100%;border-collapse:collapse;font-size:12px;">
-						<thead>
-							<tr style="background:#e779c1;color:#000;">
-								<th style="padding:6px 8px;text-align:left;">Ngày làm</th>
-								<th style="padding:6px 8px;text-align:left;">Bắt đầu</th>
-								<th style="padding:6px 8px;text-align:left;">Kết thúc</th>
-								<th style="padding:6px 8px;text-align:left;">Ghi chú</th>
-							</tr>
-						</thead>
-						<tbody>`;
+
+				if (emptyMsg) emptyMsg.classList.add('hidden');
+				if (content) content.classList.remove('hidden');
+				body.innerHTML = '';
 				rows.forEach(r => {
 					const isAutoEnd = r.isAuto || (endPlanTime && r.end === endPlanTime);
 					const endCell = r.end
 						? `${r.end} ${isAutoEnd ? '<i class="fa fa-info-circle text-warning" title="NCC quên nhấn Kết Thúc" style="cursor:pointer;color:#f0ba2c;" onclick="alert(\'NCC quên nhấn Kết Thúc\')"></i>' : ''}`
 						: '<span style="color:#b0597a;">Chưa kết thúc</span>';
-					html += `<tr style="border-bottom:1px solid #f0d4e3;">
+
+					const tr = document.createElement('tr');
+					tr.style.borderBottom = '1px solid #f0d4e3';
+					tr.innerHTML = `
 						<td style="padding:5px 8px;">${formatDateDisplay(r.ngay_lam)}</td>
 						<td style="padding:5px 8px;">${formatTimeDisplay(r.start)}</td>
 						<td style="padding:5px 8px;">${endCell}</td>
 						<td style="padding:5px 8px;">${r.note || ''}</td>
-					</tr>`;
+					`;
+					body.appendChild(tr);
 				});
-				html += '</tbody></table></div>';
-				container.innerHTML = html;
 			}
 
 			async function reloadOrder() {
