@@ -59,53 +59,57 @@
               />
               <span>Giặt Ủi Nhanh</span>
               <img
-                src="public/asset/image/logo-sua-xe-luu-dong.png"
+                src="public/asset/image/logo-giat-ui-nhanh.png"
                 alt="Logo Giặt Ủi Nhanh"
               />
             </a>
 
-            <h1 class="auth-title">Đăng nhập tài khoản</h1>
+            <h1 class="auth-title">Đăng nhập nhà cung cấp</h1>
             <p class="auth-subtitle">
               Nhập thông tin để tiếp tục đặt dịch vụ nhanh chóng.
             </p>
 
-            <form id="loginForm" novalidate>
+            <form id="providerLoginForm" method="post">
               <div class="mb-2">
-                <label for="identity" class="form-label">Số điện thoại</label>
+                <label for="providerPhone" class="form-label"
+                  >Số điện thoại</label
+                >
                 <input
-                  id="identity"
-                  name="identity"
+                  id="providerPhone"
+                  name="providerPhone"
                   type="text"
                   class="form-control"
                   placeholder="09xxxxxxxx"
                   autocomplete="username"
-                  aria-describedby="identityError"
+                  aria-describedby="providerPhoneError"
                   required
                 />
                 <small
-                  id="identityError"
+                  id="providerPhoneError"
                   class="field-error"
                   aria-live="polite"
                 ></small>
               </div>
 
               <div class="mb-1">
-                <label for="password" class="form-label">Mật khẩu</label>
+                <label for="providerPassword" class="form-label"
+                  >Mật khẩu</label
+                >
                 <div class="password-group">
                   <input
-                    id="password"
-                    name="password"
+                    id="providerPassword"
+                    name="providerPassword"
                     type="password"
                     class="form-control pe-5"
                     placeholder="Nhập mật khẩu"
                     autocomplete="current-password"
-                    aria-describedby="passwordError"
+                    aria-describedby="providerPasswordError"
                     required
                   />
                   <button
                     type="button"
                     class="toggle-password"
-                    id="togglePassword"
+                    id="toggleProviderPassword"
                     aria-label="Hiện mật khẩu"
                     aria-pressed="false"
                   >
@@ -113,7 +117,7 @@
                   </button>
                 </div>
                 <small
-                  id="passwordError"
+                  id="providerPasswordError"
                   class="field-error"
                   aria-live="polite"
                 ></small>
@@ -124,21 +128,25 @@
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    id="remember"
+                    id="rememberProvider"
                   />
-                  <label class="form-check-label" for="remember"
+                  <label class="form-check-label" for="rememberProvider"
                     >Ghi nhớ đăng nhập</label
                   >
                 </div>
                 <a href="#" aria-label="Khôi phục mật khẩu">Quên mật khẩu?</a>
               </div>
 
-              <button id="submitBtn" type="submit" class="btn-login mt-2">
+              <button
+                id="providerSubmitBtn"
+                type="submit"
+                class="btn-login mt-2"
+              >
                 <span class="btn-text">Đăng nhập</span>
               </button>
 
               <div
-                id="loginStatus"
+                id="providerLoginStatus"
                 class="alert alert-success auth-alert d-none"
                 role="status"
                 aria-live="polite"
@@ -150,12 +158,12 @@
 
               <div class="social-grid">
                 <a
-                  href="dang-nhap-nha-cung-cap.html"
+                  href="dang-nhap.html"
                   class="btn-social"
-                  aria-label="Chuyển đến đăng nhập nhà cung cấp"
+                  aria-label="Chuyển đến đăng nhập khách hàng"
                 >
                   <i class="fas fa-user-alt"></i>
-                  Nhà cung cấp
+                  Khách hàng
                 </a>
                 <!-- <button
                   type="button"
@@ -186,9 +194,9 @@
     </main>
 
     <script src="public/asset/js/bootstrap.bundle.min.js"></script>
-    <!-- <script src="public/asset/js/plugin/webfont/webfont.min.js"></script> -->
+    <script src="public/asset/js/plugin/webfont/webfont.min.js"></script>
     <script src="https://api.dvqt.vn/js/krud.js"></script>
-    <!-- <script>
+    <script>
       WebFont.load({
         google: {
           families: ["Public Sans:300,400,500,600,700"],
@@ -206,7 +214,10 @@
           sessionStorage.fonts = true;
         },
       });
-    </script> -->
-    <script type="text/javascript" src="public/asset/js/auth-login.js"></script>
+    </script>
+    <script
+      type="text/javascript"
+      src="public/asset/js/auth-login-provider.js"
+    ></script>
   </body>
 </html>

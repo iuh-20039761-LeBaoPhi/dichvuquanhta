@@ -32,6 +32,7 @@
       href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
     />
     <script src="/ga.js"></script>
+     <script src="https://api.dvqt.vn/js/krud.js"></script>
   </head>
   <body>
     <!-- Navigation -->
@@ -62,7 +63,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav ms-auto nav-menu">
             <li class="nav-item">
               <a class="nav-link" href="index.html">Trang chủ</a>
             </li>
@@ -83,8 +84,97 @@
               <a class="nav-link" data-bs-toggle="modal" data-bs-target="#bookingModal">Đặt dịch vụ</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link register-btn" href="dang-nhap.html">Đăng nhập</a>
+              <a class="nav-link login-btn" href="dang-nhap.html">Đăng nhập</a>
             </li>
+            <li class="nav-item auth-menu-item">
+            <details class="auth-menu" aria-label="Khu vực tài khoản">
+              <summary class="auth-user-trigger" aria-label="Mở menu tài khoản">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6"
+                  />
+                </svg>
+              </summary>
+
+              <div
+                class="auth-user-dropdown"
+                role="menu"
+                aria-label="Tùy chọn tài khoản"
+              >
+                <a href="khachhang/danh-sach-hoa-don.html" role="menuitem">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M14 4.5V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h7.5L14 4.5zM10.5 3a.5.5 0 0 0-.5.5V5h1.5L10.5 3z"
+                    />
+                    <path
+                      d="M4 7.5A.5.5 0 0 1 4.5 7h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 7.5m0 2A.5.5 0 0 1 4.5 9h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 9.5m0 2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5"
+                    />
+                  </svg>
+                  Đơn đặt
+                </a>
+                <a href="nhacungcap/danh-sach-hoa-don.html" role="menuitem">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                  >
+                    <path d="M0 0h1v15h15v1H0z" />
+                    <path
+                      d="M10 10.5a.5.5 0 0 1 .5-.5H14V3.5a.5.5 0 0 1 1 0V10h.5a.5.5 0 0 1 0 1H15v.5a.5.5 0 0 1-1 0V11h-3.5a.5.5 0 0 1-.5-.5"
+                    />
+                    <path
+                      d="M4.5 9a.5.5 0 0 1 .5.5V11h1.5a.5.5 0 0 1 0 1H5v1.5a.5.5 0 0 1-1 0V12h-.5a.5.5 0 0 1 0-1H4V9.5a.5.5 0 0 1 .5-.5"
+                    />
+                    <path
+                      d="M6 4.5A1.5 1.5 0 1 1 3 4.5a1.5 1.5 0 0 1 3 0m5 1A1.5 1.5 0 1 1 8 5.5a1.5 1.5 0 0 1 3 0"
+                    />
+                  </svg>
+                  Dashboard
+                </a>
+                <a href="#" class="auth-logout-btn" role="menuitem">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 15a1 1 0 0 0 1-1v-3h-1v3H2V2h8v3h1V2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1z"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M6.146 11.354a.5.5 0 0 1 0-.708L8.793 8 6.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M9.5 8a.5.5 0 0 1 .5-.5H15a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"
+                    />
+                  </svg>
+                  Đăng xuất
+                </a>
+              </div>
+            </details>
+          </li>
           </ul>
         </div>
       </div>
@@ -828,6 +918,7 @@
     ></script>
     <script src="public/asset/js/setting.js"></script>
     <script src="public/asset/js/data.js"></script>
+    <script src="public/asset/js/auth-session.js"></script>
     <script>
       // Smooth scroll for TOC links
       document.querySelectorAll(".toc-list a").forEach((anchor) => {
