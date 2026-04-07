@@ -322,6 +322,14 @@
       return Boolean(accessState && accessState.isAuthenticated === true);
     }
 
+    function shouldRedirectToOrderListAfterSubmit() {
+      const isStandalone = document.body.classList.contains("booking-standalone");
+      if (!isStandalone) return true;
+
+      const accessState = window.BookingAccessState || {};
+      return accessState.source !== "url-credentials";
+    }
+
     function normalizeMoneyToNumber(value) {
       if (typeof value === "number" && Number.isFinite(value)) {
         return Math.round(value);
@@ -450,9 +458,11 @@
           );
         }
 
-        setTimeout(function () {
-          window.location.href = "khachhang/danh-sach-hoa-don.html";
-        }, 900);
+        if (shouldRedirectToOrderListAfterSubmit()) {
+          setTimeout(function () {
+            window.location.href = "khachhang/danh-sach-hoa-don.html";
+          }, 900);
+        }
 
         form.reset();
         clearConfirmMedia();

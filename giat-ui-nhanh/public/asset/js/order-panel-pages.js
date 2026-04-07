@@ -12,6 +12,51 @@
   var ADMIN_LOGIN_PAGE = "dang-nhap-admin.html";
   var PROVIDER_DASHBOARD_PAGE = "../nha-cung-cap.html";
   var shared = window.SharedOrderUtils || {};
+  var REVIEW_UPLOAD_ENDPOINT = "../public/upload-review-media.php";
+  var REVIEW_FIELD_MAP = {
+    customer: {
+      text: [
+        "danhgia_khachhang",
+        "danhgiakhachhang",
+        "review_khachhang",
+        "review_customer_text",
+        "customer_review_text",
+      ],
+      date: [
+        "ngaydanhgia_khachhang",
+        "ngay_danhgia_khachhang",
+        "review_customer_at",
+        "customer_review_at",
+      ],
+      media: [
+        "media_danhgia_khachhang",
+        "anhvideo_danhgia_khachhang",
+        "review_customer_media",
+        "customer_review_media",
+      ],
+    },
+    provider: {
+      text: [
+        "danhgia_nhacungcap",
+        "danhgianhacungcap",
+        "review_nhacungcap",
+        "review_provider_text",
+        "provider_review_text",
+      ],
+      date: [
+        "ngaydanhgia_nhacungcap",
+        "ngay_danhgia_nhacungcap",
+        "review_provider_at",
+        "provider_review_at",
+      ],
+      media: [
+        "media_danhgia_nhacungcap",
+        "anhvideo_danhgia_nhacungcap",
+        "review_provider_media",
+        "provider_review_media",
+      ],
+    },
+  };
 
   function hasDateValue(value) {
     if (value == null) return false;
@@ -1952,6 +1997,9 @@
       showNotFound(orderId);
       return;
     }
+    if (!order.raw || typeof order.raw !== "object") {
+      order.raw = {};
+    }
 
     if (role === "customer" && !(order.customer && order.customer.avatar)) {
       order.customer.avatar = pickFirstValue([
@@ -2108,12 +2156,346 @@
     );
     setText("providerStateChip", providerStateText);
 
-    setText("reviewCustomerText", "Chưa có đánh giá");
-    setText("reviewCustomerDate", "---");
-    setText("reviewCustomerFile", "Chưa có tệp");
-    setText("reviewProviderText", "Chưa có đánh giá");
-    setText("reviewProviderDate", "---");
-    setText("reviewProviderFile", "Chưa có tệp");
+    function reviewPrefix(actor) {
+      return actor === "provider" ? "Provider" : "Customer";
+    }
+
+    function reviewNode(actor, suffix) {
+      return document.getElementById("review" + reviewPrefix(actor) + suffix);
+    }
+
+    function firstExistingKey(source, keys, fallback) {
+      var row = source && typeof source === "object" ? source : {};
+      var list = Array.isArray(keys) ? keys : [];
+      for (var i = 0; i < list.length; i += 1) {
+        if (Object.prototype.hasOwnProperty.call(row, list[i])) return list[i];
+      }
+      return fallback;
+    }
+
+    function firstReviewValue(source, keys) {
+      var row = source && typeof source === "object" ? source : {};
+      var list = Array.isArray(keys) ? keys : [];
+      for (var i = 0; i < list.length; i += 1) {
+        var value = row[list[i]];
+        if (value == null) continue;
+        if (Array.isArray(value) && value.length) return value;
+        var text = String(value).trim();
+        if (text) return text;
+      }
+      return "";
+    }
+
+    function parseReviewMedia(value) {
+      if (Array.isArray(value)) {
+        return value
+          .map(function (item) {
+            return String(item == null ? "" : item).trim();
+          })
+          .filter(Boolean);
+      }
+
+      var text = String(value == null ? "" : value).trim();
+      if (!text) return [];
+
+      if (
+        (text.charAt(0) === "[" && text.charAt(text.length - 1) === "]") ||
+        (text.charAt(0) === "{" && text.charAt(text.length - 1) === "}")
+      ) {
+        try {
+          var parsed = JSON.parse(text);
+          if (Array.isArray(parsed)) return parseReviewMedia(parsed);
+          if (parsed && Array.isArray(parsed.files)) {
+            return parseReviewMedia(parsed.files);
+          }
+        } catch (_) {}
+      }
+
+      return text
+        .split(/[\n,;]+/)
+        .map(function (item) {
+          return item.trim();
+        })
+        .filter(Boolean);
+    }
+
+    function dedupeMedia(files) {
+      var map = {};
+      var list = Array.isArray(files) ? files : [];
+      return list.filter(function (item) {
+        var key = String(item || "").trim();
+        if (!key || map[key]) return false;
+        map[key] = true;
+        return true;
+      });
+    }
+
+    function resolveReview(actor) {
+      var row = order.raw || {};
+      var config = REVIEW_FIELD_MAP[actor] || REVIEW_FIELD_MAP.customer;
+      var text = firstReviewValue(row, config.text);
+      var date = firstReviewValue(row, config.date);
+      var mediaRaw = firstReviewValue(row, config.media);
+
+      return {
+        text: String(text || "").trim(),
+        date: String(date || "").trim(),
+        files: dedupeMedia(parseReviewMedia(mediaRaw)),
+        columns: {
+          text: firstExistingKey(row, config.text, config.text[0]),
+          date: firstExistingKey(row, config.date, config.date[0]),
+          media: firstExistingKey(row, config.media, config.media[0]),
+        },
+      };
+    }
+
+    function hasReviewData(review) {
+      var info = review || {};
+      var text = String(info.text || "").trim();
+      var date = String(info.date || "").trim();
+      var files = Array.isArray(info.files) ? info.files : [];
+      return Boolean(text || date || files.length);
+    }
+
+    function resolveReviewMediaUrl(path) {
+      var value = String(path || "").trim().replace(/\\/g, "/");
+      if (!value) return "";
+      if (/^(https?:|data:|blob:|\/)/i.test(value)) return value;
+      if (value.indexOf("./") === 0 || value.indexOf("../") === 0) return value;
+      if (value.indexOf("public/") === 0) return "../" + value;
+      return "../public/asset/image/upload/danhgia/" + value.replace(/^\/+/, "");
+    }
+
+    function renderReviewMedia(actor, files) {
+      var mount = reviewNode(actor, "File");
+      if (!mount) return;
+      mount.className = "review-file";
+      mount.textContent = "";
+
+      var list = Array.isArray(files) ? files : [];
+      if (!list.length) {
+        mount.textContent = "Chưa có tệp";
+        return;
+      }
+
+      mount.classList.add("review-file-media");
+      var grid = document.createElement("div");
+      grid.className = "review-media-grid";
+
+      list.forEach(function (item, index) {
+        var url = resolveReviewMediaUrl(item);
+        if (!url) return;
+        var isVideo = /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/.test(
+          url.toLowerCase(),
+        );
+
+        var link = document.createElement("a");
+        link.className = "review-media-item";
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.title = "Mở tệp " + (index + 1);
+
+        var preview;
+        if (isVideo) {
+          preview = document.createElement("video");
+          preview.controls = true;
+          preview.preload = "metadata";
+        } else {
+          preview = document.createElement("img");
+          preview.alt = "Tệp đánh giá " + (index + 1);
+          preview.loading = "lazy";
+        }
+        preview.className = "review-media-preview";
+        preview.src = url;
+        link.appendChild(preview);
+        grid.appendChild(link);
+      });
+
+      if (!grid.children.length) {
+        mount.classList.remove("review-file-media");
+        mount.textContent = "Chưa có tệp";
+        return;
+      }
+
+      mount.appendChild(grid);
+    }
+
+    function setReviewChip(actor, hasData) {
+      var chip = reviewNode(actor, "Chip");
+      if (!chip) return;
+      chip.classList.toggle("warn", !hasData);
+      chip.textContent = hasData ? "Đã có" : "Chưa có";
+    }
+
+    function renderReview(actor) {
+      var info = resolveReview(actor);
+      var hasData = hasReviewData(info);
+      setText(
+        "review" + reviewPrefix(actor) + "Text",
+        info.text || "Chưa có đánh giá",
+      );
+      setText(
+        "review" + reviewPrefix(actor) + "Date",
+        info.date ? formatDateTime(info.date) : "---",
+      );
+      renderReviewMedia(actor, info.files || []);
+      setReviewChip(actor, hasData);
+      return info;
+    }
+
+    function renderAllReviews() {
+      renderReview("customer");
+      renderReview("provider");
+    }
+
+    function setReviewSubmitting(actor, isLoading) {
+      var button = reviewNode(actor, "Submit");
+      var input = reviewNode(actor, "Input");
+      var upload = reviewNode(actor, "Upload");
+      var hint = reviewNode(actor, "Hint");
+
+      if (button) {
+        if (isLoading) {
+          if (!button.dataset.defaultText) {
+            button.dataset.defaultText = button.textContent || "Gui danh gia";
+          }
+          button.disabled = true;
+          button.textContent = "Dang gui...";
+        } else {
+          button.disabled = false;
+          button.textContent = button.dataset.defaultText || "Gui danh gia";
+        }
+      }
+      if (input) input.disabled = Boolean(isLoading);
+      if (upload) upload.disabled = Boolean(isLoading);
+      if (hint) {
+        hint.textContent = isLoading
+          ? "Dang tai tep len..."
+          : "Ban chi co the gui danh gia 1 lan. Toi da 30MB moi tep.";
+      }
+    }
+
+    function syncReviewEditors() {
+      var canSend = statusLower === "completed";
+      ["customer", "provider"].forEach(function (actor) {
+        var editor = reviewNode(actor, "Editor");
+        if (!editor) return;
+
+        var info = resolveReview(actor);
+        var canEdit = canSend && role === actor && !hasReviewData(info);
+        editor.classList.toggle("d-none", !canEdit);
+        if (!canEdit) return;
+
+        var input = reviewNode(actor, "Input");
+        var upload = reviewNode(actor, "Upload");
+        var hint = reviewNode(actor, "Hint");
+        if (input) input.value = "";
+        if (upload) upload.value = "";
+        if (hint) {
+          hint.textContent =
+            "Ban chi co the gui danh gia 1 lan. Toi da 30MB moi tep.";
+        }
+      });
+    }
+
+    function uploadReviewFiles(files) {
+      var list = Array.isArray(files) ? files : [];
+      if (!list.length) return Promise.resolve([]);
+
+      var formData = new FormData();
+      list.forEach(function (file) {
+        formData.append("files[]", file);
+      });
+
+      return fetch(REVIEW_UPLOAD_ENDPOINT, {
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+      })
+        .then(function (response) {
+          return response.json().catch(function () {
+            return null;
+          }).then(function (result) {
+            if (!response.ok || !result || result.success !== true) {
+              throw new Error(
+                (result && result.message) ||
+                  "Không thể tải lên ảnh/video đánh giá.",
+              );
+            }
+            return dedupeMedia(result.files || []);
+          });
+        });
+    }
+
+    function submitReview(actor) {
+      if (role !== actor) return;
+      if (statusLower !== "completed") {
+        window.alert("Chi gui danh gia sau khi hoa don da hoan thanh.");
+        return;
+      }
+      if (typeof shared.updateOrder !== "function") {
+        window.alert("Chua san sang chuc nang gui danh gia.");
+        return;
+      }
+
+      var input = reviewNode(actor, "Input");
+      var upload = reviewNode(actor, "Upload");
+      if (!input || !upload) return;
+
+      var current = resolveReview(actor);
+      if (hasReviewData(current)) {
+        window.alert("Danh gia nay da duoc gui truoc do va khong the chinh sua.");
+        return;
+      }
+
+      var content = String(input.value || "").trim();
+      var selectedFiles = upload.files
+        ? Array.prototype.slice.call(upload.files)
+        : [];
+      if (!content && !selectedFiles.length) {
+        window.alert("Vui long nhap noi dung hoac chon anh/video.");
+        return;
+      }
+
+      setReviewSubmitting(actor, true);
+      uploadReviewFiles(selectedFiles)
+        .then(function (uploadedFiles) {
+          var nextFiles = dedupeMedia(uploadedFiles);
+          var submittedAt = new Date().toISOString();
+          var payload = {};
+          payload[current.columns.text] = content;
+          payload[current.columns.date] = submittedAt;
+          payload[current.columns.media] = JSON.stringify(nextFiles);
+
+          return shared
+            .updateOrder(BOOKING_TABLE, order.id, payload)
+            .then(function () {
+              order.raw[current.columns.text] = payload[current.columns.text];
+              order.raw[current.columns.date] = payload[current.columns.date];
+              order.raw[current.columns.media] = payload[current.columns.media];
+              renderAllReviews();
+              syncReviewEditors();
+            });
+        })
+        .catch(function (error) {
+          window.alert((error && error.message) || "Khong the gui danh gia.");
+        })
+        .finally(function () {
+          setReviewSubmitting(actor, false);
+        });
+    }
+
+    ["customer", "provider"].forEach(function (actor) {
+      var button = reviewNode(actor, "Submit");
+      if (!button) return;
+      button.addEventListener("click", function () {
+        submitReview(actor);
+      });
+    });
+
+    renderAllReviews();
+    syncReviewEditors();
 
     setText("heroProgressPercent", Math.round(progressValue) + "%");
 

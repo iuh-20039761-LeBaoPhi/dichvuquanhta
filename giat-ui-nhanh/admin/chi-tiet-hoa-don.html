@@ -296,7 +296,7 @@
                   <article class="review-card">
                     <div class="review-card-head">
                       <h4>Đánh giá khách hàng</h4>
-                      <span class="panel-chip warn">Chưa có</span>
+                      <span class="panel-chip warn" id="reviewCustomerChip">Chưa có</span>
                     </div>
                     <div class="review-card-body">
                       <p class="review-label">Nội dung đánh giá</p>
@@ -309,13 +309,40 @@
                       <div class="review-file" id="reviewCustomerFile">
                         Chưa có tệp
                       </div>
+                      <div class="review-editor d-none" id="reviewCustomerEditor">
+                        <textarea
+                          class="form-control form-control-sm"
+                          id="reviewCustomerInput"
+                          rows="3"
+                          placeholder="Nhập đánh giá của khách hàng..."
+                        ></textarea>
+                        <input
+                          class="form-control form-control-sm"
+                          id="reviewCustomerUpload"
+                          type="file"
+                          accept="image/*,video/*"
+                          multiple
+                        />
+                        <div class="review-editor-actions">
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-primary"
+                            id="reviewCustomerSubmit"
+                          >
+                            Gửi đánh giá
+                          </button>
+                          <span class="review-editor-note" id="reviewCustomerHint"
+                            >Chi gui 1 lan. Toi da 30MB moi tep.</span
+                          >
+                        </div>
+                      </div>
                     </div>
                   </article>
 
                   <article class="review-card">
                     <div class="review-card-head">
                       <h4>Đánh giá nhà cung cấp</h4>
-                      <span class="panel-chip warn">Chưa có</span>
+                      <span class="panel-chip warn" id="reviewProviderChip">Chưa có</span>
                     </div>
                     <div class="review-card-body">
                       <p class="review-label">Nội dung đánh giá</p>
@@ -327,6 +354,33 @@
                       <p class="review-label">Ảnh/video đánh giá</p>
                       <div class="review-file" id="reviewProviderFile">
                         Chưa có tệp
+                      </div>
+                      <div class="review-editor d-none" id="reviewProviderEditor">
+                        <textarea
+                          class="form-control form-control-sm"
+                          id="reviewProviderInput"
+                          rows="3"
+                          placeholder="Nhập đánh giá của nhà cung cấp..."
+                        ></textarea>
+                        <input
+                          class="form-control form-control-sm"
+                          id="reviewProviderUpload"
+                          type="file"
+                          accept="image/*,video/*"
+                          multiple
+                        />
+                        <div class="review-editor-actions">
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-primary"
+                            id="reviewProviderSubmit"
+                          >
+                            Gửi đánh giá
+                          </button>
+                          <span class="review-editor-note" id="reviewProviderHint"
+                            >Chi gui 1 lan. Toi da 30MB moi tep.</span
+                          >
+                        </div>
                       </div>
                     </div>
                   </article>
