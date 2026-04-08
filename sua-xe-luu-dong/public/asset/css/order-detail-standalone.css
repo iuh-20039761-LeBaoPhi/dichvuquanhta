@@ -1,0 +1,276 @@
+body.order-standalone-page {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fdf3f7 0%, #fffaf4 48%, #f7fbff 100%);
+  color: #1f2f46;
+  font-family: "Public Sans", "Segoe UI", Arial, sans-serif;
+}
+
+.standalone-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  box-shadow: 0 10px 22px rgba(59, 130, 246, 0.5);
+}
+
+.standalone-header-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  min-height: 82px;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.standalone-logo {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  padding: 5px;
+  object-fit: contain;
+}
+
+.standalone-title-wrap {
+  text-align: center;
+  color: #fff;
+}
+
+.standalone-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.standalone-subtitle {
+  margin: 3px 0 0;
+  font-size: 0.86rem;
+  opacity: 0.95;
+}
+
+.standalone-content {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 14px 12px 28px;
+}
+
+.standalone-topline {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.standalone-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid #e4d7e2;
+  background: #ffffff;
+  padding: 6px 11px;
+  color: #324b69;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.standalone-chip b {
+  color: #b7347a;
+}
+
+.standalone-action {
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.standalone-action-meta {
+  display: none;
+}
+
+.standalone-action .btn {
+  min-width: 152px;
+  min-height: 42px;
+  border-radius: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.22);
+}
+
+.standalone-action .btn.btn-outline-danger {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.standalone-action .btn.btn-outline-danger:hover,
+.standalone-action .btn.btn-outline-danger:focus {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+}
+
+.standalone-action .btn.btn-outline-primary {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.standalone-action .btn.btn-outline-primary:hover,
+.standalone-action .btn.btn-outline-primary:focus {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.standalone-alert {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+#providerActionGroup {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+#providerActionGroup .btn {
+  min-width: 152px;
+}
+
+.hero-progress .standalone-action {
+  margin-top: 0;
+  min-width: 0;
+  width: auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-progress .standalone-action-meta {
+  display: none;
+}
+
+.hero-progress .standalone-action .btn {
+  width: auto;
+}
+
+.hero-progress .standalone-alert {
+  margin-top: 6px;
+  width: 100%;
+}
+
+.hero-progress {
+  width: min(260px, 100%);
+  gap: 8px;
+}
+
+.hero-progress-ring {
+  flex: 0 0 auto;
+  aspect-ratio: 1 / 1;
+}
+
+@media (max-width: 768px) {
+  .standalone-header-inner {
+    min-height: 72px;
+    padding: 8px 10px;
+    grid-template-columns: 46px 1fr 46px;
+  }
+
+  .standalone-logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+  }
+
+  .standalone-title {
+    font-size: 1.02rem;
+  }
+
+  .standalone-subtitle {
+    font-size: 0.76rem;
+  }
+
+  .standalone-content {
+    padding: 10px 8px 22px;
+  }
+
+  .standalone-topline {
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .standalone-chip {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+    gap: 6px;
+  }
+
+  .invoice-hero-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .hero-progress {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .hero-progress .standalone-action {
+    flex: 0 1 auto;
+    justify-content: flex-start;
+  }
+
+  #providerActionGroup {
+    width: auto;
+  }
+
+  #providerActionGroup .btn,
+  .hero-progress .standalone-action .btn {
+    min-width: 132px;
+    max-width: 150px;
+    width: auto;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .hero-progress-ring {
+    width: 90px;
+    height: 90px;
+  }
+
+  .hero-progress-ring::before {
+    width: 68px;
+    height: 68px;
+  }
+
+  .hero-progress-content strong {
+    font-size: 1.22rem;
+  }
+
+  .hero-progress .standalone-alert {
+    width: 100%;
+    order: 3;
+  }
+  #providerActionGroup {
+  justify-content: left;
+}
+}

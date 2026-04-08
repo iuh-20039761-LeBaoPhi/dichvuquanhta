@@ -517,7 +517,7 @@
       Object.assign(
         {
           ngayhoanthanh: new Date().toISOString(),
-          trangthaithanhtoan: "Paid",
+          // trangthaithanhtoan: "Paid",
         },
         extraData || {},
       ),

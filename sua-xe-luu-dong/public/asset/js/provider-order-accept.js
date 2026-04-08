@@ -165,7 +165,7 @@
     return {
       distanceKm: distanceKm,
       transportFee: transportFee,
-      totalAmount: serviceAmount + surveyFee + transportFee,
+      totalAmount: serviceAmount + transportFee,
     };
   }
 

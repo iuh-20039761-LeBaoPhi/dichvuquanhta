@@ -277,7 +277,7 @@
   border: 1px solid #65a7db;
   border-radius: 16px;
   padding: 14px;
-  background: linear-gradient(to right, #ed8f03, #ffb75e);
+  background: linear-gradient(to left, #859398, #283048);
   color: #f4f9ff;
   box-shadow: 0 16px 30px rgba(19, 64, 126, 0.24);
 }
