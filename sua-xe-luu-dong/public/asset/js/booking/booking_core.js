@@ -202,7 +202,7 @@
       const servicePrice = getSelectedServicePrice();
       const surveyFee = getCurrentSurveyFee();
       const transportFee = Number(transportFeeValue || 0);
-      const total = servicePrice + surveyFee + transportFee;
+      const total = servicePrice + transportFee;
       const noFixTotal = surveyFee + transportFee;
 
       if (priceInput) {
