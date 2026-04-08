@@ -135,6 +135,9 @@
       const addr = getAddressInput();
       if (!addr) return;
 
+      addr.dataset.lat = lat;
+      addr.dataset.lng = lng;
+
       addr.placeholder = "Đang tải địa chỉ...";
       addr.value = "";
 
@@ -162,6 +165,8 @@
         })
         .catch(() => {
           addr.placeholder = "Số nhà, đường, phường/xã, quận/huyện...";
+          addr.dataset.lat = lat;
+          addr.dataset.lng = lng;
           addr.value = `Vĩ độ ${lat.toFixed(6)}, Kinh độ ${lng.toFixed(6)}`;
           addr.dispatchEvent(new Event("change", { bubbles: true }));
         });

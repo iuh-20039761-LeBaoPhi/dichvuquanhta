@@ -296,19 +296,57 @@
     }
 
     async function isUserLoggedInForBooking() {
+      const params = new URLSearchParams(window.location.search || "");
+      const urlU = params.get("sodienthoai");
+      const urlP = params.get("password");
+
+      const u = urlU || utils.getCookie("dvqt_u");
+      const p = urlP || utils.getCookie("dvqt_p");
+
+      if (!u || !p) return false;
+
       try {
-        const response = await fetch("public/session-user.php?action=get", {
-          method: "GET",
-          credentials: "same-origin",
-          headers: {
-            "Content-Type": "application/json",
-          },
+        if (typeof window.krudList !== "function") {
+          console.error("krud.js chưa được nạp.");
+          return false;
+        }
+
+        const result = await window.krudList({
+          table: "nguoidung",
+          where: [
+            { field: "sodienthoai", operator: "=", value: u },
+            { field: "matkhau", operator: "=", value: p },
+          ],
+          limit: 1,
         });
 
-        if (!response.ok) return false;
-        const result = await response.json();
-        return Boolean(result && result.hasUser);
-      } catch (_error) {
+        const rows =
+          (result && result.data) || (Array.isArray(result) ? result : []);
+        const user = rows.length ? rows[0] : null;
+
+        if (!user) return false;
+
+        const idDichvu = String(user.id_dichvu || "").trim();
+        const serviceIds = idDichvu.split(",").map((s) => s.trim());
+
+        if (serviceIds.indexOf("11") !== -1) {
+          if (typeof utils.showToast === "function") {
+            utils.showToast(
+              "Tài khoản nhà cung cấp không được phép đặt dịch vụ.",
+              "error",
+            );
+          }
+          return false;
+        }
+
+        if (urlU && urlP) {
+          document.cookie = `dvqt_u=${urlU}; path=/; max-age=604800`;
+          document.cookie = `dvqt_p=${urlP}; path=/; max-age=604800`;
+        }
+
+        return true;
+      } catch (err) {
+        console.error("Lỗi kiểm tra đăng nhập:", err);
         return false;
       }
     }
@@ -323,11 +361,7 @@
     }
 
     function shouldRedirectToOrderListAfterSubmit() {
-      const isStandalone = document.body.classList.contains("booking-standalone");
-      if (!isStandalone) return true;
-
-      const accessState = window.BookingAccessState || {};
-      return accessState.source !== "url-credentials";
+      return true;
     }
 
     function normalizeMoneyToNumber(value) {

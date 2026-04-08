@@ -12,102 +12,6 @@
     const confirmImages = document.getElementById("confirmImages");
     const confirmVideos = document.getElementById("confirmVideos");
     const confirmMediaUrls = [];
-    const ORDER_CODE_PREFIX = "SXLD";
-    const ORDER_CODE_STORE_KEY = "sua_xe_luu_dong_order_codes";
-    const ORDER_CODE_TTL_MS = 24 * 60 * 60 * 1000;
-    let currentOrderCode = "";
-
-    function normalizeStoredOrderCodes(payload) {
-      const now = Date.now();
-
-      if (!Array.isArray(payload)) return [];
-
-      const normalized = payload
-        .map((item) => {
-          if (typeof item === "string") {
-            return { code: item, createdAt: now };
-          }
-
-          if (item && typeof item.code === "string") {
-            const createdAt = Number(item.createdAt || 0);
-            return {
-              code: item.code,
-              createdAt:
-                Number.isFinite(createdAt) && createdAt > 0 ? createdAt : now,
-            };
-          }
-
-          return null;
-        })
-        .filter(Boolean)
-        .filter((item) => now - item.createdAt < ORDER_CODE_TTL_MS);
-
-      const deduped = new Map();
-      normalized.forEach((item) => {
-        deduped.set(item.code, item);
-      });
-
-      return Array.from(deduped.values());
-    }
-
-    function readStoredOrderCodeEntries() {
-      try {
-        const raw = localStorage.getItem(ORDER_CODE_STORE_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        const cleaned = normalizeStoredOrderCodes(parsed);
-        localStorage.setItem(ORDER_CODE_STORE_KEY, JSON.stringify(cleaned));
-        return cleaned;
-      } catch (_err) {
-        return [];
-      }
-    }
-
-    function getStoredOrderCodes() {
-      return readStoredOrderCodeEntries().map((item) => item.code);
-    }
-
-    function saveOrderCode(orderCode) {
-      if (!orderCode) return;
-
-      const existingEntries = readStoredOrderCodeEntries();
-      if (existingEntries.some((item) => item.code === orderCode)) return;
-
-      existingEntries.push({
-        code: orderCode,
-        createdAt: Date.now(),
-      });
-
-      const trimmed = existingEntries.slice(-3000);
-      try {
-        localStorage.setItem(ORDER_CODE_STORE_KEY, JSON.stringify(trimmed));
-      } catch (_err) {
-        // Ignore localStorage failure (private mode / quota exceeded).
-      }
-    }
-
-    function createRandomOrderCode() {
-      const numberPart = String(Math.floor(Math.random() * 10000)).padStart(
-        4,
-        "0",
-      );
-      return `${ORDER_CODE_PREFIX}${numberPart}`;
-    }
-
-    function generateUniqueOrderCode() {
-      const existingCodes = new Set(getStoredOrderCodes());
-
-      for (let i = 0; i < 200; i += 1) {
-        const candidate = createRandomOrderCode();
-        if (!existingCodes.has(candidate)) {
-          saveOrderCode(candidate);
-          return candidate;
-        }
-      }
-
-      const fallback = `${ORDER_CODE_PREFIX}${Date.now().toString().slice(-4)}`;
-      saveOrderCode(fallback);
-      return fallback;
-    }
 
     if (!form || !bookingModalEl || !confirmModalEl) return;
     if (form.dataset.confirmFlowBound === "true") return;
@@ -250,16 +154,9 @@
     }
 
     function renderSummary() {
-      if (!currentOrderCode) {
-        currentOrderCode = generateUniqueOrderCode();
-      }
-
-      form.dataset.orderCode = currentOrderCode;
-
       const summary = {
         confirmName: document.getElementById("hotenkhachhang")?.value,
         confirmPhone: document.getElementById("sodienthoaikhachhang")?.value,
-        confirmOrderCode: currentOrderCode,
         confirmService: selectedText(serviceSelect),
         confirmVehicleType: selectedText(vehicleType),
         confirmBrand: selectedText(brandSelect),
@@ -280,22 +177,18 @@
     }
 
     function collectBookingData() {
-      if (!currentOrderCode) {
-        currentOrderCode = generateUniqueOrderCode();
-      }
-
       const transportFee = moneyOnlyText(transportInput?.value);
       const payload = {
-        service_group: "sua-xe-luu-dong",
         name: document.getElementById("hotenkhachhang")?.value || "",
         phone: document.getElementById("sodienthoaikhachhang")?.value || "",
-        order_code: currentOrderCode,
         service_name: selectedText(serviceSelect),
         vehicle_type: selectedText(vehicleType),
         brand: selectedText(brandSelect),
         item: selectedItemText(),
         booking_time: datetimeInput?.value || "",
         address: addressInput?.value || "",
+        lat_kh: (addressInput?.dataset.lat || "").trim(),
+        lng_kh: (addressInput?.dataset.lng || "").trim(),
         price: priceInput?.value || "",
         survey_fee: surveyInput?.value || "",
         transport_fee: transportFee,
@@ -315,52 +208,135 @@
       }
     }
 
+    function normalizeMoneyToNumber(value) {
+      if (typeof value === "number" && Number.isFinite(value)) {
+        return Math.round(value);
+      }
+
+      const raw = String(value == null ? "" : value).trim();
+      if (!raw) return 0;
+
+      const sign = raw.includes("-") ? -1 : 1;
+      const digits = raw.replace(/\D/g, "");
+      if (!digits) return 0;
+
+      return sign * Number(digits);
+    }
+    
+
+    function saveToKrudApi(data) {
+      if (!config.BOOKING_KRUD_TABLE) {
+        return Promise.reject(new Error("Thiếu cấu hình BOOKING_KRUD_TABLE."));
+      }
+      const dbPayload = {
+        hovaten: data.name || "",
+        sodienthoai: data.phone || "",
+        dichvu: data.service_name || "",
+        loaixe: data.vehicle_type || "",
+        hangxe: data.brand || "",
+        mauxe: data.item || "",
+        giadichvu: normalizeMoneyToNumber(data.price),
+        phikhaosat: normalizeMoneyToNumber(data.survey_fee),
+        tiendichuyen: normalizeMoneyToNumber(data.transport_fee),
+        tongtien: normalizeMoneyToNumber(data.total),
+        ngaydat: data.booking_time || "",
+        diachi: data.address || "",
+        lat_kh: data.lat_kh || "",
+        lng_kh: data.lng_kh || "",
+        ghichu: data.message || "",
+        trangthaithanhtoan: "Unpaid",
+      };
+
+      return Promise.resolve(
+        krud("insert", config.BOOKING_KRUD_TABLE, dbPayload),
+      ).then((res) => {
+        if (!res || res.success === false || res.error) {
+          const errorMessage =
+            (res && (res.message || res.error)) ||
+            "Không thể lưu dữ liệu vào CSDL.";
+          throw new Error(`KRUD API: ${errorMessage}`);
+        }
+        return res;
+      });
+    }
+
+    function buildBookingSheetPayload(formData) {
+      return {
+        sheet_type: "Sửa xe lưu động",
+        "Tên khách": formData.name || "",
+        "Số điện thoại": formData.phone || "",
+        "Địa chỉ": formData.address || "",
+        lat_kh: formData.lat_kh || "",
+        lng_kh: formData.lng_kh || "",
+        "Dịch vụ": formData.service_name || "",
+        "Loại xe": formData.vehicle_type || "",
+        "Hãng xe": formData.brand || "",
+        "Mẫu xe": formData.item || "",
+        "Ngày đặt": formData.booking_time || "",
+        "Giá dịch vụ": normalizeMoneyToNumber(formData.price),
+        "Phí khảo sát": normalizeMoneyToNumber(formData.survey_fee),
+        "Tiền di chuyển": normalizeMoneyToNumber(formData.transport_fee),
+        "Tổng tiền": normalizeMoneyToNumber(formData.total),
+        "Ghi chú": formData.message || "",
+        "Trạng thái thanh toán": "Unpaid",
+      };
+    }
+
+    function saveToGoogleSheet(data) {
+      if (typeof window.saveToGoogleSheet !== "function") {
+        return Promise.reject(new Error("driveUtil.js chưa được nạp."));
+      }
+
+      const sheetPayload = buildBookingSheetPayload(data);
+
+      return Promise.resolve(window.saveToGoogleSheet(sheetPayload)).then(
+        (result) => {
+          const isSuccess =
+            result && (result.status === "success" || result.success === true);
+
+          if (!isSuccess) {
+            const serverMessage =
+              (result && (result.error || result.message)) ||
+              "Gửi dữ liệu Google Sheet thất bại";
+            throw new Error(serverMessage);
+          }
+
+          return result;
+        },
+      );
+    }
+
     function handleConfirmSubmit() {
       const payload = collectBookingData();
       const originalText = confirmBtn.textContent;
 
-      if (!config.BOOKING_GOOGLE_SHEET_API) {
-        console.error("Chưa cấu hình BOOKING_GOOGLE_SHEET_API để lưu dữ liệu.");
-        utils.showToast?.(
-          "Chưa cấu hình hệ thống lưu dữ liệu đặt lịch.",
-          "error",
-        );
-        return;
-      }
-
       confirmBtn.disabled = true;
       confirmBtn.textContent = "Đang gửi...";
 
-      fetch(config.BOOKING_GOOGLE_SHEET_API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=UTF-8",
-        },
-        body: JSON.stringify(payload),
-      })
-        .then((response) => {
-          return response.text().then((raw) => {
-            const result = parseJsonSafe(raw);
-            if (!response.ok || !result || result.success !== true) {
-              const serverMessage =
-                (result && result.error) || raw || "Gửi dữ liệu thất bại";
-              throw new Error(`HTTP ${response.status}: ${serverMessage}`);
-            }
-          });
-        })
+      const tasks = [];
+
+      // Save to Google Sheet
+      tasks.push(saveToGoogleSheet(payload));
+
+      // Save to KRUD API
+      tasks.push(saveToKrudApi(payload));
+
+      Promise.all(tasks)
         .then(() => {
           bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
           hideBookingStep();
 
           utils.showToast?.(
-            `Đặt dịch vụ thành công! Mã đơn hàng của bạn: ${payload.order_code}`,
+            "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.",
             "success",
           );
 
           form.reset();
           clearConfirmMedia();
-          currentOrderCode = "";
-          delete form.dataset.orderCode;
+
+          if (typeof window.location.reload === "function" && !isEmbeddedMode) {
+             // Optional: reload or just show booking step
+          }
 
           if (!isEmbeddedMode) {
             showBookingStep();
@@ -368,9 +344,8 @@
         })
         .catch((err) => {
           console.error("Lỗi gửi dữ liệu sửa xe:", err);
-          console.error("Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.");
           utils.showToast?.(
-            "Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.",
+            err.message || "Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.",
             "error",
           );
         })

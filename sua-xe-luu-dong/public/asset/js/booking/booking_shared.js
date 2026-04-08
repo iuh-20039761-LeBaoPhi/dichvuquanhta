@@ -10,9 +10,7 @@
     config.BOOKING_MODAL_STYLE_ID || "bookingModalInlineStyles";
   config.BOOKING_MODAL_EMBED_FIX_STYLE_ID =
     config.BOOKING_MODAL_EMBED_FIX_STYLE_ID || "bookingModalEmbedFixStyles";
-  config.BOOKING_GOOGLE_SHEET_API =
-    config.BOOKING_GOOGLE_SHEET_API ||
-    "https://script.google.com/macros/s/AKfycbzGk9VOSebrVPRhBtXpOZyBpXaYZpzbvPD3hQ5oQ7uIGnn2HXBv2bBqJ6ouOpZ3g_kENA/exec";
+  config.BOOKING_KRUD_TABLE = config.BOOKING_KRUD_TABLE || "datlich_suaxe";
 
   if (typeof state.bookingModalLoadPromise === "undefined") {
     state.bookingModalLoadPromise = null;

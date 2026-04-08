@@ -1,5 +1,5 @@
 (function () {
-  var BOOKING_TABLE = "datlich_giatuinhanh";
+  var BOOKING_TABLE = "datlich_suaxe";
   var shared = window.SharedOrderUtils || {};
   var orderDisplayUtils = window.OrderDisplayUtils || {};
   var parseOrderIdFromDisplayCode =
@@ -144,30 +144,28 @@
   }
 
   function calculatePricing(order, distanceKm) {
-    var totalWeight = parseWeight(order);
-    var baseTransportFee = toNumber(order.tiendichuyen);
-    var serviceAmount = Math.round(toNumber(order.giadichvu));
+    var serviceAmount = toNumber(order.giadichvu);
+    var surveyFee = toNumber(order.phikhaosat);
 
-    var transportName = String(order.hinhthucnhangiao || "")
-      .toLowerCase()
-      .trim();
-    var isSelfPickup =
-      transportName.indexOf("tu lay") !== -1 ||
-      transportName.indexOf("t\u1ef1 l\u1ea5y") !== -1;
-    var extraTransportFee = totalWeight >= 50 && !isSelfPickup ? 5000 : 0;
-    var effectiveTransportFee = baseTransportFee + extraTransportFee;
+    // Formula from sua-xe-luu-dong
+    var perKmIncrease = 5000;
+    var minFee = 40000;
+    var maxFee = 60000;
+    var thresholdKm = 5;
 
-    var surcharge =
-      distanceKm > 0
-        ? (distanceKm * effectiveTransportFee * (totalWeight / 20)) / 4
-        : 0;
-    var shippingSurcharge = Math.round(surcharge);
+    var billableKm = Math.max(0, Math.ceil(distanceKm));
+    var transportFee = 0;
+
+    if (distanceKm < thresholdKm) {
+      transportFee = minFee + billableKm * perKmIncrease;
+    } else {
+      transportFee = maxFee + billableKm * perKmIncrease;
+    }
 
     return {
       distanceKm: distanceKm,
-      shippingSurcharge: shippingSurcharge,
-      totalAmount: serviceAmount + effectiveTransportFee + shippingSurcharge,
-      effectiveTransportFee: effectiveTransportFee,
+      transportFee: transportFee,
+      totalAmount: serviceAmount + surveyFee + transportFee,
     };
   }
 
@@ -175,15 +173,14 @@
     var supplierId = supplier.id;
     var payload = {
       ngaynhan: new Date().toISOString(),
-      phuphigiaonhan: pricing.shippingSurcharge,
       tongtien: pricing.totalAmount,
-      tiendichuyen: pricing.effectiveTransportFee,
-      khoangcachgiaonhan: pricing.distanceKm,
+      tiendichuyen: pricing.transportFee,
       idnhacungcap: supplierId,
       tennhacungcap: supplier.hovaten || supplier.hoten || "",
       sdt_ncc: supplier.sodienthoai || supplier.sdt || "",
       email_ncc: supplier.email || "",
       diachi_ncc: supplier.diachi || "",
+      khoangcachdichuyen: pricing.distanceKm,
     };
 
     if (typeof shared.acceptProviderOrder === "function") {
@@ -249,7 +246,7 @@
     return {
       supplierName: supplier.hovaten || supplier.hoten || "Nha cung cap",
       distanceKm: pricing.distanceKm,
-      surcharge: pricing.shippingSurcharge,
+      surcharge: 0,
       total: pricing.totalAmount,
     };
   }

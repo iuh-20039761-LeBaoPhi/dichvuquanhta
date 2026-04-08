@@ -1,5 +1,6 @@
 (function (window, document) {
-  var CUSTOMER_TABLE = "khachhang";
+  var USER_TABLE = "nguoidung";
+  var PROVIDER_SERVICE_ID = "11";
   var LOGIN_PAGE = "dang-nhap.html";
   var STANDALONE_BOOKING_PAGE = "dat-dich-vu.html";
   var bookingAccessState = window.BookingAccessState || {
@@ -45,37 +46,6 @@
     return [];
   }
 
-  function getSessionUser() {
-    return fetch("public/session-user.php?action=get", {
-      method: "GET",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then(function (response) {
-        return response
-          .json()
-          .catch(function () {
-            return null;
-          })
-          .then(function (result) {
-            if (!response.ok || !result || result.hasUser !== true) {
-              return null;
-            }
-
-            var user =
-              result.user && typeof result.user === "object"
-                ? result.user
-                : null;
-            return user;
-          });
-      })
-      .catch(function () {
-        return null;
-      });
-  }
-
   function queryByWhere(table, where) {
     if (typeof window.krudList !== "function") {
       return Promise.resolve(null);
@@ -112,7 +82,7 @@
         return tryPair(indexPhone + 1, 0);
       }
 
-      return queryByWhere(CUSTOMER_TABLE, [
+      return queryByWhere(USER_TABLE, [
         {
           field: phoneFields[indexPhone],
           operator: "=",
@@ -130,6 +100,24 @@
     }
 
     return tryPair(0, 0);
+  }
+
+  function containsServiceId(idDichVu, targetId) {
+    var target = String(targetId || "").trim();
+    if (!target) return false;
+
+    return (
+      String(idDichVu || "")
+        .split(",")
+        .map(function (value) {
+          return value.trim();
+        })
+        .indexOf(target) !== -1
+    );
+  }
+
+  function isProviderAccount(user) {
+    return containsServiceId(user && user.id_dichvu, PROVIDER_SERVICE_ID);
   }
 
   function toBookingUser(user) {
@@ -203,6 +191,13 @@
     return document.body.classList.contains("booking-standalone");
   }
 
+  function getBookingCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return "";
+  }
+
   function ensureStandaloneBookingAccess() {
     if (!isStandaloneBookingPage()) {
       return Promise.resolve();
@@ -212,40 +207,48 @@
     bookingAccessState.source = "none";
     setBookingInteractionDisabled(true);
 
-    return getSessionUser().then(function (sessionUser) {
-      if (sessionUser) {
-        fillBookingFormUser(sessionUser);
+    var creds = parseUrlCredentials();
+    var source = "url-credentials";
+
+    if (!creds.phone || !creds.password) {
+      creds.phone = getBookingCookie("dvqt_u");
+      creds.password = getBookingCookie("dvqt_p");
+      source = "cookie-credentials";
+    }
+
+    var hasCreds = Boolean(creds.phone && creds.password);
+
+    if (!hasCreds) {
+      window.location.href = LOGIN_PAGE;
+      return Promise.resolve();
+    }
+
+    return authenticateByUrlCredentials(creds.phone, creds.password).then(
+      function (row) {
+        if (!row) {
+          showStandaloneAccessError("Thông tin không đúng");
+          bookingAccessState.isAuthenticated = false;
+          bookingAccessState.source = "invalid-" + source;
+          setBookingInteractionDisabled(true);
+          return;
+        }
+
+        if (isProviderAccount(row)) {
+          showStandaloneAccessError(
+            "Trang này chỉ dành cho khách hàng đặt lịch.",
+          );
+          bookingAccessState.isAuthenticated = false;
+          bookingAccessState.source = "provider-not-allowed";
+          setBookingInteractionDisabled(true);
+          return;
+        }
+
+        fillBookingFormUser(row);
         bookingAccessState.isAuthenticated = true;
-        bookingAccessState.source = "session";
+        bookingAccessState.source = source + "-customer";
         setBookingInteractionDisabled(false);
-        return;
-      }
-
-      var creds = parseUrlCredentials();
-      var hasUrlCreds = Boolean(creds.phone && creds.password);
-
-      if (!hasUrlCreds) {
-        window.location.href = LOGIN_PAGE;
-        return;
-      }
-
-      return authenticateByUrlCredentials(creds.phone, creds.password).then(
-        function (row) {
-          if (!row) {
-            showStandaloneAccessError("Thông tin không đúng");
-            bookingAccessState.isAuthenticated = false;
-            bookingAccessState.source = "invalid-url-credentials";
-            setBookingInteractionDisabled(true);
-            return;
-          }
-
-          fillBookingFormUser(row);
-          bookingAccessState.isAuthenticated = true;
-          bookingAccessState.source = "url-credentials";
-          setBookingInteractionDisabled(false);
-        },
-      );
-    });
+      },
+    );
   }
 
   function bindServiceBookingRedirect() {
@@ -259,23 +262,13 @@
 
       event.preventDefault();
 
-      getSessionUser().then(function (sessionUser) {
-        if (sessionUser) {
-          window.location.href = STANDALONE_BOOKING_PAGE;
-          return;
-        }
+      var creds = parseUrlCredentials();
+      if (creds.phone && creds.password) {
+        window.location.href = buildStandaloneUrl(creds.phone, creds.password);
+        return;
+      }
 
-        var creds = parseUrlCredentials();
-        if (creds.phone && creds.password) {
-          window.location.href = buildStandaloneUrl(
-            creds.phone,
-            creds.password,
-          );
-          return;
-        }
-
-        window.location.href = LOGIN_PAGE;
-      });
+      window.location.href = LOGIN_PAGE;
     });
   }
 

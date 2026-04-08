@@ -80,9 +80,17 @@
     return Number(normalized || 0);
   }
 
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return "";
+  }
+
   utils.showToast = showToast;
   utils.getBookingTimeInput = getBookingTimeInput;
   utils.toDateTimeLocalNow = toDateTimeLocalNow;
   utils.fillBookingTimeNow = fillBookingTimeNow;
   utils.parseIntegerLike = parseIntegerLike;
+  utils.getCookie = getCookie;
 })(window);

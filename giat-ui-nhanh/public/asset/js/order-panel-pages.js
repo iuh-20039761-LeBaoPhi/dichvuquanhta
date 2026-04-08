@@ -3,12 +3,11 @@
 
   var PAGE_SIZE = 6;
   var BOOKING_TABLE = "datlich_giatuinhanh";
-  var CUSTOMER_TABLE = "khachhang";
-  var PROVIDER_TABLE = "nhacungcap_giatuinhanh";
-  var SESSION_ENDPOINT = "../public/session-user.php?action=get";
+  var USER_TABLE = "nguoidung";
+  var PROVIDER_SERVICE_ID = "11";
   var ADMIN_SESSION_ENDPOINT = "../public/session-admin.php?action=get";
-  var CUSTOMER_LOGIN_PAGE = "../dang-nhap.html";
-  var PROVIDER_LOGIN_PAGE = "../dang-nhap-nha-cung-cap.html";
+  var CUSTOMER_LOGIN_PAGE = "../../public/dang-nhap.html?service=giatuinhanh";
+  var PROVIDER_LOGIN_PAGE = "../../public/dang-nhap.html?service=giatuinhanh";
   var ADMIN_LOGIN_PAGE = "dang-nhap-admin.html";
   var PROVIDER_DASHBOARD_PAGE = "../nha-cung-cap.html";
   var shared = window.SharedOrderUtils || {};
@@ -68,6 +67,18 @@
       text !== "0000-00-00" &&
       text !== "0000-00-00 00:00:00"
     );
+  }
+
+  function normalizePhone(value) {
+    var phone = String(value || "")
+      .replace(/\s+/g, "")
+      .trim();
+
+    if (phone.indexOf("+84") === 0) return "0" + phone.slice(3);
+    if (phone.indexOf("84") === 0 && phone.length >= 11)
+      return "0" + phone.slice(2);
+
+    return phone;
   }
 
   function hasOrderLifecycleDates(row) {
@@ -439,6 +450,131 @@
     return "customer";
   }
 
+  function containsServiceId(idDichVu, targetId) {
+    var target = String(targetId || "").trim();
+    if (!target) return false;
+
+    return (
+      String(idDichVu || "")
+        .split(",")
+        .map(function (value) {
+          return value.trim();
+        })
+        .indexOf(target) !== -1
+    );
+  }
+
+  function isProviderUser(user) {
+    if (containsServiceId(user && user.id_dichvu, PROVIDER_SERVICE_ID)) {
+      return true;
+    }
+
+    return normalizeAccountType(user && user.account_type) === "provider";
+  }
+
+  function extractRows(result) {
+    if (Array.isArray(result)) return result;
+    if (result && Array.isArray(result.data)) return result.data;
+    if (result && Array.isArray(result.items)) return result.items;
+    if (result && Array.isArray(result.rows)) return result.rows;
+    if (result && Array.isArray(result.result)) return result.result;
+    return [];
+  }
+
+  function getCookie(name) {
+    if (shared && typeof shared.getCookie === "function") {
+      return shared.getCookie(name);
+    }
+    var cookieName = String(name || "").trim();
+    if (!cookieName) return "";
+    var cookiePrefix = cookieName + "=";
+    var entries = (document.cookie || "").split(";");
+    for (var i = 0; i < entries.length; i += 1) {
+      var entry = entries[i].trim();
+      if (entry.indexOf(cookiePrefix) !== 0) continue;
+      var rawValue = entry.slice(cookiePrefix.length);
+      try {
+        return decodeURIComponent(rawValue);
+      } catch (_error) {
+        return rawValue;
+      }
+    }
+    return "";
+  }
+
+  function mapAuthenticatedUser(row, phoneFallback) {
+    if (!row || typeof row !== "object") return null;
+
+    return {
+      id: row.id || row.user_id || row.makhachhang || "",
+      user_name: row.user_name || row.hovaten || row.ten || "",
+      user_tel: normalizePhone(
+        row.user_tel || row.sodienthoai || row.phone || phoneFallback,
+      ),
+      user_email: row.user_email || row.email || "",
+      id_dichvu: String(row.id_dichvu || "").trim(),
+      account_type: containsServiceId(row.id_dichvu, PROVIDER_SERVICE_ID)
+        ? "provider"
+        : "customer",
+      raw: row,
+    };
+  }
+
+  function querySingleUser(where) {
+    if (typeof window.krudList !== "function") {
+      return Promise.resolve(null);
+    }
+
+    return Promise.resolve(
+      window.krudList({
+        table: USER_TABLE,
+        where: where,
+        limit: 1,
+      }),
+    )
+      .then(function (result) {
+        var rows = extractRows(result);
+        return rows.length ? rows[0] : null;
+      })
+      .catch(function () {
+        return null;
+      });
+  }
+
+  function findUserByCredentials(phone, password) {
+    var normalizedPhone = normalizePhone(phone);
+    var phoneFields = ["sodienthoai", "user_tel", "phone", "sdt"];
+    var passwordFields = ["matkhau", "password", "user_password", "mat_khau"];
+
+    function tryPair(indexPhone, indexPassword) {
+      if (indexPhone >= phoneFields.length) {
+        return Promise.resolve(null);
+      }
+
+      if (indexPassword >= passwordFields.length) {
+        return tryPair(indexPhone + 1, 0);
+      }
+
+      return querySingleUser([
+        {
+          field: phoneFields[indexPhone],
+          operator: "=",
+          value: normalizedPhone,
+        },
+        {
+          field: passwordFields[indexPassword],
+          operator: "=",
+          value: password,
+        },
+      ]).then(function (row) {
+        if (row) return row;
+        return tryPair(indexPhone, indexPassword + 1);
+      });
+    }
+
+    return tryPair(0, 0);
+  }
+
   function mapDbStatusToPanel(status) {
     var value = String(status || "").toLowerCase();
     if (value === "cancel") return "canceled";
@@ -579,6 +715,8 @@
           row && row.khachhang && row.khachhang.avatar_kh,
           row && row.khachhang && row.khachhang.avatartenfile,
         ]),
+        maplat: row && (row.lat_kh || row.lat),
+        maplng: row && (row.lng_kh || row.lng),
       },
       provider: {
         id: hasAssignedProvider
@@ -636,6 +774,12 @@
               row && row.nhacungcap && row.nhacungcap.avatartenfile,
             ])
           : "",
+        maplat: hasAssignedProvider
+          ? (row && row.maplat_ncc) || (row.nhacungcap && row.nhacungcap.maplat)
+          : null,
+        maplng: hasAssignedProvider
+          ? (row && row.maplng_ncc) || (row.nhacungcap && row.nhacungcap.maplng)
+          : null,
       },
       raw: row || null,
       items: [
@@ -688,20 +832,24 @@
   }
 
   function getSessionUser() {
-    return fetch(SESSION_ENDPOINT, {
-      method: "GET",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then(function (response) {
-        if (!response.ok) return null;
-        return response.json().catch(function () {
-          return null;
-        });
-      })
-      .then(function (result) {
-        if (!result || result.hasUser !== true || !result.user) return null;
-        return result.user;
+    if (shared && typeof shared.getSessionUser === "function") {
+      return shared.getSessionUser().then(function (row) {
+        if (!row) return null;
+        return mapAuthenticatedUser(row, row.sodienthoai);
+      });
+    }
+
+    var phone = normalizePhone(getCookie("dvqt_u"));
+    var password = String(getCookie("dvqt_p") || "").trim();
+
+    if (!phone || !password || typeof window.krudList !== "function") {
+      return Promise.resolve(null);
+    }
+
+    return findUserByCredentials(phone, password)
+      .then(function (row) {
+        if (!row) return null;
+        return mapAuthenticatedUser(row, phone);
       })
       .catch(function () {
         return null;
@@ -830,8 +978,9 @@
 
     return Promise.resolve(
       shared.fetchAllOrders(BOOKING_TABLE, 500, 1, {
-        customerTable: CUSTOMER_TABLE,
-        providerTable: PROVIDER_TABLE,
+        userTable: USER_TABLE,
+        customerTable: USER_TABLE,
+        providerTable: USER_TABLE,
       }),
     )
       .then(function (rows) {
@@ -901,8 +1050,9 @@
 
     return Promise.resolve(
       shared.fetchOrdersByPhone(BOOKING_TABLE, user && user.user_tel, 10, {
-        customerTable: CUSTOMER_TABLE,
-        providerTable: PROVIDER_TABLE,
+        userTable: USER_TABLE,
+        customerTable: USER_TABLE,
+        providerTable: USER_TABLE,
       }),
     )
       .then(function (rows) {
@@ -927,8 +1077,9 @@
 
     return Promise.resolve(
       shared.fetchAllOrders(BOOKING_TABLE, 500, 1, {
-        customerTable: CUSTOMER_TABLE,
-        providerTable: PROVIDER_TABLE,
+        userTable: USER_TABLE,
+        customerTable: USER_TABLE,
+        providerTable: USER_TABLE,
       }),
     )
       .then(function (rows) {
@@ -2258,12 +2409,16 @@
     }
 
     function resolveReviewMediaUrl(path) {
-      var value = String(path || "").trim().replace(/\\/g, "/");
+      var value = String(path || "")
+        .trim()
+        .replace(/\\/g, "/");
       if (!value) return "";
       if (/^(https?:|data:|blob:|\/)/i.test(value)) return value;
       if (value.indexOf("./") === 0 || value.indexOf("../") === 0) return value;
       if (value.indexOf("public/") === 0) return "../" + value;
-      return "../public/asset/image/upload/danhgia/" + value.replace(/^\/+/, "");
+      return (
+        "../public/asset/image/upload/danhgia/" + value.replace(/^\/+/, "")
+      );
     }
 
     function renderReviewMedia(actor, files) {
@@ -2412,11 +2567,13 @@
         method: "POST",
         credentials: "same-origin",
         body: formData,
-      })
-        .then(function (response) {
-          return response.json().catch(function () {
+      }).then(function (response) {
+        return response
+          .json()
+          .catch(function () {
             return null;
-          }).then(function (result) {
+          })
+          .then(function (result) {
             if (!response.ok || !result || result.success !== true) {
               throw new Error(
                 (result && result.message) ||
@@ -2425,7 +2582,7 @@
             }
             return dedupeMedia(result.files || []);
           });
-        });
+      });
     }
 
     function submitReview(actor) {
@@ -2445,7 +2602,9 @@
 
       var current = resolveReview(actor);
       if (hasReviewData(current)) {
-        window.alert("Danh gia nay da duoc gui truoc do va khong the chinh sua.");
+        window.alert(
+          "Danh gia nay da duoc gui truoc do va khong the chinh sua.",
+        );
         return;
       }
 
@@ -2552,7 +2711,7 @@
         return;
       }
 
-      if (normalizeAccountType(user.account_type) === "provider") {
+      if (isProviderUser(user)) {
         window.location.href = PROVIDER_DASHBOARD_PAGE;
         return;
       }
@@ -2567,7 +2726,7 @@
         return;
       }
 
-      if (normalizeAccountType(user.account_type) !== "provider") {
+      if (!isProviderUser(user)) {
         window.location.href = PROVIDER_LOGIN_PAGE;
         return;
       }
