@@ -65,6 +65,8 @@
       .service-work-box { border: 2px solid #4f9ddb; border-radius: 10px; padding: 10px; margin-bottom: 16px; background: #fafdff; }
       .service-work-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
       #serviceSelector { border-color: #b3c0ca; background: #f1f1f1; }
+      #serviceSelector option { white-space: normal; }
+      #serviceSelector.service-selector-open { height: auto; }
       #serviceJobs .list-group { gap: 2px; }
       #serviceJobs .list-group-item { border: 0; background: transparent; padding: 4px 0; border-radius: 0; }
       #serviceJobs .list-group-item-action:hover, #serviceJobs .list-group-item-action:focus { background: transparent; }
@@ -123,9 +125,40 @@
         .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
         .navbar-collapse .btn { width: 80%; margin-top: 10px; }
       }
-
+      
       @media (max-width: 575.98px) {
         .review-label { width: 110px; min-width: 110px; }
+
+        .service-work-box { overflow: visible; }
+        #serviceSelector {
+          min-height: 44px;
+          font-size: 0.98rem;
+        }
+        #serviceSelector.service-selector-open {
+          position: relative;
+          z-index: 30;
+          min-height: 176px;
+          padding: 6px;
+          border: 2px solid #6aa7d8;
+          border-radius: 12px;
+          /* background: #f8fcff; */
+        }
+        #serviceSelector.service-selector-open option {
+          padding: 10px 12px;
+          margin-bottom: 6px;
+          border: 1px solid #b9d7ef;
+          border-radius: 8px;
+          color: #050505;
+        }
+        #serviceSelector.service-selector-open option:last-child {
+          margin-bottom: 0;
+        }
+        #serviceSelector.service-selector-open option:checked {
+          /* background: #d8edff linear-gradient(0deg, #d8edff, #d8edff); */
+          border-color: #6ca8d9;
+          color: #000000;
+          font-weight: 700;
+        }
 
         .attachment-preview-split { grid-template-columns: 1fr; }
         .attachment-pane + .attachment-pane {
@@ -272,9 +305,9 @@
                         <div class="col-md-6">
                           <label class="form-label fw-bold" for="serviceLevel">Mức độ vệ sinh</label>
                           <select id="serviceLevel" class="form-select">
-                            <option value="light">Nhẹ (light)</option>
-                            <option value="standard" selected>Tiêu chuẩn (standard)</option>
-                            <option value="deep">Sâu (deep)</option>
+                            <option value="light">Nhẹ</option>
+                            <option value="standard" selected>Tiêu chuẩn</option>
+                            <option value="deep">Sâu</option>
                           </select>
                         </div>
                       </div>
