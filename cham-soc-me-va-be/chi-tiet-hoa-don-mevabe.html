@@ -1587,7 +1587,7 @@
 			const TABLE_CUSTOMER = 'khachhang';
 			const TABLE_STAFF = 'nhacungcap_mevabe';
 			const TABLE_ORDER = 'datlich_mevabe';
-			const TABLE_HISTORY = 'lich_su_lam_viec';
+			const TABLE_HISTORY = 'lich_su_lam_viec_mvb';
 			const REVIEW_UPLOAD_API = 'upload-review-media.php';
 
 			const app = {
@@ -1598,7 +1598,7 @@
 				$nhacungcap_mevabe: [],
 				$datlich_mevabe: null,
 				stateTimer: null,
-				// id của record lich_su_lam_viec đang mở trong ngày (sau khi nhấn btnStart)
+				// id của record lich_su_lam_viec_mvb đang mở trong ngày (sau khi nhấn btnStart)
 				currentWorkLogId: null
 			};
 
@@ -2303,7 +2303,7 @@
 				await reloadOrder();
 			}
 
-			// handleStart: bắt đầu làm trong ngày - insert mới vào lich_su_lam_viec
+			// handleStart: bắt đầu làm trong ngày - insert mới vào lich_su_lam_viec_mvb
 			async function handleStart() {
 				const idDv = app.$datlich_mevabe.id;
 				const todayStr = (() => {

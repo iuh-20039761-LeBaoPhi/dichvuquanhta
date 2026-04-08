@@ -2189,18 +2189,18 @@
         // Chuc nang: xu ly nghiep vu cho mapBookingDataForDatabase.
         function mapBookingDataForDatabase(data) {
           var payload = {
-            hovaten: (data.name || '').trim(),
-            sodienthoai: (data.phone || '').trim(),
-            email: (data.email || '').trim(),
-            diachi: (data.address || '').trim(),
+            tenkhachhang: (data.name || '').trim(),
+            sdtkhachhang: (data.phone || '').trim(),
+            emailkhachhang: (data.email || '').trim(),
+            diachikhachhang: (data.address || '').trim(),
             dich_vu: data.service || '',
             loai_noi_don: data.serviceLoaiLabel || data.serviceLoai || '',
             goi_dich_vu: data.package || 'Không chọn gói',
             cong_viec: data.jobs || '',
-            ngay_bat_dau: data.startDate || '',
-            ngay_ket_thuc: data.endDate || '',
-            gio_bat_dau: data.startTime || '',
-            gio_ket_thuc: data.endTime || '',
+            ngay_bat_dau_kehoach: data.startDate || '',
+            ngay_ket_thuc_kehoach: data.endDate || '',
+            gio_bat_dau_kehoach: data.startTime || '',
+            gio_ket_thuc_kehoach: data.endTime || '',
             tong_tien: normalizeMoneyToNumber(data.price),
             yeu_cau_khac: data.extraRequest || '',
             ghi_chu: (data.note || '').trim()
