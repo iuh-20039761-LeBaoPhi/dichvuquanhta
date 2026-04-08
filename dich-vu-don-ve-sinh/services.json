@@ -2,18 +2,18 @@
   {
     "id": 1,
     "loai": ["nhà", "trọ", "căn hộ", "homestay"],
-    "name": "Tổng Vệ Sinh Nhà Ở Toàn Diện",
+    "name": "Vệ Sinh Nhà Ở.",
     "image": "assets/giup-viec-quet-nha.jpg",
     "alt": "Dich vu tong ve sinh nha o can ho chung cu nha pho",
-    "description": "Gói vệ sinh chuyên sâu từ A-Z, tẩy sạch các vết bẩn lâu ngày.",
+    "description": "ạch sâu từng góc – Không gian sống thoáng mát.",
     "includes": [
-      "Quét mạng nhện trần nhà, lau quạt trần, đèn và miệng gió điều hòa phòng khách",
-      "Lau kính cửa sổ, cửa lùa, khung nhôm và tay nắm cửa ra vào",
-      "Tổng vệ sinh khu bếp gia đình: lau tủ bếp, bếp gas/điện, máy hút mùi và bồn rửa",
-      "Cọ rửa nhà tắm hằng ngày sử dụng: bồn cầu, lavabo, vòi sen, gương và sàn chống trơn",
-      "Vệ sinh phòng ngủ: hút bụi nệm, lau đầu giường, thay ga gối và gấp chăn gọn",
-      "Lau sàn toàn bộ nhà/trọ/căn hộ, làm sạch chân tường và các góc khuất dưới gầm giường",
-      "Khử mùi khu vực sinh hoạt và ban công để nhà sẵn sàng đón khách ở homestay"
+      "Quét mạng nhện, lau trần, quạt, đèn, miệng gió điều hòa.",
+      "Lau kính cửa sổ, cửa lùa, khung nhôm, tay nắm cửa.",
+      "Vệ sinh khu bếp: tủ bếp, bếp, máy hút mùi, bồn rửa.",
+      "Cọ rửa nhà tắm: bồn cầu, lavabo, vòi sen, gương.",
+      "Vệ sinh phòng ngủ: hút bụi nệm, thay ga gối.",
+      "Lau sàn toàn bộ nhà, làm sạch góc khuất, gầm giường.",
+      "Khử mùi toàn bộ không gian."
     ],
     "time_slots": [
       { "value": "morning", "label": "08:00 - 11:00" },
@@ -38,17 +38,19 @@
   {
     "id": 2,
     "loai": ["công trình xây dựng", "sự kiện", "hội trợ"],
-    "name": "Vệ Sinh Nhà Sau Xây Dựng & Sửa Chữa",
+    "name": "Vệ Sinh Sau Xây Dựng - Sự Kiện",
     "image": "assets/lau-kinh-sau-xay-dung.jpg",
     "alt": "Dich vu ve sinh nha moi xay xong hoac vua sua chua",
-    "description": "Xử lý triệt để bụi xi măng, sơn, keo.",
+    "description": "Xử lý triệt để bụi xi măng – Sơn – Keo | Bàn giao sạch ngay.",
     "includes": [
-      "Thu gom xà bần, bao xi măng, nilon che phủ và phân loại rác tại công trình sau thi công",
-      "Tẩy vết sơn, keo silicon, băng dính trên kính, sàn gạch và khung cửa nhôm",
-      "Hút bụi mịn bằng máy công nghiệp ở trần thạch cao, khe cửa, góc tường và bậc cầu thang",
-      "Chà sàn diện tích lớn sau xây dựng để loại bỏ lớp bụi vôi, bột bả và vết bẩn cứng đầu",
-      "Dọn vệ sinh trước và sau sự kiện/hội trợ: quầy trưng bày, lối đi, khu sân khấu, khu check-in",
-      "Khử mùi sơn mới, mùi vật liệu và vệ sinh nhà vệ sinh tạm để bàn giao mặt bằng sạch"
+      "Thu gom xà bần, bao xi măng, nilon che phủ và phân loại rác sau thi công.",
+      "Tẩy vết sơn, keo silicon, băng dính trên kính, sàn gạch và khung cửa nhôm.",
+      "Hút bụi mịn bằng máy công nghiệp: trần thạch cao, khe cửa, góc tường, cầu thang.",
+      "Chà sàn diện tích lớn, loại bỏ bụi vôi, bột bả và vết bẩn cứng đầu.",
+      "Lau kính, khung cửa, lan can, khu vực hoàn thiện.",
+      "Tổng vệ sinh toàn bộ công trình trước khi bàn giao.",
+      "Dọn vệ sinh trước & sau sự kiện/hội chợ: quầy trưng bày, lối đi, sân khấu, khu check-in.",
+      "Khử mùi sơn mới, mùi vật liệu; vệ sinh khu vệ sinh tạm."
     ],
     "time_slots": [
       { "value": "morning", "label": "08:00 - 12:00" },
@@ -72,17 +74,19 @@
   {
     "id": 3,
     "loai": ["văn phòng", "công ty", "cửa hàng", "siêu thị"],
-    "name": "Vệ Sinh Văn Phòng & Cửa Hàng",
+    "name": "Vệ Sinh Văn Phòng - Cửa Hàng",
     "image": "assets/hut-bui-tham-van-phong.jpg",
     "alt": "Dich vu don dep van phong cong ty cua hang kinh doanh",
-    "description": "Dọn dẹp văn phòng chuyên nghiệp.",
+    "description": "Dọn dẹp chuyên nghiệp – Không gian luôn gọn gàng, sạch sẽ.",
     "includes": [
-      "Lau bàn làm việc, ghế, tủ hồ sơ, màn hình máy tính và điện thoại bàn sau giờ làm",
-      "Vệ sinh quầy lễ tân, phòng họp, tay nắm cửa và nút bấm thang máy ở khu văn phòng",
-      "Lau kính mặt tiền cửa hàng/siêu thị, biển hiệu và kệ trưng bày sản phẩm",
-      "Thu gom rác theo ca, thay túi rác mới và vệ sinh khu tập kết rác nội bộ",
-      "Làm sạch khu pantry và nhà vệ sinh nhân viên: bồn rửa, bồn cầu, sàn, gương, vòi nước",
-      "Hút bụi thảm lối đi, lau sàn khu bán hàng và xử lý nhanh vết đổ nước để tránh trơn trượt"
+      "Lau bàn làm việc, ghế, tủ hồ sơ, màn hình máy tính và điện thoại bàn (thực hiện sau giờ làm).",
+      "Vệ sinh quầy lễ tân, phòng họp, tay nắm cửa, nút bấm thang máy khu văn phòng.",
+      "Lau kính mặt tiền cửa hàng/siêu thị, biển hiệu, kệ trưng bày sản phẩm.",
+      "Thu gom rác theo ca, thay túi rác mới, vệ sinh khu tập kết rác nội bộ.",
+      "Làm sạch khu pantry và nhà vệ sinh nhân viên: bồn rửa, bồn cầu, sàn, gương, vòi nước.",
+      "Hút bụi thảm lối đi, lau sàn khu làm việc và khu bán hàng.",
+      "Xử lý nhanh các vết bẩn, vết đổ nước để đảm bảo an toàn, tránh trơn trượt.",
+      "Khử mùi toàn bộ không gian, giữ môi trường làm việc luôn dễ chịu."
     ],
     "time_slots": [
       { "value": "morning", "label": "07:00 - 15:00" },
@@ -107,17 +111,18 @@
   {
     "id": 4,
     "loai": ["kho bãi", "sân vườn", "công viên", "khu chăn nuôi"],
-    "name": "Dọn Dẹp Căn Hộ Dịch Vụ & Homestay",
+    "name": "Dọn Vệ Sinh Khỗ Bãi-Sân Vườn",
     "image": "assets/ve-sinh-nha-tam-homestay.jpg",
     "alt": "Dich vu don dep airbnb homestay can ho cho thue",
-    "description": "Dọn phòng nhanh chuẩn khách sạn.",
+    "description": "Diện tích lớn vẫn sạch gọn – Tối ưu vận hành.",
     "includes": [
-      "Quét dọn kho bãi: gom bụi, màng bọc nilon, dây đai và sắp xếp lối đi an toàn cho xe nâng",
-      "Vệ sinh kệ hàng, pallet, cửa cuốn và khu xuất nhập hàng theo lịch vận hành",
-      "Thu gom lá cây, cắt cỏ, làm sạch lối đi sân vườn và khu vực ghế đá công viên",
-      "Rửa nền sân bê tông, bồn cây, khu vui chơi ngoài trời bằng máy xịt áp lực",
-      "Khử mùi và cọ rửa khu chăn nuôi: máng ăn, máng uống, nền chuồng và rãnh thoát nước",
-      "Phun khử khuẩn khu vực tiếp xúc thường xuyên để hạn chế ruồi muỗi và mùi hôi"
+      "Quét dọn, thu gom rác khu vực kho, nhà xưởng.",
+      "Lau sàn, xử lý bụi bẩn công nghiệp, dầu mỡ nhẹ.",
+      "Sắp xếp, làm sạch lối đi, khu vực lưu trữ hàng hóa.",
+      "Vệ sinh khu vực xung quanh kho, bãi xe.",
+      "Dọn dẹp sân vườn: lá cây, rác thải, cỏ dại.",
+      "Xịt rửa sân, tường, lối đi bằng máy áp lực cao.",
+      "Khử mùi khu vực rộng, cải thiện môi trường làm việc."
     ],
     "time_slots": [
       { "value": "morning", "label": "06:00 - 18:00" },
