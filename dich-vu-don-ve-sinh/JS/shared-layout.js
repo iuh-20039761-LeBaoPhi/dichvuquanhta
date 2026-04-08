@@ -69,43 +69,13 @@
 
   function applyActiveNav() {
     var navKey = (document.body && document.body.getAttribute('data-nav-active')) || '';
-
-    // Auto detect active menu from current path when page does not set data-nav-active.
-    if (!navKey) {
-      var currentPath = window.location.pathname || '';
-      var currentFile = currentPath.split('/').pop().toLowerCase() || 'index.html';
-
-      if (currentFile === 'dat-lich.html') {
-        navKey = 'services';
-      } else {
-        var navLinks = document.querySelectorAll('[data-nav-key]');
-        navLinks.forEach(function (link) {
-          if (navKey) return;
-          var href = link.getAttribute('href') || '';
-          if (!href || href.charAt(0) === '#') return;
-
-          var hrefFile = href.split('?')[0].split('#')[0].split('/').pop().toLowerCase();
-          if (hrefFile && hrefFile === currentFile) {
-            navKey = link.getAttribute('data-nav-key') || '';
-          }
-        });
-      }
-    }
-
     if (!navKey) return;
-
-    var allNavLinks = document.querySelectorAll('[data-nav-key]');
-    allNavLinks.forEach(function (link) {
-      link.classList.remove('active');
-      link.style.color = '';
-      link.style.fontSize = '';
-    });
 
     var activeLink = document.querySelector('[data-nav-key="' + navKey + '"]');
     if (!activeLink) return;
 
     activeLink.classList.add('active');
-    activeLink.style.color = '#007bff';
+    activeLink.style.color = '#f06292';
 
     var activeStyle = (document.body && document.body.getAttribute('data-nav-active-style')) || 'large';
     if (activeStyle === 'large') {
