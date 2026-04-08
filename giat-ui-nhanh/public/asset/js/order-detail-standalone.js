@@ -96,8 +96,79 @@
   }
 
   function toNumber(value) {
-    var num = Number(value);
-    return Number.isFinite(num) ? num : 0;
+    if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+    var text = String(value || "")
+      .replace(/[^\d,-.]/g, "")
+      .replace(/\.(?=\d{3}(\D|$))/g, "")
+      .replace(/,/g, ".");
+    var parsed = Number(text);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function parseWeight(order) {
+    var fromWeight = toNumber(order.khoiluong || order.weight || order.cannang);
+    if (fromWeight > 0) return fromWeight;
+
+    var fromQuantity = toNumber(order.soluong || order.quantity);
+    return fromQuantity > 0 ? fromQuantity : 1;
+  }
+
+  async function getDistance(lat1, lon1, lat2, lon2) {
+    var url =
+      "https://router.project-osrm.org/route/v1/driving/" +
+      lon1 +
+      "," +
+      lat1 +
+      ";" +
+      lon2 +
+      "," +
+      lat2 +
+      "?overview=false";
+
+    var res = await fetch(url);
+    if (!res.ok) {
+      var errorDetail = "";
+      try {
+        var errBody = await res.json();
+        errorDetail = errBody.message || errBody.code || "";
+      } catch (e) {}
+      throw new Error("Không thể tính khoảng cách (Status: " + res.status + " " + errorDetail + "). Tọa độ: NS[" + lat1 + "," + lon1 + "] -> KH[" + lat2 + "," + lon2 + "]");
+    }
+
+    var data = await res.json();
+    if (!data.routes || !data.routes.length) {
+      throw new Error("Không tính được khoảng cách giữa hai địa điểm.");
+    }
+
+    return Number((data.routes[0].distance / 1000).toFixed(2));
+  }
+
+  function calculatePricing(order, distanceKm) {
+    var totalWeight = parseWeight(order);
+    var baseTransportFee = toNumber(order.tiendichuyen);
+    var serviceAmount = Math.round(toNumber(order.giadichvu));
+
+    var transportName = String(order.hinhthucnhangiao || "")
+      .toLowerCase()
+      .trim();
+    var isSelfPickup =
+      transportName.indexOf("tu lay") !== -1 ||
+      transportName.indexOf("t\u1ef1 l\u1ea5y") !== -1;
+    var extraTransportFee = totalWeight >= 50 && !isSelfPickup ? 5000 : 0;
+    var effectiveTransportFee = baseTransportFee + extraTransportFee;
+
+    var surcharge =
+      distanceKm > 0
+        ? (distanceKm * effectiveTransportFee * (totalWeight / 20)) / 4
+        : 0;
+    var shippingSurcharge = Math.round(surcharge);
+
+    return {
+      distanceKm: distanceKm,
+      shippingSurcharge: shippingSurcharge,
+      totalAmount: serviceAmount + effectiveTransportFee + shippingSurcharge,
+      effectiveTransportFee: effectiveTransportFee,
+    };
   }
 
   function hasDateValue(value) {
@@ -878,6 +949,8 @@
       ),
       email: String(user.email || user.user_email || "").trim(),
       address: String(user.diachi || user.address || "").trim(),
+      lat: user.maplat || user.lat,
+      lng: user.maplng || user.lng || user.long,
     };
   }
 
@@ -1645,7 +1718,7 @@
             throw new Error("Không xác định được mã hóa đơn để cập nhật.");
           }
 
-          await updateOrderRow(state.orderRaw.id, payloadFactory());
+          await updateOrderRow(state.orderRaw.id, await payloadFactory());
           await loadAndRenderOrder();
         } catch (error) {
           showActionAlert(
@@ -1662,7 +1735,36 @@
       if (canReceive) {
         var receiveBtn = makeButton("Nhận đơn", "btn btn-outline-primary");
         receiveBtn.addEventListener("click", function () {
-          runProviderAction(receiveBtn, "Đang nhận...", function () {
+          runProviderAction(receiveBtn, "Đang nhận...", async function () {
+            var order = state.orderRaw || {};
+            var supplierLat = toNumber(providerIdentity.lat);
+            var supplierLng = toNumber(providerIdentity.lng);
+            var customerLat = toNumber(order.lat_kh);
+            var customerLng = toNumber(order.lng_kh);
+
+            if (!supplierLat || !supplierLng || supplierLat <= 0 || supplierLng <= 0) {
+              throw new Error(
+                "Thiếu tọa độ nhà cung cấp hợp lệ (maplat/maplng). Hiện tại: " +
+                  supplierLat +
+                  "," +
+                  supplierLng,
+              );
+            }
+            if (!customerLat || !customerLng || customerLat <= 0 || customerLng <= 0) {
+              throw new Error(
+                "Hệ thống chưa có tọa độ vị trí của khách hàng này (lat_kh/lng_kh). Vui lòng yêu cầu khách hàng cập nhật địa chỉ hoặc nhập tay.",
+              );
+            }
+
+            var distanceKm = await getDistance(
+              supplierLat,
+              supplierLng,
+              customerLat,
+              customerLng,
+            );
+
+            var pricing = calculatePricing(order, distanceKm);
+
             return {
               idnhacungcap: providerIdentity.id || "",
               tennhacungcap: providerIdentity.name || "",
@@ -1670,6 +1772,10 @@
               email_ncc: providerIdentity.email || "",
               diachi_ncc: providerIdentity.address || "",
               ngaynhan: new Date().toISOString(),
+              phuphigiaonhan: pricing.shippingSurcharge,
+              tongtien: pricing.totalAmount,
+              tiendichuyen: pricing.effectiveTransportFee,
+              khoangcachgiaonhan: pricing.distanceKm,
             };
           });
         });
