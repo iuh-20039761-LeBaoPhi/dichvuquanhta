@@ -324,8 +324,9 @@
         <h1>Test danh sach bang KRUD</h1>
         <p>
           Trang nay dung de kiem tra nhanh du lieu dang luu trong bang
-          <strong>dich_vu_chuyen_don_dat_lich</strong>. Du lieu duoc doc truc tiep
-          tu KRUD, khong qua localStorage.
+          <strong>dich_vu_chuyen_don_dat_lich</strong> va
+          <strong>nguoidung</strong>. Du lieu duoc doc truc tiep tu KRUD, khong
+          qua localStorage.
         </p>
       </section>
 
@@ -397,11 +398,44 @@
           </table>
         </div>
       </section>
+
+      <section class="table-wrap">
+        <div class="table-head">
+          <div>
+            <h2>Bang nguoidung</h2>
+            <div class="hint">
+              Dung de doi chieu nhanh tai khoan khach hang va nha cung cap dang
+              luu tren KRUD.
+            </div>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Vai tro</th>
+                <th>Ho so</th>
+                <th>Dang nhap</th>
+                <th>Dich vu</th>
+                <th>Thoi gian</th>
+                <th>Raw</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody">
+              <tr>
+                <td colspan="7" class="empty">Chua tai du lieu.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
 
     <script>
       (function () {
         const TABLE_NAME = "dich_vu_chuyen_don_dat_lich";
+        const USER_TABLE_NAME = "nguoidung";
         const core = window.FastGoCore || {};
 
         const pageInput = document.getElementById("pageInput");
@@ -409,6 +443,7 @@
         const loadBtn = document.getElementById("loadBtn");
         const resetBtn = document.getElementById("resetBtn");
         const tableBody = document.getElementById("tableBody");
+        const userTableBody = document.getElementById("userTableBody");
         const statusBox = document.getElementById("statusBox");
         const totalOrders = document.getElementById("totalOrders");
         const pendingOrders = document.getElementById("pendingOrders");
@@ -584,6 +619,62 @@
             .join("");
         }
 
+        function getRoleLabel(row) {
+          const role = normalizeText(row.role || row.vai_tro || "").toLowerCase();
+          if (role === "nha-cung-cap" || role === "doi-tac") {
+            return { label: "Nha cung cap", className: "pill processing" };
+          }
+          return { label: "Khach hang", className: "pill confirmed" };
+        }
+
+        function getServiceIdsText(row) {
+          return normalizeText(row.id_dichvu || row.id_dich_vu || row.service_ids || "--");
+        }
+
+        function renderUserRows(rows) {
+          if (!rows.length) {
+            userTableBody.innerHTML =
+              '<tr><td colspan="7" class="empty">Khong co du lieu trong bang nguoidung.</td></tr>';
+            return;
+          }
+
+          userTableBody.innerHTML = rows
+            .map((row) => {
+              const roleMeta = getRoleLabel(row);
+              const rawJson = escapeHtml(JSON.stringify(row, null, 2));
+              return `
+                <tr>
+                  <td class="mono">${escapeHtml(row.id || "--")}</td>
+                  <td><span class="${roleMeta.className}">${escapeHtml(roleMeta.label)}</span></td>
+                  <td>
+                    <strong>${escapeHtml(row.full_name || row.hovaten || row.ho_ten || "--")}</strong>
+                    <div>${escapeHtml(row.contact_person || row.nguoi_phu_trach || "--")}</div>
+                  </td>
+                  <td>
+                    <div><strong>Email:</strong> ${escapeHtml(row.email || "--")}</div>
+                    <div><strong>SDT:</strong> ${escapeHtml(row.phone || row.sodienthoai || row.so_dien_thoai || "--")}</div>
+                    <div><strong>Mat khau:</strong> ${escapeHtml(row.password || row.matkhau || row.mat_khau || "--")}</div>
+                  </td>
+                  <td>
+                    <div><strong>ID dich vu:</strong> ${escapeHtml(getServiceIdsText(row))}</div>
+                    <div><strong>Trang thai:</strong> ${escapeHtml(row.trangthai || row.status || "--")}</div>
+                  </td>
+                  <td>
+                    <div><strong>Tao:</strong> ${escapeHtml(formatDateTime(row.created_at || row.created_date || ""))}</div>
+                    <div><strong>Cap nhat:</strong> ${escapeHtml(formatDateTime(row.updated_at || row.updated_date || ""))}</div>
+                  </td>
+                  <td>
+                    <details>
+                      <summary>Xem JSON</summary>
+                      <pre>${rawJson}</pre>
+                    </details>
+                  </td>
+                </tr>
+              `;
+            })
+            .join("");
+        }
+
         function setStatus(message, type) {
           statusBox.textContent = message;
           statusBox.className = type ? "status " + type : "status";
@@ -603,21 +694,40 @@
           setStatus("Dang tai du lieu tu bang " + TABLE_NAME + "...", "info");
 
           try {
-            const result = await Promise.resolve(
-              listFn({
-                table: TABLE_NAME,
-                page,
-                limit,
-              }),
-            );
-            const rows = extractRows(result).sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
+            const [orderResult, userResult] = await Promise.all([
+              Promise.resolve(
+                listFn({
+                  table: TABLE_NAME,
+                  page,
+                  limit,
+                }),
+              ),
+              Promise.resolve(
+                listFn({
+                  table: USER_TABLE_NAME,
+                  page,
+                  limit,
+                }),
+              ),
+            ]);
+            const rows = extractRows(orderResult).sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
+            const userRows = extractRows(userResult).sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
             renderSummary(rows);
             renderRows(rows);
-            setStatus("Tai thanh cong " + rows.length + " dong du lieu tu KRUD.", "success");
+            renderUserRows(userRows);
+            setStatus(
+              "Tai thanh cong " +
+                rows.length +
+                " yeu cau va " +
+                userRows.length +
+                " tai khoan tu KRUD.",
+              "success",
+            );
           } catch (error) {
             console.error(error);
             renderSummary([]);
             renderRows([]);
+            renderUserRows([]);
             setStatus(
               (error && error.message) || "Khong the tai danh sach tu KRUD.",
               "error",

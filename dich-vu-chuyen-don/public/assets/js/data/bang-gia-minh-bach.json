@@ -8,6 +8,7 @@
       "phu_hop_khi": "Phù hợp khi bạn cần xe, nhân công, đóng gói, tháo lắp và sắp xếp lại tại nhà mới.",
       "phan_co_ban": ["Loại xe", "Quãng đường di chuyển", "Phí tối thiểu"],
       "phan_phat_sinh": [
+        "Khảo sát trước",
         "Đóng gói",
         "Tháo lắp",
         "Đồ cồng kềnh / dễ vỡ",
@@ -17,7 +18,7 @@
       ],
       "nen_khao_sat_khi": "Có nhiều tầng, hẻm nhỏ, đồ dễ vỡ, đồ giá trị cao hoặc cần tháo lắp kỹ thuật.",
       "co_the_dat_lich_luon_khi": "Bạn đã rõ loại xe cần dùng, địa chỉ hai đầu, số tầng và không có hạng mục đặc biệt ngoài gói cơ bản.",
-      "tom_tat_tong_chi_phi": "Tổng tiền = max(Phí tối thiểu, Số km di chuyển x Giá mỗi km theo loại xe x Hệ số đường dài) + Đóng gói, tháo lắp và các phụ phí nếu có."
+      "tom_tat_tong_chi_phi": "Tổng tiền = max(Phí tối thiểu, Số km di chuyển x Giá mỗi km theo loại xe x Hệ số đường dài) + Khảo sát trước, đóng gói, tháo lắp và các phụ phí nếu có."
     },
     "bang_gia": {
       "loai_xe": [
@@ -51,6 +52,12 @@
       ],
       "phu_phi": {
         "checkbox": [
+          {
+            "slug": "khao_sat_truoc",
+            "ten": "Khảo sát trước khi triển khai",
+            "don_gia": 150000,
+            "nguon_hien_thi_slug": "khao_sat_truoc"
+          },
           {
             "slug": "dong_goi_do_dac",
             "ten": "Đóng gói đồ đạc",
@@ -114,6 +121,15 @@
         "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
       },
       {
+        "slug": "khao_sat_truoc",
+        "ten": "Khảo sát trước khi triển khai",
+        "khoang_gia": "150.000",
+        "don_vi": "lượt",
+        "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
+        "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
+        "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
+      },
+      {
         "slug": "dong_goi_do_dac",
         "ten": "Đóng gói đồ đạc",
         "khoang_gia": "180.000",
@@ -160,6 +176,7 @@
       "phu_hop_khi": "Phù hợp khi bạn cần di dời có kế hoạch, kiểm soát tài liệu và giữ nhịp vận hành ổn định.",
       "phan_co_ban": ["Loại xe", "Quãng đường di chuyển", "Phí tối thiểu"],
       "phan_phat_sinh": [
+        "Khảo sát trước",
         "Đóng gói hồ sơ",
         "Thiết bị IT",
         "Tháo lắp nội thất",
@@ -169,7 +186,7 @@
       ],
       "nen_khao_sat_khi": "Có server, tài liệu bảo mật, tòa nhà giới hạn giờ ra vào hoặc cần làm ngoài giờ.",
       "co_the_dat_lich_luon_khi": "Bạn đã rõ sơ đồ di dời, số lượng bàn ghế thiết bị, điều kiện tòa nhà và không có hạng mục kỹ thuật đặc biệt.",
-      "tom_tat_tong_chi_phi": "Tổng tiền = max(Phí tối thiểu, Số km di chuyển x Giá mỗi km theo loại xe x Hệ số đường dài) + Đóng gói hồ sơ, thiết bị IT, tháo lắp và các phụ phí nếu có."
+      "tom_tat_tong_chi_phi": "Tổng tiền = max(Phí tối thiểu, Số km di chuyển x Giá mỗi km theo loại xe x Hệ số đường dài) + Khảo sát trước, đóng gói hồ sơ, thiết bị IT, tháo lắp và các phụ phí nếu có."
     },
     "bang_gia": {
       "loai_xe": [
@@ -203,6 +220,12 @@
       ],
       "phu_phi": {
         "checkbox": [
+          {
+            "slug": "khao_sat_truoc",
+            "ten": "Khảo sát trước khi triển khai",
+            "don_gia": 150000,
+            "nguon_hien_thi_slug": "khao_sat_truoc"
+          },
           {
             "slug": "dong_goi_ho_so",
             "ten": "Đóng gói hồ sơ",
@@ -266,6 +289,15 @@
         "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
       },
       {
+        "slug": "khao_sat_truoc",
+        "ten": "Khảo sát trước khi triển khai",
+        "khoang_gia": "150.000",
+        "don_vi": "lượt",
+        "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
+        "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
+        "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
+      },
+      {
         "slug": "dong_goi_ho_so_tai_lieu",
         "ten": "Đóng gói hồ sơ, tài liệu",
         "khoang_gia": "180.000",
@@ -321,6 +353,7 @@
       "phu_hop_khi": "Phù hợp khi bạn cần di dời pallet, kiện hàng nặng, máy móc và gia cố hàng hóa trước khi chuyển.",
       "phan_co_ban": ["Loại xe", "Quãng đường di chuyển", "Phí tối thiểu"],
       "phan_phat_sinh": [
+        "Khảo sát trước",
         "Pallet",
         "Xe nâng/xe cẩu",
         "Gia cố hàng",
@@ -329,7 +362,7 @@
       ],
       "nen_khao_sat_khi": "Có máy móc lớn, nhiều pallet, đường cấm tải hoặc cần xe nâng, xe cẩu tại hiện trường.",
       "co_the_dat_lich_luon_khi": "Bạn đã rõ khối lượng hàng, số pallet, phương tiện nâng hạ cần dùng và điều kiện xe vào ra kho bãi.",
-      "tom_tat_tong_chi_phi": "Tổng tiền = max(Phí tối thiểu, Số km di chuyển x Giá mỗi km theo loại xe x Hệ số đường dài) + Pallet, xe nâng/xe cẩu, gia cố và các phụ phí nếu có."
+      "tom_tat_tong_chi_phi": "Tổng tiền = max(Phí tối thiểu, Số km di chuyển x Giá mỗi km theo loại xe x Hệ số đường dài) + Khảo sát trước, pallet, xe nâng/xe cẩu, gia cố và các phụ phí nếu có."
     },
     "bang_gia": {
       "loai_xe": [
@@ -363,6 +396,12 @@
       ],
       "phu_phi": {
         "checkbox": [
+          {
+            "slug": "khao_sat_truoc",
+            "ten": "Khảo sát trước khi triển khai",
+            "don_gia": 150000,
+            "nguon_hien_thi_slug": "khao_sat_truoc"
+          },
           {
             "slug": "pallet",
             "ten": "Pallet",
@@ -430,6 +469,15 @@
         "ghi_chu": "Đơn giá di chuyển tính theo số km thực tế, tự giảm 10% khi vượt 20km và luôn so với phí tối thiểu của loại xe đã chọn.",
         "hinh_anh": "assets/images/chuyendon-kho-bai.png",
         "icon_svg": "M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4zm-9-2h10l2-5H9m-2 5L5 7H3m4 8l1.5-7H19"
+      },
+      {
+        "slug": "khao_sat_truoc",
+        "ten": "Khảo sát trước khi triển khai",
+        "khoang_gia": "150.000",
+        "don_vi": "lượt",
+        "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
+        "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
+        "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
       },
       {
         "slug": "luan_chuyen_pallet",

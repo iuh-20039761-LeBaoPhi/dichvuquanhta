@@ -16,7 +16,9 @@ function chon_tuy_chon(groupId, btn) {
     .forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
   const inputId =
-    groupId === "nhom_nguoi_tra_cuoc" ? "nguoi_tra_cuoc" : "phuong_thuc_thanh_toan";
+    groupId === "nhom_nguoi_tra_cuoc"
+      ? "nguoi_tra_cuoc"
+      : "phuong_thuc_thanh_toan";
   document.getElementById(inputId).value = btn.dataset.val;
 }
 
@@ -188,10 +190,7 @@ function xac_thuc_buoc_4() {
     if (!kiemTraXeMay.hop_le) {
       const xeGoiY =
         selectedService?.selectedVehicleLabel || "Xe 4 bánh nhỏ ≤ 500kg";
-      hien_thi_loi(
-        4,
-        `${kiemTraXeMay.ly_do} Vui lòng chuyển sang ${xeGoiY}.`,
-      );
+      hien_thi_loi(4, `${kiemTraXeMay.ly_do} Vui lòng chuyển sang ${xeGoiY}.`);
       document.getElementById("phuong_tien_giao_hang")?.focus();
       return false;
     }
@@ -248,9 +247,10 @@ function chuan_bi_xac_nhan() {
     list.appendChild(div);
   });
 
-  document.getElementById("xac_nhan_gia_tri_thu_ho_cod").textContent = payload.gia_tri_thu_ho_cod
-    ? `${payload.gia_tri_thu_ho_cod.toLocaleString()} ₫`
-    : "Không có";
+  document.getElementById("xac_nhan_gia_tri_thu_ho_cod").textContent =
+    payload.gia_tri_thu_ho_cod
+      ? `${payload.gia_tri_thu_ho_cod.toLocaleString()} ₫`
+      : "Không có";
   document.getElementById("xac_nhan_ghi_chu_tai_xe").textContent =
     document.getElementById("ghi_chu_tai_xe").value || "Không có";
   hien_thi_tai_len_xac_nhan();
@@ -261,7 +261,8 @@ function chuan_bi_xac_nhan() {
   const urgentCondition = getSelectedUrgentCondition();
   document.getElementById("xac_nhan_thoi_gian_lay_hang").textContent =
     `${formatDateToDDMMYYYY(pDate)} | ${(pSlot && pSlot.label) || "—"}`;
-  document.getElementById("xac_nhan_thoi_gian_giao_du_kien").textContent = selectedService.estimate;
+  document.getElementById("xac_nhan_thoi_gian_giao_du_kien").textContent =
+    selectedService.estimate;
 
   // Giá & Phương tiện (Phần 4: Phương tiện)
   const bd = selectedService.breakdown || {};
@@ -347,16 +348,30 @@ function hien_thi_tai_len_xac_nhan() {
   });
 }
 
+let bookingSuccessRedirectTimer = null;
+const BOOKING_SUCCESS_REDIRECT_DELAY_MS = 3000;
+
+function clearBookingSuccessRedirectTimer() {
+  if (!bookingSuccessRedirectTimer) return;
+  window.clearTimeout(bookingSuccessRedirectTimer);
+  bookingSuccessRedirectTimer = null;
+}
+
+function buildBookingSuccessRedirectUrl() {
+  return resolveProjectHtmlUrl("public/khach-hang/lich-su-don-hang.html");
+}
+
 function renderSubmitSuccessState(orderCode, messageHtml) {
   clearPendingBookingDraft();
+  clearBookingSuccessRedirectTimer();
   const isLoggedIn = !!syncBookingLoginState();
   const secondaryAction = isLoggedIn
     ? `
       <a
-        href="${resolveProjectHtmlUrl("public/khach-hang/dashboard.html")}"
+        href="${buildBookingSuccessRedirectUrl()}"
         class="btn-secondary"
         style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-width:180px;"
-      >Vào trang quản lý</a>
+      >Xem danh sách đơn</a>
     `
     : `
       <a
@@ -365,6 +380,13 @@ function renderSubmitSuccessState(orderCode, messageHtml) {
         style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; min-width:180px;"
       >Tra cứu đơn hàng</a>
     `;
+  const redirectNotice = isLoggedIn
+    ? `
+      <p style="color: #64748b; margin: -10px 0 24px;">
+        Hệ thống sẽ tự chuyển sang danh sách đơn hàng sau ${Math.round(BOOKING_SUCCESS_REDIRECT_DELAY_MS / 1000)} giây.
+      </p>
+    `
+    : "";
 
   const container = document.getElementById("buoc_5");
   if (!container) return;
@@ -377,6 +399,7 @@ function renderSubmitSuccessState(orderCode, messageHtml) {
       <h2 style="color: #1e293b; font-weight: 800; margin-bottom: 12px;">Đặt đơn hàng thành công!</h2>
       <p style="color: #64748b; margin-bottom: 16px;">Mã đơn hàng: <strong style="color: #0a2a66;">${orderCode || "GHN-00000000-0000000"}</strong>.</p>
       <p style="color: #64748b; margin-bottom: 32px;">${messageHtml}</p>
+      ${redirectNotice}
       <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
         <a
           href="${resolveProjectHtmlUrl("dat-lich-giao-hang-nhanh.html")}"
@@ -393,6 +416,12 @@ function renderSubmitSuccessState(orderCode, messageHtml) {
     successState?.focus({ preventScroll: true });
     successState?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
+
+  if (isLoggedIn) {
+    bookingSuccessRedirectTimer = window.setTimeout(() => {
+      window.location.href = buildBookingSuccessRedirectUrl();
+    }, BOOKING_SUCCESS_REDIRECT_DELAY_MS);
+  }
 }
 
 function getServiceStorageValue(serviceType) {
@@ -451,12 +480,8 @@ function tao_chi_tiet_gia_cuoc_de_luu_tru(breakdown = {}) {
 
 function chuan_hoa_chi_tiet_gia_cuoc_da_luu(chiTiet = {}) {
   return {
-    basePrice: Number(
-      chiTiet.tong_gia_van_chuyen || 0,
-    ),
-    tong_gia_van_chuyen: Number(
-      chiTiet.tong_gia_van_chuyen || 0,
-    ),
+    basePrice: Number(chiTiet.tong_gia_van_chuyen || 0),
+    tong_gia_van_chuyen: Number(chiTiet.tong_gia_van_chuyen || 0),
     don_gia_km: Number(chiTiet.don_gia_km || 0),
     he_so_xe: Number(chiTiet.he_so_xe || 1),
     phi_toi_thieu: Number(chiTiet.phi_toi_thieu || 0),
@@ -476,8 +501,10 @@ function chuan_hoa_chi_tiet_gia_cuoc_da_luu(chiTiet = {}) {
 
 function xem_truoc_tai_len(type) {
   const inputId = type === "video" ? "video_hang_hoa" : "hinh_anh_hang_hoa";
-  const previewId = type === "video" ? "xem_truoc_video_hang_hoa" : "xem_truoc_anh_hang_hoa";
-  const metaId = type === "video" ? "thong_tin_tai_len_video" : "thong_tin_tai_len_anh";
+  const previewId =
+    type === "video" ? "xem_truoc_video_hang_hoa" : "xem_truoc_anh_hang_hoa";
+  const metaId =
+    type === "video" ? "thong_tin_tai_len_video" : "thong_tin_tai_len_anh";
   const file = document.getElementById(inputId).files[0];
   if (!file) return;
   const preview = document.getElementById(previewId);
@@ -508,7 +535,8 @@ function buildBookingSheetPayload(payload, orderCode) {
     ? payload.mat_hang
         .map((item, index) => {
           const itemName = item?.ten_hang || `Hàng #${index + 1}`;
-          const itemType = ITEM_TYPE_LABELS[item?.loai_hang] || item?.loai_hang || "";
+          const itemType =
+            ITEM_TYPE_LABELS[item?.loai_hang] || item?.loai_hang || "";
           const quantity = Number(item?.so_luong || 0);
           const weight = Number(item?.can_nang || 0);
           return `${itemName} (${itemType}) x${quantity || 1}, ${weight || 0}kg`;
@@ -527,7 +555,8 @@ function buildBookingSheetPayload(payload, orderCode) {
     "Địa chỉ lấy hàng": payload.dia_chi_lay_hang || "",
     "Địa chỉ giao hàng": payload.dia_chi_giao_hang || "",
     "Ngày lấy hàng": payload.ngay_lay_hang || "",
-    "Khung giờ lấy hàng": payload.ten_khung_gio_lay_hang || payload.khung_gio_lay_hang || "",
+    "Khung giờ lấy hàng":
+      payload.ten_khung_gio_lay_hang || payload.khung_gio_lay_hang || "",
     "Dự kiến giao hàng": payload.du_kien_giao_hang || "",
     "Dịch vụ": payload.ten_dich_vu || payload.dich_vu || "",
     "Phương tiện": payload.ten_phuong_tien || payload.phuong_tien || "",
@@ -591,11 +620,10 @@ async function gui_don_hang() {
   try {
     const crudResult = await insertBookingWithCrud(payload);
     const orderMeta = extractCrudInsertOrderMeta(crudResult);
-    const finalOrderCode =
-      resolveSystemOrderCodeFromResult(
-        crudResult,
-        orderMeta.created_at || new Date().toISOString(),
-      );
+    const finalOrderCode = resolveSystemOrderCodeFromResult(
+      crudResult,
+      orderMeta.created_at || new Date().toISOString(),
+    );
     if (!finalOrderCode) {
       throw new Error(
         "Không nhận được ID hệ thống để tạo mã đơn GHN. Vui lòng thử lại.",
@@ -628,8 +656,7 @@ async function gui_don_hang() {
     console.error(error);
     hien_thi_loi(
       5,
-      error.message ||
-        "Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.",
+      error.message || "Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.",
     );
     btn.disabled = false;
     btn.innerHTML = originalText;
@@ -643,16 +670,21 @@ function tao_du_lieu_gui() {
     selectedService.breakdown || {},
   );
   const nguoi_gui_ho_ten = document.getElementById("nguoi_gui_ho_ten").value;
-  const nguoi_gui_so_dien_thoai = document.getElementById("nguoi_gui_so_dien_thoai").value;
+  const nguoi_gui_so_dien_thoai = document.getElementById(
+    "nguoi_gui_so_dien_thoai",
+  ).value;
   const nguoi_nhan_ho_ten = document.getElementById("nguoi_nhan_ho_ten").value;
-  const nguoi_nhan_so_dien_thoai = document.getElementById("nguoi_nhan_so_dien_thoai").value;
+  const nguoi_nhan_so_dien_thoai = document.getElementById(
+    "nguoi_nhan_so_dien_thoai",
+  ).value;
   const dia_chi_lay_hang = document.getElementById("dia_chi_lay_hang").value;
   const dia_chi_giao_hang = document.getElementById("dia_chi_giao_hang").value;
   const ghi_chu_tai_xe = document.getElementById("ghi_chu_tai_xe").value;
   const gia_tri_thu_ho_cod =
     parseFloat(document.getElementById("gia_tri_thu_ho_cod").value) || 0;
-  const phuong_thuc_thanh_toan =
-    document.getElementById("phuong_thuc_thanh_toan").value;
+  const phuong_thuc_thanh_toan = document.getElementById(
+    "phuong_thuc_thanh_toan",
+  ).value;
   const nguoi_tra_cuoc = document.getElementById("nguoi_tra_cuoc").value;
   return {
     nguoi_gui_ho_ten,

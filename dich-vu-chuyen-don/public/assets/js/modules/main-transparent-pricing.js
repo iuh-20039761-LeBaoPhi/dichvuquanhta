@@ -14,7 +14,7 @@
     {
       id: "ho-tro",
       ten: "Phí dịch vụ chọn thêm",
-      mo_ta: "Chỉ cộng dồn khi bạn tích chọn các hạng mục hỗ trợ ngoài như: đóng gói, tháo lắp, xe nâng...",
+      mo_ta: "Chỉ cộng dồn khi bạn tích chọn các hạng mục hỗ trợ ngoài như: khảo sát trước, đóng gói, tháo lắp, xe nâng...",
     },
     {
       id: "thoi-diem",
@@ -142,7 +142,7 @@
 
     let commonNote = "";
     if (groupId === "cuoc-xe") commonNote = "Tổng cước xe = max(Phí tối thiểu, Số km di chuyển x Giá mỗi km theo loại xe). Khi quãng đường vượt 20km, hệ thống tự giảm 10% đơn giá xe để giữ bảng giá đồng nhất.";
-    if (groupId === "ho-tro") commonNote = "Chỉ phát sinh khi khách hàng yêu cầu thêm các dịch vụ hỗ trợ ngoài cước di chuyển cơ bản.";
+    if (groupId === "ho-tro") commonNote = "Chỉ phát sinh khi khách hàng yêu cầu thêm các dịch vụ hỗ trợ ngoài cước di chuyển cơ bản. Khảo sát trước là một hạng mục tùy chọn, không bắt buộc.";
     if (groupId === "thoi-diem") commonNote = "Hệ số và phụ phí thời điểm sẽ được linh động cộng dồn một lần vào tổng hóa đơn cuối cùng.";
 
     return `
@@ -329,7 +329,7 @@
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">Phụ phí phát sinh</span>
           <h2>Những yếu tố dễ làm giá thay đổi nhất</h2>
-          <p>Đây là các nhóm phụ phí có trong cùng nguồn dữ liệu giá tham khảo của từng dịch vụ, giúp bạn nhìn nhanh yếu tố nào dễ làm chi phí thay đổi.</p>
+          <p>Đây là các nhóm phụ phí có trong cùng nguồn dữ liệu giá tham khảo của từng dịch vụ, giúp bạn nhìn nhanh yếu tố nào dễ làm chi phí thay đổi. Khảo sát trước cũng chỉ cộng khi khách hàng chủ động chọn.</p>
         </div>
         <div class="luoi-phu-phi">
           ${data
@@ -365,7 +365,7 @@
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">Ra quyết định</span>
           <h2>Khi nào nên khảo sát, khi nào có thể đặt lịch luôn</h2>
-          <p>Nếu bạn chưa chắc về mặt bằng, khối lượng hoặc phụ phí phát sinh, khảo sát trước luôn là lựa chọn an toàn hơn.</p>
+          <p>Nếu bạn chưa chắc về mặt bằng, khối lượng hoặc phụ phí phát sinh, khảo sát trước là lựa chọn an toàn hơn. Đây là hạng mục tùy chọn và có cộng phí khảo sát đi lại theo bảng giá.</p>
         </div>
         <div class="luoi-the-ra-quyet-dinh">
           ${data

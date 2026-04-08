@@ -3,92 +3,47 @@
   <head>
     <link rel="icon" type="image/x-icon" href="public/assets/images/favicon.ico" />
     <meta charset="UTF-8" />
-    <title>Khảo sát chuyển dọn tận nơi | Dịch vụ Chuyển Dọn</title>
+    <title>Đang chuyển sang form đặt lịch | Dịch vụ Chuyển Dọn</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Đăng ký khảo sát chuyển nhà, chuyển văn phòng công ty hoặc chuyển kho bãi. Nhân viên Dịch vụ Chuyển Dọn sẽ tư vấn phương án và chuẩn bị nhân sự phù hợp."
+      content="Trang khảo sát riêng đã được gộp vào form đặt lịch. Bạn sẽ được chuyển sang form đặt lịch để tiếp tục gửi yêu cầu."
     />
-    <link rel="canonical" href="khao-sat.html" />
+    <meta http-equiv="refresh" content="0; url=dat-lich.html" />
+    <link rel="canonical" href="dat-lich.html" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="khao-sat.html" />
-    <meta property="og:title" content="Khảo sát chuyển dọn tận nơi | Dịch vụ Chuyển Dọn" />
+    <meta property="og:url" content="dat-lich.html" />
+    <meta property="og:title" content="Đang chuyển sang form đặt lịch | Dịch vụ Chuyển Dọn" />
     <meta
       property="og:description"
-      content="Điền nhu cầu khảo sát cho chuyển nhà, văn phòng công ty hoặc kho bãi để đội ngũ chuẩn bị phương án vận chuyển phù hợp."
+      content="Trang khảo sát riêng đã được gộp vào form đặt lịch."
     />
     <meta property="og:image" content="public/assets/images/chuyendon-quy-trinh-khao-sat.png" />
     <meta property="og:site_name" content="Dịch vụ Chuyển Dọn" />
-
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
     <link rel="stylesheet" href="public/assets/css/styles.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="/ga.js"></script>
   </head>
   <body>
-    <div id="site-header"></div>
-
     <main class="trang-bieu-mau">
-      <section class="hero-bieu-mau hero-bieu-mau-khao-sat">
+      <section class="hero-bieu-mau">
         <div class="container hero-bieu-mau-noi-dung">
           <div class="hero-bieu-mau-van-ban">
-            <span class="nhan-phu">Khảo sát tận nơi</span>
-            <h1>Đặt lịch khảo sát để chuẩn bị phương án chuyển dọn phù hợp</h1>
+            <span class="nhan-phu">Đang chuyển hướng</span>
+            <h1>Form khảo sát đã được gộp vào form đặt lịch</h1>
             <p>
-              Chia sẻ trước thông tin về mặt bằng, khối lượng đồ đạc và thời gian
-              mong muốn để đội ngũ chủ động tư vấn, sắp xếp nhân sự và chuẩn bị
-              phương tiện sát với nhu cầu thực tế.
+              Bạn sẽ được chuyển sang trang đặt lịch. Trong form này đã có sẵn
+              tùy chọn tích chọn khảo sát trước nếu cần.
             </p>
             <div class="hero-bieu-mau-hanh-dong">
-              <a
-                class="nut-hanh-dong nut-sang"
-                href="dat-lich.html"
-                data-giu-dich-vu="dat-lich.html"
-              >Đặt lịch ngay</a>
-              <a class="nut-hanh-dong nut-vien" href="dich-vu-chuyen-don.html">Xem các dịch vụ</a>
+              <a class="nut-hanh-dong nut-sang" href="dat-lich.html">Mở form đặt lịch</a>
             </div>
           </div>
         </div>
       </section>
-
-      <section class="khu-bieu-mau">
-        <div class="container luoi-bieu-mau">
-          <div
-            id="survey-form-host"
-            class="cot-bieu-mau"
-            data-bieu-mau-trang="khao-sat"
-          ></div>
-
-          <aside class="cot-thong-tin">
-            <div class="the-thong-tin">
-              <span class="the-thong-tin-nhan">Cần chuẩn bị</span>
-              <h2>Những thông tin nên có</h2>
-              <ul class="danh-sach-buoc">
-                <li>Địa chỉ cụ thể và mô tả đường vào của điểm cần khảo sát.</li>
-                <li>Số tầng, thang máy, hẻm nhỏ hoặc vị trí đỗ xe tải nếu có.</li>
-                <li>Hình ảnh không gian hoặc khu vực cần di dời để đánh giá nhanh hơn.</li>
-              </ul>
-            </div>
-
-            <div class="the-thong-tin the-lien-he">
-              <span class="the-thong-tin-nhan">Hỗ trợ</span>
-              <h2>Cần hỗ trợ nhanh?</h2>
-              <p>Hotline: <strong>0775 472 347</strong></p>
-              <p>Email: <strong>dichvuquanhta.vn@gmail.com</strong></p>
-              <a class="nut-phu" href="dat-lich.html" data-giu-dich-vu="dat-lich.html">Chuyển sang đặt lịch</a>
-            </div>
-          </aside>
-        </div>
-      </section>
     </main>
-
-    <div id="site-footer"></div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="public/assets/js/shared-layout.js"></script>
-    <script src="public/assets/js/main.js" defer></script>
+    <script>
+      window.location.replace("dat-lich.html");
+    </script>
   </body>
 </html>

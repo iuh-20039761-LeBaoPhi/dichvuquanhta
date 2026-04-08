@@ -22,17 +22,19 @@
     "modules/main-form-booking-pricing.js",
     "modules/main-form-booking-map.js",
     "modules/main-form-booking-wizard.js",
-    "modules/main-form-survey-map.js",
     "modules/main-form-summaries.js",
     "modules/main-form-media.js",
-    "modules/main-form-survey-ui.js",
     "modules/main-form-booking-ui.js",
+    "modules/main-booking-api.js",
     "modules/main-forms.js",
     "modules/main-auth.js",
     "modules/main-customer-dashboard.js",
     "modules/main-customer-history.js",
     "modules/main-customer-profile.js",
     "modules/main-provider-dashboard.js",
+    "modules/main-provider-jobs.js",
+    "modules/main-provider-order-detail.js",
+    "modules/main-provider-profile.js",
   ];
 
   const versionSuffix =

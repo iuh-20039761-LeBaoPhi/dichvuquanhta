@@ -17,6 +17,166 @@
   font-size: 12px;
 }
 
+body.auth-page {
+  background:
+    radial-gradient(circle at top left, rgba(255, 183, 3, 0.12), transparent 22%),
+    linear-gradient(180deg, #f5faf7 0%, #ffffff 28%, #eef5f1 100%);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.auth-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 480px);
+  gap: 28px;
+  width: min(1080px, 100%);
+  align-items: stretch;
+}
+
+.auth-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 36px;
+  border-radius: 24px;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at top right, rgba(255, 222, 128, 0.2), transparent 30%),
+    linear-gradient(145deg, #123326 0%, #1b4332 58%, #2d6a4f 100%);
+  box-shadow: 0 18px 42px rgba(18, 51, 38, 0.2);
+}
+
+.auth-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffde80;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-panel h1 {
+  margin: 16px 0 14px;
+  color: #ffffff;
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1.12;
+}
+
+.auth-panel p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  line-height: 1.72;
+}
+
+.auth-points {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.auth-point {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.auth-point i {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffde80;
+}
+
+.auth-point strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #ffffff;
+}
+
+.auth-card {
+  max-width: none;
+  display: grid;
+  gap: 22px;
+  border: 1px solid rgba(27, 67, 50, 0.12);
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+}
+
+.auth-title {
+  margin-bottom: 0;
+}
+
+.auth-subtitle {
+  margin: -10px 0 0;
+  color: #5d7469;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.auth-note {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f7fbf8;
+  border: 1px solid #dde9e2;
+  color: #476458;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 4px;
+  font-size: 14px;
+  color: #5d7469;
+}
+
+.auth-link a {
+  color: #1b4332;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+.auth-card .bo-chon-vai-tro {
+  width: 100%;
+}
+
+.auth-card .gioi-thieu-tai-khoan h2 {
+  margin-bottom: 8px;
+}
+
+.luoi-truong {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .tai-khoan-vao {
   padding: 80px 40px;
   background:
@@ -240,8 +400,14 @@
 
 .hang-tai-anh {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.hang-tai-anh > .the-tai-anh:last-child {
+  grid-column: 1 / -1;
+  width: min(100%, 320px);
+  justify-self: center;
 }
 
 .the-tai-anh {
@@ -375,15 +541,29 @@
 }
 
 @media (max-width: 768px) {
+  .auth-container {
+    padding: 32px 16px;
+  }
+
   .tai-khoan-vao,
   .khu-tai-khoan {
     padding-left: 20px;
     padding-right: 20px;
   }
 
+  .auth-shell,
   .tai-khoan-vao__luoi,
   .luoi-tai-khoan,
   .tai-khoan-vao__hanh-dong {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-panel {
+    order: 2;
+    padding: 28px;
+  }
+
+  .luoi-truong {
     grid-template-columns: 1fr;
   }
 
@@ -397,12 +577,19 @@
 }
 
 @media (max-width: 480px) {
+  .auth-container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
   .tai-khoan-vao,
   .khu-tai-khoan {
     padding-left: 15px;
     padding-right: 15px;
   }
 
+  .auth-card,
+  .auth-panel,
   .tai-khoan-vao__the,
   .the-bieu-mau {
     padding: 20px;
@@ -415,7 +602,11 @@
   }
 
   .hang-tai-anh {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+  }
+
+  .hang-tai-anh > .the-tai-anh:last-child {
+    width: 100%;
   }
 
   .bo-chon-vai-tro {

@@ -1,217 +1,623 @@
 ﻿<!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đặt Lịch Dọn Vệ Sinh Nhà Ở & Văn Phòng Nhanh Chóng | Giá Tốt</title>
-    <meta name="description" content="Đặt lịch dịch vụ dọn vệ sinh nhà ở, căn hộ, văn phòng nhanh chóng. Nhân viên chuyên nghiệp, làm sạch sâu, khử khuẩn an toàn. Linh hoạt theo giờ hoặc trọn gói, phục vụ tận nơi, giá hợp lý.">
-    <meta name="keywords" content="đặt lịch dọn vệ sinh, dịch vụ dọn nhà theo giờ, vệ sinh nhà ở, vệ sinh văn phòng, tổng vệ sinh, vệ sinh sau xây dựng, đặt dịch vụ lau dọn, giúp việc theo giờ">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/logo_main.png" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-      /* Base & Navbar */
-      html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đặt Lịch Dọn Vệ Sinh Nhà Ở & Văn Phòng Nhanh Chóng | Giá Tốt</title>
+  <meta name="description"
+    content="Đặt lịch dịch vụ dọn vệ sinh nhà ở, căn hộ, văn phòng nhanh chóng. Nhân viên chuyên nghiệp, làm sạch sâu, khử khuẩn an toàn. Linh hoạt theo giờ hoặc trọn gói, phục vụ tận nơi, giá hợp lý.">
+  <meta name="keywords"
+    content="đặt lịch dọn vệ sinh, dịch vụ dọn nhà theo giờ, vệ sinh nhà ở, vệ sinh văn phòng, tổng vệ sinh, vệ sinh sau xây dựng, đặt dịch vụ lau dọn, giúp việc theo giờ">
+  <link rel="shortcut icon" type="image/x-icon" href="assets/logo_main.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* Base & Navbar */
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      padding-top: 96px;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1050;
+    }
+
+    .navbar .container {
+      display: flex;
+      flex-wrap: nowrap !important;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .package-locked {
+      opacity: 0.45;
+      filter: grayscale(0.2);
+      cursor: not-allowed;
+    }
+
+    /* Review Section - General Layout */
+    .review-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .review-label {
+      width: 120px;
+      min-width: 120px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .review-value {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    .review-shell {
+      background: #f7f7f8;
+      border: 1px solid #ececee;
+    }
+
+    .review-title {
+      color: #2f86d3 !important;
+      font-size: 1.9rem;
+      font-weight: 800 !important;
+    }
+
+    .review-alert {
+      background: #f6eac5;
+      border: 1px solid #ecd9a4;
+      color: #5e5430;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    /* Review Panel Details */
+    .review-panel {
+      background: #f5f5f6 !important;
+      border: 2px solid #7db8e8 !important;
+      border-radius: 12px;
+    }
+
+    .review-panel .card-body {
+      color: #2a2f36;
+    }
+
+    .review-section-title {
+      color: #2f86d3 !important;
+      font-size: 1.3rem;
+      font-weight: 800 !important;
+    }
+
+    .review-panel .review-label {
+      color: #3a3a3a;
+      font-weight: 700;
+    }
+
+    .review-panel .review-value {
+      color: #222;
+      font-weight: 600;
+    }
+
+    #reviewJobs {
+      color: #222;
+      font-weight: 600;
+    }
+
+    /* Review Total & Buttons */
+    .review-total-box {
+      background: #f1f8ff !important;
+      border: 2px solid #7db8e8 !important;
+      border-radius: 10px;
+    }
+
+    .review-total-box .card-body {
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+
+    .review-action-row {
+      margin-top: 16px !important;
+    }
+
+    .review-btn-edit {
+      background: #7d8790;
+      border: none;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .review-btn-edit:hover {
+      background: #6b747c;
+      color: #fff;
+    }
+
+    .review-btn-save {
+      background: linear-gradient(135deg, #3e9be6, #1f84d8) !important;
+      border: none !important;
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .review-btn-save:hover {
+      background: linear-gradient(135deg, #2d8ad6, #166fbe) !important;
+    }
+
+    /* Customer Info Box */
+    .customer-info-box {
+      border: 2px solid #6bbf83;
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 16px;
+      background: #f8fffa;
+    }
+
+    .customer-info-title {
+      color: #2e7d32;
+      font-weight: 700;
+      font-size: 1.35rem;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .customer-info-box .form-label {
+      font-weight: 700;
+      color: #2f2f2f;
+      margin-bottom: 4px;
+    }
+
+    .customer-info-box .form-control,
+    .customer-info-box .input-group-text {
+      border-color: #a8cdb2;
+      background: #f7f9f7;
+    }
+
+    .customer-info-box .input-group-text {
+      color: #7a8281;
+    }
+
+    .customer-info-box .form-control:focus {
+      border-color: #7cc190;
+      box-shadow: 0 0 0 0.2rem rgba(89, 170, 114, 0.15);
+    }
+
+    /* Service & Jobs Box */
+    .service-work-box {
+      border: 2px solid #4f9ddb;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 16px;
+      background: #fafdff;
+    }
+
+    .service-work-box .form-label {
+      color: #1f2a37;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    #serviceSelector {
+      border-color: #b3c0ca;
+      background: #f1f1f1;
+    }
+
+    #serviceSelector option {
+      white-space: normal;
+    }
+
+    #serviceSelector.service-selector-open {
+      height: auto;
+    }
+
+    #serviceJobs .list-group {
+      gap: 2px;
+    }
+
+    #serviceJobs .list-group-item {
+      border: 0;
+      background: transparent;
+      padding: 4px 0;
+      border-radius: 0;
+    }
+
+    #serviceJobs .list-group-item-action:hover,
+    #serviceJobs .list-group-item-action:focus {
+      background: transparent;
+    }
+
+    #serviceJobs .job-check {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      border-color: #2e86d1;
+      accent-color: #2e86d1;
+      margin-left: 10px;
+    }
+
+    #serviceJobs .list-group-item span {
+      color: #1f2a37;
+      font-size: 1.05rem;
+      line-height: 1.3;
+    }
+
+    /* Schedule Box */
+    .schedule-box {
+      border: 2px solid #2f93df;
+      border-radius: 16px;
+      background: #dceeff;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .schedule-box .form-label {
+      font-weight: 700;
+      color: #1f2a37;
+      margin-bottom: 4px;
+    }
+
+    .schedule-box .form-control,
+    .schedule-box .form-select {
+      background: #f4f4f4;
+      border-color: #8ca2b5;
+      color: #111;
+      font-weight: 700;
+    }
+
+    .schedule-box .form-control::placeholder {
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .schedule-box #servicePackages .list-group-item {
+      background: transparent;
+      border-color: #8ab6db;
+      color: #111;
+    }
+
+    .schedule-box #servicePackages .list-group-item.active,
+    .schedule-box #servicePackages .list-group-item-action:active {
+      color: #111 !important;
+      background: #cfe5f8;
+      border-color: #5f9fce;
+    }
+
+    .schedule-box #servicePackages .list-group-item span {
+      color: #111;
+      font-weight: 700;
+    }
+
+    .schedule-box #servicePackages .list-group-item.active span {
+      color: #111 !important;
+    }
+
+    #autoEndDateRow {
+      border: 2px solid #58b56b;
+      border-radius: 12px;
+      background: #dff5e4;
+      color: #1f4f2a;
+    }
+
+    /* Extra Request & Note */
+    .extra-request-box .form-label,
+    .note-box .form-label {
+      color: #1f2a37;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .extra-request-box #extraRequest,
+    .note-box #customerNote {
+      border: 2px solid #012b55;
+      border-radius: 12px;
+      min-height: 56px;
+      padding: 10px 14px;
+      font-size: 1.05rem;
+      color: #1f2a37;
+      background: #fffefe;
+    }
+
+    .extra-request-box #extraRequest::placeholder,
+    .note-box #customerNote::placeholder {
+      color: #050505;
+    }
+
+    .extra-request-box #extraRequest:focus,
+    .note-box #customerNote:focus {
+      border-color: #140086;
+      box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.15);
+    }
+
+    /* Price Detail Box */
+    .price-detail-box {
+      border: 2px solid #1e88e5 !important;
+      border-radius: 12px;
+      background: #eaf4ff !important;
+    }
+
+    .price-detail-box .card-body {
+      color: #1f2a37;
+      font-weight: 700;
+    }
+
+    .price-detail-title {
+      font-size: 1.2rem;
+      font-weight: 800 !important;
+      letter-spacing: 0.2px;
+    }
+
+    .price-detail-box .text-muted {
+      color: #4b5563 !important;
+      font-weight: 600;
+    }
+
+    .price-detail-box #basePrice,
+    .price-detail-box #travelFee,
+    .price-detail-box #nightFee,
+    .price-detail-box #holidayFee {
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .price-detail-box hr {
+      border-color: rgba(30, 136, 229, 0.35);
+    }
+
+    /* Attachment Previews */
+    .quick-attach-box .form-label {
+      color: #1f2a37;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .attachment-preview-box {
+      border: 2px solid #bbdefb;
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .attachment-preview-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .attachment-pane {
+      min-height: 128px;
+      padding: 6px;
+      border-radius: 10px;
+      background: #f5faff;
+    }
+
+    .attachment-pane+.attachment-pane {
+      border-left: 1px dashed #b7d7f5;
+      padding-left: 12px;
+    }
+
+    .attachment-pane-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    .attachment-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .attachment-item {
+      border: 1px solid #e3e3e3;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .attachment-item img,
+    .attachment-item video {
+      display: block;
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      background: #f8f8f8;
+    }
+
+    .attachment-item-name {
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 991.98px) {
       body {
-        padding-top: 96px;
+        padding-top: 86px;
       }
 
       .navbar {
-        position: fixed;
-        top: 0;
+        overflow-x: clip;
+      }
+
+      .navbar .container>span {
+        max-width: 34vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.95rem;
+      }
+
+      .navbar-brand img {
+        width: 56px !important;
+        height: 42px !important;
+      }
+
+      .navbar-collapse {
+        position: absolute;
+        top: 100%;
         left: 0;
         right: 0;
-        z-index: 1050;
-      }
-      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
-      .package-locked { opacity: 0.45; filter: grayscale(0.2); cursor: not-allowed; }
-
-      /* Review Section - General Layout */
-      .review-row { display: flex; align-items: flex-start; gap: 10px; }
-      .review-label { width: 120px; min-width: 120px; font-weight: 700; color: #333; }
-      .review-value { flex: 1; min-width: 0; text-align: left; word-break: break-word; }
-      .review-shell { background: #f7f7f8; border: 1px solid #ececee; }
-      .review-title { color: #2f86d3 !important; font-size: 1.9rem; font-weight: 800 !important; }
-      .review-alert { background: #f6eac5; border: 1px solid #ecd9a4; color: #5e5430; border-radius: 8px; font-weight: 600; }
-
-      /* Review Panel Details */
-      .review-panel { background: #f5f5f6 !important; border: 2px solid #7db8e8 !important; border-radius: 12px; }
-      .review-panel .card-body { color: #2a2f36; }
-      .review-section-title { color: #2f86d3 !important; font-size: 1.3rem; font-weight: 800 !important; }
-      .review-panel .review-label { color: #3a3a3a; font-weight: 700; }
-      .review-panel .review-value { color: #222; font-weight: 600; }
-      #reviewJobs { color: #222; font-weight: 600; }
-
-      /* Review Total & Buttons */
-      .review-total-box { background: #f1f8ff !important; border: 2px solid #7db8e8 !important; border-radius: 10px; }
-      .review-total-box .card-body { padding-top: 12px; padding-bottom: 12px; }
-      .review-action-row { margin-top: 16px !important; }
-      .review-btn-edit { background: #7d8790; border: none; color: #fff; font-weight: 700; }
-      .review-btn-edit:hover { background: #6b747c; color: #fff; }
-      .review-btn-save { background: linear-gradient(135deg, #3e9be6, #1f84d8) !important; border: none !important; color: #fff; font-weight: 800; }
-      .review-btn-save:hover { background: linear-gradient(135deg, #2d8ad6, #166fbe) !important; }
-
-      /* Customer Info Box */
-      .customer-info-box { border: 2px solid #6bbf83; border-radius: 16px; padding: 12px; margin-bottom: 16px; background: #f8fffa; }
-      .customer-info-title { color: #2e7d32; font-weight: 700; font-size: 1.35rem; line-height: 1; margin-bottom: 10px; }
-      .customer-info-box .form-label { font-weight: 700; color: #2f2f2f; margin-bottom: 4px; }
-      .customer-info-box .form-control, .customer-info-box .input-group-text { border-color: #a8cdb2; background: #f7f9f7; }
-      .customer-info-box .input-group-text { color: #7a8281; }
-      .customer-info-box .form-control:focus { border-color: #7cc190; box-shadow: 0 0 0 0.2rem rgba(89, 170, 114, 0.15); }
-
-      /* Service & Jobs Box */
-      .service-work-box { border: 2px solid #4f9ddb; border-radius: 10px; padding: 10px; margin-bottom: 16px; background: #fafdff; }
-      .service-work-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
-      #serviceSelector { border-color: #b3c0ca; background: #f1f1f1; }
-      #serviceSelector option { white-space: normal; }
-      #serviceSelector.service-selector-open { height: auto; }
-      #serviceJobs .list-group { gap: 2px; }
-      #serviceJobs .list-group-item { border: 0; background: transparent; padding: 4px 0; border-radius: 0; }
-      #serviceJobs .list-group-item-action:hover, #serviceJobs .list-group-item-action:focus { background: transparent; }
-      #serviceJobs .job-check { width: 16px; height: 16px; border-radius: 3px; border-color: #2e86d1; accent-color: #2e86d1; margin-left: 10px; }
-      #serviceJobs .list-group-item span { color: #1f2a37; font-size: 1.05rem; line-height: 1.3; }
-
-      /* Schedule Box */
-      .schedule-box { border: 2px solid #2f93df; border-radius: 16px; background: #dceeff; padding: 12px; margin-bottom: 10px; }
-      .schedule-box .form-label { font-weight: 700; color: #1f2a37; margin-bottom: 4px; }
-      .schedule-box .form-control, .schedule-box .form-select { background: #f4f4f4; border-color: #8ca2b5; color: #111; font-weight: 700; }
-      .schedule-box .form-control::placeholder { color: #6b7280; font-weight: 500; }
-      .schedule-box #servicePackages .list-group-item { background: transparent; border-color: #8ab6db; color: #111; }
-      .schedule-box #servicePackages .list-group-item.active, .schedule-box #servicePackages .list-group-item-action:active { color: #111 !important; background: #cfe5f8; border-color: #5f9fce; }
-      .schedule-box #servicePackages .list-group-item span { color: #111; font-weight: 700; }
-      .schedule-box #servicePackages .list-group-item.active span { color: #111 !important; }
-      #autoEndDateRow { border: 2px solid #58b56b; border-radius: 12px; background: #dff5e4; color: #1f4f2a; }
-
-      /* Extra Request & Note */
-      .extra-request-box .form-label, .note-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
-      .extra-request-box #extraRequest, .note-box #customerNote { border: 2px solid #012b55; border-radius: 12px; min-height: 56px; padding: 10px 14px; font-size: 1.05rem; color: #1f2a37; background: #fffefe; }
-      .extra-request-box #extraRequest::placeholder, .note-box #customerNote::placeholder { color: #050505; }
-      .extra-request-box #extraRequest:focus, .note-box #customerNote:focus { border-color: #140086; box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.15); }
-
-      /* Price Detail Box */
-      .price-detail-box { border: 2px solid #1e88e5 !important; border-radius: 12px; background: #eaf4ff !important; }
-      .price-detail-box .card-body { color: #1f2a37; font-weight: 700; }
-      .price-detail-title { font-size: 1.2rem; font-weight: 800 !important; letter-spacing: 0.2px; }
-      .price-detail-box .text-muted { color: #4b5563 !important; font-weight: 600; }
-      .price-detail-box #basePrice, .price-detail-box #travelFee, .price-detail-box #nightFee, .price-detail-box #holidayFee { font-weight: 800; color: #111827; }
-      .price-detail-box hr { border-color: rgba(30, 136, 229, 0.35); }
-
-      /* Attachment Previews */
-      .quick-attach-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
-      .attachment-preview-box { border: 2px solid #bbdefb; border-radius: 12px; background: #fff; padding: 10px; }
-      .attachment-preview-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-      .attachment-pane { min-height: 128px; padding: 6px; border-radius: 10px; background: #f5faff; }
-      .attachment-pane + .attachment-pane { border-left: 1px dashed #b7d7f5; padding-left: 12px; }
-      .attachment-pane-title { font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
-      .attachment-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-      .attachment-item { border: 1px solid #e3e3e3; border-radius: 10px; overflow: hidden; background: #fff; }
-      .attachment-item img, .attachment-item video { display: block; width: 100%; height: 90px; object-fit: cover; background: #f8f8f8; }
-      .attachment-item-name { padding: 6px 8px; font-size: 12px; font-weight: 600; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-      /* Mobile Responsive */
-      @media (max-width: 991.98px) {
-        body {
-          padding-top: 86px;
-        }
-        .navbar { overflow-x: clip; }
-        .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
-        .navbar-brand img { width: 56px !important; height: 42px !important; }
-        .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); }
-        .navbar-collapse.show { display: block; }
-        .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
-        .navbar-collapse .nav-item { width: 100%; text-align: center; }
-        .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
-        .navbar-collapse .btn { width: 80%; margin-top: 10px; }
-      }
-      
-      @media (max-width: 575.98px) {
-        .review-label { width: 110px; min-width: 110px; }
-
-        .service-work-box { overflow: visible; }
-        #serviceSelector {
-          min-height: 44px;
-          font-size: 0.98rem;
-        }
-        #serviceSelector.service-selector-open {
-          position: relative;
-          z-index: 30;
-          min-height: 176px;
-          padding: 6px;
-          border: 2px solid #6aa7d8;
-          border-radius: 12px;
-          /* background: #f8fcff; */
-        }
-        #serviceSelector.service-selector-open option {
-          padding: 10px 12px;
-          margin-bottom: 6px;
-          border: 1px solid #b9d7ef;
-          border-radius: 8px;
-          color: #050505;
-        }
-        #serviceSelector.service-selector-open option:last-child {
-          margin-bottom: 0;
-        }
-        #serviceSelector.service-selector-open option:checked {
-          /* background: #d8edff linear-gradient(0deg, #d8edff, #d8edff); */
-          border-color: #6ca8d9;
-          color: #000000;
-          font-weight: 700;
-        }
-
-        .attachment-preview-split { grid-template-columns: 1fr; }
-        .attachment-pane + .attachment-pane {
-          border-left: 0;
-          border-top: 1px dashed #b7d7f5;
-          padding-left: 6px;
-          padding-top: 10px;
-        }
-
-        .schedule-box .time-range-row .form-label {
-          font-size: 0.95rem;
-          margin-bottom: 4px;
-        }
-
-        .schedule-box .time-range-row .form-control {
-          padding-left: 8px;
-          padding-right: 8px;
-          font-size: 1rem;
-        }
+        width: auto;
+        background: #fff;
+        z-index: 999;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
       }
 
-      body.booking-embedded-mode nav,
-      body.booking-embedded-mode footer {
-        display: none !important;
-      }
-      body.booking-embedded-mode {
-        padding-top: 0 !important;
-      }
-      body.booking-embedded-mode section.py-5 {
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        background: #fff !important;
+      .navbar-collapse.show {
+        display: block;
       }
 
-      body.booking-embedded-mode section.py-5 > .container {
-        max-width: 100%;
-        padding: 12px 12px 18px;
+      .navbar-collapse .navbar-nav {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px;
+        padding: 15px 0;
       }
 
-      body.booking-embedded-mode #bookingPageSection,
-      body.booking-embedded-mode #reviewPageSection {
-        max-width: 100% !important;
+      .navbar-collapse .nav-item {
+        width: 100%;
+        text-align: center;
       }
 
-      body.booking-embedded-mode .booking-page-heading {
-        display: none !important;
+      .navbar-collapse .nav-link {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
       }
-    </style>
-<script src="/ga.js"></script>
-  </head>
-  <body>
-    <div style="font-family: &quot;Quicksand&quot;, sans-serif">
-      <div id="site-header"></div>
+
+      .navbar-collapse .btn {
+        width: 80%;
+        margin-top: 10px;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .review-label {
+        width: 110px;
+        min-width: 110px;
+      }
+
+      .service-work-box {
+        overflow: visible;
+      }
+
+      #serviceSelector {
+        min-height: 44px;
+        font-size: 0.98rem;
+      }
+
+      #serviceSelector.service-selector-open {
+        position: relative;
+        z-index: 30;
+        min-height: 176px;
+        padding: 6px;
+        border: 2px solid #6aa7d8;
+        border-radius: 12px;
+        /* background: #f8fcff; */
+      }
+
+      #serviceSelector.service-selector-open option {
+        padding: 10px 12px;
+        margin-bottom: 6px;
+        border: 1px solid #b9d7ef;
+        border-radius: 8px;
+        color: #050505;
+      }
+
+      #serviceSelector.service-selector-open option:last-child {
+        margin-bottom: 0;
+      }
+
+      #serviceSelector.service-selector-open option:checked {
+        /* background: #d8edff linear-gradient(0deg, #d8edff, #d8edff); */
+        border-color: #6ca8d9;
+        color: #000000;
+        font-weight: 700;
+      }
+
+      .attachment-preview-split {
+        grid-template-columns: 1fr;
+      }
+
+      .attachment-pane+.attachment-pane {
+        border-left: 0;
+        border-top: 1px dashed #b7d7f5;
+        padding-left: 6px;
+        padding-top: 10px;
+      }
+
+      .schedule-box .time-range-row .form-label {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+      }
+
+      .schedule-box .time-range-row .form-control {
+        padding-left: 8px;
+        padding-right: 8px;
+        font-size: 1rem;
+      }
+    }
+
+    body.booking-embedded-mode nav,
+    body.booking-embedded-mode footer {
+      display: none !important;
+    }
+
+    body.booking-embedded-mode {
+      padding-top: 0 !important;
+    }
+
+    body.booking-embedded-mode section.py-5 {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      background: #fff !important;
+    }
+
+    body.booking-embedded-mode section.py-5>.container {
+      max-width: 100%;
+      padding: 12px 12px 18px;
+    }
+
+    body.booking-embedded-mode #bookingPageSection,
+    body.booking-embedded-mode #reviewPageSection {
+      max-width: 100% !important;
+    }
+
+    body.booking-embedded-mode .booking-page-heading {
+      display: none !important;
+    }
+  </style>
+  <script src="/ga.js"></script>
+</head>
+
+<body>
+  <div style="font-family: &quot;Quicksand&quot;, sans-serif">
+    <div id="site-header"></div>
 
     <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #e8f4ff 100%)">
       <div class="container py-lg-4">
@@ -239,7 +645,8 @@
                       <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="tel" id="customerPhone" required placeholder="" pattern="[0-9]{10,11}" class="form-control" />
+                        <input type="tel" id="customerPhone" required placeholder="" pattern="[0-9]{10,11}"
+                          class="form-control" />
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -255,13 +662,15 @@
                     <label class="form-label">Địa chỉ của bạn</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
-                      <input type="text" id="customerAddress" placeholder="Bấm 'Lấy vị trí của tôi'" readonly class="form-control" />
+                      <input type="text" id="customerAddress" placeholder="Bấm 'Lấy vị trí của tôi'" readonly
+                        class="form-control" />
                     </div>
                     <div class="d-flex gap-2 mt-2">
                       <button type="button" onclick="getLocation()" class="btn btn-success btn-sm flex-fill">
                         <i class="fas fa-location-dot me-1"></i>Lấy vị trí
                       </button>
-                      <button type="button" id="toggleMapBtn" onclick="toggleMapPicker()" class="btn btn-warning btn-sm flex-fill">
+                      <button type="button" id="toggleMapBtn" onclick="toggleMapPicker()"
+                        class="btn btn-warning btn-sm flex-fill">
                         <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
                       </button>
                     </div>
@@ -269,7 +678,8 @@
                       <div id="mapPickerEl" style="height: 260px; border-radius: 12px; border: 1px solid #bcdcff"></div>
                       <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
                     </div>
-                    <div id="distanceInfo" class="form-text mt-1 text-muted">Quãng đường và phí di chuyển sẽ được tính tự động sau khi chọn vị trí.</div>
+                    <div id="distanceInfo" class="form-text mt-1 text-muted">Quãng đường và phí di chuyển sẽ được tính
+                      tự động sau khi chọn vị trí.</div>
                   </div>
                 </div>
 
@@ -283,7 +693,8 @@
                     <select id="serviceLoai" class="form-select"></select>
                   </div>
                   <div>
-                    <label class="form-label"><i class="fas fa-grip-horizontal me-1" style="color: #4f9ddb"></i>Chọn công việc cần làm</label>
+                    <label class="form-label"><i class="fas fa-grip-horizontal me-1" style="color: #4f9ddb"></i>Chọn
+                      công việc cần làm</label>
                     <div id="serviceJobs">
                       <div id="serviceJobsList" class="list-group"></div>
                     </div>
@@ -295,7 +706,8 @@
                 </div>
                 <div class="schedule-box">
                   <div class="mb-2">
-                    <label class="form-label fw-bold" style="color: #1f2a37"><i class="fas fa-clock me-1" style="color: #2f93df"></i>Chọn khung giờ</label>
+                    <label class="form-label fw-bold" style="color: #1f2a37"><i class="fas fa-clock me-1"
+                        style="color: #2f93df"></i>Chọn khung giờ</label>
                     <div id="servicePackages">
                       <div id="areaLevelSection" class="row g-2 mb-2 d-none">
                         <div class="col-md-6">
@@ -363,11 +775,12 @@
                   <span id="totalDaysText" class="text-muted ms-2"></span>
                 </div>
 
-                
+
 
                 <div class="card border-0 mb-3 price-detail-box">
                   <div class="card-body py-2 px-3">
-                    <p class="price-detail-title mb-2" style="color: #007bff"><i class="fas fa-receipt me-1"></i>Chi tiết tính tiền</p>
+                    <p class="price-detail-title mb-2" style="color: #007bff"><i class="fas fa-receipt me-1"></i>Chi
+                      tiết tính tiền</p>
                     <div class="d-flex justify-content-between small mb-1">
                       <span>Tiền dịch vụ</span>
                       <span id="basePrice" class="fw-bold">0 đ</span>
@@ -393,12 +806,14 @@
 
                 <div class="mb-3">
                   <label class="form-label fw-bold">Tổng tiền:</label>
-                  <input type="text" id="totalPrice" readonly value="0 đ" class="form-control fw-bold text-center fs-5" style="border-color: #007bff; background: #eef7ff; color: #1565c0" />
+                  <input type="text" id="totalPrice" readonly value="0 đ" class="form-control fw-bold text-center fs-5"
+                    style="border-color: #007bff; background: #eef7ff; color: #1565c0" />
                 </div>
 
                 <div class="mb-3 note-box">
                   <label class="form-label fw-bold">Ghi chú:</label>
-                  <textarea id="customerNote" rows="2" class="form-control" placeholder="Thời gian mong muốn, yêu cầu đặc biệt..."></textarea>
+                  <textarea id="customerNote" rows="2" class="form-control"
+                    placeholder="Thời gian mong muốn, yêu cầu đặc biệt..."></textarea>
                 </div>
 
                 <div class="mb-3 quick-attach-box">
@@ -434,12 +849,15 @@
                     </div>
                   </div>
 
-                  <div class="form-text">Nút hiển thị để minh họa giao diện. Ảnh/video chỉ hiển thị tạm, chưa lưu vào hệ thống.</div>
+                  <div class="form-text">Nút hiển thị để minh họa giao diện. Ảnh/video chỉ hiển thị tạm, chưa lưu vào hệ
+                    thống.</div>
                 </div>
 
                 <div class="d-flex gap-2 mt-3">
-                  <button type="button" id="btnResetBooking" class="btn btn-secondary rounded-pill flex-fill fw-bold">Làm lại</button>
-                  <button type="submit" class="btn text-white rounded-pill fw-bold" style="flex: 2; background-color: #007bff; border: none">
+                  <button type="button" id="btnResetBooking"
+                    class="btn btn-secondary rounded-pill flex-fill fw-bold">Làm lại</button>
+                  <button type="submit" class="btn text-white rounded-pill fw-bold"
+                    style="flex: 2; background-color: #007bff; border: none">
                     <i class="fas fa-check me-1"></i>Xem Lại Thông Tin
                   </button>
                 </div>
@@ -457,7 +875,8 @@
         <div id="reviewPageSection" class="mx-auto d-none" style="max-width: 760px">
           <div class="card border-0 shadow rounded-4 review-shell">
             <div class="card-body p-4">
-              <h5 class="fw-bold mb-3 review-title"><i class="fas fa-clipboard-check me-2"></i>Kiểm Tra Thông Tin Đặt Lịch</h5>
+              <h5 class="fw-bold mb-3 review-title"><i class="fas fa-clipboard-check me-2"></i>Kiểm Tra Thông Tin Đặt
+                Lịch</h5>
 
               <div class="alert alert-warning small review-alert">
                 <i class="fas fa-circle-info me-1"></i>
@@ -468,10 +887,14 @@
                 <div class="card-body py-3">
                   <h6 class="fw-bold mb-3 review-section-title">Thông tin khách hàng</h6>
                   <div class="row g-2 small">
-                    <div class="col-12 review-row"><span class="review-label">Họ và tên:</span><span id="reviewName" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Số điện thoại:</span><span id="reviewPhone" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Email:</span><span id="reviewEmail" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Địa chỉ:</span><span id="reviewAddress" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Họ và tên:</span><span id="reviewName"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Số điện thoại:</span><span
+                        id="reviewPhone" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Email:</span><span id="reviewEmail"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Địa chỉ:</span><span id="reviewAddress"
+                        class="review-value">-</span></div>
                   </div>
                 </div>
               </div>
@@ -480,17 +903,29 @@
                 <div class="card-body py-3">
                   <h6 class="fw-bold mb-3 review-section-title">Chi tiết đặt lịch</h6>
                   <div class="row g-2 small">
-                    <div class="col-12 review-row"><span class="review-label">Dịch vụ:</span><span id="reviewService" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Nơi dọn:</span><span id="reviewLoai" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Gói dịch vụ:</span><span id="reviewPackage" class="review-value">-</span></div>
-                    <div class="col-12"><strong>Công việc:</strong><div id="reviewJobs" class="mt-1">-</div></div>
-                    <div class="col-12 review-row"><span class="review-label">Ngày bắt đầu:</span><span id="reviewStartDate" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Ngày kết thúc:</span><span id="reviewEndDate" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Khung giờ:</span><span id="reviewTime" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Tổng số ngày:</span><span id="reviewTotalDays" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Tổng số giờ:</span><span id="reviewTotalHours" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Yêu cầu khác:</span><span id="reviewExtraRequest" class="review-value">-</span></div>
-                    <div class="col-12 review-row"><span class="review-label">Ghi chú:</span><span id="reviewNote" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Dịch vụ:</span><span id="reviewService"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Nơi dọn:</span><span id="reviewLoai"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Gói dịch vụ:</span><span
+                        id="reviewPackage" class="review-value">-</span></div>
+                    <div class="col-12"><strong>Công việc:</strong>
+                      <div id="reviewJobs" class="mt-1">-</div>
+                    </div>
+                    <div class="col-12 review-row"><span class="review-label">Ngày bắt đầu:</span><span
+                        id="reviewStartDate" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Ngày kết thúc:</span><span
+                        id="reviewEndDate" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Khung giờ:</span><span id="reviewTime"
+                        class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Tổng số ngày:</span><span
+                        id="reviewTotalDays" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Tổng số giờ:</span><span
+                        id="reviewTotalHours" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Yêu cầu khác:</span><span
+                        id="reviewExtraRequest" class="review-value">-</span></div>
+                    <div class="col-12 review-row"><span class="review-label">Ghi chú:</span><span id="reviewNote"
+                        class="review-value">-</span></div>
                     <div class="col-12">
                       <strong>Tệp đính kèm:</strong>
                       <div id="reviewAttachmentArea" class="attachment-preview-box mt-1">
@@ -523,7 +958,8 @@
                 <button type="button" id="btnBackToEdit" class="btn rounded-pill flex-fill fw-bold review-btn-edit">
                   <i class="fas fa-pen me-1"></i>Chỉnh Sửa Lại
                 </button>
-                <button type="button" id="btnConfirmSave" class="btn text-white rounded-pill fw-bold review-btn-save" style="flex: 2; border: none">
+                <button type="button" id="btnConfirmSave" class="btn text-white rounded-pill fw-bold review-btn-save"
+                  style="flex: 2; border: none">
                   <i class="fas fa-check me-1"></i>Xác Nhận
                 </button>
               </div>
@@ -531,11 +967,12 @@
           </div>
         </div>
 
-        <a id="inlineLoginTrigger" href="login.html" data-login-modal data-login-modal-src="login.html" class="d-none">Mở đăng nhập</a>
+        <a id="inlineLoginTrigger" href="login.html" data-login-modal data-login-modal-src="login.html"
+          class="d-none">Mở đăng nhập</a>
       </div>
     </section>
 
-      <div id="site-footer"></div>
+    <div id="site-footer"></div>
     <script src="https://api.dvqt.vn/js/krud.js"></script>
     <script>
       if (typeof krud === 'undefined') {
@@ -800,10 +1237,10 @@
             DISTANCE_KM = Number(distanceKm.toFixed(2));
             renderDistanceInfo(
               'Quãng đường ước tính: ' +
-                DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
-                ' km. Phí di chuyển: ' +
-                formatMoney(DISTANCE_KM * 5000) +
-                '.'
+              DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+              ' km. Phí di chuyển: ' +
+              formatMoney(DISTANCE_KM * 5000) +
+              '.'
             );
           } catch (error) {
             if (requestId !== DISTANCE_REQUEST_ID) return;
@@ -1319,20 +1756,20 @@
 
           $('#calcDetailText').text(
             baseCalc.calcText +
-              '; chọn ' +
-              selectedJobCount +
-              '/' +
-              totalJobs +
-              ' công việc' +
-              '; quãng đường ' +
-              km.toFixed(2) +
-              'km' +
-                '; số ngày ' +
-                totalDays +
-              '; hệ số giờ ' +
-              peakFactor +
-              '; hệ số ngày ' +
-              dayFactor
+            '; chọn ' +
+            selectedJobCount +
+            '/' +
+            totalJobs +
+            ' công việc' +
+            '; quãng đường ' +
+            km.toFixed(2) +
+            'km' +
+            '; số ngày ' +
+            totalDays +
+            '; hệ số giờ ' +
+            peakFactor +
+            '; hệ số ngày ' +
+            dayFactor
           );
           $('#calcDetailRow').removeClass('d-none');
 
@@ -1409,8 +1846,8 @@
               var safeName = $('<div>').text(item.name).html();
               $imageGrid.append(
                 '<div class="attachment-item">' +
-                  '<img src="' + item.url + '" alt="' + safeName + '">' +
-                  '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '<img src="' + item.url + '" alt="' + safeName + '">' +
+                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
                 '</div>'
               );
             });
@@ -1426,8 +1863,8 @@
               var safeName = $('<div>').text(item.name).html();
               $videoGrid.append(
                 '<div class="attachment-item">' +
-                  '<video src="' + item.url + '" controls muted preload="metadata"></video>' +
-                  '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '<video src="' + item.url + '" controls muted preload="metadata"></video>' +
+                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
                 '</div>'
               );
             });
@@ -1456,8 +1893,8 @@
               var safeName = $('<div>').text(item.name).html();
               $imageGrid.append(
                 '<div class="attachment-item">' +
-                  '<img src="' + item.url + '" alt="' + safeName + '">' +
-                  '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '<img src="' + item.url + '" alt="' + safeName + '">' +
+                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
                 '</div>'
               );
             });
@@ -1473,8 +1910,8 @@
               var safeName = $('<div>').text(item.name).html();
               $videoGrid.append(
                 '<div class="attachment-item">' +
-                  '<video src="' + item.url + '" controls muted preload="metadata"></video>' +
-                  '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
+                '<video src="' + item.url + '" controls muted preload="metadata"></video>' +
+                '<div class="attachment-item-name" title="' + safeName + '">' + safeName + '</div>' +
                 '</div>'
               );
             });
@@ -1597,10 +2034,10 @@
             if (DISTANCE_KM > 0) {
               renderDistanceInfo(
                 'Quãng đường ước tính: ' +
-                  DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
-                  ' km. Phí di chuyển: ' +
-                  formatMoney(DISTANCE_KM * 5000) +
-                  '.'
+                DISTANCE_KM.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) +
+                ' km. Phí di chuyển: ' +
+                formatMoney(DISTANCE_KM * 5000) +
+                '.'
               );
             }
           }
@@ -1752,18 +2189,18 @@
         // Chuc nang: xu ly nghiep vu cho mapBookingDataForDatabase.
         function mapBookingDataForDatabase(data) {
           var payload = {
-            hovaten: (data.name || '').trim(),
-            sodienthoai: (data.phone || '').trim(),
-            email: (data.email || '').trim(),
-            diachi: (data.address || '').trim(),
+            tenkhachhang: (data.name || '').trim(),
+            sdtkhachhang: (data.phone || '').trim(),
+            emailkhachhang: (data.email || '').trim(),
+            diachikhachhang: (data.address || '').trim(),
             dich_vu: data.service || '',
             loai_noi_don: data.serviceLoaiLabel || data.serviceLoai || '',
             goi_dich_vu: data.package || 'Không chọn gói',
             cong_viec: data.jobs || '',
-            ngay_bat_dau: data.startDate || '',
-            ngay_ket_thuc: data.endDate || '',
-            gio_bat_dau: data.startTime || '',
-            gio_ket_thuc: data.endTime || '',
+            ngay_bat_dau_kehoach: data.startDate || '',
+            ngay_ket_thuc_kehoach: data.endDate || '',
+            gio_bat_dau_kehoach: data.startTime || '',
+            gio_ket_thuc_kehoach: data.endTime || '',
             tong_tien: normalizeMoneyToNumber(data.price),
             yeu_cau_khac: data.extraRequest || '',
             ghi_chu: (data.note || '').trim()
@@ -2185,10 +2622,9 @@
       });
     </script>
 
-    </div>
-        <script src="JS/shared-layout.js"></script>
-  </body>
+  </div>
+  <script src="JS/shared-layout.js"></script>
+  <script src="JS/user-nav-menu.js"></script>
+</body>
+
 </html>
-
-
-

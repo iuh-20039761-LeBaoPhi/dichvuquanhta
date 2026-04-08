@@ -27,12 +27,14 @@
     "chuyen-van-phong.html": "services",
     "cam-nang.html": "news",
     "cam-nang-chi-tiet.html": "news",
-    "khao-sat.html": "survey",
+    "khao-sat.html": "booking",
     "dat-lich.html": "booking",
     "dang-nhap.html": "account",
     "dang-ky.html": "account",
     "dashboard.html": "account",
     "lich-su-yeu-cau.html": "account",
+    "danh-sach-viec.html": "account",
+    "ho-so.html": "account",
   };
 
   function safeParse(raw, fallback) {
@@ -70,12 +72,12 @@
       identity?.fullName ||
       identity?.full_name ||
       identity?.email ||
-      (role === "doi-tac" ? "Đối tác" : "Khách hàng");
+      (role === "nha-cung-cap" ? "Nhà cung cấp" : "Khách hàng");
     return String(value || "")
       .trim()
       .split(/\s+/)
       .filter(Boolean)
-      .slice(-1)[0] || (role === "doi-tac" ? "Đối tác" : "Khách hàng");
+      .slice(-1)[0] || (role === "nha-cung-cap" ? "Nhà cung cấp" : "Khách hàng");
   }
 
   function loadPartial(url) {
@@ -116,15 +118,15 @@
       services: servicesLink,
       pricing: `${projectBase}bang-gia-chuyen-don.html`,
       contact: `${projectBase}index.html#contact`,
-      survey: `${projectBase}khao-sat.html`,
+      survey: `${projectBase}dat-lich.html`,
       booking: `${projectBase}dat-lich.html`,
       account: `${projectBase}dang-nhap.html?vai-tro=khach-hang`,
       login: `${projectBase}dang-nhap.html`,
       register: `${projectBase}dang-ky.html`,
       "login-customer": `${projectBase}dang-nhap.html?vai-tro=khach-hang`,
       "register-customer": `${projectBase}dang-ky.html?vai-tro=khach-hang`,
-      "login-provider": `${projectBase}dang-nhap.html?vai-tro=doi-tac`,
-      "register-provider": `${projectBase}dang-ky.html?vai-tro=doi-tac`,
+      "login-provider": `${projectBase}dang-nhap.html?vai-tro=nha-cung-cap`,
+      "register-provider": `${projectBase}dang-ky.html?vai-tro=nha-cung-cap`,
       policy: `${projectBase}chinh-sach-va-dieu-khoan.html`,
       "moving-house": `${servicesLink}#chuyen-nha`,
       "moving-warehouse": `${servicesLink}#chuyen-kho-bai`,
@@ -160,9 +162,11 @@
   }
 
   function resolveAccountLinks(role) {
-    if (role === "doi-tac") {
+    if (role === "nha-cung-cap") {
       return {
-        dashboard: `${projectBase}doi-tac/dashboard.html`,
+        dashboard: `${projectBase}nha-cung-cap/dashboard.html`,
+        orders: `${projectBase}nha-cung-cap/danh-sach-viec.html`,
+        profile: `${projectBase}nha-cung-cap/ho-so.html`,
         secondary: `${projectBase}bang-gia-chuyen-don.html`,
         secondaryLabel: "Bảng giá minh bạch",
       };
@@ -220,16 +224,16 @@
 
     const firstName = escapeHtml(getDisplayName(identity, role));
     const summary = escapeHtml(
-      String(identity.phone || "").trim() ||
+        String(identity.phone || "").trim() ||
         String(identity.email || "").trim() ||
-        (role === "doi-tac" ? "Khu vực đối tác" : "Khu vực khách hàng"),
+        (role === "nha-cung-cap" ? "Khu vực nhà cung cấp" : "Khu vực khách hàng"),
     );
     const links = resolveAccountLinks(role);
 
     loginItem.hidden = false;
     loginItem.className = "dropdown has-submenu customer-nav-dropdown";
     loginItem.innerHTML =
-      role === "doi-tac"
+      role === "nha-cung-cap"
         ? `
           <a data-layout-link="account" href="${links.dashboard}">Xin chào, ${firstName}</a>
           <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
@@ -240,7 +244,9 @@
                 <span>${summary}</span>
               </div>
             </li>
-            <li><a href="${links.dashboard}"><i class="fas fa-chart-line"></i> Dashboard đối tác</a></li>
+            <li><a href="${links.dashboard}"><i class="fas fa-chart-line"></i> Dashboard nhà cung cấp</a></li>
+            <li><a href="${links.orders}"><i class="fas fa-briefcase"></i> Danh sách việc</a></li>
+            <li><a href="${links.profile}"><i class="fas fa-user"></i> Hồ sơ nhà cung cấp</a></li>
             <li><a href="${links.secondary}"><i class="fas fa-file-invoice-dollar"></i> ${escapeHtml(
               links.secondaryLabel,
             )}</a></li>

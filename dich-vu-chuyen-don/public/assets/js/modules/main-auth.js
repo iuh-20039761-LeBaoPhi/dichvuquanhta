@@ -5,11 +5,11 @@
   const core = window.FastGoCore || {};
   const storageKeyRole = "fastgo-auth-role";
   const storageKeyIdentity = "fastgo-auth-identity";
-  const authTableByRole = {
-    "khach-hang": "dich_vu_chuyen_don_customers",
-    "doi-tac": "dich_vu_chuyen_don_partners",
-  };
-  const validRoles = new Set(["khach-hang", "doi-tac"]);
+  const dvqtUserTable = "nguoidung";
+  // DVQT common auth currently defines service ids 1-11; `chuyendon` is not listed there yet.
+  // Use 12 here as the temporary common-table service id for moving partners.
+  const chuyenDonServiceId = "12";
+  const validRoles = new Set(["khach-hang", "nha-cung-cap"]);
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const vnPhonePattern = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
   const passwordRulePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)\S{8,32}$/;
@@ -23,8 +23,30 @@
     }
   }
 
-  function getAuthTable(role) {
-    return authTableByRole[String(role || "").trim().toLowerCase()] || "";
+  function getAuthTable() {
+    return dvqtUserTable;
+  }
+
+  function splitServiceIds(value) {
+    return String(value || "")
+      .split(",")
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+  }
+
+  function hasChuyenDonProviderRole(value) {
+    return splitServiceIds(value).includes(chuyenDonServiceId);
+  }
+
+  function resolveRoleFromServices(serviceIds, preferredRole, strictMode) {
+    const normalizedPreferredRole = normalizeRole(preferredRole);
+    const hasProviderRole = hasChuyenDonProviderRole(serviceIds);
+
+    if (normalizedPreferredRole === "nha-cung-cap") {
+      return hasProviderRole ? "nha-cung-cap" : strictMode ? "" : "khach-hang";
+    }
+
+    return "khach-hang";
   }
 
   function getListFn() {
@@ -85,11 +107,19 @@
   }
 
   function normalizeUserRecord(payload) {
-    const role = String(payload?.role || "khach-hang").trim().toLowerCase();
+    const serviceIds = splitServiceIds(
+      payload?.id_dichvu || (payload?.role === "nha-cung-cap" ? chuyenDonServiceId : "0"),
+    );
+    const role =
+      normalizeRole(payload?.role) ||
+      resolveRoleFromServices(serviceIds.join(","), "khach-hang", false) ||
+      "khach-hang";
     const email = String(payload?.email || "").trim().toLowerCase();
-    const fullName = String(payload?.full_name || payload?.fullName || "").trim();
+    const fullName = String(
+      payload?.full_name || payload?.fullName || payload?.hovaten || "",
+    ).trim();
     const contactPerson = String(payload?.contact_person || payload?.contactPerson || "").trim();
-    const phone = normalizePhone(payload?.phone || "");
+    const phone = normalizePhone(payload?.phone || payload?.sodienthoai || "");
 
     return {
       key: getUserKey(role, email),
@@ -101,33 +131,50 @@
       contact_person: contactPerson,
       contactPerson,
       phone,
-      password: String(payload?.password || ""),
-      created_at: String(payload?.created_at || new Date().toISOString()).trim(),
+      password: String(payload?.password || payload?.matkhau || payload?.mat_khau || ""),
+      id_dichvu: serviceIds.join(",") || "0",
+      created_at: String(
+        payload?.created_at || payload?.created_date || new Date().toISOString(),
+      ).trim(),
       updated_at: new Date().toISOString(),
     };
   }
 
-  function normalizeKrudUserRecord(role, row) {
+  function normalizeKrudUserRecord(row, preferredRole, strictMode) {
+    const resolvedRole = resolveRoleFromServices(
+      row?.id_dichvu,
+      preferredRole,
+      Boolean(strictMode),
+    );
+    if (!resolvedRole) return null;
+
     return normalizeUserRecord({
       id: row?.id || "",
-      role,
+      role: resolvedRole,
       email: row?.email || "",
-      full_name: row?.full_name || row?.fullName || row?.ho_ten || row?.ten_don_vi || "",
+      full_name:
+        row?.full_name ||
+        row?.fullName ||
+        row?.hovaten ||
+        row?.ho_ten ||
+        row?.ten_don_vi ||
+        "",
       contact_person:
         row?.contact_person ||
         row?.contactPerson ||
         row?.nguoi_phu_trach ||
         row?.nguoi_lien_he ||
         "",
-      phone: row?.phone || row?.so_dien_thoai || "",
-      password: row?.password || row?.mat_khau || "",
+      phone: row?.phone || row?.so_dien_thoai || row?.sodienthoai || "",
+      password: row?.password || row?.matkhau || row?.mat_khau || "",
+      id_dichvu: row?.id_dichvu || "0",
       created_at: row?.created_at || row?.created_date || "",
     });
   }
 
-  async function listUsersFromKrud(role) {
+  async function listUsersFromKrud(preferredRole, strictMode) {
     const listFn = getListFn();
-    const tableName = getAuthTable(role);
+    const tableName = getAuthTable();
     if (!listFn || !tableName) return [];
 
     const response = await listFn({
@@ -137,37 +184,20 @@
       limit: 300,
     });
 
-    return extractRows(response).map((row) => normalizeKrudUserRecord(role, row));
+    return extractRows(response)
+      .map((row) => normalizeKrudUserRecord(row, preferredRole, strictMode))
+      .filter(Boolean);
   }
 
   function normalizeRole(value) {
     const role = String(value || "").trim().toLowerCase();
+    if (role === "doi-tac" || role === "provider") return "nha-cung-cap";
     return validRoles.has(role) ? role : "";
   }
 
-  function getLoginRoleCandidates(preferredRole) {
-    const normalizedPreferredRole = normalizeRole(preferredRole);
-    const roles = [];
-
-    if (normalizedPreferredRole) {
-      roles.push(normalizedPreferredRole);
-    }
-
-    Object.keys(authTableByRole).forEach((role) => {
-      if (role !== normalizedPreferredRole) {
-        roles.push(role);
-      }
-    });
-
-    return roles;
-  }
-
-  async function getUsersForRole(role) {
-    const normalizedRole = normalizeRole(role);
-    if (!normalizedRole) return [];
-
+  async function getUsersForRole(role, strictMode) {
     try {
-      return await listUsersFromKrud(normalizedRole);
+      return await listUsersFromKrud(role, strictMode);
     } catch (error) {
       console.error("Cannot read auth users from KRUD:", error);
       throw new Error("Không thể tải dữ liệu tài khoản từ KRUD.");
@@ -176,21 +206,31 @@
 
   async function insertUserToKrud(payload) {
     const insertFn = getInsertFn();
-    const tableName = getAuthTable(payload?.role);
+    const tableName = getAuthTable();
     if (!insertFn || !tableName) return null;
 
     const extraFields = payload?.extra_fields && typeof payload.extra_fields === "object"
       ? payload.extra_fields
       : {};
 
+    const nextRole = normalizeRole(payload?.role) || "khach-hang";
+    const idDichvu = nextRole === "nha-cung-cap" ? chuyenDonServiceId : "0";
+
     return insertFn(tableName, {
-      role: String(payload?.role || "").trim().toLowerCase(),
+      role: nextRole,
+      vai_tro: nextRole,
       email: String(payload?.email || "").trim().toLowerCase(),
+      hovaten: String(payload?.full_name || payload?.fullName || "").trim(),
       full_name: String(payload?.full_name || payload?.fullName || "").trim(),
       contact_person: String(payload?.contact_person || payload?.contactPerson || "").trim(),
+      sodienthoai: normalizePhone(payload?.phone || ""),
       phone: normalizePhone(payload?.phone || ""),
+      matkhau: String(payload?.password || ""),
       password: String(payload?.password || ""),
+      id_dichvu: idDichvu,
+      created_date: new Date().toISOString(),
       created_at: new Date().toISOString(),
+      trangthai: "active",
       ...extraFields,
     });
   }
@@ -208,6 +248,7 @@
           full_name: String(payload?.full_name || payload?.fullName || "").trim(),
           contact_person: String(payload?.contact_person || payload?.contactPerson || "").trim(),
           contactPerson: String(payload?.contact_person || payload?.contactPerson || "").trim(),
+          id_dichvu: String(payload?.id_dichvu || "").trim(),
         }),
       );
     } catch (error) {
@@ -220,21 +261,34 @@
     const role = requestedRole || "khach-hang";
     const email = String(payload?.email || "").trim().toLowerCase();
     const password = String(payload?.password || "");
+    const phone = normalizePhone(payload?.phone || "");
 
     if (mode === "register") {
-      const users = await getUsersForRole(role);
-      const userKey = getUserKey(role, email);
-      const existingUser = users.find((user) => user.key === userKey);
+      const users = await getUsersForRole(role, false);
+      const existingUser = users.find((user) => {
+        const sameEmail = normalizeText(user.email).toLowerCase() === email;
+        const samePhone = phone && normalizePhone(user.phone) === phone;
+        return sameEmail || samePhone;
+      });
 
       if (existingUser) {
-        throw new Error("Email này đã được dùng cho vai trò đã chọn.");
+        throw new Error("Email hoặc số điện thoại này đã tồn tại trong hệ thống.");
       }
 
-      const nextUser = normalizeUserRecord(payload);
+      const nextUser = normalizeUserRecord({
+        ...payload,
+        role,
+        id_dichvu: role === "doi-tac" ? chuyenDonServiceId : "0",
+      });
+      const registerPayload = {
+        ...payload,
+        role,
+        id_dichvu: nextUser.id_dichvu,
+      };
       let krudInsertSucceeded = false;
 
       try {
-        const krudResult = await insertUserToKrud(payload);
+        const krudResult = await insertUserToKrud(registerPayload);
         const remoteId = String(
           krudResult?.id ||
             krudResult?.insertId ||
@@ -260,19 +314,20 @@
       };
     }
 
-    const loginRoleCandidates = getLoginRoleCandidates(requestedRole || getPreferredRole());
-    for (const candidateRole of loginRoleCandidates) {
-      const users = await getUsersForRole(candidateRole);
-      const userKey = getUserKey(candidateRole, email);
-      const existingUser = users.find((user) => user.key === userKey);
+    const preferredRole = requestedRole || getPreferredRole();
+    const strictRole = Boolean(requestedRole || getRoleFromUrl());
+    const users = await getUsersForRole(preferredRole, strictRole);
+    const existingUser = users.find((user) => {
+      if (normalizePhone(user.phone) !== phone) return false;
+      return String(user.password || "") === password;
+    });
 
-      if (!existingUser || existingUser.password !== password) {
-        continue;
-      }
-
+    if (existingUser) {
       const nextUser = normalizeUserRecord({
         ...existingUser,
-        role: candidateRole,
+        role:
+          resolveRoleFromServices(existingUser.id_dichvu, preferredRole, strictRole) ||
+          "khach-hang",
         updated_at: new Date().toISOString(),
       });
 
@@ -285,7 +340,85 @@
       };
     }
 
-    throw new Error("Email hoặc mật khẩu chưa đúng.");
+    if (strictRole && preferredRole === "nha-cung-cap") {
+      throw new Error("Tài khoản này chưa được bật quyền nhà cung cấp cho dịch vụ chuyển dọn.");
+    }
+
+    throw new Error("Số điện thoại hoặc mật khẩu chưa đúng.");
+  }
+
+  function buildAutoGeneratedCustomerEmail(phone) {
+    const normalizedPhone = normalizePhone(phone).replace(/[^\d]/g, "");
+    if (!normalizedPhone) return "";
+    return `khachhang-${normalizedPhone}@autogen.dvqt.local`;
+  }
+
+  function readSavedIdentity() {
+    return safeParse(window.localStorage.getItem(storageKeyIdentity), {});
+  }
+
+  async function ensureCustomerAccountForBooking(payload) {
+    const fullName = normalizeText(
+      payload?.full_name || payload?.fullName || payload?.ho_ten || "",
+    );
+    const phone = normalizePhone(
+      payload?.phone || payload?.so_dien_thoai || "",
+    );
+    const email = normalizeText(payload?.email || "").toLowerCase();
+
+    if (!fullName) {
+      throw new Error("Thiếu họ tên để tạo tài khoản khách hàng tự động.");
+    }
+
+    if (!phone || !vnPhonePattern.test(phone)) {
+      throw new Error("Số điện thoại chưa đúng định dạng để tạo tài khoản khách hàng.");
+    }
+
+    const users = await getUsersForRole("khach-hang", false);
+    const existingUser = users.find((user) => {
+      const samePhone = phone && normalizePhone(user.phone) === phone;
+      const sameEmail = email && normalizeText(user.email).toLowerCase() === email;
+      return samePhone || sameEmail;
+    });
+
+    if (existingUser) {
+      return {
+        status: "existing",
+        created: false,
+        auto_logged_in: false,
+        user: normalizeUserRecord(existingUser),
+      };
+    }
+
+    const generatedEmail = email || buildAutoGeneratedCustomerEmail(phone);
+    if (!generatedEmail) {
+      throw new Error("Không thể sinh email nội bộ cho tài khoản khách hàng tự động.");
+    }
+
+    const result = await requestAuth("register", {
+      role: "khach-hang",
+      email: generatedEmail,
+      full_name: fullName,
+      phone,
+      password: phone,
+      password_confirm: phone,
+      extra_fields: {
+        auto_created_from_booking: "1",
+        auto_created_source: "dat_lich_chuyen_don",
+      },
+    });
+
+    syncRole("khach-hang");
+
+    return {
+      status: "created",
+      created: true,
+      auto_logged_in: true,
+      default_password: phone,
+      login_identifier: phone,
+      generated_email: generatedEmail,
+      user: result?.user || null,
+    };
   }
 
   function showFieldError(input, message) {
@@ -491,13 +624,18 @@
     const noteInput = getField(form, "note");
     const agreeTermsInput = getField(form, "agree_terms");
 
-    pushIfInvalid(emailInput, (input) => validateEmailField(input));
-
     if (mode === "login") {
+      pushIfInvalid(phoneInput, (input) =>
+        validatePhoneField(input, {
+          required: true,
+          requiredMessage: "Nhập số điện thoại để đăng nhập.",
+        }),
+      );
       pushIfInvalid(passwordInput, (input) => validatePasswordField(input, "login"));
     }
 
     if (mode === "register") {
+      pushIfInvalid(emailInput, (input) => validateEmailField(input));
       if (role === "khach-hang") {
         pushIfInvalid(fullNameInput, (input) => validateNameField(input, "Họ và tên", 2, 80));
         pushIfInvalid(phoneInput, (input) =>
@@ -534,7 +672,7 @@
       const params = new URLSearchParams(window.location.search);
       const rawRole = String(params.get("vai-tro") || "").trim().toLowerCase();
       if (validRoles.has(rawRole)) return rawRole;
-      if (rawRole === "nha-cung-cap" || rawRole === "provider") return "doi-tac";
+      if (rawRole === "doi-tac" || rawRole === "provider") return "nha-cung-cap";
     } catch (error) {
       console.error("Cannot resolve auth role:", error);
     }
@@ -547,7 +685,8 @@
 
     try {
       const savedRole = window.localStorage.getItem(storageKeyRole);
-      if (savedRole && validRoles.has(savedRole)) return savedRole;
+      const normalizedSavedRole = normalizeRole(savedRole);
+      if (normalizedSavedRole) return normalizedSavedRole;
     } catch (error) {
       console.error("Cannot access localStorage:", error);
     }
@@ -670,7 +809,9 @@
 
       function getDefaultRedirect(role) {
         const fallback =
-          role === "doi-tac" ? "doi-tac/dashboard.html" : "khach-hang/dashboard.html";
+          role === "nha-cung-cap"
+            ? "nha-cung-cap/dashboard.html"
+            : "khach-hang/dashboard.html";
         return typeof core.toProjectUrl === "function" ? core.toProjectUrl(fallback) : fallback;
       }
 
@@ -803,4 +944,10 @@
   bindUploadNamePreview();
   hydrateSavedIdentity();
   bindForms();
+
+  window.FastGoAuth = {
+    requestAuth,
+    ensureCustomerAccountForBooking,
+    normalizePhone,
+  };
 })(window, document);

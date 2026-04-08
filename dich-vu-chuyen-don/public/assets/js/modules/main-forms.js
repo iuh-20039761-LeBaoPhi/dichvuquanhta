@@ -8,17 +8,14 @@
   const bookingPricingModule = window.FastGoBookingPricing || null;
   const bookingMapModule = window.FastGoBookingMap || null;
   const bookingWizardModule = window.FastGoBookingWizard || null;
-  const surveyMapModule = window.FastGoSurveyMap || null;
   const formSummariesModule = window.FastGoFormSummaries || null;
   const formMediaModule = window.FastGoFormMedia || null;
-  const surveyFormsModule = window.FastGoSurveyForms || null;
   const bookingFormsModule = window.FastGoBookingForms || null;
+  const bookingApi = window.FastGoBookingApi || null;
 
   const partialPaths = {
-    "khao-sat": core.toPublicUrl("assets/partials/bieu-mau/form-khao-sat.html"),
     "dat-lich": core.toPublicUrl("assets/partials/bieu-mau/form-dat-lich.html"),
   };
-  const bookingCrudTableName = "dich_vu_chuyen_don_dat_lich";
 
   const SERVICE_ALIAS_MAP = {
     chuyen_nha: "chuyen_nha",
@@ -117,7 +114,9 @@
       )
         .then((response) => {
           if (!response.ok) {
-            throw new Error(`Cannot load pricing reference: ${response.status}`);
+            throw new Error(
+              `Cannot load pricing reference: ${response.status}`,
+            );
           }
           return response.json();
         })
@@ -131,7 +130,9 @@
   }
 
   function normalizeService(rawValue) {
-    const value = String(rawValue || "").trim().toLowerCase();
+    const value = String(rawValue || "")
+      .trim()
+      .toLowerCase();
     return SERVICE_ALIAS_MAP[value] || "";
   }
 
@@ -141,7 +142,9 @@
   }
 
   function normalizePricingDataServiceId(rawValue) {
-    const value = String(rawValue || "").trim().toLowerCase();
+    const value = String(rawValue || "")
+      .trim()
+      .toLowerCase();
     return PRICING_DATA_SERVICE_ID_MAP[value] || "";
   }
 
@@ -194,50 +197,11 @@
     return labels;
   }
 
-  function formatRequestDateCode(value) {
-    const date = value instanceof Date ? value : new Date(value);
-    if (Number.isNaN(date.getTime())) return "";
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
-    return `${y}${m}${d}`;
-  }
-
-  function formatSystemRequestCode(recordId, createdAt = new Date()) {
-    const numericId = Number(recordId);
-    if (!Number.isFinite(numericId) || numericId <= 0) return "";
-    return `CDL-${formatRequestDateCode(createdAt)}-${String(
-      Math.trunc(Math.abs(numericId)),
-    ).padStart(7, "0")}`;
-  }
-
-  function getBookingInsertFn() {
-    if (typeof window.crud === "function") {
-      return (tableName, data) => window.crud("insert", tableName, data);
-    }
-
-    if (typeof window.krud === "function") {
-      return (tableName, data) => window.krud("insert", tableName, data);
-    }
-
-    return null;
-  }
-
-  function getBookingUpdateFn() {
-    if (typeof window.crud === "function") {
-      return (tableName, data) => window.crud("update", tableName, data);
-    }
-
-    if (typeof window.krud === "function") {
-      return (tableName, data) => window.krud("update", tableName, data);
-    }
-
-    return null;
-  }
-
   function getFileNames(scope, selector) {
     return Array.from(scope.querySelectorAll(selector)).flatMap((input) =>
-      Array.from(input.files || []).map((file) => file.name).filter(Boolean),
+      Array.from(input.files || [])
+        .map((file) => file.name)
+        .filter(Boolean),
     );
   }
 
@@ -259,6 +223,8 @@
       "[data-nhom-chip='chi_tiet_van_phong_dat_lich'] input[type='checkbox']",
       "[data-nhom-chip='chi_tiet_kho_bai_dat_lich'] input[type='checkbox']",
     ]);
+    const requiresSurveyFirst =
+      String(formData.get("can_khao_sat_truoc") || "").trim() === "1";
     const pricingBreakdown = getBookingPricingBreakdown(scope);
     const totalAmount = Number(
       String(
@@ -284,24 +250,38 @@
       loai_bieu_mau: "dat_lich",
       loai_dich_vu: normalizeService(serviceSelect?.value || ""),
       ten_dich_vu: getSelectedLabel(serviceSelect),
-      ho_ten: String(formData.get("ho_ten") || identity.fullName || identity.full_name || "").trim(),
-      so_dien_thoai: String(formData.get("so_dien_thoai") || identity.phone || "").trim(),
+      ho_ten: String(
+        formData.get("ho_ten") || identity.fullName || identity.full_name || "",
+      ).trim(),
+      so_dien_thoai: String(
+        formData.get("so_dien_thoai") || identity.phone || "",
+      ).trim(),
       ten_cong_ty: String(formData.get("ten_cong_ty") || "").trim(),
       dia_chi_di: String(formData.get("dia_chi_di") || "").trim(),
       dia_chi_den: String(formData.get("dia_chi_den") || "").trim(),
       ngay_thuc_hien: String(formData.get("ngay_thuc_hien") || "").trim(),
-      khung_gio_thuc_hien: String(formData.get("khung_gio_thuc_hien") || "").trim(),
-      ten_khung_gio_thuc_hien: getSelectedLabel(scope.querySelector("#khung-gio-dat-lich")),
+      khung_gio_thuc_hien: String(
+        formData.get("khung_gio_thuc_hien") || "",
+      ).trim(),
+      ten_khung_gio_thuc_hien: getSelectedLabel(
+        scope.querySelector("#khung-gio-dat-lich"),
+      ),
       thoi_tiet_du_kien: String(weatherInput?.value || "").trim(),
       loai_xe: String(formData.get("loai_xe") || "").trim(),
       ten_loai_xe: getSelectedLabel(vehicleSelect),
       ghi_chu: String(formData.get("ghi_chu") || "").trim(),
       dieu_kien_tiep_can: accessConditions.join(" | "),
-      chi_tiet_dich_vu: serviceDetails.join(" | "),
+      chi_tiet_dich_vu: [
+        ...serviceDetails,
+        ...(requiresSurveyFirst ? ["Cần khảo sát trước (+150.000/lượt)"] : []),
+      ].join(" | "),
       tong_tam_tinh: totalAmount,
       khoang_cach_km: String(
-        scope.querySelector("[data-gia-tri-khoang-cach-dat-lich]")?.textContent || "",
-      ).replace(",", ".").trim(),
+        scope.querySelector("[data-gia-tri-khoang-cach-dat-lich]")
+          ?.textContent || "",
+      )
+        .replace(",", ".")
+        .trim(),
       anh_dinh_kem: imageFiles.join(" | "),
       video_dinh_kem: videoFiles.join(" | "),
       customer_email: String(identity.email || "").trim(),
@@ -327,7 +307,9 @@
           node.querySelector(".muc-chi-tiet-gia-chot-dat-lich__hang strong")
             ?.textContent || "",
         ).trim();
-        const detail = String(node.querySelector("p")?.textContent || "").trim();
+        const detail = String(
+          node.querySelector("p")?.textContent || "",
+        ).trim();
 
         if (!label && !amount && !detail) return null;
 
@@ -370,11 +352,17 @@
       "Khoảng cách (km)": Number(payload.khoang_cach_km || 0),
       "Điều kiện tiếp cận": payload.dieu_kien_tiep_can || "",
       "Chi tiết dịch vụ": payload.chi_tiet_dich_vu || "",
+      "Khảo sát trước": scope.querySelector("#can-khao-sat-truoc-dat-lich")
+        ?.checked
+        ? "Có"
+        : "Không",
       "Tổng tạm tính": Number(payload.tong_tam_tinh || 0),
       "Ảnh đính kèm": payload.anh_dinh_kem || "",
       "Video đính kèm": payload.video_dinh_kem || "",
       "Chi tiết giá": pricingBreakdown
-        .map((item) => [item.label, item.amount, item.detail].filter(Boolean).join(": "))
+        .map((item) =>
+          [item.label, item.amount, item.detail].filter(Boolean).join(": "),
+        )
         .join(" | "),
       pricing_breakdown_json: JSON.stringify(pricingBreakdown),
       "Ghi chú": payload.ghi_chu || "",
@@ -382,72 +370,80 @@
     };
   }
 
-  async function saveBookingToGoogleSheet(scope, payload, remoteId) {
-    if (typeof window.saveToGoogleSheet !== "function") {
-      throw new Error("driveUtil.js chưa được nạp.");
+  async function syncBookingSheet(scope, payload, remoteId) {
+    if (!bookingApi || typeof bookingApi.syncGoogleSheet !== "function") {
+      throw new Error("Không tìm thấy lớp API đồng bộ Google Sheets.");
     }
 
     const sheetPayload = buildBookingSheetPayload(scope, payload, remoteId);
-    const result = await Promise.resolve(window.saveToGoogleSheet(sheetPayload));
-    const isSuccess =
-      result && (result.status === "success" || result.success === true);
-
-    if (!isSuccess) {
-      throw new Error(
-        (result && (result.error || result.message)) ||
-          "Gửi dữ liệu Google Sheet thất bại.",
-      );
-    }
-
-    return {
-      result,
-      payload: sheetPayload,
-    };
+    return bookingApi.syncGoogleSheet(sheetPayload);
   }
 
-  async function insertBookingToKrud(scope, portalStore) {
-    const insertFn = getBookingInsertFn();
-    if (!insertFn) {
-      throw new Error("Không tìm thấy hàm crud/krud trên trang đặt lịch.");
+  async function createBookingRequest(scope, portalStore) {
+    if (!bookingApi || typeof bookingApi.createBooking !== "function") {
+      throw new Error("Không tìm thấy lớp API đặt lịch chuyển dọn.");
     }
 
-    const payload = getBookingPayload(scope, portalStore);
-    const result = await insertFn(bookingCrudTableName, payload);
-    const remoteId = String(
-      result?.id ||
-        result?.insertId ||
-        result?.insert_id ||
-        result?.data?.id ||
-        "",
-    ).trim();
-    const systemRequestCode =
-      formatSystemRequestCode(remoteId, payload.created_at || new Date()) || remoteId;
+    let accountSetup = null;
+    const savedRole = portalStore?.getSavedRole?.() || "";
+    let hasCustomerSession = false;
 
-    payload.ma_yeu_cau_noi_bo = systemRequestCode;
-
-    if (remoteId) {
-      const updateFn = getBookingUpdateFn();
-      if (updateFn) {
-        try {
-          await updateFn(bookingCrudTableName, {
-            id: remoteId,
-            ma_yeu_cau_noi_bo: systemRequestCode,
-            updated_at:
-              payload.created_at instanceof Date
-                ? payload.created_at.toISOString()
-                : String(payload.created_at || new Date().toISOString()).trim(),
-          });
-        } catch (error) {
-          console.warn("Không thể ghi ngược mã yêu cầu theo ID vào KRUD:", error);
-        }
+    if (savedRole === "khach-hang" && portalStore?.fetchProfile) {
+      try {
+        const verifiedProfile = await portalStore.fetchProfile();
+        hasCustomerSession = !!String(
+          verifiedProfile?.id ||
+            verifiedProfile?.phone ||
+            verifiedProfile?.email ||
+            "",
+        ).trim();
+      } catch (error) {
+        hasCustomerSession = false;
       }
     }
 
+    if (
+      !hasCustomerSession &&
+      window.FastGoAuth?.ensureCustomerAccountForBooking
+    ) {
+      const form = scope.querySelector("form[data-loai-bieu-mau='dat-lich']");
+      const formData = form ? new FormData(form) : new FormData();
+      accountSetup = await window.FastGoAuth.ensureCustomerAccountForBooking({
+        full_name: String(formData.get("ho_ten") || "").trim(),
+        phone: String(formData.get("so_dien_thoai") || "").trim(),
+      });
+    }
+
+    const payload = getBookingPayload(scope, portalStore);
+    const bookingResult = await bookingApi.createBooking(payload);
     return {
-      payload,
-      remoteId,
-      result,
+      ...bookingResult,
+      accountSetup,
     };
+  }
+
+  function buildBookingSuccessMessage(accountSetup, sheetSyncNote) {
+    let message = `Yêu cầu đặt lịch đã được lưu thành công.${sheetSyncNote}`;
+
+    if (accountSetup?.status === "created") {
+      message += " Tài khoản khách hàng đã được tạo tự động cho yêu cầu này.";
+      return message;
+    }
+
+    if (accountSetup?.status === "existing" && !accountSetup.auto_logged_in) {
+      message += " Số điện thoại này đã có tài khoản sẵn trong hệ thống.";
+    }
+
+    return message;
+  }
+
+  let bookingSuccessRedirectTimer = null;
+  const BOOKING_SUCCESS_REDIRECT_DELAY_MS = 3000;
+
+  function clearBookingSuccessRedirectTimer() {
+    if (!bookingSuccessRedirectTimer) return;
+    window.clearTimeout(bookingSuccessRedirectTimer);
+    bookingSuccessRedirectTimer = null;
   }
 
   function countChecked(scope, selector) {
@@ -455,9 +451,12 @@
   }
 
   function countFiles(scope, selector) {
-    return Array.from(scope.querySelectorAll(selector)).reduce((total, input) => {
-      return total + (input.files ? input.files.length : 0);
-    }, 0);
+    return Array.from(scope.querySelectorAll(selector)).reduce(
+      (total, input) => {
+        return total + (input.files ? input.files.length : 0);
+      },
+      0,
+    );
   }
 
   function mapBookingPricingTimeSlot(rawValue) {
@@ -503,34 +502,16 @@
     return earthRadius * c;
   }
 
-  function updateSpecialItemField(scope) {
-    const trigger = scope.querySelector("[data-bat-khac]");
-    const target = scope.querySelector("[data-khoi-hang-muc-khac]");
-    const input = target ? target.querySelector("input") : null;
-    if (!trigger || !target) return;
-
-    const shouldShow = !!trigger.checked;
-    target.hidden = !shouldShow;
-    target.classList.toggle("is-hidden", !shouldShow);
-
-    if (!shouldShow && input) {
-      input.value = "";
-    }
-  }
-
   function getFormSummaryDeps() {
     return {
       core,
       queryFirst,
       getSelectedLabel,
-      getCheckedLabel,
       getCheckedLabels,
       getCheckedLabelsFromSelectors,
-      countChecked,
       countFiles,
       normalizeService,
       calculateDistanceKm,
-      formatSurveySchedule,
       formatBookingSchedule,
       getBookingPricingTimeLabel,
       getBookingVehicleLabel,
@@ -597,15 +578,6 @@
     refreshBookingWeather(scope);
   }
 
-  function syncSurveyUi(scope, options = {}) {
-    syncPhoneFieldValidity(scope);
-    if (options.includeSpecialField) {
-      updateSpecialItemField(scope);
-    }
-    renderSurveyMapPreview(scope);
-    renderFormSummaries(scope);
-  }
-
   function getBookingWizardDeps() {
     return {
       isVisibleFormField,
@@ -621,15 +593,6 @@
     return bookingWizardModule.validateAll(scope, getBookingWizardDeps());
   }
 
-  function getSurveyFormDeps() {
-    return {
-      syncSurveyUi,
-      syncPhoneFieldValidity,
-      updateSpecialItemField,
-      initSurveyMap,
-    };
-  }
-
   function getBookingFormDeps() {
     return {
       clearFieldErrorState,
@@ -639,12 +602,6 @@
       syncBookingVehicleOptions,
       initBookingStepWizard,
     };
-  }
-
-  // Wrapper cho module map của form khảo sát.
-  function renderSurveyMapPreview(scope) {
-    if (!surveyMapModule?.renderSurveyMapPreview) return;
-    return surveyMapModule.renderSurveyMapPreview(scope);
   }
 
   // Wrapper cho module map/forecast của form đặt lịch.
@@ -660,14 +617,6 @@
       renderFormSummaries,
       renderBookingPricing,
       getSelectedLabel,
-    });
-  }
-
-  // Wrapper cho module map của form khảo sát.
-  function initSurveyMap(scope) {
-    if (!surveyMapModule?.initSurveyMap) return;
-    return surveyMapModule.initSurveyMap(scope, {
-      renderFormSummaries,
     });
   }
 
@@ -700,14 +649,6 @@
     return "Chưa chọn";
   }
 
-  function formatSurveySchedule(scope) {
-    const dateInput = scope.querySelector("#ngay-khao-sat");
-    const timeSelect = scope.querySelector("#khung-gio-khao-sat");
-    const dateValue = String(dateInput?.value || "").trim();
-    const timeLabel = getSelectedLabel(timeSelect);
-    return formatDateTimeSummary(dateValue, timeSelect?.value, timeLabel);
-  }
-
   function formatBookingSchedule(scope) {
     const dateInput = scope.querySelector("#ngay-thuc-hien-dat-lich");
     const timeSelect = scope.querySelector("#khung-gio-dat-lich");
@@ -725,7 +666,8 @@
     const previousValue = String(select.value || "").trim();
 
     if (!config) {
-      select.innerHTML = '<option value="">Chọn dịch vụ để chọn loại xe</option>';
+      select.innerHTML =
+        '<option value="">Chọn dịch vụ để chọn loại xe</option>';
       select.value = "";
       return;
     }
@@ -766,8 +708,7 @@
 
     const config = getBookingVehicleConfig(serviceValue);
     const fallbackValue =
-      config?.defaultValue ||
-      String(entries[0]?.slug || "").trim();
+      config?.defaultValue || String(entries[0]?.slug || "").trim();
     const fallbackEntry = entries.find(
       (item) => String(item?.slug || "").trim() === fallbackValue,
     );
@@ -812,8 +753,8 @@
 
     const config = getBookingVehicleConfig(serviceValue);
     return (
-      config?.options.find((item) => item.value === config.defaultValue)?.label ||
-      "Chưa chọn"
+      config?.options.find((item) => item.value === config.defaultValue)
+        ?.label || "Chưa chọn"
     );
   }
 
@@ -853,7 +794,9 @@
   }
 
   function getBookingNumericValue(scope, selector) {
-    const value = parseBookingNumber(scope.querySelector(selector)?.value || "");
+    const value = parseBookingNumber(
+      scope.querySelector(selector)?.value || "",
+    );
     return value > 0 ? value : 0;
   }
 
@@ -863,16 +806,20 @@
 
   function getBookingDistanceKmValue(scope) {
     const fromLat = Number(
-      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_di_lat']")?.value || 0,
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_di_lat']")
+        ?.value || 0,
     );
     const fromLng = Number(
-      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_di_lng']")?.value || 0,
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_di_lng']")
+        ?.value || 0,
     );
     const toLat = Number(
-      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_den_lat']")?.value || 0,
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_den_lat']")
+        ?.value || 0,
     );
     const toLng = Number(
-      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_den_lng']")?.value || 0,
+      scope.querySelector("[data-ban-do-dat-lich-toa-do='diem_den_lng']")
+        ?.value || 0,
     );
 
     if (!fromLat || !fromLng || !toLat || !toLng) return 0;
@@ -885,18 +832,15 @@
     return bookingPricingModule.render(scope, getBookingPricingDeps());
   }
 
-  function renderSurveySummary(scope) {
-    if (!formSummariesModule?.renderSurveySummary) return;
-    return formSummariesModule.renderSurveySummary(scope, getFormSummaryDeps());
-  }
-
   function renderBookingSummary(scope) {
     if (!formSummariesModule?.renderBookingSummary) return;
-    return formSummariesModule.renderBookingSummary(scope, getFormSummaryDeps());
+    return formSummariesModule.renderBookingSummary(
+      scope,
+      getFormSummaryDeps(),
+    );
   }
 
   function renderFormSummaries(scope) {
-    renderSurveySummary(scope);
     renderBookingSummary(scope);
   }
 
@@ -948,7 +892,10 @@
         link.setAttribute("data-base-href", baseHref);
       }
 
-      link.setAttribute("href", buildServiceContextHref(baseHref, serviceValue));
+      link.setAttribute(
+        "href",
+        buildServiceContextHref(baseHref, serviceValue),
+      );
     });
   }
 
@@ -957,7 +904,9 @@
   }
 
   function normalizePhoneValue(value) {
-    return String(value || "").replace(/\s+/g, "").trim();
+    return String(value || "")
+      .replace(/\s+/g, "")
+      .trim();
   }
 
   function isValidVietnamesePhone(value) {
@@ -1012,9 +961,7 @@
     }
 
     scope.querySelectorAll("[data-hien-theo-dich-vu]").forEach((field) => {
-      const allowed = String(
-        field.getAttribute("data-hien-theo-dich-vu") || "",
-      )
+      const allowed = String(field.getAttribute("data-hien-theo-dich-vu") || "")
         .split(",")
         .map((value) => normalizeService(value))
         .filter(Boolean);
@@ -1085,11 +1032,6 @@
     });
   }
 
-  function initSurveyFormUi(scope) {
-    if (!surveyFormsModule?.init) return;
-    return surveyFormsModule.init(scope, getSurveyFormDeps());
-  }
-
   function initBookingStepWizard(scope) {
     if (!bookingWizardModule?.init) return;
     return bookingWizardModule.init(scope, getBookingWizardDeps());
@@ -1101,7 +1043,9 @@
   }
 
   function getProjectUrl(path) {
-    return typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
+    return typeof core.toProjectUrl === "function"
+      ? core.toProjectUrl(path)
+      : path;
   }
 
   function renderBookingSuccessState(scope, bookingResult, options = {}) {
@@ -1109,9 +1053,14 @@
     const finalActions = scope.querySelector("[data-booking-final-actions]");
     const notice = scope.querySelector("[data-thong-bao-bieu-mau]");
     const requestCode =
-      bookingResult?.payload?.ma_yeu_cau_noi_bo || bookingResult?.remoteId || "CDL-00000000-0000000";
+      bookingResult?.payload?.ma_yeu_cau_noi_bo ||
+      bookingResult?.remoteId ||
+      "CDL-00000000-0000000";
     const statusMessage = String(options.statusMessage || "").trim();
-    const isLoggedIn = !!(window.FastGoCustomerPortalStore?.getSavedRole?.() === "khach-hang");
+    const isLoggedIn = !!(
+      window.FastGoCustomerPortalStore?.getSavedRole?.() === "khach-hang"
+    );
+    const historyUrl = getProjectUrl("khach-hang/lich-su-yeu-cau.html");
     const secondaryActionHref = isLoggedIn
       ? `khach-hang/chi-tiet-hoa-don.html?code=${encodeURIComponent(requestCode)}`
       : "dang-nhap.html?vai-tro=khach-hang";
@@ -1120,11 +1069,15 @@
       : "Đăng nhập để theo dõi";
     const tertiaryAction = isLoggedIn
       ? `
-          <a class="nut-phu" href="${escapeHtml(getProjectUrl("khach-hang/lich-su-yeu-cau.html"))}">Lịch sử yêu cầu</a>
+          <a class="nut-phu" href="${escapeHtml(historyUrl)}">Lịch sử yêu cầu</a>
         `
+      : "";
+    const redirectNotice = isLoggedIn
+      ? `<p class="trang-thai-thanh-cong-dat-lich__ghi-chu">Hệ thống sẽ tự chuyển sang lịch sử yêu cầu sau ${Math.round(BOOKING_SUCCESS_REDIRECT_DELAY_MS / 1000)} giây.</p>`
       : "";
 
     if (!submitStep) return;
+    clearBookingSuccessRedirectTimer();
 
     if (finalActions) {
       finalActions.hidden = true;
@@ -1151,6 +1104,7 @@
         <div class="trang-thai-thanh-cong-dat-lich__ma">
           Mã yêu cầu: ${escapeHtml(requestCode)}
         </div>
+        ${redirectNotice}
         <div class="trang-thai-thanh-cong-dat-lich__hanh-dong">
           <a class="nut-chinh" href="${escapeHtml(getProjectUrl("dat-lich.html"))}">Tạo yêu cầu mới</a>
           <a class="nut-phu" href="${escapeHtml(getProjectUrl(secondaryActionHref))}">${secondaryActionLabel}</a>
@@ -1164,89 +1118,84 @@
       successNode?.focus({ preventScroll: true });
       successNode?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+
+    if (isLoggedIn) {
+      bookingSuccessRedirectTimer = window.setTimeout(function () {
+        window.location.href = historyUrl;
+      }, BOOKING_SUCCESS_REDIRECT_DELAY_MS);
+    }
   }
 
   function initFormNotice(scope, formType) {
     const form = scope.querySelector("form[data-loai-bieu-mau]");
     const notice = scope.querySelector("[data-thong-bao-bieu-mau]");
     if (!form || !notice) return;
-    const submitButton = form.querySelector("[data-nut-gui-bieu-mau]") || form.querySelector("button[type='submit']");
-    const defaultSubmitLabel = String(submitButton?.textContent || "").trim() || "Gửi";
+    const submitButton =
+      form.querySelector("[data-nut-gui-bieu-mau]") ||
+      form.querySelector("button[type='submit']");
+    const defaultSubmitLabel =
+      String(submitButton?.textContent || "").trim() || "Gửi";
 
     function syncSubmitState(isSubmitting, label) {
       if (!submitButton) return;
       submitButton.disabled = isSubmitting;
       submitButton.textContent = label || defaultSubmitLabel;
-      submitButton.setAttribute("aria-disabled", isSubmitting ? "true" : "false");
+      submitButton.setAttribute(
+        "aria-disabled",
+        isSubmitting ? "true" : "false",
+      );
     }
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
 
       syncPhoneFieldValidity(scope);
-      if (formType === "dat-lich" && !validateBookingBeforeSubmit(scope)) return;
+      if (formType === "dat-lich" && !validateBookingBeforeSubmit(scope))
+        return;
       if (!form.reportValidity()) return;
 
-      syncSubmitState(true, formType === "dat-lich" ? "Đang tạo yêu cầu..." : "Đang ghi nhận...");
-      if (formType === "khao-sat") {
-        notice.hidden = false;
-        notice.classList.remove("is-success", "is-error");
-        notice.classList.add("is-pending");
-        notice.textContent = "Hệ thống đang ghi nhận dữ liệu khảo sát bạn vừa nhập.";
-        notice.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      } else {
-        notice.hidden = true;
-        notice.classList.remove("is-pending", "is-success", "is-error");
-        notice.textContent = "";
-      }
+      syncSubmitState(true, "Đang tạo yêu cầu...");
+      notice.hidden = true;
+      notice.classList.remove("is-pending", "is-success", "is-error");
+      notice.textContent = "";
 
       window.setTimeout(async function () {
         const portalStore = window.FastGoCustomerPortalStore || null;
 
         try {
-          if (formType === "dat-lich") {
-            const bookingResult = await insertBookingToKrud(scope, portalStore);
-            let sheetSyncNote = "";
+          const bookingResult = await createBookingRequest(scope, portalStore);
+          let sheetSyncNote = "";
 
-            try {
-              await saveBookingToGoogleSheet(
-                scope,
-                bookingResult.payload,
-                bookingResult.remoteId,
-              );
-              sheetSyncNote = " Đã đồng bộ Google Sheets.";
-            } catch (sheetError) {
-              console.warn(
-                "Không thể đồng bộ Google Sheet cho form đặt lịch chuyển dọn:",
-                sheetError,
-              );
-              sheetSyncNote =
-                " Yêu cầu đã lưu KRUD nhưng chưa đồng bộ Google Sheets.";
-            }
-
-            renderBookingSuccessState(scope, bookingResult, {
-              statusMessage: `Yêu cầu đặt lịch đã được lưu thành công.${sheetSyncNote}`,
-            });
-          } else {
-            notice.classList.remove("is-pending", "is-error");
-            notice.classList.add("is-success");
-            notice.textContent =
-              "Yêu cầu khảo sát đã được ghi nhận. Bạn có thể quay lại lịch sử để tiếp tục theo dõi.";
+          try {
+            await syncBookingSheet(
+              scope,
+              bookingResult.payload,
+              bookingResult.remoteId,
+            );
+            sheetSyncNote = " Đã đồng bộ Google Sheets.";
+          } catch (sheetError) {
+            console.warn(
+              "Không thể đồng bộ Google Sheet cho form đặt lịch chuyển dọn:",
+              sheetError,
+            );
+            sheetSyncNote =
+              " Yêu cầu đã lưu KRUD nhưng chưa đồng bộ Google Sheets.";
           }
+
+          renderBookingSuccessState(scope, bookingResult, {
+            statusMessage: buildBookingSuccessMessage(
+              bookingResult.accountSetup,
+              sheetSyncNote,
+            ),
+          });
         } catch (error) {
-          if (formType === "dat-lich") {
-            notice.hidden = false;
-            notice.classList.remove("is-pending", "is-success");
-            notice.classList.add("is-error");
-            notice.textContent =
-              error?.message || "Không thể tạo yêu cầu đặt lịch ở thời điểm hiện tại.";
-            notice.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          } else {
-            notice.classList.remove("is-pending", "is-success");
-            notice.classList.add("is-error");
-            notice.textContent =
-              error?.message || "Không thể gửi yêu cầu khảo sát ở thời điểm hiện tại.";
-          }
+          notice.hidden = false;
+          notice.classList.remove("is-pending", "is-success");
+          notice.classList.add("is-error");
+          notice.textContent =
+            error?.message ||
+            "Không thể tạo yêu cầu đặt lịch ở thời điểm hiện tại.";
+          notice.scrollIntoView({ behavior: "smooth", block: "nearest" });
         } finally {
           syncSubmitState(false, defaultSubmitLabel);
         }
@@ -1266,7 +1215,6 @@
     initInfoToggles(host);
     initServiceSelect(host);
     initFileInputs(host);
-    initSurveyFormUi(host);
     initBookingFormUi(host);
     initFormNotice(host, formType);
   }

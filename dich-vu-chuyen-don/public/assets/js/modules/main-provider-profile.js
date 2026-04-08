@@ -1,16 +1,16 @@
 (function (window, document) {
-  if (window.__fastGoCustomerProfileLoaded) return;
-  window.__fastGoCustomerProfileLoaded = true;
+  if (window.__fastGoProviderProfileLoaded) return;
+  window.__fastGoProviderProfileLoaded = true;
 
   const core = window.FastGoCore || {};
   const store = window.FastGoCustomerPortalStore || null;
   const body = document.body;
 
-  if (!body || body.getAttribute("data-page") !== "customer-profile") {
+  if (!body || body.getAttribute("data-page") !== "provider-profile") {
     return;
   }
 
-  const root = document.getElementById("customer-profile-root");
+  const root = document.getElementById("provider-profile-root");
   if (!root || !store) return;
 
   function escapeHtml(value) {
@@ -31,23 +31,17 @@
   }
 
   function getInitial(name) {
-    return String(name || "").trim().charAt(0).toUpperCase() || "K";
+    return String(name || "").trim().charAt(0).toUpperCase() || "N";
   }
 
   function renderProfile(data) {
-    if (!data?.profile) {
-      store.clearAuthSession?.();
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
-      return;
-    }
-
     const role = store.getSavedRole();
-    if (role && role !== "khach-hang") {
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
+    if (role && role !== "nha-cung-cap") {
+      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=nha-cung-cap");
       return;
     }
 
-    const identity = data.profile;
+    const identity = data?.profile || store.readIdentity();
     const displayName = store.getDisplayName(identity);
     const phone = String(identity.phone || "").trim();
     const email = String(identity.email || "").trim();
@@ -62,7 +56,7 @@
               <div class="customer-profile-avatar-large">${escapeHtml(initial)}</div>
             </div>
             <div class="customer-profile-hero-info">
-              <p class="customer-section-kicker">Hồ sơ khách hàng</p>
+              <p class="customer-section-kicker">Hồ sơ nhà cung cấp</p>
               <h2>${escapeHtml(displayName)}</h2>
               <p><i class="fas fa-envelope"></i> ${escapeHtml(email || "Chưa có email")}</p>
               <p><i class="fas fa-phone"></i> ${escapeHtml(phone || "Chưa có số điện thoại")}</p>
@@ -71,11 +65,15 @@
 
           <div class="customer-profile-summary">
             <article>
-              <span>Tên hiển thị</span>
+              <span>Tên đơn vị / đội nhóm</span>
               <strong>${escapeHtml(displayName)}</strong>
             </article>
             <article>
-              <span>Email</span>
+              <span>Người phụ trách</span>
+              <strong>${escapeHtml(contactPerson || displayName || "Chưa có dữ liệu")}</strong>
+            </article>
+            <article>
+              <span>Email vận hành</span>
               <strong>${escapeHtml(email || "Chưa có dữ liệu")}</strong>
             </article>
             <article>
@@ -90,18 +88,18 @@
                 <i class="fas fa-user-pen"></i>
                 <h3>Thông tin cơ bản</h3>
               </div>
-              <div id="customer-profile-feedback"></div>
-              <form id="customer-profile-form" class="customer-form-stack">
+              <div id="provider-profile-feedback"></div>
+              <form id="provider-profile-form" class="customer-form-stack">
                 <div class="customer-form-row">
                   <label class="customer-form-group">
-                    <span>Họ và tên</span>
+                    <span>Tên đơn vị / đội nhóm</span>
                     <div class="customer-form-field">
                       <input name="full_name" type="text" value="${escapeHtml(displayName)}" required />
-                      <i class="fas fa-user"></i>
+                      <i class="fas fa-building"></i>
                     </div>
                   </label>
                   <label class="customer-form-group">
-                    <span>Email</span>
+                    <span>Email vận hành</span>
                     <div class="customer-form-field">
                       <input name="email" type="email" value="${escapeHtml(email)}" required />
                       <i class="fas fa-envelope"></i>
@@ -117,16 +115,16 @@
                     </div>
                   </label>
                   <label class="customer-form-group">
-                    <span>Đầu mối liên hệ thêm</span>
+                    <span>Người phụ trách</span>
                     <div class="customer-form-field">
-                      <input name="contact_person" type="text" value="${escapeHtml(contactPerson)}" placeholder="Nếu có người phụ trách thêm" />
+                      <input name="contact_person" type="text" value="${escapeHtml(contactPerson)}" placeholder="Tên đầu mối vận hành" />
                       <i class="fas fa-id-badge"></i>
                     </div>
                   </label>
                 </div>
                 <div class="customer-inline-actions">
                   <button class="customer-btn customer-btn-primary" type="submit">Lưu thông tin</button>
-                  <a class="customer-btn customer-btn-ghost" href="${escapeHtml(getProjectUrl("khach-hang/dashboard.html"))}">Về dashboard</a>
+                  <a class="customer-btn customer-btn-ghost" href="${escapeHtml(getProjectUrl("nha-cung-cap/dashboard.html"))}">Về dashboard</a>
                 </div>
               </form>
             </div>
@@ -136,8 +134,8 @@
                 <i class="fas fa-lock"></i>
                 <h3>Đổi mật khẩu</h3>
               </div>
-              <div id="customer-password-feedback"></div>
-              <form id="customer-password-form" class="customer-form-stack">
+              <div id="provider-password-feedback"></div>
+              <form id="provider-password-form" class="customer-form-stack">
                 <div class="customer-form-row">
                   <label class="customer-form-group">
                     <span>Mật khẩu hiện tại</span>
@@ -173,10 +171,10 @@
       </div>
     `;
 
-    const profileForm = root.querySelector("#customer-profile-form");
-    const profileFeedback = root.querySelector("#customer-profile-feedback");
-    const passwordForm = root.querySelector("#customer-password-form");
-    const passwordFeedback = root.querySelector("#customer-password-feedback");
+    const profileForm = root.querySelector("#provider-profile-form");
+    const profileFeedback = root.querySelector("#provider-profile-feedback");
+    const passwordForm = root.querySelector("#provider-password-form");
+    const passwordFeedback = root.querySelector("#provider-password-feedback");
 
     function showFeedback(target, type, message) {
       if (!target) return;
@@ -196,7 +194,11 @@
       const nextContact = String(formData.get("contact_person") || "").trim();
 
       if (!fullName || !nextEmail || !nextPhone) {
-        showFeedback(profileFeedback, "error", "Vui lòng nhập đầy đủ họ tên, email và số điện thoại.");
+        showFeedback(
+          profileFeedback,
+          "error",
+          "Vui lòng nhập đầy đủ tên đơn vị, email và số điện thoại.",
+        );
         return;
       }
 
@@ -208,17 +210,28 @@
             phone: nextPhone,
             contact_person: nextContact,
           });
-          showFeedback(profileFeedback, "success", "Đã cập nhật hồ sơ khách hàng.");
+          showFeedback(profileFeedback, "success", "Đã cập nhật hồ sơ nhà cung cấp.");
           window.setTimeout(() => renderProfile({ profile }), 300);
           return;
         }
       } catch (error) {
-        console.error("Cannot update customer profile store:", error);
-        showFeedback(profileFeedback, "error", error.message || "Không thể cập nhật hồ sơ khách hàng.");
+        console.error("Cannot update provider profile store:", error);
+        showFeedback(profileFeedback, "error", error.message || "Không thể cập nhật hồ sơ nhà cung cấp.");
         return;
       }
 
-      showFeedback(profileFeedback, "error", "Không thể cập nhật hồ sơ khách hàng.");
+      store.saveIdentity({
+        ...store.readIdentity(),
+        fullName,
+        full_name: fullName,
+        email: nextEmail,
+        phone: nextPhone,
+        contact_person: nextContact,
+        contactPerson: nextContact,
+      });
+
+      showFeedback(profileFeedback, "success", "Đã cập nhật thông tin hồ sơ trong phiên hiện tại.");
+      window.setTimeout(() => renderProfile(null), 300);
     });
 
     passwordForm?.addEventListener("submit", async function (event) {
@@ -255,7 +268,7 @@
           return;
         }
       } catch (error) {
-        console.error("Cannot change customer password store:", error);
+        console.error("Cannot change provider password store:", error);
         showFeedback(passwordFeedback, "error", error.message || "Không thể đổi mật khẩu.");
         return;
       }
@@ -270,7 +283,7 @@
       const profile = await store.fetchProfile?.();
       renderProfile({ profile });
     } catch (error) {
-      console.error("Cannot load customer profile store:", error);
+      console.error("Cannot load provider profile store:", error);
       renderProfile(null);
     }
   })();
