@@ -2,8 +2,7 @@
   "use strict";
 
   var ORDER_TABLE = "datlich_giatuinhanh";
-  var CUSTOMER_TABLE = "khachhang";
-  var PROVIDER_TABLE = "nhacungcap_giatuinhanh";
+  var USER_TABLE = "nguoidung";
   var REVIEW_UPLOAD_ENDPOINT = "public/upload-review-media.php";
   var REVIEW_FIELD_MAP = {
     customer: {
@@ -416,41 +415,22 @@
   }
 
   async function authenticateAccess(phone, password) {
-    var customer = await queryUserByCredentials(
-      CUSTOMER_TABLE,
-      phone,
-      password,
-    );
-    if (customer) {
-      return {
-        role: "customer",
-        user: customer,
-        phone: normalizePhone(
-          customer.sodienthoai || customer.user_tel || customer.phone || phone,
-        ),
-      };
+    if (typeof USER_TABLE === "undefined") {
+      var USER_TABLE = "nguoidung";
     }
+    
+    var user = await queryUserByCredentials(USER_TABLE, phone, password);
+    if (!user) return null;
 
-    var provider = await queryUserByCredentials(
-      PROVIDER_TABLE,
-      phone,
-      password,
-    );
-    if (provider) {
-      return {
-        role: "provider",
-        user: provider,
-        phone: normalizePhone(
-          provider.sodienthoai ||
-            provider.user_tel ||
-            provider.phone ||
-            provider.sdt ||
-            phone,
-        ),
-      };
-    }
+    var idDichvu = String(user.id_dichvu || "").trim();
+    var serviceIds = idDichvu.split(",").map(function(s) { return s.trim(); });
+    var isProvider = serviceIds.indexOf("11") !== -1;
 
-    return null;
+    return {
+      role: isProvider ? "provider" : "customer",
+      user: user,
+      phone: normalizePhone(user.sodienthoai || user.user_tel || user.phone || phone),
+    };
   }
 
   async function loadOrderByMahd(mahd) {
@@ -479,10 +459,8 @@
     );
     var orderPhone = normalizePhone(order.sodienthoai || order.phone);
 
-    return queryFirstByCandidates(CUSTOMER_TABLE, [
+    return queryFirstByCandidates("nguoidung", [
       { field: "id", value: customerId },
-      { field: "makhachhang", value: customerId },
-      { field: "user_id", value: customerId },
       { field: "sodienthoai", value: orderPhone },
       { field: "user_tel", value: orderPhone },
       { field: "phone", value: orderPhone },
@@ -501,11 +479,8 @@
     );
     var providerEmail = String(order.email_ncc || "").trim();
 
-    return queryFirstByCandidates(PROVIDER_TABLE, [
+    return queryFirstByCandidates("nguoidung", [
       { field: "id", value: providerId },
-      { field: "idnhacungcap", value: providerId },
-      { field: "provider_id", value: providerId },
-      { field: "manhacungcap", value: providerId },
       { field: "sodienthoai", value: providerPhone },
       { field: "user_tel", value: providerPhone },
       { field: "phone", value: providerPhone },
