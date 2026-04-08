@@ -1374,15 +1374,20 @@
 						<div
 							style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;margin-bottom:8px;">
 							<div
-								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:800;">
-								<span style="padding:7px 10px;">Ngày bắt đầu dự kiến</span>
-								<span style="padding:7px 10px;">Ngày kết thúc dự kiến</span>
+								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:800;">
+								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày bắt đầu dự
+									kiến</span>
+								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày kết thúc dự
+									kiến</span>
+								<span style="padding:7px 10px;">Số ngày</span>
 							</div>
 							<div
-								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));font-size:12px;font-weight:700;">
+								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));font-size:12px;font-weight:700;">
 								<span id="dateStartPlan"
 									style="padding:7px 10px;border-right:1px solid #efd3e9;color:#1f3853;">---</span>
-								<span id="dateEndPlan" style="padding:7px 10px;color:#1f3853;">---</span>
+								<span id="dateEndPlan"
+									style="padding:7px 10px;border-right:1px solid #efd3e9;color:#1f3853;">---</span>
+								<span id="invoicePlanDays" style="padding:7px 10px;color:#1f3853;">---</span>
 							</div>
 						</div>
 
@@ -1435,9 +1440,6 @@
 							</div>
 						</div>
 
-						<p id="timeMessage" class="hint" style="font-size:12px;margin-top:-2px;">---</p>
-
-
 
 						<div id="staffWorkForm" class="forms d-grid gap-2 hidden">
 							<label class="field-label" for="staffNote">Ghi chú công việc trong ngày</label>
@@ -1447,10 +1449,12 @@
 						</div>
 
 						<div id="workHistoryTable" style="margin-top:4px;">
+							<span style="font-size:12px;font-weight:800;color:#000000;">Lịch sử làm việc</span>
 							<div id="workHistoryContent" style="overflow-x:auto;margin-top:4px;" class="hidden">
 								<table style="width:100%;border-collapse:collapse;font-size:12px;">
 									<thead>
 										<tr style="background:#e779c1;color:#000;">
+											<th style="padding:6px 8px;text-align:left;">Ngày thứ</th>
 											<th style="padding:6px 8px;text-align:left;">Ngày làm</th>
 											<th style="padding:6px 8px;text-align:left;">Bắt đầu</th>
 											<th style="padding:6px 8px;text-align:left;">Kết thúc</th>
@@ -2147,7 +2151,7 @@
 				setText('progressHint', `Mỗi ngày cộng ${perDayPct}% (tổng ${totalDayCount} ngày). Tiến độ cộng dồn theo từng ngày làm việc.`);
 				setText('dateStartPlan', formatDateDisplay($datlich_mevabe.ngay_bat_dau_kehoach));
 				setText('dateEndPlan', formatDateDisplay($datlich_mevabe.ngay_ket_thuc_kehoach));
-				setText('timeMessage', `Số ngày kế hoạch: ${totalDayCount} ngày`);
+				setText('invoicePlanDays', `${totalDayCount} ngày`);
 				// Render bảng lịch sử làm việc (staff xem)
 				if (app.role === 'staff') renderWorkHistoryTable();
 
@@ -2200,7 +2204,9 @@
 
 					const tr = document.createElement('tr');
 					tr.style.borderBottom = '1px solid #f0d4e3';
+					const dayIdx = rows.length - rows.indexOf(r);
 					tr.innerHTML = `
+						<td style="padding:5px 8px;font-weight:800;color:#c21178;">Ngày ${dayIdx}</td>
 						<td style="padding:5px 8px;">${formatDateDisplay(r.ngay_lam)}</td>
 						<td style="padding:5px 8px;">${formatTimeDisplay(r.start)}</td>
 						<td style="padding:5px 8px;">${endCell}</td>
