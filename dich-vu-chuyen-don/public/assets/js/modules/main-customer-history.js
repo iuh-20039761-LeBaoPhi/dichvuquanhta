@@ -60,15 +60,21 @@
   }
 
   function renderHistory(data) {
+    if (!data?.profile) {
+      store.clearAuthSession?.();
+      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
+      return;
+    }
+
     const role = store.getSavedRole();
     if (role && role !== "khach-hang") {
       window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
       return;
     }
 
-    const identity = data?.profile || store.readIdentity();
+    const identity = data.profile;
     const displayName = store.getDisplayName(identity);
-    const items = Array.isArray(data?.history) ? data.history : store.getHistoryItems();
+    const items = Array.isArray(data?.history) ? data.history : [];
     const stats = store.getDashboardStats(items);
 
     root.innerHTML = `
@@ -78,7 +84,7 @@
             <div>
               <p class="customer-section-kicker">Lịch sử yêu cầu</p>
               <h2>Theo dõi toàn bộ yêu cầu chuyển dọn đã tạo</h2>
-              <p class="customer-panel-subtext">Danh sách này gom cả khảo sát và đặt lịch để khách hàng rà lại đúng mạch xử lý.</p>
+              <p class="customer-panel-subtext">Danh sách này chỉ giữ một luồng đặt lịch; nhu cầu khảo sát trước được theo dõi như một thuộc tính của đơn.</p>
             </div>
             <p class="customer-panel-note">Tài khoản đang xem: ${escapeHtml(displayName)}</p>
           </div>
@@ -96,7 +102,7 @@
               <strong>${escapeHtml(String(stats.confirmed_count || 0))}</strong>
             </article>
             <article class="customer-kpi-card">
-              <span>Khảo sát đã gửi</span>
+              <span>Cần khảo sát trước</span>
               <strong>${escapeHtml(String(stats.survey_count || 0))}</strong>
             </article>
           </div>
@@ -117,11 +123,11 @@
                   <input id="bo-loc-tu-khoa-lich-su" type="search" placeholder="Mã đơn, dịch vụ, địa chỉ..." />
                 </label>
                 <label>
-                  Loại yêu cầu
+                  Khảo sát trước
                   <select id="bo-loc-loai-lich-su">
                     <option value="all">Tất cả</option>
-                    <option value="dat-lich">Đặt lịch</option>
-                    <option value="khao-sat">Khảo sát</option>
+                    <option value="co-khao-sat">Có</option>
+                    <option value="khong-khao-sat">Không</option>
                   </select>
                 </label>
                 <label>
@@ -211,7 +217,8 @@
       const status = String(statusSelect?.value || "all").trim();
 
       const filtered = items.filter((item) => {
-        if (type !== "all" && item.type !== type) return false;
+        if (type === "co-khao-sat" && !item.survey_first) return false;
+        if (type === "khong-khao-sat" && item.survey_first) return false;
         if (status !== "all" && item.status_class !== status) return false;
 
         if (!keyword) return true;
@@ -262,6 +269,7 @@
               </div>
               <div class="customer-order-meta customer-order-meta-compact customer-order-meta-history">
                 <span><b>Loại</b>${escapeHtml(item.type_label || "--")}</span>
+                <span><b>Khảo sát trước</b>${escapeHtml(item.survey_first ? "Có" : "Không")}</span>
                 <span><b>Dịch vụ</b>${escapeHtml(item.service_label || "--")}</span>
                 <span><b>Tạo lúc</b>${escapeHtml(formatDateTime(item.created_at))}</span>
                 <span><b>Lịch</b>${escapeHtml(item.schedule_label || "--")}</span>
@@ -281,7 +289,7 @@
                     : ""
                 }
                 <a class="customer-btn customer-btn-ghost" href="${escapeHtml(
-                  getProjectUrl(item.type === "khao-sat" ? "khao-sat.html" : "dat-lich.html"),
+                  getProjectUrl("dat-lich.html"),
                 )}">Tạo lại</a>
               </div>
             </article>

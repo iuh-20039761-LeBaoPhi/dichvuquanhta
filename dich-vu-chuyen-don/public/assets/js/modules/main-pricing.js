@@ -58,7 +58,7 @@
     container.innerHTML = "";
     core.getPricingDisplayItems(data).forEach((item) => {
       const card = document.createElement("article");
-      card.className = "group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 soft-shadow hover:-translate-y-1 transition-all duration-300";
+      card.className = "group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 moving-soft-shadow hover:-translate-y-1 transition-all duration-300";
       
       const iconPath = item.icon_svg || "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z";
       const imageSrc = core.toPublicUrl(item.hinh_anh || "assets/images/chuyendon-tron-goi.png");

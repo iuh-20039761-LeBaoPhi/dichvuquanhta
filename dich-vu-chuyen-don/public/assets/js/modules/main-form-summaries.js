@@ -78,12 +78,6 @@
     return formatConfiguredSummaryParts(scope, items, deps);
   }
 
-  function formatSurveyServiceDetail(scope, serviceValue, deps, summaryConfig) {
-    const normalized = deps.normalizeService(serviceValue);
-    const items = summaryConfig?.survey_service_detail?.[normalized] || [];
-    return formatConfiguredSummaryParts(scope, items, deps);
-  }
-
   function formatBookingServiceDetail(scope, serviceValue, deps, summaryConfig) {
     const normalized = deps.normalizeService(serviceValue);
     const items = summaryConfig?.booking_service_detail?.[normalized] || [];
@@ -168,65 +162,6 @@
     });
   }
 
-  // Render tóm tắt khảo sát từ dữ liệu người dùng đã nhập.
-  async function renderSurveySummary(scope, deps) {
-    const {
-      core,
-      getSelectedLabel,
-      getCheckedLabel,
-      countChecked,
-      countFiles,
-      formatSurveySchedule,
-    } = deps;
-    const formLogic = await loadFormLogic(core);
-    const summaryConfig = formLogic?.summary_config || {};
-    const summaryBox = scope.querySelector("[data-tom-tat-khao-sat]");
-    if (!summaryBox) return;
-
-    const serviceSelect = scope.querySelector("#loai-dich-vu-khao-sat");
-    const addressInput = scope.querySelector("#dia-chi-khao-sat");
-    const destinationInput = scope.querySelector("#dia-chi-diem-den-du-kien");
-    const companyInput = scope.querySelector("#ten-don-vi-khao-sat");
-    const contactInput = scope.querySelector("#nguoi-lien-he-tai-diem");
-    const landmarkInput = scope.querySelector("#moc-nhan-dien-loi-vao-khao-sat");
-    const serviceValue = serviceSelect?.value || "";
-
-    const values = {
-      dich_vu: serviceValue ? getSelectedLabel(serviceSelect) : "Chưa chọn",
-      don_vi: String(companyInput?.value || "").trim() || "Không có",
-      nguoi_lien_he: String(contactInput?.value || "").trim() || "Chưa nhập",
-      dia_chi: String(addressInput?.value || "").trim() || "Chưa nhập",
-      dia_chi_diem_den:
-        String(destinationInput?.value || "").trim() || "Chưa có",
-      moc_nhan_dien:
-        String(landmarkInput?.value || "").trim() || "Chưa nhập",
-      lich_khao_sat: formatSurveySchedule(scope),
-      hinh_thuc:
-        getCheckedLabel(scope, "input[name='hinh_thuc_khao_sat']") ||
-        "Chưa chọn",
-      muc_do_gap:
-        getCheckedLabel(scope, "input[name='muc_do_gap']") || "Chưa chọn",
-      dieu_kien: `${countChecked(
-        scope,
-        "[data-nhom-chip='dieu_kien_tiep_can'] input[type='checkbox']",
-      )} mục`,
-      hang_muc: `${countChecked(
-        scope,
-        "[data-nhom-chip='hang_muc_dac_biet'] input[type='checkbox']",
-      )} mục`,
-      chi_tiet: formatSurveyServiceDetail(scope, serviceValue, deps, summaryConfig),
-      tep_dinh_kem: `${countFiles(
-        scope,
-        "#tep-anh-khao-sat, #tep-video-khao-sat",
-      )} tệp`,
-    };
-
-    Object.entries(values).forEach(([key, value]) => {
-      const target = summaryBox.querySelector(`[data-tom-tat='${key}']`);
-      if (target) target.textContent = value;
-    });
-  }
-
   // Render tóm tắt đặt lịch để bước xác nhận và sidebar luôn đồng bộ.
   async function renderBookingSummary(scope, deps) {
     const {
@@ -250,6 +185,7 @@
     const toInput = scope.querySelector("#dia-chi-den-dat-lich");
     const weatherSelect = scope.querySelector("#thoi-tiet-du-kien-dat-lich");
     const pricingTimeInput = scope.querySelector("[data-khung-gio-tinh-gia]");
+    const surveyCheckbox = scope.querySelector("#can-khao-sat-truoc-dat-lich");
     const serviceValue = serviceSelect?.value || "";
     const fromText = String(fromInput?.value || "").trim();
     const toText = String(toInput?.value || "").trim();
@@ -267,6 +203,7 @@
       dich_vu: serviceSelect?.value
         ? getSelectedLabel(serviceSelect)
         : "Chưa chọn",
+      khao_sat_truoc: surveyCheckbox?.checked ? "Có" : "Không",
       lo_trinh: routeText,
       lich_thuc_hien: formatBookingSchedule(scope),
       khoang_cach: formatBookingDistance(scope, deps),
@@ -299,7 +236,6 @@
   }
 
   window.FastGoFormSummaries = {
-    renderSurveySummary,
     renderBookingSummary,
   };
 })(window);

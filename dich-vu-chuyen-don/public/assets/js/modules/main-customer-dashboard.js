@@ -48,20 +48,26 @@
   }
 
   function renderDashboard(data) {
+    if (!data?.profile) {
+      store.clearAuthSession?.();
+      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
+      return;
+    }
+
     const role = store.getSavedRole();
     if (role && role !== "khach-hang") {
       window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
       return;
     }
 
-    const identity = data?.profile || store.readIdentity();
+    const identity = data.profile;
     const displayName = store.getDisplayName(identity);
     const phone = String(identity.phone || "").trim();
     const email = String(identity.email || "").trim();
     const requests = Array.isArray(data?.recent_requests)
       ? data.recent_requests
-      : store.getHistoryItems().slice(0, 4);
-    const stats = data?.stats || store.getDashboardStats(store.getHistoryItems());
+      : [];
+    const stats = data?.stats || store.getDashboardStats([]);
 
     root.innerHTML = `
       <div class="customer-portal-shell">
@@ -78,9 +84,9 @@
                 <i class="fas fa-calendar-check"></i>
                 Đặt lịch chuyển dọn
               </a>
-              <a class="customer-btn customer-btn-ghost" href="${escapeHtml(getProjectUrl("khao-sat.html"))}">
-                <i class="fas fa-clipboard-list"></i>
-                Gửi yêu cầu khảo sát
+              <a class="customer-btn customer-btn-ghost" href="${escapeHtml(getProjectUrl("lich-su-yeu-cau.html"))}">
+                <i class="fas fa-clock-rotate-left"></i>
+                Xem lịch sử yêu cầu
               </a>
             </div>
           </div>
@@ -95,10 +101,10 @@
               </article>
               <article class="customer-dashboard-highlight">
                 <span>Lịch đã xác nhận</span>
-                <strong>${escapeHtml(String(stats.confirmed_count || 0))}</strong>
-              </article>
-              <article class="customer-dashboard-highlight">
-                <span>Khảo sát đã gửi</span>
+                  <strong>${escapeHtml(String(stats.confirmed_count || 0))}</strong>
+                </article>
+                <article class="customer-dashboard-highlight">
+                <span>Cần khảo sát trước</span>
                 <strong>${escapeHtml(String(stats.survey_count || 0))}</strong>
               </article>
             </div>
@@ -156,7 +162,7 @@
                                 }
                                 <a class="customer-btn customer-btn-ghost" href="${escapeHtml(
                                   getProjectUrl(
-                                    request.type === "khao-sat" ? "khao-sat.html" : "dat-lich.html",
+                                    "dat-lich.html",
                                   ),
                                 )}">Tạo lại</a>
                               </div>
@@ -167,7 +173,7 @@
                     : `
                       <div class="customer-empty-state">
                         <i class="fas fa-inbox"></i>
-                        <p>Chưa có yêu cầu nào trong tài khoản này. Bạn có thể bắt đầu từ biểu mẫu khảo sát hoặc đặt lịch.</p>
+                        <p>Chưa có yêu cầu nào trong tài khoản này. Bạn có thể bắt đầu trực tiếp từ form đặt lịch.</p>
                         <a class="customer-btn customer-btn-primary" href="${escapeHtml(
                           getProjectUrl("dat-lich.html"),
                         )}">Tạo yêu cầu đầu tiên</a>
@@ -195,7 +201,7 @@
                 </a>
                 <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("khach-hang/lich-su-yeu-cau.html"))}">
                   <strong>Rà lại lịch sử</strong>
-                  <span>Đối chiếu các lần gửi khảo sát hoặc đặt lịch gần nhất ở một màn hình tổng.</span>
+                  <span>Đối chiếu các đơn đã tạo và xem đơn nào có yêu cầu khảo sát trước.</span>
                 </a>
               </div>
             </section>
