@@ -2,23 +2,9 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../session_user.php';
-require_once __DIR__ . '/get-hoadon.php';
-require_once __DIR__ . '/xu-ly-cong-viec.php';
+require_once __DIR__ . '/get-hoa-don.php';
 require_once __DIR__ . '/xu-ly-phan-trang.php';
-$sessionUser = session_user_require_employee('../login.html', 'nhan_vien/danh-sach-hoa-don.php');
 
-$employeeId = (int)($sessionUser['id'] ?? 0);
-$employeeStatus = (string)($sessionUser['trangthai'] ?? '');
-$isEmployeeApproved = employee_account_is_approved($employeeStatus);
-
-$rows = [];
-$loadError = '';
-
-if ($isEmployeeApproved) {
-    $result = getHoaDonData();
-    $loadError = (string)($result['error'] ?? '');
-    $rows = filter_invoices_for_employee($result['rows'] ?? [], $employeeId, $sessionUser);
-}
 $flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
 $flashMsg = trim((string)($_GET['msg'] ?? ''));
 
@@ -145,7 +131,7 @@ if ($sortFilter === 'oldest') {
     'to' => $to,
 ] = pagination_array($filteredRows, pagination_get_page($_GET, 'page', 1), 5);
 
-$buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targetPage, [
+    $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targetPage, [
     'q' => $q,
     'status' => $statusFilter,
     'service' => $serviceFilter,
