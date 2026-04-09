@@ -1460,7 +1460,7 @@
         .map(function (order) {
           var meta = statusMeta(order.status);
           var actionHtml =
-            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
             order.id +
             '">Xem chi tiết</a>';
 
@@ -1471,7 +1471,7 @@
               '<button type="button" class="btn btn-sm btn-primary btn-start-order" data-order-id="' +
               order.id +
               '">Bắt đầu</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
               order.id +
               '">Xem chi tiết</a>' +
               "</div>";
@@ -1483,7 +1483,7 @@
               '<button type="button" class="btn btn-sm btn-success btn-complete-order" data-order-id="' +
               order.id +
               '">Hoàn thành</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
               order.id +
               '">Xem chi tiết</a>' +
               "</div>";
@@ -1543,7 +1543,7 @@
         .map(function (order) {
           var meta = statusMeta(order.status);
           var actionHtml =
-            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
             order.id +
             '">Xem chi tiết</a>';
 
@@ -1562,7 +1562,7 @@
               '<button type="button" class="btn btn-sm btn-primary btn-accept-order" data-order-id="' +
               order.id +
               '">Nhận đơn</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
               order.id +
               '">Xem chi tiết</a>' +
               "</div>";
@@ -1572,7 +1572,7 @@
               '<button type="button" class="btn btn-sm btn-outline-danger btn-cancel-order" data-order-id="' +
               order.id +
               '">Hủy đơn</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
               order.id +
               '">Xem chi tiết</a>' +
               "</div>";
