@@ -1,8 +1,8 @@
+import core from "./core/app-core.js";
+
 (function (window, document) {
   if (window.__fastGoTransparentPricingLoaded) return;
   window.__fastGoTransparentPricingLoaded = true;
-
-  const core = window.FastGoCore || {};
   if (!core.toPublicUrl || !core.escapeHtml) return;
 
   const commonFormulaGroups = [

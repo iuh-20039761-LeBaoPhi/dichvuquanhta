@@ -1,6 +1,7 @@
 (function (window, document) {
   if (window.__fastGoSharedLayoutLoaded) return;
   window.__fastGoSharedLayoutLoaded = true;
+  const authChangeEventName = "fastgo:auth-changed";
 
   const storageKeys = {
     role: "fastgo-auth-role",
@@ -19,6 +20,7 @@
   const parentBase = projectBase.replace(/dich-vu-chuyen-don\/?$/i, "");
   const publicBase = `${projectBase}public/`;
   const includesBase = `${projectBase}includes/`;
+  const sharedAuthService = "chuyendon";
   const servicePageKeyByFile = {
     "dich-vu-chuyen-don.html": "services",
     "bang-gia-chuyen-don.html": "pricing",
@@ -29,8 +31,6 @@
     "cam-nang-chi-tiet.html": "news",
     "khao-sat.html": "booking",
     "dat-lich.html": "booking",
-    "dang-nhap.html": "account",
-    "dang-ky.html": "account",
     "dashboard.html": "account",
     "lich-su-yeu-cau.html": "account",
     "danh-sach-viec.html": "account",
@@ -46,10 +46,25 @@
     }
   }
 
+  function normalizeIdentity(payload) {
+    if (!payload || typeof payload !== "object") return {};
+
+    return {
+      id: String(payload.id || "").trim(),
+      role: String(payload.role || "").trim().toLowerCase(),
+      hovaten: String(payload.hovaten || "").trim(),
+      email: String(payload.email || "").trim().toLowerCase(),
+      sodienthoai: String(payload.sodienthoai || "").trim(),
+      id_dichvu: String(payload.id_dichvu || "0").trim() || "0",
+      trangthai: String(payload.trangthai || "active").trim(),
+    };
+  }
+
   function readIdentity() {
     try {
-      const identity = safeParse(window.localStorage.getItem(storageKeys.identity), {});
-      return identity && typeof identity === "object" ? identity : {};
+      return normalizeIdentity(
+        safeParse(window.localStorage.getItem(storageKeys.identity), {}),
+      );
     } catch (error) {
       console.error("Cannot read auth identity:", error);
       return {};
@@ -67,10 +82,7 @@
 
   function getDisplayName(identity, role) {
     const value =
-      identity?.contact_person ||
-      identity?.contactPerson ||
-      identity?.fullName ||
-      identity?.full_name ||
+      identity?.hovaten ||
       identity?.email ||
       (role === "nha-cung-cap" ? "Nhà cung cấp" : "Khách hàng");
     return String(value || "")
@@ -93,6 +105,19 @@
       console.error("Cannot load layout partial:", url, err);
     }
     return "";
+  }
+
+  function buildSharedAuthUrl(pageName, params = {}) {
+    const url = new URL(`${parentBase}public/${pageName}`, window.location.href);
+    url.searchParams.set("service", sharedAuthService);
+
+    Object.entries(params || {}).forEach(([key, value]) => {
+      const normalizedValue = String(value ?? "").trim();
+      if (!key || !normalizedValue) return;
+      url.searchParams.set(key, normalizedValue);
+    });
+
+    return url.toString();
   }
 
   function injectPartial(hostId, fileName) {
@@ -120,13 +145,13 @@
       contact: `${projectBase}index.html#contact`,
       survey: `${projectBase}dat-lich.html`,
       booking: `${projectBase}dat-lich.html`,
-      account: `${projectBase}dang-nhap.html?vai-tro=khach-hang`,
-      login: `${projectBase}dang-nhap.html`,
-      register: `${projectBase}dang-ky.html`,
-      "login-customer": `${projectBase}dang-nhap.html?vai-tro=khach-hang`,
-      "register-customer": `${projectBase}dang-ky.html?vai-tro=khach-hang`,
-      "login-provider": `${projectBase}dang-nhap.html?vai-tro=nha-cung-cap`,
-      "register-provider": `${projectBase}dang-ky.html?vai-tro=nha-cung-cap`,
+      account: buildSharedAuthUrl("dang-nhap.html"),
+      login: buildSharedAuthUrl("dang-nhap.html"),
+      register: buildSharedAuthUrl("dang-ky.html"),
+      "login-customer": buildSharedAuthUrl("dang-nhap.html"),
+      "register-customer": buildSharedAuthUrl("dang-ky.html"),
+      "login-provider": buildSharedAuthUrl("dang-nhap.html"),
+      "register-provider": buildSharedAuthUrl("dang-ky.html"),
       policy: `${projectBase}chinh-sach-va-dieu-khoan.html`,
       "moving-house": `${servicesLink}#chuyen-nha`,
       "moving-warehouse": `${servicesLink}#chuyen-kho-bai`,
@@ -167,8 +192,6 @@
         dashboard: `${projectBase}nha-cung-cap/dashboard.html`,
         orders: `${projectBase}nha-cung-cap/danh-sach-viec.html`,
         profile: `${projectBase}nha-cung-cap/ho-so.html`,
-        secondary: `${projectBase}bang-gia-chuyen-don.html`,
-        secondaryLabel: "Bảng giá minh bạch",
       };
     }
 
@@ -181,12 +204,16 @@
 
   function performLogout() {
     try {
+      document.cookie =
+        "dvqt_u=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+      document.cookie =
+        "dvqt_p=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
       window.localStorage.removeItem(storageKeys.identity);
       window.localStorage.removeItem(storageKeys.role);
     } catch (error) {
       console.error("Cannot clear auth session:", error);
     }
-    window.location.href = `${projectBase}dang-nhap.html`;
+    window.location.href = buildSharedAuthUrl("dang-nhap.html");
   }
 
   function bindLogoutActions(root) {
@@ -207,6 +234,8 @@
     const loginItem = root.querySelector("#nav-login-item");
     const registerItem = root.querySelector("#nav-register-item");
     if (!loginItem || !registerItem) return;
+    const loginUrl = buildSharedAuthUrl("dang-nhap.html");
+    const registerUrl = buildSharedAuthUrl("dang-ky.html");
 
     const role = getSavedRole();
     const identity = readIdentity();
@@ -214,17 +243,17 @@
       loginItem.className = "";
       loginItem.hidden = false;
       loginItem.innerHTML =
-        '<a data-layout-link="login" href="dang-nhap.html">Đăng nhập</a>';
+        `<a data-layout-link="login" href="${loginUrl}">Đăng nhập</a>`;
       registerItem.hidden = false;
       registerItem.innerHTML =
-        '<a data-layout-link="register" href="dang-ky.html" class="btn-primary nav-auth-cta">Đăng ký</a>';
+        `<a data-layout-link="register" href="${registerUrl}" class="btn-primary nav-auth-cta">Đăng ký</a>`;
       applyLinks(root, linkMap);
       return;
     }
 
     const firstName = escapeHtml(getDisplayName(identity, role));
     const summary = escapeHtml(
-        String(identity.phone || "").trim() ||
+        String(identity.sodienthoai || "").trim() ||
         String(identity.email || "").trim() ||
         (role === "nha-cung-cap" ? "Khu vực nhà cung cấp" : "Khu vực khách hàng"),
     );
@@ -235,7 +264,7 @@
     loginItem.innerHTML =
       role === "nha-cung-cap"
         ? `
-          <a data-layout-link="account" href="${links.dashboard}">Xin chào, ${firstName}</a>
+          <a data-layout-link="account" href="#" aria-haspopup="true" aria-expanded="false">Xin chào, ${firstName}</a>
           <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
             <li class="customer-nav-dropdown-summary">
               <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
@@ -247,14 +276,11 @@
             <li><a href="${links.dashboard}"><i class="fas fa-chart-line"></i> Dashboard nhà cung cấp</a></li>
             <li><a href="${links.orders}"><i class="fas fa-briefcase"></i> Danh sách việc</a></li>
             <li><a href="${links.profile}"><i class="fas fa-user"></i> Hồ sơ nhà cung cấp</a></li>
-            <li><a href="${links.secondary}"><i class="fas fa-file-invoice-dollar"></i> ${escapeHtml(
-              links.secondaryLabel,
-            )}</a></li>
-            <li class="customer-nav-logout-wrapper"><a href="${projectBase}dang-nhap.html" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
+            <li class="customer-nav-logout-wrapper"><a href="${buildSharedAuthUrl("dang-nhap.html")}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
           </ul>
         `
         : `
-          <a data-layout-link="account" href="${links.dashboard}">Xin chào, ${firstName}</a>
+          <a data-layout-link="account" href="#" aria-haspopup="true" aria-expanded="false">Xin chào, ${firstName}</a>
           <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
             <li class="customer-nav-dropdown-summary">
               <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
@@ -264,9 +290,9 @@
               </div>
             </li>
             <li><a href="${links.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
-            <li><a href="${links.orders}"><i class="fas fa-box"></i> Lịch sử yêu cầu</a></li>
+            <li><a href="${links.orders}"><i class="fas fa-box"></i> Danh sách đơn hàng</a></li>
             <li><a href="${links.profile}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>
-            <li class="customer-nav-logout-wrapper"><a href="${projectBase}dang-nhap.html" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
+            <li class="customer-nav-logout-wrapper"><a href="${buildSharedAuthUrl("dang-nhap.html")}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
           </ul>
         `;
 
@@ -343,6 +369,12 @@
   window.addEventListener("storage", function (event) {
     if (!headerHost) return;
     if (![storageKeys.role, storageKeys.identity].includes(event.key || "")) return;
+    syncAuthNav(headerHost);
+    applyActiveNav(headerHost);
+  });
+
+  window.addEventListener(authChangeEventName, function () {
+    if (!headerHost) return;
     syncAuthNav(headerHost);
     applyActiveNav(headerHost);
   });

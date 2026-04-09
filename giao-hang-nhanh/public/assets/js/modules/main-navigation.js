@@ -9,12 +9,10 @@
   }
 
   function getLocalSession() {
-    try {
-      const raw = window.localStorage.getItem("ghn-auth-session");
-      return raw ? JSON.parse(raw) : null;
-    } catch (error) {
-      return null;
+    if (window.GiaoHangNhanhLocalAuth?.getSession) {
+      return window.GiaoHangNhanhLocalAuth.getSession();
     }
+    return null;
   }
 
   function buildLocalNotifications() {

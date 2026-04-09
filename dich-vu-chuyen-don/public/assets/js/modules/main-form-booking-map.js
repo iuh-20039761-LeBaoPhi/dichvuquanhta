@@ -1,8 +1,11 @@
-(function (window) {
-  if (window.FastGoBookingMap) return;
-
-  // Tách riêng bản đồ đặt lịch và dự báo thời tiết để main-forms gọn hơn.
-  const bookingWeatherCache = new Map();
+// Tách riêng bản đồ đặt lịch và dự báo thời tiết để main-forms gọn hơn.
+const bookingWeatherCache = new Map();
+const BOOKING_DEFAULT_SLOT_STARTS = [
+  { value: "sang", hour: 8, minute: 0 },
+  { value: "chieu", hour: 13, minute: 30 },
+  { value: "toi", hour: 17, minute: 0 },
+  { value: "dem", hour: 21, minute: 0 },
+];
 
   function formatLatLng(lat, lng) {
     const safeLat = Number(lat);
@@ -164,6 +167,62 @@
     return `${year}-${month}-${day}`;
   }
 
+  function formatDateInputValue(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function buildSlotDate(baseDate, slot) {
+    const slotDate = new Date(baseDate);
+    slotDate.setHours(slot.hour, slot.minute, 0, 0);
+    return slotDate;
+  }
+
+  function getRecommendedBookingSchedule(now = new Date()) {
+    const minLeadTime = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+    const preferredUpperBound = new Date(now.getTime() + 4 * 60 * 60 * 1000);
+    const candidates = [];
+
+    for (let dayOffset = 0; dayOffset <= 2; dayOffset += 1) {
+      const baseDate = new Date(now);
+      baseDate.setHours(0, 0, 0, 0);
+      baseDate.setDate(baseDate.getDate() + dayOffset);
+
+      BOOKING_DEFAULT_SLOT_STARTS.forEach((slot) => {
+        const slotDate = buildSlotDate(baseDate, slot);
+        if (slotDate.getTime() < minLeadTime.getTime()) return;
+        candidates.push({
+          date: formatDateInputValue(baseDate),
+          slot: slot.value,
+          slotDate,
+        });
+      });
+    }
+
+    if (!candidates.length) {
+      const fallbackDate = new Date(now);
+      fallbackDate.setDate(fallbackDate.getDate() + 1);
+      fallbackDate.setHours(0, 0, 0, 0);
+      return {
+        date: formatDateInputValue(fallbackDate),
+        slot: "sang",
+      };
+    }
+
+    const preferredCandidate = candidates.find(
+      (candidate) => candidate.slotDate.getTime() <= preferredUpperBound.getTime(),
+    );
+    const resolvedCandidate = preferredCandidate || candidates[0];
+
+    return {
+      date: resolvedCandidate.date,
+      slot: resolvedCandidate.slot,
+    };
+  }
+
   function getMaxForecastDateString() {
     const maxDate = new Date();
     maxDate.setDate(maxDate.getDate() + 15);
@@ -210,8 +269,19 @@
 
   function syncBookingExecutionDateLimits(scope) {
     const dateInput = scope.querySelector("#ngay-thuc-hien-dat-lich");
+    const timeSelect = scope.querySelector("#khung-gio-dat-lich");
     if (!dateInput) return;
     dateInput.min = getTodayDateString();
+
+    const recommendedSchedule = getRecommendedBookingSchedule();
+
+    if (!String(dateInput.value || "").trim()) {
+      dateInput.value = recommendedSchedule.date;
+    }
+
+    if (timeSelect && !String(timeSelect.value || "").trim()) {
+      timeSelect.value = recommendedSchedule.slot;
+    }
   }
 
   // Tự suy ra thời tiết theo ngày, giờ và vị trí hiện tại của tuyến đường đặt lịch.
@@ -772,10 +842,18 @@
     }, 120);
   }
 
-  window.FastGoBookingMap = {
-    renderBookingMapPreview,
-    syncBookingExecutionDateLimits,
-    refreshBookingWeather,
-    initBookingMap,
-  };
-})(window);
+const bookingMapModule = {
+  renderBookingMapPreview,
+  syncBookingExecutionDateLimits,
+  refreshBookingWeather,
+  initBookingMap,
+};
+
+export {
+  renderBookingMapPreview,
+  syncBookingExecutionDateLimits,
+  refreshBookingWeather,
+  initBookingMap,
+  bookingMapModule,
+};
+export default bookingMapModule;

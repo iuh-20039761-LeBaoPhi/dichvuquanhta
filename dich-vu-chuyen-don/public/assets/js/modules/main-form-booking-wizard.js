@@ -1,7 +1,4 @@
-(function (window) {
-  if (window.FastGoBookingWizard) return;
-
-  const BOOKING_SLOT_STARTS = {
+const BOOKING_SLOT_STARTS = {
     sang: { hour: 8, minute: 0, label: "buổi sáng" },
     chieu: { hour: 13, minute: 30, label: "buổi chiều" },
     toi: { hour: 17, minute: 0, label: "buổi tối" },
@@ -487,10 +484,18 @@
     goToBookingStep(scope, 1, deps, { force: true });
   }
 
-  window.FastGoBookingWizard = {
-    init,
-    goToStep: goToBookingStep,
-    validateStep: validateBookingStep,
-    validateAll: validateAllBookingSteps,
-  };
-})(window);
+const bookingWizardModule = {
+  init,
+  goToStep: goToBookingStep,
+  validateStep: validateBookingStep,
+  validateAll: validateAllBookingSteps,
+};
+
+export {
+  init,
+  goToBookingStep,
+  validateBookingStep,
+  validateAllBookingSteps,
+  bookingWizardModule,
+};
+export default bookingWizardModule;

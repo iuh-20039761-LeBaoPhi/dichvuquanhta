@@ -1,8 +1,8 @@
+import core from "./core/app-core.js";
+
 (function (window, document) {
   if (window.__fastGoServicesHubLoaded) return;
   window.__fastGoServicesHubLoaded = true;
-
-  const core = window.FastGoCore || {};
 
   function onReady(fn) {
     if (document.readyState === "loading") {

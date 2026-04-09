@@ -1,43 +1,34 @@
-(function (window) {
-  if (window.FastGoCustomerPortalStore) return;
+import {
+  extractRows,
+  getKrudListFn,
+  getKrudUpdateFn,
+} from "./api/krud-client.js";
+import {
+  notifyAuthSessionChanged,
+  clearStoredAuthSession,
+  readStoredIdentity,
+  readStoredRole,
+  safeParse,
+  saveStoredIdentity,
+  storageKeys,
+  writeStoredRole,
+} from "./store/auth-session-store.js";
 
+const customerPortalStoreModule = (function (window) {
   const bookingCrudTableName = "dich_vu_chuyen_don_dat_lich";
-  const storageKeys = {
-    role: "fastgo-auth-role",
-    identity: "fastgo-auth-identity",
-  };
   const dvqtUserTable = "nguoidung";
-
-  function safeParse(raw, fallback) {
-    try {
-      return raw ? JSON.parse(raw) : fallback;
-    } catch (error) {
-      console.error("Cannot parse stored payload:", error);
-      return fallback;
-    }
-  }
-
-  function readJson(key, fallback) {
-    try {
-      return safeParse(window.localStorage.getItem(key), fallback);
-    } catch (error) {
-      console.error("Cannot read stored payload:", error);
-      return fallback;
-    }
-  }
-
-  function writeJson(key, value) {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (error) {
-      console.error("Cannot write stored payload:", error);
-      return false;
-    }
-  }
+  const krudScriptUrl = "https://api.dvqt.vn/js/krud.js";
+  const AUTO_CANCEL_PENDING_MINUTES = 120;
+  const AUTO_CANCEL_PENDING_MS = AUTO_CANCEL_PENDING_MINUTES * 60 * 1000;
+  const AUTO_CANCEL_SWEEP_COOLDOWN_MS = 60 * 1000;
+  let krudScriptPromise = null;
+  let autoCancelSweepPromise = null;
+  let lastAutoCancelSweepAt = 0;
 
   function normalizeText(value) {
-    return String(value || "").replace(/\s+/g, " ").trim();
+    return String(value || "")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   function normalizeLowerText(value) {
@@ -48,11 +39,74 @@
     return String(value || "").replace(/[^\d+]/g, "");
   }
 
+  function readCookie(name) {
+    const escapedName = String(name || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const match = String(document.cookie || "").match(
+      new RegExp(`(?:^|;\\s*)${escapedName}=([^;]*)`),
+    );
+    return match ? decodeURIComponent(match[1] || "") : "";
+  }
+
+  function ensureKrudRuntime() {
+    if (getKrudListFn()) {
+      return Promise.resolve(true);
+    }
+
+    if (krudScriptPromise) {
+      return krudScriptPromise;
+    }
+
+    krudScriptPromise = new Promise((resolve, reject) => {
+      const existingScript = document.querySelector(`script[src="${krudScriptUrl}"]`);
+      if (existingScript) {
+        existingScript.addEventListener("load", () => resolve(true), { once: true });
+        existingScript.addEventListener(
+          "error",
+          () => reject(new Error("Không thể nạp KRUD runtime.")),
+          { once: true },
+        );
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = krudScriptUrl;
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () =>
+        reject(new Error("Không thể nạp KRUD runtime."));
+      document.head.appendChild(script);
+    }).finally(() => {
+      krudScriptPromise = null;
+    });
+
+    return krudScriptPromise;
+  }
+
+  function resolveRoleFromProfile(profile) {
+    const normalizedRole = normalizeLowerText(profile?.role || "");
+    if (["nha-cung-cap", "doi-tac", "provider"].includes(normalizedRole)) {
+      return "nha-cung-cap";
+    }
+
+    const serviceIds = normalizeText(profile?.id_dichvu || "0");
+    return serviceIds && serviceIds !== "0" ? "nha-cung-cap" : "khach-hang";
+  }
+
   function parseNumber(value) {
     if (value == null || value === "") return 0;
-    const normalized = String(value).replace(",", ".").replace(/[^\d.-]/g, "");
+    const normalized = String(value)
+      .replace(",", ".")
+      .replace(/[^\d.-]/g, "");
     const parsed = Number(normalized);
     return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function parseDateMs(value) {
+    const normalized = normalizeText(value);
+    if (!normalized) return 0;
+
+    const timestamp = new Date(normalized).getTime();
+    return Number.isFinite(timestamp) ? timestamp : 0;
   }
 
   function formatRequestDateCode(value) {
@@ -74,7 +128,10 @@
 
   function resolveBookingRowCode(row) {
     const explicitCode = normalizeText(
-      row?.ma_yeu_cau_noi_bo || row?.ma_don_hang_noi_bo || row?.order_code || "",
+      row?.ma_yeu_cau_noi_bo ||
+        row?.ma_don_hang_noi_bo ||
+        row?.order_code ||
+        "",
     );
     if (explicitCode) return explicitCode;
 
@@ -96,7 +153,9 @@
 
   function parseJsonObject(value) {
     const parsed = safeParse(value, {});
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed
+      : {};
   }
 
   function parseJsonArray(value) {
@@ -120,7 +179,9 @@
 
   function containsSurveyFirstMarker(value) {
     const list = Array.isArray(value) ? value : splitPipeValues(value);
-    return list.some((item) => normalizeLowerText(item).includes("cần khảo sát trước"));
+    return list.some((item) =>
+      normalizeLowerText(item).includes("cần khảo sát trước"),
+    );
   }
 
   function resolveSurveyFirstFlag(source) {
@@ -135,7 +196,9 @@
       isTruthyFlag(source.survey_first) ||
       isTruthyFlag(source.can_khao_sat_truoc) ||
       isTruthyFlag(formPayload.can_khao_sat_truoc) ||
-      containsSurveyFirstMarker(source.service_details || source.chi_tiet_dich_vu) ||
+      containsSurveyFirstMarker(
+        source.service_details || source.chi_tiet_dich_vu,
+      ) ||
       normalizeLowerText(source.type) === "khao-sat"
     );
   }
@@ -194,7 +257,10 @@
       .map(([key, rawValue]) => ({
         key,
         label: bookingFormFieldLabels[key] || toLabelFromKey(key),
-        value: String(rawValue || "").trim() === "1" ? "Có" : normalizeText(rawValue),
+        value:
+          String(rawValue || "").trim() === "1"
+            ? "Có"
+            : normalizeText(rawValue),
       }))
       .filter((item) => item.value);
   }
@@ -207,7 +273,9 @@
         const label = normalizeText(item.label || item.title || "");
         const amount = normalizeText(item.amount || item.value || "");
         const detail = normalizeText(item.detail || item.note || "");
-        const amountValue = parseNumber(item.amount_value || item.amount || item.value || 0);
+        const amountValue = parseNumber(
+          item.amount_value || item.amount || item.value || 0,
+        );
         const isTotal =
           item.is_total === true ||
           /tong/i.test(label) ||
@@ -271,18 +339,12 @@
   }
 
   function readIdentity() {
-    const identity = readJson(storageKeys.identity, {});
+    const identity = readStoredIdentity();
     return identity && typeof identity === "object" ? identity : {};
   }
 
   function saveIdentity(payload) {
-    const current = readIdentity();
-    const nextIdentity = {
-      ...current,
-      ...(payload && typeof payload === "object" ? payload : {}),
-    };
-    writeJson(storageKeys.identity, nextIdentity);
-    return nextIdentity;
+    return saveStoredIdentity(payload);
   }
 
   function syncIdentityFromProfile(profile) {
@@ -290,20 +352,23 @@
       return readIdentity();
     }
 
+    const nextRole = resolveRoleFromProfile(profile);
+    writeStoredRole(nextRole);
+
     return saveIdentity({
-      fullName: normalizeText(profile.full_name || profile.fullName || ""),
-      full_name: normalizeText(profile.full_name || profile.fullName || ""),
-      contact_person: normalizeText(profile.contact_person || profile.contactPerson || ""),
-      contactPerson: normalizeText(profile.contact_person || profile.contactPerson || ""),
+      id: normalizeText(profile.id || ""),
+      hovaten: normalizeText(profile.hovaten || ""),
       email: normalizeText(profile.email || ""),
-      phone: normalizeText(profile.phone || ""),
-      status: normalizeText(profile.status || ""),
+      sodienthoai: normalizeText(profile.sodienthoai || ""),
+      id_dichvu: normalizeText(profile.id_dichvu || "0"),
+      role: nextRole,
+      trangthai: normalizeText(profile.trangthai || ""),
     });
   }
 
   function getSavedRole() {
     try {
-      const role = String(window.localStorage.getItem(storageKeys.role) || "")
+      const role = String(readStoredRole() || "")
         .trim()
         .toLowerCase();
       if (role === "doi-tac") return "nha-cung-cap";
@@ -317,7 +382,7 @@
   function getDisplayName(identity) {
     const role = getSavedRole();
     return (
-      normalizeText(identity?.fullName || identity?.full_name || "") ||
+      normalizeText(identity?.hovaten || "") ||
       normalizeText(identity?.email || "") ||
       (role === "nha-cung-cap" ? "nhà cung cấp" : "khách hàng")
     );
@@ -325,8 +390,12 @@
 
   function getDashboardStats(items) {
     const list = Array.isArray(items) ? items : [];
-    const openCount = list.filter((item) => ["moi", "dang-xu-ly"].includes(item.status_class)).length;
-    const confirmedCount = list.filter((item) => item.status_class === "xac-nhan").length;
+    const openCount = list.filter((item) =>
+      ["moi", "dang-xu-ly"].includes(item.status_class),
+    ).length;
+    const confirmedCount = list.filter(
+      (item) => item.status_class === "xac-nhan",
+    ).length;
     const surveyCount = list.filter((item) => item.survey_first).length;
     return {
       total: list.length,
@@ -337,45 +406,218 @@
   }
 
   function clearAuthSession() {
-    try {
-      window.localStorage.removeItem(storageKeys.identity);
-      window.localStorage.removeItem(storageKeys.role);
-    } catch (error) {
-      console.error("Cannot clear local session:", error);
-    }
+    clearStoredAuthSession();
   }
 
   function normalizeAuthProfileRow(row) {
     if (!row || typeof row !== "object") return null;
 
     return {
-      id: normalizeText(row.id || row.user_id || row.ma_tai_khoan_noi_bo || ""),
-      role: "khach-hang",
-      fullName: normalizeText(
-        row.full_name || row.fullName || row.hovaten || row.ho_ten || "",
-      ),
-      full_name: normalizeText(
-        row.full_name || row.fullName || row.hovaten || row.ho_ten || "",
-      ),
-      contact_person: normalizeText(
-        row.contact_person || row.contactPerson || row.nguoi_lien_he || "",
-      ),
-      contactPerson: normalizeText(
-        row.contact_person || row.contactPerson || row.nguoi_lien_he || "",
-      ),
+      id: normalizeText(row.id || ""),
+      role: resolveRoleFromProfile(row),
+      hovaten: normalizeText(row.hovaten || ""),
       email: normalizeText(row.email || "").toLowerCase(),
-      phone: normalizeText(row.phone || row.sodienthoai || row.so_dien_thoai || ""),
-      status: normalizeText(row.status || row.trangthai || "active"),
+      sodienthoai: normalizeText(row.sodienthoai || ""),
+      id_dichvu: normalizeText(row.id_dichvu || "0"),
+      trangthai: normalizeText(row.trangthai || "active"),
     };
+  }
+
+  async function hydrateAuthSessionFromDvqtCookie() {
+    const identity = readIdentity();
+    const hasLocalIdentity =
+      normalizeText(identity?.id || "") ||
+      normalizeText(identity?.email || "") ||
+      normalizeText(identity?.sodienthoai || "");
+
+    if (hasLocalIdentity) {
+      return identity;
+    }
+
+    const cookiePhone = normalizePhone(readCookie("dvqt_u"));
+    if (!cookiePhone) return null;
+
+    let listFn = getKrudListFn();
+    if (!listFn) {
+      try {
+        await ensureKrudRuntime();
+      } catch (error) {
+        console.error("Cannot prepare KRUD runtime for auth bootstrap:", error);
+        return null;
+      }
+      listFn = getKrudListFn();
+    }
+    if (!listFn) return null;
+
+    const limit = 200;
+    const maxPages = 5;
+
+    for (let page = 1; page <= maxPages; page += 1) {
+      let response;
+
+      try {
+        response = await Promise.resolve(
+          listFn({
+            table: dvqtUserTable,
+            page,
+            limit,
+            sort: {
+              id: "desc",
+            },
+          }),
+        );
+      } catch (error) {
+        console.error("Cannot hydrate auth session from DVQT cookie:", error);
+        return null;
+      }
+
+      const rows = extractRows(response);
+      if (!rows.length) break;
+
+      const matchedRow =
+        rows.find((row) => {
+          const rowPhone = normalizePhone(row.sodienthoai || "");
+          return rowPhone && rowPhone === cookiePhone;
+        }) || null;
+
+      if (matchedRow) {
+        return syncIdentityFromProfile(normalizeAuthProfileRow(matchedRow));
+      }
+
+      if (rows.length < limit) break;
+    }
+
+    return null;
+  }
+
+  async function bootstrapAuthSession() {
+    const cookiePhone = normalizePhone(readCookie("dvqt_u"));
+    if (!cookiePhone) return null;
+
+    const identity = readIdentity();
+    const hasLocalIdentity =
+      normalizeText(identity?.id || "") ||
+      normalizeText(identity?.email || "") ||
+      normalizeText(identity?.sodienthoai || "");
+
+    if (hasLocalIdentity) {
+      notifyAuthSessionChanged();
+      return identity;
+    }
+
+    const hydratedIdentity = await hydrateAuthSessionFromDvqtCookie();
+    if (hydratedIdentity) {
+      notifyAuthSessionChanged();
+    }
+    return hydratedIdentity;
+  }
+
+  function normalizeLoginIdentifier(value) {
+    const text = normalizeText(value);
+    if (!text) return "";
+
+    const phone = normalizePhone(text);
+    return phone || normalizeLowerText(text);
+  }
+
+  function matchesUrlLoginIdentifier(row, loginIdentifier) {
+    const normalizedIdentifier = normalizeLoginIdentifier(loginIdentifier);
+    if (!normalizedIdentifier) return false;
+
+    const rowPhone = normalizePhone(row?.sodienthoai || "");
+    const rowEmail = normalizeLowerText(row?.email || "");
+
+    return (
+      (rowPhone && rowPhone === normalizedIdentifier) ||
+      (rowEmail && rowEmail === normalizedIdentifier)
+    );
+  }
+
+  async function autoAuthFromUrlCredentials(credentials = {}) {
+    const loginIdentifier = normalizeText(
+      credentials?.username ||
+        credentials?.loginIdentifier ||
+        credentials?.email ||
+        credentials?.sodienthoai ||
+        "",
+    );
+    const password = String(credentials?.password || "").trim();
+
+    if (!loginIdentifier || !password) return null;
+
+    let listFn = getKrudListFn();
+    if (!listFn) {
+      try {
+        await ensureKrudRuntime();
+      } catch (error) {
+        console.error("Cannot prepare KRUD runtime for URL auth:", error);
+        return null;
+      }
+      listFn = getKrudListFn();
+    }
+    if (!listFn) return null;
+
+    const limit = 200;
+    const maxPages = 5;
+
+    for (let page = 1; page <= maxPages; page += 1) {
+      let response;
+
+      try {
+        response = await Promise.resolve(
+          listFn({
+            table: dvqtUserTable,
+            page,
+            limit,
+            sort: {
+              id: "desc",
+            },
+          }),
+        );
+      } catch (error) {
+        console.error("Cannot load URL auth profiles from KRUD:", error);
+        return null;
+      }
+
+      const rows = extractRows(response);
+      if (!rows.length) break;
+
+      const matchedRow =
+        rows.find((row) => {
+          const storedPassword = String(row?.matkhau || "").trim();
+          return (
+            storedPassword &&
+            storedPassword === password &&
+            matchesUrlLoginIdentifier(row, loginIdentifier)
+          );
+        }) || null;
+
+      if (matchedRow) {
+        return syncIdentityFromProfile(normalizeAuthProfileRow(matchedRow));
+      }
+
+      if (rows.length < limit) break;
+    }
+
+    return null;
   }
 
   async function fetchCurrentAuthProfileFromKrud() {
     const currentIdentity = readIdentity();
-    const listFn = getKrudListFn();
+    let listFn = getKrudListFn();
+    if (!listFn) {
+      try {
+        await ensureKrudRuntime();
+      } catch (error) {
+        console.error("Cannot prepare KRUD runtime for current auth profile:", error);
+        return null;
+      }
+      listFn = getKrudListFn();
+    }
     const tableName = getAuthTableName(getSavedRole() || "khach-hang");
     const localId = normalizeText(currentIdentity.id || "");
     const localEmail = normalizeLowerText(currentIdentity.email || "");
-    const localPhone = normalizePhone(currentIdentity.phone || "");
+    const localPhone = normalizePhone(currentIdentity.sodienthoai || "");
 
     if (!localId && !localEmail && !localPhone) return null;
     if (!listFn || !tableName) return null;
@@ -407,13 +649,9 @@
 
       const matchedRow =
         rows.find((row) => {
-          const rowId = normalizeText(
-            row.id || row.user_id || row.ma_tai_khoan_noi_bo || "",
-          );
+          const rowId = normalizeText(row.id || "");
           const rowEmail = normalizeLowerText(row.email || "");
-          const rowPhone = normalizePhone(
-            row.phone || row.sodienthoai || row.so_dien_thoai || "",
-          );
+          const rowPhone = normalizePhone(row.sodienthoai || "");
 
           return (
             (localId && rowId === localId) ||
@@ -433,6 +671,7 @@
   }
 
   async function requireVerifiedProfile() {
+    await hydrateAuthSessionFromDvqtCookie();
     const profile = await fetchCurrentAuthProfileFromKrud();
     if (profile) return profile;
 
@@ -442,63 +681,6 @@
 
   function getAuthTableName(role) {
     return dvqtUserTable;
-  }
-
-  function getKrudListFn() {
-    if (typeof window.krudList === "function") {
-      return (payload) => window.krudList(payload);
-    }
-
-    if (typeof window.crud === "function") {
-      return (payload) =>
-        window.crud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 300,
-          where: payload.where,
-          sort: payload.sort,
-        });
-    }
-
-    if (typeof window.krud === "function") {
-      return (payload) =>
-        window.krud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 300,
-          where: payload.where,
-          sort: payload.sort,
-        });
-    }
-
-    return null;
-  }
-
-  function getKrudUpdateFn() {
-    if (typeof window.crud === "function") {
-      return (tableName, data) => window.crud("update", tableName, data);
-    }
-
-    if (typeof window.krud === "function") {
-      return (tableName, data) => window.krud("update", tableName, data);
-    }
-
-    return null;
-  }
-
-  function extractRows(payload, depth) {
-    const level = Number(depth || 0);
-    if (level > 4 || payload == null) return [];
-    if (Array.isArray(payload)) return payload;
-    if (typeof payload !== "object") return [];
-
-    const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
-    for (const key of candidateKeys) {
-      const value = payload[key];
-      if (Array.isArray(value)) return value;
-      const nested = extractRows(value, level + 1);
-      if (nested.length) return nested;
-    }
-
-    return [];
   }
 
   function formatDateLabel(dateValue, timeValue) {
@@ -517,30 +699,183 @@
     return timeText ? `${dateText} • ${timeText}` : dateText;
   }
 
+  function isCancelledBookingStatus(rawStatus) {
+    return ["cancelled", "canceled", "huy", "da_huy", "huy_bo"].includes(
+      normalizeLowerText(rawStatus),
+    );
+  }
+
+  function isConfirmedBookingStatus(rawStatus) {
+    return [
+      "da_xac_nhan",
+      "xac_nhan",
+      "confirmed",
+      "accepted",
+      "da_chot_lich",
+    ].includes(normalizeLowerText(rawStatus));
+  }
+
+  function isProcessingBookingStatus(rawStatus) {
+    return [
+      "dang_xu_ly",
+      "processing",
+      "in_progress",
+      "dang_dieu_phoi",
+      "dang_trien_khai",
+    ].includes(normalizeLowerText(rawStatus));
+  }
+
+  function isPendingBookingRow(row) {
+    const rawStatus = normalizeLowerText(row?.status || row?.trang_thai || "");
+    if (!rawStatus) return true;
+
+    return (
+      !isCancelledBookingStatus(rawStatus) &&
+      !isConfirmedBookingStatus(rawStatus) &&
+      !isProcessingBookingStatus(rawStatus)
+    );
+  }
+
+  function isExpiredPendingBookingRow(row, nowMs = Date.now()) {
+    if (!row || typeof row !== "object") return false;
+    if (!normalizeText(row?.id || "")) return false;
+    if (!isPendingBookingRow(row)) return false;
+
+    if (
+      normalizeText(row?.accepted_at || "") ||
+      normalizeText(row?.started_at || "") ||
+      normalizeText(row?.completed_at || "") ||
+      normalizeText(row?.cancelled_at || "")
+    ) {
+      return false;
+    }
+
+    const createdMs = parseDateMs(row?.created_at || row?.created_date || "");
+    if (!createdMs) return false;
+
+    return nowMs - createdMs >= AUTO_CANCEL_PENDING_MS;
+  }
+
+  async function updateBookingAsCancelled(updateFn, rawRow, cancelledAt) {
+    const rowId = normalizeText(rawRow?.id || "");
+    if (!updateFn || !rowId) return false;
+
+    const basePayload = {
+      id: rowId,
+      status: "da_huy",
+      trang_thai: "da_huy",
+      updated_at: cancelledAt,
+    };
+
+    try {
+      await Promise.resolve(
+        updateFn(bookingCrudTableName, {
+          ...basePayload,
+          cancelled_at: cancelledAt,
+        }),
+      );
+      return true;
+    } catch (error) {
+      console.warn(
+        "Cannot persist cancelled_at for booking, fallback to status-only cancel:",
+        error,
+      );
+      await Promise.resolve(updateFn(bookingCrudTableName, basePayload));
+      return true;
+    }
+  }
+
+  async function autoCancelExpiredBookings(options = {}) {
+    const force = options?.force === true;
+    const nowMs = Date.now();
+
+    if (!force && nowMs - lastAutoCancelSweepAt < AUTO_CANCEL_SWEEP_COOLDOWN_MS) {
+      return { updatedCount: 0, skipped: true };
+    }
+
+    if (autoCancelSweepPromise) {
+      return autoCancelSweepPromise;
+    }
+
+    autoCancelSweepPromise = (async () => {
+      const listFn = getKrudListFn();
+      const updateFn = getKrudUpdateFn();
+      if (!listFn || !updateFn) {
+        lastAutoCancelSweepAt = Date.now();
+        return { updatedCount: 0, skipped: true };
+      }
+
+      const limit = 200;
+      const maxPages = 10;
+      const expiredRows = [];
+
+      for (let page = 1; page <= maxPages; page += 1) {
+        let response;
+
+        try {
+          response = await Promise.resolve(
+            listFn({
+              table: bookingCrudTableName,
+              page,
+              limit,
+              sort: {
+                created_at: "desc",
+              },
+            }),
+          );
+        } catch (error) {
+          console.error("Cannot scan booking rows for auto cancel:", error);
+          break;
+        }
+
+        const pageRows = extractRows(response);
+        if (!pageRows.length) break;
+
+        expiredRows.push(
+          ...pageRows.filter((row) => isExpiredPendingBookingRow(row, nowMs)),
+        );
+        if (pageRows.length < limit) break;
+      }
+
+      let updatedCount = 0;
+      const cancelledAt = new Date(nowMs).toISOString();
+
+      for (const row of expiredRows) {
+        try {
+          await updateBookingAsCancelled(updateFn, row, cancelledAt);
+          updatedCount += 1;
+        } catch (error) {
+          console.error("Cannot auto cancel expired booking:", error);
+        }
+      }
+
+      lastAutoCancelSweepAt = Date.now();
+      return { updatedCount, skipped: false };
+    })().finally(() => {
+      autoCancelSweepPromise = null;
+    });
+
+    return autoCancelSweepPromise;
+  }
+
   function getBookingStatusMeta(row) {
     const rawStatus = normalizeLowerText(row?.status || row?.trang_thai || "");
 
-    if (
-      ["da_xac_nhan", "xac_nhan", "confirmed", "accepted", "da_chot_lich"].includes(rawStatus)
-    ) {
+    if (isConfirmedBookingStatus(rawStatus)) {
       return {
         status_class: "xac-nhan",
         status_text: "Đã xác nhận",
       };
     }
 
-    if (
-      ["dang_xu_ly", "processing", "in_progress", "dang_dieu_phoi", "dang_trien_khai"].includes(
-        rawStatus,
-      )
-    ) {
+    if (isProcessingBookingStatus(rawStatus)) {
       return {
         status_class: "dang-xu-ly",
         status_text: "Đang xử lý",
       };
     }
 
-    if (["cancelled", "canceled", "huy", "da_huy", "huy_bo"].includes(rawStatus)) {
+    if (isCancelledBookingStatus(rawStatus)) {
       return {
         status_class: "da-huy",
         status_text: "Đã hủy",
@@ -579,8 +914,9 @@
     const statusMeta = getBookingStatusMeta(row);
     const surveyFirst = resolveSurveyFirstFlag(row);
     const code = resolveBookingRowCode(row);
-    const serviceLabel =
-      normalizeText(row?.ten_dich_vu || row?.loai_dich_vu || "Chuyển dọn");
+    const serviceLabel = normalizeText(
+      row?.ten_dich_vu || row?.loai_dich_vu || "Chuyển dọn",
+    );
     const vehicleLabel = normalizeText(row?.ten_loai_xe || row?.loai_xe || "");
     const contactName = normalizeText(row?.ho_ten || row?.contact_name || "");
     const contactPhone = normalizeText(row?.so_dien_thoai || row?.phone || "");
@@ -601,7 +937,9 @@
           : normalizeText(row?.ten_cong_ty || row?.ghi_chu || ""),
       from_address: normalizeText(row?.dia_chi_di || ""),
       to_address: normalizeText(row?.dia_chi_den || ""),
-      created_at: normalizeText(row?.created_at || row?.created_date || new Date().toISOString()),
+      created_at: normalizeText(
+        row?.created_at || row?.created_date || new Date().toISOString(),
+      ),
       schedule_label: formatDateLabel(
         row?.ngay_thuc_hien,
         row?.ten_khung_gio_thuc_hien || row?.khung_gio_thuc_hien,
@@ -618,40 +956,58 @@
 
   function normalizeBookingInvoiceDetail(rawRow, requestItem) {
     const row = rawRow && typeof rawRow === "object" ? rawRow : {};
-    const fallbackRequest = requestItem ? normalizeHistoryItem(requestItem) : null;
+    const fallbackRequest = requestItem
+      ? normalizeHistoryItem(requestItem)
+      : null;
     const mappedRequest =
-      row && Object.keys(row).length ? mapKrudBookingToHistoryItem(row) : fallbackRequest;
+      row && Object.keys(row).length
+        ? mapKrudBookingToHistoryItem(row)
+        : fallbackRequest;
     const request =
       mappedRequest && fallbackRequest
         ? {
             ...fallbackRequest,
             ...mappedRequest,
-            summary: normalizeText(mappedRequest.summary || fallbackRequest.summary || ""),
-            meta: normalizeText(mappedRequest.meta || fallbackRequest.meta || ""),
-            note: normalizeText(mappedRequest.note || fallbackRequest.note || ""),
+            summary: normalizeText(
+              mappedRequest.summary || fallbackRequest.summary || "",
+            ),
+            meta: normalizeText(
+              mappedRequest.meta || fallbackRequest.meta || "",
+            ),
+            note: normalizeText(
+              mappedRequest.note || fallbackRequest.note || "",
+            ),
           }
         : mappedRequest || fallbackRequest;
     const formRows = normalizeBookingFormRows(row?.du_lieu_form_json);
-    const pricingBreakdown = normalizeBookingPricingBreakdown(row?.pricing_breakdown_json);
+    const pricingBreakdown = normalizeBookingPricingBreakdown(
+      row?.pricing_breakdown_json,
+    );
 
     return {
       code: normalizeText(
-        resolveBookingRowCode(row) ||
-          request?.code ||
-          row?.id ||
-          "",
+        resolveBookingRowCode(row) || request?.code || row?.id || "",
       ),
       remote_id: normalizeText(row?.id || request?.remote_id || ""),
       type: "dat-lich",
       type_label: "Đặt lịch",
-      title: normalizeText(request?.title || "Hóa đơn chi tiết đặt lịch chuyển dọn"),
+      title: normalizeText(
+        request?.title || "Hóa đơn chi tiết đặt lịch chuyển dọn",
+      ),
       service_label: normalizeText(
-        row?.ten_dich_vu || request?.service_label || row?.loai_dich_vu || "Chuyển dọn",
+        row?.ten_dich_vu ||
+          request?.service_label ||
+          row?.loai_dich_vu ||
+          "Chuyển dọn",
       ),
       status_class: normalizeText(request?.status_class || "moi") || "moi",
-      status_text: normalizeText(request?.status_text || "Mới tiếp nhận") || "Mới tiếp nhận",
+      status_text:
+        normalizeText(request?.status_text || "Mới tiếp nhận") ||
+        "Mới tiếp nhận",
       summary: normalizeText(request?.summary || ""),
-      created_at: normalizeText(row?.created_at || row?.created_date || request?.created_at || ""),
+      created_at: normalizeText(
+        row?.created_at || row?.created_date || request?.created_at || "",
+      ),
       schedule_label: normalizeText(
         request?.schedule_label ||
           formatDateLabel(
@@ -660,12 +1016,18 @@
           ) ||
           "",
       ),
-      estimated_amount: Number(row?.tong_tam_tinh || request?.estimated_amount || 0),
+      estimated_amount: Number(
+        row?.tong_tam_tinh || request?.estimated_amount || 0,
+      ),
       contact_name: normalizeText(row?.ho_ten || request?.contact_name || ""),
-      contact_phone: normalizeText(row?.so_dien_thoai || request?.contact_phone || ""),
+      contact_phone: normalizeText(
+        row?.so_dien_thoai || request?.contact_phone || "",
+      ),
       customer_email: normalizeText(row?.customer_email || ""),
       company_name: normalizeText(row?.ten_cong_ty || ""),
-      from_address: normalizeText(row?.dia_chi_di || request?.from_address || ""),
+      from_address: normalizeText(
+        row?.dia_chi_di || request?.from_address || "",
+      ),
       to_address: normalizeText(row?.dia_chi_den || request?.to_address || ""),
       schedule_date: normalizeText(row?.ngay_thuc_hien || ""),
       schedule_time: normalizeText(
@@ -681,6 +1043,9 @@
       pricing_breakdown: pricingBreakdown,
       image_attachments: splitPipeValues(row?.anh_dinh_kem),
       video_attachments: splitPipeValues(row?.video_dinh_kem),
+      provider_note: normalizeText(row?.provider_note || ""),
+      customer_feedback: normalizeText(row?.customer_feedback || ""),
+      customer_rating: parseNumber(row?.customer_rating || 0),
       form_rows: formRows,
       form_payload: parseJsonObject(row?.du_lieu_form_json),
       source: normalizeText(request?.source || "krud"),
@@ -691,17 +1056,16 @@
 
   function isRowOwnedByIdentity(row, identity) {
     const identityEmail = normalizeLowerText(identity?.email || "");
-    const identityPhone = normalizePhone(identity?.phone || "");
+    const identityPhone = normalizePhone(identity?.sodienthoai || "");
     const identityNames = [
-      identity?.fullName,
-      identity?.full_name,
-      identity?.contact_person,
-      identity?.contactPerson,
+      identity?.hovaten,
     ]
       .map(normalizeLowerText)
       .filter(Boolean);
 
-    const rowEmail = normalizeLowerText(row?.customer_email || row?.email || "");
+    const rowEmail = normalizeLowerText(
+      row?.customer_email || row?.email || "",
+    );
     const rowPhone = normalizePhone(row?.so_dien_thoai || row?.phone || "");
     const rowName = normalizeLowerText(row?.ho_ten || row?.contact_name || "");
 
@@ -735,11 +1099,12 @@
     const listFn = getKrudListFn();
     if (!listFn) return [];
 
-    const profile = identity && typeof identity === "object" ? identity : readIdentity();
+    const profile =
+      identity && typeof identity === "object" ? identity : readIdentity();
     const hasLookupIdentity =
       normalizeText(profile?.email || "") ||
-      normalizeText(profile?.phone || "") ||
-      normalizeText(profile?.fullName || profile?.full_name || profile?.contact_person || "");
+      normalizeText(profile?.sodienthoai || "") ||
+      normalizeText(profile?.hovaten || "");
     if (!hasLookupIdentity) return [];
 
     const limit = 200;
@@ -780,17 +1145,19 @@
   }
 
   async function findKrudBookingRowByCode(code, identity) {
+    await autoCancelExpiredBookings();
     const listFn = getKrudListFn();
     if (!listFn) return null;
 
     const normalizedCode = normalizeLowerText(code);
     if (!normalizedCode) return null;
 
-    const profile = identity && typeof identity === "object" ? identity : readIdentity();
+    const profile =
+      identity && typeof identity === "object" ? identity : readIdentity();
     const hasLookupIdentity =
       normalizeText(profile?.email || "") ||
-      normalizeText(profile?.phone || "") ||
-      normalizeText(profile?.fullName || profile?.full_name || profile?.contact_person || "");
+      normalizeText(profile?.sodienthoai || "") ||
+      normalizeText(profile?.hovaten || "");
     if (!hasLookupIdentity) return null;
 
     const limit = 200;
@@ -834,6 +1201,7 @@
   }
 
   async function getAllHistoryItems(profile) {
+    await autoCancelExpiredBookings();
     const identity =
       profile && typeof profile === "object"
         ? syncIdentityFromProfile(profile)
@@ -871,7 +1239,10 @@
     const history = await getAllHistoryItems(profile);
     return {
       profile,
-      request: history.find((item) => normalizeLowerText(item.code) === normalizedCode) || null,
+      request:
+        history.find(
+          (item) => normalizeLowerText(item.code) === normalizedCode,
+        ) || null,
     };
   }
 
@@ -879,7 +1250,10 @@
     const profile = await requireVerifiedProfile();
     const normalizedCode = normalizeLowerText(code);
     const history = await getAllHistoryItems(profile);
-    const request = history.find((item) => normalizeLowerText(item.code) === normalizedCode) || null;
+    const request =
+      history.find(
+        (item) => normalizeLowerText(item.code) === normalizedCode,
+      ) || null;
     const rawRow = await findKrudBookingRowByCode(code, profile);
 
     if (!rawRow && (!request || request.type !== "dat-lich")) {
@@ -912,26 +1286,71 @@
     }
 
     if (!updateFn) {
-      throw new Error("Không tìm thấy API KRUD để cập nhật trạng thái yêu cầu.");
+      throw new Error(
+        "Không tìm thấy API KRUD để cập nhật trạng thái yêu cầu.",
+      );
     }
 
-    const rawStatus = normalizeLowerText(rawRow?.status || rawRow?.trang_thai || "");
-    if (["cancelled", "canceled", "huy", "da_huy", "huy_bo"].includes(rawStatus)) {
+    const rawStatus = normalizeLowerText(
+      rawRow?.status || rawRow?.trang_thai || "",
+    );
+    if (isCancelledBookingStatus(rawStatus)) {
       throw new Error("Yêu cầu này đã ở trạng thái hủy.");
     }
 
-    if (["da_xac_nhan", "xac_nhan", "confirmed", "accepted", "da_chot_lich"].includes(rawStatus)) {
-      throw new Error("Yêu cầu đã được xác nhận nên không thể hủy trực tiếp từ phía khách hàng.");
+    if (isConfirmedBookingStatus(rawStatus)) {
+      throw new Error(
+        "Yêu cầu đã được xác nhận nên không thể hủy trực tiếp từ phía khách hàng.",
+      );
     }
 
     const updatedAt = new Date().toISOString();
 
+    await updateBookingAsCancelled(updateFn, rawRow, updatedAt);
+
+    return fetchBookingInvoiceDetail(code);
+  }
+
+  async function saveBookingFeedback(code, payload) {
+    const normalizedCode = normalizeLowerText(code);
+    if (!normalizedCode) {
+      throw new Error("Thiếu mã yêu cầu để lưu đánh giá.");
+    }
+
+    const profile = syncIdentityFromProfile(readIdentity());
+    const rawRow = await findKrudBookingRowByCode(code, profile);
+    const updateFn = getKrudUpdateFn();
+
+    if (!rawRow || !normalizeText(rawRow.id || "")) {
+      throw new Error("Không tìm thấy yêu cầu phù hợp để lưu đánh giá.");
+    }
+
+    if (!updateFn) {
+      throw new Error("Không tìm thấy API KRUD để cập nhật phản hồi.");
+    }
+
+    const rawStatus = normalizeLowerText(
+      rawRow?.status || rawRow?.trang_thai || "",
+    );
+    if (
+      !["da_xac_nhan", "xac_nhan", "completed", "confirmed"].includes(rawStatus)
+    ) {
+      throw new Error(
+        "Chỉ có thể gửi đánh giá sau khi đơn hàng đã hoàn thành.",
+      );
+    }
+
+    const rawRating = Number(payload?.customer_rating || 0);
+    const customerRating = Number.isFinite(rawRating)
+      ? Math.min(5, Math.max(0, Math.round(rawRating)))
+      : 0;
+
     await Promise.resolve(
       updateFn(bookingCrudTableName, {
         id: rawRow.id,
-        status: "da_huy",
-        trang_thai: "da_huy",
-        updated_at: updatedAt,
+        customer_feedback: normalizeText(payload?.customer_feedback || ""),
+        customer_rating: customerRating,
+        updated_at: new Date().toISOString(),
       }),
     );
 
@@ -942,27 +1361,33 @@
     const currentIdentity = readIdentity();
     const nextProfile = syncIdentityFromProfile({
       ...currentIdentity,
-      ...(payload && typeof payload === "object" ? payload : {}),
+      ...(payload && typeof payload === "object"
+        ? {
+            ...payload,
+            sodienthoai: currentIdentity.sodienthoai || "",
+          }
+        : {}),
     });
     const updateFn = getKrudUpdateFn();
     const tableName = getAuthTableName(getSavedRole() || "khach-hang");
     const remoteId = normalizeText(currentIdentity.id || "");
 
     if (!updateFn || !tableName || !remoteId) {
-      throw new Error("Không tìm thấy thông tin tài khoản KRUD hiện tại để cập nhật hồ sơ.");
+      throw new Error(
+        "Không tìm thấy thông tin tài khoản KRUD hiện tại để cập nhật hồ sơ.",
+      );
     }
 
     await Promise.resolve(
       updateFn(tableName, {
         id: remoteId,
-        hovaten: normalizeText(nextProfile.full_name || currentIdentity.full_name || ""),
-        full_name: normalizeText(nextProfile.full_name || currentIdentity.full_name || ""),
-        contact_person: normalizeText(
-          nextProfile.contact_person || currentIdentity.contact_person || "",
+        hovaten: normalizeText(
+          nextProfile.hovaten || currentIdentity.hovaten || "",
         ),
-        email: normalizeText(nextProfile.email || currentIdentity.email || "").toLowerCase(),
-        sodienthoai: normalizeText(nextProfile.phone || currentIdentity.phone || ""),
-        phone: normalizeText(nextProfile.phone || currentIdentity.phone || ""),
+        email: normalizeText(
+          nextProfile.email || currentIdentity.email || "",
+        ).toLowerCase(),
+        sodienthoai: normalizeText(currentIdentity.sodienthoai || ""),
         updated_at: new Date().toISOString(),
       }),
     );
@@ -990,7 +1415,9 @@
     const updateFn = getKrudUpdateFn();
 
     if (!remoteId || !tableName || !listFn || !updateFn) {
-      throw new Error("Không tìm thấy thông tin tài khoản KRUD hiện tại để đổi mật khẩu.");
+      throw new Error(
+        "Không tìm thấy thông tin tài khoản KRUD hiện tại để đổi mật khẩu.",
+      );
     }
 
     const response = await Promise.resolve(
@@ -1004,9 +1431,7 @@
       }),
     );
     const currentRow = extractRows(response)[0] || null;
-    const storedPassword = String(
-      currentRow?.password || currentRow?.matkhau || currentRow?.mat_khau || "",
-    );
+    const storedPassword = String(currentRow?.matkhau || "");
 
     if (storedPassword && storedPassword !== currentPassword) {
       throw new Error("Mật khẩu hiện tại chưa đúng.");
@@ -1016,8 +1441,6 @@
       updateFn(tableName, {
         id: remoteId,
         matkhau: newPassword,
-        password: newPassword,
-        mat_khau: newPassword,
         updated_at: new Date().toISOString(),
       }),
     );
@@ -1025,9 +1448,11 @@
     return { status: "success" };
   }
 
-  window.FastGoCustomerPortalStore = {
+  return {
     storageKeys,
     bookingCrudTableName,
+    bootstrapAuthSession,
+    autoAuthFromUrlCredentials,
     readIdentity,
     saveIdentity,
     syncIdentityFromProfile,
@@ -1040,8 +1465,51 @@
     fetchDetail,
     fetchBookingInvoiceDetail,
     cancelBooking,
+    saveBookingFeedback,
     updateProfile,
     changePassword,
+    autoCancelExpiredBookings,
+    isExpiredPendingBookingRow,
+    bookingAutoCancelMinutes: AUTO_CANCEL_PENDING_MINUTES,
     clearAuthSession,
   };
 })(window);
+
+if (typeof window !== "undefined" && !window.__fastGoAuthBootstrapStarted) {
+  window.__fastGoAuthBootstrapStarted = true;
+
+  Promise.resolve().then(() =>
+    customerPortalStoreModule.bootstrapAuthSession?.().catch((error) => {
+      console.error("Cannot bootstrap moving auth session:", error);
+    }),
+  );
+}
+
+export const {
+  autoAuthFromUrlCredentials,
+  bootstrapAuthSession,
+  bookingCrudTableName,
+  changePassword,
+  clearAuthSession,
+  fetchBookingInvoiceDetail,
+  fetchDashboard,
+  fetchDetail,
+  fetchHistory,
+  fetchProfile,
+  getDashboardStats,
+  getDisplayName,
+  getSavedRole,
+  isExpiredPendingBookingRow,
+  readIdentity,
+  saveIdentity,
+  storageKeys: portalStorageKeys,
+  syncIdentityFromProfile,
+  updateProfile,
+  cancelBooking,
+  saveBookingFeedback,
+  autoCancelExpiredBookings,
+  bookingAutoCancelMinutes,
+} = customerPortalStoreModule;
+
+export { customerPortalStoreModule as customerPortalStore };
+export default customerPortalStoreModule;

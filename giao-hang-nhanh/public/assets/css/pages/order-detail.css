@@ -685,14 +685,6 @@
     linear-gradient(180deg, #fffdfa 0%, #ffffff 100%);
 }
 
-#order-summary-fees
-  .standalone-order-info-row:last-child
-  .standalone-order-info-value {
-  color: #2563eb;
-  font-size: 24px;
-  font-weight: 800;
-}
-
 .standalone-order-items {
   display: grid;
   gap: 14px;
@@ -1321,5 +1313,380 @@
 
   .standalone-order-info-value {
     text-align: left;
+  }
+}
+
+/* --- 5. ORDER DETAIL UX TIGHTENING --- */
+.standalone-order-page {
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.standalone-order-layout,
+.standalone-order-unified-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+.standalone-order-shell {
+  width: min(1560px, calc(100% - 12px));
+  padding: 12px 0 28px;
+}
+
+.standalone-order-card-header {
+  gap: 16px;
+  padding: 18px;
+}
+
+.standalone-order-header-main-content {
+  gap: 18px;
+}
+
+.standalone-order-card-title {
+  align-items: flex-start;
+}
+
+.standalone-order-hero-top-row {
+  align-items: stretch;
+  gap: 20px;
+}
+
+.standalone-order-hero-side-stack {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  justify-items: end;
+  min-width: min(100%, 320px);
+}
+
+.standalone-order-hero-actions-group {
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.standalone-order-hero-actions-group .customer-btn {
+  min-height: 42px;
+}
+
+.standalone-order-topbar,
+.standalone-order-card-header,
+.standalone-order-block,
+.standalone-order-panel,
+.standalone-order-contact-card,
+.standalone-order-contact-note-card,
+.standalone-order-item,
+.standalone-order-provider-card,
+.standalone-order-timeline-card,
+.standalone-order-media-card,
+.standalone-order-subcard {
+  min-width: 0;
+}
+
+.standalone-order-hero-metrics {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+.standalone-order-hero-metric {
+  grid-column: span 4;
+  min-height: 88px;
+  padding: 14px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.standalone-order-hero-metric-primary {
+  border-color: rgba(255, 181, 95, 0.28);
+  background:
+    radial-gradient(circle at top left, rgba(255, 181, 95, 0.26), transparent 42%),
+    linear-gradient(
+      135deg,
+      rgba(66, 111, 214, 0.88) 0%,
+      rgba(33, 76, 172, 0.96) 54%,
+      rgba(16, 47, 118, 0.98) 100%
+    );
+  box-shadow: 0 18px 32px rgba(8, 40, 110, 0.2);
+}
+
+.standalone-order-hero-metric-primary .standalone-order-hero-metric-copy strong {
+  font-size: clamp(28px, 4vw, 36px);
+  line-height: 1.05;
+  color: #ffffff;
+}
+
+.standalone-order-hero-metric-primary .standalone-order-hero-metric-icon {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff7ed;
+}
+
+.standalone-order-hero-metric-primary .standalone-order-hero-metric-copy span {
+  color: rgba(255, 235, 205, 0.84);
+}
+
+.standalone-order-hero-metric-primary .standalone-order-hero-metric-copy small {
+  color: rgba(255, 255, 255, 0.92);
+  opacity: 1;
+}
+
+.standalone-order-hero-metric-status .standalone-order-hero-metric-copy strong {
+  display: block;
+}
+
+.standalone-order-hero-metric-status .customer-status-badge {
+  margin-top: 4px;
+}
+
+.standalone-order-hero-metric-route {
+  grid-column: 1 / -1;
+  padding: 14px 16px;
+}
+
+.standalone-order-hero-metric-route .standalone-order-hero-metric-copy {
+  gap: 10px;
+}
+
+.standalone-order-hero-route-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+}
+
+.standalone-order-hero-route-item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.standalone-order-hero-route-icon {
+  color: #ffb15f;
+  font-size: 14px;
+  line-height: 1.4;
+  padding-top: 2px;
+}
+
+.standalone-order-hero-route-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.standalone-order-hero-route-copy small {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.74);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.standalone-order-hero-route-copy strong {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 700;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+
+.standalone-order-progress-ring {
+  width: 76px;
+  height: 76px;
+  padding: 6px;
+  flex-shrink: 0;
+}
+
+.standalone-order-progress-ring-core {
+  gap: 2px;
+}
+
+.standalone-order-progress-ring-core strong {
+  font-size: 18px;
+}
+
+.standalone-order-progress-ring-core span {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+.standalone-order-hero-side-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  max-width: 320px;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  backdrop-filter: none;
+  box-shadow: none;
+  align-self: flex-end;
+}
+
+.standalone-order-progress-info {
+  min-width: 0;
+}
+
+.standalone-order-progress-info p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.standalone-order-progress-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.customer-status-badge {
+  min-height: 30px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  box-shadow: none;
+}
+
+.standalone-order-block {
+  gap: 14px;
+  padding: 20px;
+}
+
+.standalone-order-summary-grid,
+.standalone-order-contact-grid {
+  gap: 14px;
+}
+
+.standalone-order-item-top,
+.standalone-order-item-heading,
+.standalone-order-progress-info,
+.standalone-order-provider-head,
+.standalone-order-timeline-content,
+.standalone-order-note-text {
+  min-width: 0;
+}
+
+.standalone-order-item-note,
+.standalone-order-note-text,
+.standalone-order-timeline-content p,
+.standalone-order-panel-head p,
+.standalone-order-contact-card-title p {
+  overflow-wrap: anywhere;
+}
+
+.standalone-order-panel-head p,
+.standalone-order-contact-card-title p {
+  max-width: 64ch;
+}
+
+.standalone-order-info-row {
+  grid-template-columns: minmax(112px, 26%) minmax(0, 1fr);
+  gap: 10px;
+  padding: 9px 0;
+}
+
+.standalone-order-info-value {
+  text-align: left;
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .standalone-order-hero-side-stack {
+    width: 100%;
+    min-width: 0;
+    justify-items: start;
+  }
+
+  .standalone-order-hero-actions-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .standalone-order-hero-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .standalone-order-hero-metric {
+    grid-column: span 1;
+  }
+
+  .standalone-order-hero-metric-route {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .standalone-order-shell {
+    width: min(100%, calc(100% - 8px));
+    padding: 0 0 18px;
+  }
+
+  .standalone-order-card-header {
+    padding: 16px 12px;
+    gap: 14px;
+  }
+
+  .standalone-order-block {
+    padding: 18px 12px;
+    gap: 14px;
+  }
+
+  .standalone-order-card-title {
+    align-items: flex-start;
+  }
+
+  .standalone-order-hero-metrics {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .standalone-order-hero-metric,
+  .standalone-order-hero-metric-route {
+    grid-column: auto;
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .standalone-order-hero-route-list {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .standalone-order-hero-side-stack,
+  .standalone-order-hero-side-progress,
+  .standalone-order-hero-actions-group {
+    width: 100%;
+  }
+
+  .standalone-order-hero-side-progress {
+    max-width: none;
+    padding: 0;
+  }
+
+  .standalone-order-progress-ring {
+    width: 62px;
+    height: 62px;
+    padding: 5px;
+  }
+
+  .standalone-order-progress-ring-core strong {
+    font-size: 15px;
+  }
+
+  .standalone-order-hero-route-item {
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .standalone-order-hero-route-copy strong {
+    font-size: 13px;
+    line-height: 1.45;
   }
 }

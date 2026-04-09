@@ -1,9 +1,12 @@
-(function (window, document) {
-  if (window.__fastGoProviderProfileLoaded) return;
+import core from "./core/app-core.js";
+import store from "./main-customer-portal-store.js";
+
+const providerProfileModule = (function (window, document) {
+  if (window.__fastGoProviderProfileLoaded) {
+    return window.__fastGoProviderProfileModule || null;
+  }
   window.__fastGoProviderProfileLoaded = true;
 
-  const core = window.FastGoCore || {};
-  const store = window.FastGoCustomerPortalStore || null;
   const body = document.body;
 
   if (!body || body.getAttribute("data-page") !== "provider-profile") {
@@ -26,80 +29,52 @@
       .replace(/'/g, "&#039;");
   }
 
-  function getProjectUrl(path) {
-    return typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
-  }
-
-  function getInitial(name) {
-    return String(name || "").trim().charAt(0).toUpperCase() || "N";
-  }
-
   function renderProfile(data) {
-    const role = store.getSavedRole();
-    if (role && role !== "nha-cung-cap") {
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=nha-cung-cap");
+    if (!data?.profile) {
+      store.clearAuthSession?.();
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
       return;
     }
 
-    const identity = data?.profile || store.readIdentity();
+    const role = store.getSavedRole();
+    if (role && role !== "nha-cung-cap") {
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
+      return;
+    }
+
+    const identity = data.profile;
     const displayName = store.getDisplayName(identity);
-    const phone = String(identity.phone || "").trim();
+    const phone = String(identity.sodienthoai || "").trim();
     const email = String(identity.email || "").trim();
-    const contactPerson = String(identity.contact_person || identity.contactPerson || "").trim();
-    const initial = getInitial(displayName);
 
     root.innerHTML = `
       <div class="customer-portal-shell customer-portal-shell--simple">
         <section class="customer-portal-profile">
-          <div class="customer-profile-hero">
-            <div class="customer-profile-avatar-wrapper">
-              <div class="customer-profile-avatar-large">${escapeHtml(initial)}</div>
-            </div>
-            <div class="customer-profile-hero-info">
-              <p class="customer-section-kicker">Hồ sơ nhà cung cấp</p>
-              <h2>${escapeHtml(displayName)}</h2>
-              <p><i class="fas fa-envelope"></i> ${escapeHtml(email || "Chưa có email")}</p>
-              <p><i class="fas fa-phone"></i> ${escapeHtml(phone || "Chưa có số điện thoại")}</p>
-            </div>
-          </div>
-
-          <div class="customer-profile-summary">
-            <article>
-              <span>Tên đơn vị / đội nhóm</span>
-              <strong>${escapeHtml(displayName)}</strong>
-            </article>
-            <article>
-              <span>Người phụ trách</span>
-              <strong>${escapeHtml(contactPerson || displayName || "Chưa có dữ liệu")}</strong>
-            </article>
-            <article>
-              <span>Email vận hành</span>
-              <strong>${escapeHtml(email || "Chưa có dữ liệu")}</strong>
-            </article>
-            <article>
-              <span>Số điện thoại</span>
-              <strong>${escapeHtml(phone || "Chưa có dữ liệu")}</strong>
-            </article>
-          </div>
-
           <div class="customer-profile-sections">
             <div class="customer-profile-card">
               <div class="customer-profile-card-head">
-                <i class="fas fa-user-pen"></i>
-                <h3>Thông tin cơ bản</h3>
+                <i class="fas fa-id-card"></i>
+                <div>
+                  <h3>Thông tin tài khoản</h3>
+                  <p class="customer-profile-card-note">Dữ liệu đang đồng bộ trực tiếp từ tài khoản nhà cung cấp trong bảng nguoidung.</p>
+                </div>
               </div>
               <div id="provider-profile-feedback"></div>
               <form id="provider-profile-form" class="customer-form-stack">
                 <div class="customer-form-row">
                   <label class="customer-form-group">
-                    <span>Tên đơn vị / đội nhóm</span>
+                    <span>Tên hiển thị</span>
                     <div class="customer-form-field">
-                      <input name="full_name" type="text" value="${escapeHtml(displayName)}" required />
-                      <i class="fas fa-building"></i>
+                      <input name="hovaten" type="text" value="${escapeHtml(displayName)}" required />
+                      <i class="fas fa-user"></i>
                     </div>
                   </label>
                   <label class="customer-form-group">
-                    <span>Email vận hành</span>
+                    <span>Email</span>
                     <div class="customer-form-field">
                       <input name="email" type="email" value="${escapeHtml(email)}" required />
                       <i class="fas fa-envelope"></i>
@@ -108,61 +83,62 @@
                 </div>
                 <div class="customer-form-row">
                   <label class="customer-form-group">
-                    <span>Số điện thoại</span>
+                    <span>Số điện thoại tài khoản</span>
                     <div class="customer-form-field">
-                      <input name="phone" type="tel" value="${escapeHtml(phone)}" required />
+                      <input name="sodienthoai" type="tel" value="${escapeHtml(phone)}" readonly disabled aria-readonly="true" />
                       <i class="fas fa-phone"></i>
                     </div>
                   </label>
-                  <label class="customer-form-group">
-                    <span>Người phụ trách</span>
-                    <div class="customer-form-field">
-                      <input name="contact_person" type="text" value="${escapeHtml(contactPerson)}" placeholder="Tên đầu mối vận hành" />
-                      <i class="fas fa-id-badge"></i>
-                    </div>
-                  </label>
                 </div>
+                <p class="customer-form-helper customer-form-helper-compact">
+                  <i class="fas fa-circle-info"></i> Số điện thoại là định danh tài khoản nhà cung cấp, hiện không chỉnh sửa tại đây.
+                </p>
                 <div class="customer-inline-actions">
-                  <button class="customer-btn customer-btn-primary" type="submit">Lưu thông tin</button>
-                  <a class="customer-btn customer-btn-ghost" href="${escapeHtml(getProjectUrl("nha-cung-cap/dashboard.html"))}">Về dashboard</a>
+                  <button class="customer-btn customer-btn-primary" type="submit">
+                    <i class="fas fa-floppy-disk"></i> Lưu thay đổi
+                  </button>
                 </div>
               </form>
             </div>
 
             <div class="customer-profile-card customer-password-card">
               <div class="customer-profile-card-head">
-                <i class="fas fa-lock"></i>
-                <h3>Đổi mật khẩu</h3>
+                <i class="fas fa-shield-halved"></i>
+                <div>
+                  <h3>Bảo mật tài khoản</h3>
+                  <p class="customer-profile-card-note">Đổi mật khẩu đăng nhập cho khu nhà cung cấp chuyển dọn.</p>
+                </div>
               </div>
               <div id="provider-password-feedback"></div>
               <form id="provider-password-form" class="customer-form-stack">
+                <label class="customer-form-group">
+                  <span>Mật khẩu hiện tại</span>
+                  <div class="customer-form-field">
+                    <input name="current_password" type="password" autocomplete="current-password" required />
+                    <i class="fas fa-key"></i>
+                  </div>
+                </label>
                 <div class="customer-form-row">
-                  <label class="customer-form-group">
-                    <span>Mật khẩu hiện tại</span>
-                    <div class="customer-form-field">
-                      <input name="current_password" type="password" required />
-                      <i class="fas fa-key"></i>
-                    </div>
-                  </label>
                   <label class="customer-form-group">
                     <span>Mật khẩu mới</span>
                     <div class="customer-form-field">
-                      <input name="new_password" type="password" required />
+                      <input name="new_password" type="password" autocomplete="new-password" required />
+                      <i class="fas fa-lock"></i>
+                    </div>
+                  </label>
+                  <label class="customer-form-group">
+                    <span>Xác nhận mật khẩu mới</span>
+                    <div class="customer-form-field">
+                      <input name="confirm_password" type="password" autocomplete="new-password" required />
                       <i class="fas fa-lock-open"></i>
                     </div>
                   </label>
                 </div>
-                <div class="customer-form-row">
-                  <label class="customer-form-group">
-                    <span>Xác nhận mật khẩu mới</span>
-                    <div class="customer-form-field">
-                      <input name="confirm_password" type="password" required />
-                      <i class="fas fa-shield-halved"></i>
-                    </div>
-                  </label>
-                </div>
+                <p class="customer-form-helper customer-form-helper-compact">
+                  <i class="fas fa-circle-info"></i> Mật khẩu mới cần ít nhất 8 ký tự.
+                </p>
                 <div class="customer-inline-actions">
-                  <button class="customer-btn customer-btn-ghost" type="submit">Cập nhật mật khẩu</button>
+                  <button class="customer-btn customer-btn-primary" type="submit">Cập nhật mật khẩu</button>
                 </div>
               </form>
             </div>
@@ -188,16 +164,15 @@
     profileForm?.addEventListener("submit", async function (event) {
       event.preventDefault();
       const formData = new FormData(profileForm);
-      const fullName = String(formData.get("full_name") || "").trim();
+      const hoVaTen = String(formData.get("hovaten") || "").trim();
       const nextEmail = String(formData.get("email") || "").trim();
-      const nextPhone = String(formData.get("phone") || "").trim();
-      const nextContact = String(formData.get("contact_person") || "").trim();
+      const nextPhone = phone;
 
-      if (!fullName || !nextEmail || !nextPhone) {
+      if (!hoVaTen || !nextEmail || !nextPhone) {
         showFeedback(
           profileFeedback,
           "error",
-          "Vui lòng nhập đầy đủ tên đơn vị, email và số điện thoại.",
+          "Vui lòng nhập đầy đủ tên hiển thị, email và số điện thoại tài khoản.",
         );
         return;
       }
@@ -205,10 +180,9 @@
       try {
         if (store.updateProfile) {
           const profile = await store.updateProfile({
-            full_name: fullName,
+            hovaten: hoVaTen,
             email: nextEmail,
-            phone: nextPhone,
-            contact_person: nextContact,
+            sodienthoai: nextPhone,
           });
           showFeedback(profileFeedback, "success", "Đã cập nhật hồ sơ nhà cung cấp.");
           window.setTimeout(() => renderProfile({ profile }), 300);
@@ -216,22 +190,15 @@
         }
       } catch (error) {
         console.error("Cannot update provider profile store:", error);
-        showFeedback(profileFeedback, "error", error.message || "Không thể cập nhật hồ sơ nhà cung cấp.");
+        showFeedback(
+          profileFeedback,
+          "error",
+          error.message || "Không thể cập nhật hồ sơ nhà cung cấp.",
+        );
         return;
       }
 
-      store.saveIdentity({
-        ...store.readIdentity(),
-        fullName,
-        full_name: fullName,
-        email: nextEmail,
-        phone: nextPhone,
-        contact_person: nextContact,
-        contactPerson: nextContact,
-      });
-
-      showFeedback(profileFeedback, "success", "Đã cập nhật thông tin hồ sơ trong phiên hiện tại.");
-      window.setTimeout(() => renderProfile(null), 300);
+      showFeedback(profileFeedback, "error", "Không thể cập nhật hồ sơ nhà cung cấp.");
     });
 
     passwordForm?.addEventListener("submit", async function (event) {
@@ -273,8 +240,7 @@
         return;
       }
 
-      passwordForm.reset();
-      showFeedback(passwordFeedback, "success", "Đã ghi nhận yêu cầu đổi mật khẩu ở mức giao diện.");
+      showFeedback(passwordFeedback, "error", "Không thể đổi mật khẩu.");
     });
   }
 
@@ -287,4 +253,10 @@
       renderProfile(null);
     }
   })();
+
+  const moduleApi = {};
+  window.__fastGoProviderProfileModule = moduleApi;
+  return moduleApi;
 })(window, document);
+
+export default providerProfileModule;

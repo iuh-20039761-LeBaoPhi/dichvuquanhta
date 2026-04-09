@@ -1,9 +1,6 @@
-(function (window) {
-  if (window.FastGoBookingPricing) return;
-
-  // Gom toàn bộ logic tính giá và render khối giá tạm tính của form đặt lịch.
-  // Khác biệt giữa từng dịch vụ được tách sang JSON để JS chỉ còn phần engine chung.
-  let bookingFormLogicPromise = null;
+// Gom toàn bộ logic tính giá và render khối giá tạm tính của form đặt lịch.
+// Khác biệt giữa từng dịch vụ được tách sang JSON để JS chỉ còn phần engine chung.
+let bookingFormLogicPromise = null;
 
   function loadBookingFormLogic(core) {
     if (!bookingFormLogicPromise) {
@@ -163,6 +160,7 @@
     );
     const distanceKm = getBookingDistanceKmValue(scope);
     const hasDistance = distanceKm > 0;
+    let distanceFareTotal = null;
     let total = 0;
 
     function addChargeLine({
@@ -210,13 +208,32 @@
     }) {
       const checkboxItem = checkboxItemMap.get(checkboxSlug);
       if (!checkboxItem || !active) return;
+      const resolvedLabel = label || checkboxItem.ten || "Phụ phí phát sinh";
+      const resolvedDisplaySlug =
+        displaySlug || checkboxItem.nguon_hien_thi_slug || checkboxSlug;
+
+      if (checkboxSlug === "khao_sat_truoc") {
+        addChargeLine({
+          label: resolvedLabel,
+          detail:
+            "Phí khảo sát tiêu chuẩn là 150.000đ/lượt và sẽ được miễn khi bạn chốt đơn, thực hiện chuyển dọn.",
+          amount: 0,
+          displaySlug: resolvedDisplaySlug,
+          quantity: 1,
+          note:
+            "Khảo sát trước đã được ghi nhận. Khoản này được miễn khi bạn chốt đơn triển khai chuyển dọn.",
+          forceInclude: true,
+          state: "Đã ghi nhận",
+        });
+        return;
+      }
+
       const amount = Number(checkboxItem.don_gia || 0);
       addChargeLine({
-        label: label || checkboxItem.ten || "Phụ phí phát sinh",
+        label: resolvedLabel,
         detail: `Áp dụng khi bạn chọn hạng mục này: ${core.formatCurrencyVnd(checkboxItem.don_gia || 0)}`,
         amount,
-        displaySlug:
-          displaySlug || checkboxItem.nguon_hien_thi_slug || checkboxSlug,
+        displaySlug: resolvedDisplaySlug,
         quantity: 1,
         note,
         state: "Đang chọn",
@@ -256,6 +273,7 @@
       const transportBeforeMinimum = Math.round(
         billedDistanceKm * appliedRate,
       );
+      distanceFareTotal = transportBeforeMinimum;
       addChargeLine({
         label: "Cước xe theo quãng đường",
         detail: `${billedDistanceKm.toFixed(billedDistanceKm >= 10 ? 0 : 1)} km x ${core.formatCurrencyVnd(appliedRate)}${
@@ -266,6 +284,7 @@
         amount: transportBeforeMinimum,
       });
       if (minimumFee > transportBeforeMinimum) {
+        distanceFareTotal = minimumFee;
         addChargeLine({
           label: "Bù phí tối thiểu",
           detail: `Áp dụng mức tối thiểu của ${vehicleEntry.ten_hien_thi || "loại xe đã chọn"}: ${core.formatCurrencyVnd(minimumFee)}`,
@@ -450,6 +469,7 @@
       optionCardsHtml,
       breakdownHtml,
       breakdownLines,
+      distanceFareTotal,
       total: vehicleEntry ? total : null,
       totalNote: vehicleEntry
         ? "Giá tạm tính sẽ tự cập nhật ngay khi bạn đổi loại xe, thay đổi số km, vượt ngưỡng 20km hoặc bật thêm phụ phí."
@@ -458,8 +478,8 @@
     };
   }
 
-  // Hàm public duy nhất: main-forms chỉ cần gọi render và truyền dependencies vào.
-  async function render(scope, deps) {
+// Hàm public duy nhất: main-forms chỉ cần gọi render và truyền dependencies vào.
+async function render(scope, deps) {
     const {
       core,
       loadPricingReference,
@@ -596,7 +616,7 @@
             ? "Chưa đủ dữ liệu"
             : core.formatCurrencyVnd(pricingState.total);
     }
-    updateDistancePricingBadge(scope, core, pricingState.total);
+    updateDistancePricingBadge(scope, core, pricingState.distanceFareTotal);
     if (totalHint) {
       totalHint.textContent = pricingState.totalNote;
     }
@@ -644,7 +664,9 @@
     }
   }
 
-  window.FastGoBookingPricing = {
-    render,
-  };
-})(window);
+const bookingPricingModule = {
+  render,
+};
+
+export { render, bookingPricingModule };
+export default bookingPricingModule;

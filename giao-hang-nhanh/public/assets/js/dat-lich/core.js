@@ -102,41 +102,6 @@ function syncBookingLoginState() {
   return session;
 }
 
-function buildBookingRedirectTarget() {
-  if (typeof window === "undefined") {
-    return `${getProjectBasePath()}dat-lich-giao-hang-nhanh.html`;
-  }
-
-  const pathname = String(window.location.pathname || "");
-  const search = String(window.location.search || "");
-  const hash = String(window.location.hash || "");
-  return `${pathname}${search}${hash}` || `${getProjectBasePath()}dat-lich-giao-hang-nhanh.html`;
-}
-
-function buildBookingLoginUrl() {
-  const loginUrl = new URL(resolveProjectHtmlUrl("dang-nhap.html"));
-  loginUrl.searchParams.set("redirect", buildBookingRedirectTarget());
-  return loginUrl.toString();
-}
-
-function requireBookingLogin(options = {}) {
-  const session = syncBookingLoginState();
-  if (session) return session;
-
-  if (options.saveDraft) {
-    try {
-      savePendingBookingDraft(options.payload || tao_du_lieu_gui());
-    } catch (error) {
-      console.warn("Không thể lưu nháp đơn hàng trước khi chuyển sang đăng nhập:", error);
-    }
-  }
-
-  if (typeof window !== "undefined") {
-    window.location.href = buildBookingLoginUrl();
-  }
-  return null;
-}
-
 function buildPaymentMethodLabel(value) {
   return String(value || "").toLowerCase() === "chuyen_khoan"
     ? "Chuyển khoản"
@@ -749,10 +714,6 @@ const DEFAULT_URGENT_CONDITION = {
 
 // ========== INIT ==========
 document.addEventListener("DOMContentLoaded", () => {
-  if (!requireBookingLogin()) {
-    return;
-  }
-
   weatherQuoteState = createDefaultWeatherQuoteState();
   initMap();
   initAddressSearch("dia_chi_lay_hang", "goi_y_dia_chi_lay_hang", "pickup");
@@ -806,7 +767,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("btn_buoc_4_sang_5").addEventListener("click", () => {
     if (xac_thuc_buoc_4()) {
-      if (!requireBookingLogin({ saveDraft: true })) return;
       chuan_bi_xac_nhan();
       chuyen_den_buoc(5);
     }
@@ -843,7 +803,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (ok) {
           if (step === 3) renderServiceCards();
           if (step === 5) {
-            if (!requireBookingLogin({ saveDraft: true })) return;
             chuan_bi_xac_nhan();
           }
           chuyen_den_buoc(step);

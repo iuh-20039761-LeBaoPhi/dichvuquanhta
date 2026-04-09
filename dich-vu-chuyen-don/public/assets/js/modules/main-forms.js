@@ -1,21 +1,23 @@
-(function (window, document) {
-  if (window.__fastGoFormsInitDone) return;
-  window.__fastGoFormsInitDone = true;
+import core from "./core/app-core.js";
+import authModule from "./main-auth.js";
+import bookingApi from "./main-booking-api.js";
+import customerPortalStore from "./main-customer-portal-store.js";
+import {
+  bookingFormsModule,
+  bookingMapModule,
+  bookingPricingModule,
+  bookingWizardModule,
+  formMediaModule,
+  formSummariesModule,
+} from "./ui/booking-runtime.js";
 
-  const core = window.FastGoCore;
-  if (!core) return;
-  // Hai module này được tách ra để main-forms chỉ còn vai trò điều phối UI chính.
-  const bookingPricingModule = window.FastGoBookingPricing || null;
-  const bookingMapModule = window.FastGoBookingMap || null;
-  const bookingWizardModule = window.FastGoBookingWizard || null;
-  const formSummariesModule = window.FastGoFormSummaries || null;
-  const formMediaModule = window.FastGoFormMedia || null;
-  const bookingFormsModule = window.FastGoBookingForms || null;
-  const bookingApi = window.FastGoBookingApi || null;
+if (!core) {
+  throw new Error("FastGo core module is required for booking forms.");
+}
 
-  const partialPaths = {
-    "dat-lich": core.toPublicUrl("assets/partials/bieu-mau/form-dat-lich.html"),
-  };
+const partialPaths = {
+  "dat-lich": core.toPublicUrl("assets/partials/bieu-mau/form-dat-lich.html"),
+};
 
   const SERVICE_ALIAS_MAP = {
     chuyen_nha: "chuyen_nha",
@@ -93,14 +95,21 @@
     }
   }
 
-  function loadPartial(url) {
+  async function loadPartial(url) {
+    if (typeof window.fetch !== "function") {
+      console.error("Cannot load form partial: window.fetch is unavailable.");
+      return "";
+    }
+
     try {
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", url, false);
-      xhr.send(null);
-      if (xhr.status >= 200 && xhr.status < 300) {
-        return xhr.responseText.trim();
+      const response = await fetch(url, {
+        method: "GET",
+        credentials: "same-origin",
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
+      return String(await response.text()).trim();
     } catch (error) {
       console.error("Cannot load form partial:", url, error);
     }
@@ -246,15 +255,10 @@
     }
 
     return {
-      ma_yeu_cau_noi_bo: "",
-      loai_bieu_mau: "dat_lich",
       loai_dich_vu: normalizeService(serviceSelect?.value || ""),
-      ten_dich_vu: getSelectedLabel(serviceSelect),
-      ho_ten: String(
-        formData.get("ho_ten") || identity.fullName || identity.full_name || "",
-      ).trim(),
+      ho_ten: String(formData.get("ho_ten") || identity.hovaten || "").trim(),
       so_dien_thoai: String(
-        formData.get("so_dien_thoai") || identity.phone || "",
+        formData.get("so_dien_thoai") || identity.sodienthoai || "",
       ).trim(),
       ten_cong_ty: String(formData.get("ten_cong_ty") || "").trim(),
       dia_chi_di: String(formData.get("dia_chi_di") || "").trim(),
@@ -263,17 +267,15 @@
       khung_gio_thuc_hien: String(
         formData.get("khung_gio_thuc_hien") || "",
       ).trim(),
-      ten_khung_gio_thuc_hien: getSelectedLabel(
-        scope.querySelector("#khung-gio-dat-lich"),
-      ),
       thoi_tiet_du_kien: String(weatherInput?.value || "").trim(),
       loai_xe: String(formData.get("loai_xe") || "").trim(),
-      ten_loai_xe: getSelectedLabel(vehicleSelect),
       ghi_chu: String(formData.get("ghi_chu") || "").trim(),
       dieu_kien_tiep_can: accessConditions.join(" | "),
       chi_tiet_dich_vu: [
         ...serviceDetails,
-        ...(requiresSurveyFirst ? ["Cần khảo sát trước (+150.000/lượt)"] : []),
+        ...(requiresSurveyFirst
+          ? ["Cần khảo sát trước (miễn phí khi chốt đơn)"]
+          : []),
       ].join(" | "),
       tong_tam_tinh: totalAmount,
       khoang_cach_km: String(
@@ -285,10 +287,6 @@
       anh_dinh_kem: imageFiles.join(" | "),
       video_dinh_kem: videoFiles.join(" | "),
       customer_email: String(identity.email || "").trim(),
-      customer_role: String(identity.role || "khach-hang").trim(),
-      created_at: new Date().toISOString(),
-      pricing_breakdown_json: JSON.stringify(pricingBreakdown),
-      du_lieu_form_json: JSON.stringify(scalarValues),
     };
   }
 
@@ -332,21 +330,19 @@
     const pricingBreakdown = getBookingPricingBreakdown(scope);
 
     return {
-      sheet_type: "Dịch vụ Chuyển Dọn",
-      created_at: payload.created_at || new Date().toISOString(),
+      created_at: payload.created_at || payload.created_date || new Date().toISOString(),
       "Mã yêu cầu": payload.ma_yeu_cau_noi_bo || "",
       "ID KRUD": String(remoteId || "").trim(),
       "Người liên hệ": payload.ho_ten || "",
       "Số điện thoại": payload.so_dien_thoai || "",
       Email: payload.customer_email || "",
       "Đơn vị / công ty": payload.ten_cong_ty || "",
-      "Loại dịch vụ": payload.ten_dich_vu || payload.loai_dich_vu || "",
-      "Loại xe": payload.ten_loai_xe || payload.loai_xe || "",
+      "Loại dịch vụ": getSelectedLabel(scope.querySelector("#loai-dich-vu-dat-lich")) || payload.loai_dich_vu || "",
+      "Loại xe": getSelectedLabel(scope.querySelector("#loai-xe-dat-lich")) || payload.loai_xe || "",
       "Địa chỉ điểm đi": payload.dia_chi_di || "",
       "Địa chỉ điểm đến": payload.dia_chi_den || "",
       "Ngày thực hiện": payload.ngay_thuc_hien || "",
-      "Khung giờ thực hiện":
-        payload.ten_khung_gio_thuc_hien || payload.khung_gio_thuc_hien || "",
+      "Khung giờ thực hiện": getSelectedLabel(scope.querySelector("#khung-gio-dat-lich")) || payload.khung_gio_thuc_hien || "",
       "Khung giờ tính giá": pricingTimeLabel || "",
       "Thời tiết dự kiến": weatherLabel || payload.thoi_tiet_du_kien || "",
       "Khoảng cách (km)": Number(payload.khoang_cach_km || 0),
@@ -359,14 +355,7 @@
       "Tổng tạm tính": Number(payload.tong_tam_tinh || 0),
       "Ảnh đính kèm": payload.anh_dinh_kem || "",
       "Video đính kèm": payload.video_dinh_kem || "",
-      "Chi tiết giá": pricingBreakdown
-        .map((item) =>
-          [item.label, item.amount, item.detail].filter(Boolean).join(": "),
-        )
-        .join(" | "),
-      pricing_breakdown_json: JSON.stringify(pricingBreakdown),
       "Ghi chú": payload.ghi_chu || "",
-      du_lieu_form_json: payload.du_lieu_form_json || "",
     };
   }
 
@@ -384,34 +373,44 @@
       throw new Error("Không tìm thấy lớp API đặt lịch chuyển dọn.");
     }
 
+    const form = scope.querySelector("form[data-loai-bieu-mau='dat-lich']");
+    const formData = form ? new FormData(form) : new FormData();
+    const bookingContact = {
+      hovaten: String(formData.get("ho_ten") || "").trim(),
+      sodienthoai: String(formData.get("so_dien_thoai") || "").trim(),
+    };
     let accountSetup = null;
+    const authService = authModule || null;
     const savedRole = portalStore?.getSavedRole?.() || "";
-    let hasCustomerSession = false;
+    const bookingPhone = normalizePhoneValue(bookingContact.sodienthoai);
+    let hasMatchingCustomerSession = false;
 
     if (savedRole === "khach-hang" && portalStore?.fetchProfile) {
       try {
         const verifiedProfile = await portalStore.fetchProfile();
-        hasCustomerSession = !!String(
-          verifiedProfile?.id ||
-            verifiedProfile?.phone ||
-            verifiedProfile?.email ||
-            "",
-        ).trim();
+        const profilePhone = normalizePhoneValue(
+          verifiedProfile?.sodienthoai || "",
+        );
+        hasMatchingCustomerSession = !!(
+          bookingPhone &&
+          profilePhone &&
+          bookingPhone === profilePhone
+        );
       } catch (error) {
-        hasCustomerSession = false;
+        hasMatchingCustomerSession = false;
       }
     }
 
-    if (
-      !hasCustomerSession &&
-      window.FastGoAuth?.ensureCustomerAccountForBooking
-    ) {
-      const form = scope.querySelector("form[data-loai-bieu-mau='dat-lich']");
-      const formData = form ? new FormData(form) : new FormData();
-      accountSetup = await window.FastGoAuth.ensureCustomerAccountForBooking({
-        full_name: String(formData.get("ho_ten") || "").trim(),
-        phone: String(formData.get("so_dien_thoai") || "").trim(),
-      });
+    if (!hasMatchingCustomerSession) {
+      if (typeof authService?.ensureCustomerAccountForBooking !== "function") {
+        throw new Error(
+          "Không thể xác minh hoặc tạo tài khoản khách hàng cho yêu cầu này.",
+        );
+      }
+
+      accountSetup = await authService.ensureCustomerAccountForBooking(
+        bookingContact,
+      );
     }
 
     const payload = getBookingPayload(scope, portalStore);
@@ -1057,23 +1056,25 @@
       bookingResult?.remoteId ||
       "CDL-00000000-0000000";
     const statusMessage = String(options.statusMessage || "").trim();
-    const isLoggedIn = !!(
-      window.FastGoCustomerPortalStore?.getSavedRole?.() === "khach-hang"
-    );
+    const isLoggedIn = !!(customerPortalStore?.getSavedRole?.() === "khach-hang");
     const historyUrl = getProjectUrl("khach-hang/lich-su-yeu-cau.html");
     const secondaryActionHref = isLoggedIn
-      ? `khach-hang/chi-tiet-hoa-don.html?code=${encodeURIComponent(requestCode)}`
-      : "dang-nhap.html?vai-tro=khach-hang";
+      ? (typeof core.buildOrderDetailUrl === "function"
+          ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", requestCode)
+          : `khach-hang/chi-tiet-hoa-don.html?madonhang=${encodeURIComponent(requestCode)}`)
+      : core.getSharedLoginUrl({
+          redirect: core.getCurrentRelativeUrl(),
+        });
     const secondaryActionLabel = isLoggedIn
       ? "Xem chi tiết hóa đơn"
       : "Đăng nhập để theo dõi";
     const tertiaryAction = isLoggedIn
       ? `
-          <a class="nut-phu" href="${escapeHtml(historyUrl)}">Lịch sử yêu cầu</a>
+          <a class="nut-phu" href="${escapeHtml(historyUrl)}">Danh sách đơn hàng</a>
         `
       : "";
     const redirectNotice = isLoggedIn
-      ? `<p class="trang-thai-thanh-cong-dat-lich__ghi-chu">Hệ thống sẽ tự chuyển sang lịch sử yêu cầu sau ${Math.round(BOOKING_SUCCESS_REDIRECT_DELAY_MS / 1000)} giây.</p>`
+      ? `<p class="trang-thai-thanh-cong-dat-lich__ghi-chu">Hệ thống sẽ tự chuyển sang danh sách đơn hàng sau ${Math.round(BOOKING_SUCCESS_REDIRECT_DELAY_MS / 1000)} giây.</p>`
       : "";
 
     if (!submitStep) return;
@@ -1160,7 +1161,7 @@
       notice.textContent = "";
 
       window.setTimeout(async function () {
-        const portalStore = window.FastGoCustomerPortalStore || null;
+        const portalStore = customerPortalStore || null;
 
         try {
           const bookingResult = await createBookingRequest(scope, portalStore);
@@ -1203,13 +1204,20 @@
     });
   }
 
-  function initFormHost(host) {
+  async function initFormHost(host) {
     const formType = host.getAttribute("data-bieu-mau-trang");
     const partialPath = partialPaths[formType];
     if (!formType || !partialPath) return;
+    if (host.dataset.fastgoFormHostInitState === "pending") return;
+    if (host.dataset.fastgoFormHostInitState === "done") return;
 
-    const html = loadPartial(partialPath);
-    if (!html) return;
+    host.dataset.fastgoFormHostInitState = "pending";
+
+    const html = await loadPartial(partialPath);
+    if (!html) {
+      host.dataset.fastgoFormHostInitState = "error";
+      return;
+    }
 
     host.innerHTML = html;
     initInfoToggles(host);
@@ -1217,9 +1225,15 @@
     initFileInputs(host);
     initBookingFormUi(host);
     initFormNotice(host, formType);
+    host.dataset.fastgoFormHostInitState = "done";
   }
 
-  onReady(function () {
-    document.querySelectorAll("[data-bieu-mau-trang]").forEach(initFormHost);
+onReady(function () {
+  document.querySelectorAll("[data-bieu-mau-trang]").forEach((host) => {
+    void initFormHost(host);
   });
-})(window, document);
+});
+
+const formsModule = {};
+
+export default formsModule;

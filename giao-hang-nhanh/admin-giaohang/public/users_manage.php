@@ -5,6 +5,8 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     header('Location: login.php');
     exit;
 }
+
+$legacyUserFormNotice = isset($_GET['legacy_user_form']);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -235,85 +237,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             margin-top: 10px;
         }
 
-        .users-pending-card {
-            margin-top: 18px;
-            padding: 20px;
-        }
-
-        .users-pending-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
-        .users-pending-header h4 {
-            margin: 0;
-            font-size: 15px;
-            color: #0a2a66;
-        }
-
-        .users-pending-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 34px;
-            height: 34px;
-            padding: 0 10px;
-            border-radius: 999px;
-            background: #fff4e6;
-            color: #b45309;
-            font-weight: 800;
-        }
-
-        .users-pending-note {
-            margin: 0 0 14px;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #64748b;
-        }
-
-        .users-pending-list {
-            display: grid;
-            gap: 12px;
-        }
-
-        .users-pending-item {
-            padding: 14px;
-            border-radius: 16px;
-            border: 1px solid #e5e7eb;
-            background: #f8fafc;
-        }
-
-        .users-pending-item strong {
-            display: block;
-            color: #0f172a;
-            margin-bottom: 6px;
-        }
-
-        .users-pending-item p {
-            margin: 0;
-            font-size: 13px;
-            line-height: 1.55;
-            color: #64748b;
-        }
-
-        .users-pending-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 12px;
-        }
-
-        .users-pending-empty {
-            padding: 14px;
-            border-radius: 14px;
-            background: #f8fafc;
-            color: #64748b;
-            font-size: 13px;
-            text-align: center;
-        }
-
         .users-inline-actions {
             display: flex;
             justify-content: flex-end;
@@ -381,14 +304,22 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     <main class="admin-container">
         <div class="page-header">
             <h2 class="page-title">Quản lý người dùng</h2>
-            <a href="user_form.php" class="btn-primary">
-                <i class="fa-solid fa-user-plus"></i> Thêm người dùng
-            </a>
+            <span class="users-toolbar-badge">
+                <i class="fa-solid fa-database"></i>
+                <span>Đang dùng chung bảng nguoidung</span>
+            </span>
         </div>
+
+        <?php if ($legacyUserFormNotice): ?>
+            <div class="status-badge status-pending" style="width:100%; margin-bottom: 20px; padding: 14px 16px;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Form thêm/sửa PHP cũ đã tạm ẩn vì còn ghi vào bảng `nguoi_dung` riêng, chưa đồng bộ với `nguoidung`.
+            </div>
+        <?php endif; ?>
 
         <section class="users-hero">
             <h3>Quản lý khách hàng, shipper và tài khoản quản trị</h3>
-            <p>Màn này đọc trực tiếp từ API quản trị để lọc người dùng, duyệt shipper, khóa tài khoản và theo dõi tình trạng vận hành nhân sự.</p>
+            <p>Màn này đọc trực tiếp từ bảng dùng chung <strong>nguoidung</strong> để lọc người dùng, khóa tài khoản và theo dõi tình trạng vận hành nhân sự.</p>
             <div class="users-stat-grid">
                 <div class="users-stat-card">
                     <small>Tổng người dùng</small>
@@ -403,8 +334,8 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     <strong id="users-stat-shippers">0</strong>
                 </div>
                 <div class="users-stat-card">
-                    <small>Chờ duyệt shipper</small>
-                    <strong id="users-stat-pending-shippers">0</strong>
+                    <small>Tài khoản bị khóa</small>
+                    <strong id="users-stat-locked-users">0</strong>
                 </div>
             </div>
         </section>
@@ -464,13 +395,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                             <option value="admin">Admin</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="users-approval-status">Xét duyệt</label>
-                        <select id="users-approval-status" name="approval_status" class="admin-select">
-                            <option value="">-- Trạng thái duyệt --</option>
-                            <option value="pending">Chờ duyệt</option>
-                        </select>
-                    </div>
                     <div class="users-filter-actions">
                         <button type="submit" class="btn-primary" style="justify-content: center;">
                             <i class="fa-solid fa-magnifying-glass"></i> Áp dụng lọc
@@ -480,19 +404,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                         </button>
                     </div>
                 </form>
-
-                <section class="users-pending-card" id="users-pending-card">
-                    <div class="users-pending-header">
-                        <h4><i class="fa-solid fa-user-clock"></i> Shipper web chờ duyệt</h4>
-                        <span class="users-pending-badge" id="users-pending-count">0</span>
-                    </div>
-                    <p class="users-pending-note">
-                        Khối này đọc trực tiếp từ bảng đăng ký web của shipper. Tài khoản chỉ hoạt động sau khi bấm duyệt tại đây.
-                    </p>
-                    <div id="users-pending-list" class="users-pending-list">
-                        <div class="users-pending-empty">Đang tải danh sách shipper chờ duyệt...</div>
-                    </div>
-                </section>
             </aside>
         </div>
     </main>
@@ -517,12 +428,10 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             const form = document.getElementById("users-filter-form");
             const resetBtn = document.getElementById("users-reset-btn");
             const toast = document.getElementById("users-toast");
-            const pendingList = document.getElementById("users-pending-list");
-            const pendingCount = document.getElementById("users-pending-count");
             const statTotal = document.getElementById("users-stat-total");
             const statCustomers = document.getElementById("users-stat-customers");
             const statShippers = document.getElementById("users-stat-shippers");
-            const statPendingShippers = document.getElementById("users-stat-pending-shippers");
+            const statLockedUsers = document.getElementById("users-stat-locked-users");
             let lastParams = null;
 
             function escapeHtml(value) {
@@ -562,9 +471,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             }
 
             function getStatusBadge(user) {
-                if (user.role === "shipper" && !user.is_approved) {
-                    return '<span class="users-status-pill is-pending">Chờ duyệt</span>';
-                }
                 if (user.is_locked) {
                     return '<span class="users-status-pill is-locked">Đã khóa</span>';
                 }
@@ -576,12 +482,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 const total = list.length;
                 const customers = list.filter((user) => user.role === "customer").length;
                 const shippers = list.filter((user) => user.role === "shipper").length;
-                const pendingShippers = list.filter((user) => user.role === "shipper" && !user.is_approved).length;
+                const lockedUsers = list.filter((user) => user.is_locked).length;
 
                 statTotal.textContent = total.toLocaleString("vi-VN");
                 statCustomers.textContent = customers.toLocaleString("vi-VN");
                 statShippers.textContent = shippers.toLocaleString("vi-VN");
-                statPendingShippers.textContent = pendingShippers.toLocaleString("vi-VN");
+                statLockedUsers.textContent = lockedUsers.toLocaleString("vi-VN");
             }
 
             function buildSyntheticAdminUser() {
@@ -596,7 +502,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     created_at: "",
                     is_locked: false,
                     lock_reason: "",
-                    is_approved: true,
                     status_label: "Hoạt động",
                     source: "session",
                 };
@@ -612,81 +517,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 return [adminUser, ...users];
             }
 
-            function renderPendingShippers(users) {
-                const list = Array.isArray(users) ? users : [];
-                pendingCount.textContent = list.length.toLocaleString("vi-VN");
-
-                if (!list.length) {
-                    pendingList.innerHTML = '<div class="users-pending-empty">Hiện không có shipper web nào chờ duyệt.</div>';
-                    return;
-                }
-
-                pendingList.innerHTML = list.map((user) => {
-                    const joined = formatDate(user.created_at);
-                    const phone = escapeHtml(user.phone || user.so_dien_thoai || "--");
-                    const email = escapeHtml(user.email || "--");
-                    const name = escapeHtml(user.fullname || user.ho_ten || user.username || "Shipper");
-                    const vehicle = escapeHtml(user.vehicle_type || user.loai_phuong_tien || "Chưa khai báo");
-
-                    return `
-                        <article class="users-pending-item">
-                            <strong>${name}</strong>
-                            <p>
-                                <i class="fa-solid fa-hashtag" style="width:14px;"></i> ID: #${escapeHtml(user.id)}<br>
-                                <i class="fa-solid fa-phone" style="width:14px;"></i> ${phone}<br>
-                                <i class="fa-regular fa-envelope" style="width:14px;"></i> ${email}<br>
-                                <i class="fa-solid fa-motorcycle" style="width:14px;"></i> ${vehicle}<br>
-                                <i class="fa-regular fa-calendar" style="width:14px;"></i> ${joined}
-                            </p>
-                            <div class="users-pending-actions">
-                                <button type="button" class="btn-primary" data-krud-approve-id="${escapeHtml(user.id)}">
-                                    <i class="fa-solid fa-check"></i> Duyệt tài khoản
-                                </button>
-                            </div>
-                        </article>
-                    `;
-                }).join("");
-            }
-
-            async function loadPendingShippers() {
-                if (!localAuth || typeof localAuth.listPendingShippers !== "function") {
-                    pendingList.innerHTML = '<div class="users-pending-empty">Không khởi tạo được luồng duyệt shipper web.</div>';
-                    pendingCount.textContent = "0";
-                    return;
-                }
-
-                try {
-                    const users = await localAuth.listPendingShippers();
-                    renderPendingShippers(users);
-                } catch (error) {
-                    pendingList.innerHTML = `<div class="users-pending-empty">${escapeHtml(error.message || "Không thể tải shipper web chờ duyệt.")}</div>`;
-                    pendingCount.textContent = "0";
-                }
-            }
-
-            async function approvePendingShipperFromKrud(userId) {
-                if (!localAuth || typeof localAuth.approveShipper !== "function") {
-                    throw new Error("Không khởi tạo được hành động duyệt shipper web.");
-                }
-
-                if (!window.confirm("Duyệt tài khoản shipper web này?")) {
-                    return;
-                }
-
-                const result = await localAuth.approveShipper(userId);
-                showToast(result.message || "Đã duyệt tài khoản shipper.", "success");
-                await loadPendingShippers();
-                if (lastParams) {
-                    loadUsers(lastParams);
-                }
-            }
-
             function getParamsFromLocation() {
                 const params = new URLSearchParams(window.location.search);
                 return {
                     search: params.get("search") || "",
                     role: params.get("role") || "",
-                    approval_status: params.get("approval_status") || "",
                     page: Math.max(1, Number.parseInt(params.get("page") || "1", 10) || 1),
                 };
             }
@@ -694,7 +529,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             function syncForm(params) {
                 form.search.value = params.search;
                 form.role.value = params.role;
-                form.approval_status.value = params.approval_status;
             }
 
             function updateUrl(params) {
@@ -704,8 +538,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 else url.searchParams.delete("search");
                 if (params.role) url.searchParams.set("role", params.role);
                 else url.searchParams.delete("role");
-                if (params.approval_status) url.searchParams.set("approval_status", params.approval_status);
-                else url.searchParams.delete("approval_status");
                 window.history.replaceState({}, "", url.toString());
             }
 
@@ -718,15 +550,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 tbody.innerHTML = users.map((user) => {
                     const canMutate = Number(user.id) !== currentAdminId;
                     const avatar = escapeHtml((user.username || "U").charAt(0).toUpperCase());
-                    const editUrl = `user_form.php?id=${encodeURIComponent(user.id)}`;
-
-                    const actionButtons = [
-                        `<a href="${editUrl}" class="btn-sm btn-view-site-pill" title="Sửa" style="color:#ff7a00; background:rgba(255,122,0,0.1);"><i class="fa-solid fa-pen-to-square"></i></a>`,
-                    ];
-
-                    if (user.role === "shipper" && !user.is_approved) {
-                        actionButtons.push(`<button type="button" class="btn-sm btn-view-site-pill" data-user-action="approve" data-user-id="${user.id}" title="Duyệt" style="color:#2e7d32; background:rgba(46,125,50,0.1);"><i class="fa-solid fa-check"></i></button>`);
-                    }
+                    const actionButtons = [];
 
                     if (canMutate) {
                         if (user.is_locked) {
@@ -813,7 +637,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 }
 
                 const confirmMessages = {
-                    approve: "Duyệt tài khoản shipper này?",
                     unlock: "Mở khóa tài khoản này?",
                     delete: "Xóa tài khoản này?",
                 };
@@ -825,9 +648,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 try {
                     let result = null;
 
-                    if (action === "approve") {
-                        result = await localAuth.approveShipper(userId);
-                    } else if (action === "lock") {
+                    if (action === "lock") {
                         result = await localAuth.updateKrudUser(userId, userRole, {
                             is_locked: 1,
                             bi_khoa: 1,
@@ -869,9 +690,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                     const search = String(params.search || "").trim().toLowerCase();
                     const filteredUsers = allUsers.filter((user) => {
                         if (params.role && user.role !== params.role) return false;
-                        if (params.approval_status === "pending" && !(user.role === "shipper" && !user.is_approved)) {
-                            return false;
-                        }
                         if (!search) return true;
 
                         const haystack = [
@@ -912,13 +730,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 loadUsers({
                     search: form.search.value.trim(),
                     role: form.role.value,
-                    approval_status: form.approval_status.value,
                     page: 1,
                 });
             });
 
             resetBtn.addEventListener("click", () => {
-                loadUsers({ search: "", role: "", approval_status: "", page: 1 });
+                loadUsers({ search: "", role: "", page: 1 });
             });
 
             tbody.addEventListener("click", (event) => {
@@ -929,19 +746,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 sendAction(button.dataset.userAction, Number(button.dataset.userId), userRole);
             });
 
-            pendingList.addEventListener("click", async (event) => {
-                const button = event.target.closest("[data-krud-approve-id]");
-                if (!button) return;
-
-                try {
-                    await approvePendingShipperFromKrud(button.dataset.krudApproveId);
-                } catch (error) {
-                    showToast(error.message || "Không thể duyệt tài khoản shipper web.", "error");
-                }
-            });
-
             loadUsers(getParamsFromLocation());
-            loadPendingShippers();
         })();
     </script>
 </body>

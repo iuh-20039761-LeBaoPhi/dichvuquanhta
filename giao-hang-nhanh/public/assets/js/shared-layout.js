@@ -14,6 +14,17 @@
   const parentBase = projectBase.replace(/giao-hang-nhanh\/?$/i, "");
   const includesBase = `${projectBase}includes/`;
   const authSessionKey = "ghn-auth-session";
+  const localAuthScriptPath = `${projectBase}public/assets/js/local-auth.js`;
+  let authBootstrapPromise = null;
+
+  function buildSharedAuthUrl(pageName, options = {}) {
+    const target = new URL(`${parentBase}public/${pageName}`, window.location.origin);
+    target.searchParams.set("service", "giaohangnhanh");
+    if (options.redirect) {
+      target.searchParams.set("redirect", String(options.redirect));
+    }
+    return target.toString();
+  }
 
   function loadPartial(url) {
     try {
@@ -56,8 +67,8 @@
       booking: `${projectBase}dat-lich-giao-hang-nhanh.html`,
       tracking: `${projectBase}tra-don-hang.html`,
       guide: `${projectBase}huong-dan-dat-hang.html`,
-      login: `${projectBase}dang-nhap.html`,
-      register: `${projectBase}dang-ky.html`,
+      login: buildSharedAuthUrl("dang-nhap.html"),
+      register: buildSharedAuthUrl("dang-ky.html"),
       "shipping-policy": `${projectBase}chinh-sach-van-chuyen.html`,
       privacy: `${projectBase}chinh-sach-bao-mat.html`,
       terms: `${projectBase}dieu-khoan-su-dung.html`,
@@ -98,6 +109,45 @@
     }
   }
 
+  function ensureLocalAuthLoaded() {
+    if (window.GiaoHangNhanhLocalAuth) {
+      return Promise.resolve(window.GiaoHangNhanhLocalAuth);
+    }
+
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = localAuthScriptPath;
+      script.async = true;
+      script.onload = () => {
+        if (window.GiaoHangNhanhLocalAuth) {
+          resolve(window.GiaoHangNhanhLocalAuth);
+          return;
+        }
+        reject(new Error("Local auth script loaded but auth service is unavailable."));
+      };
+      script.onerror = () => reject(new Error("Cannot load GHN local auth script."));
+      document.head.appendChild(script);
+    });
+  }
+
+  function ensureAuthBootstrap() {
+    if (authBootstrapPromise) return authBootstrapPromise;
+
+    authBootstrapPromise = ensureLocalAuthLoaded()
+      .then((auth) => {
+        if (typeof auth?.bootstrapSession === "function") {
+          return auth.bootstrapSession();
+        }
+        return null;
+      })
+      .catch((error) => {
+        console.warn("Cannot bootstrap GHN auth session from shared layout:", error);
+        return null;
+      });
+
+    return authBootstrapPromise;
+  }
+
   function resolveAccountLinks(session) {
     const role = String(session?.role || "").trim().toLowerCase();
     if (role === "shipper") {
@@ -123,9 +173,9 @@
     const session = readLocalSession();
     if (!session) {
       loginItem.innerHTML =
-        '<a data-layout-link="login" href="dang-nhap.html">Đăng nhập</a>';
+        `<a data-layout-link="login" href="${buildSharedAuthUrl("dang-nhap.html")}">Đăng nhập</a>`;
       registerItem.innerHTML =
-        '<a data-layout-link="register" href="dang-ky.html" class="btn-primary nav-auth-cta">Đăng ký</a>';
+        `<a data-layout-link="register" href="${buildSharedAuthUrl("dang-ky.html")}" class="btn-primary nav-auth-cta">Đăng ký</a>`;
       applyLinks(root, linkMap);
       return;
     }
@@ -139,12 +189,14 @@
         .slice(-1)[0] || "Tài khoản",
     );
     const accountSummary = escapeHtml(
-      String(session.phone || "").trim() || String(session.email || "").trim() || "Khu vực cá nhân"
+      String(session.phone || session.so_dien_thoai || "").trim() ||
+        String(session.email || "").trim() ||
+        "Khu vực cá nhân",
     );
 
     loginItem.className = "dropdown has-submenu customer-nav-dropdown";
     loginItem.innerHTML = `
-      <a href="${accountLinks.dashboard}">Xin chào, ${firstName}</a>
+      <a href="#" data-account-dropdown-trigger="1" aria-haspopup="true" aria-expanded="false">Xin chào, ${firstName}</a>
       <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
         <li class="customer-nav-dropdown-summary">
           <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
@@ -154,9 +206,9 @@
           </div>
         </li>
         <li><a href="${accountLinks.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
-        <li><a href="${projectBase}public/khach-hang/lich-su-don-hang.html"><i class="fas fa-box"></i> Lịch sử đơn hàng</a></li>
+        <li><a href="${projectBase}public/khach-hang/lich-su-don-hang.html"><i class="fas fa-box"></i> Danh sách đơn hàng</a></li>
         <li><a href="${accountLinks.profile}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>
-        <li class="customer-nav-logout-wrapper"><a href="${projectBase}dang-nhap.html" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
+        <li class="customer-nav-logout-wrapper"><a href="${buildSharedAuthUrl("dang-nhap.html")}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
       </ul>
     `;
     registerItem.innerHTML = "";
@@ -168,7 +220,7 @@
       window.GiaoHangNhanhLocalAuth &&
       typeof window.GiaoHangNhanhLocalAuth.logout === "function"
     ) {
-      window.GiaoHangNhanhLocalAuth.logout(`${projectBase}dang-nhap.html`);
+      window.GiaoHangNhanhLocalAuth.logout(buildSharedAuthUrl("dang-nhap.html"));
     } else {
       window.localStorage.removeItem(authSessionKey);
       document.dispatchEvent(
@@ -178,7 +230,7 @@
           },
         }),
       );
-      window.location.href = `${projectBase}dang-nhap.html`;
+      window.location.href = buildSharedAuthUrl("dang-nhap.html");
     }
   }
 
@@ -192,6 +244,53 @@
 
       event.preventDefault();
       performLogout();
+    });
+  }
+
+  function bindAccountDropdownActions(root) {
+    if (!root || root.dataset.accountDropdownDelegated === "1") return;
+
+    root.dataset.accountDropdownDelegated = "1";
+
+    const closeAllDropdowns = () => {
+      root.querySelectorAll(".customer-nav-dropdown.open").forEach((dropdown) => {
+        dropdown.classList.remove("open");
+        const trigger = dropdown.querySelector("[data-account-dropdown-trigger]");
+        if (trigger) {
+          trigger.setAttribute("aria-expanded", "false");
+        }
+      });
+    };
+
+    root.addEventListener("click", function (event) {
+      const trigger = event.target.closest("[data-account-dropdown-trigger]");
+      if (trigger && root.contains(trigger)) {
+        event.preventDefault();
+        const dropdown = trigger.closest(".customer-nav-dropdown");
+        if (!dropdown) return;
+
+        const willOpen = !dropdown.classList.contains("open");
+        closeAllDropdowns();
+        dropdown.classList.toggle("open", willOpen);
+        trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+        return;
+      }
+
+      if (!event.target.closest(".customer-nav-dropdown")) {
+        closeAllDropdowns();
+      }
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!root.contains(event.target)) {
+        closeAllDropdowns();
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeAllDropdowns();
+      }
     });
   }
 
@@ -432,6 +531,7 @@
   if (headerHost) applyActiveNav(headerHost);
   if (headerHost) syncAuthNav(headerHost);
   if (headerHost) bindLogoutActions(headerHost);
+  if (headerHost) bindAccountDropdownActions(headerHost);
   if (footerHost) applyLinks(footerHost, linkMap);
   document.dispatchEvent(
     new CustomEvent("ghn:layout-ready", {
@@ -443,6 +543,11 @@
   );
   applyFavicon();
   maybeShowPromoPopup(linkMap);
+  ensureAuthBootstrap().finally(() => {
+    if (headerHost) {
+      syncAuthNav(headerHost);
+    }
+  });
 
   window.addEventListener("hashchange", function () {
     if (headerHost) applyActiveNav(headerHost);

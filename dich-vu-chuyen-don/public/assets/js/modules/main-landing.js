@@ -1,8 +1,8 @@
+import core from "./core/app-core.js";
+
 (function (window, document) {
   if (window.__fastGoLandingInitDone) return;
   window.__fastGoLandingInitDone = true;
-
-  const core = window.FastGoCore;
   if (!core) return;
 
   function onReady(fn) {

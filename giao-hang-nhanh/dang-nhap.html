@@ -3,298 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng nhập tài khoản | Giao Hàng Nhanh</title>
+    <title>Chuyển hướng đăng nhập | Giao Hàng Nhanh</title>
     <meta
       name="description"
-      content="Đăng nhập tài khoản Giao Hàng Nhanh để tạo đơn mới, theo dõi trạng thái giao hàng và quản lý lịch sử đơn hàng thuận tiện hơn."
+      content="Giao Hàng Nhanh dùng chung trang đăng nhập của Dịch Vụ Quanh Ta."
     />
-    <link rel="stylesheet" href="public/assets/css/styles.css" />
-    <link rel="stylesheet" href="public/assets/css/pages/auth.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <style>
-      .auth-shell {
-        display: grid;
-        grid-template-columns: minmax(0, 1.15fr) minmax(320px, 420px);
-        gap: 28px;
-        width: min(1040px, 100%);
-        align-items: stretch;
-      }
-
-      .auth-panel {
-        background:
-          radial-gradient(circle at top right, rgba(255, 122, 0, 0.14), transparent 35%),
-          linear-gradient(145deg, #0a2a66, #10398c 70%, #1d4ed8);
-        color: #fff;
-        border-radius: 18px;
-        padding: 36px;
-        box-shadow: 0 14px 36px rgba(10, 42, 102, 0.18);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-
-      .auth-panel h1 {
-        font-size: clamp(30px, 4vw, 42px);
-        line-height: 1.12;
-        margin: 0 0 16px;
-        color: #fff;
-      }
-
-      .auth-panel p {
-        color: rgba(255, 255, 255, 0.88);
-        font-size: 16px;
-        line-height: 1.7;
-        margin: 0;
-      }
-
-      .auth-points {
-        display: grid;
-        gap: 14px;
-        margin-top: 28px;
-      }
-
-      .auth-point {
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 14px;
-        padding: 14px 16px;
-      }
-
-      .auth-point i {
-        width: 34px;
-        height: 34px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.14);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 34px;
-      }
-
-      .auth-point strong {
-        display: block;
-        margin-bottom: 4px;
-      }
-
-      .auth-card {
-        max-width: none;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-      }
-
-      .auth-subtitle {
-        text-align: center;
-        color: #64748b;
-        margin: -8px 0 20px;
-      }
-
-      .auth-note {
-        margin-top: 18px;
-        padding: 12px 14px;
-        border-radius: 10px;
-        background: #fff7ed;
-        color: #9a3412;
-        font-size: 13px;
-        line-height: 1.6;
-      }
-
-      .msg-box {
-        margin-bottom: 16px;
-      }
-
-      @media (max-width: 900px) {
-        .auth-shell {
-          grid-template-columns: 1fr;
-        }
-
-        .auth-panel {
-          order: 2;
-        }
-      }
-    </style>
-      <script src="/ga.js"></script>
+    <meta http-equiv="refresh" content="0;url=../public/dang-nhap.html?service=giaohangnhanh" />
+    <script src="/ga.js"></script>
   </head>
-  <body class="auth-page">
-    <div id="site-header"></div>
-
-    <main class="auth-container">
-      <div class="auth-shell">
-        <section class="auth-panel">
-          <div>
-            <span class="subpage-hero__badge" style="display: inline-flex; margin-bottom: 18px;">Khách hàng và nhà cung cấp</span>
-            <h1>Đăng nhập để quản lý đơn giao hàng thuận tiện hơn.</h1>
-            <p>
-              Đăng nhập để tạo đơn mới, theo dõi trạng thái giao hàng, xem lịch
-              sử đơn và quản lý phản hồi trong cùng một nơi.
-            </p>
-            <div class="auth-points">
-              <div class="auth-point">
-                <i class="fa-solid fa-route"></i>
-                <div>
-                  <strong>Theo dõi đơn hàng rõ ràng</strong>
-                  Xem trạng thái đơn, mốc xử lý và thông tin giao nhận mới nhất.
-                </div>
-              </div>
-              <div class="auth-point">
-                <i class="fa-solid fa-box-open"></i>
-                <div>
-                  <strong>Tạo đơn nhanh hơn</strong>
-                  Lưu sẵn thông tin liên hệ để đặt đơn với ít bước hơn.
-                </div>
-              </div>
-              <div class="auth-point">
-                <i class="fa-solid fa-shield-heart"></i>
-                <div>
-                  <strong>Quản lý tập trung</strong>
-                  Theo dõi đơn đang xử lý, đơn đã hoàn thành và lịch sử hoạt động
-                  trên cùng một tài khoản.
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="auth-card">
-          <h2 class="auth-title">Đăng nhập tài khoản</h2>
-          <p class="auth-subtitle">Nhập số điện thoại và mật khẩu để tiếp tục.</p>
-
-          <div id="thong-bao-dang-nhap" class="msg-box" style="display: none;"></div>
-
-          <form id="form-dang-nhap" novalidate>
-            <div class="form-group">
-              <label for="so-dien-thoai-dang-nhap">Số điện thoại</label>
-              <input
-                id="so-dien-thoai-dang-nhap"
-                name="so_dien_thoai"
-                type="tel"
-                autocomplete="tel"
-                required
-                inputmode="numeric"
-                placeholder="Nhập số điện thoại"
-              />
-            </div>
-            <div class="form-group">
-              <label for="mat-khau">Mật khẩu</label>
-              <input
-                id="mat-khau"
-                name="mat_khau"
-                type="password"
-                autocomplete="current-password"
-                required
-                placeholder="Nhập mật khẩu"
-              />
-            </div>
-            <button id="nut-gui-dang-nhap" type="submit" class="btn-primary" style="width: 100%;">
-              Đăng nhập
-            </button>
-          </form>
-
-          <div class="auth-note">
-            Nếu bạn đang đặt đơn từ trang đặt lịch giao hàng, hệ thống sẽ đưa
-            bạn quay lại đúng bước đang thao tác sau khi đăng nhập thành công.
-          </div>
-          <div class="auth-link">
-            Chưa có tài khoản? <a id="lien-ket-dang-ky" href="dang-ky.html">Đăng ký ngay</a>
-          </div>
-        </section>
-      </div>
-    </main>
-
-    <div id="site-footer"></div>
-
-    <script src="public/assets/js/shared-layout.js"></script>
-    <script src="https://api.dvqt.vn/js/krud.js"></script>
-    <script src="public/assets/js/local-auth.js"></script>
-    <script>
-      window.isLoggedIn = false;
-      window.apiBasePath = "";
-    </script>
-    <script src="public/assets/js/main.js" defer></script>
+  <body>
     <script>
       (function () {
-        const localAuth = window.GiaoHangNhanhLocalAuth || null;
-        const form = document.getElementById("form-dang-nhap");
-        const submitBtn = document.getElementById("nut-gui-dang-nhap");
-        const msgBox = document.getElementById("thong-bao-dang-nhap");
-        const registerLink = document.getElementById("lien-ket-dang-ky");
-        const params = new URLSearchParams(window.location.search);
-        const redirectValue = params.get("redirect") || "";
+        const current = new URL(window.location.href);
+        const target = new URL("../public/dang-nhap.html", current);
+        target.searchParams.set("service", "giaohangnhanh");
 
-        function normalizeRedirect(target) {
-          if (!target) return "";
-          if (/^(?:[a-z]+:)?\/\//i.test(target)) return "";
-          if (/[\r\n]/.test(target)) return "";
-          return target;
+        const redirect = current.searchParams.get("redirect");
+        if (redirect) {
+          target.searchParams.set("redirect", redirect);
         }
 
-        function showMessage(message, type) {
-          msgBox.textContent = message;
-          msgBox.className = "msg-box " + type;
-          msgBox.style.display = "block";
-        }
-
-        function resolveDefaultPath(role) {
-          if (localAuth && typeof localAuth.getDashboardPath === "function") {
-            return localAuth.getDashboardPath(role);
-          }
-          if (role === "shipper") return "public/nha-cung-cap/dashboard.html";
-          return "public/khach-hang/dashboard.html";
-        }
-
-        if (redirectValue) {
-          registerLink.href = "dang-ky.html?redirect=" + encodeURIComponent(redirectValue);
-        }
-
-        form.addEventListener("submit", async function (event) {
-          event.preventDefault();
-          const formData = new FormData(form);
-          const phone = String(formData.get("so_dien_thoai") || "").trim();
-          const password = String(formData.get("mat_khau") || "");
-
-          if (!phone || !password) {
-            showMessage("Vui lòng nhập số điện thoại và mật khẩu.", "error");
-            return;
-          }
-
-          if (!localAuth || typeof localAuth.login !== "function") {
-            showMessage("Không khởi tạo được luồng đăng nhập tài khoản.", "error");
-            return;
-          }
-
-          submitBtn.disabled = true;
-          submitBtn.textContent = "Đang đăng nhập...";
-          msgBox.style.display = "none";
-
-          try {
-            const result = await localAuth.login({
-              loginIdentifier: phone,
-              password,
-            });
-
-            if (!result || result.status !== "success") {
-              showMessage((result && result.message) || "Đăng nhập thất bại.", "error");
-              return;
-            }
-
-            showMessage("Đăng nhập thành công, đang chuyển trang...", "success");
-            const safeRedirect = normalizeRedirect(redirectValue);
-            const userRole = result.user && result.user.role ? result.user.role : "";
-            window.location.href = safeRedirect || resolveDefaultPath(userRole);
-          } catch (error) {
-            showMessage("Không thể xử lý đăng nhập tài khoản. Vui lòng thử lại.", "error");
-          } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Đăng nhập";
-          }
-        });
+        window.location.replace(target.toString());
       })();
     </script>
+    <p>
+      Đang chuyển sang trang đăng nhập dùng chung.
+      <a href="../public/dang-nhap.html?service=giaohangnhanh">Tiếp tục</a>
+    </p>
   </body>
 </html>
-

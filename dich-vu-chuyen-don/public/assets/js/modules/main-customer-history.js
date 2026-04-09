@@ -1,9 +1,10 @@
-(function (window, document) {
-  if (window.__fastGoCustomerHistoryLoaded) return;
+import core from "./core/app-core.js";
+import store from "./main-customer-portal-store.js";
+
+const customerHistoryModule = (function (window, document) {
+  if (window.__fastGoCustomerHistoryLoaded) return window.__fastGoCustomerHistoryModule || null;
   window.__fastGoCustomerHistoryLoaded = true;
 
-  const core = window.FastGoCore || {};
-  const store = window.FastGoCustomerPortalStore || null;
   const body = document.body;
 
   if (!body || body.getAttribute("data-page") !== "customer-history") {
@@ -28,6 +29,16 @@
 
   function getProjectUrl(path) {
     return typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
+  }
+
+  function getOrderDetailUrl(orderCode) {
+    return typeof core.buildOrderDetailUrl === "function"
+      ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", orderCode)
+      : getProjectUrl(
+          `khach-hang/chi-tiet-hoa-don.html?madonhang=${encodeURIComponent(
+            orderCode || "",
+          )}`,
+        );
   }
 
   function formatCurrency(value) {
@@ -59,166 +70,122 @@
     return "pending";
   }
 
+  function getRouteSummary(item) {
+    const fromAddress = String(item?.from_address || "").trim();
+    const toAddress = String(item?.to_address || "").trim();
+    if (fromAddress || toAddress) {
+      return `${fromAddress || "--"} → ${toAddress || "--"}`;
+    }
+    return String(item?.summary || item?.meta || "Chưa có mô tả chi tiết.").trim();
+  }
+
   function renderHistory(data) {
     if (!data?.profile) {
       store.clearAuthSession?.();
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
       return;
     }
 
     const role = store.getSavedRole();
     if (role && role !== "khach-hang") {
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
       return;
     }
 
-    const identity = data.profile;
-    const displayName = store.getDisplayName(identity);
     const items = Array.isArray(data?.history) ? data.history : [];
-    const stats = store.getDashboardStats(items);
+    const params = new URLSearchParams(window.location.search);
+    const initialKeyword = String(params.get("search") || "").trim();
+    const initialStatus = String(params.get("status") || "all").trim();
 
     root.innerHTML = `
-      <div class="customer-portal-shell">
-        <section class="customer-panel customer-panel-overview">
+      <div class="customer-portal-shell customer-portal-shell--simple">
+        <section class="customer-panel customer-orders-panel">
           <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Lịch sử yêu cầu</p>
-              <h2>Theo dõi toàn bộ yêu cầu chuyển dọn đã tạo</h2>
-              <p class="customer-panel-subtext">Danh sách này chỉ giữ một luồng đặt lịch; nhu cầu khảo sát trước được theo dõi như một thuộc tính của đơn.</p>
+              <p class="customer-section-kicker">Danh sách đơn hàng</p>
+              <h2>Tìm và lọc đơn</h2>
+              <p class="customer-panel-subtext">${escapeHtml(String(items.length))} đơn trong tài khoản hiện tại</p>
             </div>
-            <p class="customer-panel-note">Tài khoản đang xem: ${escapeHtml(displayName)}</p>
           </div>
-          <div class="customer-kpi-grid">
-            <article class="customer-kpi-card">
-              <span>Tổng yêu cầu</span>
-              <strong>${escapeHtml(String(stats.total || 0))}</strong>
-            </article>
-            <article class="customer-kpi-card">
-              <span>Đang mở</span>
-              <strong>${escapeHtml(String(stats.open_count || 0))}</strong>
-            </article>
-            <article class="customer-kpi-card">
-              <span>Đã xác nhận</span>
-              <strong>${escapeHtml(String(stats.confirmed_count || 0))}</strong>
-            </article>
-            <article class="customer-kpi-card">
-              <span>Cần khảo sát trước</span>
-              <strong>${escapeHtml(String(stats.survey_count || 0))}</strong>
-            </article>
+
+          <form class="customer-filter-form customer-filter-form-compact customer-filter-form-orders" id="customer-history-filter-form">
+            <label class="customer-filter-field-search">
+              <span>Tìm nhanh</span>
+              <input id="bo-loc-tu-khoa-lich-su" type="search" value="${escapeHtml(initialKeyword)}" placeholder="Mã đơn, dịch vụ, địa chỉ..." />
+            </label>
+            <label class="customer-filter-field-status">
+              <span>Trạng thái</span>
+              <select id="bo-loc-trang-thai-lich-su">
+                <option value="all" ${initialStatus === "all" ? "selected" : ""}>Tất cả</option>
+                <option value="moi" ${initialStatus === "moi" ? "selected" : ""}>Mới tiếp nhận</option>
+                <option value="xac-nhan" ${initialStatus === "xac-nhan" ? "selected" : ""}>Đã xác nhận</option>
+                <option value="dang-xu-ly" ${initialStatus === "dang-xu-ly" ? "selected" : ""}>Đang xử lý</option>
+              </select>
+            </label>
+            <div class="customer-inline-actions customer-filter-actions">
+              <button class="customer-btn customer-btn-primary" type="submit">Lọc</button>
+              <button class="customer-btn customer-btn-ghost customer-btn-sm" type="button" id="customer-history-reset">Đặt lại</button>
+            </div>
+          </form>
+
+          <div class="customer-active-filters" id="customer-history-active-filters">
+            <span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn hàng.</span>
           </div>
+
+          <div class="customer-panel-head">
+            <div>
+              <p class="customer-section-kicker">Danh sách</p>
+              <h2>Đơn đang hiển thị</h2>
+              <p class="customer-panel-subtext" id="customer-history-result-text">Đang tải dữ liệu đơn hàng...</p>
+            </div>
+            <div class="customer-inline-actions">
+              <a class="customer-btn customer-btn-primary customer-btn-sm" href="${escapeHtml(getProjectUrl("dat-lich.html"))}">Tạo yêu cầu mới</a>
+            </div>
+          </div>
+
+          <div class="customer-list customer-list-history" id="customer-history-list"></div>
         </section>
-
-        <div class="customer-grid-two customer-grid-dashboard">
-          <div class="customer-portal-main">
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Bộ lọc</p>
-                  <h2>Lọc và tìm nhanh</h2>
-                </div>
-              </div>
-              <div class="customer-filter-form">
-                <label>
-                  Từ khóa
-                  <input id="bo-loc-tu-khoa-lich-su" type="search" placeholder="Mã đơn, dịch vụ, địa chỉ..." />
-                </label>
-                <label>
-                  Khảo sát trước
-                  <select id="bo-loc-loai-lich-su">
-                    <option value="all">Tất cả</option>
-                    <option value="co-khao-sat">Có</option>
-                    <option value="khong-khao-sat">Không</option>
-                  </select>
-                </label>
-                <label>
-                  Trạng thái
-                  <select id="bo-loc-trang-thai-lich-su">
-                    <option value="all">Tất cả</option>
-                    <option value="moi">Mới tiếp nhận</option>
-                    <option value="xac-nhan">Đã xác nhận</option>
-                    <option value="dang-xu-ly">Đang xử lý</option>
-                  </select>
-                </label>
-              </div>
-            </section>
-
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Danh sách</p>
-                  <h2>Yêu cầu đang hiển thị</h2>
-                  <p class="customer-panel-subtext" id="customer-history-result-text">Đang tải dữ liệu lịch sử...</p>
-                </div>
-              </div>
-              <div class="customer-list customer-list-history" id="customer-history-list"></div>
-            </section>
-          </div>
-
-          <aside class="customer-portal-sidebar">
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Tài khoản</p>
-                  <h2>Thông tin đang dùng</h2>
-                </div>
-              </div>
-              <div class="customer-profile-summary">
-                <article>
-                  <span>Tên hiển thị</span>
-                  <strong>${escapeHtml(displayName)}</strong>
-                </article>
-                <article>
-                  <span>Email</span>
-                  <strong>${escapeHtml(String(identity.email || "").trim() || "Chưa có dữ liệu")}</strong>
-                </article>
-                <article>
-                  <span>Số điện thoại</span>
-                  <strong>${escapeHtml(String(identity.phone || "").trim() || "Chưa có dữ liệu")}</strong>
-                </article>
-              </div>
-            </section>
-
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Lối tắt</p>
-                  <h2>Đi nhanh</h2>
-                </div>
-              </div>
-              <div class="customer-quicklinks-strip">
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("khach-hang/dashboard.html"))}">
-                  <strong>Về dashboard</strong>
-                  <span>Quay lại màn tổng quan chính của khu khách hàng.</span>
-                </a>
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("khach-hang/ho-so.html"))}">
-                  <strong>Hồ sơ khách hàng</strong>
-                  <span>Rà lại thông tin liên hệ trước khi tạo đơn tiếp theo.</span>
-                </a>
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("dat-lich.html"))}">
-                  <strong>Tạo đơn mới</strong>
-                  <span>Đi thẳng vào form đặt lịch nếu đã đủ dữ liệu.</span>
-                </a>
-              </div>
-            </section>
-          </aside>
-        </div>
       </div>
     `;
 
+    const filterForm = root.querySelector("#customer-history-filter-form");
     const keywordInput = root.querySelector("#bo-loc-tu-khoa-lich-su");
-    const typeSelect = root.querySelector("#bo-loc-loai-lich-su");
     const statusSelect = root.querySelector("#bo-loc-trang-thai-lich-su");
+    const resetButton = root.querySelector("#customer-history-reset");
     const listNode = root.querySelector("#customer-history-list");
     const resultNode = root.querySelector("#customer-history-result-text");
+    const activeFiltersNode = root.querySelector("#customer-history-active-filters");
+
+    function syncFilterUrl() {
+      const url = new URL(window.location.href);
+      const nextKeyword = String(keywordInput?.value || "").trim();
+      const nextStatus = String(statusSelect?.value || "all").trim();
+
+      if (nextKeyword) {
+        url.searchParams.set("search", nextKeyword);
+      } else {
+        url.searchParams.delete("search");
+      }
+
+      if (nextStatus !== "all") {
+        url.searchParams.set("status", nextStatus);
+      } else {
+        url.searchParams.delete("status");
+      }
+
+      url.searchParams.delete("survey");
+      window.history.replaceState({}, "", url.toString());
+    }
 
     function renderList() {
       const keyword = String(keywordInput?.value || "").trim().toLowerCase();
-      const type = String(typeSelect?.value || "all").trim();
       const status = String(statusSelect?.value || "all").trim();
 
       const filtered = items.filter((item) => {
-        if (type === "co-khao-sat" && !item.survey_first) return false;
-        if (type === "khong-khao-sat" && item.survey_first) return false;
         if (status !== "all" && item.status_class !== status) return false;
 
         if (!keyword) return true;
@@ -239,8 +206,39 @@
       });
 
       resultNode.textContent = filtered.length
-        ? `Hiển thị ${filtered.length} yêu cầu theo bộ lọc hiện tại.`
-        : "Không tìm thấy yêu cầu nào khớp với điều kiện lọc.";
+        ? `Hiển thị ${filtered.length} đơn hàng theo bộ lọc hiện tại.`
+        : "Không tìm thấy đơn hàng nào khớp với điều kiện lọc.";
+
+      const activeFilters = [];
+      if (keyword) {
+        activeFilters.push({
+          key: "keyword",
+          label: `Từ khóa: ${keywordInput.value.trim()}`,
+        });
+      }
+      if (status === "moi") {
+        activeFilters.push({ key: "status", label: "Trạng thái: Mới tiếp nhận" });
+      }
+      if (status === "xac-nhan") {
+        activeFilters.push({ key: "status", label: "Trạng thái: Đã xác nhận" });
+      }
+      if (status === "dang-xu-ly") {
+        activeFilters.push({ key: "status", label: "Trạng thái: Đang xử lý" });
+      }
+
+      activeFiltersNode.innerHTML = activeFilters.length
+        ? activeFilters
+            .map(
+              (item) =>
+                `<button type="button" class="customer-active-filter-text" data-remove-filter="${escapeHtml(
+                  item.key,
+                )}" aria-label="${escapeHtml(`Bỏ ${item.label}`)}">
+                  <span>${escapeHtml(item.label)}</span>
+                  <i class="fas fa-xmark" aria-hidden="true"></i>
+                </button>`,
+            )
+            .join("")
+        : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ đơn hàng.</span>';
 
       if (!filtered.length) {
         listNode.innerHTML = `
@@ -260,37 +258,28 @@
               <div class="customer-order-topline">
                 <div class="customer-order-heading">
                   <p class="customer-order-code">${escapeHtml(item.code || "--")}</p>
-                  <p class="customer-order-recipient">${escapeHtml(item.title || "Yêu cầu chuyển dọn")}</p>
-                  <p class="customer-order-dest">${escapeHtml(item.summary || item.meta || "Chưa có mô tả chi tiết.")}</p>
+                  <p class="customer-order-dest">${escapeHtml(getRouteSummary(item))}</p>
                 </div>
                 <span class="customer-status-badge status-${escapeHtml(
                   getStatusBadgeClass(item.status_class),
                 )}">${escapeHtml(item.status_text || "Mới tiếp nhận")}</span>
               </div>
               <div class="customer-order-meta customer-order-meta-compact customer-order-meta-history">
-                <span><b>Loại</b>${escapeHtml(item.type_label || "--")}</span>
-                <span><b>Khảo sát trước</b>${escapeHtml(item.survey_first ? "Có" : "Không")}</span>
                 <span><b>Dịch vụ</b>${escapeHtml(item.service_label || "--")}</span>
-                <span><b>Tạo lúc</b>${escapeHtml(formatDateTime(item.created_at))}</span>
-                <span><b>Lịch</b>${escapeHtml(item.schedule_label || "--")}</span>
-                <span><b>Điểm đi</b>${escapeHtml(item.from_address || "--")}</span>
+                <span><b>Khảo sát</b>${escapeHtml(item.survey_first ? "Có" : "Không")}</span>
+                <span><b>Tạo</b>${escapeHtml(formatDateTime(item.created_at || ""))}</span>
                 <span><b>Tạm tính</b>${escapeHtml(formatCurrency(item.estimated_amount))}</span>
               </div>
               <div class="customer-order-actions customer-order-actions-compact">
                 ${
                   item.type === "dat-lich"
                     ? `<a class="customer-btn customer-btn-primary" href="${escapeHtml(
-                        getProjectUrl(
-                          `khach-hang/chi-tiet-hoa-don.html?code=${encodeURIComponent(
-                            item.code || "",
-                          )}`,
-                        ),
+                        getOrderDetailUrl(item.code || ""),
                       )}">Xem chi tiết</a>`
-                    : ""
+                    : `<a class="customer-btn customer-btn-primary" href="${escapeHtml(
+                        getProjectUrl("khach-hang/lich-su-yeu-cau.html"),
+                      )}">Mở đơn hàng</a>`
                 }
-                <a class="customer-btn customer-btn-ghost" href="${escapeHtml(
-                  getProjectUrl("dat-lich.html"),
-                )}">Tạo lại</a>
               </div>
             </article>
           `,
@@ -298,9 +287,37 @@
         .join("");
     }
 
-    [keywordInput, typeSelect, statusSelect].forEach((node) => {
-      node?.addEventListener("input", renderList);
-      node?.addEventListener("change", renderList);
+    filterForm?.addEventListener("submit", function (event) {
+      event.preventDefault();
+      syncFilterUrl();
+      renderList();
+    });
+
+    resetButton?.addEventListener("click", function () {
+      if (keywordInput) keywordInput.value = "";
+      if (statusSelect) statusSelect.value = "all";
+      syncFilterUrl();
+      renderList();
+    });
+
+    activeFiltersNode?.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-remove-filter]");
+      if (!button) return;
+
+      const filterKey = String(
+        button.getAttribute("data-remove-filter") || "",
+      ).trim();
+
+      if (filterKey === "keyword" && keywordInput) {
+        keywordInput.value = "";
+      }
+
+      if (filterKey === "status" && statusSelect) {
+        statusSelect.value = "all";
+      }
+
+      syncFilterUrl();
+      renderList();
     });
 
     renderList();
@@ -315,4 +332,9 @@
       renderHistory(null);
     }
   })();
+  const moduleApi = {};
+  window.__fastGoCustomerHistoryModule = moduleApi;
+  return moduleApi;
 })(window, document);
+
+export default customerHistoryModule;

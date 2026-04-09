@@ -811,6 +811,17 @@
         throw new Error("Vui lòng nhập đầy đủ họ tên và số điện thoại.");
       }
 
+      if (localAuth && typeof localAuth.updateKrudUser === "function") {
+        await localAuth.updateKrudUser(session.id, "shipper", {
+          fullname,
+          ho_ten: fullname,
+          phone,
+          so_dien_thoai: phone,
+          vehicle_type: vehicleType,
+          loai_phuong_tien: vehicleType,
+        });
+      }
+
       const updatedUser = updateAuthStorage((currentUser) => ({
         ...currentUser,
         fullname,
@@ -850,6 +861,17 @@
       }
       if (newPassword === currentPassword) {
         throw new Error("Mật khẩu mới phải khác mật khẩu hiện tại.");
+      }
+      const storedPassword = String(session?.password || "");
+      if (storedPassword && storedPassword !== currentPassword) {
+        throw new Error("Mật khẩu hiện tại không chính xác.");
+      }
+
+      if (localAuth && typeof localAuth.updateKrudUser === "function") {
+        await localAuth.updateKrudUser(session.id, "shipper", {
+          password: newPassword,
+          mat_khau: newPassword,
+        });
       }
 
       const updatedUser = updateAuthStorage((currentUser) => {

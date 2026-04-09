@@ -65,24 +65,6 @@
         rows.push(renderInfoRow(label, formatCurrency(value)));
       });
 
-      rows.push(
-        renderInfoRow(
-          "Tổng cộng",
-          formatCurrency(breakdown.total_fee || order.shipping_fee),
-          {
-            valueHtml: true,
-            valueTag: "div",
-          },
-        ),
-      );
-      rows.push(renderInfoRow("Thanh toán", order.payment_method_label));
-      rows.push(
-        renderInfoRow(
-          "Trạng thái thanh toán",
-          order.payment_status_label || "Chưa hoàn tất",
-        ),
-      );
-
       return rows.join("");
     }
 
@@ -151,16 +133,51 @@
       };
     }
 
-    function renderHeroMetric(icon, label, value, hint) {
+    function renderHeroMetric(icon, label, value, hint, options = {}) {
+      const safeValue = options.valueHtml ? value || "--" : escapeHtml(value || "--");
+      const safeHint = options.hintHtml ? hint || "--" : escapeHtml(hint || "--");
+      const className = normalizeText(options.className || "");
+
       return `
-      <article class="standalone-order-hero-metric">
+      <article class="standalone-order-hero-metric ${escapeHtml(className)}">
         <div class="standalone-order-hero-metric-icon">
           <i class="${escapeHtml(icon)}"></i>
         </div>
         <div class="standalone-order-hero-metric-copy">
           <span>${escapeHtml(label)}</span>
-          <strong>${escapeHtml(value || "--")}</strong>
-          <small>${escapeHtml(hint || "--")}</small>
+          <strong>${safeValue}</strong>
+          <small>${safeHint}</small>
+        </div>
+      </article>
+    `;
+    }
+
+    function renderHeroRouteCard(order) {
+      return `
+      <article class="standalone-order-hero-metric standalone-order-hero-metric-route">
+        <div class="standalone-order-hero-metric-copy">
+          <span>Lộ trình giao nhận</span>
+          <div class="standalone-order-hero-route-list">
+            <div class="standalone-order-hero-route-item">
+              <span class="standalone-order-hero-route-icon">
+                <i class="fa-solid fa-location-dot"></i>
+              </span>
+              <div class="standalone-order-hero-route-copy">
+                <small>Điểm lấy hàng</small>
+                <strong>${escapeHtml(order?.pickup_address || "--")}</strong>
+              </div>
+            </div>
+            <div class="standalone-order-hero-route-item">
+              <span class="standalone-order-hero-route-icon">
+                <i class="fa-solid fa-flag-checkered"></i>
+              </span>
+              <div class="standalone-order-hero-route-copy">
+                <small>Điểm giao hàng</small>
+                <strong>${escapeHtml(order?.delivery_address || "--")}</strong>
+              </div>
+            </div>
+          </div>
+          <small>${escapeHtml(order?.service_label || order?.service_name || "Giao hàng nhanh")}</small>
         </div>
       </article>
     `;
@@ -763,24 +780,6 @@
       const serviceLabel = order.service_label || order.service_name || "--";
       const latestEvent = getLatestOrderEvent(order);
       const itemsSummary = getItemsSummary(detail.items || []);
-      const timelineEntries = getTimelineEntries(detail);
-      const podItems = getMediaItems(detail);
-      const deliverySummary =
-        pickFirstText(order.delivery_address, order.receiver_name) || "--";
-      const deliveryHint = [
-        order.receiver_name || "Người nhận chưa cập nhật",
-        order.receiver_phone || "Chưa có số điện thoại",
-      ]
-        .filter(Boolean)
-        .join(" · ");
-      const pickupSummary =
-        pickFirstText(order.pickup_address, order.sender_name) || "--";
-      const pickupHint = [
-        order.sender_name || customer.fullname || "Người gửi chưa cập nhật",
-        order.sender_phone || customer.phone || "Chưa có số điện thoại",
-      ]
-        .filter(Boolean)
-        .join(" · ");
       const senderName = order.sender_name || customer.fullname || "--";
       const senderPhone = order.sender_phone || customer.phone || "--";
       const receiverName = order.receiver_name || "--";
@@ -820,18 +819,23 @@
                   <p class="standalone-order-card-subtitle">${escapeHtml(serviceLabel)}</p>
                 </div>
                 
-                <div class="standalone-order-hero-side-progress">
-                  <div class="standalone-order-progress-ring status-${escapeHtml(progressMeta.tone)}"
-                    style="--progress:${Math.max(0, Math.min(progressMeta.percent, 100))}%;"
-                  >
-                    <div class="standalone-order-progress-ring-core">
-                      <strong>${escapeHtml(String(progressMeta.percent))}%</strong>
-                      <span>Tiến độ</span>
-                    </div>
+                <div class="standalone-order-hero-side-stack">
+                  <div class="standalone-order-actions-group standalone-order-hero-actions-group">
+                    ${buildActionButtons(detail, viewer)}
                   </div>
-                  <div class="standalone-order-progress-info">
-                    <span class="standalone-order-progress-label">${escapeHtml(progressMeta.label)}</span>
-                    <strong>${escapeHtml(order.status_label)}</strong>
+                  <div class="standalone-order-hero-side-progress">
+                    <div class="standalone-order-progress-ring status-${escapeHtml(progressMeta.tone)}"
+                      style="--progress:${Math.max(0, Math.min(progressMeta.percent, 100))}%;"
+                    >
+                      <div class="standalone-order-progress-ring-core">
+                        <strong>${escapeHtml(String(progressMeta.percent))}%</strong>
+                        <span>Tiến độ</span>
+                      </div>
+                    </div>
+                    <div class="standalone-order-progress-info">
+                      <span class="standalone-order-progress-label">${escapeHtml(progressMeta.label)}</span>
+                      <p>${escapeHtml(progressMeta.note)}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -842,28 +846,25 @@
                   "Tổng phí",
                   totalFeeLabel,
                   "Cước phí & phụ phí",
+                  { className: "standalone-order-hero-metric-primary" },
                 )}
                 ${renderHeroMetric(
                   "fa-solid fa-clock",
-                  "Thời gian tạo",
-                  formatDateTime(order.created_at).split(" ")[1],
-                  formatDateTime(order.created_at).split(" ")[0],
+                  "Tạo lúc",
+                  formatDateTime(order.created_at),
+                  distanceLabel,
                 )}
                 ${renderHeroMetric(
-                  "fa-solid fa-location-dot",
-                  "Điểm giao cuối",
-                  deliverySummary,
-                  deliveryHint,
+                  "fa-solid fa-signal",
+                  "Trạng thái đơn",
+                  renderStatusBadge(order.status, order.status_label),
+                  progressMeta.note,
+                  {
+                    className: "standalone-order-hero-metric-status",
+                    valueHtml: true,
+                  },
                 )}
-              </div>
-            </div>
-
-            <div class="standalone-order-header-footer-row">
-              <div class="standalone-order-header-status-badge">
-                ${renderStatusBadge(order.status, order.status_label)}
-              </div>
-              <div class="standalone-order-actions-group">
-                ${buildActionButtons(detail, viewer)}
+                ${renderHeroRouteCard(order)}
               </div>
             </div>
           </header>
@@ -873,55 +874,30 @@
               <div class="standalone-order-block-header">
                 <h2>Tổng quan đơn hàng và cước phí</h2>
               </div>
-              <div class="standalone-order-overview-stats">
-                ${renderOverviewStat(
-                  "fa-solid fa-location-dot",
-                  "Điểm lấy hàng",
-                  pickupSummary,
-                  pickupHint,
-                )}
-                ${renderOverviewStat(
-                  "fa-solid fa-flag-checkered",
-                  "Điểm giao hàng",
-                  deliverySummary,
-                  deliveryHint,
-                )}
-                ${renderOverviewStat(
-                  "fa-solid fa-wallet",
-                  "Thanh toán",
-                  order.payment_method_label || "--",
-                  `Trạng thái: ${order.payment_status_label || "Chưa hoàn tất"}`,
-                )}
-                ${renderOverviewStat(
-                  "fa-solid fa-clock-rotate-left",
-                  "Cập nhật gần nhất",
-                  latestEvent.label,
-                  latestEvent.time,
-                )}
-              </div>
               <div class="standalone-order-summary-grid">
                 <div class="standalone-order-panel standalone-order-panel-overview">
                   <div class="standalone-order-panel-head">
                     <div>
                       <strong>Thông tin điều phối</strong>
-                      <p>Hiển thị mã đơn, tuyến lấy giao, quãng đường và mã tham chiếu liên quan.</p>
+                      <p>Giữ lại những dữ liệu lõi để rà nhanh mà không lặp lại địa chỉ ở nhiều khu vực.</p>
                     </div>
-                    <span class="standalone-order-chip">Lộ trình</span>
+                    <span class="standalone-order-chip">Điều phối</span>
                   </div>
                   <div class="standalone-order-info-list">
                   ${renderInfoRow("Mã đơn hàng", order.order_code || "--")}
                   ${renderInfoRow("Gói dịch vụ", order.service_label || order.service_name || "--")}
-                  ${renderInfoRow("Điểm lấy hàng", order.pickup_address || "--")}
-                  ${renderInfoRow("Điểm giao hàng", order.delivery_address || "--")}
-                  ${renderInfoRow("Tổng quãng đường", distanceLabel)}
                   ${renderInfoRow("Tạo lúc", formatDateTime(order.created_at))}
+                  ${renderInfoRow("Tổng quãng đường", distanceLabel)}
+                  ${renderInfoRow("Thanh toán", order.payment_method_label || "--")}
+                  ${renderInfoRow("Trạng thái thanh toán", order.payment_status_label || "Chưa hoàn tất")}
+                  ${renderInfoRow("Cập nhật gần nhất", `${latestEvent.label} · ${latestEvent.time}`)}
                   </div>
                 </div>
                 <div class="standalone-order-panel standalone-order-panel-fees" id="order-summary-fees">
                   <div class="standalone-order-panel-head">
                     <div>
-                      <strong>Cước phí và thanh toán</strong>
-                      <p>Tổng hợp cước vận chuyển, phụ phí phát sinh và trạng thái thanh toán hiện tại.</p>
+                      <strong>Chi tiết cước phí</strong>
+                      <p>Chỉ giữ các khoản cấu thành để tránh lặp lại tổng phí đã ưu tiên ở phần đầu trang.</p>
                     </div>
                     <span class="standalone-order-chip">Tài chính</span>
                   </div>
@@ -944,7 +920,7 @@
                   [
                     renderInfoRow("Họ tên", senderName),
                     renderInfoRow("Số điện thoại", senderPhone),
-                    renderInfoRow("Địa chỉ lấy", order.pickup_address || "--"),
+                    renderInfoRow("Vai trò", "Đầu mối giao hàng"),
                   ],
                 )}
                 ${renderContactCard(
@@ -954,10 +930,7 @@
                   [
                     renderInfoRow("Họ tên", receiverName),
                     renderInfoRow("Số điện thoại", receiverPhone),
-                    renderInfoRow(
-                      "Địa chỉ giao",
-                      order.delivery_address || "--",
-                    ),
+                    renderInfoRow("Vai trò", "Điểm nhận cuối"),
                   ],
                 )}
                 <div class="standalone-order-contact-note">

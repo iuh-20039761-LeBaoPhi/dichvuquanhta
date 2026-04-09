@@ -1,9 +1,13 @@
-(function (window, document) {
-  if (window.__fastGoProviderDashboardLoaded) return;
+import core from "./core/app-core.js";
+import store from "./main-customer-portal-store.js";
+import { extractRows, getKrudListFn } from "./api/krud-client.js";
+
+const providerDashboardModule = (function (window, document) {
+  if (window.__fastGoProviderDashboardLoaded) {
+    return window.__fastGoProviderDashboardModule || null;
+  }
   window.__fastGoProviderDashboardLoaded = true;
 
-  const core = window.FastGoCore || {};
-  const store = window.FastGoCustomerPortalStore || null;
   const body = document.body;
 
   if (!body || body.getAttribute("data-page") !== "provider-dashboard") {
@@ -38,6 +42,16 @@
     return typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
   }
 
+  function getOrderDetailUrl(orderCode) {
+    return typeof core.buildOrderDetailUrl === "function"
+      ? core.buildOrderDetailUrl("nha-cung-cap/chi-tiet-don-hang.html", orderCode)
+      : getProjectUrl(
+          `nha-cung-cap/chi-tiet-don-hang.html?madonhang=${encodeURIComponent(
+            orderCode || "",
+          )}`,
+        );
+  }
+
   function formatCurrency(value) {
     if (typeof core.formatCurrencyVnd === "function") {
       return core.formatCurrencyVnd(value || 0);
@@ -50,18 +64,6 @@
       currency: "VND",
       maximumFractionDigits: 0,
     }).format(amount);
-  }
-
-  function formatDateTime(value) {
-    const date = new Date(value || "");
-    if (Number.isNaN(date.getTime())) return "--";
-    return date.toLocaleString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   }
 
   function formatDateLabel(dateValue, timeValue) {
@@ -78,50 +80,6 @@
         });
     const timeText = normalizeText(timeValue);
     return timeText ? `${dateText} • ${timeText}` : dateText;
-  }
-
-  function getKrudListFn() {
-    if (typeof window.krudList === "function") {
-      return (payload) => window.krudList(payload);
-    }
-
-    if (typeof window.crud === "function") {
-      return (payload) =>
-        window.crud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 50,
-          where: payload.where,
-          sort: payload.sort,
-        });
-    }
-
-    if (typeof window.krud === "function") {
-      return (payload) =>
-        window.krud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 50,
-          where: payload.where,
-          sort: payload.sort,
-        });
-    }
-
-    return null;
-  }
-
-  function extractRows(payload, depth = 0) {
-    if (depth > 4 || payload == null) return [];
-    if (Array.isArray(payload)) return payload;
-    if (typeof payload !== "object") return [];
-
-    const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
-    for (const key of candidateKeys) {
-      const value = payload[key];
-      if (Array.isArray(value)) return value;
-      const nested = extractRows(value, depth + 1);
-      if (nested.length) return nested;
-    }
-
-    return [];
   }
 
   function getStatusMeta(row) {
@@ -172,12 +130,18 @@
     const status = getStatusMeta(row);
     const fromAddress = normalizeText(row?.dia_chi_di || "");
     const toAddress = normalizeText(row?.dia_chi_den || "");
+
     return {
-      code: normalizeText(row?.ma_yeu_cau_noi_bo || row?.ma_don_hang_noi_bo || row?.order_code || row?.id || ""),
+      code: normalizeText(
+        row?.ma_yeu_cau_noi_bo || row?.ma_don_hang_noi_bo || row?.order_code || row?.id || "",
+      ),
       serviceLabel: normalizeText(row?.ten_dich_vu || row?.loai_dich_vu || "Chuyển dọn"),
       statusClass: status.className,
       statusText: status.label,
-      route: fromAddress && toAddress ? `${fromAddress} → ${toAddress}` : fromAddress || toAddress || "Chưa đủ địa chỉ",
+      route:
+        fromAddress && toAddress
+          ? `${fromAddress} → ${toAddress}`
+          : fromAddress || toAddress || "Chưa đủ địa chỉ",
       createdAt: normalizeText(row?.created_at || row?.created_date || ""),
       scheduleLabel: formatDateLabel(
         row?.ngay_thuc_hien,
@@ -190,10 +154,15 @@
   }
 
   async function fetchRecentBookings() {
-    const listFn = getKrudListFn();
+    let listFn = getKrudListFn();
+    if (!listFn && typeof store.fetchProfile === "function") {
+      await store.fetchProfile();
+      listFn = getKrudListFn();
+    }
     if (!listFn) return [];
 
     try {
+      await store.autoCancelExpiredBookings?.();
       const response = await Promise.resolve(
         listFn({
           table: store.bookingCrudTableName || "dich_vu_chuyen_don_dat_lich",
@@ -219,200 +188,176 @@
   }
 
   async function renderProviderDashboard() {
-    const role = store.getSavedRole();
-    if (role && role !== "nha-cung-cap") {
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=nha-cung-cap");
+    const auth = core.getUrlAuthCredentials?.() || {
+      username: "",
+      password: "",
+    };
+    await store.autoAuthFromUrlCredentials?.(auth);
+
+    let profile = null;
+    try {
+      profile = await store.fetchProfile?.();
+    } catch (error) {
+      console.error("Cannot verify provider profile for dashboard:", error);
+    }
+    if (!profile) {
+      store.clearAuthSession?.();
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
       return;
     }
 
-    const identity = store.readIdentity();
+    const role = store.getSavedRole();
+    if (role && role !== "nha-cung-cap") {
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
+      return;
+    }
+
+    const identity = profile;
     const displayName = store.getDisplayName(identity);
-    const phone = String(identity.phone || "").trim();
-    const email = String(identity.email || "").trim();
-    const contact = String(identity.contact_person || identity.contactPerson || "").trim();
-
-    root.innerHTML = `
-      <div class="customer-portal-shell">
-        <div class="customer-empty-state">
-          <i class="fas fa-spinner fa-spin"></i>
-          <p>Đang tải tổng quan nhà cung cấp...</p>
-        </div>
-      </div>
-    `;
-
     const recentRequests = await fetchRecentBookings();
-    const activeCount = recentRequests.filter((item) =>
-      ["pending", "shipping"].includes(item.statusClass),
+    const previewRequests = recentRequests.slice(0, 3);
+    const pendingCount = recentRequests.filter(
+      (item) => item.statusClass === "pending",
+    ).length;
+    const processingCount = recentRequests.filter(
+      (item) => item.statusClass === "shipping",
     ).length;
     const confirmedCount = recentRequests.filter(
       (item) => item.statusClass === "completed",
     ).length;
-    const surveyCount = recentRequests.filter((item) => item.surveyFirst).length;
+    const summaryText = pendingCount
+      ? "Ưu tiên rà các yêu cầu mới tiếp nhận để quyết định nhận đơn, khảo sát trước và phương án triển khai."
+      : processingCount
+        ? "Các đơn mới đã được nhận. Tiếp tục bám tiến độ triển khai và ghi chú điều phối cho khách hàng."
+        : recentRequests.length
+          ? "Nhịp xử lý hiện khá ổn định. Có thể mở danh sách việc để kiểm tra lại các đơn đã xác nhận hoặc đã hủy."
+          : "Chưa có yêu cầu nào trong bảng việc gần đây của nhà cung cấp.";
 
     root.innerHTML = `
-      <div class="customer-portal-shell">
-        <section class="customer-panel customer-panel-overview">
-          <div class="customer-panel-head customer-panel-head-dashboard">
+      <div class="customer-portal-shell customer-portal-shell--simple">
+        <section class="customer-panel customer-panel-overview provider-dashboard-overview">
+          <div class="customer-panel-head">
             <div>
-              <p class="customer-section-kicker">Khu vực nhà cung cấp</p>
-              <h2>Tổng quan công việc chuyển dọn</h2>
-              <p class="customer-panel-subtext">Dashboard này giữ nhịp gọn giống bên giao hàng: nhìn nhanh số việc mở, yêu cầu mới và các lối tắt cần dùng.</p>
+              <p class="customer-section-kicker">Tổng quan công việc</p>
+              <h2>Xin chào, ${escapeHtml(displayName)}</h2>
+              <p class="customer-panel-subtext">${escapeHtml(summaryText)}</p>
             </div>
-            <div class="customer-inline-actions customer-inline-actions-dashboard">
-              <a class="customer-btn customer-btn-primary" href="${escapeHtml(getProjectUrl("nha-cung-cap/danh-sach-viec.html"))}">Mở danh sách việc</a>
+            <div class="customer-inline-actions">
+              <span class="customer-panel-note">Nhà cung cấp</span>
+              <a class="customer-btn customer-btn-primary" href="${escapeHtml(
+                getProjectUrl("nha-cung-cap/danh-sach-viec.html"),
+              )}">
+                <i class="fas fa-briefcase"></i> Mở danh sách việc
+              </a>
             </div>
           </div>
           <div class="customer-kpi-grid customer-kpi-grid-dashboard">
             <article class="customer-kpi-card customer-kpi-card-total">
-              <span>Tổng yêu cầu gần đây</span>
-              <strong>${escapeHtml(String(recentRequests.length))}</strong>
+              <span>Mới tiếp nhận</span>
+              <strong>${escapeHtml(String(pendingCount))}</strong>
+              <small>${escapeHtml(
+                pendingCount ? "Cần quyết định nhận đơn" : "Không có đơn chờ mới",
+              )}</small>
             </article>
-            <article class="customer-kpi-card ${activeCount > 0 ? "customer-kpi-card-shipping" : "customer-kpi-card-pending"}">
-              <span>Cần xử lý</span>
-              <strong>${escapeHtml(String(activeCount))}</strong>
+            <article class="customer-kpi-card customer-kpi-card-pending">
+              <span>Đang xử lý</span>
+              <strong>${escapeHtml(String(processingCount))}</strong>
+              <small>${escapeHtml(
+                processingCount ? "Đã có đầu mối nhận việc" : "Chưa có đơn đang xử lý",
+              )}</small>
             </article>
-            <article class="customer-kpi-card customer-kpi-card-revenue">
+            <article class="customer-kpi-card customer-kpi-card-completed">
               <span>Đã xác nhận</span>
               <strong>${escapeHtml(String(confirmedCount))}</strong>
-            </article>
-            <article class="customer-kpi-card">
-              <span>Có khảo sát trước</span>
-              <strong>${escapeHtml(String(surveyCount))}</strong>
+              <small>${escapeHtml(
+                confirmedCount ? "Đơn đã chốt/hoàn tất" : "Chưa có đơn xác nhận",
+              )}</small>
             </article>
           </div>
         </section>
 
-        <div class="customer-grid-two customer-grid-dashboard">
-          <div class="customer-portal-main">
-            <section class="customer-panel customer-panel-orders">
-              <div class="customer-panel-head customer-panel-head-dashboard">
-                <div>
-                  <p class="customer-section-kicker">Yêu cầu mới</p>
-                  <h2>Danh sách việc cần nhìn trước</h2>
-                  <p class="customer-panel-subtext">3 yêu cầu mới nhất từ bảng đặt lịch để nhà cung cấp nắm nhịp xử lý chung.</p>
-                </div>
-                <div class="customer-inline-actions customer-inline-actions-dashboard">
-                  <a class="customer-btn customer-btn-ghost customer-btn-sm" href="${escapeHtml(getProjectUrl("nha-cung-cap/danh-sach-viec.html"))}">Xem toàn bộ</a>
-                </div>
-              </div>
-              <div class="customer-list customer-list-compact">
-                ${
-                  recentRequests.length
-                    ? recentRequests
-                        .slice(0, 3)
-                        .map(
-                          (request) => `
-                            <article class="customer-order-card customer-order-card-compact">
-                              <div class="customer-order-topline">
-                                <div class="customer-order-heading">
-                                  <p class="customer-order-code">${escapeHtml(request.code || "--")}</p>
-                                  <p class="customer-order-recipient">${escapeHtml(request.serviceLabel || "Yêu cầu chuyển dọn")}</p>
-                                </div>
-                                ${renderStatusBadge(request.statusClass, request.statusText)}
-                              </div>
-                              <p class="customer-order-route">${escapeHtml(request.route || "Chưa có lộ trình")}</p>
-                              <div class="customer-order-meta customer-order-meta-compact">
-                                <span><b>Người liên hệ</b>${escapeHtml(request.contactName || "--")}</span>
-                                <span><b>Lịch</b>${escapeHtml(request.scheduleLabel || "--")}</span>
-                                <span><b>Khảo sát trước</b>${escapeHtml(request.surveyFirst ? "Có" : "Không")}</span>
-                                <span><b>Tạm tính</b>${escapeHtml(formatCurrency(request.estimatedAmount))}</span>
-                              </div>
-                              <div class="customer-order-actions customer-order-actions-compact">
-                                <a class="customer-btn customer-btn-primary" href="${escapeHtml(
-                                  getProjectUrl(
-                                    `nha-cung-cap/chi-tiet-don-hang.html?code=${encodeURIComponent(request.code || "")}`,
-                                  ),
-                                )}">Xem chi tiết</a>
-                              </div>
-                            </article>
-                          `,
-                        )
-                        .join("")
-                    : `
-                      <div class="customer-empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>Chưa có yêu cầu nào trong bảng đặt lịch để hiển thị ở dashboard nhà cung cấp.</p>
-                      </div>
-                    `
-                }
-              </div>
-            </section>
+        <section class="customer-panel customer-panel-orders customer-panel-orders-main">
+          <div class="customer-panel-head customer-panel-head-dashboard">
+            <div>
+              <p class="customer-section-kicker">Việc gần đây</p>
+              <h2>3 yêu cầu cần nhìn trước</h2>
+              <p class="customer-panel-subtext">Giữ một danh sách ngắn để đội vận hành vào việc nhanh hơn, đúng nhịp của khu khách hàng.</p>
+            </div>
+            <div class="customer-inline-actions customer-inline-actions-dashboard">
+              <form action="${escapeHtml(
+                getProjectUrl("nha-cung-cap/danh-sach-viec.html"),
+              )}" method="GET" class="customer-quick-search">
+                <input type="text" name="search" placeholder="Mã đơn, dịch vụ, khách..." required />
+                <button type="submit" class="customer-btn customer-btn-primary customer-btn-sm">
+                  <i class="fas fa-search"></i>
+                </button>
+              </form>
+              <a class="customer-btn customer-btn-ghost customer-btn-sm" href="${escapeHtml(
+                getProjectUrl("nha-cung-cap/danh-sach-viec.html"),
+              )}">
+                Xem tất cả
+              </a>
+            </div>
           </div>
-
-          <aside class="customer-portal-sidebar">
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Tài khoản</p>
-                  <h2>Thông tin phiên hiện tại</h2>
-                </div>
-              </div>
-              <div class="customer-profile-summary">
-                <article>
-                  <span>Tên hiển thị</span>
-                  <strong>${escapeHtml(displayName)}</strong>
-                </article>
-                <article>
-                  <span>Người phụ trách</span>
-                  <strong>${escapeHtml(contact || displayName)}</strong>
-                </article>
-                <article>
-                  <span>Email vận hành</span>
-                  <strong>${escapeHtml(email || "--")}</strong>
-                </article>
-                <article>
-                  <span>Số điện thoại</span>
-                  <strong>${escapeHtml(phone || "--")}</strong>
-                </article>
-              </div>
-            </section>
-
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Lối tắt</p>
-                  <h2>Đi nhanh</h2>
-                </div>
-              </div>
-              <div class="customer-quicklinks-strip">
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("nha-cung-cap/danh-sach-viec.html"))}">
-                  <strong>Danh sách việc</strong>
-                  <span>Xem toàn bộ yêu cầu đặt lịch và lọc nhanh theo trạng thái xử lý.</span>
-                </a>
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("nha-cung-cap/ho-so.html"))}">
-                  <strong>Hồ sơ nhà cung cấp</strong>
-                  <span>Cập nhật đầu mối liên hệ và thông tin tài khoản vận hành.</span>
-                </a>
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("bang-gia-chuyen-don.html"))}">
-                  <strong>Bảng giá</strong>
-                  <span>Rà lại cấu trúc giá và các phụ phí của dịch vụ chuyển dọn.</span>
-                </a>
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("cam-nang.html"))}">
-                  <strong>Cẩm nang</strong>
-                  <span>Xem lại phần nội dung truyền thông và hướng dẫn cho khách hàng.</span>
-                </a>
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("dang-nhap.html"))}" data-provider-logout>
-                  <strong>Đăng xuất</strong>
-                  <span>Kết thúc phiên hiện tại và quay về màn đăng nhập chung.</span>
-                </a>
-              </div>
-            </section>
-          </aside>
-        </div>
+          <div class="customer-list customer-list-compact">
+            ${
+              previewRequests.length
+                ? previewRequests
+                    .map(
+                      (request) => `
+                        <article class="customer-order-card customer-order-card-compact">
+                          <div class="customer-order-topline">
+                            <div class="customer-order-heading">
+                              <p class="customer-order-code">${escapeHtml(request.code || "--")}</p>
+                              <p class="customer-order-recipient">${escapeHtml(
+                                request.serviceLabel || "Yêu cầu chuyển dọn",
+                              )}</p>
+                            </div>
+                            ${renderStatusBadge(request.statusClass, request.statusText)}
+                          </div>
+                          <p class="customer-order-route">${escapeHtml(
+                            request.route || "Chưa có lộ trình",
+                          )}</p>
+                          <div class="customer-order-meta customer-order-meta-compact">
+                            <span><b>Khách hàng</b>${escapeHtml(request.contactName || "--")}</span>
+                            <span><b>Lịch</b>${escapeHtml(request.scheduleLabel || "--")}</span>
+                            <span><b>Khảo sát</b>${escapeHtml(
+                              request.surveyFirst ? "Có" : "Không",
+                            )}</span>
+                            <span><b>Tạm tính</b>${escapeHtml(
+                              formatCurrency(request.estimatedAmount),
+                            )}</span>
+                          </div>
+                          <div class="customer-order-actions customer-order-actions-compact">
+                            <a class="customer-btn customer-btn-primary customer-btn-sm" href="${escapeHtml(
+                              getOrderDetailUrl(request.code || ""),
+                            )}">Xem chi tiết</a>
+                          </div>
+                        </article>
+                      `,
+                    )
+                    .join("")
+                : `
+                  <div class="customer-empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>Chưa có yêu cầu nào trong bảng đặt lịch để hiển thị ở khu nhà cung cấp.</p>
+                  </div>
+                `
+            }
+          </div>
+        </section>
       </div>
     `;
-
-    root.querySelector("[data-provider-logout]")?.addEventListener("click", function (event) {
-      event.preventDefault();
-      store.clearAuthSession();
-      window.location.href = getProjectUrl("dang-nhap.html");
-    });
   }
 
   renderProviderDashboard().catch((error) => {
     console.error("Cannot render provider dashboard:", error);
     root.innerHTML = `
-      <div class="customer-portal-shell">
+      <div class="customer-portal-shell customer-portal-shell--simple">
         <div class="customer-empty-state">
           <i class="fas fa-circle-exclamation"></i>
           <p>Không thể tải dashboard nhà cung cấp ở thời điểm hiện tại.</p>
@@ -420,4 +365,10 @@
       </div>
     `;
   });
+
+  const moduleApi = {};
+  window.__fastGoProviderDashboardModule = moduleApi;
+  return moduleApi;
 })(window, document);
+
+export default providerDashboardModule;

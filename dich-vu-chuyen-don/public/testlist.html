@@ -316,7 +316,6 @@
       }
     </style>
     <script src="https://api.dvqt.vn/js/krud.js"></script>
-    <script src="assets/js/main-core.js"></script>
   </head>
   <body>
     <div class="page">
@@ -432,11 +431,12 @@
       </section>
     </div>
 
-    <script>
+    <script type="module">
+      import core from "./assets/js/modules/core/app-core.js";
+
       (function () {
         const TABLE_NAME = "dich_vu_chuyen_don_dat_lich";
         const USER_TABLE_NAME = "nguoidung";
-        const core = window.FastGoCore || {};
 
         const pageInput = document.getElementById("pageInput");
         const limitInput = document.getElementById("limitInput");
@@ -620,15 +620,15 @@
         }
 
         function getRoleLabel(row) {
-          const role = normalizeText(row.role || row.vai_tro || "").toLowerCase();
-          if (role === "nha-cung-cap" || role === "doi-tac") {
+          const serviceIds = normalizeText(row.id_dichvu || "");
+          if (serviceIds && serviceIds !== "0") {
             return { label: "Nha cung cap", className: "pill processing" };
           }
           return { label: "Khach hang", className: "pill confirmed" };
         }
 
         function getServiceIdsText(row) {
-          return normalizeText(row.id_dichvu || row.id_dich_vu || row.service_ids || "--");
+          return normalizeText(row.id_dichvu || "--");
         }
 
         function renderUserRows(rows) {
@@ -647,17 +647,16 @@
                   <td class="mono">${escapeHtml(row.id || "--")}</td>
                   <td><span class="${roleMeta.className}">${escapeHtml(roleMeta.label)}</span></td>
                   <td>
-                    <strong>${escapeHtml(row.full_name || row.hovaten || row.ho_ten || "--")}</strong>
-                    <div>${escapeHtml(row.contact_person || row.nguoi_phu_trach || "--")}</div>
+                    <strong>${escapeHtml(row.hovaten || "--")}</strong>
                   </td>
                   <td>
                     <div><strong>Email:</strong> ${escapeHtml(row.email || "--")}</div>
-                    <div><strong>SDT:</strong> ${escapeHtml(row.phone || row.sodienthoai || row.so_dien_thoai || "--")}</div>
-                    <div><strong>Mat khau:</strong> ${escapeHtml(row.password || row.matkhau || row.mat_khau || "--")}</div>
+                    <div><strong>SDT:</strong> ${escapeHtml(row.sodienthoai || "--")}</div>
+                    <div><strong>Mat khau:</strong> ${escapeHtml(row.matkhau || "--")}</div>
                   </td>
                   <td>
                     <div><strong>ID dich vu:</strong> ${escapeHtml(getServiceIdsText(row))}</div>
-                    <div><strong>Trang thai:</strong> ${escapeHtml(row.trangthai || row.status || "--")}</div>
+                    <div><strong>Trang thai:</strong> ${escapeHtml(row.trangthai || "--")}</div>
                   </td>
                   <td>
                     <div><strong>Tao:</strong> ${escapeHtml(formatDateTime(row.created_at || row.created_date || ""))}</div>

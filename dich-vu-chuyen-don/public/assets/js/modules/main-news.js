@@ -1,3 +1,5 @@
+import core from "./core/app-core.js";
+
 (function (window, document) {
   if (window.__fastGoNewsInitDone) return;
   window.__fastGoNewsInitDone = true;
@@ -6,7 +8,6 @@
   const currentPathLower = currentPath.toLowerCase();
   const projectMarker = "/dich-vu-chuyen-don/";
   const projectMarkerIndex = currentPathLower.lastIndexOf(projectMarker);
-  const core = window.FastGoCore || {};
   const projectBase =
     core.projectBase ||
     (projectMarkerIndex !== -1

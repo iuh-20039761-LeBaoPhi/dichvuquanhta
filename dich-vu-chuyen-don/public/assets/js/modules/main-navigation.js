@@ -1,8 +1,8 @@
+import core from "./core/app-core.js";
+
 (function (window, document) {
   if (window.__fastGoNavInitDone) return;
   window.__fastGoNavInitDone = true;
-
-  const core = window.FastGoCore;
   if (!core) return;
 
   const hamburgerBtn = document.getElementById("hamburger-btn");
@@ -32,11 +32,12 @@
     .querySelectorAll(".submenu-toggle, .has-submenu > a")
     .forEach((toggle) => {
       toggle.addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
         const parentLi = this.closest(".has-submenu");
         if (!parentLi) return;
+        if (parentLi.classList.contains("dropdown")) return;
+
+        e.preventDefault();
+        e.stopPropagation();
 
         const wasOpen = parentLi.classList.contains("open");
         document.querySelectorAll(".has-submenu").forEach((item) => {

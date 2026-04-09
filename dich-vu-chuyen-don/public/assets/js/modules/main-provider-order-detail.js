@@ -1,9 +1,15 @@
-(function (window, document) {
-  if (window.__fastGoProviderOrderDetailLoaded) return;
+import core from "./core/app-core.js";
+import store from "./main-customer-portal-store.js";
+import {
+  extractRows,
+  getKrudListFn,
+  getKrudUpdateFn,
+} from "./api/krud-client.js";
+
+const providerOrderDetailModule = (function (window, document) {
+  if (window.__fastGoProviderOrderDetailLoaded) return window.__fastGoProviderOrderDetailModule || null;
   window.__fastGoProviderOrderDetailLoaded = true;
 
-  const core = window.FastGoCore || {};
-  const store = window.FastGoCustomerPortalStore || null;
   const body = document.body;
 
   if (!body || body.getAttribute("data-page") !== "provider-order-detail") {
@@ -85,17 +91,6 @@
       : path;
   }
 
-  function getQueryCode() {
-    try {
-      return String(
-        new URLSearchParams(window.location.search).get("code") || "",
-      ).trim();
-    } catch (error) {
-      console.error("Cannot resolve provider booking code:", error);
-      return "";
-    }
-  }
-
   function formatRequestDateCode(value) {
     const date = value instanceof Date ? value : new Date(value);
     if (Number.isNaN(date.getTime())) return "";
@@ -126,63 +121,6 @@
     if (fallbackSystemCode) return fallbackSystemCode;
 
     return normalizeText(row?.id || row?.remote_id || "");
-  }
-
-  function getKrudListFn() {
-    if (typeof window.krudList === "function") {
-      return (payload) => window.krudList(payload);
-    }
-
-    if (typeof window.crud === "function") {
-      return (payload) =>
-        window.crud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 300,
-          where: payload.where,
-          sort: payload.sort,
-        });
-    }
-
-    if (typeof window.krud === "function") {
-      return (payload) =>
-        window.krud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 300,
-          where: payload.where,
-          sort: payload.sort,
-        });
-    }
-
-    return null;
-  }
-
-  function getKrudUpdateFn() {
-    if (typeof window.crud === "function") {
-      return (tableName, data) => window.crud("update", tableName, data);
-    }
-
-    if (typeof window.krud === "function") {
-      return (tableName, data) => window.krud("update", tableName, data);
-    }
-
-    return null;
-  }
-
-  function extractRows(payload, depth) {
-    const level = Number(depth || 0);
-    if (level > 4 || payload == null) return [];
-    if (Array.isArray(payload)) return payload;
-    if (typeof payload !== "object") return [];
-
-    const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
-    for (const key of candidateKeys) {
-      const value = payload[key];
-      if (Array.isArray(value)) return value;
-      const nested = extractRows(value, level + 1);
-      if (nested.length) return nested;
-    }
-
-    return [];
   }
 
   function getWeatherLabel(value) {
@@ -305,31 +243,50 @@
     `;
   }
 
-  function renderHeroMetric(icon, label, value, hint) {
+  function renderHeroMetric(icon, label, value, hint, options = {}) {
+    const safeValue = options.valueHtml ? value || "--" : escapeHtml(value || "--");
+    const safeHint = options.hintHtml ? hint || "--" : escapeHtml(hint || "--");
+    const className = normalizeText(options.className || "");
+
     return `
-      <article class="standalone-order-hero-metric">
+      <article class="standalone-order-hero-metric ${escapeHtml(className)}">
         <div class="standalone-order-hero-metric-icon">
           <i class="${escapeHtml(icon)}"></i>
         </div>
         <div class="standalone-order-hero-metric-copy">
           <span>${escapeHtml(label)}</span>
-          <strong>${escapeHtml(value || "--")}</strong>
-          <small>${escapeHtml(hint || "--")}</small>
+          <strong>${safeValue}</strong>
+          <small>${safeHint}</small>
         </div>
       </article>
     `;
   }
 
-  function renderOverviewStat(icon, label, value, hint) {
+  function renderHeroRouteCard(order) {
     return `
-      <article class="standalone-order-overview-stat">
-        <div class="standalone-order-overview-stat-icon">
-          <i class="${escapeHtml(icon)}"></i>
-        </div>
-        <div class="standalone-order-overview-stat-copy">
-          <span>${escapeHtml(label)}</span>
-          <strong>${escapeHtml(value || "--")}</strong>
-          <small>${escapeHtml(hint || "--")}</small>
+      <article class="standalone-order-hero-metric standalone-order-hero-metric-route">
+        <div class="standalone-order-hero-metric-copy">
+          <span>Lộ trình thực hiện</span>
+          <div class="standalone-order-hero-route-list">
+            <div class="standalone-order-hero-route-item">
+              <span class="standalone-order-hero-route-icon">
+                <i class="fa-solid fa-location-dot"></i>
+              </span>
+              <div class="standalone-order-hero-route-copy">
+                <small>Điểm đi</small>
+                <strong>${escapeHtml(order?.from_address || "--")}</strong>
+              </div>
+            </div>
+            <div class="standalone-order-hero-route-item">
+              <span class="standalone-order-hero-route-icon">
+                <i class="fa-solid fa-flag-checkered"></i>
+              </span>
+              <div class="standalone-order-hero-route-copy">
+                <small>Điểm đến</small>
+                <strong>${escapeHtml(order?.to_address || "--")}</strong>
+              </div>
+            </div>
+          </div>
         </div>
       </article>
     `;
@@ -483,8 +440,16 @@
     };
   }
 
-  async function fetchBookingRowByCode(code) {
-    const listFn = getKrudListFn();
+  async function fetchBookingRowByCode(code, options = {}) {
+    if (!options?.skipAutoSweep) {
+      await store.autoCancelExpiredBookings?.();
+    }
+
+    let listFn = getKrudListFn();
+    if (!listFn && typeof store.fetchProfile === "function") {
+      await store.fetchProfile();
+      listFn = getKrudListFn();
+    }
     if (!listFn) throw new Error("Không tìm thấy API KRUD để tải chi tiết đơn hàng.");
 
     const normalizedCode = normalizeLowerText(code);
@@ -519,6 +484,28 @@
     const order = detail?.order || {};
     if (!updateFn || !order.id) {
       throw new Error("Không tìm thấy API KRUD để cập nhật đơn hàng.");
+    }
+
+    if (["accept", "start", "complete"].includes(action)) {
+      await store.autoCancelExpiredBookings?.({ force: true });
+      const refreshedRow = await fetchBookingRowByCode(
+        resolveBookingRowCode(order),
+        { skipAutoSweep: true },
+      );
+      const latestStatus = normalizeLowerText(
+        refreshedRow?.status || refreshedRow?.trang_thai || "",
+      );
+
+      if (
+        !refreshedRow ||
+        ["cancelled", "canceled", "huy", "da_huy", "huy_bo"].includes(
+          latestStatus,
+        )
+      ) {
+        throw new Error(
+          "Yêu cầu này đã quá thời gian chờ và được hệ thống tự hủy.",
+        );
+      }
     }
 
     const now = new Date().toISOString();
@@ -560,110 +547,6 @@
     await updateBookingAction(detail, "note", {
       provider_note: normalizeText(note || ""),
     });
-  }
-
-  function renderExecutionItems(detail) {
-    const order = detail?.order || {};
-    const items = [
-      {
-        icon: "fa-solid fa-truck-ramp-box",
-        title: order.service_label || "Gói dịch vụ chuyển dọn",
-        type: "Phạm vi dịch vụ",
-        meta: [
-          `Loại xe: ${order.vehicle_label || "--"}`,
-          `Khoảng cách: ${formatDistance(order.distance_km)}`,
-          `Tạm tính: ${formatCurrency(order.estimated_amount)}`,
-        ],
-        note:
-          order.summary ||
-          "Đơn đang giữ tổ hợp dịch vụ, loại xe và cự ly tham chiếu làm phương án xử lý hiện tại.",
-      },
-      {
-        icon: "fa-solid fa-calendar-check",
-        title: order.schedule_label || "Lịch triển khai đang chờ xác nhận",
-        type: "Lịch và điều phối",
-        meta: [
-          `Ngày: ${order.schedule_date || "--"}`,
-          `Khung giờ: ${order.schedule_time || "--"}`,
-          `Thời tiết: ${getWeatherLabel(order.weather_label)}`,
-        ],
-        note:
-          "Nhà cung cấp có thể dùng mốc này để đối chiếu khi nhận đơn và cập nhật tiến độ triển khai thực tế.",
-      },
-      {
-        icon: "fa-solid fa-helmet-safety",
-        title: order.access_conditions.length
-          ? "Điều kiện tiếp cận đã ghi nhận"
-          : "Chưa có điều kiện tiếp cận đặc biệt",
-        type: "Hiện trường",
-        meta: [
-          `${order.access_conditions.length} điều kiện`,
-          `${order.service_details.length} hạng mục phụ`,
-          order.company_name ? `Đơn vị: ${order.company_name}` : "Đơn vị: Khách cá nhân",
-        ],
-        note:
-          order.access_conditions.length
-            ? order.access_conditions.join(". ")
-            : "Khách hàng chưa đánh dấu thêm các trở ngại tiếp cận trên biểu mẫu.",
-      },
-    ];
-
-    return `
-      <div class="standalone-order-items">
-        ${items
-          .map(
-            (item, index) => `
-              <article class="standalone-order-item">
-                <div class="standalone-order-item-icon">
-                  <i class="${escapeHtml(item.icon)}"></i>
-                </div>
-                <div class="standalone-order-item-body">
-                  <div class="standalone-order-item-top">
-                    <div class="standalone-order-item-heading">
-                      <span class="standalone-order-item-seq">Hạng mục ${String(index + 1).padStart(2, "0")}</span>
-                      <strong>${escapeHtml(item.title)}</strong>
-                      <div class="standalone-order-muted">${escapeHtml(item.type)}</div>
-                    </div>
-                    <div class="standalone-order-item-meta">
-                      ${(Array.isArray(item.meta) ? item.meta : [])
-                        .map((meta) => `<span>${escapeHtml(meta)}</span>`)
-                        .join("")}
-                    </div>
-                  </div>
-                  <div class="standalone-order-item-note">${escapeHtml(item.note)}</div>
-                </div>
-              </article>
-            `,
-          )
-          .join("")}
-      </div>
-    `;
-  }
-
-  function renderCoordinationCard(detail) {
-    const identity = store.readIdentity();
-    const displayName = store.getDisplayName(identity);
-    const phone = normalizeText(identity.phone || "");
-    const email = normalizeText(identity.email || "");
-    const order = detail?.order || {};
-
-    return `
-      <article class="standalone-order-provider-card standalone-order-provider-card--moving">
-        <div class="standalone-order-provider-head">
-          <div class="standalone-order-provider-avatar">NCC</div>
-          <div>
-            <strong>${escapeHtml(displayName || "Nhà cung cấp")}</strong>
-            <span>${escapeHtml(phone || "Chưa có số điện thoại")}</span>
-            <span>${escapeHtml(email || "Chưa có email vận hành")}</span>
-          </div>
-        </div>
-        <div class="standalone-order-provider-pills">
-          <span>Trạng thái: ${escapeHtml(getStatusBadge(deriveStatusKey(detail)).label)}</span>
-          <span>Loại xe: ${escapeHtml(order.vehicle_label || "--")}</span>
-          <span>Lịch: ${escapeHtml(order.schedule_label || "--")}</span>
-        </div>
-      </article>
-    `;
   }
 
   function renderTimeline(detail) {
@@ -729,17 +612,38 @@
   function renderFeedbackBlock(detail) {
     const feedback = normalizeText(detail?.order?.customer_feedback || "");
     const rating = Number(detail?.order?.customer_rating || 0);
+    const safeRating = Number.isFinite(rating)
+      ? Math.min(5, Math.max(0, Math.round(rating)))
+      : 0;
 
     return `
       <section class="standalone-order-block">
         <div class="standalone-order-block-header">
-          <h2>Phản hồi khách hàng</h2>
+          <p class="standalone-order-block-kicker">Phản hồi</p>
+          <h2>Đánh giá từ khách hàng</h2>
         </div>
         <div class="standalone-order-side-stack standalone-order-review-layout">
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
               <strong>Tóm tắt phản hồi</strong>
-              <span class="standalone-order-chip">${escapeHtml(rating > 0 ? `${rating}/5 sao` : "Chưa có sao")}</span>
+              <span class="standalone-order-chip">${escapeHtml(
+                safeRating > 0 ? `${safeRating}/5 sao` : "Chưa có sao",
+              )}</span>
+            </div>
+            <div class="standalone-order-note-panel">
+              <p>
+                <span class="standalone-order-rating-stars" aria-label="${escapeHtml(
+                  `${safeRating}/5 sao`,
+                )}">
+                  ${Array.from({ length: 5 }, (_, index) =>
+                    `<i class="${escapeHtml(
+                      index < safeRating
+                        ? "fa-solid fa-star"
+                        : "fa-regular fa-star",
+                    )}"></i>`,
+                  ).join("")}
+                </span>
+              </p>
             </div>
             <p class="standalone-order-note-text">${escapeHtml(
               feedback || "Chưa có phản hồi từ khách hàng cho đơn hàng này.",
@@ -747,11 +651,11 @@
           </article>
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
-              <strong>Trạng thái phản hồi</strong>
+              <strong>Lưu ý sử dụng</strong>
               <span class="standalone-order-chip">Chỉ xem</span>
             </div>
             <div class="standalone-order-note-panel">
-              <p>Nhà cung cấp chỉ theo dõi phản hồi khách hàng tại đây. Luồng cập nhật phản hồi nằm ở phía khách hàng.</p>
+              <p>Phản hồi này do khách hàng gửi để nhà cung cấp theo dõi lại chất lượng phục vụ và xử lý các góp ý liên quan.</p>
             </div>
           </article>
         </div>
@@ -765,13 +669,16 @@
     return `
       <section class="standalone-order-block">
         <div class="standalone-order-block-header">
-          <h2>Ghi chú nhà cung cấp</h2>
+          <p class="standalone-order-block-kicker">Báo cáo</p>
+          <h2>Báo cáo công việc</h2>
         </div>
         <div class="standalone-order-side-stack standalone-order-review-layout">
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
-              <strong>Ghi chú hiện có</strong>
-              <span class="standalone-order-chip">${escapeHtml(note ? "Đã cập nhật" : "Chưa có ghi chú")}</span>
+              <strong>Nội dung hiện có</strong>
+              <span class="standalone-order-chip">${escapeHtml(
+                note ? "Đã cập nhật" : "Chưa có báo cáo",
+              )}</span>
             </div>
             <p class="standalone-order-note-text">${escapeHtml(
               note || "Nhà cung cấp chưa cập nhật ghi chú xử lý cho đơn hàng này.",
@@ -779,16 +686,16 @@
           </article>
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
-              <strong>Thao tác ghi chú</strong>
+              <strong>Cập nhật báo cáo</strong>
               <span class="standalone-order-chip">Nhà cung cấp</span>
             </div>
             <form class="standalone-order-form" data-provider-note-form>
               <label class="standalone-order-field">
-                <span>Ghi chú xử lý</span>
-                <textarea name="provider_note" rows="5" placeholder="Cập nhật tiến độ, hiện trạng hoặc lưu ý vận hành.">${escapeHtml(note)}</textarea>
+                <span>Nội dung báo cáo</span>
+                <textarea name="provider_note" rows="5" placeholder="Cập nhật tiến độ, hiện trạng, kết quả xử lý hoặc chú thích cần khách hàng theo dõi.">${escapeHtml(note)}</textarea>
               </label>
               <div class="standalone-order-inline-actions">
-                <button class="customer-btn customer-btn-primary" type="submit">Lưu ghi chú NCC</button>
+                <button class="customer-btn customer-btn-primary" type="submit">Lưu báo cáo</button>
               </div>
             </form>
           </article>
@@ -825,23 +732,28 @@
             <div class="standalone-order-header-main-content">
               <div class="standalone-order-hero-top-row">
                 <div class="standalone-order-card-title">
-                  <p class="standalone-order-card-kicker">Mã yêu cầu nội bộ</p>
+                  <p class="standalone-order-card-kicker">Mã yêu cầu</p>
                   <h1>${escapeHtml(order.code || "--")}</h1>
                   <p class="standalone-order-card-subtitle">${escapeHtml(order.service_label || "Dịch vụ Chuyển Dọn")}</p>
                 </div>
 
-                <div class="standalone-order-hero-side-progress">
-                  <div class="standalone-order-progress-ring status-${escapeHtml(
-                    progressMeta.tone,
-                  )}" style="--progress:${escapeHtml(String(progressMeta.percent))}%;">
-                    <div class="standalone-order-progress-ring-core">
-                      <strong>${escapeHtml(String(progressMeta.percent))}%</strong>
-                      <span>Tiến độ</span>
-                    </div>
+                <div class="standalone-order-hero-side-stack">
+                  <div class="standalone-order-actions-group standalone-order-hero-actions-group">
+                    ${buildActionButtons(detail)}
                   </div>
-                  <div class="standalone-order-progress-info">
-                    <span class="standalone-order-progress-label">${escapeHtml(progressMeta.label)}</span>
-                    <p>${escapeHtml(progressMeta.note)}</p>
+                  <div class="standalone-order-hero-side-progress">
+                    <div class="standalone-order-progress-ring status-${escapeHtml(
+                      progressMeta.tone,
+                    )}" style="--progress:${escapeHtml(String(progressMeta.percent))}%;">
+                      <div class="standalone-order-progress-ring-core">
+                        <strong>${escapeHtml(String(progressMeta.percent))}%</strong>
+                        <span>Tiến độ</span>
+                      </div>
+                    </div>
+                    <div class="standalone-order-progress-info">
+                      <span class="standalone-order-progress-label">${escapeHtml(progressMeta.label)}</span>
+                      <p>${escapeHtml(progressMeta.note)}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -852,28 +764,25 @@
                   "Tổng tạm tính",
                   formatCurrency(order.estimated_amount),
                   order.vehicle_label || "Chưa chốt loại xe",
+                  { className: "standalone-order-hero-metric-primary" },
                 )}
                 ${renderHeroMetric(
                   "fa-solid fa-calendar-check",
-                  "Lịch triển khai",
-                  order.schedule_label || "Chưa chốt lịch",
+                  "Ngày thực hiện",
+                  order.schedule_date || order.schedule_label || "Chưa chốt lịch",
                   order.schedule_time || "Khung giờ triển khai",
                 )}
                 ${renderHeroMetric(
-                  "fa-solid fa-location-dot",
-                  "Điểm đến",
-                  order.to_address || "Chưa có điểm đến",
-                  order.from_address || "Chưa có điểm đi",
+                  "fa-solid fa-signal",
+                  "Trạng thái đơn",
+                  renderStatusBadge(deriveStatusKey(detail)),
+                  progressMeta.note,
+                  {
+                    className: "standalone-order-hero-metric-status",
+                    valueHtml: true,
+                  },
                 )}
-              </div>
-            </div>
-
-            <div class="standalone-order-header-footer-row">
-              <div class="standalone-order-header-status-badge">
-                ${renderStatusBadge(deriveStatusKey(detail))}
-              </div>
-              <div class="standalone-order-actions-group">
-                ${buildActionButtons(detail)}
+                ${renderHeroRouteCard(order)}
               </div>
             </div>
           </header>
@@ -881,47 +790,38 @@
           <div class="standalone-order-grid">
             <section class="standalone-order-block">
               <div class="standalone-order-block-header">
-                <h2>Tổng quan đơn hàng và tạm tính</h2>
-              </div>
-              <div class="standalone-order-overview-stats">
-                ${renderOverviewStat("fa-solid fa-location-dot", "Điểm đi", order.from_address || "--", order.customer_name || "Khách hàng")}
-                ${renderOverviewStat("fa-solid fa-flag-checkered", "Điểm đến", order.to_address || "--", order.schedule_label || "Chưa chốt lịch")}
-                ${renderOverviewStat("fa-solid fa-wallet", "Tạm tính", formatCurrency(order.estimated_amount), order.vehicle_label || "Chưa chốt loại xe")}
-                ${renderOverviewStat("fa-solid fa-clock-rotate-left", "Trạng thái", getStatusBadge(deriveStatusKey(detail)).label, progressMeta.note)}
+                <h2>Thông tin đơn hàng</h2>
               </div>
               <div class="standalone-order-summary-grid">
                 <div class="standalone-order-panel standalone-order-panel-overview">
                   <div class="standalone-order-panel-head">
                     <div>
-                      <strong>Thông tin điều phối</strong>
-                      <p>Đối chiếu mã yêu cầu, tuyến triển khai, thời gian và dữ liệu lõi của đơn hàng.</p>
+                      <strong>Chi tiết đơn</strong>
+                      <p>Những thông tin cần rà nhanh khi xử lý đơn.</p>
                     </div>
-                    <span class="standalone-order-chip">Lộ trình</span>
+                    <span class="standalone-order-chip">Đơn hàng</span>
                   </div>
                   <div class="standalone-order-info-list">
                     ${renderInfoRow("Mã yêu cầu", order.code || "--")}
-                    ${renderInfoRow("Mã hệ thống", order.id || "--")}
-                    ${renderInfoRow("Gói dịch vụ", order.service_label || "--")}
-                    ${renderInfoRow("Điểm đi", order.from_address || "--")}
-                    ${renderInfoRow("Điểm đến", order.to_address || "--")}
-                    ${renderInfoRow("Ngày thực hiện", order.schedule_date || "--")}
-                    ${renderInfoRow("Khung giờ", order.schedule_time || "--")}
+                    ${renderInfoRow("Ngày tạo", formatDateTime(order.created_at))}
                     ${renderInfoRow("Khoảng cách", formatDistance(order.distance_km))}
+                    ${renderInfoRow("Khảo sát", order.service_details.some((item) => normalizeLowerText(item).includes("khảo sát trước")) ? "Cần khảo sát trước" : "Không cần khảo sát trước")}
+                    ${renderInfoRow("Khách hàng", order.customer_name || "--")}
                   </div>
                 </div>
                 <div class="standalone-order-panel standalone-order-panel-fees" id="order-summary-fees">
                   <div class="standalone-order-panel-head">
                     <div>
-                      <strong>Tóm tắt tạm tính</strong>
-                      <p>Hiển thị mức phí tham chiếu hiện tại và các thông số tài chính để nhà cung cấp đối chiếu nhanh.</p>
+                      <strong>Chi tiết tạm tính</strong>
+                      <p>Các khoản đang dùng để tham chiếu mức giá hiện tại.</p>
                     </div>
-                    <span class="standalone-order-chip">Tài chính</span>
+                    <span class="standalone-order-chip">Tạm tính</span>
                   </div>
                   <div class="standalone-order-info-list">
                     ${renderInfoRow("Dịch vụ chuyển dọn", formatCurrency(order.estimated_amount))}
                     ${renderInfoRow("Khoảng cách tham chiếu", formatDistance(order.distance_km))}
                     ${renderInfoRow("Loại xe", order.vehicle_label || "--")}
-                    ${renderInfoRow("Tổng tạm tính", formatCurrency(order.estimated_amount), { valueHtml: true, valueTag: "div" })}
+                    ${renderInfoRow("Thời tiết", getWeatherLabel(order.weather_label))}
                   </div>
                 </div>
               </div>
@@ -929,7 +829,7 @@
 
             <section class="standalone-order-block">
               <div class="standalone-order-block-header">
-                <h2>Khách hàng, lộ trình và lưu ý triển khai</h2>
+                <h2>Khách hàng và lưu ý</h2>
               </div>
               <div class="standalone-order-contact-grid">
                 <article class="standalone-order-contact-card">
@@ -940,7 +840,7 @@
                       </span>
                       <div>
                         <strong>Thông tin khách hàng</strong>
-                        <p>Đầu mối liên hệ hiện đang gắn với đơn hàng để nhà cung cấp xác nhận lại khi cần.</p>
+                        <p>Đầu mối liên hệ của đơn hàng.</p>
                       </div>
                     </div>
                     <span class="standalone-order-chip">Khách hàng</span>
@@ -956,21 +856,21 @@
                   <div class="standalone-order-contact-card-head">
                     <div class="standalone-order-contact-card-title">
                       <span class="standalone-order-contact-card-icon">
-                        <i class="fa-solid fa-location-dot"></i>
+                        <i class="fa-solid fa-truck-ramp-box"></i>
                       </span>
                       <div>
-                        <strong>Lộ trình và phương án triển khai</strong>
-                        <p>Đối chiếu tuyến đường, loại xe, khung giờ và thời tiết tham chiếu đang lưu trên hệ thống.</p>
+                        <strong>Chi tiết thực hiện</strong>
+                        <p>Thông tin đang dùng để xử lý đơn.</p>
                       </div>
                     </div>
                     <span class="standalone-order-chip">${escapeHtml(order.service_label || "Chuyển dọn")}</span>
                   </div>
                   <div class="standalone-order-info-list">
-                    ${renderInfoRow("Điểm đi", order.from_address || "--")}
-                    ${renderInfoRow("Điểm đến", order.to_address || "--")}
-                    ${renderInfoRow("Loại xe", order.vehicle_label || "--")}
-                    ${renderInfoRow("Lịch triển khai", order.schedule_label || "--")}
+                    ${renderInfoRow("Khung giờ", order.schedule_time || "--")}
                     ${renderInfoRow("Thời tiết", getWeatherLabel(order.weather_label))}
+                    ${renderInfoRow("Điều kiện tiếp cận", String((order.access_conditions || []).length))}
+                    ${renderInfoRow("Hạng mục phụ", String((order.service_details || []).length))}
+                    ${renderInfoRow("Tệp gửi kèm", String(order.image_attachments.length + order.video_attachments.length))}
                   </div>
                 </article>
                 <div class="standalone-order-contact-note">
@@ -981,8 +881,8 @@
                           <i class="fa-solid fa-triangle-exclamation"></i>
                         </span>
                         <div>
-                          <strong>Lưu ý từ khách hàng</strong>
-                          <p>Gom ghi chú, điều kiện hiện trường và những điểm cần lưu ý trước khi triển khai thực tế.</p>
+                          <strong>Lưu ý của khách hàng</strong>
+                          <p>Thông tin cần lưu ý trước khi thực hiện.</p>
                         </div>
                       </div>
                       <span class="standalone-order-chip">Lưu ý</span>
@@ -994,14 +894,12 @@
                       <article class="standalone-order-subcard">
                         <div class="standalone-order-subcard-head">
                           <strong>Điều kiện tiếp cận</strong>
-                          <span class="standalone-order-chip">${escapeHtml(String(order.access_conditions.length))} mục</span>
                         </div>
                         ${renderChipList(order.access_conditions, "Chưa có điều kiện tiếp cận đặc biệt được ghi nhận.")}
                       </article>
                       <article class="standalone-order-subcard">
                         <div class="standalone-order-subcard-head">
-                          <strong>Chi tiết dịch vụ</strong>
-                          <span class="standalone-order-chip">${escapeHtml(String(order.service_details.length))} mục</span>
+                          <strong>Dịch vụ đi kèm</strong>
                         </div>
                         ${renderChipList(order.service_details, "Chưa có hạng mục phụ nào được chọn thêm.")}
                       </article>
@@ -1013,45 +911,29 @@
 
             <section class="standalone-order-block">
               <div class="standalone-order-block-header">
-                <h2>Khối lượng công việc và phạm vi triển khai</h2>
+                <h2>Tiến độ và tài liệu</h2>
               </div>
-              <div class="standalone-order-overview-stats standalone-order-overview-stats-compact">
-                ${renderOverviewStat("fa-solid fa-layer-group", "Hạng mục phụ", String(order.service_details.length), "Số lựa chọn cộng thêm hiện đang gắn với yêu cầu")}
-                ${renderOverviewStat("fa-solid fa-helmet-safety", "Tiếp cận", String(order.access_conditions.length), "Số điều kiện hiện trường đã được khách hàng đánh dấu")}
-                ${renderOverviewStat("fa-solid fa-paperclip", "Tệp gửi kèm", String(order.image_attachments.length + order.video_attachments.length), "Ảnh và video mặt bằng hiện đang gắn với đơn hàng")}
-                ${renderOverviewStat("fa-solid fa-clipboard-list", "Khảo sát", order.service_details.some((item) => normalizeLowerText(item).includes("khảo sát trước")) ? "Cần khảo sát trước" : "Không cần khảo sát trước", "Cờ khảo sát hỗ trợ nhà cung cấp chốt phương án thực địa")}
-              </div>
-              ${renderExecutionItems(detail)}
-            </section>
-
-            <section class="standalone-order-block">
-              <div class="standalone-order-block-header">
-                <h2>Nhà cung cấp, trạng thái xử lý và tài liệu hiện trường</h2>
-              </div>
-              <div class="standalone-order-provider-shell">
-                ${renderCoordinationCard(detail)}
-                <div class="standalone-order-provider-grid">
-                  <article class="standalone-order-timeline-card">
-                    <div class="standalone-order-panel-head">
-                      <div>
-                        <strong>Timeline trạng thái</strong>
-                        <p>Theo dõi các mốc nhận đơn, bắt đầu triển khai và hoàn thành xử lý.</p>
-                      </div>
-                      <span class="standalone-order-chip">Theo dõi</span>
+              <div class="standalone-order-summary-grid">
+                <article class="standalone-order-timeline-card">
+                  <div class="standalone-order-panel-head">
+                    <div>
+                      <strong>Tiến độ xử lý</strong>
+                      <p>Các mốc chính từ lúc nhận đến khi hoàn tất.</p>
                     </div>
-                    ${renderTimeline(detail)}
-                  </article>
-                  <article class="standalone-order-media-card">
-                    <div class="standalone-order-panel-head">
-                      <div>
-                        <strong>Tài liệu hiện trường</strong>
-                        <p>Ảnh và video khách gửi trước khi nhà cung cấp nhận xử lý đơn hàng.</p>
-                      </div>
-                      <span class="standalone-order-chip">Media</span>
+                    <span class="standalone-order-chip">Tiến độ</span>
+                  </div>
+                  ${renderTimeline(detail)}
+                </article>
+                <article class="standalone-order-media-card">
+                  <div class="standalone-order-panel-head">
+                    <div>
+                      <strong>Tài liệu hiện trường</strong>
+                      <p>Ảnh và video khách hàng đã gửi kèm.</p>
                     </div>
-                    ${renderAttachmentGallery(detail)}
-                  </article>
-                </div>
+                    <span class="standalone-order-chip">Tệp đính kèm</span>
+                  </div>
+                  ${renderAttachmentGallery(detail)}
+                </article>
               </div>
             </section>
 
@@ -1100,20 +982,49 @@
   }
 
   (async function bootstrapProviderOrderDetail() {
-    const role = store.getSavedRole();
-    if (role && role !== "nha-cung-cap") {
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=nha-cung-cap");
+    const auth = core.getOrderDetailAccessCredentials?.() || core.getUrlAuthCredentials?.() || {
+      username: "",
+      password: "",
+    };
+    await store.autoAuthFromUrlCredentials?.(auth);
+
+    let profile = null;
+    try {
+      profile = await store.fetchProfile?.();
+    } catch (error) {
+      console.error("Cannot verify provider profile for detail:", error);
+    }
+    if (!profile) {
+      store.clearAuthSession?.();
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
       return;
     }
 
-    const code = getQueryCode();
-    if (!code) {
+    const role = store.getSavedRole();
+    if (role && role !== "nha-cung-cap") {
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
+      return;
+    }
+
+    const orderCode = core.getOrderIdentifierFromUrl?.() || "";
+    if (!orderCode) {
       renderError("Thiếu mã yêu cầu để hiển thị chi tiết đơn hàng.");
       return;
     }
 
+    core.syncOrderDetailUrl?.({
+      orderCode,
+      path: window.location.pathname,
+      username: auth.username,
+      password: auth.password,
+    });
+
     try {
-      const row = await fetchBookingRowByCode(code);
+      const row = await fetchBookingRowByCode(orderCode);
       if (!row) {
         renderError("Không tìm thấy yêu cầu phù hợp trong bảng đặt lịch chuyển dọn.");
         return;
@@ -1125,4 +1036,11 @@
       renderError(error?.message || "Không thể tải chi tiết đơn hàng.");
     }
   })();
+  const moduleApi = {};
+  window.__fastGoProviderOrderDetailModule = moduleApi;
+  return moduleApi;
 })(window, document);
+
+export default providerOrderDetailModule;
+
+

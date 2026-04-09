@@ -1,8 +1,8 @@
+import core from "./core/app-core.js";
+
 (function (window, document) {
   if (window.__fastGoPricingInitDone) return;
   window.__fastGoPricingInitDone = true;
-
-  const core = window.FastGoCore;
   if (!core) return;
 
   function formatCurrency(value) {

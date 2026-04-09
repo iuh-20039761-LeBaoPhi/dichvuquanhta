@@ -1,8 +1,5 @@
-(function (window) {
-  if (window.FastGoFormSummaries) return;
-
-  // Gom toàn bộ logic format và render phần tóm tắt để main-forms bớt ôm việc.
-  let formLogicPromise = null;
+// Gom toàn bộ logic format và render phần tóm tắt để main-forms bớt ôm việc.
+let formLogicPromise = null;
 
   function loadFormLogic(core) {
     if (!formLogicPromise) {
@@ -235,7 +232,9 @@
     updateBookingSummarySectionVisibility(summaryBox);
   }
 
-  window.FastGoFormSummaries = {
-    renderBookingSummary,
-  };
-})(window);
+const formSummariesModule = {
+  renderBookingSummary,
+};
+
+export { renderBookingSummary, formSummariesModule };
+export default formSummariesModule;

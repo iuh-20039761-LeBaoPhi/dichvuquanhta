@@ -1,9 +1,10 @@
-(function (window, document) {
-  if (window.__fastGoCustomerProfileLoaded) return;
+import core from "./core/app-core.js";
+import store from "./main-customer-portal-store.js";
+
+const customerProfileModule = (function (window, document) {
+  if (window.__fastGoCustomerProfileLoaded) return window.__fastGoCustomerProfileModule || null;
   window.__fastGoCustomerProfileLoaded = true;
 
-  const core = window.FastGoCore || {};
-  const store = window.FastGoCustomerPortalStore || null;
   const body = document.body;
 
   if (!body || body.getAttribute("data-page") !== "customer-profile") {
@@ -30,65 +31,39 @@
     return typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
   }
 
-  function getInitial(name) {
-    return String(name || "").trim().charAt(0).toUpperCase() || "K";
-  }
-
   function renderProfile(data) {
     if (!data?.profile) {
       store.clearAuthSession?.();
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
       return;
     }
 
     const role = store.getSavedRole();
     if (role && role !== "khach-hang") {
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=khach-hang");
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
       return;
     }
 
     const identity = data.profile;
     const displayName = store.getDisplayName(identity);
-    const phone = String(identity.phone || "").trim();
+    const phone = String(identity.sodienthoai || "").trim();
     const email = String(identity.email || "").trim();
-    const contactPerson = String(identity.contact_person || identity.contactPerson || "").trim();
-    const initial = getInitial(displayName);
 
     root.innerHTML = `
       <div class="customer-portal-shell customer-portal-shell--simple">
         <section class="customer-portal-profile">
-          <div class="customer-profile-hero">
-            <div class="customer-profile-avatar-wrapper">
-              <div class="customer-profile-avatar-large">${escapeHtml(initial)}</div>
-            </div>
-            <div class="customer-profile-hero-info">
-              <p class="customer-section-kicker">Hồ sơ khách hàng</p>
-              <h2>${escapeHtml(displayName)}</h2>
-              <p><i class="fas fa-envelope"></i> ${escapeHtml(email || "Chưa có email")}</p>
-              <p><i class="fas fa-phone"></i> ${escapeHtml(phone || "Chưa có số điện thoại")}</p>
-            </div>
-          </div>
-
-          <div class="customer-profile-summary">
-            <article>
-              <span>Tên hiển thị</span>
-              <strong>${escapeHtml(displayName)}</strong>
-            </article>
-            <article>
-              <span>Email</span>
-              <strong>${escapeHtml(email || "Chưa có dữ liệu")}</strong>
-            </article>
-            <article>
-              <span>Số điện thoại</span>
-              <strong>${escapeHtml(phone || "Chưa có dữ liệu")}</strong>
-            </article>
-          </div>
-
           <div class="customer-profile-sections">
             <div class="customer-profile-card">
               <div class="customer-profile-card-head">
-                <i class="fas fa-user-pen"></i>
-                <h3>Thông tin cơ bản</h3>
+                <i class="fas fa-user-gear"></i>
+                <div>
+                  <h3>Thông tin tài khoản</h3>
+                  <p class="customer-profile-card-note">Cập nhật thông tin liên hệ dùng cho các đơn chuyển dọn tiếp theo.</p>
+                </div>
               </div>
               <div id="customer-profile-feedback"></div>
               <form id="customer-profile-form" class="customer-form-stack">
@@ -96,7 +71,7 @@
                   <label class="customer-form-group">
                     <span>Họ và tên</span>
                     <div class="customer-form-field">
-                      <input name="full_name" type="text" value="${escapeHtml(displayName)}" required />
+                      <input name="hovaten" type="text" value="${escapeHtml(displayName)}" required />
                       <i class="fas fa-user"></i>
                     </div>
                   </label>
@@ -112,59 +87,60 @@
                   <label class="customer-form-group">
                     <span>Số điện thoại</span>
                     <div class="customer-form-field">
-                      <input name="phone" type="tel" value="${escapeHtml(phone)}" required />
+                      <input name="sodienthoai" type="tel" value="${escapeHtml(phone)}" readonly disabled aria-readonly="true" />
                       <i class="fas fa-phone"></i>
                     </div>
                   </label>
-                  <label class="customer-form-group">
-                    <span>Đầu mối liên hệ thêm</span>
-                    <div class="customer-form-field">
-                      <input name="contact_person" type="text" value="${escapeHtml(contactPerson)}" placeholder="Nếu có người phụ trách thêm" />
-                      <i class="fas fa-id-badge"></i>
-                    </div>
-                  </label>
                 </div>
+                <p class="customer-form-helper customer-form-helper-compact">
+                  <i class="fas fa-circle-info"></i> Số điện thoại là định danh tài khoản, hiện không thể chỉnh sửa tại đây.
+                </p>
                 <div class="customer-inline-actions">
-                  <button class="customer-btn customer-btn-primary" type="submit">Lưu thông tin</button>
-                  <a class="customer-btn customer-btn-ghost" href="${escapeHtml(getProjectUrl("khach-hang/dashboard.html"))}">Về dashboard</a>
+                  <button class="customer-btn customer-btn-primary" type="submit">
+                    <i class="fas fa-floppy-disk"></i> Lưu thay đổi
+                  </button>
                 </div>
               </form>
             </div>
 
             <div class="customer-profile-card customer-password-card">
               <div class="customer-profile-card-head">
-                <i class="fas fa-lock"></i>
-                <h3>Đổi mật khẩu</h3>
+                <i class="fas fa-shield-halved"></i>
+                <div>
+                  <h3>Bảo mật tài khoản</h3>
+                  <p class="customer-profile-card-note">Đổi mật khẩu đăng nhập cho khu khách hàng.</p>
+                </div>
               </div>
               <div id="customer-password-feedback"></div>
               <form id="customer-password-form" class="customer-form-stack">
+                <label class="customer-form-group">
+                  <span>Mật khẩu hiện tại</span>
+                  <div class="customer-form-field">
+                    <input name="current_password" type="password" autocomplete="current-password" required />
+                    <i class="fas fa-key"></i>
+                  </div>
+                </label>
                 <div class="customer-form-row">
-                  <label class="customer-form-group">
-                    <span>Mật khẩu hiện tại</span>
-                    <div class="customer-form-field">
-                      <input name="current_password" type="password" required />
-                      <i class="fas fa-key"></i>
-                    </div>
-                  </label>
                   <label class="customer-form-group">
                     <span>Mật khẩu mới</span>
                     <div class="customer-form-field">
-                      <input name="new_password" type="password" required />
+                      <input name="new_password" type="password" autocomplete="new-password" required />
+                      <i class="fas fa-lock"></i>
+                    </div>
+                  </label>
+                  <label class="customer-form-group">
+                    <span>Xác nhận mật khẩu mới</span>
+                    <div class="customer-form-field">
+                      <input name="confirm_password" type="password" autocomplete="new-password" required />
                       <i class="fas fa-lock-open"></i>
                     </div>
                   </label>
                 </div>
-                <div class="customer-form-row">
-                  <label class="customer-form-group">
-                    <span>Xác nhận mật khẩu mới</span>
-                    <div class="customer-form-field">
-                      <input name="confirm_password" type="password" required />
-                      <i class="fas fa-shield-halved"></i>
-                    </div>
-                  </label>
-                </div>
+                <p class="customer-form-helper customer-form-helper-compact">
+                  <i class="fas fa-circle-info"></i> Mật khẩu mới cần ít nhất 8 ký tự.
+                </p>
                 <div class="customer-inline-actions">
-                  <button class="customer-btn customer-btn-ghost" type="submit">Cập nhật mật khẩu</button>
+                  <button class="customer-btn customer-btn-primary" type="submit">Cập nhật mật khẩu</button>
                 </div>
               </form>
             </div>
@@ -190,12 +166,11 @@
     profileForm?.addEventListener("submit", async function (event) {
       event.preventDefault();
       const formData = new FormData(profileForm);
-      const fullName = String(formData.get("full_name") || "").trim();
+      const hoVaTen = String(formData.get("hovaten") || "").trim();
       const nextEmail = String(formData.get("email") || "").trim();
-      const nextPhone = String(formData.get("phone") || "").trim();
-      const nextContact = String(formData.get("contact_person") || "").trim();
+      const nextPhone = phone;
 
-      if (!fullName || !nextEmail || !nextPhone) {
+      if (!hoVaTen || !nextEmail || !nextPhone) {
         showFeedback(profileFeedback, "error", "Vui lòng nhập đầy đủ họ tên, email và số điện thoại.");
         return;
       }
@@ -203,10 +178,9 @@
       try {
         if (store.updateProfile) {
           const profile = await store.updateProfile({
-            full_name: fullName,
+            hovaten: hoVaTen,
             email: nextEmail,
-            phone: nextPhone,
-            contact_person: nextContact,
+            sodienthoai: nextPhone,
           });
           showFeedback(profileFeedback, "success", "Đã cập nhật hồ sơ khách hàng.");
           window.setTimeout(() => renderProfile({ profile }), 300);
@@ -274,4 +248,9 @@
       renderProfile(null);
     }
   })();
+  const moduleApi = {};
+  window.__fastGoCustomerProfileModule = moduleApi;
+  return moduleApi;
 })(window, document);
+
+export default customerProfileModule;

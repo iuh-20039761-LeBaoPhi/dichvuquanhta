@@ -24,6 +24,7 @@
 
   const projectBasePath = resolveProjectBasePath();
   const publicBasePath = `${projectBasePath}public/`;
+  const parentBasePath = projectBasePath.replace(/giao-hang-nhanh\/?$/i, "");
   const apiBasePath =
     typeof window.apiBasePath === "string"
       ? window.apiBasePath
@@ -559,20 +560,35 @@
     return `${window.location.pathname}${window.location.search}`;
   }
 
-  function buildLoginRedirect(loginUrl = `${projectBasePath}dang-nhap.html`) {
+  function buildSharedAuthUrl(pageName, options = {}) {
+    const normalizedPage = String(pageName || "dang-nhap.html").replace(/^\.?\//, "");
+    const target = new URL(`${parentBasePath}public/${normalizedPage}`, window.location.origin);
+    target.searchParams.set("service", "giaohangnhanh");
+    if (options.redirect) {
+      target.searchParams.set("redirect", String(options.redirect));
+    }
+    return target.toString();
+  }
+
+  function buildLoginRedirect(loginUrl = buildSharedAuthUrl("dang-nhap.html")) {
     const target = getCurrentPathWithSearch();
-    const baseLoginUrl = String(loginUrl || `${projectBasePath}dang-nhap.html`).trim();
-    return `${baseLoginUrl}?redirect=${encodeURIComponent(target)}`;
+    const url = new URL(String(loginUrl || buildSharedAuthUrl("dang-nhap.html")), window.location.origin);
+    url.searchParams.set("redirect", target);
+    if (!url.searchParams.has("service")) {
+      url.searchParams.set("service", "giaohangnhanh");
+    }
+    return url.toString();
   }
 
   function getPortalRoutes(portalType) {
     const type = normalizeText(portalType).toLowerCase();
+    const sharedLoginUrl = buildSharedAuthUrl("dang-nhap.html");
 
     if (type === "shipper") {
       return {
         home: "../../index.html",
-        login: "../../dang-nhap.html",
-        logout: "../../dang-nhap.html",
+        login: sharedLoginUrl,
+        logout: sharedLoginUrl,
         dashboard: "dashboard.html",
         orders: "don-hang.html",
         detail: "../../chi-tiet-don-hang.html",
@@ -581,8 +597,8 @@
     }
 
     return {
-      login: "../../dang-nhap.html",
-      logout: "../../dang-nhap.html",
+      login: sharedLoginUrl,
+      logout: sharedLoginUrl,
       booking: "../../dat-lich-giao-hang-nhanh.html",
       dashboard: "dashboard.html",
       orders: "lich-su-don-hang.html",
@@ -689,7 +705,12 @@
     formatDateTime,
     formatDateOnly,
     getCurrentPathWithSearch,
+    buildSharedAuthUrl,
     buildLoginRedirect,
+    getSharedLoginUrl: (options = {}) =>
+      buildSharedAuthUrl("dang-nhap.html", options),
+    getSharedRegisterUrl: (options = {}) =>
+      buildSharedAuthUrl("dang-ky.html", options),
     getPortalRoutes,
     getPortalLoginRedirect,
     bindPortalLogoutActions,

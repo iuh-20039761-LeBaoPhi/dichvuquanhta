@@ -443,16 +443,7 @@
     <script>
       (function bootstrapLandingData() {
         const localAuth = window.GiaoHangNhanhLocalAuth || null;
-
-        function escapeHtml(text) {
-          if (text === null || text === undefined) return "";
-          return String(text)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-        }
+        const sharedAuthService = "giaohangnhanh";
 
         function toPublicUrl(path) {
           if (!path) return path;
@@ -469,6 +460,12 @@
           return routeMap[normalized] || `public/${normalized}`;
         }
 
+        function buildSharedAuthUrl(pageName) {
+          const url = new URL(toPublicUrl(pageName), window.location.href);
+          url.searchParams.set("service", sharedAuthService);
+          return url.toString();
+        }
+
         function getDashboardPath(role) {
           if (localAuth && typeof localAuth.getDashboardPath === "function") {
             return localAuth.getDashboardPath(role);
@@ -478,59 +475,34 @@
         }
 
         function bindLogoutActions() {
-          document.querySelectorAll("[data-local-logout]").forEach((link) => {
-            if (link.dataset.logoutBound === "1") return;
-            link.dataset.logoutBound = "1";
-            link.addEventListener("click", function (event) {
-              event.preventDefault();
-              if (localAuth && typeof localAuth.clearSession === "function") {
-                localAuth.clearSession();
-              }
-              window.location.href = toPublicUrl("dang-nhap.html");
-            });
+          const contactSecondary = document.getElementById("contact-secondary-btn");
+          if (!contactSecondary || contactSecondary.dataset.logoutBound === "1") return;
+
+          contactSecondary.dataset.logoutBound = "1";
+          contactSecondary.addEventListener("click", function (event) {
+            if (contactSecondary.getAttribute("data-local-logout") !== "1") return;
+
+            event.preventDefault();
+            if (localAuth && typeof localAuth.logout === "function") {
+              localAuth.logout(buildSharedAuthUrl("dang-nhap.html"));
+              return;
+            }
+            window.location.href = buildSharedAuthUrl("dang-nhap.html");
           });
         }
 
-        function renderAuthUi(isLoggedIn, role, sessionData) {
-          const navLoginItem = document.getElementById("nav-login-item");
-          const navRegisterItem = document.getElementById("nav-register-item");
+        function renderAuthUi(sessionData) {
           const contactPrimary = document.getElementById("contact-primary-btn");
           const contactSecondary = document.getElementById("contact-secondary-btn");
+          const isLoggedIn = !!sessionData;
+          const role = sessionData?.role || "guest";
 
           const dashboardUrl = toPublicUrl(getDashboardPath(role));
-          const logoutUrl = toPublicUrl("dang-nhap.html");
-          const loginUrl = toPublicUrl("dang-nhap.html");
-          const registerUrl = toPublicUrl("dang-ky.html");
-          const bookingUrl = toPublicUrl("dat-lich-giao-hang-nhanh.html");
+          const logoutUrl = buildSharedAuthUrl("dang-nhap.html");
+          const loginUrl = buildSharedAuthUrl("dang-nhap.html");
+          const registerUrl = buildSharedAuthUrl("dang-ky.html");
 
           if (isLoggedIn) {
-            const sessionUser = sessionData || (typeof window.GiaoHangNhanhLocalAuth !== "undefined" ? window.GiaoHangNhanhLocalAuth.getSession() : {});
-            const firstName = (sessionUser && (sessionUser.fullname || sessionUser.ho_ten || sessionUser.username)) || "Khách hàng";
-            const accountSummary = (sessionUser && (sessionUser.phone || sessionUser.email)) || "Khu vực cá nhân";
-
-            if (navLoginItem) {
-              navLoginItem.className = "dropdown has-submenu customer-nav-dropdown";
-              navLoginItem.innerHTML = `
-                <a href="${dashboardUrl}">Xin chào, ${firstName}</a>
-                <ul class="dropdown-menu customer-nav-dropdown-menu" style="text-align: left;">
-                  <li class="customer-nav-dropdown-summary">
-                    <div class="customer-nav-dropdown-avatar">${firstName.charAt(0)}</div>
-                    <div class="customer-nav-dropdown-user">
-                      <strong>${firstName}</strong>
-                      <span>${accountSummary}</span>
-                    </div>
-                  </li>
-                  <li><a href="${dashboardUrl}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
-                  <li><a href="${toPublicUrl("khach-hang/lich-su-don-hang.html")}"><i class="fas fa-box"></i> Lịch sử đơn hàng</a></li>
-                  <li><a href="${toPublicUrl("khach-hang/ho-so.html")}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>
-                  <li class="customer-nav-logout-wrapper"><a href="${logoutUrl}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
-                </ul>
-              `;
-            }
-            if (navRegisterItem) {
-              navRegisterItem.innerHTML = "";
-              navRegisterItem.hidden = true;
-            }
             if (contactSecondary) {
               contactSecondary.href = logoutUrl;
               contactSecondary.setAttribute("data-local-logout", "1");
@@ -544,40 +516,45 @@
             return;
           }
 
-          if (navLoginItem) {
-            navLoginItem.innerHTML = `<a href="${loginUrl}">Đăng nhập</a>`;
-          }
-          if (navRegisterItem) {
-            navRegisterItem.innerHTML = `<a href="${registerUrl}" class="btn-primary nav-auth-cta">Đăng ký</a>`;
-          }
           if (contactPrimary) {
             contactPrimary.href = loginUrl;
             contactPrimary.textContent = "Đăng nhập để tạo đơn";
           }
           if (contactSecondary) {
             contactSecondary.href = registerUrl;
+            contactSecondary.removeAttribute("data-local-logout");
             contactSecondary.textContent = "Đăng ký tài khoản mới";
           }
         }
 
-        function loadLandingData() {
+        function syncLandingData(sessionOverride = null) {
           try {
             window.pricingConfig = {
               weight_free: 2,
               weight_price: 5000,
               cod_min: 5000,
             };
-            const session = localAuth && typeof localAuth.getSession === "function"
-              ? localAuth.getSession()
-              : null;
+            const session =
+              sessionOverride ||
+              (localAuth && typeof localAuth.getSession === "function"
+                ? localAuth.getSession()
+                : null);
             window.isLoggedIn = !!session;
-            renderAuthUi(window.isLoggedIn, session?.role || "guest", session);
+            renderAuthUi(session);
           } catch (error) {
             console.error("Cannot bootstrap landing page", error);
           }
         }
 
-        loadLandingData();
+        Promise.resolve(localAuth?.bootstrapSession?.())
+          .catch(() => null)
+          .finally(() => {
+            syncLandingData();
+          });
+
+        document.addEventListener("ghn:auth-changed", function (event) {
+          syncLandingData(event?.detail?.session || null);
+        });
       })();
     </script>
   </body>

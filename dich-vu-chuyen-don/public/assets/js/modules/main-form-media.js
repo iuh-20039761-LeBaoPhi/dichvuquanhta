@@ -1,8 +1,5 @@
-(function (window) {
-  if (window.FastGoFormMedia) return;
-
-  // Tách phần upload/preview media để form chính chỉ giữ orchestration.
-  function revokePreviewUrl(preview) {
+// Tách phần upload/preview media để form chính chỉ giữ orchestration.
+function revokePreviewUrl(preview) {
     const currentUrl = preview?.dataset?.objectUrl;
     if (currentUrl) {
       window.URL.revokeObjectURL(currentUrl);
@@ -220,8 +217,10 @@
       });
   }
 
-  window.FastGoFormMedia = {
-    initFileInputs,
-    renderBookingMediaReview,
-  };
-})(window);
+const formMediaModule = {
+  initFileInputs,
+  renderBookingMediaReview,
+};
+
+export { initFileInputs, renderBookingMediaReview, formMediaModule };
+export default formMediaModule;

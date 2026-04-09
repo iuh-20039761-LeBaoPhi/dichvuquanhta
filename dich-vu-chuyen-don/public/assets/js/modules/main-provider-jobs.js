@@ -1,9 +1,13 @@
-(function (window, document) {
-  if (window.__fastGoProviderJobsLoaded) return;
+import core from "./core/app-core.js";
+import store from "./main-customer-portal-store.js";
+import { extractRows, getKrudListFn } from "./api/krud-client.js";
+
+const providerJobsModule = (function (window, document) {
+  if (window.__fastGoProviderJobsLoaded) {
+    return window.__fastGoProviderJobsModule || null;
+  }
   window.__fastGoProviderJobsLoaded = true;
 
-  const core = window.FastGoCore || {};
-  const store = window.FastGoCustomerPortalStore || null;
   const body = document.body;
 
   if (!body || body.getAttribute("data-page") !== "provider-jobs") {
@@ -36,6 +40,16 @@
 
   function getProjectUrl(path) {
     return typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
+  }
+
+  function getOrderDetailUrl(orderCode) {
+    return typeof core.buildOrderDetailUrl === "function"
+      ? core.buildOrderDetailUrl("nha-cung-cap/chi-tiet-don-hang.html", orderCode)
+      : getProjectUrl(
+          `nha-cung-cap/chi-tiet-don-hang.html?madonhang=${encodeURIComponent(
+            orderCode || "",
+          )}`,
+        );
   }
 
   function formatCurrency(value) {
@@ -78,50 +92,6 @@
         });
     const timeText = normalizeText(timeValue);
     return timeText ? `${dateText} • ${timeText}` : dateText;
-  }
-
-  function getKrudListFn() {
-    if (typeof window.krudList === "function") {
-      return (payload) => window.krudList(payload);
-    }
-
-    if (typeof window.crud === "function") {
-      return (payload) =>
-        window.crud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 100,
-          where: payload.where,
-          sort: payload.sort,
-        });
-    }
-
-    if (typeof window.krud === "function") {
-      return (payload) =>
-        window.krud("list", payload.table, {
-          p: payload.page || 1,
-          limit: payload.limit || 100,
-          where: payload.where,
-          sort: payload.sort,
-        });
-    }
-
-    return null;
-  }
-
-  function extractRows(payload, depth = 0) {
-    if (depth > 4 || payload == null) return [];
-    if (Array.isArray(payload)) return payload;
-    if (typeof payload !== "object") return [];
-
-    const candidateKeys = ["data", "items", "rows", "list", "result", "payload"];
-    for (const key of candidateKeys) {
-      const value = payload[key];
-      if (Array.isArray(value)) return value;
-      const nested = extractRows(value, depth + 1);
-      if (nested.length) return nested;
-    }
-
-    return [];
   }
 
   function getStatusMeta(row) {
@@ -176,35 +146,41 @@
     const status = getStatusMeta(row);
     const fromAddress = normalizeText(row?.dia_chi_di || "");
     const toAddress = normalizeText(row?.dia_chi_den || "");
-    const contactName = normalizeText(row?.ho_ten || row?.contact_name || "");
-    const contactPhone = normalizeText(row?.so_dien_thoai || row?.phone || "");
-    const companyName = normalizeText(row?.ten_cong_ty || "");
 
     return {
-      code: normalizeText(row?.ma_yeu_cau_noi_bo || row?.ma_don_hang_noi_bo || row?.order_code || row?.id || ""),
+      code: normalizeText(
+        row?.ma_yeu_cau_noi_bo || row?.ma_don_hang_noi_bo || row?.order_code || row?.id || "",
+      ),
       serviceLabel: normalizeText(row?.ten_dich_vu || row?.loai_dich_vu || "Chuyển dọn"),
       statusClass: status.className,
       statusValue: status.value,
       statusText: status.label,
-      route: fromAddress && toAddress ? `${fromAddress} → ${toAddress}` : fromAddress || toAddress || "Chưa đủ địa chỉ",
+      route:
+        fromAddress && toAddress
+          ? `${fromAddress} → ${toAddress}`
+          : fromAddress || toAddress || "Chưa đủ địa chỉ",
       createdAt: normalizeText(row?.created_at || row?.created_date || ""),
       scheduleLabel: formatDateLabel(
         row?.ngay_thuc_hien,
         row?.ten_khung_gio_thuc_hien || row?.khung_gio_thuc_hien,
       ),
       estimatedAmount: Number(row?.tong_tam_tinh || 0),
-      contactName,
-      contactPhone,
-      companyName,
+      contactName: normalizeText(row?.ho_ten || ""),
+      contactPhone: normalizeText(row?.so_dien_thoai || row?.phone || ""),
       surveyFirst: hasSurveyFirst(row),
     };
   }
 
   async function fetchBookings() {
-    const listFn = getKrudListFn();
+    let listFn = getKrudListFn();
+    if (!listFn && typeof store.fetchProfile === "function") {
+      await store.fetchProfile();
+      listFn = getKrudListFn();
+    }
     if (!listFn) return [];
 
     try {
+      await store.autoCancelExpiredBookings?.();
       const response = await Promise.resolve(
         listFn({
           table: store.bookingCrudTableName || "dich_vu_chuyen_don_dat_lich",
@@ -223,163 +199,121 @@
     }
   }
 
-  function renderStatusBadge(statusClass, label) {
-    return `<span class="customer-status-badge status-${escapeHtml(
-      statusClass || "pending",
-    )}">${escapeHtml(label || "Mới tiếp nhận")}</span>`;
+  function getRouteSummary(item) {
+    return String(item?.route || "Chưa có lộ trình").trim();
   }
 
   function renderJobs(data) {
     const role = store.getSavedRole();
     if (role && role !== "nha-cung-cap") {
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=nha-cung-cap");
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
       return;
     }
 
-    const identity = store.readIdentity();
-    const displayName = store.getDisplayName(identity);
-    const phone = String(identity.phone || "").trim();
-    const email = String(identity.email || "").trim();
     const items = Array.isArray(data?.items) ? data.items : [];
-    const totalCount = items.length;
-    const activeCount = items.filter((item) => ["pending", "shipping"].includes(item.statusClass)).length;
-    const confirmedCount = items.filter((item) => item.statusClass === "completed").length;
-    const surveyCount = items.filter((item) => item.surveyFirst).length;
+    const params = new URLSearchParams(window.location.search);
+    const initialKeyword = String(params.get("search") || "").trim();
+    const initialSurvey = String(params.get("survey") || "all").trim();
+    const initialStatus = String(params.get("status") || "all").trim();
 
     root.innerHTML = `
-      <div class="customer-portal-shell">
-        <section class="customer-panel customer-panel-overview">
+      <div class="customer-portal-shell customer-portal-shell--simple">
+        <section class="customer-panel customer-orders-panel provider-jobs-panel">
           <div class="customer-panel-head">
             <div>
               <p class="customer-section-kicker">Danh sách việc</p>
-              <h2>Theo dõi yêu cầu chuyển dọn theo nhịp xử lý</h2>
-              <p class="customer-panel-subtext">Trang này gom toàn bộ yêu cầu đặt lịch mới nhất để nhà cung cấp lọc nhanh theo trạng thái và nhu cầu khảo sát trước.</p>
+              <h2>Tìm và lọc yêu cầu chuyển dọn</h2>
+              <p class="customer-panel-subtext">${escapeHtml(
+                String(items.length),
+              )} yêu cầu trong bảng việc hiện tại</p>
             </div>
-            <p class="customer-panel-note">Tài khoản đang xem: ${escapeHtml(displayName)}</p>
           </div>
-          <div class="customer-kpi-grid">
-            <article class="customer-kpi-card">
-              <span>Tổng yêu cầu</span>
-              <strong>${escapeHtml(String(totalCount))}</strong>
-            </article>
-            <article class="customer-kpi-card">
-              <span>Cần xử lý</span>
-              <strong>${escapeHtml(String(activeCount))}</strong>
-            </article>
-            <article class="customer-kpi-card">
-              <span>Đã xác nhận</span>
-              <strong>${escapeHtml(String(confirmedCount))}</strong>
-            </article>
-            <article class="customer-kpi-card">
-              <span>Có khảo sát trước</span>
-              <strong>${escapeHtml(String(surveyCount))}</strong>
-            </article>
+
+          <form class="customer-filter-form customer-filter-form-compact customer-filter-form-orders provider-filter-form-jobs" id="provider-jobs-filter-form">
+            <label class="provider-filter-field-search">
+              <span>Tìm nhanh</span>
+              <input id="provider-job-keyword" type="search" value="${escapeHtml(
+                initialKeyword,
+              )}" placeholder="Mã đơn, dịch vụ, khách, địa chỉ..." />
+            </label>
+            <label class="provider-filter-field-survey">
+              <span>Khảo sát trước</span>
+              <select id="provider-job-survey-filter">
+                <option value="all" ${initialSurvey === "all" ? "selected" : ""}>Tất cả</option>
+                <option value="co-khao-sat" ${initialSurvey === "co-khao-sat" ? "selected" : ""}>Có</option>
+                <option value="khong-khao-sat" ${initialSurvey === "khong-khao-sat" ? "selected" : ""}>Không</option>
+              </select>
+            </label>
+            <label class="provider-filter-field-status">
+              <span>Trạng thái</span>
+              <select id="provider-job-status-filter">
+                <option value="all" ${initialStatus === "all" ? "selected" : ""}>Tất cả</option>
+                <option value="moi" ${initialStatus === "moi" ? "selected" : ""}>Mới tiếp nhận</option>
+                <option value="dang-xu-ly" ${initialStatus === "dang-xu-ly" ? "selected" : ""}>Đang xử lý</option>
+                <option value="xac-nhan" ${initialStatus === "xac-nhan" ? "selected" : ""}>Đã xác nhận</option>
+                <option value="da-huy" ${initialStatus === "da-huy" ? "selected" : ""}>Đã hủy</option>
+              </select>
+            </label>
+            <div class="customer-inline-actions customer-filter-actions">
+              <button class="customer-btn customer-btn-primary" type="submit">Lọc</button>
+              <button class="customer-btn customer-btn-ghost customer-btn-sm" type="button" id="provider-jobs-reset">Đặt lại</button>
+            </div>
+          </form>
+
+          <div class="customer-active-filters" id="provider-jobs-active-filters">
+            <span class="customer-active-filters-note">Đang hiển thị toàn bộ yêu cầu.</span>
           </div>
+
+          <div class="customer-panel-head">
+            <div>
+              <p class="customer-section-kicker">Danh sách</p>
+              <h2>Việc đang hiển thị</h2>
+              <p class="customer-panel-subtext" id="provider-job-result-text">Đang tải dữ liệu yêu cầu...</p>
+            </div>
+          </div>
+
+          <div class="customer-list customer-list-history" id="provider-job-list"></div>
         </section>
-
-        <div class="customer-grid-two customer-grid-dashboard">
-          <div class="customer-portal-main">
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Bộ lọc</p>
-                  <h2>Lọc và tìm việc</h2>
-                </div>
-              </div>
-              <div class="customer-filter-form">
-                <label>
-                  Từ khóa
-                  <input id="provider-job-keyword" type="search" placeholder="Mã việc, dịch vụ, tên khách, địa chỉ..." />
-                </label>
-                <label>
-                  Khảo sát trước
-                  <select id="provider-job-survey-filter">
-                    <option value="all">Tất cả</option>
-                    <option value="co-khao-sat">Có</option>
-                    <option value="khong-khao-sat">Không</option>
-                  </select>
-                </label>
-                <label>
-                  Trạng thái
-                  <select id="provider-job-status-filter">
-                    <option value="all">Tất cả</option>
-                    <option value="moi">Mới tiếp nhận</option>
-                    <option value="xac-nhan">Đã xác nhận</option>
-                    <option value="dang-xu-ly">Đang xử lý</option>
-                    <option value="da-huy">Đã hủy</option>
-                  </select>
-                </label>
-              </div>
-            </section>
-
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Danh sách</p>
-                  <h2>Việc đang hiển thị</h2>
-                  <p class="customer-panel-subtext" id="provider-job-result-text">Đang tải dữ liệu yêu cầu...</p>
-                </div>
-              </div>
-              <div class="customer-list customer-list-history" id="provider-job-list"></div>
-            </section>
-          </div>
-
-          <aside class="customer-portal-sidebar">
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Tài khoản</p>
-                  <h2>Thông tin đang dùng</h2>
-                </div>
-              </div>
-              <div class="customer-profile-summary">
-                <article>
-                  <span>Tên đơn vị / đội nhóm</span>
-                  <strong>${escapeHtml(displayName)}</strong>
-                </article>
-                <article>
-                  <span>Email vận hành</span>
-                  <strong>${escapeHtml(email || "Chưa có dữ liệu")}</strong>
-                </article>
-                <article>
-                  <span>Số điện thoại</span>
-                  <strong>${escapeHtml(phone || "Chưa có dữ liệu")}</strong>
-                </article>
-              </div>
-            </section>
-
-            <section class="customer-panel">
-              <div class="customer-panel-head">
-                <div>
-                  <p class="customer-section-kicker">Lối tắt</p>
-                  <h2>Đi nhanh</h2>
-                </div>
-              </div>
-              <div class="customer-quicklinks-strip">
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("nha-cung-cap/dashboard.html"))}">
-                  <strong>Dashboard nhà cung cấp</strong>
-                  <span>Quay lại màn tổng quan với KPI và 3 việc mới nhất.</span>
-                </a>
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("nha-cung-cap/ho-so.html"))}">
-                  <strong>Hồ sơ nhà cung cấp</strong>
-                  <span>Cập nhật thông tin liên hệ và mật khẩu của tài khoản vận hành.</span>
-                </a>
-                <a class="customer-quicklink-item" href="${escapeHtml(getProjectUrl("bang-gia-chuyen-don.html"))}">
-                  <strong>Bảng giá minh bạch</strong>
-                  <span>Rà lại giá dịch vụ và các phụ phí đang áp dụng.</span>
-                </a>
-              </div>
-            </section>
-          </aside>
-        </div>
       </div>
     `;
 
+    const filterForm = root.querySelector("#provider-jobs-filter-form");
     const keywordInput = root.querySelector("#provider-job-keyword");
     const surveySelect = root.querySelector("#provider-job-survey-filter");
     const statusSelect = root.querySelector("#provider-job-status-filter");
+    const resetButton = root.querySelector("#provider-jobs-reset");
     const listNode = root.querySelector("#provider-job-list");
     const resultNode = root.querySelector("#provider-job-result-text");
+    const activeFiltersNode = root.querySelector("#provider-jobs-active-filters");
+
+    function syncFilterUrl() {
+      const url = new URL(window.location.href);
+      const nextKeyword = String(keywordInput?.value || "").trim();
+      const nextSurvey = String(surveySelect?.value || "all").trim();
+      const nextStatus = String(statusSelect?.value || "all").trim();
+
+      if (nextKeyword) {
+        url.searchParams.set("search", nextKeyword);
+      } else {
+        url.searchParams.delete("search");
+      }
+
+      if (nextSurvey !== "all") {
+        url.searchParams.set("survey", nextSurvey);
+      } else {
+        url.searchParams.delete("survey");
+      }
+
+      if (nextStatus !== "all") {
+        url.searchParams.set("status", nextStatus);
+      } else {
+        url.searchParams.delete("status");
+      }
+
+      window.history.replaceState({}, "", url.toString());
+    }
 
     function renderList() {
       const keyword = normalizeLowerText(keywordInput?.value || "");
@@ -398,7 +332,6 @@
           item.route,
           item.contactName,
           item.contactPhone,
-          item.companyName,
           item.statusText,
         ]
           .join(" ")
@@ -411,14 +344,63 @@
         ? `Hiển thị ${filtered.length} yêu cầu theo bộ lọc hiện tại.`
         : "Không tìm thấy yêu cầu nào khớp với điều kiện lọc.";
 
+      const activeFilters = [];
+      if (keyword) {
+        activeFilters.push({
+          key: "keyword",
+          label: `Từ khóa: ${keywordInput.value.trim()}`,
+        });
+      }
+      if (survey === "co-khao-sat") {
+        activeFilters.push({ key: "survey", label: "Khảo sát trước: Có" });
+      }
+      if (survey === "khong-khao-sat") {
+        activeFilters.push({ key: "survey", label: "Khảo sát trước: Không" });
+      }
+      if (status === "moi") {
+        activeFilters.push({ key: "status", label: "Trạng thái: Mới tiếp nhận" });
+      }
+      if (status === "dang-xu-ly") {
+        activeFilters.push({ key: "status", label: "Trạng thái: Đang xử lý" });
+      }
+      if (status === "xac-nhan") {
+        activeFilters.push({ key: "status", label: "Trạng thái: Đã xác nhận" });
+      }
+      if (status === "da-huy") {
+        activeFilters.push({ key: "status", label: "Trạng thái: Đã hủy" });
+      }
+
+      activeFiltersNode.innerHTML = activeFilters.length
+        ? activeFilters
+            .map(
+              (item) =>
+                `<button type="button" class="customer-active-filter-text" data-remove-filter="${escapeHtml(
+                  item.key,
+                )}" aria-label="${escapeHtml(`Bỏ ${item.label}`)}">
+                  <span>${escapeHtml(item.label)}</span>
+                  <i class="fas fa-xmark" aria-hidden="true"></i>
+                </button>`,
+            )
+            .join("")
+        : '<span class="customer-active-filters-note">Đang hiển thị toàn bộ yêu cầu.</span>';
+
       if (!filtered.length) {
         listNode.innerHTML = `
           <div class="customer-empty-state">
             <i class="fas fa-folder-open"></i>
             <p>Không có yêu cầu phù hợp với bộ lọc hiện tại.</p>
-            <a class="customer-btn customer-btn-primary" href="${escapeHtml(getProjectUrl("nha-cung-cap/dashboard.html"))}">Về dashboard</a>
+            <button class="customer-btn customer-btn-primary" type="button" id="provider-jobs-empty-reset">Đặt lại bộ lọc</button>
           </div>
         `;
+        root
+          .querySelector("#provider-jobs-empty-reset")
+          ?.addEventListener("click", function () {
+            if (keywordInput) keywordInput.value = "";
+            if (surveySelect) surveySelect.value = "all";
+            if (statusSelect) statusSelect.value = "all";
+            syncFilterUrl();
+            renderList();
+          });
         return;
       }
 
@@ -430,26 +412,24 @@
                 <div class="customer-order-heading">
                   <p class="customer-order-code">${escapeHtml(item.code || "--")}</p>
                   <p class="customer-order-recipient">${escapeHtml(item.serviceLabel || "Yêu cầu chuyển dọn")}</p>
-                  <p class="customer-order-dest">${escapeHtml(item.route || "Chưa có lộ trình")}</p>
+                  <p class="customer-order-dest">${escapeHtml(getRouteSummary(item))}</p>
                 </div>
-                ${renderStatusBadge(item.statusClass, item.statusText)}
+                <span class="customer-status-badge status-${escapeHtml(
+                  item.statusClass,
+                )}">${escapeHtml(item.statusText || "Mới tiếp nhận")}</span>
               </div>
               <div class="customer-order-meta customer-order-meta-compact customer-order-meta-history">
-                <span><b>Người liên hệ</b>${escapeHtml(item.contactName || "--")}</span>
+                <span><b>Khách hàng</b>${escapeHtml(item.contactName || "--")}</span>
                 <span><b>Số điện thoại</b>${escapeHtml(item.contactPhone || "--")}</span>
-                <span><b>Đơn vị</b>${escapeHtml(item.companyName || "--")}</span>
-                <span><b>Khảo sát trước</b>${escapeHtml(item.surveyFirst ? "Có" : "Không")}</span>
+                <span><b>Khảo sát</b>${escapeHtml(item.surveyFirst ? "Có" : "Không")}</span>
                 <span><b>Lịch</b>${escapeHtml(item.scheduleLabel || "--")}</span>
                 <span><b>Tạo lúc</b>${escapeHtml(formatDateTime(item.createdAt))}</span>
                 <span><b>Tạm tính</b>${escapeHtml(formatCurrency(item.estimatedAmount))}</span>
               </div>
               <div class="customer-order-actions customer-order-actions-compact">
-                <a class="customer-btn customer-btn-ghost" href="${escapeHtml(
-                  getProjectUrl(
-                    `nha-cung-cap/chi-tiet-don-hang.html?code=${encodeURIComponent(item.code || "")}`,
-                  ),
+                <a class="customer-btn customer-btn-primary" href="${escapeHtml(
+                  getOrderDetailUrl(item.code || ""),
                 )}">Xem chi tiết</a>
-                <a class="customer-btn customer-btn-primary" href="${escapeHtml(getProjectUrl("bang-gia-chuyen-don.html"))}">Rà giá</a>
               </div>
             </article>
           `,
@@ -457,23 +437,78 @@
         .join("");
     }
 
-    [keywordInput, surveySelect, statusSelect].forEach((node) => {
-      node?.addEventListener("input", renderList);
-      node?.addEventListener("change", renderList);
+    filterForm?.addEventListener("submit", function (event) {
+      event.preventDefault();
+      syncFilterUrl();
+      renderList();
+    });
+
+    resetButton?.addEventListener("click", function () {
+      if (keywordInput) keywordInput.value = "";
+      if (surveySelect) surveySelect.value = "all";
+      if (statusSelect) statusSelect.value = "all";
+      syncFilterUrl();
+      renderList();
+    });
+
+    activeFiltersNode?.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-remove-filter]");
+      if (!button) return;
+
+      const filterKey = String(
+        button.getAttribute("data-remove-filter") || "",
+      ).trim();
+
+      if (filterKey === "keyword" && keywordInput) {
+        keywordInput.value = "";
+      }
+
+      if (filterKey === "survey" && surveySelect) {
+        surveySelect.value = "all";
+      }
+
+      if (filterKey === "status" && statusSelect) {
+        statusSelect.value = "all";
+      }
+
+      syncFilterUrl();
+      renderList();
     });
 
     renderList();
   }
 
   (async function bootstrapJobs() {
+    const auth = core.getUrlAuthCredentials?.() || {
+      username: "",
+      password: "",
+    };
+    await store.autoAuthFromUrlCredentials?.(auth);
+
+    let profile = null;
+    try {
+      profile = await store.fetchProfile?.();
+    } catch (error) {
+      console.error("Cannot verify provider profile for jobs:", error);
+    }
+    if (!profile) {
+      store.clearAuthSession?.();
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
+      return;
+    }
+
     const role = store.getSavedRole();
     if (role && role !== "nha-cung-cap") {
-      window.location.href = getProjectUrl("dang-nhap.html?vai-tro=nha-cung-cap");
+      window.location.href = core.getSharedLoginUrl({
+        redirect: core.getCurrentRelativeUrl(),
+      });
       return;
     }
 
     root.innerHTML = `
-      <div class="customer-portal-shell">
+      <div class="customer-portal-shell customer-portal-shell--simple">
         <div class="customer-empty-state">
           <i class="fas fa-spinner fa-spin"></i>
           <p>Đang tải danh sách việc nhà cung cấp...</p>
@@ -483,11 +518,11 @@
 
     try {
       const items = await fetchBookings();
-      renderJobs({ items });
+      renderJobs({ items, profile });
     } catch (error) {
       console.error("Cannot render provider jobs:", error);
       root.innerHTML = `
-        <div class="customer-portal-shell">
+        <div class="customer-portal-shell customer-portal-shell--simple">
           <div class="customer-empty-state">
             <i class="fas fa-circle-exclamation"></i>
             <p>Không thể tải danh sách việc ở thời điểm hiện tại.</p>
@@ -496,4 +531,10 @@
       `;
     }
   })();
+
+  const moduleApi = {};
+  window.__fastGoProviderJobsModule = moduleApi;
+  return moduleApi;
 })(window, document);
+
+export default providerJobsModule;

@@ -658,11 +658,14 @@ async function initCustomerPrefill() {
   if (getQueryParam("reorder_id")) return;
 
   try {
-    const session = getLocalSession();
+    const session =
+      (await Promise.resolve(
+        window.GiaoHangNhanhLocalAuth?.bootstrapSession?.(),
+      ).catch(() => null)) || getLocalSession();
     if (!session) return;
     applyCustomerPrefill({
       nguoi_gui_ho_ten: session.fullname || "",
-      nguoi_gui_so_dien_thoai: session.phone || "",
+      nguoi_gui_so_dien_thoai: session.phone || session.so_dien_thoai || "",
     });
   } catch (error) {
     console.warn("Không tự điền được thông tin khách hàng:", error);

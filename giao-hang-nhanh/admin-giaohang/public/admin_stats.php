@@ -284,7 +284,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
     <script>
         (function () {
             const ordersTable = "giaohangnhanh_dat_lich";
-            const customersTable = "giaohangnhanh_customers";
+            const usersTable = "nguoidung";
             const pageLimit = 200;
             const maxPages = 10;
 
@@ -355,6 +355,18 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
             function normalizeText(value) {
                 return String(value ?? "").replace(/\s+/g, " ").trim();
+            }
+
+            function splitServiceIds(value) {
+                return String(value || "")
+                    .split(",")
+                    .map((item) => normalizeText(item))
+                    .filter(Boolean);
+            }
+
+            function isCustomerAccount(row) {
+                const serviceIds = splitServiceIds(row?.id_dichvu);
+                return serviceIds.length === 0 || (serviceIds.length === 1 && serviceIds[0] === "0");
             }
 
             function escapeHtml(value) {
@@ -506,9 +518,9 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             function normalizeCustomer(row) {
                 return {
                     id: normalizeText(row.id),
-                    username: normalizeText(row.username || row.ten_dang_nhap || ""),
-                    fullname: normalizeText(row.fullname || row.ho_ten || ""),
-                    phone: normalizeText(row.phone || row.so_dien_thoai || ""),
+                    username: normalizeText(row.username || row.ten_dang_nhap || row.sodienthoai || row.so_dien_thoai || ""),
+                    fullname: normalizeText(row.hovaten || row.fullname || row.ho_ten || ""),
+                    phone: normalizeText(row.sodienthoai || row.phone || row.so_dien_thoai || ""),
                 };
             }
 
@@ -659,10 +671,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
             async function loadStats() {
                 try {
-                    const [orderRows, customerRows] = await Promise.all([
+                    const [orderRows, allUsers] = await Promise.all([
                         listAllRows(ordersTable),
-                        listAllRows(customersTable),
+                        listAllRows(usersTable),
                     ]);
+                    const customerRows = allUsers.filter(isCustomerAccount);
                     const data = buildStatsData(orderRows, customerRows);
                     const kpi = data.kpi || {};
                     document.getElementById("stats-kpi-revenue").textContent = formatMoney(kpi.revenue);

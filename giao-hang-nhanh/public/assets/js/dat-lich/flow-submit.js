@@ -603,6 +603,33 @@ function saveBookingToGoogleSheet(payload, orderCode) {
   return saveBookingSheetPayload(sheetPayload);
 }
 
+async function ensureBookingCustomerAccount(payload) {
+  const auth = window.GiaoHangNhanhLocalAuth;
+  if (typeof auth?.ensureCustomerAccountForBooking !== "function") {
+    throw new Error(
+      "Không thể xác minh hoặc tạo tài khoản khách hàng cho đơn này.",
+    );
+  }
+
+  return auth.ensureCustomerAccountForBooking({
+    fullname: payload.nguoi_gui_ho_ten,
+    phone: payload.nguoi_gui_so_dien_thoai,
+  });
+}
+
+function buildBookingSubmitSuccessMessage(accountSetup, googleSheetWarning = "") {
+  let message =
+    "Đơn hàng đã được tạo thành công. Bạn có thể theo dõi đơn ngay trong tài khoản của mình.";
+
+  if (accountSetup?.status === "created") {
+    message += " Tài khoản khách hàng đã được tạo tự động từ thông tin người gửi.";
+  } else if (accountSetup?.status === "existing") {
+    message += " Số điện thoại người gửi đã được liên kết với tài khoản có sẵn.";
+  }
+
+  return `${message}${googleSheetWarning}`;
+}
+
 async function gui_don_hang() {
   const btn = document.getElementById("btn_gui_don_hang");
   const originalText = btn.innerHTML;
@@ -610,14 +637,10 @@ async function gui_don_hang() {
   btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang xử lý...`;
 
   const payload = tao_du_lieu_gui();
-  if (!requireBookingLogin({ saveDraft: true, payload })) {
-    btn.disabled = false;
-    btn.innerHTML = originalText;
-    return;
-  }
   xoa_loi(5);
 
   try {
+    const accountSetup = await ensureBookingCustomerAccount(payload);
     const crudResult = await insertBookingWithCrud(payload);
     const orderMeta = extractCrudInsertOrderMeta(crudResult);
     const finalOrderCode = resolveSystemOrderCodeFromResult(
@@ -648,9 +671,7 @@ async function gui_don_hang() {
 
     renderSubmitSuccessState(
       finalOrderCode || "GHN-00000000-0000000",
-      !!syncBookingLoginState()
-        ? `Đơn hàng đã được tạo thành công. Bạn có thể theo dõi đơn ngay trong tài khoản của mình.${googleSheetWarning}`
-        : `Đơn hàng đã được tạo thành công. Hãy lưu lại mã đơn để tra cứu sau.${googleSheetWarning}`,
+      buildBookingSubmitSuccessMessage(accountSetup, googleSheetWarning),
     );
   } catch (error) {
     console.error(error);

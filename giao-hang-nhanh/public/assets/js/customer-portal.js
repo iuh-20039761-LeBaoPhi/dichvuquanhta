@@ -1375,6 +1375,7 @@
             remoteProfile?.so_dien_thoai ||
             remoteProfile?.phone ||
             latestSession.phone ||
+            latestSession.so_dien_thoai ||
             "",
           ten_cong_ty:
             remoteProfile?.ten_cong_ty ||
@@ -1408,10 +1409,16 @@
           formData?.get("ho_ten") || session.fullname || "",
         ).trim(),
         phone: String(
-          formData?.get("so_dien_thoai") || session.phone || "",
+          formData?.get("so_dien_thoai") ||
+            session.phone ||
+            session.so_dien_thoai ||
+            "",
         ).trim(),
         so_dien_thoai: String(
-          formData?.get("so_dien_thoai") || session.phone || "",
+          formData?.get("so_dien_thoai") ||
+            session.phone ||
+            session.so_dien_thoai ||
+            "",
         ).trim(),
         company_name: String(
           formData?.get("ten_cong_ty") || session.company_name || "",
@@ -1625,7 +1632,7 @@
             </div>
           </li>
           <li><a href="${routes.dashboard}"><i class="fas fa-chart-line"></i> Tổng quan</a></li>
-          <li><a href="${routes.orders}"><i class="fas fa-box"></i> Lịch sử đơn hàng</a></li>
+          <li><a href="${routes.orders}"><i class="fas fa-box"></i> Danh sách đơn hàng</a></li>
           <li><a href="${routes.profile}"><i class="fas fa-user"></i> Hồ sơ cá nhân</a></li>
           <li class="customer-nav-logout-wrapper"><a href="${routes.logout}" class="customer-nav-logout" data-local-logout="1"><i class="fas fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
         </ul>
