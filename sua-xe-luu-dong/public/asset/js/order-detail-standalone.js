@@ -6,46 +6,14 @@
   var REVIEW_UPLOAD_ENDPOINT = "public/upload-review-media.php";
   var REVIEW_FIELD_MAP = {
     customer: {
-      text: [
-        "danhgia_khachhang",
-        "danhgiakhachhang",
-        "review_khachhang",
-        "review_customer_text",
-        "customer_review_text",
-      ],
-      date: [
-        "ngaydanhgia_khachhang",
-        "ngay_danhgia_khachhang",
-        "review_customer_at",
-        "customer_review_at",
-      ],
-      media: [
-        "media_danhgia_khachhang",
-        "anhvideo_danhgia_khachhang",
-        "review_customer_media",
-        "customer_review_media",
-      ],
+      text: ["danhgia_khachhang"],
+      date: ["ngaydanhgia_khachhang"],
+      media: ["media_danhgia_khachhang"],
     },
     provider: {
-      text: [
-        "danhgia_nhacungcap",
-        "danhgianhacungcap",
-        "review_nhacungcap",
-        "review_provider_text",
-        "provider_review_text",
-      ],
-      date: [
-        "ngaydanhgia_nhacungcap",
-        "ngay_danhgia_nhacungcap",
-        "review_provider_at",
-        "provider_review_at",
-      ],
-      media: [
-        "media_danhgia_nhacungcap",
-        "anhvideo_danhgia_nhacungcap",
-        "review_provider_media",
-        "provider_review_media",
-      ],
+      text: ["danhgia_nhacungcap"],
+      date: ["ngaydanhgia_nhacungcap"],
+      media: ["media_danhgia_nhacungcap"],
     },
   };
 
@@ -59,6 +27,11 @@
     isSubmittingReview: false,
   };
 
+  /**
+   * Lấy mảng dữ liệu từ kết quả trả về của API KRUD.
+   * @param {Object|Array} result Kết quả từ API.
+   * @returns {Array} Mảng các hàng dữ liệu.
+   */
   function extractRows(result) {
     if (typeof shared.extractRows === "function") {
       return shared.extractRows(result);
@@ -71,6 +44,11 @@
     return [];
   }
 
+  /**
+   * Chuẩn hóa số điện thoại về định dạng 0xxx.
+   * @param {string|number} phone Số điện thoại cần chuẩn hóa.
+   * @returns {string} Số điện thoại đã chuẩn hóa.
+   */
   function normalizePhone(phone) {
     var value = String(phone || "")
       .replace(/\s+/g, "")
@@ -82,10 +60,20 @@
     return value;
   }
 
+  /**
+   * Chuẩn hóa ID (loại bỏ khoảng trắng và chuyển về chuỗi).
+   * @param {any} id ID cần chuẩn hóa.
+   * @returns {string} ID đã chuẩn hóa.
+   */
   function normalizeId(id) {
     return String(id == null ? "" : id).trim();
   }
 
+  /**
+   * Lấy giá trị đầu tiên không rỗng trong mảng các giá trị.
+   * @param {Array} values Mảng các giá trị.
+   * @returns {string} Giá trị đầu tiên tìm thấy.
+   */
   function pickFirstValue(values) {
     var list = Array.isArray(values) ? values : [];
     for (var i = 0; i < list.length; i += 1) {
@@ -95,11 +83,24 @@
     return "";
   }
 
+  /**
+   * Chuyển đổi một giá trị bất kỳ sang kiểu số thực (finite number).
+   * @param {any} value Giá trị cần chuyển đổi.
+   * @returns {number} Giá trị số, mặc định là 0 nếu không hợp lệ.
+   */
   function toNumber(value) {
     var num = Number(value);
     return Number.isFinite(num) ? num : 0;
   }
 
+  /**
+   * Tính khoảng cách đường bộ giữa 2 điểm tọa độ qua API OSRM.
+   * @param {number} lat1 Vĩ độ điểm 1.
+   * @param {number} lon1 Kinh độ điểm 1.
+   * @param {number} lat2 Vĩ độ điểm 2.
+   * @param {number} lon2 Kinh độ điểm 2.
+   * @returns {Promise<number>} Khoảng cách tính bằng km.
+   */
   async function getDistance(lat1, lon1, lat2, lon2) {
     var url =
       "https://router.project-osrm.org/route/v1/driving/" +
@@ -123,6 +124,12 @@
     return Number((data.routes[0].distance / 1000).toFixed(2));
   }
 
+  /**
+   * Tính toán phí vận chuyển và tổng tiền dựa trên khoảng cách di chuyển.
+   * @param {Object} order Dữ liệu đơn hàng thô.
+   * @param {number} distanceKm Khoảng cách tính được (km).
+   * @returns {Object} Kết quả tính toán giá.
+   */
   function calculatePricing(order, distanceKm) {
     var serviceAmount = toNumber(order.giadichvu);
     var perKmIncrease = 5000;
@@ -146,6 +153,11 @@
     };
   }
 
+  /**
+   * Kiểm tra một giá trị có phải là ngày tháng hợp lệ không.
+   * @param {any} value Giá trị cần kiểm tra.
+   * @returns {boolean} True nếu là ngày hợp lệ.
+   */
   function hasDateValue(value) {
     if (value == null) return false;
     var text = String(value).trim().toLowerCase();
@@ -158,6 +170,11 @@
     );
   }
 
+  /**
+   * Gán nội dung văn bản cho một phần tử DOM theo ID.
+   * @param {string} id ID của phần tử DOM.
+   * @param {any} value Giá trị cần hiển thị.
+   */
   function setText(id, value) {
     var node = document.getElementById(id);
     if (node) {
@@ -165,6 +182,11 @@
     }
   }
 
+  /**
+   * Định dạng ID đơn hàng thành mã chuỗi có 7 chữ số.
+   * @param {number|string} orderId ID đơn hàng.
+   * @returns {string} Mã đơn hàng đã định dạng.
+   */
   function formatOrderCode(orderId) {
     if (typeof shared.formatOrderCode === "function") {
       return shared.formatOrderCode(orderId);
@@ -174,16 +196,31 @@
     return String(Math.floor(id)).padStart(7, "0");
   }
 
+  /**
+   * Định dạng số thành chuỗi tiền tệ tiếng Việt.
+   * @param {number|string} value Giá trị số.
+   * @returns {string} Chuỗi tiền tệ.
+   */
   function formatCurrency(value) {
     var num = toNumber(value);
     return num.toLocaleString("vi-VN") + " đ";
   }
 
+  /**
+   * Định dạng số thành chuỗi tiền tệ tiếng Việt có hậu tố VND.
+   * @param {number|string} value Giá trị số.
+   * @returns {string} Chuỗi tiền tệ.
+   */
   function formatCurrencyVnd(value) {
     var num = toNumber(value);
     return num.toLocaleString("vi-VN") + " VND";
   }
 
+  /**
+   * Định dạng ngày giờ theo kiểu Việt Nam.
+   * @param {string|Date} value Giá trị ngày tháng.
+   * @returns {string} Chuỗi ngày giờ định dạng.
+   */
   function formatDateTime(value) {
     if (!value) return "---";
     var date = new Date(value);
@@ -197,6 +234,11 @@
     });
   }
 
+  /**
+   * Định dạng ngày theo kiểu Việt Nam.
+   * @param {string|Date} value Giá trị ngày tháng.
+   * @returns {string} Chuỗi ngày định dạng.
+   */
   function formatDateOnly(value) {
     if (!value) return "---";
     var date = new Date(value);
@@ -204,11 +246,21 @@
     return date.toLocaleDateString("vi-VN");
   }
 
+  /**
+   * Trả về chuỗi văn bản đã trim hoặc "---" nếu rỗng.
+   * @param {any} value Giá trị văn bản.
+   * @returns {string} Văn bản an toàn để hiển thị.
+   */
   function safeText(value) {
     var text = String(value || "").trim();
     return text || "---";
   }
 
+  /**
+   * Lấy nhãn hiển thị cho trạng thái thanh toán.
+   * @param {string} value Mã trạng thái từ DB.
+   * @returns {string} Nhãn tiếng Việt.
+   */
   function getPaymentStatusLabel(value) {
     if (typeof shared.getPaymentStatusLabel === "function") {
       return shared.getPaymentStatusLabel(value);
@@ -220,6 +272,12 @@
       : "Chưa thanh toán";
   }
 
+  /**
+   * Lấy chữ cái đầu của tên dùng làm fallback cho avatar.
+   * @param {string} name Tên đầy đủ.
+   * @param {string} fallback Giá trị thay thế.
+   * @returns {string} Các chữ cái đầu.
+   */
   function initialsOf(name, fallback) {
     var text = String(name || "").trim();
     if (!text) return fallback || "--";
@@ -230,6 +288,11 @@
     return (first + last).toUpperCase();
   }
 
+  /**
+   * Tách một chuỗi danh sách thành mảng.
+   * @param {string} value Chuỗi cần tách.
+   * @returns {string[]} Mảng các mục.
+   */
   function splitListText(value) {
     return String(value || "")
       .split(/[\n,;]+/)
@@ -239,6 +302,11 @@
       .filter(Boolean);
   }
 
+  /**
+   * Tạo danh sách các bước thực hiện công việc từ dữ liệu đơn hàng.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {string[]} Danh sách chuỗi mô tả.
+   */
   function taskLinesFromOrder(order) {
     var apiItems = splitListText(order && order.workItemsText);
     if (apiItems.length) return apiItems;
@@ -257,6 +325,11 @@
     });
   }
 
+  /**
+   * Ánh xạ trạng thái thô sang mã trạng thái chuẩn của hệ thống.
+   * @param {string} status Trạng thái thô.
+   * @returns {string} Mã trạng thái chuẩn.
+   */
   function mapDbStatus(status) {
     var value = String(status || "").toLowerCase();
     if (value === "cancel") return "canceled";
@@ -266,26 +339,36 @@
     return "pending";
   }
 
+  /**
+   * Xác định trạng thái của đơn hàng dựa trên các mốc thời gian.
+   * @param {Object} row Hàng dữ liệu đơn hàng.
+   * @returns {string} Mã trạng thái chuẩn.
+   */
   function getOrderStatus(row) {
     if (typeof shared.getOrderStatus === "function") {
       return mapDbStatus(shared.getOrderStatus(row));
     }
 
-    if (row && (row.ngayhuy || row.ngay_huy || row.canceled_at)) {
+    if (row && row.ngayhuy) {
       return "canceled";
     }
-    if (row && (row.ngayhoanthanh || row.ngay_hoan_thanh || row.completed_at)) {
+    if (row && row.ngayhoanthanh) {
       return "completed";
     }
-    if (row && (row.ngaybatdau || row.ngay_bat_dau || row.started_at)) {
+    if (row && row.ngaybatdau) {
       return "processing";
     }
-    if (row && (row.ngaynhan || row.ngay_nhan || row.received_at)) {
+    if (row && row.ngaynhan) {
       return "accepted";
     }
     return "pending";
   }
 
+  /**
+   * Lấy metadata cho trạng thái hiển thị (nhãn và CSS class).
+   * @param {string} status Mã trạng thái chuẩn.
+   * @returns {Object} Metadata.
+   */
   function statusMeta(status) {
     var value = String(status || "").toLowerCase();
     if (value === "accepted") {
@@ -303,6 +386,11 @@
     return { label: "Chờ xử lý", className: "status-pending" };
   }
 
+  /**
+   * Trả về phần trăm tiến độ tương ứng cho mỗi trạng thái.
+   * @param {string} status Mã trạng thái chuẩn.
+   * @returns {number} Phần trăm.
+   */
   function statusProgress(status) {
     var value = String(status || "").toLowerCase();
     if (value === "completed") return 100;
@@ -312,6 +400,11 @@
     return 20;
   }
 
+  /**
+   * Trích xuất ID số từ mã đơn hàng văn bản.
+   * @param {string} mahd Mã đơn hàng văn bản.
+   * @returns {number} ID dạng số.
+   */
   function parseOrderId(mahd) {
     var raw = String(mahd || "")
       .trim()
@@ -329,6 +422,10 @@
     return Number.isFinite(id) ? Math.floor(id) : 0;
   }
 
+  /**
+   * Trích xuất các tham số từ URL.
+   * @returns {Object} Các tham số mahd, phone, password.
+   */
   function parseParams() {
     var urlParams = new URLSearchParams(window.location.search);
     return {
@@ -338,6 +435,10 @@
     };
   }
 
+  /**
+   * Hiển thị thông tin người dùng hiện tại lên UI.
+   * @param {Object} auth Thông tin xác thực.
+   */
   function setIdentityChip(auth) {
     var roleNode = document.getElementById("accessRole");
     var phoneNode = document.getElementById("accessPhone");
@@ -351,6 +452,11 @@
     }
   }
 
+  /**
+   * Hiển thị nội dung lỗi khi không truy cập được đơn hàng.
+   * @param {string} title Tiêu đề lỗi.
+   * @param {string} message Mô tả lỗi.
+   */
   function showError(title, message) {
     var foundNode = document.getElementById("detailStateFound");
     var missingNode = document.getElementById("detailStateNotFound");
@@ -367,6 +473,9 @@
     );
   }
 
+  /**
+   * Hiển thị phần chi tiết đơn hàng (ẩn màn hình lỗi).
+   */
   function showDetail() {
     var foundNode = document.getElementById("detailStateFound");
     var missingNode = document.getElementById("detailStateNotFound");
@@ -374,6 +483,12 @@
     if (missingNode) missingNode.classList.add("d-none");
   }
 
+  /**
+   * Tìm kiếm một bản ghi theo điều kiện cụ thể dùng KRUD.
+   * @param {string} table Tên bảng.
+   * @param {Array} where Các điều kiện lọc.
+   * @returns {Promise<Object|null>}
+   */
   async function queryByWhere(table, where) {
     if (typeof window.krudList !== "function") {
       throw new Error("Thư viện KRUD chưa sẵn sàng.");
@@ -392,6 +507,12 @@
     return rows.length ? rows[0] : null;
   }
 
+  /**
+   * Thử tìm kiếm bản ghi qua một danh sách các field tiềm năng.
+   * @param {string} table Tên bảng.
+   * @param {Array} candidates Các trường và giá trị ứng viên.
+   * @returns {Promise<Object|null>}
+   */
   async function queryFirstByCandidates(table, candidates) {
     var list = Array.isArray(candidates) ? candidates : [];
 
@@ -420,6 +541,13 @@
     return null;
   }
 
+  /**
+   * Xác thực người dùng bằng số điện thoại và mật khẩu.
+   * @param {string} table Bảng người dùng.
+   * @param {string} phone SĐT.
+   * @param {string} password Mật khẩu.
+   * @returns {Promise<Object|null>}
+   */
   async function queryUserByCredentials(table, phone, password) {
     var phoneFields = ["sodienthoai", "user_tel", "phone"];
     var passwordFields = ["matkhau", "password", "user_password"];
@@ -452,6 +580,12 @@
     return null;
   }
 
+  /**
+   * Xử lý xác thực đăng nhập và phân quyền (Nhà cung cấp / Khách hàng).
+   * @param {string} phone SĐT.
+   * @param {string} password Mật khẩu.
+   * @returns {Promise<Object|null>}
+   */
   async function authenticateAccess(phone, password) {
     if (typeof USER_TABLE === "undefined") {
       var USER_TABLE = "nguoidung";
@@ -471,6 +605,11 @@
     };
   }
 
+  /**
+   * Tải thông tin đơn hàng từ mã đơn.
+   * @param {string} mahd Mã đơn hàng.
+   * @returns {Promise<Object|null>}
+   */
   async function loadOrderByMahd(mahd) {
     var orderId = parseOrderId(mahd);
     if (!Number.isFinite(orderId) || orderId <= 0) {
@@ -491,30 +630,29 @@
     ]);
   }
 
+  /**
+   * Tải thông tin khách hàng từ đơn hàng hiện tại.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {Promise<Object|null>}
+   */
   async function loadCustomerRecord(order) {
-    var customerId = normalizeId(
-      order.idkhachhang || order.makhachhang || order.user_id,
-    );
-    var orderPhone = normalizePhone(order.sodienthoai || order.phone);
+    var orderPhone = normalizePhone(order.sodienthoai);
 
     return queryFirstByCandidates("nguoidung", [
-      { field: "id", value: customerId },
       { field: "sodienthoai", value: orderPhone },
       { field: "user_tel", value: orderPhone },
       { field: "phone", value: orderPhone },
     ]);
   }
 
+  /**
+   * Tải thông tin nhà cung cấp phục vụ đơn hàng.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {Promise<Object|null>}
+   */
   async function loadProviderRecord(order) {
-    var providerId = normalizeId(
-      order.idnhacungcap ||
-        order.id_ncc ||
-        order.manhacungcap ||
-        order.provider_id,
-    );
-    var providerPhone = normalizePhone(
-      order.sdt_ncc || order.sodienthoai_ncc || order.phone_ncc,
-    );
+    var providerId = normalizeId(order.idnhacungcap);
+    var providerPhone = normalizePhone(order.sdt_ncc);
     var providerEmail = String(order.email_ncc || "").trim();
 
     return queryFirstByCandidates("nguoidung", [
@@ -528,6 +666,11 @@
     ]);
   }
 
+  /**
+   * Tải đồng thời tất cả các bản ghi liên quan (Khách hàng, NCC).
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {Promise<Object>}
+   */
   async function loadRelatedRecords(order) {
     var results = await Promise.all([
       loadCustomerRecord(order),
@@ -540,6 +683,12 @@
     };
   }
 
+  /**
+   * Kết hợp dữ liệu đơn hàng và thông tin chi tiết của người dùng/NCC.
+   * @param {Object} order Đơn hàng thô.
+   * @param {Object} related Các bản ghi liên quan.
+   * @returns {Object} Đơn hàng đã được làm giàu dữ liệu.
+   */
   function mergeOrderWithRelated(order, related) {
     var row = Object.assign({}, order);
     var customer = related && related.customer ? related.customer : null;
@@ -553,42 +702,20 @@
       row.email = row.email || customer.email || customer.user_email || "";
       row.diachi = row.diachi || customer.diachi || "";
       row.avatar_kh = pickFirstValue([
-        row.avatar_kh,
-        row.avatartenfile,
         customer.avatar,
-        customer.avatar_kh,
         customer.avatartenfile,
       ]);
     }
 
     if (provider) {
       row.nhacungcap = provider;
-      row.idnhacungcap =
-        row.idnhacungcap ||
-        row.id_ncc ||
-        row.manhacungcap ||
-        provider.id ||
-        provider.idnhacungcap ||
-        provider.provider_id ||
-        provider.manhacungcap ||
-        "";
-      row.tennhacungcap =
-        row.tennhacungcap || provider.hovaten || provider.user_name || "";
-      row.sdt_ncc =
-        row.sdt_ncc ||
-        provider.sodienthoai ||
-        provider.user_tel ||
-        provider.sdt ||
-        "";
-      row.email_ncc =
-        row.email_ncc || provider.email || provider.user_email || "";
+      row.idnhacungcap = row.idnhacungcap || provider.id || "";
+      row.tennhacungcap = row.tennhacungcap || provider.hovaten || "";
+      row.sdt_ncc = row.sdt_ncc || provider.sodienthoai || "";
+      row.email_ncc = row.email_ncc || provider.email || "";
       row.diachi_ncc = row.diachi_ncc || provider.diachi || "";
       row.avatar_ncc = pickFirstValue([
-        row.avatar_ncc,
-        row.avatar_nhacungcap,
-        row.provider_avatar,
         provider.avatar,
-        provider.avatar_ncc,
         provider.avatartenfile,
       ]);
     }
@@ -596,188 +723,91 @@
     return row;
   }
 
+  /**
+   * Kiểm tra xem đơn hàng đã được giao cho nhà cung cấp nào chưa.
+   * @param {Object} row Hàng dữ liệu đơn hàng.
+   * @returns {boolean}
+   */
   function hasAssignedProviderRow(row) {
-    var providerId = normalizeId(
-      row.idnhacungcap ||
-        row.id_ncc ||
-        row.manhacungcap ||
-        row.provider_id ||
-        (row.nhacungcap &&
-          (row.nhacungcap.id ||
-            row.nhacungcap.idnhacungcap ||
-            row.nhacungcap.provider_id ||
-            row.nhacungcap.manhacungcap)),
-    );
+    var providerId = normalizeId(row.idnhacungcap);
 
     if (!providerId || providerId === "0") return false;
 
-    var providerName = pickFirstValue([
-      row.tennhacungcap,
-      row.nhacungcap && row.nhacungcap.hovaten,
-      row.nhacungcap && row.nhacungcap.user_name,
-    ]);
-    var providerPhone = normalizePhone(
-      row.sdt_ncc ||
-        row.sodienthoai_ncc ||
-        row.phone_ncc ||
-        (row.nhacungcap &&
-          (row.nhacungcap.sodienthoai ||
-            row.nhacungcap.user_tel ||
-            row.nhacungcap.sdt)),
-    );
-    var providerEmail = String(
-      row.email_ncc ||
-        (row.nhacungcap &&
-          (row.nhacungcap.email || row.nhacungcap.user_email)) ||
-        "",
-    )
-      .trim()
-      .toLowerCase();
+    var providerName = row.tennhacungcap;
+    var providerPhone = normalizePhone(row.sdt_ncc);
+    var providerEmail = String(row.email_ncc || "").trim().toLowerCase();
 
     return Boolean(providerName || providerPhone || providerEmail);
   }
 
+  /**
+   * Chuyển đổi dữ liệu thực thể sang đối tượng chuẩn cho giao diện (View Object).
+   * @param {Object} row Hàng dữ liệu đã qua tiền xử lý.
+   * @returns {Object}
+   */
   function mapOrderView(row) {
-    var createdAt = row.ngaydat || row.ngaytao || row.created_at || "";
+    var createdAt = row.ngaydat || row.created_date || "";
     var updatedAt =
       row.ngayhoanthanh ||
       row.ngayhuy ||
       row.ngaybatdau ||
       row.ngaynhan ||
-      row.updated_at ||
       createdAt;
 
     var status = getOrderStatus(row);
     var serviceFee = toNumber(row.giadichvu);
     var transportFee = toNumber(row.tiendichuyen);
-    var surchargeFee = toNumber(
-      row.phikhaosat || row.phi_khao_sat || row.phuphigiaonhan,
-    );
+    var surchargeFee = toNumber(row.phikhaosat);
     var totalAmount = toNumber(row.tongtien);
     var hasAssignedProvider = hasAssignedProviderRow(row);
 
-    var qty = toNumber(row.soluong);
-    if (qty <= 0) qty = 1;
+    var qty = 1;
 
     return {
       id: toNumber(row.id),
       status: status,
       createdAt: createdAt,
       updatedAt: updatedAt,
-      service: row.dichvu || row.dichvuquantam || "Dịch vụ giặt ủi",
+      service: row.dichvu || "Dịch vụ sửa xe",
       note: row.ghichu || "Không có ghi chú.",
       vehicleInfo: {
         type: row.loaixe || "",
         brand: row.hangxe || "",
         model: row.mauxe || "",
       },
-      receivedAt: row.ngaynhan || row.ngay_nhan || row.received_at || "",
-      startedAt: row.ngaybatdau || row.ngay_bat_dau || row.started_at || "",
-      completedAt:
-        row.ngayhoanthanh || row.ngay_hoan_thanh || row.completed_at || "",
+      receivedAt: row.ngaynhan || "",
+      startedAt: row.ngaybatdau || "",
+      completedAt: row.ngayhoanthanh || "",
       totalAmount: totalAmount,
       extraFee: transportFee + surchargeFee,
       discount: 0,
       serviceFee: serviceFee,
       transportFee: transportFee,
       surchargeFee: surchargeFee,
-      paymentStatus:
-        row.trangthaithanhtoan ||
-        row.trang_thai_thanh_toan ||
-        row.payment_status ||
-        row.paymentStatus ||
-        "Unpaid",
+      paymentStatus: row.trangthaithanhtoan || "Unpaid",
       customer: {
-        id: toNumber(
-          row.idkhachhang ||
-            row.makhachhang ||
-            row.user_id ||
-            (row.khachhang &&
-              (row.khachhang.id ||
-                row.khachhang.makhachhang ||
-                row.khachhang.user_id)),
-        ),
-        name:
-          row.hovaten ||
-          (row.khachhang &&
-            (row.khachhang.hovaten || row.khachhang.user_name)) ||
-          "Khách hàng",
-        phone:
-          row.sodienthoai ||
-          (row.khachhang &&
-            (row.khachhang.sodienthoai ||
-              row.khachhang.user_tel ||
-              row.khachhang.phone)) ||
-          "",
-        email:
-          row.email ||
-          (row.khachhang &&
-            (row.khachhang.email || row.khachhang.user_email)) ||
-          "",
-        address: row.diachi || (row.khachhang && row.khachhang.diachi) || "",
+        id: 0,
+        name: row.hovaten || "Khách hàng",
+        phone: row.sodienthoai || "",
+        email: "",
+        address: row.diachi || "",
         avatar: pickFirstValue([
           row.avatar_kh,
-          row.avatar_khachhang,
-          row.avatar_customer,
-          row.customer_avatar,
           row.avatartenfile,
-          row.khachhang && row.khachhang.avatar,
-          row.khachhang && row.khachhang.avatar_kh,
-          row.khachhang && row.khachhang.avatartenfile,
         ]),
       },
       provider: {
-        id: hasAssignedProvider
-          ? toNumber(
-              row.idnhacungcap ||
-                row.id_ncc ||
-                row.manhacungcap ||
-                row.provider_id ||
-                (row.nhacungcap &&
-                  (row.nhacungcap.id ||
-                    row.nhacungcap.idnhacungcap ||
-                    row.nhacungcap.provider_id ||
-                    row.nhacungcap.manhacungcap)),
-            )
-          : 0,
-        name: hasAssignedProvider
-          ? row.tennhacungcap ||
-            (row.nhacungcap &&
-              (row.nhacungcap.hovaten || row.nhacungcap.user_name)) ||
-            "Chưa phân công"
-          : "Chưa phân công",
-        phone: hasAssignedProvider
-          ? row.sdt_ncc ||
-            (row.nhacungcap &&
-              (row.nhacungcap.sodienthoai ||
-                row.nhacungcap.user_tel ||
-                row.nhacungcap.sdt)) ||
-            ""
-          : "",
-        email: hasAssignedProvider
-          ? row.email_ncc ||
-            (row.nhacungcap &&
-              (row.nhacungcap.email || row.nhacungcap.user_email)) ||
-            ""
-          : "",
-        address: hasAssignedProvider
-          ? row.diachi_ncc || (row.nhacungcap && row.nhacungcap.diachi) || ""
-          : "",
-        avatar: hasAssignedProvider
-          ? pickFirstValue([
-              row.avatar_ncc,
-              row.avatar_nhacungcap,
-              row.provider_avatar,
-              row.nhacungcap && row.nhacungcap.avatar,
-              row.nhacungcap && row.nhacungcap.avatar_ncc,
-              row.nhacungcap && row.nhacungcap.avatartenfile,
-            ])
-          : "",
+        id: hasAssignedProvider ? toNumber(row.idnhacungcap) : 0,
+        name: hasAssignedProvider ? row.tennhacungcap || "Chưa phân công" : "Chưa phân công",
+        phone: hasAssignedProvider ? row.sdt_ncc || "" : "",
+        email: hasAssignedProvider ? row.email_ncc || "" : "",
+        address: hasAssignedProvider ? row.diachi_ncc || "" : "",
+        avatar: hasAssignedProvider ? pickFirstValue([row.avatar_ncc]) : "",
       },
       raw: row,
       items: [
         {
-          name: row.hinhthucnhangiao || row.dichvu || "Dịch vụ",
+          name: row.dichvu || "Dịch vụ",
           quantity: qty,
           unitPrice: serviceFee,
         },
@@ -785,6 +815,12 @@
     };
   }
 
+  /**
+   * Sinh danh sách các URL tiềm năng cho ảnh đại diện.
+   * @param {string} rawValue Đường dẫn ảnh thô.
+   * @param {string} kind Loại đối tượng.
+   * @returns {string[]}
+   */
   function normalizeAvatarCandidates(rawValue, kind) {
     var text = String(rawValue == null ? "" : rawValue).trim();
     if (!text) return [];
@@ -845,6 +881,13 @@
     });
   }
 
+  /**
+   * Hiển thị avatar hoặc tên viết tắt lên giao diện.
+   * @param {string} id ID phần tử.
+   * @param {string} avatarValue Giá trị ảnh.
+   * @param {string} fallbackText Text thay thế.
+   * @param {string} kind Loại đối tượng.
+   */
   function renderAvatarBadge(id, avatarValue, fallbackText, kind) {
     var node = document.getElementById(id);
     if (!node) return;
@@ -887,6 +930,11 @@
     tryNext();
   }
 
+  /**
+   * Chuẩn hóa tên người phục vụ cho việc so sánh.
+   * @param {string} value Tên thô.
+   * @returns {string} Tên sạch.
+   */
   function normalizePersonName(value) {
     return String(value || "")
       .toLowerCase()
@@ -894,6 +942,11 @@
       .trim();
   }
 
+  /**
+   * Trích xuất thông tin định danh NCC từ đối tượng xác thực.
+   * @param {Object} auth
+   * @returns {Object}
+   */
   function resolveProviderIdentity(auth) {
     var user = (auth && auth.user) || {};
     var providerId = normalizeId(
@@ -919,6 +972,12 @@
     };
   }
 
+  /**
+   * Kiểm tra quyền xem chi tiết đơn hàng của người dùng.
+   * @param {Object} auth Thông tin đăng nhập.
+   * @param {Object} order Đối tượng đơn hàng.
+   * @returns {boolean}
+   */
   function canAccessOrder(auth, order) {
     if (!auth || !order) return false;
 
@@ -967,6 +1026,10 @@
     return false;
   }
 
+  /**
+   * Hiển thị danh sách các bước công việc lên UI.
+   * @param {Object} order
+   */
   function renderTaskList(order) {
     var listNode = document.getElementById("detailTasksList");
     if (!listNode) return;
@@ -989,14 +1052,32 @@
 
   }
 
+  /**
+   * Trả về tiền tố ID cho các chức năng đánh giá.
+   * @param {string} actor Đối tượng.
+   * @returns {string} Customer/Provider.
+   */
   function reviewPrefix(actor) {
     return actor === "provider" ? "Provider" : "Customer";
   }
 
+  /**
+   * Lấy nhanh nút/phần tử DOM trong phần đánh giá.
+   * @param {string} actor
+   * @param {string} suffix
+   * @returns {HTMLElement}
+   */
   function reviewNode(actor, suffix) {
     return document.getElementById("review" + reviewPrefix(actor) + suffix);
   }
 
+  /**
+   * Tìm key (trường) đầu tiên tồn tại trong dữ liệu thực tế.
+   * @param {Object} row
+   * @param {string[]} keys
+   * @param {string} fallback
+   * @returns {string}
+   */
   function firstExistingKey(row, keys, fallback) {
     var source = row && typeof row === "object" ? row : {};
     var list = Array.isArray(keys) ? keys : [];
@@ -1008,6 +1089,12 @@
     return fallback;
   }
 
+  /**
+   * Lấy giá trị của trường đánh giá đầu tiên tìm được.
+   * @param {Object} row
+   * @param {string[]} keys
+   * @returns {any}
+   */
   function firstReviewValue(row, keys) {
     var source = row && typeof row === "object" ? row : {};
     var list = Array.isArray(keys) ? keys : [];
@@ -1021,6 +1108,11 @@
     return "";
   }
 
+  /**
+   * Chuẩn hóa mảng/chuỗi chứa file media đánh giá.
+   * @param {any} value
+   * @returns {string[]}
+   */
   function parseReviewMedia(value) {
     if (Array.isArray(value)) {
       return value
@@ -1053,6 +1145,11 @@
       .filter(Boolean);
   }
 
+  /**
+   * Xử lý trùng lặp và loại bỏ file media rỗng.
+   * @param {string[]} files
+   * @returns {string[]}
+   */
   function dedupeMedia(files) {
     var map = {};
     var list = Array.isArray(files) ? files : [];
@@ -1064,6 +1161,12 @@
     });
   }
 
+  /**
+   * Tổng hợp dữ liệu đánh giá đầy đủ cho Customer/Provider.
+   * @param {Object} raw
+   * @param {string} actor
+   * @returns {Object}
+   */
   function resolveReviewData(raw, actor) {
     var source = raw && typeof raw === "object" ? raw : {};
     var config = REVIEW_FIELD_MAP[actor] || REVIEW_FIELD_MAP.customer;
@@ -1083,6 +1186,11 @@
     };
   }
 
+  /**
+   * Chuyển đổi tên tệp media sang đường dẫn tuyệt đối.
+   * @param {string} path
+   * @returns {string}
+   */
   function resolveReviewMediaUrl(path) {
     var value = String(path || "")
       .trim()
@@ -1094,6 +1202,11 @@
     return "public/asset/image/upload/danhgia/" + value.replace(/^\/+/, "");
   }
 
+  /**
+   * Hiển thị lưới ảnh/video đánh giá lên giao diện.
+   * @param {HTMLElement} container
+   * @param {string[]} files
+   */
   function renderReviewMedia(container, files) {
     if (!container) return;
     container.className = "review-file";
@@ -1147,6 +1260,11 @@
     container.appendChild(grid);
   }
 
+  /**
+   * Cập nhật trạng thái hiển thị của chip "Đã/Chưa có" đánh giá.
+   * @param {string} actor
+   * @param {boolean} hasData
+   */
   function setReviewChip(actor, hasData) {
     var chip = reviewNode(actor, "Chip");
     if (!chip) return;
@@ -1154,6 +1272,11 @@
     chip.textContent = hasData ? "Đã có" : "Chưa có";
   }
 
+  /**
+   * Vẽ nội dung chi tiết của một phần đánh giá.
+   * @param {string} actor
+   * @param {Object} review
+   */
   function renderReviewSection(actor, review) {
     var info = review || { text: "", date: "", files: [] };
     var hasData = Boolean(info.text || (info.files && info.files.length));
@@ -1169,12 +1292,21 @@
     setReviewChip(actor, hasData);
   }
 
+  /**
+   * Hiển thị cả hai phần đánh giá của KH và NCC.
+   * @param {Object} order
+   */
   function renderReviews(order) {
     var raw = (order && order.raw) || {};
     renderReviewSection("customer", resolveReviewData(raw, "customer"));
     renderReviewSection("provider", resolveReviewData(raw, "provider"));
   }
 
+  /**
+   * Kiểm tra xem object review hiện tại có dữ liệu thực sự hay không.
+   * @param {Object} review
+   * @returns {boolean}
+   */
   function hasReviewData(review) {
     var info = review || {};
     var text = String(info.text || "").trim();
@@ -1182,6 +1314,10 @@
     var files = Array.isArray(info.files) ? info.files : [];
     return Boolean(text || date || files.length);
   }
+  /**
+   * Đồng bộ các trình soạn thảo đánh giá dựa trên trạng thái đơn hàng.
+   * @param {Object} order
+   */
   function syncReviewEditors(order) {
     var auth = state.auth || {};
     var status = String((order && order.status) || "").toLowerCase();
@@ -1209,6 +1345,10 @@
     });
   }
 
+  /**
+   * Hàm chính để hiển thị mọi thông tin đơn hàng lên UI.
+   * @param {Object} order
+   */
   function renderOrder(order) {
     showDetail();
 
@@ -1381,6 +1521,9 @@
   //   node.textContent = message;
   // }
 
+  /**
+   * Ẩn tất cả các thông báo hành động đang hiện.
+   */
   function hideActionAlert() {
     var node = document.getElementById("detailActionAlert");
     if (!node) return;
@@ -1389,6 +1532,11 @@
     node.classList.remove("alert-success", "alert-danger", "alert-info");
   }
 
+  /**
+   * Cập nhật bản ghi đơn hàng trong cơ sở dữ liệu dùng API update.
+   * @param {number|string} orderId ID đơn hàng.
+   * @param {Object} payload Dữ liệu cần cập nhật.
+   */
   async function updateOrderRow(orderId, payload) {
     if (typeof shared.updateOrder === "function") {
       await shared.updateOrder(ORDER_TABLE, orderId, payload);
@@ -1410,6 +1558,11 @@
     }
   }
 
+  /**
+   * Tải các tệp đánh giá lên máy chủ.
+   * @param {File[]} files
+   * @returns {Promise<string[]>}
+   */
   async function uploadReviewFiles(files) {
     var list = Array.isArray(files) ? files : [];
     if (!list.length) return [];
@@ -1436,6 +1589,11 @@
     return dedupeMedia(result.files || []);
   }
 
+  /**
+   * Chuyển form đánh giá sang trạng thái đang xử lý.
+   * @param {string} actor
+   * @param {boolean} isLoading
+   */
   function setReviewSubmitting(actor, isLoading) {
     var button = reviewNode(actor, "Submit");
     var input = reviewNode(actor, "Input");
@@ -1463,6 +1621,10 @@
     }
   }
 
+  /**
+   * Quy trình gửi một đánh giá mới.
+   * @param {string} actor
+   */
   async function submitReview(actor) {
     if (state.isSubmittingReview) return;
 
@@ -1541,6 +1703,9 @@
     }
   }
 
+  /**
+   * Gán sự kiện click cho các nút gửi đánh giá.
+   */
   function initReviewEditors() {
     ["customer", "provider"].forEach(function (actor) {
       var button = reviewNode(actor, "Submit");
@@ -1552,16 +1717,16 @@
     });
   }
 
+  /**
+   * Xác định kịch bản hành động cho khách hàng (Hủy đơn).
+   * @param {string} authRole Vai trò người đăng nhập.
+   * @param {Object} order Đối tượng đơn hàng.
+   * @returns {Object|null} Cấu hình phím bấm và gợi ý.
+   */
   function getActionConfig(authRole, order) {
     var orderStatus = order && order.status;
     var hasReceivedDate = hasDateValue(
-      order &&
-        (order.receivedAt ||
-          (order.raw &&
-            (order.raw.ngaynhan ||
-              order.raw.ngay_nhan ||
-              order.raw.received_at ||
-              order.raw.receive_at))),
+      order && (order.receivedAt || (order.raw && order.raw.ngaynhan)),
     );
 
     if (authRole === "customer") {
@@ -1600,6 +1765,11 @@
     return null;
   }
 
+  /**
+   * Hiển thị tổ hợp các nút hành động dựa trên vai trò (Nhận đơn, Bắt đầu, Hoàn thành).
+   * @param {Object} auth
+   * @param {Object} order
+   */
   function renderAction(auth, order) {
     var bar = document.getElementById("detailActionBar");
     var btn = document.getElementById("detailActionBtn");
@@ -1638,9 +1808,7 @@
       var hasStartedDate = hasDateValue(order && order.startedAt);
       var hasCompletedDate = hasDateValue(order && order.completedAt);
       var isCanceled = hasDateValue(
-        order &&
-          order.raw &&
-          (order.raw.ngayhuy || order.raw.ngay_huy || order.raw.canceled_at),
+        order && order.raw && order.raw.ngayhuy,
       );
 
       var canReceive =
@@ -1871,11 +2039,7 @@
           var hasReceivedDate = hasDateValue(
             state.orderView &&
               (state.orderView.receivedAt ||
-                (state.orderView.raw &&
-                  (state.orderView.raw.ngaynhan ||
-                    state.orderView.raw.ngay_nhan ||
-                    state.orderView.raw.received_at ||
-                    state.orderView.raw.receive_at))),
+                (state.orderView.raw && state.orderView.raw.ngaynhan)),
           );
 
           if (hasReceivedDate) {
@@ -1908,6 +2072,9 @@
     };
   }
 
+  /**
+   * Tải lại dữ liệu hóa đơn và làm mới giao diện.
+   */
   async function loadAndRenderOrder() {
     var params = state.params;
     var auth = state.auth;
@@ -1941,6 +2108,9 @@
     initPaymentAction();
   }
 
+  /**
+   * Khởi tạo logic xử lý thanh toán cho khách hàng (có áp dụng giảm giá 5%).
+   */
   function initPaymentAction() {
     var btn = document.getElementById("paymentSubmitBtn");
     var input = document.getElementById("paymentInput");
@@ -1988,6 +2158,9 @@
     });
   }
 
+  /**
+   * Điểm khởi đầu của ứng dụng (Bootstrap): kiểm tra URL, xác thực, tải dữ liệu đầu tiên.
+   */
   async function bootstrap() {
     try {
       if (typeof window.krudList !== "function") {

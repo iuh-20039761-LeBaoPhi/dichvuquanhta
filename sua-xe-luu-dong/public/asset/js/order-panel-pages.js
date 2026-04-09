@@ -14,46 +14,14 @@
   var REVIEW_UPLOAD_ENDPOINT = "../public/upload-review-media.php";
   var REVIEW_FIELD_MAP = {
     customer: {
-      text: [
-        "danhgia_khachhang",
-        "danhgiakhachhang",
-        "review_khachhang",
-        "review_customer_text",
-        "customer_review_text",
-      ],
-      date: [
-        "ngaydanhgia_khachhang",
-        "ngay_danhgia_khachhang",
-        "review_customer_at",
-        "customer_review_at",
-      ],
-      media: [
-        "media_danhgia_khachhang",
-        "anhvideo_danhgia_khachhang",
-        "review_customer_media",
-        "customer_review_media",
-      ],
+      text: ["danhgia_khachhang"],
+      date: ["ngaydanhgia_khachhang"],
+      media: ["media_danhgia_khachhang"],
     },
     provider: {
-      text: [
-        "danhgia_nhacungcap",
-        "danhgianhacungcap",
-        "review_nhacungcap",
-        "review_provider_text",
-        "provider_review_text",
-      ],
-      date: [
-        "ngaydanhgia_nhacungcap",
-        "ngay_danhgia_nhacungcap",
-        "review_provider_at",
-        "provider_review_at",
-      ],
-      media: [
-        "media_danhgia_nhacungcap",
-        "anhvideo_danhgia_nhacungcap",
-        "review_provider_media",
-        "provider_review_media",
-      ],
+      text: ["danhgia_nhacungcap"],
+      date: ["ngaydanhgia_nhacungcap"],
+      media: ["media_danhgia_nhacungcap"],
     },
   };
 
@@ -83,21 +51,9 @@
 
   function hasOrderLifecycleDates(row) {
     return (
-      hasDateValue(
-        row &&
-          (row.ngayhuy || row.ngay_huy || row.canceled_at || row.cancel_at),
-      ) ||
-      hasDateValue(
-        row &&
-          (row.ngaynhan || row.ngay_nhan || row.received_at || row.receive_at),
-      ) ||
-      hasDateValue(
-        row &&
-          (row.ngayhoanthanh ||
-            row.ngay_hoan_thanh ||
-            row.completed_at ||
-            row.complete_at),
-      )
+      hasDateValue(row && row.ngayhuy) ||
+      hasDateValue(row && row.ngaynhan) ||
+      hasDateValue(row && row.ngayhoanthanh)
     );
   }
 
@@ -278,56 +234,15 @@
   }
 
   function hasAssignedProviderRow(row) {
-    var providerId = String(
-      (row &&
-        (row.idnhacungcap ||
-          row.id_ncc ||
-          row.manhacungcap ||
-          row.provider_id ||
-          (row.nhacungcap &&
-            (row.nhacungcap.id ||
-              row.nhacungcap.idnhacungcap ||
-              row.nhacungcap.provider_id ||
-              row.nhacungcap.manhacungcap)))) ||
-        "",
-    ).trim();
+    var providerId = String((row && row.idnhacungcap) || "").trim();
 
     if (!providerId || providerId === "0") return false;
 
-    var providerName = pickFirstValue([
-      row && row.tennhacungcap,
-      row && row.nhacungcap && row.nhacungcap.hovaten,
-      row && row.nhacungcap && row.nhacungcap.user_name,
-    ]);
+    var providerName = (row && row.tennhacungcap) || "";
 
-    var providerPhone = String(
-      (row &&
-        (row.sdt_ncc ||
-          row.sodienthoai_ncc ||
-          row.phone_ncc ||
-          (row.nhacungcap &&
-            (row.nhacungcap.sodienthoai ||
-              row.nhacungcap.user_tel ||
-              row.nhacungcap.sdt)))) ||
-        "",
-    )
-      .replace(/\s+/g, "")
-      .trim();
-    if (providerPhone.indexOf("+84") === 0)
-      providerPhone = "0" + providerPhone.slice(3);
-    if (providerPhone.indexOf("84") === 0 && providerPhone.length >= 11) {
-      providerPhone = "0" + providerPhone.slice(2);
-    }
+    var providerPhone = String((row && row.sdt_ncc) || "").replace(/\s+/g, "").trim();
 
-    var providerEmail = String(
-      (row &&
-        (row.email_ncc ||
-          (row.nhacungcap &&
-            (row.nhacungcap.email || row.nhacungcap.user_email)))) ||
-        "",
-    )
-      .trim()
-      .toLowerCase();
+    var providerEmail = String((row && row.email_ncc) || "").trim().toLowerCase();
 
     return Boolean(providerName || providerPhone || providerEmail);
   }
@@ -593,17 +508,17 @@
       },
     ];
 
-    if (row && (row.ngaynhan || row.ngay_nhan || row.received_at)) {
+    if (row && row.ngaynhan) {
       timeline.push({
-        at: row.ngaynhan || row.ngay_nhan || row.received_at,
+        at: row.ngaynhan,
         title: "Nhà cung cấp xác nhận",
         detail: "Đơn hàng đã được nhà cung cấp tiếp nhận.",
       });
     }
 
-    if (row && (row.ngaybatdau || row.ngay_bat_dau || row.started_at)) {
+    if (row && row.ngaybatdau) {
       timeline.push({
-        at: row.ngaybatdau || row.ngay_bat_dau || row.started_at,
+        at: row.ngaybatdau,
         title: "Bắt đầu xử lý",
         detail: "Nhà cung cấp đã bắt đầu thực hiện đơn hàng.",
       });
@@ -629,166 +544,67 @@
   }
 
   function mapDbOrderToPanelOrder(row) {
-    var createdAt =
-      (row && (row.ngaydat || row.ngaytao || row.created_at)) ||
-      new Date().toISOString();
+    var createdAt = (row && (row.ngaydat || row.created_date)) || new Date().toISOString();
     var updatedAt =
       (row &&
         (row.ngayhoanthanh ||
           row.ngayhuy ||
           row.ngaybatdau ||
-          row.ngay_bat_dau ||
-          row.started_at ||
-          row.ngaynhan ||
-          row.ngay_nhan ||
-          row.received_at ||
-          row.updated_at)) ||
+          row.ngaynhan)) ||
       createdAt;
 
     var rawStatus =
       typeof shared.getOrderStatus === "function"
         ? shared.getOrderStatus(row)
-        : row && (row.ngayhuy || row.ngay_huy || row.canceled_at)
+        : row && row.ngayhuy
           ? "cancel"
-          : row &&
-              (row.ngayhoanthanh || row.ngay_hoan_thanh || row.completed_at)
+          : row && row.ngayhoanthanh
             ? "completed"
-            : row && (row.ngaybatdau || row.ngay_bat_dau || row.started_at)
+            : row && row.ngaybatdau
               ? "processing"
-              : row && (row.ngaynhan || row.ngay_nhan || row.received_at)
+              : row && row.ngaynhan
                 ? "accepted"
                 : "pending";
     var status = mapDbStatusToPanel(rawStatus);
 
-    var qty = toNumber(row && row.soluong);
-    if (qty <= 0) qty = 1;
+    var qty = 1;
 
     var servicePrice = toNumber(row && row.giadichvu);
     var transportFee = toNumber(row && row.tiendichuyen);
-    var surchargeFee = toNumber(
-      row && (row.phikhaosat || row.phi_khao_sat || row.phuphigiaonhan),
-    );
+    var surchargeFee = toNumber(row && row.phikhaosat);
     var totalAmount = toNumber(row && row.tongtien);
     var hasAssignedProvider = hasAssignedProviderRow(row);
 
     return {
       id: toNumber(row && row.id),
-      service: (row && row.dichvu) || "Dịch vụ giặt ủi",
+      service: (row && row.dichvu) || "Dịch vụ sửa xe",
       createdAt: createdAt,
       updatedAt: updatedAt,
       status: status,
       customer: {
-        id: toNumber(
-          row &&
-            (row.idkhachhang ||
-              row.makhachhang ||
-              row.user_id ||
-              (row.khachhang &&
-                (row.khachhang.id ||
-                  row.khachhang.makhachhang ||
-                  row.khachhang.user_id))),
-        ),
-        name:
-          (row && row.hovaten) ||
-          (row && row.khachhang && row.khachhang.hovaten) ||
-          (row && row.khachhang && row.khachhang.user_name) ||
-          "Khách hàng",
-        phone:
-          (row && row.sodienthoai) ||
-          (row && row.khachhang && row.khachhang.sodienthoai) ||
-          (row && row.khachhang && row.khachhang.user_tel) ||
-          "",
-        email:
-          (row && row.email) ||
-          (row && row.khachhang && row.khachhang.email) ||
-          (row && row.khachhang && row.khachhang.user_email) ||
-          "",
-        address:
-          (row && row.diachi) ||
-          (row && row.khachhang && row.khachhang.diachi) ||
-          "",
-        avatar: pickFirstValue([
-          row && row.avatar_kh,
-          row && row.avatar_khachhang,
-          row && row.avatar_customer,
-          row && row.customer_avatar,
-          row && row.avatartenfile,
-          row && row.khachhang && row.khachhang.avatar,
-          row && row.khachhang && row.khachhang.avatar_kh,
-          row && row.khachhang && row.khachhang.avatartenfile,
-        ]),
-        maplat: row && (row.lat_kh || row.lat),
-        maplng: row && (row.lng_kh || row.lng),
+        id: 0,
+        name: (row && row.hovaten) || "Khách hàng",
+        phone: (row && row.sodienthoai) || "",
+        email: "",
+        address: (row && row.diachi) || "",
+        avatar: "",
+        maplat: row && row.lat_kh,
+        maplng: row && row.lng_kh,
       },
       provider: {
-        id: hasAssignedProvider
-          ? toNumber(
-              row &&
-                (row.idnhacungcap ||
-                  row.id_ncc ||
-                  row.manhacungcap ||
-                  row.provider_id ||
-                  (row.nhacungcap &&
-                    (row.nhacungcap.id ||
-                      row.nhacungcap.idnhacungcap ||
-                      row.nhacungcap.provider_id ||
-                      row.nhacungcap.manhacungcap))),
-            )
-          : 0,
-        name: hasAssignedProvider
-          ? (row && row.tennhacungcap) ||
-            (row &&
-              row.nhacungcap &&
-              (row.nhacungcap.hovaten || row.nhacungcap.user_name)) ||
-            "Chưa phân công"
-          : "Chưa phân công",
-        phone: hasAssignedProvider
-          ? (row && row.sdt_ncc) ||
-            (row && row.sodienthoai_ncc) ||
-            (row && row.phone_ncc) ||
-            (row &&
-              row.nhacungcap &&
-              (row.nhacungcap.sodienthoai ||
-                row.nhacungcap.user_tel ||
-                row.nhacungcap.sdt)) ||
-            ""
-          : "",
-        email: hasAssignedProvider
-          ? (row && row.email_ncc) ||
-            (row &&
-              row.nhacungcap &&
-              (row.nhacungcap.email || row.nhacungcap.user_email)) ||
-            ""
-          : "",
-        address: hasAssignedProvider
-          ? (row && row.diachi_ncc) ||
-            (row && row.address_ncc) ||
-            (row && row.nhacungcap && row.nhacungcap.diachi) ||
-            ""
-          : "",
-        avatar: hasAssignedProvider
-          ? pickFirstValue([
-              row && row.avatar_ncc,
-              row && row.avatar_nhacungcap,
-              row && row.provider_avatar,
-              row && row.nhacungcap && row.nhacungcap.avatar,
-              row && row.nhacungcap && row.nhacungcap.avatar_ncc,
-              row && row.nhacungcap && row.nhacungcap.avatartenfile,
-            ])
-          : "",
-        maplat: hasAssignedProvider
-          ? (row && row.maplat_ncc) || (row.nhacungcap && row.nhacungcap.maplat)
-          : null,
-        maplng: hasAssignedProvider
-          ? (row && row.maplng_ncc) || (row.nhacungcap && row.nhacungcap.maplng)
-          : null,
+        id: hasAssignedProvider ? toNumber(row && row.idnhacungcap) : 0,
+        name: hasAssignedProvider ? (row && row.tennhacungcap) || "Chưa phân công" : "Chưa phân công",
+        phone: hasAssignedProvider ? (row && row.sdt_ncc) || "" : "",
+        email: hasAssignedProvider ? (row && row.email_ncc) || "" : "",
+        address: hasAssignedProvider ? (row && row.diachi_ncc) || "" : "",
+        avatar: "",
+        maplat: null,
+        maplng: null,
       },
       raw: row || null,
       items: [
         {
-          name:
-            (row && (row.hinhthucnhangiao || row.dichvu || "Dịch vụ")) ||
-            "Dịch vụ",
+          name: (row && row.dichvu) || "Dịch vụ",
           quantity: qty,
           unitPrice: servicePrice,
         },
@@ -806,34 +622,18 @@
             row.payment_status ||
             row.paymentStatus)) ||
         "Unpaid",
-      deliveryMethod:
-        (row &&
-          (row.hinhthucnhangiao ||
-            row.phuongthucgiaonhan ||
-            row.transport_option)) ||
-        "",
+      deliveryMethod: "",
       vehicleInfo: {
         type: (row && row.loaixe) || "",
         brand: (row && row.hangxe) || "",
         model: (row && row.mauxe) || "",
       },
       note: (row && row.ghichu) || "Không có ghi chú.",
-      workItemsText:
-        (row &&
-          (row.danhsachcongviec || row.congviec || row.danhsach_congviec)) ||
-        "",
-      chemicalsText:
-        (row &&
-          (row.danhsachhoachat || row.hoachathotro || row.danhsach_hoachat)) ||
-        "",
-      receivedAt:
-        (row && (row.ngaynhan || row.ngay_nhan || row.received_at)) || "",
-      startedAt:
-        (row && (row.ngaybatdau || row.ngay_bat_dau || row.started_at)) || "",
-      completedAt:
-        (row &&
-          (row.ngayhoanthanh || row.ngay_hoan_thanh || row.completed_at)) ||
-        "",
+      workItemsText: "",
+      chemicalsText: "",
+      receivedAt: (row && row.ngaynhan) || "",
+      startedAt: (row && row.ngaybatdau) || "",
+      completedAt: (row && row.ngayhoanthanh) || "",
       timeline: buildTimelineFromDbRow(row, status, createdAt),
     };
   }
@@ -961,10 +761,7 @@
   }
 
   function resolveOrderProviderId(row) {
-    return toNumber(
-      row &&
-        (row.idnhacungcap || row.id_ncc || row.manhacungcap || row.provider_id),
-    );
+    return toNumber(row && row.idnhacungcap);
   }
 
   function loadProviderOrders(user) {
@@ -1577,10 +1374,7 @@
 
           var canCancelCustomerOrder =
             role === "customer" &&
-            !hasDateValue(
-              (order && order.receivedAt) ||
-                (order && order.raw && order.raw.ngaynhan),
-            ) &&
+            !hasDateValue(order && order.ngaynhan) &&
             String(order.status || "") !== "completed" &&
             String(order.status || "") !== "canceled";
 

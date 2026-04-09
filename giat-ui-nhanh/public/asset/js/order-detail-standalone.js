@@ -59,6 +59,11 @@
     isSubmittingReview: false,
   };
 
+  /**
+   * Lấy mảng dữ liệu từ kết quả trả về của API KRUD.
+   * @param {Object|Array} result Kết quả từ API.
+   * @returns {Array} Mảng các hàng dữ liệu.
+   */
   function extractRows(result) {
     if (typeof shared.extractRows === "function") {
       return shared.extractRows(result);
@@ -71,6 +76,11 @@
     return [];
   }
 
+  /**
+   * Chuẩn hóa số điện thoại về định dạng 0xxx.
+   * @param {string|number} phone Số điện thoại cần chuẩn hóa.
+   * @returns {string} Số điện thoại đã chuẩn hóa.
+   */
   function normalizePhone(phone) {
     var value = String(phone || "")
       .replace(/\s+/g, "")
@@ -82,10 +92,20 @@
     return value;
   }
 
+  /**
+   * Chuẩn hóa ID (loại bỏ khoảng trắng và chuyển về chuỗi).
+   * @param {any} id ID cần chuẩn hóa.
+   * @returns {string} ID đã chuẩn hóa.
+   */
   function normalizeId(id) {
     return String(id == null ? "" : id).trim();
   }
 
+  /**
+   * Lấy giá trị đầu tiên không rỗng trong mảng các giá trị.
+   * @param {Array} values Mảng các giá trị.
+   * @returns {string} Giá trị đầu tiên tìm thấy.
+   */
   function pickFirstValue(values) {
     var list = Array.isArray(values) ? values : [];
     for (var i = 0; i < list.length; i += 1) {
@@ -95,6 +115,11 @@
     return "";
   }
 
+  /**
+   * Chuyển đổi một giá trị bất kỳ sang kiểu số thực (finite number).
+   * @param {any} value Giá trị cần chuyển đổi.
+   * @returns {number} Giá trị số, mặc định là 0 nếu không hợp lệ.
+   */
   function toNumber(value) {
     if (typeof value === "number") return Number.isFinite(value) ? value : 0;
     var text = String(value || "")
@@ -105,6 +130,11 @@
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
+  /**
+   * Lấy khối lượng hoặc số lượng từ dữ liệu đơn hàng để tính toán.
+   * @param {Object} order Đối tượng đơn hàng.
+   * @returns {number} Khối lượng hoặc số lượng (mặc định ít nhất là 1).
+   */
   function parseWeight(order) {
     var fromWeight = toNumber(order.khoiluong || order.weight || order.cannang);
     if (fromWeight > 0) return fromWeight;
@@ -113,6 +143,14 @@
     return fromQuantity > 0 ? fromQuantity : 1;
   }
 
+  /**
+   * Tính khoảng cách đường bộ giữa 2 điểm tọa độ qua API OSRM.
+   * @param {number} lat1 Vĩ độ điểm 1.
+   * @param {number} lon1 Kinh độ điểm 1.
+   * @param {number} lat2 Vĩ độ điểm 2.
+   * @param {number} lon2 Kinh độ điểm 2.
+   * @returns {Promise<number>} Khoảng cách tính bằng km.
+   */
   async function getDistance(lat1, lon1, lat2, lon2) {
     var url =
       "https://router.project-osrm.org/route/v1/driving/" +
@@ -143,6 +181,12 @@
     return Number((data.routes[0].distance / 1000).toFixed(2));
   }
 
+  /**
+   * Tính toán phụ phí giao hàng và tổng tiền dựa trên khoảng cách và khối lượng.
+   * @param {Object} order Dữ liệu đơn hàng thô.
+   * @param {number} distanceKm Khoảng cách tính được (km).
+   * @returns {Object} Kết quả tính toán giá (khoảng cách, phụ phí, tổng tiền).
+   */
   function calculatePricing(order, distanceKm) {
     var totalWeight = parseWeight(order);
     var baseTransportFee = toNumber(order.tiendichuyen);
@@ -171,6 +215,11 @@
     };
   }
 
+  /**
+   * Kiểm tra một giá trị có phải là ngày tháng hợp lệ (không rỗng, không phải 0000-00-00).
+   * @param {any} value Giá trị cần kiểm tra.
+   * @returns {boolean} True nếu là ngày hợp lệ.
+   */
   function hasDateValue(value) {
     if (value == null) return false;
     var text = String(value).trim().toLowerCase();
@@ -183,6 +232,11 @@
     );
   }
 
+  /**
+   * Gán nội dung văn bản cho một phần tử DOM theo ID.
+   * @param {string} id ID của phần tử DOM.
+   * @param {any} value Giá trị cần hiển thị.
+   */
   function setText(id, value) {
     var node = document.getElementById(id);
     if (node) {
@@ -190,6 +244,11 @@
     }
   }
 
+  /**
+   * Định dạng ID đơn hàng thành mã chuỗi có 7 chữ số (ví dụ: 0000123).
+   * @param {number|string} orderId ID đơn hàng.
+   * @returns {string} Mã đơn hàng đã định dạng.
+   */
   function formatOrderCode(orderId) {
     if (typeof shared.formatOrderCode === "function") {
       return shared.formatOrderCode(orderId);
@@ -199,16 +258,31 @@
     return String(Math.floor(id)).padStart(7, "0");
   }
 
+  /**
+   * Định dạng số thành chuỗi tiền tệ tiếng Việt (ví dụ: 100.000 đ).
+   * @param {number|string} value Giá trị số.
+   * @returns {string} Chuỗi tiền tệ.
+   */
   function formatCurrency(value) {
     var num = toNumber(value);
     return num.toLocaleString("vi-VN") + " đ";
   }
 
+  /**
+   * Định dạng số thành chuỗi tiền tệ tiếng Việt có hậu tố VND.
+   * @param {number|string} value Giá trị số.
+   * @returns {string} Chuỗi tiền tệ.
+   */
   function formatCurrencyVnd(value) {
     var num = toNumber(value);
     return num.toLocaleString("vi-VN") + " VND";
   }
 
+  /**
+   * Định dạng ngày giờ theo kiểu Việt Nam (DD/MM/YYYY HH:MM).
+   * @param {string|Date} value Giá trị ngày tháng.
+   * @returns {string} Chuỗi ngày giờ định dạng.
+   */
   function formatDateTime(value) {
     if (!value) return "---";
     var date = new Date(value);
@@ -222,6 +296,11 @@
     });
   }
 
+  /**
+   * Định dạng ngày (chỉ có ngày/tháng/năm) theo kiểu Việt Nam.
+   * @param {string|Date} value Giá trị ngày tháng.
+   * @returns {string} Chuỗi ngày định dạng.
+   */
   function formatDateOnly(value) {
     if (!value) return "---";
     var date = new Date(value);
@@ -229,11 +308,21 @@
     return date.toLocaleDateString("vi-VN");
   }
 
+  /**
+   * Trả về chuỗi văn bản đã trim hoặc "---" nếu rỗng.
+   * @param {any} value Giá trị văn bản.
+   * @returns {string} Văn bản an toàn để hiển thị.
+   */
   function safeText(value) {
     var text = String(value || "").trim();
     return text || "---";
   }
 
+  /**
+   * Lấy nhãn hiển thị cho trạng thái thanh toán (Paid -> Đã thanh toán).
+   * @param {string} value Mã trạng thái từ DB.
+   * @returns {string} Nhãn tiếng Việt.
+   */
   function getPaymentStatusLabel(value) {
     if (typeof shared.getPaymentStatusLabel === "function") {
       return shared.getPaymentStatusLabel(value);
@@ -245,6 +334,12 @@
       : "Chưa thanh toán";
   }
 
+  /**
+   * Lấy chữ cái đầu của tên (ví dụ: "Lê Bảo Phi" -> "LP"). Dùng làm fallback cho avatar.
+   * @param {string} name Tên đầy đủ.
+   * @param {string} fallback Giá trị thay thế nếu không lấy được.
+   * @returns {string} Các chữ cái đầu.
+   */
   function initialsOf(name, fallback) {
     var text = String(name || "").trim();
     if (!text) return fallback || "--";
@@ -255,6 +350,11 @@
     return (first + last).toUpperCase();
   }
 
+  /**
+   * Tách một chuỗi văn bản danh sách thành mảng các mục.
+   * @param {string} value Chuỗi cần tách (dùng dấu phẩy, chấm phẩy hoặc xuống dòng).
+   * @returns {string[]} Mảng các mục đã tách.
+   */
   function splitListText(value) {
     return String(value || "")
       .split(/[\n,;]+/)
@@ -264,6 +364,11 @@
       .filter(Boolean);
   }
 
+  /**
+   * Tạo danh sách các bước thực hiện công việc (tasks) từ dữ liệu đơn hàng.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {string[]} Danh sách các chuỗi mô tả công việc.
+   */
   function taskLinesFromOrder(order) {
     var apiItems = splitListText(order && order.workItemsText);
     if (apiItems.length) return apiItems;
@@ -290,6 +395,11 @@
     });
   }
 
+  /**
+   * Ánh xạ trạng thái thô từ Database sang các mã trạng thái chuẩn của App.
+   * @param {string} status Trạng thái từ DB.
+   * @returns {string} Mã trạng thái chuẩn (pending, accepted, processing, completed, canceled).
+   */
   function mapDbStatus(status) {
     var value = String(status || "").toLowerCase();
     if (value === "cancel") return "canceled";
@@ -299,6 +409,11 @@
     return "pending";
   }
 
+  /**
+   * Xác định trạng thái đơn hàng dựa trên các mốc thời gian đã được ghi nhận.
+   * @param {Object} row Dữ liệu hàng đơn hàng.
+   * @returns {string} Mã trạng thái chuẩn.
+   */
   function getOrderStatus(row) {
     if (typeof shared.getOrderStatus === "function") {
       return mapDbStatus(shared.getOrderStatus(row));
@@ -319,6 +434,11 @@
     return "pending";
   }
 
+  /**
+   * Lấy siêu dữ liệu cho trạng thái (Nhãn hiển thị và CSS class).
+   * @param {string} status Mã trạng thái chuẩn.
+   * @returns {Object} Metadata (label, className).
+   */
   function statusMeta(status) {
     var value = String(status || "").toLowerCase();
     if (value === "accepted") {
@@ -336,6 +456,11 @@
     return { label: "Chờ xử lý", className: "status-pending" };
   }
 
+  /**
+   * Trả về phần trăm tiến độ tương ứng với mỗi trạng thái đơn hàng.
+   * @param {string} status Mã trạng thái chuẩn.
+   * @returns {number} Phần trăm (0-100).
+   */
   function statusProgress(status) {
     var value = String(status || "").toLowerCase();
     if (value === "completed") return 100;
@@ -345,6 +470,11 @@
     return 20;
   }
 
+  /**
+   * Trích xuất ID số từ mã đơn hàng dạng văn bản (ví dụ: "#0000123" -> 123).
+   * @param {string} mahd Mã đơn hàng văn bản.
+   * @returns {number} ID dạng số.
+   */
   function parseOrderId(mahd) {
     var raw = String(mahd || "")
       .trim()
@@ -362,6 +492,10 @@
     return Number.isFinite(id) ? Math.floor(id) : 0;
   }
 
+  /**
+   * Trích xuất các tham số từ URL (`mahd`, `sodienthoai`, `password`).
+   * @returns {Object} Đối tượng chứa các tham số.
+   */
   function parseParams() {
     var urlParams = new URLSearchParams(window.location.search);
     return {
@@ -371,6 +505,10 @@
     };
   }
 
+  /**
+   * Hiển thị thông tin định danh của người dùng hiện tại lên UI (Chip vai trò và SĐT).
+   * @param {Object} auth Thông tin xác thực.
+   */
   function setIdentityChip(auth) {
     var roleNode = document.getElementById("accessRole");
     var phoneNode = document.getElementById("accessPhone");
@@ -384,6 +522,11 @@
     }
   }
 
+  /**
+   * Hiển thị nội dung lỗi khi không thể tải hoặc truy cập hóa đơn.
+   * @param {string} title Tiêu đề lỗi.
+   * @param {string} message Chi tiết lỗi.
+   */
   function showError(title, message) {
     var foundNode = document.getElementById("detailStateFound");
     var missingNode = document.getElementById("detailStateNotFound");
@@ -400,6 +543,9 @@
     );
   }
 
+  /**
+   * Chuyển trạng thái giao diện sang hiển thị chi tiết hóa đơn (ẩn thông báo lỗi).
+   */
   function showDetail() {
     var foundNode = document.getElementById("detailStateFound");
     var missingNode = document.getElementById("detailStateNotFound");
@@ -407,6 +553,12 @@
     if (missingNode) missingNode.classList.add("d-none");
   }
 
+  /**
+   * Tìm kiếm 1 bản ghi trong một bảng DB theo điều kiện dùng thư viện KRUD.
+   * @param {string} table Tên bảng.
+   * @param {Array} where Mảng các điều kiện lọc.
+   * @returns {Promise<Object|null>} Bản ghi đầu tiên tìm được hoặc null.
+   */
   async function queryByWhere(table, where) {
     if (typeof window.krudList !== "function") {
       throw new Error("Thư viện KRUD chưa sẵn sàng.");
@@ -425,6 +577,12 @@
     return rows.length ? rows[0] : null;
   }
 
+  /**
+   * Thử tìm kiếm 1 bản ghi bằng cách kiểm tra lần lượt các cặp Trường-Giá trị đề cử.
+   * @param {string} table Tên bảng.
+   * @param {Array} candidates Danh sách các cặp {field, value}.
+   * @returns {Promise<Object|null>} Bản ghi đầu tiên tìm được.
+   */
   async function queryFirstByCandidates(table, candidates) {
     var list = Array.isArray(candidates) ? candidates : [];
 
@@ -453,6 +611,13 @@
     return null;
   }
 
+  /**
+   * Xác thực người dùng bằng cách kiểm tra SĐT và Mật khẩu qua nhiều tên trường tiềm năng.
+   * @param {string} table Tên bảng người dùng.
+   * @param {string} phone Số điện thoại đăng nhập.
+   * @param {string} password Mật khẩu đăng nhập.
+   * @returns {Promise<Object|null>} Thông tin người dùng nếu khớp.
+   */
   async function queryUserByCredentials(table, phone, password) {
     var phoneFields = ["sodienthoai", "user_tel", "phone"];
     var passwordFields = ["matkhau", "password", "user_password"];
@@ -485,6 +650,12 @@
     return null;
   }
 
+  /**
+   * Hàm xử lý xác thực quyền truy cập và xác định vai trò (Provider/Customer).
+   * @param {string} phone Số điện thoại.
+   * @param {string} password Mật khẩu.
+   * @returns {Promise<Object|null>} Kết quả xác thực (role, user, phone).
+   */
   async function authenticateAccess(phone, password) {
     if (typeof USER_TABLE === "undefined") {
       var USER_TABLE = "nguoidung";
@@ -504,6 +675,11 @@
     };
   }
 
+  /**
+   * Tải thông tin đơn hàng từ Database dựa trên mã đơn.
+   * @param {string} mahd Mã đơn hàng.
+   * @returns {Promise<Object|null>} Dữ liệu đơn hàng thô.
+   */
   async function loadOrderByMahd(mahd) {
     var orderId = parseOrderId(mahd);
     if (!Number.isFinite(orderId) || orderId <= 0) {
@@ -524,6 +700,11 @@
     ]);
   }
 
+  /**
+   * Tải thông tin bản ghi Khách hàng liên quan đến đơn hàng.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {Promise<Object|null>} Thông tin khách hàng.
+   */
   async function loadCustomerRecord(order) {
     var customerId = normalizeId(
       order.idkhachhang || order.makhachhang || order.user_id,
@@ -538,6 +719,11 @@
     ]);
   }
 
+  /**
+   * Tải thông tin bản ghi Nhà cung cấp liên quan đến đơn hàng.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {Promise<Object|null>} Thông tin nhà cung cấp.
+   */
   async function loadProviderRecord(order) {
     var providerId = normalizeId(
       order.idnhacungcap ||
@@ -561,6 +747,11 @@
     ]);
   }
 
+  /**
+   * Tải đồng thời thông tin khách hàng và nhà cung cấp liên quan.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @returns {Promise<Object>} Object chứa customer và provider.
+   */
   async function loadRelatedRecords(order) {
     var results = await Promise.all([
       loadCustomerRecord(order),
@@ -573,6 +764,12 @@
     };
   }
 
+  /**
+   * Hợp nhất dữ liệu đơn hàng với thông tin chi tiết từ bản ghi khách hàng/nhà cung cấp.
+   * @param {Object} order Dữ liệu đơn hàng.
+   * @param {Object} related Kết quả từ loadRelatedRecords.
+   * @returns {Object} Dữ liệu đơn hàng đầy đủ trường.
+   */
   function mergeOrderWithRelated(order, related) {
     var row = Object.assign({}, order);
     var customer = related && related.customer ? related.customer : null;
@@ -629,6 +826,11 @@
     return row;
   }
 
+  /**
+   * Kiểm tra xem trong dữ liệu hàng có thông tin về việc đã được phân công nhà cung cấp chưa.
+   * @param {Object} row Dữ liệu hàng đơn hàng.
+   * @returns {boolean} True nếu đã có nhà cung cấp được gắn vào đơn.
+   */
   function hasAssignedProviderRow(row) {
     var providerId = normalizeId(
       row.idnhacungcap ||
@@ -670,6 +872,11 @@
     return Boolean(providerName || providerPhone || providerEmail);
   }
 
+  /**
+   * Chuyển đổi dữ liệu thô từ Database sang một đối tượng có cấu trúc dùng để hiển thị lên UI.
+   * @param {Object} row Dữ liệu đơn hàng đã được hợp nhất.
+   * @returns {Object} View object cho giao diện.
+   */
   function mapOrderView(row) {
     var createdAt = row.ngaydat || row.ngaytao || row.created_at || "";
     var updatedAt =
@@ -820,6 +1027,12 @@
     };
   }
 
+  /**
+   * Tạo danh sách các đường dẫn (URL) tiềm năng để thử tải ảnh đại diện.
+   * @param {string} rawValue Giá trị avatar thô từ DB.
+   * @param {string} kind Loại người dùng (customer/provider).
+   * @returns {string[]} Mảng các URL khả thi.
+   */
   function normalizeAvatarCandidates(rawValue, kind) {
     var text = String(rawValue == null ? "" : rawValue).trim();
     if (!text) return [];
@@ -880,6 +1093,13 @@
     });
   }
 
+  /**
+   * Thử hiển thị ảnh đại diện lên một badge, nếu không có ảnh thì hiện chữ cái đầu.
+   * @param {string} id ID phần tử HTML.
+   * @param {string} avatarValue Giá trị avatar từ DB.
+   * @param {string} fallbackText Văn bản hiển thị thay thế (initials).
+   * @param {string} kind Loại người dùng.
+   */
   function renderAvatarBadge(id, avatarValue, fallbackText, kind) {
     var node = document.getElementById(id);
     if (!node) return;
@@ -922,6 +1142,11 @@
     tryNext();
   }
 
+  /**
+   * Chuẩn hóa tên người (chuyển chữ thường, xóa khoảng trắng thừa) để so sánh.
+   * @param {string} value Tên thô.
+   * @returns {string} Tên đã chuẩn hóa.
+   */
   function normalizePersonName(value) {
     return String(value || "")
       .toLowerCase()
@@ -929,6 +1154,11 @@
       .trim();
   }
 
+  /**
+   * Trích xuất thông tin định danh đầy đủ của nhà cung cấp từ đối tượng auth.
+   * @param {Object} auth Thông tin xác thực.
+   * @returns {Object} Thông tin nhà cung cấp (id, name, phone, coordinates...).
+   */
   function resolveProviderIdentity(auth) {
     var user = (auth && auth.user) || {};
     var providerId = normalizeId(
@@ -954,6 +1184,12 @@
     };
   }
 
+  /**
+   * Kiểm tra xem người dùng hiện tại có quyền truy cập vào hóa đơn này hay không.
+   * @param {Object} auth Thông tin người dùng đang đăng nhập.
+   * @param {Object} order Thông tin đơn hàng hiện tại.
+   * @returns {boolean} True nếu được phép xem.
+   */
   function canAccessOrder(auth, order) {
     if (!auth || !order) return false;
 
@@ -1002,6 +1238,10 @@
     return false;
   }
 
+  /**
+   * Hiển thị danh sách các bước thực hiện công việc và ghi chú lên UI.
+   * @param {Object} order View object của đơn hàng.
+   */
   function renderTaskList(order) {
     var listNode = document.getElementById("detailTasksList");
     if (!listNode) return;
@@ -1029,14 +1269,32 @@
     setText("detailNote", order.note || "Không có ghi chú.");
   }
 
+  /**
+   * Lấy tiền tố cho các ID phần tử giao diện đánh giá (Customer/Provider).
+   * @param {string} actor Loại đối tượng đánh giá.
+   * @returns {string} Tên tiền tố.
+   */
   function reviewPrefix(actor) {
     return actor === "provider" ? "Provider" : "Customer";
   }
 
+  /**
+   * Lấy phần tử HTML liên quan đến đánh giá dựa trên đối tượng và hậu tố ID.
+   * @param {string} actor Đối tượng (customer/provider).
+   * @param {string} suffix Phần hậu tố của ID phần tử.
+   * @returns {HTMLElement|null}
+   */
   function reviewNode(actor, suffix) {
     return document.getElementById("review" + reviewPrefix(actor) + suffix);
   }
 
+  /**
+   * Tìm tên Field (Key) đầu tiên thực sự tồn tại trong một hàng dữ liệu DB từ danh sách key gợi ý.
+   * @param {Object} row Hàng dữ liệu DB.
+   * @param {string[]} keys Danh sách các tên field có thể chứa dữ liệu.
+   * @param {string} fallback Giá trị mặc định nếu không tìm thấy key nào.
+   * @returns {string} Tên field tìm thấy.
+   */
   function firstExistingKey(row, keys, fallback) {
     var source = row && typeof row === "object" ? row : {};
     var list = Array.isArray(keys) ? keys : [];
@@ -1048,6 +1306,12 @@
     return fallback;
   }
 
+  /**
+   * Lấy giá trị đầu tiên có dữ liệu cho một nhóm các tên Field (Key).
+   * @param {Object} row Hàng dữ liệu thô.
+   * @param {string[]} keys Các key cần kiểm tra.
+   * @returns {any} Giá trị đầu tiên tìm được.
+   */
   function firstReviewValue(row, keys) {
     var source = row && typeof row === "object" ? row : {};
     var list = Array.isArray(keys) ? keys : [];
@@ -1061,6 +1325,11 @@
     return "";
   }
 
+  /**
+   * Xử lý dữ liệu Ảnh/Video đánh giá từ nhiều định dạng lưu trữ (Mảng, JSON chuỗi, Chuỗi phân tách).
+   * @param {any} value Giá trị media thô.
+   * @returns {string[]} Mảng các tên file hoặc URL media.
+   */
   function parseReviewMedia(value) {
     if (Array.isArray(value)) {
       return value
@@ -1093,6 +1362,11 @@
       .filter(Boolean);
   }
 
+  /**
+   * Loại bỏ các file trùng lặp trong mảng media.
+   * @param {string[]} files Mảng tên file.
+   * @returns {string[]}
+   */
   function dedupeMedia(files) {
     var map = {};
     var list = Array.isArray(files) ? files : [];
@@ -1104,6 +1378,12 @@
     });
   }
 
+  /**
+   * Trích xuất đầy đủ dữ liệu đánh giá của một đối tượng (Customer hoặc Provider) từ đơn hàng.
+   * @param {Object} raw Dữ liệu đơn hàng thô.
+   * @param {string} actor Đối tượng.
+   * @returns {Object} Dữ liệu đánh giá (văn bản, ngày, files, và các tên cột tương ứng).
+   */
   function resolveReviewData(raw, actor) {
     var source = raw && typeof raw === "object" ? raw : {};
     var config = REVIEW_FIELD_MAP[actor] || REVIEW_FIELD_MAP.customer;
@@ -1123,6 +1403,11 @@
     };
   }
 
+  /**
+   * Chuyển đổi tên file đánh giá sang URL truy cập được trên web.
+   * @param {string} path Tên file hoặc đường dẫn thô.
+   * @returns {string} URL đầy đủ.
+   */
   function resolveReviewMediaUrl(path) {
     var value = String(path || "")
       .trim()
@@ -1134,6 +1419,11 @@
     return "public/asset/image/upload/danhgia/" + value.replace(/^\/+/, "");
   }
 
+  /**
+   * Hiển thị danh sách các tệp đa phương tiện (ảnh/video) đánh giá lên giao diện.
+   * @param {HTMLElement} container Vùng chứa.
+   * @param {string[]} files Danh sách các tệp.
+   */
   function renderReviewMedia(container, files) {
     if (!container) return;
     container.className = "review-file";
@@ -1187,6 +1477,11 @@
     container.appendChild(grid);
   }
 
+  /**
+   * Hiển thị trạng thái "Đã có" hoặc "Chưa có" cho phần đánh giá.
+   * @param {string} actor Đối tượng.
+   * @param {boolean} hasData True nếu đã có dữ liệu đánh giá.
+   */
   function setReviewChip(actor, hasData) {
     var chip = reviewNode(actor, "Chip");
     if (!chip) return;
@@ -1194,6 +1489,11 @@
     chip.textContent = hasData ? "Đã có" : "Chưa có";
   }
 
+  /**
+   * Hiển thị nội dung chi tiết phần đánh giá của một đối tượng lên UI.
+   * @param {string} actor Đối tượng.
+   * @param {Object} review Dữ liệu đánh giá.
+   */
   function renderReviewSection(actor, review) {
     var info = review || { text: "", date: "", files: [] };
     var hasData = Boolean(info.text || (info.files && info.files.length));
@@ -1209,12 +1509,21 @@
     setReviewChip(actor, hasData);
   }
 
+  /**
+   * Hiển thị cả hai phần đánh giá của Khách hàng và Nhà cung cấp.
+   * @param {Object} order View object của đơn hàng.
+   */
   function renderReviews(order) {
     var raw = (order && order.raw) || {};
     renderReviewSection("customer", resolveReviewData(raw, "customer"));
     renderReviewSection("provider", resolveReviewData(raw, "provider"));
   }
 
+  /**
+   * Kiểm tra xem một đối tượng review có chứa bất kỳ thông tin nào không.
+   * @param {Object} review
+   * @returns {boolean}
+   */
   function hasReviewData(review) {
     var info = review || {};
     var text = String(info.text || "").trim();
@@ -1222,6 +1531,10 @@
     var files = Array.isArray(info.files) ? info.files : [];
     return Boolean(text || date || files.length);
   }
+  /**
+   * Điều khiển hiển thị hoặc ẩn các trình nhập liệu đánh giá dựa trên trạng thái hóa đơn và quyền hạn.
+   * @param {Object} order
+   */
   function syncReviewEditors(order) {
     var auth = state.auth || {};
     var status = String((order && order.status) || "").toLowerCase();
@@ -1249,6 +1562,10 @@
     });
   }
 
+  /**
+   * Hàm chính để hiển thị mọi thông tin chi tiết của đơn hàng lên toàn bộ giao diện.
+   * @param {Object} order Đối tượng đơn hàng đã được ánh xạ (view object).
+   */
   function renderOrder(order) {
     showDetail();
 
@@ -1405,6 +1722,9 @@
   //   node.textContent = message;
   // }
 
+  /**
+   * Ẩn thông báo hành động và xóa nội dung của nó.
+   */
   function hideActionAlert() {
     var node = document.getElementById("detailActionAlert");
     if (!node) return;
@@ -1413,6 +1733,11 @@
     node.classList.remove("alert-success", "alert-danger", "alert-info");
   }
 
+  /**
+   * Cập nhật các cột dữ liệu cho một hàng đơn hàng trong cơ sở dữ liệu.
+   * @param {number|string} orderId ID đơn hàng.
+   * @param {Object} payload Dữ liệu các trường cần cập nhật (Key-Value).
+   */
   async function updateOrderRow(orderId, payload) {
     if (typeof shared.updateOrder === "function") {
       await shared.updateOrder(ORDER_TABLE, orderId, payload);
@@ -1434,6 +1759,11 @@
     }
   }
 
+  /**
+   * Tải các tệp ảnh/video đánh giá lên máy chủ qua API.
+   * @param {File[]} files Danh sách các tệp File từ input.
+   * @returns {Promise<string[]>} Danh sách tên các file đã được lưu trên server.
+   */
   async function uploadReviewFiles(files) {
     var list = Array.isArray(files) ? files : [];
     if (!list.length) return [];
@@ -1460,6 +1790,11 @@
     return dedupeMedia(result.files || []);
   }
 
+  /**
+   * Cập nhật trạng thái "Đang gửi..." cho các nút và input trong form đánh giá.
+   * @param {string} actor Đối tượng đánh giá.
+   * @param {boolean} isLoading True nếu đang trong quá trình gửi.
+   */
   function setReviewSubmitting(actor, isLoading) {
     var button = reviewNode(actor, "Submit");
     var input = reviewNode(actor, "Input");
@@ -1487,6 +1822,10 @@
     }
   }
 
+  /**
+   * Xử lý quy trình gửi đánh giá: Tải media lên -> Cập nhật DB -> Tải lại dữ liệu trang.
+   * @param {string} actor Đối tượng đang gửi đánh giá (customer/provider).
+   */
   async function submitReview(actor) {
     if (state.isSubmittingReview) return;
 
@@ -1565,6 +1904,9 @@
     }
   }
 
+  /**
+   * Khởi tạo các sự kiện Click cho các nút gửi đánh giá của Khách hàng và Nhà cung cấp.
+   */
   function initReviewEditors() {
     ["customer", "provider"].forEach(function (actor) {
       var button = reviewNode(actor, "Submit");
@@ -1576,6 +1918,12 @@
     });
   }
 
+  /**
+   * Xác định cấu hình hiển thị (nhãn, màu sắc, gợi ý) cho nút hành động của Khách hàng.
+   * @param {string} authRole Vai trò người đăng nhập.
+   * @param {Object} order View object đơn hàng.
+   * @returns {Object|null} Cấu hình nút hoặc null.
+   */
   function getActionConfig(authRole, order) {
     var orderStatus = order && order.status;
     var hasReceivedDate = hasDateValue(
@@ -1624,6 +1972,12 @@
     return null;
   }
 
+  /**
+   * Hiển thị các nút hành động (Hủy đơn, Nhận đơn, Bắt đầu, Hoàn thành) dựa trên trạng thái và vai trò.
+   * Chứa logic xử lý tương tác trực tiếp cho các hành động quan trọng của Đơn hàng.
+   * @param {Object} auth Thông tin người dùng.
+   * @param {Object} order Thông tin đơn hàng (view object).
+   */
   function renderAction(auth, order) {
     var bar = document.getElementById("detailActionBar");
     var btn = document.getElementById("detailActionBtn");
@@ -1879,6 +2233,9 @@
     };
   }
 
+  /**
+   * Quy trình đầy đủ để tải lại dữ liệu đơn hàng mới nhất và hiển thị lên toàn bộ UI.
+   */
   async function loadAndRenderOrder() {
     var params = state.params;
     var auth = state.auth;
@@ -1911,6 +2268,9 @@
     renderAction(auth, mapped);
   }
 
+  /**
+   * Hàm khởi động chính của ứng dụng: Kiểm tra tham số URL -> Xác thực -> Tải dữ liệu đầu tiên.
+   */
   async function bootstrap() {
     try {
       if (typeof window.krudList !== "function") {
