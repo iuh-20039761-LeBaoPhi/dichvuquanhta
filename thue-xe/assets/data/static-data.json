@@ -1,4 +1,4 @@
-﻿{
+{
     "car_types": [
         {
             "id": 1, "name": "Toyota Camry 2023", "brand": "Toyota", "model": "Camry", "year": 2023,
@@ -112,63 +112,63 @@
 
     "cars": [
         { "id": 1,  "type_id": 1,  "license_plate": "51G-123.45", "manufacture_year": 2023, "mileage": 12500, "color": "Trắng ngọc trai",
-          "status": "available",
+          "status": "available", "frame_number": "RLHKG1230NC000001", "engine_number": "2AR-FE100001",
                     "images": { "front": "thue-xe-xe-toyota-camry-2023.jpg", "back": "thue-xe-xe-toyota-camry-2023-back.jpg", "left": "thue-xe-xe-toyota-camry-2023-left.jpg", "right": "thue-xe-xe-toyota-camry-2023-right.jpg", "interior": "thue-xe-xe-toyota-camry-2023-interior.jpg" }
         },
         { "id": 2,  "type_id": 1,  "license_plate": "51G-678.90", "manufacture_year": 2023, "mileage": 8300,  "color": "Đen bóng",
-          "status": "rented",
+          "status": "rented", "frame_number": "RLHKG1230NC000002", "engine_number": "2AR-FE100002",
                     "images": { "front": "thue-xe-xe-toyota-camry-2023.jpg", "back": "thue-xe-xe-toyota-camry-2023-back.jpg", "left": "thue-xe-xe-toyota-camry-2023-left.jpg", "right": "thue-xe-xe-toyota-camry-2023-right.jpg", "interior": "thue-xe-xe-toyota-camry-2023-interior.jpg" }
         },
         { "id": 3,  "type_id": 2,  "license_plate": "51F-456.78", "manufacture_year": 2022, "mileage": 28000, "color": "Xanh dương đậm",
-          "status": "available",
+          "status": "available", "frame_number": "MRHRE1230MB000003", "engine_number": "L15B71000003",
                     "images": { "front": "thue-xe-xe-honda-crv-2022.jpg", "back": "thue-xe-xe-honda-crv-2022-back.jpg", "left": "thue-xe-xe-honda-crv-2022-left.jpg", "right": "thue-xe-xe-honda-crv-2022-right.jpg", "interior": "thue-xe-xe-honda-crv-2022-interior.jpg" }
         },
         { "id": 4,  "type_id": 2,  "license_plate": "51F-112.34", "manufacture_year": 2022, "mileage": 19500, "color": "Trắng tinh",
-          "status": "available",
+          "status": "available", "frame_number": "MRHRE1230MB000004", "engine_number": "L15B71000004",
                     "images": { "front": "thue-xe-xe-honda-crv-2022.jpg", "back": "thue-xe-xe-honda-crv-2022-back.jpg", "left": "thue-xe-xe-honda-crv-2022-left.jpg", "right": "thue-xe-xe-honda-crv-2022-right.jpg", "interior": "thue-xe-xe-honda-crv-2022-interior.jpg" }
         },
-        { "id": 5,  "type_id": 3,  "license_plate": "51H-789.01", "manufacture_year": 2023, "mileage": 9800,  "color": "Bạc ánh kim",         "status": "available" },
-        { "id": 6,  "type_id": 4,  "license_plate": "51K-234.56", "manufacture_year": 2022, "mileage": 45000, "color": "Đen bóng",            "status": "rented" },
-        { "id": 7,  "type_id": 4,  "license_plate": "51K-990.11", "manufacture_year": 2022, "mileage": 38000, "color": "Trắng tinh",          "status": "rented" },
-        { "id": 8,  "type_id": 5,  "license_plate": "51L-567.89", "manufacture_year": 2023, "mileage": 18300, "color": "Trắng tinh",          "status": "available" },
-        { "id": 9,  "type_id": 5,  "license_plate": "51L-221.44", "manufacture_year": 2023, "mileage": 22100, "color": "Đen bóng",            "status": "available" },
-        { "id": 10, "type_id": 6,  "license_plate": "51M-890.12", "manufacture_year": 2023, "mileage": 6200,  "color": "Xanh Sage",           "status": "available" },
-        { "id": 11, "type_id": 7,  "license_plate": "51N-111.22", "manufacture_year": 2023, "mileage": 21700, "color": "Đỏ rubine",           "status": "available" },
-        { "id": 12, "type_id": 7,  "license_plate": "51N-333.55", "manufacture_year": 2023, "mileage": 14200, "color": "Trắng ngọc trai",     "status": "available" },
-        { "id": 13, "type_id": 7,  "license_plate": "51N-557.88", "manufacture_year": 2023, "mileage": 31000, "color": "Xanh dương",          "status": "maintenance" },
-        { "id": 14, "type_id": 8,  "license_plate": "51P-333.44", "manufacture_year": 2023, "mileage": 14600, "color": "Đỏ Soul Crystal",     "status": "available" },
-        { "id": 15, "type_id": 8,  "license_plate": "51P-779.00", "manufacture_year": 2023, "mileage": 9100,  "color": "Xám Polymetal",       "status": "available" },
-        { "id": 16, "type_id": 9,  "license_plate": "51Q-555.66", "manufacture_year": 2023, "mileage": 19200, "color": "Xám Polymetal",       "status": "available" },
-        { "id": 17, "type_id": 9,  "license_plate": "51Q-112.33", "manufacture_year": 2023, "mileage": 27400, "color": "Trắng tinh",          "status": "rented" },
-        { "id": 18, "type_id": 10, "license_plate": "51R-777.88", "manufacture_year": 2023, "mileage": 32100, "color": "Xám Celestite",       "status": "available" },
-        { "id": 19, "type_id": 10, "license_plate": "51R-221.99", "manufacture_year": 2023, "mileage": 18600, "color": "Trắng ngọc trai",     "status": "available" },
-        { "id": 20, "type_id": 10, "license_plate": "51R-554.33", "manufacture_year": 2023, "mileage": 44200, "color": "Đen bóng",            "status": "available" },
-        { "id": 21, "type_id": 11, "license_plate": "51S-999.00", "manufacture_year": 2023, "mileage": 8400,  "color": "Trắng Frost",         "status": "available" },
-        { "id": 22, "type_id": 12, "license_plate": "51T-246.80", "manufacture_year": 2023, "mileage": 23500, "color": "Nâu Mineral Brown",   "status": "available" },
-        { "id": 23, "type_id": 12, "license_plate": "51T-468.02", "manufacture_year": 2023, "mileage": 31700, "color": "Trắng tinh",          "status": "rented" },
+        { "id": 5,  "type_id": 3,  "license_plate": "51H-789.01", "manufacture_year": 2023, "mileage": 9800,  "color": "Bạc ánh kim",         "status": "available",   "frame_number": "KNAJU1230NC000005", "engine_number": "G4KE10000005" },
+        { "id": 6,  "type_id": 4,  "license_plate": "51K-234.56", "manufacture_year": 2022, "mileage": 45000, "color": "Đen bóng",            "status": "rented",      "frame_number": "AAVBB1230KC000006", "engine_number": "P4AT10000006" },
+        { "id": 7,  "type_id": 4,  "license_plate": "51K-990.11", "manufacture_year": 2022, "mileage": 38000, "color": "Trắng tinh",          "status": "rented",      "frame_number": "AAVBB1230KC000007", "engine_number": "P4AT10000007" },
+        { "id": 8,  "type_id": 5,  "license_plate": "51L-567.89", "manufacture_year": 2023, "mileage": 18300, "color": "Trắng tinh",          "status": "available",   "frame_number": "MMBNC1230NC000008", "engine_number": "4G6310000008" },
+        { "id": 9,  "type_id": 5,  "license_plate": "51L-221.44", "manufacture_year": 2023, "mileage": 22100, "color": "Đen bóng",            "status": "available",   "frame_number": "MMBNC1230NC000009", "engine_number": "4G6310000009" },
+        { "id": 10, "type_id": 6,  "license_plate": "51M-890.12", "manufacture_year": 2023, "mileage": 6200,  "color": "Xanh Sage",           "status": "available",   "frame_number": "VNFVF1230NC000010", "engine_number": "VF8E10000010" },
+        { "id": 11, "type_id": 7,  "license_plate": "51N-111.22", "manufacture_year": 2023, "mileage": 21700, "color": "Đỏ rubine",           "status": "available",   "frame_number": "MRHGM1230NC000011", "engine_number": "L15Z10000011" },
+        { "id": 12, "type_id": 7,  "license_plate": "51N-333.55", "manufacture_year": 2023, "mileage": 14200, "color": "Trắng ngọc trai",     "status": "available",   "frame_number": "MRHGM1230NC000012", "engine_number": "L15Z10000012" },
+        { "id": 13, "type_id": 7,  "license_plate": "51N-557.88", "manufacture_year": 2023, "mileage": 31000, "color": "Xanh dương",          "status": "maintenance", "frame_number": "MRHGM1230NC000013", "engine_number": "L15Z10000013" },
+        { "id": 14, "type_id": 8,  "license_plate": "51P-333.44", "manufacture_year": 2023, "mileage": 14600, "color": "Đỏ Soul Crystal",     "status": "available",   "frame_number": "JM6KF1230NC000014", "engine_number": "PE0110000014" },
+        { "id": 15, "type_id": 8,  "license_plate": "51P-779.00", "manufacture_year": 2023, "mileage": 9100,  "color": "Xám Polymetal",       "status": "available",   "frame_number": "JM6KF1230NC000015", "engine_number": "PE0110000015" },
+        { "id": 16, "type_id": 9,  "license_plate": "51Q-555.66", "manufacture_year": 2023, "mileage": 19200, "color": "Xám Polymetal",       "status": "available",   "frame_number": "JM6BP1230NC000016", "engine_number": "P50210000016" },
+        { "id": 17, "type_id": 9,  "license_plate": "51Q-112.33", "manufacture_year": 2023, "mileage": 27400, "color": "Trắng tinh",          "status": "rented",      "frame_number": "JM6BP1230NC000017", "engine_number": "P50210000017" },
+        { "id": 18, "type_id": 10, "license_plate": "51R-777.88", "manufacture_year": 2023, "mileage": 32100, "color": "Xám Celestite",       "status": "available",   "frame_number": "RLHKP1230NC000018", "engine_number": "2NR-FE1000018" },
+        { "id": 19, "type_id": 10, "license_plate": "51R-221.99", "manufacture_year": 2023, "mileage": 18600, "color": "Trắng ngọc trai",     "status": "available",   "frame_number": "RLHKP1230NC000019", "engine_number": "2NR-FE1000019" },
+        { "id": 20, "type_id": 10, "license_plate": "51R-554.33", "manufacture_year": 2023, "mileage": 44200, "color": "Đen bóng",            "status": "available",   "frame_number": "RLHKP1230NC000020", "engine_number": "2NR-FE1000020" },
+        { "id": 21, "type_id": 11, "license_plate": "51S-999.00", "manufacture_year": 2023, "mileage": 8400,  "color": "Trắng Frost",         "status": "available",   "frame_number": "VNFVF1230NC000021", "engine_number": "VF5E10000021" },
+        { "id": 22, "type_id": 12, "license_plate": "51T-246.80", "manufacture_year": 2023, "mileage": 23500, "color": "Nâu Mineral Brown",   "status": "available",   "frame_number": "MMBNC1230NC000022", "engine_number": "K15B10000022" },
+        { "id": 23, "type_id": 12, "license_plate": "51T-468.02", "manufacture_year": 2023, "mileage": 31700, "color": "Trắng tinh",          "status": "rented",      "frame_number": "MMBNC1230NC000023", "engine_number": "K15B10000023" },
 
-        { "id": 24, "type_id": 3,  "license_plate": "51H-442.67", "manufacture_year": 2023, "mileage": 15300, "color": "Đỏ Sunset",           "status": "available" },
-        { "id": 25, "type_id": 3,  "license_plate": "51H-881.09", "manufacture_year": 2023, "mileage": 5100,  "color": "Đen bóng",            "status": "maintenance" },
+        { "id": 24, "type_id": 3,  "license_plate": "51H-442.67", "manufacture_year": 2023, "mileage": 15300, "color": "Đỏ Sunset",           "status": "available",   "frame_number": "KNAJU1230NC000024", "engine_number": "G4KE10000024" },
+        { "id": 25, "type_id": 3,  "license_plate": "51H-881.09", "manufacture_year": 2023, "mileage": 5100,  "color": "Đen bóng",            "status": "maintenance", "frame_number": "KNAJU1230NC000025", "engine_number": "G4KE10000025" },
 
-        { "id": 26, "type_id": 6,  "license_plate": "51M-114.33", "manufacture_year": 2023, "mileage": 11200, "color": "Trắng Arctic",        "status": "available" },
-        { "id": 27, "type_id": 6,  "license_plate": "51M-335.77", "manufacture_year": 2024, "mileage": 2800,  "color": "Đen Starry",          "status": "rented" },
+        { "id": 26, "type_id": 6,  "license_plate": "51M-114.33", "manufacture_year": 2023, "mileage": 11200, "color": "Trắng Arctic",        "status": "available",   "frame_number": "VNFVF1230NC000026", "engine_number": "VF8E10000026" },
+        { "id": 27, "type_id": 6,  "license_plate": "51M-335.77", "manufacture_year": 2024, "mileage": 2800,  "color": "Đen Starry",          "status": "rented",      "frame_number": "VNFVF1230OD000027", "engine_number": "VF8E10000027" },
 
-        { "id": 28, "type_id": 9,  "license_plate": "51Q-778.44", "manufacture_year": 2023, "mileage": 11500, "color": "Đỏ Soul Crystal",     "status": "available" },
-        { "id": 29, "type_id": 9,  "license_plate": "51Q-990.55", "manufacture_year": 2024, "mileage": 4200,  "color": "Trắng ngọc trai",     "status": "available" },
+        { "id": 28, "type_id": 9,  "license_plate": "51Q-778.44", "manufacture_year": 2023, "mileage": 11500, "color": "Đỏ Soul Crystal",     "status": "available",   "frame_number": "JM6BP1230NC000028", "engine_number": "P50210000028" },
+        { "id": 29, "type_id": 9,  "license_plate": "51Q-990.55", "manufacture_year": 2024, "mileage": 4200,  "color": "Trắng ngọc trai",     "status": "available",   "frame_number": "JM6BP1230OD000029", "engine_number": "P50210000029" },
 
-        { "id": 30, "type_id": 11, "license_plate": "51S-112.44", "manufacture_year": 2023, "mileage": 17900, "color": "Xanh Ocean Blue",     "status": "available" },
-        { "id": 31, "type_id": 11, "license_plate": "51S-334.88", "manufacture_year": 2024, "mileage": 3600,  "color": "Đỏ Candy",            "status": "rented" },
+        { "id": 30, "type_id": 11, "license_plate": "51S-112.44", "manufacture_year": 2023, "mileage": 17900, "color": "Xanh Ocean Blue",     "status": "available",   "frame_number": "VNFVF1230NC000030", "engine_number": "VF5E10000030" },
+        { "id": 31, "type_id": 11, "license_plate": "51S-334.88", "manufacture_year": 2024, "mileage": 3600,  "color": "Đỏ Candy",            "status": "rented",      "frame_number": "VNFVF1230OD000031", "engine_number": "VF5E10000031" },
 
         { "id": 32, "type_id": 1,  "license_plate": "51G-901.23", "manufacture_year": 2024, "mileage": 3200,  "color": "Xám Platinum",
-          "status": "available",
+          "status": "available", "frame_number": "RLHKG1230OD000032", "engine_number": "2AR-FE1000032",
                     "images": { "front": "thue-xe-xe-toyota-camry-2023.jpg", "back": "thue-xe-xe-toyota-camry-2023-back.jpg", "left": "thue-xe-xe-toyota-camry-2023-left.jpg", "right": "thue-xe-xe-toyota-camry-2023-right.jpg", "interior": "thue-xe-xe-toyota-camry-2023-interior.jpg" }
         },
 
-        { "id": 33, "type_id": 5,  "license_plate": "51L-443.77", "manufacture_year": 2023, "mileage": 29500, "color": "Bạc ánh kim",         "status": "available" },
+        { "id": 33, "type_id": 5,  "license_plate": "51L-443.77", "manufacture_year": 2023, "mileage": 29500, "color": "Bạc ánh kim",         "status": "available",   "frame_number": "MMBNC1230NC000033", "engine_number": "4G6310000033" },
 
-        { "id": 34, "type_id": 8,  "license_plate": "51P-550.11", "manufacture_year": 2024, "mileage": 6800,  "color": "Trắng Snowflake",     "status": "available" },
+        { "id": 34, "type_id": 8,  "license_plate": "51P-550.11", "manufacture_year": 2024, "mileage": 6800,  "color": "Trắng Snowflake",     "status": "available",   "frame_number": "JM6KF1230OD000034", "engine_number": "PE0110000034" },
 
-        { "id": 35, "type_id": 10, "license_plate": "51R-886.77", "manufacture_year": 2024, "mileage": 7100,  "color": "Đỏ Crimson",          "status": "maintenance" }
+        { "id": 35, "type_id": 10, "license_plate": "51R-886.77", "manufacture_year": 2024, "mileage": 7100,  "color": "Đỏ Crimson",          "status": "maintenance", "frame_number": "RLHKP1230OD000035", "engine_number": "2NR-FE1000035" }
     ],
 
     "services": [

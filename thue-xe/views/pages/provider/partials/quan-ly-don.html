@@ -1,0 +1,248 @@
+<!-- 1. ĐƠN HÀNG CẦN XỬ LÝ (Mới chuyển từ Tổng quan sang) -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; border-left: 4px solid #0d6efd !important;">
+    <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold text-primary"><i class="fas fa-bell me-2"></i>Đơn hàng cần xử lý ngay</h6>
+        <span class="badge bg-primary rounded-pill" id="pendingOrderCount">0</span>
+    </div>
+    <div class="card-body p-0">
+        <div id="pendingOrdersWrap" class="p-0">
+            <div class="text-center py-4 text-muted small">Đang tải đơn hàng...</div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. TẤT CẢ ĐƠN ĐẶT XE -->
+<div class="card border-0 shadow-sm" style="border-radius: 16px;">
+    <div class="card-header bg-white py-4 border-0 d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-800 mb-1">Đơn đặt xe của tôi</h5>
+            <p class="text-muted small mb-0">Theo dõi toàn bộ lịch sử thuê xe</p>
+        </div>
+        <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="loadProviderOrders()">
+            <i class="fas fa-sync-alt me-1"></i> Làm mới
+        </button>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="bg-light text-muted small uppercase">
+                    <tr>
+                        <th class="ps-4">Mã đơn / Xe</th>
+                        <th>Khách hàng</th>
+                        <th>Thời gian thuê</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th class="pe-4">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="providerOrderBody">
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="spinner-border text-primary"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        const TABLE_ORDERS = 'datlich_thuexe';
+        const TABLE_CARS = 'xethue';
+
+        const getStatusInfo = (o) => {
+            if (o.ngayhuy) return { label: 'Đã hủy', class: 'bg-danger', code: 'cancelled' };
+            if (o.ngayhoanthanhthucte) return { label: 'Hoàn thành', class: 'bg-success', code: 'completed' };
+            if (o.ngaybatdauthucte) return { label: 'Đang thuê', class: 'bg-primary', code: 'doing' };
+            if (o.ngaynhan) return { label: 'Đã nhận đơn', class: 'bg-info text-dark', code: 'accepted' };
+            if (o.ngaydat) return { label: 'Chờ xác nhận', class: 'bg-warning text-dark', code: 'pending' };
+            return { label: 'Mới', class: 'bg-secondary', code: 'new' };
+        };
+
+        window.updateOrderStatus = async function (id, action) {
+            let field = '';
+            let confirmMsg = '';
+            const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+            switch (action) {
+                case 'accept': field = 'ngaynhan'; confirmMsg = 'Xác nhận nhận đơn hàng này?'; break;
+                case 'start': field = 'ngaybatdauthucte'; confirmMsg = 'Xác nhận bắt đầu giao xe cho khách?'; break;
+                case 'complete': field = 'ngayhoanthanhthucte'; confirmMsg = 'Xác nhận đã nhận lại xe và hoàn tất đơn?'; break;
+                case 'cancel': field = 'ngayhuy'; confirmMsg = 'Bạn có chắc muốn hủy đơn hàng này?'; break;
+            }
+
+            const res = await Swal.fire({
+                title: 'Xác nhận',
+                text: confirmMsg,
+                icon: 'question',
+                showCancelButton: true
+            });
+
+            if (res.isConfirmed) {
+                try {
+                    const session = window._dvqt_session_cache || await DVQTApp.checkSession();
+                    const payload = {};
+                    payload[field] = now;
+
+                    // Nếu là nhận đơn, lưu thêm thông tin NCC
+                    if (action === 'accept' && session) {
+                        payload.tenncc = session.hovaten || '';
+                        payload.sdtncc = session.sodienthoai || '';
+                        payload.diachincc = session.diachi || '';
+                        payload.emailncc = session.email || '';
+                    }
+
+                    await DVQTKrud.updateRow(TABLE_ORDERS, id, payload);
+                    Swal.fire('Thành công', 'Đã cập nhật trạng thái đơn hàng.', 'success');
+                    loadProviderOrders();
+                } catch (e) {
+                    Swal.fire('Lỗi', 'Không thể cập nhật: ' + e.message, 'error');
+                }
+            }
+        };
+
+        window.loadProviderOrders = async function () {
+            const tbody = document.getElementById('providerOrderBody');
+            const pendingWrap = document.getElementById('pendingOrdersWrap');
+            if (!tbody) return;
+
+            try {
+                const session = window._dvqt_session_cache || await DVQTApp.checkSession();
+
+                // 1. Lấy thông tin xe của NCC (Quét tối đa 1000 xe)
+                const cars = await DVQTKrud.listTable(TABLE_CARS, { limit: 1000 });
+                const myCars = (cars || []).filter(c => Number(c.provider_id) === Number(session.id));
+                const myCarIds = myCars.map(c => Number(c.id));
+                const myCarNames = myCars.map(c => (c.tenxe || '').trim()); // Cách khớp cũ
+
+                // 2. Lấy toàn bộ đơn đặt lịch (Quét tối đa 1000 đơn)
+                const allOrders = await DVQTKrud.listTable(TABLE_ORDERS, { limit: 1000 });
+
+                // 3. Lọc đa tầng: Khớp theo ID xe HOẶC Tên xe
+                const myOrders = (allOrders || []).filter(o => {
+                    const matchId = o.id_xe && myCarIds.includes(Number(o.id_xe));
+                    const matchName = o.ten_xe && myCarNames.includes((o.ten_xe || '').trim());
+                    return matchId || matchName;
+                }).reverse();
+
+                // 1. Render Đơn hàng cần xử lý ngay (CHỈ HIỆN ĐƠN CHỜ NHẬN)
+                const pendingOrders = myOrders.filter(o => !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte);
+                document.getElementById('pendingOrderCount').textContent = pendingOrders.length;
+
+                if (!pendingOrders.length) {
+                    pendingWrap.innerHTML = '<div class="p-4 text-center text-muted small">Không có đơn hàng mới nào đang chờ xử lý.</div>';
+                } else {
+                    const pendingRows = pendingOrders.map(o => {
+                        return `
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold text-primary">#TX${o.id}</div>
+                            <div class="small fw-600 text-dark">${o.ten_xe}</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark small">${o.tenkhachhang || o.ho_ten || '---'}</div>
+                            <div class="small text-muted">${o.sdtkhachhang || o.dien_thoai || '---'}</div>
+                        </td>
+                        <td>
+                            <div class="small fw-600 text-dark">${o.ngay_nhan_yeu_cau} → ${o.ngay_tra_yeu_cau}</div>
+                            <div class="small text-muted">${o.gio_nhan_yeu_cau} / ${o.gio_tra_yeu_cau}</div>
+                        </td>
+                        <td class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</td>
+                        <td><span class="badge bg-warning bg-opacity-10 text-dark">Chờ xác nhận</span></td>
+                        <td class="pe-4 text-end">
+                            <button class="btn btn-sm btn-light me-1" onclick="viewOrderDetailP(${o.id})" title="Chi tiết"><i class="fas fa-eye text-primary"></i></button>
+                            <button class="btn btn-sm btn-primary px-3 rounded-pill me-1" onclick="updateOrderStatus(${o.id}, 'accept')">Nhận đơn</button>
+                            <button class="btn btn-sm btn-outline-danger px-3 rounded-pill" onclick="updateOrderStatus(${o.id}, 'cancel')">Hủy</button>
+                        </td>
+                    </tr>`;
+                    }).join('');
+                    pendingWrap.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light text-muted small uppercase">
+                            <tr>
+                                <th class="ps-4">Mã đơn / Xe</th>
+                                <th>Khách hàng</th>
+                                <th>Thời gian thuê</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th class="pe-4 text-end">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>${pendingRows}</tbody>
+                    </table>
+                </div>`;
+                }
+
+                // 2. Render Đơn đặt xe của tôi (HIỆN ĐƠN ĐÃ NHẬN + ĐANG THUÊ + HOÀN THÀNH)
+                const confirmedOrders = myOrders.filter(o => o.ngaynhan || o.ngayhoanthanhthucte || o.ngayhuy);
+
+                if (!confirmedOrders.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-muted">Chưa có đơn hàng nào đã được xác nhận.</td></tr>';
+                } else {
+                    tbody.innerHTML = confirmedOrders.map(o => {
+                        const st = getStatusInfo(o);
+
+                        // Thêm nút thao tác tùy theo trạng thái ngay tại bảng history
+                        let actionsHtml = '';
+                        if (st.code === 'accepted') {
+                            actionsHtml = `<button class="btn btn-sm btn-success px-3 rounded-pill ms-2" onclick="updateOrderStatus(${o.id}, 'start')">Giao xe</button>`;
+                        } else if (st.code === 'doing') {
+                            actionsHtml = `<button class="btn btn-sm btn-info text-white px-3 rounded-pill ms-2" onclick="updateOrderStatus(${o.id}, 'complete')">Nhận xe trả</button>`;
+                        }
+
+                        return `<tr>
+                        <td class="ps-4">
+                            <div class="fw-bold text-primary">#TX${o.id}</div>
+                            <div class="small fw-600 text-dark">${o.ten_xe || 'N/A'}</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">${o.tenkhachhang || o.ho_ten || '---'}</div>
+                            <div class="small text-muted">${o.sdtkhachhang || o.dien_thoai || '---'}</div>
+                        </td>
+                        <td>
+                            <div class="small fw-600 text-dark">${o.ngay_nhan_yeu_cau} → ${o.ngay_tra_yeu_cau}</div>
+                            <div class="small text-muted">${o.gio_nhan_yeu_cau} / ${o.gio_tra_yeu_cau}</div>
+                        </td>
+                        <td class="fw-bold text-dark">${Number(o.tong_tien).toLocaleString()}đ</td>
+                        <td><span class="badge ${st.class} bg-opacity-10">${st.label}</span></td>
+                        <td class="pe-4 text-nowrap">
+                            <button class="btn btn-sm btn-light" onclick="viewOrderDetailP(${o.id})" title="Chi tiết"><i class="fas fa-eye text-primary"></i> Chi tiết</button>
+                            ${actionsHtml}
+                        </td>
+                    </tr>`;
+                    }).join('');
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi tải dữ liệu</td></tr>';
+            }
+        };
+
+        window.viewOrderDetailP = function (id) {
+            window.open('../chi-tiet-thue-xe.html?id=' + id, '_blank');
+        };
+
+        loadProviderOrders();
+    })();
+</script>
+
+<style>
+/* Quản lý đơn - Responsive */
+@media (max-width: 768px) {
+    .card-header { flex-direction: column; gap: 8px; padding: 16px !important; }
+    .card-header h5, .card-header h6 { font-size: 0.95rem; }
+    table th, table td { font-size: 0.78rem; padding: 8px 6px !important; white-space: nowrap; }
+    /* Ẩn cột "Khách hàng" & "Tổng tiền" trên mobile */
+    table th:nth-child(2), table td:nth-child(2),
+    table th:nth-child(4), table td:nth-child(4) { display: none; }
+    .btn-sm { font-size: 0.7rem; padding: 4px 8px; }
+    .pending-order-card { flex-direction: column !important; gap: 8px; }
+}
+@media (max-width: 480px) {
+    /* Ẩn thêm cột thời gian thuê trên rất nhỏ */
+    table th:nth-child(3), table td:nth-child(3) { display: none; }
+}
+</style>

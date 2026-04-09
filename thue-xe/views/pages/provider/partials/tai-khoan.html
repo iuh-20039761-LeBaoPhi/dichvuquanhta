@@ -1,0 +1,45 @@
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-body p-4">
+        <div class="row g-4">
+            <div class="col-md-4 text-center border-end">
+                <div class="profile-avatar-wrap mb-3 position-relative d-inline-block">
+                    <div id="acc-ph-avatar" class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width:120px;height:120px;font-size:3rem;color:#cbd5e1;border:2px dashed #e2e8f0;">
+                        <i class="fas fa-user text-muted"></i>
+                    </div>
+                    <img id="acc-prev-avatar" class="rounded-circle shadow-sm" style="width:120px;height:120px;object-fit:cover;display:none;border:3px solid white;">
+                </div>
+                <h5 class="fw-bold mb-1" id="displayProfileName">—</h5>
+                <p class="text-muted small mb-0" id="displayProfileRole">Thành viên Thuê Xe</p>
+            </div>
+            <div class="col-md-8">
+                <h6 class="fw-bold mb-4">Thông tin cá nhân</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted uppercase">Họ và tên</label>
+                        <input type="text" class="form-control" id="accName" placeholder="Nhập họ tên">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted uppercase">Số điện thoại</label>
+                        <input type="text" class="form-control" id="accPhone" readonly disabled>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small fw-bold text-muted uppercase">Địa chỉ</label>
+                        <input type="text" class="form-control" id="accAddress" placeholder="Địa chỉ giao nhận xe">
+                    </div>
+                    <div class="col-12 mt-4 text-end">
+                        <div id="saveMsg" class="me-3 d-inline-block"></div>
+                        <button class="btn btn-primary px-4 rounded-pill fw-bold" id="saveProfileBtn">
+                            <i class="fas fa-save me-2"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control { padding: 0.6rem 1rem; border-radius: 10px; border-color: #e2e8f0; font-size: 0.9rem; }
+    .form-control:focus { box-shadow: 0 0 0 0.25rem rgba(37,99,235,0.1); border-color: #3b82f6; }
+    .uppercase { text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; }
+</style>

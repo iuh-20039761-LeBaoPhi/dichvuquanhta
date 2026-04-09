@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết đơn thuê xe | Thuê Xe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/font-awesome.min.css">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --bg-light: #f8f9fa;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .invoice-card {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: none;
+            overflow: hidden;
+        }
+
+        .invoice-header {
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            color: white;
+            padding: 40px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .price-box {
+            background-color: #eef2ff;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+            border-left: 2px dashed #dee2e6;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -7px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dee2e6;
+            border: 2px solid white;
+        }
+
+        .timeline-item.active::before {
+            background: #0d6efd;
+        }
+
+        .timeline-item.active {
+            border-left-color: #0d6efd;
+        }
+
+        /* === RESPONSIVE === */
+
+        /* Tablet */
+        @media (max-width: 768px) {
+            .invoice-card {
+                margin: 16px;
+                border-radius: 12px;
+            }
+
+            .invoice-header {
+                padding: 24px 20px;
+                flex-direction: column !important;
+                gap: 12px;
+            }
+
+            .invoice-header h2 {
+                font-size: 1.25rem;
+            }
+
+            .card-body {
+                padding: 20px !important;
+            }
+
+            /* Remove border-end on stacked columns */
+            .border-end {
+                border-right: none !important;
+                border-bottom: 1px solid #dee2e6;
+                padding-bottom: 16px;
+                margin-bottom: 8px;
+            }
+
+            .price-box {
+                padding: 16px;
+            }
+
+            .info-value.h5 {
+                font-size: 1rem;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 576px) {
+            .invoice-card {
+                margin: 8px;
+                border-radius: 10px;
+            }
+
+            .invoice-header {
+                padding: 20px 16px;
+            }
+
+            .invoice-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .card-body {
+                padding: 16px !important;
+            }
+
+            .status-badge {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+            }
+
+            .info-label {
+                font-size: 0.7rem;
+            }
+
+            /* Stack action buttons */
+            .d-flex.gap-2 {
+                flex-direction: column;
+            }
+            .d-flex.gap-2 .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="invoice-card">
+            <!-- Header -->
+            <div class="invoice-header d-flex justify-content-between align-items-start">
+                <div>
+                    <h2 class="fw-800 mb-1">HÓA ĐƠN THUÊ XE</h2>
+                    <p class="mb-0 opacity-75 small" id="orderIdText">Mã đơn: #TX---</p>
+                </div>
+                <div id="statusBadge"></div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <!-- Client & Car Info -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4 border-end">
+                        <div class="info-label">Khách hàng thuê</div>
+                        <div class="info-value h5 mb-1" id="custName">---</div>
+                        <div class="text-muted small" id="custPhone">---</div>
+                        <div class="text-muted small mt-2" id="custAddr">---</div>
+                    </div>
+                    <div class="col-md-4 border-end ps-md-4">
+                        <div class="info-label">Nhà cung cấp vận hành</div>
+                        <div id="nccInfo">
+                            <div class="info-value h5 mb-1" id="nccName">---</div>
+                            <div class="text-muted small" id="nccPhone">---</div>
+                            <div class="text-muted small mt-2" id="nccAddr">---</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 ps-md-4">
+                        <div class="info-label">Phương tiện</div>
+                        <div class="info-value h5 mb-1 text-primary" id="carName">---</div>
+                        <div class="text-muted small">Biển số: <b id="carPlate">---</b></div>
+                        <div class="text-muted small">Loại xe: <span id="carType">---</span></div>
+                    </div>
+                </div>
+
+                <!-- Schedule -->
+                <div class="row g-4 mb-5">
+                    <div class="col-6 col-md-3">
+                        <div class="info-label">Ngày nhận xe</div>
+                        <div class="info-value" id="dateStart">---</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="info-label">Giờ nhận</div>
+                        <div class="info-value" id="timeStart">---</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="info-label">Ngày trả xe</div>
+                        <div class="info-value" id="dateEnd">---</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="info-label">Giờ trả</div>
+                        <div class="info-value" id="timeEnd">---</div>
+                    </div>
+                </div>
+
+                <!-- Pricing Table -->
+                <div class="price-box mb-5">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Tổng cộng hợp đồng</span>
+                        <span class="fw-bold h4 mb-0 text-primary" id="totalPrice">---đ</span>
+                    </div>
+                    <div class="small text-muted border-top pt-2 mt-2">
+                        <i class="fas fa-info-circle me-1"></i> Giá đã bao gồm phí dịch vụ và bảo hiểm cơ bản.
+                    </div>
+                </div>
+
+                <!-- Process Timeline -->
+                <div class="mb-5">
+                    <h6 class="fw-bold mb-4 small text-uppercase fw-800"><i class="fas fa-history me-2"></i>Lịch sử
+                        trạng thái đơn</h6>
+                    <div id="orderTimeline"></div>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div id="actionArea" class="text-center pt-4 border-top">
+                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-light border-0 py-3 text-center">
+                <button class="btn btn-link text-muted btn-sm text-decoration-none" onclick="window.close()"><i
+                        class="fas fa-times me-1"></i>Đóng trang</button>
+                <button class="btn btn-link text-muted btn-sm text-decoration-none ms-3" onclick="window.print()"><i
+                        class="fas fa-print me-1"></i>In hóa đơn</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../../public/asset/js/dvqt-app.js"></script>
+    <script src="../../../public/asset/js/dvqt-krud.js"></script>
+
+    <script>
+        (function () {
+            'use strict';
+            const TABLE = 'datlich_thuexe';
+            const params = new URLSearchParams(window.location.search);
+            const orderId = params.get('id');
+            let currentOrder = null;
+            let isProvider = false;
+
+            async function init() {
+                if (!orderId) { alert('Mã đơn hàng không hợp lệ!'); return; }
+                try {
+                    // Đảm bảo DVQTApp đã sẵn sàng
+                    const session = await DVQTApp.checkSession();
+                    // Lấy thông tin đơn hàng (Sử dụng listTable vì không có getRow)
+                    const orderRows = await DVQTKrud.listTable(TABLE, { id: orderId, limit: 1 });
+                    currentOrder = orderRows && orderRows[0];
+                    if (!currentOrder) { alert('Không tìm thấy đơn hàng!'); return; }
+
+                    // Lấy thông tin xe (Sử dụng listTable vì không có getRow)
+                    const carRows = await DVQTKrud.listTable('xethue', { id: currentOrder.id_xe, limit: 1 }).catch(() => []);
+                    const car = carRows && carRows[0];
+                    if (car && session && Number(car.provider_id) === Number(session.id)) isProvider = true;
+
+                    renderData();
+                    renderActions(session);
+                } catch (e) {
+                    console.error('Initialization Error:', e);
+                    document.getElementById('actionArea').innerHTML = `<div class="text-danger small">Lỗi kết nối dữ liệu: ${e.message}</div>`;
+                }
+            }
+
+            function renderData() {
+                const o = currentOrder;
+                document.getElementById('orderIdText').textContent = `Mã đơn: #TX${o.id}`;
+                document.getElementById('custName').textContent = o.tenkhachhang || o.ho_ten || '---';
+                document.getElementById('custPhone').textContent = o.sdtkhachhang || o.dien_thoai || '---';
+                document.getElementById('custAddr').textContent = o.diachikhachhang || o.dia_chi || 'Lấy tại bãi xe';
+                
+                // NCC Info
+                document.getElementById('nccName').textContent = o.tenncc || 'Chưa xác định';
+                document.getElementById('nccPhone').textContent = o.sdtncc || '---';
+                document.getElementById('nccAddr').textContent = o.diachincc || '---';
+
+                document.getElementById('carName').textContent = o.ten_xe;
+                document.getElementById('carPlate').textContent = o.bien_so || 'N/A';
+                document.getElementById('dateStart').textContent = o.ngay_nhan_yeu_cau;
+                document.getElementById('timeStart').textContent = o.gio_nhan_yeu_cau;
+                document.getElementById('dateEnd').textContent = o.ngay_tra_yeu_cau;
+                document.getElementById('timeEnd').textContent = o.gio_tra_yeu_cau;
+                document.getElementById('totalPrice').textContent = Number(o.tong_tien).toLocaleString() + 'đ';
+
+                // Status Badge
+                const st = getStatusInfo(o);
+                document.getElementById('statusBadge').innerHTML = `<span class="status-badge ${st.badgeClass}">${st.label}</span>`;
+
+                // Timeline
+                let timelineH = `<div class="timeline-item active"><div>Đã gửi yêu cầu thuê</div><small class="text-muted">${o.ngaydat || '---'}</small></div>`;
+                if (o.ngaynhan) timelineH += `<div class="timeline-item active"><div>Đã xác nhận đơn hàng [NCC: ${o.tenncc || ''}]</div><small class="text-muted">${o.ngaynhan}</small></div>`;
+                if (o.ngaybatdauthucte) timelineH += `<div class="timeline-item active"><div>Đã giao phương tiện cho khách</div><small class="text-muted">${o.ngaybatdauthucte}</small></div>`;
+                if (o.ngayhoanthanhthucte) timelineH += `<div class="timeline-item active"><div>Đã trả xe & kết thúc hợp đồng</div><small class="text-muted">${o.ngayhoanthanhthucte}</small></div>`;
+                if (o.ngayhuy) timelineH += `<div class="timeline-item active" style="border-left-color: #dc3545 !important;"><div class="text-danger">Đã hủy đơn hàng</div><small class="text-muted">${o.ngayhuy}</small></div>`;
+                document.getElementById('orderTimeline').innerHTML = timelineH;
+            }
+
+            function renderActions(session) {
+                const o = currentOrder;
+                const area = document.getElementById('actionArea');
+                const st = getStatusInfo(o);
+                area.innerHTML = '';
+
+                if (st.code === 'completed' || st.code === 'cancelled') {
+                    area.innerHTML = `<button class="btn btn-outline-secondary px-5 rounded-pill" disabled>Giao dịch đã kết thúc</button>`;
+                    return;
+                }
+
+                // NCC ACTIONS
+                if (isProvider) {
+                    if (st.code === 'pending') {
+                        area.innerHTML = `
+                    <button class="btn btn-primary px-4 py-2 rounded-pill me-2" onclick="updateStatus('accept')">XÁC NHẬN NHẬN ĐƠN</button>
+                    <button class="btn btn-outline-danger px-4 py-2 rounded-pill" onclick="updateStatus('cancel')">HỦY ĐƠN</button>`;
+                    } else if (st.code === 'accepted') {
+                        area.innerHTML = `
+                    <button class="btn btn-success px-5 py-2 rounded-pill me-2" onclick="updateStatus('start')">BẮT ĐẦU GIAO XE</button>
+                    <button class="btn btn-outline-danger px-4 py-2 rounded-pill" onclick="updateStatus('cancel')">HỦY ĐƠN</button>`;
+                    } else if (st.code === 'doing') {
+                        area.innerHTML = `<button class="btn btn-info text-white px-5 py-2 rounded-pill" onclick="updateStatus('complete')">ĐÃ NHẬN LẠI XE (HOÀN THÀNH)</button>`;
+                    }
+                }
+                // CUSTOMER ACTIONS (If they match the phone or if no session but name matches - simplified for now)
+                else if (session && session.id == o.id_nguoidung && st.code === 'pending') {
+                    area.innerHTML = `<button class="btn btn-outline-danger px-5 py-2 rounded-pill" onclick="updateStatus('cancel')">HỦY YÊU CẦU THUÊ</button>`;
+                } else {
+                    area.innerHTML = `<div class="text-muted small">Vui lòng đăng nhập với tài khoản NCC để xử lý đơn này.</div>`;
+                }
+            }
+
+            window.updateStatus = async function (action) {
+                let field = '';
+                let confirmMsg = '';
+                const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+                switch (action) {
+                    case 'accept': field = 'ngaynhan'; confirmMsg = 'Bạn có chắc chắn muốn xác nhận đơn hàng #TX' + orderId + '?'; break;
+                    case 'start': field = 'ngaybatdauthucte'; confirmMsg = 'Xác nhận bắt đầu quá trình giao xe cho khách hàng?'; break;
+                    case 'complete': field = 'ngayhoanthanhthucte'; confirmMsg = 'Xác nhận xe đã về bãi an toàn và kết thúc hợp đồng?'; break;
+                    case 'cancel': field = 'ngayhuy'; confirmMsg = 'Bạn có chắc muốn hủy đơn hàng này không?'; break;
+                }
+
+                const res = await Swal.fire({ title: 'Xác nhận', text: confirmMsg, icon: 'question', showCancelButton: true });
+                if (!res.isConfirmed) return;
+
+                try {
+                    const session = await DVQTApp.checkSession();
+                    const payload = {};
+                    payload[field] = now;
+
+                    // Nếu là nhận đơn, lưu thêm thông tin NCC
+                    if (action === 'accept' && session) {
+                        payload.tenncc = session.hovaten || '';
+                        payload.sdtncc = session.sodienthoai || '';
+                        payload.diachincc = session.diachi || '';
+                        payload.emailncc = session.email || '';
+                    }
+
+                    await DVQTKrud.updateRow(TABLE, orderId, payload);
+                    Swal.fire('Thành công', 'Trạng thái đơn hàng đã được cập nhật!', 'success').then(() => {
+                        location.reload();
+                    });
+                } catch (e) { Swal.fire('Lỗi', e.message, 'error'); }
+            }
+
+            function getStatusInfo(o) {
+                if (o.ngayhuy) return { label: 'Đã hủy', badgeClass: 'bg-danger', code: 'cancelled' };
+                if (o.ngayhoanthanhthucte) return { label: 'Hoàn thành', badgeClass: 'bg-success', code: 'completed' };
+                if (o.ngaybatdauthucte) return { label: 'Đang thuê', badgeClass: 'bg-primary', code: 'doing' };
+                if (o.ngaynhan) return { label: 'Đã nhận đơn', badgeClass: 'bg-info', code: 'accepted' };
+                if (o.ngaydat) return { label: 'Chờ xác nhận', badgeClass: 'bg-warning text-dark', code: 'pending' };
+                return { label: 'Mới', badgeClass: 'bg-secondary', code: 'new' };
+            }
+
+            init();
+        })();
+    </script>
+
+</body>
+
+</html>
