@@ -1,8 +1,15 @@
 <?php
-session_start();
-// Đảm bảo session đã được nạp (hoặc gọi API nếu cần)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Nếu là AJAX request (từ SPA), không hiển thị layout header
+if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+    return;
+}
+
+// Đảm bảo session đã được nạp
 if (!isset($_SESSION['user'])) {
-    // Nếu chưa có session, thử chạy session_user.php để đồng bộ từ cookie
     ob_start();
     include_once __DIR__ . '/../session_user.php';
     ob_end_clean();
@@ -15,6 +22,9 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
 } else if ($userAvatar === 'logomvb.png') {
     $userAvatar = '../assets/logomvb.png';
 }
+
+$current_page = basename($_SERVER['PHP_SELF']);
+$pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -22,9 +32,10 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MamaCore - Staff Panel</title>
+    <title><?php echo htmlspecialchars($pageTitle); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://api.dvqt.vn/js/krud.js"></script>
     
     <style>
@@ -53,7 +64,7 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             color: var(--nv-text);
             background: #fffafa;
         }
@@ -108,7 +119,7 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
             padding: 14px 24px;
             margin: 4px 12px;
             border-radius: 12px;
-            font-weight: 500;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -178,13 +189,11 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
                 right: 0;
                 bottom: auto;
                 flex-direction: column;
-                /* Changed to column to support dropdown menu */
                 align-items: stretch;
                 padding: 0;
                 border-radius: 0;
                 z-index: 1100;
                 overflow: visible;
-                /* Allow menu to overflow */
             }
 
             .nv-admin-brand-wrapper {
@@ -207,13 +216,11 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
 
             #nvSidebarMenu {
                 display: none;
-                /* Hide by default on mobile */
                 flex-direction: column;
                 background: linear-gradient(135deg, var(--nv-sidebar-a), var(--nv-sidebar-b));
                 margin-top: 0;
                 width: 100%;
                 position: absolute;
-                /* Thay đổi thành tuyệt đối để không đẩy nội dung */
                 top: var(--nv-header-mobile-height);
                 left: 0;
                 box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
@@ -227,15 +234,8 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
             }
 
             @keyframes slideDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
             }
 
             .nv-admin-sidebar .list-group-item {
@@ -245,15 +245,6 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
                 border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             }
 
-            .nv-admin-sidebar .list-group-item i {
-                margin-right: 12px !important;
-            }
-
-            .nv-admin-sidebar .list-group-item span {
-                display: inline;
-            }
-
-            /* Ẩn Topbar trên Mobile để tinh gọn */
             .nv-admin-topbar {
                 display: none !important;
             }
@@ -271,7 +262,6 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
                 overflow-x: hidden;
             }
 
-            /* Ép các container con (nếu có) phải sát lề */
             .nv-main-wrapper #main-content .container,
             .nv-main-wrapper #main-content .container-fluid {
                 padding-left: 0 !important;
@@ -282,7 +272,6 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
             }
         }
 
-        /* Utilities */
         .spinner-border.text-pink {
             color: var(--nv-accent);
         }
@@ -298,7 +287,6 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
                     <div class="nv-admin-brand"><img src="../assets/logomvb.png" width="22" alt="logo"></div>
                     <div class="fw-bold lh-1 profile-name-text">Chăm Sóc Mẹ và Bé</div>
                 </div>
-                <!-- Avatar làm nút mở Menu trên Mobile -->
                 <button class="btn p-0 d-lg-none" id="mobileMenuToggle" type="button">
                     <img class="nv-admin-avatar m-0" src="../assets/logomvb.png" alt="toggle menu"
                         style="width: 40px; height: 40px; border: 2px solid #fff;">
@@ -309,10 +297,10 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
                 <a href="../index.html" class="list-group-item">
                     <i class="bi bi-house"></i> <span>Trang chủ</span>
                 </a>
-                <a href="#" class="list-group-item active" data-page="thong-tin-nhan-vien.php">
+                <a href="thong-tin-nhan-vien.php" class="list-group-item <?php echo $current_page == 'thong-tin-nhan-vien.php' || $current_page == 'sua-thong-tin-nhan-vien.php' ? 'active' : ''; ?>" data-page="thong-tin-nhan-vien.php">
                     <i class="bi bi-person-badge"></i> <span>Thông tin cá nhân</span>
                 </a>
-                <a href="#" class="list-group-item" data-page="danh-sach-hoa-don.php">
+                <a href="danh-sach-hoa-don.php" class="list-group-item <?php echo $current_page == 'danh-sach-hoa-don.php' ? 'active' : ''; ?>" data-page="danh-sach-hoa-don.php">
                     <i class="bi bi-receipt"></i> <span>Danh sách hóa đơn</span>
                 </a>
                 
@@ -324,7 +312,7 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
 
         <section class="nv-main-wrapper">
             <header class="nv-admin-topbar">
-                <h1 class="h5 fw-bold mb-0 text-truncate" id="page-title">Thông tin cá nhân</h1>
+                <h1 class="h5 fw-bold mb-0 text-truncate" id="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
 
                 <div class="dropdown">
                     <button class="btn border-0 d-flex align-items-center gap-2" data-bs-toggle="dropdown">
@@ -333,9 +321,7 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="border-radius: 15px;">
                         <li><a class="dropdown-item py-2 px-3" href="#"><i class="bi bi-gear me-2"></i>Cài đặt</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger py-2 px-3" href="../logout.php"><i
                                     class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
                     </ul>
@@ -343,144 +329,3 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
             </header>
 
             <main id="main-content">
-                <div class="d-flex justify-content-center mt-5">
-                    <div class="spinner-border text-pink" role="status"></div>
-                </div>
-            </main>
-        </section>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        /**
-         * HÀM XỬ LÝ SPA - ĐƠN GIẢN & DỄ HIỂU
-         */
-        async function navigateTo(url, element = null, updateHistory = true, keepShellURL = false) {
-            const contentArea = document.getElementById('main-content');
-            const pageTitle = document.getElementById('page-title');
-
-            // 1. Hiệu ứng loading
-            contentArea.innerHTML = '<div class="text-center mt-5"><div class="spinner-border text-danger"></div></div>';
-
-            try {
-                // 2. Cập nhật URL trình duyệt
-                if (updateHistory) {
-                    const newURL = keepShellURL ? 'header-shared.php' : url;
-                    window.history.pushState({ url: url, keepShellURL: keepShellURL }, '', newURL);
-                }
-
-                // 3. Gọi file HTML/PHP độc lập
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Trang không tồn tại');
-                const html = await response.text();
-
-                // 4. Hiển thị vào vùng div
-                const range = document.createRange();
-                range.selectNode(contentArea);
-                const fragment = range.createContextualFragment(html);
-                contentArea.innerHTML = '';
-                contentArea.appendChild(fragment);
-
-                // 5. Cập nhật giao diện Menu Active
-                if (element) {
-                    document.querySelectorAll('.list-group-item').forEach(el => el.classList.remove('active'));
-                    element.classList.add('active');
-                    pageTitle.innerText = element.innerText.trim();
-                } else {
-                    const matchedEl = document.querySelector(`[data-page="${url.split('?')[0]}"]`);
-                    if (matchedEl) {
-                        document.querySelectorAll('.list-group-item').forEach(el => el.classList.remove('active'));
-                        matchedEl.classList.add('active');
-                        pageTitle.innerText = matchedEl.innerText.trim();
-                    }
-                }
-            } catch (err) {
-                contentArea.innerHTML = `<div class="alert alert-danger">Lỗi tải trang: ${err.message}</div>`;
-            }
-        }
-
-        // Lắng nghe click vào menu - Đối với Sidebar Menu thì ÉP URL là header-shared.html
-        document.querySelectorAll('[data-page]').forEach(item => {
-            item.addEventListener('click', function (e) {
-                e.preventDefault();
-                const page = this.getAttribute('data-page');
-                navigateTo(page, this, true, true);
-
-                // Đóng menu sau khi click (trên mobile)
-                document.querySelector('.nv-admin-sidebar').classList.remove('menu-open');
-            });
-        });
-
-        // Xử lý nút Hamburger Toggle trên Mobile
-        document.getElementById('mobileMenuToggle').addEventListener('click', function () {
-            document.querySelector('.nv-admin-sidebar').classList.toggle('menu-open');
-        });
-
-        // TỰ ĐỘNG HÓA SPA: Xử lý tất cả các link và form trong vùng nội dung chính
-        // 1. Xử lý nộp form lọc (mặc định GET sẽ làm reload trang mất layout)
-        document.addEventListener('submit', function (e) {
-            const form = e.target;
-            if (form.closest('#main-content') && form.method.toLowerCase() === 'get') {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const params = new URLSearchParams(formData).toString();
-                const action = form.getAttribute('action') || '';
-                // Lấy tên tệp hiện tại nếu action trống
-                const baseUrl = action || 'danh-sach-hoa-don.php'; 
-                navigateTo(baseUrl + (params ? '?' + params : ''));
-            }
-        });
-
-        // 2. Xử lý các link nội bộ (Phân trang, Xem chi tiết...)
-        document.addEventListener('click', function (e) {
-            const link = e.target.closest('a');
-            if (!link || e.defaultPrevented) return;
-
-            const href = link.getAttribute('href');
-            if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('javascript:')) return;
-
-            // Nếu link nằm trong vùng nội dung chính, nạp qua navigateTo
-            if (link.closest('#main-content')) {
-                e.preventDefault();
-                navigateTo(href);
-            }
-        });
-
-        // Xử lý nút Back/Forward
-        window.onpopstate = function (event) {
-            if (event.state && event.state.url) {
-                navigateTo(event.state.url, null, false, event.state.keepShellURL || false);
-            }
-        };
-
-        // Tải trang mặc định hoặc trang hiện tại dựa trên URL
-        window.onload = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const displayParam = urlParams.get('display');
-
-            const currentPath = window.location.pathname.split('/').pop();
-            const currentSearch = window.location.search;
-            const currentFull = currentPath + currentSearch;
-
-            if (displayParam) {
-                // Nếu có tham số display, nạp trang đó vào layout
-                const targetItem = document.querySelector(`[data-page="${displayParam.split('?')[0]}"]`);
-                navigateTo(displayParam, targetItem, false, true);
-            } else if (currentPath === 'header-shared.php' || currentPath === '') {
-                // Mặc định nạp Thông tin nhân viên và giữ URL Shell
-                const defaultItem = document.querySelector('[data-page="danh-sach-hoa-don.php"]');
-                if (defaultItem) {
-                    navigateTo('danh-sach-hoa-don.php', defaultItem, false, true);
-                }
-            } else {
-                // Nếu load trực tiếp một trang (như chi tiết hóa đơn), giữ nguyên URL đó trong layout
-                navigateTo(currentFull, null, false, false);
-            }
-        };
-
-    </script>
-
-</body>
-
-</html>
