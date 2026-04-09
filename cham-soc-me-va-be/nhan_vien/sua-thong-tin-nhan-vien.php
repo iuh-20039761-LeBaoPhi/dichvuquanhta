@@ -44,9 +44,10 @@ $isDisabled = $loadError !== '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sửa Thông Tin Nhân Viên</title>
+    <title>Sửa Thông Tin </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 
@@ -335,7 +336,7 @@ $isDisabled = $loadError !== '';
 
         <section class="edit-shell">
             <div class="edit-head">
-                <h1><i class="bi bi-pencil-square me-2"></i>Cập Nhật Thông Tin Nhân Viên</h1>
+                <h1><i class="bi bi-pencil-square me-2"></i>Cập Nhật Thông Tin Tài Khoản</h1>
             </div>
             <div class="edit-body">
                 <form class="form-box" method="post" action="xu-ly-sua-thong-tin-nhan-vien.php"
@@ -449,8 +450,8 @@ $isDisabled = $loadError !== '';
                         <button type="submit" class="btn btn-primary btn-soft" <?= $isDisabled ? 'disabled' : '' ?>>
                             <i class="bi bi-check2-circle me-1"></i> Lưu thay đổi
                         </button>
-                        <a class="btn btn-outline-secondary btn-soft" href="thong-tin-nhan-vien.php"
-                            onclick="event.preventDefault(); navigateTo('thong-tin-nhan-vien.php');">
+                        <a class="btn btn-outline-secondary btn-soft" href="header-shared.php?display=thong-tin-nhan-vien.php"
+                           >
                             <i class="bi bi-arrow-left me-1"></i> Quay lại thông tin
                         </a>
                     </div>
