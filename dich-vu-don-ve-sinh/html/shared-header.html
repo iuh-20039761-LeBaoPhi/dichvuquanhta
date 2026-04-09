@@ -21,44 +21,32 @@
         <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="blog" href="cam-nang.html">Cẩm Nang</a></li>
         <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="contact" href="lien-he.html">Liên Hệ</a></li>
         <li class="nav-item ms-lg-3" id="loginNavItem">
-          <a
-            href="../../../dichvuquanhta/public/dang-nhap.html?redirect=/dichvuquanhta/dich-vu-don-ve-sinh/index.html"
-            data-login-modal
-            data-login-modal-src="login.html"
-            class="btn text-white rounded-pill px-4 py-2 shadow-sm"
-            style="background-color: #f06292"
-            onmouseover="
+          <a id="btnLoginCheck"
+            href="../../../dichvuquanhta/public/dang-nhap.html?redirect=/dichvuquanhta/cham-soc-me-va-be/index.html"
+            class="btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #007bff" onmouseover="
               this.style.backgroundColor = '#d84374';
               this.style.transform = 'scale(1.05)';
-            "
-            onmouseout="
+            " onmouseout="
               this.style.backgroundColor = '#F06292';
               this.style.transform = 'scale(1)';
-            "
-          >Đăng Nhập</a>
+            ">Đăng Nhập</a>
         </li>
         <li class="nav-item ms-lg-3 d-none" id="userMenuContainer">
           <div class="dropdown d-inline-block">
             <button
               class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <img
-                id="navAvatar"
-                src="assets/logo_main.png"
-                alt="avatar"
-                width="32"
-                height="32"
-                class="rounded-circle border"
-              />
+              type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img id="navAvatar" src="assets/logo_main.png" alt="avatar" width="32" height="32"
+                class="rounded-circle border" />
               <span id="navUserName" class="fw-semibold small">Tài khoản</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0 text-center">
-              <li><a class="dropdown-item text-center" id="navInvoiceLink" href="khach_hang/danh-sach-hoa-don.php">Danh sách hóa đơn</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger text-center"  href="logout.html">Đăng xuất</a></li>
+              <li><a class="dropdown-item text-center" id="navInvoiceLink" href="nhan_vien/header-shared.php?display=danh-sach-hoa-don.php">Danh
+                  sách hóa đơn</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item text-danger text-center" href="logout.html">Đăng xuất</a></li>
             </ul>
           </div>
         </li>

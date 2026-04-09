@@ -100,14 +100,14 @@
 
     // Both customer and employee use the same profile modal/page.
     if (profileLink) {
-      profileLink.setAttribute('href', 'khach_hang/profile.html');
-      profileLink.setAttribute('data-profile-modal-src', 'khach_hang/profile.html');
+      profileLink.setAttribute('href', 'nhan_vien/profile.html');
+      profileLink.setAttribute('data-profile-modal-src', 'nhan_vien/profile.html');
     }
 
     if (invoiceLink) {
       var invoicePath = role === 'nhan_vien'
-        ? 'nhan_vien/danh-sach-hoa-don.php'
-        : 'khach_hang/danh-sach-hoa-don.php';
+        ? 'nhan_vien/header-shared.php?display=danh-sach-hoa-don.php'
+        : 'nhan_vien/danh-sach-hoa-don.php';
       invoiceLink.setAttribute('href', invoicePath);
     }
   }
@@ -174,7 +174,7 @@
 
     return {
       ten: rawUser.ten || rawUser.hovaten || rawUser.ho_ten || rawUser.name || rawUser.customer_name || 'Tài khoản',
-      vai_tro: rawUser.vai_tro || rawUser.role || 'khach_hang',
+      vai_tro: rawUser.vai_tro || rawUser.role || 'nhan_vien',
       anh_dai_dien: rawUser.anh_dai_dien || rawUser.avatar || rawUser.image || '',
       sodienthoai: rawUser.sodienthoai || rawUser.so_dien_thoai || rawUser.phone || '',
       dia_chi: rawUser.dia_chi || rawUser.address || ''
@@ -216,7 +216,7 @@
         ten: (profile && (profile.name || profile.ten)) || customerName,
         sodienthoai: profile && profile.phone ? profile.phone : '',
         dia_chi: profile && profile.address ? profile.address : '',
-        vai_tro: 'khach_hang'
+        vai_tro: 'nhan_vien'
       });
     }
 

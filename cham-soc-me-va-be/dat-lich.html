@@ -1508,6 +1508,15 @@
       }
 
       function handleBookingSuccess() {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({
+            type: 'booking:success',
+            message: 'Chúng tôi sẽ liên hệ với bạn sớm nhất.'
+          }, '*');
+          return;
+        }
+
+        // Fallback cho chế độ trang độc lập
         $('#reviewPageSection').addClass('d-none');
         $('#bookingPageSection').removeClass('d-none');
         $('#bookingForm').addClass('d-none');
@@ -1515,33 +1524,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         setTimeout(function () {
-          var targetUrl = 'dich-vu-cham-soc-me-be.html';
-          try {
-            if (window.parent && window.parent !== window) {
-              var parentWin = window.parent;
-              var parent$ = parentWin.jQuery || parentWin.$;
-
-              if (parent$) {
-                var $activeModal = parent$('.modal.show').first();
-                if ($activeModal.length) {
-                  var modalEl = $activeModal.get(0);
-                  if (parentWin.bootstrap && parentWin.bootstrap.Modal) {
-                    var modalInstance = parentWin.bootstrap.Modal.getInstance(modalEl) || new parentWin.bootstrap.Modal(modalEl);
-                    modalInstance.hide();
-                  } else if (typeof $activeModal.modal === 'function') {
-                    $activeModal.modal('hide');
-                  }
-                }
-              }
-
-              parentWin.location.href = targetUrl;
-              return;
-            }
-          } catch (e) {
-            // fallback điều hướng tại trang hiện tại nếu không truy cập được parent
-          }
-
-          window.location.href = targetUrl;
+          window.location.href = 'dich-vu-cham-soc-me-be.html';
         }, 3000);
       }
 
@@ -1887,7 +1870,6 @@
           // =========================
           // SUCCESS
           // =========================
-          alert('✅ Đặt lịch thành công');
           handleBookingSuccess();
         } catch (err) {
           console.error(err);

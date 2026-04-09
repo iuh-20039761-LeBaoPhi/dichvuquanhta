@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
 
 <head>
@@ -378,6 +378,9 @@
         if (!event || !event.data || !event.data.type) return;
 
         if (event.data.type === 'booking:success') {
+          if (bookingModal) {
+            bookingModal.hide();
+          }
           if (bookingSuccessTextEl) {
             bookingSuccessTextEl.textContent = event.data.message || 'Chúng tôi sẽ liên hệ với bạn sớm nhất.';
           }
