@@ -271,6 +271,12 @@ $summaryTotal = count($rows);
         }
 
         @media (max-width: 991.98px) {
+            .table-wrap {
+                border: none !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+
             .page-wrap {
                 padding: 1px;
             }
@@ -467,9 +473,11 @@ $summaryTotal = count($rows);
 
         /* Mobile Card Styles */
         .invoice-card {
-            background: #fff;
-            border-bottom: 1px solid #f2e1eb;
-            padding: 12px;
+            background: #ffffffff;
+            border: 1px solid #020202ff;
+            margin-bottom: 2px;
+            border-radius: 5px;
+            padding: 10px;
             text-decoration: none !important;
             color: inherit !important;
             display: block;
@@ -481,7 +489,7 @@ $summaryTotal = count($rows);
         }
 
         .invoice-card .inv-id {
-            color: #22c55e;
+            color: #c52274ff;
             font-weight: 700;
             font-size: 0.95rem;
         }
