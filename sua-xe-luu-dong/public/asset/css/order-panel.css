@@ -906,6 +906,11 @@ select:focus-visible {
   outline-offset: 2px;
 }
 
+/* ============================================================ 
+   RESPONSIVE DESIGN SYSTEM (ULTIMATE FIX - ADAPTED FOR PANEL)
+   ============================================================ */
+
+/* --- Tablet & Small Desktop (Up to 991px) --- */
 @media (max-width: 991.98px) {
   .filter-grid {
     grid-template-columns: repeat(2, minmax(140px, 1fr));
@@ -918,53 +923,252 @@ select:focus-visible {
 
   .invoice-main-grid,
   .identity-grid,
-  .review-grid,
-  .invoice-hero-kpis,
-  .task-note-grid,
-  .time-grid {
+  .review-grid {
     grid-template-columns: 1fr;
+    gap: 15px;
   }
-
-  .invoice-service-meta {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-
-  .invoice-service-meta-col-dates {
-    border-left: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.28);
-    padding-left: 0;
-    padding-top: 6px;
+  .invoice-hero-kpis {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-@media (max-width: 575.98px) {
+/* --- Mobile (The Big Fix) --- */
+@media (max-width: 767px) {
+  .admin-shell {
+    overflow-x: hidden;
+  }
+
+  .content-shell {
+    padding: 0;
+  }
+
+  /* Adjust Page Heading on Mobile */
+  .page-heading {
+    padding: 10px 15px;
+    text-align: center;
+    justify-content: center !important;
+  }
   .page-title {
     font-size: 1.2rem;
+  }
+  .page-heading .btn {
+    width: 100%;
+    margin-top: 5px;
+  }
+
+  /* Invoice Hero Mobile */
+  .invoice-hero {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    padding: 25px 15px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .invoice-code-line {
+    justify-content: center;
+    margin-bottom: 5px;
+  }
+  .invoice-code {
+    font-size: 1.4rem;
+  }
+  .invoice-service {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+
+  /* Meta Data Mobile */
+  .invoice-service-meta {
+    grid-template-columns: 1fr;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  .invoice-service-meta-col-dates {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 0 0;
+    margin-top: 8px;
+  }
+
+  .invoice-hero-top {
+    flex-direction: column;
+    align-items: normal;
+    gap: 12px;
+}
+
+  /* Buttons & Progress Ring Mobile */
+  .hero-progress {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  .hero-progress-ring {
+    width: 105px;
+    height: 105px;
+    margin: 0 auto;
+  }
+
+  /* KPI Rows Mobile */
+  .invoice-hero-kpis {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 25px;
+  }
+  .hero-kpi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: left;
+  }
+  .hero-kpi-label {
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+  .hero-kpi-value {
+    font-size: 1rem;
+    margin: 0;
+    max-width: 65%;
+    text-align: right;
+  }
+  .hero-kpi-sub {
+    display: none;
+  }
+
+  /* Identity Cards Mobile */
+  .identity-main {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .identity-name {
+    font-size: 1.3rem;
+    margin-top: 10px;
+  }
+  .identity-contacts {
+    align-items: center;
+  }
+
+  .invoice-panel,
+  .identity-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin: 0 0 15px;
+  }
+  
+  /* Order Table Card Transform */
+  .order-table, 
+  .order-table thead, 
+  .order-table tbody, 
+  .order-table th, 
+  .order-table td, 
+  .order-table tr { 
+    display: block; 
+  }
+
+  .order-table thead tr { 
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  .order-table tr {
+    border: 1px solid #e2e8f0;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .order-table td { 
+    border: none;
+    border-bottom: 1px solid #f1f5f9; 
+    position: relative;
+    padding-left: 45% !important; 
+    text-align: right;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 0.88rem;
+  }
+
+  /* Restore labels for all cells */
+  .order-table td:before { 
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 40%; 
+    padding-right: 10px; 
+    white-space: nowrap;
+    text-align: left;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+  }
+
+  .order-table td:last-child {
+    border-bottom: none;
+    background: #f8fafc;
+    justify-content: center;
+    padding: 15px !important; /* Increase padding for better touch area */
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically on mobile for clarity */
+    gap: 8px; /* Space between buttons */
+  }
+
+  .order-table td:last-child:before {
+    display: none; /* Hide 'Thao tác' label to give full width to buttons */
+  }
+
+  .order-table td:last-child .btn,
+  .order-table td:last-child .d-flex {
+    width: 100% !important; /* Force action buttons/groups to full width */
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .customer-block {
+    align-items: flex-end;
+  }
+
+  .service-text {
+    min-width: unset;
   }
 
   .panel-foot {
     display: grid;
     gap: 10px;
   }
+}
 
-  .filter-grid {
-    grid-template-columns: 1fr;
-  }
+/* Interactive Enhancements */
+.invoice-panel,
+.identity-card,
+.invoice-hero,
+.detail-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-  .invoice-code {
-    font-size: 1.5rem;
-  }
-
-  .invoice-hero {
-    padding: 10px;
-  }
-
-  .hero-kpi-value {
-    font-size: 1.05rem;
-  }
-
-  .identity-name {
-    font-size: 1.24rem;
+@media (min-width: 992px) {
+  .invoice-panel:hover,
+  .identity-card:hover,
+  .detail-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
   }
 }
+
