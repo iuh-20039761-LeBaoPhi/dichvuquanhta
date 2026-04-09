@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Giặt Ủi Nhanh - Admin - Chi tiết hóa đơn</title>
+    <title>Sửa Xe Lưu Động - Admin - Chi tiết hóa đơn</title>
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
@@ -13,7 +13,7 @@
       <div
         id="asideMount"
         data-aside-src="partials/aside.html"
-        data-logo-src="../public/asset/image/logo-giat-ui-nhanh.png"
+        data-logo-src="../public/asset/image/logo-sua-xe-luu-dong.png"
         data-logout-href="dang-nhap-admin.html"
         data-logout-api="../public/logout.php"
       ></div>
@@ -37,7 +37,7 @@
           <div class="topbar-actions">
             <div class="admin-chip">
               <span class="admin-avatar">A</span>
-              <span class="admin-email">admin@giatuinhanh.vn</span>
+              <span class="admin-email">admin@dvqt.vn</span>
             </div>
           </div>
         </header>
@@ -99,7 +99,7 @@
                     >
                   </div>
                   <p class="invoice-service" id="heroServiceName">
-                    Chăm sóc bé tại nhà
+                    Sửa xe tại nhà
                   </p>
                   <div class="invoice-service-meta">
                     <div class="invoice-service-meta-col">
@@ -107,15 +107,11 @@
                         Giá dịch vụ: <strong id="heroServiceFee">0 VND</strong>
                       </p>
                       <p class="invoice-service-meta-item">
-                        Chi phí giao nhận:
+                        Chi phí di chuyển:
                         <strong id="heroTransportFee">0 VND</strong>
                       </p>
                       <p class="invoice-service-meta-item">
-                        Phụ phí: <strong id="heroSurchargeFee">0 VND</strong>
-                      </p>
-                      <p class="invoice-service-meta-item">
-                        Trạng thái thanh toán:
-                        <strong id="heroPaymentStatus">---</strong>
+                        Phí khảo sát: <strong id="heroSurchargeFee">0 VND</strong>
                       </p>
                     </div>
 
@@ -150,10 +146,11 @@
                 <article class="hero-kpi">
                   <p class="hero-kpi-label">Tổng tiền</p>
                   <p class="hero-kpi-value" id="heroTotalAmount">0 VND</p>
+                  <p class="hero-kpi-sub">Phí di chuyển + Giá dịch vụ</p>
                 </article>
 
                 <article class="hero-kpi">
-                  <p class="hero-kpi-label">Hình thức giao nhận</p>
+                  <p class="hero-kpi-label">Trạng thái thanh toán</p>
                   <p class="hero-kpi-value" id="heroTimeRange">---</p>
                   <p class="hero-kpi-sub d-none" id="heroDateRange"></p>
                 </article>
@@ -169,21 +166,19 @@
             <div class="invoice-main-grid">
               <article class="invoice-panel">
                 <div class="invoice-panel-head">
-                  <h3 class="invoice-panel-title">Công việc cần thực hiện</h3>
+                  <h3 class="invoice-panel-title">Dòng xe cần sửa</h3>
                 </div>
                 <div class="invoice-panel-body">
-                  <ol class="task-list" id="detailTasksList"></ol>
-
+                  <div class="vehicle-info-grid mb-3">
+                    <p class="mb-1">Loại xe: <strong id="detailVehicleType">---</strong></p>
+                    <p class="mb-1">Hãng xe: <strong id="detailVehicleBrand">---</strong></p>
+                    <p class="mb-1">Mẫu xe: <strong id="detailVehicleModel">---</strong></p>
+                  </div>
+                  <hr>
                   <div class="task-note-grid">
-                    <article class="task-note-box">
-                      <p class="task-note-label">Ghi chú</p>
-                      <p class="task-note-value" id="detailNote">---</p>
-                    </article>
-                    <article class="task-note-box">
-                      <p class="task-note-label">Hóa chất sử dụng</p>
-                      <p class="task-note-value" id="detailChemicals">
-                        Không sử dụng
-                      </p>
+                    <article class="task-note-box w-100">
+                      <p class="task-note-label">Mô tả chi tiết vấn đề</p>
+                      <p class="task-note-value" id="detailNote" style="font-size: 1.1rem; color: #2d3748;">---</p>
                     </article>
                   </div>
                 </div>
@@ -309,33 +304,6 @@
                       <div class="review-file" id="reviewCustomerFile">
                         Chưa có tệp
                       </div>
-                      <div class="review-editor d-none" id="reviewCustomerEditor">
-                        <textarea
-                          class="form-control form-control-sm"
-                          id="reviewCustomerInput"
-                          rows="3"
-                          placeholder="Nhập đánh giá của khách hàng..."
-                        ></textarea>
-                        <input
-                          class="form-control form-control-sm"
-                          id="reviewCustomerUpload"
-                          type="file"
-                          accept="image/*,video/*"
-                          multiple
-                        />
-                        <div class="review-editor-actions">
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-primary"
-                            id="reviewCustomerSubmit"
-                          >
-                            Gửi đánh giá
-                          </button>
-                          <span class="review-editor-note" id="reviewCustomerHint"
-                            >Chi gui 1 lan. Toi da 30MB moi tep.</span
-                          >
-                        </div>
-                      </div>
                     </div>
                   </article>
 
@@ -354,33 +322,6 @@
                       <p class="review-label">Ảnh/video đánh giá</p>
                       <div class="review-file" id="reviewProviderFile">
                         Chưa có tệp
-                      </div>
-                      <div class="review-editor d-none" id="reviewProviderEditor">
-                        <textarea
-                          class="form-control form-control-sm"
-                          id="reviewProviderInput"
-                          rows="3"
-                          placeholder="Nhập đánh giá của nhà cung cấp..."
-                        ></textarea>
-                        <input
-                          class="form-control form-control-sm"
-                          id="reviewProviderUpload"
-                          type="file"
-                          accept="image/*,video/*"
-                          multiple
-                        />
-                        <div class="review-editor-actions">
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-primary"
-                            id="reviewProviderSubmit"
-                          >
-                            Gửi đánh giá
-                          </button>
-                          <span class="review-editor-note" id="reviewProviderHint"
-                            >Chi gui 1 lan. Toi da 30MB moi tep.</span
-                          >
-                        </div>
                       </div>
                     </div>
                   </article>

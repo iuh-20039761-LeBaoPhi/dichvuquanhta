@@ -48,5 +48,44 @@
     });
   }
 
+  function getBookingTimeInput() {
+    return (
+      document.getElementById("thoigianmongmuon") ||
+      document.querySelector('input[name="thoigianmongmuon"]')
+    );
+  }
+
+  function toDateTimeLocalNow() {
+    const now = new Date();
+    const tzOffsetMs = now.getTimezoneOffset() * 60000;
+    return new Date(now.getTime() - tzOffsetMs).toISOString().slice(0, 16);
+  }
+
+  function fillBookingTimeNow(force = false) {
+    const input = getBookingTimeInput();
+    if (!input) return;
+
+    if (force || !String(input.value || "").trim()) {
+      input.value = toDateTimeLocalNow();
+    }
+  }
+
+  function parseIntegerLike(value) {
+    const normalized = String(value == null ? "" : value).replace(/\D/g, "");
+    return Number(normalized || 0);
+  }
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return "";
+  }
+
   utils.showToast = showToast;
+  utils.getBookingTimeInput = getBookingTimeInput;
+  utils.toDateTimeLocalNow = toDateTimeLocalNow;
+  utils.fillBookingTimeNow = fillBookingTimeNow;
+  utils.parseIntegerLike = parseIntegerLike;
+  utils.getCookie = getCookie;
 })(window);

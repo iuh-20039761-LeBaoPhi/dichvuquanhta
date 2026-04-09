@@ -108,15 +108,11 @@
                         Giá dịch vụ: <strong id="heroServiceFee">0 VND</strong>
                       </p>
                       <p class="invoice-service-meta-item">
-                        Chi phí giao nhận:
+                        Chi phí di chuyển:
                         <strong id="heroTransportFee">0 VND</strong>
                       </p>
                       <p class="invoice-service-meta-item">
-                        Phụ phí: <strong id="heroSurchargeFee">0 VND</strong>
-                      </p>
-                      <p class="invoice-service-meta-item">
-                        Trạng thái thanh toán:
-                        <strong id="heroPaymentStatus">---</strong>
+                        Phí khảo sát: <strong id="heroSurchargeFee">0 VND</strong>
                       </p>
                     </div>
 
@@ -151,10 +147,11 @@
                 <article class="hero-kpi">
                   <p class="hero-kpi-label">Tổng tiền</p>
                   <p class="hero-kpi-value" id="heroTotalAmount">0 VND</p>
+                  <p class="hero-kpi-sub">Phí di chuyển + Giá dịch vụ</p>
                 </article>
 
                 <article class="hero-kpi">
-                  <p class="hero-kpi-label">Hình thức giao nhận</p>
+                  <p class="hero-kpi-label">Trạng thái thanh toán</p>
                   <p class="hero-kpi-value" id="heroTimeRange">---</p>
                   <p class="hero-kpi-sub d-none" id="heroDateRange"></p>
                 </article>
@@ -170,21 +167,19 @@
             <div class="invoice-main-grid">
               <article class="invoice-panel">
                 <div class="invoice-panel-head">
-                  <h3 class="invoice-panel-title">Công việc cần thực hiện</h3>
+                  <h3 class="invoice-panel-title">Dòng xe cần sửa</h3>
                 </div>
                 <div class="invoice-panel-body">
-                  <ol class="task-list" id="detailTasksList"></ol>
-
+                  <div class="vehicle-info-grid mb-3">
+                    <p class="mb-1">Loại xe: <strong id="detailVehicleType">---</strong></p>
+                    <p class="mb-1">Hãng xe: <strong id="detailVehicleBrand">---</strong></p>
+                    <p class="mb-1">Mẫu xe: <strong id="detailVehicleModel">---</strong></p>
+                  </div>
+                  <hr>
                   <div class="task-note-grid">
-                    <article class="task-note-box">
-                      <p class="task-note-label">Ghi chú</p>
-                      <p class="task-note-value" id="detailNote">---</p>
-                    </article>
-                    <article class="task-note-box">
-                      <p class="task-note-label">Hóa chất sử dụng</p>
-                      <p class="task-note-value" id="detailChemicals">
-                        Không sử dụng
-                      </p>
+                    <article class="task-note-box w-100">
+                      <p class="task-note-label">Mô tả chi tiết vấn đề</p>
+                      <p class="task-note-value" id="detailNote" style="font-size: 1.1rem; color: #2d3748;">---</p>
                     </article>
                   </div>
                 </div>

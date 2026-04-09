@@ -1,7 +1,7 @@
 (function (window, document) {
   "use strict";
 
-  var ORDER_TABLE = "datlich_giatuinhanh";
+  var ORDER_TABLE = "datlich_suaxe";
   var USER_TABLE = "nguoidung";
   var REVIEW_UPLOAD_ENDPOINT = "public/upload-review-media.php";
   var REVIEW_FIELD_MAP = {
@@ -96,21 +96,8 @@
   }
 
   function toNumber(value) {
-    if (typeof value === "number") return Number.isFinite(value) ? value : 0;
-    var text = String(value || "")
-      .replace(/[^\d,-.]/g, "")
-      .replace(/\.(?=\d{3}(\D|$))/g, "")
-      .replace(/,/g, ".");
-    var parsed = Number(text);
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-
-  function parseWeight(order) {
-    var fromWeight = toNumber(order.khoiluong || order.weight || order.cannang);
-    if (fromWeight > 0) return fromWeight;
-
-    var fromQuantity = toNumber(order.soluong || order.quantity);
-    return fromQuantity > 0 ? fromQuantity : 1;
+    var num = Number(value);
+    return Number.isFinite(num) ? num : 0;
   }
 
   async function getDistance(lat1, lon1, lat2, lon2) {
@@ -126,48 +113,36 @@
       "?overview=false";
 
     var res = await fetch(url);
-    if (!res.ok) {
-      var errorDetail = "";
-      try {
-        var errBody = await res.json();
-        errorDetail = errBody.message || errBody.code || "";
-      } catch (e) {}
-      throw new Error("Không thể tính khoảng cách (Status: " + res.status + " " + errorDetail + "). Tọa độ: NS[" + lat1 + "," + lon1 + "] -> KH[" + lat2 + "," + lon2 + "]");
-    }
+    if (!res.ok) throw new Error("Không thể tính khoảng cách di chuyển.");
 
     var data = await res.json();
     if (!data.routes || !data.routes.length) {
-      throw new Error("Không tính được khoảng cách giữa hai địa điểm.");
+      throw new Error("Không tính được khoảng cách giữa 2 vị trí.");
     }
 
     return Number((data.routes[0].distance / 1000).toFixed(2));
   }
 
   function calculatePricing(order, distanceKm) {
-    var totalWeight = parseWeight(order);
-    var baseTransportFee = toNumber(order.tiendichuyen);
-    var serviceAmount = Math.round(toNumber(order.giadichvu));
+    var serviceAmount = toNumber(order.giadichvu);
+    var perKmIncrease = 5000;
+    var minFee = 40000;
+    var maxFee = 60000;
+    var thresholdKm = 5;
 
-    var transportName = String(order.hinhthucnhangiao || "")
-      .toLowerCase()
-      .trim();
-    var isSelfPickup =
-      transportName.indexOf("tu lay") !== -1 ||
-      transportName.indexOf("t\u1ef1 l\u1ea5y") !== -1;
-    var extraTransportFee = totalWeight >= 50 && !isSelfPickup ? 5000 : 0;
-    var effectiveTransportFee = baseTransportFee + extraTransportFee;
+    var billableKm = Math.max(0, Math.ceil(distanceKm));
+    var transportFee = 0;
 
-    var surcharge =
-      distanceKm > 0
-        ? (distanceKm * effectiveTransportFee * (totalWeight / 20)) / 4
-        : 0;
-    var shippingSurcharge = Math.round(surcharge);
+    if (distanceKm < thresholdKm) {
+      transportFee = minFee + billableKm * perKmIncrease;
+    } else {
+      transportFee = maxFee + billableKm * perKmIncrease;
+    }
 
     return {
       distanceKm: distanceKm,
-      shippingSurcharge: shippingSurcharge,
-      totalAmount: serviceAmount + effectiveTransportFee + shippingSurcharge,
-      effectiveTransportFee: effectiveTransportFee,
+      transportFee: transportFee,
+      totalAmount: serviceAmount + transportFee,
     };
   }
 
@@ -278,15 +253,7 @@
     }
 
     return items.map(function (item) {
-      var qty = Number(item.quantity) || 0;
-      var itemName = safeText(item.name).toLowerCase();
-      return (
-        "Xử lý " +
-        qty +
-        " " +
-        itemName +
-        ", làm sạch và kiểm tra chất lượng trước khi bàn giao."
-      );
+      return safeText(item.name);
     });
   }
 
@@ -683,7 +650,9 @@
     var status = getOrderStatus(row);
     var serviceFee = toNumber(row.giadichvu);
     var transportFee = toNumber(row.tiendichuyen);
-    var surchargeFee = toNumber(row.phuphigiaonhan);
+    var surchargeFee = toNumber(
+      row.phikhaosat || row.phi_khao_sat || row.phuphigiaonhan,
+    );
     var totalAmount = toNumber(row.tongtien);
     var hasAssignedProvider = hasAssignedProviderRow(row);
 
@@ -697,15 +666,11 @@
       updatedAt: updatedAt,
       service: row.dichvu || row.dichvuquantam || "Dịch vụ giặt ủi",
       note: row.ghichu || "Không có ghi chú.",
-      chemicalsText:
-        row.danhsachhoachat || row.hoachathotro || row.danhsach_hoachat || "",
-      workItemsText:
-        row.danhsachcongviec || row.congviec || row.danhsach_congviec || "",
-      deliveryMethod:
-        row.hinhthucnhangiao ||
-        row.phuongthucgiaonhan ||
-        row.transport_option ||
-        "",
+      vehicleInfo: {
+        type: row.loaixe || "",
+        brand: row.hangxe || "",
+        model: row.mauxe || "",
+      },
       receivedAt: row.ngaynhan || row.ngay_nhan || row.received_at || "",
       startedAt: row.ngaybatdau || row.ngay_bat_dau || row.started_at || "",
       completedAt:
@@ -949,8 +914,8 @@
       ),
       email: String(user.email || user.user_email || "").trim(),
       address: String(user.diachi || user.address || "").trim(),
-      lat: user.maplat || user.lat,
-      lng: user.maplng || user.lng || user.long,
+      lat: user.maplat || user.lat || user.user_lat,
+      lng: user.maplng || user.lng || user.user_lng,
     };
   }
 
@@ -1022,11 +987,6 @@
       })
       .join("");
 
-    setText(
-      "detailChemicals",
-      splitListText(order.chemicalsText).join(", ") || "Không sử dụng",
-    );
-    setText("detailNote", order.note || "Không có ghi chú.");
   }
 
   function reviewPrefix(actor) {
@@ -1299,7 +1259,13 @@
     );
     setText("heroPaymentStatus", getPaymentStatusLabel(order.paymentStatus));
     setText("heroTotalAmount", formatCurrencyVnd(total));
-    setText("heroTimeRange", safeText(order.deliveryMethod));
+    setText("heroTimeRange", getPaymentStatusLabel(order.paymentStatus));
+    if (order.vehicleInfo) {
+      setText("detailVehicleType", order.vehicleInfo.type);
+      setText("detailVehicleBrand", order.vehicleInfo.brand);
+      setText("detailVehicleModel", order.vehicleInfo.model);
+    }
+    setText("detailNote", order.note || "Không có ghi chú.");
     var heroDateRangeNode = document.getElementById("heroDateRange");
     if (heroDateRangeNode) {
       heroDateRangeNode.textContent = "";
@@ -1389,6 +1355,16 @@
       initialsOf(order.provider && order.provider.name, "NCC"),
       "provider",
     );
+
+    // Hiển thị khung thanh toán cho khách hàng nếu đơn đã hoàn thành nhưng chưa thanh toán
+    var paymentPanel = document.getElementById("paymentPanel");
+    if (paymentPanel) {
+      var isCompleted = String(order.status || "").toLowerCase() === "completed";
+      var isUnpaid = String(order.paymentStatus || "").toLowerCase() !== "paid";
+      var isCustomer = (state.auth && state.auth.role) === "customer";
+      
+      paymentPanel.classList.toggle("d-none", !(isCompleted && isUnpaid && isCustomer));
+    }
   }
 
   // function showActionAlert(message, type) {
@@ -1718,7 +1694,7 @@
             throw new Error("Không xác định được mã hóa đơn để cập nhật.");
           }
 
-          await updateOrderRow(state.orderRaw.id, await payloadFactory());
+          await updateOrderRow(state.orderRaw.id, payloadFactory());
           await loadAndRenderOrder();
         } catch (error) {
           showActionAlert(
@@ -1734,25 +1710,42 @@
 
       if (canReceive) {
         var receiveBtn = makeButton("Nhận đơn", "btn btn-outline-primary");
-        receiveBtn.addEventListener("click", function () {
-          runProviderAction(receiveBtn, "Đang nhận...", async function () {
-            var order = state.orderRaw || {};
-            var supplierLat = toNumber(providerIdentity.lat);
-            var supplierLng = toNumber(providerIdentity.lng);
-            var customerLat = toNumber(order.lat_kh);
-            var customerLng = toNumber(order.lng_kh);
+        receiveBtn.addEventListener("click", async function () {
+          if (state.isSubmitting) return;
+          state.isSubmitting = true;
+          hideActionAlert();
 
-            if (!supplierLat || !supplierLng || supplierLat <= 0 || supplierLng <= 0) {
+          var originalText = receiveBtn.textContent;
+          receiveBtn.disabled = true;
+          receiveBtn.textContent = "Đang nhận...";
+
+          try {
+            var provider = resolveProviderIdentity(auth);
+            var orderRaw = (order && order.raw) || {};
+
+            var supplierLat = Number(provider.lat);
+            var supplierLng = Number(provider.lng);
+            var customerLat = Number(orderRaw.lat_kh);
+            var customerLng = Number(orderRaw.lng_kh);
+
+            if (
+              !supplierLat ||
+              !supplierLng ||
+              supplierLat <= 0 ||
+              supplierLng <= 0
+            ) {
               throw new Error(
-                "Thiếu tọa độ nhà cung cấp hợp lệ (maplat/maplng). Hiện tại: " +
-                  supplierLat +
-                  "," +
-                  supplierLng,
+                "Thiếu tọa độ nhà cung cấp (maplat/maplng). Vui lòng cập nhật thông tin cá nhân.",
               );
             }
-            if (!customerLat || !customerLng || customerLat <= 0 || customerLng <= 0) {
+            if (
+              !customerLat ||
+              !customerLng ||
+              customerLat <= 0 ||
+              customerLng <= 0
+            ) {
               throw new Error(
-                "Hệ thống chưa có tọa độ vị trí của khách hàng này (lat_kh/lng_kh). Vui lòng yêu cầu khách hàng cập nhật địa chỉ hoặc nhập tay.",
+                "Hệ thống chưa có tọa độ vị trí khách hàng. Vui lòng yêu cầu khách hàng cập nhật địa chỉ.",
               );
             }
 
@@ -1763,21 +1756,32 @@
               customerLng,
             );
 
-            var pricing = calculatePricing(order, distanceKm);
+            var pricing = calculatePricing(orderRaw, distanceKm);
 
-            return {
-              idnhacungcap: providerIdentity.id || "",
-              tennhacungcap: providerIdentity.name || "",
-              sdt_ncc: providerIdentity.phone || "",
-              email_ncc: providerIdentity.email || "",
-              diachi_ncc: providerIdentity.address || "",
+            var payload = {
+              idnhacungcap: provider.id || "",
+              tennhacungcap: provider.name || "",
+              sdt_ncc: provider.phone || "",
+              email_ncc: provider.email || "",
+              diachi_ncc: provider.address || "",
               ngaynhan: new Date().toISOString(),
-              phuphigiaonhan: pricing.shippingSurcharge,
               tongtien: pricing.totalAmount,
-              tiendichuyen: pricing.effectiveTransportFee,
-              khoangcachgiaonhan: pricing.distanceKm,
+              tiendichuyen: pricing.transportFee,
+              khoangcachdichuyen: pricing.distanceKm,
             };
-          });
+
+            await updateOrderRow(state.orderRaw.id, payload);
+            await loadAndRenderOrder();
+          } catch (error) {
+            showActionAlert(
+              (error && error.message) || "Không thể nhận đơn.",
+              "alert-danger",
+            );
+          } finally {
+            state.isSubmitting = false;
+            receiveBtn.textContent = originalText;
+            receiveBtn.disabled = false;
+          }
         });
         group.appendChild(receiveBtn);
       } else if (canStart) {
@@ -1791,16 +1795,41 @@
         });
         group.appendChild(startBtn);
       } else if (canComplete) {
+        // Nút Hoàn thành (Sửa xe thành công)
         var completeBtn = makeButton("Hoàn thành", "btn btn-success");
         completeBtn.addEventListener("click", function () {
           runProviderAction(completeBtn, "Đang hoàn thành...", function () {
             return {
               ngayhoanthanh: new Date().toISOString(),
-              trangthaithanhtoan: "Paid",
+              phikhaosat: 0,
             };
           });
         });
         group.appendChild(completeBtn);
+
+        // Nút Hoàn thành khảo sát
+        var surveyCompleteBtn = makeButton(
+          "Khảo sát xong",
+          "btn btn-info",
+        );
+        surveyCompleteBtn.addEventListener("click", function () {
+          runProviderAction(
+            surveyCompleteBtn,
+            "Đang cập nhật...",
+            function () {
+              var transportFee = toNumber(order.transportFee);
+              var surveyFee = toNumber(order.surchargeFee);
+              return {
+                dichvu: "Khảo sát",
+                ngayhoanthanh: new Date().toISOString(),
+                giadichvu: 0,
+                tongtien: surveyFee + transportFee,
+                trangthaithanhtoan: "Paid",
+              };
+            },
+          );
+        });
+        group.appendChild(surveyCompleteBtn);
       }
 
       if (group.children.length) {
@@ -1909,6 +1938,54 @@
 
     renderOrder(mapped);
     renderAction(auth, mapped);
+    initPaymentAction();
+  }
+
+  function initPaymentAction() {
+    var btn = document.getElementById("paymentSubmitBtn");
+    var input = document.getElementById("paymentInput");
+    if (!btn || !input || btn.dataset.bound === "1") return;
+    btn.dataset.bound = "1";
+
+    btn.addEventListener("click", async function () {
+      var rawValue = input.value;
+      var amount = toNumber(rawValue);
+      if (amount <= 0) {
+        alert("Vui lòng nhập số tiền hợp lệ.");
+        return;
+      }
+
+      var finalAmount = Math.round(amount * 0.95);
+      if (!confirm("Hệ thống sẽ áp dụng giảm giá 5%. Số tiền thanh toán cuối cùng là: " + formatCurrencyVnd(finalAmount) + ". Bạn có chắc chắn?")) {
+        return;
+      }
+
+      if (state.isSubmitting) return;
+      state.isSubmitting = true;
+      btn.disabled = true;
+      var originalText = btn.textContent;
+      btn.textContent = "Đang xử lý...";
+
+      try {
+        if (!state.orderRaw || !state.orderRaw.id) {
+          throw new Error("Không xác định được mã hóa đơn.");
+        }
+
+        await updateOrderRow(state.orderRaw.id, {
+          tongtien: finalAmount,
+          trangthaithanhtoan: "Paid",
+        });
+
+        await loadAndRenderOrder();
+        alert("Thanh toán thành công! Bạn đã được giảm giá 5%.");
+      } catch (error) {
+        alert((error && error.message) || "Không thể thực hiện thanh toán.");
+      } finally {
+        state.isSubmitting = false;
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    });
   }
 
   async function bootstrap() {
