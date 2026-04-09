@@ -1503,7 +1503,7 @@
 								alt="Khách hàng">
 							<div class="profile-main">
 								<h3 id="customerCardName" class="profile-name">---</h3>
-								<p class="profile-contact contact-email"><span id="customerCardEmail">---</span></p>
+								<p class="profile-row"><i class="fa fa-envelope me-2"></i><span id="customerCardEmail">---</span></p>
 								<p class="profile-row"><i class="fa fa-phone me-2"></i><span id="customerCardPhone">---</span></p>
 								<p class="profile-row"><i class="fa fa-map-marker me-2"></i><span id="customerCardAddress">---</span></p>
 							</div>
@@ -1521,14 +1521,13 @@
 							<div class="profile-main">
 								<h3 id="staffCardName" class="profile-name">---</h3>
 								<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
-								<p id="staffCardEmail" class="profile-row contact-email">---</p>
+								<p class="profile-row"><i class="fa fa-envelope me-2"></i><span id="staffCardEmail">---</span></p>
 								<p class="profile-row"><i class="fa fa-phone me-2"></i><span id="staffCardPhone">---</span></p>
 								<p class="profile-row"><i class="fa fa-map-marker me-2"></i><span id="staffCardAddress">---</span></p>
 							</div>
 						</div>
 						<div class="profile-foot">
 							<span id="staffReceiveTime" class="profile-pill">Nhận việc: ---</span>
-							<span id="staffExpChip" class="profile-pill">Kinh nghiệm: ---</span>
 						</div>
 					</article>
 
@@ -2132,7 +2131,6 @@
 				setText('staffCardPhone', $datlich_mevabe.sdtncc || '---');
 				setText('staffCardAddress', $datlich_mevabe.diachincc || '---');
 				setText('staffReceiveTime', `Nhận việc: ${formatDateTimeDisplay($datlich_mevabe.ngaynhan)}`);
-				setText('staffExpChip', `Kinh nghiệm: ${$nhacungcap_mevabe.kinh_nghiem || '---'}`);
 				setAvatar('staffAvatar', $nhacungcap_mevabe.anh_dai_dien || $nhacungcap_mevabe.avatar || '');
 
 				const status = $datlich_mevabe.trangthai || '---';
