@@ -291,7 +291,16 @@
   document.addEventListener('DOMContentLoaded', function () {
     initNavState();
   });
-
+  document.addEventListener('DOMContentLoaded', function () {
+    fetch('session_user.php', { credentials: 'same-origin' })
+      .then(res => {
+        // Nếu trả về JSON, có thể kiểm tra nếu cần
+        try { return res.json(); } catch (e) { return null; }
+      })
+      .then(data => {
+        // Không cần xử lý gì, chỉ cần gọi là đủ để session PHP nhận cookie
+      });
+  });
   // Chi xu ly logout khi nguoi dung bam link dang xuat.
   document.addEventListener('click', function (event) {
     if (isLogoutLink(event.target)) {

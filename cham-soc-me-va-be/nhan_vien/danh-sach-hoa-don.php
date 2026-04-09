@@ -4,7 +4,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/../session_user.php';
 require_once __DIR__ . '/get-hoadon.php';
 require_once __DIR__ . '/xu-ly-cong-viec.php';
-require_once __DIR__ . '/header-shared.php';
 require_once __DIR__ . '/xu-ly-phan-trang.php';
 $sessionUser = session_user_require_employee('../login.html', 'nhan_vien/danh-sach-hoa-don.php');
 
@@ -166,7 +165,7 @@ $summaryTotal = count($rows);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <?php render_nhan_vien_header_styles(); ?>
+
     <style>
         body {
             font-family: 'Be Vietnam Pro', sans-serif;
@@ -409,7 +408,6 @@ $summaryTotal = count($rows);
     </style>
 </head>
 <body>
-<?php render_nhan_vien_header($sessionUser, 'Quan ly hoa don nhan vien', 'orders'); ?>
 <div class="page-wrap">
 
     <?php if ($flashMsg !== ''): ?>
@@ -600,7 +598,6 @@ $summaryTotal = count($rows);
         </div>
     </section>
 </div>
-<?php render_nhan_vien_layout_end(); ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

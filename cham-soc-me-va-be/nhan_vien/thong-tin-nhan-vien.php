@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../session_user.php';
-require_once __DIR__ . '/header-shared.php';
 require_once __DIR__ . '/get-nhan-vien.php';
 
 $sessionUser = session_user_require_employee('../login.html', 'nhan_vien/thong-tin-nhan-vien.php');
@@ -48,7 +47,7 @@ $statusClass = strtolower($statusText) === 'pending' ? ' pending' : '';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <?php render_nhan_vien_header_styles(); ?>
+
     <style>
         body {
             font-family: 'Be Vietnam Pro', sans-serif;
@@ -310,7 +309,6 @@ $statusClass = strtolower($statusText) === 'pending' ? ' pending' : '';
     </style>
 </head>
 <body>
-<?php render_nhan_vien_header($sessionUser, 'Thong tin nhan vien', 'profile'); ?>
 <div class="page-wrap">
 
     <?php if ($flashMsg !== ''): ?>
@@ -424,7 +422,6 @@ $statusClass = strtolower($statusText) === 'pending' ? ' pending' : '';
         </div>
     </section>
 </div>
-<?php render_nhan_vien_layout_end(); ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
