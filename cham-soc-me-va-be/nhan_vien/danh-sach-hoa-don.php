@@ -703,7 +703,7 @@ $summaryTotal = count($rows);
                                                 </td>
                                                 <td><?= number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND' ?>
                                                 </td>
-                                                <td><?= htmlspecialchars((string) ($item['ngay_bat_dau_kehoach'] ?? 'N/A'), ENT_QUOTES, 'UTF-8') ?>
+                                                <td><?= date('d/m/Y', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now'))) ?>
                                                 </td>
                                                 <td><span
                                                         class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span>
@@ -745,7 +745,7 @@ $summaryTotal = count($rows);
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div class="inv-id"><?= htmlspecialchars($displayItemId, ENT_QUOTES, 'UTF-8') ?></div>
                                             <div class="inv-date">
-                                                <?= htmlspecialchars((string) ($item['ngay_them'] ?? '09/04/2026'), ENT_QUOTES, 'UTF-8') ?>
+                                                <?= date('d/m/Y', strtotime((string) ($item['ngay_bat_dau_kehoach'] ?? 'now'))) ?>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center mt-1">
