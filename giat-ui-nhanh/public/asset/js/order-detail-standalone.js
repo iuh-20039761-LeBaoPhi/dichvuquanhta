@@ -472,11 +472,11 @@
 
   /**
    * Trích xuất ID số từ mã đơn hàng dạng văn bản (ví dụ: "#0000123" -> 123).
-   * @param {string} mahd Mã đơn hàng văn bản.
+   * @param {string} madh Mã đơn hàng văn bản.
    * @returns {number} ID dạng số.
    */
-  function parseOrderId(mahd) {
-    var raw = String(mahd || "")
+  function parseOrderId(madh) {
+    var raw = String(madh || "")
       .trim()
       .replace(/^#/, "");
     if (!raw) return 0;
@@ -493,13 +493,13 @@
   }
 
   /**
-   * Trích xuất các tham số từ URL (`mahd`, `sodienthoai`, `password`).
+   * Trích xuất các tham số từ URL (`madh`, `sodienthoai`, `password`).
    * @returns {Object} Đối tượng chứa các tham số.
    */
   function parseParams() {
     var urlParams = new URLSearchParams(window.location.search);
     return {
-      mahd: String(urlParams.get("mahd") || "").trim(),
+      madh: String(urlParams.get("madh") || "").trim(),
       phone: String(urlParams.get("sodienthoai") || "").trim(),
       password: String(urlParams.get("password") || "").trim(),
     };
@@ -677,11 +677,11 @@
 
   /**
    * Tải thông tin đơn hàng từ Database dựa trên mã đơn.
-   * @param {string} mahd Mã đơn hàng.
+   * @param {string} madh Mã đơn hàng.
    * @returns {Promise<Object|null>} Dữ liệu đơn hàng thô.
    */
-  async function loadOrderByMahd(mahd) {
-    var orderId = parseOrderId(mahd);
+  async function loadOrderBymadh(madh) {
+    var orderId = parseOrderId(madh);
     if (!Number.isFinite(orderId) || orderId <= 0) {
       return null;
     }
@@ -2240,7 +2240,7 @@
     var params = state.params;
     var auth = state.auth;
 
-    var raw = await loadOrderByMahd(params.mahd);
+    var raw = await loadOrderBymadh(params.madh);
     if (!raw) {
       showError(
         "Không tìm thấy hóa đơn",
@@ -2284,10 +2284,10 @@
       var params = parseParams();
       state.params = params;
 
-      if (!params.mahd || !params.phone || !params.password) {
+      if (!params.madh || !params.phone || !params.password) {
         showError(
           "Thiếu tham số truy cập",
-          "URL bắt buộc có mahd, sodienthoai và password.",
+          "URL bắt buộc có madh, sodienthoai và password.",
         );
         return;
       }

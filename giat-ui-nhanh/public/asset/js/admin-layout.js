@@ -56,8 +56,8 @@
 
     var currentPath = window.location.pathname.split("/").pop().toLowerCase();
     var activePath = currentPath;
-    if (currentPath === "chi-tiet-hoa-don.html") {
-      activePath = "danh-sach-hoa-don.html";
+    if (currentPath === "chi-tiet-don-hang.html") {
+      activePath = "danh-sach-don-hang.html";
     }
     var navItems = aside.querySelectorAll(".sidebar-nav .nav-item");
 

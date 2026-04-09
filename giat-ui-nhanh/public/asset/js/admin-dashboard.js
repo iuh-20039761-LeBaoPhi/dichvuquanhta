@@ -231,7 +231,7 @@
             <td><span class="status-pill ${status.className}">${status.label}</span></td>
             <td>${formatCurrency(order.total)}</td>
             <td>
-              <a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=${order.id}">
+              <a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=${order.id}">
                 Xem chi tiết
               </a>
             </td>
