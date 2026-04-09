@@ -450,10 +450,10 @@ $isDisabled = $loadError !== '';
                         <button type="submit" class="btn btn-primary btn-soft" <?= $isDisabled ? 'disabled' : '' ?>>
                             <i class="bi bi-check2-circle me-1"></i> Lưu thay đổi
                         </button>
-                        <a class="btn btn-outline-secondary btn-soft" href="header-shared.php?display=thong-tin-nhan-vien.php"
+                        <!-- <a class="btn btn-outline-secondary btn-soft" href="header-shared.php"
                            >
                             <i class="bi bi-arrow-left me-1"></i> Quay lại thông tin
-                        </a>
+                        </a> -->
                     </div>
                 </form>
             </div>
