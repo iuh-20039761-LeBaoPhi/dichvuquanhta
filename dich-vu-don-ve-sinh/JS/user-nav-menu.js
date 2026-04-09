@@ -23,7 +23,7 @@
   };
 
   const assetUrl = (path) => {
-    if (!path) return new URL('assets/logomvb.png', projectBase).href;
+    if (!path) return new URL('assets/logo_main.png', projectBase).href;
     if (/^https?:\/\//i.test(path)) return path;
     return new URL(String(path).replace(/^\/+/, ''), projectBase).href;
   };
@@ -150,7 +150,7 @@
 
     if (navUserName) navUserName.textContent = user && user.ten ? user.ten : 'Tài khoản';
     if (navAvatar) {
-      const avatar = user && user.anh_dai_dien ? user.anh_dai_dien : 'assets/logomvb.png';
+      const avatar = user && user.anh_dai_dien ? user.anh_dai_dien : 'assets/logo_main.png';
       navAvatar.src = assetUrl(avatar);
     }
     resetIdleLogoutTimer();

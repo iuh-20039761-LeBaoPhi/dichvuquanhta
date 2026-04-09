@@ -27,13 +27,13 @@ $cccdFront = trim((string) ($row['cccdmattruoctenfile'] ?? ''));
 $cccdBack = trim((string) ($row['cccdmatsautenfile'] ?? ''));
 
 if ($avatar === '') {
-    $avatar = '../assets/logomvb.png';
+    $avatar = '../assets/logo_main.png';
 }
 if ($cccdFront === '') {
-    $cccdFront = '../assets/logomvb.png';
+    $cccdFront = '../assets/logo_main.png';
 }
 if ($cccdBack === '') {
-    $cccdBack = '../assets/logomvb.png';
+    $cccdBack = '../assets/logo_main.png';
 }
 
 $isDisabled = $loadError !== '';

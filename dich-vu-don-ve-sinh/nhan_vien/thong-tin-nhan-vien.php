@@ -24,13 +24,13 @@ $cccdBack = trim((string) ($row['cccdmatsautenfile'] ?? ''));
 $statusText = trim((string) ($row['trangthai'] ?? ''));
 
 if ($avatar === '') {
-    $avatar = '../assets/logomvb.png';
+    $avatar = '../assets/logo_main.png';
 }
 if ($cccdFront === '') {
-    $cccdFront = '../assets/logomvb.png';
+    $cccdFront = '../assets/logo_main.png';
 }
 if ($cccdBack === '') {
-    $cccdBack = '../assets/logomvb.png';
+    $cccdBack = '../assets/logo_main.png';
 }
 if ($statusText === '') {
     $statusText = 'Dang hoat dong';
