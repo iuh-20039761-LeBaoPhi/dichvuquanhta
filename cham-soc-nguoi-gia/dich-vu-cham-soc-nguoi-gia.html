@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
@@ -254,8 +254,21 @@ body {
         }
 
         @media (max-width: 575.98px) {
+          #bookingFlowModal .modal-dialog {
+            margin: 2px !important;
+            max-width: none !important;
+            width: calc(100% - 4px) !important;
+            height: calc(100% - 4px) !important;
+            padding: 0 !important;
+          }
+
+          #bookingFlowModal .modal-content {
+            height: 100% !important;
+          }
+
           #bookingFlowModal .modal-body {
-            height: calc(100vh - 140px);
+            flex: 1 1 auto;
+            height: auto !important;
           }
           #bookingFlowModal .booking-modal-title {
             gap: 8px;
