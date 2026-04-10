@@ -1746,7 +1746,12 @@
           return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' +
             pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
         }
-
+        function nowNgayDat() {
+        var d = new Date();
+        var pad = function (n) { return String(n).padStart(2, '0'); };
+        return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' +
+          d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+      }
         function isKrudSuccess(res) {
           return !!res && !res.error && res.success !== false;
         }
@@ -1802,24 +1807,24 @@
             // =========================
             var res = await krud('insert', 'datlich_nguoibenh', {
               tenkhachhang: formData.name || '',
-            sdtkhachhang: formData.phone || '',
-            emailkhachhang: formData.email || '',
-            diachikhachhang: formData.address || '',
-            dich_vu: formData.service || '',
-            goi_dich_vu: formData.selectedPackage || '',
-            cong_viec: (formData.jobs || []).join(', '),
+              sdtkhachhang: formData.phone || '',
+              emailkhachhang: formData.email || '',
+              diachikhachhang: formData.address || '',
+              dich_vu: formData.service || '',
+              goi_dich_vu: formData.selectedPackage || '',
+              cong_viec: (formData.jobs || []).join(', '),
 
-            ngay_bat_dau_kehoach: formData.startDate || '',
-            ngay_ket_thuc_kehoach: formData.endDate || '',
-            gio_bat_dau_kehoach: formData.startTime || '',
-            gio_ket_thuc_kehoach: formData.endTime || '',
+              ngay_bat_dau_kehoach: formData.startDate || '',
+              ngay_ket_thuc_kehoach: formData.endDate || '',
+              gio_bat_dau_kehoach: formData.startTime || '',
+              gio_ket_thuc_kehoach: formData.endTime || '',
 
-            tong_tien: normalizeMoneyToNumber(formData.price),
+              tong_tien: normalizeMoneyToNumber(formData.price),
 
-            yeu_cau_khac: formData.extraRequest || '',
-            ghi_chu: formData.note || '',
+              yeu_cau_khac: formData.extraRequest || '',
+              ghi_chu: formData.note || '',
 
-            ngaydat: nowNgayDat()
+              ngaydat: nowNgayDat()
             });
 
             console.log('DB:', res);

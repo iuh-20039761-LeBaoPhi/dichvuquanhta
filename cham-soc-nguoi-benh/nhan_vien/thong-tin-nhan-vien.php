@@ -213,98 +213,98 @@ include 'layout-header.php';
     /* Theme color overrides */
     body {
         background:
-            radial-gradient(1200px 500px at 10% -10%, #ffe1f1 0%, transparent 55%),
-            radial-gradient(900px 440px at 100% 0%, #ffeede 0%, transparent 52%),
-            linear-gradient(180deg, #fff4fb 0%, #fff9fc 100%);
-        color: #6b3e58;
+            radial-gradient(1200px 500px at 10% -10%, #dbeafe 0%, transparent 55%),
+            radial-gradient(900px 440px at 100% 0%, #f0f7ff 0%, transparent 52%),
+            linear-gradient(180deg, #f0f7ff 0%, #f8fafc 100%);
+        color: #1e3a8a;
     }
 
     .profile-shell {
-        border-color: #f1c5dc;
+        border-color: #bbd9fb;
         border-radius: 20px;
-        box-shadow: 0 18px 45px rgba(156, 65, 113, 0.16);
-        background: #fff9fd;
+        box-shadow: 0 18px 45px rgba(30, 64, 175, 0.16);
+        background: #f0f7ff;
     }
 
     .profile-head {
-        background: linear-gradient(110deg, #c14b84 0%, #e16ca4 68%, #f39a90 100%);
-        border-bottom: 1px solid #f4cade;
+        background: linear-gradient(110deg, #1e3a8a 0%, #2563eb 68%, #3b82f6 100%);
+        border-bottom: 1px solid #bbd9fb;
     }
 
     .card-soft {
-        border-color: #f1c7dd;
+        border-color: #bbd9fb;
         background: #fff;
-        box-shadow: 0 10px 24px rgba(156, 65, 113, 0.12);
+        box-shadow: 0 10px 24px rgba(30, 64, 175, 0.12);
     }
 
     .avatar {
-        border-color: #f8cee2;
-        box-shadow: 0 10px 22px rgba(195, 75, 132, 0.28);
+        border-color: #dbeafe;
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.28);
     }
 
     .name,
     .info-value,
     h2.h5 {
-        color: #7a345a;
+        color: #1e3a8a;
     }
 
     .muted,
     .info-label,
     .path-text {
-        color: #95627f;
+        color: #475569;
     }
 
     .status-pill {
-        border-color: #f2bfd9;
-        background: #ffe9f4;
-        color: #8d2f61;
+        border-color: #bbd9fb;
+        background: #dbeafe;
+        color: #1e40af;
     }
 
     .status-pill.pending {
-        border-color: #f2d2bc;
-        background: #fff1e7;
-        color: #9d5d2a;
+        border-color: #fed7aa;
+        background: #fff7ed;
+        color: #9a3412;
     }
 
     .info-item {
-        border-color: #f1c8dd;
-        background: #fff6fb;
-        box-shadow: 0 6px 14px rgba(151, 61, 107, 0.08);
+        border-color: #bbd9fb;
+        background: #f8fafc;
+        box-shadow: 0 6px 14px rgba(30, 64, 175, 0.08);
     }
 
     .media-item {
-        border-color: #f1c7dd;
-        background: #fff8fc;
+        border-color: #bbd9fb;
+        background: #f8fafc;
     }
 
     .media-item img {
-        border-color: #f0c6dc;
-        box-shadow: 0 8px 18px rgba(151, 61, 107, 0.12);
+        border-color: #bbd9fb;
+        box-shadow: 0 8px 18px rgba(30, 64, 175, 0.12);
     }
 
     .btn-primary {
-        border-color: #ef9fc7;
-        background: linear-gradient(135deg, #eb76af, #cd5d94);
-        box-shadow: 0 8px 18px rgba(205, 93, 148, 0.24);
+        border-color: #3b82f6;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
     }
 
     .btn-primary:hover,
     .btn-primary:focus {
-        border-color: #e58fb9;
-        background: linear-gradient(135deg, #df66a4, #bf4f87);
+        border-color: #2563eb;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
     }
 
     .btn-outline-secondary {
-        color: #8d335f;
-        border-color: #ebb5d2;
-        background: #fff9fc;
+        color: #1e40af;
+        border-color: #bbd9fb;
+        background: #f8fafc;
     }
 
     .btn-outline-secondary:hover,
     .btn-outline-secondary:focus {
         color: #fff;
-        border-color: #cb5f94;
-        background: #cb5f94;
+        border-color: #1e40af;
+        background: #1e40af;
     }
 
     .alert-success {
@@ -315,17 +315,17 @@ include 'layout-header.php';
     }
 
     .alert-warning {
-        color: #7d2e53;
-        background: #fff1f8;
-        border-color: #efbdd7;
-        box-shadow: 0 8px 16px rgba(125, 46, 83, 0.08);
+        color: #7c2d12;
+        background: #fff7ed;
+        border-color: #fed7aa;
+        box-shadow: 0 8px 16px rgba(124, 45, 18, 0.08);
     }
 
     .alert-danger {
-        color: #9b355d;
-        background: #ffe8f0;
-        border-color: #f4bfd2;
-        box-shadow: 0 8px 16px rgba(155, 53, 93, 0.1);
+        color: #991b1b;
+        background: #fef2f2;
+        border-color: #fecaca;
+        box-shadow: 0 8px 16px rgba(153, 27, 27, 0.1);
     }
 </style>
 
