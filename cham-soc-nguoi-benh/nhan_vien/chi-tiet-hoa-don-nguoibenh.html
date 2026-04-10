@@ -1278,9 +1278,9 @@
 				<a class="topbar-logo" href="../index.html" aria-label="Trang chủ">
 					<img src="../assets/logo-he-thong.png" alt="Logo dịch vụ" />
 				</a>
-				<h1 class="topbar-title">Chi tiết hóa đơn mẹ và bé</h1>
-				<a class="topbar-logo" href="danh-sach-hoa-don.php" aria-label="Trang dịch vụ mẹ và bé">
-					<img src="../assets/logo-cham-soc-benh-nhan.png" alt="Logo mẹ và bé" />
+				<h1 class="topbar-title">Chi tiết hóa đơn người bệnh</h1>
+				<a class="topbar-logo" href="danh-sach-hoa-don.php" aria-label="Trang dịch vụ người bệnh">
+					<img src="../assets/logo-cham-soc-benh-nhan.png" alt="Logo người bệnh" />
 				</a>
 			</header>
 
@@ -1302,6 +1302,8 @@
 								</div>
 								<div class="actions d-flex flex-wrap align-items-center"
 									style="gap:8px; margin-left: auto;">
+									<button id="btnCancelService" class="btn btn-danger btn-sm hidden" type="button">Hủy
+										dịch vụ</button>
 									<button id="btnHdrClaim" class="btn btn-primary btn-sm hidden" type="button">Nhận
 										việc</button>
 									<button id="btnHdrStart" class="btn btn-success btn-sm hidden" type="button">Bắt đầu
@@ -1488,8 +1490,7 @@
 
 						<div class="actions d-flex flex-wrap align-items-center mt-auto" style="gap:8px;">
 							<span id="badgeProgress" class="badge" style="display:none;">0%</span>
-							<button id="btnCancelService" class="btn btn-danger btn-sm hidden" type="button">Hủy dịch
-								vụ</button>
+
 						</div>
 					</article>
 					<article class="panel" id="panelCustomer">
@@ -1818,7 +1819,7 @@
 				// Xác định role dựa vào id_dichvu:
 				// Nếu id_dichvu chứa '1' → nhà cung cấp (staff), ngược lại → khách hàng (customer)
 				const idDichvuList = String(matched.id_dichvu || '').split(',').map(s => s.trim());
-				const isProvider = idDichvuList.includes('1');
+				const isProvider = idDichvuList.includes('2');
 				return { role: isProvider ? 'staff' : 'customer', $user: matched };
 			}
 

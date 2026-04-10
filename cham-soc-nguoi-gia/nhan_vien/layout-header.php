@@ -24,7 +24,7 @@ if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logong.png') {
 }
 
 $current_page = basename($_SERVER['PHP_SELF']);
-$pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
+$pageTitle = $pageTitle ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -40,12 +40,12 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
     
     <style>
         :root {
-            --nv-border: #ee68b2;
-            --nv-title: #e474a5;
-            --nv-text: #e572a6;
-            --nv-sidebar-a: #ea5f99;
-            --nv-sidebar-b: #e984af;
-            --nv-accent: #f391c2;
+            --nv-border: #4caf50;
+            --nv-title: #2e7d32;
+            --nv-text: #1b5e20;
+            --nv-sidebar-a: #1b5e20;
+            --nv-sidebar-b: #388e3c;
+            --nv-accent: #66bb6a;
             --nv-sidebar-width: 260px;
             --nv-header-mobile-height: 50px;
         }
@@ -66,7 +66,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             color: var(--nv-text);
-            background: #fffafa;
+            background: #f1f8f1;
         }
 
         /* Shell Container */
@@ -145,7 +145,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
             display: flex;
             flex-direction: column;
             min-width: 0;
-            background: #fdf8fb;
+            background: #f7faf7;
         }
 
         /* Topbar */
@@ -153,7 +153,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
             height: 70px;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(241, 195, 220, 0.3);
+            border-bottom: 1px solid rgba(76, 175, 80, 0.2);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -272,7 +272,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
             }
         }
 
-        .spinner-border.text-pink {
+        .spinner-border.text-green {
             color: var(--nv-accent);
         }
     </style>
@@ -285,7 +285,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
             <div class="nv-admin-brand-wrapper">
                 <div class="d-flex align-items-center gap-2">
                     <div class="nv-admin-brand"><img src="../assets/logong.png" width="22" alt="logo"></div>
-                    <div class="fw-bold lh-1 profile-name-text">Chăm Sóc Mẹ và Bé</div>
+                    <div class="fw-bold lh-1 profile-name-text">Chăm Sóc Người Già</div>
                 </div>
                 <button class="btn p-0 d-lg-none" id="mobileMenuToggle" type="button">
                     <img class="nv-admin-avatar m-0" src="../assets/logong.png" alt="toggle menu"
