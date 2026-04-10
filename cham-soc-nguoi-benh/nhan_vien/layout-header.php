@@ -40,12 +40,12 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
     
     <style>
         :root {
-            --nv-border: #ee68b2;
-            --nv-title: #e474a5;
-            --nv-text: #e572a6;
-            --nv-sidebar-a: #ea5f99;
-            --nv-sidebar-b: #e984af;
-            --nv-accent: #f391c2;
+            --nv-border: #3498db;
+            --nv-title: #2a5298;
+            --nv-text: #1b2a3a;
+            --nv-sidebar-a: #1e3c72;
+            --nv-sidebar-b: #2a5298;
+            --nv-accent: #3498db;
             --nv-sidebar-width: 260px;
             --nv-header-mobile-height: 50px;
         }
@@ -66,7 +66,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             color: var(--nv-text);
-            background: #fffafa;
+            background: #f8fafc;
         }
 
         /* Shell Container */
@@ -145,7 +145,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
             display: flex;
             flex-direction: column;
             min-width: 0;
-            background: #fdf8fb;
+            background: #f0f7ff;
         }
 
         /* Topbar */
@@ -153,7 +153,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
             height: 70px;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(241, 195, 220, 0.3);
+            border-bottom: 1px solid rgba(52, 152, 219, 0.2);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -272,7 +272,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
             }
         }
 
-        .spinner-border.text-pink {
+        .spinner-border.text-blue {
             color: var(--nv-accent);
         }
     </style>
@@ -285,7 +285,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
             <div class="nv-admin-brand-wrapper">
                 <div class="d-flex align-items-center gap-2">
                     <div class="nv-admin-brand"><img src="../assets/logo-cham-soc-benh-nhan.png" width="22" alt="logo"></div>
-                    <div class="fw-bold lh-1 profile-name-text">Chăm Sóc Mẹ và Bé</div>
+                    <div class="fw-bold lh-1 profile-name-text">Chăm Sóc Người Bệnh</div>
                 </div>
                 <button class="btn p-0 d-lg-none" id="mobileMenuToggle" type="button">
                     <img class="nv-admin-avatar m-0" src="../assets/logo-cham-soc-benh-nhan.png" alt="toggle menu"

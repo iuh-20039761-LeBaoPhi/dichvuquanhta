@@ -274,109 +274,109 @@ include 'layout-header.php';
 <style>
     /* Theme color overrides */
     body {
-        background: linear-gradient(180deg, #fff6fb 0%, #ffeff8 48%, #fff9fc 100%);
-        color: #6a3f59;
+        background: linear-gradient(180deg, #f0f7ff 0%, #e1effe 48%, #f8fafc 100%);
+        color: #1e3a8a;
     }
 
     .panel-soft {
-        border: 1px solid #f2c6de;
+        border: 1px solid #bbd9fb;
         border-radius: 16px;
-        box-shadow: 0 14px 34px rgba(151, 61, 107, 0.16);
-        background: #fff9fd;
+        box-shadow: 0 14px 34px rgba(30, 64, 175, 0.12);
+        background: #f0f7ff;
     }
 
     .stat-card {
-        border-color: #f1c6dc;
-        background: linear-gradient(180deg, #fff9fd, #fff2f9);
-        box-shadow: 0 8px 20px rgba(151, 61, 107, 0.09);
+        border-color: #bbd9fb;
+        background: linear-gradient(180deg, #f0f7ff, #e1effe);
+        box-shadow: 0 8px 20px rgba(30, 107, 184, 0.08);
     }
 
     .filter-box {
-        border-color: #f1c7dd;
+        border-color: #bbd9fb;
         border-radius: 14px;
-        background: linear-gradient(180deg, #fff8fc, #fff2f9);
-        box-shadow: 0 8px 18px rgba(155, 65, 112, 0.08);
+        background: linear-gradient(180deg, #f8fafc, #f0f7ff);
+        box-shadow: 0 8px 18px rgba(30, 107, 184, 0.06);
     }
 
     .table-wrap {
-        border-color: #f1c4dc;
+        border-color: #bbd9fb;
         border-radius: 14px;
         background: #fff;
-        box-shadow: 0 10px 22px rgba(151, 61, 107, 0.1);
+        box-shadow: 0 10px 22px rgba(30, 64, 175, 0.1);
     }
 
-    .jobs-table { --bs-table-hover-bg: #fff1f8; }
+    .jobs-table { --bs-table-hover-bg: #e1effe; }
 
     .jobs-table thead th {
-        background: linear-gradient(135deg, #ffe8f3 0%, #ffeff8 100%);
-        color: #8a3260;
-        border-bottom-color: #f3cbe0;
+        background: linear-gradient(135deg, #dbeafe 0%, #e1effe 100%);
+        color: #1e40af;
+        border-bottom-color: #bbd9fb;
     }
 
-    .jobs-table tbody td { border-color: #f7dae9; }
+    .jobs-table tbody td { border-color: #dbeafe; }
 
     .id-badge {
-        background: #ffeaf5 !important;
-        border-color: #f2bed9 !important;
-        color: #8f2f61 !important;
+        background: #dbeafe !important;
+        border-color: #bbd9fb !important;
+        color: #1e40af !important;
     }
 
     .summary-note, .empty-row, .text-secondary, .form-label.small.text-secondary {
-        color: #925b7c !important;
+        color: #475569 !important;
     }
 
     .badge.rounded-pill.text-bg-warning,
     .badge.rounded-pill.text-bg-info,
     .badge.rounded-pill.text-bg-success,
     .badge.rounded-pill.text-bg-secondary {
-        border: 1px solid #f1bfd9;
-        background: #fff1f8 !important;
-        color: #8d325f !important;
+        border: 1px solid #bbd9fb;
+        background: #e1effe !important;
+        color: #1e40af !important;
     }
 
     .btn-primary {
-        border-color: #ef9fc7;
-        background: linear-gradient(135deg, #ea73ad, #cd5a92);
-        box-shadow: 0 8px 18px rgba(205, 90, 146, 0.24);
+        border-color: #3b82f6;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
     }
 
     .btn-primary:hover, .btn-primary:focus {
-        border-color: #e58ab8;
-        background: linear-gradient(135deg, #de63a1, #bf4d86);
+        border-color: #2563eb;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
     }
 
     .btn-outline-secondary {
-        color: #8c3160;
-        border-color: #ebb3d1;
-        background: #fff7fb;
+        color: #1e40af;
+        border-color: #bbd9fb;
+        background: #f8fafc;
     }
 
     .btn-outline-secondary:hover, .btn-outline-secondary:focus {
         color: #fff;
-        border-color: #ca5a90;
-        background: #ca5a90;
+        border-color: #1e40af;
+        background: #1e40af;
     }
 
     .form-control, .form-select, .input-group-text {
-        border-color: #f0c5db;
-        background: #fffbfd;
-        color: #744360;
+        border-color: #bbd9fb;
+        background: #f8fafc;
+        color: #1e3a8a;
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: #e18bb8;
-        box-shadow: 0 0 0 0.2rem rgba(225, 139, 184, 0.2);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2);
     }
 
     .pagination .page-link {
-        color: #8c3462;
-        border-color: #f1c5dc;
-        background: #fff9fc;
+        color: #1e40af;
+        border-color: #bbd9fb;
+        background: #f8fafc;
     }
 
     .pagination .page-item.active .page-link {
-        border-color: #ce5e95;
-        background: #ce5e95;
+        border-color: #1e40af;
+        background: #1e40af;
         color: #fff;
     }
 
@@ -388,16 +388,16 @@ include 'layout-header.php';
     }
 
     .alert-warning {
-        color: #7b2f53;
-        background: #fff1f8;
-        border-color: #efbdd7;
-        box-shadow: 0 8px 16px rgba(123, 47, 83, 0.08);
+        color: #7c2d12;
+        background: #fff7ed;
+        border-color: #fed7aa;
+        box-shadow: 0 8px 16px rgba(124, 45, 18, 0.08);
     }
 
     /* Mobile Card Styles */
     .invoice-card {
-        background: #ffffffff;
-        border: 1px solid #020202ff;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
         margin-bottom: 2px;
         border-radius: 5px;
         padding: 10px;
@@ -407,8 +407,8 @@ include 'layout-header.php';
         transition: background 0.2s;
     }
 
-    .invoice-card:active { background: #fff0f7; }
-    .invoice-card .inv-id { color: #c52274ff; font-weight: 700; font-size: 0.95rem; }
+    .invoice-card:active { background: #e1effe; }
+    .invoice-card .inv-id { color: #2563eb; font-weight: 700; font-size: 0.95rem; }
     .invoice-card .inv-date { color: #94a3b8; font-size: 0.75rem; }
     .invoice-card .inv-name { font-weight: 700; font-size: 1rem; color: #1e293b; margin-top: 4px; }
     .invoice-card .inv-status { background: #1e293b; color: #fff; font-size: 0.7rem; padding: 4px 10px; border-radius: 999px; font-weight: 600; }

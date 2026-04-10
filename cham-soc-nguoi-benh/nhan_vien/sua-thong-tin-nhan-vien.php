@@ -158,86 +158,86 @@ include 'layout-header.php';
 <style>
     /* Theme color overrides */
     body {
-        background: linear-gradient(180deg, #fff4fb 0%, #ffeff8 100%);
-        color: #6b3d58;
+        background: linear-gradient(180deg, #f0f7ff 0%, #e1effe 100%);
+        color: #1e3a8a;
     }
 
     .edit-shell {
-        border-color: #f1c6dc;
+        border-color: #bbd9fb;
         border-radius: 18px;
-        background: #fff9fd;
-        box-shadow: 0 18px 44px rgba(156, 65, 113, 0.16);
+        background: #f0f7ff;
+        box-shadow: 0 18px 44px rgba(30, 64, 175, 0.16);
     }
 
     .edit-head {
-        background: linear-gradient(105deg, #c14b84 0%, #e16ca4 72%, #f39a90 100%);
-        border-bottom: 1px solid #f4cade;
+        background: linear-gradient(105deg, #1e3a8a 0%, #2563eb 72%, #3b82f6 100%);
+        border-bottom: 1px solid #bbd9fb;
     }
 
     .form-box {
-        border-color: #f0c5db;
+        border-color: #bbd9fb;
         border-radius: 14px;
         background: #fff;
-        box-shadow: 0 10px 22px rgba(156, 65, 113, 0.1);
+        box-shadow: 0 10px 22px rgba(30, 64, 175, 0.1);
     }
 
     .form-label {
-        color: #7f4064;
+        color: #1e3a8a;
     }
 
     .form-control {
-        border-color: #efc5db;
-        background: #fffbfd;
-        color: #6f3c5d;
+        border-color: #bbd9fb;
+        background: #f8fafc;
+        color: #1e3a8a;
     }
 
     .form-control:focus {
-        border-color: #e188b7;
-        box-shadow: 0 0 0 0.2rem rgba(225, 136, 183, 0.2);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2);
     }
 
     .tip {
-        border-color: #efc4db;
-        background: #fff3fa;
-        color: #8a5376;
+        border-color: #bbd9fb;
+        background: #f0f7ff;
+        color: #1e40af;
     }
 
     .preview-card {
-        border-color: #f1c7dd;
-        background: #fff7fc;
-        box-shadow: 0 8px 18px rgba(151, 61, 107, 0.09);
+        border-color: #bbd9fb;
+        background: #f8fafc;
+        box-shadow: 0 8px 18px rgba(30, 107, 184, 0.09);
     }
 
     .preview-card img {
-        border-color: #f1c6dc;
-        box-shadow: 0 8px 16px rgba(151, 61, 107, 0.12);
+        border-color: #bbd9fb;
+        box-shadow: 0 8px 16px rgba(30, 107, 184, 0.12);
     }
 
-    .path-text { color: #986482; }
+    .path-text { color: #475569; }
 
     .btn-primary {
-        border-color: #ef9fc7;
-        background: linear-gradient(135deg, #eb76af, #cd5d94);
-        box-shadow: 0 8px 18px rgba(205, 93, 148, 0.24);
+        border-color: #3b82f6;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
     }
 
     .btn-primary:hover,
     .btn-primary:focus {
-        border-color: #e58fb9;
-        background: linear-gradient(135deg, #df66a4, #bf4f87);
+        border-color: #2563eb;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
     }
 
     .btn-outline-secondary {
-        color: #8d335f;
-        border-color: #ebb5d2;
-        background: #fff9fc;
+        color: #1e40af;
+        border-color: #bbd9fb;
+        background: #f8fafc;
     }
 
     .btn-outline-secondary:hover,
     .btn-outline-secondary:focus {
         color: #fff;
-        border-color: #cb5f94;
-        background: #cb5f94;
+        border-color: #1e40af;
+        background: #1e40af;
     }
 
     .alert-success {
@@ -248,17 +248,17 @@ include 'layout-header.php';
     }
 
     .alert-warning {
-        color: #7d2e53;
-        background: #fff1f8;
-        border-color: #efbdd7;
-        box-shadow: 0 8px 16px rgba(125, 46, 83, 0.08);
+        color: #7c2d12;
+        background: #fff7ed;
+        border-color: #fed7aa;
+        box-shadow: 0 8px 16px rgba(124, 45, 18, 0.08);
     }
 
     .alert-danger {
-        color: #9b355d;
-        background: #ffe8f0;
-        border-color: #f4bfd2;
-        box-shadow: 0 8px 16px rgba(155, 53, 93, 0.1);
+        color: #991b1b;
+        background: #fef2f2;
+        border-color: #fecaca;
+        box-shadow: 0 8px 16px rgba(153, 27, 27, 0.1);
     }
 </style>
 
