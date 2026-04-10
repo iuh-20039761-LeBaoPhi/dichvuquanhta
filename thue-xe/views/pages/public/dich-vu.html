@@ -29,8 +29,8 @@
     <link rel="stylesheet" href="assets/css/index.css">
 
     <!-- Shared Core Libraries (Relative to <base> which is thue-xe/) -->
-    <script src="../public/asset/js/dvqt-krud.js"></script>
-    <script src="../public/asset/js/dvqt-app.js"></script>
+    <script src="public/asset/js/dvqt-krud.js"></script>
+    <script src="public/asset/js/dvqt-app.js"></script>
     <script src="assets/js/static-data.js"></script>
 </head>
 
@@ -224,10 +224,14 @@
     </section>
 
     <script>loadFooter();</script>
-    <script src="assets/js/utils.js"></script>
-    <script src="assets/js/main.js"></script>
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/pages/services.js"></script>
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../public/asset/js/dvqt-krud.js?v=1.7"></script>
+    <script src="../public/asset/js/dvqt-app.js?v=1.7"></script>
+    <script src="assets/js/utils.js?v=1.7"></script>
+    <script src="assets/js/static-data.js?v=1.7"></script>
+    <script src="assets/js/api.js?v=1.7"></script>
+    <script src="assets/js/pages/services.js?v=1.7"></script>
     <script>
         function buildSearchSummary(brand, seats, price) {
             const fmt = n => new Intl.NumberFormat('vi-VN').format(n);

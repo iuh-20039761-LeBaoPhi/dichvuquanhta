@@ -9,59 +9,77 @@ async function loadRentalCars() {
     Utils.showLoading(container);
 
     try {
-        const data = await STATIC_DATA_PROMISE;
-        const carTypes = data.car_types || [];
-        const cars = data.cars || [];
-        const availableByType = cars.reduce((acc, car) => {
-            if (car.status === 'available') {
-                acc[car.type_id] = (acc[car.type_id] || 0) + 1;
+        // 1. Nạp toàn bộ xe đã được duyệt từ database
+        const res = await API.cars.getAll();
+        const cars = res.data || [];
+        
+        // 2. Gom nhóm theo Loại xe (để hiển thị đếm số lượng)
+        // Trong database mới, ta có thể gom theo 'tenxe' (Vios, Mazda 3...)
+        const groupedCars = cars.reduce((acc, car) => {
+            const key = car.tenxe;
+            if (!acc[key]) {
+                acc[key] = {
+                    ...car,
+                    count: 0
+                };
             }
+            // Coi như xe approved là xe sẵn sàng (nếu muốn check bận thì thêm điều kiện && car.tinhtrang !== 'busy')
+            acc[key].count++;
             return acc;
         }, {});
 
-        displayRentalCars(carTypes, availableByType);
+        const carList = Object.values(groupedCars);
+        displayRentalCars(carList);
     } catch (error) {
+        console.error(error);
         container.innerHTML = `
             <div class="col-12 text-center">
-                <p class="text-danger">Không thể tải danh sách xe cho thuê. Vui lòng thử lại sau.</p>
+                <p class="text-danger">Không thể tải danh sách xe. Vui lòng thử lại sau.</p>
             </div>
         `;
     }
 }
 
-function displayRentalCars(carTypes, availableByType) {
+function displayRentalCars(carList) {
     const container = document.getElementById('rentalCarList');
     if (!container) return;
 
-    if (carTypes.length === 0) {
+    if (carList.length === 0) {
         container.innerHTML = `
             <div class="col-12 text-center">
-                <p class="text-muted">Chưa có xe cho thuê</p>
+                <p class="text-muted">Chưa có xe nào được phê duyệt.</p>
             </div>
         `;
         return;
     }
 
-    const html = carTypes.map((car) => {
-        const availableCount = availableByType[car.id] || 0;
+    const html = carList.map((car) => {
+        const avail = car.count || 0;
+        
+        // Kiểm tra xem trang có thẻ <base> không. Nếu có, đường dẫn luôn bắt đầu từ gốc thue-xe/
+        const hasBaseTag = !!document.querySelector('base');
+        const imgBase = hasBaseTag ? 'assets/images/cars/' : (window.location.pathname.includes('/public/') ? '../../../assets/images/cars/' : 'assets/images/cars/');
+        
+        const carImg = car.anhdaidien || 'thue-xe-xe-anh-mac-dinh-fallback.jpg';
+
         return `
             <div class="col-lg-4 col-md-6">
                 <div class="card car-card h-100">
                     <div class="position-relative">
-                        <img src="assets/images/cars/${car.main_image}"
+                        <img src="${imgBase}${carImg}"
                             class="card-img-top car-card-img"
-                            alt="${car.name}"
-                            onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
-                        ${availableCount > 0
-                            ? `<span class="badge badge-status badge-available">Còn ${availableCount} xe</span>`
+                            alt="${car.tenxe}"
+                            onerror="this.src='${imgBase}thue-xe-xe-anh-mac-dinh-fallback.jpg'">
+                        ${avail > 0 
+                            ? `<span class="badge badge-status badge-available">Còn ${avail} xe</span>`
                             : `<span class="badge badge-status" style="background:linear-gradient(135deg,#6c757d,#495057);">Hết xe</span>`}
                     </div>
                     <div class="card-body">
-                        <h5 class="fw-bold mb-2">${car.name}</h5>
-                        <p class="text-muted small mb-3">${car.brand} · ${car.seats} chỗ · ${car.transmission}</p>
+                        <h5 class="fw-bold mb-2">${car.tenxe}</h5>
+                        <p class="text-muted small mb-3">${car.loaixe} · ${car.socho} chỗ · ${car.nhienlieu}</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="car-price">${Utils.formatPrice(car.price_per_day)}đ/ngày</span>
-                            <a href="views/pages/public/chi-tiet-xe.html?type_id=${car.id}" class="btn btn-gradient-secondary btn-sm">
+                            <span class="car-price">${Utils.formatPrice(car.giathue)}đ/ngày</span>
+                            <a href="views/pages/public/chi-tiet-xe.html?id=${car.id || car.type_id}" class="btn btn-gradient-secondary btn-sm">
                                 Chi tiết
                             </a>
                         </div>

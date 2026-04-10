@@ -20,59 +20,46 @@ window.STATIC_DATA_PROMISE = (async function() {
             console.error("[Antigravity-Debug] Error fetching 'xethue':", err);
         }
         
-        // 2. Fetch car types from table 'loai_xe'
-        let dbCarTypes = [];
-        try {
-            console.log("[Antigravity-Debug] Fetching types from table 'loai_xe'...");
-            dbCarTypes = await DVQTKrud.listTable('loai_xe', { limit: 1000 }) || [];
-        } catch (err) {
-            console.warn("[Antigravity-Debug] Optional table 'loai_xe' not found or error. Using empty.");
-        }
-
-        // 3. Fetch services from table 'dichvu_thuexe'
+        // 2. Fetch services from table 'dichvu_thuexe'
         let dbServicesRaw = [];
         try {
             console.log("[Antigravity-Debug] Fetching services from table 'dichvu_thuexe'...");
             dbServicesRaw = await DVQTKrud.listTable('dichvu_thuexe', { limit: 1000 }) || [];
         } catch (err) {
-            console.warn("[Antigravity-Debug] Optional table 'dichvu_thuexe' not found. Using empty.");
+            console.warn("[Antigravity-Debug] Table 'dichvu_thuexe' not found. Using default.");
         }
 
-        const dbServices = dbServicesRaw.length ? dbServicesRaw : [
-            { "id": 1, "name": "Giao xe tận nơi", "icon": "map-marker-alt", "unit": "chuyến", "price": 100000, "description": "Giao xe đến tận địa chỉ của bạn trong nội thành." },
-            { "id": 2, "name": "Bảo hiểm mở rộng", "icon": "shield-alt", "unit": "ngày", "price": 150000, "description": "Gói bảo hiểm toàn diện bảo vệ xe và người lái." },
-            { "id": 3, "name": "Xe có tài xế", "icon": "user-tie", "unit": "ngày", "price": 300000, "description": "Tài xế chuyên nghiệp phục vụ nhiệt tình." }
-        ];
+        // Chuyển đổi tên cột từ database sang tên field giao diện dùng
+        const services = dbServicesRaw.map(s => ({
+            id: s.id,
+            name: s.tendichvu,
+            icon: s.icon || 'circle-check',
+            unit: s.donvi || 'chuyến',
+            price: Number(s.gia),
+            description: s.mota || ''
+        }));
 
-        console.log(`[Antigravity-Debug] Loaded ${dbCars.length} cars, ${dbCarTypes.length} types, ${dbServices.length} services.`);
+        console.log(`[Antigravity-Debug] Loaded ${dbCars.length} cars from xethue.`);
         
-        // 2. Auxiliary Metadata (Hardcoded for now to replace JSON entirely)
-        const services = [
-            { "id": 1, "name": "Giao xe tận nơi", "icon": "map-marker-alt", "unit": "chuyến", "price": 100000, "description": "Giao xe đến tận địa chỉ của bạn trong nội thành." },
-            { "id": 2, "name": "Bảo hiểm mở rộng", "icon": "shield-alt", "unit": "ngày", "price": 150000, "description": "Gói bảo hiểm toàn diện bảo vệ xe và người lái." },
-            { "id": 3, "name": "Xe có tài xế", "icon": "user-tie", "unit": "ngày", "price": 300000, "description": "Tài xế chuyên nghiệp phục vụ nhiệt tình." },
-            { "id": 4, "name": "GPS định vị", "icon": "map-marker-alt", "unit": "chuyến", "price": 50000, "description": "Thiết bị dẫn đường chính xác." },
-            { "id": 5, "name": "Ghế trẻ em", "icon": "baby", "unit": "chuyến", "price": 100000, "description": "Ghế an toàn cho bé đạt chuẩn quốc tế." },
-            { "id": 6, "name": "WiFi di động", "icon": "wifi", "unit": "chuyến", "price": 80000, "description": "Bộ phát WiFi tốc độ cao suốt chuyến đi." }
-        ];
-
         const filterOptions = {
-            "brands": ["Toyota", "Honda", "Hyundai", "Ford", "Mitsubishi", "VinFast", "Mazda", "Suzuki"],
-            "seats": [5, 7],
-            "prices": { "min": 500000, "max": 3000000 }
+            "brands": [...new Set(dbCars.map(c => c.tenxe.split(' ')[0]))], // Tự động lấy các hãng xe có trong DB
+            "seats": [4, 5, 7],
+            "prices": { "min": 500000, "max": 5000000 }
         };
 
         if (!dbCars || !dbCars.length) {
             return { car_types: [], cars: [], services, filterOptions };
         }
 
-        // 3. Transform flat database rows into nested car_types and cars structure
         const car_types = [];
         const cars = [];
         const typeMap = {};
 
         dbCars.forEach(row => {
-            const typeKey = `${row.tenxe}_${row.giathue}`;
+            // Chỉ lấy xe đã được duyệt
+            if(row.trangthai !== 'approved') return;
+
+            const typeKey = row.tenxe;
             
             if (!typeMap[typeKey]) {
                 const typeId = car_types.length + 1;
@@ -80,8 +67,8 @@ window.STATIC_DATA_PROMISE = (async function() {
                 car_types.push({
                     id: typeId,
                     name: row.tenxe,
-                    brand: row.hangxe,
-                    model: row.dongxe,
+                    brand: row.tenxe.split(' ')[0], // Tách hãng từ tên xe
+                    model: row.tenxe,
                     year: Number(row.namsanxuat),
                     car_type: row.loaixe,
                     seats: Number(row.socho),
@@ -89,11 +76,9 @@ window.STATIC_DATA_PROMISE = (async function() {
                     fuel_type: row.nhienlieu,
                     price_per_day: Number(row.giathue),
                     main_image: row.anhdaidien,
-                    video_url: row.videourl,
-                    description: row.mota,
-                    features: row.features,
+                    description: row.loaixe + " sang trọng và tiện nghi.",
                     images: { 
-                        front: row.anhdaidien,
+                        front: row.anhdaidien, // Dùng ảnh đại diện làm mặt trước
                         back: row.anhsau,
                         left: row.anhtrai,
                         right: row.anhphai,
@@ -103,26 +88,17 @@ window.STATIC_DATA_PROMISE = (async function() {
             }
 
             const typeId = typeMap[typeKey];
-            const carImages = {
-                front: row.anhdaidien,
-                back: row.anhsau,
-                left: row.anhtrai,
-                right: row.anhphai,
-                interior: row.anhnoithat
-            };
-
             cars.push({
                 id: Number(row.id),
                 type_id: typeId,
                 license_plate: row.bienso,
                 manufacture_year: Number(row.namsanxuat),
-                mileage: Number(row.odo),
-                color: row.mausac,
-                status: row.trangthai || 'available',
-                frame_number: row.sokhung,
-                engine_number: row.somay,
+                status: 'available',
                 provider_id: row.provider_id,
-                images: carImages
+                price_per_day: Number(row.giathue), // Thêm để tương thích search
+                brand: row.tenxe.split(' ')[0],
+                seats: Number(row.socho),
+                main_image: row.anhdaidien
             });
         });
 

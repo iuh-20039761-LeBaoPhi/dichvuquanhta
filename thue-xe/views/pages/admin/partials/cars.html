@@ -1,0 +1,95 @@
+<!-- Admin Car Management Partial -->
+<div class="card border-0 shadow-sm mb-4" style="border-radius: 20px; overflow: hidden;">
+    <div class="card-header bg-white py-4 border-0 d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-800 mb-0">Hệ thống Duyệt xe</h5>
+            <p class="text-muted small mb-0">Quản lý danh mục phương tiện toàn diện của hệ thống</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-light rounded-pill px-3 fw-600" onclick="loadAllCars()"><i class="fas fa-sync-alt me-2"></i>Làm mới</button>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0" id="adminCarTable">
+                <thead class="bg-light text-muted small uppercase">
+                    <tr>
+                        <th class="ps-4">Phương tiện / Nhà CC</th>
+                        <th>Thông số</th>
+                        <th>Pháp lý</th>
+                        <th>Giá (Ngày)</th>
+                        <th>Trạng thái</th>
+                        <th class="pe-4 text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="adminCarBody">
+                    <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    const TABLE = 'xethue';
+
+    window.loadAllCars = async function() {
+        const tbody = document.getElementById('adminCarBody');
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
+        
+        try {
+            const cars = await DVQTKrud.listTable(TABLE, { limit: 1000 });
+            if(!cars || !cars.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có xe nào.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = cars.reverse().map(c => {
+                let badge = '<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded-pill">Chưa xác định</span>';
+                if(c.trangthai === 'pending') badge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Chờ duyệt</span>';
+                else if(c.trangthai === 'approved') badge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Đã duyệt (Hiện)</span>';
+                else if(c.trangthai === 'hidden') badge = '<span class="badge bg-dark text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang ẩn</span>';
+                else if(c.trangthai === 'rejected') badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Bị từ chối</span>';
+
+                return `<tr>
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded overflow-hidden" style="width:50px; height:50px;">
+                                <img src="../../../assets/images/cars/${c.anhngoaitruoc}" onerror="this.src='https://placehold.co/100x100?text=Auto'" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark">${c.tenxe}</div>
+                                <div class="text-muted small">ID NCC: ${c.provider_id || '---'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><div class="small fw-600">${c.loaixe} · ${c.socho} chỗ</div><div class="text-muted small">${c.nhienlieu} · ${c.hopso}</div></td>
+                    <td><div class="small fw-bold">${c.bienso}</div><div class="text-muted small">Năm: ${c.namsanxuat}</div></td>
+                    <td><div class="fw-bold text-primary">${ThueXeAdmin.formatCurrency(c.giathue)}</div></td>
+                    <td>${badge}</td>
+                    <td class="pe-4 text-end">
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-light text-success" title="Duyệt xe này" onclick="approveCarAdmin(${c.id})"><i class="fas fa-check"></i></button>
+                            <button class="btn btn-sm btn-light text-danger" title="Từ chối duyệt" onclick="rejectCarAdmin(${c.id})"><i class="fas fa-ban"></i></button>
+                            <button class="btn btn-sm btn-light text-primary" title="Xem chi tiết" onclick="viewCarDetail(${c.id})"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
+    };
+
+    window.approveCarAdmin = async (id) => { if(await ThueXeAdmin.updateStatus(TABLE, id, 'approved', 'Đã duyệt hiện xe!')) loadAllCars(); };
+    window.rejectCarAdmin = async (id) => { if(await ThueXeAdmin.rejectCar(id)) loadAllCars(); };
+
+    window.viewCarDetail = function(id) {
+        // Link sang trang chi tiết xe ngoài public để xem
+        window.open('../public/chi-tiet-xe.html?id=' + id, '_blank');
+    };
+
+    loadAllCars();
+})();
+</script>
