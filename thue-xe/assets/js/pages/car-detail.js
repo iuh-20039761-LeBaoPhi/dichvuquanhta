@@ -1,878 +1,452 @@
-﻿/**
- * Car Detail Page JavaScript
+/**
+ * Car Detail Page Logic
+ * Manages gallery, SEO, and booking integration
  */
 
-// Google Apps Script Web App URL để lưu đặt xe lên Google Sheets
-const TX_GSHEET_URL = window.GSHEET_URL || 'https://script.google.com/macros/s/AKfycbx8J5infIIqf-VOFCNq89L7W1xRfluTU0Dt4R8Vijl81zhid59aql3vURdT01dwaaKgPQ/exec';
+(async function () {
+    // 1. Initial State
+    let selectedCarId = null;
+    let _currentCarType = null;
+    let _galleryMode = 'image';
+    let _galleryVideoUrl = '';
+    let _session = null;
+    
+    // Safety constants
+    const ADDON_PRICES = {};
+    const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
+    const today = () => new Date().toISOString().split('T')[0];
 
-function txSendToSheet(data, bookingId) {
-    if (!TX_GSHEET_URL) return;
-    const now = new Date();
-    const payload = {
-        sheet_name:      'DatXe',
-        order_code:      bookingId ? 'TX' + bookingId : '',
-        name:            data.customer_name    || '',
-        phone:           data.customer_phone   || '',
-        email:           data.customer_email   || '',
-        car:             data.car_name         || '',
-        pickup_date:     data.pickup_date      || '',
-        return_date:     data.return_date      || '',
-        pickup_time:     data.pickup_time      || '',
-        return_time:     data.return_time      || '',
-        address:         data.customer_address || '',
-        addon_services:  (data.addon_services || []).join(', '),
-        note:            data.notes            || '',
-        status:          'new',
-        created_at:      now.toLocaleString('vi-VN', { hour12: false }),
+    // 2. Core Functions
+    window.gallerySwitch = function (type, src, el) {
+        const imgEl = document.getElementById('galleryMainImg');
+        const videoEl = document.getElementById('galleryMainVideo');
+        if (type === 'video') {
+            _galleryVideoUrl = src || _galleryVideoUrl;
+            setGalleryMode('video');
+        } else {
+            setGalleryMode('image');
+            imgEl.src = src;
+            imgEl.onerror = () => { imgEl.src = 'assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'; };
+        }
+        document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+        if (el) el.classList.add('active');
+        updateGalleryNavButtons();
     };
-    fetch(TX_GSHEET_URL, {
-        method:  'POST',
-        mode:    'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body:    JSON.stringify(payload),
-    }).catch(() => {});
-}
 
-let currentCar = null;
-let currentImages = [];
-let bookingModalSetup = false;
-let bookingModalSetupPromise = null;
+    window.setGalleryMode = function (mode) {
+        const imgEl = document.getElementById('galleryMainImg');
+        const videoEl = document.getElementById('galleryMainVideo');
+        const thumbsWrap = document.getElementById('galleryThumbsWrap');
+        if (!imgEl || !videoEl || !thumbsWrap) return;
 
-// ===== Media capture state =====
-let _txMediaFiles   = [];
-let _txPendingData  = null; // dữ liệu chờ xác nhận
+        const hasVideo = !!_galleryVideoUrl;
+        _galleryMode = (mode === 'video' && hasVideo) ? 'video' : 'image';
 
-// Sẽ được nạp từ API.services.getAll() khi khởi động
-let ADDON_SERVICES = [];
-let ADDON_PRICES   = {}; // { 'Tên dịch vụ': { price, unit } }
+        if (_galleryMode === 'video') {
+            imgEl.style.display = 'none';
+            thumbsWrap.classList.add('is-hidden');
+            videoEl.style.display = 'block';
+            const sep = _galleryVideoUrl.includes('?') ? '&' : '?';
+            videoEl.src = `${_galleryVideoUrl}${sep}autoplay=1&rel=0`;
+            document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+        } else {
+            videoEl.style.display = 'none';
+            videoEl.src = '';
+            imgEl.style.display = 'block';
+            thumbsWrap.classList.remove('is-hidden');
+            let activeThumb = document.querySelector('.gallery-thumb.active img');
+            if (!activeThumb) {
+                const front = document.querySelector('.gallery-thumb[data-angle="avatar"]');
+                if (front) { front.classList.add('active'); activeThumb = front.querySelector('img'); }
+            }
+            if (activeThumb) imgEl.src = activeThumb.src;
+        }
+        updateGalleryModeButtons(_galleryMode, hasVideo);
+        updateGalleryNavButtons();
+    };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const carId = Utils.getUrlParam('id');
-    
-    if(!carId) {
-        window.location.href = 'index.php?page=home';
-        return;
-    }
-    
-    await loadCarDetail(carId);
-});
-
-async function loadCarDetail(carId) {
-    // Show loading
-    Utils.showLoading(document.getElementById('carDetail'));
-    Utils.showLoading(document.getElementById('bookingForm'));
-
-    // Tải song song: thông tin xe + danh sách dịch vụ addon
-    const [result, svcResult] = await Promise.all([
-        API.cars.getById(carId),
-        API.services.getAll()
-    ]);
-
-    // Xây dựng ADDON_PRICES từ dữ liệu API
-    if (svcResult.success && svcResult.data && svcResult.data.length) {
-        ADDON_SERVICES = svcResult.data;
-        ADDON_PRICES = {};
-        svcResult.data.forEach(svc => {
-            ADDON_PRICES[svc.name] = { price: Number(svc.price), unit: svc.unit || 'chuyến' };
-        });
-    } else {
-        // Fallback cứng khi cả static-data không có unit
-        ADDON_SERVICES = [
-            { id:1, name:'Giao xe tận nơi',  icon:'map-marker-alt', price:100000, unit:'chuyến', description:'Giao xe đến tận địa chỉ của bạn' },
-            { id:2, name:'Bảo hiểm mở rộng', icon:'shield-alt',    price:150000, unit:'ngày',    description:'Bảo hiểm toàn diện an tâm hơn' },
-            { id:3, name:'Xe có tài xế',      icon:'user-tie',      price:300000, unit:'ngày',    description:'Tài xế chuyên nghiệp, lịch sự' },
-            { id:4, name:'GPS định vị',       icon:'map-marker-alt',price: 50000, unit:'chuyến', description:'Dẫn đường chính xác, không lo lạc' },
-            { id:5, name:'Ghế trẻ em',        icon:'baby',          price:100000, unit:'chuyến', description:'An toàn cho bé dưới 10 tuổi' },
-            { id:6, name:'WiFi di động',      icon:'wifi',          price: 80000, unit:'chuyến', description:'Kết nối internet ổn định' },
-        ];
-        ADDON_SERVICES.forEach(svc => {
-            ADDON_PRICES[svc.name] = { price: svc.price, unit: svc.unit };
-        });
+    function updateGalleryModeButtons(mode, hasVideo) {
+        const imgBtn = document.getElementById('galleryModeImageBtn');
+        const vidBtn = document.getElementById('galleryModeVideoBtn');
+        if (imgBtn) imgBtn.classList.toggle('active', mode === 'image');
+        if (vidBtn) {
+            vidBtn.classList.toggle('active', mode === 'video');
+            vidBtn.disabled = !hasVideo;
+        }
     }
 
-    if(result.success && result.data) {
-        currentCar = result.data.car;
-        currentImages = result.data.images || [];
-
-        // Update page SEO dynamically
-        const car = result.data.car;
-        const SITE_BASE = 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe';
-        const carUrl = `${SITE_BASE}/views/pages/public/chi-tiet-xe.html?id=${car.id}`;
-        const carImg = `${SITE_BASE}/assets/images/cars/${car.main_image}`;
-        const carTitle = `${car.name} – Thuê Xe TP.HCM | ${new Intl.NumberFormat('vi-VN').format(car.price_per_day)}đ/ngày`;
-        const carDesc = `Thuê ${car.name} tại Thuê Xe TP.HCM. ${car.seats} chỗ, ${car.transmission}, ${car.fuel_type}. Giá chỉ từ ${new Intl.NumberFormat('vi-VN').format(car.price_per_day)}đ/ngày. Giao xe tận nơi, bảo hiểm đầy đủ.`;
-        document.title = carTitle;
-        const setMeta = (sel, attr, val) => { const el = document.querySelector(sel); if (el) el.setAttribute(attr, val); };
-        setMeta('meta[name="description"]', 'content', carDesc);
-        setMeta('meta[property="og:title"]', 'content', carTitle);
-        setMeta('meta[property="og:description"]', 'content', carDesc);
-        setMeta('meta[property="og:url"]', 'content', carUrl);
-        setMeta('meta[property="og:image"]', 'content', carImg);
-        setMeta('meta[name="twitter:title"]', 'content', carTitle);
-        setMeta('meta[name="twitter:description"]', 'content', carDesc);
-        setMeta('meta[name="twitter:image"]', 'content', carImg);
-        const canonical = document.querySelector('link[rel="canonical"]');
-        if (canonical) canonical.href = carUrl;
-
-        displayCarDetail(result.data);
-        displayBookingForm(result.data.car);
-    } else {
-        document.getElementById('carDetail').innerHTML = `
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                Không tìm thấy xe hoặc xe không còn tồn tại
-            </div>
-            <a href="index.php?page=home" class="btn btn-gradient">
-                <i class="fas fa-arrow-left me-2"></i>Về trang chủ
-            </a>
-        `;
+    function updateGalleryNavButtons() {
+        const prev = document.getElementById('galleryPrevBtn');
+        const next = document.getElementById('galleryNextBtn');
+        if (!prev || !next) return;
+        const thumbs = Array.from(document.querySelectorAll('.gallery-thumb[data-angle]'));
+        if (_galleryMode !== 'image' || thumbs.length <= 1) {
+            prev.style.display = next.style.display = 'none';
+            return;
+        }
+        const idx = thumbs.findIndex(t => t.classList.contains('active'));
+        prev.style.display = idx > 0 ? 'flex' : 'none';
+        next.style.display = idx < thumbs.length - 1 ? 'flex' : 'none';
     }
-}
 
-function displayCarDetail(data) {
-    const car = data.car;
-    const images = data.images || [];
-    
-    // Prepare images array
-    const allImages = [
-        {path: car.main_image, is_main: true},
-        ...images.map(img => ({path: img.image_path, is_main: false}))
-    ];
-    
-    const features = car.features ? car.features.split(',') : [];
-    
-    const html = `
-        <!-- Image Gallery -->
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-0">
-                <!-- Main Image -->
-                <div id="carMainImage" class="position-relative">
-                    <img src="assets/images/cars/${allImages[0].path}" 
-                         class="w-100" 
-                         style="height: 400px; object-fit: cover; border-radius: 8px 8px 0 0;"
-                         alt="${car.name}"
-                         onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
-                    <span class="badge badge-status ${car.status === 'available' ? 'badge-available' : 'badge-rented'}" 
-                          style="position: absolute; top: 20px; right: 20px;">
-                        ${car.status === 'available' ? 'Có sẵn' : 'Đã thuê'}
-                    </span>
-                </div>
-                
-                <!-- Thumbnail Gallery -->
-                ${allImages.length > 1 ? `
-                <div class="p-3">
-                    <div class="row g-2" id="imageThumbnails">
-                        ${allImages.map((img, index) => `
-                            <div class="col-3">
-                                <img src="assets/images/cars/${img.path}" 
-                                     class="img-thumbnail cursor-pointer ${index === 0 ? 'border-primary' : ''}" 
-                                     style="height: 80px; object-fit: cover; cursor: pointer;"
-                                     onclick="changeMainImage('${img.path}', ${index})"
-                                     onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                ` : ''}
-            </div>
-        </div>
-        
-        <!-- Car Info -->
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-4">
-                <h1 class="fw-bold mb-3 fs-3">${car.name}</h1>
-                <div class="d-flex align-items-center mb-3">
-                    <span class="badge bg-primary me-2">${car.brand}</span>
-                    <span class="badge bg-secondary me-2">${car.model}</span>
-                    <span class="badge bg-info">${car.year}</span>
-                </div>
-                
-                <div class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
-                                <i class="fas fa-users text-primary"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted">Số chỗ</small>
-                                <p class="mb-0 fw-bold">${car.seats} chỗ</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-secondary bg-opacity-10 p-3 me-3">
-                                <i class="fas fa-cog text-secondary"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted">Hộp số</small>
-                                <p class="mb-0 fw-bold">${car.transmission}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
-                                <i class="fas fa-gas-pump text-success"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted">Nhiên liệu</small>
-                                <p class="mb-0 fw-bold">${car.fuel_type}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
-                                <i class="fas fa-dollar-sign text-warning"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted">Giá thuê</small>
-                                <p class="mb-0 fw-bold text-primary">${Utils.formatPrice(car.price_per_day)}đ</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <hr>
+    window.galleryPrev = () => {
+        const thumbs = Array.from(document.querySelectorAll('.gallery-thumb[data-angle]'));
+        const idx = thumbs.findIndex(t => t.classList.contains('active'));
+        if (idx > 0) gallerySwitch('img', thumbs[idx-1].querySelector('img').src, thumbs[idx-1]);
+    };
 
-                <h5 class="fw-bold mb-3">Thông Tin Chi Tiết</h5>
-                <div class="row g-2 mb-3">
-                    <div class="col-6 col-md-4">
-                        <div class="p-3 bg-light rounded h-100">
-                            <small class="text-muted d-block mb-1"><i class="fas fa-id-card me-1 text-primary"></i>Biển số</small>
-                            <span class="fw-bold">${car.license_plate || '—'}</span>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <div class="p-3 bg-light rounded h-100">
-                            <small class="text-muted d-block mb-1"><i class="fas fa-calendar-alt me-1 text-primary"></i>Năm sản xuất</small>
-                            <span class="fw-bold">${car.manufacture_year || car.year || '—'}</span>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <div class="p-3 bg-light rounded h-100">
-                            <small class="text-muted d-block mb-1"><i class="fas fa-tachometer-alt me-1 text-primary"></i>Quãng đường đã chạy</small>
-                            <span class="fw-bold">${car.mileage != null ? Number(car.mileage).toLocaleString('vi-VN') + ' km' : '—'}</span>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <div class="p-3 bg-light rounded h-100">
-                            <small class="text-muted d-block mb-1"><i class="fas fa-palette me-1 text-primary"></i>Màu xe</small>
-                            <span class="fw-bold">${car.color || '—'}</span>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <div class="p-3 bg-light rounded h-100">
-                            <small class="text-muted d-block mb-1"><i class="fas fa-industry me-1 text-primary"></i>Hãng xe</small>
-                            <span class="fw-bold">${car.brand || '—'}</span>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <div class="p-3 bg-light rounded h-100">
-                            <small class="text-muted d-block mb-1"><i class="fas fa-car me-1 text-primary"></i>Loại xe</small>
-                            <span class="fw-bold">${car.car_type || '—'}</span>
-                        </div>
+    window.galleryNext = () => {
+        const thumbs = Array.from(document.querySelectorAll('.gallery-thumb[data-angle]'));
+        const idx = thumbs.findIndex(t => t.classList.contains('active'));
+        if (idx < thumbs.length - 1) gallerySwitch('img', thumbs[idx+1].querySelector('img').src, thumbs[idx+1]);
+    };
+
+    function buildGalleryHtml(car, hasAvail, count) {
+        const base = 'assets/images/cars/';
+        const fallback = `onerror="this.src='${base}thue-xe-xe-anh-mac-dinh-fallback.jpg'"`;
+        const thumbs = [
+            { key: 'avatar', label: 'Trước', src: car.anhdaidien },
+            { key: 'back', label: 'Sau', src: car.anhsau },
+            { key: 'left', label: 'Trái', src: car.anhtrai },
+            { key: 'right', label: 'Phải', src: car.anhphai },
+            { key: 'interior', label: 'Nội thất', src: car.anhnoithat },
+        ].filter(t => t.src);
+
+        return `
+            <div class="card border-0 shadow-sm mb-4 gallery-wrap position-relative">
+                <div class="position-relative">
+                    <img id="galleryMainImg" class="gallery-main-img" src="${base + (thumbs[0]?.src || 'default.jpg')}" ${fallback}>
+                    <iframe id="galleryMainVideo" class="gallery-main-video" allowfullscreen></iframe>
+                    <button class="gallery-main-nav prev" id="galleryPrevBtn" onclick="galleryPrev()"><i class="fas fa-chevron-left"></i></button>
+                    <button class="gallery-main-nav next" id="galleryNextBtn" onclick="galleryNext()"><i class="fas fa-chevron-right"></i></button>
+                    <div class="gallery-toggle-overlay">
+                        <button class="gtog-btn" id="galleryModeImageBtn" onclick="setGalleryMode('image')"><i class="fas fa-image"></i> Ảnh</button>
+                        <button class="gtog-btn" id="galleryModeVideoBtn" onclick="setGalleryMode('video')"><i class="fas fa-play"></i> Video</button>
                     </div>
                 </div>
-
-                <hr>
-
-                <h5 class="fw-bold mb-3">Mô Tả</h5>
-                <p class="text-muted">${car.description || 'Không có mô tả'}</p>
-                
-                ${features.length > 0 ? `
-                <hr>
-                <h5 class="fw-bold mb-3">Tính Năng</h5>
-                <div class="row g-2">
-                    ${features.map(feature => `
-                        <div class="col-md-6">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            <span>${feature.trim()}</span>
+                <div class="gallery-thumbs" id="galleryThumbsWrap">
+                    ${thumbs.map((t, i) => `
+                        <div class="gallery-thumb ${i===0?'active':''}" data-angle="${t.key}" onclick="gallerySwitch('img','${base+t.src}',this)">
+                            <img src="${base+t.src}" ${fallback}>
+                            <div class="gallery-thumb-label">${t.label}</div>
                         </div>
                     `).join('')}
                 </div>
-                ` : ''}
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('carDetail').innerHTML = html;
-}
+            </div>`;
+    }
 
-function changeMainImage(imagePath, index) {
-    // Update main image
-    const mainImg = document.querySelector('#carMainImage img');
-    mainImg.src = `assets/images/cars/${imagePath}`;
-    
-    // Update thumbnail borders
-    document.querySelectorAll('#imageThumbnails img').forEach((thumb, i) => {
-        if(i === index) {
-            thumb.classList.add('border-primary');
-        } else {
-            thumb.classList.remove('border-primary');
-        }
-    });
-}
+    function renderCarDetail(car, avail, allSameType = []) {
+        const hasAvailable = avail.length > 0;
+        const features = (car.features || '').split(',').filter(f => f.trim());
+        const container = document.getElementById('carContent');
+        if (!container) return;
 
-function displayBookingForm(car) {
-    const html = `
-        <div class="card border-0 shadow-sm sticky-top booking-sticky" style="top: 90px;">
-            <div class="card-body p-4">
-                <h5 class="fw-bold mb-3">Đặt Xe Ngay</h5>
-                
-                <div class="mb-3 p-3 bg-light rounded">
-                    <h6 class="fw-bold mb-2">${car.name}</h6>
-                    <p class="mb-0 text-primary fw-bold">${Utils.formatPrice(car.price_per_day)}đ <small class="text-muted">/ ngày</small></p>
+        container.innerHTML = `
+            <div class="col-lg-8">
+                ${buildGalleryHtml(car, hasAvailable, avail.length)}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h1 class="fw-bold fs-3 mb-2">${car.tenxe}</h1>
+                        <div class="mb-4">
+                            <span class="badge bg-primary me-2">${car.hangxe}</span>
+                            <span class="badge bg-secondary me-2">${car.dongxe}</span>
+                            <span class="badge bg-info">${car.namsanxuat}</span>
+                        </div>
+                        <div class="row g-3 mb-4">
+                            ${renderSpecItem('users', 'Số chỗ', car.socho + ' chỗ')}
+                            ${renderSpecItem('cog', 'Hộp số', car.hopso)}
+                            ${renderSpecItem('gas-pump', 'Nhiên liệu', car.nhienlieu)}
+                            ${renderSpecItem('dollar-sign', 'Giá thuê', fmt(car.giathue)+'đ')}
+                        </div>
+                        <hr>
+                        <h5 class="fw-bold mb-3">Mô Tả</h5>
+                        <p class="text-muted" style="line-height:1.7">${car.mota || 'Đang cập nhật'}</p>
+                        <hr>
+                        <h5 class="fw-bold mb-3">Tính Năng</h5>
+                        <div class="feature-grid">
+                            ${features.map(f => `<div class="feature-item"><i class="fas fa-check-circle me-2"></i>${f}</div>`).join('')}
+                        </div>
+                    </div>
                 </div>
-                
-                <form id="quickBookingForm">
-                    <div class="mb-3">
-                        <label class="form-label">Ngày nhận xe *</label>
-                        <div class="row g-1">
-                            <div class="col-7">
-                                <input type="date" class="form-control" id="pickupDate" required min="${getTodayDate()}">
-                            </div>
-                            <div class="col-5">
-                                <input type="time" class="form-control" id="pickupTime" value="08:00" title="Giờ nhận xe">
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Ngày trả xe *</label>
-                        <div class="row g-1">
-                            <div class="col-7">
-                                <input type="date" class="form-control" id="returnDate" required min="${getTodayDate()}">
-                            </div>
-                            <div class="col-5">
-                                <input type="time" class="form-control" id="returnTime" value="08:00" title="Giờ trả xe">
-                            </div>
+                <!-- HIỂN THỊ CÁC XE CÙNG LOẠI TRONG HỆ THỐNG -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-1"><i class="fas fa-layer-group me-2 text-primary"></i>Đội xe cùng loại (${allSameType.length})</h5>
+                        <p class="text-muted small mb-3">Hệ thống có ${allSameType.length} chiếc ${car.tenxe} đang sẵn sàng phục vụ.</p>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle border-top">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="py-3">Biển số</th>
+                                        <th>Màu sắc</th>
+                                        <th>Odo</th>
+                                        <th>Trạng thái</th>
+                                        <th class="text-end">Chi tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${allSameType.map(item => {
+                                        const isBusy = item.trangthai === 'rented' || item.trangthai === 'maintenance';
+                                        return `
+                                        <tr class="${item.id == car.id ? 'table-primary bg-opacity-10' : ''}">
+                                            <td class="fw-bold fs-6">
+                                                <i class="fas fa-id-card-alt text-muted me-2"></i>${item.bienso || '—'}
+                                                ${item.id == car.id ? '<span class="badge bg-primary ms-1 small" style="font-size:0.6rem">Đang xem</span>' : ''}
+                                            </td>
+                                            <td><span class="small">${item.mausac || '—'}</span></td>
+                                            <td><span class="small">${fmt(item.odo || 0)} km</span></td>
+                                            <td>
+                                                ${!isBusy 
+                                                    ? '<span class="badge bg-success bg-opacity-10 text-success fw-medium"><i class="fas fa-check-circle me-1"></i>Còn xe</span>' 
+                                                    : '<span class="badge bg-danger bg-opacity-10 text-danger fw-medium"><i class="fas fa-clock me-1"></i>Đang cho thuê</span>'}
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="views/pages/public/chi-tiet-xe.html?id=${item.id}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                                    Chọn <i class="fas fa-chevron-right ms-1"></i>
+                                                </a>
+                                            </td>
+                                        </tr>`;
+                                    }).join('')}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    
-                    <div id="priceCalculation" class="mb-3 p-3 bg-light rounded" style="display: none;">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Số ngày:</span>
-                            <strong id="totalDays">0</strong>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Tổng tiền:</span>
-                            <strong class="text-primary" id="totalPrice">0đ</strong>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Thông số kỹ thuật</h5>
+                        <div class="row g-3">
+                            ${renderDetailSpec('Năm SX', car.namsanxuat)}
+                            ${renderDetailSpec('Loại xe', car.loaixe)}
+                            ${renderDetailSpec('Biển số', car.bienso)}
+                            ${renderDetailSpec('Odo', fmt(car.odo) + ' km')}
+                            ${renderDetailSpec('Màu sắc', car.mausac)}
                         </div>
                     </div>
-                    
-                    <button type="button" class="btn btn-gradient w-100" onclick="openBookingModal()">
-                        <i class="fas fa-calendar-check me-2"></i>Đặt xe ngay
-                    </button>
-                </form>
-                
-                <hr>
-                
-                <div class="text-center">
-                    <p class="mb-2"><i class="fas fa-phone text-primary me-2"></i><strong>0775 472 347</strong></p>
-                    <p class="mb-0 small text-muted">Hỗ trợ 24/7</p>
                 </div>
             </div>
-        </div>
-    `;
-    
-    document.getElementById('bookingForm').innerHTML = html;
-    
-    // Setup date change listeners
-    setupDateCalculation(car.price_per_day);
-    
-    // Preload modal in background
-    bookingModalSetupPromise = setupBookingModal(car);
-}
+            <div class="col-lg-4">${renderBookingSidebar(car, hasAvailable)}</div>
+        `;
 
-async function openBookingModal() {
-    // Đảm bảo modal đã load xong trước khi mở
-    if (bookingModalSetupPromise) await bookingModalSetupPromise;
-    syncQuickDateTimeToModal();
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('bookingModal')).show();
-}
-
-function syncQuickDateTimeToModal() {
-    const quickForm = document.getElementById('quickBookingForm');
-    const modalForm = document.getElementById('bookingFormFull');
-    if (!quickForm || !modalForm) return;
-
-    const quickPickup = quickForm.querySelector('#pickupDate');
-    const quickReturn = quickForm.querySelector('#returnDate');
-    const quickPickupTime = quickForm.querySelector('#pickupTime');
-    const quickReturnTime = quickForm.querySelector('#returnTime');
-
-    const modalPickup = modalForm.querySelector('#pickupDate');
-    const modalReturn = modalForm.querySelector('#returnDate');
-    const modalPickupTime = modalForm.querySelector('#pickupTime');
-    const modalReturnTime = modalForm.querySelector('#returnTime');
-    if (!modalPickup || !modalReturn) return;
-
-    const today = getTodayDate();
-    modalPickup.min = quickPickup && quickPickup.min ? quickPickup.min : today;
-    modalReturn.min = quickReturn && quickReturn.min ? quickReturn.min : today;
-
-    if (quickPickup && quickPickup.value) modalPickup.value = quickPickup.value;
-    if (quickReturn && quickReturn.value) modalReturn.value = quickReturn.value;
-    if (quickPickupTime && quickPickupTime.value && modalPickupTime) modalPickupTime.value = quickPickupTime.value;
-    if (quickReturnTime && quickReturnTime.value && modalReturnTime) modalReturnTime.value = quickReturnTime.value;
-
-    if (modalPickup.value) {
-        modalReturn.min = modalPickup.value;
+        _galleryVideoUrl = car.videourl || '';
+        window._currentCarData = car; // Store for booking confirmation
+        setGalleryMode('image');
+        setupBookingLogic(car, hasAvailable);
     }
-}
 
-function setupDateCalculation(pricePerDay) {
-    const pickupInput = document.getElementById('pickupDate');
-    const returnInput = document.getElementById('returnDate');
-    
-    const calculate = () => {
-        if(pickupInput.value && returnInput.value) {
-            const days = Utils.calculateDays(pickupInput.value, returnInput.value);
-            const total = days * pricePerDay;
-            
-            document.getElementById('totalDays').textContent = days + ' ngày';
-            document.getElementById('totalPrice').textContent = Utils.formatPrice(total) + 'đ';
-            document.getElementById('priceCalculation').style.display = 'block';
-            
-            // Update return date min
-            returnInput.min = pickupInput.value;
-        }
-    };
-    
-    pickupInput.addEventListener('change', calculate);
-    returnInput.addEventListener('change', calculate);
-}
-
-async function loadBookingModal() {
-    if (document.getElementById('bookingModal')) return;
-    const res = await fetch('views/partials/dat-lich.html?v=2');
-    const html = await res.text();
-    document.body.insertAdjacentHTML('beforeend', html);
-}
-
-async function setupBookingModal(car) {
-    await loadBookingModal();
-
-    // Inject addon checkboxes động
-    document.getElementById('addonServiceList').innerHTML = renderAddonCheckboxes();
-
-    // Setup addon price recalculation on checkbox change
-    document.querySelectorAll('input[name="addon_services"]').forEach(cb => {
-        cb.addEventListener('change', () => recalcAddonSummary(car.price_per_day));
-    });
-    document.getElementById('bookingModal').addEventListener('show.bs.modal', () => {
-        syncQuickDateTimeToModal();
-        recalcAddonSummary(car.price_per_day);
-        bookingAutoFillTX();
-    });
-
-    // Setup media capture
-    setupTxMediaCapture();
-
-    // Submit → hiện bảng xác nhận
-    document.getElementById('bookingFormFull').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        try {
-            await showTxBookingConfirm(car);
-        } catch (err) {
-            showBookingAlert('Có lỗi hiển thị form xác nhận: ' + err.message, 'danger');
-            console.error('showTxBookingConfirm error:', err);
-        }
-    });
-
-    // Quay lại form
-    document.getElementById('txConfirmBackBtn').addEventListener('click', () => {
-        document.getElementById('txBookingConfirm').style.display = 'none';
-        document.getElementById('bookingFormFull').style.display  = '';
-        _txPendingData = null;
-    });
-
-    // Xác nhận → gọi API
-    document.getElementById('txConfirmSubmitBtn').addEventListener('click', async () => {
-        await executeTxBooking(car);
-    });
-}
-
-function renderAddonCheckboxes() {
-    if (!ADDON_SERVICES.length) return '<p class="text-muted small py-2">Không có dịch vụ đi kèm</p>';
-    const UNIT_LABELS = { 'ngày': '/ngày', 'chuyến': '/chuyến' };
-    return ADDON_SERVICES.map(svc => `
-        <div class="col-md-6">
-            <div class="form-check border rounded p-2 h-100">
-                <input class="form-check-input" type="checkbox" name="addon_services"
-                       value="${svc.name}" id="svc_${svc.id}">
-                <label class="form-check-label w-100" for="svc_${svc.id}">
-                    <i class="fas fa-${svc.icon} text-primary me-1"></i> ${svc.name}
-                    <span class="float-end text-primary fw-semibold">+${Utils.formatPrice(svc.price)}đ${UNIT_LABELS[svc.unit] || ''}</span>
-                    <small class="d-block text-muted">${svc.description || ''}</small>
-                </label>
+    function renderSpecItem(icon, label, val) {
+        return `<div class="col-6 col-md-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-light p-3 rounded-circle me-2"><i class="fas fa-${icon}"></i></div>
+                <div><small class="text-muted d-block">${label}</small><strong>${val}</strong></div>
             </div>
-        </div>
-    `).join('');
-}
-
-
-// ===== BƯỚC 1: Validate + hiện bảng xác nhận =====
-async function showTxBookingConfirm(car) {
-    const form     = document.getElementById('bookingFormFull');
-    const formData = new FormData(form);
-
-    const pickupDate = document.getElementById('pickupDate').value;
-    const returnDate = document.getElementById('returnDate').value;
-    const pickupTime = document.getElementById('pickupTime')?.value || '08:00';
-    const returnTime = document.getElementById('returnTime')?.value || '08:00';
-
-    if (!pickupDate || !returnDate) {
-        showBookingAlert('Vui lòng chọn ngày nhận và trả xe!', 'danger');
-        return;
-    }
-    if (returnDate < pickupDate || (returnDate === pickupDate && returnTime <= pickupTime)) {
-        showBookingAlert('Thời gian trả xe phải sau thời gian nhận xe!', 'danger');
-        return;
-    }
-
-    const phone    = (formData.get('customer_phone') || '').trim();
-    const email    = (formData.get('customer_email') || '').trim();
-    const idNumber = (formData.get('id_number') || '').trim();
-    if (!/^0[3-9][0-9]{8}$/.test(phone)) {
-        showBookingAlert('Số điện thoại không hợp lệ! Vui lòng nhập 10 chữ số bắt đầu bằng 03x / 05x / 07x / 08x / 09x.', 'danger');
-        return;
-    }
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showBookingAlert('Email không hợp lệ!', 'danger');
-        return;
-    }
-    if (idNumber && !/^[0-9]{9}$|^[0-9]{12}$/.test(idNumber)) {
-        showBookingAlert('CMND/CCCD không hợp lệ! Phải gồm 9 hoặc 12 chữ số.', 'danger');
-        return;
-    }
-
-    const addonServices = [...document.querySelectorAll('input[name="addon_services"]:checked')]
-        .map(cb => cb.value);
-    const days       = Utils.calculateDays(pickupDate, returnDate) || 0;
-    const addonTotal = addonServices.reduce((sum, name) => {
-        const info = ADDON_PRICES[name];
-        if (!info) return sum;
-        return sum + (info.unit === 'ngày' ? info.price * days : info.price);
-    }, 0);
-
-    // Gộp media vào notes
-    let notes = formData.get('notes') || '';
-    if (_txMediaFiles.length > 0) {
-        const imgs  = _txMediaFiles.filter(m => m.file.type.startsWith('image/')).length;
-        const vids  = _txMediaFiles.filter(m => m.file.type.startsWith('video/')).length;
-        const parts = [];
-        if (imgs > 0) parts.push(`${imgs} ảnh`);
-        if (vids > 0) parts.push(`${vids} video`);
-        notes = (notes ? notes + '\n' : '') + `[Đính kèm: ${parts.join(', ')}]`;
-    }
-
-    _txPendingData = {
-        car_id:           car.id,
-        car_name:         car.name,
-        customer_name:    formData.get('customer_name'),
-        customer_email:   email,
-        customer_phone:   phone,
-        customer_address: formData.get('customer_address'),
-        id_number:        idNumber,
-        pickup_date:      pickupDate,
-        return_date:      returnDate,
-        pickup_time:      pickupTime,
-        return_time:      returnTime,
-        notes,
-        addon_services:   addonServices,
-        _days:            days,
-        _addonTotal:      addonTotal,
-    };
-
-    // Điền vào bảng xác nhận
-    document.getElementById('tx-cf-name').textContent  = _txPendingData.customer_name;
-    document.getElementById('tx-cf-phone').textContent = phone;
-    document.getElementById('tx-cf-email').textContent = email || 'Không cung cấp';
-
-    const idRow = document.getElementById('tx-cf-id-row');
-    if (idRow) {
-        if (idNumber) {
-            const idEl = document.getElementById('tx-cf-id');
-            if (idEl) idEl.textContent = idNumber;
-            idRow.style.display = '';
-        } else {
-            idRow.style.display = 'none';
-        }
-    }
-
-    const addressRow = document.getElementById('tx-cf-address-row');
-    const addressEl = document.getElementById('tx-cf-address');
-    if (addressRow && addressEl) {
-        const customerAddress = (_txPendingData.customer_address || '').trim();
-        if (customerAddress) {
-            addressEl.textContent = customerAddress;
-            addressRow.style.display = '';
-        } else {
-            addressRow.style.display = 'none';
-        }
-    }
-
-    document.getElementById('tx-cf-pickup').textContent = `${pickupDate.split('-').reverse().join('/')} ${pickupTime}`;
-    document.getElementById('tx-cf-return').textContent = `${returnDate.split('-').reverse().join('/')} ${returnTime}`;
-    document.getElementById('tx-cf-days').textContent   = `${days} ngày`;
-
-    const addonRow = document.getElementById('tx-cf-addon-row');
-    if (addonServices.length) { document.getElementById('tx-cf-addon').textContent = addonServices.join(', '); addonRow.style.display = ''; }
-    else addonRow.style.display = 'none';
-
-    const totalRow = document.getElementById('tx-cf-total-row');
-    const totalDisplay = document.getElementById('summaryTotal')?.textContent || '';
-    if (totalDisplay && totalDisplay !== '0đ') { document.getElementById('tx-cf-total').textContent = totalDisplay; totalRow.style.display = ''; }
-    else totalRow.style.display = 'none';
-
-    const rawNote = formData.get('notes') || '';
-    const noteRow = document.getElementById('tx-cf-note-row');
-    if (rawNote) { document.getElementById('tx-cf-note').textContent = rawNote; noteRow.style.display = ''; }
-    else noteRow.style.display = 'none';
-
-    const mediaRow = document.getElementById('tx-cf-media-row');
-    if (_txMediaFiles.length > 0) {
-        const imgs  = _txMediaFiles.filter(m => m.file.type.startsWith('image/')).length;
-        const vids  = _txMediaFiles.filter(m => m.file.type.startsWith('video/')).length;
-        const parts = [];
-        if (imgs > 0) parts.push(`${imgs} ảnh`);
-        if (vids > 0) parts.push(`${vids} video`);
-        document.getElementById('tx-cf-media').textContent = parts.join(', ');
-        mediaRow.style.display = '';
-    } else mediaRow.style.display = 'none';
-
-    // Chuyển sang màn hình xác nhận
-    document.getElementById('bookingFormFull').style.display  = 'none';
-    document.getElementById('addonSummary').style.display     = 'none';
-    document.getElementById('txBookingConfirm').style.display = '';
-}
-
-// ===== BƯỚC 2: Gọi API sau khi xác nhận =====
-async function executeTxBooking(car) {
-    if (!_txPendingData) return;
-
-    const btn = document.getElementById('txConfirmSubmitBtn');
-    btn.disabled  = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
-
-    const resetBtn = () => {
-        btn.disabled  = false;
-        btn.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe';
-    };
-
-    const { _days: days, _addonTotal: addonTotal, ...bookingData } = _txPendingData;
-
-    try {
-        const result = await API.bookings.create(bookingData);
-
-        if (result.success) {
-            txSendToSheet(bookingData, result.booking_id);
-            const sp = new URLSearchParams({ page: 'booking-success', id: result.booking_id });
-            sp.set('days',        result.total_days  ?? days);
-            sp.set('addon_total', result.addon_total ?? addonTotal);
-            sp.set('total',       result.final_total ?? 0);
-            if (bookingData.addon_services.length) sp.set('addons', bookingData.addon_services.join('|'));
-            window.location.href = 'index.php?' + sp.toString();
-        } else if (result.demo) {
-            txSendToSheet(bookingData, null);
-            const addonLines = bookingData.addon_services.length
-                ? `<br><br><strong>Dịch vụ đi kèm:</strong> ${bookingData.addon_services.join(', ')}`
-                : '';
-            // Quay lại form để hiện alert
-            document.getElementById('txBookingConfirm').style.display = 'none';
-            document.getElementById('bookingFormFull').style.display  = '';
-            showBookingAlert(`
-                <i class="fas fa-check-circle me-2"></i>
-                <strong>Đặt xe thành công! (Demo)</strong><br>
-                Cảm ơn bạn đã quan tâm đến <strong>${car.name}</strong>.
-                ${addonLines}<br>
-                Để hoàn tất đặt xe, vui lòng gọi hotline <strong>0775 472 347</strong> – hỗ trợ 24/7.
-            `, 'success');
-            clearTxMediaFiles();
-            _txPendingData = null;
-            resetBtn();
-        } else {
-            document.getElementById('txBookingConfirm').style.display = 'none';
-            document.getElementById('bookingFormFull').style.display  = '';
-            showBookingAlert(result.message || 'Có lỗi xảy ra!', 'danger');
-            _txPendingData = null;
-            resetBtn();
-        }
-    } catch {
-        document.getElementById('txBookingConfirm').style.display = 'none';
-        document.getElementById('bookingFormFull').style.display  = '';
-        showBookingAlert('Có lỗi xảy ra. Vui lòng thử lại!', 'danger');
-        _txPendingData = null;
-        resetBtn();
-    }
-}
-
-function recalcAddonSummary(pricePerDay) {
-    const pickup = document.getElementById('pickupDate').value;
-    const ret    = document.getElementById('returnDate').value;
-    const days   = (pickup && ret && ret > pickup) ? Utils.calculateDays(pickup, ret) : 0;
-
-    const checked = [...document.querySelectorAll('input[name="addon_services"]:checked')];
-    const summaryEl = document.getElementById('addonSummary');
-
-    if (!days && !checked.length) { summaryEl.style.display = 'none'; return; }
-
-    const carTotal = days * pricePerDay;
-    let addonTotal = 0;
-    let addonLines = '';
-
-    checked.forEach(cb => {
-        const info = ADDON_PRICES[cb.value];
-        if (!info) return;
-        const cost = info.unit === 'ngày' ? info.price * days : info.price;
-        addonTotal += cost;
-        addonLines += `<div class="d-flex justify-content-between mb-1">
-            <span class="text-muted">${cb.value}:</span>
-            <span>+${Utils.formatPrice(cost)}đ</span>
         </div>`;
-    });
-
-    document.getElementById('summaryCarPrice').textContent = Utils.formatPrice(carTotal) + 'đ';
-    document.getElementById('summaryAddonList').innerHTML = addonLines;
-    document.getElementById('summaryTotal').textContent = Utils.formatPrice(carTotal + addonTotal) + 'đ';
-    summaryEl.style.display = 'block';
-}
-
-function showBookingAlert(message, type) {
-    const alertDiv = document.getElementById('bookingAlert');
-    alertDiv.innerHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    `;
-}
-
-function getTodayDate() {
-    return new Date().toISOString().split('T')[0];
-}
-
-// ===== MEDIA CAPTURE =====
-function setupTxMediaCapture() {
-    const photoInput   = document.getElementById('txMediaPhotoInput');
-    const videoInput   = document.getElementById('txMediaVideoInput');
-    const photoBtn     = document.getElementById('txPhotoCaptureBtn');
-    const videoBtn     = document.getElementById('txVideoCaptureBtn');
-    const photoPreview = document.getElementById('txMediaPhotoPreviewContainer');
-    const videoPreview = document.getElementById('txMediaVideoPreviewContainer');
-    if (!photoInput || !videoInput) return;
-
-    photoBtn.addEventListener('click', () => photoInput.click());
-    videoBtn.addEventListener('click', () => videoInput.click());
-
-    photoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addTxMediaFile(f, photoPreview));
-        this.value = '';
-    });
-    videoInput.addEventListener('change', function () {
-        Array.from(this.files).forEach(f => addTxMediaFile(f, videoPreview));
-        this.value = '';
-    });
-}
-
-function addTxMediaFile(file, previewBox) {
-    const id = Date.now() + Math.random();
-    _txMediaFiles.push({ id, file });
-
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:2px solid rgba(59,130,246,0.4);';
-    wrap.dataset.mediaId = id;
-
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.innerHTML = '&times;';
-    removeBtn.style.cssText = 'position:absolute;top:2px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:16px;cursor:pointer;padding:0;z-index:1;';
-    removeBtn.addEventListener('click', () => {
-        _txMediaFiles = _txMediaFiles.filter(m => m.id !== id);
-        wrap.remove();
-    });
-
-    if (file.type.startsWith('image/')) {
-        const img = document.createElement('img');
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-        img.src = URL.createObjectURL(file);
-        wrap.appendChild(img);
-    } else {
-        const icon = document.createElement('div');
-        icon.style.cssText = 'width:100%;height:100%;background:#0f172a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;';
-        icon.innerHTML = '<i class="fas fa-video" style="color:#3B82F6;font-size:1.4rem;"></i><span style="color:#ccc;font-size:0.6rem;text-align:center;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:100%;">' + file.name + '</span>';
-        wrap.appendChild(icon);
     }
-    wrap.appendChild(removeBtn);
-    previewBox.appendChild(wrap);
-}
 
-function clearTxMediaFiles() {
-    _txMediaFiles = [];
-    const pg = document.getElementById('txMediaPhotoPreviewContainer');
-    const vg = document.getElementById('txMediaVideoPreviewContainer');
-    if (pg) pg.innerHTML = '';
-    if (vg) vg.innerHTML = '';
-}
+    function renderDetailSpec(label, val) {
+        return `<div class="col-6 col-md-4"><div class="spec-item"><small class="text-muted d-block">${label}</small><strong>${val || '—'}</strong></div></div>`;
+    }
 
-// Export functions
-window.changeMainImage = changeMainImage;
+    function renderBookingSidebar(car, hasAvail) {
+        return `
+            <div class="card border-0 shadow-sm sticky-top" style="top:90px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Đặt Xe Ngay</h5>
+                    <div class="bg-light p-3 rounded mb-3">
+                        <h6 class="fw-bold mb-1">${car.tenxe}</h6>
+                        <p class="text-primary fw-bold mb-0">${fmt(car.giathue)}đ/ngày</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ngày nhận</label>
+                        <input type="date" class="form-control" id="pickupDate" min="${today()}" ${!hasAvail?'disabled':''}>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ngày trả</label>
+                        <input type="date" class="form-control" id="returnDate" min="${today()}" ${!hasAvail?'disabled':''}>
+                    </div>
+                    <div id="priceCalc" class="bg-light p-3 rounded mb-3" style="display:none;">
+                        <div class="d-flex justify-content-between"><span>Số ngày:</span><strong id="totalDays">0</strong></div>
+                        <div class="d-flex justify-content-between"><span>Tổng:</span><strong class="text-primary" id="totalPrice">0đ</strong></div>
+                    </div>
+                    ${hasAvail ? '<button class="btn btn-gradient w-100" onclick="txBpOpen()"><i class="fas fa-calendar-check me-2"></i>Đặt ngay</button>' : '<button class="btn btn-secondary w-100" disabled>Hết xe</button>'}
+                </div>
+            </div>`;
+    }
 
-// --- Booking auto-fill from session ---
-var _txSession = null;
-
-function bookingAutoFillTX() {
-    _txSession = null; // reset mỗi lần mở modal
-    fetch('controllers/check-session.php')
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            _txSession = data;
-            var banner = document.getElementById('bookingAuthBanner');
-            if (!banner) return;
-
-            if (data.logged_in && data.role === 'customer') {
-                // Auto-fill ngay
-                var form = document.getElementById('bookingFormFull');
-                if (form) {
-                    var nameEl  = form.querySelector('[name="customer_name"]');
-                    var phoneEl = form.querySelector('[name="customer_phone"]');
-                    var emailEl = form.querySelector('[name="customer_email"]');
-                    if (nameEl  && data.name)  nameEl.value  = data.name;
-                    if (phoneEl && data.phone) phoneEl.value = data.phone;
-                    if (emailEl && data.email) emailEl.value = data.email;
-                }
-                banner.innerHTML =
-                    '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;">' +
-                        '<span style="font-size:0.83rem;color:#1e40af;"><i class="fas fa-user-check me-2"></i>Đã đăng nhập: <strong>' + (data.name || '') + '</strong></span>' +
-                        '<button type="button" onclick="bookingAutoFillClick()" ' +
-                            'style="background:linear-gradient(135deg,#3B82F6,#1E40AF);color:white;border:none;padding:5px 14px;border-radius:50px;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;">' +
-                            '<i class="fas fa-magic me-1"></i>Tự điền thông tin' +
-                        '</button>' +
-                    '</div>';
-            } else {
-                banner.innerHTML =
-                    '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:0.83rem;color:#92400e;margin-bottom:4px;">' +
-                        '<i class="fas fa-info-circle me-2"></i>' +
-                        '<a href="views/pages/customer/dang-nhap.html" style="color:#d97706;font-weight:600;text-decoration:none;">Đăng nhập</a>' +
-                        ' để tự động điền tên, số điện thoại và email.' +
-                    '</div>';
+    function setupBookingLogic(car, hasAvail) {
+        if (!hasAvail) return;
+        const pDate = document.getElementById('pickupDate');
+        const rDate = document.getElementById('returnDate');
+        const calc = () => {
+            if (pDate.value && rDate.value) {
+                const days = Math.max(1, Math.round((new Date(rDate.value)-new Date(pDate.value))/86400000));
+                document.getElementById('totalDays').textContent = days + ' ngày';
+                document.getElementById('totalPrice').textContent = fmt(days * car.giathue) + 'đ';
+                document.getElementById('priceCalc').style.display = 'block';
+                rDate.min = pDate.value;
             }
-        })
-        .catch(function () { /* im lặng nếu lỗi */ });
-}
+        };
+        pDate.onchange = rDate.onchange = calc;
+    }
 
-window.bookingAutoFillClick = function () {
-    if (!_txSession || !_txSession.logged_in) return;
-    var form = document.getElementById('bookingFormFull');
-    if (!form) return;
-    var nameEl  = form.querySelector('[name="customer_name"]');
-    var phoneEl = form.querySelector('[name="customer_phone"]');
-    var emailEl = form.querySelector('[name="customer_email"]');
-    if (nameEl  && _txSession.name)  nameEl.value  = _txSession.name;
-    if (phoneEl && _txSession.phone) phoneEl.value = _txSession.phone;
-    if (emailEl && _txSession.email) emailEl.value = _txSession.email;
-};
-window.openBookingModal = openBookingModal;
+    function updateSEO(car) {
+        const title = `${car.tenxe} - Thuê Xe Toàn Quốc`;
+        document.title = title;
+        const desc = car.mota || `Thuê xe ${car.tenxe} giá rẻ...`;
+        document.getElementById('metaDesc').setAttribute('content', desc);
+    }
+
+    // 3. Initialization
+    try {
+        await STATIC_DATA_PROMISE;
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        if (!id) throw new Error('No ID');
+
+        const allCars = await getLiveCars();
+        console.log("[Antigravity-Debug] Total cars found:", allCars.length);
+        
+        const car = allCars.find(c => String(c.id) == String(id));
+        if (!car) throw new Error('Empty result');
+
+        // Tìm các xe cùng loại (cùng tên xe)
+        const allSameType = allCars.filter(c => String(c.tenxe).toLowerCase() === String(car.tenxe).toLowerCase());
+
+        updateSEO(car);
+        renderCarDetail(car, [car], allSameType);
+    } catch (e) {
+        console.error(e);
+        document.getElementById('carContent').innerHTML = '<div class="text-center py-5"><h4>Không tìm thấy xe</h4><a href="index.html" class="btn btn-primary mt-3">Quay lại</a></div>';
+    }
+
+    window.txBpFormLoaded = async function() {
+        console.log('[Antigravity] Booking form loaded. Initializing modal logic...');
+        const form = document.getElementById('bookingFormFull');
+        if (!form) return;
+
+        // A. Autofill & State
+        const s = (window.DVQTApp && window.DVQTApp.checkSession) ? await window.DVQTApp.checkSession() : null;
+        if (s && s.logged_in) {
+            const f = n => form.querySelector(`[name="${n}"]`);
+            if (f('customer_name')) f('customer_name').value = s.hovaten || s.name || '';
+            if (f('customer_phone')) f('customer_phone').value = s.sodienthoai || s.phone || '';
+            if (f('customer_email')) f('customer_email').value = s.email || '';
+            if (f('customer_address')) f('customer_address').value = s.diachi || s.address || '';
+        }
+
+        // B. Render Addon Services
+        const STATIC = await STATIC_DATA_PROMISE;
+        const addonContainer = document.getElementById('addonServiceList');
+        if (addonContainer && STATIC.services) {
+            addonContainer.innerHTML = STATIC.services.map(svc => `
+                <div class="col-12 col-md-6">
+                    <label class="addon-service-card" for="svc_${svc.id}">
+                        <input class="addon-service-input" type="checkbox" name="addon_services" value="${svc.name}" id="svc_${svc.id}" data-price="${svc.price}" data-unit="${svc.unit}">
+                        <span class="addon-service-shell">
+                            <span class="addon-service-check"><i class="fas fa-check"></i></span>
+                            <span class="addon-service-main">
+                                <span class="addon-service-top">
+                                    <span class="addon-service-name"><i class="fas fa-${svc.icon || 'star'} text-primary me-1"></i>${svc.name}</span>
+                                    <span class="addon-service-price">+${fmt(svc.price)}đ/${svc.unit}</span>
+                                </span>
+                            </span>
+                        </span>
+                    </label>
+                </div>`).join('');
+        }
+
+        // C. Sync Dates from Sidebar (if available)
+        const sidebarPickup = document.getElementById('pickupDate');
+        const sidebarReturn = document.getElementById('returnDate');
+        const modalPickup = form.querySelector('#pickupDate');
+        const modalReturn = form.querySelector('#returnDate');
+        if (sidebarPickup && modalPickup) modalPickup.value = sidebarPickup.value;
+        if (sidebarReturn && modalReturn) modalReturn.value = sidebarReturn.value;
+
+        // D. Handle Form Submission -> Show Confirmation
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            const car = window._currentCarData; // Lấy dữ liệu xe đang xem
+            if(!car) return;
+
+            const days = Math.max(1, Math.round((new Date(modalReturn.value) - new Date(modalPickup.value)) / 86400000));
+            const addons = [...form.querySelectorAll('input[name="addon_services"]:checked')];
+            let addonTotal = 0;
+            let addonText = [];
+            addons.forEach(cb => {
+                const p = Number(cb.dataset.price);
+                const u = cb.dataset.unit;
+                const cost = u === 'ngày' ? p * days : p;
+                addonTotal += cost;
+                addonText.push(cb.value);
+            });
+
+            // Populate Confirmation Table
+            const cf = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+            cf('tx-cf-name', form.customer_name.value);
+            cf('tx-cf-phone', form.customer_phone.value);
+            cf('tx-cf-email', form.customer_email.value || 'N/A');
+            cf('tx-cf-pickup', modalPickup.value + ' ' + (document.getElementById('pickupTime')?.value || '08:00'));
+            cf('tx-cf-return', modalReturn.value + ' ' + (document.getElementById('returnTime')?.value || '08:00'));
+            cf('tx-cf-days', days + ' ngày');
+            cf('tx-cf-price-day', fmt(car.giathue) + ' đ/ngày');
+            cf('tx-cf-rental-cost', fmt(days * car.giathue) + ' đ');
+            cf('tx-cf-addon-cost', fmt(addonTotal) + ' đ');
+            cf('tx-cf-total', fmt(days * car.giathue + addonTotal) + ' đ');
+            
+            // Diễn giải & Dịch vụ đi kèm
+            const summaryEl = document.getElementById('tx-cf-summary');
+            if(summaryEl) summaryEl.textContent = `Giá thuê ${days} ngày x ${fmt(car.giathue)}đ/ngày`;
+            const addonEl = document.getElementById('tx-cf-addon');
+            if(addonEl) addonEl.textContent = addonText.length ? addonText.join(', ') : 'Không có';
+
+            const imgEl = document.getElementById('tx-cf-car-front-img');
+            if(imgEl) { imgEl.src = 'assets/images/cars/' + car.anhdaidien; imgEl.style.display='block'; }
+            const carRow = document.getElementById('tx-cf-car-front-row');
+            if(carRow) carRow.style.display = 'flex';
+
+            document.getElementById('bookingFormFull').style.display = 'none';
+            document.getElementById('txBookingConfirm').style.display = 'block';
+            
+            // Final Database Submission
+            document.getElementById('txConfirmSubmitBtn').onclick = async function() {
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
+                try {
+                    const payload = {
+                        id_nguoidung: s?.id || null,
+                        tenkhachhang: form.customer_name.value,
+                        sdtkhachhang: form.customer_phone.value,
+                        emailkhachhang: form.customer_email.value,
+                        id_xe: car.id,
+                        ten_xe: car.tenxe,
+                        ngay_nhan_yeu_cau: modalPickup.value,
+                        ngay_tra_yeu_cau: modalReturn.value,
+                        gio_nhan_yeu_cau: document.getElementById('pickupTime')?.value || '08:00',
+                        gio_tra_yeu_cau: document.getElementById('returnTime')?.value || '08:00',
+                        diachikhachhang: form.customer_address.value,
+                        ghi_chu: form.notes.value,
+                        dich_vu_kem: JSON.stringify(addonText),
+                        tong_tien: (days * car.giathue + addonTotal),
+                        ngaydat: new Date().toISOString().slice(0, 19).replace('T', ' ')
+                    };
+                    const res = await DVQTKrud.insertRow('datlich_thuexe', payload);
+                    if(res) {
+                        Swal.fire('Thành công!', `Đơn hàng #${String(res.id).padStart(7,'0')} đã được tiếp nhận.`, 'success')
+                            .then(() => window.location.href = 'views/pages/customer/trang-ca-nhan.html');
+                    }
+                } catch(err) { Swal.fire('Lỗi', 'Không thể gửi đơn hàng', 'error'); }
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe';
+            };
+            
+            document.getElementById('txConfirmBackBtn').onclick = () => {
+                document.getElementById('bookingFormFull').style.display = 'block';
+                document.getElementById('txBookingConfirm').style.display = 'none';
+            };
+        };
+    };
+})();

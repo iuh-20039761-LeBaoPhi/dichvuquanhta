@@ -1,93 +1,76 @@
-// true chỉ khi chạy trên XAMPP (port 80), không phải Live Server (5500/5501)
-const IS_LOCAL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-    && (window.location.port === '' || window.location.port === '80');
-
-async function getMergedStaticCars() {
-    const sd = await STATIC_DATA_PROMISE;
-    const carTypes = Array.isArray(sd?.car_types) ? sd.car_types : [];
-    const cars = Array.isArray(sd?.cars) ? sd.cars : [];
-    const carTypeMap = new Map(carTypes.map(type => [Number(type.id), type]));
-
-    return cars.map(car => {
-        const carType = carTypeMap.get(Number(car.type_id)) || {};
-        const imageSet = car.images || carType.images || {};
-        const fallbackMain = 'thue-xe-xe-anh-mac-dinh-fallback.jpg';
-
-        return {
-            ...carType,
-            ...car,
-            main_image: car.main_image || imageSet.front || carType.main_image || fallbackMain
-        };
-    });
+async function getLiveCars() {
+    try {
+        // Lấy toàn bộ dữ liệu thực từ bảng xethue
+        const allCars = await DVQTKrud.listTable('xethue', { limit: 1000 });
+        return allCars || [];
+    } catch (e) {
+        console.error("Error fetching live cars:", e);
+        return [];
+    }
 }
 
 const API = {
-    // Không còn dùng baseURL controllers/ vì đã chuyển hẳn sang JS
     cars: {
         getFeatured: async () => {
-            const sd = await STATIC_DATA_PROMISE;
-            return { success: true, data: (sd.cars || []).slice(0, 6) };
+            const cars = await getLiveCars();
+            return { success: true, data: cars.slice(0, 6) };
         },
         getAll: async () => {
-            const sd = await STATIC_DATA_PROMISE;
-            return { success: true, data: sd.cars || [] };
+            const cars = await getLiveCars();
+            return { success: true, data: cars };
         },
         getById: async (id) => {
-            const sd = await STATIC_DATA_PROMISE;
-            const targetId = parseInt(id, 10);
-            const car = (sd.cars || []).find(c => c.id === targetId);
-            if (!car) return { success: false, message: 'Không tìm thấy xe' };
+            console.log("[Antigravity-Debug] Fetching car with ID:", id);
+            try {
+                // Lấy toàn bộ danh sách để đảm bảo không bị lỗi filter từ server
+                const allCars = await getLiveCars();
+                console.log("[Antigravity-Debug] Total cars found:", allCars.length);
 
-            const carType = (sd.car_types || []).find(t => t.id === car.type_id) || {};
-            const imageSet = car.images || carType.images || {};
-            const fallbackMain = 'thue-xe-xe-anh-mac-dinh-fallback.jpg';
-            const mergedCar = {
-                ...carType,
-                ...car,
-                main_image: car.main_image || imageSet.front || carType.main_image || fallbackMain
-            };
+                const car = allCars.find(c => String(c.id) == String(id));
 
-            const detailImages = ['back', 'left', 'right', 'interior']
-                .map(view => imageSet?.[view])
-                .filter(Boolean)
-                .filter(path => path !== mergedCar.main_image)
-                .map(path => ({ image_path: path, is_main: 0 }));
+                if (!car) {
+                    console.warn("[Antigravity-Debug] Car ID not found in list:", id);
+                    throw new Error('Không tìm thấy xe #' + id);
+                }
 
-            return { success: true, data: { car: mergedCar, images: detailImages } };
+                const mergedCar = {
+                    ...car,
+                    main_image: car.anhdaidien,
+                    price_per_day: Number(car.giathue) || 0,
+                    name: car.tenxe
+                };
+
+                return {
+                    success: true,
+                    data: { car: mergedCar, images: [] }
+                };
+            } catch (err) {
+                console.error('[Antigravity-Debug] getById Error:', err);
+                return { success: false, message: err.message };
+            }
         },
         search: async (params) => {
-            const allCars = await getMergedStaticCars();
-            let cars = allCars.filter(c => c.status === 'available');
-
+            let cars = await getLiveCars();
             const brand = (params?.brand || '').trim().toLowerCase();
             const seats = params?.seats;
             const price = (params?.price || '').trim();
 
-            if (brand) cars = cars.filter(c => String(c.brand || '').trim().toLowerCase() === brand);
-            if (seats) {
-                const seatNum = Number(seats);
-                cars = cars.filter(c => Number(c.seats) === seatNum);
-            }
+            if (brand) cars = cars.filter(c => String(c.tenxe || '').toLowerCase().includes(brand));
+            if (seats) cars = cars.filter(c => Number(c.socho) === Number(seats));
             if (price) {
-                if (price.includes('-')) {
-                    const [min, max] = price.split('-').map(Number);
-                    cars = cars.filter(c => {
-                        const p = Number(c.price_per_day);
-                        return p >= min && p <= max;
-                    });
-                } else {
-                    const min = Number(price);
-                    cars = cars.filter(c => Number(c.price_per_day) >= min);
-                }
+                const [min, max] = price.includes('-') ? price.split('-').map(Number) : [Number(price), 999999999];
+                cars = cars.filter(c => {
+                    const p = Number(c.gia_thue_ngay); // Đồng bộ cột giá mới
+                    return p >= min && (max ? p <= max : true);
+                });
             }
             return { success: true, data: cars };
         },
         getFilterOptions: async () => {
-            const allCars = await getMergedStaticCars();
-            const cars = allCars.filter(c => c.status === 'available');
-            const brands = [...new Set(cars.map(c => String(c.brand || '').trim()).filter(Boolean))].sort();
-            const seats = [...new Set(cars.map(c => Number(c.seats)).filter(Number.isFinite))].sort((a,b)=>a-b);
-            const prices = cars.map(c => Number(c.price_per_day)).filter(Number.isFinite);
+            const cars = await getLiveCars();
+            const brands = [...new Set(cars.map(c => String(c.tenxe || '').split(' ')[0]).filter(Boolean))].sort();
+            const seats = [...new Set(cars.map(c => Number(c.socho)).filter(Number.isFinite))].sort((a, b) => a - b);
+            const prices = cars.map(c => Number(c.giathue)).filter(Number.isFinite); // Đồng bộ cột giathue
             return {
                 success: true,
                 brands,
@@ -109,9 +92,7 @@ const API = {
 
     bookings: {
         create: async (data) => {
-            // Sử dụng trực tiếp DVQTKrud để tạo đơn hàng (Không qua PHP)
             try {
-                // Đảm bảo dữ liệu khách hàng được ánh xạ đúng vào các trường mới
                 const payload = {
                     ...data,
                     tenkhachhang: data.customer_name || data.tenkhachhang,
@@ -125,18 +106,6 @@ const API = {
                 return { success: !!res, id: res?.id };
             } catch (err) {
                 return { success: false, message: err.message };
-            }
-        },
-        getById: async (id) => {
-            try {
-                // Lấy đơn hàng trực tiếp từ table datlich_thuexe qua JS
-                const result = await DVQTKrud.listTable('datlich_thuexe', { 
-                    filter: `id=${id}`,
-                    limit: 1 
-                });
-                return { success: !!result.length, data: result[0] };
-            } catch {
-                return { success: false };
             }
         }
     }

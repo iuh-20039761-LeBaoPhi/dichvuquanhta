@@ -25,50 +25,63 @@
         <h6 class="mb-0 fw-bold"><i class="fas fa-car-side me-2 text-primary"></i>Đội xe của tôi</h6>
     </div>
     <div id="carsTableWrap" class="p-0"></div>
-</div>
-
-<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold"><i class="fas fa-car-side me-2 text-primary"></i>Đội xe của tôi</h6>
+    <div id="carsPagination" class="px-4 py-3 bg-light border-top d-flex justify-content-between align-items-center" style="display:none !important;">
+        <span class="small text-muted" id="pageInfo">Trang 1 / 1</span>
+        <div class="pagination-btns d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" id="btnPrevPage"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn btn-sm btn-outline-secondary" id="btnNextPage"><i class="fas fa-chevron-right"></i></button>
+        </div>
     </div>
-    <div id="carsTableWrap" class="p-0"></div>
 </div>
 
 <script>
     (function() {
+        let _allMyCars = [];
+        let _currentPage = 1;
+        const _pageSize = 10;
+
         async function loadProviderData() {
             try {
                 const session = await DVQTApp.checkSession();
                 const allCars = await DVQTKrud.listTable('xethue', { limit: 1000 }).catch(() => []);
-                const myCars = allCars.filter(c => String(c.provider_id) === String(session.id));
-                const myOrders = await DVQTKrud.listTable('datlich_thuexe', { limit: 1000 }).catch(() => []);
+                _allMyCars = allCars.filter(c => String(c.provider_id) === String(session.id));
                 
-                const carIds = myCars.map(c => Number(c.id));
-                const carNames = myCars.map(c => (c.tenxe || '').trim().toLowerCase());
-                const filteredOrders = myOrders.filter(o => {
-                    const matchId = carIds.includes(Number(o.id_xe));
-                    const matchName = carNames.includes((o.ten_xe || '').trim().toLowerCase());
-                    return matchId || matchName;
-                });
+                const myOrders = await DVQTKrud.listTable('datlich_thuexe', { limit: 1000 }).catch(() => []);
+                const carIds = _allMyCars.map(c => Number(c.id));
+                const filteredOrders = myOrders.filter(o => carIds.includes(Number(o.id_xe)));
 
-                document.getElementById('statCars').textContent = myCars.length || '0';
+                document.getElementById('statCars').textContent = _allMyCars.length || '0';
                 document.getElementById('statOrders').textContent = filteredOrders.length || '0';
 
-                renderCars(myCars, session.id);
+                renderCars();
             } catch (e) {
                 console.error('Provider Dashboard Error:', e);
             }
         }
 
-        function renderCars(data, sid) {
+        function renderCars() {
             const wrap = document.getElementById('carsTableWrap');
-            if(!data || !data.length) { 
-                wrap.innerHTML = `<div class="p-4 text-center">
-                    <p class="text-muted small mb-1">Chưa có phương tiện nào trong hệ thống.</p>
-                </div>`; 
+            const pag = document.getElementById('carsPagination');
+            const info = document.getElementById('pageInfo');
+            
+            if(!_allMyCars || !_allMyCars.length) { 
+                wrap.innerHTML = `<div class="p-4 text-center"><p class="text-muted small mb-1">Chưa có phương tiện nào.</p></div>`; 
+                pag.style.setProperty('display', 'none', 'important');
                 return; 
             }
-            const rows = data.map(c => `
+
+            const totalPages = Math.ceil(_allMyCars.length / _pageSize);
+            if (totalPages > 1) {
+                pag.style.setProperty('display', 'flex', 'important');
+                info.textContent = `Trang ${_currentPage} / ${totalPages}`;
+            } else {
+                pag.style.setProperty('display', 'none', 'important');
+            }
+
+            const start = (_currentPage - 1) * _pageSize;
+            const slice = _allMyCars.slice(start, start + _pageSize);
+
+            const rows = slice.map(c => `
                 <tr>
                     <td class="ps-4"><strong>${c.tenxe}</strong></td>
                     <td><code class="text-dark">${c.bienso}</code></td>
@@ -76,7 +89,12 @@
                     <td><span class="badge ${c.trangthai === 'approved' ? 'bg-success' : 'bg-warning'}">${c.trangthai === 'approved' ? 'Hoạt động' : 'Chờ duyệt'}</span></td>
                 </tr>
             `).join('');
+
             wrap.innerHTML = `<div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="bg-light text-muted small uppercase"><tr><th class="ps-4">Tên xe</th><th>Biển số</th><th>Giá/ngày</th><th>Trạng thái</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            
+            // Re-bind buttons
+            document.getElementById('btnPrevPage').onclick = () => { if(_currentPage > 1) { _currentPage--; renderCars(); }};
+            document.getElementById('btnNextPage').onclick = () => { if(_currentPage < totalPages) { _currentPage++; renderCars(); }};
         }
 
         loadProviderData();
