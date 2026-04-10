@@ -319,17 +319,18 @@ include 'layout-header.php';
                         <input type="email" class="form-control" id="email" name="email" maxlength="150" required
                             value="<?= esc_edit((string) ($row['email'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
-                    <div class="col-12">
-                        <label for="diachi" class="form-label">Địa chỉ *</label>
-                        <input type="text" class="form-control" id="diachi" name="diachi" maxlength="255" required
-                            value="<?= esc_edit((string) ($row['diachi'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
-                    </div>
                     <div class="col-12 col-md-6">
                         <label for="matkhau" class="form-label">Mật khẩu *</label>
                         <input type="text" class="form-control" id="matkhau" name="matkhau" minlength="6"
                             maxlength="255" required value="<?= esc_edit((string) ($row['matkhau'] ?? '')) ?>"
                             <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
+                    <div class="col-12">
+                        <label for="diachi" class="form-label">Địa chỉ *</label>
+                        <input type="text" class="form-control" id="diachi" name="diachi" maxlength="255" required
+                            value="<?= esc_edit((string) ($row['diachi'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                    </div>
+                    
 
                     <div class="col-12">
                         <div class="card border-0 shadow-sm"
