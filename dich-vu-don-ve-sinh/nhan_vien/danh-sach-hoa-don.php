@@ -180,7 +180,7 @@ include 'layout-header.php';
 
     .stat-value {
         font-size: 1.4rem;
-        font-weight: 700;
+        font-weight: 600;
         line-height: 1;
         margin-top: 4px;
     }
@@ -211,7 +211,7 @@ include 'layout-header.php';
         background: #f1f5f9;
         color: #334155;
         white-space: nowrap;
-        font-weight: 700;
+        font-weight: 600;
         padding: 12px 14px;
         border-bottom: 1px solid #e2e8f0;
     }
@@ -224,7 +224,7 @@ include 'layout-header.php';
     .id-badge {
         min-width: 48px;
         text-align: center;
-        font-weight: 700;
+        font-weight: 600;
         border-radius: 999px;
     }
 
@@ -408,9 +408,9 @@ include 'layout-header.php';
     }
 
     .invoice-card:active { background: #f0f7ff; }
-    .invoice-card .inv-id { color: #2563eb; font-weight: 700; font-size: 0.95rem; }
+    .invoice-card .inv-id { color: #2563eb; font-weight: 600; font-size: 0.95rem; }
     .invoice-card .inv-date { color: #94a3b8; font-size: 0.75rem; }
-    .invoice-card .inv-name { font-weight: 700; font-size: 1rem; color: #1e293b; margin-top: 4px; }
+    .invoice-card .inv-name { font-weight: 600; font-size: 1rem; color: #1e293b; margin-top: 4px; }
     .invoice-card .inv-status { background: #1e293b; color: #fff; font-size: 0.7rem; padding: 4px 10px; border-radius: 999px; font-weight: 600; }
     .invoice-card .inv-service { color: #64748b; font-size: 0.85rem; margin-top: 2px; }
     .invoice-card .inv-price { color: #3b82f6; font-weight: 700; font-size: 1.1rem; text-align: right; margin-top: 4px; }
@@ -430,7 +430,7 @@ include 'layout-header.php';
             <?php else: ?>
                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-3">
                     <div>
-                        <h1 class="h4 fw-bold mb-1">Danh sách hóa đơn</h1>
+                        <h1 class="h4 fw-semibold mb-1">Danh sách hóa đơn</h1>
                     </div>
                     <div class="text-secondary small">Tổng hiển thị: <b><?= (int) $totalFiltered ?></b> /
                         <?= (int) $summaryTotal ?> hoa don

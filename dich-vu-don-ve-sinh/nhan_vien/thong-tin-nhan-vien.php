@@ -72,7 +72,7 @@ include 'layout-header.php';
     .profile-head h1 {
         margin: 0;
         font-size: 1.35rem;
-        font-weight: 700;
+        font-weight: 600;
     }
 
     .profile-sub {
@@ -111,7 +111,7 @@ include 'layout-header.php';
         margin-top: 12px;
         margin-bottom: 4px;
         font-size: 1.2rem;
-        font-weight: 700;
+        font-weight: 600;
         color: #0b2454;
     }
 
@@ -124,7 +124,7 @@ include 'layout-header.php';
         align-items: center;
         border-radius: 999px;
         font-size: 0.78rem;
-        font-weight: 700;
+        font-weight: 600;
         padding: 4px 10px;
         border: 1px solid #dbeafe;
         background: #eff6ff;
@@ -159,7 +159,7 @@ include 'layout-header.php';
 
     .info-value {
         font-size: 0.97rem;
-        font-weight: 600;
+        font-weight: 500;
         color: #0f172a;
         word-break: break-word;
     }
@@ -381,7 +381,7 @@ include 'layout-header.php';
                     <div class="card-soft">
                         <div class="card-body">
                             <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h2 class="h5 mb-0 fw-bold">Chi tiết tài khoản nhân viên</h2>
+                                <h2 class="h5 mb-0 fw-semibold">Chi tiết tài khoản nhân viên</h2>
                             </div>
 
                             <div class="info-grid">
@@ -432,7 +432,7 @@ include 'layout-header.php';
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="media-item">
-                                        <div class="small fw-semibold mb-2">CCCD mặt trước</div>
+                                        <div class="small fw-medium mb-2">CCCD mặt trước</div>
                                         <a href="../assets/<?= esc_nv($cccdFront) ?>" target="_blank"
                                             rel="noopener noreferrer">
                                             <img src="../assets/<?= esc_nv($cccdFront) ?>" alt="cccd mat truoc">

@@ -67,7 +67,7 @@ include 'layout-header.php';
     .edit-head h1 {
         margin: 0;
         font-size: 1.25rem;
-        font-weight: 700;
+        font-weight: 600;
     }
 
     .edit-sub {
@@ -88,7 +88,7 @@ include 'layout-header.php';
     }
 
     .form-label {
-        font-weight: 600;
+        font-weight: 500;
     }
 
     .form-control {
@@ -320,7 +320,7 @@ include 'layout-header.php';
                             style="border-radius: 12px; background: #f8fbff; border: 1px solid #e1e9f1 !important;">
                             <div class="card-header bg-transparent border-0 d-flex align-items-center py-3">
                                 <i class="bi bi-briefcase text-primary me-2"></i>
-                                <h6 class="mb-0 fw-bold">Chọn các dịch vụ bạn cung cấp</h6>
+                                <h6 class="mb-0 fw-semibold">Chọn các dịch vụ bạn cung cấp</h6>
                             </div>
                             <div class="card-body pt-0">
                                 <div class="row g-2">
@@ -337,7 +337,7 @@ include 'layout-header.php';
                                                     style="width: 36px; height: 36px; background: <?= $srv['color'] ?>15; color: <?= $srv['color'] ?>;">
                                                     <i class="<?= $srv['icon'] ?> small"></i>
                                                 </div>
-                                                <div class="flex-grow-1 small fw-semibold text-truncate">
+                                                <div class="flex-grow-1 small fw-medium text-truncate">
                                                     <?= $srv['name'] ?>
                                                 </div>
                                                 <div class="form-check m-0 px-2">
@@ -371,7 +371,7 @@ include 'layout-header.php';
 
                 <div class="preview-grid">
                     <div class="preview-card">
-                        <div class="small fw-semibold">Ảnh đại diện hiện tại</div>
+                        <div class="small fw-medium">Ảnh đại diện hiện tại</div>
                         <img src="../assets/<?= esc_edit($avatar) ?>" alt="anh dai dien">
                     </div>
                     <div class="preview-card">
