@@ -1795,7 +1795,7 @@
 				// Xác định role dựa vào id_dichvu:
 				// Nếu id_dichvu chứa '1' → nhà cung cấp (staff), ngược lại → khách hàng (customer)
 				const idDichvuList = String(matched.id_dichvu || '').split(',').map(s => s.trim());
-				const isProvider = idDichvuList.includes('1');
+				const isProvider = idDichvuList.includes('2');
 				return { role: isProvider ? 'staff' : 'customer', $user: matched };
 			}
 
