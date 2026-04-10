@@ -2122,6 +2122,10 @@
       executionStartValue ? formatDateTime(executionStartValue) : "---",
     );
     setText(
+      "heroStartedDate",
+      order.startedAt ? formatDateTime(order.startedAt) : "---",
+    );
+    setText(
       "heroCompletedDate",
       executionEndValue ? formatDateTime(executionEndValue) : "---",
     );

@@ -1639,7 +1639,7 @@ footer {
   font-size: 0.75rem;
 }
 
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .confirm-grid {
     display: grid;
     grid-template-columns: 1fr 1.2fr;
@@ -1649,5 +1649,5 @@ footer {
   .confirm-section-card.highlight-costs {
     grid-column: span 2;
   }
-}
+} */
 
