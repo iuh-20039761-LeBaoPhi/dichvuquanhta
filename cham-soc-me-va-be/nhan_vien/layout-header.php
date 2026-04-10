@@ -275,6 +275,103 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
         .spinner-border.text-pink {
             color: var(--nv-accent);
         }
+/* RESPONSIVE: MOBILE & IPAD */
+        @media (max-width: 991.98px) {
+            .nv-admin-sidebar {
+                width: 100%;
+                height: var(--nv-header-mobile-height);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: auto;
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0;
+                border-radius: 0;
+                z-index: 1100;
+                overflow: visible;
+            }
+
+            .nv-admin-brand-wrapper {
+                height: var(--nv-header-mobile-height);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 20px;
+                border-bottom: none;
+                width: 100%;
+            }
+
+            .profile-name-text {
+                font-size: 0.9rem;
+                max-width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            #nvSidebarMenu {
+                display: none;
+                flex-direction: column;
+                background: linear-gradient(135deg, var(--nv-sidebar-a), var(--nv-sidebar-b));
+                margin-top: 0;
+                width: 100%;
+                position: absolute;
+                top: var(--nv-header-mobile-height);
+                left: 0;
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                z-index: 1090;
+            }
+
+            .nv-admin-sidebar.menu-open #nvSidebarMenu {
+                display: flex !important;
+                animation: slideDown 0.3s ease-out;
+            }
+
+            @keyframes slideDown {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .nv-admin-sidebar .list-group-item {
+                margin: 0;
+                padding: 15px 25px;
+                border-radius: 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .nv-admin-topbar {
+                display: none !important;
+            }
+
+            .nv-main-wrapper {
+                margin: 0;
+                padding: 0;
+                padding-top: var(--nv-header-mobile-height);
+                width: 100%;
+            }
+
+            .nv-main-wrapper #main-content {
+                padding: 0;
+                width: 100%;
+                overflow-x: hidden;
+            }
+
+            .nv-main-wrapper #main-content .container,
+            .nv-main-wrapper #main-content .container-fluid {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                max-width: 100% !important;
+            }
+        }
+
+        .spinner-border.text-green {
+            color: var(--nv-accent);
+        }
     </style>
 </head>
 

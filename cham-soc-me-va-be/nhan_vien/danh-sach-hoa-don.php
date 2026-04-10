@@ -259,7 +259,7 @@ include 'layout-header.php';
 
     @media (max-width: 991.98px) {
         .table-wrap { border: none !important; box-shadow: none !important; background: transparent !important; }
-        .page-wrap { padding: 1px; }
+        .page-wrap { padding: 3px; }
         .panel-soft { margin: 1px; border-radius: 12px; }
         .card-body { padding: 8px 1px !important; }
         .stat-card { padding: 8px 6px; }
@@ -423,7 +423,7 @@ include 'layout-header.php';
         </div>
     <?php endif; ?>
 
-    <section class="card panel-soft mb-3">
+    <section class="card panel-soft mb-3" >
         <div class="card-body p-3 p-lg-4">
             <?php if (!$isEmployeeApproved): ?>
                 <div class="alert alert-warning mb-0">Tài khoản của bạn đang chờ duyệt</div>
