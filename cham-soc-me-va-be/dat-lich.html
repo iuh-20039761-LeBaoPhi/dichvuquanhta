@@ -552,10 +552,12 @@
     }
 
     @media (max-width: 575.98px) {
+
       /* Sát với viền màn hình điện thoại */
       section.py-5 {
         padding: 5px 1px !important;
       }
+
       .container,
       #bookingPageSection,
       #bookingPageSection .card {
@@ -566,6 +568,7 @@
         border-radius: 0 !important;
         max-width: 100% !important;
       }
+
       #bookingPageSection .card-body {
         padding: 8px 2px !important;
       }
@@ -1515,12 +1518,16 @@
       }
 
       function handleBookingSuccess() {
+        // [Thêm mới] Xử lý đăng nhập và chuyển hướng tự động
+        if (typeof xulyDangNhapSauDatLich === 'function') {
+          xulyDangNhapSauDatLich(collectBookingFormData());
+        }
+
         if (window.parent && window.parent !== window) {
           window.parent.postMessage({
             type: 'booking:success',
             message: 'Chúng tôi sẽ liên hệ với bạn sớm nhất.'
           }, '*');
-          return;
         }
 
         // Fallback cho chế độ trang độc lập
@@ -1531,9 +1538,90 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         setTimeout(function () {
-          window.location.href = 'dich-vu-cham-soc-me-be.html';
+          window.top.location.href = "nhan_vien/danh-sach-hoa-don.php";
         }, 3000);
       }
+
+      // ==========================================
+      // [THÊM MỚI] HÀM XỬ LÝ ĐĂNG NHẬP VÀ CHUYỂN HƯỚNG
+      // ==========================================
+      async function xulyDangNhapSauDatLich(formData) {
+        if (!formData || !formData.phone) return;
+        var phone = formData.phone.trim();
+        var name = formData.name || '';
+        var email = formData.email || '';
+        var address = formData.address || '';
+
+        var Utils = window.Utils || {
+          setCookie: function (name, value, days) {
+            var expires = "";
+            var d = days || 30;
+            var date = new Date();
+            date.setTime(date.getTime() + (d * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+            // Sử dụng encodeURIComponent để tránh lỗi ký tự đặc biệt trong cookie
+            document.cookie = name + "=" + encodeURIComponent(value || "") + expires + "; path=/";
+          }
+        };
+
+        try {
+          // 1. Kiểm tra sự tồn tại của số điện thoại trong bảng nguoidung
+          var users = [];
+          var resList = await krud('list', 'nguoidung', { p: 1, limit: 10000 });
+
+          if (Array.isArray(resList)) {
+            users = resList;
+          } else if (resList && resList.data) {
+            users = Array.isArray(resList.data) ? resList.data : (resList.data.rows || resList.data.items || []);
+          } else if (resList && resList.rows) {
+            users = resList.rows;
+          } else if (resList && resList.list) {
+            users = resList.list;
+          }
+
+          var clean = function (p) { return String(p || '').replace(/\D/g, ''); };
+          var inputPhone = clean(phone);
+          var foundUser = users.find(function (u) {
+            return clean(u.sodienthoai || u.phone) === inputPhone;
+          });
+
+          var matkhau = '';
+          if (foundUser) {
+            // Trường hợp 1: Đã tồn tại -> lấy mật khẩu hiện tại
+            matkhau = foundUser.matkhau || foundUser.password || inputPhone;
+          } else {
+            // Trường hợp 2: Chưa tồn tại -> insert khách hàng mới với mk là sdt
+            matkhau = inputPhone;
+            await krud('insert', 'nguoidung', {
+              hovaten: name,
+              sodienthoai: phone,
+              email: email,
+              diachi: address,
+              matkhau: matkhau,
+              trangthai: 'active'
+            });
+          }
+
+          // 2. Thiết lập cookie đăng nhập (dvqt_u, dvqt_p) để session_user.php nhận diện
+          Utils.setCookie('dvqt_u', phone);
+          Utils.setCookie('dvqt_p', matkhau);
+
+          // 3. Khởi tạo session trên server bằng cách gọi session_user.php
+          // credentials: 'same-origin' đảm bảo gửi kèm cookie vừa set
+          await fetch('session_user.php', { credentials: 'same-origin' }).catch(function (e) {
+            console.error('Session sync error:', e);
+          });
+
+          // 4. Chuyển hướng ngay lập tức tới trang danh sách hóa đơn
+          window.top.location.href = "nhan_vien/danh-sach-hoa-don.php";
+
+        } catch (error) {
+          console.error('Lỗi xử lý đăng nhập sau đặt lịch:', error);
+          // Vẫn cố gắng chuyển hướng để người dùng không bị kẹt ở màn hình thành công
+          window.top.location.href = "nhan_vien/danh-sach-hoa-don.php";
+        }
+      }
+
 
 
       // TỪ ĐÂY XỬ LÝ LẤY DỮ LIỆU TỪ FORM CHUYỂN QUA DRIVE JS ĐỂ LƯU

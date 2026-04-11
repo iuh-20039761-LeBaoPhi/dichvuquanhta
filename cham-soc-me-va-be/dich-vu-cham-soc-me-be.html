@@ -269,26 +269,6 @@
     </div>
   </div>
 
-  <div class="modal fade" id="bookingSuccessModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 rounded-4 overflow-hidden">
-        <div class="modal-header border-0"
-          style="background: linear-gradient(135deg, #f7e8f6 0%, #ffffff 55%, #fff3fc 100%);">
-          <h5 class="modal-title fw-bold" style="color:#2e7d32">Thông Báo</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body text-center py-4" style="background:#fff;">
-          <i class="fas fa-check-circle mb-3" style="font-size:3rem;color:#2e7d32"></i>
-          <h5 class="fw-bold mb-2">Đặt lịch thành công!</h5>
-          <p id="bookingSuccessText" class="text-muted mb-0">Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
-        </div>
-        <div class="modal-footer border-0 pt-0 justify-content-center">
-          <button type="button" class="btn text-white rounded-pill px-4" data-bs-dismiss="modal"
-            style="background:#2e7d32">Đã hiểu</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -298,9 +278,7 @@
       var bookingModalEl = document.getElementById('bookingFlowModal');
       var bookingFrame = document.getElementById('bookingFlowFrame');
       var bookingModal = bookingModalEl ? new bootstrap.Modal(bookingModalEl) : null;
-      var bookingSuccessModalEl = document.getElementById('bookingSuccessModal');
-      var bookingSuccessTextEl = document.getElementById('bookingSuccessText');
-      var bookingSuccessModal = bookingSuccessModalEl ? new bootstrap.Modal(bookingSuccessModalEl) : null;
+      var bookingModal = bookingModalEl ? new bootstrap.Modal(bookingModalEl) : null;
 
       function buildBookingUrl(serviceId) {
         var params = new URLSearchParams();
@@ -391,15 +369,7 @@
         if (!event || !event.data || !event.data.type) return;
 
         if (event.data.type === 'booking:success') {
-          if (bookingModal) {
-            bookingModal.hide();
-          }
-          if (bookingSuccessTextEl) {
-            bookingSuccessTextEl.textContent = event.data.message || 'Chúng tôi sẽ liên hệ với bạn sớm nhất.';
-          }
-          if (bookingSuccessModal) {
-            bookingSuccessModal.show();
-          }
+          // Không hiển thị modal thành công tại đây nữa, để dat-lich.html tự hiển thị
           return;
         }
 
