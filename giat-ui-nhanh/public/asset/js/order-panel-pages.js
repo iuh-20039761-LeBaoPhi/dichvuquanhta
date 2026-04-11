@@ -1460,7 +1460,7 @@
         .map(function (order) {
           var meta = statusMeta(order.status);
           var actionHtml =
-            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
             order.id +
             '">Xem chi tiết</a>';
 
@@ -1471,7 +1471,7 @@
               '<button type="button" class="btn btn-sm btn-primary btn-start-order" data-order-id="' +
               order.id +
               '">Bắt đầu</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
               order.id +
               '">Xem chi tiết</a>' +
               "</div>";
@@ -1483,7 +1483,7 @@
               '<button type="button" class="btn btn-sm btn-success btn-complete-order" data-order-id="' +
               order.id +
               '">Hoàn thành</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
               order.id +
               '">Xem chi tiết</a>' +
               "</div>";
@@ -1491,18 +1491,18 @@
 
           return (
             "<tr>" +
-            '<td class="order-code">' +
+            '<td class="order-code" data-label="Mã đơn">' +
             orderCode(order.id) +
             "</td>" +
-            '<td><div class="customer-block"><strong>' +
+            '<td data-label="Khách hàng"><div class="customer-block"><strong>' +
             order.customer.name +
             "</strong><span>" +
             order.customer.phone +
             "</span></div></td>" +
-            '<td><p class="service-text mb-0">' +
+            '<td data-label="Dịch vụ"><p class="service-text mb-0">' +
             order.service +
             "</p></td>" +
-            "<td>" +
+            '<td data-label="Ngày đặt">' +
             formatDate(
               order.startedAt ||
                 order.receivedAt ||
@@ -1510,15 +1510,15 @@
                 order.createdAt,
             ) +
             "</td>" +
-            '<td><span class="status-pill ' +
+            '<td data-label="Trạng thái"><span class="status-pill ' +
             meta.className +
             '">' +
             meta.label +
             "</span></td>" +
-            "<td>" +
+            '<td data-label="Tổng tiền">' +
             formatCurrency(calculateTotal(order)) +
             "</td>" +
-            "<td>" +
+            '<td data-label="Thao tác">' +
             actionHtml +
             "</td>" +
             "</tr>"
@@ -1543,7 +1543,7 @@
         .map(function (order) {
           var meta = statusMeta(order.status);
           var actionHtml =
-            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+            '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
             order.id +
             '">Xem chi tiết</a>';
 
@@ -1562,7 +1562,7 @@
               '<button type="button" class="btn btn-sm btn-primary btn-accept-order" data-order-id="' +
               order.id +
               '">Nhận đơn</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
               order.id +
               '">Xem chi tiết</a>' +
               "</div>";
@@ -1572,7 +1572,7 @@
               '<button type="button" class="btn btn-sm btn-outline-danger btn-cancel-order" data-order-id="' +
               order.id +
               '">Hủy đơn</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=' +
+              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
               order.id +
               '">Xem chi tiết</a>' +
               "</div>";
@@ -1580,29 +1580,29 @@
 
           return (
             "<tr>" +
-            '<td class="order-code">' +
+            '<td class="order-code" data-label="Mã đơn">' +
             orderCode(order.id) +
             "</td>" +
-            '<td><div class="customer-block"><strong>' +
+            '<td data-label="Khách hàng"><div class="customer-block"><strong>' +
             order.customer.name +
             "</strong><span>" +
             order.customer.phone +
             "</span></div></td>" +
-            '<td><p class="service-text mb-0">' +
+            '<td data-label="Dịch vụ"><p class="service-text mb-0">' +
             order.service +
             "</p></td>" +
-            "<td>" +
+            '<td data-label="Ngày đặt">' +
             formatDate(order.createdAt) +
             "</td>" +
-            '<td><span class="status-pill ' +
+            '<td data-label="Trạng thái"><span class="status-pill ' +
             meta.className +
             '">' +
             meta.label +
             "</span></td>" +
-            "<td>" +
+            '<td data-label="Tổng tiền">' +
             formatCurrency(calculateTotal(order)) +
             "</td>" +
-            "<td>" +
+            '<td data-label="Thao tác">' +
             actionHtml +
             "</td>" +
             "</tr>"

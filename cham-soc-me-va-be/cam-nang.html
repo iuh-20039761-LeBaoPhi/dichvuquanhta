@@ -1,104 +1,372 @@
 ﻿<!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title id="page-title">Cẩm Nang Chăm Sóc Mẹ Và Bé – Kiến Thức Sau Sinh Toàn Diện</title>
-    <meta id="meta-desc" name="description" content="Cẩm nang kiến thức chăm sóc mẹ và bé sau sinh: dinh dưỡng, sức khỏe tâm lý, phát triển trẻ sơ sinh, dịch vụ osin chuyên nghiệp tại nhà.">
-    <meta id="meta-kw"   name="keywords"    content="chăm sóc mẹ sau sinh, chăm sóc bé sơ sinh, dinh dưỡng sau sinh, osin chăm bé, phục hồi sau sinh">
-    <meta property="og:type"  content="website" />
-    <meta id="og-title"  property="og:title"       content="Cẩm Nang Chăm Sóc Mẹ Và Bé" />
-    <meta id="og-desc"   property="og:description" content="Kiến thức chăm sóc mẹ và bé sau sinh toàn diện." />
 
-    <link rel="shortcut icon" type="image/x-icon" href="assets/logomvb.png" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Cẩm Nang Chăm Sóc Mẹ Và Bé – Kiến Thức Sau Sinh Toàn Diện</title>
+  <meta id="meta-desc" name="description"
+    content="Cẩm nang kiến thức chăm sóc mẹ và bé sau sinh: dinh dưỡng, sức khỏe tâm lý, phát triển trẻ sơ sinh, dịch vụ osin chuyên nghiệp tại nhà.">
+  <meta id="meta-kw" name="keywords"
+    content="chăm sóc mẹ sau sinh, chăm sóc bé sơ sinh, dinh dưỡng sau sinh, osin chăm bé, phục hồi sau sinh">
+  <meta property="og:type" content="website" />
+  <meta id="og-title" property="og:title" content="Cẩm Nang Chăm Sóc Mẹ Và Bé" />
+  <meta id="og-desc" property="og:description" content="Kiến thức chăm sóc mẹ và bé sau sinh toàn diện." />
 
-    <style>
-      :root {
-        --pink:   #f06292;
-        --pink-d: #d84374;
-        --pink-l: #fff0f6;
-        --pink-m: #fce4ec;
-        --teal:   #26a69a;
-        --teal-l: #e0f2f1;
-      }
-      html,body {width: 100%;max-width: 100%;overflow-x: hidden; }
-      body { font-family:"Quicksand",sans-serif;  color:#444; background:#fafafa; }
-      .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
+  <link rel="shortcut icon" type="image/x-icon" href="assets/logomvb.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --pink: #f06292;
+      --pink-d: #d84374;
+      --pink-l: #fff0f6;
+      --pink-m: #fce4ec;
+      --teal: #26a69a;
+      --teal-l: #e0f2f1;
+    }
+
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: "Quicksand", sans-serif;
+      color: #444;
+      background: #fafafa;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1050;
+    }
+
     /* GIỮ header luôn 1 hàng */
-      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
-      /* ── CATEGORY PILLS ─────────────────────────── */
-      .cat-pill { font-size:.72rem; font-weight:700; letter-spacing:.4px; padding:3px 11px; border-radius:50px; display:inline-block; }
-      .cat-0 { background:#fce4ec; color:#c2185b; }
-      .cat-1 { background:#e8f5e9; color:#2e7d32; }
-      .cat-2 { background:#fff3e0; color:#e65100; }
-      .cat-3 { background:#e3f2fd; color:#1565c0; }
-      .cat-4 { background:#f3e5f5; color:#6a1b9a; }
-      .cat-5 { background:#e0f2f1; color:#00695c; }
-      .cat-6 { background:#fbe9e7; color:#bf360c; }
-      .cat-7 { background:#ede7f6; color:#4527a0; }
+    .navbar .container {
+      display: flex;
+      flex-wrap: nowrap !important;
+      align-items: center;
+      min-width: 0;
+    }
 
-      /* ── CARDS ──────────────────────────────────── */
-      .post-card { transition:transform .25s,box-shadow .25s; border-radius:16px !important; overflow:hidden; border:none !important; cursor:pointer; }
-      .post-card:hover { transform:translateY(-5px); box-shadow:0 12px 32px rgba(240,98,146,.18) !important; }
-      .post-card .card-img-area { height:185px; overflow:hidden; }
-      .post-card .card-img-area img { width:100%; height:100%; object-fit:cover; transition:transform .4s; }
-      .post-card:hover .card-img-area img { transform:scale(1.06); }
-      .post-card .card-body { background:#fff; }
+    /* ── CATEGORY PILLS ─────────────────────────── */
+    .cat-pill {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .4px;
+      padding: 3px 11px;
+      border-radius: 50px;
+      display: inline-block;
+    }
 
-      /* ── FILTER BAR ─────────────────────────────── */
-      .btn-filter { font-size:.82rem; font-weight:700; border-radius:50px; padding:2px 2px; border:2px solid #eee; background:#fff; color:#888; transition:.2s; cursor:pointer; }
-      .btn-filter.active, .btn-filter:hover { background:var(--pink-d); color:#fff; border-color:var(--pink-d); }
+    .cat-0 {
+      background: #fce4ec;
+      color: #c2185b;
+    }
 
-      /* ── ARTICLE DETAIL ─────────────────────────── */
-      #article-view { display:none; }
-      .article-hero  { width:100%; max-height:420px; object-fit:cover; border-radius:16px; }
-      .article-intro-box   { background:var(--pink-l); border-left:5px solid var(--pink-d); border-radius:0 12px 12px 0; }
-      .article-section-h   { color:var(--pink-d); font-weight:700; font-size:1.15rem; margin-top:1.8rem; margin-bottom:.5rem; }
-      .article-conclusion  { background:var(--teal-l); border-left:5px solid var(--teal); border-radius:0 12px 12px 0; }
-      .article-cta-box     { background:linear-gradient(135deg,var(--pink-l),var(--pink-m)); border-radius:16px; }
-      .sec-icon { width:36px; height:36px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--pink-m); color:var(--pink-d); font-size:.9rem; flex-shrink:0; }
-      .tag-pill { background:var(--pink-m); color:var(--pink-d); font-size:.75rem; font-weight:700; padding:3px 10px; border-radius:50px; text-decoration:none; display:inline-block; }
-      .tag-pill:hover { background:var(--pink-d); color:#fff; }
+    .cat-1 {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
 
-      /* ── SIDEBAR ────────────────────────────────── */
-      .s-card { border-radius:16px !important; border:none !important; }
-      .rel-item { border-radius:10px; transition:background .2s; cursor:pointer; }
-      .rel-item:hover { background:var(--pink-l) !important; }
-      .rel-thumb { width:64px; height:64px; object-fit:cover; border-radius:8px; flex-shrink:0; }
+    .cat-2 {
+      background: #fff3e0;
+      color: #e65100;
+    }
 
-      /* ── MISC ───────────────────────────────────── */
-      .hero-section { background:linear-gradient(135deg,var(--pink-l) 0%,#fff 50%,var(--pink-m) 100%); }
-      #search-input:focus { border-color:var(--pink); box-shadow:0 0 0 .2rem rgba(240,98,146,.2); }
-      .page-link { color:var(--pink-d); border-radius:8px !important; margin:0 2px; }
-      .page-item.active .page-link { background:var(--pink-d); border-color:var(--pink-d); color:#fff; }
-      .page-link:hover { background:var(--pink-l); color:var(--pink-d); }
-      .breadcrumb-item a { color:var(--pink); text-decoration:none; }
-      .img-ph { background:linear-gradient(135deg,var(--pink-l),var(--pink-m)); display:flex; align-items:center; justify-content:center; }
-      /* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
-      .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+    .cat-3 {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
 
-/* ================= MOBILE ONLY ================= */
-      @media (max-width: 991.98px) {
-        body {
-    padding-top: 86px;
-  }
-        .navbar { overflow-x: clip; }
-        .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
-        .navbar-brand img { width: 56px !important; height: 42px !important; }
-        .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-        .navbar-collapse.show { display: block; }
-        .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
-        .navbar-collapse .nav-item { width: 100%; text-align: center; }
-        .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
-        .navbar-collapse .btn { width: 80%; margin-top: 10px; }
-      }    
-    </style>
-<script src="/ga.js"></script>
-  </head>
-  <body data-nav-active="blog" data-nav-active-style="normal">
+    .cat-4 {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+
+    .cat-5 {
+      background: #e0f2f1;
+      color: #00695c;
+    }
+
+    .cat-6 {
+      background: #fbe9e7;
+      color: #bf360c;
+    }
+
+    .cat-7 {
+      background: #ede7f6;
+      color: #4527a0;
+    }
+
+    /* ── CARDS ──────────────────────────────────── */
+    .post-card {
+      transition: transform .25s, box-shadow .25s;
+      border-radius: 16px !important;
+      overflow: hidden;
+      border: none !important;
+      cursor: pointer;
+    }
+
+    .post-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 32px rgba(240, 98, 146, .18) !important;
+    }
+
+    .post-card .card-img-area {
+      height: 185px;
+      overflow: hidden;
+    }
+
+    .post-card .card-img-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .4s;
+    }
+
+    .post-card:hover .card-img-area img {
+      transform: scale(1.06);
+    }
+
+    .post-card .card-body {
+      background: #fff;
+    }
+
+    /* ── FILTER BAR ─────────────────────────────── */
+    .btn-filter {
+      font-size: .82rem;
+      font-weight: 700;
+      border-radius: 50px;
+      padding: 2px 2px;
+      border: 2px solid #eee;
+      background: #fff;
+      color: #888;
+      transition: .2s;
+      cursor: pointer;
+    }
+
+    .btn-filter.active,
+    .btn-filter:hover {
+      background: var(--pink-d);
+      color: #fff;
+      border-color: var(--pink-d);
+    }
+
+    /* ── ARTICLE DETAIL ─────────────────────────── */
+    #article-view {
+      display: none;
+    }
+
+    .article-hero {
+      width: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+
+    .article-intro-box {
+      background: var(--pink-l);
+      border-left: 5px solid var(--pink-d);
+      border-radius: 0 12px 12px 0;
+    }
+
+    .article-section-h {
+      color: var(--pink-d);
+      font-weight: 700;
+      font-size: 1.15rem;
+      margin-top: 1.8rem;
+      margin-bottom: .5rem;
+    }
+
+    .article-conclusion {
+      background: var(--teal-l);
+      border-left: 5px solid var(--teal);
+      border-radius: 0 12px 12px 0;
+    }
+
+    .article-cta-box {
+      background: linear-gradient(135deg, var(--pink-l), var(--pink-m));
+      border-radius: 16px;
+    }
+
+    .sec-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--pink-m);
+      color: var(--pink-d);
+      font-size: .9rem;
+      flex-shrink: 0;
+    }
+
+    .tag-pill {
+      background: var(--pink-m);
+      color: var(--pink-d);
+      font-size: .75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 50px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .tag-pill:hover {
+      background: var(--pink-d);
+      color: #fff;
+    }
+
+    /* ── SIDEBAR ────────────────────────────────── */
+    .s-card {
+      border-radius: 16px !important;
+      border: none !important;
+    }
+
+    .rel-item {
+      border-radius: 10px;
+      transition: background .2s;
+      cursor: pointer;
+    }
+
+    .rel-item:hover {
+      background: var(--pink-l) !important;
+    }
+
+    .rel-thumb {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ── MISC ───────────────────────────────────── */
+    .hero-section {
+      background: linear-gradient(135deg, var(--pink-l) 0%, #fff 50%, var(--pink-m) 100%);
+    }
+
+    #search-input:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 .2rem rgba(240, 98, 146, .2);
+    }
+
+    .page-link {
+      color: var(--pink-d);
+      border-radius: 8px !important;
+      margin: 0 2px;
+    }
+
+    .page-item.active .page-link {
+      background: var(--pink-d);
+      border-color: var(--pink-d);
+      color: #fff;
+    }
+
+    .page-link:hover {
+      background: var(--pink-l);
+      color: var(--pink-d);
+    }
+
+    .breadcrumb-item a {
+      color: var(--pink);
+      text-decoration: none;
+    }
+
+    .img-ph {
+      background: linear-gradient(135deg, var(--pink-l), var(--pink-m));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* GIỮ header luôn 1 hàng (áp dụng mọi màn hình) */
+    .navbar .container {
+      display: flex;
+      flex-wrap: nowrap !important;
+      align-items: center;
+      min-width: 0;
+    }
+
+    /* ================= MOBILE ONLY ================= */
+    @media (max-width: 991.98px) {
+      body {
+        padding-top: 86px;
+      }
+
+      .navbar {
+        overflow-x: clip;
+      }
+
+      .navbar .container>span {
+        max-width: 34vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.95rem;
+      }
+
+      .navbar-brand img {
+        width: 56px !important;
+        height: 42px !important;
+      }
+
+      .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: auto;
+        background: #fff;
+        z-index: 999;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .navbar-collapse.show {
+        display: block;
+      }
+
+      .navbar-collapse .navbar-nav {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px;
+        padding: 15px 0;
+      }
+
+      .navbar-collapse .nav-item {
+        width: 100%;
+        text-align: center;
+      }
+
+      .navbar-collapse .nav-link {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      .navbar-collapse .btn {
+        width: 80%;
+        margin-top: 10px;
+      }
+    }
+  </style>
+  <script src="/ga.js"></script>
+</head>
+
+<body data-nav-active="blog" data-nav-active-style="normal">
 
   <!-- ═══════════ NAVBAR (giữ nguyên) ═══════════ -->
   <div id="site-header"></div>
@@ -112,7 +380,8 @@
             <i class="fas fa-heart me-1"></i> Chăm Sóc Mẹ Và Bé
           </span>
           <h1 class="display-5 fw-bold mb-3" id="hero-title">Cẩm Nang Chăm Sóc Mẹ Và Bé Sau Sinh</h1>
-          <p class="lead text-muted" id="hero-sub">30 bài viết kiến thức chuyên sâu về chăm sóc mẹ, bé sơ sinh, dinh dưỡng và phục hồi sau sinh — biên soạn bởi đội ngũ chuyên nghiệp.</p>
+          <p class="lead text-muted" id="hero-sub">30 bài viết kiến thức chuyên sâu về chăm sóc mẹ, bé sơ sinh, dinh
+            dưỡng và phục hồi sau sinh — biên soạn bởi đội ngũ chuyên nghiệp.</p>
           <div class="d-flex justify-content-center flex-wrap gap-4 text-muted small mt-4">
             <span><i class="fas fa-calendar-alt me-1 text-danger"></i> Cập nhật 2025</span>
             <span><i class="fas fa-newspaper me-1 text-danger"></i> <span id="total-posts">30</span> bài viết</span>
@@ -136,9 +405,10 @@
 
             <!-- Search bar -->
             <div class="input-group mb-3 shadow-sm rounded-pill overflow-hidden" style="border:2px solid #f8bbd0;">
-              <span class="input-group-text bg-white border-0 ps-3"><i class="fas fa-search" style="color:var(--pink)"></i></span>
+              <span class="input-group-text bg-white border-0 ps-3"><i class="fas fa-search"
+                  style="color:var(--pink)"></i></span>
               <input type="text" id="search-input" class="form-control border-0 bg-white py-2"
-                     placeholder="Tìm kiếm bài viết…" autocomplete="off" />
+                placeholder="Tìm kiếm bài viết…" autocomplete="off" />
               <button class="btn text-white border-0 px-4" style="background:var(--pink-d)" onclick="clearSearch()">
                 <i class="fas fa-times"></i>
               </button>
@@ -158,7 +428,8 @@
             <div id="no-results" class="text-center py-5 d-none">
               <div class="fs-1 mb-3">🔍</div>
               <h5 class="text-muted">Không tìm thấy bài viết phù hợp.</h5>
-              <button class="btn rounded-pill mt-2 text-white" style="background:var(--pink-d)" onclick="clearSearch()">Xem tất cả</button>
+              <button class="btn rounded-pill mt-2 text-white" style="background:var(--pink-d)"
+                onclick="clearSearch()">Xem tất cả</button>
             </div>
 
             <!-- Pagination -->
@@ -173,7 +444,8 @@
             <!-- Danh mục -->
             <div class="card s-card shadow-sm mb-4">
               <div class="card-body p-4">
-                <h5 class="fw-bold mb-3" style="color:var(--pink-d)"><i class="fas fa-layer-group me-2"></i>Danh Mục</h5>
+                <h5 class="fw-bold mb-3" style="color:var(--pink-d)"><i class="fas fa-layer-group me-2"></i>Danh Mục
+                </h5>
                 <ul class="list-unstyled mb-0" id="sb-cats"></ul>
               </div>
             </div>
@@ -181,18 +453,21 @@
             <!-- Bài mới nhất -->
             <div class="card s-card shadow-sm mb-4">
               <div class="card-body p-4">
-                <h5 class="fw-bold mb-3" style="color:var(--pink-d)"><i class="fas fa-clock me-2"></i>Bài Viết Mới Nhất</h5>
+                <h5 class="fw-bold mb-3" style="color:var(--pink-d)"><i class="fas fa-clock me-2"></i>Bài Viết Mới Nhất
+                </h5>
                 <div id="sb-recent"></div>
               </div>
             </div>
 
             <!-- CTA -->
-            <div class="card s-card shadow-sm text-center" style="background:linear-gradient(135deg,var(--pink-l),var(--pink-m));">
+            <div class="card s-card shadow-sm text-center"
+              style="background:linear-gradient(135deg,var(--pink-l),var(--pink-m));">
               <div class="card-body p-4">
                 <div class="fs-1 mb-2">📞</div>
                 <h5 class="fw-bold mb-2">Tư Vấn Miễn Phí</h5>
                 <p class="text-muted small mb-3">Gọi ngay để được tư vấn và đặt lịch chăm sóc tận nhà.</p>
-                <a href="tel:0775472347" class="btn text-white fw-bold rounded-pill w-100 py-2 mb-2" style="background:var(--pink-d)">
+                <a href="tel:0775472347" class="btn text-white fw-bold rounded-pill w-100 py-2 mb-2"
+                  style="background:var(--pink-d)">
                   <i class="fas fa-phone me-2"></i>0775 472 347
                 </a>
                 <a href="html/lien-he.html" class="btn btn-outline-secondary rounded-pill w-100 py-2">
@@ -211,7 +486,8 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#" onclick="showList();return false"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="#" onclick="showList();return false"><i
+                  class="fas fa-home me-1"></i>Trang chủ</a></li>
             <li class="breadcrumb-item"><a href="#" onclick="showList();return false">Bài Viết</a></li>
             <li class="breadcrumb-item active text-muted" id="bc-title" aria-current="page">Chi tiết</li>
           </ol>
@@ -232,7 +508,8 @@
             <div class="d-flex flex-wrap align-items-center gap-3 mb-3 text-muted small">
               <span id="art-cat-badge"></span>
               <span><i class="fas fa-calendar-alt me-1" style="color:var(--pink)"></i><span id="art-date"></span></span>
-              <span><i class="fas fa-clock me-1" style="color:var(--pink)"></i><span id="art-read"></span> phút đọc</span>
+              <span><i class="fas fa-clock me-1" style="color:var(--pink)"></i><span id="art-read"></span> phút
+                đọc</span>
             </div>
 
             <!-- Title -->
@@ -256,9 +533,12 @@
             <!-- Share -->
             <div class="d-flex align-items-center gap-3 flex-wrap mb-4 p-3 rounded-3 bg-white shadow-sm">
               <span class="fw-bold" style="color:var(--pink-d)"><i class="fas fa-share-alt me-2"></i>Chia sẻ:</span>
-              <a href="#" class="btn btn-sm rounded-pill fw-bold" style="background:#1877f2;color:#fff"><i class="fab fa-facebook-f me-1"></i>Facebook</a>
-              <a href="#" class="btn btn-sm rounded-pill fw-bold" style="background:#25d366;color:#fff"><i class="fab fa-whatsapp me-1"></i>Zalo</a>
-              <a href="#" class="btn btn-sm rounded-pill btn-outline-secondary fw-bold" onclick="copyLink();return false"><i class="fas fa-link me-1"></i>Sao chép</a>
+              <a href="#" class="btn btn-sm rounded-pill fw-bold" style="background:#1877f2;color:#fff"><i
+                  class="fab fa-facebook-f me-1"></i>Facebook</a>
+              <a href="#" class="btn btn-sm rounded-pill fw-bold" style="background:#25d366;color:#fff"><i
+                  class="fab fa-whatsapp me-1"></i>Zalo</a>
+              <a href="#" class="btn btn-sm rounded-pill btn-outline-secondary fw-bold"
+                onclick="copyLink();return false"><i class="fas fa-link me-1"></i>Sao chép</a>
             </div>
           </div>
 
@@ -268,7 +548,8 @@
             <!-- Related -->
             <div class="card s-card shadow-sm mb-4">
               <div class="card-body p-4">
-                <h5 class="fw-bold mb-3" style="color:var(--pink-d)"><i class="fas fa-heart me-2"></i>Bài Viết Liên Quan</h5>
+                <h5 class="fw-bold mb-3" style="color:var(--pink-d)"><i class="fas fa-heart me-2"></i>Bài Viết Liên Quan
+                </h5>
                 <div id="art-related"></div>
               </div>
             </div>
@@ -276,18 +557,21 @@
             <!-- Cats -->
             <div class="card s-card shadow-sm mb-4">
               <div class="card-body p-4">
-                <h5 class="fw-bold mb-3" style="color:var(--pink-d)"><i class="fas fa-layer-group me-2"></i>Danh Mục</h5>
+                <h5 class="fw-bold mb-3" style="color:var(--pink-d)"><i class="fas fa-layer-group me-2"></i>Danh Mục
+                </h5>
                 <ul class="list-unstyled mb-0" id="sb-cats-art"></ul>
               </div>
             </div>
 
             <!-- CTA -->
-            <div class="card s-card shadow-sm text-center" style="background:linear-gradient(135deg,var(--pink-l),var(--pink-m));">
+            <div class="card s-card shadow-sm text-center"
+              style="background:linear-gradient(135deg,var(--pink-l),var(--pink-m));">
               <div class="card-body p-4">
                 <div class="fs-1 mb-2">💝</div>
                 <h5 class="fw-bold mb-2">Cần Hỗ Trợ?</h5>
                 <p class="text-muted small mb-3">Đội ngũ chuyên nghiệp sẵn sàng đồng hành cùng gia đình bạn 24/7.</p>
-                <a href="tel:0775472347" class="btn text-white fw-bold rounded-pill w-100 py-2 mb-2" style="background:var(--pink-d)">
+                <a href="tel:0775472347" class="btn text-white fw-bold rounded-pill w-100 py-2 mb-2"
+                  style="background:var(--pink-d)">
                   <i class="fas fa-phone me-2"></i>0775 472 347
                 </a>
                 <a href="lien-he.html" class="btn btn-outline-secondary rounded-pill w-100 py-2">
@@ -308,133 +592,133 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-  /* ═══════════════════════════════════════════════
-     CONFIG
-  ═══════════════════════════════════════════════ */
-  const JSON_URL  = 'baiviet.json';
-  const PER_PAGE  = 6;
+    /* ═══════════════════════════════════════════════
+       CONFIG
+    ═══════════════════════════════════════════════ */
+    const JSON_URL = 'baiviet.json';
+    const PER_PAGE = 6;
 
-  const CAT_CLS = {
-    'Chăm sóc mẹ sau sinh':          'cat-0',
-    'Chăm sóc trẻ sơ sinh':          'cat-1',
-    'Dinh dưỡng sau sinh':            'cat-2',
-    'Sức khỏe tâm lý mẹ sau sinh':   'cat-3',
-    'Phát triển trẻ sơ sinh':         'cat-4',
-    'Hỗ trợ việc nhà':               'cat-5',
-    'Dịch vụ chăm sóc':              'cat-6',
-    'Dinh dưỡng và phát triển':      'cat-7',
-  };
-  const SEC_ICONS = [
-    'fas fa-seedling','fas fa-star','fas fa-check-circle',
-    'fas fa-lightbulb','fas fa-heart','fas fa-shield-alt'
-  ];
+    const CAT_CLS = {
+      'Chăm sóc mẹ sau sinh': 'cat-0',
+      'Chăm sóc trẻ sơ sinh': 'cat-1',
+      'Dinh dưỡng sau sinh': 'cat-2',
+      'Sức khỏe tâm lý mẹ sau sinh': 'cat-3',
+      'Phát triển trẻ sơ sinh': 'cat-4',
+      'Hỗ trợ việc nhà': 'cat-5',
+      'Dịch vụ chăm sóc': 'cat-6',
+      'Dinh dưỡng và phát triển': 'cat-7',
+    };
+    const SEC_ICONS = [
+      'fas fa-seedling', 'fas fa-star', 'fas fa-check-circle',
+      'fas fa-lightbulb', 'fas fa-heart', 'fas fa-shield-alt'
+    ];
 
-  /* ═══════════════════════════════════════════════
-     STATE
-  ═══════════════════════════════════════════════ */
-  let allPosts = [], filtered = [];
-  let curCat = 'all', curQ = '', curPage = 1;
+    /* ═══════════════════════════════════════════════
+       STATE
+    ═══════════════════════════════════════════════ */
+    let allPosts = [], filtered = [];
+    let curCat = 'all', curQ = '', curPage = 1;
 
-  /* ═══════════════════════════════════════════════
-     BOOT
-  ═══════════════════════════════════════════════ */
-  document.addEventListener('DOMContentLoaded', () => {
-    fetch(JSON_URL)
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(data => {
-        allPosts = data;
-        document.getElementById('total-posts').textContent = allPosts.length;
-        buildFilterBar();
-        buildSbCats('sb-cats');
-        buildSbRecent();
+    /* ═══════════════════════════════════════════════
+       BOOT
+    ═══════════════════════════════════════════════ */
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch(JSON_URL)
+        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(data => {
+          allPosts = data;
+          document.getElementById('total-posts').textContent = allPosts.length;
+          buildFilterBar();
+          buildSbCats('sb-cats');
+          buildSbRecent();
+          applyFilter();
+        })
+        .catch(err => {
+          document.getElementById('posts-grid').innerHTML =
+            '<div class="col-12"><div class="alert alert-warning rounded-4 text-center"><i class="fas fa-exclamation-circle me-2"></i>Không thể tải dữ liệu: ' + esc(err.message) + '</div></div>';
+        });
+
+      document.getElementById('search-input').addEventListener('input', e => {
+        curQ = e.target.value.trim().toLowerCase();
+        curPage = 1;
         applyFilter();
-      })
-      .catch(err => {
-        document.getElementById('posts-grid').innerHTML =
-          '<div class="col-12"><div class="alert alert-warning rounded-4 text-center"><i class="fas fa-exclamation-circle me-2"></i>Không thể tải dữ liệu: ' + esc(err.message) + '</div></div>';
       });
-
-    document.getElementById('search-input').addEventListener('input', e => {
-      curQ = e.target.value.trim().toLowerCase();
-      curPage = 1;
-      applyFilter();
     });
-  });
 
-  /* ═══════════════════════════════════════════════
-     FILTER / SEARCH
-  ═══════════════════════════════════════════════ */
-  function applyFilter() {
-    filtered = allPosts.filter(p => {
-      const mc = curCat === 'all' || p.category === curCat;
-      const mq = !curQ ||
-        p.title.toLowerCase().includes(curQ) ||
-        p.excerpt.toLowerCase().includes(curQ) ||
-        p.category.toLowerCase().includes(curQ) ||
-        (p.tags||[]).some(t => t.toLowerCase().includes(curQ));
-      return mc && mq;
-    });
-    renderGrid();
-    renderPag();
-  }
-
-  function filterCat(cat, btn) {
-    curCat = cat; curPage = 1;
-    document.querySelectorAll('#filter-bar .btn-filter').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    applyFilter();
-  }
-
-  function clearSearch() {
-    document.getElementById('search-input').value = '';
-    curQ = ''; curPage = 1;
-    applyFilter();
-  }
-
-  /* ═══════════════════════════════════════════════
-     BUILD FILTER BAR
-  ═══════════════════════════════════════════════ */
-  function buildFilterBar() {
-    const bar = document.getElementById('filter-bar');
-    const cats = [...new Set(allPosts.map(p => p.category))];
-    cats.forEach(c => {
-      const btn = document.createElement('button');
-      btn.className = 'btn-filter';
-      btn.innerHTML = '<span class="cat-pill ' + (CAT_CLS[c]||'cat-0') + '">' + esc(c) + '</span>';
-      btn.onclick = () => filterCat(c, btn);
-      bar.appendChild(btn);
-    });
-  }
-
-  /* ═══════════════════════════════════════════════
-     RENDER GRID
-  ═══════════════════════════════════════════════ */
-  function renderGrid() {
-    const grid = document.getElementById('posts-grid');
-    const noR  = document.getElementById('no-results');
-    const pw   = document.getElementById('pag-wrap');
-
-    if (!filtered.length) {
-      grid.innerHTML = '';
-      noR.classList.remove('d-none');
-      pw.classList.add('d-none');
-      return;
+    /* ═══════════════════════════════════════════════
+       FILTER / SEARCH
+    ═══════════════════════════════════════════════ */
+    function applyFilter() {
+      filtered = allPosts.filter(p => {
+        const mc = curCat === 'all' || p.category === curCat;
+        const mq = !curQ ||
+          p.title.toLowerCase().includes(curQ) ||
+          p.excerpt.toLowerCase().includes(curQ) ||
+          p.category.toLowerCase().includes(curQ) ||
+          (p.tags || []).some(t => t.toLowerCase().includes(curQ));
+        return mc && mq;
+      });
+      renderGrid();
+      renderPag();
     }
-    noR.classList.add('d-none');
-    pw.classList.remove('d-none');
 
-    const slice = filtered.slice((curPage-1)*PER_PAGE, curPage*PER_PAGE);
-    grid.innerHTML = slice.map(buildCard).join('');
-  }
+    function filterCat(cat, btn) {
+      curCat = cat; curPage = 1;
+      document.querySelectorAll('#filter-bar .btn-filter').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      applyFilter();
+    }
 
-  function buildCard(p) {
-    const cls  = CAT_CLS[p.category] || 'cat-0';
-    const date = fmtDate(p.published_at);
-    const imgHtml = p.thumbnail
-      ? '<img src="' + p.thumbnail + '" alt="' + esc(p.title) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML=\'<div class=\\\'img-ph\\\' style=\\\'height:185px\\\'><i class=\\\'fas fa-baby fa-2x\\\' style=\\\'color:#f8bbd0\\\'></i></div>\'">'
-      : '<div class="img-ph" style="height:185px"><i class="fas fa-baby fa-2x" style="color:#f8bbd0"></i></div>';
+    function clearSearch() {
+      document.getElementById('search-input').value = '';
+      curQ = ''; curPage = 1;
+      applyFilter();
+    }
 
-    return `
+    /* ═══════════════════════════════════════════════
+       BUILD FILTER BAR
+    ═══════════════════════════════════════════════ */
+    function buildFilterBar() {
+      const bar = document.getElementById('filter-bar');
+      const cats = [...new Set(allPosts.map(p => p.category))];
+      cats.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-filter';
+        btn.innerHTML = '<span class="cat-pill ' + (CAT_CLS[c] || 'cat-0') + '">' + esc(c) + '</span>';
+        btn.onclick = () => filterCat(c, btn);
+        bar.appendChild(btn);
+      });
+    }
+
+    /* ═══════════════════════════════════════════════
+       RENDER GRID
+    ═══════════════════════════════════════════════ */
+    function renderGrid() {
+      const grid = document.getElementById('posts-grid');
+      const noR = document.getElementById('no-results');
+      const pw = document.getElementById('pag-wrap');
+
+      if (!filtered.length) {
+        grid.innerHTML = '';
+        noR.classList.remove('d-none');
+        pw.classList.add('d-none');
+        return;
+      }
+      noR.classList.add('d-none');
+      pw.classList.remove('d-none');
+
+      const slice = filtered.slice((curPage - 1) * PER_PAGE, curPage * PER_PAGE);
+      grid.innerHTML = slice.map(buildCard).join('');
+    }
+
+    function buildCard(p) {
+      const cls = CAT_CLS[p.category] || 'cat-0';
+      const date = fmtDate(p.published_at);
+      const imgHtml = p.thumbnail
+        ? '<img src="' + p.thumbnail + '" alt="' + esc(p.title) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML=\'<div class=\\\'img-ph\\\' style=\\\'height:185px\\\'><i class=\\\'fas fa-baby fa-2x\\\' style=\\\'color:#f8bbd0\\\'></i></div>\'">'
+        : '<div class="img-ph" style="height:185px"><i class="fas fa-baby fa-2x" style="color:#f8bbd0"></i></div>';
+
+      return `
     <div class="col-sm-6">
       <article class="card post-card shadow-sm h-100" onclick="openArt(${p.id})">
         <div class="card-img-area">${imgHtml}</div>
@@ -449,138 +733,138 @@
         </div>
       </article>
     </div>`;
-  }
+    }
 
-  /* ═══════════════════════════════════════════════
-     PAGINATION
-  ═══════════════════════════════════════════════ */
-  function renderPag() {
-    const ul    = document.getElementById('pagination');
-    const total = Math.ceil(filtered.length / PER_PAGE);
-    if (total <= 1) { ul.innerHTML = ''; return; }
+    /* ═══════════════════════════════════════════════
+       PAGINATION
+    ═══════════════════════════════════════════════ */
+    function renderPag() {
+      const ul = document.getElementById('pagination');
+      const total = Math.ceil(filtered.length / PER_PAGE);
+      if (total <= 1) { ul.innerHTML = ''; return; }
 
-    let h = `<li class="page-item ${curPage===1?'disabled':''}">
-      <a class="page-link" href="#" onclick="goPg(${curPage-1});return false"><i class="fas fa-chevron-left"></i></a></li>`;
-    for (let i=1;i<=total;i++)
-      h += `<li class="page-item ${i===curPage?'active':''}">
+      let h = `<li class="page-item ${curPage === 1 ? 'disabled' : ''}">
+      <a class="page-link" href="#" onclick="goPg(${curPage - 1});return false"><i class="fas fa-chevron-left"></i></a></li>`;
+      for (let i = 1; i <= total; i++)
+        h += `<li class="page-item ${i === curPage ? 'active' : ''}">
         <a class="page-link" href="#" onclick="goPg(${i});return false">${i}</a></li>`;
-    h += `<li class="page-item ${curPage===total?'disabled':''}">
-      <a class="page-link" href="#" onclick="goPg(${curPage+1});return false"><i class="fas fa-chevron-right"></i></a></li>`;
-    ul.innerHTML = h;
-  }
+      h += `<li class="page-item ${curPage === total ? 'disabled' : ''}">
+      <a class="page-link" href="#" onclick="goPg(${curPage + 1});return false"><i class="fas fa-chevron-right"></i></a></li>`;
+      ul.innerHTML = h;
+    }
 
-  function goPg(n) {
-    const tot = Math.ceil(filtered.length/PER_PAGE);
-    if (n<1||n>tot) return;
-    curPage = n;
-    renderGrid(); renderPag();
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+    function goPg(n) {
+      const tot = Math.ceil(filtered.length / PER_PAGE);
+      if (n < 1 || n > tot) return;
+      curPage = n;
+      renderGrid(); renderPag();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-  /* ═══════════════════════════════════════════════
-     SIDEBAR HELPERS
-  ═══════════════════════════════════════════════ */
-  function buildSbCats(elId) {
-    const el = document.getElementById(elId);
-    if (!el) return;
-    const map = {};
-    allPosts.forEach(p => map[p.category] = (map[p.category]||0)+1);
-    el.innerHTML = Object.entries(map).map(([c,n]) =>
-      `<li class="mb-2 d-flex justify-content-between align-items-center" style="cursor:pointer"
+    /* ═══════════════════════════════════════════════
+       SIDEBAR HELPERS
+    ═══════════════════════════════════════════════ */
+    function buildSbCats(elId) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const map = {};
+      allPosts.forEach(p => map[p.category] = (map[p.category] || 0) + 1);
+      el.innerHTML = Object.entries(map).map(([c, n]) =>
+        `<li class="mb-2 d-flex justify-content-between align-items-center" style="cursor:pointer"
            onclick="filterFromSb('${escAttr(c)}')">
-         <span class="cat-pill ${CAT_CLS[c]||'cat-0'}">${esc(c)}</span>
+         <span class="cat-pill ${CAT_CLS[c] || 'cat-0'}">${esc(c)}</span>
          <span class="badge rounded-pill text-white" style="background:var(--pink-d)">${n}</span>
        </li>`
-    ).join('');
-  }
+      ).join('');
+    }
 
-  function buildSbRecent() {
-    const el = document.getElementById('sb-recent');
-    if (!el) return;
-    const rec = [...allPosts].sort((a,b)=>b.published_at.localeCompare(a.published_at)).slice(0,5);
-    el.innerHTML = rec.map(p => `
+    function buildSbRecent() {
+      const el = document.getElementById('sb-recent');
+      if (!el) return;
+      const rec = [...allPosts].sort((a, b) => b.published_at.localeCompare(a.published_at)).slice(0, 5);
+      el.innerHTML = rec.map(p => `
       <div class="rel-item d-flex gap-3 align-items-center p-2 mb-2 rounded" onclick="openArt(${p.id})">
         <div style="width:64px;height:64px;flex-shrink:0;border-radius:8px;overflow:hidden;background:var(--pink-m)">
-          ${p.thumbnail ? '<img src="'+p.thumbnail+'" alt="'+esc(p.title)+'" class="rel-thumb" onerror="this.style.display=\'none\'">' : ''}
+          ${p.thumbnail ? '<img src="' + p.thumbnail + '" alt="' + esc(p.title) + '" class="rel-thumb" onerror="this.style.display=\'none\'">' : ''}
         </div>
         <div class="flex-grow-1 min-w-0">
           <p class="mb-0 small fw-bold" style="color:#333;line-height:1.4">${esc(p.title)}</p>
           <span class="small text-muted">${fmtDate(p.published_at)}</span>
         </div>
       </div>`).join('');
-  }
+    }
 
-  function filterFromSb(cat) {
-    showList();
-    curCat = cat; curPage = 1;
-    document.querySelectorAll('#filter-bar .btn-filter').forEach(b => b.classList.remove('active'));
-    applyFilter();
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+    function filterFromSb(cat) {
+      showList();
+      curCat = cat; curPage = 1;
+      document.querySelectorAll('#filter-bar .btn-filter').forEach(b => b.classList.remove('active'));
+      applyFilter();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-  /* ═══════════════════════════════════════════════
-     ARTICLE DETAIL
-  ═══════════════════════════════════════════════ */
-  function openArt(id) {
-    const p = allPosts.find(x => x.id === id);
-    if (!p) return;
-    renderArt(p);
-    document.getElementById('list-view').style.display    = 'none';
-    document.getElementById('article-view').style.display = 'block';
-    const seoKeywords = typeof p.keywords === 'string' && p.keywords.trim()
-      ? p.keywords.trim()
-      : Array.isArray(p.keywords) && p.keywords.length
-        ? p.keywords.join(', ')
-        : (p.tags || []).join(', ');
-    // SEO update
-    document.getElementById('page-title').textContent = p.title + ' – Chăm Sóc Mẹ Và Bé';
-    document.getElementById('meta-desc').content      = p.excerpt;
-    document.getElementById('meta-kw').content        = seoKeywords;
-    document.getElementById('og-title').content       = p.title;
-    document.getElementById('og-desc').content        = p.excerpt;
-    document.getElementById('hero-title').textContent = p.title;
-    document.getElementById('hero-sub').textContent   = p.excerpt;
-    document.getElementById('bc-title').textContent   = p.title;
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+    /* ═══════════════════════════════════════════════
+       ARTICLE DETAIL
+    ═══════════════════════════════════════════════ */
+    function openArt(id) {
+      const p = allPosts.find(x => x.id === id);
+      if (!p) return;
+      renderArt(p);
+      document.getElementById('list-view').style.display = 'none';
+      document.getElementById('article-view').style.display = 'block';
+      const seoKeywords = typeof p.keywords === 'string' && p.keywords.trim()
+        ? p.keywords.trim()
+        : Array.isArray(p.keywords) && p.keywords.length
+          ? p.keywords.join(', ')
+          : (p.tags || []).join(', ');
+      // SEO update
+      document.getElementById('page-title').textContent = p.title + ' – Chăm Sóc Mẹ Và Bé';
+      document.getElementById('meta-desc').content = p.excerpt;
+      document.getElementById('meta-kw').content = seoKeywords;
+      document.getElementById('og-title').content = p.title;
+      document.getElementById('og-desc').content = p.excerpt;
+      document.getElementById('hero-title').textContent = p.title;
+      document.getElementById('hero-sub').textContent = p.excerpt;
+      document.getElementById('bc-title').textContent = p.title;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-  function renderArt(p) {
-    const cls = CAT_CLS[p.category] || 'cat-0';
+    function renderArt(p) {
+      const cls = CAT_CLS[p.category] || 'cat-0';
 
-    // Hero
-    document.getElementById('art-hero-wrap').innerHTML = p.thumbnail
-      ? '<img src="'+p.thumbnail+'" alt="'+esc(p.title)+'" class="article-hero shadow-sm mb-2" loading="lazy" onerror="this.style.display=\'none\'">'
-      : '<div class="img-ph article-hero shadow-sm mb-2" style="height:320px"><i class="fas fa-baby fa-3x" style="color:#f8bbd0"></i></div>';
+      // Hero
+      document.getElementById('art-hero-wrap').innerHTML = p.thumbnail
+        ? '<img src="' + p.thumbnail + '" alt="' + esc(p.title) + '" class="article-hero shadow-sm mb-2" loading="lazy" onerror="this.style.display=\'none\'">'
+        : '<div class="img-ph article-hero shadow-sm mb-2" style="height:320px"><i class="fas fa-baby fa-3x" style="color:#f8bbd0"></i></div>';
 
-    // Meta
-    document.getElementById('art-cat-badge').innerHTML = '<span class="cat-pill '+cls+'">'+esc(p.category)+'</span>';
-    document.getElementById('art-date').textContent    = fmtDate(p.published_at);
-    document.getElementById('art-read').textContent    = p.read_time;
-    document.getElementById('art-title').textContent   = p.title;
+      // Meta
+      document.getElementById('art-cat-badge').innerHTML = '<span class="cat-pill ' + cls + '">' + esc(p.category) + '</span>';
+      document.getElementById('art-date').textContent = fmtDate(p.published_at);
+      document.getElementById('art-read').textContent = p.read_time;
+      document.getElementById('art-title').textContent = p.title;
 
-    // Intro
-    document.getElementById('art-intro').innerHTML = '<p class="mb-0 fs-6">'+esc(p.content.intro)+'</p>';
+      // Intro
+      document.getElementById('art-intro').innerHTML = '<p class="mb-0 fs-6">' + esc(p.content.intro) + '</p>';
 
-    // Sections
-    document.getElementById('art-sections').innerHTML =
-      (p.content.sections||[]).map((s,i) => `
+      // Sections
+      document.getElementById('art-sections').innerHTML =
+        (p.content.sections || []).map((s, i) => `
         <div class="mb-4">
           <h2 class="article-section-h d-flex align-items-center gap-2">
-            <span class="sec-icon"><i class="${SEC_ICONS[i%SEC_ICONS.length]}"></i></span>
+            <span class="sec-icon"><i class="${SEC_ICONS[i % SEC_ICONS.length]}"></i></span>
             ${esc(s.heading)}
           </h2>
           <p class="mt-2 mb-0">${esc(s.body)}</p>
         </div>`).join('');
 
-    // Conclusion
-    document.getElementById('art-conclusion').innerHTML = `
+      // Conclusion
+      document.getElementById('art-conclusion').innerHTML = `
       <div class="d-flex align-items-start gap-3">
         <i class="fas fa-check-double fs-4 mt-1" style="color:var(--teal)"></i>
         <p class="mb-0 fw-bold">${esc(p.content.conclusion)}</p>
       </div>`;
 
-    // CTA
-    document.getElementById('art-cta').innerHTML = `
+      // CTA
+      document.getElementById('art-cta').innerHTML = `
       <p class="fw-bold fs-5 mb-3" style="color:var(--pink-d)">
         <i class="fas fa-heart me-2"></i>${esc(p.content.cta)}
       </p>
@@ -588,79 +872,77 @@
         <i class="fas fa-phone me-2"></i>Liên Hệ Ngay
       </a>`;
 
-    // Tags
-    document.getElementById('art-tags').innerHTML = `
+      // Tags
+      document.getElementById('art-tags').innerHTML = `
       <span class="fw-bold me-2" style="color:var(--pink-d)"><i class="fas fa-tags me-1"></i>Tags:</span>
-      ${(p.tags||[]).map(t =>
-        '<a href="#" class="tag-pill me-1 mb-1" onclick="tagSearch(\''+escAttr(t)+'\');return false">'+esc(t)+'</a>'
+      ${(p.tags || []).map(t =>
+        '<a href="#" class="tag-pill me-1 mb-1" onclick="tagSearch(\'' + escAttr(t) + '\');return false">' + esc(t) + '</a>'
       ).join('')}`;
 
-    // Related
-    const rel = allPosts.filter(x => x.category===p.category && x.id!==p.id).slice(0,5);
-    document.getElementById('art-related').innerHTML = rel.length
-      ? rel.map(r => `
+      // Related
+      const rel = allPosts.filter(x => x.category === p.category && x.id !== p.id).slice(0, 5);
+      document.getElementById('art-related').innerHTML = rel.length
+        ? rel.map(r => `
           <div class="rel-item d-flex gap-3 align-items-center p-2 mb-2 rounded" onclick="openArt(${r.id})">
             <div style="width:64px;height:64px;flex-shrink:0;border-radius:8px;overflow:hidden;background:var(--pink-m)">
-              ${r.thumbnail ? '<img src="'+r.thumbnail+'" alt="'+esc(r.title)+'" class="rel-thumb" onerror="this.style.display=\'none\'">' : ''}
+              ${r.thumbnail ? '<img src="' + r.thumbnail + '" alt="' + esc(r.title) + '" class="rel-thumb" onerror="this.style.display=\'none\'">' : ''}
             </div>
             <div>
               <p class="mb-0 small fw-bold" style="color:#333;line-height:1.4">${esc(r.title)}</p>
               <span class="small text-muted"><i class="fas fa-clock me-1"></i>${r.read_time} phút</span>
             </div>
           </div>`).join('')
-      : '<p class="text-muted small mb-0">Không có bài viết liên quan.</p>';
+        : '<p class="text-muted small mb-0">Không có bài viết liên quan.</p>';
 
-    // Sidebar cats in article view
-    buildSbCats('sb-cats-art');
-  }
+      // Sidebar cats in article view
+      buildSbCats('sb-cats-art');
+    }
 
-  function tagSearch(tag) {
-    showList();
-    document.getElementById('search-input').value = tag;
-    curQ = tag.toLowerCase(); curPage = 1;
-    curCat = 'all';
-    document.querySelectorAll('#filter-bar .btn-filter').forEach(b => b.classList.remove('active'));
-    const first = document.querySelector('#filter-bar .btn-filter');
-    if (first) first.classList.add('active');
-    applyFilter();
-  }
+    function tagSearch(tag) {
+      showList();
+      document.getElementById('search-input').value = tag;
+      curQ = tag.toLowerCase(); curPage = 1;
+      curCat = 'all';
+      document.querySelectorAll('#filter-bar .btn-filter').forEach(b => b.classList.remove('active'));
+      const first = document.querySelector('#filter-bar .btn-filter');
+      if (first) first.classList.add('active');
+      applyFilter();
+    }
 
-  function showList() {
-    document.getElementById('list-view').style.display    = 'block';
-    document.getElementById('article-view').style.display = 'none';
-    document.getElementById('page-title').textContent = 'Cẩm Nang Chăm Sóc Mẹ Và Bé – Kiến Thức Sau Sinh Toàn Diện';
-    document.getElementById('meta-desc').content      = 'Cẩm nang kiến thức chăm sóc mẹ và bé sau sinh: dinh dưỡng, sức khỏe tâm lý, phát triển trẻ sơ sinh, dịch vụ osin chuyên nghiệp tại nhà.';
-    document.getElementById('meta-kw').content        = 'chăm sóc mẹ sau sinh, chăm sóc bé sơ sinh, dinh dưỡng sau sinh, osin chăm bé, phục hồi sau sinh';
-    document.getElementById('og-title').content       = 'Cẩm Nang Chăm Sóc Mẹ Và Bé';
-    document.getElementById('og-desc').content        = 'Kiến thức chăm sóc mẹ và bé sau sinh toàn diện.';
-    document.getElementById('hero-title').textContent = 'Cẩm Nang Chăm Sóc Mẹ Và Bé Sau Sinh';
-    document.getElementById('hero-sub').textContent   = '30 bài viết kiến thức chuyên sâu về chăm sóc mẹ, bé sơ sinh, dinh dưỡng và phục hồi sau sinh — biên soạn bởi đội ngũ chuyên nghiệp.';
-  }
+    function showList() {
+      document.getElementById('list-view').style.display = 'block';
+      document.getElementById('article-view').style.display = 'none';
+      document.getElementById('page-title').textContent = 'Cẩm Nang Chăm Sóc Mẹ Và Bé – Kiến Thức Sau Sinh Toàn Diện';
+      document.getElementById('meta-desc').content = 'Cẩm nang kiến thức chăm sóc mẹ và bé sau sinh: dinh dưỡng, sức khỏe tâm lý, phát triển trẻ sơ sinh, dịch vụ osin chuyên nghiệp tại nhà.';
+      document.getElementById('meta-kw').content = 'chăm sóc mẹ sau sinh, chăm sóc bé sơ sinh, dinh dưỡng sau sinh, osin chăm bé, phục hồi sau sinh';
+      document.getElementById('og-title').content = 'Cẩm Nang Chăm Sóc Mẹ Và Bé';
+      document.getElementById('og-desc').content = 'Kiến thức chăm sóc mẹ và bé sau sinh toàn diện.';
+      document.getElementById('hero-title').textContent = 'Cẩm Nang Chăm Sóc Mẹ Và Bé Sau Sinh';
+      document.getElementById('hero-sub').textContent = '30 bài viết kiến thức chuyên sâu về chăm sóc mẹ, bé sơ sinh, dinh dưỡng và phục hồi sau sinh — biên soạn bởi đội ngũ chuyên nghiệp.';
+    }
 
-  /* ═══════════════════════════════════════════════
-     UTILS
-  ═══════════════════════════════════════════════ */
-  function fmtDate(s) {
-    if (!s) return '';
-    const d = new Date(s);
-    return d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});
-  }
-  function esc(s) {
-    return String(s||'')
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-  function escAttr(s) { return String(s||'').replace(/'/g,"\\'"); }
-  function copyLink() {
-    navigator.clipboard.writeText(window.location.href)
-      .then(()=>alert('Đã sao chép liên kết!'))
-      .catch(()=>alert('Không thể sao chép.'));
-  }
+    /* ═══════════════════════════════════════════════
+       UTILS
+    ═══════════════════════════════════════════════ */
+    function fmtDate(s) {
+      if (!s) return '';
+      const d = new Date(s);
+      return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+    function esc(s) {
+      return String(s || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function escAttr(s) { return String(s || '').replace(/'/g, "\\'"); }
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => alert('Đã sao chép liên kết!'))
+        .catch(() => alert('Không thể sao chép.'));
+    }
   </script>
   <script src="JS/shared-layout.js"></script>
-    <script src="JS/user-nav-menu.js"></script>
+  <script src="JS/user-nav-menu.js"></script>
 </body>
+
 </html>
-
-
-

@@ -44,30 +44,10 @@ function krud_call(array $payload): array
     }
 
     if (!empty($decoded['error']) || (isset($decoded['success']) && $decoded['success'] === false)) {
-        return ['success' => false, 'message' => (string)($decoded['error'] ?? $decoded['message'] ?? 'Cap nhat that bai.')];
+        return ['success' => false, 'message' => (string) ($decoded['error'] ?? $decoded['message'] ?? 'Cap nhat that bai.')];
     }
 
     return ['success' => true, 'message' => 'Cap nhat thanh cong.'];
-}
-
-/** Chuan hoa duong dan anh luu trong DB. */
-function normalize_db_path(string $value): string
-{
-    $path = trim(str_replace('\\', '/', $value));
-    if ($path === '') {
-        return '';
-    }
-
-    if (strpos($path, '../') === 0) {
-        $path = substr($path, 3);
-    }
-
-    if (strpos($path, './') === 0) {
-        $path = substr($path, 2);
-    }
-
-    $path = ltrim($path, '/');
-    return str_replace('..', '', $path);
 }
 
 /** Upload 1 anh neu nguoi dung chon file moi, neu khong thi giu file cu. */
@@ -78,7 +58,7 @@ function upload_or_keep_image(string $inputName, string $targetDir, string $curr
     }
 
     $file = $_FILES[$inputName];
-    $error = (int)($file['error'] ?? UPLOAD_ERR_NO_FILE);
+    $error = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
     if ($error === UPLOAD_ERR_NO_FILE) {
         return ['success' => true, 'path' => $currentPath];
     }
@@ -87,13 +67,13 @@ function upload_or_keep_image(string $inputName, string $targetDir, string $curr
         return ['success' => false, 'message' => 'Upload file loi: ' . $inputName];
     }
 
-    $tmpPath = (string)($file['tmp_name'] ?? '');
+    $tmpPath = (string) ($file['tmp_name'] ?? '');
     if ($tmpPath === '' || !is_uploaded_file($tmpPath)) {
         return ['success' => false, 'message' => 'File upload khong hop le: ' . $inputName];
     }
 
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mime = $finfo ? (string)finfo_file($finfo, $tmpPath) : '';
+    $mime = $finfo ? (string) finfo_file($finfo, $tmpPath) : '';
     if ($finfo) {
         finfo_close($finfo);
     }
@@ -109,9 +89,8 @@ function upload_or_keep_image(string $inputName, string $targetDir, string $curr
         return ['success' => false, 'message' => 'Dinh dang anh khong hop le: ' . $inputName];
     }
 
-    $safeDir = normalize_db_path($targetDir);
-    $baseDir = dirname(__DIR__);
-    $absoluteDir = $baseDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $safeDir);
+    $safeDir = trim(str_replace('\\', '/', $targetDir), '/');
+    $absoluteDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $safeDir);
 
     if (!is_dir($absoluteDir) && !mkdir($absoluteDir, 0775, true) && !is_dir($absoluteDir)) {
         return ['success' => false, 'message' => 'Khong tao duoc thu muc upload'];
@@ -133,22 +112,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$user = session_user_require_employee('../login.html', 'nhan_vien/sua-thong-tin-nhan-vien.php');
-$employeeId = (int)($user['id'] ?? 0);
+$user = $_SESSION['user'] ?? [];
+$employeeId = (int) ($user['id'] ?? 0);
 if ($employeeId <= 0) {
     redirect_with_message(false, 'Khong tim thay id nhan vien trong session.');
 }
 
-$fullName = trim((string)($_POST['hovaten'] ?? ''));
-$phone = trim((string)($_POST['sodienthoai'] ?? ''));
-$password = trim((string)($_POST['matkhau'] ?? ''));
-$email = trim((string)($_POST['email'] ?? ''));
-$address = trim((string)($_POST['diachi'] ?? ''));
-$birthDate = trim((string)($_POST['ngaysinh'] ?? ''));
-$experience = trim((string)($_POST['kinh_nghiem'] ?? ''));
-$existingAvatar = normalize_db_path((string)($_POST['existing_anh_dai_dien'] ?? ''));
-$existingFront = normalize_db_path((string)($_POST['existing_cccd_mat_truoc'] ?? ''));
-$existingBack = normalize_db_path((string)($_POST['existing_cccd_mat_sau'] ?? ''));
+$fullName = trim((string) ($_POST['hovaten'] ?? ''));
+$phone = trim((string) ($_POST['sodienthoai'] ?? ''));
+$password = trim((string) ($_POST['matkhau'] ?? ''));
+$email = trim((string) ($_POST['email'] ?? ''));
+$address = trim((string) ($_POST['diachi'] ?? ''));
+$existingAvatar = trim((string) ($_POST['existing_anh_dai_dien'] ?? ''));
+$existingFront = trim((string) ($_POST['existing_cccd_mat_truoc'] ?? ''));
+$existingBack = trim((string) ($_POST['existing_cccd_mat_sau'] ?? ''));
 
 if ($fullName === '' || mb_strlen($fullName, 'UTF-8') > 120) {
     redirect_with_message(false, 'Ho va ten khong hop le.');
@@ -167,36 +144,33 @@ if ($password === '' || mb_strlen($password, 'UTF-8') < 6) {
     redirect_with_message(false, 'Mat khau phai co it nhat 6 ky tu.');
 }
 
+// Xử lý danh sách dịch vụ được chọn
+$selectedServices = $_POST['services'] ?? [];
+$idDichVu = is_array($selectedServices) ? implode(',', array_map('intval', $selectedServices)) : '';
+
 if ($address === '') {
     redirect_with_message(false, 'Dia chi khong duoc bo trong.');
 }
 
-if ($birthDate === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $birthDate)) {
-    redirect_with_message(false, 'Ngay sinh khong hop le hoac bi bo trong.');
-}
-
-if ($experience === '') {
-    redirect_with_message(false, 'Mo ta kinh nghiem khong duoc bo trong.');
-}
 
 $avatar = upload_or_keep_image('anh_dai_dien', 'assets/nhacungcap/anhdaidien', $existingAvatar);
 if (!$avatar['success']) {
-    redirect_with_message(false, (string)($avatar['message'] ?? 'Khong the upload anh dai dien.'));
+    redirect_with_message(false, (string) ($avatar['message'] ?? 'Khong the upload anh dai dien.'));
 }
 
 $front = upload_or_keep_image('cccd_mat_truoc', 'assets/nhacungcap/cccdmattruoc', $existingFront);
 if (!$front['success']) {
-    redirect_with_message(false, (string)($front['message'] ?? 'Khong the upload CCCD mat truoc.'));
+    redirect_with_message(false, (string) ($front['message'] ?? 'Khong the upload CCCD mat truoc.'));
 }
 
 $back = upload_or_keep_image('cccd_mat_sau', 'assets/nhacungcap/cccdmatsau', $existingBack);
 if (!$back['success']) {
-    redirect_with_message(false, (string)($back['message'] ?? 'Khong the upload CCCD mat sau.'));
+    redirect_with_message(false, (string) ($back['message'] ?? 'Khong the upload CCCD mat sau.'));
 }
 
-$avatarPath = trim((string)($avatar['path'] ?? ''));
-$frontPath = trim((string)($front['path'] ?? ''));
-$backPath = trim((string)($back['path'] ?? ''));
+$avatarPath = trim((string) ($avatar['path'] ?? ''));
+$frontPath = trim((string) ($front['path'] ?? ''));
+$backPath = trim((string) ($back['path'] ?? ''));
 
 if ($avatarPath === '' || $frontPath === '' || $backPath === '') {
     redirect_with_message(false, 'Can co day du anh dai dien, CCCD mat truoc va CCCD mat sau.');
@@ -208,26 +182,28 @@ $data = [
     'matkhau' => $password,
     'email' => $email,
     'diachi' => $address,
-    'ngaysinh' => $birthDate,
-    'kinh_nghiem' => $experience,
-    'anh_dai_dien' => $avatarPath,
-    'cccd_mat_truoc' => $frontPath,
-    'cccd_mat_sau' => $backPath,
+    'avatartenfile' => $avatarPath,
+    'cccdmattruoctenfile' => $frontPath,
+    'cccdmatsautenfile' => $backPath,
+    'id_dichvu' => $idDichVu,
     'updated_date' => date('Y-m-d H:i:s'),
 ];
 
 $updateResult = krud_call([
     'action' => 'update',
-    'table' => 'nhacungcap_nguoigia',
+    'table' => 'nguoidung',
     'id' => $employeeId,
     'data' => $data,
 ]);
 
 if (!$updateResult['success']) {
-    redirect_with_message(false, (string)$updateResult['message']);
+    redirect_with_message(false, (string) $updateResult['message']);
 }
 
-session_user_start();
+// Cập nhật lại session sau khi lưu thành công
+if (!isset($_SESSION)) {
+    session_start();
+}
 if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
     $_SESSION['user']['id'] = $employeeId;
     $_SESSION['user']['ten'] = $fullName;
@@ -235,13 +211,11 @@ if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
     $_SESSION['user']['sodienthoai'] = $phone;
     $_SESSION['user']['matkhau'] = $password;
     $_SESSION['user']['email'] = $email;
-    $_SESSION['user']['dia_chi'] = $address;
     $_SESSION['user']['diachi'] = $address;
-    $_SESSION['user']['ngaysinh'] = $birthDate;
-    $_SESSION['user']['kinh_nghiem'] = $experience;
-    $_SESSION['user']['anh_dai_dien'] = $avatarPath;
-    $_SESSION['user']['cccd_mat_truoc'] = $frontPath;
-    $_SESSION['user']['cccd_mat_sau'] = $backPath;
+    $_SESSION['user']['avatartenfile'] = $avatarPath;
+    $_SESSION['user']['cccdmattruoctenfile'] = $frontPath;
+    $_SESSION['user']['cccdmatsautenfile'] = $backPath;
+    $_SESSION['user']['id_dichvu'] = $idDichVu;
 }
 
 $_SESSION['user_id'] = $employeeId;

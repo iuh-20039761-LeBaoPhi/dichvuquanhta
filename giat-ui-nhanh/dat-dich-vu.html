@@ -470,10 +470,8 @@
           <li><a href="cam-nang.html" class="nav-link">Cẩm nang</a></li>
           <li>
             <a
-              id="navBookingTrigger"
               class="nav-link"
-              data-bs-toggle="modal"
-              data-bs-target="#bookingModal"
+              href="dat-dich-vu.html"
               >Đặt dịch vụ</a
             >
           </li>
@@ -502,7 +500,7 @@
                 role="menu"
                 aria-label="Tùy chọn tài khoản"
               >
-                <a href="khachhang/danh-sach-hoa-don.html" role="menuitem">
+                <a href="khachhang/danh-sach-don-hang.html" role="menuitem">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -520,7 +518,7 @@
                   </svg>
                   Đơn đặt
                 </a>
-                <a href="nhacungcap/danh-sach-hoa-don.html" role="menuitem">
+                <a href="nhacungcap/danh-sach-don-hang.html" role="menuitem">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -905,88 +903,107 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body">
-            <div class="table-responsive">
-              <table class="table table-striped align-middle mb-0">
-                <tbody>
-                  <tr>
-                    <th scope="row">Họ và tên</th>
-                    <td id="confirmName">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Số điện thoại</th>
-                    <td id="confirmPhone">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Địa chỉ</th>
-                    <td id="confirmAddress">-</td>
-                  </tr>
-                  <!-- <tr>
-                    <th scope="row">Mã đơn</th>
-                    <td id="confirmOrderCode">-</td>
-                  </tr> -->
-                  <tr>
-                    <th scope="row">Dịch vụ quan tâm</th>
-                    <td id="confirmService">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Hình thức nhận / giao</th>
-                    <td id="confirmSubService">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Công việc thực hiện</th>
-                    <td id="confirmWorkItems">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Hóa chất hỗ trợ</th>
-                    <td id="confirmChemicals">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Số lượng</th>
-                    <td id="confirmQuantity">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Giá dịch vụ</th>
-                    <td id="confirmPrice">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Thời gian đặt dịch vụ</th>
-                    <td id="confirmBookingTime">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Phí di chuyển</th>
-                    <td id="confirmShip">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Phụ phí giao, nhận hàng</th>
-                    <td id="confirmShippingSurcharge">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Tổng tiền</th>
-                    <td id="confirmTotal">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Ghi chú</th>
-                    <td id="confirmMessage">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Hình ảnh đính kèm</th>
-                    <td>
-                      <div id="confirmImages" class="confirm-media-list">
-                        <span class="confirm-media-empty">-</span>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Video đính kèm</th>
-                    <td>
-                      <div id="confirmVideos" class="confirm-media-list">
-                        <span class="confirm-media-empty">-</span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="modal-body custom-confirm-body">
+            <div class="confirm-grid">
+              <!-- Nhóm 1: Thông tin khách hàng -->
+              <div class="confirm-section-card">
+                <div class="section-badge-gradient">
+                  <i class="fas fa-user"></i>
+                  <span>Thông tin khách hàng</span>
+                </div>
+                <div class="section-content-list">
+                  <div class="info-row">
+                    <span class="info-label">Họ và tên</span>
+                    <span class="info-value" id="confirmName">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Số điện thoại</span>
+                    <span class="info-value text-primary fw-bold" id="confirmPhone">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Địa chỉ</span>
+                    <span class="info-value" id="confirmAddress">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nhóm 2: Chi tiết dịch vụ & Đơn hàng -->
+              <div class="confirm-section-card">
+                <div class="section-badge-gradient purple">
+                  <i class="fas fa-list-check"></i>
+                  <span>Chi tiết dịch vụ</span>
+                </div>
+                <div class="section-content-list">
+                  <div class="info-row">
+                    <span class="info-label">Dịch vụ chính</span>
+                    <span class="info-value fw-bold" id="confirmService">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Hình thức nhận/giao</span>
+                    <span class="info-value" id="confirmSubService">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Công việc cụ thể</span>
+                    <span class="info-value" id="confirmWorkItems">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Hóa chất hỗ trợ</span>
+                    <span class="info-value" id="confirmChemicals">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Trọng lượng</span>
+                    <span class="info-value" id="confirmQuantity">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Thời gian hẹn</span>
+                    <span class="info-value" id="confirmBookingTime">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Ghi chú</span>
+                    <span class="info-value italic" id="confirmMessage">-</span>
+                  </div>
+                  
+                  <div class="media-preview-wrap mt-3">
+                    <p class="small text-muted mb-2 fw-bold"><i class="fas fa-images"></i> Hình ảnh & Video</p>
+                    <div class="d-flex gap-4">
+                       <div class="media-column flex-1">
+                          <small class="d-block mb-1 text-uppercase text-xs tracking-wider opacity-60">Hình ảnh</small>
+                          <div id="confirmImages" class="confirm-media-list mini">-</div>
+                       </div>
+                       <div class="media-column flex-1">
+                          <small class="d-block mb-1 text-uppercase text-xs tracking-wider opacity-60">Video</small>
+                          <div id="confirmVideos" class="confirm-media-list mini">-</div>
+                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nhóm 3: Chi tiết thanh toán -->
+              <div class="confirm-section-card highlight-costs">
+                <div class="section-badge-gradient orange">
+                  <i class="fas fa-money-bill-wave"></i>
+                  <span>Chi tiết chi phí</span>
+                </div>
+                <div class="section-content-list">
+                  <div class="info-row cost">
+                    <span class="info-label">Giá dịch vụ</span>
+                    <span class="info-value" id="confirmPrice">0 VND</span>
+                  </div>
+                  <div class="info-row cost">
+                    <span class="info-label">Phí di chuyển</span>
+                    <span class="info-value" id="confirmShip">0 VND</span>
+                  </div>
+                  <div class="info-row cost border-bottom pb-2">
+                    <span class="info-label">Phụ phí phát sinh</span>
+                    <span class="info-value" id="confirmShippingSurcharge">0 VND</span>
+                  </div>
+                  <div class="total-summary-bar mt-3">
+                    <span class="total-label">TỔNG CỘNG</span>
+                    <span class="total-amount" id="confirmTotal">0 VND</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="modal-footer">

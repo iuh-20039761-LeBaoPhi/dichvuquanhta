@@ -1,4 +1,4 @@
-function loadHeader() {
+async function loadHeader() {
     // Inject CSS vào head ngay lập tức nếu trang chưa có (tránh FOUC)
     if (!document.querySelector('link[href*="bootstrap.min.css"]')) {
         [
@@ -12,7 +12,51 @@ function loadHeader() {
             link.href = href;
             document.head.appendChild(link);
         });
+        
+        // Nạp SweetAlert2 JS
+        const swalScript = document.createElement('script');
+        swalScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+        document.head.appendChild(swalScript);
     }
+
+    // Tự động nạp DVQT Core nếu chưa có
+    const ROOT_DETECTOR = () => {
+        // Nếu DVQTApp đã nạp và có ROOT_URL, dùng nó luôn
+        if (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) return window.DVQTApp.ROOT_URL;
+
+        const path = window.location.pathname;
+        const lowerPath = path.toLowerCase();
+        
+        // Theo dõi chuỗi /thue-xe/ để cắt root
+        const idx = lowerPath.indexOf('/thue-xe/');
+        if (idx !== -1) return path.substring(0, idx);
+        
+        // Nếu không tìm thấy thue-xe, lấy segment đầu tiên làm root (dùng cho XAMPP)
+        const parts = path.split('/');
+        return parts[1] && !parts[1].includes('.') ? '/' + parts[1] : '';
+    };
+    const BASE = ROOT_DETECTOR();
+    
+    const loadCore = (src) => new Promise(res => {
+        if (document.querySelector(`script[src*="${src}"]`)) return res();
+        const s = document.createElement('script');
+        s.src = BASE + src;
+        s.onload = res;
+        s.onerror = () => {
+            console.warn(`[loadHeader] Không thể nạp ${src}, sử dụng fallback...`);
+            res();
+        };
+        // Timeout 5 giây tránh treo ứng dụng
+        const timer = setTimeout(() => {
+            console.warn(`[loadHeader] Timeout nạp ${src}`);
+            res();
+        }, 5000);
+        s.addEventListener('load', () => clearTimeout(timer));
+        document.head.appendChild(s);
+    });
+
+    await loadCore('/public/asset/js/dvqt-krud.js');
+    await loadCore('/public/asset/js/dvqt-app.js');
 
     injectBaseSEO();
     fetch('views/partials/header.html')
@@ -57,6 +101,9 @@ function initAuthNav() {
 
     const checkSessionHandler = (data) => {
         if (loadingEl) loadingEl.style.display = 'none';
+        
+        // Lưu vào cache toàn cục để các script khác dùng luôn
+        window._dvqt_session_cache = data;
 
         if (data && data.logged_in) {
             if (userEl) userEl.style.display = '';
@@ -68,9 +115,9 @@ function initAuthNav() {
 
             // 2. Cấu hình Dashboard cục bộ của module Thuê xe
             const dashMap = {
-                customer: 'views/pages/customer/bang-dieu-khien.html',
-                provider: 'views/pages/provider/bang-dieu-khien.html',
-                admin:    'admin/index.php'
+                customer: 'views/pages/customer/trang-ca-nhan.html',
+                provider: 'views/pages/provider/trang-ca-nhan.html',
+                admin:    'admin/index.html'
             };
             
             // 3. Đường dẫn API và Đăng xuất về hệ thống chung
@@ -103,12 +150,29 @@ function initAuthNav() {
             if (logoutLink) {
                 logoutLink.addEventListener('click', async function(e) {
                     e.preventDefault();
-                    if (window.DVQTApp && window.DVQTApp.logout) {
-                        await window.DVQTApp.logout();
-                    } else {
-                        await fetch(logoutApi).catch(() => null);
+                    
+                    // Sử dụng SweetAlert2 để xác nhận đăng xuất giống Thợ Nhà
+                    const swalExist = typeof Swal !== 'undefined';
+                    const confirmLogout = swalExist ? await Swal.fire({
+                        title: '<span style="color:#ef4444">Đăng xuất?</span>',
+                        text: 'Bạn có chắc chắn muốn thoát khỏi phiên làm việc này không?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Đăng xuất ngay',
+                        cancelButtonText: 'Để sau',
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#94a3b8',
+                        borderRadius: '12px'
+                    }).then(r => r.isConfirmed) : confirm('Bạn có chắc muốn đăng xuất?');
+
+                    if (confirmLogout) {
+                        if (window.DVQTApp && window.DVQTApp.logout) {
+                            await window.DVQTApp.logout();
+                        } else {
+                            await fetch(logoutApi).catch(() => null);
+                        }
+                        window.location.href = loginUrl;
                     }
-                    window.location.href = loginUrl;
                 });
             }
         } else {
@@ -122,14 +186,15 @@ function initAuthNav() {
             if (guestEl)   guestEl.style.display   = '';
         });
     } else {
-        // Fallback kiểm tra session cục bộ (thường là PHP)
-        fetch('controllers/check-session.php')
-            .then(r => r.json())
-            .then(checkSessionHandler)
-            .catch(() => {
+        // Dự phòng nếu thư viện chưa load kịp
+        setTimeout(() => {
+            if (window.DVQTApp && window.DVQTApp.checkSession) {
+                window.DVQTApp.checkSession().then(checkSessionHandler);
+            } else {
                 if (loadingEl) loadingEl.style.display = 'none';
                 if (guestEl)   guestEl.style.display   = '';
-            });
+            }
+        }, 1000);
     }
 }
 

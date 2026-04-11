@@ -99,9 +99,15 @@
 </head>
 <body>
 
-<!-- Load shared header from layouts -->
-<script src="assets/js/static-data.js"></script>
-<script src="assets/js/load-template.js"></script>
+  <!-- Shared Core Libraries (Must load before any other scripts) -->
+  <script src="../public/asset/js/dvqt-krud.js"></script>
+  <script src="../public/asset/js/dvqt-app.js"></script>
+  <script src="assets/js/static-data.js"></script>
+  
+  <!-- Load shared header from layouts -->
+  <script src="assets/js/load-template.js"></script>
+</head>
+<body>
 <script>
 window.PAGE_SEO = {
   title: 'Dịch Vụ Quanh Ta - Thuê Xe - Trang Chủ',
@@ -109,7 +115,10 @@ window.PAGE_SEO = {
   keys:  'thuê xe toàn quốc, thuê xe tự lái nationwide, cho thuê xe uy tín, thuê xe giá rẻ, car rental nationwide',
   url:   'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/'
 };
-loadHeader();
+// Đảm bảo DOM đã sẵn sàng trước khi nạp template
+document.addEventListener('DOMContentLoaded', () => {
+    loadHeader();
+});
 </script>
 
 <!-- ===== HERO ===== -->
@@ -260,96 +269,87 @@ loadHeader();
 
 <!-- ===== SCRIPTS ===== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../public/asset/js/dvqt-krud.js?v=1.6"></script>
+    <script src="../public/asset/js/dvqt-app.js?v=1.6"></script>
+    <script src="assets/js/utils.js?v=1.6"></script>
+    <script src="assets/js/static-data.js?v=1.6"></script>
+    <script src="assets/js/api.js?v=1.6"></script>
 
 <!-- Load shared footer from layouts -->
-<script src="../public/asset/js/dvqt-krud.js"></script>
-<script src="../public/asset/js/dvqt-app.js"></script>
 <script>loadFooter();</script>
 <script>
-STATIC_DATA_PROMISE.then(STATIC_DATA => {
-const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
-const DEFAULT_VISIBLE_LIMIT = 6;
-const availableCars = (STATIC_DATA.cars || []).filter(c => c.status === 'available');
-const availableCountByType = availableCars.reduce((acc, car) => {
-  const typeId = Number(car.type_id);
-  acc[typeId] = (acc[typeId] || 0) + 1;
-  return acc;
-}, {});
-const availableTypes = (STATIC_DATA.car_types || []).filter(type => (availableCountByType[type.id] || 0) > 0);
-const showAllBtn = document.getElementById('showAllBtn');
-let currentTypes = [...availableTypes];
-let showingAll = false;
+(async function() {
+  const carListContainer = document.getElementById('carList');
+  const showAllBtn = document.getElementById('showAllBtn');
+  const DEFAULT_VISIBLE_LIMIT = 6;
+  const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
 
-function renderCarTypes(carTypes) {
-  if (!carTypes.length) {
-    renderNoResults();
-    return;
-  }
+  try {
+    // 1. Nạp dữ liệu thực từ database qua API
+    const res = await API.cars.getAll();
+    const allApprovedCars = res.data || [];
 
-    document.getElementById('carList').innerHTML = carTypes.map(type => {
-    const avail = availableCountByType[type.id] || 0;
-        return `
+    // 2. Gom nhóm theo tên xe (Vios, Mazda 3...) để hiển thị đại diện trên trang chủ
+    const groupedCars = allApprovedCars.reduce((acc, car) => {
+      const key = car.tenxe;
+      if (!acc[key]) {
+        acc[key] = { ...car, count: 0 };
+      }
+      acc[key].count++;
+      return acc;
+    }, {});
+
+    const displayList = Object.values(groupedCars);
+
+    function renderCars(list) {
+      if (!list.length) {
+        carListContainer.innerHTML = `
+          <div class="col-12 text-center py-5">
+            <i class="fas fa-car fa-3x text-muted mb-3"></i>
+            <h5>Hiện chưa có xe nào được phê duyệt hiển thị</h5>
+          </div>`;
+        return;
+      }
+
+      carListContainer.innerHTML = list.map(car => `
         <div class="col-lg-4 col-md-6">
             <div class="card car-card h-100">
                 <div class="position-relative">
-                    <img src="assets/images/cars/${type.main_image}"
+                    <img src="assets/images/cars/${car.anhdaidien}"
                          class="card-img-top car-card-img"
-                         alt="${type.name}"
+                         alt="${car.tenxe}"
                          onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
-          <span class="badge badge-status badge-available">Còn ${avail} xe</span>
+                    <span class="badge badge-status badge-available">Còn ${car.count} xe</span>
                 </div>
                 <div class="card-body">
-                    <h5 class="fw-bold mb-1">${type.name}</h5>
-                    <p class="text-muted small mb-2">${type.brand} · ${type.seats} chỗ · ${type.transmission} · ${type.fuel_type}</p>
+                    <h5 class="fw-bold mb-1">${car.tenxe}</h5>
+                    <p class="text-muted small mb-2">${car.loaixe} · ${car.socho} chỗ · ${car.nhienlieu}</p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="car-price">${fmt(type.price_per_day)}đ/ngày</span>
-            <a href="views/pages/public/chi-tiet-xe.html?type_id=${type.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>
+                        <span class="car-price">${fmt(car.giathue)}đ/ngày</span>
+                        <a href="views/pages/public/chi-tiet-xe.html?id=${car.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>
                     </div>
                 </div>
             </div>
-        </div>`;
-    }).join('');
-}
-
-function renderNoResults() {
-  document.getElementById('carList').innerHTML = `
-    <div class="col-12 text-center py-5">
-      <i class="fas fa-search fa-3x text-muted mb-3"></i>
-      <h5>Hiện không có xe phù hợp</h5>
-    </div>`;
-}
-
-function updateShowAllButton() {
-  if (!showAllBtn) return;
-
-  if (!currentTypes.length || currentTypes.length <= DEFAULT_VISIBLE_LIMIT) {
-    showAllBtn.style.display = 'none';
-    return;
-  }
-
-  showAllBtn.style.display = 'inline-block';
-  showAllBtn.innerHTML = showingAll
-    ? '<i class="fas fa-chevron-up me-2"></i>Thu gọn'
-    : '<i class="fas fa-search me-2"></i>Xem tất cả xe';
-}
-
-showAllBtn.addEventListener('click', () => {
-  if (!currentTypes.length || currentTypes.length <= DEFAULT_VISIBLE_LIMIT) return;
-
-    if (showingAll) {
-    renderCarTypes(currentTypes.slice(0, DEFAULT_VISIBLE_LIMIT));
-        showingAll = false;
-    } else {
-    renderCarTypes(currentTypes);
-        showingAll = true;
+        </div>`).join('');
     }
 
-  updateShowAllButton();
-});
+    // Khởi tạo hiển thị
+    renderCars(displayList.slice(0, DEFAULT_VISIBLE_LIMIT));
 
-renderCarTypes(availableTypes.slice(0, DEFAULT_VISIBLE_LIMIT));
-updateShowAllButton();
-}); // end STATIC_DATA_PROMISE.then
+    // Xử lý nút Xem tất cả
+    if (displayList.length <= DEFAULT_VISIBLE_LIMIT) {
+      showAllBtn.style.display = 'none';
+    } else {
+      showAllBtn.onclick = () => {
+        window.location.href = 'views/pages/public/dich-vu.html';
+      };
+    }
+
+  } catch (e) {
+    console.error("Home load error:", e);
+    carListContainer.innerHTML = '<p class="text-center text-danger">Không thể tải dữ liệu hiện tại.</p>';
+  }
+})();
 </script>
 
 </body>

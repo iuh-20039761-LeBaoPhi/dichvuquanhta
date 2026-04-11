@@ -7,11 +7,25 @@ body.order-standalone-page {
 }
 
 .standalone-header {
-  position: sticky;
-  top: 0;
+  max-width: 1240px;
+  margin: 16px auto 16px;
+  border-radius: 16px;
+  position: relative;
   z-index: 30;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  box-shadow: 0 10px 22px rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+.order-page-wrapper {
+  max-width: 1280px;
+  margin: 20px auto;
+  padding: 10px 10px 10px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px rgb(0 0 0 / 25%);
 }
 
 .standalone-header-inner {
@@ -56,7 +70,7 @@ body.order-standalone-page {
 .standalone-content {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 14px 12px 28px;
+  padding: 14px 12px 14px;
 }
 
 .standalone-topline {
@@ -144,6 +158,7 @@ body.order-standalone-page {
   display: inline-flex;
   flex-wrap: nowrap;
   gap: 8px;
+  justify-content: center;
 }
 
 #providerActionGroup .btn {
@@ -181,92 +196,236 @@ body.order-standalone-page {
   aspect-ratio: 1 / 1;
 }
 
-@media (max-width: 768px) {
-  .standalone-header-inner {
-    min-height: 72px;
-    padding: 8px 10px;
-    grid-template-columns: 46px 1fr 46px;
-  }
+/* ============================================================ 
+   RESPONSIVE DESIGN SYSTEM (ULTIMATE FIX)
+   ============================================================ */
 
-  .standalone-logo {
-    width: 46px;
-    height: 46px;
-    border-radius: 10px;
-  }
-
-  .standalone-title {
-    font-size: 1.02rem;
-  }
-
-  .standalone-subtitle {
-    font-size: 0.76rem;
-  }
-
+/* --- Laptop & Small Desktop --- */
+@media (max-width: 1200px) {
+  .standalone-header,
+  .order-page-wrapper,
   .standalone-content {
-    padding: 10px 8px 22px;
+    max-width: 96%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* --- Tablet --- */
+@media (max-width: 991px) {
+  .invoice-hero-kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+  .invoice-main-grid,
+  .identity-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+/* --- Mobile (The Big Fix) --- */
+@media (max-width: 767px) {
+  body.order-standalone-page {
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    background: #f4f7fa;
   }
 
+  .order-page-wrapper {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    border: none;
+  }
+
+  /* Header Mobile */
+  .standalone-header {
+    margin: 0;
+    border-radius: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .standalone-header-inner {
+    grid-template-columns: 40px 1fr 40px;
+    min-height: 60px;
+    padding: 5px 10px;
+  }
+  .standalone-logo {
+    width: 38px;
+    height: 38px;
+  }
+  .standalone-title {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  /* Content Container */
+  .standalone-content {
+    width: 100%;
+    max-width: 100%;
+    padding: 0; /* Content will have its own padding */
+  }
+
+  /* Topline Chip Fix */
   .standalone-topline {
+    padding: 10px;
     justify-content: center;
-    margin-bottom: 8px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
   }
-
   .standalone-chip {
+    font-size: 0.75rem;
+    padding: 5px 15px;
     width: 100%;
     justify-content: center;
-    flex-wrap: wrap;
+    border: none;
+    background: #f8f9fa;
+  }
+
+  /* Invoice Hero Mobile */
+  .invoice-hero {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    padding: 25px 15px;
+    width: 100%;
     text-align: center;
-    gap: 6px;
+  }
+
+  .invoice-code-line {
+    justify-content: center;
+    margin-bottom: 5px;
+  }
+  .invoice-code {
+    font-size: 1.4rem;
+  }
+  .invoice-service {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+
+  .invoice-service-meta {
+    grid-template-columns: 1fr;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  .invoice-service-meta-col-dates {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 0 0;
+    margin-top: 8px;
   }
 
   .invoice-hero-top {
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: normal;
     flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-
+    gap: 0px;
+}
+  /* Buttons & Progress Ring Mobile */
   .hero-progress {
     width: 100%;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .hero-progress .standalone-action {
-    flex: 0 1 auto;
-    justify-content: flex-start;
-  }
-
-  #providerActionGroup {
-    width: auto;
-  }
-
-  #providerActionGroup .btn,
-  .hero-progress .standalone-action .btn {
-    min-width: 132px;
-    max-width: 150px;
-    width: auto;
-    padding-left: 14px;
-    padding-right: 14px;
+    gap: 20px;
+    margin-top: 10px;
   }
 
   .hero-progress-ring {
-    width: 90px;
-    height: 90px;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto;
   }
 
-  .hero-progress-ring::before {
-    width: 68px;
-    height: 68px;
-  }
-
-  .hero-progress-content strong {
-    font-size: 1.22rem;
-  }
-
-  .hero-progress .standalone-alert {
+  /* Action Buttons Mobile */
+  .standalone-action {
     width: 100%;
-    order: 3;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .standalone-action .btn {
+    width: 100% !important;
+    min-width: 100%;
+    margin: 0;
+    height: 48px;
+    font-size: 1rem;
+  }
+
+  /* KPI Rows Mobile */
+  .invoice-hero-kpis {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 25px;
+  }
+  .hero-kpi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .hero-kpi-label {
+    font-size: 0.7rem;
+    opacity: 0.8;
+  }
+  .hero-kpi-value {
+    font-size: 1rem;
+    margin: 0;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+  }
+  .hero-kpi-sub {
+    display: none;
+  }
+
+  /* Inner Panels Mobile */
+  .invoice-panel-body, 
+  .identity-body {
+    padding: 15px;
+  }
+  
+  .identity-main {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .identity-name {
+    font-size: 1.25rem;
+    margin-top: 10px;
+  }
+  .identity-contacts {
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .invoice-panel, .identity-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin: 0 0 15px;
+  }
+}
+
+/* Interactive Enhancements */
+.invoice-panel,
+.identity-card,
+.invoice-hero {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+@media (min-width: 992px) {
+  .invoice-panel:hover,
+  .identity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
   }
 }

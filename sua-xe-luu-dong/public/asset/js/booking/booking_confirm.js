@@ -334,13 +334,9 @@
           form.reset();
           clearConfirmMedia();
 
-          if (typeof window.location.reload === "function" && !isEmbeddedMode) {
-             // Optional: reload or just show booking step
-          }
-
-          if (!isEmbeddedMode) {
-            showBookingStep();
-          }
+          setTimeout(function () {
+            window.location.href = "khachhang/danh-sach-don-hang.html";
+          }, 1200);
         })
         .catch((err) => {
           console.error("Lỗi gửi dữ liệu sửa xe:", err);
@@ -360,8 +356,90 @@
       showBookingStep();
     }
 
-    form.addEventListener("submit", function (e) {
+    async function isUserLoggedInForBooking() {
+      const params = new URLSearchParams(window.location.search || "");
+      const urlU = params.get("sodienthoai");
+      const urlP = params.get("password");
+
+      const u = urlU || utils.getCookie("dvqt_u");
+      const p = urlP || utils.getCookie("dvqt_p");
+
+      if (!u || !p) return false;
+
+      try {
+        if (typeof window.krudList !== "function") {
+          console.error("krud.js chưa được nạp.");
+          return false;
+        }
+
+        const result = await window.krudList({
+          table: "nguoidung",
+          where: [
+            { field: "sodienthoai", operator: "=", value: u },
+            { field: "matkhau", operator: "=", value: p },
+          ],
+          limit: 1,
+        });
+
+        const rows = (result && result.data) || (Array.isArray(result) ? result : []);
+        const user = rows.length ? rows[0] : null;
+
+        if (!user) return false;
+
+        // Nếu là nhà cung cấp (id_dichvu chứa '8') thì không cho đặt
+        const idDichvu = String(user.id_dichvu || "").trim();
+        const serviceIds = idDichvu.split(",").map((s) => s.trim());
+
+        if (serviceIds.indexOf("8") !== -1) {
+          if (typeof utils.showToast === "function") {
+            utils.showToast(
+              "Tài khoản nhà cung cấp không được phép đặt dịch vụ.",
+              "error",
+            );
+          }
+          return false;
+        }
+
+        // Nếu đăng nhập bằng URL, lưu vào cookie để duy trì phiên
+        if (urlU && urlP) {
+          document.cookie = `dvqt_u=${urlU}; path=/; max-age=604800`;
+          document.cookie = `dvqt_p=${urlP}; path=/; max-age=604800`;
+        }
+
+        return true;
+      } catch (err) {
+        console.error("Lỗi kiểm tra đăng nhập:", err);
+        return false;
+      }
+    }
+
+    function hasStandaloneAuthorizedAccess() {
+      if (!document.body.classList.contains("booking-standalone")) {
+        return false;
+      }
+
+      const accessState = window.BookingAccessState;
+      return Boolean(accessState && accessState.isAuthenticated === true);
+    }
+
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
+
+      if (typeof utils.fillBookingTimeNow === "function") {
+        utils.fillBookingTimeNow(false);
+      }
+
+      const isLoggedIn = await isUserLoggedInForBooking();
+      if (!isLoggedIn && !hasStandaloneAuthorizedAccess()) {
+        if (typeof utils.showToast === "function") {
+          utils.showToast("Vui lòng đăng nhập để tiếp tục đặt dịch vụ.", "error");
+        }
+        setTimeout(() => {
+          window.location.href = "../public/dang-nhap.html?service=suaxe";
+        }, 1200);
+        return;
+      }
+
       renderSummary();
       renderConfirmMedia();
 

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng xuất...</title>
+  <script src="../../../dichvuquanhta/public/asset/js/dvqt-app.js"></script>
+  <script>
+    // Gọi hàm logout phía client
+    if (window.DVQTApp && typeof DVQTApp.logout === 'function') {
+      DVQTApp.logout();
+    }
+    // Sau đó chuyển hướng về trang chủ hoặc trang đăng nhập
+    window.location.href = 'logout.php'; // hoặc '/cham-soc-me-va-be/index.html'
+  </script>
+</head>
+<body>
+  <p>Đang đăng xuất...</p>
+</body>
+</html>

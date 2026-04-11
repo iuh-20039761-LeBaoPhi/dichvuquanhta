@@ -494,7 +494,7 @@
 
         if (shouldRedirectToOrderListAfterSubmit()) {
           setTimeout(function () {
-            window.location.href = "khachhang/danh-sach-hoa-don.html";
+            window.location.href = "khachhang/danh-sach-don-hang.html";
           }, 900);
         }
 

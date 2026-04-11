@@ -162,12 +162,12 @@
       ),
       orderLinks: Array.from(
         document.querySelectorAll(
-          '.nav-menu .auth-user-dropdown a[href*="khachhang/danh-sach-hoa-don.html"]',
+          '.nav-menu .auth-user-dropdown a[href*="khachhang/danh-sach-don-hang.html"]',
         ),
       ),
       dashboardLinks: Array.from(
         document.querySelectorAll(
-          '.nav-menu .auth-user-dropdown a[href*="nhacungcap/danh-sach-hoa-don.html"]',
+          '.nav-menu .auth-user-dropdown a[href*="nhacungcap/danh-sach-don-hang.html"]',
         ),
       ),
     };

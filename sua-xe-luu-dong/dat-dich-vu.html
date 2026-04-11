@@ -30,6 +30,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
     />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <script src="/ga.js"></script>
      <script src="https://api.dvqt.vn/js/krud.js"></script>
     <style>
@@ -346,6 +347,196 @@
       .booking-section {
         padding: 0;
       }
+      /* Premium Confirm Groups Styling */
+      body {
+        font-family: 'Be Vietnam Pro', sans-serif !important;
+      }
+
+      .confirm-group {
+        background: #ffffff;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+      }
+
+      .confirm-group:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08);
+      }
+
+      .confirm-group-title {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 16px 20px;
+        margin-bottom: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .confirm-group-title i {
+        color: #0ea5e9;
+        background: rgba(14, 165, 233, 0.2);
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        margin-right: 14px;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2);
+      }
+
+      .confirm-group-content {
+        padding: 10px 20px;
+      }
+
+      .confirm-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+        border-bottom: 1px solid #f1f5f9;
+        gap: 24px;
+      }
+
+      .confirm-row:last-child {
+        border-bottom: none;
+      }
+
+      .confirm-label {
+        color: #475569; /* Darker gray for labels */
+        font-weight: 500;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      .confirm-value {
+        color: #0f172a; /* Solid deep dark for values */
+        font-weight: 700;
+        font-size: 1rem;
+        text-align: right;
+        line-height: 1.5;
+      }
+
+      .italic-text {
+        font-style: italic;
+        font-weight: 400;
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+
+      /* Total Row with High Contrast */
+      .confirm-group-content.highlight {
+        background: linear-gradient(to bottom, #ffffff, #f8fafc);
+      }
+
+      .total-row {
+        background: linear-gradient(90deg, rgba(2, 132, 199, 0.05) 0%, rgba(2, 132, 199, 0.1) 100%);
+        margin: 5px -20px -10px -20px;
+        padding: 22px 20px;
+        border-top: 1.5px solid rgba(2, 132, 199, 0.15);
+      }
+
+      .total-row .confirm-label {
+        color: #0c4a6e;
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+
+      .total-row .confirm-value {
+        color: #0369a1;
+        font-size: 1.4rem;
+        font-weight: 900;
+        text-shadow: 0 2px 4px rgba(3, 105, 161, 0.1);
+      }
+
+      #bookingConfirmModal .modal-footer {
+        padding: 1.25rem 20px;
+      }
+
+      #bookingConfirmModal #confirmBackBtn {
+        background: #64748b;
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        transition: all 0.2s;
+      }
+
+      #bookingConfirmModal #confirmSubmitBtn {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 0.75rem 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        transition: all 0.2s;
+      }
+
+      #bookingConfirmModal #confirmSubmitBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.35);
+      }
+
+      @media (min-width: 768px) and (max-width: 1024px) {
+        #bookingModal .modal-dialog,
+        #bookingConfirmModal .modal-dialog {
+          max-width: 90%;
+          margin: 2rem auto;
+        }
+
+        #bookingModal .modal-content,
+        #bookingConfirmModal .modal-content {
+          border-radius: 20px;
+        }
+
+        .confirm-group-content {
+          padding: 15px 25px;
+        }
+
+        .confirm-row {
+          padding: 18px 0;
+          gap: 40px;
+        }
+
+        .confirm-label {
+          font-size: 0.95rem;
+          min-width: 160px;
+        }
+
+        .confirm-value {
+          font-size: 1.05rem;
+          text-align: right;
+        }
+
+        .total-row {
+          margin: 10px -25px -15px -25px;
+          padding: 25px;
+        }
+
+        .total-row .confirm-value {
+          font-size: 1.5rem;
+        }
+        
+        #bookingModal .col-md-4 {
+          width: 33.333333%;
+        }
+
+        #bookingModal .col-md-6 {
+          width: 50%;
+        }
+      }
+
       @media (max-width: 767px) {
         #bookingModal .modal-dialog,
         #bookingConfirmModal .modal-dialog {
@@ -481,7 +672,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav ms-auto nav-menu">
             <li class="nav-item">
               <a class="nav-link" href="index.html">Trang chủ</a>
             </li>
@@ -495,7 +686,7 @@
               <a class="nav-link" href="cam-nang.html">Cẩm nang</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="modal" data-bs-target="#bookingModal">Đặt dịch vụ</a>
+              <a class="nav-link" href="dat-dich-vu.html">Đặt dịch vụ</a>
             </li>
             <li class="nav-item">
               <a class="nav-link login-btn" href="../public/dang-nhap.html?service=suaxe">Đăng nhập</a>
@@ -522,7 +713,7 @@
                 role="menu"
                 aria-label="Tùy chọn tài khoản"
               >
-                <a href="khachhang/danh-sach-hoa-don.html" role="menuitem">
+                <a href="khachhang/danh-sach-don-hang.html" role="menuitem">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -540,7 +731,7 @@
                   </svg>
                   Đơn đặt
                 </a>
-                <a href="nhacungcap/danh-sach-hoa-don.html" role="menuitem">
+                <a href="nhacungcap/danh-sach-don-hang.html" role="menuitem">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -967,83 +1158,84 @@
                 ></button>
           </div>
           <div class="modal-body">
-            <div class="table-responsive">
-              <table class="table table-striped align-middle mb-0">
-                <tbody>
-                  <tr>
-                    <th scope="row">Họ và tên</th>
-                    <td id="confirmName">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Số điện thoại</th>
-                    <td id="confirmPhone">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Mã đơn</th>
-                    <td id="confirmOrderCode">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Loại dịch vụ</th>
-                    <td id="confirmService">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Loại xe</th>
-                    <td id="confirmVehicleType">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Hãng xe</th>
-                    <td id="confirmBrand">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Mẫu xe</th>
-                    <td id="confirmItem">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Thời gian mong muốn</th>
-                    <td id="confirmDatetime">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Địa chỉ</th>
-                    <td id="confirmAddress">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Chi phí</th>
-                    <td id="confirmPrice">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Chi phí khảo sát</th>
-                    <td id="confirmSurvey">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Phí di chuyển</th>
-                    <td id="confirmTransport">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Tổng chi phí ước tính</th>
-                    <td id="confirmTotal">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Mô tả vấn đề</th>
-                    <td id="confirmNote">-</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Hình ảnh đính kèm</th>
-                    <td>
-                      <div id="confirmImages" class="confirm-media-list">
-                        <span class="confirm-media-empty">-</span>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Video đính kèm</th>
-                    <td>
-                      <div id="confirmVideos" class="confirm-media-list">
-                        <span class="confirm-media-empty">-</span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <!-- Group 1: Customer Info -->
+            <div class="confirm-group mb-4">
+              <h6 class="confirm-group-title"><i class="fas fa-user-circle me-2"></i>Thông tin khách hàng</h6>
+              <div class="confirm-group-content">
+                <div class="confirm-row">
+                  <span class="confirm-label">Họ và tên</span>
+                  <span class="confirm-value" id="confirmName">-</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-label">Số điện thoại</span>
+                  <span class="confirm-value" id="confirmPhone">-</span>
+                </div>
+                <!-- <div class="confirm-row">
+                  <span class="confirm-label">Mã đơn</span>
+                  <span class="confirm-value fw-bold text-primary" id="confirmOrderCode">-</span>
+                </div> -->
+                <div class="confirm-row">
+                  <span class="confirm-label">Địa chỉ</span>
+                  <span class="confirm-value" id="confirmAddress">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 2: Service Info -->
+            <div class="confirm-group mb-4">
+              <h6 class="confirm-group-title"><i class="fas fa-tools me-2"></i>Thông tin dịch vụ</h6>
+              <div class="confirm-group-content">
+                <div class="confirm-row">
+                  <span class="confirm-label">Loại dịch vụ</span>
+                  <span class="confirm-value" id="confirmService">-</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-label">Thông tin xe</span>
+                  <span class="confirm-value" id="confirmVehicleInfo">
+                    <span id="confirmVehicleType">-</span> | 
+                    <span id="confirmBrand">-</span> | 
+                    <span id="confirmItem">-</span>
+                  </span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-label">Thời gian đặt</span>
+                  <span class="confirm-value" id="confirmDatetime">-</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-label">Mô tả vấn đề</span>
+                  <span class="confirm-value italic-text" id="confirmNote">-</span>
+                </div>
+                <div class="confirm-row flex-column align-items-start">
+                  <span class="confirm-label mb-2">Hình ảnh & Video</span>
+                  <div class="d-flex gap-3 flex-wrap">
+                    <div id="confirmImages" class="confirm-media-list"></div>
+                    <div id="confirmVideos" class="confirm-media-list"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 3: Costs Info -->
+            <div class="confirm-group">
+              <h6 class="confirm-group-title"><i class="fas fa-receipt me-2"></i>Chi phí dịch vụ</h6>
+              <div class="confirm-group-content highlight">
+                <div class="confirm-row">
+                  <span class="confirm-label">Chi phí dịch vụ</span>
+                  <span class="confirm-value" id="confirmPrice">-</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-label">Chi phí khảo sát</span>
+                  <span class="confirm-value" id="confirmSurvey">-</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-label">Phí di chuyển</span>
+                  <span class="confirm-value" id="confirmTransport">-</span>
+                </div>
+                <div class="confirm-row total-row">
+                  <span class="confirm-label">Tổng chi phí dự kiến</span>
+                  <span class="confirm-value fw-bold" id="confirmTotal">-</span>
+                </div>
+              </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -1216,10 +1408,11 @@
     <script src="public/asset/js/booking/booking_confirm.js"></script>
     <script src="public/asset/js/booking/booking_core.js"></script>
     <script src="public/asset/js/booking/booking_bootstrap.js"></script>
-    <script src="public/asset/js/auth-session.js"></script>
     <script
       type="text/javascript"
       src="../public/asset/js/driveUtil.js"
     ></script>
+    <script src="public/asset/js/auth-session.js"></script>
+    <script src="public/asset/js/input-fill.js"></script>
   </body>
 </html>

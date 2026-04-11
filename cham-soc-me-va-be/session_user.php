@@ -1,153 +1,67 @@
 <?php
-declare(strict_types=1);
+session_start();
 
-const SESSION_USER_IDLE_TIMEOUT = 1800;
+// 1. Lấy cookie
+$phone = $_COOKIE['dvqt_u'] ?? '';
+$password = $_COOKIE['dvqt_p'] ?? '';
 
-function session_user_start(): void
-{
-	if (session_status() !== PHP_SESSION_ACTIVE) {
-		session_start();
-	}
+// 2. Nếu thiếu thông tin, trả về lỗi
+if (!$phone || !$password) {
+    echo json_encode(['success' => false, 'message' => 'Chưa đăng nhập']);
+    exit;
 }
 
-function session_user_clear(): void
-{
-	$_SESSION = [];
+// 3. Gọi API lấy danh sách người dùng (POST)
+$url = 'https://api.dvqt.vn/list/';
+$payload = json_encode(['table' => 'nguoidung'], JSON_UNESCAPED_UNICODE);
 
-	if (ini_get('session.use_cookies')) {
-		$params = session_get_cookie_params();
-		setcookie(
-			session_name(),
-			'',
-			time() - 42000,
-			$params['path'],
-			$params['domain'],
-			(bool)$params['secure'],
-			(bool)$params['httponly']
-		);
-	}
+$opts = [
+    'http' => [
+        'method'  => 'POST',
+        'header'  => "Content-Type: application/json\r\n",
+        'content' => $payload,
+        'timeout' => 20,
+    ]
+];
+$context = stream_context_create($opts);
+$raw = @file_get_contents($url, false, $context);
 
-	session_destroy();
+if (!$raw) {
+    echo json_encode(['success' => false, 'message' => 'Không kết nối được API']);
+    exit;
 }
 
-/**
- * Doc thong tin user hien tai tu session dung chung.
- */
-function session_user_current(): array
-{
-	session_user_start();
+$json = json_decode($raw, true);
+$users = $json['data'] ?? $json['rows'] ?? $json['list'] ?? [];
 
-	if (isset($_SESSION['last_activity'])) {
-		$lastActivity = (int)$_SESSION['last_activity'];
-		if ($lastActivity > 0 && (time() - $lastActivity) > SESSION_USER_IDLE_TIMEOUT) {
-			session_user_clear();
-			return [
-				'success' => false,
-				'message' => 'Phiên đăng nhập đã hết hạn do không hoạt động',
-				'user' => null,
-			];
-		}
-	}
-
-	$isLoggedIn = !empty($_SESSION['logged_in']);
-	$hasUser = isset($_SESSION['user']) && is_array($_SESSION['user']);
-
-	if (!$isLoggedIn || !$hasUser) {
-		return [
-			'success' => false,
-			'message' => 'Unauthorized',
-			'user' => null,
-		];
-	}
-
-	$_SESSION['last_activity'] = time();
-
-	$user = $_SESSION['user'];
-	return [
-		'success' => true,
-		'message' => 'OK',
-		'user' => [
-			'id' => $user['id'] ?? ($_SESSION['user_id'] ?? null),
-			'ten' => (string)($user['ten'] ?? ($_SESSION['user_name'] ?? '')),
-			'sodienthoai' => (string)($user['sodienthoai'] ?? ($_SESSION['user_phone'] ?? '')),
-			'email' => (string)($user['email'] ?? ($_SESSION['user_email'] ?? '')),
-			'vai_tro' => (string)($user['vai_tro'] ?? ($_SESSION['user_role'] ?? '')),
-			'trangthai' => (string)($user['trangthai'] ?? ($_SESSION['user_status'] ?? '')),
-			'anh_dai_dien' => (string)($user['anh_dai_dien'] ?? ''),
-			'diachi' => (string)($user['diachi'] ?? ($user['dia_chi'] ?? '')),
-			'dia_chi' => (string)($user['dia_chi'] ?? ''),
-			'loai_tai_khoan' => (string)($user['loai_tai_khoan'] ?? ''),
-			'bang_nguon' => (string)($user['bang_nguon'] ?? ''),
-		],
-	];
+// 4. Tìm user khớp số điện thoại và mật khẩu
+$found = null;
+foreach ($users as $user) {
+    $dbPhone = preg_replace('/\\D/', '', $user['sodienthoai'] ?? $user['phone'] ?? '');
+    $inputPhone = preg_replace('/\\D/', '', $phone);
+    $dbPass = $user['matkhau'] ?? $user['password'] ?? '';
+    if ($dbPhone === $inputPhone && $dbPass === $password) {
+        $found = $user;
+        break;
+    }
 }
 
-/**
- * Bat buoc dang nhap voi vai tro nhan vien, sai se redirect ve trang login.
- */
-function session_user_require_employee(string $loginPath = 'login.html', string $returnPath = ''): array
-{
-	$result = session_user_current();
-
-	if (!$result['success']) {
-		$target = $loginPath;
-		if ($returnPath !== '') {
-			$target .= (strpos($target, '?') === false ? '?' : '&') . 'redirect=' . rawurlencode($returnPath);
-		}
-		header('Location: ' . $target);
-		exit;
-	}
-
-	$role = strtolower(trim((string)($result['user']['vai_tro'] ?? '')));
-	$isEmployee = in_array($role, ['nhan_vien', 'nhanvien', 'employee'], true);
-
-	if (!$isEmployee) {
-		$target = $loginPath;
-		if ($returnPath !== '') {
-			$target .= (strpos($target, '?') === false ? '?' : '&') . 'redirect=' . rawurlencode($returnPath);
-		}
-		header('Location: ' . $target);
-		exit;
-	}
-
-	return $result['user'];
+if (!$found) {
+    echo json_encode(['success' => false, 'message' => 'Sai tài khoản hoặc mật khẩu']);
+    exit;
 }
 
-/**
- * Bat buoc dang nhap voi vai tro khach hang, sai se redirect ve trang login.
- */
-function session_user_require_customer(string $loginPath = 'login.html', string $returnPath = ''): array
-{
-	$result = session_user_current();
-
-	if (!$result['success']) {
-		$target = $loginPath;
-		if ($returnPath !== '') {
-			$target .= (strpos($target, '?') === false ? '?' : '&') . 'redirect=' . rawurlencode($returnPath);
-		}
-		header('Location: ' . $target);
-		exit;
-	}
-
-	$role = strtolower(trim((string)($result['user']['vai_tro'] ?? '')));
-	$isCustomer = in_array($role, ['khach_hang', 'khachhang', 'customer'], true);
-
-	if (!$isCustomer) {
-		$target = $loginPath;
-		if ($returnPath !== '') {
-			$target .= (strpos($target, '?') === false ? '?' : '&') . 'redirect=' . rawurlencode($returnPath);
-		}
-		header('Location: ' . $target);
-		exit;
-	}
-
-	return $result['user'];
-}
-
-if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
-	header('Content-Type: application/json; charset=utf-8');
-	$result = session_user_current();
-	http_response_code($result['success'] ? 200 : 401);
-	echo json_encode($result, JSON_UNESCAPED_UNICODE);
-	exit;
-}
+// 5. Lưu vào session các trường cần thiết
+$_SESSION['user'] = [
+    'id'             => $found['id'] ?? '',
+    'hovaten'        => $found['hovaten'] ?? '',
+    'sodienthoai'    => $found['sodienthoai'] ?? '',
+    'email'          => $found['email'] ?? '',
+    'diachi'         => $found['diachi'] ?? '',
+    'matkhau'        => $found['matkhau'] ?? '',
+    'avatartenfile'  => $found['avatartenfile'] ?? '',
+    'id_dichvu'      => $found['id_dichvu'] ?? '',
+    'trangthai'      => $found['trangthai'] ?? 'active'
+];
+$_SESSION['logged_in'] = true;
+$_SESSION['last_activity'] = time();

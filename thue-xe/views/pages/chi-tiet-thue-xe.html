@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết hóa đơn thuê xe | Dịch vụ Quanh Ta</title>
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-emerald: #10b981;
+            --primary-blue: #0ea5e9;
+            --indigo-600: #4f46e5;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-500: #64748b;
+            --slate-800: #1e293b;
+            --soft-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
+            --premium-shadow: 0 20px 50px -12px rgba(0,0,0,0.12);
+        }
+
+        /* Responsive và Reset cho nhúng (Embedded) */
+        #orderDetailApp {
+            font-family: 'Public Sans', sans-serif;
+            background-color: #f4f7f6;
+            color: var(--slate-800);
+            min-height: 100%;
+            padding-bottom: 30px;
+        }
+
+        /* Top Nav Bar */
+        .top-nav { padding: 20px 0; display: flex; justify-content: space-between; align-items: center; }
+        .back-link {
+            text-decoration: none; color: var(--slate-500); font-weight: 600; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 8px; background: #fff; padding: 8px 16px; 
+            border-radius: 12px; box-shadow: var(--soft-shadow);
+        }
+        .access-info {
+            background: #fff; padding: 8px 20px; border-radius: 100px; font-size: 0.8rem;
+            font-weight: 600; box-shadow: var(--soft-shadow); color: var(--slate-500);
+        }
+        .access-role { color: var(--primary-emerald); font-weight: 800; }
+
+        /* Hero Panel */
+        .hero-panel { background: #fff; border-radius: 30px; padding: 35px; box-shadow: var(--soft-shadow); margin-bottom: 25px; position: relative; }
+        .hero-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .order-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
+        .status-badge { font-size: 0.7rem; padding: 4px 12px; border-radius: 100px; font-weight: 800; text-transform: uppercase; vertical-align: middle; margin-left: 10px; color:#fff; }
+        .service-summary { color: var(--primary-emerald); font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; }
+        
+        .meta-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; 
+            margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--slate-200); 
+        }
+        .meta-item .label { font-size: 0.7rem; color: var(--slate-500); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+        .meta-item .value { font-size: 0.85rem; font-weight: 700; }
+
+        /* Action & Progress Circle */
+        .action-float { display: flex; align-items: center; gap: 15px; }
+        .btn-action-main {
+            background: var(--primary-emerald); color: #fff; border-radius: 12px; padding: 12px 25px;
+            font-weight: 800; border: none; display: flex; align-items: center; gap: 10px;
+            text-transform: uppercase; font-size: 0.9rem; box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
+        }
+
+        /* KPI Cards */
+        .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .kpi-card { background: #fff; border-radius: 24px; padding: 25px; position: relative; box-shadow: var(--soft-shadow); overflow: hidden; }
+        .kpi-card i.ghost-icon { position: absolute; right: 20px; top: 20px; font-size: 1.8rem; color: var(--slate-200); opacity: 0.6; }
+        .kpi-card .label { font-size: 0.65rem; font-weight: 800; color: var(--slate-500); text-transform: uppercase; margin-bottom: 15px; display: block; }
+        .kpi-card .value { font-size: 1.4rem; font-weight: 800; display: block; }
+        .kpi-card .sub { font-size: 0.8rem; color: var(--slate-500); font-weight: 600; margin-top: 8px; display: block; }
+
+        /* Content Panels */
+        .content-panel { background: #fff; border-radius: 24px; padding: 30px; box-shadow: var(--soft-shadow); height: 100%; }
+        .panel-title { font-weight: 800; font-size: 1.1rem; text-transform: uppercase; margin: 0; letter-spacing: 0.5px; }
+        .panel-badge { background: var(--slate-100); padding: 4px 12px; border-radius: 100px; font-size: 0.65rem; font-weight: 700; color: var(--slate-500); }
+        .panel-title-wrap { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+        /* Entity Styles */
+        .entity-avatar { width: 60px; height: 60px; border-radius: 15px; background: var(--primary-emerald); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; margin-bottom: 20px; }
+        .entity-name { font-size: 1.2rem; font-weight: 800; margin-bottom: 10px; }
+        .entity-detail { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; margin-bottom: 5px; font-weight: 600; }
+
+        /* Tech Detail Row */
+        .tech-item { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 12px; padding: 12px; font-size: 0.8rem; }
+        .tech-label { color: var(--slate-500); display: block; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
+        .tech-value { font-weight: 700; color: var(--slate-900); font-size: 0.9rem; }
+
+        /* Progress & Timeline */
+        .progress-bar-wrap { height: 10px; background: var(--slate-100); border-radius: 100px; margin: 20px 0; overflow: hidden; }
+        .progress-bar-val { height: 100%; background: var(--slate-200); width: 0%; transition: 1s ease; }
+        .tl-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; padding: 8px 0; }
+        .tl-lab { color: var(--slate-500); font-weight: 500; }
+        .tl-val { font-weight: 800; }
+
+        /* Review Section */
+        .review-flex { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .review-box { background: var(--slate-50); border-radius: 20px; padding: 25px; }
+        .rev-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .rev-title { font-size: 0.85rem; font-weight: 800; }
+        .rev-status { font-size: 0.65rem; font-weight: 800; color: #ef4444; }
+
+        /* CIRCULAR PROGRESS */
+        .circular-progress-wrap {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-emerald) var(--progress-angle, 0deg), var(--slate-100) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .circular-progress-wrap::before {
+            content: "";
+            position: absolute;
+            width: 82%;
+            height: 82%;
+            background: white;
+            border-radius: 50%;
+        }
+        .circular-progress-val {
+            position: relative;
+            z-index: 2;
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--slate-800);
+        }
+
+        /* HEADER ACTION CLUSTER */
+        .header-actions-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-cancel-soft {
+            border: 1.5px solid #fda4af;
+            color: #e11d48;
+            background: #fff1f2;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+        .btn-cancel-soft:hover { background: #ffe4e6; transform: translateY(-2px); }
+
+        /* Review Button Premium */
+        .btn-review-premium {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 24px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+        }
+        .btn-review-premium:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        }
+        .btn-review-premium i { font-size: 1rem; }
+
+        [hidden] { display: none !important; }
+        @media print { .top-nav, .btn-action-main { display: none !important; } }
+    </style>
+</head>
+<body>
+
+<div id="orderDetailApp">
+    <div class="container" style="max-width: 1000px;">
+        <!-- NAVIGATION -->
+        <nav class="top-nav" id="appNav">
+            <a href="javascript:history.back()" class="back-link">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <div class="access-info">
+                Quyền: <span class="access-role" id="accessRole">---</span> | Đơn: <span id="accessOrderId">#-------</span>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <div class="hero-panel">
+            <div class="hero-header">
+                <div>
+                    <h1 class="order-title">Đơn <span id="fullOrderId">#-------</span> <span class="status-badge" id="orderStatusBadge">...</span></h1>
+                    <div class="service-summary">
+                        <i class="fas fa-car-side"></i>
+                        <span id="carSummary">---</span>
+                    </div>
+                </div>
+                <!-- VÒNG TRÒN TIẾN ĐỘ & NÚT HÀNH ĐỘNG -->
+                <div class="header-actions-group">
+                    <div class="circular-progress-wrap" id="circularProgressBox">
+                        <span class="circular-progress-val" id="progressPctText">0%</span>
+                    </div>
+                    <div id="mainActionArea" class="d-flex gap-2">
+                        <button class="btn-action-main" id="btnMainAction" style="display:none;"></button>
+                        <button class="btn-cancel-soft" id="btnCancelOrder" style="display:none;">HỦY ĐƠN</button>
+                    </div>
+                </div>
+            </div>
+            <div class="meta-grid">
+                <div class="meta-item"><div class="label">Giá dịch vụ</div><div class="value" id="priceService">0 đ</div></div>
+                <div class="meta-item"><div class="label">Ngày đặt</div><div class="value" id="orderDate">--/--/----</div></div>
+                <div class="meta-item"><div class="label">Thời gian thuê</div><div class="value" id="rentalTime">--:-- → --:--</div></div>
+                <div class="meta-item"><div class="label">Thanh toán</div><div class="value" id="paymentStatus">Chưa thanh toán</div></div>
+            </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="kpi-row">
+            <div class="kpi-card"><i class="fas fa-wallet ghost-icon"></i><span class="label">Tổng tiền</span><span class="value" id="totalAmount">0 đ</span><span class="sub">Thanh toán trực tiếp</span></div>
+            <div class="kpi-card"><i class="fas fa-car ghost-icon"></i><span class="label">Hình thức</span><span class="value">Thuê xe tự lái</span><span class="sub">Giao nhận tận nơi</span></div>
+            <div class="kpi-card"><i class="fas fa-location-dot ghost-icon"></i><span class="label">Địa chỉ</span><span class="value text-truncate" id="pickupAddr">---</span><span class="sub">Khu vực bàn giao</span></div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-7">
+                <div class="content-panel">
+                    <div class="panel-title-wrap"><h5 class="panel-title">Thông tin chi tiết</h5></div>
+                    <div class="fw-bold mb-4 p-3 bg-light rounded-3 border-start border-4 border-emerald" id="carNameFull">---</div>
+                    
+                    <!-- THÔNG SỐ XE -->
+                    <div class="mb-4">
+                        <div class="label text-muted fw-800 small uppercase mb-2">Thông số xe chi tiết</div>
+                        <div class="row g-2">
+                            <div class="col-6"><div class="tech-item"><span class="tech-label">Màu sắc</span><span class="tech-value" id="carColor">---</span></div></div>
+                            <div class="col-6"><div class="tech-item"><span class="tech-label">Biển số</span><span class="tech-value" id="carPlate">---</span></div></div>
+                            <div class="col-6"><div class="tech-item"><span class="tech-label">Số khung</span><span class="tech-value" id="carChassis">---</span></div></div>
+                            <div class="col-6"><div class="tech-item"><span class="tech-label">Số máy</span><span class="tech-value" id="carEngine">---</span></div></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="label text-muted fw-800 small uppercase mb-1">Ghi chú từ khách</div>
+                        <div class="small fw-500" id="orderNote">Không có ghi chú.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="content-panel">
+                    <div class="panel-title-wrap"><h5 class="panel-title">Tiến độ</h5><span class="panel-badge">Live</span></div>
+                    <div class="d-flex justify-content-between small fw-800 mb-1"><span>Thực hiện</span><span id="progressPctLabel">0%</span></div>
+                    <div class="progress-bar-wrap"><div class="progress-bar-val" id="progressBarVal"></div></div>
+                    <div class="mb-4 small fw-600 text-center text-primary" id="statusTextHero">Đang xử lý</div>
+                    <div class="timeline-box border-top pt-3">
+                        <div class="tl-item"><span class="tl-lab">Xác nhận đơn</span><span class="tl-val" id="timeAccepted">N/A</span></div>
+                        <div class="tl-item"><span class="tl-lab">Bắt đầu thuê</span><span class="tl-val" id="timeStarted">N/A</span></div>
+                        <div class="tl-item"><span class="tl-lab">Hoàn thành</span><span class="tl-val" id="timeFinished">N/A</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IDENTITIES -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="content-panel">
+                    <h5 class="panel-title mb-4">Khách hàng</h5>
+                    <div class="entity-avatar" id="custAvatar">KH</div>
+                    <div class="entity-name" id="custName">---</div>
+                    <div class="entity-detail"><i class="fas fa-phone-alt opacity-50"></i> <span id="custPhone">---</span></div>
+                    <div class="entity-detail"><i class="fas fa-envelope opacity-50"></i> <span id="custEmail">---</span></div>
+                    <div class="entity-detail"><i class="fas fa-map-marker-alt opacity-50"></i> <span id="custAddr">---</span></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="content-panel">
+                    <h5 class="panel-title mb-4">Nhà cung cấp</h5>
+                    <div class="entity-avatar" style="background:var(--indigo-600)" id="nccAvatar">NC</div>
+                    <div class="entity-name" id="nccName">Đang tìm đối tác...</div>
+                    <div class="entity-detail"><i class="fas fa-phone-alt opacity-50"></i> <span id="nccPhone">---</span></div>
+                    <div class="entity-detail"><i class="fas fa-map-marker-alt opacity-50"></i> <span id="nccAddr">---</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVIDENCE -->
+        <div class="content-panel">
+            <h5 class="panel-title mb-4">Đánh giá & Minh chứng</h5>
+            <div class="review-flex">
+                <div class="review-box">
+                    <div class="rev-header"><span class="rev-title">Khách hàng</span><span class="rev-status" id="custReviewBadge">CHƯA CÓ</span></div>
+                    <div class="rev-msg" id="custReviewMsg">Chưa có đánh giá.</div>
+                </div>
+                <div class="review-box">
+                    <div class="rev-header"><span class="rev-title">Nhà cung cấp</span><span class="rev-status" id="nccReviewBadge">CHƯA CÓ</span></div>
+                    <div class="rev-msg" id="nccReviewMsg">Chưa có báo cáo.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="../../../public/asset/js/dvqt-app.js"></script>
+<script src="../../../public/asset/js/dvqt-krud.js"></script>
+<script src="../../assets/js/api.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const OrderDetailComponent = (function() {
+        'use strict';
+        const TABLE_ORDERS = 'datlich_thuexe';
+        let currentOrder = null;
+        let vehicleInfo = null;
+
+        /**
+         * Hàm khởi tạo chính - Có thể gọi từ bên ngoài
+         * @param {string} id - Mã đơn hàng
+         * @param {object} creds - { sdt, password } (tùy chọn cho truy cập độc lập)
+         */
+        async function run(id, creds = null) {
+            const container = document.getElementById('orderDetailApp');
+            if(!id) return;
+            console.log('--- Order Detail Running ---', { id, creds });
+
+            try {
+                // 1. Xác thực quyền TRƯỚC khi load dữ liệu
+                let session = await DVQTApp.checkSession().catch(() => null);
+                
+                // Nếu không có session hoặc session chưa có ID, thử đăng nhập bằng creds từ URL
+                if(!session || !session.id) {
+                    if(creds && creds.sdt && creds.password) {
+                        const allUsers = await DVQTKrud.listTable('nguoidung', { limit: 1000 }).catch(() => []);
+                        const found = allUsers.find(u => String(u.sodienthoai) === String(creds.sdt) && String(u.matkhau) === String(creds.password));
+                        if(found) {
+                            session = found;
+                            console.log('URL Auth successful:', session.hovaten);
+                        } else {
+                            console.log('URL Auth failed: User not found or wrong password');
+                        }
+                    }
+                }
+
+                // 2. Tải dữ liệu đơn hàng
+                const all = await DVQTKrud.listTable(TABLE_ORDERS, { limit: 1000 });
+                currentOrder = all.find(o => String(o.id) === String(id));
+                if(!currentOrder) { alert('Không tìm thấy đơn hàng #'+id); return; }
+
+                // 3. Kiểm tra quyền xem cụ thể cho đơn này
+                let hasAccess = false;
+                if(session && session.id) {
+                    const role = String(session.trangthai || session.role || '').toLowerCase();
+                    const sid = Number(session.id);
+                    const kid = Number(currentOrder.id_nguoidung);
+                    
+                    // Xử lý id_dichvu dạng chuỗi "1,2,10,..."
+                    const srvStr = String(session.id_dichvu || '');
+                    const isCarProvider = srvStr.split(',').includes('10');
+                    
+                    console.log('Access Analysis:', { role, sid, kid, isCarProvider, orderCarId: currentOrder.id_xe });
+
+                    if(role === 'admin' || role === 'quantrivien') hasAccess = true;
+                    else if(sid === kid) hasAccess = true;
+                    else if(role === 'provider' || role === 'active' || isCarProvider) {
+                        // Tải thông tin xe để kiểm tra chủ sở hữu
+                        if(currentOrder.id_xe) {
+                            const cars = await DVQTKrud.listTable('xethue', { limit: 1000 }).catch(() => []);
+                            vehicleInfo = cars.find(c => String(c.id) === String(currentOrder.id_xe));
+                            
+                            console.log('Vehicle Check:', { found: !!vehicleInfo, owner: vehicleInfo ? vehicleInfo.provider_id : 'null' });
+
+                            if(vehicleInfo && Number(vehicleInfo.provider_id) === sid) {
+                                hasAccess = true;
+                            }
+                        }
+                    }
+                }
+
+                if(!hasAccess) {
+                    container.innerHTML = `
+                        <div class="p-5 text-center">
+                            <i class="fas fa-lock fa-3x mb-3 text-muted"></i>
+                            <h4>Bạn không có quyền xem đơn này</h4>
+                            <p class="text-muted">Đơn hàng này thuộc về phương tiện của chủ sở hữu khác hoặc sai ngành nghề.</p>
+                        </div>`;
+                    return;
+                }
+
+                window._currentSessionRole = (session.trangthai === 'admin' || session.role === 'admin') ? 'admin' : (Number(session.id) === Number(currentOrder.id_nguoidung) ? 'customer' : 'provider');
+                renderData();
+                renderActions(session);
+                
+                const roleLabel = (window._currentSessionRole === 'admin') ? 'ADMIN' : (window._currentSessionRole === 'customer' ? 'KHÁCH HÀNG' : 'NHÀ CUNG CẤP');
+                document.getElementById('accessRole').textContent = roleLabel;
+                document.getElementById('accessOrderId').textContent = '#' + String(id).padStart(7, '0');
+
+            } catch (e) { console.error('Component Error:', e); }
+        }
+
+        async function openReviewModal(target) {
+            const label = target === 'customer' ? 'Đánh giá từ bạn' : 'Báo cáo/Nhận xét NCC';
+            const field = target === 'customer' ? 'danhgia_kh' : 'danhgia_ncc';
+
+            const { value: formValues } = await Swal.fire({
+                title: label,
+                html: `
+                    <textarea id="swal-review-text" class="form-control mb-3" placeholder="Nhập ý kiến của bạn..." style="height: 100px;"></textarea>
+                    <div class="row g-2 text-start">
+                        <div class="col-6">
+                            <label class="btn btn-sm btn-outline-secondary w-100" style="font-size: 11px;">
+                                <i class="fas fa-image me-1"></i>Thêm ảnh
+                                <input type="file" id="swal-review-imgs" class="d-none" accept="image/*" multiple onchange="window._previewReviewFiles(this, 'review-img-preview')">
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <label class="btn btn-sm btn-outline-secondary w-100" style="font-size: 11px;">
+                                <i class="fas fa-video me-1"></i>Thêm Video
+                                <input type="file" id="swal-review-video" class="d-none" accept="video/*" onchange="document.getElementById('review-vid-preview').textContent = this.files[0].name">
+                            </label>
+                        </div>
+                    </div>
+                    <div id="review-img-preview" class="d-flex flex-wrap gap-2 mt-2"></div>
+                    <div id="review-vid-preview" class="mt-2 small text-success fw-bold"></div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Gửi đánh giá',
+                cancelButtonText: 'Hủy',
+                preConfirm: () => {
+                    return {
+                        text: document.getElementById('swal-review-text').value,
+                        imgs: document.getElementById('swal-review-imgs').files,
+                        vid: document.getElementById('swal-review-video').files[0]
+                    }
+                }
+            });
+
+            if (formValues && formValues.text) {
+                try {
+                    Swal.fire({ title: 'Đang tải lên...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    
+                    let mediaList = [];
+                    const formData = new FormData();
+                    formData.append('car_id', currentOrder.id_xe || 'review');
+                    
+                    if(formValues.imgs.length) {
+                        for(let i=0; i<formValues.imgs.length; i++) formData.append('img_'+i, formValues.imgs[i]);
+                    }
+                    if(formValues.vid) formData.append('video', formValues.vid);
+
+                    if(formValues.imgs.length || formValues.vid) {
+                        const upRes = await fetch('../controllers/upload-car-media.php', { method: 'POST', body: formData }).then(r => r.json());
+                        if(upRes.success) {
+                            mediaList = Object.values(upRes.files);
+                        }
+                    }
+
+                    const jsonReview = JSON.stringify({
+                        text: formValues.text,
+                        media: mediaList,
+                        date: new Date().toISOString()
+                    });
+
+                    const payload = {}; payload[field] = jsonReview;
+                    await DVQTKrud.updateRow(TABLE_ORDERS, currentOrder.id, payload);
+                    
+                    Swal.fire('Thành công','Cảm ơn bạn đã đánh giá!','success').then(() => {
+                        window.location.reload();
+                    });
+                } catch (err) { 
+                    console.error(err);
+                    Swal.fire('Lỗi','Không thể gửi đánh giá','error'); 
+                }
+            }
+        }
+
+        function renderData() {
+            const o = currentOrder;
+            const v = vehicleInfo;
+            const pid = String(o.id).padStart(7, '0');
+
+            document.getElementById('fullOrderId').textContent = '#' + pid;
+            document.getElementById('carSummary').textContent = o.ten_xe || (v ? v.tenxe : '---');
+            document.getElementById('carNameFull').textContent = (o.ten_xe || (v ? v.tenxe : '---')) + (v ? ` (${v.bien_so || v.bienso || '---'})` : '');
+            
+            if (v) {
+                document.getElementById('carColor').textContent = v.mausac || v.mau_sac || '---';
+                document.getElementById('carPlate').textContent = v.bienso || v.bien_so || '---';
+                document.getElementById('carChassis').textContent = v.sokhung || v.so_khung || '---';
+                document.getElementById('carEngine').textContent = v.somay || v.so_may || '---';
+            }
+
+            document.getElementById('priceService').textContent = Number(o.tong_tien).toLocaleString() + ' đ';
+            document.getElementById('totalAmount').textContent = Number(o.tong_tien).toLocaleString() + ' đ';
+            document.getElementById('orderDate').textContent = o.ngaydat ? o.ngaydat.split(' ')[0] : '---';
+            document.getElementById('rentalTime').textContent = `${o.gio_nhan_yeu_cau} / ${o.ngay_nhan_yeu_cau} → ${o.gio_tra_yeu_cau} / ${o.ngay_tra_yeu_cau}`;
+            document.getElementById('paymentStatus').textContent = o.ngayhoanthanhthucte ? 'Đã kết thúc' : 'Trong tiến trình';
+            document.getElementById('pickupAddr').textContent = o.diachikhachhang || o.dia_chi || 'Tận nơi';
+            document.getElementById('orderNote').textContent = o.ghi_chu || 'Không có ghi chú.';
+
+            let pct = 0; let stL = 'MỚI'; let stB = '#10b981'; let stH = 'Đang xử lý';
+            if(o.ngayhuy) { pct = 0; stL = 'ĐÃ HỦY'; stB = '#ef4444'; stH = 'Đơn đã hủy'; }
+            else if(o.ngayhoanthanhthucte) { pct = 100; stL = 'XONG'; stB = '#10b981'; stH = 'Đã hoàn thành'; }
+            else if(o.ngaybatdauthucte) { pct = 66; stL = 'ĐANG THUÊ'; stB = '#0ea5e9'; stH = 'Đang giao nhận'; }
+            else if(o.ngaynhan) { pct = 33; stL = 'ĐÃ NHẬN'; stB = '#4f46e5'; stH = 'Đã tiếp nhận'; }
+
+            document.getElementById('orderStatusBadge').textContent = stL;
+            document.getElementById('orderStatusBadge').style.background = stB;
+            document.getElementById('progressPctText').textContent = pct + '%';
+            document.getElementById('progressPctLabel').textContent = pct + '%';
+            document.getElementById('progressBarVal').style.width = pct + '%';
+            document.getElementById('progressBarVal').style.background = stB;
+            
+            // Cập nhật vòng tròn tiến độ
+            const angle = (360 * pct) / 100;
+            const progressBox = document.getElementById('circularProgressBox');
+            progressBox.style.setProperty('--progress-angle', angle + 'deg');
+            progressBox.style.background = `conic-gradient(${stB} ${angle}deg, var(--slate-100) 0deg)`;
+
+            document.getElementById('statusTextHero').textContent = stH;
+            document.getElementById('statusTextHero').style.color = stB;
+
+            document.getElementById('timeAccepted').textContent = o.ngaynhan || 'N/A';
+            document.getElementById('timeStarted').textContent = o.ngaybatdauthucte || 'N/A';
+            document.getElementById('timeFinished').textContent = o.ngayhoanthanhthucte || 'N/A';
+
+            document.getElementById('custName').textContent = o.tenkhachhang || o.ho_ten || '---';
+            document.getElementById('custPhone').textContent = o.sdtkhachhang || o.dien_thoai || '---';
+            document.getElementById('custEmail').textContent = o.emailkhachhang || o.email || '---';
+            document.getElementById('custAddr').textContent = o.diachikhachhang || o.dia_chi || '---';
+            document.getElementById('custAvatar').textContent = (o.tenkhachhang || 'KH').substring(0, 2).toUpperCase();
+
+            if(o.ngaynhan || o.tenncc) {
+                document.getElementById('nccName').textContent = o.tenncc || 'Đối tác DVQT';
+                document.getElementById('nccPhone').textContent = o.sdtncc || '---';
+                document.getElementById('nccAddr').textContent = o.diachincc || '---';
+                document.getElementById('nccAvatar').textContent = (o.tenncc || 'NC').substring(0, 2).toUpperCase();
+            }
+
+            const renderRev = (raw, badgeId, msgId, role) => {
+                const badge = document.getElementById(badgeId);
+                const msg = document.getElementById(msgId);
+                if(!raw) {
+                    if(o.ngayhoanthanhthucte && window._currentSessionRole === role) {
+                        msg.innerHTML = `<button class="btn-review-premium mt-2" onclick="OrderDetailComponent.openReviewModal('${role}')"><i class="fas fa-edit"></i> Viết đánh giá</button>`;
+                    }
+                    return;
+                }
+                
+                let data = { text: raw, media: [] };
+                try { if(raw.startsWith('{')) data = JSON.parse(raw); } catch(e){}
+
+                badge.textContent = 'ĐÃ CÓ';
+                badge.style.color = '#10b981';
+                
+                let mediaHtml = '';
+                if(data.media && data.media.length) {
+                    mediaHtml = '<div class="d-flex flex-wrap gap-2 mt-2">';
+                    data.media.forEach(m => {
+                        const isVid = m.toLowerCase().endsWith('.mp4');
+                        if(isVid) mediaHtml += `<video src="../../video-cards/${m}" style="width:100px; height:70px; object-fit:cover; border-radius:8px;" controls></video>`;
+                        else mediaHtml += `<img src="../../images/cars/${m}" style="width:100px; height:70px; object-fit:cover; border-radius:8px; cursor:pointer;" onclick="window.open(this.src)">`;
+                    });
+                    mediaHtml += '</div>';
+                }
+                msg.innerHTML = `<div class="fw-600">${data.text}</div>${mediaHtml}`;
+            };
+
+            renderRev(o.danhgia_kh, 'custReviewBadge', 'custReviewMsg', 'customer');
+            renderRev(o.danhgia_ncc, 'nccReviewBadge', 'nccReviewMsg', 'provider');
+        }
+
+        function renderActions(session) {
+            const btn = document.getElementById('btnMainAction');
+            const btnCancel = document.getElementById('btnCancelOrder');
+            const o = currentOrder;
+            
+            console.log('Action Check:', { role: window._currentSessionRole, status: o.trangthai, acceptedDate: o.ngaynhan, nccId: o.id_ncc, myId: session.id });
+
+            btn.style.display = 'none';
+            btnCancel.style.display = 'none';
+
+            // 1. Logic cho Khách hàng
+            if(window._currentSessionRole === 'customer') {
+                if(!o.ngaynhan && !o.ngayhuy) {
+                    btnCancel.style.display = 'block';
+                    btnCancel.onclick = () => updateStatus(o.id, 'cancel', session);
+                }
+            }
+
+            // 2. Logic cho Nhà cung cấp
+            if(window._currentSessionRole === 'provider' || (session && (session.trangthai === 'provider' || session.role === 'provider'))) {
+                // Chặn nếu đơn đã được nhận bởi một NCC KHÁC
+                if(o.id_ncc && Number(o.id_ncc) > 0 && Number(o.id_ncc) !== Number(session.id)) {
+                    return;
+                }
+                
+                if(!o.ngaynhan && !o.ngayhuy) {
+                    // Khi chưa nhận: NCC có quyền nhận hoặc hủy (từ chối)
+                    btn.style.display = 'flex';
+                    btn.innerHTML = '<i class="fas fa-handshake mr-1"></i> NHẬN ĐƠN';
+                    btn.onclick = () => updateStatus(o.id, 'accept', session);
+
+                    btnCancel.style.display = 'block';
+                    btnCancel.innerHTML = 'HỦY ĐƠN';
+                    btnCancel.onclick = () => updateStatus(o.id, 'cancel', session);
+                } else if(!o.ngaybatdauthucte && !o.ngayhuy) {
+                    btn.style.display = 'flex';
+                    btn.innerHTML = '<i class="fas fa-key mr-1"></i> GIAO XE';
+                    btn.onclick = () => updateStatus(o.id, 'start', session);
+                } else if(!o.ngayhoanthanhthucte && !o.ngayhuy) {
+                    btn.style.display = 'flex';
+                    btn.innerHTML = '<i class="fas fa-flag-checkered mr-1"></i> HOÀN THÀNH';
+                    btn.onclick = () => updateStatus(o.id, 'complete', session);
+                }
+            }
+        }
+
+        async function updateStatus(id, action, session) {
+            let field = ''; let msg = '';
+            const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            if(action==='accept') { field='ngaynhan'; msg='Nhận đơn này?'; }
+            if(action==='start') { field='ngaybatdauthucte'; msg='Bàn giao xe cho khách?'; }
+            if(action==='complete') { field='ngayhoanthanhthucte'; msg='Bạn đã nhận lại xe và hoàn thành hợp đồng?'; }
+            if(action==='cancel') { field='ngayhuy'; msg='Bạn chắc chắn muốn hủy đơn hàng này?'; }
+
+            const r = await Swal.fire({ title: 'Xác nhận', text: msg, showCancelButton: true });
+            if(r.isConfirmed) {
+                try {
+                    const payload = {}; payload[field] = now;
+                    // Lấy dữ liệu trực tiếp từ session đã đăng nhập để đảm bảo chính chủ
+                    if (action === 'accept' && session) {
+                        payload.id_ncc = session.id;
+                        payload.tenncc = session.hovaten || session.ho_ten || session.name || '';
+                        payload.sdtncc = session.sodienthoai || session.dien_thoai || session.phone || '';
+                        payload.diachincc = session.diachi || session.address || '';
+                        payload.emailncc = session.email || '';
+                    }
+                    await DVQTKrud.updateRow(TABLE_ORDERS, id, payload);
+                    Swal.fire('Thành công','','success').then(() => window.location.reload());
+                } catch (e) { console.error('Update Status Error:', e); }
+            }
+        }
+
+        return { run, openReviewModal };
+    })();
+
+    // Helpers ngoài component
+    window._previewReviewFiles = (input, targetId) => {
+        const wrap = document.getElementById(targetId);
+        if(!wrap) return;
+        wrap.innerHTML = '';
+        if(input.files) {
+            Array.from(input.files).forEach(file => {
+                if(file.type.startsWith('image/')) {
+                    const r = new FileReader();
+                    r.onload = (e) => {
+                        wrap.innerHTML += `<img src="${e.target.result}" style="width:60px; height:60px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">`;
+                    };
+                    r.readAsDataURL(file);
+                }
+            });
+        }
+    };
+
+    // Tự động chạy nếu có params trên URL
+    (function() {
+        const p = new URLSearchParams(window.location.search);
+        const id = p.get('id');
+        const sdt = p.get('sdt');
+        const pwd = p.get('password');
+        
+        if(id) {
+            OrderDetailComponent.run(id, { sdt, password: pwd });
+        }
+    })();
+</script>
+
+</body>
+</html>

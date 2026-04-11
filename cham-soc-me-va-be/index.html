@@ -1,47 +1,131 @@
 ﻿<!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chăm Sóc Mẹ và Bé Chuyên Nghiệp</title>
-    <meta name="description" content="Dịch vụ chăm sóc mẹ và bé tại nhà chuyên nghiệp: chăm bé sơ sinh, tắm bé, ru ngủ, chăm mẹ sau sinh, hỗ trợ mẹ bầu, nấu ăn dinh dưỡng, dọn dẹp và đồng hành cùng gia đình mỗi ngày. Phục vụ tận nơi, an toàn, tận tâm.">
-    <meta name="keywords" content="chăm sóc mẹ và bé tại nhà, chăm bé sơ sinh tại nhà, tắm bé tại nhà, ru bé ngủ, chăm mẹ sau sinh tại nhà, hỗ trợ mẹ bầu, dịch vụ chăm sóc mẹ và bé, giúp việc chăm em bé, chăm bé 24h, chăm sóc mẹ và bé trọn gói tại nhà">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/logomvb.png"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet" />
-    <style>
-    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
-    body {padding-top: 96px;}
 
-    .navbar {position: fixed;top: 0;left: 0;right: 0;z-index: 1050;}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chăm Sóc Mẹ và Bé Chuyên Nghiệp</title>
+  <meta name="description"
+    content="Dịch vụ chăm sóc mẹ và bé tại nhà chuyên nghiệp: chăm bé sơ sinh, tắm bé, ru ngủ, chăm mẹ sau sinh, hỗ trợ mẹ bầu, nấu ăn dinh dưỡng, dọn dẹp và đồng hành cùng gia đình mỗi ngày. Phục vụ tận nơi, an toàn, tận tâm.">
+  <meta name="keywords"
+    content="chăm sóc mẹ và bé tại nhà, chăm bé sơ sinh tại nhà, tắm bé tại nhà, ru bé ngủ, chăm mẹ sau sinh tại nhà, hỗ trợ mẹ bầu, dịch vụ chăm sóc mẹ và bé, giúp việc chăm em bé, chăm bé 24h, chăm sóc mẹ và bé trọn gói tại nhà">
+  <link rel="shortcut icon" type="image/x-icon" href="assets/logomvb.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      padding-top: 96px;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1050;
+    }
+
     /* GIỮ header luôn 1 hàng */
-    .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
+    .navbar .container {
+      display: flex;
+      flex-wrap: nowrap !important;
+      align-items: center;
+      min-width: 0;
+    }
+
     /* ================= MOBILE ONLY ================= */
     @media (max-width: 991.98px) {
       body {
-    padding-top: 86px;
-  }
-      .navbar { overflow-x: clip; }
-      .navbar .container > span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
-      .navbar-brand img { width: 56px !important; height: 42px !important; }
-      .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; width: auto; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-      .navbar-collapse.show { display: block; }
-      .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
-      .navbar-collapse .nav-item { width: 100%; text-align: center; }
-      .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
-      .navbar-collapse .btn { width: 80%; margin-top: 10px; }
-      .hero-section img { width: 100% !important; max-width: 340px; height: auto !important; }
+        padding-top: 86px;
+      }
+
+      .navbar {
+        overflow-x: clip;
+      }
+
+      .navbar .container>span {
+        max-width: 34vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.95rem;
+      }
+
+      .navbar-brand img {
+        width: 56px !important;
+        height: 42px !important;
+      }
+
+      .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: auto;
+        background: #fff;
+        z-index: 999;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .navbar-collapse.show {
+        display: block;
+      }
+
+      .navbar-collapse .navbar-nav {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px;
+        padding: 15px 0;
+      }
+
+      .navbar-collapse .nav-item {
+        width: 100%;
+        text-align: center;
+      }
+
+      .navbar-collapse .nav-link {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      .navbar-collapse .btn {
+        width: 80%;
+        margin-top: 10px;
+      }
+
+      .hero-section img {
+        width: 100% !important;
+        max-width: 340px;
+        height: auto !important;
+      }
     }
 
-    .footer-col { height: 100%; }
+    .footer-col {
+      height: 100%;
+    }
 
     @media (min-width: 992px) {
-      .footer-col { padding-right: 1rem; padding-left: 1rem; }
+      .footer-col {
+        padding-right: 1rem;
+        padding-left: 1rem;
+      }
     }
-    </style>
-<script src="/ga.js"></script>
-<script type="application/ld+json">
+  </style>
+  <script src="/ga.js"></script>
+  <script type="application/ld+json">
 {
  "@context": "https://schema.org",
  "@graph": [
@@ -85,213 +169,201 @@
  ]
 }
 </script>
-  </head>
-  <body data-nav-active="home" data-nav-active-style="large">
+</head>
 
-    <div style="font-family: &quot;Quicksand&quot;, sans-serif">
-<div id="site-header"></div>
+<body data-nav-active="home" data-nav-active-style="large">
 
-      <section class="hero-section py-5" style="background: linear-gradient(135deg, #ffe1ec 0%, #ffffff 50%, #f7e0f4 100%);">
-        <div class="container py-lg-5">
-          <div class="row align-items-center">
-            <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
-              <h1 class="display-3 fw-bold mb-3">
-                Chăm Sóc Toàn Diện <br /> Cho 
-                <span class="text-danger" style="font-family: 'Pacifico', cursive;">Mẹ và Bé</span>
-              </h1>
-              <p class="lead text-muted mb-4">Dịch vụ chăm sóc tại nhà chuyên nghiệp, tận tâm và chất lượng cao cho sức khỏe của gia đình bạn.</p>
-              
-              <button class="btn text-white rounded-pill btn-lg px-5 py-3" 
-                style="background-color: #f06292; transition: 0.3s;"
-                onclick="window.location.href = 'lien-he.html'"
-                onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
-                onmouseout="this.style.backgroundColor='#f06292'; this.style.transform='scale(1)';"
-              >
-                📞 Liên Hệ Tư Vấn Ngay
-              </button>
-            </div>
+  <div style="font-family: &quot;Quicksand&quot;, sans-serif">
+    <div id="site-header"></div>
 
-            <div class="col-lg-6 text-center">
-              <img src="assets/cham-be.png" alt="Chăm sóc Mẹ và bé" class="img-fluid rounded-pill shadow-lg" style="width: 500px; height: 450px; object-fit: cover;">
-            </div>
-          </div>
-        </div>
-      </section>
+    <section class="hero-section py-5"
+      style="background: linear-gradient(135deg, #ffe1ec 0%, #ffffff 50%, #f7e0f4 100%);">
+      <div class="container py-lg-5">
+        <div class="row align-items-center">
+          <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+            <h1 class="display-3 fw-bold mb-3">
+              Chăm Sóc Toàn Diện <br /> Cho
+              <span class="text-danger" style="font-family: 'Pacifico', cursive;">Mẹ và Bé</span>
+            </h1>
+            <p class="lead text-muted mb-4">Dịch vụ chăm sóc tại nhà chuyên nghiệp, tận tâm và chất lượng cao cho sức
+              khỏe của gia đình bạn.</p>
 
-      <section class="py-5 bg-light">
-        <div class="container py-5">
-          <h2 class="text-center fw-bold display-5 mb-5">
-            Vì Sao Nên Chọn Dịch Vụ Chăm Sóc Tại Nhà?
-          </h2>
-
-          <div class="row g-4" id="features-grid">
-
-            <!-- 1 -->
-            <div class="col-md-6 col-lg-3 text-center">
-              <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
-                <div class="mb-4 fs-1 text-danger">
-                  <i class="fas fa-user-check"></i>
-                </div>
-                <h3 class="h5 fw-bold">Nhân Sự Được Tuyển Chọn</h3>
-                <p class="text-muted small mb-0">
-                  Đội ngũ được chọn lọc kỹ lưỡng, có kinh nghiệm chăm sóc và tinh thần trách nhiệm cao.
-                </p>
-              </div>
-            </div>
-
-            <!-- 2 -->
-            <div class="col-md-6 col-lg-3 text-center">
-              <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
-                <div class="mb-4 fs-1 text-danger">
-                  <i class="fas fa-clock"></i>
-                </div>
-                <h3 class="h5 fw-bold">Linh Hoạt 24/7</h3>
-                <p class="text-muted small mb-0">
-                  Hỗ trợ theo giờ, theo ca ngày/đêm hoặc 24/24 tùy theo nhu cầu của gia đình.
-                </p>
-              </div>
-            </div>
-
-            <!-- 3 -->
-            <div class="col-md-6 col-lg-3 text-center">
-              <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
-                <div class="mb-4 fs-1 text-danger">
-                  <i class="fas fa-home"></i>
-                </div>
-                <h3 class="h5 fw-bold">Chăm Sóc Tận Nơi</h3>
-                <p class="text-muted small mb-0">
-                  Hỗ trợ chăm sóc tại nhà hoặc tại bệnh viện, giúp gia đình yên tâm công tác.
-                </p>
-              </div>
-            </div>
-
-            <!-- 4 -->
-            <div class="col-md-6 col-lg-3 text-center">
-              <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
-                <div class="mb-4 fs-1 text-danger">
-                  <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3 class="h5 fw-bold">Uy Tín & An Tâm</h3>
-                <p class="text-muted small mb-0">
-                  Cam kết trung thực, bảo vệ tài sản và đảm bảo sự an tâm trong suốt quá trình chăm sóc.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-      <section class="py-5">
-        <div class="container py-5">
-          <h2 class="text-center fw-bold display-5 mb-5">Các Dịch Vụ Chính</h2>
-          <div class="row g-4 mb-5" id="services-grid">
-            
-          </div>
-          <div class="text-center">
-            <a
-              href="dich-vu-cham-soc-me-be.html"
-              class="btn btn-outline-secondary px-5 rounded-pill fw-bold"
-              style="border-color: #f06292; color: #f06292"
-              >Xem Tất Cả Dịch Vụ</a
-            >
-          </div>
-        </div>
-      </section>
-
-      <section
-        class="py-5 text-white shadow-inner"
-        style="background-color: #f06292"
-      >
-        <div class="container py-4">
-          <div class="row g-4 text-center">
-            <div class="col-6 col-md-3">
-              <h3 class="display-5 fw-bold">15+</h3>
-              <p class="mb-0 opacity-75">Năm Kinh Nghiệm</p>
-            </div>
-            <div class="col-6 col-md-3">
-              <h3 class="display-5 fw-bold">10k+</h3>
-              <p class="mb-0 opacity-75">Gia Đình Tin Tưởng</p>
-            </div>
-            <div class="col-6 col-md-3">
-              <h3 class="display-5 fw-bold">98%</h3>
-              <p class="mb-0 opacity-75">Độ Hài Lòng</p>
-            </div>
-            <div class="col-6 col-md-3">
-              <h3 class="display-5 fw-bold">50+</h3>
-              <p class="mb-0 opacity-75">Bác Sĩ</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        class="py-5 text-center text-white"
-        style="background: linear-gradient(135deg, #2fb3a5, #1f8c80);"
-      >
-        <div class="container py-5">
-
-          <h2 class="display-5 fw-bold mb-4">
-            Gia Đình Bạn Đang Cần Người Hỗ Trợ Chăm Sóc?
-          </h2>
-
-          <p class="fs-5 mb-4 opacity-90">
-            Chúng tôi luôn sẵn sàng đồng hành cùng gia đình, 
-            giúp người thân được chăm sóc chu đáo, an toàn và tận tâm 
-            ngay tại nhà hoặc tại bệnh viện.
-          </p>
-
-          <div class="mb-4">
-            <p class="fs-5 mb-3">
-              Bên cạnh dịch vụ chăm sóc Mẹ và Bé, chúng tôi còn cung cấp:
-            </p>
-
-            <div class="d-flex flex-column gap-2 align-items-center">
-
-              <a href="../cham-soc-nguoi-gia/index.html"
-                class="fw-bold fs-5 text-warning text-decoration-none">
-                👴 Chăm sóc Người cao tuổi tại nhà
-              </a>
-
-              <a href="../cham-soc-nguoi-benh/index.html"
-                class="fw-bold fs-5 text-warning text-decoration-none">
-                🏥 Chăm sóc Người bệnh tại nhà hoặc tại bệnh viện
-              </a>
-
-            </div>
-          </div>
-
-          <div class="mt-4">
-            <button
-              class="btn btn-light btn-lg px-5 rounded-pill shadow fw-bold"
-              onclick="window.location.href = 'lien-he.html'"
-            >
+            <button class="btn text-white rounded-pill btn-lg px-5 py-3"
+              style="background-color: #f06292; transition: 0.3s;" onclick="window.location.href = 'lien-he.html'"
+              onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
+              onmouseout="this.style.backgroundColor='#f06292'; this.style.transform='scale(1)';">
               📞 Liên Hệ Tư Vấn Ngay
             </button>
           </div>
 
+          <div class="col-lg-6 text-center">
+            <img src="assets/cham-be.png" alt="Chăm sóc Mẹ và bé" class="img-fluid rounded-pill shadow-lg"
+              style="width: 500px; height: 450px; object-fit: cover;">
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
+
+    <section class="py-5 bg-light">
+      <div class="container py-5">
+        <h2 class="text-center fw-bold display-5 mb-5">
+          Vì Sao Nên Chọn Dịch Vụ Chăm Sóc Tại Nhà?
+        </h2>
+
+        <div class="row g-4" id="features-grid">
+
+          <!-- 1 -->
+          <div class="col-md-6 col-lg-3 text-center">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
+              <div class="mb-4 fs-1 text-danger">
+                <i class="fas fa-user-check"></i>
+              </div>
+              <h3 class="h5 fw-bold">Nhân Sự Được Tuyển Chọn</h3>
+              <p class="text-muted small mb-0">
+                Đội ngũ được chọn lọc kỹ lưỡng, có kinh nghiệm chăm sóc và tinh thần trách nhiệm cao.
+              </p>
+            </div>
+          </div>
+
+          <!-- 2 -->
+          <div class="col-md-6 col-lg-3 text-center">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
+              <div class="mb-4 fs-1 text-danger">
+                <i class="fas fa-clock"></i>
+              </div>
+              <h3 class="h5 fw-bold">Linh Hoạt 24/7</h3>
+              <p class="text-muted small mb-0">
+                Hỗ trợ theo giờ, theo ca ngày/đêm hoặc 24/24 tùy theo nhu cầu của gia đình.
+              </p>
+            </div>
+          </div>
+
+          <!-- 3 -->
+          <div class="col-md-6 col-lg-3 text-center">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
+              <div class="mb-4 fs-1 text-danger">
+                <i class="fas fa-home"></i>
+              </div>
+              <h3 class="h5 fw-bold">Chăm Sóc Tận Nơi</h3>
+              <p class="text-muted small mb-0">
+                Hỗ trợ chăm sóc tại nhà hoặc tại bệnh viện, giúp gia đình yên tâm công tác.
+              </p>
+            </div>
+          </div>
+
+          <!-- 4 -->
+          <div class="col-md-6 col-lg-3 text-center">
+            <div class="p-5 bg-white rounded-4 shadow-sm h-100 hover-lift feature-card">
+              <div class="mb-4 fs-1 text-danger">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3 class="h5 fw-bold">Uy Tín & An Tâm</h3>
+              <p class="text-muted small mb-0">
+                Cam kết trung thực, bảo vệ tài sản và đảm bảo sự an tâm trong suốt quá trình chăm sóc.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+    <section class="py-5">
+      <div class="container py-5">
+        <h2 class="text-center fw-bold display-5 mb-5">Các Dịch Vụ Chính</h2>
+        <div class="row g-4 mb-5" id="services-grid">
+
+        </div>
+        <div class="text-center">
+          <a href="dich-vu-cham-soc-me-be.html" class="btn btn-outline-secondary px-5 rounded-pill fw-bold"
+            style="border-color: #f06292; color: #f06292">Xem Tất Cả Dịch Vụ</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5 text-white shadow-inner" style="background-color: #f06292">
+      <div class="container py-4">
+        <div class="row g-4 text-center">
+          <div class="col-6 col-md-3">
+            <h3 class="display-5 fw-bold">15+</h3>
+            <p class="mb-0 opacity-75">Năm Kinh Nghiệm</p>
+          </div>
+          <div class="col-6 col-md-3">
+            <h3 class="display-5 fw-bold">10k+</h3>
+            <p class="mb-0 opacity-75">Gia Đình Tin Tưởng</p>
+          </div>
+          <div class="col-6 col-md-3">
+            <h3 class="display-5 fw-bold">98%</h3>
+            <p class="mb-0 opacity-75">Độ Hài Lòng</p>
+          </div>
+          <div class="col-6 col-md-3">
+            <h3 class="display-5 fw-bold">50+</h3>
+            <p class="mb-0 opacity-75">Bác Sĩ</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5 text-center text-white" style="background: linear-gradient(135deg, #2fb3a5, #1f8c80);">
+      <div class="container py-5">
+
+        <h2 class="display-5 fw-bold mb-4">
+          Gia Đình Bạn Đang Cần Người Hỗ Trợ Chăm Sóc?
+        </h2>
+
+        <p class="fs-5 mb-4 opacity-90">
+          Chúng tôi luôn sẵn sàng đồng hành cùng gia đình,
+          giúp người thân được chăm sóc chu đáo, an toàn và tận tâm
+          ngay tại nhà hoặc tại bệnh viện.
+        </p>
+
+        <div class="mb-4">
+          <p class="fs-5 mb-3">
+            Bên cạnh dịch vụ chăm sóc Mẹ và Bé, chúng tôi còn cung cấp:
+          </p>
+
+          <div class="d-flex flex-column gap-2 align-items-center">
+
+            <a href="../cham-soc-nguoi-gia/index.html" class="fw-bold fs-5 text-warning text-decoration-none">
+              👴 Chăm sóc Người cao tuổi tại nhà
+            </a>
+
+            <a href="../cham-soc-nguoi-benh/index.html" class="fw-bold fs-5 text-warning text-decoration-none">
+              🏥 Chăm sóc Người bệnh tại nhà hoặc tại bệnh viện
+            </a>
+
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <button class="btn btn-light btn-lg px-5 rounded-pill shadow fw-bold"
+            onclick="window.location.href = 'lien-he.html'">
+            📞 Liên Hệ Tư Vấn Ngay
+          </button>
+        </div>
+
+      </div>
+    </section>
 
     <div id="site-footer"></div>
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Load services from JSON and display 4 services on homepage
-        async function loadHomeServices() {
-            try {
-                const response = await fetch('services.json');
-                const services = await response.json();
-                const servicesGrid = document.getElementById("services-grid");
+      // Load services from JSON and display 4 services on homepage
+      async function loadHomeServices() {
+        try {
+          const response = await fetch('services.json');
+          const services = await response.json();
+          const servicesGrid = document.getElementById("services-grid");
 
-                // Lấy 4 dịch vụ đầu tiên
-                const homepageServices = services.slice(0, 4);
+          // Lấy 4 dịch vụ đầu tiên
+          const homepageServices = services.slice(0, 4);
 
-                homepageServices.forEach(service => {
-                    const col = document.createElement("div");
-                    col.className = "col-md-6 col-lg-3";
-                  const imageAlt = (service.alt || service.name || "Dich vu cham soc me va be").replace(/"/g, "&quot;");
+          homepageServices.forEach(service => {
+            const col = document.createElement("div");
+            col.className = "col-md-6 col-lg-3";
+            const imageAlt = (service.alt || service.name || "Dich vu cham soc me va be").replace(/"/g, "&quot;");
 
-                    col.innerHTML = `
+            col.innerHTML = `
                         <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden hover-lift">
                             <img src="${service.image}" 
                                 class="card-img-top" 
@@ -304,23 +376,18 @@
                         </div>
                     `;
 
-                    servicesGrid.appendChild(col);
-                });
-            } catch (error) {
-                console.error('Error loading services:', error);
-            }
+            servicesGrid.appendChild(col);
+          });
+        } catch (error) {
+          console.error('Error loading services:', error);
         }
+      }
 
-        document.addEventListener("DOMContentLoaded", loadHomeServices);
+      document.addEventListener("DOMContentLoaded", loadHomeServices);
     </script>
     <script src="JS/shared-layout.js"></script>
     <script src="JS/user-nav-menu.js"></script>
-    </div>
-  </body>
+  </div>
+</body>
+
 </html>
-
-
-
-
-
-

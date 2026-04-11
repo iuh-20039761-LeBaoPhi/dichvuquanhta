@@ -49,13 +49,7 @@
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
-  function parseWeight(order) {
-    var fromWeight = toNumber(order.khoiluong || order.weight || order.cannang);
-    if (fromWeight > 0) return fromWeight;
 
-    var fromQuantity = toNumber(order.soluong || order.quantity);
-    return fromQuantity > 0 ? fromQuantity : 1;
-  }
 
   async function getDistance(lat1, lon1, lat2, lon2) {
     var url =
@@ -165,7 +159,7 @@
     return {
       distanceKm: distanceKm,
       transportFee: transportFee,
-      totalAmount: serviceAmount + surveyFee + transportFee,
+      totalAmount: serviceAmount + transportFee,
     };
   }
 

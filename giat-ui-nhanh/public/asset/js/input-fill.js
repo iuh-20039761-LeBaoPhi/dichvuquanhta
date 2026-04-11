@@ -1,7 +1,7 @@
 (function (window, document) {
   var USER_TABLE = "nguoidung";
   var PROVIDER_SERVICE_ID = "11";
-  var LOGIN_PAGE = "dang-nhap.html";
+  var LOGIN_PAGE = "../public/dang-nhap.html";
   var STANDALONE_BOOKING_PAGE = "dat-dich-vu.html";
   var bookingAccessState = window.BookingAccessState || {
     isAuthenticated: false,
@@ -126,6 +126,7 @@
     return {
       name: String(user.user_name || user.hovaten || user.ten || "").trim(),
       phone: normalizePhone(user.user_tel || user.sodienthoai || user.phone),
+      address: String(user.diachi || user.address || "").trim(),
     };
   }
 
@@ -135,6 +136,7 @@
 
     var nameInput = document.getElementById("hotenkhachhang");
     var phoneInput = document.getElementById("sodienthoaikhachhang");
+    var addressInput = document.getElementById("diachi");
 
     if (nameInput && mapped.name) {
       nameInput.value = mapped.name;
@@ -144,6 +146,12 @@
     if (phoneInput && mapped.phone) {
       phoneInput.value = mapped.phone;
       phoneInput.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+
+    if (addressInput && mapped.address) {
+      addressInput.value = mapped.address;
+      addressInput.dispatchEvent(new Event("input", { bubbles: true }));
+      addressInput.dispatchEvent(new Event("change", { bubbles: true }));
     }
   }
 
@@ -198,6 +206,27 @@
     return "";
   }
 
+  function tryAutoFill() {
+    var creds = parseUrlCredentials();
+    if (!creds.phone || !creds.password) {
+      creds.phone = getBookingCookie("dvqt_u");
+      creds.password = getBookingCookie("dvqt_p");
+    }
+
+    if (creds.phone && creds.password) {
+      return authenticateByUrlCredentials(creds.phone, creds.password).then(
+        function (row) {
+          if (row && !isProviderAccount(row)) {
+            fillBookingFormUser(row);
+            return row;
+          }
+          return null;
+        },
+      );
+    }
+    return Promise.resolve(null);
+  }
+
   function ensureStandaloneBookingAccess() {
     if (!isStandaloneBookingPage()) {
       return Promise.resolve();
@@ -219,7 +248,7 @@
     var hasCreds = Boolean(creds.phone && creds.password);
 
     if (!hasCreds) {
-      window.location.href = LOGIN_PAGE;
+      window.location.href = LOGIN_PAGE + "?service=giatuinhanh";
       return Promise.resolve();
     }
 
@@ -260,6 +289,15 @@
       var trigger = event.target.closest("#navBookingTrigger, .svc-action");
       if (!trigger) return;
 
+      // If the trigger is intended to open a modal, let Bootstrap handle it.
+      // Our 'shown.bs.modal' listener will handle the auto-fill.
+      if (
+        trigger.hasAttribute("data-bs-toggle") ||
+        trigger.hasAttribute("data-bs-target")
+      ) {
+        return;
+      }
+
       event.preventDefault();
 
       var creds = parseUrlCredentials();
@@ -268,13 +306,26 @@
         return;
       }
 
-      window.location.href = LOGIN_PAGE;
+      window.location.href = LOGIN_PAGE + "?service=giatuinhanh";
     });
   }
 
   function bootstrapAccessFlow() {
     bindServiceBookingRedirect();
-    ensureStandaloneBookingAccess();
+
+    // Fill on load
+    tryAutoFill().then(function () {
+      if (isStandaloneBookingPage()) {
+        ensureStandaloneBookingAccess();
+      }
+    });
+
+    // Handle modal show event for dynamic loading or lazy filling
+    document.addEventListener("shown.bs.modal", function (event) {
+      if (event.target.id === "bookingModal") {
+        tryAutoFill();
+      }
+    });
   }
 
   if (document.readyState === "loading") {

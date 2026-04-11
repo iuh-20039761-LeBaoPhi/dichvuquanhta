@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../session_user.php';
-require_once __DIR__ . '/header-shared.php';
 require_once __DIR__ . '/get-nhan-vien.php';
 
 /** Escape HTML output. */
@@ -11,159 +10,275 @@ function esc_edit(string $value): string
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
-/** Map DB path to browser path. */
-function asset_url(string $path): string
-{
-    $value = trim(str_replace('\\', '/', $path));
-    if ($value === '') {
-        return '../assets/logomvb.png';
-    }
+$flashOk = isset($_GET['ok']) ? ((string) $_GET['ok'] === '1') : null;
+$flashMsg = trim((string) ($_GET['msg'] ?? ''));
 
-    if (preg_match('/^(https?:)?\/\//i', $value) || strpos($value, 'data:image/') === 0) {
-        return $value;
-    }
-
-    if (strpos($value, '../') === 0 || strpos($value, './') === 0) {
-        return $value;
-    }
-
-    return '../' . ltrim($value, '/');
+$employeeResult = nv_get_employee_info();
+if ($employeeResult['error'] === 'Chưa đăng nhập') {
+    header('Location: ../login.html');
+    exit;
 }
 
-$sessionUser = session_user_require_employee('../login.html', 'nhan_vien/sua-thong-tin-nhan-vien.php');
-$flashOk = isset($_GET['ok']) ? ((string)$_GET['ok'] === '1') : null;
-$flashMsg = trim((string)($_GET['msg'] ?? ''));
+$loadError = (string) ($employeeResult['error'] ?? '');
+$row = $employeeResult['row'] ?? [];
 
-$employeeId = (int)($sessionUser['id'] ?? 0);
-$load = getNhanVienBySessionId($employeeId);
-$employee = is_array($load['row'] ?? null) ? $load['row'] : [];
-$loadError = (string)($load['error'] ?? '');
+$avatar = trim((string) ($row['avatartenfile'] ?? ''));
+$cccdFront = trim((string) ($row['cccdmattruoctenfile'] ?? ''));
+$cccdBack = trim((string) ($row['cccdmatsautenfile'] ?? ''));
 
-$fullName = trim((string)($employee['hovaten'] ?? ''));
-$email = trim((string)($employee['email'] ?? ''));
-$phone = trim((string)($employee['sodienthoai'] ?? ''));
-$password = trim((string)($employee['matkhau'] ?? ''));
-$address = trim((string)($employee['diachi'] ?? ''));
-$birthDate = trim((string)($employee['ngaysinh'] ?? ''));
-$experience = trim((string)($employee['kinh_nghiem'] ?? ''));
-
-$avatarPath = trim((string)($employee['anh_dai_dien'] ?? ''));
-$cccdFrontPath = trim((string)($employee['cccd_mat_truoc'] ?? ''));
-$cccdBackPath = trim((string)($employee['cccd_mat_sau'] ?? ''));
+if ($avatar === '') {
+    $avatar = '../assets/logo-cham-soc-benh-nhan.png';
+}
+if ($cccdFront === '') {
+    $cccdFront = '../assets/logo-cham-soc-benh-nhan.png';
+}
+if ($cccdBack === '') {
+    $cccdBack = '../assets/logo-cham-soc-benh-nhan.png';
+}
 
 $isDisabled = $loadError !== '';
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sua Thong Tin Nhan Vien</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <?php render_nhan_vien_header_styles(); ?>
-    <style>
-        body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-            background: linear-gradient(180deg, #edf4ff 0%, #f4f9ff 100%);
-            color: #0f172a;
-            min-height: 100vh;
-        }
-        .page-wrap {
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 14px;
-        }
-        .edit-shell {
-            border: 1px solid #dce9f7;
-            border-radius: 18px;
-            background: #fff;
-            box-shadow: 0 18px 44px rgba(2, 32, 71, 0.12);
-            overflow: hidden;
-        }
-        .edit-head {
-            background: linear-gradient(105deg, #0f4ca8 0%, #1a73e8 72%, #31a0ff 100%);
-            color: #fff;
-            padding: 18px 20px;
-        }
-        .edit-head h1 {
-            margin: 0;
-            font-size: 1.25rem;
-            font-weight: 800;
-        }
-        .edit-sub {
-            margin: 4px 0 0;
-            opacity: 0.92;
-            font-size: 0.92rem;
-        }
-        .edit-body {
-            padding: 18px;
-        }
-        .form-box {
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            background: #fff;
-            padding: 16px;
-        }
-        .form-label {
-            font-weight: 600;
-        }
-        .form-control {
-            border-radius: 10px;
-            min-height: 42px;
-        }
-        .tip {
-            border-radius: 10px;
-            border: 1px dashed #cbd5e1;
-            background: #f8fbff;
-            padding: 10px 12px;
-            color: #334155;
-            font-size: 0.92rem;
-        }
-        .preview-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-            margin-top: 14px;
-        }
-        .preview-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 10px;
-            background: #f8fafc;
-        }
-        .preview-card img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border: 1px solid #dbe3ef;
-            border-radius: 10px;
-            background: #fff;
-        }
-        .path-text {
-            font-size: 0.76rem;
-            color: #64748b;
-            word-break: break-all;
-            margin-top: 6px;
-        }
-        .btn-soft {
-            border-radius: 10px;
-            min-height: 42px;
-            font-weight: 600;
-            padding: 8px 14px;
-        }
-        @media (max-width: 991.98px) {
-            .preview-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-<main class="page-wrap">
-    <?php render_nhan_vien_header($sessionUser, 'Sua thong tin nhan vien'); ?>
+<?php
+$pageTitle = "Cập nhật thông tin";
+include 'layout-header.php';
+?>
+<style>
+    /* Style gốc của trang */
+    .page-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 14px;
+    }
 
+    .edit-shell {
+        border: 1px solid #dce9f7;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 18px 44px rgba(2, 32, 71, 0.12);
+        overflow: hidden;
+    }
+
+    .edit-head {
+        background: linear-gradient(105deg, #0f4ca8 0%, #1a73e8 72%, #31a0ff 100%);
+        color: #fff;
+        padding: 18px 20px;
+    }
+
+    .edit-head h1 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .edit-sub {
+        margin: 4px 0 0;
+        opacity: 0.92;
+        font-size: 0.92rem;
+    }
+
+    .edit-body {
+        padding: 18px;
+    }
+
+    .form-box {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: #fff;
+        padding: 16px;
+    }
+
+    .form-label {
+        font-weight: 600;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        min-height: 42px;
+    }
+
+    .tip {
+        border-radius: 10px;
+        border: 1px dashed #cbd5e1;
+        background: #f8fbff;
+        padding: 10px 12px;
+        color: #334155;
+        font-size: 0.92rem;
+    }
+
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+    }
+
+    .preview-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px;
+        background: #f8fafc;
+    }
+
+    .preview-card img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border: 1px solid #dbe3ef;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .path-text {
+        font-size: 0.76rem;
+        color: #64748b;
+        word-break: break-all;
+        margin-top: 6px;
+    }
+
+    .btn-soft {
+        border-radius: 10px;
+        min-height: 42px;
+        font-weight: 600;
+        padding: 8px 14px;
+    }
+
+    @media (max-width: 991.98px) {
+        .page-wrap { padding: 1px; }
+        .edit-shell { margin: 1px; border-radius: 12px; }
+        .edit-head { padding: 12px 10px; }
+        .edit-body { padding: 4px 1px; }
+        .form-box { padding: 8px 4px; }
+        .preview-grid { grid-template-columns: 1fr; gap: 5px; }
+        .preview-card { padding: 4px; }
+        .row { --bs-gutter-x: 0.25rem; --bs-gutter-y: 0.25rem; }
+        .mt-4 { margin-top: 0.5rem !important; }
+        .g-3 { --bs-gutter-x: 0.25rem; --bs-gutter-y: 0.25rem; }
+    }
+    
+    /* Phục hồi giao diện desktop cho iPad (768px - 991px) */
+    @media (min-width: 768px) and (max-width: 991.98px) {
+        .page-wrap { padding: 14px; }
+        .edit-shell { margin: 0; border-radius: 18px; }
+        .edit-head { padding: 18px 20px; }
+        .edit-body { padding: 18px; }
+        .form-box { padding: 16px; }
+        .preview-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+        .preview-card { padding: 10px; }
+        
+        /* Khôi phục khoảng cách (gutters) */
+        .edit-body .row { --bs-gutter-x: 1.5rem !important; }
+        .edit-body .g-3 { --bs-gutter-x: 1rem !important; --bs-gutter-y: 1rem !important; }
+        .mt-4 { margin-top: 1.5rem !important; }
+    }
+</style>
+<style>
+    /* Theme color overrides */
+    body {
+        background: linear-gradient(180deg, #f0f7ff 0%, #e1effe 100%);
+        color: #1e3a8a;
+    }
+
+    .edit-shell {
+        border-color: #bbd9fb;
+        border-radius: 18px;
+        background: #f0f7ff;
+        box-shadow: 0 18px 44px rgba(30, 64, 175, 0.16);
+    }
+
+    .edit-head {
+        background: linear-gradient(105deg, #1e3a8a 0%, #2563eb 72%, #3b82f6 100%);
+        border-bottom: 1px solid #bbd9fb;
+    }
+
+    .form-box {
+        border-color: #bbd9fb;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 10px 22px rgba(30, 64, 175, 0.1);
+    }
+
+    .form-label {
+        color: #1e3a8a;
+    }
+
+    .form-control {
+        border-color: #bbd9fb;
+        background: #f8fafc;
+        color: #1e3a8a;
+    }
+
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2);
+    }
+
+    .tip {
+        border-color: #bbd9fb;
+        background: #f0f7ff;
+        color: #1e40af;
+    }
+
+    .preview-card {
+        border-color: #bbd9fb;
+        background: #f8fafc;
+        box-shadow: 0 8px 18px rgba(30, 107, 184, 0.09);
+    }
+
+    .preview-card img {
+        border-color: #bbd9fb;
+        box-shadow: 0 8px 16px rgba(30, 107, 184, 0.12);
+    }
+
+    .path-text { color: #475569; }
+
+    .btn-primary {
+        border-color: #3b82f6;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus {
+        border-color: #2563eb;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+
+    .btn-outline-secondary {
+        color: #1e40af;
+        border-color: #bbd9fb;
+        background: #f8fafc;
+    }
+
+    .btn-outline-secondary:hover,
+    .btn-outline-secondary:focus {
+        color: #fff;
+        border-color: #1e40af;
+        background: #1e40af;
+    }
+
+    .alert-success {
+        color: #1f6148;
+        background: #e9f8f1;
+        border-color: #9dd9be;
+        box-shadow: 0 8px 16px rgba(31, 97, 72, 0.08);
+    }
+
+    .alert-warning {
+        color: #7c2d12;
+        background: #fff7ed;
+        border-color: #fed7aa;
+        box-shadow: 0 8px 16px rgba(124, 45, 18, 0.08);
+    }
+
+    .alert-danger {
+        color: #991b1b;
+        background: #fef2f2;
+        border-color: #fecaca;
+        box-shadow: 0 8px 16px rgba(153, 27, 27, 0.1);
+    }
+</style>
+
+<div class="page-wrap">
     <?php if ($flashMsg !== ''): ?>
         <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2" role="alert">
             <?= esc_edit($flashMsg) ?>
@@ -176,91 +291,127 @@ $isDisabled = $loadError !== '';
 
     <section class="edit-shell">
         <div class="edit-head">
-            <h1><i class="bi bi-pencil-square me-2"></i>Cap Nhat Thong Tin Nhan Vien</h1>
+            <h1><i class="bi bi-pencil-square me-2"></i>Cập Nhật Thông Tin Tài Khoản</h1>
         </div>
         <div class="edit-body">
-            <form class="form-box" method="post" action="xu-ly-sua-thong-tin-nhan-vien.php" enctype="multipart/form-data">
-                <input type="hidden" name="existing_anh_dai_dien" value="<?= esc_edit($avatarPath) ?>">
-                <input type="hidden" name="existing_cccd_mat_truoc" value="<?= esc_edit($cccdFrontPath) ?>">
-                <input type="hidden" name="existing_cccd_mat_sau" value="<?= esc_edit($cccdBackPath) ?>">
+            <form class="form-box" method="post" action="xu-ly-sua-thong-tin-nhan-vien.php"
+                enctype="multipart/form-data">
+                <input type="hidden" name="existing_anh_dai_dien"
+                    value="<?= esc_edit((string) ($row['avatartenfile'] ?? '')) ?>">
+                <input type="hidden" name="existing_cccd_mat_truoc"
+                    value="<?= esc_edit((string) ($row['cccdmattruoctenfile'] ?? '')) ?>">
+                <input type="hidden" name="existing_cccd_mat_sau"
+                    value="<?= esc_edit((string) ($row['cccdmatsautenfile'] ?? '')) ?>">
 
                 <div class="row g-3">
-                    <!-- <div class="col-12 col-md-6">
-                        <label class="form-label">ID nhan vien</label>
-                        <input type="text" class="form-control" value="<?= (int)$employeeId ?>" readonly>
-                    </div> -->
                     <div class="col-12 col-md-6">
-                        <label for="hovaten" class="form-label">Ho va ten *</label>
-                        <input type="text" class="form-control" id="hovaten" name="hovaten" maxlength="120" required value="<?= esc_edit($fullName) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <label for="hovaten" class="form-label">Họ và tên *</label>
+                        <input type="text" class="form-control" id="hovaten" name="hovaten" maxlength="120" required
+                            value="<?= esc_edit((string) ($row['hovaten'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12 col-md-6">
-                        <label for="sodienthoai" class="form-label">So dien thoai *</label>
-                        <input type="text" class="form-control" id="sodienthoai" name="sodienthoai" maxlength="20" required value="<?= esc_edit($phone) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <label for="sodienthoai" class="form-label">Số điện thoại *</label>
+                        <input type="text" class="form-control" id="sodienthoai" name="sodienthoai" maxlength="20"
+                            required value="<?= esc_edit((string) ($row['sodienthoai'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12 col-md-6">
                         <label for="email" class="form-label">Email *</label>
-                        <input type="email" class="form-control" id="email" name="email" maxlength="150" required value="<?= esc_edit($email) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
-                    </div>
-                    <div class="col-12">
-                        <label for="diachi" class="form-label">Dia chi *</label>
-                        <input type="text" class="form-control" id="diachi" name="diachi" maxlength="255" required value="<?= esc_edit($address) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <input type="email" class="form-control" id="email" name="email" maxlength="150" required
+                            value="<?= esc_edit((string) ($row['email'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12 col-md-6">
-                        <label for="matkhau" class="form-label">Mat khau *</label>
-                        <input type="text" class="form-control" id="matkhau" name="matkhau" minlength="6" maxlength="255" required value="<?= esc_edit($password) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label for="ngaysinh" class="form-label">Ngay sinh *</label>
-                        <input type="date" class="form-control" id="ngaysinh" name="ngaysinh" required value="<?= esc_edit($birthDate) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <label for="matkhau" class="form-label">Mật khẩu *</label>
+                        <input type="text" class="form-control" id="matkhau" name="matkhau" minlength="6"
+                            maxlength="255" required value="<?= esc_edit((string) ($row['matkhau'] ?? '')) ?>"
+                            <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12">
-                        <label for="kinh_nghiem" class="form-label">Mo ta kinh nghiem *</label>
-                        <textarea class="form-control" id="kinh_nghiem" name="kinh_nghiem" rows="3" required <?= $isDisabled ? 'disabled' : '' ?>><?= esc_edit($experience) ?></textarea>
+                        <label for="diachi" class="form-label">Địa chỉ *</label>
+                        <input type="text" class="form-control" id="diachi" name="diachi" maxlength="255" required
+                            value="<?= esc_edit((string) ($row['diachi'] ?? '')) ?>" <?= $isDisabled ? 'disabled' : '' ?>>
+                    </div>
+                    
+
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm"
+                            style="border-radius: 12px; background: #f8fbff; border: 1px solid #e1e9f1 !important;">
+                            <div class="card-header bg-transparent border-0 d-flex align-items-center py-3">
+                                <i class="bi bi-briefcase text-primary me-2"></i>
+                                <h6 class="mb-0 fw-bold">Chọn các dịch vụ bạn cung cấp</h6>
+                            </div>
+                            <div class="card-body pt-0">
+                                <div class="row g-2">
+                                    <?php
+                                    $currentServiceIds = explode(',', (string) ($row['id_dichvu'] ?? ''));
+                                    $serviceMap = nv_get_service_map();
+                                    foreach ($serviceMap as $id => $srv):
+                                        $isChecked = in_array((string) $id, $currentServiceIds);
+                                        ?>
+                                        <div class="col-12 col-sm-6 col-lg-4">
+                                            <div class="service-item d-flex align-items-center p-2 border rounded-3 bg-white h-100"
+                                                style="transition: all 0.2s;">
+                                                <div class="srv-icon d-flex align-items-center justify-content-center rounded-3 me-2"
+                                                    style="width: 36px; height: 36px; background: <?= $srv['color'] ?>15; color: <?= $srv['color'] ?>;">
+                                                    <i class="<?= $srv['icon'] ?> small"></i>
+                                                </div>
+                                                <div class="flex-grow-1 small fw-semibold text-truncate">
+                                                    <?= $srv['name'] ?>
+                                                </div>
+                                                <div class="form-check m-0 px-2">
+                                                    <input class="form-check-input" type="checkbox" name="services[]"
+                                                        value="<?= $id ?>" id="srv-<?= $id ?>" <?= $isChecked ? 'checked' : '' ?>>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="anh_dai_dien" class="form-label">Ảnh đại diện mới</label>
+                        <input type="file" class="form-control" id="anh_dai_dien" name="anh_dai_dien"
+                            accept="image/*" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12 col-md-4">
-                        <label for="anh_dai_dien" class="form-label">Anh dai dien moi</label>
-                        <input type="file" class="form-control" id="anh_dai_dien" name="anh_dai_dien" accept="image/*" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <label for="cccd_mat_truoc" class="form-label">CCCD mặt trước mới</label>
+                        <input type="file" class="form-control" id="cccd_mat_truoc" name="cccd_mat_truoc"
+                            accept="image/*" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                     <div class="col-12 col-md-4">
-                        <label for="cccd_mat_truoc" class="form-label">CCCD mat truoc moi</label>
-                        <input type="file" class="form-control" id="cccd_mat_truoc" name="cccd_mat_truoc" accept="image/*" <?= $isDisabled ? 'disabled' : '' ?>>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label for="cccd_mat_sau" class="form-label">CCCD mat sau moi</label>
-                        <input type="file" class="form-control" id="cccd_mat_sau" name="cccd_mat_sau" accept="image/*" <?= $isDisabled ? 'disabled' : '' ?>>
+                        <label for="cccd_mat_sau" class="form-label">CCCD mặt sau mới</label>
+                        <input type="file" class="form-control" id="cccd_mat_sau" name="cccd_mat_sau"
+                            accept="image/*" <?= $isDisabled ? 'disabled' : '' ?>>
                     </div>
                 </div>
 
                 <div class="preview-grid">
                     <div class="preview-card">
-                        <div class="small fw-semibold">Anh dai dien hien tai</div>
-                        <img src="<?= esc_edit(asset_url($avatarPath)) ?>" alt="anh dai dien">
-                        <!-- <div class="path-text"><?= esc_edit($avatarPath !== '' ? $avatarPath : '-') ?></div> -->
+                        <div class="small fw-semibold">Ảnh đại diện hiện tại</div>
+                        <img src="../assets/<?= esc_edit($avatar) ?>" alt="anh dai dien">
                     </div>
                     <div class="preview-card">
-                        <div class="small fw-semibold">CCCD mat truoc hien tai</div>
-                        <img src="<?= esc_edit(asset_url($cccdFrontPath)) ?>" alt="cccd mat truoc">
-                        <!-- <div class="path-text"><?= esc_edit($cccdFrontPath !== '' ? $cccdFrontPath : '-') ?></div> -->
+                        <div class="small fw-semibold">CCCD mặt trước hiện tại</div>
+                        <img src="../assets/<?= esc_edit($cccdFront) ?>" alt="cccd mat truoc">
                     </div>
                     <div class="preview-card">
-                        <div class="small fw-semibold">CCCD mat sau hien tai</div>
-                        <img src="<?= esc_edit(asset_url($cccdBackPath)) ?>" alt="cccd mat sau">
-                        <!-- <div class="path-text"><?= esc_edit($cccdBackPath !== '' ? $cccdBackPath : '-') ?></div> -->
+                        <div class="small fw-semibold">CCCD mặt sau hiện tại</div>
+                        <img src="../assets/<?= esc_edit($cccdBack) ?>" alt="cccd mat sau">
                     </div>
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 mt-4">
                     <button type="submit" class="btn btn-primary btn-soft" <?= $isDisabled ? 'disabled' : '' ?>>
-                        <i class="bi bi-check2-circle me-1"></i> Luu thay doi
+                        <i class="bi bi-check2-circle me-1"></i> Lưu thay đổi
                     </button>
-                    <a class="btn btn-outline-secondary btn-soft" href="thong-tin-nhan-vien.php">
-                        <i class="bi bi-arrow-left me-1"></i> Quay lai thong tin
+                    <a class="btn btn-outline-secondary btn-soft" href="thong-tin-nhan-vien.php"
+                       onclick="event.preventDefault(); navigateTo('thong-tin-nhan-vien.php');">
+                        <i class="bi bi-arrow-left me-1"></i> Quay lại
                     </a>
                 </div>
             </form>
         </div>
     </section>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+<?php include 'layout-footer.php'; ?>

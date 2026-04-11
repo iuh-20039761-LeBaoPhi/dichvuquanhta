@@ -85,21 +85,21 @@
   }
 
   function mapOrder(row) {
-    const rawDate = row.ngaydat || row.ngaytao || row.created_at || "";
+    const rawDate = row.ngaydat || row.created_date || "";
     const totalAmount = toNumber(row.tongtien);
 
     const fallbackTotal =
       toNumber(row.giadichvu) +
       toNumber(row.tiendichuyen) +
-      toNumber(row.phuphigiaonhan);
+      0;
 
     return {
       id: Number(row.id) || 0,
       code: formatOrderCode(row.id),
       customerName:
-        row.hovaten || row.tenkhachhang || row.hoten || "Khách hàng",
-      customerPhone: row.sodienthoai || row.phone || "",
-      service: row.dichvu || row.dichvuquantam || "Chưa cập nhật dịch vụ",
+        row.hovaten || "Khách hàng",
+      customerPhone: row.sodienthoai || "",
+      service: row.dichvu || "Chưa cập nhật dịch vụ",
       status: getOrderStatus(row),
       date: formatDate(rawDate),
       total: totalAmount > 0 ? totalAmount : fallbackTotal,
@@ -231,7 +231,7 @@
             <td><span class="status-pill ${status.className}">${status.label}</span></td>
             <td>${formatCurrency(order.total)}</td>
             <td>
-              <a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-hoa-don.html?id=${order.id}">
+              <a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=${order.id}">
                 Xem chi tiết
               </a>
             </td>

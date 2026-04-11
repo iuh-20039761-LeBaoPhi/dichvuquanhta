@@ -5,14 +5,14 @@
     "image": "assets/bai-tap-cho-nguoi-benh-xuong-khop.png",
     "alt": "Dich vu ho tro sinh hoat muc nhe cho nguoi benh tai nha",
     "description": "Phù hợp cho người bệnh vẫn tự chủ một phần, cần thêm người đồng hành để sinh hoạt hằng ngày đều đặn, an toàn và bớt mệt mỏi.",
-    "includes": [
-      "Chuẩn bị bữa ăn hằng ngày, hỗ trợ ăn uống đúng giờ và dọn dẹp sau bữa",
-      "Nhắc lịch sinh hoạt, hỗ trợ di chuyển nhẹ trong nhà để hạn chế té ngã",
-      "Hỗ trợ tắm rửa, thay đồ, vệ sinh cá nhân cơ bản khi người bệnh mệt",
-      "Giặt giũ, thay ga gối, sắp xếp không gian nghỉ ngơi gọn gàng",
-      "Đi chợ, mua vật dụng thiết yếu và chuẩn bị đồ dùng cá nhân theo nhu cầu",
-      "Trò chuyện, đọc tin, hỗ trợ giải trí nhẹ giúp người bệnh thoải mái tinh thần"
-    ],
+      "includes": [
+        "Chuẩn bị bữa ăn hằng ngày, hỗ trợ ăn uống đúng giờ và dọn dẹp sau bữa.",
+        "Nhắc lịch sinh hoạt, hỗ trợ di chuyển nhẹ trong nhà để hạn chế té ngã.",
+        "Hỗ trợ tắm rửa, thay đồ, vệ sinh cá nhân cơ bản khi người bệnh mệt.",
+        "Giặt giũ, thay ga gối, sắp xếp không gian nghỉ ngơi gọn gàng.",
+        "Đi chợ, mua vật dụng thiết yếu và chuẩn bị đồ dùng cá nhân theo nhu cầu.",
+        "Trò chuyện, đọc tin, hỗ trợ giải trí nhẹ giúp người bệnh thoải mái tinh thần."
+      ],
     "pricing": [
       {
         "label": "Cả ngày 24h",
@@ -34,14 +34,14 @@
     "image": "assets/cach-su-dung-xe-lan-an-toan.png",
     "alt": "Dich vu ho tro sinh hoat muc trung binh cho nguoi benh",
     "description": "Dành cho người bệnh suy yếu rõ rệt, cần người kề bên nhiều thời điểm trong ngày để hỗ trợ các việc cá nhân và việc nhà cơ bản.",
-    "includes": [
-      "Hỗ trợ ăn uống tại giường hoặc tại bàn khi người bệnh khó tự phục vụ",
-      "Hỗ trợ đi vệ sinh, thay tã người lớn hoặc vệ sinh sau khi đi vệ sinh",
-      "Hỗ trợ tắm lau, thay đồ, giữ cơ thể sạch sẽ và dễ chịu mỗi ngày",
-      "Đỡ người bệnh ngồi dậy, đổi tư thế, di chuyển trong nhà bằng dụng cụ hỗ trợ sẵn có",
-      "Dọn dẹp khu vực sinh hoạt, xử lý đồ bẩn và khử mùi không gian sống",
-      "Cập nhật tình hình ăn ngủ, sinh hoạt trong ngày để gia đình dễ theo dõi"
-    ],
+      "includes": [
+        "Hỗ trợ ăn uống tại giường hoặc tại bàn khi người bệnh khó tự phục vụ.",
+        "Hỗ trợ đi vệ sinh, thay tã người lớn hoặc vệ sinh sau khi đi vệ sinh.",
+        "Hỗ trợ tắm lau, thay đồ, giữ cơ thể sạch sẽ và dễ chịu mỗi ngày.",
+        "Đỡ người bệnh ngồi dậy, đổi tư thế, di chuyển trong nhà bằng dụng cụ hỗ trợ sẵn có.",
+        "Dọn dẹp khu vực sinh hoạt, xử lý đồ bẩn và khử mùi không gian sống.",
+        "Cập nhật tình hình ăn ngủ, sinh hoạt trong ngày để gia đình dễ theo dõi."
+      ],
     "pricing": [
       {
         "label": "Cả ngày 24h",
@@ -64,14 +64,14 @@
     "image": "assets/tam-quan-trong-cua-viec-kham-suc-khoe-dinh-ky.png",
     "alt": "Dich vu ho tro sinh hoat muc nang cho nguoi benh phu thuoc",
     "description": "Phù hợp cho người bệnh gần như không tự sinh hoạt, cần hỗ trợ gần như trọn thời gian để đảm bảo sạch sẽ, thoải mái và ổn định nhịp sống tại nhà.",
-    "includes": [
-      "Hỗ trợ toàn bộ việc ăn uống, uống nước và vệ sinh sau ăn cho người bệnh",
-      "Hỗ trợ thay đồ, vệ sinh tại giường, chăm sóc tóc và móng tay móng chân cơ bản",
-      "Xoay trở, thay đổi tư thế định kỳ để người bệnh đỡ mỏi và dễ chịu hơn",
-      "Giặt giũ, thay chăn ga, làm sạch đệm và khu vực nghỉ ngơi thường xuyên",
-      "Hỗ trợ người bệnh giao tiếp với người thân qua điện thoại hoặc video call",
-      "Phối hợp với gia đình để chuẩn bị lịch sinh hoạt phù hợp theo từng ngày"
-    ],
+      "includes": [
+        "Hỗ trợ toàn bộ việc ăn uống, uống nước và vệ sinh sau ăn cho người bệnh.",
+        "Hỗ trợ thay đồ, vệ sinh tại giường, chăm sóc tóc và móng tay móng chân cơ bản.",
+        "Xoay trở, thay đổi tư thế định kỳ để người bệnh đỡ mỏi và dễ chịu hơn.",
+        "Giặt giũ, thay chăn ga, làm sạch đệm và khu vực nghỉ ngơi thường xuyên.",
+        "Hỗ trợ người bệnh giao tiếp với người thân qua điện thoại hoặc video call.",
+        "Phối hợp với gia đình để chuẩn bị lịch sinh hoạt phù hợp theo từng ngày."
+      ],
     "pricing": [
       {
         "label": "Cả ngày 24h",
@@ -94,14 +94,14 @@
     "image": "assets/cham-soc-nguoi-benh-bi-ho.png",
     "alt": "Dich vu dong hanh 24 7 cho nguoi benh phu thuoc hoan toan",
     "description": "Giải pháp cho người bệnh cần người túc trực thường xuyên cả ngày lẫn đêm, đặc biệt khi gia đình bận rộn hoặc không thể ở cạnh liên tục.",
-    "includes": [
-      "Túc trực hỗ trợ sinh hoạt liên tục theo ca: ăn uống, vệ sinh, thay đồ, nghỉ ngơi",
-      "Theo sát nhu cầu phát sinh trong ngày và ban đêm, phản hồi nhanh cho gia đình",
-      "Hỗ trợ đưa người bệnh đi tái khám, đi dạo ngắn hoặc thay đổi không khí khi cần",
-      "Quản lý đồ dùng thiết yếu: tã, khăn, quần áo, vật dụng vệ sinh và đồ ăn dự trữ",
-      "Dọn dẹp khu vực người bệnh, giữ không gian sạch, thoáng, an toàn khi di chuyển",
-      "Đồng hành tâm lý, trò chuyện và tạo cảm giác yên tâm để người bệnh bớt cô đơn"
-    ],
+      "includes": [
+        "Túc trực hỗ trợ sinh hoạt liên tục theo ca: ăn uống, vệ sinh, thay đồ, nghỉ ngơi.",
+        "Theo sát nhu cầu phát sinh trong ngày và ban đêm, phản hồi nhanh cho gia đình.",
+        "Hỗ trợ đưa người bệnh đi tái khám, đi dạo ngắn hoặc thay đổi không khí khi cần.",
+        "Quản lý đồ dùng thiết yếu: tã, khăn, quần áo, vật dụng vệ sinh và đồ ăn dự trữ.",
+        "Dọn dẹp khu vực người bệnh, giữ không gian sạch, thoáng, an toàn khi di chuyển.",
+        "Đồng hành tâm lý, trò chuyện và tạo cảm giác yên tâm để người bệnh bớt cô đơn."
+      ],
     "pricing": [
       {
         "label": "Cả ngày 24h",

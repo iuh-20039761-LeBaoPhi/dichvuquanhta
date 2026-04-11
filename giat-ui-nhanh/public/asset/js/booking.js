@@ -1,4 +1,4 @@
-﻿(function (window, document) {
+(function (window, document) {
   const moduleBase = "public/asset/js/booking/";
   const moduleFiles = [
     "booking_shared.js",

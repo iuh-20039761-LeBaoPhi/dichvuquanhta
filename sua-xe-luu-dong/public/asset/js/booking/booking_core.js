@@ -345,7 +345,7 @@
 
       if (!addressText) {
         latestDistanceKm = null;
-        transportFeeValue = minFee;
+        transportFeeValue = 0;
         setTransportFeeDisplay(null, {
           displayText: "Nhập địa chỉ để tính giá",
         });

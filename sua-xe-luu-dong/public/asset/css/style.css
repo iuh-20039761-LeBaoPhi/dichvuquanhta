@@ -41,6 +41,7 @@ html {
   font-weight: 700;
   font-size: 1.5rem;
   color: #fff !important;
+  margin-right: 0;
 }
 
 .logo-icon {
@@ -813,5 +814,8 @@ footer ul li a:hover {
     right: auto;
     transform: translateX(-50%);
     width: min(280px, calc(100vw - 32px));
+  }
+  .stats-box {
+    max-width: 390px;
   }
 }
