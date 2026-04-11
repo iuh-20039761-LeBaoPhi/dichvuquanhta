@@ -231,7 +231,7 @@
 		.panel-title {
 			margin: 0;
 			font-size: 16px;
-			font-weight: 700;
+			font-weight: 600;
 			color: #15314f;
 		}
 
@@ -239,7 +239,7 @@
 			padding: 5px 10px;
 			border-radius: 999px;
 			font-size: 11px;
-			font-weight: 700;
+			font-weight: 600;
 			letter-spacing: .2px;
 			background: #e8f3ff;
 			color: #0d4d96;
@@ -286,7 +286,7 @@
 		.field-value {
 			margin: 0;
 			font-size: 14px;
-			font-weight: 600;
+			font-weight: 500;
 			word-break: break-word;
 		}
 
@@ -328,7 +328,7 @@
 		.invoice-order-title {
 			margin: 0;
 			font-size: clamp(1.1rem, 2vw, 1.7rem);
-			font-weight: 700;
+			font-weight: 600;
 		}
 
 		.invoice-status-badge {
@@ -358,7 +358,7 @@
 		.invoice-subtitle {
 			margin: 0;
 			font-size: 19px;
-			font-weight: 600;
+			font-weight: 500;
 			opacity: .95;
 		}
 
@@ -456,7 +456,7 @@
 		.invoice-item-content h4 {
 			margin: 0;
 			font-size: clamp(1.05rem, 1.6vw, 1.9rem);
-			font-weight: 700;
+			font-weight: 600;
 			line-height: 1.15;
 			word-break: break-word;
 		}
@@ -509,8 +509,8 @@
 
 		.jobs-title {
 			margin: 0;
-			font-size: 27px;
-			font-weight: 700;
+			font-size: 24px;
+			font-weight: 600;
 			color: #213d57;
 		}
 
@@ -683,8 +683,8 @@
 
 		.profile-name {
 			margin: 0;
-			font-size: 22px;
-			font-weight: 700;
+			font-size: 20px;
+			font-weight: 600;
 			line-height: 1.25;
 			color: #1d3650;
 		}
@@ -699,7 +699,7 @@
 		.profile-contact {
 			margin: 0;
 			font-size: 14px;
-			font-weight: 700;
+			font-weight: 500;
 			color: #2f4961;
 			display: flex;
 			align-items: center;
@@ -718,8 +718,8 @@
 
 		.profile-row {
 			margin: 0;
-			font-size: 15px;
-			font-weight: 700;
+			font-size: 14px;
+			font-weight: 500;
 			color: #2f4961;
 			display: flex;
 			align-items: flex-start;
@@ -767,7 +767,7 @@
 			border-radius: 10px;
 			background: #eef2f6;
 			font-size: 13px;
-			font-weight: 700;
+			font-weight: 500;
 			color: #50657a;
 		}
 
@@ -1344,6 +1344,12 @@
 											<span id="badgeInvoiceStatus" class="invoice-status-badge">---</span>
 										</div>
 										<p id="invoiceService" class="invoice-subtitle">---</p>
+										<div class="invoice-title-line" style="margin-top: 5px; gap: 8px;">
+											<span id="invoiceLoaiNoiDon" class="invoice-status-badge"
+												style="background: rgba(255, 255, 255, 0.45); color: #000; border: 1px solid rgba(0,0,0,0.1);">---</span>
+											<span id="invoiceGoiDichVu" class="invoice-status-badge"
+												style="background: rgba(255, 255, 255, 0.45); color: #000; border: 1px solid rgba(0,0,0,0.1);">---</span>
+										</div>
 									</div>
 								</div>
 								<div class="actions d-flex flex-wrap align-items-center"
@@ -2159,6 +2165,8 @@
 				setText('invoiceId', invoiceCode);
 				setText('invoicePrice', formatMoney($datlich_donvesinh.tong_tien || 0));
 				setText('invoiceService', $datlich_donvesinh.dich_vu || '---');
+				setText('invoiceLoaiNoiDon', $datlich_donvesinh.loai_noi_don || '---');
+				setText('invoiceGoiDichVu', $datlich_donvesinh.goi_dich_vu || '---');
 				setText('invoiceAddress', $datlich_donvesinh.diachikhachhang || '---');
 				setText('invoiceTimeRange', `${formatTimeDisplay($datlich_donvesinh.gio_bat_dau_kehoach)} - ${formatTimeDisplay($datlich_donvesinh.gio_ket_thuc_kehoach)}`);
 				setText('invoiceDate', `${formatDateDisplay($datlich_donvesinh.ngay_bat_dau_kehoach)}${$datlich_donvesinh.ngay_ket_thuc_kehoach ? ` -> ${formatDateDisplay($datlich_donvesinh.ngay_ket_thuc_kehoach)}` : ''}`);

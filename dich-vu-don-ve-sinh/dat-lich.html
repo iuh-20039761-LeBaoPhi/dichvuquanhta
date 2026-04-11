@@ -517,10 +517,12 @@
     }
 
     @media (max-width: 575.98px) {
+
       /* Sát với viền màn hình điện thoại */
       section.py-5 {
         padding: 5px 1px !important;
       }
+
       .container,
       #bookingPageSection,
       #bookingPageSection .card {
@@ -531,6 +533,7 @@
         border-radius: 0 !important;
         max-width: 100% !important;
       }
+
       #bookingPageSection .card-body {
         padding: 8px 2px !important;
       }
@@ -774,9 +777,9 @@
                         <div class="col-md-6">
                           <label class="form-label fw-bold" for="serviceLevel">Mức độ vệ sinh</label>
                           <select id="serviceLevel" class="form-select">
-                            <option value="light">Nhẹ</option>
-                            <option value="standard" selected>Tiêu chuẩn</option>
-                            <option value="deep">Sâu</option>
+                            <option value="nhẹ">Nhẹ</option>
+                            <option value="tiêu chuẩn" selected>Tiêu chuẩn</option>
+                            <option value="sâu">Sâu</option>
                           </select>
                         </div>
                       </div>
@@ -1391,7 +1394,7 @@
           $('#totalPrice').val('0 đ');
           $('#travelFee').text('0 đ');
           $('#serviceArea').val('');
-          $('#serviceLevel').val('standard');
+          $('#serviceLevel').val('tiêu chuẩn');
           if ($('#timeSlotSelect').length) {
             $('#timeSlotSelect').prop('selectedIndex', 0);
           }
@@ -1712,7 +1715,7 @@
 
           if (type === 'per_m2') {
             var area = Number($('#serviceArea').val() || 0);
-            var level = $('#serviceLevel').val() || 'standard';
+            var level = $('#serviceLevel').val() || 'tiêu chuẩn';
             var levelFactor = Number((pricing.levels && pricing.levels[level]) || 1);
             if (area <= 0) {
               return { valid: false, message: 'Vui lòng nhập diện tích (m²).', basePrice: 0 };

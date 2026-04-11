@@ -1,7 +1,12 @@
 [
   {
     "id": 1,
-    "loai": ["nhà", "trọ", "căn hộ", "homestay"],
+    "loai": [
+      "nhà",
+      "trọ",
+      "căn hộ",
+      "homestay"
+    ],
     "name": "Vệ Sinh Nhà Ở.",
     "image": "assets/giup-viec-quet-nha.jpg",
     "alt": "Dich vu tong ve sinh nha o can ho chung cu nha pho",
@@ -16,28 +21,50 @@
       "Khử mùi toàn bộ không gian."
     ],
     "time_slots": [
-      { "value": "morning", "label": "08:00 - 11:00" },
-      { "value": "afternoon", "label": "13:00 - 17:00" }
+      {
+        "value": "morning",
+        "label": "08:00 - 11:00"
+      },
+      {
+        "value": "afternoon",
+        "label": "13:00 - 17:00"
+      }
     ],
     "pricing": {
       "type": "per_m2",
       "base_price": 15000,
       "min_price": 1200000,
       "levels": {
-        "light": 0.7,
-        "standard": 1,
-        "deep": 1.2
+        "nhẹ": 0.7,
+        "tiêu chuẩn": 1,
+        "sâu": 1.2
       },
       "estimated": [
-        { "area": 50, "staff": 2, "hours": 3 },
-        { "area": 100, "staff": 3, "hours": 5 },
-        { "area": 150, "staff": 4, "hours": 7 }
+        {
+          "area": 50,
+          "staff": 2,
+          "hours": 3
+        },
+        {
+          "area": 100,
+          "staff": 3,
+          "hours": 5
+        },
+        {
+          "area": 150,
+          "staff": 4,
+          "hours": 7
+        }
       ]
     }
   },
   {
     "id": 2,
-    "loai": ["công trình xây dựng", "sự kiện", "hội trợ"],
+    "loai": [
+      "công trình xây dựng",
+      "sự kiện",
+      "hội trợ"
+    ],
     "name": "Vệ Sinh Sau Xây Dựng - Sự Kiện",
     "image": "assets/lau-kinh-sau-xay-dung.jpg",
     "alt": "Dich vu ve sinh nha moi xay xong hoac vua sua chua",
@@ -53,27 +80,46 @@
       "Khử mùi sơn mới, mùi vật liệu; vệ sinh khu vệ sinh tạm."
     ],
     "time_slots": [
-      { "value": "morning", "label": "08:00 - 12:00" },
-      { "value": "afternoon", "label": "13:00 - 18:00" }
+      {
+        "value": "morning",
+        "label": "08:00 - 12:00"
+      },
+      {
+        "value": "afternoon",
+        "label": "13:00 - 18:00"
+      }
     ],
     "pricing": {
       "type": "per_m2",
       "base_price": 20000,
       "min_price": 2000000,
       "levels": {
-        "light": 0.8,
-        "standard": 1,
-        "deep": 1.3
+        "nhẹ": 0.8,
+        "tiêu chuẩn": 1,
+        "sâu": 1.3
       },
       "estimated": [
-        { "area": 100, "staff": 3, "hours": 6 },
-        { "area": 200, "staff": 5, "hours": 10 }
+        {
+          "area": 100,
+          "staff": 3,
+          "hours": 6
+        },
+        {
+          "area": 200,
+          "staff": 5,
+          "hours": 10
+        }
       ]
     }
   },
   {
     "id": 3,
-    "loai": ["văn phòng", "công ty", "cửa hàng", "siêu thị"],
+    "loai": [
+      "văn phòng",
+      "công ty",
+      "cửa hàng",
+      "siêu thị"
+    ],
     "name": "Vệ Sinh Văn Phòng - Cửa Hàng",
     "image": "assets/hut-bui-tham-van-phong.jpg",
     "alt": "Dich vu don dep van phong cong ty cua hang kinh doanh",
@@ -89,28 +135,51 @@
       "Khử mùi toàn bộ không gian, giữ môi trường làm việc luôn dễ chịu."
     ],
     "time_slots": [
-      { "value": "morning", "label": "07:00 - 15:00" },
-      { "value": "evening", "label": "13:00 - 21:00" }
+      {
+        "value": "morning",
+        "label": "07:00 - 15:00"
+      },
+      {
+        "value": "evening",
+        "label": "13:00 - 21:00"
+      }
     ],
     "pricing": {
       "type": "per_m2",
       "base_price": 13000,
       "min_price": 1000000,
       "levels": {
-        "light": 0.8,
-        "standard": 1,
-        "deep": 1.25
+        "nhẹ": 0.8,
+        "tiêu chuẩn": 1,
+        "sâu": 1.25
       },
       "estimated": [
-        { "area": 80, "staff": 2, "hours": 3 },
-        { "area": 150, "staff": 3, "hours": 5 },
-        { "area": 250, "staff": 4, "hours": 7 }
+        {
+          "area": 80,
+          "staff": 2,
+          "hours": 3
+        },
+        {
+          "area": 150,
+          "staff": 3,
+          "hours": 5
+        },
+        {
+          "area": 250,
+          "staff": 4,
+          "hours": 7
+        }
       ]
     }
   },
   {
     "id": 4,
-    "loai": ["kho bãi", "sân vườn", "công viên", "khu chăn nuôi"],
+    "loai": [
+      "kho bãi",
+      "sân vườn",
+      "công viên",
+      "khu chăn nuôi"
+    ],
     "name": "Dọn Vệ Sinh Khỗ Bãi-Sân Vườn",
     "image": "assets/ve-sinh-nha-tam-homestay.jpg",
     "alt": "Dich vu don dep airbnb homestay can ho cho thue",
@@ -125,14 +194,30 @@
       "Khử mùi khu vực rộng, cải thiện môi trường làm việc."
     ],
     "time_slots": [
-      { "value": "morning", "label": "06:00 - 18:00" },
-      { "value": "evening", "label": "18:00 - 6:00" }
+      {
+        "value": "morning",
+        "label": "06:00 - 18:00"
+      },
+      {
+        "value": "evening",
+        "label": "18:00 - 6:00"
+      }
     ],
     "pricing": {
       "type": "package",
       "packages": [
-        { "name": "Căn 1 Phòng ngủ", "price": 250000, "staff": 1, "hours": 2 },
-        { "name": "Căn 2-3 Phòng ngủ", "price": 450000, "staff": 2, "hours": 4 }
+        {
+          "name": "Căn 1 Phòng ngủ",
+          "price": 250000,
+          "staff": 1,
+          "hours": 2
+        },
+        {
+          "name": "Căn 2-3 Phòng ngủ",
+          "price": 450000,
+          "staff": 2,
+          "hours": 4
+        }
       ]
     }
   }

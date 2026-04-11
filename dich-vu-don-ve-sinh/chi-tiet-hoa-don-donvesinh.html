@@ -1294,6 +1294,10 @@
 											<span id="badgeInvoiceStatus" class="invoice-status-badge">---</span>
 										</div>
 										<p id="invoiceService" class="invoice-subtitle">---</p>
+										<div class="invoice-title-line" style="margin-top: 5px; gap: 8px;">
+											<span id="invoiceLoaiNoiDon" class="invoice-status-badge" style="background: rgba(255, 255, 255, 0.45); color: #000; border: 1px solid rgba(0,0,0,0.1);">---</span>
+											<span id="invoiceGoiDichVu" class="invoice-status-badge" style="background: rgba(255, 255, 255, 0.45); color: #000; border: 1px solid rgba(0,0,0,0.1);">---</span>
+										</div>
 									</div>
 								</div>
 								<div class="actions d-flex flex-wrap align-items-center"
@@ -1523,7 +1527,6 @@
 						</div>
 						<div class="profile-foot">
 							<span id="staffReceiveTime" class="profile-pill">Nhận việc: ---</span>
-							<span id="staffExpChip" class="profile-pill">Kinh nghiệm: ---</span>
 						</div>
 					</article>
 
@@ -2108,6 +2111,8 @@
 				setText('invoiceId', invoiceCode);
 				setText('invoicePrice', formatMoney($datlich_donvesinh.tong_tien || 0));
 				setText('invoiceService', $datlich_donvesinh.dich_vu || '---');
+				setText('invoiceLoaiNoiDon', $datlich_donvesinh.loai_noi_don || '---');
+				setText('invoiceGoiDichVu', $datlich_donvesinh.goi_dich_vu || '---');
 				setText('invoiceAddress', $datlich_donvesinh.diachikhachhang || '---');
 				setText('invoiceTimeRange', `${formatTimeDisplay($datlich_donvesinh.gio_bat_dau_kehoach)} - ${formatTimeDisplay($datlich_donvesinh.gio_ket_thuc_kehoach)}`);
 				setText('invoiceDate', `${formatDateDisplay($datlich_donvesinh.ngay_bat_dau_kehoach)}${$datlich_donvesinh.ngay_ket_thuc_kehoach ? ` -> ${formatDateDisplay($datlich_donvesinh.ngay_ket_thuc_kehoach)}` : ''}`);
@@ -2126,7 +2131,6 @@
 				setText('staffCardPhone', $datlich_donvesinh.sdtncc || '---');
 				setText('staffCardAddress', $datlich_donvesinh.diachincc || '---');
 				setText('staffReceiveTime', `Nhận việc: ${formatDateTimeDisplay($datlich_donvesinh.ngaynhan)}`);
-				setText('staffExpChip', `Kinh nghiệm: ${$nhacungcap_donvesinh.kinh_nghiem || '---'}`);
 				setAvatar('staffAvatar', $nhacungcap_donvesinh.anh_dai_dien || $nhacungcap_donvesinh.avatar || '');
 
 				const status = $datlich_donvesinh.trangthai || '---';
