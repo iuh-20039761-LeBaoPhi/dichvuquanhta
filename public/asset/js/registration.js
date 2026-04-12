@@ -237,8 +237,8 @@ async function regSubmit() {
         // Đảm bảo bảng nguoidung tồn tại
         await krud.ensureNguoidungTable();
 
-        // Kiểm tra trùng SĐT trong bảng nguoidung
-        const existing = await krud.listTable('nguoidung');
+        // Kiểm tra trùng SĐT trong bảng nguoidung (Mở rộng limit lên 1000)
+        const existing = await krud.listTable('nguoidung', { limit: 1000 });
         const pNorm = phone.replace(/\D/g, '');
         if (existing.find(r => String(r.sodienthoai || r.phone || '').replace(/\D/g, '') === pNorm)) {
             throw new Error('SĐT đã được đăng ký. Vui lòng đăng nhập hoặc dùng SĐT khác.');

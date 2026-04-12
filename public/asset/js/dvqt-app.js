@@ -99,7 +99,8 @@
             const krudHelper = Utils.getKrudHelper();
             await krudHelper.ensureNguoidungTable();
 
-            const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER);
+            // Lấy tối đa 1000 bản ghi để lọc (Tránh limit mặc định là 10)
+            const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER, { limit: 1000 });
             const user = rows.find(r => {
                 const dbPhone = Utils.normalizePhone(r.sodienthoai || r.phone);
                 return dbPhone === Utils.normalizePhone(phone);
@@ -161,7 +162,7 @@
          */
         isAccountExists: async (phone) => {
             const krudHelper = Utils.getKrudHelper();
-            const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER);
+            const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER, { limit: 1000 });
             const phoneNorm = Utils.normalizePhone(phone);
             return rows.some(r => Utils.normalizePhone(r.sodienthoai || r.phone) === phoneNorm);
         },
@@ -196,7 +197,7 @@
 
         getProviders: async (idDichvu) => {
             const krudHelper = Utils.getKrudHelper();
-            const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER);
+            const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER, { limit: 1000 });
             return rows.filter(r => String(r.id_dichvu || '0').split(',').includes(String(idDichvu)));
         },
 
@@ -208,7 +209,7 @@
         checkAccess: async (roleGroup, phone) => {
             try {
                 const krudHelper = Utils.getKrudHelper();
-                const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER);
+                const rows = await krudHelper.listTable(API_CONFIG.TABLE_USER, { limit: 1000 });
                 const user = rows.find(r => Utils.normalizePhone(r.sodienthoai || r.phone) === Utils.normalizePhone(phone));
                 if (!user) return false;
                 
