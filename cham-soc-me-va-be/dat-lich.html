@@ -1519,7 +1519,28 @@
         $('#reviewPageSection').addClass('d-none');
         $('#bookingPageSection').removeClass('d-none');
       }
-
+      async function fetchRows(table) {
+        if (typeof krudList === 'function') {
+          return await krudList({ table: table });
+        }
+        const res = await fetch('https://api.dvqt.vn/list/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ table: table })
+        });
+        return await res.json();
+      }
+      function normalizeRows(res) {
+        if (Array.isArray(res)) return res;
+        if (!res || typeof res !== 'object') return [];
+        if (res.error) throw new Error(res.error);
+        if (res.success === false) throw new Error(res.message || 'API tra ve loi');
+        if (Array.isArray(res.data)) return res.data;
+        if (Array.isArray(res.rows)) return res.rows;
+        if (Array.isArray(res.items)) return res.items;
+        if (Array.isArray(res.result)) return res.result;
+        return [];
+      }
       function handleBookingSuccess() {
         // [Thêm mới] Xử lý đăng nhập và chuyển hướng tự động
         if (typeof xulyDangNhapSauDatLich === 'function') {
@@ -1562,39 +1583,20 @@
             var date = new Date();
             date.setTime(date.getTime() + (d * 24 * 60 * 60 * 1000));
             expires = "; expires=" + date.toUTCString();
-            // Sử dụng encodeURIComponent để tránh lỗi ký tự đặc biệt trong cookie
+            // Sử dụng enc odeURIComponent để tránh lỗi ký tự đặc biệt trong cookie
             document.cookie = name + "=" + encodeURIComponent(value || "") + expires + "; path=/";
           }
         };
 
         try {
-          // 1. Kiểm tra sự tồn tại của số điện thoại trong bảng nguoidung
-          var users = [];
-          var resList = await krud('list', 'nguoidung', { p: 1, limit: 10000 });
-
-          if (Array.isArray(resList)) {
-            users = resList;
-          } else if (resList && resList.data) {
-            users = Array.isArray(resList.data) ? resList.data : (resList.data.rows || resList.data.items || []);
-          } else if (resList && resList.rows) {
-            users = resList.rows;
-          } else if (resList && resList.list) {
-            users = resList.list;
-          }
-
-          var clean = function (p) { return String(p || '').replace(/\D/g, ''); };
-          var inputPhone = clean(phone);
-          var foundUser = users.find(function (u) {
-            return clean(u.sodienthoai) === inputPhone;
-          });
-
-          var matkhau = '';
-          if (foundUser) {
-            // Trường hợp 1: Đã tồn tại -> lấy mật khẩu hiện tại
-            matkhau = foundUser.matkhau;
+          let matkhau = '';
+          let res = await fetchRows('nguoidung');
+          let rows = normalizeRows(res);
+          let found = rows.find(r => (r.sodienthoai || r.so_dien_thoai || r.phone) === phone);
+          if (found) {
+            matkhau = found.matkhau;
           } else {
-            // Trường hợp 2: Chưa tồn tại -> insert khách hàng mới với mk là sdt
-            matkhau = inputPhone;
+            matkhau = phone;
             await krud('insert', 'nguoidung', {
               hovaten: name,
               sodienthoai: phone,
@@ -1604,6 +1606,7 @@
               trangthai: 'active'
             });
           }
+
 
           // 2. Thiết lập cookie đăng nhập (dvqt_u, dvqt_p) để session_user.php nhận diện
           Utils.setCookie('dvqt_u', phone);

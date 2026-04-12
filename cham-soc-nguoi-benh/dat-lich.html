@@ -16,138 +16,709 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
-    body { padding-top: 96px; font-family: 'Quicksand', sans-serif; }
-    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1050; }
-    .navbar .container { display: flex; flex-wrap: nowrap !important; align-items: center; min-width: 0; }
-    .package-locked { opacity: 0.45; filter: grayscale(0.2); cursor: not-allowed; }
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      padding-top: 96px;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1050;
+    }
+
+    .navbar .container {
+      display: flex;
+      flex-wrap: nowrap !important;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .package-locked {
+      opacity: 0.45;
+      filter: grayscale(0.2);
+      cursor: not-allowed;
+    }
 
     /* Review Section */
-    .review-row { display: flex; align-items: flex-start; gap: 10px; }
-    .review-label { width: 120px; min-width: 120px; font-weight: 700; color: #333; }
-    .review-value { flex: 1; min-width: 0; text-align: left; word-break: break-word; }
-    .review-shell { background: #f7f7f8; border: 1px solid #ececee; }
-    .review-title { color: #2f86d3 !important; font-size: 1.9rem; font-weight: 800 !important; }
-    .review-alert { background: #f6eac5; border: 1px solid #ecd9a4; color: #5e5430; border-radius: 8px; font-weight: 600; }
-    .review-panel { background: #f5f5f6 !important; border: 2px solid #7db8e8 !important; border-radius: 12px; }
-    .review-panel .card-body { color: #2a2f36; }
-    .review-section-title { color: #2f86d3 !important; font-size: 1.3rem; font-weight: 800 !important; }
-    .review-panel .review-label { color: #3a3a3a; font-weight: 700; }
-    .review-panel .review-value { color: #222; font-weight: 600; }
-    #reviewJobs { color: #222; font-weight: 600; }
-    #reviewJobs .review-jobs-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-    #reviewJobs .review-jobs-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 12px; border: 1px solid #b9ebcb; background: #ecfdf3; }
-    #reviewJobs .review-job-index { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #22a35a; color: #fff; font-size: 0.9rem; font-weight: 800; line-height: 1; }
-    #reviewJobs .review-job-text { flex: 1; color: #1f2a37; font-size: 1.02rem; line-height: 1.35; }
-    .review-total-box { background: #f1f8ff !important; border: 2px solid #7db8e8 !important; border-radius: 10px; }
-    .review-total-box .card-body { padding: 12px 0; }
-    .review-action-row { margin-top: 16px !important; }
-    .review-btn-edit { background: #7d8790; border: none; color: #fff; font-weight: 700; }
-    .review-btn-edit:hover { background: #6b747c; color: #fff; }
-    .review-btn-save { background: linear-gradient(135deg, #3e9be6, #1f84d8) !important; border: none !important; color: #fff; font-weight: 800; }
-    .review-btn-save:hover { background: linear-gradient(135deg, #2d8ad6, #166fbe) !important; }
+    .review-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .review-label {
+      width: 120px;
+      min-width: 120px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .review-value {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    .review-shell {
+      background: #f7f7f8;
+      border: 1px solid #ececee;
+    }
+
+    .review-title {
+      color: #2f86d3 !important;
+      font-size: 1.9rem;
+      font-weight: 800 !important;
+    }
+
+    .review-alert {
+      background: #f6eac5;
+      border: 1px solid #ecd9a4;
+      color: #5e5430;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .review-panel {
+      background: #f5f5f6 !important;
+      border: 2px solid #7db8e8 !important;
+      border-radius: 12px;
+    }
+
+    .review-panel .card-body {
+      color: #2a2f36;
+    }
+
+    .review-section-title {
+      color: #2f86d3 !important;
+      font-size: 1.3rem;
+      font-weight: 800 !important;
+    }
+
+    .review-panel .review-label {
+      color: #3a3a3a;
+      font-weight: 700;
+    }
+
+    .review-panel .review-value {
+      color: #222;
+      font-weight: 600;
+    }
+
+    #reviewJobs {
+      color: #222;
+      font-weight: 600;
+    }
+
+    #reviewJobs .review-jobs-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #reviewJobs .review-jobs-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid #b9ebcb;
+      background: #ecfdf3;
+    }
+
+    #reviewJobs .review-job-index {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #22a35a;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    #reviewJobs .review-job-text {
+      flex: 1;
+      color: #1f2a37;
+      font-size: 1.02rem;
+      line-height: 1.35;
+    }
+
+    .review-total-box {
+      background: #f1f8ff !important;
+      border: 2px solid #7db8e8 !important;
+      border-radius: 10px;
+    }
+
+    .review-total-box .card-body {
+      padding: 12px 0;
+    }
+
+    .review-action-row {
+      margin-top: 16px !important;
+    }
+
+    .review-btn-edit {
+      background: #7d8790;
+      border: none;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .review-btn-edit:hover {
+      background: #6b747c;
+      color: #fff;
+    }
+
+    .review-btn-save {
+      background: linear-gradient(135deg, #3e9be6, #1f84d8) !important;
+      border: none !important;
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .review-btn-save:hover {
+      background: linear-gradient(135deg, #2d8ad6, #166fbe) !important;
+    }
 
     /* Boxes */
-    .customer-info-box { border: 2px solid #6bbf83; border-radius: 16px; padding: 12px; margin-bottom: 16px; background: #f8fffa; }
-    .customer-info-title { color: #2e7d32; font-weight: 700; font-size: 1.35rem; line-height: 1; margin-bottom: 10px; }
-    .customer-info-box .form-label { font-weight: 700; color: #2f2f2f; margin-bottom: 4px; }
-    .customer-info-box .form-control, .customer-info-box .input-group-text { border-color: #a8cdb2; background: #f7f9f7; }
-    .customer-info-box .input-group-text { color: #7a8281; }
-    .customer-info-box .form-control:focus { border-color: #7cc190; box-shadow: 0 0 0 0.2rem rgba(89, 170, 114, 0.15); }
+    .customer-info-box {
+      border: 2px solid #6bbf83;
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 16px;
+      background: #f8fffa;
+    }
 
-    .service-work-box { border: 2px solid #4f9ddb; border-radius: 10px; padding: 10px; margin-bottom: 16px; background: #fafdff; }
-    .service-work-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
-    #serviceSelector { border-color: #b3c0ca; background: #f1f1f1; }
-    #serviceSelector option { white-space: normal; }
-    #serviceSelector.service-selector-open { height: auto; }
-    #serviceJobs .list-group { gap: 2px; }
-    #serviceJobs .list-group-item { border: 0; background: transparent; padding: 4px 0; border-radius: 0; }
-    #serviceJobs .job-check { width: 16px; height: 16px; border-radius: 3px; border-color: #2e86d1; accent-color: #2e86d1; margin-left: 10px; }
-    #serviceJobs .list-group-item span { color: #1f2a37; font-size: 1.05rem; line-height: 1.3; }
+    .customer-info-title {
+      color: #2e7d32;
+      font-weight: 700;
+      font-size: 1.35rem;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
 
-    .schedule-box { border: 2px solid #2f93df; border-radius: 16px; background: #dceeff; padding: 12px; margin-bottom: 10px; }
-    .schedule-box .form-label { font-weight: 700; color: #1f2a37; margin-bottom: 4px; }
-    .schedule-box .form-control, .schedule-box .form-select { background: #f4f4f4; border-color: #8ca2b5; color: #111; font-weight: 700; }
-    .schedule-box #servicePackages .list-group-item { background: transparent; border-color: #8ab6db; color: #111; }
-    .schedule-box #servicePackages .list-group-item.active { background: #cfe5f8; border-color: #5f9fce; }
-    .schedule-box #servicePackages .list-group-item span { color: #111; font-weight: 700; }
-    #autoEndDateRow { border: 2px solid #58b56b; border-radius: 12px; background: #dff5e4; color: #1f4f2a; }
+    .customer-info-box .form-label {
+      font-weight: 700;
+      color: #2f2f2f;
+      margin-bottom: 4px;
+    }
 
-    .extra-request-box .form-label, .note-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
-    .extra-request-box #extraRequest, .note-box #customerNote { border: 2px solid #012b55; border-radius: 12px; min-height: 56px; padding: 10px 14px; font-size: 1.05rem; color: #1f2a37; background: #fffefe; }
-    .extra-request-box #extraRequest:focus, .note-box #customerNote:focus { border-color: #140086; box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.15); }
+    .customer-info-box .form-control,
+    .customer-info-box .input-group-text {
+      border-color: #a8cdb2;
+      background: #f7f9f7;
+    }
 
-    .price-detail-box { border: 2px solid #1e88e5 !important; border-radius: 12px; background: #eaf4ff !important; }
-    .price-detail-box .card-body { color: #1f2a37; font-weight: 700; }
-    .price-detail-title { font-size: 1.2rem; font-weight: 800 !important; }
-    .price-detail-box .text-muted { color: #4b5563 !important; font-weight: 600; }
-    .price-detail-box #basePrice, .price-detail-box #travelFee, .price-detail-box #nightFee, .price-detail-box #holidayFee { font-weight: 800; color: #111827; }
-    .price-detail-box hr { border-color: rgba(30, 136, 229, 0.35); }
+    .customer-info-box .input-group-text {
+      color: #7a8281;
+    }
 
-    .quick-attach-box .form-label { color: #1f2a37; font-weight: 700; margin-bottom: 6px; }
-    .attachment-preview-box { border: 2px solid #bbdefb; border-radius: 12px; background: #fff; padding: 10px; }
-    .attachment-preview-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .attachment-pane { min-height: 128px; padding: 6px; border-radius: 10px; background: #f5faff; }
-    .attachment-pane+.attachment-pane { border-left: 1px dashed #b7d7f5; padding-left: 12px; }
-    .attachment-pane-title { font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 6px; }
-    .attachment-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-    .attachment-item { border: 1px solid #e3e3e3; border-radius: 10px; overflow: hidden; background: #fff; }
-    .attachment-item img, .attachment-item video { display: block; width: 100%; height: 90px; object-fit: cover; background: #f8f8f8; }
-    .attachment-item-name { padding: 6px 8px; font-size: 12px; font-weight: 600; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .customer-info-box .form-control:focus {
+      border-color: #7cc190;
+      box-shadow: 0 0 0 0.2rem rgba(89, 170, 114, 0.15);
+    }
+
+    .service-work-box {
+      border: 2px solid #4f9ddb;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 16px;
+      background: #fafdff;
+    }
+
+    .service-work-box .form-label {
+      color: #1f2a37;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    #serviceSelector {
+      border-color: #b3c0ca;
+      background: #f1f1f1;
+    }
+
+    #serviceSelector option {
+      white-space: normal;
+    }
+
+    #serviceSelector.service-selector-open {
+      height: auto;
+    }
+
+    #serviceJobs .list-group {
+      gap: 2px;
+    }
+
+    #serviceJobs .list-group-item {
+      border: 0;
+      background: transparent;
+      padding: 4px 0;
+      border-radius: 0;
+    }
+
+    #serviceJobs .job-check {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      border-color: #2e86d1;
+      accent-color: #2e86d1;
+      margin-left: 10px;
+    }
+
+    #serviceJobs .list-group-item span {
+      color: #1f2a37;
+      font-size: 1.05rem;
+      line-height: 1.3;
+    }
+
+    .schedule-box {
+      border: 2px solid #2f93df;
+      border-radius: 16px;
+      background: #dceeff;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .schedule-box .form-label {
+      font-weight: 700;
+      color: #1f2a37;
+      margin-bottom: 4px;
+    }
+
+    .schedule-box .form-control,
+    .schedule-box .form-select {
+      background: #f4f4f4;
+      border-color: #8ca2b5;
+      color: #111;
+      font-weight: 700;
+    }
+
+    .schedule-box #servicePackages .list-group-item {
+      background: transparent;
+      border-color: #8ab6db;
+      color: #111;
+    }
+
+    .schedule-box #servicePackages .list-group-item.active {
+      background: #cfe5f8;
+      border-color: #5f9fce;
+    }
+
+    .schedule-box #servicePackages .list-group-item span {
+      color: #111;
+      font-weight: 700;
+    }
+
+    #autoEndDateRow {
+      border: 2px solid #58b56b;
+      border-radius: 12px;
+      background: #dff5e4;
+      color: #1f4f2a;
+    }
+
+    .extra-request-box .form-label,
+    .note-box .form-label {
+      color: #1f2a37;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .extra-request-box #extraRequest,
+    .note-box #customerNote {
+      border: 2px solid #012b55;
+      border-radius: 12px;
+      min-height: 56px;
+      padding: 10px 14px;
+      font-size: 1.05rem;
+      color: #1f2a37;
+      background: #fffefe;
+    }
+
+    .extra-request-box #extraRequest:focus,
+    .note-box #customerNote:focus {
+      border-color: #140086;
+      box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.15);
+    }
+
+    .price-detail-box {
+      border: 2px solid #1e88e5 !important;
+      border-radius: 12px;
+      background: #eaf4ff !important;
+    }
+
+    .price-detail-box .card-body {
+      color: #1f2a37;
+      font-weight: 700;
+    }
+
+    .price-detail-title {
+      font-size: 1.2rem;
+      font-weight: 800 !important;
+    }
+
+    .price-detail-box .text-muted {
+      color: #4b5563 !important;
+      font-weight: 600;
+    }
+
+    .price-detail-box #basePrice,
+    .price-detail-box #travelFee,
+    .price-detail-box #nightFee,
+    .price-detail-box #holidayFee {
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .price-detail-box hr {
+      border-color: rgba(30, 136, 229, 0.35);
+    }
+
+    .quick-attach-box .form-label {
+      color: #1f2a37;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .attachment-preview-box {
+      border: 2px solid #bbdefb;
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .attachment-preview-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .attachment-pane {
+      min-height: 128px;
+      padding: 6px;
+      border-radius: 10px;
+      background: #f5faff;
+    }
+
+    .attachment-pane+.attachment-pane {
+      border-left: 1px dashed #b7d7f5;
+      padding-left: 12px;
+    }
+
+    .attachment-pane-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .attachment-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .attachment-item {
+      border: 1px solid #e3e3e3;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .attachment-item img,
+    .attachment-item video {
+      display: block;
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      background: #f8f8f8;
+    }
+
+    .attachment-item-name {
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     /* Embedded Mode */
-    body.booking-embedded-mode nav, body.booking-embedded-mode footer { display: none !important; }
-    body.booking-embedded-mode { padding-top: 0 !important; }
-    body.booking-embedded-mode section.py-5 { padding: 0 !important; background: #fff !important; }
-    body.booking-embedded-mode section.py-5>.container { max-width: 100%; padding: 12px 12px 18px; }
-    body.booking-embedded-mode #bookingPageSection, body.booking-embedded-mode #reviewPageSection { max-width: 100% !important; }
-    body.booking-embedded-mode .booking-page-heading { display: none !important; }
+    body.booking-embedded-mode nav,
+    body.booking-embedded-mode footer {
+      display: none !important;
+    }
+
+    body.booking-embedded-mode {
+      padding-top: 0 !important;
+    }
+
+    body.booking-embedded-mode section.py-5 {
+      padding: 0 !important;
+      background: #fff !important;
+    }
+
+    body.booking-embedded-mode section.py-5>.container {
+      max-width: 100%;
+      padding: 12px 12px 18px;
+    }
+
+    body.booking-embedded-mode #bookingPageSection,
+    body.booking-embedded-mode #reviewPageSection {
+      max-width: 100% !important;
+    }
+
+    body.booking-embedded-mode .booking-page-heading {
+      display: none !important;
+    }
 
     /* RESPONSIVE */
     @media (max-width: 991.98px) {
-      body { padding-top: 86px; }
-      .navbar { overflow-x: clip; }
-      .navbar .container>span { max-width: 34vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
-      .navbar-brand img { width: 56px !important; height: 42px !important; }
-      .navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; background: #fff; z-index: 999; border-radius: 0 0 12px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-      .navbar-collapse .navbar-nav { flex-direction: column !important; align-items: center !important; gap: 10px; padding: 15px 0; }
-      .navbar-collapse .nav-item { width: 100%; text-align: center; }
-      .navbar-collapse .nav-link { display: block; width: 100%; padding: 10px; font-size: 16px; }
-      .navbar-collapse .btn { width: 80%; margin-top: 10px; }
+      body {
+        padding-top: 86px;
+      }
+
+      .navbar {
+        overflow-x: clip;
+      }
+
+      .navbar .container>span {
+        max-width: 34vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.95rem;
+      }
+
+      .navbar-brand img {
+        width: 56px !important;
+        height: 42px !important;
+      }
+
+      .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        z-index: 999;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .navbar-collapse .navbar-nav {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px;
+        padding: 15px 0;
+      }
+
+      .navbar-collapse .nav-item {
+        width: 100%;
+        text-align: center;
+      }
+
+      .navbar-collapse .nav-link {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      .navbar-collapse .btn {
+        width: 80%;
+        margin-top: 10px;
+      }
     }
 
     @media (max-width: 575.98px) {
-      section.py-5 { padding: 5px 1px !important; }
-      .container, #bookingPageSection, #bookingPageSection .card { padding: 0 !important; margin: 0 !important; border-radius: 0 !important; max-width: 100% !important; }
-      #bookingPageSection .card-body { padding: 8px 2px !important; }
-      .customer-info-box, .service-work-box, .schedule-box, .extra-request-box, .price-detail-box, #autoEndDateRow, .mb-3 { margin-bottom: 2px !important; }
-      .customer-info-box, .service-work-box, .schedule-box, .price-detail-box, #autoEndDateRow { padding: 10px 8px !important; border-radius: 8px !important; }
-      .customer-info-box .mb-2, .customer-info-box .row.mb-2, .service-work-box .mb-2, .schedule-box .mb-2 { margin-bottom: 6px !important; }
-      .form-label { margin-bottom: 2px !important; }
-      #servicePackages .list-group-item, #serviceJobs .list-group-item { margin-bottom: 2px !important; padding: 8px 10px !important; }
-      .review-label { width: 110px; min-width: 110px; }
-      .service-work-box { overflow: visible; }
-      #serviceSelector { min-height: 44px; font-size: 0.98rem; }
-      #serviceSelector.service-selector-open { position: relative; z-index: 30; min-height: 176px; padding: 6px; border: 2px solid #6aa7d8; border-radius: 12px; }
-      #serviceSelector.service-selector-open option { padding: 10px 12px; margin-bottom: 6px; border: 1px solid #b9d7ef; border-radius: 8px; color: #050505; }
-      #serviceSelector.service-selector-open option:last-child { margin-bottom: 0; }
-      #serviceSelector.service-selector-open option:checked { border-color: #6ca8d9; color: #000000; font-weight: 700; }
-      .attachment-preview-split { grid-template-columns: 1fr 1fr !important; }
-      .attachment-pane+.attachment-pane { border-top: 0; border-left: 1px dashed #b7d7f5; padding: 0 0 0 12px; }
-      .schedule-box .time-range-row .form-label { font-size: 0.95rem; margin-bottom: 4px; }
-      .schedule-box .time-range-row .form-control { padding: 0 8px; font-size: 1rem; }
+      section.py-5 {
+        padding: 5px 1px !important;
+      }
+
+      .container,
+      #bookingPageSection,
+      #bookingPageSection .card {
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        max-width: 100% !important;
+      }
+
+      #bookingPageSection .card-body {
+        padding: 8px 2px !important;
+      }
+
+      .customer-info-box,
+      .service-work-box,
+      .schedule-box,
+      .extra-request-box,
+      .price-detail-box,
+      #autoEndDateRow,
+      .mb-3 {
+        margin-bottom: 2px !important;
+      }
+
+      .customer-info-box,
+      .service-work-box,
+      .schedule-box,
+      .price-detail-box,
+      #autoEndDateRow {
+        padding: 10px 8px !important;
+        border-radius: 8px !important;
+      }
+
+      .customer-info-box .mb-2,
+      .customer-info-box .row.mb-2,
+      .service-work-box .mb-2,
+      .schedule-box .mb-2 {
+        margin-bottom: 6px !important;
+      }
+
+      .form-label {
+        margin-bottom: 2px !important;
+      }
+
+      #servicePackages .list-group-item,
+      #serviceJobs .list-group-item {
+        margin-bottom: 2px !important;
+        padding: 8px 10px !important;
+      }
+
+      .review-label {
+        width: 110px;
+        min-width: 110px;
+      }
+
+      .service-work-box {
+        overflow: visible;
+      }
+
+      #serviceSelector {
+        min-height: 44px;
+        font-size: 0.98rem;
+      }
+
+      #serviceSelector.service-selector-open {
+        position: relative;
+        z-index: 30;
+        min-height: 176px;
+        padding: 6px;
+        border: 2px solid #6aa7d8;
+        border-radius: 12px;
+      }
+
+      #serviceSelector.service-selector-open option {
+        padding: 10px 12px;
+        margin-bottom: 6px;
+        border: 1px solid #b9d7ef;
+        border-radius: 8px;
+        color: #050505;
+      }
+
+      #serviceSelector.service-selector-open option:last-child {
+        margin-bottom: 0;
+      }
+
+      #serviceSelector.service-selector-open option:checked {
+        border-color: #6ca8d9;
+        color: #000000;
+        font-weight: 700;
+      }
+
+      .attachment-preview-split {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .attachment-pane+.attachment-pane {
+        border-top: 0;
+        border-left: 1px dashed #b7d7f5;
+        padding: 0 0 0 12px;
+      }
+
+      .schedule-box .time-range-row .form-label {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+      }
+
+      .schedule-box .time-range-row .form-control {
+        padding: 0 8px;
+        font-size: 1rem;
+      }
 
       /* Review Page Mobile */
-      #reviewPageSection { padding: 0 !important; margin: 0 !important; width: 100vw !important; max-width: 100vw !important; border-radius: 0 !important; position: relative; top: 0; left: 0; right: 0; }
-      #reviewPageSection .card, #reviewPageSection .card-body, #reviewPageSection .review-shell, #reviewPageSection .review-panel, 
-      #reviewPageSection .review-total-box, #reviewPageSection .review-action-row, #reviewPageSection .attachment-preview-box, 
-      #reviewPageSection .attachment-pane, #reviewPageSection .review-section-title, #reviewPageSection .review-row, 
-      #reviewPageSection .review-jobs-list, #reviewPageSection .review-jobs-item { margin: 2px !important; padding: 2px !important; border-radius: 6px; }
-      #reviewPageSection .row.g-2 { margin: 0 -2px !important; }
-      #reviewPageSection .col-12, #reviewPageSection .col-md-6 { padding: 0 2px !important; }
-      #reviewPageSection .review-title, #reviewPageSection .review-label, #reviewPageSection .review-value { margin: 2px 0 !important; padding: 2px 0 !important; }
-      #reviewPageSection .review-action-row button { margin: 2px !important; padding: 2px !important; }
-      #reviewPageSection .attachment-pane-title { margin-bottom: 2px !important; }
+      #reviewPageSection {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        border-radius: 0 !important;
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+      }
+
+      #reviewPageSection .card,
+      #reviewPageSection .card-body,
+      #reviewPageSection .review-shell,
+      #reviewPageSection .review-panel,
+      #reviewPageSection .review-total-box,
+      #reviewPageSection .review-action-row,
+      #reviewPageSection .attachment-preview-box,
+      #reviewPageSection .attachment-pane,
+      #reviewPageSection .review-section-title,
+      #reviewPageSection .review-row,
+      #reviewPageSection .review-jobs-list,
+      #reviewPageSection .review-jobs-item {
+        margin: 2px !important;
+        padding: 2px !important;
+        border-radius: 6px;
+      }
+
+      #reviewPageSection .row.g-2 {
+        margin: 0 -2px !important;
+      }
+
+      #reviewPageSection .col-12,
+      #reviewPageSection .col-md-6 {
+        padding: 0 2px !important;
+      }
+
+      #reviewPageSection .review-title,
+      #reviewPageSection .review-label,
+      #reviewPageSection .review-value {
+        margin: 2px 0 !important;
+        padding: 2px 0 !important;
+      }
+
+      #reviewPageSection .review-action-row button {
+        margin: 2px !important;
+        padding: 2px !important;
+      }
+
+      #reviewPageSection .attachment-pane-title {
+        margin-bottom: 2px !important;
+      }
     }
   </style>
   <script src="/ga.js"></script>
@@ -971,7 +1542,28 @@
           $('#reviewPageSection').addClass('d-none');
           $('#bookingPageSection').removeClass('d-none');
         }
-
+        async function fetchRows(table) {
+          if (typeof krudList === 'function') {
+            return await krudList({ table: table });
+          }
+          const res = await fetch('https://api.dvqt.vn/list/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ table: table })
+          });
+          return await res.json();
+        }
+        function normalizeRows(res) {
+          if (Array.isArray(res)) return res;
+          if (!res || typeof res !== 'object') return [];
+          if (res.error) throw new Error(res.error);
+          if (res.success === false) throw new Error(res.message || 'API tra ve loi');
+          if (Array.isArray(res.data)) return res.data;
+          if (Array.isArray(res.rows)) return res.rows;
+          if (Array.isArray(res.items)) return res.items;
+          if (Array.isArray(res.result)) return res.result;
+          return [];
+        }
         function handleBookingSuccess() {
           // [Thêm mới] Xử lý đăng nhập và chuyển hướng tự động
           if (typeof xulyDangNhapSauDatLich === 'function') {
@@ -1370,33 +1962,14 @@
           };
 
           try {
-            // 1. Kiểm tra sự tồn tại của số điện thoại trong bảng nguoidung
-            var users = [];
-            var resList = await krud('list', 'nguoidung', { p: 1, limit: 10000 });
-
-            if (Array.isArray(resList)) {
-              users = resList;
-            } else if (resList && resList.data) {
-              users = Array.isArray(resList.data) ? resList.data : (resList.data.rows || resList.data.items || []);
-            } else if (resList && resList.rows) {
-              users = resList.rows;
-            } else if (resList && resList.list) {
-              users = resList.list;
-            }
-
-            var clean = function (p) { return String(p || '').replace(/\D/g, ''); };
-            var inputPhone = clean(phone);
-            var foundUser = users.find(function (u) {
-              return clean(u.sodienthoai || u.phone) === inputPhone;
-            });
-
-            var matkhau = '';
-            if (foundUser) {
-              // Trường hợp 1: Đã tồn tại -> lấy mật khẩu hiện tại
-              matkhau = foundUser.matkhau || foundUser.password || inputPhone;
+            let matkhau = '';
+            let res = await fetchRows('nguoidung');
+            let rows = normalizeRows(res);
+            let found = rows.find(r => (r.sodienthoai || r.so_dien_thoai || r.phone) === phone);
+            if (found) {
+              matkhau = found.matkhau;
             } else {
-              // Trường hợp 2: Chưa tồn tại -> insert khách hàng mới với mk là sdt
-              matkhau = inputPhone;
+              matkhau = phone;
               await krud('insert', 'nguoidung', {
                 hovaten: name,
                 sodienthoai: phone,
