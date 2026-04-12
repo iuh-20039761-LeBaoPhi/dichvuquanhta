@@ -1039,7 +1039,7 @@
           </div>
         `;
         window.location.href = buildStandaloneDetailUrl(
-          order.order_code || order.id || code,
+          order.krud_id || order.id || order.order_code || code,
         );
       })
       .catch((error) => {

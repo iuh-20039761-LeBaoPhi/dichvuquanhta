@@ -384,6 +384,9 @@
       base_price: Number(
         breakdown.base_price ??
           breakdown.tong_gia_van_chuyen ??
+          breakdown.phi_van_chuyen ??
+          breakdown.gia_co_ban ??
+          breakdown.baseFee ??
           breakdown.basePrice ??
           0,
       ),
@@ -391,19 +394,53 @@
         breakdown.overweight_fee ?? breakdown.overweightFee ?? 0,
       ),
       volume_fee: Number(breakdown.volume_fee ?? breakdown.volumeFee ?? 0),
-      goods_fee: Number(breakdown.goods_fee ?? breakdown.goodsFee ?? 0),
-      time_fee: Number(breakdown.time_fee ?? breakdown.timeFee ?? 0),
+      goods_fee: Number(
+        breakdown.goods_fee ??
+          breakdown.phu_phi_loai_hang ??
+          breakdown.goodsGroupFee ??
+          breakdown.goodsFee ??
+          0,
+      ),
+      time_fee: Number(
+        breakdown.time_fee ??
+          breakdown.phu_phi_khung_gio ??
+          breakdown.serviceFee ??
+          breakdown.timeFee ??
+          0,
+      ),
       condition_fee: Number(
-        breakdown.condition_fee ?? breakdown.conditionFee ?? 0,
+        breakdown.condition_fee ??
+          breakdown.phu_phi_thoi_tiet ??
+          breakdown.conditionFee ??
+          0,
       ),
-      vehicle_fee: Number(breakdown.vehicle_fee ?? breakdown.vehicleFee ?? 0),
-      cod_fee: Number(breakdown.cod_fee ?? breakdown.codFee ?? 0),
+      vehicle_fee: Number(
+        breakdown.vehicle_fee ??
+          breakdown.dieu_chinh_theo_xe ??
+          breakdown.vehicleFee ??
+          0,
+      ),
+      cod_fee: Number(
+        breakdown.cod_fee ?? breakdown.phi_cod ?? breakdown.codFee ?? 0,
+      ),
       insurance_fee: Number(
-        breakdown.insurance_fee ?? breakdown.insuranceFee ?? 0,
+        breakdown.insurance_fee ??
+          breakdown.phi_bao_hiem ??
+          breakdown.insuranceFee ??
+          0,
       ),
-      service_fee: Number(breakdown.service_fee ?? breakdown.serviceFee ?? 0),
+      service_fee: Number(
+        breakdown.service_fee ?? breakdown.serviceFee ?? 0,
+      ),
       total_fee: Number(
-        breakdown.total_fee ?? breakdown.totalFee ?? shippingFee ?? 0,
+        breakdown.total_fee ??
+          breakdown.tong_cuoc ??
+          breakdown.totalFee ??
+          shippingFee ??
+          0,
+      ),
+      khoang_cach_km: Number(
+        breakdown.khoang_cach_km ?? breakdown.distance_km ?? 0,
       ),
     };
   }
@@ -697,6 +734,10 @@
       receiver_phone: order.receiver_phone || "",
       created_at: order.created_at || "",
     };
+  }
+
+  function getOrderDetailIdentifier(order) {
+    return normalizeText(order?.krud_id || order?.id || order?.order_code || "");
   }
 
   function isProviderAssignedToOrder(row, session) {
@@ -1295,7 +1336,7 @@
                   <span><b>Tạo lúc</b>${formatDateTime(order.created_at)}</span>
                 </div>
                 <div class="customer-order-actions customer-order-actions-compact">
-                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(order.order_code || order.id)}&viewer=shipper">Xử lý ngay</a>
+                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(getOrderDetailIdentifier(order))}&viewer=shipper">Xử lý ngay</a>
                 </div>
               </article>`,
                   )
@@ -1409,7 +1450,7 @@
                   <span><b>Tạo lúc</b>${formatDateTime(order.created_at)}</span>
                 </div>
                 <div class="customer-order-actions customer-order-actions-compact">
-                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(order.order_code || order.id)}&viewer=shipper">Xem chi tiết</a>
+                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(getOrderDetailIdentifier(order))}&viewer=shipper">Xem chi tiết</a>
                 </div>
               </article>`,
                   )

@@ -130,6 +130,20 @@
     return `GHN-${dateCode}-${String(Math.trunc(Math.abs(numericId))).padStart(7, "0")}`;
   }
 
+  function parseSystemOrderIdentifier(value) {
+    const match = String(value || "")
+      .trim()
+      .toUpperCase()
+      .match(/^GHN-(\d{8})-(\d{7})$/);
+    if (!match) return null;
+    const numericId = Number(match[2]);
+    if (!Number.isFinite(numericId) || numericId <= 0) return null;
+    return {
+      dateCode: match[1],
+      numericId,
+    };
+  }
+
   function formatDateTime(value) {
     if (!value) return "--";
     const date = new Date(value);
@@ -273,18 +287,22 @@
         breakdown.base_price ??
           breakdown.tong_gia_van_chuyen ??
           breakdown.phi_van_chuyen ??
+          breakdown.gia_co_ban ??
+          breakdown.baseFee ??
           breakdown.basePrice ??
           0,
       ),
       goods_fee: Number(
         breakdown.goods_fee ??
           breakdown.phu_phi_loai_hang ??
+          breakdown.goodsGroupFee ??
           breakdown.goodsFee ??
           0,
       ),
       time_fee: Number(
         breakdown.time_fee ??
           breakdown.phu_phi_khung_gio ??
+          breakdown.serviceFee ??
           breakdown.timeFee ??
           0,
       ),
@@ -315,6 +333,9 @@
           breakdown.totalFee ??
           shippingFee ??
           0,
+      ),
+      khoang_cach_km: Number(
+        breakdown.khoang_cach_km ?? breakdown.distance_km ?? 0,
       ),
       don_gia_km: Number(breakdown.don_gia_km ?? 0),
       he_so_xe: Number(breakdown.he_so_xe ?? 1),
@@ -822,18 +843,30 @@
 
   function matchKrudRecordByIdentifier(rows, identifier) {
     const normalizedIdentifier = normalizeText(identifier).toUpperCase();
+    const parsedSystemIdentifier = parseSystemOrderIdentifier(normalizedIdentifier);
     const list = Array.isArray(rows) ? rows : [];
     return (
       list.find((row) => {
+        const generatedSystemCode = formatSystemOrderCode(
+          row.id || row.ma_don_hang_noi_bo || row.ma_don_hang || row.order_code,
+          row.created_at || row.created_date || new Date(),
+        )
+          .trim()
+          .toUpperCase();
         const candidates = [
           row.ma_don_hang_noi_bo,
           row.ma_don_hang,
           row.order_code,
           row.id,
+          generatedSystemCode,
         ]
           .map((value) => normalizeText(value).toUpperCase())
           .filter(Boolean);
-        return candidates.includes(normalizedIdentifier);
+        return (
+          candidates.includes(normalizedIdentifier) ||
+          (parsedSystemIdentifier &&
+            Number(row.id || 0) === parsedSystemIdentifier.numericId)
+        );
       }) || null
     );
   }
@@ -843,12 +876,20 @@
     if (!listFn) return null;
 
     const normalizedIdentifier = normalizeText(identifier);
+    const parsedSystemIdentifier = parseSystemOrderIdentifier(normalizedIdentifier);
     if (!normalizedIdentifier) return null;
     const exactFilters = [
       { field: "ma_don_hang_noi_bo", operator: "=", value: normalizedIdentifier },
       { field: "ma_don_hang", operator: "=", value: normalizedIdentifier },
       { field: "order_code", operator: "=", value: normalizedIdentifier },
     ];
+    if (parsedSystemIdentifier) {
+      exactFilters.unshift({
+        field: "id",
+        operator: "=",
+        value: parsedSystemIdentifier.numericId,
+      });
+    }
     if (/^\d+$/.test(normalizedIdentifier)) {
       exactFilters.unshift({
         field: "id",
@@ -899,9 +940,18 @@
       const code = normalizeText(
         row.ma_don_hang_noi_bo || row.ma_don_hang || row.order_code || row.id,
       ).toUpperCase();
+      const generatedSystemCode = normalizeText(
+        formatSystemOrderCode(
+          row.id || row.ma_don_hang_noi_bo || row.ma_don_hang || row.order_code,
+          row.created_at || row.created_date || new Date(),
+        ),
+      ).toUpperCase();
       const rowId = normalizeText(row.id).toUpperCase();
       return (
         code === normalizedIdentifier.toUpperCase() ||
+        generatedSystemCode === normalizedIdentifier.toUpperCase() ||
+        (parsedSystemIdentifier &&
+          Number(row.id || 0) === parsedSystemIdentifier.numericId) ||
         rowId === normalizedIdentifier.toUpperCase()
       );
     });
@@ -930,6 +980,7 @@
     const breakdown = normalizeBreakdown(
       parseJsonSafe(
         record.chi_tiet_gia_cuoc_json ||
+          record.chi_tiet_gia_cuoc ||
           record.chi_tiet_gia_json ||
           record.pricing_breakdown ||
           {},
@@ -1022,7 +1073,33 @@
         rating: Number(record.danh_gia_so_sao || record.rating || 0),
         feedback: record.phan_hoi || record.feedback || "",
         shipper_note: record.ghi_chu_shipper || record.shipper_note || "",
+        chi_tiet_gia_cuoc: record.chi_tiet_gia_cuoc || {},
+        chi_tiet_gia_cuoc_json:
+          record.chi_tiet_gia_cuoc_json ||
+          (record.chi_tiet_gia_cuoc
+            ? JSON.stringify(record.chi_tiet_gia_cuoc)
+            : ""),
+        pricing_breakdown: record.pricing_breakdown || {},
         fee_breakdown: breakdown,
+        service_meta: {
+          distance_km: Number(
+            record.khoang_cach_km || breakdown.khoang_cach_km || 0,
+          ),
+          pickup_slot_label:
+            record.ten_khung_gio_lay_hang || record.khung_gio_lay_hang || "",
+          estimated_eta:
+            record.du_kien_giao_hang ||
+            record.estimated_delivery ||
+            record.estimated_eta ||
+            record.thoi_gian_giao_hang_du_kien ||
+            "",
+          vehicle_label:
+            record.ten_phuong_tien ||
+            record.vehicle_label ||
+            record.phuong_tien ||
+            record.vehicle_type ||
+            "",
+        },
         pod_image: record.pod_image || record.anh_xac_nhan_giao_hang || "",
         ngayhuy: record.ngayhuy || "",
         thoidiemnhandon: record.thoidiemnhandon || record.ngaynhan || "",

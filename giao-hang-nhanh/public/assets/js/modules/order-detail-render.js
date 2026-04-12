@@ -55,32 +55,62 @@
         normalizeText(extraLabel)
           ? `${baseLabel} (${normalizeText(extraLabel)})`
           : baseLabel;
-      const rows = [];
-      const pushMoneyRow = (label, amount) => {
-        if (Number(amount || 0) <= 0) return;
-        rows.push(renderInfoRow(label, formatCurrency(amount)));
-      };
+      const hasBreakdownData = [
+        breakdown.base_price,
+        breakdown.goods_fee,
+        breakdown.time_fee,
+        breakdown.condition_fee,
+        breakdown.vehicle_fee,
+        breakdown.cod_fee,
+        breakdown.insurance_fee,
+      ].some((value) => Number(value || 0) > 0);
+      const baseFee =
+        Number(breakdown.base_price || 0) > 0
+          ? Number(breakdown.base_price || 0)
+          : !hasBreakdownData && totalFee > 0
+            ? totalFee
+            : 0;
+      const rows = [
+        {
+          label: "Phí vận chuyển",
+          value: baseFee,
+        },
+        {
+          label: "Phụ phí loại hàng",
+          value: Number(breakdown.goods_fee || 0),
+        },
+        {
+          label: withLabel("Phụ phí khung giờ", breakdown.time_surcharge_label),
+          value: Number(breakdown.time_fee || 0),
+        },
+        {
+          label: withLabel(
+            "Phụ phí thời tiết",
+            breakdown.condition_surcharge_label,
+          ),
+          value: Number(breakdown.condition_fee || 0),
+        },
+        {
+          label: "Điều chỉnh theo xe",
+          value: Number(breakdown.vehicle_fee || 0),
+        },
+        {
+          label: "Phí COD",
+          value: Number(breakdown.cod_fee || 0),
+        },
+        {
+          label: "Phí bảo hiểm",
+          value: Number(breakdown.insurance_fee || 0),
+        },
+      ].filter((row) => row.value > 0);
 
-      pushMoneyRow("Phí vận chuyển", breakdown.base_price || 0);
-      pushMoneyRow("Phụ phí loại hàng", breakdown.goods_fee || 0);
-      pushMoneyRow(
-        withLabel("Phụ phí khung giờ", breakdown.time_surcharge_label),
-        breakdown.time_fee || 0,
-      );
-      pushMoneyRow(
-        withLabel("Phụ phí thời tiết", breakdown.condition_surcharge_label),
-        breakdown.condition_fee || 0,
-      );
-      pushMoneyRow("Điều chỉnh theo xe", breakdown.vehicle_fee || 0);
-      pushMoneyRow("Phí COD", breakdown.cod_fee || 0);
-      pushMoneyRow("Phí bảo hiểm", breakdown.insurance_fee || 0);
-      pushMoneyRow("Tổng cước", totalFee);
-
-      if (!rows.length) {
+      if (!rows.length && totalFee <= 0) {
         return renderInfoRow("Chi tiết phí", "Chưa có dữ liệu");
       }
 
-      return rows.join("");
+      return rows
+        .map((row) => renderInfoRow(row.label, formatCurrency(row.value)))
+        .join("");
     }
 
     function getHeroProgressMeta(order) {
@@ -768,13 +798,24 @@
       const order = detail.order || {};
       const customer = detail.customer || {};
       const provider = detail.provider || {};
+      const serviceMeta =
+        order.service_meta && typeof order.service_meta === "object"
+          ? order.service_meta
+          : {};
+      const distanceValue = Number(
+        order.khoang_cach_km ||
+          serviceMeta.distance_km ||
+          order?.fee_breakdown?.khoang_cach_km ||
+          0,
+      );
       const distanceLabel =
-        Number(order.khoang_cach_km || 0) > 0
-          ? `${Number(order.khoang_cach_km).toLocaleString("vi-VN", {
+        distanceValue > 0
+          ? `${distanceValue.toLocaleString("vi-VN", {
               minimumFractionDigits: 0,
               maximumFractionDigits: 2,
             })} km`
-          : "--";
+          : pickFirstText(order.distance_label, serviceMeta.distance_label) ||
+            "--";
       const providerName =
         provider.shipper_name ||
         provider.fullname ||
@@ -799,9 +840,29 @@
         (typeof getFeePayerLabel === "function"
           ? getFeePayerLabel(order.fee_payer || "gui")
           : "Người gửi");
-      const pickupSlotLabel = order.pickup_slot_label || "--";
-      const estimatedDelivery = order.estimated_delivery || "--";
-      const vehicleLabel = order.vehicle_label || order.vehicle_type || "--";
+      const pickupSlotLabel =
+        pickFirstText(
+          order.pickup_slot_label,
+          order.ten_khung_gio_lay_hang,
+          order.khung_gio_lay_hang,
+          order.pickup_slot,
+          serviceMeta.pickup_slot_label,
+        ) || "--";
+      const estimatedDelivery =
+        pickFirstText(
+          order.estimated_delivery,
+          order.du_kien_giao_hang,
+          order.estimated_eta,
+          serviceMeta.estimated_eta,
+        ) || "--";
+      const vehicleLabel =
+        pickFirstText(
+          order.vehicle_label,
+          order.ten_phuong_tien,
+          order.vehicle_type,
+          order.phuong_tien,
+          serviceMeta.vehicle_label,
+        ) || "--";
       const itemsSummary = getItemsSummary(detail.items || []);
       const senderName = order.sender_name || customer.fullname || "--";
       const senderPhone = order.sender_phone || customer.phone || "--";
