@@ -82,8 +82,7 @@
                 <td><div class="fw-bold text-primary">${ThueXeAdmin.formatCurrency(o.tong_tien)}</div></td>
                 <td class="pe-4 text-end">
                     <button class="btn btn-sm btn-light text-primary py-1 px-3 rounded-pill" onclick="viewOrderAdmin(${o.id})">Hóa đơn</button>
-                    <!-- Admin can also intervene and cancel if needed -->
-                    <button class="btn btn-sm btn-light text-danger ms-1" onclick="cancelOrderAdmin(${o.id})" title="Hủy đơn này"><i class="fas fa-times"></i></button>
+                    <!-- Chức năng can thiệp đơn hàng (Hủy) đã bị vô hiệu hóa theo nguyên tắc quản trị -->
                 </td>
             </tr>`;
         }).join('');

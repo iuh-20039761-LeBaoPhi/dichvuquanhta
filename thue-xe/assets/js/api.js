@@ -4,10 +4,17 @@ async function getLiveCars() {
         const allCars = await DVQTKrud.listTable('xethue', { limit: 1000 });
         console.log("[Antigravity-Debug] Raw cars from DB:", allCars);
         
-        // Lọc: Sử dụng cột 'trangthai' theo thực tế Database
-        // Chỉ hiện xe 'available' hoặc xe chưa có dữ liệu trạng thái
-        const filtered = (allCars || []).filter(c => !c.trangthai || c.trangthai === 'available');
-        console.log("[Antigravity-Debug] Filtered cars (available):", filtered);
+        // Lọc: Mở rộng trạng thái để phù hợp với trạng thái mới của NCC
+        const filtered = (allCars || []).filter(c => {
+            if (!c.trangthai) return true;
+            const st = String(c.trangthai).toLowerCase();
+            // Nếu có trangthai_ncc thì kiểm tra không bị khóa
+            if (c.trangthai_ncc && ['0', 'banned', 'inactive'].includes(String(c.trangthai_ncc).toLowerCase())) {
+                return false;
+            }
+            return ['available', 'active', '1', 'hoat_dong', 'đã duyệt', 'đang cho thuê'].includes(st);
+        });
+        console.log("[Antigravity-Debug] Filtered cars (active/available):", filtered);
         
         return filtered;
     } catch (e) {

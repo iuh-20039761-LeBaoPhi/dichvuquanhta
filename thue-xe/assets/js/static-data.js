@@ -56,8 +56,10 @@ window.STATIC_DATA_PROMISE = (async function() {
         const typeMap = {};
 
         dbCars.forEach(row => {
-            // Chỉ lấy xe đang cho thuê (available) hoặc xe chưa có trạng thái
-            if(row.trangthai && row.trangthai !== 'available') return;
+            // Chỉ lấy xe đang hoạt động (cho phép 여러 trạng thái kích hoạt)
+            const st = row.trangthai ? String(row.trangthai).toLowerCase() : 'available';
+            if(row.trangthai_ncc && ['0', 'banned', 'inactive'].includes(String(row.trangthai_ncc).toLowerCase())) return;
+            if(!['available', 'active', '1', 'hoat_dong', 'đã duyệt', 'đang cho thuê'].includes(st)) return;
             if(!row.tenxe) return; // Bỏ qua nếu xe không có tên
 
             const typeKey = row.tenxe;

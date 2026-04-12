@@ -262,6 +262,9 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="public/asset/js/dvqt-krud.js?v=1.7"></script>
+<script src="public/asset/js/dvqt-app.js?v=1.7"></script>
 <script>
 let vehicles = [];
 
@@ -270,19 +273,28 @@ function fmtPrice(n) {
 }
 
 function getStatusMeta(status) {
-    if (status === 'available') return { label: 'Đang cho thuê', badgeClass: 'badge-available', actionLabel: 'Tạm dừng', nextStatus: 'maintenance' };
-    if (status === 'maintenance') return { label: 'Tạm dừng', badgeClass: 'badge-maintenance', actionLabel: 'Mở lại', nextStatus: 'available' };
+    const st = String(status || '').toLowerCase();
+    if (['available', 'active', 'approved', 'hot_dong', '1'].includes(st)) {
+        return { label: 'Đang cho thuê', badgeClass: 'badge-available', actionLabel: 'Tạm dừng', nextStatus: 'maintenance' };
+    }
+    if (st === 'maintenance') {
+        return { label: 'Tạm dừng', badgeClass: 'badge-maintenance', actionLabel: 'Mở lại', nextStatus: 'available' };
+    }
     return { label: status || 'Không xác định', badgeClass: 'badge-rented', actionLabel: 'Không hỗ trợ', nextStatus: '' };
 }
 
 async function ensureProviderLogin() {
-    const response = await fetch('controllers/provider/auth-controller.php?action=checkLogin');
-    const data = await response.json();
-    if (!data.success) {
+    try {
+        const session = await DVQTApp.checkSession();
+        if (!session || !session.logged_in || session.role !== 'provider') {
+            window.location.href = 'views/pages/provider/dang-nhap.html';
+            return null;
+        }
+        return session;
+    } catch {
         window.location.href = 'views/pages/provider/dang-nhap.html';
-        return false;
+        return null;
     }
-    return true;
 }
 
 async function loadCars() {
@@ -290,13 +302,23 @@ async function loadCars() {
     wrap.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải danh sách xe...</div>';
 
     try {
-        const response = await fetch('controllers/provider/cars-controller.php?action=getMyCars');
-        const result = await response.json();
-        if (!result.success) {
-            wrap.innerHTML = `<div class="empty-state text-danger">${result.message || 'Không tải được dữ liệu xe'}</div>`;
-            return;
-        }
-        vehicles = result.data || [];
+        const session = await ensureProviderLogin();
+        if (!session) return;
+        
+        const allCars = await DVQTKrud.listTable('xethue', { limit: 1000 }).catch(() => []);
+        vehicles = allCars.filter(c => String(c.provider_id) === String(session.id)) || [];
+        
+        // Normalize object keys dynamically
+        vehicles = vehicles.map(v => ({
+            ...v, 
+            name: v.tenxe || v.name,
+            brand: v.hangxe || v.brand,
+            model: v.dongxe || v.model,
+            license_plate: v.bienso || v.license_plate,
+            price_per_day: v.giathue || v.price_per_day,
+            status: v.trangthai || v.status
+        }));
+
         renderManageTable();
     } catch (error) {
         wrap.innerHTML = '<div class="empty-state text-danger">Lỗi kết nối khi tải dữ liệu xe</div>';
@@ -364,19 +386,17 @@ function showDetail(carId) {
 
 async function toggleVehicleStatus(carId, status) {
     try {
-        const response = await fetch('controllers/provider/cars-controller.php?action=updateStatus', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ car_id: carId, status })
-        });
-        const result = await response.json();
-        if (!result.success) {
-            alert(result.message || 'Không cập nhật được trạng thái xe');
+        const session = await ensureProviderLogin();
+        if (!session) return;
+        
+        const ok = await DVQTKrud.updateRow('xethue', carId, { trangthai: status });
+        if (!ok) {
+            Swal.fire('Lỗi', 'Không cập nhật được trạng thái xe', 'error');
             return;
         }
         await loadCars();
     } catch (error) {
-        alert('Lỗi kết nối khi cập nhật trạng thái xe');
+        Swal.fire('Lỗi', 'Lỗi kết nối khi cập nhật trạng thái xe', 'error');
     }
 }
 

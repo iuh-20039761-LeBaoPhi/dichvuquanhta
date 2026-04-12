@@ -267,11 +267,13 @@
         const tbody = document.getElementById('carListBody');
         const items = myCarsRaw.slice((page-1)*itemsPerPage, page*itemsPerPage);
             tbody.innerHTML = items.map(c => {
+            const st = String(c.trangthai || '').toLowerCase();
             let badge = `<span class="badge bg-secondary bg-opacity-10 text-secondary">N/A</span>`;
-            if (c.trangthai === 'pending') badge = `<span class="badge bg-warning bg-opacity-10 text-warning">Chờ duyệt</span>`;
-            if (c.trangthai === 'approved') badge = `<span class="badge bg-success bg-opacity-10 text-success">Hoạt động</span>`;
-            if (c.trangthai === 'rejected') badge = `<span class="badge bg-danger bg-opacity-10 text-danger">Từ chối</span>`;
-            if (c.trangthai === 'hidden') badge = `<span class="badge bg-dark bg-opacity-25 text-dark">Đã ẩn</span>`;
+            if (st === 'pending') badge = `<span class="badge bg-warning bg-opacity-10 text-warning">Chờ duyệt</span>`;
+            if (st === 'rejected') badge = `<span class="badge bg-danger bg-opacity-10 text-danger">Từ chối</span>`;
+            if (st === 'hidden') badge = `<span class="badge bg-dark bg-opacity-25 text-dark">Đã ẩn</span>`;
+            if (['available', 'active', 'approved', 'hot_dong', '1'].includes(st)) badge = `<span class="badge bg-success bg-opacity-10 text-success">Hoạt động</span>`;
+
 
             const isHidden = c.trangthai === 'hidden';
             return `<tr>
@@ -331,7 +333,7 @@
         document.getElementById('carFeatures').value = car.features || '';
         document.getElementById('carDesc').value = car.mota || '';
 
-        const path = 'assets/images/cars/';
+        const path = '../../../assets/images/cars/';
         if(car.anhdaidien) document.getElementById('prev_front').innerHTML = `<img src="${path}${car.anhdaidien}" class="img-preview">`;
         if(car.anhsau)   document.getElementById('prev_back').innerHTML = `<img src="${path}${car.anhsau}" class="img-preview">`;
         if(car.anhtrai)   document.getElementById('prev_left').innerHTML = `<img src="${path}${car.anhtrai}" class="img-preview">`;
@@ -392,7 +394,7 @@
             for(let a in inputs) { const el = document.getElementById(inputs[a]); if(el && el.files[0]) { formData.append(a, el.files[0]); hasF=true; } }
             
             if(hasF) {
-                const up = await fetch('../controllers/upload-car-media.php', { method:'POST', body:formData }).then(r=>r.json());
+                const up = await fetch('../../../controllers/upload-car-media.php', { method:'POST', body:formData }).then(r=>r.json());
                 if(up.success) {
                     const upData = {};
                     if(up.files.front) { upData.anhdaidien=up.files.front; }

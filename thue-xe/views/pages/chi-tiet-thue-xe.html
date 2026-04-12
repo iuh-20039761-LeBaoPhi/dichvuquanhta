@@ -393,7 +393,9 @@
                     return;
                 }
 
-                window._currentSessionRole = (session.trangthai === 'admin' || session.role === 'admin') ? 'admin' : (Number(session.id) === Number(currentOrder.id_nguoidung) ? 'customer' : 'provider');
+                const roleStr = String(session.trangthai || session.role || '').toLowerCase();
+                const isAdmin = roleStr === 'admin' || roleStr === 'quantrivien';
+                window._currentSessionRole = isAdmin ? 'admin' : (Number(session.id) === Number(currentOrder.id_nguoidung) ? 'customer' : 'provider');
                 renderData();
                 renderActions(session);
                 

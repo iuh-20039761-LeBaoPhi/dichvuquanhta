@@ -81,14 +81,17 @@
             const start = (_currentPage - 1) * _pageSize;
             const slice = _allMyCars.slice(start, start + _pageSize);
 
-            const rows = slice.map(c => `
+            const rows = slice.map(c => {
+                const isValid = c.trangthai && ['available', 'active', 'approved', 'hot_dong', '1'].includes(String(c.trangthai).toLowerCase());
+                return `
                 <tr>
                     <td class="ps-4"><strong>${c.tenxe}</strong></td>
                     <td><code class="text-dark">${c.bienso}</code></td>
                     <td class="text-primary fw-bold">${Number(c.giathue).toLocaleString('vi-VN')}đ</td>
-                    <td><span class="badge ${c.trangthai === 'approved' ? 'bg-success' : 'bg-warning'}">${c.trangthai === 'approved' ? 'Hoạt động' : 'Chờ duyệt'}</span></td>
+                    <td><span class="badge ${isValid ? 'bg-success' : 'bg-warning'}">${isValid ? 'Hoạt động' : 'Chờ duyệt'}</span></td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
 
             wrap.innerHTML = `<div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="bg-light text-muted small uppercase"><tr><th class="ps-4">Tên xe</th><th>Biển số</th><th>Giá/ngày</th><th>Trạng thái</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             

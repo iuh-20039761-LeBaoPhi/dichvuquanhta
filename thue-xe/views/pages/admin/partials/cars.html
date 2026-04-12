@@ -28,6 +28,7 @@
                 </tbody>
             </table>
         </div>
+        <div class="px-4 pb-3 mt-3" id="adminCarPagination"></div>
     </div>
 </div>
 
@@ -35,6 +36,9 @@
 (function() {
     'use strict';
     const TABLE = 'xethue';
+    let allCarsRaw = [];
+    let currentPage = 1;
+    const itemsPerPage = 8;
 
     window.loadAllCars = async function() {
         const tbody = document.getElementById('adminCarBody');
@@ -44,45 +48,72 @@
             const cars = await DVQTKrud.listTable(TABLE, { limit: 1000 });
             if(!cars || !cars.length) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có xe nào.</td></tr>';
+                document.getElementById('adminCarPagination').innerHTML = '';
                 return;
             }
 
-            tbody.innerHTML = cars.reverse().map(c => {
-                let badge = '<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded-pill">Chưa xác định</span>';
-                if(c.trangthai === 'pending') badge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Chờ duyệt</span>';
-                else if(c.trangthai === 'approved') badge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Đã duyệt (Hiện)</span>';
-                else if(c.trangthai === 'hidden') badge = '<span class="badge bg-dark text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang ẩn</span>';
-                else if(c.trangthai === 'rejected') badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Bị từ chối</span>';
-
-                return `<tr>
-                    <td class="ps-4">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded overflow-hidden" style="width:50px; height:50px;">
-                                <img src="../../../assets/images/cars/${c.anhngoaitruoc}" onerror="this.src='https://placehold.co/100x100?text=Auto'" class="w-100 h-100 object-fit-cover">
-                            </div>
-                            <div>
-                                <div class="fw-bold text-dark">${c.tenxe}</div>
-                                <div class="text-muted small">ID NCC: ${c.provider_id || '---'}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td><div class="small fw-600">${c.loaixe} · ${c.socho} chỗ</div><div class="text-muted small">${c.nhienlieu} · ${c.hopso}</div></td>
-                    <td><div class="small fw-bold">${c.bienso}</div><div class="text-muted small">Năm: ${c.namsanxuat}</div></td>
-                    <td><div class="fw-bold text-primary">${ThueXeAdmin.formatCurrency(c.giathue)}</div></td>
-                    <td>${badge}</td>
-                    <td class="pe-4 text-end">
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-light text-success" title="Duyệt xe này" onclick="approveCarAdmin(${c.id})"><i class="fas fa-check"></i></button>
-                            <button class="btn btn-sm btn-light text-danger" title="Từ chối duyệt" onclick="rejectCarAdmin(${c.id})"><i class="fas fa-ban"></i></button>
-                            <button class="btn btn-sm btn-light text-primary" title="Xem chi tiết" onclick="viewCarDetail(${c.id})"><i class="fas fa-eye"></i></button>
-                        </div>
-                    </td>
-                </tr>`;
-            }).join('');
+            allCarsRaw = cars.reverse();
+            renderAdminPage(1);
         } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
     };
 
-    window.approveCarAdmin = async (id) => { if(await ThueXeAdmin.updateStatus(TABLE, id, 'approved', 'Đã duyệt hiện xe!')) loadAllCars(); };
+    function renderAdminPage(page) {
+        currentPage = page;
+        const tbody = document.getElementById('adminCarBody');
+        const items = allCarsRaw.slice((page-1)*itemsPerPage, page*itemsPerPage);
+
+        tbody.innerHTML = items.map(c => {
+            const st = String(c.trangthai || '').toLowerCase();
+            let badge = '<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded-pill">Chưa xác định</span>';
+            if(st === 'pending') badge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Chờ duyệt</span>';
+            else if(['available', 'active', 'approved', 'hot_dong', '1'].includes(st)) badge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Đã duyệt (Hiện)</span>';
+            else if(st === 'hidden') badge = '<span class="badge bg-dark text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang ẩn</span>';
+            else if(st === 'rejected') badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Bị từ chối</span>';
+
+            return `<tr>
+                <td class="ps-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-light rounded overflow-hidden" style="width:50px; height:50px;">
+                            <img src="../../../assets/images/cars/${c.anhngoaitruoc}" onerror="this.src='https://placehold.co/100x100?text=Auto'" class="w-100 h-100 object-fit-cover">
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark">${c.tenxe}</div>
+                            <div class="text-muted small">ID NCC: ${c.provider_id || '---'}</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="small fw-600">${c.loaixe} · ${c.socho} chỗ</div><div class="text-muted small">${c.nhienlieu} · ${c.hopso}</div></td>
+                <td><div class="small fw-bold">${c.bienso}</div><div class="text-muted small">Năm: ${c.namsanxuat}</div></td>
+                <td><div class="fw-bold text-primary">${ThueXeAdmin.formatCurrency(c.giathue)}</div></td>
+                <td>${badge}</td>
+                <td class="pe-4 text-end">
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-light text-success" title="Duyệt xe này" onclick="approveCarAdmin(${c.id})"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-light text-danger" title="Từ chối duyệt" onclick="rejectCarAdmin(${c.id})"><i class="fas fa-ban"></i></button>
+                        <button class="btn btn-sm btn-light text-primary" title="Xem chi tiết" onclick="viewCarDetail(${c.id})"><i class="fas fa-eye"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+
+        renderAdminPagination(allCarsRaw.length);
+    }
+
+    function renderAdminPagination(total) {
+        const container = document.getElementById('adminCarPagination');
+        const pages = Math.ceil(total/itemsPerPage);
+        if(pages<=1) { container.innerHTML=''; return; }
+        
+        let h = `<nav><ul class="pagination pagination-sm justify-content-end mb-0">`;
+        for(let i=1; i<=pages; i++) {
+            h += `<li class="page-item ${i===currentPage?'active':''}"><a class="page-link" href="#" onclick="event.preventDefault(); window.changeAdminCarsPage(${i})">${i}</a></li>`;
+        }
+        container.innerHTML = h + `</ul></nav>`;
+    }
+
+    window.changeAdminCarsPage = (p) => { renderAdminPage(p); };
+
+    window.approveCarAdmin = async (id) => { if(await ThueXeAdmin.updateStatus(TABLE, id, 'available', 'Đã duyệt hiện xe!')) loadAllCars(); };
     window.rejectCarAdmin = async (id) => { if(await ThueXeAdmin.rejectCar(id)) loadAllCars(); };
 
     window.viewCarDetail = function(id) {
