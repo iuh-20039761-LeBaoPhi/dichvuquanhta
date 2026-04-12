@@ -53,7 +53,8 @@ const _BD_KRUD_TABLE = window.BD_KRUD_TABLE || 'datlich_thonha';
 const _BD_GSHEET_URL = window.GSHEET_URL || 'https://script.google.com/macros/s/AKfycbx8J5infIIqf-VOFCNq89L7W1xRfluTU0Dt4R8Vijl81zhid59aql3vURdT01dwaaKgPQ/exec';
 
 // ===================================================================
-// AUTH GATE — yêu cầu đăng nhập trước khi đặt lịch
+// AUTH GATE — ĐẶT LỊCH NHANH (Không yêu cầu đăng nhập)
+// Tự động tạo tài khoản nếu chưa có khi đặt lịch.
 // ===================================================================
 // Parse JSON an toàn, trả về fallback nếu dữ liệu rỗng hoặc lỗi cú pháp.
 function _bdSafeParse(raw, fallback) {
@@ -64,8 +65,6 @@ function _bdSafeParse(raw, fallback) {
         return fallback;
     }
 }
-
-
 
 // Kiểm tra khách hàng đã đăng nhập hợp lệ hay chưa.
 async function _bdIsCustomerLoggedIn() {
@@ -83,35 +82,77 @@ function _bdGetCustomerLoginUrl() {
     return _BD_BASE + '../public/dang-nhap.html?redirect=' + redirect;
 }
 
-// Hiển thị banner trạng thái đăng nhập trên form đặt lịch.
+// Hiển thị banner trạng thái trên form đặt lịch.
 async function _bdRenderAuthBanner() {
     const banner = document.getElementById('bookingAuthBanner');
     if (!banner) return;
 
     // 1. Kiểm tra session thật
-    const session = await DVQTApp.checkSession();
-    if (session.logged_in) {
-        const name = String(session.name || 'Khách hàng');
-        const phone = String(session.phone || '');
-        banner.innerHTML = '<div class="alert alert-success py-2 mb-0"><i class="fas fa-check-circle me-1"></i>Đang đặt lịch bằng tài khoản: <strong>' +
-            name + '</strong>' + (phone ? ' - ' + phone : '') + '</div>';
-        banner.style.display = '';
-        return;
-    }
-
-    // 2. Kiểm tra xác thực uỷ quyền qua URL (Express Mode)
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('sdt') && params.get('password')) {
-        // Nếu đã gọi _bdRequireCustomerLogin và thành công thì ẩn luôn
-        if (_urlAuthCache && _urlAuthCache.valid) {
-            banner.style.display = 'none';
+    try {
+        const session = await DVQTApp.checkSession();
+        if (session && session.logged_in) {
+            const name = String(session.name || 'Khách hàng');
+            const phone = String(session.phone || '');
+            banner.innerHTML = '<div class="alert alert-success py-2 mb-0"><i class="fas fa-check-circle me-1"></i>Đang đặt lịch bằng tài khoản: <strong>' +
+                name + '</strong>' + (phone ? ' - ' + phone : '') + '</div>';
+            banner.style.display = '';
             return;
         }
+    } catch(_e) {}
+
+    // 2. Hiện banner đặt lịch nhanh (không yêu cầu đăng nhập)
+    banner.innerHTML = '<div class="alert alert-info py-2 mb-0"><i class="fas fa-bolt me-1"></i>Đặt lịch nhanh — Hệ thống sẽ tự động tạo tài khoản cho bạn. ' +
+        'Đã có tài khoản? <a href="' + _bdGetCustomerLoginUrl() + '">Đăng nhập</a></div>';
+    banner.style.display = '';
+}
+
+/**
+ * Tự động tạo tài khoản hoặc tìm tài khoản hiện có theo SĐT.
+ * - Nếu SĐT chưa tồn tại: Tạo tài khoản mới (matkhau = SĐT, id_dichvu = 0)
+ * - Nếu SĐT đã tồn tại: Thông báo nhưng vẫn cho đặt lịch
+ * @param {string} name - Họ tên khách hàng
+ * @param {string} phone - SĐT khách hàng
+ * @returns {{ isNew: boolean, accountExists: boolean, userId: string|null }}
+ */
+async function _bdAutoCreateOrFindAccount(name, phone) {
+    const krud = window.DVQTKrud;
+    if (!krud) throw new Error('Hệ thống chưa sẵn sàng.');
+
+    const pNorm = String(phone).replace(/\D/g, '');
+    const rows = await krud.listTable('nguoidung', { limit: 2000 });
+    const existing = rows.find(r => {
+        const dbPhone = String(r.sodienthoai || r.phone || '').replace(/\D/g, '');
+        return dbPhone === pNorm;
+    });
+
+    if (existing) {
+        // SĐT đã tồn tại — vẫn cho đặt lịch nhưng thông báo
+        return { isNew: false, accountExists: true, userId: existing.id };
     }
 
-    banner.innerHTML = '<div class="alert alert-warning py-2 mb-0"><i class="fas fa-exclamation-triangle me-1"></i>Bạn cần <strong>đăng nhập</strong> trước khi đặt lịch. <a href="' +
-        _bdGetCustomerLoginUrl() + '">Đăng nhập ngay</a></div>';
-    banner.style.display = '';
+    // Tạo tài khoản mới
+    const now = new Date();
+    const vn = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+    const pad = n => String(n).padStart(2, '0');
+    const created = `${vn.getFullYear()}-${pad(vn.getMonth()+1)}-${pad(vn.getDate())} ${pad(vn.getHours())}:${pad(vn.getMinutes())}:${pad(vn.getSeconds())}`;
+
+    // Đảm bảo bảng nguoidung tồn tại
+    if (typeof krud.ensureNguoidungTable === 'function') {
+        await krud.ensureNguoidungTable();
+    }
+
+    const userData = {
+        hovaten: name,
+        sodienthoai: phone,
+        matkhau: phone, // Mật khẩu mặc định = SĐT
+        id_dichvu: '0', // Mặc định là khách hàng
+        created_date: created,
+        trangthai: 'active'
+    };
+
+    const result = await krud.insertRow('nguoidung', userData);
+    const newId = result?.data?.id || result?.id || null;
+    return { isNew: true, accountExists: false, userId: newId };
 }
 
 // Điền sẵn thông tin khách hàng vào form từ URL hoặc Profile (đã đăng nhập).
@@ -175,111 +216,31 @@ async function _bdPrepareBookingAuthState() {
 // Biến lưu kết quả xác thực URL để tránh gọi API nhiều lần
 let _urlAuthCache = null;
 
-// Kiểm tra khách hàng đã đăng nhập hợp lệ hay chưa, hoặc có URL hợp lệ không.
+// Kiểm tra quyền đặt lịch (chỉ chặn nếu NCC tự đặt dịch vụ của mình).
+// Không còn yêu cầu đăng nhập — luôn cho phép đặt lịch.
 async function _bdRequireCustomerLogin(isSilent = false) {
     const currentCatId = String(_bdCurCatId || '9');
 
-    // 1. Nếu đã có Session Cookie (Đã đăng nhập thực sự)
-    const session = await DVQTApp.checkSession();
-    if (session && session.logged_in) {
-        // KIỂM TRA QUYỀN
-        const userDichVuIds = String(session.id_dichvu || '').split(',').map(v => v.trim());
-        if (userDichVuIds.includes(currentCatId)) {
-            Swal.fire({
-                title: '<span style="color:#11998e">Rất tiếc!</span>',
-                html: 'Bạn không thể đặt lịch dịch vụ do chính mình thực hiện.',
-                icon: 'warning',
-                confirmButtonColor: '#11998e',
-                borderRadius: '12px'
-            });
-            return false;
-        }
-        return true;
-    }
-
-    // 2. Kiểm tra chế độ EXPRESS qua URL (sdt + password)
-    const params = new URLSearchParams(window.location.search);
-    const sdt = params.get('sdt');
-    const pass = params.get('password');
-
-    if (sdt && pass) {
-        if (_urlAuthCache !== null) return !!_urlAuthCache.valid;
-
-        try {
-            console.log('🔄 Đang xác thực thông tin uỷ quyền từ URL...');
-            const krud = window.DVQTKrud;
-            if (!krud) throw new Error('KRUD not found');
-
-            const rows = await krud.listTable('nguoidung', { limit: 1000 });
-            const user = rows.find(r => {
-                const dbPhone = String(r.sodienthoai || r.phone || '').replace(/\D/g, '');
-                const targetPhone = String(sdt).replace(/\D/g, '');
-                return dbPhone === targetPhone;
-            });
-
-            if (user) {
-                const storedPass = String(user.matkhau || user.password || user.mat_khau || '');
-                if (storedPass === String(pass)) {
-                    // KIỂM TRA QUYỀN
-                    const userDichVuIds = String(user.id_dichvu || '').split(',').map(v => v.trim());
-                    if (userDichVuIds.includes(currentCatId)) {
-                        Swal.fire({
-                            title: '<span style="color:#11998e">Rất tiếc!</span>',
-                            html: 'Bạn không thể đặt lịch dịch vụ do chính mình thực hiện (Tài khoản uỷ quyền).',
-                            icon: 'warning',
-                            confirmButtonColor: '#11998e',
-                            borderRadius: '12px'
-                        });
-                        _urlAuthCache = { valid: false };
-                        return false;
-                    }
-
-                    console.log('✅ Xác thực uỷ quyền thành công cho:', user.hovaten);
-                    _urlAuthCache = { valid: true, profile: user };
-                    await _bdPrefillFromExpressUser(user);
-                    return true;
-                }
+    // Nếu đã có Session Cookie (Đã đăng nhập thực sự) → Chỉ chặn NCC tự đặt cho mình
+    try {
+        const session = await DVQTApp.checkSession();
+        if (session && session.logged_in) {
+            const userDichVuIds = String(session.id_dichvu || '').split(',').map(v => v.trim());
+            if (userDichVuIds.includes(currentCatId)) {
+                Swal.fire({
+                    title: '<span style="color:#11998e">Rất tiếc!</span>',
+                    html: 'Bạn không thể đặt lịch dịch vụ do chính mình thực hiện.',
+                    icon: 'warning',
+                    confirmButtonColor: '#11998e',
+                    borderRadius: '12px'
+                });
+                return false;
             }
-            throw new Error('Mật khẩu hoặc SĐT không đúng.');
-        } catch (e) {
-            console.error('❌ Xác thực uỷ quyền thất bại:', e.message);
-            _urlAuthCache = { valid: false };
-            Swal.fire({
-                title: '<span style="color:#ef4444">Xác thực thất bại</span>',
-                html: 'Thông tin tài khoản từ liên kết không đúng hoặc đã bị thay đổi.',
-                icon: 'error',
-                confirmButtonColor: '#ef4444',
-                borderRadius: '12px'
-            });
         }
-    }
+    } catch(_e) {}
 
-    // 3. Nếu không có URL hoặc xác thực URL thất bại -> Hiện Alert đăng nhập nếu không phải silent
-    if (!isSilent) {
-        await _bdRenderAuthBanner();
-        const banner = document.getElementById('bookingAuthBanner');
-        if (banner) banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        Swal.fire({
-            title: '<span style="color:#11998e">Yêu cầu đăng nhập</span>',
-            html: 'Bạn cần đăng nhập tài khoản khách hàng để thực hiện đặt lịch.',
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonText: 'Đăng nhập ngay',
-            cancelButtonText: 'Để sau',
-            confirmButtonColor: '#11998e',
-            cancelButtonColor: '#94a3b8',
-            borderRadius: '12px'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Chuyển hướng đến trang đăng nhập chung (Kèm redirect để quay lại đúng trang hiện tại)
-                const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : window.location.pathname.split('/tho-nha/')[0];
-                const loginUrl = root + '/public/dang-nhap.html';
-                window.location.href = loginUrl + '?redirect=' + encodeURIComponent(window.location.href);
-            }
-        });
-    }
-    return false;
+    // Luôn cho phép đặt lịch — tài khoản sẽ được tạo tự động khi submit
+    return true;
 }
 
 // Điền thông tin profile uỷ quyền từ URL vào form (Không kích hoạt banner đăng nhập)

@@ -1,8 +1,15 @@
 async function getLiveCars() {
     try {
-        // Lấy toàn bộ dữ liệu thực từ bảng xethue
+        // Lấy dữ liệu thực từ bảng xethue
         const allCars = await DVQTKrud.listTable('xethue', { limit: 1000 });
-        return allCars || [];
+        console.log("[Antigravity-Debug] Raw cars from DB:", allCars);
+        
+        // Lọc: Sử dụng cột 'trangthai' theo thực tế Database
+        // Chỉ hiện xe 'available' hoặc xe chưa có dữ liệu trạng thái
+        const filtered = (allCars || []).filter(c => !c.trangthai || c.trangthai === 'available');
+        console.log("[Antigravity-Debug] Filtered cars (available):", filtered);
+        
+        return filtered;
     } catch (e) {
         console.error("Error fetching live cars:", e);
         return [];
@@ -60,7 +67,7 @@ const API = {
             if (price) {
                 const [min, max] = price.includes('-') ? price.split('-').map(Number) : [Number(price), 999999999];
                 cars = cars.filter(c => {
-                    const p = Number(c.gia_thue_ngay); // Đồng bộ cột giá mới
+                    const p = Number(c.giathue || 0); // Đồng bộ với cột giathue trong DB
                     return p >= min && (max ? p <= max : true);
                 });
             }

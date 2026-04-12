@@ -469,12 +469,7 @@
         e.preventDefault();
         e.stopImmediatePropagation(); // ngăn booking-detail.js mở modal cũ
 
-        // 1. Kiểm tra trạng thái hiện tại (Đăng nhập hoặc Uỷ quyền URL) qua hàm dùng chung
-        // Hàm này sẽ tự động kiểm tra Cookie, URL, và cả quyền id_dichvu=9
-        if (typeof _bdRequireCustomerLogin === 'function') {
-            const isAuthValid = await _bdRequireCustomerLogin(); 
-            if (!isAuthValid) return; // Nếu không hợp lệ (Bị chặn hoặc chưa có auth), dừng lại
-        }
+        // Không yêu cầu đăng nhập nữa — tài khoản sẽ được tạo tự động khi đặt lịch
 
         var serviceName = btn.getAttribute('data-service-name') || '';
         var card = btn.closest('.service-item-card');

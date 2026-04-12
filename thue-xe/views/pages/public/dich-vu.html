@@ -29,8 +29,9 @@
     <link rel="stylesheet" href="assets/css/index.css">
 
     <!-- Shared Core Libraries (Relative to <base> which is thue-xe/) -->
-    <script src="public/asset/js/dvqt-krud.js"></script>
-    <script src="public/asset/js/dvqt-app.js"></script>
+
+    <script src="../public/asset/js/dvqt-krud.js"></script>
+    <script src="../public/asset/js/dvqt-app.js"></script>
     <script src="assets/js/static-data.js"></script>
 </head>
 
@@ -41,9 +42,10 @@
             title: 'Dịch Vụ Quanh Ta - Thuê Xe - Dịch Vụ',
             desc: 'Các dịch vụ thuê xe đa dạng tại CarRental trên toàn quốc: giao xe tận nơi, bảo hiểm mở rộng, xe có tài xế, thuê xe theo tháng. Liên hệ: 0775 472 347.',
             keys: 'dịch vụ thuê xe, giao xe tận nơi, xe có tài xế toàn quốc, bảo hiểm xe thuê',
-            url: 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/public/dich-vu.html'
+            url: 'https://iuh-20039761-lebaophi.github.io/GlobalCare/thue-xe/views/pages/public/dich-vu.html',
+            navPage: 'services'
         };
-        loadHeader();
+        document.addEventListener('DOMContentLoaded', loadHeader);
     </script>
 
     <section class="hero-section" style="padding: 80px 0;">
@@ -225,11 +227,7 @@
 
     <script>loadFooter();</script>
     <!-- ===== SCRIPTS ===== -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../public/asset/js/dvqt-krud.js?v=1.7"></script>
-    <script src="../public/asset/js/dvqt-app.js?v=1.7"></script>
     <script src="assets/js/utils.js?v=1.7"></script>
-    <script src="assets/js/static-data.js?v=1.7"></script>
     <script src="assets/js/api.js?v=1.7"></script>
     <script src="assets/js/pages/services.js?v=1.7"></script>
     <script>
@@ -271,26 +269,32 @@
                 return;
             }
 
-            container.innerHTML = cars.map(car => `
-        <div class="col-lg-4 col-md-6">
-            <div class="card car-card h-100">
-                <div class="position-relative">
-                    <img src="assets/images/cars/${car.main_image}"
-                         class="card-img-top car-card-img"
-                         alt="${car.name}"
-                         onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
-                    <span class="badge badge-status badge-available">Có sẵn</span>
-                </div>
-                <div class="card-body">
-                    <h5 class="fw-bold mb-2">${car.name}</h5>
-                    <p class="text-muted small mb-3">${car.brand} · ${car.seats} chỗ · ${car.transmission} · ${car.fuel_type}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="car-price">${fmt(car.price_per_day)}đ/ngày</span>
-                        <a href="views/pages/public/chi-tiet-xe.html?type_id=${car.type_id || car.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>
+            container.innerHTML = cars.map(car => {
+                const img = car.anhdaidien || 'thue-xe-xe-anh-mac-dinh-fallback.jpg';
+                const price = Number(car.giathue) || 0;
+                const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
+                
+                return `
+                <div class="col-lg-4 col-md-6">
+                    <div class="card car-card h-100">
+                        <div class="position-relative">
+                            <img src="assets/images/cars/${img}"
+                                 class="card-img-top car-card-img"
+                                 alt="${car.tenxe || 'Xe'}"
+                                 onerror="this.src='assets/images/cars/thue-xe-xe-anh-mac-dinh-fallback.jpg'">
+                            <span class="badge badge-status badge-available">Có sẵn</span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-2">${car.tenxe || 'Tên xe'}</h5>
+                            <p class="text-muted small mb-3">${car.loaixe || ''} · ${car.socho || 0} chỗ · ${car.nhienlieu || ''}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="car-price">${formattedPrice}đ/ngày</span>
+                                <a href="views/pages/public/chi-tiet-xe.html?id=${car.id}" class="btn btn-gradient-secondary btn-sm">Chi tiết</a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>`).join('');
+                </div>`;
+            }).join('');
 
             host.style.display = 'block';
             host.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -420,44 +424,80 @@
     </style>
 
     <script>
-        (function () {
-            function initSearchDropdown(wrapId, inputId) {
+        (async function () {
+            // 1. Phân tích chức năng Dropdown
+            function setupDropdownLogic(wrapId, inputId) {
                 const wrap = document.getElementById(wrapId);
                 const input = document.getElementById(inputId);
                 if (!wrap || !input) return;
                 const btn = wrap.querySelector('.search-dropdown-btn');
                 const label = wrap.querySelector('.search-dropdown-label');
                 const menu = wrap.querySelector('.search-dropdown-menu');
-                const items = menu.querySelectorAll('li');
 
+                // Toggle menu
                 btn.addEventListener('click', function (e) {
                     e.stopPropagation();
+                    document.querySelectorAll('.search-dropdown.open').forEach(d => {
+                        if (d !== wrap) d.classList.remove('open');
+                    });
                     const isOpen = wrap.classList.toggle('open');
                     btn.setAttribute('aria-expanded', isOpen);
                 });
 
-                items.forEach(function (li) {
-                    li.addEventListener('click', function () {
-                        items.forEach(function (x) { x.classList.remove('active'); });
-                        li.classList.add('active');
-                        label.textContent = li.textContent;
-                        input.value = li.dataset.value;
-                        wrap.classList.remove('open');
-                        btn.setAttribute('aria-expanded', 'false');
-                    });
+                // Xử lý khi chọn item (Event delegation cho các item được thêm động)
+                menu.addEventListener('click', function(e) {
+                    const li = e.target.closest('li');
+                    if (!li) return;
+                    
+                    menu.querySelectorAll('li').forEach(x => x.classList.remove('active'));
+                    li.classList.add('active');
+                    label.textContent = li.textContent;
+                    input.value = li.dataset.value;
+                    wrap.classList.remove('open');
+                    btn.setAttribute('aria-expanded', 'false');
                 });
             }
 
+            // 2. Nạp dữ liệu động từ Database cho các Filter
+            try {
+                const filterRes = await API.cars.getFilterOptions();
+                if (filterRes.success) {
+                    // Cập nhật Hãng xe
+                    const brandMenu = document.querySelector('#dropBrand .search-dropdown-menu');
+                    if (brandMenu) {
+                        const brandHtml = ['<li data-value="" class="active">Tất cả hãng</li>'];
+                        filterRes.brands.forEach(b => {
+                            brandHtml.push(`<li data-value="${b}">${b}</li>`);
+                        });
+                        brandMenu.innerHTML = brandHtml.join('');
+                    }
+
+                    // Cập nhật Số chỗ
+                    const seatMenu = document.querySelector('#dropSeats .search-dropdown-menu');
+                    if (seatMenu) {
+                        const seatHtml = ['<li data-value="" class="active">Tất cả</li>'];
+                        filterRes.seats.forEach(s => {
+                            seatHtml.push(`<li data-value="${s}">${s} chỗ</li>`);
+                        });
+                        seatMenu.innerHTML = seatHtml.join('');
+                    }
+                }
+            } catch (err) {
+                console.warn("Lỗi đồng bộ bộ lọc:", err);
+            }
+
+            // 3. Khởi tạo Logic
+            setupDropdownLogic('dropBrand', 'serviceSearchBrand');
+            setupDropdownLogic('dropSeats', 'serviceSearchSeats');
+            setupDropdownLogic('dropPrice', 'serviceSearchPrice');
+
+            // Đóng tất cả khi click ra ngoài
             document.addEventListener('click', function () {
                 document.querySelectorAll('.search-dropdown.open').forEach(function (d) {
                     d.classList.remove('open');
                     d.querySelector('.search-dropdown-btn').setAttribute('aria-expanded', 'false');
                 });
             });
-
-            initSearchDropdown('dropBrand', 'serviceSearchBrand');
-            initSearchDropdown('dropSeats', 'serviceSearchSeats');
-            initSearchDropdown('dropPrice', 'serviceSearchPrice');
         })();
     </script>
 </body>

@@ -29,10 +29,15 @@ async function _bdInitStandalone() {
 
     let _stPendingData = null;
 
-    // Submit → validate → confirm
+    // Submit → validate → confirm (KHÔNG CẦN ĐĂNG NHẬP)
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
-        if (!(await _bdRequireCustomerLogin())) return;
+        
+        // Chỉ kiểm tra NCC tự đặt cho mình (không yêu cầu đăng nhập)
+        if (typeof _bdRequireCustomerLogin === 'function') {
+            if (!(await _bdRequireCustomerLogin())) return;
+        }
+        
         const mainSel = document.getElementById('loaidichvu');
         const subSel  = document.getElementById('dichvucuthe');
         const service = (subSel?.value || '').trim();
@@ -61,42 +66,124 @@ async function _bdInitStandalone() {
         _stPendingData = null;
     });
 
-    // Xác nhận → API
+    // Xác nhận → TẠO TÀI KHOẢN TỰ ĐỘNG → API
     const confirmBtn = document.getElementById('btnxacnhan');
     confirmBtn?.addEventListener('click', async function () {
         if (!_stPendingData) return;
-        if (!(await _bdRequireCustomerLogin())) return;
-        await _bdSubmitApi(_stPendingData, this, (orderCode) => {
-            alert(orderCode ? `✅ Đặt lịch thành công! Mã đơn: ${orderCode}` : '✅ Đặt lịch thành công!\nChúng tôi sẽ liên hệ lại sớm nhất.');
-            
-            // Nếu dùng Express Booking (có sdt/pass trong URL) -> Chuyển về trang đăng nhập
-            const urlParams = new URLSearchParams(window.location.search);
-            const sdt = urlParams.get('sdt');
-            const pass = urlParams.get('password');
-            if (sdt && pass) {
-                const redirectUrl = `../../public/dang-nhap.html?sodienthoai=${encodeURIComponent(sdt)}&matkhau=${encodeURIComponent(pass)}&redirect=${encodeURIComponent(window.location.href)}`;
-                window.location.href = redirectUrl;
-                return;
+
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+
+        try {
+            // BƯỚC 1: Tự động tạo tài khoản nếu chưa đăng nhập
+            let accountResult = null;
+            const isLoggedIn = await _bdIsCustomerLoggedIn();
+
+            if (!isLoggedIn) {
+                accountResult = await _bdAutoCreateOrFindAccount(
+                    _stPendingData.name,
+                    _stPendingData.phone
+                );
+                console.log('📝 Account result:', accountResult);
             }
 
-            form.reset();
-            form.style.display = '';
-            const confirm = document.getElementById('bookingConfirm');
-            if (confirm) confirm.style.display = 'none';
-            const subWrap = document.getElementById('subServiceWrap');
-            if (subWrap) subWrap.style.display = 'none';
-            const subBtns = document.getElementById('subServiceBtns');
-            if (subBtns) subBtns.innerHTML = '';
-            const subCount = document.getElementById('subServiceCount');
-            if (subCount) { subCount.textContent = ''; subCount.style.display = 'none'; }
-            const subHidden = document.getElementById('dichvucuthe');
-            if (subHidden) subHidden.value = '';
-            if (typeof _bdClearBrandSelectorUi === 'function') _bdClearBrandSelectorUi();
-            _bdHideBreakdown(true);
-            _bdClearMedia();
-            _stPendingData = null;
-        });
+            // BƯỚC 2: Gửi đơn đặt lịch
+            await _bdSubmitApi(_stPendingData, btn, async (orderCode) => {
+                // BƯỚC 3: Xử lý sau khi đặt lịch thành công
+                if (accountResult && accountResult.isNew) {
+                    // TÀI KHOẢN MỚI → Đăng nhập tự động và chuyển đến trang quản lý
+                    try {
+                        await DVQTApp.login(_stPendingData.phone, _stPendingData.phone);
+                    } catch(_loginErr) {
+                        console.warn('Auto-login failed:', _loginErr);
+                    }
+                    
+                    await Swal.fire({
+                        title: '<span style="color:#11998e">Đặt lịch thành công!</span>',
+                        html: `<div style="text-align:left; line-height:1.8;">
+                            <p><i class="fas fa-check-circle text-success me-1"></i> Mã đơn: <strong>${orderCode || 'Đang xử lý'}</strong></p>
+                            <p><i class="fas fa-user-plus text-primary me-1"></i> Tài khoản đã được tạo tự động:</p>
+                            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; margin:8px 0;">
+                                <p style="margin:4px 0;"><strong>SĐT:</strong> ${_stPendingData.phone}</p>
+                                <p style="margin:4px 0;"><strong>Mật khẩu:</strong> ${_stPendingData.phone} <small class="text-muted">(mặc định = SĐT)</small></p>
+                            </div>
+                            <p class="text-warning small"><i class="fas fa-shield-alt me-1"></i>Vui lòng đổi mật khẩu để bảo mật tài khoản.</p>
+                        </div>`,
+                        icon: 'success',
+                        confirmButtonText: 'Xem đơn hàng của tôi',
+                        confirmButtonColor: '#11998e',
+                        allowOutsideClick: false
+                    });
+                    
+                    // Chuyển đến trang quản lý đơn hàng
+                    const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : '/Test';
+                    window.location.href = root + '/tho-nha/pages/customer/trang-ca-nhan.html';
+
+                } else if (accountResult && accountResult.accountExists) {
+                    // SĐT ĐÃ TỒN TẠI → Thông báo, đặt lịch thành công nhưng KHÔNG đăng nhập
+                    await Swal.fire({
+                        title: '<span style="color:#11998e">Đặt lịch thành công!</span>',
+                        html: `<div style="text-align:left; line-height:1.8;">
+                            <p><i class="fas fa-check-circle text-success me-1"></i> Mã đơn: <strong>${orderCode || 'Đang xử lý'}</strong></p>
+                            <p><i class="fas fa-info-circle text-warning me-1"></i> SĐT <strong>${_stPendingData.phone}</strong> đã có tài khoản trong hệ thống.</p>
+                            <p class="small text-muted">Vui lòng <a href="${_bdGetCustomerLoginUrl()}">đăng nhập</a> để xem và quản lý đơn hàng.</p>
+                        </div>`,
+                        icon: 'success',
+                        confirmButtonText: 'Đóng',
+                        confirmButtonColor: '#11998e'
+                    });
+
+                    // Reset form
+                    _bdResetBookingForm(form);
+                    _stPendingData = null;
+
+                } else {
+                    // Đã đăng nhập sẵn → Thông báo bình thường
+                    await Swal.fire({
+                        title: '<span style="color:#11998e">Đặt lịch thành công!</span>',
+                        html: `Mã đơn: <strong>${orderCode || 'Đang xử lý'}</strong><br>Chúng tôi sẽ liên hệ lại sớm nhất.`,
+                        icon: 'success',
+                        confirmButtonText: 'Xem đơn hàng',
+                        confirmButtonColor: '#11998e'
+                    });
+
+                    const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : '/Test';
+                    window.location.href = root + '/tho-nha/pages/customer/trang-ca-nhan.html';
+                }
+            });
+        } catch (err) {
+            console.error('Booking error:', err);
+            Swal.fire({
+                title: 'Lỗi',
+                text: err?.message || 'Không thể đặt lịch. Vui lòng thử lại.',
+                icon: 'error',
+                confirmButtonColor: '#ef4444'
+            });
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Xác nhận';
+        }
     });
+}
+
+// Helper: Reset form về trạng thái ban đầu
+function _bdResetBookingForm(form) {
+    if (!form) return;
+    form.reset();
+    form.style.display = '';
+    const confirm = document.getElementById('bookingConfirm');
+    if (confirm) confirm.style.display = 'none';
+    const subWrap = document.getElementById('subServiceWrap');
+    if (subWrap) subWrap.style.display = 'none';
+    const subBtns = document.getElementById('subServiceBtns');
+    if (subBtns) subBtns.innerHTML = '';
+    const subCount = document.getElementById('subServiceCount');
+    if (subCount) { subCount.textContent = ''; subCount.style.display = 'none'; }
+    const subHidden = document.getElementById('dichvucuthe');
+    if (subHidden) subHidden.value = '';
+    if (typeof _bdClearBrandSelectorUi === 'function') _bdClearBrandSelectorUi();
+    _bdHideBreakdown(true);
+    _bdClearMedia();
 }
 
 async function _bdLoadStandaloneServices() {

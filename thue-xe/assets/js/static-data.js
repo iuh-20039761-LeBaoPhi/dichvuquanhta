@@ -42,7 +42,7 @@ window.STATIC_DATA_PROMISE = (async function() {
         console.log(`[Antigravity-Debug] Loaded ${dbCars.length} cars from xethue.`);
         
         const filterOptions = {
-            "brands": [...new Set(dbCars.map(c => c.tenxe.split(' ')[0]))], // Tự động lấy các hãng xe có trong DB
+            "brands": [...new Set(dbCars.map(c => (c.tenxe || '').split(' ')[0]).filter(Boolean))], // Tự động lấy các hãng xe có trong DB
             "seats": [4, 5, 7],
             "prices": { "min": 500000, "max": 5000000 }
         };
@@ -56,29 +56,31 @@ window.STATIC_DATA_PROMISE = (async function() {
         const typeMap = {};
 
         dbCars.forEach(row => {
-            // Chỉ lấy xe đã được duyệt
-            if(row.trangthai !== 'approved') return;
+            // Chỉ lấy xe đang cho thuê (available) hoặc xe chưa có trạng thái
+            if(row.trangthai && row.trangthai !== 'available') return;
+            if(!row.tenxe) return; // Bỏ qua nếu xe không có tên
 
             const typeKey = row.tenxe;
+            const carBrand = typeKey.split(' ')[0] || 'Khác';
             
             if (!typeMap[typeKey]) {
                 const typeId = car_types.length + 1;
                 typeMap[typeKey] = typeId;
                 car_types.push({
                     id: typeId,
-                    name: row.tenxe,
-                    brand: row.tenxe.split(' ')[0], // Tách hãng từ tên xe
-                    model: row.tenxe,
-                    year: Number(row.namsanxuat),
-                    car_type: row.loaixe,
-                    seats: Number(row.socho),
-                    transmission: row.hopso,
-                    fuel_type: row.nhienlieu,
-                    price_per_day: Number(row.giathue),
+                    name: typeKey,
+                    brand: carBrand, 
+                    model: typeKey,
+                    year: Number(row.namsanxuat) || 0,
+                    car_type: row.loaixe || 'Xe đời mới',
+                    seats: Number(row.socho) || 5,
+                    transmission: row.hopso || 'Tự động',
+                    fuel_type: row.nhienlieu || 'Xăng',
+                    price_per_day: Number(row.giathue) || 0,
                     main_image: row.anhdaidien,
-                    description: row.loaixe + " sang trọng và tiện nghi.",
+                    description: (row.loaixe || 'Xe') + " sang trọng và tiện nghi.",
                     images: { 
-                        front: row.anhdaidien, // Dùng ảnh đại diện làm mặt trước
+                        front: row.anhdaidien, 
                         back: row.anhsau,
                         left: row.anhtrai,
                         right: row.anhphai,
@@ -91,14 +93,16 @@ window.STATIC_DATA_PROMISE = (async function() {
             cars.push({
                 id: Number(row.id),
                 type_id: typeId,
-                license_plate: row.bienso,
-                manufacture_year: Number(row.namsanxuat),
+                license_plate: row.bienso || '',
+                manufacture_year: Number(row.namsanxuat) || 0,
                 status: 'available',
                 provider_id: row.provider_id,
-                price_per_day: Number(row.giathue), // Thêm để tương thích search
-                brand: row.tenxe.split(' ')[0],
-                seats: Number(row.socho),
-                main_image: row.anhdaidien
+                price_per_day: Number(row.giathue) || 0,
+                brand: carBrand,
+                seats: Number(row.socho) || 5,
+                main_image: row.anhdaidien,
+                color: row.mausac || '',
+                odo: Number(row.odo) || 0
             });
         });
 

@@ -59,22 +59,54 @@ async function loadHeader() {
     await loadCore('/public/asset/js/dvqt-app.js');
 
     injectBaseSEO();
-    fetch('views/partials/header.html')
-        .then(r => r.text())
-        .then(html => {
-            // Chỉ extract phần <header> thay vì inject cả file HTML
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const headerEl = doc.querySelector('header');
-            if (headerEl) {
-                document.body.insertAdjacentElement('afterbegin', headerEl);
+    try {
+        const response = await fetch('views/partials/header.html');
+        const html = await response.text();
+        
+        // Chỉ extract phần <header> thay vì inject cả file HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const headerEl = doc.querySelector('header');
+        
+        if (headerEl) {
+            document.body.insertAdjacentElement('afterbegin', headerEl);
+        } else {
+            document.body.insertAdjacentHTML('afterbegin', html);
+        }
+
+        // Kích hoạt lại (Re-init) Bootstrap cho các thành phần vừa nạp động
+        const reinitBS = () => {
+            if (typeof bootstrap !== 'undefined') {
+                // Khởi tạo các Dropdown (Menu tài khoản)
+                document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(el => {
+                    if (!bootstrap.Dropdown.getInstance(el)) new bootstrap.Dropdown(el);
+                });
+
+                // Khởi tạo các Collapse (Menu Mobile)
+                document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(el => {
+                    if (!bootstrap.Collapse.getInstance(el)) new bootstrap.Collapse(el, { toggle: false });
+                });
             } else {
-                document.body.insertAdjacentHTML('afterbegin', html);
+                // Nếu chưa có bootstrap, đợi 300ms rồi thử lại (tối đa vài lần)
+                let retry = 0;
+                const timer = setInterval(() => {
+                    retry++;
+                    if (typeof bootstrap !== 'undefined') {
+                        clearInterval(timer);
+                        reinitBS();
+                    }
+                    if (retry > 10) clearInterval(timer);
+                }, 300);
             }
-            highlightActiveNav();
-            injectBackBar();
-            initAuthNav();
-        });
+        };
+        reinitBS();
+
+        highlightActiveNav();
+        injectBackBar();
+        initAuthNav();
+    } catch (err) {
+        console.error('[loadHeader] Error loading navigation:', err);
+    }
 }
 
 function initAuthNav() {

@@ -311,7 +311,8 @@ function renderManageTable() {
     }
 
     const rows = vehicles.map(vehicle => {
-        const statusMeta = getStatusMeta(vehicle.status);
+        const vStatus = vehicle.trangthai || vehicle.status || '';
+        const statusMeta = getStatusMeta(vStatus);
         const toggleBtn = statusMeta.nextStatus
             ? `<button type="button" class="btn-toggle" onclick="toggleVehicleStatus(${vehicle.id}, '${statusMeta.nextStatus}')">${statusMeta.actionLabel}</button>`
             : '';
@@ -337,7 +338,8 @@ function showDetail(carId) {
     const car = vehicles.find(item => Number(item.id) === Number(carId));
     if (!car) return;
 
-    const statusMeta = getStatusMeta(car.status);
+    const vStatus = car.trangthai || car.status || '';
+    const statusMeta = getStatusMeta(vStatus);
     document.getElementById('detailTitle').textContent = `${car.name || 'Xe'} (#${car.id})`;
     document.getElementById('detailBody').innerHTML = `
         <div class="row g-2">

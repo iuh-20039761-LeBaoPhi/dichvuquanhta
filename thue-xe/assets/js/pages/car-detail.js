@@ -169,6 +169,19 @@
                     </div>
                 </div>
 
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Thông số kỹ thuật</h5>
+                        <div class="row g-3">
+                            ${renderDetailSpec('Năm SX', car.namsanxuat)}
+                            ${renderDetailSpec('Loại xe', car.loaixe)}
+                            ${renderDetailSpec('Biển số', car.bienso)}
+                            ${renderDetailSpec('Odo', fmt(car.odo) + ' km')}
+                            ${renderDetailSpec('Màu sắc', car.mausac)}
+                        </div>
+                    </div>
+                </div>
+
                 <!-- HIỂN THỊ CÁC XE CÙNG LOẠI TRONG HỆ THỐNG -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body p-4">
@@ -211,19 +224,6 @@
                                     }).join('')}
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3">Thông số kỹ thuật</h5>
-                        <div class="row g-3">
-                            ${renderDetailSpec('Năm SX', car.namsanxuat)}
-                            ${renderDetailSpec('Loại xe', car.loaixe)}
-                            ${renderDetailSpec('Biển số', car.bienso)}
-                            ${renderDetailSpec('Odo', fmt(car.odo) + ' km')}
-                            ${renderDetailSpec('Màu sắc', car.mausac)}
                         </div>
                     </div>
                 </div>
@@ -327,15 +327,18 @@
         const form = document.getElementById('bookingFormFull');
         if (!form) return;
 
-        // A. Autofill & State
-        const s = (window.DVQTApp && window.DVQTApp.checkSession) ? await window.DVQTApp.checkSession() : null;
-        if (s && s.logged_in) {
-            const f = n => form.querySelector(`[name="${n}"]`);
-            if (f('customer_name')) f('customer_name').value = s.hovaten || s.name || '';
-            if (f('customer_phone')) f('customer_phone').value = s.sodienthoai || s.phone || '';
-            if (f('customer_email')) f('customer_email').value = s.email || '';
-            if (f('customer_address')) f('customer_address').value = s.diachi || s.address || '';
-        }
+        // A. Autofill & State — Tự động điền nếu đã đăng nhập (KHÔNG BẮT BUỘC)
+        let s = null;
+        try {
+            s = (window.DVQTApp && window.DVQTApp.checkSession) ? await window.DVQTApp.checkSession() : null;
+            if (s && s.logged_in) {
+                const f = n => form.querySelector(`[name="${n}"]`);
+                if (f('customer_name')) f('customer_name').value = s.hovaten || s.name || '';
+                if (f('customer_phone')) f('customer_phone').value = s.sodienthoai || s.phone || '';
+                if (f('customer_email')) f('customer_email').value = s.email || '';
+                if (f('customer_address')) f('customer_address').value = s.diachi || s.address || '';
+            }
+        } catch(_e) { console.warn('Session check skipped:', _e); }
 
         // B. Render Addon Services
         const STATIC = await STATIC_DATA_PROMISE;
@@ -411,15 +414,39 @@
             document.getElementById('bookingFormFull').style.display = 'none';
             document.getElementById('txBookingConfirm').style.display = 'block';
             
-            // Final Database Submission
+            // Final Database Submission — TỰ ĐỘNG TẠO TÀI KHOẢN
             document.getElementById('txConfirmSubmitBtn').onclick = async function() {
                 this.disabled = true;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
+                
+                const custName = form.customer_name.value.trim();
+                const custPhone = form.customer_phone.value.trim();
+                
                 try {
+                    // BƯỚC 1: Tự động tạo tài khoản nếu chưa đăng nhập
+                    let accountResult = null;
+                    let isLoggedIn = false;
+                    try {
+                        const currentSession = await DVQTApp.checkSession();
+                        isLoggedIn = !!(currentSession && currentSession.logged_in);
+                    } catch(_e) {}
+
+                    if (!isLoggedIn) {
+                        const helper = window.DVQTBookingHelper;
+                        if (helper) {
+                            accountResult = await helper.autoCreateOrFindAccount(custName, custPhone);
+                            console.log('📝 TX Account result (Helper):', accountResult);
+                        } else {
+                            // Fallback nếu helper chưa nạp
+                            accountResult = await _txAutoCreateOrFindAccount(custName, custPhone);
+                        }
+                    }
+
+                    // BƯỚC 2: Gửi đơn đặt xe
                     const payload = {
-                        id_nguoidung: s?.id || null,
-                        tenkhachhang: form.customer_name.value,
-                        sdtkhachhang: form.customer_phone.value,
+                        id_nguoidung: accountResult?.userId || s?.id || null,
+                        tenkhachhang: custName,
+                        sdtkhachhang: custPhone,
                         emailkhachhang: form.customer_email.value,
                         id_xe: car.id,
                         ten_xe: car.tenxe,
@@ -434,11 +461,41 @@
                         ngaydat: new Date().toISOString().slice(0, 19).replace('T', ' ')
                     };
                     const res = await DVQTKrud.insertRow('datlich_thuexe', payload);
-                    if(res) {
-                        Swal.fire('Thành công!', `Đơn hàng #${String(res.id).padStart(7,'0')} đã được tiếp nhận.`, 'success')
-                            .then(() => window.location.href = 'views/pages/customer/trang-ca-nhan.html');
+                    const orderCode = res ? String(res.id).padStart(7, '0') : null;
+
+                    // BƯỚC 3: Xử lý kết quả
+                    if (window.DVQTBookingHelper) {
+                        const helper = window.DVQTBookingHelper;
+                        const redirectUrl = 'views/pages/customer/trang-ca-nhan.html';
+                        await helper.showSuccessAlert(accountResult || {isNew:false}, custPhone, orderCode, redirectUrl);
+                    } else {
+                        // Fallback cũ
+                        if (accountResult && accountResult.isNew) {
+                            try { await DVQTApp.login(custPhone, custPhone); } catch(_e) {}
+                            await Swal.fire({
+                                title: '<span style="color:#0ea5e9">Đặt xe thành công!</span>',
+                                html: `<div style="text-align:left; line-height:1.8;">
+                                    <p><i class="fas fa-check-circle text-success me-1"></i> Mã đơn: <strong>#${orderCode || 'Đang xử lý'}</strong></p>
+                                    <p><i class="fas fa-user-plus text-primary me-1"></i> Tài khoản đã được tạo tự động:</p>
+                                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; margin:8px 0;">
+                                        <p style="margin:4px 0;"><strong>SĐT:</strong> ${custPhone}</p>
+                                        <p style="margin:4px 0;"><strong>Mật khẩu:</strong> ${custPhone} <small class="text-muted">(mặc định = SĐT)</small></p>
+                                    </div>
+                                </div>`,
+                                icon: 'success',
+                                confirmButtonText: 'Xem đơn hàng',
+                                confirmButtonColor: '#0ea5e9'
+                            });
+                            window.location.href = 'views/pages/customer/trang-ca-nhan.html';
+                        } else {
+                            Swal.fire('Thành công!', `Đơn hàng #${orderCode} đã được tiếp nhận.`, 'success')
+                                .then(() => window.location.href = 'views/pages/customer/trang-ca-nhan.html');
+                        }
                     }
-                } catch(err) { Swal.fire('Lỗi', 'Không thể gửi đơn hàng', 'error'); }
+                } catch(err) {
+                    console.error('Booking error:', err);
+                    Swal.fire('Lỗi', err?.message || 'Không thể gửi đơn hàng', 'error');
+                }
                 this.disabled = false;
                 this.innerHTML = '<i class="fas fa-check me-2"></i> Xác nhận đặt xe';
             };
@@ -449,4 +506,47 @@
             };
         };
     };
+
+    /**
+     * Tự động tạo tài khoản hoặc tìm tài khoản hiện có theo SĐT (Thuê Xe).
+     * Logic tương tự _bdAutoCreateOrFindAccount trong Thợ Nhà.
+     */
+    async function _txAutoCreateOrFindAccount(name, phone) {
+        const krud = window.DVQTKrud;
+        if (!krud) throw new Error('Hệ thống chưa sẵn sàng.');
+
+        const pNorm = String(phone).replace(/\D/g, '');
+        const rows = await krud.listTable('nguoidung', { limit: 2000 });
+        const existing = rows.find(r => {
+            const dbPhone = String(r.sodienthoai || r.phone || '').replace(/\D/g, '');
+            return dbPhone === pNorm;
+        });
+
+        if (existing) {
+            return { isNew: false, accountExists: true, userId: existing.id };
+        }
+
+        // Tạo tài khoản mới
+        const now = new Date();
+        const vn = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+        const pad = n => String(n).padStart(2, '0');
+        const created = `${vn.getFullYear()}-${pad(vn.getMonth()+1)}-${pad(vn.getDate())} ${pad(vn.getHours())}:${pad(vn.getMinutes())}:${pad(vn.getSeconds())}`;
+
+        if (typeof krud.ensureNguoidungTable === 'function') {
+            await krud.ensureNguoidungTable();
+        }
+
+        const userData = {
+            hovaten: name,
+            sodienthoai: phone,
+            matkhau: phone,
+            id_dichvu: '0',
+            created_date: created,
+            trangthai: 'active'
+        };
+
+        const result = await krud.insertRow('nguoidung', userData);
+        const newId = result?.data?.id || result?.id || null;
+        return { isNew: true, accountExists: false, userId: newId };
+    }
 })();

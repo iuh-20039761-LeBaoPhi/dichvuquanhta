@@ -14,7 +14,7 @@ window.ThueXeAdmin = (function () {
     return {
         // 1. NGHIỆP VỤ QUẢN LÝ XE
         approveCar: async function (id) {
-            return this.updateStatus(TABLES.CARS, id, 'approved', 'Duyệt hiển thị xe thành công!');
+            return this.updateStatus(TABLES.CARS, id, 'available', 'Duyệt hiển thị xe thành công!');
         },
 
         rejectCar: async function (id) {

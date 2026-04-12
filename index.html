@@ -341,18 +341,11 @@
 
             <!-- AUTH SECTION -->
             <li class="nav-item ms-lg-2" id="auth-loading">
-              <a class="nav-link disabled" href="#"
-                ><span class="spinner-border spinner-border-sm me-1"></span>
-                Đang tải...</a
-              >
+              <a class="nav-link disabled" href="#"><span class="spinner-border spinner-border-sm me-1"></span> Đang tải...</a>
             </li>
 
             <!-- GUEST: Hiện khi chưa đăng nhập -->
-            <li
-              class="nav-item dropdown ms-lg-2"
-              id="auth-guest"
-              style="display: none"
-            >
+            <li class="nav-item dropdown ms-lg-2" id="auth-guest" style="display:none;">
               <a
                 class="nav-link dropdown-toggle"
                 href="#"
@@ -363,18 +356,14 @@
               >
                 <i class="fas fa-user-circle me-1"></i> Tài khoản
               </a>
-              <ul
-                class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                aria-labelledby="guestDropdown"
-              >
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="guestDropdown">
                 <li>
                   <a class="dropdown-item py-2" href="public/dang-nhap.html">
-                    <i class="fas fa-sign-in-alt me-2 text-primary"></i> Đăng
-                    nhập
+                    <i class="fas fa-sign-in-alt me-2 text-primary"></i> Đăng nhập
                   </a>
                 </li>
                 <li>
-                  <hr class="dropdown-divider" />
+                  <hr class="dropdown-divider">
                 </li>
                 <li>
                   <a class="dropdown-item py-2" href="public/dang-ky.html">
@@ -385,11 +374,7 @@
             </li>
 
             <!-- USER: Hiện khi ĐÃ đăng nhập -->
-            <li
-              class="nav-item dropdown ms-lg-2"
-              id="auth-user"
-              style="display: none"
-            >
+            <li class="nav-item dropdown ms-lg-2" id="auth-user" style="display:none;">
               <a
                 class="nav-link dropdown-toggle d-flex align-items-center gap-2"
                 href="#"
@@ -398,30 +383,23 @@
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <div
-                  id="auth-avatar"
-                  class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow-sm"
-                  style="width: 32px; height: 32px; font-size: 14px"
-                >
-                  U
-                </div>
+                <div id="auth-avatar" class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 32px; height: 32px; font-size: 14px;">U</div>
                 <span id="auth-name" class="d-none d-xl-inline">Tài khoản</span>
               </a>
-              <ul
-                class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                aria-labelledby="userDropdown"
-              >
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="userDropdown">
                 <li class="px-3 py-2 d-xl-none border-bottom mb-1">
-                  <span class="fw-bold small" id="auth-name-mobile"
-                    >Tài khoản</span
-                  >
+                    <span class="fw-bold small" id="auth-name-mobile">Tài khoản</span>
                 </li>
                 <li>
-                  <a
-                    class="dropdown-item py-2 text-danger"
-                    href="#"
-                    id="auth-logout-link"
-                  >
+                  <a class="dropdown-item py-2" href="public/trang-ca-nhan.html">
+                    <i class="fas fa-user-cog me-2 text-primary"></i> Hồ sơ cá nhân
+                  </a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item py-2 text-danger" href="#" id="auth-logout-link">
                     <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
                   </a>
                 </li>
@@ -788,11 +766,11 @@
                   class="d-flex align-items-center justify-content-between gap-2 mb-2"
                 >
                   <h3 class="h5 card-title text-primary mb-0">Giặt Ủi Nhanh</h3>
-                  <!-- <a
+                  <a
                     class="btn btn-primary btn-sm rounded-pill px-3 py-1"
                     onclick="loadPage('giat-ui-nhanh/dat-dich-vu.html', this)"
                     >Đặt lịch</a
-                  > -->
+                  >
                 </div>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Công nghệ giặt là tiên tiến, xử lý vết bẩn hiệu quả, giao nhận
@@ -851,7 +829,7 @@
                   <h3 class="h5 card-title mb-0" style="color: #0a2a66">
                     Giao Hàng Nhanh
                   </h3>
-                  <!-- <a
+                  <a
                     class="btn btn-primary btn-sm rounded-pill px-3 py-1"
                     style="
                       background: linear-gradient(90deg, #0a2a66, #ff7a00);
@@ -865,7 +843,7 @@
                       )
                     "
                     >Đặt lịch</a
-                  > -->
+                  >
                 </div>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Dịch vụ giao nhận hàng hóa siêu tốc, đảm bảo an toàn, uy tín
@@ -928,7 +906,7 @@
                   <h3 class="h5 card-title mb-0" style="color: #1b4332">
                     Dịch Vụ Chuyển Dọn
                   </h3>
-                  <!-- <a
+                  <a
                     class="btn btn-primary btn-sm rounded-pill px-3 py-1"
                     style="
                       background-color: #1b4332;
@@ -937,7 +915,7 @@
                     "
                     onclick="loadPage('dich-vu-chuyen-don/dat-lich.html', this)"
                     >Đặt lịch</a
-                  > -->
+                  >
                 </div>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Dịch vụ chuyển nhà, văn phòng, kho bãi chuyên nghiệp. Hỗ trợ
@@ -1023,61 +1001,6 @@
             </div>
           </div>
 
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card">
-              <div class="card-img-wrapper">
-                <div class="card-overlay"></div>
-                <img
-                  src="public/asset/image/dich-vu-lai-xe-ho.jpg"
-                  alt="Dịch vụ lái xe hộ"
-                />
-                <div class="icon-box text-info">
-                  <i data-lucide="car"></i>
-                </div>
-              </div>
-              <div
-                class="card-body"
-                style="
-                  background: linear-gradient(
-                    135deg,
-                    #e3f2fd 0%,
-                    #ffffff 50%,
-                    #fff3e0 100%
-                  );
-                "
-              >
-                <h3 class="h5 card-title">Dịch Vụ Lái Xe Hộ</h3>
-                <p class="text-muted small mb-4 flex-grow-1">
-                  Dịch vụ thuê xe cung cấp giải pháp di chuyển linh hoạt, tiện
-                  lợi với nhiều loại xe phù hợp mọi nhu cầu, giúp bạn tiết kiệm
-                  thời gian và tận hưởng hành trình thoải mái..
-                </p>
-                <div
-                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
-                >
-                  <a
-                    href="dich-vu-lai-xe-ho/index.html"
-                    class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-info"
-                  >
-                    Xem Chi Tiết
-                    <i data-lucide="arrow-right" style="width: 16px"></i>
-                  </a>
-                  <a
-                    href="dich-vu-lai-xe-ho/cam-nang.html"
-                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-info"
-                  >
-                    Cẩm Nang
-                    <i data-lucide="book-open" style="width: 16px"></i>
-                  </a>
-                </div>
-              </div>
-              <div
-                class="card-bottom-border"
-                style="background: linear-gradient(90deg, #0ea5e9, #06b6d4)"
-              ></div>
-            </div>
-          </div>
-
           <!-- Mobile Car Repair Service -->
           <div class="col-md-6 col-lg-4">
             <div class="service-card">
@@ -1101,11 +1024,11 @@
                   <h3 class="h5 card-title text-warning mb-0">
                     Sửa Xe Lưu Động
                   </h3>
-                  <!-- <a
+                  <a
                     class="btn btn-warning btn-sm rounded-pill px-3 py-1"
                     onclick="loadPage('sua-xe-luu-dong/dat-dich-vu.html', this)"
                     >Đặt lịch</a
-                  > -->
+                  >
                 </div>
                 <p class="text-light small mb-4 flex-grow-1">
                   Sửa chữa, vá lốp - thay lốp xe tại chỗ đảm bảo tiết kiệm thời
@@ -1456,7 +1379,6 @@
                     <option>Chăm Sóc Người Già</option>
                     <option>Chăm Sóc Bệnh Nhân</option>
                     <option>Giao Hàng Nhanh</option>
-                    <option>Dịch Vụ Lái Xe Hộ</option>
                     <option>Thuê Xe</option>
                     <option>Sửa Xe Lưu Động</option>
                   </select>
@@ -1598,9 +1520,6 @@
                 <a href="thue-xe/views/pages/public/dich-vu.html">Thuê Xe</a>
               </li>
               <li>
-                <a href="dich-vu-lai-xe-ho/index.html">Dịch vụ lái xe hộ</a>
-              </li>
-              <li>
                 <a href="sua-xe-luu-dong/dich-vu.html">Sửa xe lưu động</a>
               </li>
               <li>
@@ -1734,34 +1653,34 @@
       /**
        * home-auth.js logic tích hợp trực tiếp vào index.html
        */
-      (function () {
-        const loadingEl = document.getElementById("auth-loading");
-        const guestEl = document.getElementById("auth-guest");
-        const userEl = document.getElementById("auth-user");
+      (function() {
+        const loadingEl = document.getElementById('auth-loading');
+        const guestEl   = document.getElementById('auth-guest');
+        const userEl    = document.getElementById('auth-user');
 
         async function initHomeAuth() {
           try {
             const data = await window.DVQTApp.checkSession();
-            if (loadingEl) loadingEl.style.display = "none";
+            if (loadingEl) loadingEl.style.display = 'none';
 
             if (data && data.logged_in) {
-              if (userEl) userEl.style.display = "";
-
-              const name = data.name || "Người dùng";
+              if (userEl) userEl.style.display = '';
+              
+              const name = data.name || 'Người dùng';
               const initial = name.charAt(0).toUpperCase();
 
-              const nameEl = document.getElementById("auth-name");
-              const nameMb = document.getElementById("auth-name-mobile");
-              const avatEl = document.getElementById("auth-avatar");
+              const nameEl = document.getElementById('auth-name');
+              const nameMb = document.getElementById('auth-name-mobile');
+              const avatEl = document.getElementById('auth-avatar');
 
               if (nameEl) nameEl.textContent = name;
               if (nameMb) nameMb.textContent = name;
               if (avatEl) avatEl.textContent = initial;
 
               // Xử lý đăng xuất
-              const logoutLink = document.getElementById("auth-logout-link");
+              const logoutLink = document.getElementById('auth-logout-link');
               if (logoutLink) {
-                logoutLink.onclick = async function (e) {
+                logoutLink.onclick = async function(e) {
                   e.preventDefault();
                   const success = await window.DVQTApp.logout();
                   if (success) {
@@ -1770,15 +1689,15 @@
                 };
               }
             } else {
-              if (guestEl) guestEl.style.display = "";
+              if (guestEl) guestEl.style.display = '';
             }
-          } catch (e) {
-            if (loadingEl) loadingEl.style.display = "none";
-            if (guestEl) guestEl.style.display = "";
+          } catch(e) {
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (guestEl) guestEl.style.display = '';
           }
         }
 
-        document.addEventListener("DOMContentLoaded", initHomeAuth);
+        document.addEventListener('DOMContentLoaded', initHomeAuth);
       })();
     </script>
   </body>
