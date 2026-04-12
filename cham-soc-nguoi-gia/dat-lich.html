@@ -205,6 +205,7 @@
       padding: 12px;
       margin-bottom: 16px;
       background: #f8fffa;
+      transition: all 0.3s ease-in-out;
     }
 
     .customer-info-title {
@@ -213,6 +214,37 @@
       font-size: 1.35rem;
       line-height: 1;
       margin-bottom: 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .customer-info-content {
+      transition: all 0.3s ease-in-out;
+      overflow: hidden;
+      max-height: 1000px;
+      opacity: 1;
+    }
+
+    .customer-info-box.collapsed {
+      padding-bottom: 8px;
+    }
+
+    .customer-info-box.collapsed .customer-info-title {
+      margin-bottom: 0;
+    }
+
+    .customer-info-box.collapsed .customer-info-content {
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .toggle-arrow {
+      transition: transform 0.3s ease;
+      font-size: 1.1rem;
     }
 
     .customer-info-box .form-label {
@@ -736,54 +768,59 @@
         <div class="card border-0 shadow rounded-4">
           <div class="card-body p-4">
             <form id="bookingForm">
-              <div class="customer-info-box">
-                <div class="customer-info-title"><i class="fas fa-user me-2"></i>Thông tin khách hàng</div>
-
-                <div class="mb-2">
-                  <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="far fa-user"></i></span>
-                    <input type="text" id="hoten" required placeholder="" class="form-control" />
-                  </div>
+              <div class="customer-info-box" id="customerInfoBox">
+                <div class="customer-info-title" onclick="toggleCustomerInfo()">
+                  <span><i class="fas fa-user me-2"></i>Thông tin khách hàng</span>
+                  <i class="fas fa-chevron-up toggle-arrow" id="customerInfoArrow"></i>
                 </div>
 
-                <div class="row g-2 mb-2">
-                  <div class="col-md-6">
-                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                <div class="customer-info-content" id="customerInfoContent">
+                  <div class="mb-2">
+                    <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
                     <div class="input-group">
-                      <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                      <input type="tel" id="sodienthoai" required placeholder="" pattern="[0-9]{10,11}"
+                      <span class="input-group-text"><i class="far fa-user"></i></span>
+                      <input type="text" id="hoten" required placeholder="" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                      <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        <input type="tel" id="sodienthoai" required placeholder="" pattern="[0-9]{10,11}"
+                          class="form-control" />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Email</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="far fa-envelope"></i></span>
+                        <input type="email" id="customerEmail" placeholder="" class="form-control" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="form-label">Địa chỉ của bạn</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
+                      <input type="text" id="diachi" placeholder="Bấm 'Lấy vị trí của tôi'" readonly
                         class="form-control" />
                     </div>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Email</label>
-                    <div class="input-group">
-                      <span class="input-group-text"><i class="far fa-envelope"></i></span>
-                      <input type="email" id="customerEmail" placeholder="" class="form-control" />
+                    <div class="d-flex gap-2 mt-2">
+                      <button type="button" onclick="getLocation()" class="btn btn-success btn-sm flex-fill">
+                        <i class="fas fa-location-dot me-1"></i>Lấy vị trí
+                      </button>
+                      <button type="button" id="toggleMapBtn" onclick="toggleMapPicker()"
+                        class="btn btn-warning btn-sm flex-fill">
+                        <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
+                      </button>
                     </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label class="form-label">Địa chỉ của bạn</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-location-dot"></i></span>
-                    <input type="text" id="diachi" placeholder="Bấm 'Lấy vị trí của tôi'" readonly
-                      class="form-control" />
-                  </div>
-                  <div class="d-flex gap-2 mt-2">
-                    <button type="button" onclick="getLocation()" class="btn btn-success btn-sm flex-fill">
-                      <i class="fas fa-location-dot me-1"></i>Lấy vị trí
-                    </button>
-                    <button type="button" id="toggleMapBtn" onclick="toggleMapPicker()"
-                      class="btn btn-warning btn-sm flex-fill">
-                      <i class="fas fa-map-marker-alt me-1"></i>Chọn trên bản đồ
-                    </button>
-                  </div>
-                  <div id="mapPickerBox" class="mt-2 d-none">
-                    <div id="mapPickerEl" style="height: 260px; border-radius: 12px; border: 1px solid #b7dfba"></div>
-                    <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
+                    <div id="mapPickerBox" class="mt-2 d-none">
+                      <div id="mapPickerEl" style="height: 260px; border-radius: 12px; border: 1px solid #b7dfba"></div>
+                      <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1111,6 +1148,19 @@
         return parts.join(', ') || data.display_name || lat.toFixed(6) + ', ' + lng.toFixed(6);
       }
       return (data && data.display_name) || lat.toFixed(6) + ', ' + lng.toFixed(6);
+    }
+
+    // Thu gọn/mở rộng phần thông tin khách hàng.
+    function toggleCustomerInfo() {
+      const box = document.getElementById('customerInfoBox');
+      const arrow = document.getElementById('customerInfoArrow');
+      const isCollapsed = box.classList.toggle('collapsed');
+
+      if (isCollapsed) {
+        arrow.classList.replace('fa-chevron-up', 'fa-chevron-down');
+      } else {
+        arrow.classList.replace('fa-chevron-down', 'fa-chevron-up');
+      }
     }
 
     // Cập nhật vị trí khách, marker map, địa chỉ text rồi tính lại giá.
