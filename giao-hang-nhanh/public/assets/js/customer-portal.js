@@ -182,7 +182,9 @@
 
   function buildOrderDetailUrl(order, sessionOverride = null) {
     const detailUrl = new URL(routes.detail, window.location.href);
-    const identifier = normalizeText(order?.order_code || order?.id || "");
+    const identifier = normalizeText(
+      order?.krud_id || order?.id || order?.order_code || "",
+    );
     if (identifier) {
       detailUrl.searchParams.set("madonhang", identifier);
     }
@@ -646,6 +648,9 @@
       base_price: Number(
         breakdown.base_price ??
           breakdown.tong_gia_van_chuyen ??
+          breakdown.phi_van_chuyen ??
+          breakdown.gia_co_ban ??
+          breakdown.baseFee ??
           breakdown.basePrice ??
           0,
       ),
@@ -653,19 +658,53 @@
         breakdown.overweight_fee ?? breakdown.overweightFee ?? 0,
       ),
       volume_fee: Number(breakdown.volume_fee ?? breakdown.volumeFee ?? 0),
-      goods_fee: Number(breakdown.goods_fee ?? breakdown.goodsFee ?? 0),
-      time_fee: Number(breakdown.time_fee ?? breakdown.timeFee ?? 0),
+      goods_fee: Number(
+        breakdown.goods_fee ??
+          breakdown.phu_phi_loai_hang ??
+          breakdown.goodsGroupFee ??
+          breakdown.goodsFee ??
+          0,
+      ),
+      time_fee: Number(
+        breakdown.time_fee ??
+          breakdown.phu_phi_khung_gio ??
+          breakdown.serviceFee ??
+          breakdown.timeFee ??
+          0,
+      ),
       condition_fee: Number(
-        breakdown.condition_fee ?? breakdown.conditionFee ?? 0,
+        breakdown.condition_fee ??
+          breakdown.phu_phi_thoi_tiet ??
+          breakdown.conditionFee ??
+          0,
       ),
-      vehicle_fee: Number(breakdown.vehicle_fee ?? breakdown.vehicleFee ?? 0),
-      cod_fee: Number(breakdown.cod_fee ?? breakdown.codFee ?? 0),
+      vehicle_fee: Number(
+        breakdown.vehicle_fee ??
+          breakdown.dieu_chinh_theo_xe ??
+          breakdown.vehicleFee ??
+          0,
+      ),
+      cod_fee: Number(
+        breakdown.cod_fee ?? breakdown.phi_cod ?? breakdown.codFee ?? 0,
+      ),
       insurance_fee: Number(
-        breakdown.insurance_fee ?? breakdown.insuranceFee ?? 0,
+        breakdown.insurance_fee ??
+          breakdown.phi_bao_hiem ??
+          breakdown.insuranceFee ??
+          0,
       ),
-      service_fee: Number(breakdown.service_fee ?? breakdown.serviceFee ?? 0),
+      service_fee: Number(
+        breakdown.service_fee ?? breakdown.serviceFee ?? 0,
+      ),
       total_fee: Number(
-        breakdown.total_fee ?? breakdown.totalFee ?? shippingFee ?? 0,
+        breakdown.total_fee ??
+          breakdown.tong_cuoc ??
+          breakdown.totalFee ??
+          shippingFee ??
+          0,
+      ),
+      khoang_cach_km: Number(
+        breakdown.khoang_cach_km ?? breakdown.distance_km ?? 0,
       ),
     };
   }
@@ -2038,25 +2077,50 @@
   }
 
   function renderFeeBreakdownRows(breakdown, shippingFee) {
+    const hasBreakdownData = [
+      breakdown.base_price,
+      breakdown.goods_fee,
+      breakdown.time_fee,
+      breakdown.condition_fee,
+      breakdown.vehicle_fee,
+      breakdown.cod_fee,
+      breakdown.insurance_fee,
+    ].some((value) => Number(value || 0) > 0);
+    const baseFee =
+      Number(breakdown.base_price || 0) > 0
+        ? Number(breakdown.base_price || 0)
+        : !hasBreakdownData && Number(shippingFee || 0) > 0
+          ? Number(shippingFee || 0)
+          : 0;
     const rows = [
-      { label: "Phí vận chuyển", value: breakdown.base_price || 0 },
-      { label: "Phụ phí loại hàng", value: breakdown.goods_fee || 0 },
-      { label: "Phụ phí khung giờ", value: breakdown.time_fee || 0 },
-      { label: "Phụ phí thời tiết", value: breakdown.condition_fee || 0 },
-      { label: "Điều chỉnh theo xe", value: breakdown.vehicle_fee || 0 },
-      { label: "Phí COD", value: breakdown.cod_fee || 0 },
-      { label: "Phí bảo hiểm", value: breakdown.insurance_fee || 0 },
-    ].filter((item, index) => (index < 5 ? true : Number(item.value || 0) > 0));
+      { label: "Phí vận chuyển", value: baseFee },
+      { label: "Phụ phí loại hàng", value: Number(breakdown.goods_fee || 0) },
+      { label: "Phụ phí khung giờ", value: Number(breakdown.time_fee || 0) },
+      {
+        label: "Phụ phí thời tiết",
+        value: Number(breakdown.condition_fee || 0),
+      },
+      {
+        label: "Điều chỉnh theo xe",
+        value: Number(breakdown.vehicle_fee || 0),
+      },
+      { label: "Phí COD", value: Number(breakdown.cod_fee || 0) },
+      {
+        label: "Phí bảo hiểm",
+        value: Number(breakdown.insurance_fee || 0),
+      },
+    ].filter((item) => item.value > 0);
 
-    if (!rows.length) {
-      rows.push({
-        label: "Tổng phí vận chuyển",
-        value: shippingFee || 0,
-      });
+    if (!rows.length && Number(shippingFee || 0) <= 0) {
+      return `
+        <div class="rv-row">
+          <span class="rv-label">${escapeHtml("Chi tiết phí")}</span>
+          <span class="rv-val">${escapeHtml("Chưa có dữ liệu")}</span>
+        </div>
+      `;
     }
 
-    return `
-      ${rows
+    return rows
         .map(
           (item) => `
         <div class="rv-row">
@@ -2064,14 +2128,7 @@
           <span class="rv-val">${formatCurrency(item.value)}</span>
         </div>`,
         )
-        .join("")}
-      <div class="rv-total-row">
-        <span>Tổng cước</span>
-        <strong>${formatCurrency(
-          breakdown.total_fee > 0 ? breakdown.total_fee : shippingFee || 0,
-        )}</strong>
-      </div>
-    `;
+        .join("");
   }
 
   function isImageExtension(extension) {
