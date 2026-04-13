@@ -26,7 +26,7 @@ if (!function_exists('dichvu_normalize_includes')) {
 
         $items = [];
         foreach ($raw as $item) {
-            $value = trim((string)$item);
+            $value = trim((string) $item);
             if ($value !== '') {
                 $items[] = $value;
             }
@@ -59,19 +59,19 @@ if (!function_exists('dichvu_normalize_pricing')) {
                 continue;
             }
 
-            $label = trim((string)($row['label'] ?? ''));
-            $type = trim((string)($row['type'] ?? ''));
+            $label = trim((string) ($row['label'] ?? ''));
+            $type = trim((string) ($row['type'] ?? ''));
             $valueRaw = $row['value'] ?? '';
             $hoursRaw = $row['hours'] ?? '';
 
-            if ($label === '' && $type === '' && (string)$valueRaw === '' && (string)$hoursRaw === '') {
+            if ($label === '' && $type === '' && (string) $valueRaw === '' && (string) $hoursRaw === '') {
                 continue;
             }
 
             $rows[] = [
                 'label' => $label,
-                'value' => is_numeric((string)$valueRaw) ? (float)$valueRaw : 0,
-                'hours' => is_numeric((string)$hoursRaw) ? (float)$hoursRaw : 0,
+                'value' => is_numeric((string) $valueRaw) ? (float) $valueRaw : 0,
+                'hours' => is_numeric((string) $hoursRaw) ? (float) $hoursRaw : 0,
                 'type' => $type,
             ];
         }
@@ -84,11 +84,11 @@ if (!function_exists('dichvu_normalize_row')) {
     function dichvu_normalize_row(array $row): array
     {
         return [
-            'id' => (int)($row['id'] ?? 0),
-            'name' => trim((string)($row['name'] ?? '')),
-            'image' => trim((string)($row['image'] ?? '')),
-            'alt' => trim((string)($row['alt'] ?? '')),
-            'description' => trim((string)($row['description'] ?? '')),
+            'id' => (int) ($row['id'] ?? 0),
+            'name' => trim((string) ($row['name'] ?? '')),
+            'image' => trim((string) ($row['image'] ?? '')),
+            'alt' => trim((string) ($row['alt'] ?? '')),
+            'description' => trim((string) ($row['description'] ?? '')),
             'includes' => dichvu_normalize_includes($row['includes'] ?? []),
             'pricing' => dichvu_normalize_pricing($row['pricing'] ?? []),
         ];
@@ -98,7 +98,7 @@ if (!function_exists('dichvu_normalize_row')) {
 if (!function_exists('dichvu_includes_to_text')) {
     function dichvu_includes_to_text(array $items): string
     {
-        return implode("\n", array_map(static fn($item): string => trim((string)$item), $items));
+        return implode("\n", array_map(static fn($item): string => trim((string) $item), $items));
     }
 }
 
@@ -113,7 +113,7 @@ if (!function_exists('get_dichvu_data')) {
 
         return [
             'rows' => $normalized,
-            'error' => (string)($result['error'] ?? ''),
+            'error' => (string) ($result['error'] ?? ''),
         ];
     }
 }
@@ -127,11 +127,11 @@ if (!function_exists('get_dichvu_by_id')) {
 
         $result = get_dichvu_data();
         if (($result['error'] ?? '') !== '') {
-            return ['row' => null, 'error' => (string)$result['error']];
+            return ['row' => null, 'error' => (string) $result['error']];
         }
 
         foreach (($result['rows'] ?? []) as $row) {
-            if ((int)($row['id'] ?? 0) === $id) {
+            if ((int) ($row['id'] ?? 0) === $id) {
                 return ['row' => $row, 'error' => ''];
             }
         }
@@ -143,13 +143,22 @@ if (!function_exists('get_dichvu_by_id')) {
 if (!function_exists('dichvu_build_payload_from_post')) {
     function dichvu_build_payload_from_post(array $post): array
     {
-        $name = trim((string)($post['name'] ?? ''));
-        $image = trim((string)($post['image'] ?? ''));
-        $alt = trim((string)($post['alt'] ?? ''));
-        $description = trim((string)($post['description'] ?? ''));
+        $name = trim((string) ($post['name'] ?? ''));
+        $image = trim((string) ($post['image'] ?? ''));
+        $alt = trim((string) ($post['alt'] ?? ''));
+        $description = trim((string) ($post['description'] ?? ''));
 
-        $includesText = str_replace("\r", '', (string)($post['includes_text'] ?? ''));
-        $includes = array_values(array_filter(array_map('trim', explode("\n", $includesText)), static fn(string $item): bool => $item !== ''));
+        $includesTextRaw = str_replace("\r", '', (string)($post['includes_text'] ?? ''));
+        $includesLines = array_filter(array_map('trim', explode("\n", $includesTextRaw)), static fn(string $item): bool => $item !== '');
+        
+        $includes = [];
+        foreach ($includesLines as $line) {
+            if (substr($line, -1) !== '.') {
+                $line .= '.';
+            }
+            $includes[] = $line;
+        }
+        $includes = array_values($includes);
 
         if ($name === '') {
             return ['success' => false, 'message' => 'Ten dich vu khong duoc de trong.'];
@@ -170,10 +179,10 @@ if (!function_exists('dichvu_build_payload_from_post')) {
         $pricing = [];
 
         for ($i = 0; $i < $maxRows; $i++) {
-            $label = trim((string)($labels[$i] ?? ''));
-            $type = trim((string)($types[$i] ?? ''));
-            $valueRaw = trim((string)($values[$i] ?? ''));
-            $hoursRaw = trim((string)($hours[$i] ?? ''));
+            $label = trim((string) ($labels[$i] ?? ''));
+            $type = trim((string) ($types[$i] ?? ''));
+            $valueRaw = trim((string) ($values[$i] ?? ''));
+            $hoursRaw = trim((string) ($hours[$i] ?? ''));
 
             if ($label === '' && $type === '' && $valueRaw === '' && $hoursRaw === '') {
                 continue;
@@ -183,18 +192,18 @@ if (!function_exists('dichvu_build_payload_from_post')) {
                 return ['success' => false, 'message' => 'Thong tin bang gia dong ' . ($i + 1) . ' chua day du.'];
             }
 
-            if (!is_numeric($valueRaw) || (float)$valueRaw < 0) {
+            if (!is_numeric($valueRaw) || (float) $valueRaw < 0) {
                 return ['success' => false, 'message' => 'Gia tri dong ' . ($i + 1) . ' khong hop le.'];
             }
 
-            if (!is_numeric($hoursRaw) || (float)$hoursRaw <= 0) {
+            if (!is_numeric($hoursRaw) || (float) $hoursRaw <= 0) {
                 return ['success' => false, 'message' => 'So gio dong ' . ($i + 1) . ' khong hop le.'];
             }
 
             $pricing[] = [
                 'label' => $label,
-                'value' => (float)$valueRaw,
-                'hours' => (float)$hoursRaw,
+                'value' => (float) $valueRaw,
+                'hours' => (float) $hoursRaw,
                 'type' => $type,
             ];
         }
