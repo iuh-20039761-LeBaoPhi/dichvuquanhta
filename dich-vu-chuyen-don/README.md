@@ -20,11 +20,21 @@ Project hiện đã đi qua giai đoạn landing/form cơ bản và đang có th
 - URL khảo sát cũ giữ lại để chuyển hướng mềm về trang đặt lịch
 - Portal khách hàng sau đăng nhập
 - Portal nhà cung cấp sau đăng nhập
+- Cụm admin riêng cho chuyển dọn theo hướng PHP session + JSON local
 
 ## Cấu trúc thư mục
 
 ```text
 dich-vu-chuyen-don/
+├── admin-chuyendon/
+│   ├── config/
+│   ├── data/
+│   ├── includes/
+│   └── public/
+│       ├── login.php
+│       ├── users_manage.php
+│       ├── orders_manage.php
+│       └── admin_pricing.php
 ├── index.html
 ├── dich-vu-chuyen-don.html
 ├── bang-gia-chuyen-don.html
@@ -97,6 +107,10 @@ dich-vu-chuyen-don/
 | `bang-gia-chuyen-don.html`                     | Trang bảng giá tham khảo và minh bạch thông tin                 |
 | `dat-lich.html`                                | Trang đặt lịch riêng                                            |
 | `khao-sat.html`                                | URL cũ, chuyển hướng về `dat-lich.html`                         |
+| `admin-chuyendon/public/login.php`             | Đăng nhập admin chuyển dọn                                      |
+| `admin-chuyendon/public/users_manage.php`      | Quản lý người dùng                                              |
+| `admin-chuyendon/public/orders_manage.php`     | Quản lý đơn hàng                                                |
+| `admin-chuyendon/public/admin_pricing.php`     | Quản lý bảng giá                                                |
 | `khach-hang/dashboard.html`                    | Dashboard khách hàng sau đăng nhập                              |
 | `khach-hang/danh-sach-don-hang.html`           | Danh sách đơn hàng của khách hàng                               |
 | `khach-hang/chi-tiet-hoa-don.html`             | Chi tiết một đơn đặt lịch của khách hàng                        |
@@ -117,6 +131,22 @@ dich-vu-chuyen-don/
 - Không còn form khảo sát riêng trong runtime.
 - Nhu cầu khảo sát được gộp vào [form-dat-lich.html](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\partials\bieu-mau\form-dat-lich.html) bằng checkbox `Cần nhà cung cấp khảo sát trước (+150.000/lượt)`.
 - `khao-sat.html` chỉ còn vai trò URL cũ để chuyển hướng về `dat-lich.html`.
+
+## Admin chuyển dọn
+
+- Cụm admin mới nằm tại [admin-chuyendon](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon)
+- Hướng triển khai bám theo `giao-hang-nhanh`: có `login`, `session`, `includes`, `config`, `public`
+- Dữ liệu hiện lưu bằng JSON nội bộ trong thư mục `data/` để dễ mang theo khi copy cả project
+- 3 màn hình chính:
+  - [users_manage.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\users_manage.php)
+  - [orders_manage.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\orders_manage.php)
+  - [admin_pricing.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\admin_pricing.php)
+- Tài khoản mặc định:
+  - `admin01`
+  - `0901234569`
+  - mật khẩu `Admin@123`
+- Muốn chạy trên máy khác vẫn cần môi trường PHP/XAMPP hoặc web server có PHP, sau đó mở:
+  - [login.php](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\admin-chuyendon\public\login.php)
 
 ## Form đặt lịch
 

@@ -195,6 +195,7 @@ function tao_du_lieu_tinh_cuoc() {
     loai_hang: primaryItem.loai_hang,
     ten_hang: primaryItem.ten_hang,
     can_nang: totalCanNang,
+    tong_can_nang: totalCanNang,
     chieu_dai: maxDai,
     chieu_rong: maxRong,
     chieu_cao: maxCao,

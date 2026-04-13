@@ -591,7 +591,7 @@
         logout: sharedLoginUrl,
         dashboard: "dashboard.html",
         orders: "don-hang.html",
-        detail: "../../chi-tiet-don-hang.html",
+        detail: "chi-tiet-don-hang.html",
         profile: "ho-so.html",
       };
     }

@@ -4,6 +4,8 @@
 
   const core = window.GiaoHangNhanhCore;
   if (!core) return;
+  const krudScriptUrl = "https://api.dvqt.vn/js/krud.js";
+  let inquiryKrudReadyPromise = null;
 
   function onReady(fn) {
     if (document.readyState === "loading") {
@@ -11,6 +13,58 @@
     } else {
       fn();
     }
+  }
+
+  function ensureInquiryKrudReady() {
+    if (
+      typeof window.krudList === "function" ||
+      typeof window.crud === "function" ||
+      typeof window.krud === "function"
+    ) {
+      return Promise.resolve(true);
+    }
+
+    if (inquiryKrudReadyPromise) return inquiryKrudReadyPromise;
+
+    inquiryKrudReadyPromise = new Promise((resolve, reject) => {
+      const existingScript = Array.from(document.scripts || []).find((script) =>
+        String(script.src || "").includes("/js/krud.js"),
+      );
+
+      if (existingScript) {
+        existingScript.addEventListener("load", () => resolve(true), { once: true });
+        existingScript.addEventListener(
+          "error",
+          () => reject(new Error("Không tải được KRUD client.")),
+          { once: true },
+        );
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = krudScriptUrl;
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => reject(new Error("Không tải được KRUD client."));
+      document.head.appendChild(script);
+    }).catch((error) => {
+      inquiryKrudReadyPromise = null;
+      throw error;
+    });
+
+    return inquiryKrudReadyPromise;
+  }
+
+  function getInquiryInsertFn() {
+    if (typeof window.crud === "function") {
+      return (tableName, data) => window.crud("insert", tableName, data);
+    }
+
+    if (typeof window.krud === "function") {
+      return (tableName, data) => window.krud("insert", tableName, data);
+    }
+
+    return null;
   }
 
   function initFaqAccordion() {
@@ -772,26 +826,62 @@
   function initInquiryForm() {
     const inquiryForm = document.getElementById("inquiry-form");
     if (!inquiryForm) return;
+    const contactTable = "lien_he";
+    const subjectMap = {
+      Tuvan: "Tư vấn dịch vụ",
+      KhieuNai: "Khiếu nại đơn hàng",
+      HopTac: "Liên hệ hợp tác",
+      Khac: "Khác",
+    };
 
-    inquiryForm.addEventListener("submit", function (e) {
+    inquiryForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      const btn = inquiryForm.querySelector("button");
+      const btn = inquiryForm.querySelector("button[type='submit']") || inquiryForm.querySelector("button");
       const msgDiv = document.getElementById("inquiry-message");
+      if (!btn || !msgDiv) return;
       const originalText = btn.innerText;
 
       btn.innerText = "Đang gửi...";
       btn.disabled = true;
       msgDiv.style.display = "none";
-      window.setTimeout(() => {
+      try {
+        await ensureInquiryKrudReady();
+        const insertFn = getInquiryInsertFn();
+        if (!insertFn) {
+          throw new Error("Không tải được KRUD client.");
+        }
+        const now = new Date().toISOString();
+        const subjectValue = String(inquiryForm.querySelector("select[name='subject']")?.value || "").trim();
+        const payload = {
+          name: String(inquiryForm.querySelector("input[name='name']")?.value || "").trim(),
+          email: String(inquiryForm.querySelector("input[name='email']")?.value || "").trim(),
+          phone: String(inquiryForm.querySelector("input[name='phone']")?.value || "").trim(),
+          subject: subjectMap[subjectValue] || subjectValue || "Liên hệ",
+          message: String(inquiryForm.querySelector("textarea[name='message']")?.value || "").trim(),
+          status: 0,
+          note_admin: "",
+          source: "public_inquiry_form",
+          created_at: now,
+          updated_at: now,
+        };
+        if (!payload.name || !payload.email || !payload.phone || !payload.message) {
+          throw new Error("Vui lòng nhập đầy đủ họ tên, email, số điện thoại và nội dung.");
+        }
+        await insertFn(contactTable, payload);
         msgDiv.style.display = "block";
-        msgDiv.innerText =
-          "Yêu cầu của bạn đã được ghi nhận trong chế độ local. Nhóm sẽ nối API mới sau.";
+        msgDiv.innerText = "Đã gửi liên hệ thành công. Chúng tôi sẽ phản hồi sớm nhất.";
         msgDiv.style.color = "green";
         inquiryForm.reset();
+      } catch (error) {
+        msgDiv.style.display = "block";
+        msgDiv.innerText =
+          error instanceof Error ? error.message : "Không thể gửi liên hệ lúc này.";
+        msgDiv.style.color = "#dc2626";
+      } finally {
         btn.innerText = originalText;
         btn.disabled = false;
-      }, 350);
+      }
     });
   }
 

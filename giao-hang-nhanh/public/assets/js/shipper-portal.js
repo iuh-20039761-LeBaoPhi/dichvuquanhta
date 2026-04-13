@@ -12,7 +12,7 @@
           logout: "../../dang-nhap.html",
           dashboard: "dashboard.html",
           orders: "don-hang.html",
-          detail: "../../chi-tiet-don-hang.html",
+          detail: "chi-tiet-don-hang.html",
           profile: "ho-so.html",
         };
   const storageKeys = {
@@ -63,6 +63,36 @@
 
   function normalizeText(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
+  }
+
+  function getAccessCredentials(sessionOverride = null) {
+    const session =
+      sessionOverride && typeof sessionOverride === "object"
+        ? sessionOverride
+        : getCurrentSessionUser();
+    const username = normalizeText(
+      session?.username || session?.phone || session?.so_dien_thoai || "",
+    );
+    const password = String(session?.password || session?.mat_khau || "");
+
+    if (!username || !password) return null;
+    return { username, password };
+  }
+
+  function buildOrderDetailUrl(order, sessionOverride = null) {
+    const detailUrl = new URL(routes.detail, window.location.href);
+    const identifier = getOrderDetailIdentifier(order);
+    if (identifier) {
+      detailUrl.searchParams.set("madonhang", identifier);
+    }
+
+    const access = getAccessCredentials(sessionOverride);
+    if (access) {
+      detailUrl.searchParams.set("username", access.username);
+      detailUrl.searchParams.set("password", access.password);
+    }
+
+    return detailUrl.toString();
   }
 
   function formatOrderDateCode(value = new Date()) {
@@ -1336,7 +1366,7 @@
                   <span><b>Tạo lúc</b>${formatDateTime(order.created_at)}</span>
                 </div>
                 <div class="customer-order-actions customer-order-actions-compact">
-                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(getOrderDetailIdentifier(order))}&viewer=shipper">Xử lý ngay</a>
+                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${buildOrderDetailUrl(order)}">Xử lý ngay</a>
                 </div>
               </article>`,
                   )
@@ -1450,7 +1480,7 @@
                   <span><b>Tạo lúc</b>${formatDateTime(order.created_at)}</span>
                 </div>
                 <div class="customer-order-actions customer-order-actions-compact">
-                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${routes.detail}?madonhang=${encodeURIComponent(getOrderDetailIdentifier(order))}&viewer=shipper">Xem chi tiết</a>
+                  <a class="customer-btn customer-btn-primary customer-btn-sm" href="${buildOrderDetailUrl(order)}">Xem chi tiết</a>
                 </div>
               </article>`,
                   )

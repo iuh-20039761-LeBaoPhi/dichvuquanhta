@@ -67,9 +67,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </ul>
                 </li>
 
-                <li class="<?php echo ($current_page === 'admin_settings.php') ? 'active' : ''; ?>">
-                    <a href="admin_settings.php">⚙️ Cài đặt</a>
-                </li>
             </ul>
         </div>
 
