@@ -887,7 +887,7 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 	<!-- <h2 class="od-title">Chi tiết hóa đơn mẹ và bé</h2> -->
 	<div class="od-head-actions">
 		<!-- <span class="od-chip">Vai trò: Admin</span> -->
-		<a href="quan-ly-hoa-don.php" class="od-back-btn"><i class="bi bi-arrow-left-circle me-1"></i>Quay lại</a>
+		<a href="index.php" class="od-back-btn"><i class="bi bi-arrow-left-circle me-1"></i>Quay lại</a>
 	</div>
 </div>
 

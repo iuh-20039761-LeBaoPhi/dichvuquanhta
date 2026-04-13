@@ -224,20 +224,54 @@ if (!function_exists('admin_render_layout_start')) {
                 }
 
                 @media (max-width: 991.98px) {
+                    .container-fluid {
+                        padding: 0 !important;
+                    }
+
                     .admin-shell {
-                        border-radius: 12px;
+                        border-radius: 0;
+                        margin: 0 !important;
+                        border: none !important;
+                        box-shadow: none !important;
+                        min-height: auto !important; /* Disable fixed minimum height */
+                        display: flex !important;
+                        flex-direction: column !important;
                     }
 
                     .admin-sidebar {
-                        position: -webkit-sticky !important;
-                        position: sticky !important;
+                        position: relative !important;
                         top: 0 !important;
-                        max-height: 70vh;
-                        overflow-y: auto;
+                        height: auto !important;
+                        min-height: 0 !important;
+                        padding: 0.75rem 1rem !important;
+                        width: 100% !important;
+                        flex: 0 0 auto !important;
+                    }
+
+                    .admin-sidebar .d-flex.mb-4,
+                    .admin-sidebar div:first-child:not(.collapse) {
+                        margin-bottom: 0 !important;
                     }
 
                     .admin-sidebar-menu {
                         margin-top: 0.5rem;
+                        margin-bottom: 0.5rem !important;
+                    }
+
+                    .admin-main {
+                        padding: 0 !important;
+                        margin: 0 !important;
+                        flex: 1 1 auto !important;
+                        width: 100% !important;
+                    }
+
+                    .admin-main main {
+                        padding: 1rem 0.75rem !important;
+                        margin: 0 !important;
+                    }
+                    
+                    .admin-topbar {
+                        display: none !important;
                     }
                 }
 
@@ -272,16 +306,12 @@ if (!function_exists('admin_render_layout_start')) {
                         </div>
 
                         <div id="adminSidebarMenu" class="collapse admin-sidebar-menu list-group list-group-flush mb-3">
-                            <a href="index.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'dashboard')) ?>"><i
-                                    class="bi bi-speedometer2"></i>Tong quan</a>
-                            <a href="quan-ly-hoa-don.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'orders')) ?>"><i
+                            
+                            <a href="index.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'orders')) ?>"><i
                                     class="bi bi-receipt"></i>Quan ly don hang</a>
                             <a href="quan-ly-dich-vu.php"
                                 class="<?= admin_h(admin_menu_link_class($activeKey, 'services')) ?>"><i
                                     class="bi bi-grid"></i>Quan ly dich vu</a>
-                            <a href="quan-ly-nhan-vien.php"
-                                class="<?= admin_h(admin_menu_link_class($activeKey, 'employees')) ?>"><i
-                                    class="bi bi-people"></i>Quan ly nhan vien</a>
                             <a href="logout.php"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 border-0 rounded-3 mt-2 px-3 py-2 fw-semibold"><i
                                     class="bi bi-box-arrow-right"></i>Dang xuat</a>
@@ -290,14 +320,6 @@ if (!function_exists('admin_render_layout_start')) {
                     </aside>
 
                     <section class="col-12 col-lg-10 p-0 d-flex flex-column admin-main">
-                        <header class="admin-topbar px-3 py-2 d-flex align-items-center justify-content-between">
-                            <h1 class="h5 admin-page-title fw-bold mb-0"><?= admin_h($title) ?></h1>
-                            <div class="d-flex align-items-center gap-2">
-
-                                <span
-                                    class="badge bg-success-subtle text-success-emphasis px-3 py-2 rounded-pill border border-success-subtle"><?= admin_h($name !== '' ? $name : $email) ?></span>
-                            </div>
-                        </header>
                         <main class="flex-grow-1 p-3">
                             <?php
     }

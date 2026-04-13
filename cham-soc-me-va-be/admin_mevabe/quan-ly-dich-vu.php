@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 require_once __DIR__ . '/slidebar.php';
 require_once __DIR__ . '/get_dichvu.php';
@@ -55,28 +54,119 @@ $truncate = static function (string $text, int $limit = 120): string {
 	return rtrim(substr($text, 0, $limit)) . '...';
 };
 
-admin_render_layout_start('Quan Ly Dich Vu', 'services', $admin);
+admin_render_layout_start('Quản Lý Dịch Vụ', 'services', $admin);
 ?>
 
 <style>
-	.admin-main,
-	.admin-main > main {
-		background: #ffffff !important;
-	}
+.admin-main,
+.admin-main > main {
+	background: #f8f9fa !important;
+}
+.service-page-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 14px;
+}
+table th {
+	white-space: nowrap !important;
+	vertical-align: middle !important;
+}
+table td {
+	vertical-align: middle !important;
+}
+.action-buttons {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: flex-end;
+	align-items: center;
+	flex-wrap: nowrap;
+}
+.action-buttons .btn {
+	min-width: 36px;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
 
-	.service-page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 12px;
-		margin-bottom: 14px;
+/* Mobile Service Card Styles */
+@media (max-width: 767.98px) {
+	.service-list-container {
+		background: transparent !important;
+		padding: 0 !important;
+		box-shadow: none !important;
+		border: none !important;
 	}
+	.service-list-container > .card-body {
+		padding: 0 !important;
+	}
+	.service-item-mobile {
+		display: flex;
+		align-items: center;
+		padding: 12px;
+		background: #fff;
+		border-radius: 12px;
+		margin-bottom: 12px;
+		position: relative;
+		transition: transform 0.2s, box-shadow 0.2s;
+		cursor: pointer;
+		text-decoration: none;
+		color: inherit;
+		border: 1px solid rgba(0,0,0,0.05);
+	}
+	.service-item-mobile:active {
+		transform: scale(0.98);
+		background-color: #f0f7ff;
+	}
+	.service-img-mobile {
+		width: 60px;
+		height: 60px;
+		object-fit: cover;
+		border-radius: 10px;
+		margin-right: 15px;
+		border: 1px solid #eee;
+	}
+	.service-info-mobile {
+		flex: 1;
+	}
+	.service-info-mobile h6 {
+		font-weight: 700;
+		font-size: 1rem;
+		margin-bottom: 4px;
+		color: #333;
+	}
+	.service-jobs-mobile {
+		font-size: 0.85rem;
+		color: #888;
+	}
+	.btn-edit-mobile {
+		position: absolute;
+		bottom: 10px;
+		right: 10px;
+		width: 32px;
+		height: 32px;
+		background: #fff9e6;
+		color: #ffc107;
+		border-radius: 8px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid #ffeeba;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+	}
+	.btn-edit-mobile i {
+		font-size: 0.9rem;
+	}
+}
 </style>
 
 <div class="service-page-header">
-	<h2 class="h4 mb-0 fw-bold">Quan ly dich vu</h2>
-	<a href="them-dich-vu.php" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Them dich vu</a>
+	<h2 class="h4 mb-0 fw-bold">Quản lý dịch vụ</h2>
+	<a href="them-dich-vu.php" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Thêm dịch vụ</a>
 </div>
 
 <?php if ($flashMsg !== ''): ?>
@@ -87,73 +177,103 @@ admin_render_layout_start('Quan Ly Dich Vu', 'services', $admin);
 	<div class="card-body">
 		<form method="get" class="row g-2 align-items-end">
 			<div class="col-12 col-md-7 col-lg-8">
-				<label class="form-label mb-1">Tim kiem dich vu</label>
-				<input type="text" class="form-control" name="q" value="<?= admin_h($q) ?>" placeholder="Ten dich vu, mo ta, bang gia...">
+				<label class="form-label mb-1">Tìm kiếm dịch vụ</label>
+				<input type="text" class="form-control" name="q" value="<?= admin_h($q) ?>" placeholder="Tên dịch vụ, mô tả, bảng giá...">
 			</div>
 			<div class="col-6 col-md-3 col-lg-2 d-grid">
-				<button class="btn btn-success" type="submit"><i class="bi bi-search me-1"></i>Tim</button>
+				<button class="btn btn-success" type="submit"><i class="bi bi-search me-1"></i>Tìm</button>
 			</div>
 			<div class="col-6 col-md-2 col-lg-2 text-md-end text-secondary small">
-				Tong: <strong><?= (int)count($filtered) ?></strong>
+				Tổng: <strong><?= (int)count($filtered) ?></strong>
 			</div>
 		</form>
 	</div>
 </div>
 
-<div class="card border-0 shadow-sm">
+<div class="card border-0 shadow-sm service-list-container">
 	<div class="card-body">
 		<?php if ($error !== ''): ?>
 			<div class="alert alert-warning mb-0"><?= admin_h($error) ?></div>
 		<?php else: ?>
-			<div class="table-responsive">
-				<table class="table table-hover align-middle mb-0">
-					<thead class="table-light">
-					<tr>
-						<th>ID</th>
-						<th>Ten dich vu</th>
-						<th>Mo ta ngan</th>
-						<th>So muc bao gom</th>
-						<th>So goi gia</th>
-						<th class="text-end">Hanh dong</th>
-					</tr>
-					</thead>
-					<tbody>
-					<?php if (!$filtered): ?>
-						<tr><td colspan="6" class="text-center py-4 text-secondary">Khong co dich vu phu hop.</td></tr>
-					<?php else: ?>
-						<?php foreach ($filtered as $row): ?>
-							<tr>
-								<td class="fw-semibold text-primary">#<?= (int)($row['id'] ?? 0) ?></td>
-								<td>
-									<div class="fw-semibold"><?= admin_h((string)($row['name'] ?? 'N/A')) ?></div>
-									<div class="small text-secondary"><?= admin_h((string)($row['alt'] ?? '')) ?></div>
-								</td>
-								<td><?= admin_h($truncate((string)($row['description'] ?? ''))) ?></td>
-								<td><?= (int)count($row['includes'] ?? []) ?></td>
-								<td><?= (int)count($row['pricing'] ?? []) ?></td>
-								<td class="text-end">
-									<div class="d-inline-flex gap-1 flex-wrap justify-content-end">
-										<a href="chi-tiet-dich-vu.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>" class="btn btn-sm btn-outline-primary">
-											<i class="bi bi-eye me-1"></i>Chi tiet
-										</a>
-										<a href="sua-dich-vu.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>" class="btn btn-sm btn-outline-warning">
-											<i class="bi bi-pencil-square me-1"></i>Sua
-										</a>
-										<form method="post" action="xu-ly-xoa-dich-vu.php" class="d-inline" onsubmit="return confirm('Ban co chac chan muon xoa dich vu nay?');">
-											<input type="hidden" name="id" value="<?= (int)($row['id'] ?? 0) ?>">
-											<input type="hidden" name="q" value="<?= admin_h($q) ?>">
-											<button type="submit" class="btn btn-sm btn-outline-danger">
-												<i class="bi bi-trash me-1"></i>Xoa
-											</button>
-										</form>
-									</div>
-								</td>
-							</tr>
-						<?php endforeach; ?>
-					<?php endif; ?>
-					</tbody>
-				</table>
-			</div>
+			<?php if (!$filtered): ?>
+				<div class="text-center py-4 text-secondary">Không có dịch vụ phù hợp.</div>
+			<?php else: ?>
+				<!-- Desktop View -->
+				<div class="table-responsive d-none d-md-block">
+					<table class="table table-hover align-middle mb-0">
+						<thead class="table-light">
+						<tr>
+							<th>ID</th>
+							<th>Hình ảnh</th>
+							<th>Tên dịch vụ</th>
+							<th>Mô tả</th>
+							<th>Công việc</th>
+							<th class="text-end">Hành động</th>
+						</tr>
+						</thead>
+						<tbody>
+							<?php foreach ($filtered as $row): ?>
+								<tr>
+									<td class="fw-semibold text-primary">#<?= (int)($row['id'] ?? 0) ?></td>
+									<td>
+										<?php if (!empty($row['image'])): ?>
+											<img src="../<?= admin_h($row['image']) ?>" alt="<?= admin_h($row['alt'] ?? $row['name'] ?? '') ?>" style="width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid #eee;" loading="lazy">
+										<?php else: ?>
+											<span class="text-secondary small">(Không có ảnh)</span>
+										<?php endif; ?>
+									</td>
+									<td>
+										<div class="fw-semibold"><?= admin_h((string)($row['name'] ?? 'N/A')) ?></div>
+									</td>
+									<td><?= admin_h($truncate((string)($row['description'] ?? ''))) ?></td>
+									<td><?= (int)count($row['includes'] ?? []) ?></td>
+									<td class="text-end">
+										<div class="action-buttons">
+											<a href="chi-tiet-dich-vu.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>" class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+												<i class="bi bi-eye"></i>
+											</a>
+											<a href="sua-dich-vu.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>" class="btn btn-sm btn-outline-warning" title="Sửa dịch vụ">
+												<i class="bi bi-pencil-square"></i>
+											</a>
+											<form method="post" action="xu-ly-xoa-dich-vu.php" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa dịch vụ này?');" style="margin:0;">
+												<input type="hidden" name="id" value="<?= (int)($row['id'] ?? 0) ?>">
+												<input type="hidden" name="q" value="<?= admin_h($q) ?>">
+												<button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa dịch vụ">
+													<i class="bi bi-trash"></i>
+												</button>
+											</form>
+										</div>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Mobile View -->
+				<div class="d-md-none">
+					<?php foreach ($filtered as $row): ?>
+						<div class="service-item-mobile shadow-sm" onclick="location.href='chi-tiet-dich-vu.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>'">
+							<?php if (!empty($row['image'])): ?>
+								<img src="../<?= admin_h($row['image']) ?>" alt="<?= admin_h($row['name'] ?? '') ?>" class="service-img-mobile">
+							<?php else: ?>
+								<div class="service-img-mobile d-flex align-items-center justify-content-center bg-light text-secondary">
+									<i class="bi bi-image" style="font-size: 1.5rem;"></i>
+								</div>
+							<?php endif; ?>
+							
+							<div class="service-info-mobile">
+								<h6 class="mb-0"><?= admin_h((string)($row['name'] ?? 'N/A')) ?></h6>
+								<div class="service-jobs-mobile">Số công việc: <?= (int)count($row['includes'] ?? []) ?></div>
+							</div>
+
+							<a href="sua-dich-vu.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>" class="btn-edit-mobile" title="Sửa dịch vụ" onclick="event.stopPropagation();">
+								<i class="bi bi-pencil-square"></i>
+							</a>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
 		<?php endif; ?>
 	</div>
 </div>
