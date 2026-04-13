@@ -957,13 +957,17 @@ select:focus-visible {
 }
 
 /* ============================================================ 
-   RESPONSIVE DESIGN SYSTEM (ULTIMATE FIX - ADAPTED FOR PANEL)
+   RESPONSIVE DESIGN SYSTEM
+   Standard Breakpoints:
+   Mobile: width < 740px
+   Tablet: 740px <= width < 1024px
+   PC: width >= 1024px
    ============================================================ */
 
-/* --- Tablet & Small Desktop (Up to 991px) --- */
-@media (max-width: 991.98px) {
+/* --- TABLET: 740px to 1023px --- */
+@media only screen and (min-width: 740px) and (max-width: 1023px) {
   .filter-grid {
-    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .detail-grid,
@@ -975,305 +979,221 @@ select:focus-visible {
   .identity-grid,
   .review-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .invoice-hero-top {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 30px;
+  }
+
+  .hero-header-left, 
+  .hero-header-right {
+    justify-content: center;
+  }
+
+  .hero-header-right{
+    flex-direction: column;
     gap: 15px;
   }
-  .invoice-hero-kpis {
-    grid-template-columns: 1fr 1fr;
+
+  .invoice-hero-bottom {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-card:last-child {
+    grid-column: span 2;
   }
 }
 
-/* --- Mobile (The Big Fix) --- */
-@media (max-width: 767px) {
-  .admin-shell {
-    overflow-x: hidden;
-  }
-
+/* --- MOBILE: Under 740px --- */
+@media only screen and (max-width: 739px) {
+  .admin-shell, 
   .content-shell {
     padding: 0;
   }
 
-  /* Adjust Page Heading on Mobile */
   .page-heading {
-    padding: 10px 15px;
-    text-align: center;
-    justify-content: center !important;
-  }
-  .page-title {
-    font-size: 1.2rem;
-  }
-  .page-heading .btn {
-    width: 100%;
-    margin-top: 5px;
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
   }
 
-  /* Invoice Hero Mobile */
-  .invoice-hero {
-    margin: 0;
-    border-radius: 0;
-    border: none;
-    padding: 25px 15px;
-    width: 100%;
-    text-align: center;
-  }
-
-  .invoice-code-line {
-    justify-content: center;
-    margin-bottom: 5px;
-  }
-  .invoice-code {
-    font-size: 1.4rem;
-  }
-  .invoice-service {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-  }
-
-  /* Meta Data Mobile */
-  .invoice-service-meta {
+  .filter-grid {
     grid-template-columns: 1fr;
-    gap: 5px;
-    background: rgba(0, 0, 0, 0.15);
-    padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    text-align: left;
   }
-  .invoice-service-meta-col-dates {
+
+  /* Invoice Hero Mobile - Full Width */
+  .invoice-hero {
+    padding: 24px 15px;
+    border-radius: 0;
+    margin: 0 !important;
+    width: 100% !important;
     border-left: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 8px 0 0;
-    margin-top: 8px;
+    border-right: none;
   }
 
   .invoice-hero-top {
-    flex-direction: column;
-    align-items: normal;
-    gap: 12px;
-}
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 15px;
+  }
 
-  /* Buttons & Progress Ring Mobile */
-  .hero-progress {
-    width: 100%;
+  .hero-header-left {
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    margin-top: 10px;
-  }
-  .hero-progress-ring {
-    width: 105px;
-    height: 105px;
-    margin: 0 auto;
   }
 
-  /* KPI Rows Mobile */
-  .invoice-hero-kpis {
+  .invoice-code {
+    font-size: 1.5rem;
+  }
+
+  .hero-header-center {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .hero-total-amount {
+    font-size: 1.5rem;
+  }
+
+  .hero-header-right {
+    justify-content: center;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .hero-progress-ring {
+    width: 90px;
+    height: 90px;
+  }
+
+  .hero-progress-ring::before {
+    width: 70px;
+    height: 70px;
+  }
+
+  .hero-progress-content strong {
+    font-size: 1.25rem;
+  }
+
+  .invoice-hero-bottom {
     grid-template-columns: 1fr;
     gap: 10px;
-    margin-top: 25px;
-  }
-  .hero-kpi {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    text-align: left;
-  }
-  .hero-kpi-label {
-    font-size: 0.72rem;
-    white-space: nowrap;
-  }
-  .hero-kpi-value {
-    font-size: 1.15rem;
-    font-weight: 800;
-    margin: 0;
-    max-width: 65%;
-    text-align: right;
-  }
-  .hero-kpi-sub {
-    display: none;
   }
 
-  /* Identity Cards Mobile */
+  /* Grid Layouts to Stacks */
+  .invoice-main-grid,
+  .identity-grid,
+  .review-grid,
+  .detail-grid,
+  .detail-fields {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
   .identity-main {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
+
   .identity-name {
     font-size: 1.3rem;
     margin-top: 10px;
   }
+
   .identity-contacts {
     align-items: center;
   }
 
-  .invoice-panel,
-  .identity-card {
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    margin: 0 0 15px;
-  }
-  
-  /* Order Table Card Transform */
-  .order-table, 
-  .order-table thead, 
-  .order-table tbody, 
-  .order-table th, 
-  .order-table td, 
-  .order-table tr { 
-    display: block; 
+  /* Table transformation for mobile */
+  .order-table thead {
+    display: none;
   }
 
-  .order-table thead tr { 
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
+  .order-table, 
+  .order-table tbody, 
+  .order-table tr, 
+  .order-table td {
+    display: block;
+    width: 100%;
   }
 
   .order-table tr {
+    margin-bottom: 16px;
     border: 1px solid #e2e8f0;
-    margin-bottom: 15px;
     border-radius: 12px;
-    overflow: hidden;
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
   }
 
-  .order-table td { 
-    border: none;
-    border-bottom: 1px solid #f1f5f9; 
-    position: relative;
-    padding-left: 45% !important; 
+  .order-table td {
     text-align: right;
-    min-height: 45px;
+    padding: 8px 12px;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    position: relative;
+    padding-left: 45% !important;
+    min-height: 40px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    font-size: 0.88rem;
   }
 
-  /* Restore labels for all cells */
-  .order-table td:before { 
+  .order-table td::before {
     content: attr(data-label);
     position: absolute;
-    left: 15px;
-    width: 40%; 
-    padding-right: 10px; 
-    white-space: nowrap;
-    text-align: left;
+    left: 12px;
     font-weight: 700;
     color: #64748b;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    font-size: 0.7rem;
-    letter-spacing: 0.03em;
   }
 
   .order-table td:last-child {
     border-bottom: none;
-    background: #f8fafc;
-    justify-content: center;
-    padding: 15px !important; /* Increase padding for better touch area */
-    display: flex;
-    flex-direction: column; /* Stack buttons vertically on mobile for clarity */
-    gap: 8px; /* Space between buttons */
+    padding-left: 12px !important;
+    justify-content: stretch;
   }
 
-  .order-table td:last-child:before {
-    display: none; /* Hide 'Thao tác' label to give full width to buttons */
+  .order-table td:last-child::before {
+    display: none;
   }
 
-  .order-table td:last-child .btn,
-  .order-table td:last-child .d-flex {
-    width: 100% !important; /* Force action buttons/groups to full width */
-    justify-content: center;
-    flex-wrap: wrap;
+  .order-table .btn {
+    width: 100%;
   }
 
-  .customer-block {
-    align-items: flex-end;
-  }
-
-  .service-text {
-    min-width: unset;
-  }
-
-  .panel-foot {
-    display: grid;
-    gap: 10px;
+  .invoice-panel, 
+  .identity-card,
+  .detail-card {
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    margin: 0 !important;
+    width: 100% !important;
   }
 }
 
-/* Interactive Enhancements */
-.invoice-panel,
-.identity-card,
-.invoice-hero,
-.detail-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+/* --- PC: 1024px and above --- */
+@media only screen and (min-width: 1024px) {
+  .detail-grid,
+  .invoice-main-grid,
+  .identity-grid,
+  .review-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .invoice-hero-bottom {
+    grid-template-columns: 1.2fr 1fr 1.2fr;
+  }
 
-@media (min-width: 992px) {
   .invoice-panel:hover,
   .identity-card:hover,
   .detail-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
   }
-}
-
-/* Status Dates Grid */
-.status-dates-grid {
-    display: grid;
-    gap: 2px;
-}
-
-.status-dates-grid .status-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 0;
-}
-
-.status-dates-grid .status-line b {
-    color: #1f2f46;
-    font-size: 0.84rem;
-}
-
-.status-dates-grid .status-line span {
-    color: #5f7592;
-    font-weight: 600;
-}
-
-@media (max-width: 991.98px) {
-    .invoice-hero {
-        padding: 18px;
-    }
-
-    .invoice-hero-top {
-        grid-template-columns: 1fr;
-        gap: 24px;
-        text-align: center;
-    }
-
-    .hero-header-left, .hero-header-right {
-        align-items: center;
-        justify-content: center;
-    }
-
-    .hero-total-amount {
-        font-size: 2.25rem;
-    }
-
-    .invoice-hero-bottom {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    
-    .invoice-main-grid,
-    .identity-grid,
-    .review-grid {
-        grid-template-columns: 1fr;
-    }
 }
