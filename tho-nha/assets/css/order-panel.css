@@ -70,7 +70,7 @@
 .board-header h3 i { color: var(--admin-primary); }
 
 /* 10. Empty States */
-.empty-state { padding: 80px 20px; text-align: center; color: var(--admin-muted); display: block !important; border: 1px dashed var(--admin-border); margin: 24px; border-radius: 20px; }
+.empty-state { padding: 80px 20px; text-align: center; color: var(--admin-muted); display: block; border: 1px dashed var(--admin-border); margin: 24px; border-radius: 20px; }
 .empty-state i { font-size: 3.5rem; margin-bottom: 16px; opacity: 0.2; display: block; }
 .empty-state h4 { margin: 0; font-weight: 800; font-size: 1.2rem; color: #64748b; }
 

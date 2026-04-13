@@ -1,34 +1,28 @@
 <!-- Tho Nha Order Detail Partial (Premium v4.1) -->
 <div class="order-detail-shell">
-    <!-- Navigation Bar -->
-    <nav class="detail-nav">
-        <button class="back-btn" data-action="back-to-list">
-            <i class="fas fa-chevron-left"></i> Trở lại danh sách
-        </button>
-        <span class="nav-title">Chi tiết hóa đơn</span>
-    </nav>
-
     <!-- Hero Section -->
     <article class="invoice-hero">
         <div class="invoice-hero-top">
-            <div>
-                <div class="invoice-code-line">
-                    <h3 class="invoice-code">Đơn <span id="heroOrderCode">#-------</span></h3>
-                    <span id="heroStatusBadge">---</span>
-                </div>
-                <p class="invoice-service" id="heroServiceName">Dịch vụ Thợ Nhà</p>
-                
-                <div class="invoice-service-meta">
-                    <p class="invoice-service-meta-item">Giá dịch vụ: <strong id="heroServiceFee">0 VND</strong></p>
-                    <p class="invoice-service-meta-item">Phí di chuyển: <strong id="heroTransportFee">0 VND</strong></p>
-                    <p class="invoice-service-meta-item">Mã giảm giá/Phụ phí: <strong id="heroSurchargeFee">0 VND</strong></p>
-                    <p class="invoice-service-meta-item">Ngày đặt lịch: <strong id="heroBookingDate">---</strong></p>
-                    <p class="invoice-service-meta-item">Trạng thái thanh toán: <strong id="heroPaymentStatus">Chưa thanh toán</strong></p>
-                </div>
+            <div class="hero-left">
+                <header class="invoice-main-header">
+                    <div class="header-col-left d-flex align-items-center gap-3">
+                        <h1 class="invoice-title">ĐƠN HÀNG <span id="heroOrderCode">---</span></h1>
+                        <span id="heroStatusBadge">---</span>
+                    </div>
+
+                    <div class="header-total-center">
+                        <small class="header-total-label">TỔNG TIỀN</small>
+                        <span class="header-total-amount" id="heroTotalAmountHeader">0 VND</span>
+                        <small class="header-total-formula">(Giá dịch vụ + Phí di chuyển + Phụ phí)</small>
+                    </div>
+
+                    <div class="header-actions-group">
+                        <div id="actionArea"></div>
+                    </div>
+                </header>
             </div>
 
             <div class="hero-progress-group">
-                <div id="actionArea"></div>
                 <div class="hero-progress">
                     <div class="hero-progress-ring" id="heroProgressRing">
                         <div class="hero-progress-content">
@@ -43,28 +37,39 @@
         <div class="invoice-hero-kpis">
             <article class="hero-kpi">
                 <div class="hero-kpi-header">
-                    <p class="hero-kpi-label">TỔNG TIỀN</p>
                     <i class="fas fa-wallet hero-kpi-icon text-success"></i>
+                    <p class="hero-kpi-label">CHI TIẾT THANH TOÁN</p>
                 </div>
-                <p class="hero-kpi-value" id="heroTotalAmount">0 VND</p>
+                <div class="invoice-service-meta-v2">
+                    <div class="meta-row-v2">
+                        <span class="meta-label">Giá dịch vụ:</span>
+                        <strong class="meta-value" id="heroServiceFee">0 VND</strong>
+                    </div>
+                    <div class="meta-row-v2">
+                        <span class="meta-label">Phí di chuyển:</span>
+                        <strong class="meta-value" id="heroTransportFee">0 VND</strong>
+                    </div>
+                    <div class="meta-row-v2">
+                        <span class="meta-label">Mã giảm giá/Phụ phí:</span>
+                        <strong class="meta-value" id="heroSurchargeFee">0 VND</strong>
+                    </div>
+                </div>
+            </article>
+
+            <article class="hero-kpi highlight-kpi">
+                <div class="hero-kpi-header">
+                    <i class="fas fa-credit-card hero-kpi-icon text-primary"></i>
+                    <p class="hero-kpi-label">TRẠNG THÁI THANH TOÁN</p>
+                </div>
+                <p class="hero-kpi-value" id="heroPaymentStatus">Chưa báo giá</p>
             </article>
 
             <article class="hero-kpi">
                 <div class="hero-kpi-header">
-                    <p class="hero-kpi-label">HÌNH THỨC DỊCH VỤ</p>
-                    <i class="fas fa-concierge-bell hero-kpi-icon text-primary"></i>
-                </div>
-                <p class="hero-kpi-value">Tại khách hàng</p>
-                <p class="hero-kpi-sub">Dịch vụ tận nơi</p>
-            </article>
-
-            <article class="hero-kpi">
-                <div class="hero-kpi-header">
-                    <p class="hero-kpi-label">ĐỊA CHỈ THỰC HIỆN</p>
                     <i class="fas fa-map-marker-alt hero-kpi-icon text-danger"></i>
+                    <p class="hero-kpi-label">ĐỊA CHỈ THỰC HIỆN</p>
                 </div>
                 <p class="hero-kpi-value" id="heroAddress">---</p>
-                <p class="hero-kpi-sub">Khu vực phục vụ</p>
             </article>
         </div>
     </article>
@@ -79,12 +84,13 @@
             <div class="invoice-panel-body">
                 <ol class="task-list" id="detailTasksList"></ol>
 
-                <div class="task-note-grid">
-                    <article class="task-note-box">
+                <div class="task-note-split-view">
+                    <article class="task-note-col">
                         <p class="task-note-label">GHI CHÚ KHÁCH HÀNG</p>
-                        <p class="task-note-value" id="detailNote">Không có ghi chú</p>
+                        <p class="task-note-value" id="detailNote">Chưa có ghi chú</p>
                     </article>
-                    <article class="task-note-box">
+                    <div class="task-note-divider"></div>
+                    <article class="task-note-col">
                         <p class="task-note-label">VẬT TƯ / PHỤ TÙNG (Nếu có)</p>
                         <p class="task-note-value">Theo khảo sát thực tế</p>
                     </article>
@@ -99,33 +105,49 @@
                 <span class="panel-chip">Theo dõi</span>
             </div>
             <div class="invoice-panel-body">
-                <div class="progress-row">
-                    <span>Tiến độ thực hiện</span>
-                    <b id="detailProgressText">0%</b>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="detailProgressBar"></div>
-                </div>
-
-                <p class="timeline-note" id="detailTimelineSummary">Hệ thống đang chờ xác nhận từ nhà cung cấp.</p>
-                
-                <div class="status-line">
-                    <span>Trạng thái:</span>
-                    <b id="detailStatusText">Đang xử lý</b>
+                <!-- Block 1: Progress -->
+                <div class="status-block mb-3">
+                    <div class="progress-row">
+                        <span>Tiến độ thực hiện</span>
+                        <b id="detailProgressText">0%</b>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="detailProgressBar"></div>
+                    </div>
                 </div>
 
-                <div class="time-grid">
-                    <article class="time-box">
-                        <h4>Mốc thời gian quan trọng</h4>
-                        <div class="time-item">
-                            <span>Thợ nhận đơn</span>
-                            <b id="detailExecutionStart">---</b>
-                        </div>
-                        <div class="time-item">
-                            <span>Hoàn thành thực tế</span>
-                            <b id="detailExecutionEnd">---</b>
-                        </div>
-                    </article>
+                <!-- Block 2: Status Summary -->
+                <div class="status-block mb-3">
+                    <p class="timeline-note" id="detailTimelineSummary">Hệ thống đang chờ xác nhận từ nhà cung cấp.</p>
+                    <div class="status-line">
+                        <span>Trạng thái hiện tại:</span>
+                        <b id="detailStatusText">Đang xử lý</b>
+                    </div>
+                </div>
+
+                <!-- Block 3: Time Milestones -->
+                <div class="status-block">
+                    <div class="time-grid">
+                        <article class="time-box">
+                            <h4 class="time-box-title">MỐC THỜI GIAN QUAN TRỌNG</h4>
+                            <div class="time-item-v2">
+                                <span class="time-label">Ngày đặt lịch</span>
+                                <b id="heroBookingDate">---</b>
+                            </div>
+                            <div class="time-item-v2">
+                                <span class="time-label">Ngày nhận</span>
+                                <b id="detailExecutionStart">Chưa</b>
+                            </div>
+                            <div class="time-item-v2">
+                                <span class="time-label">Bắt đầu thực tế</span>
+                                <b id="detailExecutionActual">Chưa</b>
+                            </div>
+                            <div class="time-item-v2">
+                                <span class="time-label">Hoàn thành thực tế</span>
+                                <b id="detailExecutionEnd">Chưa</b>
+                            </div>
+                        </article>
+                    </div>
                 </div>
             </div>
         </article>
@@ -135,12 +157,13 @@
     <div class="identity-grid">
         <article class="identity-card">
             <div class="identity-head">
-                <h3>Khách hàng</h3>
-                <span class="panel-chip">Người đặt lịch</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="avatar-badge-sm" id="customerAvatarBadge">KH</span>
+                    <h3>Khách hàng</h3>
+                </div>
             </div>
             <div class="identity-body">
                 <div class="identity-main">
-                    <span class="avatar-badge" id="customerAvatarBadge">KH</span>
                     <div>
                         <h4 class="identity-name" id="detailCustomerName">---</h4>
                         <div class="identity-contacts">
@@ -155,12 +178,13 @@
 
         <article class="identity-card">
             <div class="identity-head">
-                <h3>Nhà Cung Cấp phụ trách</h3>
-                <span id="providerStateChip">Đang tìm thợ</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="avatar-badge-sm" id="providerAvatarBadge">NCC</span>
+                    <h3>Nhà Cung Cấp</h3>
+                </div>
             </div>
             <div class="identity-body">
                 <div class="identity-main">
-                    <span class="avatar-badge" id="providerAvatarBadge">NCC</span>
                     <div>
                         <h4 class="identity-name" id="detailProviderName">---</h4>
                         <div class="identity-contacts">

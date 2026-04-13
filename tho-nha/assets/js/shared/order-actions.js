@@ -18,6 +18,10 @@ const ThoNhaOrderActions = (() => {
             const btn = e.target.closest('[data-action]');
             if (!btn) return;
 
+            // Dừng sự kiện lan truyền để tránh các listener ở cấp document (như trong order-management.js) chạy đè lên
+            e.stopPropagation();
+            e.preventDefault();
+
             const action = btn.dataset.action;
             const id = btn.dataset.id;
             
@@ -36,6 +40,7 @@ const ThoNhaOrderActions = (() => {
                         id_nhacungcap: session.id, 
                         tenncc: session.name || session.hovaten, 
                         sdtncc: session.phone || session.sodienthoai, 
+                        diachincc: session.address || session.diachi || '',
                         ngaynhan: now 
                     };
                 } else if (action === 'start-order') {

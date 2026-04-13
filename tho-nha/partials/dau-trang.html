@@ -1,22 +1,22 @@
 <!-- Auth nav styles -->
 <style>
 .btn-auth-guest {
-    background: linear-gradient(135deg, #2563eb, #06b6d4);
+    background: linear-gradient(135deg, #10b981, #059669);
     color: white; border: none; padding: 7px 18px; border-radius: 50px;
     font-weight: 600; font-size: 0.85rem; cursor: pointer;
     display: flex; align-items: center; gap: 7px; white-space: nowrap;
     font-family: inherit; transition: all 0.2s;
 }
-.btn-auth-guest:hover { opacity: 0.9; box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35); }
+.btn-auth-guest:hover { opacity: 0.9; box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35); }
 .btn-auth-user {
-    background: rgba(37, 99, 235, 0.08); border: 1.5px solid #2563eb44;
-    color: #1e40af; padding: 4px 8px; border-radius: 50px;
+    background: rgba(16, 185, 129, 0.08); border: 1.5px solid #10b98144;
+    color: #065f46; padding: 4px 8px; border-radius: 50px;
     font-weight: 600; font-size: 0.85rem; cursor: pointer;
     display: flex; align-items: center; gap: 4px; font-family: inherit; transition: all 0.2s;
 }
-.btn-auth-user:hover { background: rgba(37, 99, 235, 0.15); border-color: #2563eb; }
+.btn-auth-user:hover { background: rgba(16, 185, 129, 0.15); border-color: #10b981; }
 .auth-avatar {
-    width: 28px; height: 28px; background: linear-gradient(135deg, #2563eb, #06b6d4);
+    width: 28px; height: 28px; background: linear-gradient(135deg, #10b981, #059669);
     color: white; border-radius: 50%; display: inline-flex; align-items: center;
     justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
 }
@@ -28,7 +28,7 @@
 .auth-dropdown .dropdown-item {
     border-radius: 8px; font-size: 0.87rem; padding: 8px 14px;
 }
-.auth-dropdown .dropdown-item:hover { background: #eff6ff; color: #2563eb; }
+.auth-dropdown .dropdown-item:hover { background: #ecfdf5; color: #059669; }
 .auth-dropdown .dropdown-item.text-danger:hover { background: #fef2f2; }
 .auth-dropdown .dropdown-header { font-size: 0.72rem; color: #94a3b8; padding: 6px 14px 2px; }
 .auth-dropdown .dropdown-item i { width: 1.2rem; text-align: center; }
@@ -51,16 +51,16 @@
     text-decoration: none; transition: background 0.16s;
     margin: 2px 0;
 }
-.mobile-auth-link:hover { background: rgba(37, 99, 235, 0.08); color: #2563eb; text-decoration: none; }
+.mobile-auth-link:hover { background: rgba(16, 185, 129, 0.08); color: #059669; text-decoration: none; }
 .mobile-auth-link .icon-wrap {
     width: 34px; height: 34px; border-radius: 9px;
     display: flex; align-items: center; justify-content: center;
     font-size: 0.87rem; flex-shrink: 0;
 }
-.mobile-auth-link.--customer .icon-wrap { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
-.mobile-auth-link.--provider .icon-wrap { background: rgba(6, 182, 212, 0.1); color: #06b6d4; }
+.mobile-auth-link.--customer .icon-wrap { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.mobile-auth-link.--provider .icon-wrap { background: rgba(5, 150, 105, 0.1); color: #059669; }
 .mobile-auth-link.--admin    .icon-wrap { background: #f1f5f9; color: #64748b; }
-.mobile-auth-link.--dashboard .icon-wrap { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+.mobile-auth-link.--dashboard .icon-wrap { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 .mobile-auth-link.--logout   .icon-wrap { background: #fff1f1; color: #e53e3e; }
 .mobile-auth-link.--logout   { color: #e53e3e; }
 .mobile-auth-link.--logout:hover { background: #fff5f5; color: #c53030; }
@@ -142,18 +142,18 @@
           <!-- Guest Dropdown (Standardized with DVQT) -->
           <div class="dropdown" id="auth-guest" style="display:none;">
             <button class="nav-link dropdown-toggle btn-auth-guest" type="button" data-bs-toggle="dropdown" aria-expanded="false" 
-                    style="background: linear-gradient(135deg, #2563eb, #06b6d4); color: white; border: none; padding: 7px 20px; border-radius: 50px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25);">
+                    style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 7px 20px; border-radius: 50px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);">
               <i class="fas fa-user-circle"></i> Tài khoản
             </button>
             <ul class="dropdown-menu dropdown-menu-end auth-dropdown">
               <li>
                 <a class="dropdown-item" href="../../../public/dang-nhap.html?service=thonha">
-                  <i class="fas fa-sign-in-alt me-2" style="color:#2563eb;"></i> Đăng nhập
+                  <i class="fas fa-sign-in-alt me-2" style="color:#10b981;"></i> Đăng nhập
                 </a>
               </li>
               <li>
                 <a class="dropdown-item" href="../../../public/dang-ky.html?service=thonha">
-                  <i class="fas fa-user-plus me-2" style="color:#06b6d4;"></i> Đăng ký ngay
+                  <i class="fas fa-user-plus me-2" style="color:#059669;"></i> Đăng ký ngay
                 </a>
               </li>
             </ul>
@@ -162,14 +162,14 @@
           <!-- User Logged In -->
           <div class="dropdown" id="auth-user" style="display:none;">
             <button class="btn-auth-user dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                    style="background: rgba(37, 99, 235, 0.08); border: 1.5px solid #2563eb44; color: #1e40af;">
-              <span class="auth-avatar" id="auth-avatar" style="background: linear-gradient(135deg, #2563eb, #06b6d4);">K</span>
+                    style="background: rgba(16, 185, 129, 0.08); border: 1.5px solid #10b98144; color: #065f46;">
+              <span class="auth-avatar" id="auth-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">K</span>
               <span id="auth-name" style="display:none;"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end auth-dropdown">
               <li>
                 <a class="dropdown-item fw-600" id="auth-dashboard-link" href="../../pages/customer/trang-ca-nhan.html">
-                  <i class="fas fa-th-large me-2" style="color:#2563eb;"></i>Trang cá nhân
+                  <i class="fas fa-th-large me-2" style="color:#10b981;"></i>Trang cá nhân
                 </a>
               </li>
               <li><hr class="dropdown-divider my-1"></li>
@@ -191,11 +191,11 @@
           <div id="mobile-auth-guest" style="display:none;">
             <div class="mobile-auth-label">Tài khoản</div>
             <a class="mobile-auth-link --customer" href="../../../public/dang-nhap.html?service=thonha">
-              <span class="icon-wrap" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;"><i class="fas fa-sign-in-alt"></i></span>
+              <span class="icon-wrap" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="fas fa-sign-in-alt"></i></span>
               Đăng nhập
             </a>
             <a class="mobile-auth-link --provider" href="../../../public/dang-ky.html?service=thonha">
-              <span class="icon-wrap" style="background: rgba(6, 182, 212, 0.1); color: #06b6d4;"><i class="fas fa-user-plus"></i></span>
+              <span class="icon-wrap" style="background: rgba(5, 150, 105, 0.1); color: #059669;"><i class="fas fa-user-plus"></i></span>
               Đăng ký ngay
             </a>
           </div>
@@ -203,7 +203,7 @@
           <!-- User mobile -->
           <div id="mobile-auth-user" style="display:none;">
             <div class="mobile-auth-user-info">
-              <span class="auth-avatar" id="mobile-auth-avatar-inner">K</span>
+              <span class="auth-avatar" id="mobile-auth-avatar-inner" style="background: linear-gradient(135deg, #10b981, #059669);">K</span>
               <span class="user-name" id="mobile-auth-name"></span>
             </div>
             <a class="mobile-auth-link --dashboard" id="mobile-auth-dashboard-link" href="../../pages/customer/trang-ca-nhan.html">

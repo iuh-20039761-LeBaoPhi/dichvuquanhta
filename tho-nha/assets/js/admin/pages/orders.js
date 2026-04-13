@@ -62,11 +62,15 @@ window.initOrders = function() {
     }
 
     function showList() {
+        const filterSec = document.getElementById('orderFilterSection');
+        if (filterSec) filterSec.style.display = '';
         if (elements.listContainer) elements.listContainer.hidden = false;
         if (elements.detailContainer) elements.detailContainer.hidden = true;
     }
 
     async function showDetail(order) {
+        const filterSec = document.getElementById('orderFilterSection');
+        if (filterSec) filterSec.style.display = 'none';
         if (elements.listContainer) elements.listContainer.hidden = true;
         if (elements.detailContainer) {
             elements.detailContainer.hidden = false;

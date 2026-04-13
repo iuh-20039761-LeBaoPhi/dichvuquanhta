@@ -136,24 +136,62 @@
         #customerMobileList { display: none !important; }
 
         @media (max-width: 1024px) {
-            .sidebar { width: 0; display: none; }
-            .main-wrapper { margin-left: 0; }
-            .top-bar { padding: 0 20px; }
-            .content-area { padding: 20px; }
+            .sidebar { 
+                transform: translateX(-100%); 
+                transition: transform 0.3s ease;
+                box-shadow: none;
+            }
+            .sidebar.mobile-active { 
+                transform: translateX(0); 
+                box-shadow: 10px 0 50px rgba(0,0,0,0.3);
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.5);
+                backdrop-filter: blur(4px);
+                z-index: 999;
+            }
+            .sidebar-overlay.active { display: block; }
+
+            .main-wrapper { margin-left: 0; width: 100%; }
+            .top-bar { padding: 0 15px; }
+            .content-area { padding: 5px !important; }
+            .sidebar-toggle { display: flex !important; }
+            
+            /* Đồng ý re-enable card mobile để mang lại trải nghiệm tối ưu (Responsive) cho khách hàng: */
             .d-table-responsive { display: none !important; }
             #customerMobileList { 
                 display: flex !important; flex-direction: column; gap: 16px; padding: 10px 0; 
             }
-            
-            .mobile-card { background: #fff; border-radius: 18px; padding: 22px; box-shadow: var(--shadow-md); border: 1px solid #f1f5f9; position: relative; }
-            .mobile-card::after { content: ""; position: absolute; left: 0; top: 15%; width: 5px; height: 70%; background: var(--primary); border-radius: 0 10px 10px 0; }
-            .mobile-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-            .mobile-title { font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 5px; }
-            .mobile-code { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-            .mobile-row { display: flex; justify-content: space-between; font-size: 13px; padding-top: 10px; border-top: 1px dashed #e2e8f0; margin-top: 10px; }
-            .mobile-row span { color: var(--text-sub); }
-            .mobile-row strong { color: var(--text-main); font-weight: 700; }
-            .mobile-actions { margin-top: 20px; display: flex; justify-content: flex-end; }
+            .mobile-card { 
+                background: #fff; border-radius: 20px; padding: 20px; 
+                box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; 
+                position: relative; overflow: hidden;
+                transition: transform 0.2s;
+            }
+            .mobile-card:active { transform: scale(0.98); }
+            .mobile-card::after { content: ""; position: absolute; left: 0; top: 0; width: 6px; height: 100%; background: var(--primary); }
+            .mobile-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+            .mobile-title { 
+                font-size: 1rem; font-weight: 800; color: #1e293b; margin-bottom: 4px; line-height: 1.4;
+                display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
+            }
+            .mobile-code { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 0.5px; }
+            .mobile-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 12px 0; border-top: 1px solid #f8fafc; }
+            .mobile-row span { color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+            .mobile-row strong { color: #1e293b; font-weight: 700; }
+            .mobile-actions { margin-top: 15px; padding-top: 15px; border-top: 2px solid #f1f5f9; display: flex; justify-content: flex-end; }
+        }
+
+        .sidebar-toggle {
+            display: none;
+            width: 40px; height: 40px;
+            align-items: center; justify-content: center;
+            background: #fff; border: 1px solid var(--border);
+            border-radius: 10px; font-size: 1.2rem; color: var(--text-main);
+            cursor: pointer;
         }
 
         /* Status Badges */
@@ -167,6 +205,9 @@
     </style>
 </head>
 <body>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -207,7 +248,12 @@
     <!-- Main Wrapper -->
     <main class="main-wrapper">
         <header class="top-bar">
-            <h1 class="top-h1">Trang cá nhân</h1>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="sidebar-toggle" id="mobileMenuBtn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h1 class="top-h1">Trang cá nhân</h1>
+            </div>
             <div class="user-pill">
                 <div class="user-avatar" id="accAvatarHead">K</div>
                 <div class="user-role">Khách hàng</div>
@@ -233,5 +279,27 @@
     <script src="../../assets/js/shared/order-detail-renderer.js"></script>
     <script src="../../assets/js/shared/order-actions.js"></script>
     <script src="../../assets/js/customer/shell.js"></script>
+    <!-- Menu Toggle Script -->
+    <script>
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.add('mobile-active');
+            document.getElementById('sidebarOverlay').classList.add('active');
+        });
+
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.remove('mobile-active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        });
+
+        // Close menu when clicking nav links on mobile
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    document.querySelector('.sidebar').classList.remove('mobile-active');
+                    document.getElementById('sidebarOverlay').classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

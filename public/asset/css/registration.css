@@ -176,8 +176,8 @@
 .map-btns .btn-map-toggle:hover { opacity: 0.9; }
 .map-btns .btn-gps { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
 .map-btns .btn-gps:hover { opacity: 0.9; }
-#regMapBox { display: none; border-radius: var(--auth-radius-sm); overflow: hidden; margin-top: 8px; }
-#regMapEl { height: 240px; }
+#mapPickerBox { display: none; border-radius: var(--auth-radius-sm); overflow: hidden; margin-top: 8px; }
+#mapPickerEl { height: 240px; }
 .coord-info {
     display: flex; gap: 8px; margin-top: 6px;
     font-size: 0.75rem; color: var(--auth-muted);

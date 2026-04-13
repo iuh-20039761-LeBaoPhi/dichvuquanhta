@@ -8,16 +8,41 @@
      * Xác thực phiên đăng nhập của khách hàng (Route Guard).
      * Kiểm tra cả LocalStorage và Server Session (PHP).
      */
+    /**
+     * Xác thực phiên đăng nhập của khách hàng (Route Guard).
+     * Hỗ trợ giải mã tham số URL (id, sdt, pass) để tự động đăng nhập và xem đơn hàng.
+     */
     async function verifySession() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sdt = urlParams.get('sdt');
+        const pass = urlParams.get('pass');
+        const orderId = urlParams.get('id');
+
+        // Nếu có truyền sdt và pass trên URL, thực hiện đăng nhập tự động (Deep Link)
+        if (sdt && pass) {
+            console.log('Phát hiện thông tin đăng nhập tự động...');
+            try {
+                await DVQTApp.login(sdt, pass); // Giả định API login hỗ trợ (sdt, pass)
+            } catch (e) {
+                console.error('Đăng nhập tự động thất bại:', e);
+            }
+        }
+
         const session = await DVQTApp.checkSession();
         if (!session || !session.logged_in) {
             const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : window.location.pathname.split('/tho-nha/')[0];
+            // Nếu không có session, chuyển về trang logout hoặc login
             window.location.href = root + '/public/dang-nhap.html?service=thonha';
             return;
         }
 
         _currentSession = session;
         window._dvqt_session_cache = session;
+
+        // Lưu orderId vào global để các trang con (quan-ly-don) có thể tự mở
+        if (orderId) {
+            window._pendingOrderId = orderId;
+        }
 
         const ids = String(session.id_dichvu || '0').split(',');
         const isThoNhaProvider = ids.includes('9') || (session.profile && session.profile.role === 'admin');
