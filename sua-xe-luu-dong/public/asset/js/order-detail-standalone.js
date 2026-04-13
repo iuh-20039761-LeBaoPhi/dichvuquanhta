@@ -131,7 +131,7 @@
    * @returns {Object} Kết quả tính toán giá.
    */
   function calculatePricing(order, distanceKm) {
-    var serviceAmount = toNumber(order.giadichvu);
+    var surchargeFee = toNumber(order.phikhaosat);
     var perKmIncrease = 5000;
     var minFee = 40000;
     var maxFee = 60000;
@@ -149,7 +149,7 @@
     return {
       distanceKm: distanceKm,
       transportFee: transportFee,
-      totalAmount: serviceAmount + transportFee,
+      totalAmount: surchargeFee + transportFee,
     };
   }
 
@@ -394,10 +394,9 @@
   function statusProgress(status) {
     var value = String(status || "").toLowerCase();
     if (value === "completed") return 100;
-    if (value === "accepted") return 45;
-    if (value === "processing") return 62;
-    if (value === "canceled") return 0;
-    return 20;
+    if (value === "processing") return 65;
+    if (value === "accepted") return 30;
+    return 0;
   }
 
   /**
@@ -755,10 +754,11 @@
       createdAt;
 
     var status = getOrderStatus(row);
-    var serviceFee = toNumber(row.giadichvu);
     var transportFee = toNumber(row.tiendichuyen);
     var surchargeFee = toNumber(row.phikhaosat);
-    var totalAmount = toNumber(row.tongtien);
+    var tongtienthucte = toNumber(row.tongtienthucte);
+    var totalAmount = tongtienthucte > 0 ? tongtienthucte : toNumber(row.tongtien);
+    var discountFee = toNumber(row.sotiengiam);
     var hasAssignedProvider = hasAssignedProviderRow(row);
 
     var qty = 1;
@@ -780,8 +780,7 @@
       completedAt: row.ngayhoanthanh || "",
       totalAmount: totalAmount,
       extraFee: transportFee + surchargeFee,
-      discount: 0,
-      serviceFee: serviceFee,
+      discount: discountFee,
       transportFee: transportFee,
       surchargeFee: surchargeFee,
       paymentStatus: row.trangthaithanhtoan || "Unpaid",
@@ -809,7 +808,7 @@
         {
           name: row.dichvu || "Dịch vụ",
           quantity: qty,
-          unitPrice: serviceFee,
+          unitPrice: 0,
         },
       ],
     };
@@ -1354,11 +1353,11 @@
 
     var meta = statusMeta(order.status);
     var progressValue = statusProgress(order.status);
-    var subtotal = toNumber(order.serviceFee);
+    var subtotal = 0;
     var total =
       toNumber(order.totalAmount) > 0
         ? toNumber(order.totalAmount)
-        : subtotal + toNumber(order.extraFee);
+        : toNumber(order.extraFee);
 
     var hasReceivedDate = hasDateValue(order && order.receivedAt);
     var hasStartedDate = hasDateValue(order && order.startedAt);
@@ -1381,9 +1380,10 @@
 
     setText("heroOrderCode", "#" + formatOrderCode(order.id));
     setText("heroServiceName", safeText(order.service));
-    setText("heroServiceFee", formatCurrencyVnd(order.serviceFee));
+    setText("heroTotalAmount", formatCurrencyVnd(order.totalAmount));
     setText("heroTransportFee", formatCurrencyVnd(order.transportFee));
     setText("heroSurchargeFee", formatCurrencyVnd(order.surchargeFee));
+    setText("heroDiscountFee", formatCurrencyVnd(order.discount));
     setText("heroBookingDate", formatDateTime(order.createdAt));
     setText(
       "heroReceivedDate",
@@ -1398,7 +1398,6 @@
       order.completedAt ? formatDateTime(order.completedAt) : "---",
     );
     setText("heroPaymentStatus", getPaymentStatusLabel(order.paymentStatus));
-    setText("heroTotalAmount", formatCurrencyVnd(total));
     setText("heroTimeRange", getPaymentStatusLabel(order.paymentStatus));
     if (order.vehicleInfo) {
       setText("detailVehicleType", order.vehicleInfo.type);
@@ -1877,7 +1876,7 @@
       }
 
       if (canReceive) {
-        var receiveBtn = makeButton("Nhận đơn", "btn btn-outline-primary");
+        var receiveBtn = makeButton("Nhận đơn", "btn btn-primary");
         receiveBtn.addEventListener("click", async function () {
           if (state.isSubmitting) return;
           state.isSubmitting = true;
@@ -1967,9 +1966,11 @@
         var completeBtn = makeButton("Hoàn thành", "btn btn-success");
         completeBtn.addEventListener("click", function () {
           runProviderAction(completeBtn, "Đang hoàn thành...", function () {
+            var transportFee = toNumber(order.transportFee);
             return {
               ngayhoanthanh: new Date().toISOString(),
-              phikhaosat: 0,
+              phikhaosat: 0, // Miễn phí khảo sát khi hoàn thành sửa chữa
+              tongtien: transportFee, // Tổng tiền = 0 (phí khảo sát) + phí di chuyển
             };
           });
         });
@@ -1990,7 +1991,6 @@
               return {
                 dichvu: "Khảo sát",
                 ngayhoanthanh: new Date().toISOString(),
-                giadichvu: 0,
                 tongtien: surveyFee + transportFee,
                 trangthaithanhtoan: "Paid",
               };
@@ -2050,8 +2050,11 @@
             ngayhuy: new Date().toISOString(),
           });
         } else {
+          // var transportFee = toNumber(state.orderView && state.orderView.transportFee);
           await updateOrderRow(state.orderRaw.id, {
             ngayhoanthanh: new Date().toISOString(),
+            // phikhaosat: 0,
+            // tongtien: transportFee,
           });
         }
 
@@ -2141,8 +2144,10 @@
           throw new Error("Không xác định được mã hóa đơn.");
         }
 
+        var discountAmount = amount - finalAmount;
         await updateOrderRow(state.orderRaw.id, {
-          tongtien: finalAmount,
+          tongtienthucte: finalAmount,
+          sotiengiam: discountAmount,
           trangthaithanhtoan: "Paid",
         });
 

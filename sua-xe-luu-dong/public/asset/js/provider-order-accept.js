@@ -138,7 +138,6 @@
   }
 
   function calculatePricing(order, distanceKm) {
-    var serviceAmount = toNumber(order.giadichvu);
     var surveyFee = toNumber(order.phikhaosat);
 
     // Formula from sua-xe-luu-dong
@@ -159,7 +158,7 @@
     return {
       distanceKm: distanceKm,
       transportFee: transportFee,
-      totalAmount: serviceAmount + transportFee,
+      totalAmount: surveyFee + transportFee,
     };
   }
 

@@ -186,10 +186,10 @@ body.order-standalone-page {
   width: 100%;
 }
 
-.hero-progress {
+/* .hero-progress {
   width: min(260px, 100%);
   gap: 8px;
-}
+} */
 
 .hero-progress-ring {
   flex: 0 0 auto;

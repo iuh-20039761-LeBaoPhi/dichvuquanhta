@@ -97,10 +97,9 @@
   function statusProgress(status) {
     var value = String(status || "").toLowerCase();
     if (value === "completed") return 100;
-    if (value === "accepted") return 45;
-    if (value === "processing") return 62;
-    if (value === "canceled") return 0;
-    return 20;
+    if (value === "processing") return 65;
+    if (value === "accepted") return 30;
+    return 0;
   }
 
   function formatCurrency(value) {
@@ -569,10 +568,12 @@
 
     var qty = 1;
 
-    var servicePrice = toNumber(row && row.giadichvu);
+    var servicePrice = 0;
     var transportFee = toNumber(row && row.tiendichuyen);
     var surchargeFee = toNumber(row && row.phikhaosat);
-    var totalAmount = toNumber(row && row.tongtien);
+    var tongtienthucte = toNumber(row && row.tongtienthucte);
+    var totalAmount = tongtienthucte > 0 ? tongtienthucte : toNumber(row && row.tongtien);
+    var discountFee = toNumber(row && row.sotiengiam);
     var hasAssignedProvider = hasAssignedProviderRow(row);
 
     return {
@@ -610,9 +611,8 @@
         },
       ],
       extraFee: transportFee + surchargeFee,
-      discount: 0,
+      discount: discountFee,
       totalAmount: totalAmount,
-      serviceFee: servicePrice,
       transportFee: transportFee,
       surchargeFee: surchargeFee,
       paymentStatus:
@@ -853,7 +853,7 @@
     }
 
     return Promise.resolve(
-      shared.fetchOrdersByPhone(BOOKING_TABLE, user && user.user_tel, 10, {
+      shared.fetchOrdersByPhone(BOOKING_TABLE, user && user.user_tel, 500, {
         userTable: USER_TABLE,
         customerTable: USER_TABLE,
         providerTable: USER_TABLE,
@@ -1127,15 +1127,13 @@
       );
     }
 
-    function handleCompleteOrder(orderId) {
-      if (typeof shared.completeProviderOrder === "function") {
-        return shared.completeProviderOrder(orderId, BOOKING_TABLE);
-      }
+    function handleCompleteOrder(orderId, order) {
       if (typeof shared.updateOrder === "function") {
+        var transportFee = toNumber(order && order.transportFee);
         return shared.updateOrder(BOOKING_TABLE, orderId, {
           ngayhoanthanh: new Date().toISOString(),
           phikhaosat: 0,
-          // trangthaithanhtoan: "Paid",
+          tongtien: transportFee,
         });
       }
       return Promise.reject(
@@ -1166,7 +1164,6 @@
       return shared.updateOrder(BOOKING_TABLE, orderId, {
         dichvu: "Khảo sát",
         ngayhoanthanh: new Date().toISOString(),
-        giadichvu: 0,
         tongtien: surveyFee + transportFee,
         trangthaithanhtoan: "Paid",
       });
@@ -1830,8 +1827,13 @@
           return;
         }
 
-        setActionButtonLoading(button, true, "Hoàn thành", "Đang cập nhật...");
-        handleCompleteOrder(orderId)
+        var order = (assignedState.all || []).find(function (it) {
+          return it.id === orderId;
+        }) || (overviewState.all || []).find(function (it) {
+          return it.id === orderId;
+        });
+
+        handleCompleteOrder(orderId, order)
           .then(function () {
             return refreshProviderOrders();
           })
@@ -2056,10 +2058,6 @@
         : null;
 
     var orderCodeText = orderCode(order.id);
-    var serviceFeeAmount = Number(order.serviceFee);
-    if (!Number.isFinite(serviceFeeAmount) || serviceFeeAmount < 0) {
-      serviceFeeAmount = subtotal;
-    }
     var transportFeeAmount = Number(order.transportFee);
     if (!Number.isFinite(transportFeeAmount) || transportFeeAmount < 0) {
       transportFeeAmount = 0;
@@ -2099,7 +2097,7 @@
     setText("detailSubTotal", formatCurrency(subtotal));
     setText("detailExtraFee", formatCurrency(order.extraFee));
     setText("detailDiscount", formatCurrency(order.discount));
-    setText("detailTotal", formatCurrency(total));
+    setText("detailTotal", formatCurrency(order.tongtienthucte || order.total || total));
     setText("detailNote", order.note || "Không có ghi chú.");
     if (order.vehicleInfo) {
       setText("detailVehicleType", order.vehicleInfo.type);
@@ -2113,9 +2111,10 @@
 
     setText("heroOrderCode", "#" + orderCodeText);
     setText("heroServiceName", safeText(order.service));
-    setText("heroServiceFee", formatCurrencyVnd(serviceFeeAmount));
+    setText("heroTotalAmount", formatCurrencyVnd(order.totalAmount));
     setText("heroTransportFee", formatCurrencyVnd(transportFeeAmount));
     setText("heroSurchargeFee", formatCurrencyVnd(surchargeFeeAmount));
+    setText("heroDiscountFee", formatCurrencyVnd(order.discount));
     setText("heroBookingDate", formatDateTime(order.createdAt));
     setText(
       "heroReceivedDate",
@@ -2130,7 +2129,6 @@
       executionEndValue ? formatDateTime(executionEndValue) : "---",
     );
     setText("heroPaymentStatus", getPaymentStatusLabel(order.paymentStatus));
-    setText("heroTotalAmount", formatCurrencyVnd(total));
     setText("heroTimeRange", getPaymentStatusLabel(order.paymentStatus));
     var heroDateRangeNode = document.getElementById("heroDateRange");
     if (heroDateRangeNode) {
@@ -2602,8 +2600,10 @@
       var originalText = btn.textContent;
       btn.textContent = "Đang xử lý...";
 
+      var discountAmount = amount - finalAmount;
       shared.updateOrder(BOOKING_TABLE, order.id, {
-        tongtien: finalAmount,
+        tongtienthucte: finalAmount,
+        sotiengiam: discountAmount,
         trangthaithanhtoan: "Paid"
       }).then(function() {
         window.alert("Thanh toán thành công! Bạn đã được giảm giá 5%.");

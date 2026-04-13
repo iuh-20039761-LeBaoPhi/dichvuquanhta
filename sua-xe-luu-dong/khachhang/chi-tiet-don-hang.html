@@ -80,62 +80,28 @@
           >
             <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
             <h3>Không tìm thấy đơn hàng</h3>
-            <p>
-              Mã đơn <strong id="missingOrderId">(không hợp lệ)</strong> không
-              tồn tại hoặc bạn không có quyền truy cập.
             </p>
           </article>
 
           <div class="order-detail-shell" id="detailStateFound">
             <article class="invoice-hero">
               <div class="invoice-hero-top">
-                <div>
-                  <div class="invoice-code-line">
-                    <h3 class="invoice-code">
-                      Đơn <span id="heroOrderCode">#-------</span>
-                    </h3>
-                    <span class="invoice-status-chip" id="heroStatusBadge"
-                      >Đang xử lý</span
-                    >
-                  </div>
-                  <p class="invoice-service" id="heroServiceName">
-                    Dịch vụ sửa xe lưu động
-                  </p>
-                  <div class="invoice-service-meta">
-                    <div class="invoice-service-meta-col">
-                      <p class="invoice-service-meta-item">
-                        Giá dịch vụ: <strong id="heroServiceFee">0 VND</strong>
-                      </p>
-                      <p class="invoice-service-meta-item">
-                        Chi phí di chuyển:
-                        <strong id="heroTransportFee">0 VND</strong>
-                      </p>
-                      <p class="invoice-service-meta-item">
-                        Phí khảo sát: <strong id="heroSurchargeFee">0 VND</strong>
-                      </p>
-                    </div>
-
-                    <div
-                      class="invoice-service-meta-col invoice-service-meta-col-dates"
-                    >
-                      <p class="invoice-service-meta-item">
-                        Ngày đặt lịch: <strong id="heroBookingDate">---</strong>
-                      </p>
-                      <p class="invoice-service-meta-item">
-                        Ngày nhận: <strong id="heroReceivedDate">---</strong>
-                      </p>
-                      <p class="invoice-service-meta-item">
-                        Ngày bắt đầu: <strong id="heroStartedDate">---</strong>
-                      </p>
-                      <p class="invoice-service-meta-item">
-                        Ngày hoàn thành:
-                        <strong id="heroCompletedDate">---</strong>
-                      </p>
-                    </div>
-                  </div>
+                <div class="hero-header-left">
+                  <h3 class="invoice-code">
+                    Đơn <span id="heroOrderCode">#-------</span>
+                  </h3>
+                  <span class="invoice-status-chip" id="heroStatusBadge"
+                    >Đang xử lý</span
+                  >
                 </div>
 
-                <div class="hero-progress">
+                <div class="hero-header-center">
+                  <span class="hero-total-label">TỔNG TIỀN</span>
+                  <div class="hero-total-amount" id="heroTotalAmount">0 VND</div>
+                  <!-- <span class="hero-total-sub">Phí di chuyển + Giá dịch vụ</span> -->
+                </div>
+
+                <div class="hero-header-right">
                   <div class="hero-progress-ring" id="heroProgressRing">
                     <div class="hero-progress-content">
                       <strong id="heroProgressPercent">0%</strong>
@@ -145,24 +111,40 @@
                 </div>
               </div>
 
-              <div class="invoice-hero-kpis">
-                <article class="hero-kpi">
-                  <p class="hero-kpi-label">Tổng tiền</p>
-                  <p class="hero-kpi-value" id="heroTotalAmount">0 VND</p>
-                  <p class="hero-kpi-sub">Phí di chuyển + Giá dịch vụ</p>
-                </article>
+              <div class="invoice-hero-mid">
+                <h4 class="hero-service-title" id="heroServiceName">
+                  Dịch vụ sửa xe lưu động
+                </h4>
+              </div>
 
-                <article class="hero-kpi">
-                  <p class="hero-kpi-label">Trạng thái thanh toán</p>
-                  <p class="hero-kpi-value" id="heroTimeRange">---</p>
-                  <p class="hero-kpi-sub d-none" id="heroDateRange"></p>
-                </article>
+              <div class="invoice-hero-bottom">
+                <div class="hero-card">
+                  <div class="hero-card-label">CHI PHÍ CHI TIẾT</div>
+                  <div class="hero-card-costs">
+                    <div class="cost-item">
+                      <span>Phí di chuyển</span>
+                      <strong id="heroTransportFee">0 VND</strong>
+                    </div>
+                    <div class="cost-item">
+                      <span>Phí khảo sát</span>
+                      <strong id="heroSurchargeFee">0 VND</strong>
+                    </div>
+                    <div class="cost-item">
+                      <span>Số tiền giảm</span>
+                      <strong id="heroDiscountFee">0 VND</strong>
+                    </div>
+                  </div>
+                </div>
 
-                <article class="hero-kpi">
-                  <p class="hero-kpi-label">Địa chỉ</p>
-                  <p class="hero-kpi-value" id="heroAddress">---</p>
-                  <p class="hero-kpi-sub">Khu vực phục vụ</p>
-                </article>
+                <div class="hero-card">
+                  <div class="hero-card-label">THANH TOÁN</div>
+                  <div class="hero-card-value" id="heroTimeRange">---</div>
+                </div>
+
+                <div class="hero-card">
+                  <div class="hero-card-label">ĐỊA CHỈ</div>
+                  <div class="hero-card-value" id="heroAddress">---</div>
+                </div>
               </div>
             </article>
 
@@ -207,6 +189,25 @@
                   <div class="status-line">
                     <span>Trạng thái:</span>
                     <b id="detailStatusText">---</b>
+                  </div>
+
+                  <div class="status-dates-grid mt-3 pt-3 border-top">
+                    <div class="status-line mb-2">
+                        <span>Ngày đặt lịch:</span>
+                        <b id="heroBookingDate">---</b>
+                    </div>
+                    <div class="status-line mb-2">
+                        <span>Ngày nhận:</span>
+                        <b id="heroReceivedDate">---</b>
+                    </div>
+                    <div class="status-line mb-2">
+                        <span>Ngày bắt đầu:</span>
+                        <b id="heroStartedDate">---</b>
+                    </div>
+                    <div class="status-line mb-0">
+                        <span>Ngày hoàn thành:</span>
+                        <b id="heroCompletedDate">---</b>
+                    </div>
                   </div>
                 </div>
               </article>
