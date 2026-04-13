@@ -1264,6 +1264,11 @@ function calculateDomesticQuote(payload, options = {}) {
     itemType: payload.loai_hang || payload.itemType || "thuong",
     itemName: payload.ten_hang || payload.itemName || "",
     weight: toPositiveNumber(payload.can_nang || payload.weight),
+    totalWeight: toPositiveNumber(
+      payload.tong_can_nang ||
+        payload.totalWeight ||
+        payload.trong_luong_hang,
+    ),
     quantity: Math.max(
       1,
       Math.round(toPositiveNumber(payload.so_luong || payload.quantity) || 1),
@@ -1374,8 +1379,12 @@ function calculateDomesticQuote(payload, options = {}) {
           norm.toCity,
           norm.toDistrict,
         );
-  const actualWeightTotal = norm.weight * quantity;
-  const billableWeightPerPackage = Math.max(norm.weight, 0.1);
+  const actualWeightTotal =
+    norm.totalWeight > 0 ? norm.totalWeight : norm.weight * quantity;
+  const billableWeightPerPackage =
+    norm.totalWeight > 0 && quantity > 0
+      ? Math.max(actualWeightTotal / quantity, 0.1)
+      : Math.max(norm.weight, 0.1);
   const billableWeight = Math.max(actualWeightTotal, 0.1);
   const normalizedItemType = normalizeItemTypeKey(norm.itemType);
   const goodsFixedFee = config.goodsTypeFee[normalizedItemType] || 0;

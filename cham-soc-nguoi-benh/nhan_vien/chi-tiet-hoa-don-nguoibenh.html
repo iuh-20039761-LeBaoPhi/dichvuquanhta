@@ -1850,19 +1850,16 @@
 
 			function findAuthUser() {
 				const { sodienthoai, password } = app.params;
+				const matched = app.$nguoidung.find(r => String(r.sodienthoai || '') === sodienthoai && String(r.matkhau || r.mat_khau || r.password || '') === password);
+				if (!matched || !app.$datlich_mevabe) return null;
 
-				// Tìm user trong bảng nguoidung theo SĐT và mật khẩu
-				const matched = app.$nguoidung.find((row) => (
-					String(row.sodienthoai || '') === sodienthoai
-					&& String(row.matkhau || row.mat_khau || row.password || '') === password
-				));
-				if (!matched) return null;
+				const ord = app.$datlich_mevabe;
+				const isProvider = String(matched.id_dichvu || '').split(',').map(s => s.trim()).includes('2');
+				const sdt_url = sodienthoai, sdt_kh = String(ord.sdtkhachhang || ''), sdt_ncc = String(ord.sdtncc || '');
 
-				// Xác định role dựa vào id_dichvu:
-				// Nếu id_dichvu chứa '1' → nhà cung cấp (staff), ngược lại → khách hàng (customer)
-				const idDichvuList = String(matched.id_dichvu || '').split(',').map(s => s.trim());
-				const isProvider = idDichvuList.includes('2');
-				return { role: isProvider ? 'staff' : 'customer', $user: matched };
+				if (sdt_url === sdt_kh) return { role: 'customer', $user: matched };
+				if (sdt_url !== sdt_kh && isProvider && (sdt_url === sdt_ncc || !sdt_ncc)) return { role: 'staff', $user: matched };
+				return null;
 			}
 
 			async function applyAutoOrderStatusRules($datlich_nguoibenh) {

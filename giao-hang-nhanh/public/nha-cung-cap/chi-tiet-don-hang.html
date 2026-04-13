@@ -11,9 +11,6 @@
         currentParams.forEach((value, key) => {
           target.searchParams.set(key, value);
         });
-        if (!target.searchParams.has("viewer")) {
-          target.searchParams.set("viewer", "shipper");
-        }
         window.location.replace(target.toString());
       })();
     </script>

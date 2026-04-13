@@ -1,0 +1,46 @@
+[
+  {
+    "id": "USR-001",
+    "name": "Nguyen Hoang Minh",
+    "phone": "0903123456",
+    "email": "minh.admin@globalcare.vn",
+    "region": "TP. HCM",
+    "role": "admin",
+    "status": "active",
+    "note": "Quan ly van hanh tong va kiem soat bang gia.",
+    "created_at": "2026-04-01 08:00:00"
+  },
+  {
+    "id": "USR-002",
+    "name": "Tran Bao Chau",
+    "phone": "0911222333",
+    "email": "chau.kh@gmail.com",
+    "region": "Quan 7",
+    "role": "customer",
+    "status": "active",
+    "note": "Khach hang chuyen nha dinh ky.",
+    "created_at": "2026-04-03 10:20:00"
+  },
+  {
+    "id": "USR-003",
+    "name": "Le Quoc Dat",
+    "phone": "0935444555",
+    "email": "dat.provider@vanchuyen.vn",
+    "region": "Thu Duc",
+    "role": "provider",
+    "status": "active",
+    "note": "Doi xe tai 1.9 tan phu trach khu Dong.",
+    "created_at": "2026-04-04 09:45:00"
+  },
+  {
+    "id": "USR-004",
+    "name": "Pham Thu Ha",
+    "phone": "0988999777",
+    "email": "ha.office@abc.vn",
+    "region": "Binh Thanh",
+    "role": "customer",
+    "status": "pending",
+    "note": "Dang cho xac nhan hop dong chuyen van phong.",
+    "created_at": "2026-04-06 13:15:00"
+  }
+]
