@@ -447,7 +447,6 @@
         danhsachcongviec: data.work_items || "",
         danhsachhoachat: data.support_chemicals || "",
         ngaydat: data.booking_time || "",
-        ngaytao: data.created_at || new Date().toISOString(),
         diachi: data.address || "",
         lat_kh: data.lat_kh || "",
         lng_kh: data.lng_kh || "",
