@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$id = (int)($_POST['id'] ?? 0);
-$q = trim((string)($_POST['q'] ?? ''));
+$id = (int) ($_POST['id'] ?? 0);
+$q = trim((string) ($_POST['q'] ?? ''));
 
 $redirectWithMessage = static function (bool $ok, string $message) use ($q): void {
     $params = [
@@ -32,9 +32,9 @@ if ($id <= 0) {
     $redirectWithMessage(false, 'ID dich vu khong hop le.');
 }
 
-$result = admin_api_delete_table('dichvu_mevabe', $id);
+$result = admin_api_delete_table('dichvu_nguoibenh', $id);
 if (!($result['success'] ?? false)) {
-    $redirectWithMessage(false, (string)($result['message'] ?? 'Xoa dich vu that bai.'));
+    $redirectWithMessage(false, (string) ($result['message'] ?? 'Xoa dich vu that bai.'));
 }
 
-$redirectWithMessage(true, (string)($result['message'] ?? 'Xoa dich vu thanh cong.'));
+$redirectWithMessage(true, (string) ($result['message'] ?? 'Xoa dich vu thanh cong.'));

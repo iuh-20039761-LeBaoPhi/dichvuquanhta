@@ -105,7 +105,7 @@ if (!function_exists('dichvu_includes_to_text')) {
 if (!function_exists('get_dichvu_data')) {
     function get_dichvu_data(): array
     {
-        $result = admin_api_list_table('dichvu_mevabe');
+        $result = admin_api_list_table('dichvu_donvesinh');
         $rows = $result['rows'] ?? [];
 
         $normalized = array_map(static fn(array $row): array => dichvu_normalize_row($row), $rows);
@@ -148,9 +148,9 @@ if (!function_exists('dichvu_build_payload_from_post')) {
         $alt = trim((string) ($post['alt'] ?? ''));
         $description = trim((string) ($post['description'] ?? ''));
 
-        $includesTextRaw = str_replace("\r", '', (string)($post['includes_text'] ?? ''));
+        $includesTextRaw = str_replace("\r", '', (string) ($post['includes_text'] ?? ''));
         $includesLines = array_filter(array_map('trim', explode("\n", $includesTextRaw)), static fn(string $item): bool => $item !== '');
-        
+
         $includes = [];
         foreach ($includesLines as $line) {
             if (substr($line, -1) !== '.') {

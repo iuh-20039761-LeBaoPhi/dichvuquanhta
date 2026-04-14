@@ -6,16 +6,16 @@ require_once __DIR__ . '/admin_api_common.php';
 if (!function_exists('get_hoadon_data')) {
     function get_hoadon_data(): array
     {
-        $result = admin_api_list_table('datlich_mevabe');
+        $result = admin_api_list_table('datlich_donvesinh');
         $rows = is_array($result['rows'] ?? null) ? $result['rows'] : [];
 
         usort($rows, static function (array $a, array $b): int {
-            return (int)($b['id'] ?? 0) <=> (int)($a['id'] ?? 0);
+            return (int) ($b['id'] ?? 0) <=> (int) ($a['id'] ?? 0);
         });
 
         return [
             'rows' => $rows,
-            'error' => (string)($result['error'] ?? ''),
+            'error' => (string) ($result['error'] ?? ''),
         ];
     }
 }
@@ -29,11 +29,11 @@ if (!function_exists('get_hoadon_by_id')) {
 
         $result = get_hoadon_data();
         if (($result['error'] ?? '') !== '') {
-            return ['row' => null, 'error' => (string)$result['error']];
+            return ['row' => null, 'error' => (string) $result['error']];
         }
 
         foreach (($result['rows'] ?? []) as $row) {
-            if ((int)($row['id'] ?? 0) === $id) {
+            if ((int) ($row['id'] ?? 0) === $id) {
                 return ['row' => $row, 'error' => ''];
             }
         }
