@@ -103,6 +103,8 @@ window.initProviderOrders = function() {
     function showList(els) {
         const e = els || getElements();
         if (e.listContainer) e.listContainer.hidden = false;
+        const filterSec = document.getElementById('orderFilterSection');
+        if (filterSec) filterSec.style.display = ''; // Hiện lại thanh thống kê
         if (e.detailContainer) e.detailContainer.hidden = true;
     }
 
@@ -121,6 +123,7 @@ window.initProviderOrders = function() {
                 id_nhacungcap: currentProvider.id,
                 tenncc: currentProvider.name,
                 sdtncc: currentProvider.phone,
+                diachincc: currentProvider.address || currentProvider.diachi || '',
                 ngaynhan: nowStr 
             };
         } else if (actionType === 'start-order') {
@@ -156,7 +159,10 @@ window.initProviderOrders = function() {
                 // 1. Chuyển đổi View
                 const listSec = document.getElementById('providerListSection');
                 const detailSec = document.getElementById('providerDetailSection');
+                const filterSec = document.getElementById('orderFilterSection');
+
                 if (listSec) listSec.hidden = true;
+                if (filterSec) filterSec.style.display = 'none';
                 if (detailSec) detailSec.hidden = false;
 
                 // 2. Nạp Partial và Render
@@ -194,7 +200,10 @@ window.initProviderOrders = function() {
                 e.preventDefault();
                 const listSec = document.getElementById('providerListSection');
                 const detailSec = document.getElementById('providerDetailSection');
+                const filterSec = document.getElementById('orderFilterSection');
+
                 if (listSec) listSec.hidden = false;
+                if (filterSec) filterSec.style.display = '';
                 if (detailSec) detailSec.hidden = true;
                 return;
             }

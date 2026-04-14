@@ -69,16 +69,23 @@ window.mapPicker = (function () {
                     .then(r => r.json())
                     .then(data => {
                         const a = data.address || {};
+                        // Danh sách các "mảnh" địa chỉ theo thứ tự ưu tiên
                         const parts = [
-                            a.house_number || a.building,
-                            a.road || a.pedestrian,
-                            a.suburb || a.neighbourhood || a.quarter,
-                            a.city_district || a.ward || a.district,
+                            a.amenity || a.building || a.shop || a.office || a.tourism || a.leisure, // Tên tòa nhà/cửa hàng
+                            a.house_number,
+                            a.road || a.pedestrian || a.cycleway,
+                            a.suburb || a.neighbourhood || a.quarter || a.hamlet,
+                            a.ward || a.city_district || a.district,
                             a.city || a.town || a.village || a.province || a.state
                         ].filter(Boolean);
 
-                        const fullAddr = parts.join(', ') || data.display_name || `${lat}, ${lng}`;
-                        addr.value = fullAddr;
+                        // Nếu các mảnh ghép được quá ít, dùng display_name nhưng lọc bớt phần đuôi (Quốc gia, Mã bưu chính...)
+                        let fullAddr = parts.join(', ');
+                        if (parts.length < 3 && data.display_name) {
+                            fullAddr = data.display_name.split(', ').slice(0, 5).join(', ');
+                        }
+                        
+                        addr.value = fullAddr || `${lat}, ${lng}`;
                         addr.placeholder = 'Số nhà, tên đường, phường...';
                         if (marker) marker.bindPopup(`<small>${fullAddr}</small>`).openPopup();
                     })

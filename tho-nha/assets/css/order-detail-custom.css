@@ -25,86 +25,86 @@
 
 /* 1. Hero Section - Khu vực tổng quan Emerald */
 .invoice-hero {
-    background: #fff;
+    background: var(--primary-emerald);
     border-radius: 28px;
-    padding: 20px;
+    padding: 25px 25px 10px 25px;
     box-shadow: var(--premium-shadow);
     margin-bottom: 5px;
-    border: 1px solid var(--slate-100);
+    border: none;
     position: relative;
     overflow: hidden;
 }
 
 .invoice-hero::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 150px; height: 150px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
-    border-radius: 50%;
+    display: none;
 }
 
-.invoice-code-line {
+.invoice-hero-top {
     display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 25px;
+}
+
+.hero-left {
+    flex: 1;
+}
+
+.invoice-main-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    width: 100%;
     margin-bottom: 5px;
 }
 
-.invoice-code {
-    color: var(--slate-800);
-    font-size: 2.2rem;
+.invoice-title {
+    color: #ffffff;
+    font-size: 1.4rem;
     font-weight: 800;
     margin: 0;
     letter-spacing: -0.03em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .invoice-status-chip {
-    padding: 6px 14px;
+    padding: 8px 18px;
     border-radius: 50px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: #f1f5f9;
+    letter-spacing: 0.08em;
+    background: #ffffff;
     color: #475569;
     display: inline-flex;
     align-items: center;
-    border: 1px solid rgba(0,0,0,0.05);
-    margin-left: 10px;
-    vertical-align: middle;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.invoice-status-chip.status-new { background: #ecfdf5 !important; color: #059669 !important; border-color: #d1fae5 !important; }
-.invoice-status-chip.status-doing { background: #eff6ff !important; color: #2563eb !important; border-color: #dbeafe !important; }
-.invoice-status-chip.status-done { background: #f0fdf4 !important; color: #15803d !important; border-color: #dcfce7 !important; }
-.invoice-status-chip.status-canceled { background: #fef2f2 !important; color: #dc2626 !important; border-color: #fee2e2 !important; }
+.invoice-status-chip.status-new { background: #065f46 !important; color: #ffffff !important; border-color: #064e3b !important; }
+.invoice-status-chip.status-doing { background: #1d4ed8 !important; color: #ffffff !important; border-color: #1e40af !important; }
+.invoice-status-chip.status-done { background: #15803d !important; color: #ffffff !important; border-color: #166534 !important; }
+.invoice-status-chip.status-canceled { background: #b91c1c !important; color: #ffffff !important; border-color: #991b1b !important; }
 
 .invoice-service {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--deep-emerald);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: none; /* Ẩn theo yêu cầu user */
 }
 
 /* 2. Panels - Các bảng thông tin chi tiết */
 .invoice-panel {
-    background: #fff;
+    background: #f8fafc;
     border-radius: 24px;
-    padding: 20px;
+    padding: 22px;
     box-shadow: var(--soft-shadow);
-    border: 1px solid var(--slate-100);
-    height: 100%;
-    transition: transform 0.3s ease;
+    border: 1.5px solid #f1f5f9;
 }
 
 .invoice-panel-head {
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--slate-100);
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -113,7 +113,7 @@
 .invoice-panel-title {
     font-size: 1.05rem;
     font-weight: 800;
-    color: var(--slate-800);
+    color: #334155;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -121,87 +121,178 @@
 
 /* 3. Identity Cards - Thông tin khách & thợ */
 .identity-card {
-    background: #fff;
+    background: #ffffff;
     border-radius: 24px;
     padding: 20px;
     box-shadow: var(--soft-shadow);
-    border: 1px solid var(--slate-100);
+    border: 1.5px solid #f1f5f9;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.avatar-badge {
-    width: 60px;
-    height: 60px;
+.identity-main {
+    display: flex;
+    gap: 15px;
+    background: #f8fafc;
+    padding: 18px;
     border-radius: 18px;
+    border: 1px solid #f1f5f9;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.identity-main:hover {
+    background: #fff;
+    border-color: var(--primary-emerald);
+    box-shadow: var(--soft-shadow);
+}
+
+.avatar-badge, .avatar-badge-sm {
+    border-radius: 10px;
     background: linear-gradient(135deg, var(--primary-emerald), var(--deep-emerald));
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+}
+
+.avatar-badge {
+    width: 60px;
+    height: 60px;
     font-size: 1.2rem;
-    box-shadow: 0 8px 15px rgba(16, 185, 129, 0.2);
+}
+
+.avatar-badge-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.identity-card h3, .identity-card h4 {
+    margin: 0;
+}
+
+.identity-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--slate-100);
+}
+
+.identity-head .d-flex {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: nowrap;
+}
+
+.identity-head h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--slate-800);
+    white-space: nowrap;
 }
 
 .identity-name {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--slate-800);
-}
-
-/* KPI Cards Hero */
-.hero-kpi {
-    background: var(--slate-100);
-    padding: 15px;
-    border-radius: 20px;
-    border: 1px solid transparent;
-    transition: all 0.3s;
-}
-
-.hero-kpi-label {
-    font-size: 0.65rem;
-    font-weight: 800;
-    color: var(--slate-500);
-    letter-spacing: 0.1em;
-    margin-bottom: 5px;
-}
-
-.hero-kpi-value {
     font-size: 1.2rem;
     font-weight: 800;
     color: var(--slate-800);
     margin: 0;
 }
 
-/* Grids - Khít 5px */
-.invoice-main-grid, .identity-grid, .review-grid, .invoice-hero-kpis, .invoice-service-meta {
+.identity-contacts {
+    margin-top: 12px;
+}
+
+.identity-contacts p {
+    font-size: 0.9rem;
+    color: var(--slate-500);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.identity-contacts i {
+    color: var(--primary-emerald);
+    width: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.identity-contacts span {
+    color: var(--slate-800);
+    font-weight: 600;
+}
+
+/* KPI Cards Hero */
+.hero-kpi {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s;
+}
+
+.hero-kpi .hero-kpi-icon {
+    color: #ffffff !important;
+}
+
+.hero-kpi-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.hero-kpi-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.1em;
+    margin: 0; /* Xóa margin để cùng hàng icon */
+    text-transform: uppercase;
+}
+
+.hero-kpi-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.invoice-main-grid, .identity-grid, .review-grid {
     display: grid;
     gap: 5px;
     margin-bottom: 5px;
 }
 
+.invoice-hero-kpis {
+    display: grid;
+    gap: 5px;
+    margin-bottom: 0; /* Xóa margin đáy để khít form */
+}
+
 @media (min-width: 992px) {
-    .invoice-main-grid, .identity-grid, .review-grid {
+    .invoice-main-grid {
+        grid-template-columns: 1.5fr 1fr;
+    }
+    .identity-grid, .review-grid {
         grid-template-columns: 1fr 1fr;
     }
     .invoice-hero-kpis {
         grid-template-columns: repeat(3, 1fr);
     }
-}
-
-.invoice-service-meta {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    border-top: 1px dashed var(--slate-100);
-    padding-top: 10px;
-}
-
-.invoice-service-meta-item {
-    font-size: 0.85rem;
-    color: var(--slate-500);
-    display: flex;
-    justify-content: space-between;
 }
 
 /* Task List */
@@ -212,21 +303,16 @@
 }
 
 .task-list li {
-    padding: 10px 15px;
+    padding: 12px 18px;
     background: var(--slate-100);
-    border-radius: 12px;
-    margin-bottom: 5px;
+    border-radius: 14px;
+    margin-bottom: 8px;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-left: 4px solid var(--primary-emerald);
-}
-
-.task-list li::before {
-    content: '\f058';
-    font-family: 'Font Awesome 6 Free';
-    color: var(--primary-emerald);
+    gap: 12px;
+    border-left: 5px solid var(--primary-emerald);
+    font-size: 0.9rem;
 }
 
 /* Timeline & Progress */
@@ -260,41 +346,31 @@
     font-style: italic;
 }
 
-.time-box h4 {
-    font-size: 0.8rem;
-    font-weight: 800;
-    color: var(--slate-500);
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-.time-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px dashed var(--slate-100);
-    font-size: 0.85rem;
+.status-line {
+    margin-top: 10px;
+    font-size: 0.9rem;
 }
 
 /* Circular Progress Ring */
 .hero-progress-ring {
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
-    background: conic-gradient(var(--primary-emerald) 0%, #e2e8f0 0%);
+    background: conic-gradient(var(--primary-emerald) 0%, #334155 0%);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    border: 4px solid #1e293b;
 }
 
 .hero-progress-ring::before {
     content: '';
     position: absolute;
-    width: 60px;
-    height: 60px;
-    background: #fff;
+    width: 76px;
+    height: 76px;
+    background: #1e293b; /* Nền tối như hình mẫu */
     border-radius: 50%;
 }
 
@@ -303,124 +379,30 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    line-height: 1;
+    line-height: 1.1;
 }
 
 .hero-progress-content strong {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     font-weight: 800;
-    color: var(--slate-800);
+    color: #fff; /* Chữ trắng trên nền tối */
 }
 
 .hero-progress-content small {
     font-size: 0.55rem;
     font-weight: 700;
-    color: var(--slate-500);
+    color: #94a3b8; /* Màu xám xanh nhạt cho chữ phụ */
     text-transform: uppercase;
-}
-
-/* Review Cards */
-.review-card {
-    background: var(--slate-100);
-    border-radius: 20px;
-    padding: 15px;
-    border: 1px solid transparent;
-}
-
-.review-card-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--slate-200);
-}
-
-.review-card-head h4 {
-    font-size: 0.9rem;
-    font-weight: 800;
-    margin: 0;
-}
-
-.review-label {
-    font-size: 0.6rem;
-    font-weight: 800;
-    color: var(--slate-500);
-    margin-bottom: 4px;
-    text-transform: uppercase;
-}
-
-.review-value {
-    font-size: 0.85rem;
-    color: var(--slate-800);
-    margin-bottom: 15px;
-    line-height: 1.4;
-}
-
-/* Standalone navigation (Hidden in SPA) */
-.detail-nav {
-    display: none !important;
-}
-
-/* Hero layout */
-.invoice-hero-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    letter-spacing: 0.05em;
 }
 
 .hero-progress-group {
      display: flex;
      align-items: center;
-     gap: 15px;
+     gap: 20px;
 }
 
-/* 4. Action Buttons - Thiết kế lại để không bị đè CSS */
-.btn-emerald, .btn-cancel {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 18px;
-    border-radius: 14px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid transparent;
-    text-decoration: none !important;
-    gap: 8px;
-    white-space: nowrap;
-    height: auto !important;
-    line-height: normal !important;
-}
-
-/* Nút Xanh Emerald (Chấp nhận, Báo giá, Hoàn thành) */
-.btn-emerald {
-    background: var(--primary-emerald);
-    color: #fff !important;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-}
-
-.btn-emerald:hover {
-    background: var(--deep-emerald);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
-}
-
-/* Nút Hủy Đơn (Đỏ nhạt) */
-.btn-cancel {
-    background: #fff !important;
-    color: #ef4444 !important;
-    border: 2px solid #fee2e2 !important;
-}
-
-.btn-cancel:hover {
-    background: #fef2f2 !important;
-    border-color: #fecaca !important;
-    transform: translateY(-2px);
-}
-
-/* Action Area adjustment */
+/* Action Buttons */
 #actionArea {
     min-width: 120px;
     display: flex;
@@ -428,88 +410,346 @@
     align-items: center;
 }
 
-/* 7. Pricing Input Box - Hiện đại và chuyên nghiệp */
-.pricing-input-box {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 12px 15px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    min-width: 260px;
-    animation: slideInRight 0.4s ease-out;
+.btn-emerald, .btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 22px;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+    gap: 8px;
 }
 
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
+.btn-emerald {
+    background: #1d4ed8;
+    color: #fff !important;
+    border-color: #1e40af;
+    box-shadow: 0 10px 18px rgba(30, 64, 175, 0.28);
 }
 
-.pricing-title {
-    font-size: 0.75rem;
+.btn-cancel {
+    background: #fff !important;
+    color: #ef4444 !important;
+    border-color: #fee2e2 !important;
+    box-shadow: 0 8px 16px rgba(220, 38, 38, 0.12);
+}
+
+.btn-emerald:hover,
+.btn-cancel:hover {
+    transform: translateY(-1px);
+}
+
+.btn-action-accept {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-color: #1e40af;
+    box-shadow: 0 10px 18px rgba(30, 64, 175, 0.3);
+}
+
+.btn-action-start {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-color: #b45309;
+    box-shadow: 0 10px 18px rgba(180, 83, 9, 0.3);
+}
+
+.btn-action-complete {
+    background: linear-gradient(135deg, #0f172a, #334155);
+    border-color: #475569;
+    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.35);
+}
+
+.btn-action-accept:hover {
+    box-shadow: 0 12px 22px rgba(30, 64, 175, 0.38);
+}
+
+.btn-action-start:hover {
+    box-shadow: 0 12px 22px rgba(180, 83, 9, 0.4);
+}
+
+.btn-action-complete:hover {
+    box-shadow: 0 12px 22px rgba(15, 23, 42, 0.42);
+}
+
+/* Custom Meta V2 & Time Items */
+.invoice-service-meta-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--slate-100);
+}
+
+.meta-row-v2 {
+    display: flex;
+    align-items: center;
+    width: 320px;
+    padding: 3px 0;
+}
+
+.meta-label {
+    min-width: 150px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+}
+
+.meta-value {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #ffffff;
+    font-weight: 800;
+    text-align: right;
+}
+
+.time-item-v2 {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--slate-100);
+    font-size: 0.85rem;
+}
+
+.highlight-kpi {
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Task Note Split View */
+.task-note-split-view {
+    display: flex;
+    align-items: stretch;
+    gap: 25px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 20px;
+    margin-top: 20px;
+    border: 1px solid #f1f5f9;
+}
+
+.task-note-col {
+    flex: 1;
+}
+
+.task-note-divider {
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.task-note-label {
+    font-size: 0.7rem;
     font-weight: 800;
     color: var(--slate-500);
     margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
-.pricing-title i {
-    color: #f59e0b; /* Amber icon */
-}
-
-.pricing-group {
-    display: flex;
-    gap: 8px;
-}
-
-.pricing-field {
-    flex-grow: 1;
-    border: 2px solid #f1f5f9;
-    border-radius: 10px;
-    padding: 6px 12px;
+.task-note-value {
     font-size: 0.9rem;
-    font-weight: 700;
     color: var(--slate-800);
-    transition: all 0.2s;
-    width: 100%;
+    font-weight: 600;
+    line-height: 1.6;
 }
 
-.pricing-field:focus {
-    outline: none;
-    border-color: var(--primary-emerald);
-    background: #f0fdf4;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+/* Status Blocks */
+.status-block {
+    background: #f8fafc;
+    border-radius: 18px;
+    padding: 18px 22px;
+    border: 1px solid #f1f5f9;
+    margin-bottom: 15px;
 }
 
-.pricing-submit {
-    background: var(--primary-emerald);
-    color: #fff !important;
+.time-box-title {
+    font-size: 0.75rem;
+    font-weight: 800 !important;
+    color: var(--slate-500);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+    display: block;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+.header-col-left {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-total-center {
+    position: absolute;
+    left: 50%;
+    top: 25px; /* Khớp với padding của hero */
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    z-index: 10;
+}
+
+/* Ẩn khi màn hình quá nhỏ để tránh đè logo/nút */
+@media (max-width: 991px) {
+    .header-total-center {
+        position: static;
+        transform: none;
+        margin: 20px 0;
+    }
+}
+
+.header-total-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.header-total-formula {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 2px;
+}
+
+.header-total-amount {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    background: transparent;
+    padding: 4px 10px;
     border: none;
-    border-radius: 10px;
-    padding: 0 15px;
-    font-weight: 700;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
+    box-shadow: none;
     white-space: nowrap;
 }
 
-.pricing-submit:hover {
-    background: var(--deep-emerald);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+.header-actions-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 15px; /* Hạ thấp nút xuống một chút */
 }
 
-.pricing-tip {
-    font-size: 0.65rem;
-    color: var(--slate-500);
-    margin-top: 6px;
+.invoice-hero-kpis .invoice-service-meta-v2 {
+    margin-top: 15px;
+    padding-top: 0;
+    border: none;
 }
 
-.pricing-tip b {
-    color: var(--deep-emerald);
-    font-weight: 800;
+.invoice-hero-kpis .meta-row-v2 {
+    width: 100% !important;
+    justify-content: space-between;
+}
+
+/* Review Cards */
+.review-card {
+    background: var(--slate-100);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.review-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--slate-200);
+}
+
+.review-card-head h4 { font-size: 1rem; font-weight: 800; margin: 0; }
+.review-label { font-size: 0.65rem; font-weight: 800; color: var(--slate-500); text-transform: uppercase; margin-bottom: 5px; }
+.review-value { font-size: 0.9rem; color: var(--slate-800); line-height: 1.5; margin-bottom: 15px; }
+
+/* Navigation */
+.detail-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 0;
+    margin-bottom: 20px;
+}
+
+.back-btn {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.back-btn:hover { background: var(--slate-100); }
+.nav-title { font-size: 1.1rem; font-weight: 800; color: var(--slate-800); }
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .invoice-main-grid, .identity-grid, .review-grid {
+        grid-template-columns: 1fr;
+    }
+    .invoice-hero-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .invoice-main-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .hero-progress-group {
+        width: 100%;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .meta-row-v2 {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 767px) {
+    .task-note-split-view {
+        flex-direction: column;
+    }
+    .task-note-divider {
+        width: 100%;
+        height: 1px;
+    }
+    /* Kéo dài các thẻ nhỏ ra sát mép hơn cho điện thoại */
+    .invoice-hero {
+        padding: 20px 8px 15px 8px !important;
+        border-radius: 20px !important;
+    }
+    .hero-kpi {
+        padding: 15px 12px !important;
+        border-radius: 15px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    .invoice-panel, .identity-card {
+        padding: 18px 12px !important;
+        border-radius: 18px !important;
+        background: #fff !important; /* Đảm bảo đồng nhất màu trắng */
+    }
+    .invoice-panel-body, .identity-main {
+        padding: 15px 10px !important;
+        border-radius: 15px !important;
+    }
+    .invoice-hero-top {
+        margin-bottom: 25px !important;
+    }
+    .header-total-amount {
+        font-size: 1.6rem !important;
+    }
 }

@@ -79,24 +79,30 @@ const ThoNhaOrderUI = (() => {
 
         let rows = '';
         if (role === 'provider') {
-            rows += `<div class="mobile-row"><span>SĐT khách</span><strong>${order.customer.phone}</strong></div>`;
-            rows += `<div class="mobile-row"><span>Dịch vụ</span><strong>${order.service}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-user me-1"></i>SĐT khách</span><strong>${order.customer.phone}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-wrench me-1"></i>Dịch vụ</span><strong>${order.service}</strong></div>`;
         } else {
-            rows += `<div class="mobile-row"><span>Ngày đặt</span><strong>${utils.formatDateTime(order.createdAt)}</strong></div>`;
-            rows += `<div class="mobile-row"><span>Thợ thầu</span><strong>${order.provider.company || order.provider.name}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-calendar-day me-1"></i>Ngày đặt</span><strong>${utils.formatDate(order.createdAt)}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-clock me-1"></i>Thời gian</span><strong>${utils.formatTime(order.createdAt)}</strong></div>`;
+            const providerDisplay = order.provider.id ? (order.provider.company || order.provider.name) : '<span class="text-warning">Chờ nhận</span>';
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-user-tie me-1"></i>Nhà cung cấp</span><strong>${providerDisplay}</strong></div>`;
         }
 
         return `
             <article class="mobile-card">
                 <div class="mobile-card-head">
-                    <div>
+                    <div style="flex: 1; padding-right: 10px;">
                         <h4 class="mobile-title">${utils.escapeHtml(title)}</h4>
-                        <p class="mobile-code">${subTitle}</p>
+                        <p class="mobile-code">#${order.orderCode}</p>
                     </div>
-                    ${statusBadge}
+                    <div>${statusBadge}</div>
                 </div>
                 ${rows}
-                <div class="mobile-actions">${utils.buildDetailActionButton(order.id)}</div>
+                <div class="mobile-actions">
+                    <button class="btn-view-modern" data-action="view-detail" data-id="${order.id}">
+                        <i class="fa-regular fa-eye me-2"></i>Xem chi tiết
+                    </button>
+                </div>
             </article>
         `;
     }
@@ -110,11 +116,11 @@ const ThoNhaOrderUI = (() => {
         if (!orders.length) {
             if (elements.body) elements.body.innerHTML = '';
             if (elements.mobile) elements.mobile.innerHTML = '';
-            if (elements.empty) elements.empty.hidden = false;
+            if (elements.empty) elements.empty.style.display = 'block';
             return;
         }
 
-        if (elements.empty) elements.empty.hidden = true;
+        if (elements.empty) elements.empty.style.display = 'none';
         if (elements.body) elements.body.innerHTML = orders.map(o => buildRowHtml(o, role)).join('');
         if (elements.mobile) elements.mobile.innerHTML = orders.map(o => buildCardHtml(o, role)).join('');
     }

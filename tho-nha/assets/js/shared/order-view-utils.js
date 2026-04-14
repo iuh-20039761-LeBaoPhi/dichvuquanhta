@@ -298,12 +298,12 @@
      */
     function buildDetailActionButton(orderId, label) {
         var buttonLabel = label || 'Xem chi tiết';
-        var url = 'chi-tiet-hoa-don-tho-nha.html?id=' + orderId;
+        var url = 'chi-tiet-don-hang.html?id=' + orderId;
         
         // Nếu đang ở trong thư mục sâu (như pages/admin), cần điều chỉnh đường dẫn
         var depth = window.location.pathname.split('/').length;
         if (depth > 5) { // Ví dụ: /tho-nha/pages/admin/quan-tri.html -> length là 6
-            url = '../../chi-tiet-hoa-don-tho-nha.html?id=' + orderId;
+            url = '../../chi-tiet-don-hang.html?id=' + orderId;
         }
 
         return '<a href="' + url + '" class="btn-detail" data-action="view-detail" data-id="' + escapeHtml(orderId) + '" style="text-decoration:none;">' + escapeHtml(buttonLabel) + '</a>';

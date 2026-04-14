@@ -840,7 +840,7 @@ function _bdBuildKrudBookingRecord(pendingData) {
         quangduongkm: _bdTravelDistKm ? Number(_bdTravelDistKm.toFixed(2)) : null,
         trangthaidichuyen: _bdTravelStatus === 'ok' ? 'calculated' : 'waiting_provider',
         phikhaosat: surveyFee,
-        tongtien: basePrice + surveyFee + _bdToMoney(_bdTravelAmt), 
+        tongtien: basePrice + _bdToMoney(_bdTravelAmt), 
         soluongmedia: mediaStats.total,
         soluonganh: mediaStats.images,
         soluongvideo: mediaStats.videos,
