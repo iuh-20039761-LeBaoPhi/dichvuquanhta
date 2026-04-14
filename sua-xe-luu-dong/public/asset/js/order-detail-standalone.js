@@ -595,7 +595,7 @@
 
     var idDichvu = String(user.id_dichvu || "").trim();
     var serviceIds = idDichvu.split(",").map(function(s) { return s.trim(); });
-    var isProvider = serviceIds.indexOf("11") !== -1;
+    var isProvider = serviceIds.indexOf("8") !== -1;
 
     return {
       role: isProvider ? "provider" : "customer",

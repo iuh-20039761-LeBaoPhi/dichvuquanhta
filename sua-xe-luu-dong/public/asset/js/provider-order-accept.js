@@ -92,7 +92,7 @@
 
     var idDichvu = String(user.id_dichvu || "").trim();
     var serviceIds = idDichvu.split(",").map((s) => s.trim());
-    if (serviceIds.indexOf("11") === -1) {
+    if (serviceIds.indexOf("8") === -1) {
       throw new Error("Tài khoản của bạn không có quyền nhận đơn.");
     }
 
@@ -306,10 +306,11 @@
     });
   }
 
+  window.ProviderOrderAccept = {
+    handleAcceptOrder: handleAcceptOrder,
+  };
+
   document.addEventListener("DOMContentLoaded", function () {
-    window.ProviderOrderAccept = {
-      handleAcceptOrder: handleAcceptOrder,
-    };
     bindAcceptOrderAction();
   });
 })();

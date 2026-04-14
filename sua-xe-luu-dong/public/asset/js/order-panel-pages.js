@@ -10,7 +10,10 @@
   var PROVIDER_LOGIN_PAGE = "../../public/dang-nhap.html?service=suaxe";
   var ADMIN_LOGIN_PAGE = "dang-nhap-admin.html";
   var PROVIDER_DASHBOARD_PAGE = "../nha-cung-cap.html";
-  var shared = window.SharedOrderUtils || {};
+  var getShared = function () {
+    return window.SharedOrderUtils || {};
+  };
+  var shared = getShared();
   var REVIEW_UPLOAD_ENDPOINT = "../public/upload-review-media.php";
   var REVIEW_FIELD_MAP = {
     customer: {
@@ -1027,6 +1030,110 @@
       .join("");
   }
 
+  function setAcceptButtonLoading(button, isLoading) {
+    if (!button) return;
+    if (isLoading) {
+      if (!button.dataset.originalText) {
+        button.dataset.originalText = button.textContent || "Nhận đơn";
+      }
+      button.disabled = true;
+      button.textContent = "Đang nhận...";
+      return;
+    }
+
+    button.disabled = false;
+    button.textContent = button.dataset.originalText || "Nhận đơn";
+  }
+
+  function setActionButtonLoading(
+    button,
+    isLoading,
+    fallbackText,
+    loadingText,
+  ) {
+    if (!button) return;
+    if (isLoading) {
+      if (!button.dataset.originalText) {
+        button.dataset.originalText = button.textContent || fallbackText;
+      }
+      button.disabled = true;
+      button.textContent = loadingText;
+      return;
+    }
+
+    button.disabled = false;
+    button.textContent = button.dataset.originalText || fallbackText;
+  }
+
+  function handleAcceptOrder(orderId) {
+    if (typeof window.ProviderOrderAccept !== "object") {
+      return Promise.reject(
+        new Error("Chưa sẵn sàng chức năng nhận đơn. Vui lòng tải lại trang."),
+      );
+    }
+    if (typeof window.ProviderOrderAccept.handleAcceptOrder !== "function") {
+      return Promise.reject(
+        new Error("Chức năng nhận đơn không khả dụng. Vui lòng tải lại trang."),
+      );
+    }
+    return window.ProviderOrderAccept.handleAcceptOrder(orderId);
+  }
+
+  function handleCompleteOrder(orderId, order) {
+    var sh = getShared();
+    if (typeof sh.updateOrder === "function") {
+      var transportFee = toNumber(order && order.transportFee);
+      return sh.updateOrder(BOOKING_TABLE, orderId, {
+        ngayhoanthanh: new Date().toISOString(),
+        phikhaosat: 0,
+        tongtien: transportFee,
+      });
+    }
+    return Promise.reject(
+      new Error("Chưa sẵn sàng chức năng hoàn thành đơn."),
+    );
+  }
+
+  function handleStartOrder(orderId) {
+    var sh = getShared();
+    if (typeof sh.startProviderOrder === "function") {
+      return sh.startProviderOrder(orderId, BOOKING_TABLE);
+    }
+    if (typeof sh.updateOrder === "function") {
+      return sh.updateOrder(BOOKING_TABLE, orderId, {
+        ngaybatdau: new Date().toISOString(),
+      });
+    }
+    return Promise.reject(new Error("Chưa sẵn sàng chức năng bắt đầu đơn."));
+  }
+
+  function handleSurveyCompleteOrder(orderId, order) {
+    var sh = getShared();
+    if (typeof sh.updateOrder !== "function") {
+      return Promise.reject(
+        new Error("Chưa sẵn sàng chức năng hoàn thành đơn."),
+      );
+    }
+    var transportFee = toNumber(order && order.transportFee);
+    var surveyFee = toNumber(order && order.surchargeFee);
+    return sh.updateOrder(BOOKING_TABLE, orderId, {
+      dichvu: "Khảo sát",
+      ngayhoanthanh: new Date().toISOString(),
+      tongtien: surveyFee + transportFee,
+      trangthaithanhtoan: "Paid",
+    });
+  }
+
+  function handleCancelOrder(orderId) {
+    var sh = getShared();
+    if (typeof sh.updateOrder !== "function") {
+      return Promise.reject(new Error("Chưa sẵn sàng chức năng hủy đơn."));
+    }
+    return sh.updateOrder(BOOKING_TABLE, orderId, {
+      ngayhuy: new Date().toISOString(),
+    });
+  }
+
   function initListPage(role, sourceOrders) {
     var providerSource =
       role === "provider" && sourceOrders && !Array.isArray(sourceOrders)
@@ -1079,119 +1186,6 @@
 
     renderStats(statsOrders, role);
 
-    function setAcceptButtonLoading(button, isLoading) {
-      if (!button) return;
-      if (isLoading) {
-        if (!button.dataset.originalText) {
-          button.dataset.originalText = button.textContent || "Nhận đơn";
-        }
-        button.disabled = true;
-        button.textContent = "Đang nhận...";
-        return;
-      }
-
-      button.disabled = false;
-      button.textContent = button.dataset.originalText || "Nhận đơn";
-    }
-
-    function setActionButtonLoading(
-      button,
-      isLoading,
-      fallbackText,
-      loadingText,
-    ) {
-      if (!button) return;
-      if (isLoading) {
-        if (!button.dataset.originalText) {
-          button.dataset.originalText = button.textContent || fallbackText;
-        }
-        button.disabled = true;
-        button.textContent = loadingText;
-        return;
-      }
-
-      button.disabled = false;
-      button.textContent = button.dataset.originalText || fallbackText;
-    }
-
-    function handleAcceptOrder(orderId) {
-      if (
-        window.ProviderOrderAccept &&
-        typeof window.ProviderOrderAccept.handleAcceptOrder === "function"
-      ) {
-        return window.ProviderOrderAccept.handleAcceptOrder(orderId);
-      }
-
-      return Promise.reject(
-        new Error("Chưa sẵn sàng chức năng nhận đơn. Vui lòng tải lại trang."),
-      );
-    }
-
-    function handleCompleteOrder(orderId, order) {
-      if (typeof shared.updateOrder === "function") {
-        var transportFee = toNumber(order && order.transportFee);
-        return shared.updateOrder(BOOKING_TABLE, orderId, {
-          ngayhoanthanh: new Date().toISOString(),
-          phikhaosat: 0,
-          tongtien: transportFee,
-        });
-      }
-      return Promise.reject(
-        new Error("Chưa sẵn sàng chức năng hoàn thành đơn."),
-      );
-    }
-
-    function handleStartOrder(orderId) {
-      if (typeof shared.startProviderOrder === "function") {
-        return shared.startProviderOrder(orderId, BOOKING_TABLE);
-      }
-      if (typeof shared.updateOrder === "function") {
-        return shared.updateOrder(BOOKING_TABLE, orderId, {
-          ngaybatdau: new Date().toISOString(),
-        });
-      }
-      return Promise.reject(new Error("Chưa sẵn sàng chức năng bắt đầu đơn."));
-    }
-
-    function handleSurveyCompleteOrder(orderId, order) {
-      if (typeof shared.updateOrder !== "function") {
-        return Promise.reject(
-          new Error("Chưa sẵn sàng chức năng hoàn thành đơn."),
-        );
-      }
-      var transportFee = toNumber(order && order.transportFee);
-      var surveyFee = toNumber(order && order.surchargeFee);
-      return shared.updateOrder(BOOKING_TABLE, orderId, {
-        dichvu: "Khảo sát",
-        ngayhoanthanh: new Date().toISOString(),
-        tongtien: surveyFee + transportFee,
-        trangthaithanhtoan: "Paid",
-      });
-    }
-
-    function handleCancelOrder(orderId) {
-      if (typeof shared.updateOrder !== "function") {
-        return Promise.reject(new Error("Chưa sẵn sàng chức năng hủy đơn."));
-      }
-      return shared.updateOrder(BOOKING_TABLE, orderId, {
-        ngayhuy: new Date().toISOString(),
-      });
-    }
-
-    function patchOrderLocally(orderId, updater) {
-      function patchList(list) {
-        (list || []).forEach(function (item) {
-          if (Number(item.id) !== Number(orderId)) return;
-          updater(item);
-        });
-      }
-
-      patchList(state.all);
-      patchList(state.filtered);
-      patchList(assignedState.all);
-      patchList(assignedState.filtered);
-      patchList(statsOrders);
-    }
 
     function refreshProviderOrders() {
       if (role !== "provider") {
@@ -1283,34 +1277,6 @@
             order.id +
             '">Xem chi tiết</a>';
 
-          var statusValue = String(order.status || "");
-          if (statusValue === "accepted") {
-            actionHtml =
-              '<div class="d-flex gap-2 flex-wrap">' +
-              '<button type="button" class="btn btn-sm btn-primary btn-start-order" data-order-id="' +
-              order.id +
-              '">Bắt đầu</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
-              order.id +
-              '">Xem chi tiết</a>' +
-              "</div>";
-          }
-
-          if (statusValue === "processing") {
-            actionHtml =
-              '<div class="d-flex gap-2 flex-wrap">' +
-              '<button type="button" class="btn btn-sm btn-success btn-complete-order" data-order-id="' +
-              order.id +
-              '">Hoàn thành</button>' +
-              '<button type="button" class="btn btn-sm btn-outline-success btn-survey-complete-order" data-order-id="' +
-              order.id +
-              '">Khảo sát xong</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
-              order.id +
-              '">Xem chi tiết</a>' +
-              "</div>";
-          }
-
           return (
             "<tr>" +
             '<td data-label="Mã đơn" class="order-code">' +
@@ -1368,34 +1334,6 @@
             '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
             order.id +
             '">Xem chi tiết</a>';
-
-          var canCancelCustomerOrder =
-            role === "customer" &&
-            !hasDateValue(order && order.ngaynhan) &&
-            String(order.status || "") !== "completed" &&
-            String(order.status || "") !== "canceled";
-
-          if (role === "provider" && String(order.status) === "pending") {
-            actionHtml =
-              '<div class="d-flex gap-2 flex-wrap">' +
-              '<button type="button" class="btn btn-sm btn-primary btn-accept-order" data-order-id="' +
-              order.id +
-              '">Nhận đơn</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
-              order.id +
-              '">Xem chi tiết</a>' +
-              "</div>";
-          } else if (canCancelCustomerOrder) {
-            actionHtml =
-              '<div class="d-flex gap-2 flex-wrap">' +
-              '<button type="button" class="btn btn-sm btn-outline-danger btn-cancel-order" data-order-id="' +
-              order.id +
-              '">Hủy đơn</button>' +
-              '<a class="btn btn-sm btn-outline-secondary btn-view-detail" href="chi-tiet-don-hang.html?id=' +
-              order.id +
-              '">Xem chi tiết</a>' +
-              "</div>";
-          }
 
           return (
             "<tr>" +
@@ -1662,197 +1600,7 @@
       });
     }
 
-    if (tbody && role === "provider") {
-      tbody.addEventListener("click", function (event) {
-        var button = event.target.closest(".btn-accept-order");
-        if (!button) return;
-
-        var orderId = Number(button.getAttribute("data-order-id"));
-        if (!Number.isFinite(orderId) || orderId <= 0) {
-          window.alert("Không xác định được mã đơn hàng.");
-          return;
-        }
-
-        setAcceptButtonLoading(button, true);
-        handleAcceptOrder(orderId)
-          .then(function () {
-            return refreshProviderOrders();
-          })
-          .catch(function (error) {
-            window.alert(
-              (error && error.message) ||
-                "Không thể nhận đơn. Vui lòng thử lại.",
-            );
-          })
-          .finally(function () {
-            setAcceptButtonLoading(button, false);
-          });
-      });
-    }
-
-    if (tbody && role === "customer") {
-      tbody.addEventListener("click", function (event) {
-        var button = event.target.closest(".btn-cancel-order");
-        if (!button) return;
-
-        var orderId = Number(button.getAttribute("data-order-id"));
-        if (!Number.isFinite(orderId) || orderId <= 0) {
-          window.alert("Không xác định được mã đơn hàng.");
-          return;
-        }
-
-        if (!window.confirm("Bạn có chắc muốn hủy đơn này?")) {
-          return;
-        }
-
-        setActionButtonLoading(button, true, "Hủy đơn", "Đang hủy...");
-        handleCancelOrder(orderId)
-          .then(function () {
-            var canceledAt = new Date().toISOString();
-            patchOrderLocally(orderId, function (order) {
-              order.status = "canceled";
-              order.updatedAt = canceledAt;
-              if (order.raw && typeof order.raw === "object") {
-                order.raw.ngayhuy = canceledAt;
-              }
-            });
-
-            applyFilter();
-            renderStats(state.all, role);
-          })
-          .catch(function (error) {
-            window.alert(
-              (error && error.message) ||
-                "Không thể hủy đơn. Vui lòng thử lại.",
-            );
-          })
-          .finally(function () {
-            setActionButtonLoading(button, false, "Hủy đơn", "Đang hủy...");
-          });
-      });
-    }
-
-    if (assignedTbody && role === "provider") {
-      assignedTbody.addEventListener("click", function (event) {
-        var startButton = event.target.closest(".btn-start-order");
-        if (startButton) {
-          var startOrderId = Number(startButton.getAttribute("data-order-id"));
-          if (!Number.isFinite(startOrderId) || startOrderId <= 0) {
-            window.alert("Không xác định được mã đơn hàng.");
-            return;
-          }
-
-          setActionButtonLoading(
-            startButton,
-            true,
-            "Bắt đầu",
-            "Đang cập nhật...",
-          );
-          handleStartOrder(startOrderId)
-            .then(function () {
-              return refreshProviderOrders();
-            })
-            .catch(function (error) {
-              window.alert(
-                (error && error.message) ||
-                  "Không thể bắt đầu xử lý đơn. Vui lòng thử lại.",
-              );
-            })
-            .finally(function () {
-              setActionButtonLoading(
-                startButton,
-                false,
-                "Bắt đầu",
-                "Đang cập nhật...",
-              );
-            });
-
-          return;
-        }
-
-        var surveyButton = event.target.closest(".btn-survey-complete-order");
-        if (surveyButton) {
-          var surveyOrderId = Number(surveyButton.getAttribute("data-order-id"));
-          if (!Number.isFinite(surveyOrderId) || surveyOrderId <= 0) {
-            window.alert("Không xác định được mã đơn hàng.");
-            return;
-          }
-
-          var o = assignedState.all.find(function (item) {
-            return Number(item.id) === surveyOrderId;
-          });
-
-          if (!window.confirm("Xác nhận hoàn thành khảo sát cho đơn này?")) {
-            return;
-          }
-
-          setActionButtonLoading(
-            surveyButton,
-            true,
-            "Hoàn thành khảo sát",
-            "Đang cập nhật...",
-          );
-          handleSurveyCompleteOrder(surveyOrderId, o)
-            .then(function () {
-              return refreshProviderOrders();
-            })
-            .catch(function (error) {
-              window.alert(
-                (error && error.message) ||
-                  "Không thể cập nhật hoàn thành. Vui lòng thử lại.",
-              );
-            })
-            .finally(function () {
-              setActionButtonLoading(
-                surveyButton,
-                false,
-                "Hoàn thành khảo sát",
-                "Đang cập nhật...",
-              );
-            });
-
-          return;
-        }
-
-        var button = event.target.closest(".btn-complete-order");
-        if (!button) return;
-
-        var orderId = Number(button.getAttribute("data-order-id"));
-        if (!Number.isFinite(orderId) || orderId <= 0) {
-          window.alert("Không xác định được mã đơn hàng.");
-          return;
-        }
-
-        if (!window.confirm("Xác nhận hoàn thành đơn này?")) {
-          return;
-        }
-
-        var order = (assignedState.all || []).find(function (it) {
-          return it.id === orderId;
-        }) || (overviewState.all || []).find(function (it) {
-          return it.id === orderId;
-        });
-
-        handleCompleteOrder(orderId, order)
-          .then(function () {
-            return refreshProviderOrders();
-          })
-          .catch(function (error) {
-            window.alert(
-              (error && error.message) ||
-                "Không thể cập nhật hoàn thành. Vui lòng thử lại.",
-            );
-          })
-          .finally(function () {
-            setActionButtonLoading(
-              button,
-              false,
-              "Hoàn thành",
-              "Đang cập nhật...",
-            );
-          });
-      });
-    }
+    // Listeners relocated to Detail Page
 
     renderRows();
     renderAssignedRows();
@@ -2158,18 +1906,6 @@
       formatDateTime(order.completedAt || schedule.actualEnd),
     );
 
-    renderAvatarBadge(
-      "customerAvatarBadge",
-      order.customer && order.customer.avatar,
-      initialsOf(order.customer && order.customer.name, "KH"),
-      "customer",
-    );
-    renderAvatarBadge(
-      "providerAvatarBadge",
-      hasProviderIdentityInOrder ? order.provider && order.provider.avatar : "",
-      initialsOf(order.provider && order.provider.name, "NCC"),
-      "provider",
-    );
     setText("providerStateChip", providerStateText);
 
     function reviewPrefix(actor) {
@@ -2551,14 +2287,143 @@
       heroBadge.textContent = meta.label;
     }
 
-    var providerChipNode = document.getElementById("providerStateChip");
-    if (providerChipNode) {
-      providerChipNode.className = "panel-chip";
-      if (statusLower === "pending" || statusLower === "canceled") {
-        providerChipNode.classList.add("warn");
+    renderAvatarBadge(
+      "customerAvatarBadge",
+      order.customer && order.customer.avatar,
+      initialsOf(order.customer && order.customer.name, "KH"),
+      "customer",
+    );
+    renderAvatarBadge(
+      "providerAvatarBadge",
+      hasProviderIdentityInOrder ? order.provider && order.provider.avatar : "",
+      initialsOf(order.provider && order.provider.name, "NCC"),
+      "provider",
+    );
+    setText("providerStateChip", providerStateText);
+
+    (function initActionButtons() {
+      var actionBar = document.getElementById("detailActionBar");
+      if (!actionBar) return;
+      
+      var currentStatus = String(order.status || "").toLowerCase();
+      var configs = [];
+
+      if (role === "customer") {
+        var canCancel =
+          !hasDateValue(order.receivedAt) &&
+          currentStatus !== "completed" &&
+          currentStatus !== "canceled";
+
+        if (canCancel) {
+          configs.push({
+            text: "Hủy đơn",
+            loadingText: "Đang hủy...",
+            className: "btn-danger",
+            handler: function (btn) {
+              if (window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
+                setActionButtonLoading(btn, true, "Hủy đơn", "Đang hủy...");
+                handleCancelOrder(order.id)
+                  .then(function () { start(); })
+                  .catch(function (err) {
+                    window.alert(err.message || "Lỗi hủy đơn.");
+                    setActionButtonLoading(btn, false, "Hủy đơn", "Đang hủy...");
+                  });
+              }
+            },
+          });
+        }
+      } else if (role === "provider") {
+        if (currentStatus === "pending") {
+          configs.push({
+            text: "Nhận đơn",
+            loadingText: "Đang xử lý...",
+            className: "btn-primary",
+            handler: function (btn) {
+              setActionButtonLoading(btn, true, "Nhận đơn", "Đang xử lý...");
+              handleAcceptOrder(order.id)
+                .then(function () { start(); })
+                .catch(function (err) {
+                  window.alert(err.message || "Lỗi nhận đơn.");
+                  setActionButtonLoading(btn, false, "Nhận đơn", "Đang xử lý...");
+                });
+            },
+          });
+        } else if (currentStatus === "accepted") {
+          configs.push({
+            text: "Bắt đầu",
+            loadingText: "Đang cập nhật...",
+            className: "btn-info text-white",
+            handler: function (btn) {
+              setActionButtonLoading(btn, true, "Bắt đầu", "Đang cập nhật...");
+              handleStartOrder(order.id)
+                .then(function () { start(); })
+                .catch(function (err) {
+                  window.alert(err.message || "Lỗi cập nhật.");
+                  setActionButtonLoading(btn, false, "Bắt đầu", "Đang cập nhật...");
+                });
+            },
+          });
+        } else if (currentStatus === "processing") {
+          configs.push({
+            text: "Hoàn thành",
+            loadingText: "Đang xử lý...",
+            className: "btn-success",
+            handler: function (btn) {
+              if (window.confirm("Xác nhận hoàn thành hóa đơn này?")) {
+                setActionButtonLoading(btn, true, "Hoàn thành", "Đang xử lý...");
+                handleCompleteOrder(order.id, order)
+                  .then(function () { start(); })
+                  .catch(function (err) {
+                    window.alert(err.message || "Lỗi cập nhật.");
+                    setActionButtonLoading(btn, false, "Hoàn thành", "Đang xử lý...");
+                  });
+              }
+            },
+          });
+          configs.push({
+            text: "Khảo sát xong",
+            loadingText: "Đang cập nhật...",
+            className: "btn-info",
+            handler: function (btn) {
+              if (window.confirm("Xác nhận đã hoàn thành khảo sát?")) {
+                setActionButtonLoading(btn, true, "Khảo sát xong", "Đang cập nhật...");
+                handleSurveyCompleteOrder(order.id, order)
+                  .then(function () { start(); })
+                  .catch(function (err) {
+                    window.alert(err.message || "Lỗi cập nhật.");
+                    setActionButtonLoading(btn, false, "Khảo sát xong", "Đang cập nhật...");
+                  });
+              }
+            },
+          });
+        }
       }
-      providerChipNode.textContent = providerStateText;
-    }
+
+      if (configs.length > 0) {
+        actionBar.innerHTML = "";
+        configs.forEach(function(cfg) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn btn-sm fw-bold shadow-sm " + cfg.className;
+          btn.textContent = cfg.text;
+          btn.style.borderRadius = "8px";
+          btn.style.padding = "8px 16px";
+          // btn.style.marginRight = "8px";
+          
+          btn.addEventListener("click", function(e) {
+            e.preventDefault();
+            cfg.handler(this);
+          });
+          actionBar.appendChild(btn);
+        });
+        
+        actionBar.classList.remove("d-none");
+        actionBar.classList.add("d-flex");
+      } else {
+        actionBar.classList.add("d-none");
+        actionBar.classList.remove("d-flex");
+      }
+    })();
 
     renderItems(order);
     renderTimeline(order);
@@ -2607,7 +2472,7 @@
         trangthaithanhtoan: "Paid"
       }).then(function() {
         window.alert("Thanh toán thành công! Bạn đã được giảm giá 5%.");
-        window.location.reload();
+        start();
       }).catch(function(error) {
         window.alert((error && error.message) || "Không thể thực hiện thanh toán.");
         btn.disabled = false;
