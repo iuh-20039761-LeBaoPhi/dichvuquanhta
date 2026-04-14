@@ -233,7 +233,8 @@ if (!function_exists('admin_render_layout_start')) {
                         margin: 0 !important;
                         border: none !important;
                         box-shadow: none !important;
-                        min-height: auto !important; /* Disable fixed minimum height */
+                        min-height: auto !important;
+                        /* Disable fixed minimum height */
                         display: flex !important;
                         flex-direction: column !important;
                     }
@@ -269,7 +270,7 @@ if (!function_exists('admin_render_layout_start')) {
                         padding: 1rem 0.75rem !important;
                         margin: 0 !important;
                     }
-                    
+
                     .admin-topbar {
                         display: none !important;
                     }
@@ -291,11 +292,10 @@ if (!function_exists('admin_render_layout_start')) {
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <div class="d-flex align-items-center gap-2">
                                 <div class="admin-brand-logo">
-                                    <img src="../assets/logomvb.png" alt="logo">
+                                    <img src="../assets/logo_main.png" alt="logo">
                                 </div>
                                 <div>
-                                    <div class="fw-bold">Chăm Sóc Mẹ và Bé</div>
-                                    <small class="text-secondary">ADMIN PANEL</small>
+                                    <div class="fw-bold">Dọn Vệ Sinh</div>
                                 </div>
                             </div>
                             <button class="btn btn-outline-light admin-menu-toggle d-lg-none" type="button"
@@ -306,15 +306,15 @@ if (!function_exists('admin_render_layout_start')) {
                         </div>
 
                         <div id="adminSidebarMenu" class="collapse admin-sidebar-menu list-group list-group-flush mb-3">
-                            
+
                             <a href="index.php" class="<?= admin_h(admin_menu_link_class($activeKey, 'orders')) ?>"><i
-                                    class="bi bi-receipt"></i>Quan ly don hang</a>
+                                    class="bi bi-receipt"></i>Quản lý đơn hàng</a>
                             <a href="quan-ly-dich-vu.php"
                                 class="<?= admin_h(admin_menu_link_class($activeKey, 'services')) ?>"><i
-                                    class="bi bi-grid"></i>Quan ly dich vu</a>
+                                    class="bi bi-grid"></i>Quản lý dịch vụ</a>
                             <a href="logout.php"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 border-0 rounded-3 mt-2 px-3 py-2 fw-semibold"><i
-                                    class="bi bi-box-arrow-right"></i>Dang xuat</a>
+                                    class="bi bi-box-arrow-right"></i>Đăng xuất</a>
                         </div>
 
                     </aside>
