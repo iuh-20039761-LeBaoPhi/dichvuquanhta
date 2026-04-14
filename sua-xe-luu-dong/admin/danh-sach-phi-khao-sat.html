@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sửa Xe Lưu Động - Admin - Quản lý phí khảo sát</title>
+    <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
+    <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
+    <style>
+      .pagination { border-radius: 8px; overflow: hidden; }
+      .pagination .page-link { border: 1px solid #dee2e6; padding: 8px 14px; color: #0d6efd; font-size: 14px; transition: none; }
+      .pagination .page-item:first-child .page-link { background-color: #eef1f4; color: #333; border-right: 0; }
+      .pagination .page-item.active .page-link { background-color: #0d6efd; border-color: #0d6efd; color: #fff; }
+      .pagination .page-item:not(.active):not(:first-child) .page-link { border-left: 0; }
+      .pagination .page-item.disabled .page-link { color: #999; pointer-events: none; }
+    </style>
+  </head>
+  <body data-role="admin" data-page="list">
+    <div class="admin-shell">
+      <div id="asideMount" data-aside-src="partials/aside.html" data-logo-src="../public/asset/image/logo-sua-xe-luu-dong.png" data-logout-href="dang-nhap-admin.html" data-logout-api="../public/logout.php"></div>
+      <main class="content-shell">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="btn btn-sm sidebar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"><i class="fas fa-bars"></i></button>
+            <h2>Quản lý phí khảo sát</h2>
+          </div>
+          <div class="topbar-actions">
+            <div class="admin-chip"><span class="admin-avatar">A</span><span class="admin-email">admin@suaxeluudong.vn</span></div>
+          </div>
+        </header>
+
+        <section class="container-fluid py-3 py-lg-4">
+          <div class="page-heading">
+            <nav aria-label="breadcrumb"><ol class="breadcrumb panel-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Trang quản trị</a></li><li class="breadcrumb-item active">Phí khảo sát</li></ol></nav>
+            <h1 class="page-title">Quản lý phí khảo sát</h1>
+            <p class="page-subtitle">Quản lý phí khảo sát dựa trên từng loại phương tiện (loaixe).</p>
+          </div>
+
+          <article class="panel-card mt-3">
+            <div class="panel-head">
+              <h3><i class="fas fa-hand-holding-usd"></i> Danh sách phí theo loại xe</h3>
+              <div class="d-flex align-items-center gap-3">
+                <span class="record-count" id="itemCount">0 loại xe</span>
+                <button class="btn btn-sm btn-primary" onclick="openFeeModal()"><i class="fas fa-plus"></i> Thêm cấu hình</button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>STT</th><th>Loại xe</th><th>Phí khảo sát (VNĐ)</th><th class="text-end">Thao tác</th></tr></thead>
+                <tbody id="feeTableBody"></tbody>
+              </table>
+            </div>
+            <div class="panel-foot d-flex align-items-center justify-content-between p-3 border-top">
+              <p class="mb-0 text-muted small" id="pageInfo">Đang tải...</p>
+              <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <!-- Modal Phí tham khảo -->
+    <div class="modal fade" id="feeModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <form id="feeForm" class="modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold" id="modalTitle">Thêm cấu hình phí</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Loại xe</label>
+              <input type="text" name="loaixe" class="form-control" placeholder="Ví dụ: Xe máy, Ô tô..." required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Phí khảo sát (VNĐ)</label>
+              <input type="number" name="phikhaosat" class="form-control" placeholder="0" required>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-sm btn-primary px-4" id="btnSave">Lưu lại</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="../public/asset/js/bootstrap.bundle.min.js"></script>
+    <script src="../public/asset/js/admin-layout.js"></script>
+    <script src="https://api.dvqt.vn/js/krud.js"></script>
+    <script src="../../public/asset/js/order-shared-utils.js"></script>
+    <script src="../public/asset/js/shared-order-utils.js"></script>
+    <script>
+      const limit = 10;
+      let currentPage = 1, currentData = [], editingId = null;
+      const modal = new bootstrap.Modal(document.getElementById('feeModal'));
+
+      async function loadData(page = 1) {
+        if (page < 1) return;
+        currentPage = page;
+        const tbody = document.getElementById("feeTableBody");
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4">Đang tải...</td></tr>';
+        
+        try {
+          const res = await window.krudList({ table: "loaixe", page, limit });
+          currentData = (res && res.data) || (Array.isArray(res) ? res : []);
+          const total = (res && res.total) || currentData.length;
+          const totalPages = Math.ceil(total / limit);
+          
+          document.getElementById("itemCount").textContent = `${total} loại xe`;
+          document.getElementById("pageInfo").textContent = `Trang ${page}/${totalPages || 1}`;
+          
+          tbody.innerHTML = currentData.map((s, i) => `
+            <tr>
+              <td>${(page - 1) * limit + i + 1}</td>
+              <td><strong>${s.loaixe}</strong></td>
+              <td>${Number(s.phikhaosat).toLocaleString('vi-VN')} đ</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="openFeeModal(${s.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteFee(${s.id})"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>`).join("");
+          renderPagination(totalPages);
+        } catch (err) { 
+          tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-danger">Lỗi tải dữ liệu. Bảng "loaixe" có thể chưa tồn tại.</td></tr>'; 
+        }
+      }
+
+      function renderPagination(totalPages) {
+        const pagin = document.getElementById("pagination");
+        let html = `<li class="page-item ${currentPage === 1 ? "disabled" : ""}"><a class="page-link" href="#" onclick="loadData(${currentPage - 1});return false;">Trước</a></li>`;
+        for (let i = 1; i <= totalPages; i++) html += `<li class="page-item ${i === currentPage ? "active" : ""}"><a class="page-link" href="#" onclick="loadData(${i});return false;">${i}</a></li>`;
+        html += `<li class="page-item ${currentPage === totalPages || totalPages === 0 ? "disabled" : ""}"><a class="page-link" href="#" onclick="loadData(${currentPage + 1});return false;">Sau</a></li>`;
+        pagin.innerHTML = html;
+      }
+
+      function openFeeModal(id = null) {
+        editingId = id;
+        const form = document.getElementById('feeForm');
+        form.reset();
+        document.getElementById('modalTitle').textContent = id ? "Chỉnh sửa phí" : "Thêm cấu hình phí";
+        if (id) {
+          const s = currentData.find(x => x.id == id);
+          if (s) {
+            form.loaixe.value = s.loaixe;
+            form.phikhaosat.value = s.phikhaosat;
+          }
+        }
+        modal.show();
+      }
+
+      async function deleteFee(id) {
+        if (confirm("Bạn có chắc chắn muốn xóa cấu hình này?")) {
+          const res = await window.krud("delete", "loaixe", null, id);
+          if (res && res.success !== false) loadData(currentPage);
+        }
+      }
+
+      document.getElementById("feeForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        const btn = document.getElementById('btnSave');
+        const fd = new FormData(e.target);
+        
+        btn.disabled = true; 
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang lưu...';
+        
+        try {
+          const payload = { 
+            loaixe: fd.get('loaixe'), 
+            phikhaosat: fd.get('phikhaosat') 
+          };
+          
+          const res = await window.krud(editingId ? "update" : "insert", "loaixe", payload, editingId);
+          if (res && res.success !== false) { 
+            modal.hide(); 
+            loadData(currentPage); 
+          } else {
+            throw new Error("Lỗi lưu dữ liệu cơ sở dữ liệu");
+          }
+        } catch (err) { 
+          alert(err.message); 
+        } finally { 
+          btn.disabled = false; 
+          btn.textContent = "Lưu lại"; 
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => loadData(1));
+    </script>
+    <script src="../public/asset/js/plugin/webfont/webfont.min.js"></script>
+    <script>WebFont.load({ google: { families: ["Public Sans:300,400,500,600,700"] }, custom: { families: ["Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands"], urls: ["../public/asset/css/fonts.min.css"] } });</script>
+  </body>
+</html>

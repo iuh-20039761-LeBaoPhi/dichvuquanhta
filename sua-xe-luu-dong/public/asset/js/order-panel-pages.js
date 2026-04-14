@@ -5,10 +5,9 @@
   var BOOKING_TABLE = "datlich_suaxe";
   var USER_TABLE = "nguoidung";
   var PROVIDER_SERVICE_ID = "8";
-  var ADMIN_SESSION_ENDPOINT = "../public/session-admin.php?action=get";
   var CUSTOMER_LOGIN_PAGE = "../../public/dang-nhap.html?service=suaxe";
   var PROVIDER_LOGIN_PAGE = "../../public/dang-nhap.html?service=suaxe";
-  var ADMIN_LOGIN_PAGE = "dang-nhap-admin.html";
+  var ADMIN_LOGIN_PAGE = "../../public/admin-login.html";
 
   var getShared = function () {
     return window.SharedOrderUtils || {};
@@ -667,20 +666,25 @@
   }
 
   function getSessionAdmin() {
-    return fetch(ADMIN_SESSION_ENDPOINT, {
-      method: "GET",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then(function (response) {
-        if (!response.ok) return null;
-        return response.json().catch(function () {
-          return null;
-        });
-      })
+    var e = getCookie("admin_e");
+    var p = getCookie("admin_p");
+    if (!e || !p || typeof window.krudList !== "function") {
+      return Promise.resolve(null);
+    }
+
+    return Promise.resolve(
+      window.krudList({
+        table: "admin",
+        where: [
+          { field: "email", operator: "=", value: e },
+          { field: "matkhau", operator: "=", value: p },
+        ],
+        limit: 1,
+      }),
+    )
       .then(function (result) {
-        if (!result || result.hasAdmin !== true || !result.admin) return null;
-        return result.admin;
+        var rows = extractRows(result);
+        return rows.length ? rows[0] : null;
       })
       .catch(function () {
         return null;

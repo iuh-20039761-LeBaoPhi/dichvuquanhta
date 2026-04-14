@@ -126,22 +126,11 @@
                 return;
               }
 
-              // Lưu session admin ở server để dùng cho các trang quản trị khác.
-              const response = await fetch("../public/session-admin.php?action=set", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ admin: admins[0] }),
-              });
-
-              const result = await response.json();
-              if (result.success) {
-                window.location.href = "index.html";
-                return;
-              }
-
-              showAlert(result.message || "Xác thực thất bại!");
+              // Lưu thông tin vào cookie để dùng cho các trang quản trị khác.
+              document.cookie = `admin_e=${encodeURIComponent(email)}; path=/; max-age=86400`;
+              document.cookie = `admin_p=${encodeURIComponent(matkhau)}; path=/; max-age=86400`;
+              
+              window.location.href = "index.html";
             })
             .catch(() => {
               showAlert("Không thể kết nối máy chủ. Vui lòng thử lại sau.");
