@@ -1864,12 +1864,12 @@
 				// Xác định role dựa vào id_dichvu:
 				// Nếu id_dichvu chứa '1' → nhà cung cấp (staff), ngược lại → khách hàng (customer)
 				const idDichvuList = String(matched.id_dichvu || '').split(',').map(s => s.trim());
-				const isProvider = idDichvuList.includes('1');
+				const isProvider = idDichvuList.includes('5');
 				const role = isProvider ? 'staff' : 'customer';
 
 				// Bổ sung: Nếu là khách hàng, phải khớp SĐT trong hóa đơn
-				if (role === 'customer' && app.$datlich_donvesinh) {
-					const customerPhone = String(app.$datlich_donvesinh.sdtkhachhang || '').trim();
+				if (role === 'customer' && app.$datlich_nguoigia) {
+					const customerPhone = String(app.$datlich_nguoigia.sdtkhachhang || '').trim();
 					if (customerPhone !== sodienthoai.trim()) {
 						return null;
 					}
@@ -2224,8 +2224,9 @@
 				setText('dateStartPlan', formatDateDisplay($datlich_donvesinh.ngay_bat_dau_kehoach));
 				setText('dateEndPlan', formatDateDisplay($datlich_donvesinh.ngay_ket_thuc_kehoach));
 				setText('invoicePlanDays', `${totalDayCount} ngày`);
-				// Render bảng lịch sử làm việc (staff xem)
-				if (app.role === 'staff') renderWorkHistoryTable();
+
+				// Render bảng lịch sử làm việc (cho cả staff và khách hàng xem)
+				renderWorkHistoryTable();
 
 				$('badgeStaff').textContent = toNum($datlich_donvesinh.id_nhacungcap) > 0 ? 'Đã nhận' : 'Chưa nhận';
 				$('badgeStaff').className = toNum($datlich_donvesinh.id_nhacungcap) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
@@ -2473,10 +2474,11 @@
 
 			// checkAutoEndPreviousWorkDay: nếu có record chưa kết thúc từ ngày trước
 			async function checkAutoEndPreviousWorkDay() {
-				if (app.role !== 'staff') return;
 				if (!app.$datlich_donvesinh) return;
 				const idDv = app.$datlich_donvesinh.id;
 				const history = await listHistoryByOrder(idDv);
+				// Chỉ NCC mới thực hiện tự động kết thúc ngày làm việc nếu quên
+				if (app.role !== 'staff') return;
 				app.$workHistory = history;
 				const todayStr = (() => {
 					const d = now();
