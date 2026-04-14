@@ -316,10 +316,11 @@
     });
   }
 
+  window.ProviderOrderAccept = {
+    handleAcceptOrder: handleAcceptOrder,
+  };
+
   document.addEventListener("DOMContentLoaded", function () {
-    window.ProviderOrderAccept = {
-      handleAcceptOrder: handleAcceptOrder,
-    };
     bindAcceptOrderAction();
   });
 })();
