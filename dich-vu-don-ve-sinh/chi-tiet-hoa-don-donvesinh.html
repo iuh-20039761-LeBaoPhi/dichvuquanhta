@@ -1802,16 +1802,28 @@
 
 			function findAuthUser() {
 				const { sodienthoai, password } = app.params;
-				const matched = app.$nguoidung.find(r => String(r.sodienthoai || '') === sodienthoai && String(r.matkhau || r.mat_khau || r.password || '') === password);
-				if (!matched || !app.$datlich_mevabe) return null;
+				// Tìm user trong bảng nguoidung theo SĐT và mật khẩu
+				const matched = app.$nguoidung.find((row) => (
+					String(row.sodienthoai || '') === sodienthoai
+					&& String(row.matkhau || row.mat_khau || row.password || '') === password
+				));
+				if (!matched) return null;
 
-				const ord = app.$datlich_mevabe;
-				const isProvider = String(matched.id_dichvu || '').split(',').map(s => s.trim()).includes('5');
-				const sdt_url = sodienthoai, sdt_kh = String(ord.sdtkhachhang || ''), sdt_ncc = String(ord.sdtncc || '');
+				// Xác định role dựa vào id_dichvu:
+				// Nếu id_dichvu chứa '1' → nhà cung cấp (staff), ngược lại → khách hàng (customer)
+				const idDichvuList = String(matched.id_dichvu || '').split(',').map(s => s.trim());
+				const isProvider = idDichvuList.includes('1');
+				const role = isProvider ? 'staff' : 'customer';
 
-				if (sdt_url === sdt_kh) return { role: 'customer', $user: matched };
-				if (sdt_url !== sdt_kh && isProvider && (sdt_url === sdt_ncc || !sdt_ncc)) return { role: 'staff', $user: matched };
-				return null;
+				// Bổ sung: Nếu là khách hàng, phải khớp SĐT trong hóa đơn
+				if (role === 'customer' && app.$datlich_mevabe) {
+					const customerPhone = String(app.$datlich_mevabe.sdtkhachhang || '').trim();
+					if (customerPhone !== sodienthoai.trim()) {
+						return null;
+					}
+				}
+
+				return { role: role, $user: matched };
 			}
 
 			async function applyAutoOrderStatusRules($datlich_donvesinh) {
@@ -2049,12 +2061,11 @@
 
 			function renderActionButtons() {
 				const el = id => document.getElementById(id);
-				const $ = app.$datlich_donvesinh;
+				const $ = app.$datlich_mevabe;
 				if (!$) return;
 				const isStaff = app.role === 'staff', isCust = app.role === 'customer';
 				const assigned = toNum($.id_nhacungcap) > 0;
-				const isMe = (isStaff && toNum($.id_nhacungcap) === toNum(app.$user.id))
-					|| (isCust && String($.sdtkhachhang) === String(app.$user.sodienthoai));
+				const isAssignedStaff = isStaff && toNum($.id_nhacungcap) === toNum(app.$user.id);
 				const status = String($.trangthai || '').toLowerCase();
 				const isCancel = status.includes('hủy'), isDone = status.includes('hoàn thành'), isOver = status.includes('quá hạn');
 				const startVal = buildPlanDateTime($.ngay_bat_dau_kehoach, $.gio_bat_dau_kehoach);
@@ -2064,9 +2075,9 @@
 				show(el('btnHdrClaim'), canClaim);
 
 				// btnHdrStart: chỉ hiện khi chưa bắt đầu tổng thể (thoigian_batdau_thucte chưa có)
-				const canHdrStart = isMe && assigned && !started && !isCancel && !isDone && !isOver;
+				const canHdrStart = isAssignedStaff && !started && !isCancel && !isDone && !isOver;
 				show(el('btnHdrStart'), canHdrStart);
-				const canHdrEnd = isMe && assigned && started && !ended && !isCancel && !isDone && !isOver;
+				const canHdrEnd = isAssignedStaff && started && !ended && !isCancel && !isDone && !isOver;
 				show(el('btnHdrEnd'), canHdrEnd);
 
 				// btnStart / btnEnd: chỉ hiện cho staff, khi đã nhấn btnHdrStart (thoigian_batdau_thucte đã có)
@@ -2078,7 +2089,7 @@
 				})();
 				const startPlanDate = ($.ngay_bat_dau_kehoach || '').slice(0, 10);
 				const endPlanDate = ($.ngay_ket_thuc_kehoach || '').slice(0, 10);
-				const inPlanRange = isMe && assigned && started && !isCancel && !isDone && !isOver
+				const inPlanRange = isAssignedStaff && started && !isCancel && !isDone && !isOver
 					&& startPlanDate <= todayStr && todayStr <= endPlanDate;
 				const pastEndDate = endPlanDate && todayStr > endPlanDate;
 
@@ -2099,7 +2110,7 @@
 					show(el('btnEnd'), todayStarted && !todayEnded && !isDone);
 				}
 
-				show(el('btnCancelService'), isCust && (startVal && now() < startVal.getTime() - 3600000) && !isCancel && !isDone && !started);
+				show(el('btnCancelService'), isCust && !assigned && (startVal && now() < startVal.getTime() - 3600000) && !isCancel && !isDone && !started);
 			}
 
 			function renderUI() {
