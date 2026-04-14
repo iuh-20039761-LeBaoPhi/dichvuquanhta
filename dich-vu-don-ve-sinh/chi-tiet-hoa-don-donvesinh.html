@@ -1816,8 +1816,8 @@
 				const role = isProvider ? 'staff' : 'customer';
 
 				// Bổ sung: Nếu là khách hàng, phải khớp SĐT trong hóa đơn
-				if (role === 'customer' && app.$datlich_mevabe) {
-					const customerPhone = String(app.$datlich_mevabe.sdtkhachhang || '').trim();
+				if (role === 'customer' && app.$datlich_donvesinh) {
+					const customerPhone = String(app.$datlich_donvesinh.sdtkhachhang || '').trim();
 					if (customerPhone !== sodienthoai.trim()) {
 						return null;
 					}
@@ -2061,7 +2061,7 @@
 
 			function renderActionButtons() {
 				const el = id => document.getElementById(id);
-				const $ = app.$datlich_mevabe;
+				const $ = app.$datlich_donvesinh;
 				if (!$) return;
 				const isStaff = app.role === 'staff', isCust = app.role === 'customer';
 				const assigned = toNum($.id_nhacungcap) > 0;

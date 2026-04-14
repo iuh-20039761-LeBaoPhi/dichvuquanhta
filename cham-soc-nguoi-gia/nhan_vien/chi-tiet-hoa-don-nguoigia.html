@@ -1666,7 +1666,7 @@
 				$nguoidung: [], // Danh sách tất cả người dùng từ bảng nguoidung
 				$datlich_nguoigia: null,
 				stateTimer: null,
-				// id của record lich_su_lam_viec_mvb đang mở trong ngày (sau khi nhấn btnStart)
+				// id của record lich_su_lam_viec_nguoigia đang mở trong ngày (sau khi nhấn btnStart)
 				currentWorkLogId: null
 			};
 
@@ -1847,7 +1847,6 @@
 				// Chỉ cần load 1 bảng nguoidung duy nhất
 				app.$nguoidung = await listTableRows(TABLE_USER);
 			}
-
 			function findAuthUser() {
 				const { sodienthoai, password } = app.params;
 				// Tìm user trong bảng nguoidung theo SĐT và mật khẩu
@@ -1864,8 +1863,8 @@
 				const role = isProvider ? 'staff' : 'customer';
 
 				// Bổ sung: Nếu là khách hàng, phải khớp SĐT trong hóa đơn
-				if (role === 'customer' && app.$datlich_mevabe) {
-					const customerPhone = String(app.$datlich_mevabe.sdtkhachhang || '').trim();
+				if (role === 'customer' && app.$datlich_nguoigia) {
+					const customerPhone = String(app.$datlich_nguoigia.sdtkhachhang || '').trim();
 					if (customerPhone !== sodienthoai.trim()) {
 						return null;
 					}
@@ -1873,6 +1872,7 @@
 
 				return { role: role, $user: matched };
 			}
+
 
 			async function applyAutoOrderStatusRules($datlich_nguoigia) {
 				const status = String($datlich_nguoigia.trangthai || '').toLowerCase();
@@ -2110,7 +2110,7 @@
 
 			function renderActionButtons() {
 				const el = id => document.getElementById(id);
-				const $ = app.$datlich_mevabe;
+				const $ = app.$datlich_nguoigia;
 				if (!$) return;
 				const isStaff = app.role === 'staff', isCust = app.role === 'customer';
 				const assigned = toNum($.id_nhacungcap) > 0;
@@ -2219,8 +2219,9 @@
 				setText('dateStartPlan', formatDateDisplay($datlich_nguoigia.ngay_bat_dau_kehoach));
 				setText('dateEndPlan', formatDateDisplay($datlich_nguoigia.ngay_ket_thuc_kehoach));
 				setText('invoicePlanDays', `${totalDayCount} ngày`);
-				// Render bảng lịch sử làm việc (staff xem)
-				if (app.role === 'staff') renderWorkHistoryTable();
+				// Render bảng lịch sử làm việc (cho cả staff và khách hàng xem)
+				renderWorkHistoryTable();
+
 
 				$('badgeStaff').textContent = toNum($datlich_nguoigia.id_nhacungcap) > 0 ? 'Đã nhận' : 'Chưa nhận';
 				$('badgeStaff').className = toNum($datlich_nguoigia.id_nhacungcap) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
@@ -2267,13 +2268,13 @@
 					const isAutoEnd = r.isAuto || (endPlanTime && r.end === endPlanTime);
 					const endCell = r.end
 						? `${r.end} ${isAutoEnd ? '<i class="fa fa-info-circle text-warning" title="NCC quên nhấn Kết Thúc" style="cursor:pointer;color:#f0ba2c;" onclick="alert(\'NCC quên nhấn Kết Thúc\')"></i>' : ''}`
-						: '<span style="color:#1b5e20;">Chưa kết thúc</span>';
+						: '<span style="color:#b0597a;">Chưa kết thúc</span>';
 
 					const tr = document.createElement('tr');
-					tr.style.borderBottom = '1px solid #c8e6c9';
+					tr.style.borderBottom = '1px solid #f0d4e3';
 					const dayIdx = rows.length - rows.indexOf(r);
 					tr.innerHTML = `
-						<td style="padding:5px 8px;font-weight:700;color:#2e7d32;">Ngày ${dayIdx}</td>
+						<td style="padding:5px 8px;font-weight:800;color:#c21178;">Ngày ${dayIdx}</td>
 						<td style="padding:5px 8px;">${formatDateDisplay(r.ngay_lam)}</td>
 						<td style="padding:5px 8px;">${formatTimeDisplay(r.start)}</td>
 						<td style="padding:5px 8px;">${endCell}</td>
@@ -2376,7 +2377,7 @@
 				await reloadOrder();
 			}
 
-			// handleStart: bắt đầu làm trong ngày - insert mới vào lich_su_lam_viec_mvb
+			// handleStart: bắt đầu làm trong ngày - insert mới vào lich_su_lam_viec_nguoigia
 			async function handleStart() {
 				const idDv = app.$datlich_nguoigia.id;
 				const todayStr = (() => {
@@ -2468,11 +2469,12 @@
 
 			// checkAutoEndPreviousWorkDay: nếu có record chưa kết thúc từ ngày trước
 			async function checkAutoEndPreviousWorkDay() {
-				if (app.role !== 'staff') return;
 				if (!app.$datlich_nguoigia) return;
 				const idDv = app.$datlich_nguoigia.id;
 				const history = await listHistoryByOrder(idDv);
 				app.$workHistory = history;
+				// Chỉ NCC mới thực hiện tự động kết thúc ngày làm việc nếu quên
+				if (app.role !== 'staff') return;
 				const todayStr = (() => {
 					const d = now();
 					const p = n => String(n).padStart(2, '0');
@@ -2593,12 +2595,11 @@
 					}
 
 					await loadAuthTables();
+					await loadOrderById();
 					const auth = findAuthUser();
 					if (!auth) throw new Error('Bạn không thể truy cập trang này');
 					app.role = auth.role;
 					app.$user = auth.$user;
-
-					await loadOrderById();
 
 					// Kiểm tra và auto-end nếu NCC quên nhấn btnEnd từ ngày trước
 					await checkAutoEndPreviousWorkDay();

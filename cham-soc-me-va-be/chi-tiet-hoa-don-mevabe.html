@@ -1551,7 +1551,6 @@
 						</div>
 						<div class="profile-foot">
 							<span id="staffReceiveTime" class="profile-pill">Nhận việc: ---</span>
-							<span id="staffExpChip" class="profile-pill">Kinh nghiệm: ---</span>
 						</div>
 					</article>
 
@@ -2163,7 +2162,6 @@
 				setText('staffCardPhone', $datlich_mevabe.sdtncc || '---');
 				setText('staffCardAddress', $datlich_mevabe.diachincc || '---');
 				setText('staffReceiveTime', `Nhận việc: ${formatDateTimeDisplay($datlich_mevabe.ngaynhan)}`);
-				setText('staffExpChip', `Kinh nghiệm: ${$nhacungcap_mevabe.kinh_nghiem || '---'}`);
 				setAvatar('staffAvatar', $nhacungcap_mevabe.anh_dai_dien || $nhacungcap_mevabe.avatar || '');
 
 				const status = $datlich_mevabe.trangthai || '---';
@@ -2195,8 +2193,8 @@
 				setText('dateStartPlan', formatDateDisplay($datlich_mevabe.ngay_bat_dau_kehoach));
 				setText('dateEndPlan', formatDateDisplay($datlich_mevabe.ngay_ket_thuc_kehoach));
 				setText('invoicePlanDays', `${totalDayCount} ngày`);
-				// Render bảng lịch sử làm việc (staff xem)
-				if (app.role === 'staff') renderWorkHistoryTable();
+				// Render bảng lịch sử làm việc (cho cả staff và khách hàng xem)
+				renderWorkHistoryTable();
 
 				$('badgeStaff').textContent = toNum($datlich_mevabe.id_nhacungcap) > 0 ? 'Đã nhận' : 'Chưa nhận';
 				$('badgeStaff').className = toNum($datlich_mevabe.id_nhacungcap) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
@@ -2444,11 +2442,12 @@
 
 			// checkAutoEndPreviousWorkDay: nếu có record chưa kết thúc từ ngày trước
 			async function checkAutoEndPreviousWorkDay() {
-				if (app.role !== 'staff') return;
 				if (!app.$datlich_mevabe) return;
 				const idDv = app.$datlich_mevabe.id;
 				const history = await listHistoryByOrder(idDv);
 				app.$workHistory = history;
+				// Chỉ NCC mới thực hiện tự động kết thúc ngày làm việc nếu quên
+				if (app.role !== 'staff') return;
 				const todayStr = (() => {
 					const d = now();
 					const p = n => String(n).padStart(2, '0');
