@@ -18,280 +18,332 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 ?>
 
 <style>
-	:root {
-		--admin-primary: #4361ee;
-		--admin-secondary: #8392a5;
-		--admin-success: #2ec4b6;
-		--admin-warning: #ff9f1c;
-		--admin-bg: #f8f9fa;
-	}
+    :root {
+        --admin-primary: #4361ee;
+        --admin-secondary: #8392a5;
+        --admin-success: #2ec4b6;
+        --admin-warning: #ff9f1c;
+        --admin-bg: #f8f9fa;
+    }
 
-	.admin-main,
-	.admin-main>main {
-		background: var(--admin-bg) !important;
-	}
+    .admin-main,
+    .admin-main>main {
+        background: var(--admin-bg) !important;
+    }
 
-	.card {
-		border-radius: 4px;
-		border: 1px solid rgba(0, 0, 0, 0.05) !important;
-		transition: box-shadow 0.2s ease;
-	}
+    .card {
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        transition: box-shadow 0.2s ease;
+    }
 
-	.card:hover {
-		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08) !important;
-	}
+    .card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08) !important;
+    }
 
-	.form-label {
-		font-weight: 700;
-		color: #000;
-		margin-bottom: 3px;
-		font-size: 0.85rem;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
+    .form-label {
+        font-weight: 700;
+        color: #000;
+        margin-bottom: 3px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 
-	.form-control,
-	.form-select {
-		border-radius: 4px;
-		border: 1px solid #000 !important;
-		font-size: 0.95rem;
-		padding: 0.5rem 0.75rem;
-		color: #000;
-		font-weight: 500;
-	}
+    .form-control,
+    .form-select {
+        border-radius: 4px;
+        border: 1px solid #000 !important;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.95rem;
+        color: #000;
+        font-weight: 500;
+    }
 
-	.form-control:focus {
-		border-color: var(--admin-primary) !important;
-		box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.1);
-	}
+    .form-control:focus {
+        border-color: var(--admin-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.1);
+    }
 
-	.compact-row {
-		--bs-gutter-x: 8px;
-		--bs-gutter-y: 8px;
-	}
+    .section-title {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--admin-primary);
+        border-left: 3px solid var(--admin-primary);
+        padding-left: 10px;
+        margin-bottom: 15px;
+    }
 </style>
 
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-	<div class="d-flex align-items-center">
-		<div class="bg-primary bg-opacity-10 p-2 rounded-2 me-3">
-			<i class="bi bi-pencil-square text-primary fs-5"></i>
-		</div>
-		<h2 class="h4 mb-0 fw-bold">Sửa dịch vụ #<?= (int) $id ?></h2>
-	</div>
-	<a href="quan-ly-dich-vu.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Quay
-		lại</a>
+    <div class="d-flex align-items-center">
+        <div class="bg-primary bg-opacity-10 p-2 rounded-2 me-3">
+            <i class="bi bi-pencil-square text-primary fs-5"></i>
+        </div>
+        <h2 class="h4 mb-0 fw-bold">Sửa dịch vụ #<?= (int) $id ?></h2>
+    </div>
+    <a href="quan-ly-dich-vu.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Quay
+        lại</a>
 </div>
 
 <?php if ($flashMsg !== ''): ?>
-	<div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2 border-0 shadow-sm"
-		style="border-radius: 4px;"><?= admin_h($flashMsg) ?></div>
+    <div class="alert <?= $flashOk ? 'alert-success' : 'alert-warning' ?> py-2 shadow-sm border-0"
+        style="border-radius: 4px;"><?= admin_h($flashMsg) ?></div>
 <?php endif; ?>
 
 <?php if ($error !== '' || !is_array($row)): ?>
-	<div class="alert alert-warning border-0 shadow-sm" style="border-radius: 4px;">
-		<?= admin_h($error !== '' ? $error : 'Không tìm thấy dịch vụ.') ?></div>
+    <div class="alert alert-warning border-0 shadow-sm" style="border-radius: 4px;"><?= admin_h($error !== '' ? $error : 'Không tìm thấy dịch vụ.') ?></div>
 <?php else: ?>
-	<?php
-	$pricingRows = is_array($row['pricing'] ?? null) ? $row['pricing'] : [];
-	if (!$pricingRows) {
-		$pricingRows = [['label' => '', 'value' => '', 'hours' => '', 'type' => '']];
-	}
-	?>
-	<form id="editServiceForm" method="post" action="xu-ly-sua-dich-vu.php" enctype="multipart/form-data">
-		<input type="hidden" name="id" value="<?= (int) $id ?>">
-		<input type="hidden" name="current_image" value="<?= admin_h((string) ($row['image'] ?? '')) ?>">
+    <?php
+    $pricing = is_array($row['pricing'] ?? null) ? $row['pricing'] : [];
+    $pType = (string) ($pricing['type'] ?? 'per_m2');
+    ?>
+    <form id="editServiceForm" method="post" action="xu-ly-sua-dich-vu.php" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="<?= (int) $id ?>">
+        <input type="hidden" name="pricing_json" id="pricing_json">
+        <input type="hidden" name="current_image" value="<?= admin_h((string) ($row['image'] ?? '')) ?>">
 
-		<div class="row compact-row g-1">
-			<!-- Ô 1: Thông tin & Mô tả (7/12) -->
-			<div class="col-lg-7">
-				<div class="card border-0 shadow-sm h-100">
-					<div class="card-header bg-white py-2 border-bottom border-light">
-						<h6 class="mb-0 fw-bold text-dark"><i class="bi bi-info-circle-fill me-2 text-primary"></i>Thông tin
-							cơ bản & Mô tả</h6>
-					</div>
-					<div class="card-body p-3 h-100">
-						<div class="row g-3 h-100">
-							<!-- Phân bổ giống chi tiết -->
-							<div class="col-md-5 d-flex flex-column">
-								<label class="form-label">Hình ảnh dịch vụ</label>
-								<div class="service-image-container rounded-2 overflow-hidden border mb-2 bg-light d-flex align-items-center justify-content-center flex-grow-1"
-									style="aspect-ratio: 1/1; min-height: 200px;">
-									<?php
-									$image = trim((string) ($row['image'] ?? ''));
-									$imageSrc = $image;
-									if ($imageSrc !== '' && !preg_match('/^https?:\/\//i', $imageSrc)) {
-										$imageSrc = '../' . ltrim($imageSrc, '/');
-									}
-									?>
-									<img id="imagePreview" src="<?= $imageSrc !== '' ? admin_h($imageSrc) : '' ?>"
-										class="img-fluid w-100 h-100 <?= $imageSrc === '' ? 'd-none' : '' ?>"
-										style="object-fit: cover;" alt="Preview">
-									<div id="noImageText"
-										class="text-secondary text-center p-2 <?= $imageSrc !== '' ? 'd-none' : '' ?>">
-										<i class="bi bi-image fs-2 opacity-25 d-block"></i>
-										<span class="small d-block mt-1">Xem trước ảnh</span>
-									</div>
-								</div>
-								<input type="file" class="form-control form-control-sm mt-auto" name="image_file"
-									id="imageInput" accept="image/png,image/jpeg,image/webp,image/gif">
-							</div>
+        <div class="row g-3">
+            <!-- Cột trái: Thông tin chính -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="section-title">Thông tin cơ bản</div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Hình ảnh</label>
+                                <div class="border rounded bg-light d-flex align-items-center justify-content-center mb-2"
+                                    style="aspect-ratio: 1/1; overflow: hidden;">
+                                    <?php
+                                    $image = trim((string) ($row['image'] ?? ''));
+                                    $imageSrc = $image;
+                                    if ($imageSrc !== '' && !preg_match('/^https?:\/\//i', $imageSrc)) {
+                                        $imageSrc = '../' . ltrim($imageSrc, '/');
+                                    }
+                                    ?>
+                                    <img id="imagePreview" src="<?= $imageSrc !== '' ? admin_h($imageSrc) : '' ?>" class="img-fluid <?= $imageSrc === '' ? 'd-none' : '' ?>" style="object-fit: cover;">
+                                    <i id="noImageText" class="bi bi-image text-muted fs-1 <?= $imageSrc !== '' ? 'd-none' : '' ?>"></i>
+                                </div>
+                                <input type="file" name="image_file" id="imageInput" class="form-control form-control-sm" accept="image/*">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Tên dịch vụ</label>
+                                    <input type="text" name="name" class="form-control" value="<?= admin_h((string) ($row['name'] ?? '')) ?>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mô tả ảnh (ALT)</label>
+                                    <input type="text" name="alt" class="form-control" value="<?= admin_h((string) ($row['alt'] ?? '')) ?>">
+                                </div>
+                                <div>
+                                    <label class="form-label">Giới thiệu ngắn</label>
+                                    <textarea name="description" class="form-control" rows="3" required><?= admin_h((string) ($row['description'] ?? '')) ?></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-							<div class="col-md-7 d-flex flex-column">
-								<div class="mb-2">
-									<label class="form-label">Tên dịch vụ</label>
-									<input type="text" class="form-control fw-bold text-primary" name="name"
-										value="<?= admin_h((string) ($row['name'] ?? '')) ?>" required>
-								</div>
-								<div class="mb-2">
-									<label class="form-label">Chú thích (Alt)</label>
-									<input type="text" class="form-control" name="alt"
-										value="<?= admin_h((string) ($row['alt'] ?? '')) ?>"
-										placeholder="Mô tả nội dung ảnh">
-								</div>
-								<div class="flex-grow-1 d-flex flex-column">
-									<label class="form-label">Mô tả chi tiết dịch vụ</label>
-									<textarea class="form-control flex-grow-1" name="description" required
-										style="font-size: 0.95rem; line-height: 1.5; border-left: 3px solid var(--admin-primary) !important; min-height: 100px;"><?= admin_h((string) ($row['description'] ?? '')) ?></textarea>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="section-title">Bảng giá chuyên sâu (Pricing)</div>
+                        <div class="mb-3">
+                            <label class="form-label">Loại hình tính phí</label>
+                            <select id="pricing_type_select" class="form-select border-primary fw-bold" style="border-width: 2px !important;">
+                                <option value="per_m2" <?= $pType === 'per_m2' ? 'selected' : '' ?>>Tính theo m2 (Diện tích)</option>
+                                <option value="package" <?= $pType === 'package' ? 'selected' : '' ?>>Tính theo Gói (Số phòng/đặc thù)</option>
+                            </select>
+                        </div>
 
-			<!-- Ô 2: Công việc (5/12) -->
-			<div class="col-lg-5">
-				<div class="card border-0 shadow-sm h-100">
-					<div class="card-header bg-white py-2 border-bottom border-light">
-						<h6 class="mb-0 fw-bold text-dark"><i class="bi bi-list-check me-2 text-primary"></i>Danh mục công
-							việc</h6>
-					</div>
-					<div class="card-body p-3 d-flex flex-column h-100">
-						<label class="form-label">Nội dung công việc (Mỗi dòng 1 mục):</label>
-						<textarea class="form-control flex-grow-1" name="includes_text" required
-							style="font-size: 0.95rem; border-left: 3px solid var(--admin-success) !important; min-height: 250px;"><?= admin_h(dichvu_includes_to_text($row['includes'] ?? [])) ?></textarea>
-						<div class="form-text small mt-1">Xuống dòng để tạo mục mới.</div>
-					</div>
-				</div>
-			</div>
+                        <!-- Giao diện cho per_m2 -->
+                        <div id="pricing_per_m2_box" class="<?= $pType !== 'per_m2' ? 'd-none' : '' ?>">
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small">Giá cơ bản (VNĐ/m2)</label>
+                                    <input type="number" id="base_price" class="form-control" value="<?= (int) ($pricing['base_price'] ?? 15000) ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small">Giá tối thiểu (VNĐ)</label>
+                                    <input type="number" id="min_price" class="form-control" value="<?= (int) ($pricing['min_price'] ?? 1200000) ?>">
+                                </div>
+                            </div>
+                            <label class="form-label small">Hệ số mức độ sạch (Levels)</label>
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Nhẹ</span>
+                                        <input type="number" id="level_nhẹ" class="form-control" step="0.1" value="<?= (float) ($pricing['levels']['nhẹ'] ?? 0.7) ?>">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Thường</span>
+                                        <input type="number" id="level_tiêu_chuẩn" class="form-control" step="0.1" value="<?= (float) ($pricing['levels']['tiêu chuẩn'] ?? 1) ?>">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Sâu</span>
+                                        <input type="number" id="level_sâu" class="form-control" step="0.1" value="<?= (float) ($pricing['levels']['sâu'] ?? 1.2) ?>">
+                                    </div>
+                                </div>
+                            </div>
+                            <label class="form-label small d-flex justify-content-between">
+                                Dự toán thực hiện (Estimated)
+                                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none" onclick="addEstimatedRow()">+ Thêm dự toán</button>
+                            </label>
+                            <div id="estimated_rows" class="bg-light p-2 rounded"></div>
+                        </div>
 
-			<!-- Ô 3: Bảng giá (12/12) -->
-			<div class="col-12 mt-1">
-				<div class="card border-0 shadow-sm">
-					<div
-						class="card-header bg-white py-2 border-bottom border-light d-flex justify-content-between align-items-center">
-						<h6 class="mb-0 fw-bold text-dark"><i class="bi bi-currency-dollar me-2 text-primary"></i>Bảng giá
-							dịch vụ</h6>
-						<button class="btn btn-sm btn-primary rounded-pill px-3" type="button" id="btn-add-pricing">
-							<i class="bi bi-plus-lg me-1"></i>Thêm dòng
-						</button>
-					</div>
-					<div class="card-body p-2 px-3">
-						<div id="pricing-rows">
-							<div class="row g-2 mb-2 d-none d-md-flex text-muted fw-bold"
-								style="font-size: 0.7rem; text-transform: uppercase;">
-								<div class="col-md-3 ms-2">Loại gói</div>
-								<div class="col-md-3">Đơn giá (VNĐ)</div>
-								<div class="col-md-2 text-center">Số giờ</div>
-								<div class="col-md-3">Ghi chú/Hình thức</div>
-							</div>
+                        <!-- Giao diện cho package -->
+                        <div id="pricing_package_box" class="<?= $pType !== 'package' ? 'd-none' : '' ?>">
+                            <label class="form-label small d-flex justify-content-between">
+                                Danh sách các gói dịch vụ
+                                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none" onclick="addPackageRow()">+ Thêm gói</button>
+                            </label>
+                            <div id="package_rows" class="bg-light p-2 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-							<div class="d-flex flex-column gap-1">
-								<?php foreach ($pricingRows as $pricing): ?>
-									<div
-										class="row g-2 pricing-row align-items-center bg-light bg-opacity-25 p-1 rounded-1 border border-light mx-0 mb-1">
-										<div class="col-md-3">
-											<input type="text" class="form-control form-control-sm border-0 bg-white"
-												name="pricing_label[]" value="<?= admin_h((string) ($pricing['label'] ?? '')) ?>"
-												placeholder="Tên gói" required>
-										</div>
-										<div class="col-md-3">
-											<input type="number"
-												class="form-control form-control-sm border-0 bg-white fw-bold text-primary"
-												name="pricing_value[]" value="<?= admin_h((string) ($pricing['value'] ?? '')) ?>"
-												placeholder="Giá tiền" min="0" step="1000" required>
-										</div>
-										<div class="col-md-2">
-											<input type="number"
-												class="form-control form-control-sm border-0 bg-white text-center"
-												name="pricing_hours[]" value="<?= admin_h((string) ($pricing['hours'] ?? '')) ?>"
-												placeholder="0" min="0.1" step="0.1" required>
-										</div>
-										<div class="col-md-3">
-											<input type="text" class="form-control form-control-sm border-0 bg-white"
-												name="pricing_type[]" value="<?= admin_h((string) ($pricing['type'] ?? '')) ?>"
-												placeholder="VD: theo_gio" required>
-										</div>
-										<div class="col-md-1 text-center">
-											<button type="button" class="btn btn-sm btn-outline-danger border-0 p-0" title="Xóa"
-												onclick="this.closest('.pricing-row').remove()">
-												<i class="bi bi-dash-circle-fill fs-5"></i>
-											</button>
-										</div>
-									</div>
-								<?php endforeach; ?>
-							</div>
-						</div>
-					</div>
-					<div class="card-footer bg-white py-3 border-top border-light d-flex justify-content-end gap-2">
-						<a href="chi-tiet-dich-vu.php?id=<?= urlencode((string) $id) ?>"
-							class="btn btn-light px-4 border">Thoát</a>
-						<button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">
-							<i class="bi bi-save-fill me-2"></i>LƯU THAY ĐỔI
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</form>
+            <!-- Cột phải: Lists -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="section-title">Loại hình áp dụng</div>
+                        <label class="form-label small">Mỗi dòng 1 loại</label>
+                        <textarea name="loai_text" class="form-control" rows="4" required><?= admin_h(implode("\n", $row['loai'] ?? [])) ?></textarea>
+                    </div>
+                </div>
 
-	<script>
-		(function () {
-			// Image preview
-			var imageInput = document.getElementById('imageInput');
-			var imagePreview = document.getElementById('imagePreview');
-			var noImageText = document.getElementById('noImageText');
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="section-title">Công việc bao gồm</div>
+                        <label class="form-label small">Mỗi dòng 1 công việc</label>
+                        <textarea name="includes_text" class="form-control" rows="8" required><?= admin_h(implode("\n", $row['includes'] ?? [])) ?></textarea>
+                    </div>
+                </div>
 
-			imageInput.onchange = function () {
-				var file = this.files[0];
-				if (file) {
-					var reader = new FileReader();
-					reader.onload = function (e) {
-						imagePreview.src = e.target.result;
-						imagePreview.classList.remove('d-none');
-						noImageText.classList.add('d-none');
-					}
-					reader.readAsDataURL(file);
-				}
-			};
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="section-title">Khung giờ phục vụ</div>
+                        <div id="ts_rows" class="d-flex flex-column gap-2"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary w-100 mt-2" onclick="addTsRow()">+ Thêm khung giờ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-			// Pricing rows logic
-			var container = document.querySelector('#pricing-rows > .d-flex');
-			var addButton = document.getElementById('btn-add-pricing');
+        <div class="card border-0 shadow-sm mt-3">
+            <div class="card-body d-flex justify-content-end gap-2">
+                <a href="quan-ly-dich-vu.php" class="btn btn-light border px-4">Hủy</a>
+                <button type="submit" class="btn btn-primary px-5 fw-bold"><i class="bi bi-save me-1"></i>LƯU THAY ĐỔI</button>
+            </div>
+        </div>
+    </form>
 
-			function bindRemoveButtons() {
-				var removeButtons = container.querySelectorAll('.btn-remove-pricing');
-				removeButtons.forEach(function (button) {
-					button.onclick = function () {
-						var rows = container.querySelectorAll('.pricing-row');
-						if (rows.length <= 1) return;
-						button.closest('.pricing-row').remove();
-					};
-				});
-			}
+    <script>
+        // --- Utils ---
+        function createRow(containerId, html) {
+            const div = document.createElement('div');
+            div.className = 'row g-1 mb-1 align-items-center pricing-sub-row';
+            div.innerHTML = html + '<div class="col-auto"><button type="button" class="btn btn-sm text-danger p-0" onclick="this.closest(\'.pricing-sub-row\').remove()"><i class="bi bi-x-circle"></i></button></div>';
+            document.getElementById(containerId).appendChild(div);
+        }
 
-			addButton.addEventListener('click', function () {
-				var firstRow = container.querySelector('.pricing-row');
-				if (!firstRow) return;
-				var clone = firstRow.cloneNode(true);
-				clone.querySelectorAll('input').forEach(function (input) { input.value = ''; });
-				container.appendChild(clone);
-				bindRemoveButtons();
-			});
+        function addTsRow(v = '', l = '') {
+            createRow('ts_rows', `
+                <div class="col"><input type="text" name="ts_value[]" class="form-control form-control-sm" placeholder="morning" value="${v}"></div>
+                <div class="col-7"><input type="text" name="ts_label[]" class="form-control form-control-sm" placeholder="08:00 - 11:00" value="${l}"></div>
+            `);
+        }
 
-			bindRemoveButtons();
-		})();
-	</script>
+        function addEstimatedRow(a = '', s = '', h = '') {
+            createRow('estimated_rows', `
+                <div class="col"><input type="number" class="form-control form-control-sm est-area" placeholder="Diện tích" value="${a}"></div>
+                <div class="col"><input type="number" class="form-control form-control-sm est-staff" placeholder="Nhân viên" value="${s}"></div>
+                <div class="col"><input type="number" class="form-control form-control-sm est-hours" placeholder="Số giờ" value="${h}"></div>
+            `);
+        }
+
+        function addPackageRow(n = '', p = '', s = '', h = '') {
+            createRow('package_rows', `
+                <div class="col-5"><input type="text" class="form-control form-control-sm pkg-name" placeholder="Tên gói" value="${n}"></div>
+                <div class="col"><input type="number" class="form-control form-control-sm pkg-price" placeholder="Giá" value="${p}"></div>
+                <div class="col"><input type="number" class="form-control form-control-sm pkg-staff" placeholder="NV" value="${s}"></div>
+                <div class="col"><input type="number" class="form-control form-control-sm pkg-hours" placeholder="Giờ" value="${h}"></div>
+            `);
+        }
+
+        document.getElementById('pricing_type_select').onchange = function () {
+            const isM2 = this.value === 'per_m2';
+            document.getElementById('pricing_per_m2_box').classList.toggle('d-none', !isM2);
+            document.getElementById('pricing_package_box').classList.toggle('d-none', isM2);
+        };
+
+        const currentPricing = <?= json_encode($pricing) ?>;
+        const currentTs = <?= json_encode($row['time_slots'] ?? []) ?>;
+
+        if (currentTs.length > 0) {
+            currentTs.forEach(ts => addTsRow(ts.value, ts.label));
+        } else {
+            addTsRow();
+        }
+
+        if (currentPricing.type === 'package' && currentPricing.packages) {
+            currentPricing.packages.forEach(p => addPackageRow(p.name, p.price, p.staff, p.hours));
+        } else if (currentPricing.type === 'per_m2' && currentPricing.estimated) {
+            currentPricing.estimated.forEach(e => addEstimatedRow(e.area, e.staff, e.hours));
+        } else {
+            addEstimatedRow(50, 2, 3);
+            addPackageRow();
+        }
+
+        document.getElementById('editServiceForm').onsubmit = function (e) {
+            const type = document.getElementById('pricing_type_select').value;
+            let pData = { type: type };
+            if (type === 'per_m2') {
+                pData.base_price = parseInt(document.getElementById('base_price').value) || 0;
+                pData.min_price = parseInt(document.getElementById('min_price').value) || 0;
+                pData.levels = {
+                    "nhẹ": parseFloat(document.getElementById('level_nhẹ').value) || 1,
+                    "tiêu chuẩn": parseFloat(document.getElementById('level_tiêu_chuẩn').value) || 1,
+                    "sâu": parseFloat(document.getElementById('level_sâu').value) || 1
+                };
+                pData.estimated = [];
+                document.querySelectorAll('#estimated_rows .pricing-sub-row').forEach(row => {
+                    const a = row.querySelector('.est-area').value;
+                    const s = row.querySelector('.est-staff').value;
+                    const h = row.querySelector('.est-hours').value;
+                    if (a && s && h) pData.estimated.push({ area: parseInt(a), staff: parseInt(s), hours: parseFloat(h) });
+                });
+            } else {
+                pData.packages = [];
+                document.querySelectorAll('#package_rows .pricing-sub-row').forEach(row => {
+                    const n = row.querySelector('.pkg-name').value;
+                    const p = row.querySelector('.pkg-price').value;
+                    const s = row.querySelector('.pkg-staff').value;
+                    const h = row.querySelector('.pkg-hours').value;
+                    if (n && p) pData.packages.push({ name: n, price: parseInt(p), staff: parseInt(s) || 1, hours: parseFloat(h) || 1 });
+                });
+            }
+            document.getElementById('pricing_json').value = JSON.stringify(pData);
+        };
+
+        document.getElementById('imageInput').onchange = function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').classList.remove('d-none');
+                    document.getElementById('noImageText').classList.add('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+    </script>
 <?php endif; ?>
 
 <?php admin_render_layout_end(); ?>

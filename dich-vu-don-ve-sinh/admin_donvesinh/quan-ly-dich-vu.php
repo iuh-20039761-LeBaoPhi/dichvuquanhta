@@ -16,15 +16,22 @@ $filtered = array_values(array_filter($rows, static function (array $row) use ($
 		return true;
 	}
 
-	$pricingText = implode(' ', array_map(static function (array $p): string {
-		return trim((string)($p['label'] ?? '')) . ' ' . trim((string)($p['type'] ?? ''));
-	}, $row['pricing'] ?? []));
+	$pricing = is_array($row['pricing'] ?? null) ? $row['pricing'] : [];
+	$pricingText = (string) ($pricing['type'] ?? '');
+	if ($pricingText === 'per_m2') {
+		$pricingText .= ' ' . ($pricing['base_price'] ?? '') . ' ' . ($pricing['min_price'] ?? '');
+	} elseif ($pricingText === 'package') {
+		foreach (($pricing['packages'] ?? []) as $pkg) {
+			$pricingText .= ' ' . ($pkg['name'] ?? '') . ' ' . ($pkg['price'] ?? '');
+		}
+	}
 
 	$target = strtolower(implode(' ', [
-		(string)($row['id'] ?? ''),
-		(string)($row['name'] ?? ''),
-		(string)($row['alt'] ?? ''),
-		(string)($row['description'] ?? ''),
+		(string) ($row['id'] ?? ''),
+		(string) ($row['name'] ?? ''),
+		(string) ($row['alt'] ?? ''),
+		(string) ($row['description'] ?? ''),
+		implode(' ', $row['loai'] ?? []),
 		implode(' ', $row['includes'] ?? []),
 		$pricingText,
 	]));

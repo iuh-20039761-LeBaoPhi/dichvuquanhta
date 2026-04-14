@@ -36,15 +36,14 @@ if (!function_exists('dichvu_normalize_includes')) {
     }
 }
 
-if (!function_exists('dichvu_normalize_pricing')) {
-    function dichvu_normalize_pricing($raw): array
+if (!function_exists('dichvu_normalize_time_slots')) {
+    function dichvu_normalize_time_slots($raw): array
     {
         if (is_string($raw)) {
             $trimmed = trim($raw);
             if ($trimmed === '') {
                 return [];
             }
-
             $decoded = json_decode($trimmed, true);
             $raw = is_array($decoded) ? $decoded : [];
         }
@@ -53,30 +52,33 @@ if (!function_exists('dichvu_normalize_pricing')) {
             return [];
         }
 
-        $rows = [];
-        foreach ($raw as $row) {
-            if (!is_array($row)) {
+        $items = [];
+        foreach ($raw as $item) {
+            if (!is_array($item)) {
                 continue;
             }
-
-            $label = trim((string) ($row['label'] ?? ''));
-            $type = trim((string) ($row['type'] ?? ''));
-            $valueRaw = $row['value'] ?? '';
-            $hoursRaw = $row['hours'] ?? '';
-
-            if ($label === '' && $type === '' && (string) $valueRaw === '' && (string) $hoursRaw === '') {
-                continue;
+            $value = trim((string) ($item['value'] ?? ''));
+            $label = trim((string) ($item['label'] ?? ''));
+            if ($value !== '' || $label !== '') {
+                $items[] = ['value' => $value, 'label' => $label];
             }
-
-            $rows[] = [
-                'label' => $label,
-                'value' => is_numeric((string) $valueRaw) ? (float) $valueRaw : 0,
-                'hours' => is_numeric((string) $hoursRaw) ? (float) $hoursRaw : 0,
-                'type' => $type,
-            ];
         }
+        return $items;
+    }
+}
 
-        return $rows;
+if (!function_exists('dichvu_normalize_pricing')) {
+    function dichvu_normalize_pricing($raw): array
+    {
+        if (is_string($raw)) {
+            $trimmed = trim($raw);
+            if ($trimmed === '') {
+                return [];
+            }
+            $decoded = json_decode($trimmed, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        return is_array($raw) ? $raw : [];
     }
 }
 
@@ -85,11 +87,13 @@ if (!function_exists('dichvu_normalize_row')) {
     {
         return [
             'id' => (int) ($row['id'] ?? 0),
+            'loai' => dichvu_normalize_includes($row['loai'] ?? []),
             'name' => trim((string) ($row['name'] ?? '')),
             'image' => trim((string) ($row['image'] ?? '')),
             'alt' => trim((string) ($row['alt'] ?? '')),
             'description' => trim((string) ($row['description'] ?? '')),
             'includes' => dichvu_normalize_includes($row['includes'] ?? []),
+            'time_slots' => dichvu_normalize_time_slots($row['time_slots'] ?? []),
             'pricing' => dichvu_normalize_pricing($row['pricing'] ?? []),
         ];
     }
@@ -148,17 +152,45 @@ if (!function_exists('dichvu_build_payload_from_post')) {
         $alt = trim((string) ($post['alt'] ?? ''));
         $description = trim((string) ($post['description'] ?? ''));
 
+        // Xử lý LOẠI
+        $loaiTextRaw = str_replace("\r", '', (string) ($post['loai_text'] ?? ''));
+        $loaiLines = array_filter(array_map('trim', explode("\n", $loaiTextRaw)), static fn(string $item): bool => $item !== '');
+        $loai = array_values($loaiLines);
+
+        // Xử lý INCLUDES
         $includesTextRaw = str_replace("\r", '', (string) ($post['includes_text'] ?? ''));
         $includesLines = array_filter(array_map('trim', explode("\n", $includesTextRaw)), static fn(string $item): bool => $item !== '');
-
         $includes = [];
         foreach ($includesLines as $line) {
-            if (substr($line, -1) !== '.') {
+            if ($line !== '' && substr($line, -1) !== '.') {
                 $line .= '.';
             }
             $includes[] = $line;
         }
         $includes = array_values($includes);
+
+        // Xử lý TIME SLOTS
+        $tsValues = is_array($post['ts_value'] ?? null) ? $post['ts_value'] : [];
+        $tsLabels = is_array($post['ts_label'] ?? null) ? $post['ts_label'] : [];
+        $timeSlots = [];
+        $maxTs = max(count($tsValues), count($tsLabels));
+        for ($i = 0; $i < $maxTs; $i++) {
+            $v = trim((string) ($tsValues[$i] ?? ''));
+            $l = trim((string) ($tsLabels[$i] ?? ''));
+            if ($v !== '' || $l !== '') {
+                $timeSlots[] = ['value' => $v, 'label' => $l];
+            }
+        }
+
+        // Xử lý PRICING (chấp nhận JSON trực tiếp từ form ẩn để xử lý cấu trúc phức tạp)
+        $pricingJsonRaw = trim((string) ($post['pricing_json'] ?? ''));
+        $pricing = [];
+        if ($pricingJsonRaw !== '') {
+            $decoded = json_decode($pricingJsonRaw, true);
+            if (is_array($decoded)) {
+                $pricing = $decoded;
+            }
+        }
 
         if ($name === '') {
             return ['success' => false, 'message' => 'Ten dich vu khong duoc de trong.'];
@@ -166,72 +198,32 @@ if (!function_exists('dichvu_build_payload_from_post')) {
         if ($description === '') {
             return ['success' => false, 'message' => 'Mo ta dich vu khong duoc de trong.'];
         }
+        if (!$loai) {
+            return ['success' => false, 'message' => 'Can it nhat 1 loai hinh (nha, tro, can ho...).'];
+        }
         if (!$includes) {
             return ['success' => false, 'message' => 'Can it nhat 1 muc trong danh sach cong viec bao gom.'];
         }
-
-        $labels = is_array($post['pricing_label'] ?? null) ? $post['pricing_label'] : [];
-        $values = is_array($post['pricing_value'] ?? null) ? $post['pricing_value'] : [];
-        $hours = is_array($post['pricing_hours'] ?? null) ? $post['pricing_hours'] : [];
-        $types = is_array($post['pricing_type'] ?? null) ? $post['pricing_type'] : [];
-
-        $maxRows = max(count($labels), count($values), count($hours), count($types));
-        $pricing = [];
-
-        for ($i = 0; $i < $maxRows; $i++) {
-            $label = trim((string) ($labels[$i] ?? ''));
-            $type = trim((string) ($types[$i] ?? ''));
-            $valueRaw = trim((string) ($values[$i] ?? ''));
-            $hoursRaw = trim((string) ($hours[$i] ?? ''));
-
-            if ($label === '' && $type === '' && $valueRaw === '' && $hoursRaw === '') {
-                continue;
-            }
-
-            if ($label === '' || $type === '' || $valueRaw === '' || $hoursRaw === '') {
-                return ['success' => false, 'message' => 'Thong tin bang gia dong ' . ($i + 1) . ' chua day du.'];
-            }
-
-            if (!is_numeric($valueRaw) || (float) $valueRaw < 0) {
-                return ['success' => false, 'message' => 'Gia tri dong ' . ($i + 1) . ' khong hop le.'];
-            }
-
-            if (!is_numeric($hoursRaw) || (float) $hoursRaw <= 0) {
-                return ['success' => false, 'message' => 'So gio dong ' . ($i + 1) . ' khong hop le.'];
-            }
-
-            $pricing[] = [
-                'label' => $label,
-                'value' => (float) $valueRaw,
-                'hours' => (float) $hoursRaw,
-                'type' => $type,
-            ];
-        }
-
-        if (!$pricing) {
-            return ['success' => false, 'message' => 'Can it nhat 1 dong bang gia.'];
+        if (!$pricing || !isset($pricing['type'])) {
+            return ['success' => false, 'message' => 'Thong tin bang gia khong hop le hoac thieu loai (type).'];
         }
 
         if ($alt === '') {
             $alt = 'Dich vu ' . $name;
         }
 
-        $includesJson = json_encode($includes, JSON_UNESCAPED_UNICODE);
-        $pricingJson = json_encode($pricing, JSON_UNESCAPED_UNICODE);
-        if ($includesJson === false || $pricingJson === false) {
-            return ['success' => false, 'message' => 'Khong the ma hoa du lieu includes/pricing.'];
-        }
-
         return [
             'success' => true,
             'message' => '',
             'data' => [
+                'loai' => json_encode($loai, JSON_UNESCAPED_UNICODE),
                 'name' => $name,
                 'image' => $image,
                 'alt' => $alt,
                 'description' => $description,
-                'includes' => $includesJson,
-                'pricing' => $pricingJson,
+                'includes' => json_encode($includes, JSON_UNESCAPED_UNICODE),
+                'time_slots' => json_encode($timeSlots, JSON_UNESCAPED_UNICODE),
+                'pricing' => json_encode($pricing, JSON_UNESCAPED_UNICODE),
             ],
         ];
     }
