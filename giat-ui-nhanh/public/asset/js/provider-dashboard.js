@@ -135,13 +135,13 @@
   }
 
   function mapOrder(row) {
-    var rawDate = row.ngaydat || row.ngaytao || row.created_at || "";
+    var rawDate = row.ngaydat || row.created_date || "";
     return {
       id: Number(row.id) || 0,
       code: resolveOrderDisplayCode(row),
-      customer: row.hovaten || row.tenkhachhang || "Khách hàng",
+      customer: row.hovaten || "Khách hàng",
       phone: row.sodienthoai || "",
-      service: row.dichvu || row.dichvuquantam || "Chưa rõ dịch vụ",
+      service: row.dichvu || "Chưa rõ dịch vụ",
       date: formatDate(rawDate),
       status: statusFromDates(row),
       sortScore: toDateScore(rawDate) || Number(row.id) || 0,
@@ -175,9 +175,7 @@
 
     activeOrders = all.filter(function (o) {
       if (o.status !== "processing" && o.status !== "completed") return false;
-      var ownerId = Number(
-        o.raw && (o.raw.idnhacungcap || o.raw.id_ncc || o.raw.manhacungcap),
-      );
+      var ownerId = Number(o.raw && o.raw.idnhacungcap);
       return Number.isFinite(ownerId) && ownerId === supplierId;
     });
   }
@@ -371,9 +369,7 @@
   function fillOrderDetailModal(order) {
     var stKey = statusFromDates(order);
     var stLabel = (statusConfig[stKey] || statusConfig.pending).label;
-    var supplierId = Number(
-      order.idnhacungcap || order.id_ncc || order.manhacungcap,
-    );
+    var supplierId = Number(order.idnhacungcap);
     var hasSupplierInfo =
       (Number.isFinite(supplierId) && supplierId > 0) ||
       String(order.tennhacungcap || "").trim() !== "" ||
@@ -387,21 +383,15 @@
     var supplierAddress = hasSupplierInfo ? order.diachi_ncc : "Chưa có";
 
     setText("detailOrderCode", formatOrderDisplayId(order.id));
-    setText("detailSubService", order.dichvu || order.dichvuquantam);
+    setText("detailSubService", order.dichvu);
     setText("detailWorkItems", order.danhsachcongviec);
     setText("detailChemicals", order.danhsachhoachat);
-    setText(
-      "detailTransportMethod",
-      order.hinhthucnhangiao || order.phuongthucgiaonhan,
-    );
-    setText(
-      "detailQuantity",
-      order.soluong || order.khoiluong || order.quantity,
-    );
+    setText("detailTransportMethod", order.hinhthucnhangiao);
+    setText("detailQuantity", order.soluong);
 
     setText(
       "detailBookingDate",
-      formatDate(order.ngaydat || order.ngaytao || order.created_at),
+      formatDate(order.ngaydat || order.created_date),
     );
     setText("detailOrderStatus", stLabel);
     setPaymentBadge(order.trangthaithanhtoan);
@@ -411,8 +401,8 @@
     setText("detailTotalFee", money(order.tongtien));
     setText("detailNote", order.ghichu);
 
-    setText("detailCustomerName", order.hovaten || order.tenkhachhang);
-    setText("detailCustomerPhone", order.sodienthoai || order.phone);
+    setText("detailCustomerName", order.hovaten);
+    setText("detailCustomerPhone", order.sodienthoai);
     setText("detailCustomerEmail", order.email);
     setText("detailCustomerAddress", order.diachi);
 

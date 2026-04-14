@@ -6,46 +6,14 @@
   var REVIEW_UPLOAD_ENDPOINT = "public/upload-review-media.php";
   var REVIEW_FIELD_MAP = {
     customer: {
-      text: [
-        "danhgia_khachhang",
-        "danhgiakhachhang",
-        "review_khachhang",
-        "review_customer_text",
-        "customer_review_text",
-      ],
-      date: [
-        "ngaydanhgia_khachhang",
-        "ngay_danhgia_khachhang",
-        "review_customer_at",
-        "customer_review_at",
-      ],
-      media: [
-        "media_danhgia_khachhang",
-        "anhvideo_danhgia_khachhang",
-        "review_customer_media",
-        "customer_review_media",
-      ],
+      text: ["danhgia_khachhang"],
+      date: ["ngaydanhgia_khachhang"],
+      media: ["media_danhgia_khachhang"],
     },
     provider: {
-      text: [
-        "danhgia_nhacungcap",
-        "danhgianhacungcap",
-        "review_nhacungcap",
-        "review_provider_text",
-        "provider_review_text",
-      ],
-      date: [
-        "ngaydanhgia_nhacungcap",
-        "ngay_danhgia_nhacungcap",
-        "review_provider_at",
-        "provider_review_at",
-      ],
-      media: [
-        "media_danhgia_nhacungcap",
-        "anhvideo_danhgia_nhacungcap",
-        "review_provider_media",
-        "provider_review_media",
-      ],
+      text: ["danhgia_nhacungcap"],
+      date: ["ngaydanhgia_nhacungcap"],
+      media: ["media_danhgia_nhacungcap"],
     },
   };
 
@@ -170,7 +138,21 @@
         var errBody = await res.json();
         errorDetail = errBody.message || errBody.code || "";
       } catch (e) {}
-      throw new Error("Không thể tính khoảng cách (Status: " + res.status + " " + errorDetail + "). Tọa độ: NS[" + lat1 + "," + lon1 + "] -> KH[" + lat2 + "," + lon2 + "]");
+      throw new Error(
+        "Không thể tính khoảng cách (Status: " +
+          res.status +
+          " " +
+          errorDetail +
+          "). Tọa độ: NS[" +
+          lat1 +
+          "," +
+          lon1 +
+          "] -> KH[" +
+          lat2 +
+          "," +
+          lon2 +
+          "]",
+      );
     }
 
     var data = await res.json();
@@ -419,16 +401,16 @@
       return mapDbStatus(shared.getOrderStatus(row));
     }
 
-    if (row && (row.ngayhuy || row.ngay_huy || row.canceled_at)) {
+    if (row && row.ngayhuy) {
       return "canceled";
     }
-    if (row && (row.ngayhoanthanh || row.ngay_hoan_thanh || row.completed_at)) {
+    if (row && row.ngayhoanthanh) {
       return "completed";
     }
-    if (row && (row.ngaybatdau || row.ngay_bat_dau || row.started_at)) {
+    if (row && row.ngaybatdau) {
       return "processing";
     }
-    if (row && (row.ngaynhan || row.ngay_nhan || row.received_at)) {
+    if (row && row.ngaynhan) {
       return "accepted";
     }
     return "pending";
@@ -660,18 +642,22 @@
     if (typeof USER_TABLE === "undefined") {
       var USER_TABLE = "nguoidung";
     }
-    
+
     var user = await queryUserByCredentials(USER_TABLE, phone, password);
     if (!user) return null;
 
     var idDichvu = String(user.id_dichvu || "").trim();
-    var serviceIds = idDichvu.split(",").map(function(s) { return s.trim(); });
+    var serviceIds = idDichvu.split(",").map(function (s) {
+      return s.trim();
+    });
     var isProvider = serviceIds.indexOf("11") !== -1;
 
     return {
       role: isProvider ? "provider" : "customer",
       user: user,
-      phone: normalizePhone(user.sodienthoai || user.user_tel || user.phone || phone),
+      phone: normalizePhone(
+        user.sodienthoai || user.user_tel || user.phone || phone,
+      ),
     };
   }
 
@@ -725,15 +711,8 @@
    * @returns {Promise<Object|null>} Thông tin nhà cung cấp.
    */
   async function loadProviderRecord(order) {
-    var providerId = normalizeId(
-      order.idnhacungcap ||
-        order.id_ncc ||
-        order.manhacungcap ||
-        order.provider_id,
-    );
-    var providerPhone = normalizePhone(
-      order.sdt_ncc || order.sodienthoai_ncc || order.phone_ncc,
-    );
+    var providerId = normalizeId(order.idnhacungcap);
+    var providerPhone = normalizePhone(order.sdt_ncc);
     var providerEmail = String(order.email_ncc || "").trim();
 
     return queryFirstByCandidates("nguoidung", [
@@ -794,14 +773,7 @@
     if (provider) {
       row.nhacungcap = provider;
       row.idnhacungcap =
-        row.idnhacungcap ||
-        row.id_ncc ||
-        row.manhacungcap ||
-        provider.id ||
-        provider.idnhacungcap ||
-        provider.provider_id ||
-        provider.manhacungcap ||
-        "";
+        row.idnhacungcap || provider.id || provider.idnhacungcap || "";
       row.tennhacungcap =
         row.tennhacungcap || provider.hovaten || provider.user_name || "";
       row.sdt_ncc =
@@ -834,14 +806,7 @@
   function hasAssignedProviderRow(row) {
     var providerId = normalizeId(
       row.idnhacungcap ||
-        row.id_ncc ||
-        row.manhacungcap ||
-        row.provider_id ||
-        (row.nhacungcap &&
-          (row.nhacungcap.id ||
-            row.nhacungcap.idnhacungcap ||
-            row.nhacungcap.provider_id ||
-            row.nhacungcap.manhacungcap)),
+        (row.nhacungcap && (row.nhacungcap.id || row.nhacungcap.idnhacungcap)),
     );
 
     if (!providerId || providerId === "0") return false;
@@ -853,8 +818,6 @@
     ]);
     var providerPhone = normalizePhone(
       row.sdt_ncc ||
-        row.sodienthoai_ncc ||
-        row.phone_ncc ||
         (row.nhacungcap &&
           (row.nhacungcap.sodienthoai ||
             row.nhacungcap.user_tel ||
@@ -878,13 +841,13 @@
    * @returns {Object} View object cho giao diện.
    */
   function mapOrderView(row) {
-    var createdAt = row.ngaydat || row.ngaytao || row.created_at || "";
+    var createdAt = row.ngaydat || row.created_date || "";
     var updatedAt =
       row.ngayhoanthanh ||
       row.ngayhuy ||
       row.ngaybatdau ||
       row.ngaynhan ||
-      row.updated_at ||
+      row.created_date ||
       createdAt;
 
     var status = getOrderStatus(row);
@@ -902,33 +865,21 @@
       status: status,
       createdAt: createdAt,
       updatedAt: updatedAt,
-      service: row.dichvu || row.dichvuquantam || "Dịch vụ giặt ủi",
+      service: row.dichvu || "Dịch vụ giặt ủi",
       note: row.ghichu || "Không có ghi chú.",
-      chemicalsText:
-        row.danhsachhoachat || row.hoachathotro || row.danhsach_hoachat || "",
-      workItemsText:
-        row.danhsachcongviec || row.congviec || row.danhsach_congviec || "",
-      deliveryMethod:
-        row.hinhthucnhangiao ||
-        row.phuongthucgiaonhan ||
-        row.transport_option ||
-        "",
-      receivedAt: row.ngaynhan || row.ngay_nhan || row.received_at || "",
-      startedAt: row.ngaybatdau || row.ngay_bat_dau || row.started_at || "",
-      completedAt:
-        row.ngayhoanthanh || row.ngay_hoan_thanh || row.completed_at || "",
+      chemicalsText: row.danhsachhoachat || "",
+      workItemsText: row.danhsachcongviec || "",
+      deliveryMethod: row.hinhthucnhangiao || "",
+      receivedAt: row.ngaynhan || "",
+      startedAt: row.ngaybatdau || "",
+      completedAt: row.ngayhoanthanh || "",
       totalAmount: totalAmount,
       extraFee: transportFee + surchargeFee,
       discount: 0,
       serviceFee: serviceFee,
       transportFee: transportFee,
       surchargeFee: surchargeFee,
-      paymentStatus:
-        row.trangthaithanhtoan ||
-        row.trang_thai_thanh_toan ||
-        row.payment_status ||
-        row.paymentStatus ||
-        "Unpaid",
+      paymentStatus: row.trangthaithanhtoan || "Unpaid",
       customer: {
         id: toNumber(
           row.idkhachhang ||
@@ -972,14 +923,8 @@
         id: hasAssignedProvider
           ? toNumber(
               row.idnhacungcap ||
-                row.id_ncc ||
-                row.manhacungcap ||
-                row.provider_id ||
                 (row.nhacungcap &&
-                  (row.nhacungcap.id ||
-                    row.nhacungcap.idnhacungcap ||
-                    row.nhacungcap.provider_id ||
-                    row.nhacungcap.manhacungcap)),
+                  (row.nhacungcap.id || row.nhacungcap.idnhacungcap)),
             )
           : 0,
         name: hasAssignedProvider
@@ -1580,11 +1525,7 @@
     var hasReceivedDate = hasDateValue(order && order.receivedAt);
     var hasStartedDate = hasDateValue(order && order.startedAt);
     var hasCompletedDate = hasDateValue(order && order.completedAt);
-    var isCanceled = hasDateValue(
-      order &&
-        order.raw &&
-        (order.raw.ngayhuy || order.raw.ngay_huy || order.raw.canceled_at),
-    );
+    var isCanceled = hasDateValue(order && order.raw && order.raw.ngayhuy);
     var providerStateText = "Chưa nhận";
     if (isCanceled) {
       providerStateText = "Đã hủy";
@@ -1927,13 +1868,7 @@
   function getActionConfig(authRole, order) {
     var orderStatus = order && order.status;
     var hasReceivedDate = hasDateValue(
-      order &&
-        (order.receivedAt ||
-          (order.raw &&
-            (order.raw.ngaynhan ||
-              order.raw.ngay_nhan ||
-              order.raw.received_at ||
-              order.raw.receive_at))),
+      order && (order.receivedAt || (order.raw && order.raw.ngaynhan)),
     );
 
     if (authRole === "customer") {
@@ -2015,11 +1950,7 @@
       var hasReceivedDate = hasDateValue(order && order.receivedAt);
       var hasStartedDate = hasDateValue(order && order.startedAt);
       var hasCompletedDate = hasDateValue(order && order.completedAt);
-      var isCanceled = hasDateValue(
-        order &&
-          order.raw &&
-          (order.raw.ngayhuy || order.raw.ngay_huy || order.raw.canceled_at),
-      );
+      var isCanceled = hasDateValue(order && order.raw && order.raw.ngayhuy);
 
       var canReceive =
         !hasAssignedProvider &&
@@ -2096,7 +2027,12 @@
             var customerLat = toNumber(order.lat_kh);
             var customerLng = toNumber(order.lng_kh);
 
-            if (!supplierLat || !supplierLng || supplierLat <= 0 || supplierLng <= 0) {
+            if (
+              !supplierLat ||
+              !supplierLng ||
+              supplierLat <= 0 ||
+              supplierLng <= 0
+            ) {
               throw new Error(
                 "Thiếu tọa độ nhà cung cấp hợp lệ (maplat/maplng). Hiện tại: " +
                   supplierLat +
@@ -2104,7 +2040,12 @@
                   supplierLng,
               );
             }
-            if (!customerLat || !customerLng || customerLat <= 0 || customerLng <= 0) {
+            if (
+              !customerLat ||
+              !customerLng ||
+              customerLat <= 0 ||
+              customerLng <= 0
+            ) {
               throw new Error(
                 "Hệ thống chưa có tọa độ vị trí của khách hàng này (lat_kh/lng_kh). Vui lòng yêu cầu khách hàng cập nhật địa chỉ hoặc nhập tay.",
               );
@@ -2196,11 +2137,7 @@
           var hasReceivedDate = hasDateValue(
             state.orderView &&
               (state.orderView.receivedAt ||
-                (state.orderView.raw &&
-                  (state.orderView.raw.ngaynhan ||
-                    state.orderView.raw.ngay_nhan ||
-                    state.orderView.raw.received_at ||
-                    state.orderView.raw.receive_at))),
+                (state.orderView.raw && state.orderView.raw.ngaynhan)),
           );
 
           if (hasReceivedDate) {

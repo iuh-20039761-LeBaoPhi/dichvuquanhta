@@ -14,46 +14,14 @@
   var REVIEW_UPLOAD_ENDPOINT = "../public/upload-review-media.php";
   var REVIEW_FIELD_MAP = {
     customer: {
-      text: [
-        "danhgia_khachhang",
-        "danhgiakhachhang",
-        "review_khachhang",
-        "review_customer_text",
-        "customer_review_text",
-      ],
-      date: [
-        "ngaydanhgia_khachhang",
-        "ngay_danhgia_khachhang",
-        "review_customer_at",
-        "customer_review_at",
-      ],
-      media: [
-        "media_danhgia_khachhang",
-        "anhvideo_danhgia_khachhang",
-        "review_customer_media",
-        "customer_review_media",
-      ],
+      text: ["danhgia_khachhang"],
+      date: ["ngaydanhgia_khachhang"],
+      media: ["media_danhgia_khachhang"],
     },
     provider: {
-      text: [
-        "danhgia_nhacungcap",
-        "danhgianhacungcap",
-        "review_nhacungcap",
-        "review_provider_text",
-        "provider_review_text",
-      ],
-      date: [
-        "ngaydanhgia_nhacungcap",
-        "ngay_danhgia_nhacungcap",
-        "review_provider_at",
-        "provider_review_at",
-      ],
-      media: [
-        "media_danhgia_nhacungcap",
-        "anhvideo_danhgia_nhacungcap",
-        "review_provider_media",
-        "provider_review_media",
-      ],
+      text: ["danhgia_nhacungcap"],
+      date: ["ngaydanhgia_nhacungcap"],
+      media: ["media_danhgia_nhacungcap"],
     },
   };
 
@@ -83,21 +51,9 @@
 
   function hasOrderLifecycleDates(row) {
     return (
-      hasDateValue(
-        row &&
-          (row.ngayhuy || row.ngay_huy || row.canceled_at || row.cancel_at),
-      ) ||
-      hasDateValue(
-        row &&
-          (row.ngaynhan || row.ngay_nhan || row.received_at || row.receive_at),
-      ) ||
-      hasDateValue(
-        row &&
-          (row.ngayhoanthanh ||
-            row.ngay_hoan_thanh ||
-            row.completed_at ||
-            row.complete_at),
-      )
+      hasDateValue(row && row.ngayhuy) ||
+      hasDateValue(row && row.ngaynhan) ||
+      hasDateValue(row && row.ngayhoanthanh)
     );
   }
 
@@ -281,14 +237,8 @@
     var providerId = String(
       (row &&
         (row.idnhacungcap ||
-          row.id_ncc ||
-          row.manhacungcap ||
-          row.provider_id ||
           (row.nhacungcap &&
-            (row.nhacungcap.id ||
-              row.nhacungcap.idnhacungcap ||
-              row.nhacungcap.provider_id ||
-              row.nhacungcap.manhacungcap)))) ||
+            (row.nhacungcap.id || row.nhacungcap.idnhacungcap)))) ||
         "",
     ).trim();
 
@@ -303,8 +253,6 @@
     var providerPhone = String(
       (row &&
         (row.sdt_ncc ||
-          row.sodienthoai_ncc ||
-          row.phone_ncc ||
           (row.nhacungcap &&
             (row.nhacungcap.sodienthoai ||
               row.nhacungcap.user_tel ||
@@ -593,17 +541,17 @@
       },
     ];
 
-    if (row && (row.ngaynhan || row.ngay_nhan || row.received_at)) {
+    if (row && row.ngaynhan) {
       timeline.push({
-        at: row.ngaynhan || row.ngay_nhan || row.received_at,
+        at: row.ngaynhan,
         title: "Nhà cung cấp xác nhận",
         detail: "Đơn hàng đã được nhà cung cấp tiếp nhận.",
       });
     }
 
-    if (row && (row.ngaybatdau || row.ngay_bat_dau || row.started_at)) {
+    if (row && row.ngaybatdau) {
       timeline.push({
-        at: row.ngaybatdau || row.ngay_bat_dau || row.started_at,
+        at: row.ngaybatdau,
         title: "Bắt đầu xử lý",
         detail: "Nhà cung cấp đã bắt đầu thực hiện đơn hàng.",
       });
@@ -630,32 +578,26 @@
 
   function mapDbOrderToPanelOrder(row) {
     var createdAt =
-      (row && (row.ngaydat || row.ngaytao || row.created_at)) ||
-      new Date().toISOString();
+      (row && (row.ngaydat || row.created_date)) || new Date().toISOString();
     var updatedAt =
       (row &&
         (row.ngayhoanthanh ||
           row.ngayhuy ||
           row.ngaybatdau ||
-          row.ngay_bat_dau ||
-          row.started_at ||
           row.ngaynhan ||
-          row.ngay_nhan ||
-          row.received_at ||
-          row.updated_at)) ||
+          row.created_date)) ||
       createdAt;
 
     var rawStatus =
       typeof shared.getOrderStatus === "function"
         ? shared.getOrderStatus(row)
-        : row && (row.ngayhuy || row.ngay_huy || row.canceled_at)
+        : row && row.ngayhuy
           ? "cancel"
-          : row &&
-              (row.ngayhoanthanh || row.ngay_hoan_thanh || row.completed_at)
+          : row && row.ngayhoanthanh
             ? "completed"
-            : row && (row.ngaybatdau || row.ngay_bat_dau || row.started_at)
+            : row && row.ngaybatdau
               ? "processing"
-              : row && (row.ngaynhan || row.ngay_nhan || row.received_at)
+              : row && row.ngaynhan
                 ? "accepted"
                 : "pending";
     var status = mapDbStatusToPanel(rawStatus);
@@ -715,22 +657,16 @@
           row && row.khachhang && row.khachhang.avatar_kh,
           row && row.khachhang && row.khachhang.avatartenfile,
         ]),
-        maplat: row && (row.lat_kh || row.lat),
-        maplng: row && (row.lng_kh || row.lng),
+        maplat: row && row.lat_kh,
+        maplng: row && row.lng_kh,
       },
       provider: {
         id: hasAssignedProvider
           ? toNumber(
               row &&
                 (row.idnhacungcap ||
-                  row.id_ncc ||
-                  row.manhacungcap ||
-                  row.provider_id ||
                   (row.nhacungcap &&
-                    (row.nhacungcap.id ||
-                      row.nhacungcap.idnhacungcap ||
-                      row.nhacungcap.provider_id ||
-                      row.nhacungcap.manhacungcap))),
+                    (row.nhacungcap.id || row.nhacungcap.idnhacungcap))),
             )
           : 0,
         name: hasAssignedProvider
@@ -742,8 +678,6 @@
           : "Chưa phân công",
         phone: hasAssignedProvider
           ? (row && row.sdt_ncc) ||
-            (row && row.sodienthoai_ncc) ||
-            (row && row.phone_ncc) ||
             (row &&
               row.nhacungcap &&
               (row.nhacungcap.sodienthoai ||
@@ -760,7 +694,6 @@
           : "",
         address: hasAssignedProvider
           ? (row && row.diachi_ncc) ||
-            (row && row.address_ncc) ||
             (row && row.nhacungcap && row.nhacungcap.diachi) ||
             ""
           : "",
@@ -797,36 +730,14 @@
       serviceFee: servicePrice,
       transportFee: transportFee,
       surchargeFee: surchargeFee,
-      paymentStatus:
-        (row &&
-          (row.trangthaithanhtoan ||
-            row.trang_thai_thanh_toan ||
-            row.payment_status ||
-            row.paymentStatus)) ||
-        "Unpaid",
-      deliveryMethod:
-        (row &&
-          (row.hinhthucnhangiao ||
-            row.phuongthucgiaonhan ||
-            row.transport_option)) ||
-        "",
+      paymentStatus: (row && row.trangthaithanhtoan) || "Unpaid",
+      deliveryMethod: (row && row.hinhthucnhangiao) || "",
       note: (row && row.ghichu) || "Không có ghi chú.",
-      workItemsText:
-        (row &&
-          (row.danhsachcongviec || row.congviec || row.danhsach_congviec)) ||
-        "",
-      chemicalsText:
-        (row &&
-          (row.danhsachhoachat || row.hoachathotro || row.danhsach_hoachat)) ||
-        "",
-      receivedAt:
-        (row && (row.ngaynhan || row.ngay_nhan || row.received_at)) || "",
-      startedAt:
-        (row && (row.ngaybatdau || row.ngay_bat_dau || row.started_at)) || "",
-      completedAt:
-        (row &&
-          (row.ngayhoanthanh || row.ngay_hoan_thanh || row.completed_at)) ||
-        "",
+      workItemsText: (row && row.danhsachcongviec) || "",
+      chemicalsText: (row && row.danhsachhoachat) || "",
+      receivedAt: (row && row.ngaynhan) || "",
+      startedAt: (row && row.ngaybatdau) || "",
+      completedAt: (row && row.ngayhoanthanh) || "",
       timeline: buildTimelineFromDbRow(row, status, createdAt),
     };
   }
@@ -945,7 +856,7 @@
 
   function resolveProviderId(user) {
     var row = user || {};
-    var candidates = [row.id, row.idnhacungcap, row.provider_id, row.user_id];
+    var candidates = [row.id, row.idnhacungcap, row.user_id];
     for (var i = 0; i < candidates.length; i += 1) {
       var providerId = toNumber(candidates[i]);
       if (providerId > 0) return providerId;
@@ -954,10 +865,7 @@
   }
 
   function resolveOrderProviderId(row) {
-    return toNumber(
-      row &&
-        (row.idnhacungcap || row.id_ncc || row.manhacungcap || row.provider_id),
-    );
+    return toNumber(row && row.idnhacungcap);
   }
 
   function loadProviderOrders(user) {

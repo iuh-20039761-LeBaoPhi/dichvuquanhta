@@ -85,7 +85,7 @@
   }
 
   function mapOrder(row) {
-    const rawDate = row.ngaydat || row.ngaytao || row.created_at || "";
+    const rawDate = row.ngaydat || row.created_date || "";
     const totalAmount = toNumber(row.tongtien);
 
     const fallbackTotal =
@@ -96,10 +96,9 @@
     return {
       id: Number(row.id) || 0,
       code: formatOrderCode(row.id),
-      customerName:
-        row.hovaten || row.tenkhachhang || row.hoten || "Khách hàng",
-      customerPhone: row.sodienthoai || row.phone || "",
-      service: row.dichvu || row.dichvuquantam || "Chưa cập nhật dịch vụ",
+      customerName: row.hovaten || "Khách hàng",
+      customerPhone: row.sodienthoai || "",
+      service: row.dichvu || "Chưa cập nhật dịch vụ",
       status: getOrderStatus(row),
       date: formatDate(rawDate),
       total: totalAmount > 0 ? totalAmount : fallbackTotal,

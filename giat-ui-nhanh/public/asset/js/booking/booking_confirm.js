@@ -382,7 +382,6 @@
     function buildBookingSheetPayload(formData) {
       return {
         sheet_type: "Giặt ủi nhanh",
-        created_at: formData.created_at || new Date().toISOString(),
         "Tên khách": formData.name || "",
         "Số điện thoại": formData.phone || "",
         "Địa chỉ": formData.address || "",
@@ -476,8 +475,6 @@
 
       try {
         const { data } = collectBookingData();
-        const createdAtNow = new Date().toISOString();
-        data.created_at = createdAtNow;
 
         await Promise.all([saveToGoogleSheet(data), saveToKrudApi(data)]);
 
