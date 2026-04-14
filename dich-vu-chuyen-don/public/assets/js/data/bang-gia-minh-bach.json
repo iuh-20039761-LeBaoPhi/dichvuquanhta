@@ -124,7 +124,6 @@
         "slug": "khao_sat_truoc",
         "ten": "Khảo sát trước khi triển khai",
         "khoang_gia": "150.000",
-        "don_vi": "lượt",
         "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
         "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
         "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
@@ -133,7 +132,6 @@
         "slug": "dong_goi_do_dac",
         "ten": "Đóng gói đồ đạc",
         "khoang_gia": "180.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định chỉ cộng khi bạn chọn thêm hạng mục đóng gói đồ đạc.",
         "hinh_anh": "assets/images/chuyendon-van-chuyen-an-toan.png",
         "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
@@ -142,7 +140,6 @@
         "slug": "thao_lap_noi_that",
         "ten": "Xử lý đồ cồng kềnh",
         "khoang_gia": "70.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định áp dụng khi bạn chọn hạng mục đồ cồng kềnh.",
         "hinh_anh": "assets/images/feature-relocation-staff.png",
         "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
@@ -151,7 +148,6 @@
         "slug": "ho_tro_thao_lap_ky_thuat",
         "ten": "Hỗ trợ tháo lắp kỹ thuật",
         "khoang_gia": "220.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định áp dụng khi bạn chọn thêm hạng mục tháo lắp.",
         "hinh_anh": "assets/images/chuyendon-thiet-bi-gia-dinh.png",
         "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
@@ -160,7 +156,6 @@
         "slug": "sap_xep_tai_nha_moi",
         "ten": "Sắp xếp tại nhà mới",
         "khoang_gia": "Hỗ trợ miễn phí",
-        "don_vi": "",
         "ghi_chu": "Hạng mục hỗ trợ miễn phí sau khi hoàn tất vận chuyển, giúp sắp xếp đồ đạc vào vị trí mong muốn.",
         "hinh_anh": "assets/images/chuyendon-tron-goi.png",
         "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
@@ -292,7 +287,6 @@
         "slug": "khao_sat_truoc",
         "ten": "Khảo sát trước khi triển khai",
         "khoang_gia": "150.000",
-        "don_vi": "lượt",
         "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
         "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
         "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
@@ -301,7 +295,6 @@
         "slug": "dong_goi_ho_so_tai_lieu",
         "ten": "Đóng gói hồ sơ, tài liệu",
         "khoang_gia": "180.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định chỉ cộng khi bạn chọn thêm hạng mục đóng gói hồ sơ.",
         "hinh_anh": "assets/images/dong-goi-tai-lieu.png",
         "icon_svg": "M17 20a4 4 0 00-8 0m12 0a6 6 0 00-12 0m12 0H5m12-9a3 3 0 11-6 0 3 3 0 016 0zm-9 0a3 3 0 11-6 0 3 3 0 016 0z"
@@ -310,7 +303,6 @@
         "slug": "bao_ve_thiet_bi_it",
         "ten": "Bảo vệ thiết bị IT",
         "khoang_gia": "260.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định áp dụng khi bạn chọn thêm hạng mục bảo vệ thiết bị IT.",
         "hinh_anh": "assets/images/boc-lot-it.png",
         "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m8-14l-8 4m0 10L4 17V7m8 4v10"
@@ -319,7 +311,6 @@
         "slug": "thao_lap_noi_that_van_phong",
         "ten": "Tháo lắp nội thất văn phòng",
         "khoang_gia": "220.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định áp dụng khi bạn chọn thêm hạng mục tháo lắp nội thất văn phòng.",
         "hinh_anh": "assets/images/thao-lap-van-phong.png",
         "icon_svg": "M4 12h16M4 7h16M4 17h10m6-7v10"
@@ -328,7 +319,6 @@
         "slug": "van_chuyen_thiet_bi_nang",
         "ten": "Vận chuyển thiết bị nặng",
         "khoang_gia": "420.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định áp dụng khi bạn chọn thêm hạng mục thiết bị nặng.",
         "hinh_anh": "assets/images/van-chuyen-thiet-bi-nang.png",
         "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8zm0 0h6m-6 0H6"
@@ -337,7 +327,6 @@
         "slug": "lap_dat_tai_van_phong_moi",
         "ten": "Lắp đặt tại văn phòng mới",
         "khoang_gia": "Hỗ trợ miễn phí",
-        "don_vi": "",
         "ghi_chu": "Hạng mục hỗ trợ miễn phí để bố trí lại bàn ghế và thiết bị cơ bản sau khi di dời.",
         "hinh_anh": "assets/images/lap-dat-van-phong-moi.png",
         "icon_svg": "M3 10l9-5 9 5-9 5-9-5zm0 4l9 5 9-5"
@@ -474,7 +463,6 @@
         "slug": "khao_sat_truoc",
         "ten": "Khảo sát trước khi triển khai",
         "khoang_gia": "150.000",
-        "don_vi": "lượt",
         "ghi_chu": "Phụ phí khảo sát đi lại chỉ cộng khi bạn tích chọn khảo sát trước. Ngoài phạm vi nội thành sẽ cần xác nhận thêm.",
         "hinh_anh": "assets/images/chuyendon-quy-trinh-khao-sat.png",
         "icon_svg": "M12 2a7 7 0 017 7c0 5.2-7 13-7 13S5 14.2 5 9a7 7 0 017-7zm0 10a3 3 0 100-6 3 3 0 000 6z"
@@ -483,7 +471,6 @@
         "slug": "luan_chuyen_pallet",
         "ten": "Luân chuyển pallet",
         "khoang_gia": "220.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định áp dụng khi bạn chọn thêm hạng mục pallet.",
         "hinh_anh": "assets/images/feature-pallet.png",
         "icon_svg": "M20 7L12 3 4 7m16 0v10l-8 4m0-10L4 7m8 4v10"
@@ -492,7 +479,6 @@
         "slug": "thue_xe_nang_xe_cau",
         "ten": "Thuê xe nâng - xe cẩu",
         "khoang_gia": "2.200.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định áp dụng khi bạn chọn thêm hạng mục xe nâng hoặc xe cẩu.",
         "hinh_anh": "assets/images/chuyendon-kho-bai.png",
         "icon_svg": "M12 3v6m0 0a4 4 0 100 8 4 4 0 000-8z"
@@ -501,7 +487,6 @@
         "slug": "dong_goi_gia_co",
         "ten": "Đóng gói & Gia cố",
         "khoang_gia": "180.000",
-        "don_vi": "",
         "ghi_chu": "Phụ phí cố định áp dụng khi bạn chọn thêm hạng mục gia cố hàng hóa.",
         "hinh_anh": "assets/images/dong-goi-va-gia-co.png",
         "icon_svg": "M12 8v4l3 3m6-3a9 9 0 11-18 0"
@@ -510,7 +495,6 @@
         "slug": "kiem_ke_ban_giao",
         "ten": "Kiểm kê & Bàn giao",
         "khoang_gia": "Miễn phí",
-        "don_vi": "",
         "ghi_chu": "Hạng mục hỗ trợ miễn phí để đối soát số lượng hàng hóa và thiết bị trước, trong và sau khi bàn giao.",
         "hinh_anh": "assets/images/kiem-ke-va-ban-giao.png",
         "icon_svg": "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2"

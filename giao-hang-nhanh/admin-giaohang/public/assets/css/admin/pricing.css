@@ -13,15 +13,52 @@
   border-radius: 0;
   box-shadow: none;
   overflow: visible;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+.text-right { text-align: right !important; }
+.text-center { text-align: center !important; }
+.text-muted-sm { color: #64748b; font-size: 0.85em; }
+
+.pricing-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid #e2e8f0;
+}
+
+.pricing-value {
+    font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+    letter-spacing: -0.02em;
+}
+
+
 .pricing-brief {
-  margin-bottom: 20px;
-  padding: 18px 20px;
-  border-radius: 18px;
-  border: 1px solid #fde7cf;
-  background: linear-gradient(180deg, #fffaf5 0%, #fff7ed 100%);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  margin-bottom: 24px;
+  padding: 22px 28px;
+  border-radius: 24px;
+  border: 1px solid rgba(253, 231, 207, 0.4);
+  background: linear-gradient(135deg, #fffaf5 0%, #fff7ed 100%);
+  box-shadow: 0 4px 12px rgba(251, 146, 60, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-brief::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(251, 146, 60, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
 }
 
 .pricing-nav {
@@ -31,12 +68,15 @@
 }
 
 .pricing-tabs {
-  margin-bottom: 18px;
-  padding: 0 0 12px;
+  margin-bottom: 22px;
+  padding: 12px 0 16px;
   position: sticky;
   top: 0;
-  z-index: 20;
-  background: #f8fafc;
+  z-index: 50;
+  background: rgba(248, 250, 252, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
 }
 
 .pricing-tabs__label {
@@ -150,8 +190,18 @@
 }
 
 .pricing-card {
-  padding: 20px 0 26px;
-  max-width: 1120px;
+  padding: 24px 28px 32px;
+  max-width: 1200px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.05);
+  margin-bottom: 32px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pricing-card:hover {
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
 }
 
 .pricing-card[hidden] {
@@ -188,10 +238,10 @@
 .pricing-table-wrap {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid #dbe4f0;
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  background: transparent;
+  box-shadow: none;
 }
 
 .pricing-table {
@@ -205,30 +255,66 @@
 .pricing-table thead th {
   position: sticky;
   top: 0;
-  z-index: 1;
-  background: linear-gradient(180deg, #12377f 0%, #0a2a66 100%);
+  z-index: 10;
+  background: linear-gradient(135deg, #0a2a66 0%, #08214f 100%);
   color: #ffffff;
   text-align: left;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   white-space: nowrap;
-  padding: 16px 16px;
+  padding: 18px 20px;
   border-bottom: 0;
 }
 
 .pricing-table thead th:first-child {
-  border-top-left-radius: 22px;
+  border-top-left-radius: 15px;
 }
 
 .pricing-table thead th:last-child {
-  border-top-right-radius: 22px;
+  border-top-right-radius: 15px;
 }
 
+.pricing-table th.text-right,
+.pricing-table td.text-right {
+    padding-right: 24px;
+}
+
+.vehicle-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.vehicle-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 10px;
+    color: #0a2a66;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.vehicle-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.vehicle-name {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+
 .pricing-table td {
-  padding: 16px 16px;
-  border-bottom: 1px solid #edf2f7;
+  padding: 18px 20px;
+  border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
   color: #334155;
   font-size: 15px;
@@ -635,9 +721,10 @@ a.pricing-open-btn:hover {
   width: min(760px, calc(100vw - 32px));
   max-height: calc(100vh - 40px);
   margin: 20px auto;
-  border-radius: 24px;
+  border-radius: 28px;
   background: #fff;
-  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.28);
+  box-shadow: 0 40px 100px rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
   display: flex;
   flex-direction: column;

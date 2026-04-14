@@ -175,32 +175,17 @@
   }
 
   function showAlert(type, message) {
-    const container = document.querySelector(".admin-container");
-    if (!container) return;
-
-    let existing = container.querySelector(".pricing-alert--runtime");
-    if (!existing) {
-      existing = document.createElement("div");
-      existing.className = "pricing-alert pricing-alert--runtime";
-      const header = container.querySelector(".page-header");
-      if (header) {
-        header.insertAdjacentElement("afterend", existing);
-      } else {
-        container.prepend(existing);
-      }
+    if (window.core && typeof window.core.notify === "function") {
+      window.core.notify(message, type);
+      return;
     }
-
-    existing.className = `pricing-alert pricing-alert--runtime pricing-alert--${type}`;
-    existing.textContent = message;
+    // Fallback nếu core chưa load
+    console.log(`[Pricing Alert ${type}]: ${message}`);
   }
 
   function showProgress(message) {
-    pendingProgressMessage = message;
-    if (progressTimer) return;
-    progressTimer = window.setTimeout(() => {
-      progressTimer = 0;
-      showAlert("success", pendingProgressMessage);
-    }, 120);
+    // Với hệ thống mới, ta có thể dùng notify với type info để hiện progress
+    showAlert("info", message);
   }
 
   function clearPendingFormState(form) {
@@ -827,9 +812,21 @@
       formData.set("action", pendingAction);
     }
     const confirmMessage = String(form.dataset.pendingConfirmMessage || form.dataset.confirmMessage || "").trim();
-    if (confirmMessage && !window.confirm(confirmMessage)) {
-      clearPendingFormState(form);
-      return;
+    if (confirmMessage) {
+      if (window.core && typeof window.core.confirm === "function") {
+        const confirmed = await window.core.confirm({
+          title: "Xác nhận lưu thay đổi",
+          message: confirmMessage,
+          type: confirmMessage.toLowerCase().includes("xóa") ? "danger" : "primary"
+        });
+        if (!confirmed) {
+          clearPendingFormState(form);
+          return;
+        }
+      } else if (!window.confirm(confirmMessage)) {
+        clearPendingFormState(form);
+        return;
+      }
     }
     toggleSubmitting(form, true);
     showAlert("success", "Đang kiểm tra dữ liệu và đồng bộ lên KRUD...");

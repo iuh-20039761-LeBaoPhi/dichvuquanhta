@@ -94,17 +94,17 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 
 <style>
     :root {
-        --bg: #f4f7fb;
+        --bg: #f8fafc;
         --surface: #ffffff;
-        --surface-soft: #f8fbff;
-        --text: #1b2a3a;
-        --muted: #6a7a8a;
-        --primary: #0f80f2;
-        --success: #19a56f;
-        --warning: #ed9f1a;
-        --danger: #d14242;
-        --border: #e5edf5;
-        --shadow: 0 20px 45px rgba(20, 50, 80, 0.12);
+        --surface-soft: #f1f5f9;
+        --text: #0f172a;
+        --muted: #64748b;
+        --primary: #2563eb;
+        --success: #1e40af;
+        --warning: #3b82f6;
+        --danger: #1d4ed8;
+        --border: #e2e8f0;
+        --shadow: 0 20px 45px rgba(30, 58, 138, 0.08);
         --radius-xl: 22px;
         --radius-lg: 16px;
         --radius-md: 12px;

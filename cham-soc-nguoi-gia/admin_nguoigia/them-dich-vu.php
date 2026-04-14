@@ -13,11 +13,11 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
 
 <style>
     :root {
-        --admin-primary: #4361ee;
-        --admin-secondary: #8392a5;
-        --admin-success: #2ec4b6;
-        --admin-warning: #ff9f1c;
-        --admin-bg: #f8f9fa;
+        --admin-primary: #16a34a;
+        --admin-secondary: #71717a;
+        --admin-success: #15803d;
+        --admin-warning: #22c55e;
+        --admin-bg: #f8fafc;
     }
 
     .admin-main,
@@ -26,18 +26,18 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
     }
 
     .card {
-        border-radius: 4px;
-        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        border-radius: 14px;
+        border: 1px solid var(--admin-border) !important;
         transition: box-shadow 0.2s ease;
     }
 
     .card:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 5px 15px rgba(22, 101, 52, 0.08) !important;
     }
 
     .form-label {
         font-weight: 700;
-        color: #000;
+        color: #14532d;
         margin-bottom: 3px;
         font-size: 0.85rem;
         text-transform: uppercase;
@@ -46,17 +46,17 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
 
     .form-control,
     .form-select {
-        border-radius: 4px;
-        border: 1px solid #000 !important;
+        border-radius: 8px;
+        border: 1px solid #dcfce7 !important;
         padding: 0.5rem 0.75rem;
         font-size: 0.95rem;
-        color: #000;
+        color: #14532d;
         font-weight: 500;
     }
 
     .form-control:focus {
         border-color: var(--admin-primary) !important;
-        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.1);
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.1);
     }
 </style>
 

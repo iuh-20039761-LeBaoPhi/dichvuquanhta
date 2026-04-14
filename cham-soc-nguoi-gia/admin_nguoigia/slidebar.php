@@ -59,19 +59,19 @@ if (!function_exists('admin_render_layout_start')) {
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
             <style>
                 :root {
-                    --admin-bg: #f3f6fb;
+                    --admin-bg: #f8fafc;
                     --admin-panel: #ffffff;
-                    --admin-border: #dbe4f0;
-                    --admin-title: #0f172a;
-                    --admin-text: #334155;
-                    --admin-muted: #64748b;
-                    --admin-sidebar-a: #0b2239;
-                    --admin-sidebar-b: #123551;
-                    --admin-accent: #16a34a;
+                    --admin-border: #e2e8f0;
+                    --admin-title: #14532d;
+                    --admin-text: #166534;
+                    --admin-muted: #71717a;
+                    --admin-sidebar-a: #166534;
+                    --admin-sidebar-b: #14532d;
+                    --admin-accent: #22c55e;
                 }
 
                 body {
-                    background: radial-gradient(circle at top right, #ebf4ff 0%, var(--admin-bg) 42%, #eef2f8 100%);
+                    background: radial-gradient(circle at top right, #f0fdf4 0%, var(--admin-bg) 42%, #f8fafc 100%);
                     color: var(--admin-text);
                     scrollbar-gutter: stable;
                 }
@@ -85,7 +85,7 @@ if (!function_exists('admin_render_layout_start')) {
                     border: 1px solid var(--admin-border);
                     border-radius: 18px;
                     overflow: visible;
-                    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+                    box-shadow: 0 14px 40px rgba(20, 83, 45, 0.08);
                     background: var(--admin-panel);
                     --bs-gutter-x: 0;
                     margin-left: 0;
@@ -135,7 +135,7 @@ if (!function_exists('admin_render_layout_start')) {
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
-                    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+                    box-shadow: 0 4px 14px rgba(20, 83, 45, 0.25);
                 }
 
                 .admin-brand-logo img {
@@ -156,6 +156,7 @@ if (!function_exists('admin_render_layout_start')) {
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
                 }
 
                 .admin-menu-toggle i {
@@ -165,7 +166,7 @@ if (!function_exists('admin_render_layout_start')) {
 
                 .admin-sidebar .list-group-item {
                     background: transparent;
-                    color: rgba(241, 245, 249, 0.9);
+                    color: rgba(240, 253, 244, 0.9);
                     transition: all 0.2s ease;
                 }
 
@@ -182,7 +183,7 @@ if (!function_exists('admin_render_layout_start')) {
                 }
 
                 .admin-topbar {
-                    background: linear-gradient(180deg, #ffffff, #f8fafc);
+                    background: linear-gradient(180deg, #ffffff, #f0fdf4);
                     border-bottom: 1px solid var(--admin-border);
                 }
 
@@ -192,35 +193,91 @@ if (!function_exists('admin_render_layout_start')) {
                 }
 
                 .admin-main {
-                    background: linear-gradient(180deg, #f9fbff, #f4f7fc);
+                    background: linear-gradient(180deg, #f0fdf4, #ffffff);
                     min-width: 0;
                 }
 
                 .card {
                     border: 1px solid var(--admin-border);
                     border-radius: 14px;
-                    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+                    box-shadow: 0 6px 20px rgba(20, 83, 45, 0.05);
                 }
 
                 .card-header {
-                    border-bottom: 1px solid #e7edf6;
+                    border-bottom: 1px solid #dcfce7;
                     border-top-left-radius: 14px !important;
                     border-top-right-radius: 14px !important;
+                    background-color: #f0fdf4 !important;
+                    color: #14532d !important;
                 }
 
                 .table thead th {
-                    background: #edf3fb !important;
-                    color: #1e3a5f;
-                    border-bottom-color: #dbe4f0;
+                    background: #f0fdf4 !important;
+                    color: #14532d;
+                    border-bottom-color: #dcfce7;
                     font-weight: 700;
                 }
 
                 .table tbody td {
-                    border-color: #e7edf6;
+                    border-color: #f0fdf4;
                 }
 
                 .table tbody tr:hover {
-                    background: #f8fbff;
+                    background: #f0fdf4;
+                }
+
+                /* Override Bootstrap Colors to match Green theme */
+                .btn-success {
+                    background-color: #16a34a;
+                    border-color: #16a34a;
+                }
+                .btn-success:hover, .btn-success:focus, .btn-success:active {
+                    background-color: #15803d !important;
+                    border-color: #15803d !important;
+                }
+                .text-success { color: #16a34a !important; }
+                .bg-success { background-color: #22c55e !important; }
+                .btn-outline-success {
+                    color: #16a34a;
+                    border-color: #16a34a;
+                }
+                .btn-outline-success:hover {
+                    background-color: #16a34a;
+                    color: #fff;
+                }
+                
+                .btn-primary {
+                    background-color: #15803d;
+                    border-color: #15803d;
+                }
+                .btn-primary:hover {
+                    background-color: #14532d;
+                    border-color: #14532d;
+                }
+                .text-primary { color: #15803d !important; }
+                .btn-outline-primary {
+                    color: #15803d;
+                    border-color: #15803d;
+                }
+                .btn-outline-primary:hover {
+                    background-color: #15803d;
+                    color: #fff;
+                }
+
+                .badge.bg-success { background-color: #22c55e !important; }
+                .badge.bg-primary { background-color: #15803d !important; }
+                .badge.bg-info { background-color: #16a34a !important; }
+                
+                .pagination .page-item.active .page-link {
+                    background-color: #15803d;
+                    border-color: #15803d;
+                }
+                .page-link { color: #15803d; }
+                .page-link:hover { color: #14532d; }
+
+                .form-control:focus, .form-select:focus {
+                    border-color: #22c55e;
+                    box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.25);
                 }
 
                 @media (max-width: 991.98px) {

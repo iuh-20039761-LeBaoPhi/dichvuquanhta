@@ -2,279 +2,154 @@
 require_once __DIR__ . '/../includes/bootstrap.php';
 moving_admin_require_login();
 
-$users = moving_admin_read_collection('users');
-$editId = trim((string) ($_GET['edit'] ?? ''));
-$search = trim((string) ($_GET['search'] ?? ''));
-$roleFilter = trim((string) ($_GET['role'] ?? 'all'));
-$statusFilter = trim((string) ($_GET['status'] ?? 'all'));
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = (string) ($_POST['action'] ?? 'save');
-    $id = trim((string) ($_POST['id'] ?? ''));
-
-    if ($action === 'delete') {
-        $users = array_values(array_filter($users, function ($row) use ($id) {
-            return (string) ($row['id'] ?? '') !== $id;
-        }));
-        moving_admin_write_collection('users', $users);
-        moving_admin_set_flash('success', 'Đã xóa người dùng.');
-        moving_admin_redirect('users_manage.php');
-    }
-
-    $payload = [
-        'id' => $id !== '' ? $id : moving_admin_next_id('USR', $users),
-        'name' => trim((string) ($_POST['name'] ?? '')),
-        'phone' => trim((string) ($_POST['phone'] ?? '')),
-        'email' => trim((string) ($_POST['email'] ?? '')),
-        'region' => trim((string) ($_POST['region'] ?? '')),
-        'role' => trim((string) ($_POST['role'] ?? 'customer')),
-        'status' => trim((string) ($_POST['status'] ?? 'active')),
-        'note' => trim((string) ($_POST['note'] ?? '')),
-        'created_at' => trim((string) ($_POST['created_at'] ?? '')) ?: date('Y-m-d H:i:s'),
-    ];
-
-    if ($payload['name'] === '' || $payload['phone'] === '' || $payload['email'] === '') {
-        moving_admin_set_flash('error', 'Vui lòng nhập đầy đủ họ tên, số điện thoại và email.');
-        $redirect = 'users_manage.php' . ($payload['id'] !== '' ? '?edit=' . urlencode($payload['id']) : '');
-        moving_admin_redirect($redirect);
-    }
-
-    [$index] = moving_admin_find_by_id($users, $payload['id']);
-    if ($index === null) {
-        array_unshift($users, $payload);
-        moving_admin_set_flash('success', 'Đã thêm người dùng mới.');
-    } else {
-        $users[$index] = $payload;
-        moving_admin_set_flash('success', 'Đã cập nhật người dùng.');
-    }
-
-    moving_admin_write_collection('users', $users);
-    moving_admin_redirect('users_manage.php');
-}
-
-$editingUser = [
-    'id' => '',
-    'name' => '',
-    'phone' => '',
-    'email' => '',
-    'region' => '',
-    'role' => 'customer',
-    'status' => 'active',
-    'note' => '',
-    'created_at' => date('Y-m-d H:i:s'),
-];
-
-if ($editId !== '') {
-    [, $selectedUser] = moving_admin_find_by_id($users, $editId);
-    if (is_array($selectedUser)) {
-        $editingUser = $selectedUser;
-    }
-}
-
-$filteredUsers = array_values(array_filter($users, function ($row) use ($search, $roleFilter, $statusFilter) {
-    $haystack = strtolower(implode(' ', [
-        $row['id'] ?? '',
-        $row['name'] ?? '',
-        $row['phone'] ?? '',
-        $row['email'] ?? '',
-        $row['region'] ?? '',
-        $row['note'] ?? '',
-    ]));
-
-    if ($search !== '' && strpos($haystack, strtolower($search)) === false) {
-        return false;
-    }
-    if ($roleFilter !== 'all' && (string) ($row['role'] ?? '') !== $roleFilter) {
-        return false;
-    }
-    if ($statusFilter !== 'all' && (string) ($row['status'] ?? '') !== $statusFilter) {
-        return false;
-    }
-    return true;
-}));
-
-$flash = moving_admin_get_flash();
-$pageTitle = 'Quản lý người dùng | Admin chuyển dọn';
-$activeUsers = count(array_filter($users, fn($row) => ($row['status'] ?? '') === 'active'));
-$providerUsers = count(array_filter($users, fn($row) => ($row['role'] ?? '') === 'provider'));
-$customerUsers = count(array_filter($users, fn($row) => ($row['role'] ?? '') === 'customer'));
-
-require_once __DIR__ . '/../includes/header_admin.php';
+$pageTitle = 'Quản lý người dùng - Admin Chuyển Dọn';
+include __DIR__ . '/../includes/header_admin.php';
 ?>
-<section class="hero-card">
-    <div>
-        <h1>Quản lý người dùng</h1>
-        <p>
-            Cụm này đang giữ gọn 3 vai trò chính: admin, khách hàng và nhà cung
-            cấp. Dữ liệu được lưu trong JSON nội bộ để dễ copy theo cả thư mục
-            admin sang máy khác.
-        </p>
-    </div>
-    <div class="hero-meta">
-        <span class="muted">Bản ghi đang hiển thị</span>
-        <strong><?php echo count($filteredUsers); ?></strong>
-        <p>trên tổng <?php echo count($users); ?> người dùng</p>
-    </div>
-</section>
 
-<section class="stats-grid">
-    <article class="stat-card">
-        <span class="muted">Tổng người dùng</span>
-        <strong><?php echo count($users); ?></strong>
-        <p>Dữ liệu cục bộ trong `users.json`</p>
-    </article>
-    <article class="stat-card">
-        <span class="muted">Đang hoạt động</span>
-        <strong><?php echo $activeUsers; ?></strong>
-        <p>Tài khoản đã mở sử dụng</p>
-    </article>
-    <article class="stat-card">
-        <span class="muted">Khách hàng / NCC</span>
-        <strong><?php echo $customerUsers; ?> / <?php echo $providerUsers; ?></strong>
-        <p>Phân bổ theo 2 nhóm chính</p>
-    </article>
-</section>
-
-<?php if (is_array($flash)): ?>
-    <div class="flash <?php echo $flash['type'] === 'error' ? 'flash-error' : ($flash['type'] === 'warning' ? 'flash-warning' : 'flash-success'); ?>">
-        <?php echo moving_admin_escape($flash['message'] ?? ''); ?>
-    </div>
-<?php endif; ?>
-
-<section class="panel">
-    <div class="section-header">
-        <div>
-            <h2>Danh sách người dùng</h2>
-            <p>Lọc nhanh theo từ khóa, vai trò và trạng thái.</p>
+<div class="admin-page">
+    <div class="hero-card">
+        <div class="hero-content">
+            <h1>Quản lý Người dùng</h1>
+            <p>Đồng bộ dữ liệu trực tiếp từ hệ thống <strong>Dịch vụ quanh ta</strong> qua API.</p>
+        </div>
+        <div class="hero-actions">
+            <button class="btn btn-primary" onclick="userManager.showUserModal()">
+                <i class="fas fa-plus me-2"></i>Thêm người dùng mới
+            </button>
         </div>
     </div>
 
-    <div class="layout-split">
-        <div>
-            <form method="get" class="toolbar">
-                <div class="field">
-                    <label for="search">Tìm kiếm</label>
-                    <input id="search" class="input" type="text" name="search" value="<?php echo moving_admin_escape($search); ?>" placeholder="Tên, email, số điện thoại...">
+    <div class="panel">
+        <!-- Premium Toolbar -->
+        <div class="premium-toolbar">
+            <div class="input-icon-group" style="flex: 2;">
+                <label class="label">Tìm kiếm</label>
+                <div style="position: relative;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="input" placeholder="Tìm tên, SĐT hoặc email..." oninput="userManager.handleSearch(this.value)">
                 </div>
-                <div class="field">
-                    <label for="role">Vai trò</label>
-                    <select id="role" class="select" name="role">
-                        <option value="all" <?php echo $roleFilter === 'all' ? 'selected' : ''; ?>>Tất cả</option>
-                        <option value="admin" <?php echo $roleFilter === 'admin' ? 'selected' : ''; ?>>Admin</option>
-                        <option value="provider" <?php echo $roleFilter === 'provider' ? 'selected' : ''; ?>>Nhà cung cấp</option>
-                        <option value="customer" <?php echo $roleFilter === 'customer' ? 'selected' : ''; ?>>Khách hàng</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label for="status">Trạng thái</label>
-                    <select id="status" class="select" name="status">
-                        <option value="all" <?php echo $statusFilter === 'all' ? 'selected' : ''; ?>>Tất cả</option>
-                        <option value="active" <?php echo $statusFilter === 'active' ? 'selected' : ''; ?>>Đang hoạt động</option>
-                        <option value="pending" <?php echo $statusFilter === 'pending' ? 'selected' : ''; ?>>Chờ duyệt</option>
-                        <option value="locked" <?php echo $statusFilter === 'locked' ? 'selected' : ''; ?>>Tạm khóa</option>
-                    </select>
-                </div>
-                <div class="form-actions" style="align-self: end;">
-                    <button type="submit" class="button button-secondary">Lọc</button>
-                    <a href="users_manage.php" class="button-link button-secondary">Làm mới</a>
-                </div>
-            </form>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Người dùng</th>
-                            <th>Vai trò</th>
-                            <th>Khu vực</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!$filteredUsers): ?>
-                            <tr><td colspan="5" class="empty-state">Không có người dùng phù hợp.</td></tr>
-                        <?php else: ?>
-                            <?php foreach ($filteredUsers as $user): ?>
-                                <tr>
-                                    <td>
-                                        <strong><?php echo moving_admin_escape($user['name'] ?? ''); ?></strong><br>
-                                        <span class="muted"><?php echo moving_admin_escape($user['phone'] ?? ''); ?></span><br>
-                                        <span class="muted"><?php echo moving_admin_escape($user['email'] ?? ''); ?></span>
-                                    </td>
-                                    <td><span class="badge <?php echo moving_admin_badge_class('user-role', $user['role'] ?? ''); ?>"><?php echo moving_admin_escape(moving_admin_user_role_label($user['role'] ?? '')); ?></span></td>
-                                    <td><?php echo moving_admin_escape($user['region'] ?? ''); ?></td>
-                                    <td><span class="badge <?php echo moving_admin_badge_class('user-status', $user['status'] ?? ''); ?>"><?php echo moving_admin_escape(moving_admin_user_status_label($user['status'] ?? '')); ?></span></td>
-                                    <td>
-                                        <div class="inline-actions">
-                                            <a href="users_manage.php?edit=<?php echo urlencode((string) ($user['id'] ?? '')); ?>" class="button-link button-secondary">Sửa</a>
-                                            <form method="post" onsubmit="return confirm('Xóa người dùng này?');">
-                                                <input type="hidden" name="action" value="delete">
-                                                <input type="hidden" name="id" value="<?php echo moving_admin_escape($user['id'] ?? ''); ?>">
-                                                <button type="submit" class="button button-danger">Xóa</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
             </div>
+            
+            <div class="input-icon-group">
+                <label class="label">Vai trò</label>
+                <div style="position: relative;">
+                    <i class="fas fa-user-tag"></i>
+                    <select class="select" id="roleFilter" onchange="userManager.handleFilterChange()">
+                        <option value="">Tất cả vai trò</option>
+                        <option value="customer">Khách hàng</option>
+                        <option value="provider">Nhà cung cấp</option>
+                        <option value="admin">Quản trị viên</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-outline" style="height: 48px;" onclick="userManager.fetchUsers()" title="Tải lại">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+
+            <!-- Filter Chips Container -->
+            <div id="filterChips" class="filter-chips"></div>
         </div>
 
-        <aside class="editor-card">
-            <h3><?php echo $editingUser['id'] !== '' ? 'Cập nhật người dùng' : 'Thêm người dùng'; ?></h3>
-            <form method="post">
-                <input type="hidden" name="action" value="save">
-                <input type="hidden" name="id" value="<?php echo moving_admin_escape($editingUser['id']); ?>">
-                <input type="hidden" name="created_at" value="<?php echo moving_admin_escape($editingUser['created_at']); ?>">
-
-                <div class="editor-grid">
-                    <div class="field">
-                        <label for="name">Họ tên</label>
-                        <input id="name" class="input" type="text" name="name" required value="<?php echo moving_admin_escape($editingUser['name']); ?>">
-                    </div>
-                    <div class="field">
-                        <label for="phone">Số điện thoại</label>
-                        <input id="phone" class="input" type="text" name="phone" required value="<?php echo moving_admin_escape($editingUser['phone']); ?>">
-                    </div>
-                    <div class="field">
-                        <label for="email">Email</label>
-                        <input id="email" class="input" type="email" name="email" required value="<?php echo moving_admin_escape($editingUser['email']); ?>">
-                    </div>
-                    <div class="field">
-                        <label for="region">Khu vực</label>
-                        <input id="region" class="input" type="text" name="region" value="<?php echo moving_admin_escape($editingUser['region']); ?>">
-                    </div>
-                    <div class="field">
-                        <label for="role-edit">Vai trò</label>
-                        <select id="role-edit" class="select" name="role">
-                            <option value="customer" <?php echo ($editingUser['role'] ?? '') === 'customer' ? 'selected' : ''; ?>>Khách hàng</option>
-                            <option value="provider" <?php echo ($editingUser['role'] ?? '') === 'provider' ? 'selected' : ''; ?>>Nhà cung cấp</option>
-                            <option value="admin" <?php echo ($editingUser['role'] ?? '') === 'admin' ? 'selected' : ''; ?>>Admin</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label for="status-edit">Trạng thái</label>
-                        <select id="status-edit" class="select" name="status">
-                            <option value="active" <?php echo ($editingUser['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Đang hoạt động</option>
-                            <option value="pending" <?php echo ($editingUser['status'] ?? '') === 'pending' ? 'selected' : ''; ?>>Chờ duyệt</option>
-                            <option value="locked" <?php echo ($editingUser['status'] ?? '') === 'locked' ? 'selected' : ''; ?>>Tạm khóa</option>
-                        </select>
-                    </div>
-                    <div class="field span-full">
-                        <label for="note">Ghi chú</label>
-                        <textarea id="note" class="textarea" name="note"><?php echo moving_admin_escape($editingUser['note']); ?></textarea>
-                    </div>
-                </div>
-
-                <div class="form-actions" style="margin-top: 16px;">
-                    <button type="submit" class="button button-primary">Lưu người dùng</button>
-                    <a href="users_manage.php" class="button-link button-secondary">Tạo mới</a>
-                </div>
-            </form>
-        </aside>
+        <div class="table-wrap">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Người dùng</th>
+                        <th>Liên hệ</th>
+                        <th>Vai trò & Dịch vụ</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th style="width: 100px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="userListBody">
+                    <!-- Data will be rendered here by JS -->
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 60px;">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p style="margin-top: 15px; color: var(--muted);">Đang tải danh sách người dùng...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-</section>
-<?php require_once __DIR__ . '/../includes/footer_admin.php'; ?>
+</div>
+
+<!-- Modal Thêm/Sửa Người dùng -->
+<div id="userModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="modal-content panel" style="width: 100%; max-width: 600px; max-height: 90vh; overflow: auto; padding: 32px; border-radius: var(--radius-lg);">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h3 id="modalTitle" style="margin: 0;">Thêm người dùng mới</h3>
+            <button class="btn-close" onclick="userManager.closeModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted);"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="userForm" onsubmit="userManager.handleSubmit(event)">
+            <input type="hidden" id="userId">
+            <div class="editor-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="field" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-weight: 600; font-size: 13px; color: var(--ink);">Họ và tên</label>
+                    <input type="text" id="hovaten" required placeholder="Nguyễn Văn A" style="padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line);">
+                </div>
+                <div class="field" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-weight: 600; font-size: 13px; color: var(--ink);">Số điện thoại</label>
+                    <input type="text" id="sodienthoai" required placeholder="0901234567" style="padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line);">
+                </div>
+                <div class="field" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-weight: 600; font-size: 13px; color: var(--ink);">Email</label>
+                    <input type="email" id="email" placeholder="email@example.com" style="padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line);">
+                </div>
+                <div class="field" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-weight: 600; font-size: 13px; color: var(--ink);">Vai trò</label>
+                    <select id="vaitro" style="padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line);">
+                        <option value="customer">Khách hàng</option>
+                        <option value="provider">Nhà cung cấp</option>
+                        <option value="admin">Quản trị viên</option>
+                    </select>
+                </div>
+                <div class="field" style="display: flex; flex-direction: column; gap: 8px; grid-column: span 2;">
+                    <label style="font-weight: 600; font-size: 13px; color: var(--ink);">Địa chỉ</label>
+                    <input type="text" id="diachi" placeholder="Số nhà, đường, phường, quận..." style="padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line);">
+                </div>
+                <div class="field" id="passwordField" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-weight: 600; font-size: 13px; color: var(--ink);">Mật khẩu</label>
+                    <input type="password" id="matkhau" placeholder="Nhập mật khẩu mới" style="padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line);">
+                </div>
+                <div class="field" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-weight: 600; font-size: 13px; color: var(--ink);">Trạng thái</label>
+                    <select id="trangthai" style="padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line);">
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Khóa tài khoản</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="margin-top: 32px; display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn btn-outline" onclick="userManager.closeModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary" id="btnSave">Lưu thông tin</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Confirm Delete User -->
+<div class="modal-overlay" id="confirmDeleteUserModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center;">
+    <div class="modal" style="background: white; max-width: 400px; text-align: center; padding: 40px 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);">
+        <div style="width: 80px; height: 80px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 32px;">
+            <i class="fas fa-user-minus"></i>
+        </div>
+        <h3 style="margin-bottom: 12px; font-size: 20px; font-weight: 700;">Xác nhận xóa người dùng?</h3>
+        <p style="color: var(--slate-light); margin-bottom: 32px; line-height: 1.6;">Thao tác này sẽ xóa vĩnh viễn tài khoản người dùng khỏi hệ thống và không thể hoàn tác.</p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button class="btn btn-outline" onclick="userManager.closeDeleteModal()" style="flex: 1; padding: 12px; border-radius: 10px;">Hủy bỏ</button>
+            <button class="btn btn-danger" id="confirmDeleteUserBtn" style="flex: 1; padding: 12px; border-radius: 10px; background: var(--danger); color: white; border: none; cursor: pointer; font-weight: 600;">Xác nhận xóa</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Scripts -->
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/users-manage.js"></script>
+
+<?php include __DIR__ . '/../includes/footer_admin.php'; ?>

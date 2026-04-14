@@ -19,11 +19,11 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 
 <style>
 	:root {
-		--admin-primary: #4361ee;
-		--admin-secondary: #8392a5;
-		--admin-success: #2ec4b6;
-		--admin-warning: #ff9f1c;
-		--admin-bg: #f8f9fa;
+		--admin-primary: #2563eb;
+		--admin-secondary: #64748b;
+		--admin-success: #1e40af;
+		--admin-warning: #3b82f6;
+		--admin-bg: #f8fafc;
 	}
 
 	.admin-main,
@@ -33,22 +33,24 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 
 	.card {
 		transition: transform 0.2s ease, box-shadow 0.2s ease;
-		border: 1px solid rgba(0, 0, 0, 0.05) !important;
+		border: 1px solid #e2e8f0 !important;
+        border-radius: 14px !important;
 	}
 
 	.card:hover {
-		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08) !important;
+		box-shadow: 0 5px 15px rgba(30, 58, 138, 0.08) !important;
 		z-index: 1;
 	}
 
 	.compact-row {
-		--bs-gutter-x: 2px;
-		--bs-gutter-y: 2px;
+		--bs-gutter-x: 8px;
+		--bs-gutter-y: 8px;
 	}
 
 	.service-image-container {
-		background: #fdfdfd;
+		background: #ffffff;
 		position: relative;
+        border: 1px solid #e2e8f0 !important;
 	}
 
 	.service-image-container img {
@@ -66,6 +68,8 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 	.custom-table thead th {
 		border-top: none;
 		letter-spacing: 0.5px;
+        background-color: #f1f5f9 !important;
+        color: #1e3a8a !important;
 	}
 
 	.custom-table tbody tr {
@@ -73,11 +77,11 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 	}
 
 	.custom-table tbody tr:hover {
-		background-color: rgba(67, 97, 238, 0.02);
+		background-color: #f8fafc;
 	}
 
 	.badge {
-		font-weight: 500;
+		font-weight: 600;
 	}
 
 	.ls-1 {

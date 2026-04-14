@@ -3,6 +3,11 @@
 @import "base/reset.css";
 @import "base/typography.css";
 @import "base/global.css";
+/* ===== GLOBAL STYLES ===== */
+/* ===== BASE IMPORTS ===== */
+@import "base/reset.css";
+@import "base/typography.css";
+@import "base/global.css";
 
 /* ===== LAYOUT IMPORTS ===== */
 @import "layout/header.css";
@@ -14,6 +19,7 @@
 @import "components/forms.css";
 @import "components/cards.css";
 @import "components/ui-kit.css";
+@import "components/notifications.css";
 
 /* ===== PAGE IMPORTS ===== */
 @import "pages/landing.css";

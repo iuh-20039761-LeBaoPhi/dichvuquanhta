@@ -97,7 +97,7 @@ let bookingFormLogicPromise = null;
     `;
   }
 
-  function updateDistancePricingBadge(scope, core, total) {
+  function updateDistancePricingBadge(scope, core, total, fallbackText = "") {
     const priceWrap = scope.querySelector(
       "[data-tam-tinh-theo-khoang-cach-dat-lich]",
     );
@@ -107,8 +107,15 @@ let bookingFormLogicPromise = null;
     if (!priceWrap || !priceValue) return;
 
     if (typeof total !== "number" || !Number.isFinite(total) || total < 0) {
-      priceWrap.hidden = true;
-      priceValue.textContent = "";
+      const fallback = String(fallbackText || "").trim();
+      if (!fallback) {
+        priceWrap.hidden = true;
+        priceValue.textContent = "";
+        return;
+      }
+
+      priceValue.textContent = fallback;
+      priceWrap.hidden = false;
       return;
     }
 
@@ -160,7 +167,7 @@ let bookingFormLogicPromise = null;
     );
     const distanceKm = getBookingDistanceKmValue(scope);
     const hasDistance = distanceKm > 0;
-    let distanceFareTotal = null;
+    let distanceDistanceOnlyTotal = null;
     let total = 0;
 
     function addChargeLine({
@@ -216,7 +223,7 @@ let bookingFormLogicPromise = null;
         addChargeLine({
           label: resolvedLabel,
           detail:
-            "Phí khảo sát tiêu chuẩn là 150.000đ/lượt và sẽ được miễn khi bạn chốt đơn, thực hiện chuyển dọn.",
+            "Phí khảo sát tiêu chuẩn là 150.000đ và sẽ được miễn khi bạn chốt đơn, thực hiện chuyển dọn.",
           amount: 0,
           displaySlug: resolvedDisplaySlug,
           quantity: 1,
@@ -273,7 +280,7 @@ let bookingFormLogicPromise = null;
       const transportBeforeMinimum = Math.round(
         billedDistanceKm * appliedRate,
       );
-      distanceFareTotal = transportBeforeMinimum;
+      distanceDistanceOnlyTotal = transportBeforeMinimum;
       addChargeLine({
         label: "Cước xe theo quãng đường",
         detail: `${billedDistanceKm.toFixed(billedDistanceKm >= 10 ? 0 : 1)} km x ${core.formatCurrencyVnd(appliedRate)}${
@@ -284,7 +291,6 @@ let bookingFormLogicPromise = null;
         amount: transportBeforeMinimum,
       });
       if (minimumFee > transportBeforeMinimum) {
-        distanceFareTotal = minimumFee;
         addChargeLine({
           label: "Bù phí tối thiểu",
           detail: `Áp dụng mức tối thiểu của ${vehicleEntry.ten_hien_thi || "loại xe đã chọn"}: ${core.formatCurrencyVnd(minimumFee)}`,
@@ -469,7 +475,7 @@ let bookingFormLogicPromise = null;
       optionCardsHtml,
       breakdownHtml,
       breakdownLines,
-      distanceFareTotal,
+      distanceDistanceOnlyTotal,
       total: vehicleEntry ? total : null,
       totalNote: vehicleEntry
         ? "Giá tạm tính sẽ tự cập nhật ngay khi bạn đổi loại xe, thay đổi số km, vượt ngưỡng 20km hoặc bật thêm phụ phí."
@@ -485,6 +491,7 @@ async function render(scope, deps) {
       loadPricingReference,
       getPricingServiceId,
       normalizePricingDataServiceId,
+      getBookingDistanceKmValue,
     } = deps;
     const pricingRoot = scope.querySelector("[data-gia-tham-khao-dat-lich]");
     if (!pricingRoot) return;
@@ -519,9 +526,15 @@ async function render(scope, deps) {
     const confirmNotes = scope.querySelector("[data-luu-y-xac-nhan-dat-lich]");
     const serviceSelect = scope.querySelector("#loai-dich-vu-dat-lich");
     const pricingServiceId = getPricingServiceId(serviceSelect?.value || "");
+    const hasDistance = Number(getBookingDistanceKmValue(scope) || 0) > 0;
 
     if (!pricingServiceId) {
-      updateDistancePricingBadge(scope, core, null);
+      updateDistancePricingBadge(
+        scope,
+        core,
+        null,
+        hasDistance ? "Chọn dịch vụ để xem cước tạm tính" : "",
+      );
       if (defaultBlock) defaultBlock.hidden = false;
       if (contentBlock) {
         contentBlock.hidden = true;
@@ -552,6 +565,10 @@ async function render(scope, deps) {
       return;
     }
 
+    if (hasDistance) {
+      updateDistancePricingBadge(scope, core, null, "Đang tính...");
+    }
+
     const [pricingData, formLogicConfig] = await Promise.all([
       loadPricingReference(),
       loadBookingFormLogic(core),
@@ -564,7 +581,12 @@ async function render(scope, deps) {
       : null;
 
     if (!serviceData) {
-      updateDistancePricingBadge(scope, core, null);
+      updateDistancePricingBadge(
+        scope,
+        core,
+        null,
+        hasDistance ? "Đang tải cước tạm tính..." : "",
+      );
       if (defaultBlock) defaultBlock.hidden = false;
       if (contentBlock) {
         contentBlock.hidden = true;
@@ -616,7 +638,11 @@ async function render(scope, deps) {
             ? "Chưa đủ dữ liệu"
             : core.formatCurrencyVnd(pricingState.total);
     }
-    updateDistancePricingBadge(scope, core, pricingState.distanceFareTotal);
+    updateDistancePricingBadge(
+      scope,
+      core,
+      pricingState.distanceDistanceOnlyTotal,
+    );
     if (totalHint) {
       totalHint.textContent = pricingState.totalNote;
     }

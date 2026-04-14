@@ -49,23 +49,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập admin chuyển dọn</title>
     <link rel="stylesheet" href="assets/css/admin.css">
 </head>
+
 <body>
     <div class="login-shell">
         <form method="post" class="login-card">
             <div class="login-card__head">
                 <span class="admin-brand__eyebrow">Admin đơn giản</span>
                 <h1>Đăng nhập quản trị</h1>
-                <p>
-                    Cụm admin này đi theo hướng của giao hàng: có session PHP,
-                    tách riêng `public / includes / config / data`, nhưng chỉ giữ
-                    3 màn hình đơn giản cho chuyển dọn.
-                </p>
             </div>
 
             <div class="login-card__body">
@@ -81,12 +78,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="field">
                     <label for="identifier">Tài khoản, email hoặc số điện thoại</label>
-                    <input id="identifier" class="input" type="text" name="identifier" required autocomplete="username" value="<?php echo moving_admin_escape($_POST['identifier'] ?? ''); ?>">
+                    <input id="identifier" class="input" type="text" name="identifier" required autocomplete="username"
+                        value="<?php echo moving_admin_escape($_POST['identifier'] ?? ''); ?>">
                 </div>
 
                 <div class="field" style="margin-top: 14px;">
                     <label for="password">Mật khẩu</label>
-                    <input id="password" class="input" type="password" name="password" required autocomplete="current-password">
+                    <input id="password" class="input" type="password" name="password" required
+                        autocomplete="current-password">
                 </div>
 
                 <div class="form-actions" style="margin-top: 20px;">
@@ -96,4 +95,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 </body>
+
 </html>

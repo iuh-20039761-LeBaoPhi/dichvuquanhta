@@ -90,34 +90,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
-<body class="bg-light d-flex align-items-center min-vh-100">
+<body style="background: radial-gradient(circle at top right, #fdf2f8 0%, #fff5f7 42%, #fff1f2 100%);" class="d-flex align-items-center min-vh-100">
 	<main class="container">
 		<div class="row justify-content-center">
 			<div class="col-12 col-md-8 col-lg-5">
-				<div class="card border-0 shadow-sm rounded-4">
+				<div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="border: 1px solid #fce7f3 !important;">
 					<div class="card-body p-4 p-lg-5">
-						<h1 class="h4 fw-bold text-center mb-1">Dang nhap Admin</h1>
-						<p class="text-secondary text-center mb-4">Quan ly hoa don va nhan vien</p>
+						<div class="text-center mb-4">
+							<div class="d-inline-flex align-items-center justify-content-center bg-pink-100 rounded-circle mb-3" style="width: 80px; height: 80px; background: #fdf2f8; border: 1px solid #fce7f3;">
+								<img src="../assets/logomvb.png" alt="logo" style="width: 50px; height: 50px; object-fit: contain;">
+							</div>
+							<h1 class="h4 fw-bold mb-1" style="color: #831843;">Đăng nhập Admin</h1>
+							<p class="text-secondary small">Hệ thống chăm sóc Mẹ và Bé</p>
+						</div>
 
 						<?php if ($error !== ''): ?>
-							<div class="alert alert-danger py-2"><?= admin_login_h($error) ?></div>
+							<div class="alert alert-danger py-2 small" style="background-color: #fff1f2; border-color: #fecdd3; color: #9d174d;"><?= admin_login_h($error) ?></div>
 						<?php endif; ?>
 
 						<form method="post">
 							<div class="mb-3">
-								<label class="form-label">Email</label>
-								<input type="email" name="email" class="form-control" value="<?= admin_login_h($email) ?>" required>
+								<label class="form-label small fw-bold" style="color: #be185d;">Email</label>
+								<input type="email" name="email" class="form-control rounded-3" style="border-color: #fce7f3; color: #4a044e;" value="<?= admin_login_h($email) ?>" required>
 							</div>
-							<div class="mb-3">
-								<label class="form-label">Mat khau</label>
-								<input type="password" name="password" class="form-control" required>
+							<div class="mb-4">
+								<label class="form-label small fw-bold" style="color: #be185d;">Mật khẩu</label>
+								<input type="password" name="password" class="form-control rounded-3" style="border-color: #fce7f3; color: #4a044e;" required>
 							</div>
-							<button type="submit" class="btn btn-success w-100">
-								<i class="bi bi-box-arrow-in-right me-1"></i>Dang nhap
+							<button type="submit" class="btn w-100 py-2 fw-bold text-white rounded-3 shadow-sm" style="background: linear-gradient(90deg, #ec4899, #db2777); border: none;">
+								<i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
 							</button>
 						</form>
 					</div>
-				</div>
+                </div>
+                <div class="text-center mt-4">
+                    <p class="small" style="color: #be185d;">&copy; 2024 Chăm Sóc Mẹ và Bé - Admin Panel</p>
+                </div>
 			</div>
 		</div>
 	</main>

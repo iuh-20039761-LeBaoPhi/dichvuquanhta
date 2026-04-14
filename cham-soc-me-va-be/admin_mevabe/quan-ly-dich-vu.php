@@ -60,7 +60,7 @@ admin_render_layout_start('Quản Lý Dịch Vụ', 'services', $admin);
 <style>
 .admin-main,
 .admin-main > main {
-	background: #f8f9fa !important;
+	background: #fff5f7 !important;
 }
 .service-page-header {
 	display: flex;
@@ -116,11 +116,11 @@ table td {
 		cursor: pointer;
 		text-decoration: none;
 		color: inherit;
-		border: 1px solid rgba(0,0,0,0.05);
+		border: 1px solid #fce7f3;
 	}
 	.service-item-mobile:active {
 		transform: scale(0.98);
-		background-color: #f0f7ff;
+		background-color: #fff5f7;
 	}
 	.service-img-mobile {
 		width: 60px;
@@ -128,7 +128,7 @@ table td {
 		object-fit: cover;
 		border-radius: 10px;
 		margin-right: 15px;
-		border: 1px solid #eee;
+		border: 1px solid #fce7f3;
 	}
 	.service-info-mobile {
 		flex: 1;
@@ -137,11 +137,11 @@ table td {
 		font-weight: 700;
 		font-size: 1rem;
 		margin-bottom: 4px;
-		color: #333;
+		color: #4a044e;
 	}
 	.service-jobs-mobile {
 		font-size: 0.85rem;
-		color: #888;
+		color: #be185d;
 	}
 	.btn-edit-mobile {
 		position: absolute;
@@ -149,14 +149,14 @@ table td {
 		right: 10px;
 		width: 32px;
 		height: 32px;
-		background: #fff9e6;
-		color: #ffc107;
+		background: #fff5f7;
+		color: #ec4899;
 		border-radius: 8px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border: 1px solid #ffeeba;
-		box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+		border: 1px solid #fce7f3;
+		box-shadow: 0 2px 4px rgba(131, 24, 67, 0.05);
 	}
 	.btn-edit-mobile i {
 		font-size: 0.9rem;

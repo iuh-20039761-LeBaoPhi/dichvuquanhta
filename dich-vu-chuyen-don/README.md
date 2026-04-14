@@ -129,7 +129,7 @@ dich-vu-chuyen-don/
 ## Luồng khảo sát
 
 - Không còn form khảo sát riêng trong runtime.
-- Nhu cầu khảo sát được gộp vào [form-dat-lich.html](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\partials\bieu-mau\form-dat-lich.html) bằng checkbox `Cần nhà cung cấp khảo sát trước (+150.000/lượt)`.
+- Nhu cầu khảo sát được gộp vào [form-dat-lich.html](e:\Thực tập Keri\Task\GlobalCare\dich-vu-chuyen-don\public\assets\partials\bieu-mau\form-dat-lich.html) bằng checkbox `Cần nhà cung cấp khảo sát trước (+150.000)`.
 - `khao-sat.html` chỉ còn vai trò URL cũ để chuyển hướng về `dat-lich.html`.
 
 ## Admin chuyển dọn
@@ -157,7 +157,7 @@ Hiện đã có:
 - Form đặt lịch riêng khỏi landing
 - Hiện/ẩn chi tiết theo từng loại dịch vụ
 - Summary cuối form
-- Checkbox `Cần nhà cung cấp khảo sát trước (+150.000/lượt)` ngay trong bước đầu tiên
+- Checkbox `Cần nhà cung cấp khảo sát trước (+150.000)` ngay trong bước đầu tiên
 - Lưu dữ liệu vào KRUD và đồng bộ Google Sheets
 
 Chưa có:

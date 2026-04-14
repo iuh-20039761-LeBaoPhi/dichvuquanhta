@@ -1,0 +1,165 @@
+/* ===== GLOBAL NOTIFICATIONS (Toasts & Confirm Modals) ===== */
+
+/* Toast Styles */
+.core-toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.core-toast {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 16px 24px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 300px;
+  max-width: 450px;
+  transform: translateX(120%);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0;
+}
+
+.core-toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.core-toast-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.core-toast.success .core-toast-icon { background: #dcfce7; color: #15803d; }
+.core-toast.error .core-toast-icon { background: #fee2e2; color: #b91c1c; }
+.core-toast.warning .core-toast-icon { background: #fef9c3; color: #a16207; }
+
+.core-toast-message {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+/* Modal Styles */
+.core-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.core-modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.core-modal-card {
+  background: white;
+  width: 100%;
+  max-width: 420px;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  transform: scale(0.9);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+}
+
+.core-modal-overlay.show .core-modal-card {
+  transform: scale(1);
+}
+
+.core-modal-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(var(--primary-rgb, 27, 67, 50), 0.1);
+  color: var(--primary-color, #1b4332);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 28px;
+}
+
+.core-modal-icon.danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.core-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.core-modal-body {
+  font-size: 15px;
+  color: #64748b;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.core-modal-footer {
+  display: flex;
+  gap: 12px;
+}
+
+.core-modal-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.core-modal-btn-secondary {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.core-modal-btn-secondary:hover { background: #e2e8f0; }
+
+.core-modal-btn-primary {
+  background: var(--primary-color, #1b4332);
+  color: white;
+}
+
+.core-modal-btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+@media (max-width: 480px) {
+  .core-toast-container {
+    top: auto;
+    bottom: 24px;
+    right: 16px;
+    left: 16px;
+  }
+  .core-toast { min-width: auto; }
+  .core-modal-card { max-width: 90%; }
+}

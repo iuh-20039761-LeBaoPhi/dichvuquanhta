@@ -151,18 +151,18 @@ admin_render_layout_start('Quản Lý Đơn Hàng', 'orders', $admin);
 			text-decoration: none;
 		}
 
-		.order-card-inner {
+	.order-card-inner {
 			background: #fff;
 			border-radius: 12px;
-			box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+			box-shadow: 0 2px 8px rgba(131, 24, 67, 0.08);
 			padding: 16px 18px 12px 18px;
-			border: 1px solid #f0f0f0;
+			border: 1px solid #fce7f3;
 			transition: box-shadow 0.2s;
 		}
 
 		.order-card-mobile:active .order-card-inner,
 		.order-card-mobile:focus .order-card-inner {
-			box-shadow: 0 4px 16px rgba(44, 62, 80, 0.16);
+			box-shadow: 0 4px 16px rgba(131, 24, 67, 0.16);
 		}
 
 		.order-card-row {
@@ -174,19 +174,19 @@ admin_render_layout_start('Quản Lý Đơn Hàng', 'orders', $admin);
 
 		.order-card-id {
 			font-weight: 700;
-			color: #2d7a2d;
+			color: #db2777;
 			font-size: 1.08rem;
 		}
 
 		.order-card-date {
 			font-size: 0.95rem;
-			color: #888;
+			color: #be185d;
 			font-weight: 500;
 		}
 
 		.order-card-customer {
 			font-weight: 700;
-			color: #222;
+			color: #4a044e;
 			font-size: 1.07rem;
 		}
 
@@ -198,14 +198,14 @@ admin_render_layout_start('Quản Lý Đơn Hàng', 'orders', $admin);
 		}
 
 		.order-card-service {
-			color: #555;
+			color: #be185d;
 			font-size: 0.98rem;
 			margin-bottom: 2px;
 			margin-left: 2px;
 		}
 
 		.order-card-price {
-			color: #1976d2;
+			color: #ec4899;
 			font-weight: 700;
 			font-size: 1.15rem;
 			text-align: right;

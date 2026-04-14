@@ -1023,9 +1023,15 @@ const customerInvoiceDetailModule = (function (window, document) {
     root
       .querySelector("[data-invoice-cancel]")
       ?.addEventListener("click", async function (event) {
-        if (!window.confirm("Bạn có chắc muốn hủy yêu cầu này không?")) {
-          return;
-        }
+        const confirmed = await core.confirm({
+          title: "Hủy yêu cầu?",
+          message: "Bạn có chắc chắn muốn hủy yêu cầu chuyển dọn này không? Hành động này không thể hoàn tác.",
+          type: "danger",
+          confirmText: "Xác nhận hủy",
+          cancelText: "Quay lại"
+        });
+
+        if (!confirmed) return;
 
         try {
           const invoiceReference = getInvoiceReference(invoice, event.currentTarget);
@@ -1034,9 +1040,7 @@ const customerInvoiceDetailModule = (function (window, document) {
           );
           renderInvoice(result || null);
         } catch (error) {
-          window.alert(
-            error?.message || "Không thể hủy yêu cầu ở thời điểm hiện tại.",
-          );
+          core.notify(error?.message || "Không thể hủy yêu cầu ở thời điểm hiện tại.", "error");
         }
       });
 
@@ -1056,9 +1060,7 @@ const customerInvoiceDetailModule = (function (window, document) {
           });
           renderInvoice(result || null);
         } catch (error) {
-          window.alert(
-            error?.message || "Không thể lưu đánh giá ở thời điểm hiện tại.",
-          );
+          core.notify(error?.message || "Không thể lưu đánh giá ở thời điểm hiện tại.", "error");
         }
       });
 

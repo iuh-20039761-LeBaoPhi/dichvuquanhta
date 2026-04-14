@@ -19,11 +19,11 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 
 <style>
     :root {
-        --admin-primary: #4361ee;
-        --admin-secondary: #8392a5;
-        --admin-success: #2ec4b6;
-        --admin-warning: #ff9f1c;
-        --admin-bg: #f8f9fa;
+        --admin-primary: #2563eb;
+        --admin-secondary: #64748b;
+        --admin-success: #1e40af;
+        --admin-warning: #3b82f6;
+        --admin-bg: #f8fafc;
     }
 
     .admin-main,
@@ -32,8 +32,13 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
     }
 
     .card {
-        border: 1px solid rgba(0, 0, 0, 0.05) !important;
-        border-radius: 6px;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 14px;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 5px 15px rgba(37, 99, 235, 0.08) !important;
     }
 
     .section-title {
@@ -47,9 +52,9 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
     }
 
     .pricing-table th {
-        background: #f1f4f9;
+        background: #f1f5f9 !important;
         font-size: 0.75rem;
-        color: #555;
+        color: #1e293b;
         border: none !important;
     }
 </style>

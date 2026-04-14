@@ -179,8 +179,8 @@ import core from "./core/app-core.js";
       <section class="phan-bang-gia-so-sanh">
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">So sánh nhanh</span>
-          <h2>Ba nhóm dịch vụ khác nhau ở phụ phí và phạm vi hỗ trợ</h2>
-          <p>Bạn có thể nhìn nhanh đơn giá theo km, nhóm hạng mục chính và mở đúng nội dung trên trang dịch vụ tổng hợp khi cần xem sâu hơn.</p>
+          <h2>Điểm khác biệt của từng dịch vụ</h2>
+          <p>So sánh nhanh đơn giá theo km và các thế mạnh riêng của từng dịch vụ để lựa chọn chính xác phương án vận chuyển tối ưu cho nhu cầu của bạn.</p>
         </div>
         <div class="luoi-so-sanh-dich-vu">
           ${data
@@ -273,63 +273,13 @@ import core from "./core/app-core.js";
     `;
   }
 
-  function buildServiceFormulaSection(data) {
-    return `
-      <section class="phan-cong-thuc-rieng">
-        <div class="dau-muc-trang">
-          <span class="the-thong-tin-nhan">Điểm khác nhau</span>
-          <h2>Mỗi dịch vụ có một nhóm phụ phí đặc thù riêng</h2>
-          <p>Cả 3 nhóm đều tính theo km như nhau. Bảng dưới đây chỉ giữ lại các phần khác nhau để bạn so sánh nhanh và chọn đúng dịch vụ.</p>
-        </div>
-        <div class="bang-so-sanh-cong-thuc-wrapper">
-          <table class="bang-so-sanh-cong-thuc">
-            <thead>
-              <tr>
-                <th scope="col">Dịch vụ</th>
-                <th scope="col">Phù hợp khi</th>
-                <th scope="col">Phần cơ bản</th>
-                <th scope="col">Phát sinh thường gặp</th>
-                <th scope="col">Nên khảo sát trước khi</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${data
-                .map((item) => {
-                  const info = getTransparentInfo(item);
-                  const basicParts = Array.isArray(info.phan_co_ban)
-                    ? info.phan_co_ban
-                    : [];
-                  const extraParts = Array.isArray(info.phan_phat_sinh)
-                    ? info.phan_phat_sinh
-                    : [];
-
-                  return `
-                    <tr>
-                      <th scope="row">
-                        <span class="ten-dich-vu-bang-cong-thuc">${core.escapeHtml(item.ten_dich_vu || "")}</span>
-                      </th>
-                      <td>${core.escapeHtml(info.phu_hop_khi || "")}</td>
-                      <td>${renderInlineList(basicParts, "Loại xe và quãng đường di chuyển")}</td>
-                      <td>${renderInlineList(extraParts, "Chốt thêm theo nhu cầu thực tế")}</td>
-                      <td class="o-noi-bat-bang-cong-thuc">${core.escapeHtml(info.nen_khao_sat_khi || "")}</td>
-                    </tr>
-                  `;
-                })
-                .join("")}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    `;
-  }
-
   function buildSurchargeSection(data) {
     return `
       <section class="phan-phu-phi">
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">Phụ phí phát sinh</span>
-          <h2>Những yếu tố dễ làm giá thay đổi nhất</h2>
-          <p>Đây là các nhóm phụ phí có trong cùng nguồn dữ liệu giá tham khảo của từng dịch vụ, giúp bạn nhìn nhanh yếu tố nào dễ làm chi phí thay đổi. Khảo sát trước cũng chỉ cộng khi khách hàng chủ động chọn.</p>
+          <h2>Những yếu tố ảnh hưởng trực tiếp đến chi phí</h2>
+          <p>Tùy thuộc vào thực tế thi công mà một số hạng mục hỗ trợ ngoài sẽ được áp dụng. Bạn có thể chủ động lựa chọn các dịch vụ đi kèm này để đảm bảo an toàn tuyệt đối cho tài sản (như bọc lót, đóng gói, tháo lắp).</p>
         </div>
         <div class="luoi-phu-phi">
           ${data

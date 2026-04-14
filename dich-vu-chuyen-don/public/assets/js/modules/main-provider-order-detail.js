@@ -1035,7 +1035,7 @@ const providerOrderDetailModule = (function (window, document) {
           render(normalizeDetail(nextRow));
         } catch (error) {
           console.error("Cannot update provider booking action:", error);
-          window.alert(error?.message || "Không thể cập nhật trạng thái đơn hàng lúc này.");
+          core.notify(error?.message || "Không thể cập nhật trạng thái đơn hàng lúc này.", "error");
         }
       });
     });
@@ -1053,7 +1053,7 @@ const providerOrderDetailModule = (function (window, document) {
         render(normalizeDetail(nextRow));
       } catch (error) {
         console.error("Cannot save provider note:", error);
-        window.alert(error?.message || "Không thể lưu ghi chú nhà cung cấp lúc này.");
+        core.notify(error?.message || "Không thể lưu ghi chú nhà cung cấp lúc này.", "error");
       }
     });
   }

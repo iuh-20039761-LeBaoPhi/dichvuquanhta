@@ -593,6 +593,7 @@ const BOOKING_DEFAULT_SLOT_STARTS = [
       renderBookingMapPreview(scope);
       renderFormSummaries(scope);
       updateDistanceAndRoute();
+      renderBookingPricing(scope);
       refreshWeather();
     }
 
@@ -603,6 +604,7 @@ const BOOKING_DEFAULT_SLOT_STARTS = [
       renderBookingMapPreview(scope);
       renderFormSummaries(scope);
       updateDistanceAndRoute();
+      renderBookingPricing(scope);
       updateMapBounds();
       refreshWeather();
     }
