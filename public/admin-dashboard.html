@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Hệ sinh thái Dịch Vụ Quanh Ta</title>
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="asset/css/admin-dashboard.css" />
+</head>
+
+<body class="dvqt-admin">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="asset/image/logo-dich-vu-quanh-ta.png" alt="Logo" class="sidebar-logo">
+                <h3 class="sidebar-brand">DVQT Admin</h3>
+                <button class="btn-close-sidebar d-md-none" id="btnCloseSidebar"><i class="fas fa-times"></i></button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-label">QUẢN LÝ TỔNG THỂ</li>
+                    <li>
+                        <a href="#" class="nav-link active" data-target="danh-muc-dich-vu">
+                            <i class="fas fa-layer-group"></i> Danh mục dịch vụ
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link" data-target="quan-ly-dich-vu">
+                            <i class="fas fa-cogs"></i> Quản lý dịch vụ
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link" data-target="quan-ly-phi">
+                            <i class="fas fa-route"></i> Quản lý phí di chuyển
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="nav-link text-danger w-100 text-start border-0 bg-transparent" id="btnLogout">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Topbar -->
+            <header class="admin-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn-toggle-sidebar d-md-none" id="btnToggleSidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="topbar-title">
+                        <h1 id="pageTitle">Danh mục dịch vụ</h1>
+                    </div>
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="admin-profile">
+                        <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
+                        <span class="profile-name">Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="admin-content-area" id="mainContent">
+
+                <!-- Tab 1: Danh mục dịch vụ -->
+                <section class="content-section active" id="sec-danh-muc-dich-vu">
+                    <div class="section-header">
+                        <h2>Hệ sinh thái dịch vụ</h2>
+                        <p class="text-muted">Chọn một module dịch vụ để chuyển đến trang quản trị dành riêng cho dịch
+                            vụ đó.</p>
+                    </div>
+                    <div class="app-cards-grid" id="appCardsContainer">
+                        <p class="text-center w-100 text-muted"><i class="fas fa-spinner fa-spin"></i> Đang tải danh
+                            sách dịch vụ...</p>
+                    </div>
+                </section>
+
+                <!-- Tab 2: Quản lý dịch vụ (DVQT) -->
+                <section class="content-section" id="sec-quan-ly-dich-vu">
+                    <div class="section-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2>Quản lý danh sách dịch vụ</h2>
+                            <p class="text-muted">Danh sách các danh mục dịch vụ đang được cung cấp trên hệ thống DVQT.
+                            </p>
+                        </div>
+                        <button class="btn btn-primary" id="btnAddService">
+                            <i class="fas fa-plus me-2"></i> Thêm dịch vụ
+                        </button>
+                    </div>
+
+                    <div class="dvqt-card">
+                        <div class="table-responsive">
+                            <table class="table table-hover dvqt-table text-nowrap mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên dịch vụ</th>
+                                        <th>Mô tả</th>
+                                        <th class="text-end">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="serviceTableBody">
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5"><i
+                                                class="fas fa-spinner fa-spin fa-2x text-primary mb-3"></i><br>Đang tải
+                                            dữ liệu...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 3: Quản lý phí di chuyển -->
+                <section class="content-section" id="sec-quan-ly-phi">
+                    <div class="section-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2>Bảng phí di chuyển</h2>
+                            <p class="text-muted">Cấu hình biểu phí vận chuyển cho các dịch vụ.</p>
+                        </div>
+                        <button class="btn btn-primary" id="btnAddFee">
+                            <i class="fas fa-plus me-2"></i> Kích hoạt mẫu phí mới
+                        </button>
+                    </div>
+
+                    <div class="dvqt-card">
+                        <div class="table-responsive">
+                            <table class="table table-hover dvqt-table text-nowrap mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Khoảng cách / Mô tả</th>
+                                        <th>Mức phí (VND)</th>
+                                        <th class="text-end">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feeTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5"><i
+                                                class="fas fa-spinner fa-spin fa-2x text-primary mb-3"></i><br>Đang tải
+                                            dữ liệu...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals cho Quản lý Dịch vụ -->
+    <div class="modal fade" id="modalService" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold" id="modalServiceTitle">Thêm dịch vụ mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formService">
+                        <input type="hidden" id="serviceId">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tên dịch vụ (*)</label>
+                            <input type="text" class="form-control" id="serviceName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Mô tả chi tiết</label>
+                            <textarea class="form-control" id="serviceDesc" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer bg-light border-top-0">
+                    <button type="button" class="btn btn-secondary border-0" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnSaveService">Lưu lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals cho Phí Di Chuyển -->
+    <div class="modal fade" id="modalFee" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold" id="modalFeeTitle">Thêm mức phí mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formFee">
+                        <input type="hidden" id="feeId">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tên loại phí / Mô tả (*)</label>
+                            <input type="text" class="form-control" id="feeType" required
+                                placeholder="Ví dụ: Giờ cao điểm">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Mức phí (VNĐ) (*)</label>
+                            <input type="number" class="form-control" id="feeAmount" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer bg-light border-top-0">
+                    <button type="button" class="btn btn-secondary border-0" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnSaveFee">Lưu lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="asset/js/dvqt-krud.js"></script>
+    <script src="asset/js/dvqt-app.js"></script>
+    <script src="asset/js/admin-dashboard.js"></script>
+</body>
+
+</html>

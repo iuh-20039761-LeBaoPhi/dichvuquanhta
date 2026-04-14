@@ -1729,6 +1729,30 @@
         $('#reviewAttachmentVideoGrid').toggleClass('d-none', true).empty();
       }
 
+      async function fetchRows(table) {
+        if (typeof krudList === 'function') {
+          return await krudList({ table: table });
+        }
+        const res = await fetch('https://api.dvqt.vn/list/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ table: table })
+        });
+        return await res.json();
+      }
+
+      function normalizeRows(res) {
+        if (Array.isArray(res)) return res;
+        if (!res || typeof res !== 'object') return [];
+        if (res.error) throw new Error(res.error);
+        if (res.success === false) throw new Error(res.message || 'API tra ve loi');
+        if (Array.isArray(res.data)) return res.data;
+        if (Array.isArray(res.rows)) return res.rows;
+        if (Array.isArray(res.items)) return res.items;
+        if (Array.isArray(res.result)) return res.result;
+        return [];
+      }
+
       // Render gói dịch vụ và danh sách công việc theo dịch vụ chọn.
       function renderService(service) {
         CURRENT_SERVICE = service;
@@ -1762,10 +1786,47 @@
         updatePackageLockState();
       }
 
-      // Tải services.json và render dịch vụ mặc định.
+      // Tải thông tin dịch vụ từ API bảng dichvu_nguoigia và render dịch vụ mặc định.
       async function initServices() {
-        var response = await fetch('services.json');
-        SERVICES = await response.json();
+        try {
+          const res = await fetchRows('dichvu_nguoigia');
+          SERVICES = normalizeRows(res).map(s => {
+            try {
+              s.includes = typeof s.includes === 'string' ? JSON.parse(s.includes) : (s.includes || []);
+              s.pricing = typeof s.pricing === 'string' ? JSON.parse(s.pricing) : (s.pricing || []);
+            } catch (err) {
+              console.error('Lỗi parse JSON dịch vụ:', s.name, err);
+              s.includes = Array.isArray(s.includes) ? s.includes : [];
+              s.pricing = Array.isArray(s.pricing) ? s.pricing : [];
+            }
+            return s;
+          });
+
+          if (SERVICES.length === 0) {
+            console.warn('Bảng dichvu_nguoigia không có dữ liệu, chuyển sang load services.json');
+            await loadServicesFromJson();
+          } else {
+            renderAfterInit();
+          }
+        } catch (e) {
+          console.error('Lỗi tải danh sách dịch vụ từ API:', e);
+          console.warn('Chuyển sang load services.json do lỗi API');
+          await loadServicesFromJson();
+        }
+      }
+
+      async function loadServicesFromJson() {
+        try {
+          const res = await fetch('services.json');
+          SERVICES = await res.json();
+          renderAfterInit();
+        } catch (e) {
+          console.error('Lỗi tải services.json:', e);
+          alert('Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.');
+        }
+      }
+
+      function renderAfterInit() {
         $('#serviceSelector').empty();
         SERVICES.forEach(function (s) {
           $('#serviceSelector').append('<option value="' + s.id + '">' + s.name + '</option>');

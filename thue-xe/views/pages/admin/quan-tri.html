@@ -375,15 +375,35 @@
             let currentSession = null;
 
             async function checkAuth() {
-                const session = await DVQTApp.checkSession();
-                // Vai trò cho demo là client/provider nhưng admin check riêng hoặc dùng meta role
-                if (!session || !session.logged_in) {
-                    window.location.href = 'dang-nhap.html';
-                    return;
+                const getCookie = (name) => {
+                    const cookies = document.cookie.split(';');
+                    const cookie = cookies.find(c => c.trim().startsWith(name + '='));
+                    return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+                };
+
+                const adminE = getCookie('admin_e');
+                const adminP = getCookie('admin_p');
+
+                if (!adminE || !adminP) {
+                    window.location.href = '../../../../public/admin-login.html';
+                    return Promise.reject("Unauthorized");
                 }
-                currentSession = session;
-                document.getElementById('adminUsernameDisplay').textContent = session.hovaten || session.username;
-                document.getElementById('userAvatar').textContent = (session.hovaten || session.username || 'A').charAt(0).toUpperCase();
+
+                // Verify with backend
+                const adminListData = await DVQTKrud.listTable('admin', { limit: 100 });
+                const isValidAdmin = adminListData.find(x => x.email === adminE && x.matkhau === adminP);
+                
+                if (!isValidAdmin) {
+                    document.cookie = "admin_e=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    document.cookie = "admin_p=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    window.location.href = '../../../../public/admin-login.html';
+                    return Promise.reject("Invalid credentials");
+                }
+
+                currentSession = { email: adminE, logged_in: true, role: 'admin' };
+                const username = adminE.split('@')[0];
+                document.getElementById('adminUsernameDisplay').textContent = username;
+                document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
             }
 
             function loadPage(pageId) {
@@ -433,8 +453,9 @@
 
             document.getElementById('shellLogoutBtn').onclick = async function (e) {
                 e.preventDefault();
-                await DVQTApp.logout();
-                window.location.href = '../../../index.html';
+                document.cookie = "admin_e=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "admin_p=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                window.location.href = '../../../../public/admin-login.html';
             }
 
             // Init

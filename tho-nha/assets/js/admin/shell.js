@@ -5,22 +5,41 @@ window.allOrders = [];
 window.allCategories = [];
 window.allProviders = [];
 
-// Check login
+// Check login via Central SSO
 async function checkAdminLogin() {
     try {
-        const session = await DVQTApp.checkSession();
-        if (!session || !session.logged_in || session.role !== 'admin') {
-            window.location.href = 'dang-nhap.html';
+        const getCookie = (name) => {
+            const cookies = document.cookie.split(';');
+            const cookie = cookies.find(c => c.trim().startsWith(name + '='));
+            return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+        };
+
+        const adminE = getCookie('admin_e');
+        const adminP = getCookie('admin_p');
+        if (!adminE || !adminP) {
+            window.location.href = '../../../public/admin-login.html';
             return;
         }
 
-        const username = session.name || 'Admin';
+        // Verify with backend
+        const adminListData = await window.DVQTKrud.listTable('admin', { limit: 100 });
+        const isValidAdmin = adminListData.find(x => x.email === adminE && x.matkhau === adminP);
+        
+        if (!isValidAdmin) {
+            document.cookie = "admin_e=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "admin_p=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.href = '../../../public/admin-login.html';
+            return;
+        }
+
+        const username = adminE.split('@')[0];
         const el = document.getElementById('adminUsernameDisplay');
         const av = document.getElementById('userAvatar');
         if (el) el.textContent = username;
         if (av) av.textContent = username.charAt(0).toUpperCase();
     } catch (e) {
-        window.location.href = 'dang-nhap.html';
+        console.error("SSO Error:", e);
+        window.location.href = '../../../public/admin-login.html';
     }
 }
 checkAdminLogin();
@@ -57,14 +76,9 @@ function setupNavigation() {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (confirm('Bạn có chắc muốn đăng xuất?')) {
-                if (window.DVQTApp && window.DVQTApp.logout) {
-                    window.DVQTApp.logout().then(() => {
-                        window.location.href = 'dang-nhap.html';
-                    });
-                } else {
-                    localStorage.removeItem('admin_username');
-                    window.location.href = 'dang-nhap.html';
-                }
+                document.cookie = "admin_e=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "admin_p=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                window.location.href = '../../../public/admin-login.html';
             }
         });
     }

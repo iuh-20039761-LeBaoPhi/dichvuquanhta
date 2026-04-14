@@ -809,7 +809,8 @@
                       </button>
                     </div>
                     <div id="mapPickerBox" class="mt-2 d-none">
-                      <div id="mapPickerEl" style="height: 260px; border-radius: 12px; border: 1px solid #f1b8ce"></div>
+                      <div id="mapPickerEl" style="height: 260px; border-radius: 12px; border: 1px solid #f1b8ce">
+                      </div>
                       <div class="form-text">Nhấn vào bản đồ để chọn vị trí chính xác.</div>
                     </div>
                   </div>
@@ -905,7 +906,8 @@
                     <span>Phí di chuyển</span>
                     <span id="travelFee">0 đ</span>
                   </div>
-                  <div id="distanceInfo" class="small text-muted mb-1">Quãng đường và phí di chuyển sẽ được tính tự động
+                  <div id="distanceInfo" class="small text-muted mb-1">Quãng đường và phí di chuyển sẽ
+                    được tính tự động
                     sau khi chọn vị trí.</div>
                   <hr class="my-2" />
                 </div>
@@ -945,18 +947,21 @@
                   <div class="attachment-preview-split">
                     <div class="attachment-pane">
                       <div class="attachment-pane-title">Hình ảnh</div>
-                      <div id="attachmentImageEmpty" class="text-muted small">Chưa có hình ảnh được chọn.</div>
+                      <div id="attachmentImageEmpty" class="text-muted small">Chưa có hình ảnh
+                        được chọn.</div>
                       <div id="attachmentImageGrid" class="attachment-preview-grid d-none"></div>
                     </div>
                     <div class="attachment-pane">
                       <div class="attachment-pane-title">Video</div>
-                      <div id="attachmentVideoEmpty" class="text-muted small">Chưa có video được chọn.</div>
+                      <div id="attachmentVideoEmpty" class="text-muted small">Chưa có video được
+                        chọn.</div>
                       <div id="attachmentVideoGrid" class="attachment-preview-grid d-none"></div>
                     </div>
                   </div>
                 </div>
 
-                <div class="form-text">Nút hiển thị để minh họa giao diện. Ảnh/video chỉ hiển thị tạm, chưa lưu vào hệ
+                <div class="form-text">Nút hiển thị để minh họa giao diện. Ảnh/video chỉ hiển thị tạm,
+                  chưa lưu vào hệ
                   thống.</div>
               </div>
 
@@ -982,7 +987,8 @@
       <div id="reviewPageSection" class="mx-auto d-none" style="max-width: 760px">
         <div class="card border-0 shadow rounded-4 review-shell">
           <div class="card-body p-4">
-            <h5 class="fw-bold mb-3 review-title"><i class="fas fa-clipboard-check me-2"></i>Kiểm Tra Thông Tin Đặt Lịch
+            <h5 class="fw-bold mb-3 review-title"><i class="fas fa-clipboard-check me-2"></i>Kiểm Tra Thông
+              Tin Đặt Lịch
             </h5>
 
             <div class="alert alert-warning small review-alert">
@@ -1037,12 +1043,14 @@
                       <div class="attachment-preview-split">
                         <div class="attachment-pane">
                           <div class="attachment-pane-title">Hình ảnh</div>
-                          <div id="reviewAttachmentImageEmpty" class="text-muted small">Không có hình ảnh tạm.</div>
+                          <div id="reviewAttachmentImageEmpty" class="text-muted small">Không
+                            có hình ảnh tạm.</div>
                           <div id="reviewAttachmentImageGrid" class="attachment-preview-grid d-none"></div>
                         </div>
                         <div class="attachment-pane">
                           <div class="attachment-pane-title">Video</div>
-                          <div id="reviewAttachmentVideoEmpty" class="text-muted small">Không có video tạm.</div>
+                          <div id="reviewAttachmentVideoEmpty" class="text-muted small">Không
+                            có video tạm.</div>
                           <div id="reviewAttachmentVideoGrid" class="attachment-preview-grid d-none"></div>
                         </div>
                       </div>
@@ -1808,10 +1816,47 @@
         updatePackageLockState();
       }
 
-      // Tải services.json và render dịch vụ mặc định.
+      // Tải thông tin dịch vụ từ API bảng dichvu_mevabe và render dịch vụ mặc định.
       async function initServices() {
-        var response = await fetch('services.json');
-        SERVICES = await response.json();
+        try {
+          const res = await fetchRows('dichvu_mevabe');
+          SERVICES = normalizeRows(res).map(s => {
+            try {
+              s.includes = typeof s.includes === 'string' ? JSON.parse(s.includes) : (s.includes || []);
+              s.pricing = typeof s.pricing === 'string' ? JSON.parse(s.pricing) : (s.pricing || []);
+            } catch (err) {
+              console.error('Lỗi parse JSON dịch vụ:', s.name, err);
+              s.includes = Array.isArray(s.includes) ? s.includes : [];
+              s.pricing = Array.isArray(s.pricing) ? s.pricing : [];
+            }
+            return s;
+          });
+
+          if (SERVICES.length === 0) {
+            console.warn('Bảng dichvu_mevabe không có dữ liệu, chuyển sang load services.json');
+            await loadServicesFromJson();
+          } else {
+            renderAfterInit();
+          }
+        } catch (e) {
+          console.error('Lỗi tải danh sách dịch vụ từ API:', e);
+          console.warn('Chuyển sang load services.json do lỗi API');
+          await loadServicesFromJson();
+        }
+      }
+
+      async function loadServicesFromJson() {
+        try {
+          const res = await fetch('services.json');
+          SERVICES = await res.json();
+          renderAfterInit();
+        } catch (e) {
+          console.error('Lỗi tải services.json:', e);
+          alert('Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.');
+        }
+      }
+
+      function renderAfterInit() {
         $('#serviceSelector').empty();
         SERVICES.forEach(function (s) {
           $('#serviceSelector').append('<option value="' + s.id + '">' + s.name + '</option>');
@@ -1826,7 +1871,7 @@
       try {
         await initServices();
       } catch (e) {
-        alert('Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.');
+        console.error(e);
         return;
       }
 
