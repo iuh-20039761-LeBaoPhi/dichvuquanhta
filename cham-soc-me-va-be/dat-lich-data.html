@@ -1848,19 +1848,40 @@
                         return s;
                     });
 
-                    $('#serviceSelector').empty();
-                    SERVICES.forEach(function (s) {
-                        $('#serviceSelector').append('<option value="' + s.id + '">' + s.name + '</option>');
-                    });
-
-                    var defaultService = PRESELECT_SERVICE_ID
-                        ? SERVICES.find(function (s) { return String(s.id) === String(PRESELECT_SERVICE_ID); })
-                        : null;
-                    renderService(defaultService || SERVICES[0]);
+                    if (SERVICES.length === 0) {
+                        console.warn('Bảng dichvu_mevabe không có dữ liệu, chuyển sang load services.json');
+                        await loadServicesFromJson();
+                    } else {
+                        renderAfterInit();
+                    }
                 } catch (e) {
-                    console.error('Lỗi tải danh sách dịch vụ:', e);
+                    console.error('Lỗi tải danh sách dịch vụ từ API:', e);
+                    console.warn('Chuyển sang load services.json do lỗi API');
+                    await loadServicesFromJson();
+                }
+            }
+
+            async function loadServicesFromJson() {
+                try {
+                    const res = await fetch('services.json');
+                    SERVICES = await res.json();
+                    renderAfterInit();
+                } catch (e) {
+                    console.error('Lỗi tải services.json:', e);
                     alert('Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.');
                 }
+            }
+
+            function renderAfterInit() {
+                $('#serviceSelector').empty();
+                SERVICES.forEach(function (s) {
+                    $('#serviceSelector').append('<option value="' + s.id + '">' + s.name + '</option>');
+                });
+
+                var defaultService = PRESELECT_SERVICE_ID
+                    ? SERVICES.find(function (s) { return String(s.id) === String(PRESELECT_SERVICE_ID); })
+                    : null;
+                renderService(defaultService || SERVICES[0]);
             }
 
             try {
