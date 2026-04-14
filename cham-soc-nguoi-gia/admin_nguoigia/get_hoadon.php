@@ -96,3 +96,30 @@ if (!function_exists('hoadon_status_meta')) {
         ];
     }
 }
+if (!function_exists('get_work_history_by_datlich_id')) {
+    function get_work_history_by_datlich_id(int $id_datlich): array
+    {
+        if ($id_datlich <= 0) {
+            return ['rows' => [], 'error' => 'Ma dat lich khong hop le.'];
+        }
+
+        $result = admin_api_list_table('lich_su_lam_viec_nguoigia');
+        $rows = is_array($result['rows'] ?? null) ? $result['rows'] : [];
+
+        $filtered = [];
+        foreach ($rows as $row) {
+            if ((int) ($row['id_dv'] ?? 0) === $id_datlich) {
+                $filtered[] = $row;
+            }
+        }
+
+        usort($filtered, static function (array $a, array $b): int {
+            return (int) ($a['id'] ?? 0) <=> (int) ($b['id'] ?? 0);
+        });
+
+        return [
+            'rows' => $filtered,
+            'error' => (string) ($result['error'] ?? ''),
+        ];
+    }
+}
