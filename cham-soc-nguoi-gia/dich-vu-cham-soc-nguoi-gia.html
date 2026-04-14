@@ -433,7 +433,7 @@
           const res = await fetch('https://api.dvqt.vn/list/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ table: 'dichvu_mevabe' })
+            body: JSON.stringify({ table: 'dichvu_nguoigia' })
           }).then(r => r.json());
 
           SERVICES = normalizeRows(res);
