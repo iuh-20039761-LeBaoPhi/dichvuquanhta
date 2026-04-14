@@ -279,7 +279,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
+
   <!-- KRUD API -->
   <script src="https://api.dvqt.vn/js/krud.js"></script>
   <script>
@@ -326,7 +326,7 @@
       function renderServiceCards(list) {
         var $container = $('#servicesContainer');
         $container.empty();
-        
+
         if (!list || list.length === 0) {
           $container.html('<div class="text-center py-5"><p class="text-muted">Không tìm thấy dịch vụ nào.</p></div>');
           return;
@@ -335,7 +335,7 @@
         list.forEach(function (service, index) {
           var reverse = index % 2 ? 'flex-lg-row-reverse' : '';
           var serviceAlt = (service.alt || service.name || 'Dịch vụ chăm sóc mẹ và bé').replace(/"/g, '&quot;');
-          
+
           // Xử lý includes (có thể là mảng hoặc JSON string hoặc newline string)
           var includesArr = [];
           if (Array.isArray(service.includes)) {
@@ -344,7 +344,7 @@
             try {
               var parsed = JSON.parse(service.includes);
               includesArr = Array.isArray(parsed) ? parsed : [service.includes];
-            } catch(e) {
+            } catch (e) {
               includesArr = service.includes.split('\n').filter(item => item.trim() !== '');
             }
           }
@@ -409,9 +409,27 @@
           }).then(r => r.json());
 
           SERVICES = normalizeRows(res);
-          renderServiceCards(SERVICES);
+
+          if (SERVICES.length === 0) {
+            console.warn('Bảng dichvu_mevabe không có dữ liệu, chuyển sang load services.json');
+            await loadServicesFromJson();
+          } else {
+            renderServiceCards(SERVICES);
+          }
         } catch (error) {
-          console.error('Lỗi load danh sách dịch vụ:', error);
+          console.error('Lỗi load danh sách dịch vụ từ API:', error);
+          console.warn('Chuyển sang load services.json do lỗi API');
+          await loadServicesFromJson();
+        }
+      }
+
+      async function loadServicesFromJson() {
+        try {
+          const response = await fetch('services.json');
+          SERVICES = await response.json();
+          renderServiceCards(SERVICES);
+        } catch (jsonError) {
+          console.error('Lỗi load services.json:', jsonError);
           $('#servicesContainer').html(
             '<div class="alert alert-warning text-center">Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.</div>'
           );

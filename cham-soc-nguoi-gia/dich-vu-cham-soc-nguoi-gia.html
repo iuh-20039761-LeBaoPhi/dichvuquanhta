@@ -164,7 +164,15 @@
   <!-- Services Detail -->
   <section class="py-5">
     <div class="container py-lg-5">
-      <div id="servicesContainer"></div>
+      <div id="servicesContainer">
+        <!-- Dữ liệu được load từ API krud -->
+        <div class="text-center py-5">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Đang tải...</span>
+          </div>
+          <p class="mt-2 text-muted">Đang tải danh sách dịch vụ...</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -298,6 +306,28 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- KRUD API -->
+  <script src="https://api.dvqt.vn/js/krud.js"></script>
+  <script>
+    if (typeof krud === 'undefined') {
+      console.warn('krud chưa load, tạo fallback');
+
+      const KRUD_API_URL = "https://api.dvqt.vn";
+
+      function krud(action, table, data = {}, id = null) {
+        const payload = { action, table, data };
+        if (id !== null) payload.id = id;
+
+        return fetch(KRUD_API_URL + "/krud/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).then(res => res.json());
+      }
+    }
+  </script>
+
   <script>
     $(document).ready(async function () {
       var SERVICES = [];
@@ -322,17 +352,38 @@
       }
 
       function renderServiceCards(list) {
-        $('#servicesContainer').empty();
+        var $container = $('#servicesContainer');
+        $container.empty();
+
+        if (!list || list.length === 0) {
+          $container.html('<div class="text-center py-5"><p class="text-muted">Không tìm thấy dịch vụ nào.</p></div>');
+          return;
+        }
+
         list.forEach(function (service, index) {
           var reverse = index % 2 ? 'flex-lg-row-reverse' : '';
-          var serviceAlt = (service.alt || service.name || 'Dich vu cham soc me va be').replace(/"/g, '&quot;');
-          var includesHTML = service.includes
+          var serviceAlt = (service.alt || service.name || 'Dịch vụ chăm sóc người cao tuổi').replace(/"/g, '&quot;');
+
+          // Xử lý includes (có thể là mảng hoặc JSON string hoặc newline string)
+          var includesArr = [];
+          if (Array.isArray(service.includes)) {
+            includesArr = service.includes;
+          } else if (typeof service.includes === 'string') {
+            try {
+              var parsed = JSON.parse(service.includes);
+              includesArr = Array.isArray(parsed) ? parsed : [service.includes];
+            } catch (e) {
+              includesArr = service.includes.split('\n').filter(item => item.trim() !== '');
+            }
+          }
+
+          var includesHTML = includesArr
             .map(function (item) {
               return '<li class="py-2" style="color:#555"><i class="fas fa-check me-2" style="color:#2e7d32"></i>' + item + '</li>';
             })
             .join('');
 
-          $('#servicesContainer').append(
+          $container.append(
             '<div class="row align-items-center mb-5 g-5 ' +
             reverse +
             '">' +
@@ -365,14 +416,55 @@
         });
       }
 
-      try {
-        var response = await fetch('services.json');
-        SERVICES = await response.json();
-        renderServiceCards(SERVICES);
-      } catch (error) {
-        console.error('Lỗi load services.json:', error);
-        alert('Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.');
+      function normalizeRows(res) {
+        if (Array.isArray(res)) return res;
+        if (!res || typeof res !== 'object') return [];
+        if (res.error) throw new Error(res.error);
+        if (res.success === false) throw new Error(res.message || 'API trả về lỗi');
+        if (Array.isArray(res.data)) return res.data;
+        if (Array.isArray(res.rows)) return res.rows;
+        if (Array.isArray(res.items)) return res.items;
+        if (Array.isArray(res.result)) return res.result;
+        return [];
       }
+
+      async function loadServices() {
+        try {
+          const res = await fetch('https://api.dvqt.vn/list/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ table: 'dichvu_nguoigia' })
+          }).then(r => r.json());
+
+          SERVICES = normalizeRows(res);
+
+          if (SERVICES.length === 0) {
+            console.warn('Bảng dichvu_nguoigia không có dữ liệu, chuyển sang load services.json');
+            await loadServicesFromJson();
+          } else {
+            renderServiceCards(SERVICES);
+          }
+        } catch (error) {
+          console.error('Lỗi load danh sách dịch vụ từ API:', error);
+          console.warn('Chuyển sang load services.json do lỗi API');
+          await loadServicesFromJson();
+        }
+      }
+
+      async function loadServicesFromJson() {
+        try {
+          const response = await fetch('services.json');
+          SERVICES = await response.json();
+          renderServiceCards(SERVICES);
+        } catch (jsonError) {
+          console.error('Lỗi load services.json:', jsonError);
+          $('#servicesContainer').html(
+            '<div class="alert alert-warning text-center">Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.</div>'
+          );
+        }
+      }
+
+      loadServices();
 
       $(document).on('click', '.btn-book', function () {
         openBookingModal($(this).data('id'));
