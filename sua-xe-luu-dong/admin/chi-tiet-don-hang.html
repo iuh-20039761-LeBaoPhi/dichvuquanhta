@@ -14,8 +14,7 @@
         id="asideMount"
         data-aside-src="partials/aside.html"
         data-logo-src="../public/asset/image/logo-sua-xe-luu-dong.png"
-        data-logout-href="dang-nhap-admin.html"
-        data-logout-api="../public/logout.php"
+        data-logout-href="../../public/admin-login.html"
       ></div>
 
       <main class="content-shell">
@@ -100,7 +99,9 @@
 
                 <div class="hero-header-center">
                   <span class="hero-total-label">TỔNG TIỀN</span>
-                  <div class="hero-total-amount" id="heroTotalAmount">0 VND</div>
+                  <div class="hero-total-amount" id="heroTotalAmount">
+                    0 VND
+                  </div>
                   <!-- <span class="hero-total-sub">Phí di chuyển + Giá dịch vụ</span> -->
                 </div>
 
@@ -159,15 +160,27 @@
                 </div>
                 <div class="invoice-panel-body">
                   <div class="vehicle-info-grid mb-3">
-                    <p class="mb-1">Loại xe: <strong id="detailVehicleType">---</strong></p>
-                    <p class="mb-1">Hãng xe: <strong id="detailVehicleBrand">---</strong></p>
-                    <p class="mb-1">Mẫu xe: <strong id="detailVehicleModel">---</strong></p>
+                    <p class="mb-1">
+                      Loại xe: <strong id="detailVehicleType">---</strong>
+                    </p>
+                    <p class="mb-1">
+                      Hãng xe: <strong id="detailVehicleBrand">---</strong>
+                    </p>
+                    <p class="mb-1">
+                      Mẫu xe: <strong id="detailVehicleModel">---</strong>
+                    </p>
                   </div>
-                  <hr>
+                  <hr />
                   <div class="task-note-grid">
                     <article class="task-note-box w-100">
                       <p class="task-note-label">Mô tả chi tiết vấn đề</p>
-                      <p class="task-note-value" id="detailNote" style="font-size: 1.1rem; color: #2d3748;">---</p>
+                      <p
+                        class="task-note-value"
+                        id="detailNote"
+                        style="font-size: 1.1rem; color: #2d3748"
+                      >
+                        ---
+                      </p>
                     </article>
                   </div>
                 </div>
@@ -197,20 +210,20 @@
 
                   <div class="status-dates-grid mt-3 pt-3 border-top">
                     <div class="status-line mb-2">
-                        <span>Ngày đặt lịch:</span>
-                        <b id="heroBookingDate">---</b>
+                      <span>Ngày đặt lịch:</span>
+                      <b id="heroBookingDate">---</b>
                     </div>
                     <div class="status-line mb-2">
-                        <span>Ngày nhận:</span>
-                        <b id="heroReceivedDate">---</b>
+                      <span>Ngày nhận:</span>
+                      <b id="heroReceivedDate">---</b>
                     </div>
                     <div class="status-line mb-2">
-                        <span>Ngày bắt đầu:</span>
-                        <b id="heroStartedDate">---</b>
+                      <span>Ngày bắt đầu:</span>
+                      <b id="heroStartedDate">---</b>
                     </div>
                     <div class="status-line mb-0">
-                        <span>Ngày hoàn thành:</span>
-                        <b id="heroCompletedDate">---</b>
+                      <span>Ngày hoàn thành:</span>
+                      <b id="heroCompletedDate">---</b>
                     </div>
                   </div>
                 </div>
@@ -299,7 +312,9 @@
                   <article class="review-card">
                     <div class="review-card-head">
                       <h4>Đánh giá khách hàng</h4>
-                      <span class="panel-chip warn" id="reviewCustomerChip">Chưa có</span>
+                      <span class="panel-chip warn" id="reviewCustomerChip"
+                        >Chưa có</span
+                      >
                     </div>
                     <div class="review-card-body">
                       <p class="review-label">Nội dung đánh giá</p>
@@ -318,7 +333,9 @@
                   <article class="review-card">
                     <div class="review-card-head">
                       <h4>Đánh giá nhà cung cấp</h4>
-                      <span class="panel-chip warn" id="reviewProviderChip">Chưa có</span>
+                      <span class="panel-chip warn" id="reviewProviderChip"
+                        >Chưa có</span
+                      >
                     </div>
                     <div class="review-card-body">
                       <p class="review-label">Nội dung đánh giá</p>
