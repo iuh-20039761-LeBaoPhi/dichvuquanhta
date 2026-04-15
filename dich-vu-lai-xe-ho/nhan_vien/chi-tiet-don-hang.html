@@ -1,0 +1,2308 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Chi tiết đơn hàng thuê tài xế</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://api.dvqt.vn/js/krud.js"></script>
+	<style>
+		/* Ẩn topbar và điều chỉnh layout khi được nhúng vào trong shell header-shared (SPA) */
+		.nv-admin-shell .topbar {
+			display: none !important;
+		}
+
+		.nv-admin-shell .page {
+			padding: 0;
+			min-height: auto;
+			display: block;
+		}
+
+		.nv-admin-shell .modal-card {
+			width: 100%;
+			border-radius: 0;
+			box-shadow: none;
+			border: 0;
+			transform: none !important;
+			animation: none !important;
+			opacity: 1 !important;
+		}
+	</style>
+	<style>
+		:root {
+			--bg: #e8f4ff;
+			--surface: #ffffff;
+			--surface-soft: #f0f8ff;
+			--text: #1a2a3a;
+			--muted: #4a6a8a;
+			--primary: #007bff;
+			--success: #28a745;
+			--warning: #ffc107;
+			--danger: #dc3545;
+			--border: #c5e0f5;
+			--shadow: 0 20px 45px rgba(0, 123, 255, 0.12);
+			--radius-xl: 22px;
+			--radius-lg: 16px;
+			--radius-md: 12px;
+			--anim: 260ms cubic-bezier(.2, .7, .2, 1);
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			min-height: 100%;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			color: var(--text);
+			background:
+				radial-gradient(circle at 20% -10%, #d4e8ff 0, transparent 42%),
+				radial-gradient(circle at 95% 120%, #d4f5e8 0, transparent 38%),
+				var(--bg);
+		}
+
+		.page {
+			min-height: 100vh;
+			display: grid;
+			place-items: center;
+			padding: 24px;
+		}
+
+		.modal-card {
+			width: min(1240px, 100%);
+			border-radius: var(--radius-xl);
+			background: linear-gradient(180deg, #ffffff 0%, #f5faff 100%);
+			box-shadow: var(--shadow);
+			border: 1px solid rgba(0, 123, 255, 0.08);
+			overflow: visible;
+			transform: translateY(8px);
+			opacity: 0;
+			animation: showCard 520ms var(--anim) forwards;
+		}
+
+		@keyframes showCard {
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		.topbar {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr) auto;
+			gap: 14px;
+			align-items: center;
+			padding: 20px 24px;
+			background: linear-gradient(100deg, #007bff, #00b4d8);
+			color: #fff;
+			position: sticky;
+			top: 0;
+			z-index: 50;
+			box-shadow: 0 10px 24px rgba(0, 86, 179, 0.25);
+		}
+
+		.topbar-logo {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 98px;
+			height: 66px;
+			padding: 6px;
+			border-radius: 14px;
+			border: 1px solid rgba(255, 255, 255, 0.34);
+			background: rgba(255, 255, 255, 0.14);
+			box-shadow: 0 10px 22px rgba(0, 86, 179, 0.2);
+			backdrop-filter: blur(4px);
+			transition: transform var(--anim), background var(--anim), border-color var(--anim);
+		}
+
+		.topbar-logo:hover {
+			transform: translateY(-2px);
+			background: rgba(255, 255, 255, 0.22);
+			border-color: rgba(255, 255, 255, 0.5);
+		}
+
+		.topbar-logo img {
+			width: 74px;
+			height: 50px;
+			object-fit: contain;
+			filter: drop-shadow(0 4px 8px rgba(0, 86, 179, 0.35));
+		}
+
+		.topbar-title {
+			margin: 0;
+			font-size: clamp(1.05rem, 1.5vw, 1.5rem);
+			font-weight: 700;
+			letter-spacing: .2px;
+			text-align: center;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.topbar-meta {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.chip {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 7px 12px;
+			border-radius: 999px;
+			border: 1px solid rgba(255, 255, 255, 0.35);
+			font-size: 12px;
+			font-weight: 700;
+			background: rgba(255, 255, 255, 0.15);
+			color: #fff;
+			backdrop-filter: blur(4px);
+		}
+
+		.content {
+			padding: 18px;
+		}
+
+		.state {
+			border-radius: var(--radius-md);
+			padding: 14px 16px;
+			margin: 0 0 16px;
+			font-weight: 600;
+			border: 1px solid;
+			display: none;
+		}
+
+		.state.show {
+			display: block;
+		}
+
+		.state.info {
+			background: #e3f2fd;
+			border-color: #90caf9;
+			color: #1565c0;
+		}
+
+		.state.error {
+			background: #ffebee;
+			border-color: #ef9a9a;
+			color: #c62828;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 14px;
+		}
+
+		.panel {
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			background: var(--surface);
+			box-shadow: 0 7px 20px rgba(0, 86, 179, 0.06);
+			padding: 14px;
+			min-height: 205px;
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		.panel-wide {
+			grid-column: 1 / -1;
+		}
+
+		.panel-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+		}
+
+		.panel-title {
+			margin: 0;
+			font-size: 16px;
+			font-weight: 700;
+			color: #1565c0;
+		}
+
+		.badge {
+			padding: 5px 10px;
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 700;
+			letter-spacing: .2px;
+			background: #e3f2fd;
+			color: #1565c0;
+			white-space: nowrap;
+		}
+
+		.badge.success {
+			background: #e8f5e9;
+			color: #2e7d32;
+		}
+
+		.badge.warning {
+			background: #fff3e0;
+			color: #e68a2e;
+		}
+
+		.badge.danger {
+			background: #ffebee;
+			color: #c62828;
+		}
+
+		.info-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px 12px;
+		}
+
+		.field {
+			border: 1px dashed #c5e0f5;
+			border-radius: 10px;
+			padding: 8px 10px;
+			background: var(--surface-soft);
+		}
+
+		.field-label {
+			font-size: 11px;
+			font-weight: 700;
+			color: var(--muted);
+			margin: 0 0 4px;
+			text-transform: uppercase;
+			letter-spacing: .5px;
+		}
+
+		.field-value {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 600;
+			word-break: break-word;
+		}
+
+		#panelInvoice {
+			padding: 0;
+			min-height: auto;
+			border: 0;
+			box-shadow: none;
+			background: transparent;
+		}
+
+		.invoice-hero {
+			border-radius: 16px 16px 16px 16px;
+			padding: 16px;
+			color: #ffffff;
+			background: linear-gradient(118deg, #007bff 0%, #00b4d8 48%, #40c4ff 100%);
+		}
+
+		.invoice-main {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 14px;
+			margin-bottom: 14px;
+		}
+
+		.invoice-headline {
+			display: grid;
+			gap: 10px;
+			flex: 1;
+		}
+
+		.invoice-title-line {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			flex-wrap: wrap;
+		}
+
+		.invoice-order-title {
+			margin: 0;
+			font-size: clamp(1.1rem, 2vw, 1.7rem);
+			font-weight: 700;
+		}
+
+		.invoice-status-badge {
+			display: inline-flex;
+			align-items: center;
+			padding: 5px 10px;
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 700;
+			background: rgba(255, 255, 255, 0.25);
+			border: 1px solid rgba(255, 255, 255, 0.35);
+			color: #ffffff;
+		}
+
+		.invoice-status-badge.success {
+			background: #28a745;
+		}
+
+		.invoice-status-badge.warning {
+			background: #ffc107;
+			color: #333;
+		}
+
+		.invoice-status-badge.danger {
+			background: #dc3545;
+		}
+
+		.invoice-subtitle {
+			margin: 0;
+			font-size: 19px;
+			font-weight: 600;
+			opacity: .95;
+		}
+
+		.invoice-chip-btn {
+			display: inline-flex;
+			align-items: center;
+			padding: 7px 11px;
+			border-radius: 999px;
+			font-size: 12px;
+			font-weight: 700;
+			background: rgba(255, 255, 255, 0.12);
+			border: 1px solid rgba(255, 255, 255, 0.28);
+		}
+
+		.invoice-progress-ring {
+			--p: 0;
+			width: 122px;
+			height: 122px;
+			border-radius: 50%;
+			background: conic-gradient(#b4f3d2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.25) 0);
+			padding: 7px;
+			flex: 0 0 auto;
+		}
+
+		.invoice-progress-core {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			background: rgba(0, 86, 179, 0.44);
+			display: grid;
+			place-content: center;
+			text-align: center;
+			backdrop-filter: blur(4px);
+		}
+
+		.invoice-progress-core strong {
+			font-size: 34px;
+			line-height: 1;
+		}
+
+		.invoice-progress-core small {
+			font-size: 12px;
+			font-weight: 700;
+			opacity: .9;
+		}
+
+		.invoice-summary {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.invoice-item {
+			display: flex;
+			gap: 9px;
+			align-items: flex-start;
+			border: 1px solid rgba(0, 123, 255, 0.25);
+			background: rgba(0, 123, 255, 0.1);
+			border-radius: 12px;
+			padding: 10px 12px;
+			min-height: 96px;
+		}
+
+		.invoice-item-icon {
+			width: 27px;
+			height: 27px;
+			border-radius: 999px;
+			border: 1px solid rgba(255, 255, 255, 0.4);
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 11px;
+			font-weight: 700;
+			background: rgba(255, 255, 255, 0.576);
+			color: #007bff;
+			flex: 0 0 27px;
+			margin-top: 2px;
+		}
+
+		.invoice-item-content {
+			display: grid;
+			gap: 2px;
+			min-width: 0;
+		}
+
+		.invoice-item-content p {
+			margin: 0;
+			font-size: 11px;
+			font-weight: 600;
+			opacity: .85;
+		}
+
+		.invoice-item-content h4 {
+			margin: 0;
+			font-size: clamp(1.05rem, 1.6vw, 1.9rem);
+			font-weight: 700;
+			line-height: 1.15;
+			word-break: break-word;
+		}
+
+		.invoice-item-content span {
+			font-size: 11px;
+			font-weight: 600;
+			opacity: .9;
+		}
+
+		#invoicePrice {
+			font-size: clamp(1.45rem, 2vw, 2.25rem);
+			line-height: 1.08;
+		}
+
+		#invoiceTimeRange {
+			font-size: clamp(1.2rem, 1.5vw, 1.75rem);
+		}
+
+		#invoiceDate {
+			display: inline-block;
+			margin-top: 2px;
+		}
+
+		.invoice-item.address #invoiceAddress {
+			font-size: clamp(0.9rem, 1.05vw, 1.1rem);
+			line-height: 1.35;
+			display: block;
+			white-space: normal;
+			overflow: visible;
+			word-break: break-word;
+		}
+
+		#panelJobs {
+			padding: 0;
+			overflow: hidden;
+			gap: 0;
+			border-color: #c5e0f5;
+		}
+
+		.jobs-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			padding: 12px 14px;
+			background: #e8f4ff;
+			border-bottom: 1px solid #c5e0f5;
+		}
+
+		.jobs-title {
+			margin: 0;
+			font-size: 27px;
+			font-weight: 700;
+			color: #1565c0;
+		}
+
+		.job-count {
+			display: inline-flex;
+			align-items: center;
+			padding: 6px 10px;
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 700;
+			color: #2e7d32;
+			background: #e8f5e9;
+			border: 1px solid #a5d6a7;
+			white-space: nowrap;
+		}
+
+		.jobs-body {
+			padding: 12px;
+			background: #f0f8ff;
+		}
+
+		#panelJobs #invoiceJob {
+			background: transparent;
+			padding: 0;
+			margin: 0;
+			gap: 10px;
+		}
+
+		#panelJobs #invoiceJob li {
+			background: rgba(255, 255, 255, 0.35);
+			border: 1px solid #c5e0f5;
+			border-radius: 10px;
+			padding: 10px;
+		}
+
+		.jobs-meta {
+			padding: 10px;
+			border-top: 1px solid #c5e0f5;
+			background: #fff;
+		}
+
+		.invoice-extra {
+			border: 1px solid #c5e0f5;
+			border-top: 0;
+			border-radius: 0 0 14px 14px;
+			background: #fff;
+			padding: 12px;
+			display: grid;
+			gap: 10px;
+		}
+
+		.invoice-extra-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+		}
+
+		.invoice-extra-item {
+			border: 1px solid #c5e0f5;
+			background: #e8f4ff;
+			border-radius: 8px;
+			padding: 8px 10px;
+		}
+
+		.invoice-extra-item.full-width {
+			grid-column: 1 / -1;
+		}
+
+		.invoice-extra .field-label {
+			color: #1565c0;
+			font-size: 10px;
+		}
+
+		.invoice-extra .field-value {
+			font-size: 13px;
+			font-weight: 700;
+			color: #0d47a1;
+		}
+
+		#invoiceJob {
+			list-style: none;
+			margin: 0;
+			padding: 8px;
+			border-radius: 10px;
+			background: #e8f5e9;
+			display: grid;
+			gap: 8px;
+			counter-reset: job-item;
+		}
+
+		#invoiceJob li {
+			counter-increment: job-item;
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			font-size: 13px;
+			font-weight: 600;
+			line-height: 1.45;
+			color: #1a5d9c;
+		}
+
+		#invoiceJob li::before {
+			content: counter(job-item);
+			flex: 0 0 22px;
+			height: 22px;
+			border-radius: 999px;
+			background: #007bff;
+			color: #fff;
+			font-size: 12px;
+			font-weight: 700;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: 1px;
+		}
+
+		#panelCustomer,
+		#panelStaff {
+			padding: 0;
+			overflow: hidden;
+			gap: 0;
+			border-color: #c5e0f5;
+		}
+
+		.profile-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px;
+			padding: 12px 14px;
+			border-bottom: 1px solid #c5e0f5;
+			background: #e8f4ff;
+		}
+
+		.profile-title {
+			margin: 0;
+			font-size: 18px;
+			font-weight: 700;
+			color: #1565c0;
+		}
+
+		.profile-status {
+			border-radius: 999px;
+			padding: 5px 10px;
+			font-size: 11px;
+			font-weight: 700;
+		}
+
+		.profile-body {
+			padding: 14px;
+			display: grid;
+			grid-template-columns: 88px 1fr;
+			gap: 14px;
+			align-items: start;
+		}
+
+		.profile-avatar {
+			width: 88px;
+			height: 88px;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 3px solid #c5e0f5;
+			background: #e8f4ff;
+		}
+
+		.profile-main {
+			display: grid;
+			gap: 7px;
+		}
+
+		.profile-name {
+			margin: 0;
+			font-size: 22px;
+			font-weight: 700;
+			line-height: 1.25;
+			color: #0d47a1;
+		}
+
+		.profile-rate {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 700;
+			color: #1565c0;
+		}
+
+		.profile-contact {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 700;
+			color: #1a5d9c;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			word-break: break-word;
+		}
+
+		.profile-contact span {
+			word-break: break-word;
+		}
+
+		.profile-rate .star {
+			color: #ffc107;
+			margin-right: 4px;
+		}
+
+		.profile-row {
+			margin: 0;
+			font-size: 15px;
+			font-weight: 700;
+			color: #1a5d9c;
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			word-break: break-word;
+		}
+
+		.profile-row::before,
+		.profile-contact::before {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 18px;
+			height: 18px;
+			border-radius: 999px;
+			background: #e3f2fd;
+			color: #007bff;
+			font-size: 11px;
+			line-height: 1;
+			font-weight: 700;
+			flex: 0 0 18px;
+			margin-top: 1px;
+		}
+
+		.contact-email::before {
+			content: '✉';
+		}
+
+		.contact-phone::before {
+			content: '✆';
+		}
+
+		.contact-address::before {
+			content: '⌂';
+		}
+
+		.profile-foot {
+			padding: 0 14px 14px;
+		}
+
+		.profile-pill {
+			display: inline-flex;
+			align-items: center;
+			padding: 8px 12px;
+			border-radius: 10px;
+			background: #e8f4ff;
+			font-size: 13px;
+			font-weight: 700;
+			color: #1565c0;
+		}
+
+		.progress-inner {
+			height: 100%;
+			width: 0;
+			transition: width 420ms ease, background 300ms ease;
+			background: linear-gradient(90deg, #28a745, #007bff);
+		}
+
+		.progress-inner.warn {
+			background: linear-gradient(90deg, #ffc107, #ff9800);
+		}
+
+		.progress-inner.danger {
+			background: linear-gradient(90deg, #dc3545, #c62828);
+		}
+
+		#panelTime #badgeTimeState:not(.success):not(.warning):not(.danger) {
+			background: #e3f2fd;
+			color: #1565c0;
+		}
+
+		.hint {
+			margin: 0;
+			color: #1565c0;
+			font-size: 13px;
+		}
+
+		.review-split {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.review-box {
+			border: 1px solid #c5e0f5;
+			border-radius: 12px;
+			padding: 10px;
+			background: #f0f8ff;
+			display: grid;
+			gap: 10px;
+		}
+
+		.review-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.review-title {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 700;
+			color: #1565c0;
+		}
+
+		.review-display {
+			display: grid;
+			gap: 6px;
+			padding: 8px;
+			border-radius: 10px;
+			border: 1px dashed #c5e0f5;
+			background: #fff;
+		}
+
+		.review-text,
+		.review-time {
+			margin: 0;
+			font-size: 13px;
+			font-weight: 600;
+			color: #1a5d9c;
+			word-break: break-word;
+		}
+
+		.review-media-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+		}
+
+		.review-media-grid img,
+		.review-media-grid video {
+			width: 100%;
+			height: 120px;
+			object-fit: cover;
+			border-radius: 10px;
+			border: 1px solid #c5e0f5;
+			background: #f0f8ff;
+		}
+
+		.media-empty {
+			grid-column: 1 / -1;
+			font-size: 12px;
+			font-weight: 700;
+			color: #1565c0;
+			background: #e8f4ff;
+			border: 1px solid #c5e0f5;
+			padding: 8px 10px;
+			border-radius: 8px;
+		}
+
+		.hidden {
+			display: none !important;
+		}
+
+		.btn.btn-primary,
+		.btn.btn-success,
+		.btn.btn-warning,
+		.btn.btn-danger {
+			border: 0;
+			box-shadow: 0 8px 18px rgba(0, 123, 255, 0.2);
+		}
+
+		.btn.btn-primary {
+			background: linear-gradient(135deg, #007bff, #00b4d8) !important;
+			color: #fff !important;
+		}
+
+		.btn.btn-success {
+			background: linear-gradient(135deg, #28a745, #20c997) !important;
+			color: #fff !important;
+		}
+
+		.btn.btn-warning {
+			background: linear-gradient(135deg, #ffc107, #ff9800) !important;
+			color: #333 !important;
+		}
+
+		.btn.btn-danger {
+			background: linear-gradient(135deg, #dc3545, #c62828) !important;
+			color: #fff !important;
+		}
+
+		.btn.btn-primary:hover,
+		.btn.btn-success:hover,
+		.btn.btn-warning:hover,
+		.btn.btn-danger:hover {
+			filter: brightness(0.96);
+		}
+
+		@media (max-width: 1060px) {
+
+			.grid,
+			.info-grid,
+			.invoice-extra-grid,
+			.review-split,
+			.review-media-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.invoice-summary {
+				grid-template-columns: 1fr;
+				gap: 6px;
+			}
+
+			.invoice-item {
+				width: 100%;
+				min-height: auto;
+				padding: 8px 12px;
+			}
+
+			.profile-body {
+				grid-template-columns: 1fr 80px;
+				align-items: center;
+				gap: 12px;
+			}
+
+			.profile-avatar {
+				grid-column: 2;
+				grid-row: 1;
+				width: 72px;
+				height: 72px;
+			}
+
+			.profile-main {
+				grid-column: 1;
+				grid-row: 1;
+				text-align: left;
+			}
+
+			.invoice-main {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.invoice-main .actions {
+				margin: auto !important;
+				justify-content: center;
+				width: 100%;
+				order: 0;
+			}
+
+			.invoice-progress-ring {
+				width: 105px;
+				height: 105px;
+				order: 1;
+			}
+
+			.invoice-item-content h4 {
+				font-size: 18px;
+			}
+
+			.panel {
+				min-height: auto;
+			}
+		}
+
+		@media (max-width: 640px) {
+			.page {
+				padding: 10px;
+			}
+
+			.content {
+				padding: 10px;
+			}
+
+			.topbar {
+				grid-template-columns: auto minmax(0, 1fr) auto;
+				gap: 8px;
+				padding: 12px 10px;
+			}
+
+			.topbar-title {
+				font-size: 0.92rem;
+			}
+
+			.topbar-logo {
+				width: 72px;
+				height: 48px;
+				padding: 4px;
+			}
+
+			.topbar-logo img {
+				width: 54px;
+				height: 36px;
+			}
+
+			#invoiceProgressRing {
+				margin-inline: auto;
+				width: 140px !important;
+				height: 140px !important;
+			}
+
+			.invoice-progress-ring {
+				width: 140px !important;
+				height: 140px !important;
+			}
+		}
+
+		@media (min-width: 768px) and (max-width: 1024px) {
+			.invoice-main {
+				display: grid !important;
+				grid-template-columns: 1fr auto 1fr !important;
+				align-items: center !important;
+				text-align: left !important;
+				gap: 20px !important;
+			}
+
+			.invoice-headline {
+				width: auto !important;
+			}
+
+			.invoice-title-line {
+				justify-content: flex-start !important;
+			}
+
+			.invoice-main .actions {
+				margin: 0 !important;
+				justify-content: center !important;
+				width: auto !important;
+			}
+
+			#invoiceProgressRing {
+				justify-self: end;
+				margin: 0 !important;
+				width: 120px !important;
+				height: 120px !important;
+				border-radius: 50% !important;
+				aspect-ratio: 1 / 1 !important;
+			}
+
+			.invoice-summary {
+				grid-template-columns: repeat(2, 1fr) !important;
+				gap: 15px !important;
+			}
+
+			.invoice-item.address {
+				grid-column: span 2 !important;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<main class="page">
+		<section class="modal-card">
+			<header class="topbar">
+				<a class="topbar-logo" href="../index.html" aria-label="Trang chủ">
+					<img src="../assets/logo-he-thong.png" alt="Logo dịch vụ thuê tài xế" />
+				</a>
+				<h1 class="topbar-title">Chi tiết đơn hàng thuê tài xế</h1>
+				<a class="topbar-logo" href="danh-sach-don-hang.php" aria-label="Danh sách đơn hàng">
+					<img src="../assets/logo_main.png" alt="Logo thuê tài xế" />
+				</a>
+			</header>
+
+			<div class="content">
+				<div id="stateMessage" class="state info">Đang tải dữ liệu...</div>
+
+				<section id="mainGrid" class="grid hidden">
+					<article class="panel panel-wide" id="panelInvoice">
+						<div class="invoice-hero">
+							<div class="invoice-main">
+								<div class="invoice-headline">
+									<div>
+										<div class="invoice-title-line">
+											<h2 class="invoice-order-title">Đơn #<span id="invoiceId">---</span></h2>
+											<span id="badgeInvoiceStatus" class="invoice-status-badge">---</span>
+										</div>
+										<p id="invoiceService" class="invoice-subtitle">---</p>
+									</div>
+								</div>
+								<div class="actions d-flex flex-wrap align-items-center"
+									style="gap:8px; margin-left: auto;">
+									<button id="btnCancelService" class="btn btn-danger btn-sm hidden" type="button">Hủy
+										dịch vụ</button>
+									<button id="btnHdrClaim" class="btn btn-primary btn-sm hidden" type="button">Nhận
+										việc</button>
+									<button id="btnHdrStart" class="btn btn-success btn-sm hidden" type="button">Bắt đầu
+										dịch vụ</button>
+									<button id="btnHdrEnd" class="btn btn-warning btn-sm hidden" style="color:#fff;"
+										type="button">Hoàn thành dịch vụ</button>
+								</div>
+								<div id="invoiceProgressRing" class="invoice-progress-ring" style="--p:0;">
+									<div class="invoice-progress-core">
+										<strong id="invoiceProgressHero">0%</strong>
+										<small>Hoàn thành</small>
+									</div>
+								</div>
+							</div>
+
+							<div class="invoice-summary">
+								<div class="invoice-item">
+									<span class="invoice-item-icon"><i class="fa fa-usd" aria-hidden="true"></i></span>
+									<div class="invoice-item-content">
+										<p>Tổng tiền</p>
+										<h4 id="invoicePrice">---</h4>
+									</div>
+								</div>
+								<div class="invoice-item">
+									<span class="invoice-item-icon"><i class="fa fa-clock-o"
+											aria-hidden="true"></i></span>
+									<div class="invoice-item-content">
+										<p>Thời gian</p>
+										<h4 id="invoiceTimeRange">---</h4>
+										<span id="invoiceDate">---</span>
+									</div>
+								</div>
+								<div class="invoice-item address">
+									<span class="invoice-item-icon"><i class="fa fa-map-marker"
+											aria-hidden="true"></i></span>
+									<div class="invoice-item-content">
+										<p>Điểm đón</p>
+										<h4 id="invoiceAddress">---</h4>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</article>
+
+					<article class="panel" id="panelJobs">
+						<div class="jobs-header">
+							<h2 class="jobs-title">Công việc cần thực hiện</h2>
+						</div>
+						<div class="jobs-body">
+							<ol id="invoiceJob" class="field-value">
+								<li>---</li>
+							</ol>
+						</div>
+						<div class="jobs-meta invoice-extra-grid">
+							<div class="invoice-extra-item">
+								<p class="field-label">Yêu cầu khác</p>
+								<p id="invoiceRequest" class="field-value">---</p>
+							</div>
+							<div class="invoice-extra-item">
+								<p class="field-label">Ghi chú</p>
+								<p id="invoiceNote" class="field-value">---</p>
+							</div>
+						</div>
+					</article>
+
+					<article class="panel" id="panelTime"
+						style="background:linear-gradient(180deg,#e8f4ff 0%,#ffffff 100%);border-color:#007bff;">
+						<div class="panel-head" style="margin-bottom:2px;">
+							<h2 class="panel-title" style="font-size:15px;">Trạng thái, thời gian và tiến độ</h2>
+						</div>
+
+						<div style="display:grid;gap:6px;">
+							<div class="d-flex justify-content-between align-items-center fw-bold"
+								style="gap:10px;font-size:12px;color:#1565c0;">
+								<span>Tiến độ thực hiện</span>
+								<span id="progressText">0%</span>
+							</div>
+							<div
+								style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:#e8f4ff;border:1px solid #007bff;box-shadow:inset 0 1px 2px rgb(255, 255, 255);">
+								<div id="progressBar" class="progress-inner"></div>
+							</div>
+							<p id="progressHint" class="hint" style="font-size:12px;margin-top:-2px;">Dữ liệu tiến độ sẽ
+								được cập nhật theo thời gian.</p>
+						</div>
+
+						<div
+							style="border:1px solid #c5e0f5;border-radius:8px;overflow:hidden;background:#fff;margin-bottom:8px;">
+							<div
+								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#007bff;color:#fff;font-size:12px;font-weight:700;">
+								<span style="padding:7px 10px;border-right:1px solid rgba(255,255,255,0.2);">Ngày bắt đầu dự
+									kiến</span>
+								<span style="padding:7px 10px;border-right:1px solid rgba(255,255,255,0.2);">Ngày kết thúc dự
+									kiến</span>
+								<span style="padding:7px 10px;">Số ngày</span>
+							</div>
+							<div
+								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));font-size:12px;font-weight:700;">
+								<span id="dateStartPlan"
+									style="padding:7px 10px;border-right:1px solid #c5e0f5;color:#1565c0;">---</span>
+								<span id="dateEndPlan"
+									style="padding:7px 10px;border-right:1px solid #c5e0f5;color:#1565c0;">---</span>
+								<span id="invoicePlanDays" style="padding:7px 10px;color:#1565c0;">---</span>
+							</div>
+						</div>
+
+						<div class="d-flex align-items-center flex-wrap" style="gap:8px;">
+							<span style="font-size:12px;font-weight:700;color:#1565c0;">Trạng thái:</span>
+							<span id="badgeTimeState" class="badge">---</span>
+							<span id="timeCurrentState" class="hidden">---</span>
+
+							<div class="actions d-flex align-items-center ms-auto" style="gap:8px;">
+								<button id="btnStart" class="btn btn-success btn-sm hidden"
+									style="min-height:32px;padding:4px 12px;font-size:12px;border-radius:8px;"
+									type="button">Bắt đầu ca</button>
+								<span id="startButtonCountdown" class="hidden"
+									style="font-size:11px;font-weight:700;color:#1565c0;background:#e3f2fd;border:1px solid #90caf9;border-radius:999px;padding:4px 8px;white-space:nowrap;">--</span>
+								<button id="btnEnd" class="btn btn-warning btn-sm hidden"
+									style="color:#fff;min-height:32px;padding:4px 12px;font-size:12px;border-radius:8px;"
+									type="button">Kết thúc ca</button>
+							</div>
+						</div>
+
+						<div style="border:1px solid #c5e0f5;border-radius:8px;overflow:hidden;background:#fff;">
+							<div
+								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#007bff;color:#fff;font-size:12px;font-weight:700;">
+								<span style="padding:7px 10px;">Thời gian dự kiến</span>
+								<span style="padding:7px 10px;">Thời gian thực tế</span>
+							</div>
+							<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));">
+								<div style="border-right:1px solid #c5e0f5;">
+									<div class="d-flex justify-content-between align-items-center"
+										style="gap:8px;padding:7px 10px;font-size:12px;"><span
+											style="color:#1565c0;font-weight:700;">Bắt đầu</span><span
+											id="timeStartPlan" style="color:#1565c0;font-weight:700;">---</span></div>
+									<div class="d-flex justify-content-between align-items-center"
+										style="gap:8px;padding:7px 10px;border-top:1px solid #c5e0f5;font-size:12px;">
+										<span style="color:#1565c0;font-weight:700;">Kết thúc</span><span
+											id="timeEndPlan" style="color:#1565c0;font-weight:700;">---</span>
+									</div>
+								</div>
+								<div>
+									<div class="d-flex justify-content-between align-items-center"
+										style="gap:8px;padding:7px 10px;font-size:12px;"><span
+											style="color:#1565c0;font-weight:700;">Bắt đầu</span><span
+											id="timeStartReal" style="color:#1565c0;font-weight:700;">---</span></div>
+									<div class="d-flex justify-content-between align-items-center"
+										style="gap:8px;padding:7px 10px;border-top:1px solid #c5e0f5;font-size:12px;">
+										<span style="color:#1565c0;font-weight:700;">Kết thúc</span><span
+											id="timeEndReal" style="color:#1565c0;font-weight:700;">---</span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						<div id="staffWorkForm" class="forms d-grid gap-2 hidden">
+							<label class="field-label" for="staffNote">Ghi chú công việc trong ngày</label>
+							<textarea id="staffNote" class="form-control" style="min-height:84px;resize:vertical;"
+								placeholder="Nhập ghi chú công việc hôm nay..."></textarea>
+							<button id="btnSaveStaffLog" class="btn btn-primary btn-sm" type="button">Lưu ghi chú</button>
+						</div>
+
+						<div id="workHistoryTable" style="margin-top:4px;">
+							<span style="font-size:12px;font-weight:700;color:#1565c0;">Lịch sử làm việc</span>
+							<div id="workHistoryContent" style="overflow-x:auto;margin-top:4px;" class="hidden">
+								<table style="width:100%;border-collapse:collapse;font-size:12px;">
+									<thead>
+										<tr style="background:#007bff;color:#fff;">
+											<th style="padding:6px 8px;text-align:left;">Ngày thứ</th>
+											<th style="padding:6px 8px;text-align:left;">Ngày làm</th>
+											<th style="padding:6px 8px;text-align:left;">Bắt đầu</th>
+											<th style="padding:6px 8px;text-align:left;">Kết thúc</th>
+											<th style="padding:6px 8px;text-align:left;">Ghi chú</th>
+										</tr>
+									</thead>
+									<tbody id="workHistoryBody"></tbody>
+								</table>
+							</div>
+							<p id="workHistoryEmpty" style="font-size:12px;color:#1565c0;margin:0;">Chưa có lịch sử làm
+								việc.</p>
+						</div>
+
+						<div class="actions d-flex flex-wrap align-items-center mt-auto" style="gap:8px;">
+							<span id="badgeProgress" class="badge" style="display:none;">0%</span>
+						</div>
+					</article>
+					<article class="panel" id="panelCustomer">
+						<div class="profile-head">
+							<h2 class="profile-title">Khách hàng</h2>
+							<span class="profile-status badge success">Khách hàng</span>
+						</div>
+						<div class="profile-body">
+							<img id="customerAvatar" class="profile-avatar" src="../assets/logo_main.png"
+								alt="Khách hàng">
+							<div class="profile-main">
+								<h3 id="customerCardName" class="profile-name">---</h3>
+								<p class="profile-row"><i class="fa fa-envelope me-2"></i><span
+										id="customerCardEmail">---</span></p>
+								<p class="profile-row"><i class="fa fa-phone me-2"></i><span
+										id="customerCardPhone">---</span></p>
+								<p class="profile-row"><i class="fa fa-map-marker me-2"></i><span
+										id="customerCardAddress">---</span></p>
+							</div>
+						</div>
+
+					</article>
+
+					<article class="panel" id="panelStaff">
+						<div class="profile-head">
+							<h2 class="profile-title">Tài xế phụ trách</h2>
+							<span id="badgeStaff" class="profile-status badge warning">Chưa nhận</span>
+						</div>
+						<div class="profile-body">
+							<img id="staffAvatar" class="profile-avatar" src="../assets/logo_main.png" alt="Tài xế">
+							<div class="profile-main">
+								<h3 id="staffCardName" class="profile-name">---</h3>
+								<p class="profile-row"><i class="fa fa-envelope me-2"></i><span
+										id="staffCardEmail">---</span></p>
+								<p class="profile-row"><i class="fa fa-phone me-2"></i><span
+										id="staffCardPhone">---</span></p>
+								<p class="profile-row"><i class="fa fa-map-marker me-2"></i><span
+										id="staffCardAddress">---</span></p>
+							</div>
+						</div>
+						<div class="profile-foot">
+							<span id="staffReceiveTime" class="profile-pill">Nhận việc: ---</span>
+						</div>
+					</article>
+
+					<article class="panel panel-wide" id="panelMedia">
+						<div class="panel-head">
+							<h2 class="panel-title">Ảnh và đánh giá</h2>
+							<span class="badge">Minh chứng</span>
+						</div>
+
+						<div class="review-split">
+							<section class="review-box">
+								<div class="review-head">
+									<h3 class="review-title">Đánh giá khách hàng</h3>
+									<span id="badgeCustomerReview" class="badge warning">Chưa có</span>
+								</div>
+
+								<div class="review-display">
+									<p class="field-label">Nội dung đánh giá</p>
+									<p id="customerReviewText" class="review-text">Chưa có đánh giá</p>
+									<p class="field-label">Thời gian gửi</p>
+									<p id="customerReviewTime" class="review-time">---</p>
+									<p class="field-label">Ảnh/video đánh giá</p>
+									<div id="customerReviewMediaGrid" class="review-media-grid"></div>
+								</div>
+
+								<div id="customerReviewForm" class="forms d-grid gap-2 hidden">
+									<label class="field-label" for="customerReview">Nhập đánh giá của khách hàng</label>
+									<textarea id="customerReview" class="form-control"
+										style="min-height:84px;resize:vertical;"
+										placeholder="Nhập đánh giá sau khi hoàn thành..."></textarea>
+									<label class="field-label" for="customerMediaInput">Tải lên ảnh/video đánh giá
+										(khách hàng)</label>
+									<input id="customerMediaInput" class="form-control" type="file"
+										accept="image/*,video/*" multiple>
+									<button id="btnSaveReview" class="btn btn-primary btn-sm" type="button">Lưu đánh giá
+										khách hàng</button>
+								</div>
+							</section>
+
+							<section class="review-box">
+								<div class="review-head">
+									<h3 class="review-title">Đánh giá tài xế</h3>
+									<span id="badgeStaffReview" class="badge warning">Chưa có</span>
+								</div>
+
+								<div class="review-display">
+									<p class="field-label">Nội dung đánh giá</p>
+									<p id="staffReviewText" class="review-text">Chưa có đánh giá</p>
+									<p class="field-label">Thời gian gửi</p>
+									<p id="staffReviewTime" class="review-time">---</p>
+									<p class="field-label">Ảnh/video đánh giá</p>
+									<div id="staffReviewMediaGrid" class="review-media-grid"></div>
+								</div>
+
+								<div id="staffReviewForm" class="forms d-grid gap-2 hidden">
+									<label class="field-label" for="staffReview">Nhập đánh giá của tài xế</label>
+									<textarea id="staffReview" class="form-control"
+										style="min-height:84px;resize:vertical;"
+										placeholder="Nhập đánh giá sau khi hoàn thành..."></textarea>
+									<label class="field-label" for="staffReviewMediaInput">Tải lên ảnh/video đánh giá
+										(tài xế)</label>
+									<input id="staffReviewMediaInput" class="form-control" type="file"
+										accept="image/*,video/*" multiple>
+									<button id="btnSaveStaffReview" class="btn btn-primary btn-sm" type="button">Lưu
+										đánh giá tài xế</button>
+								</div>
+							</section>
+						</div>
+					</article>
+				</section>
+			</div>
+		</section>
+	</main>
+
+	<script>
+		// Cấu hình cho dịch vụ thuê tài xế
+		const TABLE_USER = 'nguoidung'; // Bảng chứa cả khách hàng lẫn tài xế
+		const TABLE_ORDER = 'datlich_taixe'; // Bảng đơn hàng thuê tài xế
+		const TABLE_HISTORY = 'lich_su_lam_viec_taixe'; // Bảng lịch sử làm việc của tài xế
+		const REVIEW_UPLOAD_API = 'upload-review-media.php';
+
+		const app = {
+			params: {},
+			role: '',
+			$user: null,
+			$nguoidung: [],
+			$datlich_taixe: null,
+			stateTimer: null,
+			currentWorkLogId: null
+		};
+
+		const $ = (id) => document.getElementById(id);
+		const toNum = (v) => Number(v || 0);
+		const now = () => new Date();
+		const nowSql = () => {
+			const d = now();
+			const p = (n) => String(n).padStart(2, '0');
+			return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+		};
+		const nowTimeSql = () => {
+			const d = now();
+			const p = (n) => String(n).padStart(2, '0');
+			return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+		};
+		const show = (el, ok = true) => el && el.classList.toggle('hidden', !ok);
+		const setText = (id, value) => {
+			const el = $(id);
+			if (el) el.textContent = value || '---';
+		};
+		const setAvatar = (id, src, fallback = '../assets/logo_main.png') => {
+			const el = $(id);
+			if (!el) return;
+			el.onerror = () => {
+				el.onerror = null;
+				el.src = fallback;
+			};
+			el.src = src || fallback;
+		};
+		const formatMoney = (value) => {
+			const n = Number(String(value || 0).replace(/[^\d.-]/g, ''));
+			if (!Number.isFinite(n)) return `${value || 0} VND`;
+			return `${n.toLocaleString('vi-VN')} VND`;
+		};
+		const formatInvoiceCode = (id) => {
+			const raw = String(id ?? '').trim();
+			if (!raw) return '---';
+			const n = Number(raw);
+			if (!Number.isFinite(n) || n < 0) return '---';
+			return String(Math.trunc(n)).padStart(7, '0');
+		};
+
+		function parseDateTimeParts(value) {
+			const raw = String(value || '').trim();
+			if (!raw) return null;
+
+			const ymd = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?)?/);
+			if (ymd) {
+				return {
+					y: Number(ymd[1]),
+					m: Number(ymd[2]),
+					d: Number(ymd[3]),
+					h: Number(ymd[4] || 0),
+					min: Number(ymd[5] || 0),
+					s: Number(ymd[6] || 0),
+					hasDate: true,
+					hasTime: !!ymd[4]
+				};
+			}
+
+			const dmy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?)?/);
+			if (dmy) {
+				return {
+					y: Number(dmy[3]),
+					m: Number(dmy[2]),
+					d: Number(dmy[1]),
+					h: Number(dmy[4] || 0),
+					min: Number(dmy[5] || 0),
+					s: Number(dmy[6] || 0),
+					hasDate: true,
+					hasTime: !!dmy[4]
+				};
+			}
+
+			const hms = raw.match(/^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
+			if (hms) {
+				return {
+					y: 0,
+					m: 0,
+					d: 0,
+					h: Number(hms[1] || 0),
+					min: Number(hms[2] || 0),
+					s: Number(hms[3] || 0),
+					hasDate: false,
+					hasTime: true
+				};
+			}
+
+			return null;
+		}
+
+		function buildPlanDateTime(dateValue, timeValue, endOfDay = false) {
+			const d = parseDateTimeParts(dateValue);
+			if (!d || !d.hasDate) return null;
+
+			const t = parseDateTimeParts(timeValue);
+			const h = t && t.hasTime ? t.h : (endOfDay ? 23 : 0);
+			const min = t && t.hasTime ? t.min : (endOfDay ? 59 : 0);
+			const s = t && t.hasTime ? t.s : (endOfDay ? 59 : 0);
+			return new Date(d.y, d.m - 1, d.d, h, min, s);
+		}
+
+		function formatDateDisplay(value) {
+			if (!value) return '---';
+			const p = parseDateTimeParts(value);
+			if (!p || !p.hasDate) return String(value || '---');
+			return `${p.d}/${p.m}/${p.y}`;
+		}
+
+		function formatTimeDisplay(value) {
+			if (!value) return '--:--:--';
+			const p = parseDateTimeParts(value);
+			if (!p || !p.hasTime) return String(value || '--:--:--');
+			return `${p.h}:${p.min}:${p.s}`;
+		}
+
+		function formatDateTimeDisplay(value) {
+			if (!value) return '---';
+			const p = parseDateTimeParts(value);
+			if (!p) return String(value || '---');
+			if (p.hasDate && p.hasTime) return `${p.d}/${p.m}/${p.y} ${p.h}:${p.min}:${p.s}`;
+			if (p.hasDate) return `${p.d}/${p.m}/${p.y}`;
+			if (p.hasTime) return `${p.h}:${p.min}:${p.s}`;
+			return String(value || '---');
+		}
+
+		async function listTableRows(tableName) {
+			const result = typeof krudList === 'function'
+				? await krudList({ table: tableName })
+				: await krud('list', tableName, { p: 1, limit: 1000 });
+
+			if (Array.isArray(result)) return result;
+			if (Array.isArray(result?.data)) return result.data;
+			if (Array.isArray(result?.rows)) return result.rows;
+			if (Array.isArray(result?.items)) return result.items;
+			if (result?.error) throw new Error(result.error);
+			if (result?.success === false) throw new Error(result.message || `Không lấy được dữ liệu bảng ${tableName}`);
+			return [];
+		}
+
+		async function updateById(tableName, id, data) {
+			if (id == null || id === '') throw new Error('Thiếu id để cập nhật dữ liệu');
+			const result = await krud('update', tableName, data, id);
+			if (result && result.success === false) throw new Error(result.message || 'Cập nhật thất bại');
+			return result;
+		}
+
+		async function insertRow(tableName, data) {
+			const result = await krud('insert', tableName, data);
+			if (result && result.success === false) throw new Error(result.message || 'Lưu dữ liệu thất bại');
+			if (result && result.id) return result.id;
+			if (result && result.data && result.data.id) return result.data.id;
+			if (typeof result === 'number' || (typeof result === 'string' && result)) return result;
+			return result;
+		}
+
+		async function listHistoryByOrder(idDv) {
+			try {
+				const rows = await listTableRows(TABLE_HISTORY);
+				return rows.filter(r => String(r.id_dv) === String(idDv));
+			} catch {
+				return [];
+			}
+		}
+
+		function getUrlParams() {
+			const p = new URLSearchParams(window.location.search);
+			return {
+				mahd: p.get('mahd') || '',
+				sodienthoai: p.get('sodienthoai') || '',
+				password: p.get('password') || ''
+			};
+		}
+
+		async function loadAuthTables() {
+			app.$nguoidung = await listTableRows(TABLE_USER);
+		}
+
+		function findAuthUser() {
+			const { sodienthoai, password } = app.params;
+			const matched = app.$nguoidung.find(r => String(r.sodienthoai || '') === sodienthoai && String(r.matkhau || r.mat_khau || r.password || '') === password);
+			if (!matched || !app.$datlich_taixe) return null;
+
+			const ord = app.$datlich_taixe;
+			const isProvider = String(matched.id_dichvu || '').split(',').map(s => s.trim()).includes('1');
+			const sdt_url = sodienthoai, sdt_kh = String(ord.sdtkhachhang || ''), sdt_tx = String(ord.sdt_taixe || '');
+
+			if (sdt_url === sdt_kh) return { role: 'customer', $user: matched };
+			if (sdt_url !== sdt_kh && isProvider && (sdt_url === sdt_tx || !sdt_tx)) return { role: 'driver', $user: matched };
+			return null;
+		}
+
+		async function applyAutoOrderStatusRules($datlich_taixe) {
+			const status = String($datlich_taixe.trangthai || '').toLowerCase();
+			const hasDriver = toNum($datlich_taixe.id_taixe) > 0;
+			const startPlanAt = buildPlanDateTime($datlich_taixe.ngay_bat_dau_kehoach, $datlich_taixe.gio_bat_dau_kehoach);
+			const endPlanAt = buildPlanDateTime($datlich_taixe.ngay_ket_thuc_kehoach, $datlich_taixe.gio_ket_thuc_kehoach, true);
+			const isCanceled = status.includes('hủy') || status.includes('huy');
+			const isOverdue = status.includes('quá hạn') || status.includes('qua han');
+			const isCompleted = status.includes('hoàn thành') || status.includes('hoan thanh');
+			const needOverdue = !hasDriver
+				&& !!startPlanAt
+				&& now().getTime() > startPlanAt.getTime()
+				&& !isCanceled
+				&& !isOverdue
+				&& !isCompleted;
+			const needComplete = hasDriver
+				&& !!endPlanAt
+				&& now().getTime() > endPlanAt.getTime()
+				&& !isCanceled
+				&& !isOverdue
+				&& !isCompleted;
+
+			if (needOverdue) {
+				await updateById(TABLE_ORDER, $datlich_taixe.id, { trangthai: 'quá hạn' });
+				return { ...$datlich_taixe, trangthai: 'quá hạn' };
+			}
+
+			if (needComplete) {
+				await updateById(TABLE_ORDER, $datlich_taixe.id, { trangthai: 'hoàn thành' });
+				return { ...$datlich_taixe, trangthai: 'hoàn thành' };
+			}
+
+			return $datlich_taixe;
+		}
+
+		async function loadOrderById() {
+			const $datlich_taixe_rows = await listTableRows(TABLE_ORDER);
+			const $datlich_taixe = $datlich_taixe_rows.find((row) => String(row.id) === String(app.params.mahd));
+			if (!$datlich_taixe) throw new Error('Không tìm thấy đơn hàng');
+
+			app.$datlich_taixe = await applyAutoOrderStatusRules($datlich_taixe);
+		}
+
+		function getAssignedDriverRow() {
+			if (!app.$datlich_taixe) return null;
+			const idDriver = toNum(app.$datlich_taixe.id_taixe);
+			if (idDriver <= 0) return null;
+			return app.$nguoidung.find((row) => toNum(row.id) === idDriver) || null;
+		}
+
+		function parseDateOnly(dateStr) {
+			if (!dateStr) return null;
+			return new Date(`${String(dateStr).slice(0, 10)}T00:00:00`);
+		}
+
+		function parseTimeToHour(timeStr) {
+			const [h, m] = String(timeStr || '0:0').split(':').map(Number);
+			return (h || 0) + ((m || 0) / 60);
+		}
+
+		function diffDays(startDate, endDate) {
+			const s = parseDateOnly(startDate);
+			const e = parseDateOnly(endDate);
+			if (!s || !e) return 1;
+			const ms = e.getTime() - s.getTime();
+			return Math.max(1, Math.round(ms / 86400000));
+		}
+
+		function statusBadgeClass(status) {
+			const s = String(status || '').toLowerCase();
+			if (s.includes('hủy') || s.includes('huy') || s.includes('quá hạn') || s.includes('qua han')) return 'badge danger';
+			if (s.includes('hoàn thành') || s.includes('hoan thanh')) return 'badge success';
+			if (s.includes('đang') || s.includes('dang')) return 'badge warning';
+			return 'badge';
+		}
+
+		function isReviewLockedByDeadline($datlich_taixe) {
+			if (!$datlich_taixe) return true;
+			const status = String($datlich_taixe.trangthai || '').toLowerCase();
+			const endPlanAt = buildPlanDateTime($datlich_taixe.ngay_ket_thuc_kehoach, $datlich_taixe.gio_ket_thuc_kehoach, true);
+			if (!endPlanAt) return false;
+
+			const isCanceled = status.includes('hủy') || status.includes('huy');
+			const isOverdue = status.includes('quá hạn') || status.includes('qua han');
+			const noDriver = toNum($datlich_taixe.id_taixe) <= 0;
+			return now().getTime() > endPlanAt.getTime() && (isCanceled || isOverdue || noDriver);
+		}
+
+		function canSubmitCustomerReview() {
+			const $datlich_taixe = app.$datlich_taixe;
+			if (!$datlich_taixe) return false;
+			const isCompleted = String($datlich_taixe.trangthai || '').toLowerCase().includes('hoàn thành');
+			return isCompleted && !isReviewLockedByDeadline($datlich_taixe);
+		}
+
+		function canSubmitDriverReview() {
+			const $datlich_taixe = app.$datlich_taixe;
+			if (!$datlich_taixe) return false;
+			const isCompleted = String($datlich_taixe.trangthai || '').toLowerCase().includes('hoàn thành');
+			const isAssignedDriver = toNum($datlich_taixe.id_taixe) > 0
+				&& toNum($datlich_taixe.id_taixe) === toNum(app.$user?.id);
+			return isCompleted && isAssignedDriver && !isReviewLockedByDeadline($datlich_taixe);
+		}
+
+		function renderJobList(value) {
+			const list = $('invoiceJob');
+			if (!list) return;
+			list.innerHTML = '';
+			const cleanJob = (text) => String(text || '')
+				.replace(/^[,;:.\-\s]+/, '')
+				.replace(/\s+/g, ' ')
+				.trim();
+			const raw = String(value || '').replace(/\r?\n/g, ' ').trim();
+			let jobs = raw
+				.split('.')
+				.map(cleanJob)
+				.filter(Boolean);
+
+			if (!jobs.length && raw) {
+				jobs = raw.split(',').map(cleanJob).filter(Boolean);
+			}
+
+			(jobs.length ? jobs : ['---']).forEach((job) => {
+				const li = document.createElement('li');
+				li.textContent = job;
+				list.appendChild(li);
+			});
+		}
+
+		function parseMedia(raw) {
+			if (!raw) return [];
+			if (Array.isArray(raw)) return raw;
+			try {
+				const j = JSON.parse(raw);
+				return Array.isArray(j) ? j : [];
+			} catch {
+				return String(raw).split(',').map((x) => x.trim()).filter(Boolean);
+			}
+		}
+
+		function renderMedia(gridId, raw) {
+			const grid = $(gridId);
+			if (!grid) return;
+			grid.innerHTML = '';
+			const items = parseMedia(raw);
+			if (!items.length) {
+				const div = document.createElement('div');
+				div.className = 'media-empty';
+				div.textContent = 'Chưa có tệp';
+				grid.appendChild(div);
+				return;
+			}
+			items.forEach((src) => {
+				const isVideo = /(^data:video)|(\.(mp4|webm|ogg|mov)(\?.*)?$)/i.test(String(src || ''));
+				const el = document.createElement(isVideo ? 'video' : 'img');
+				el.src = src;
+				if (isVideo) el.controls = true;
+				grid.appendChild(el);
+			});
+		}
+
+		function renderLocalMedia(gridId, fileList) {
+			const grid = $(gridId);
+			if (!grid) return;
+			grid.innerHTML = '';
+			const files = Array.from(fileList || []);
+			if (!files.length) {
+				const div = document.createElement('div');
+				div.className = 'media-empty';
+				div.textContent = 'Chưa có tệp';
+				grid.appendChild(div);
+				return;
+			}
+			files.forEach((file) => {
+				const url = URL.createObjectURL(file);
+				const isVideo = String(file.type || '').startsWith('video/');
+				const el = document.createElement(isVideo ? 'video' : 'img');
+				el.src = url;
+				if (isVideo) {
+					el.controls = true;
+					el.onloadeddata = () => URL.revokeObjectURL(url);
+				} else {
+					el.onload = () => URL.revokeObjectURL(url);
+				}
+				grid.appendChild(el);
+			});
+		}
+
+		function bindReviewPreview(inputId, gridId, mediaColumn) {
+			const input = $(inputId);
+			if (!input) return;
+			input.addEventListener('change', () => {
+				if (input.files && input.files.length) {
+					renderLocalMedia(gridId, input.files);
+					return;
+				}
+				renderMedia(gridId, (app.$datlich_taixe || {})[mediaColumn]);
+			});
+		}
+
+		function renderReview() {
+			const $datlich_taixe = app.$datlich_taixe;
+			if (!$datlich_taixe) return;
+			const customerDone = !!$datlich_taixe.danhgia_khachhang;
+			const driverDone = !!$datlich_taixe.danhgia_taixe;
+
+			setText('customerReviewText', $datlich_taixe.danhgia_khachhang || 'Chưa có đánh giá');
+			setText('customerReviewTime', formatDateTimeDisplay($datlich_taixe.thoigian_danhgia_khachhang));
+			setText('staffReviewText', $datlich_taixe.danhgia_taixe || 'Chưa có đánh giá');
+			setText('staffReviewTime', formatDateTimeDisplay($datlich_taixe.thoigian_danhgia_taixe));
+			renderMedia('customerReviewMediaGrid', $datlich_taixe.media_danhgia_khachhang);
+			renderMedia('staffReviewMediaGrid', $datlich_taixe.media_danhgia_taixe);
+
+			$('badgeCustomerReview').textContent = customerDone ? 'Đã gửi' : 'Chưa có';
+			$('badgeCustomerReview').className = customerDone ? 'badge success' : 'badge warning';
+			$('badgeStaffReview').textContent = driverDone ? 'Đã gửi' : 'Chưa có';
+			$('badgeStaffReview').className = driverDone ? 'badge success' : 'badge warning';
+
+			show($('customerReviewForm'), app.role === 'customer' && canSubmitCustomerReview() && !customerDone);
+			show($('staffReviewForm'), app.role === 'driver' && canSubmitDriverReview() && !driverDone);
+		}
+
+		function renderActionButtons() {
+			const el = id => document.getElementById(id);
+			const $ = app.$datlich_taixe;
+			if (!$) return;
+			const isDriver = app.role === 'driver', isCust = app.role === 'customer';
+			const assigned = toNum($.id_taixe) > 0;
+			const isMe = (isDriver && toNum($.id_taixe) === toNum(app.$user.id))
+				|| (isCust && String($.sdtkhachhang) === String(app.$user.sodienthoai));
+			const status = String($.trangthai || '').toLowerCase();
+			const isCancel = status.includes('hủy') || status.includes('huy'), 
+				isDone = status.includes('hoàn thành') || status.includes('hoan thanh'), 
+				isOver = status.includes('quá hạn') || status.includes('qua han');
+			const startVal = buildPlanDateTime($.ngay_bat_dau_kehoach, $.gio_bat_dau_kehoach);
+			const canClaim = isDriver && !assigned && !isCancel && !isDone && !isOver && (startVal && now() < startVal);
+			const started = !!$.thoigian_batdau_thucte, ended = !!$.thoigian_ketthuc_thucte;
+
+			show(el('btnHdrClaim'), canClaim);
+
+			const canHdrStart = isMe && assigned && !started && !isCancel && !isDone && !isOver;
+			show(el('btnHdrStart'), canHdrStart);
+			const canHdrEnd = isMe && assigned && started && !ended && !isCancel && !isDone && !isOver;
+			show(el('btnHdrEnd'), canHdrEnd);
+
+			const todayStr = (() => {
+				const d = now();
+				const p = n => String(n).padStart(2, '0');
+				return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+			})();
+			const startPlanDate = ($.ngay_bat_dau_kehoach || '').slice(0, 10);
+			const endPlanDate = ($.ngay_ket_thuc_kehoach || '').slice(0, 10);
+			const inPlanRange = isMe && assigned && started && !isCancel && !isDone && !isOver
+				&& startPlanDate <= todayStr && todayStr <= endPlanDate;
+			const pastEndDate = endPlanDate && todayStr > endPlanDate;
+
+			if (pastEndDate || !inPlanRange) {
+				show(el('btnStart'), false);
+				show(el('btnEnd'), false);
+			} else {
+				const history = app.$workHistory || [];
+				const hasRecordToday = history.some(r => (r.ngay_lam || '').slice(0, 10) === todayStr);
+				const logToday = history.find(r => (r.ngay_lam || '').slice(0, 10) === todayStr && r.gio_bat_dau_trong_ngay);
+				const todayStarted = !!logToday;
+				const todayEnded = logToday && logToday.gio_ket_thuc_trong_ngay;
+
+				show(el('btnStart'), !hasRecordToday && !isDone);
+				show(el('btnEnd'), todayStarted && !todayEnded && !isDone);
+			}
+
+			show(el('btnCancelService'), isCust && (startVal && now() < startVal.getTime() - 3600000) && !isCancel && !isDone && !started);
+		}
+
+		function renderUI() {
+			const $datlich_taixe = app.$datlich_taixe || {};
+			const $taixe = getAssignedDriverRow() || {};
+			const invoiceCode = formatInvoiceCode($datlich_taixe.id || app.params.mahd);
+
+			setText('invoiceId', invoiceCode);
+			setText('invoicePrice', formatMoney($datlich_taixe.tong_tien || 0));
+			setText('invoiceService', $datlich_taixe.dich_vu || '---');
+			setText('invoiceAddress', $datlich_taixe.diemdon || '---');
+			setText('invoiceTimeRange', `${formatTimeDisplay($datlich_taixe.gio_bat_dau_kehoach)} - ${formatTimeDisplay($datlich_taixe.gio_ket_thuc_kehoach)}`);
+			setText('invoiceDate', `${formatDateDisplay($datlich_taixe.ngay_bat_dau_kehoach)}${$datlich_taixe.ngay_ket_thuc_kehoach ? ` -> ${formatDateDisplay($datlich_taixe.ngay_ket_thuc_kehoach)}` : ''}`);
+			setText('invoiceRequest', $datlich_taixe.yeu_cau_khac || '---');
+			setText('invoiceNote', $datlich_taixe.ghi_chu || '---');
+			renderJobList($datlich_taixe.cong_viec || '');
+
+			setText('customerCardName', $datlich_taixe.tenkhachhang || '---');
+			setText('customerCardPhone', $datlich_taixe.sdtkhachhang || '---');
+			setText('customerCardEmail', $datlich_taixe.emailkhachhang || '---');
+			setText('customerCardAddress', $datlich_taixe.diachikhachhang || '---');
+			setAvatar('customerAvatar', $datlich_taixe.anh_dai_dien || app.$user?.anh_dai_dien || app.$user?.avatar || '');
+
+			setText('staffCardName', $datlich_taixe.ten_taixe || '---');
+			setText('staffCardEmail', $datlich_taixe.email_taixe || '---');
+			setText('staffCardPhone', $datlich_taixe.sdt_taixe || '---');
+			setText('staffCardAddress', $datlich_taixe.diachi_taixe || '---');
+			setText('staffReceiveTime', `Nhận việc: ${formatDateTimeDisplay($datlich_taixe.ngaynhan)}`);
+			setAvatar('staffAvatar', $taixe.anh_dai_dien || $taixe.avatar || '');
+
+			const status = $datlich_taixe.trangthai || '---';
+			const invoiceStatusEl = $('badgeInvoiceStatus');
+			if (invoiceStatusEl) {
+				invoiceStatusEl.textContent = status;
+				invoiceStatusEl.className = 'invoice-status-badge';
+				if (String(status).toLowerCase().includes('hoàn thành')) invoiceStatusEl.classList.add('success');
+				if (String(status).toLowerCase().includes('đang')) invoiceStatusEl.classList.add('warning');
+				if (String(status).toLowerCase().includes('hủy') || String(status).toLowerCase().includes('quá hạn')) invoiceStatusEl.classList.add('danger');
+			}
+			$('badgeTimeState').textContent = status;
+			$('badgeTimeState').className = statusBadgeClass(status);
+
+			setText('timeStartPlan', `${formatTimeDisplay($datlich_taixe.gio_bat_dau_kehoach)}`.trim());
+			setText('timeEndPlan', `${formatTimeDisplay($datlich_taixe.gio_ket_thuc_kehoach)}`.trim());
+			setText('timeStartReal', formatDateTimeDisplay($datlich_taixe.thoigian_batdau_thucte));
+			setText('timeEndReal', formatDateTimeDisplay($datlich_taixe.thoigian_ketthuc_thucte));
+
+			const progress = Math.max(0, Math.min(100, toNum($datlich_taixe.tien_do || 0)));
+			$('progressBar').style.width = `${progress}%`;
+			setText('progressText', `${progress.toFixed(2)}%`);
+			setText('invoiceProgressHero', `${Math.round(progress)}%`);
+			const ring = $('invoiceProgressRing');
+			if (ring) ring.style.setProperty('--p', progress.toFixed(2));
+			const totalDayCount = Math.max(1, diffDays($datlich_taixe.ngay_bat_dau_kehoach, $datlich_taixe.ngay_ket_thuc_kehoach) + 1);
+			const perDayPct = (100 / totalDayCount).toFixed(2);
+			setText('progressHint', `Mỗi ngày cộng ${perDayPct}% (tổng ${totalDayCount} ngày). Tiến độ cộng dồn theo từng ngày làm việc.`);
+			setText('dateStartPlan', formatDateDisplay($datlich_taixe.ngay_bat_dau_kehoach));
+			setText('dateEndPlan', formatDateDisplay($datlich_taixe.ngay_ket_thuc_kehoach));
+			setText('invoicePlanDays', `${totalDayCount} ngày`);
+			if (app.role === 'driver') renderWorkHistoryTable();
+
+			$('badgeStaff').textContent = toNum($datlich_taixe.id_taixe) > 0 ? 'Đã nhận' : 'Chưa nhận';
+			$('badgeStaff').className = toNum($datlich_taixe.id_taixe) > 0 ? 'profile-status badge success' : 'profile-status badge warning';
+
+			renderActionButtons();
+			renderReview();
+		}
+
+		function renderWorkHistoryTable() {
+			const emptyMsg = document.getElementById('workHistoryEmpty');
+			const content = document.getElementById('workHistoryContent');
+			const body = document.getElementById('workHistoryBody');
+			if (!body) return;
+
+			const rawRows = app.$workHistory || [];
+			const endPlanTime = app.$datlich_taixe ? app.$datlich_taixe.gio_ket_thuc_kehoach : '';
+
+			const groups = {};
+			rawRows.forEach(r => {
+				const d = (r.ngay_lam || '').slice(0, 10);
+				if (!d) return;
+				if (!groups[d]) groups[d] = { ngay_lam: d, start: '', end: '', note: '', isAuto: false };
+				if (r.gio_bat_dau_trong_ngay) groups[d].start = r.gio_bat_dau_trong_ngay;
+				if (r.gio_ket_thuc_trong_ngay) groups[d].end = r.gio_ket_thuc_trong_ngay;
+				if (r.ghichu_cv_ngay) groups[d].note = r.ghichu_cv_ngay;
+				if (r.is_auto_end == 1) groups[d].isAuto = true;
+			});
+			const rows = Object.values(groups).sort((a, b) => a.ngay_lam > b.ngay_lam ? -1 : 1);
+
+			if (!rows.length) {
+				if (emptyMsg) emptyMsg.classList.remove('hidden');
+				if (content) content.classList.add('hidden');
+				return;
+			}
+
+			if (emptyMsg) emptyMsg.classList.add('hidden');
+			if (content) content.classList.remove('hidden');
+			body.innerHTML = '';
+			rows.forEach(r => {
+				const isAutoEnd = r.isAuto || (endPlanTime && r.end === endPlanTime);
+				const endCell = r.end
+					? `${r.end} ${isAutoEnd ? '<i class="fa fa-info-circle text-warning" title="Tài xế quên nhấn Kết Thúc" style="cursor:pointer;color:#ffc107;" onclick="alert(\'Tài xế quên nhấn Kết Thúc\')"></i>' : ''}`
+					: '<span style="color:#1565c0;">Chưa kết thúc</span>';
+
+				const tr = document.createElement('tr');
+				tr.style.borderBottom = '1px solid #c5e0f5';
+				const dayIdx = rows.length - rows.indexOf(r);
+				tr.innerHTML = `
+					<td style="padding:5px 8px;font-weight:700;color:#007bff;">Ngày ${dayIdx}</td>
+					<td style="padding:5px 8px;">${formatDateDisplay(r.ngay_lam)}</td>
+					<td style="padding:5px 8px;">${formatTimeDisplay(r.start)}</td>
+					<td style="padding:5px 8px;">${endCell}</td>
+					<td style="padding:5px 8px;">${r.note || ''}</td>
+				`;
+				body.appendChild(tr);
+			});
+		}
+
+		async function reloadOrder() {
+			await loadOrderById();
+			renderUI();
+		}
+
+		async function handleClaim() {
+			const $datlich_taixe = app.$datlich_taixe || {};
+			const statusText = String($datlich_taixe.trangthai || '').toLowerCase();
+			if (statusText.includes('quá hạn') || statusText.includes('qua han')) {
+				throw new Error('Đơn hàng quá hạn, không thể nhận việc');
+			}
+
+			const startPlanAt = buildPlanDateTime($datlich_taixe.ngay_bat_dau_kehoach, $datlich_taixe.gio_bat_dau_kehoach);
+			if (startPlanAt && now().getTime() >= startPlanAt.getTime()) {
+				if (toNum($datlich_taixe.id_taixe) <= 0 && !statusText.includes('hủy') && !statusText.includes('hoàn thành')) {
+					await updateById(TABLE_ORDER, $datlich_taixe.id, { trangthai: 'quá hạn' });
+					await reloadOrder();
+				}
+				throw new Error('Đơn hàng quá hạn, không thể nhận việc');
+			}
+
+			await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
+				id_taixe: app.$user.id,
+				ngaynhan: nowSql(),
+				ten_taixe: app.$user.hovaten || '',
+				sdt_taixe: app.$user.sodienthoai || '',
+				email_taixe: app.$user.email || '',
+				diachi_taixe: app.$user.diachi || '',
+				avatar_taixe: app.$user.anh_dai_dien || ''
+			});
+			await reloadOrder();
+		}
+
+		async function handleCancel() {
+			const $datlich_taixe = app.$datlich_taixe || {};
+			const statusText = String($datlich_taixe.trangthai || '').toLowerCase();
+			if (statusText.includes('hủy') || statusText.includes('huy')) {
+				setState('Đơn đã được hủy trước đó', 'info');
+				return;
+			}
+			if (statusText.includes('quá hạn') || statusText.includes('qua han')) {
+				setState('Đơn đã quá hạn nên không thể hủy', 'info');
+				return;
+			}
+
+			const hasDriver = toNum($datlich_taixe.id_taixe) > 0;
+			const startPlanAt = buildPlanDateTime($datlich_taixe.ngay_bat_dau_kehoach, $datlich_taixe.gio_bat_dau_kehoach);
+			if (startPlanAt && now().getTime() >= startPlanAt.getTime()) {
+				if (!hasDriver && !statusText.includes('hoàn thành')) {
+					await updateById(TABLE_ORDER, app.$datlich_taixe.id, { trangthai: 'quá hạn' });
+					await reloadOrder();
+					setState('Đã qua giờ bắt đầu, đơn tự động chuyển quá hạn', 'info');
+					return;
+				}
+				throw new Error('Đã qua giờ bắt đầu kế hoạch nên không thể hủy đơn');
+			}
+
+			if (statusText.includes('hoàn thành') || $datlich_taixe.thoigian_batdau_thucte || $datlich_taixe.thoigian_ketthuc_thucte) {
+				throw new Error('Đơn đã bắt đầu hoặc hoàn thành nên không thể hủy');
+			}
+
+			const cancelAt = nowSql();
+			await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
+				trangthai: 'đã hủy',
+				thoigian_huy: cancelAt,
+				ngayhuy: cancelAt
+			});
+			await reloadOrder();
+		}
+
+		async function handleHdrStart() {
+			await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
+				trangthai: 'đang thực hiện',
+				thoigian_batdau_thucte: nowSql(),
+				thoigian_ketthuc_thucte: ''
+			});
+			await reloadOrder();
+		}
+
+		async function handleHdrEnd() {
+			if (!confirm('Bạn có chắc chắn muốn hoàn thành dịch vụ?')) return;
+			await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
+				trangthai: 'hoàn thành',
+				thoigian_ketthuc_thucte: nowSql(),
+				tien_do: 100
+			});
+			await reloadOrder();
+		}
+
+		async function handleStart() {
+			const idDv = app.$datlich_taixe.id;
+			const todayStr = (() => {
+				const d = now();
+				const p = n => String(n).padStart(2, '0');
+				return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+			})();
+			const newId = await insertRow(TABLE_HISTORY, {
+				id_dv: idDv,
+				ngay_lam: todayStr,
+				gio_bat_dau_trong_ngay: nowTimeSql()
+			});
+			app.currentWorkLogId = newId;
+			const totalDay = Math.max(1, diffDays(app.$datlich_taixe.ngay_bat_dau_kehoach, app.$datlich_taixe.ngay_ket_thuc_kehoach) + 1);
+			const percentPerDay = 100 / totalDay;
+			const nextProgress = Math.min(100, toNum(app.$datlich_taixe.tien_do || 0) + percentPerDay);
+			await updateById(TABLE_ORDER, idDv, { tien_do: Number(nextProgress.toFixed(2)) });
+			app.$workHistory = await listHistoryByOrder(idDv);
+			await reloadOrder();
+		}
+
+		async function handleEnd() {
+			if (!confirm('Bạn có chắc chắn muốn kết thúc ca làm việc hôm nay?')) return;
+			const curTime = nowTimeSql();
+
+			let workLogId = app.currentWorkLogId;
+			if (!workLogId) {
+				const todayStr = (() => {
+					const d = now();
+					const p = n => String(n).padStart(2, '0');
+					return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+				})();
+				const log = (app.$workHistory || []).find(r => (r.ngay_lam || '').slice(0, 10) === todayStr && !r.gio_ket_thuc_trong_ngay);
+				workLogId = log ? log.id : null;
+			}
+
+			if (workLogId) {
+				await updateById(TABLE_HISTORY, workLogId, {
+					gio_ket_thuc_trong_ngay: curTime
+				});
+			}
+
+			app.currentWorkLogId = null;
+			app.$workHistory = await listHistoryByOrder(app.$datlich_taixe.id);
+			await reloadOrder();
+		}
+
+		async function handleSaveStaffLog() {
+			const note = document.getElementById('staffNote');
+			const form = document.getElementById('staffWorkForm');
+			const todayStr = (() => {
+				const d = now();
+				const p = n => String(n).padStart(2, '0');
+				return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+			})();
+
+			await insertRow(TABLE_HISTORY, {
+				id_dv: app.$datlich_taixe.id,
+				ngay_lam: todayStr,
+				ghichu_cv_ngay: note ? note.value.trim() : ''
+			});
+
+			if (note) note.value = '';
+			if (form) form.classList.add('hidden');
+			app.$workHistory = await listHistoryByOrder(app.$datlich_taixe.id);
+			renderWorkHistoryTable();
+			setState('Đã lưu ghi chú công việc', 'info');
+		}
+
+		async function checkAutoEndPreviousWorkDay() {
+			if (app.role !== 'driver') return;
+			if (!app.$datlich_taixe) return;
+			const idDv = app.$datlich_taixe.id;
+			const history = await listHistoryByOrder(idDv);
+			app.$workHistory = history;
+			const todayStr = (() => {
+				const d = now();
+				const p = n => String(n).padStart(2, '0');
+				return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+			})();
+			const incompleteOld = history.filter(r =>
+				r.gio_bat_dau_trong_ngay
+				&& !history.some(h => (h.ngay_lam || '').slice(0, 10) === (r.ngay_lam || '').slice(0, 10) && h.gio_ket_thuc_trong_ngay)
+				&& (r.ngay_lam || '').slice(0, 10) < todayStr
+			);
+			const autoEndTime = app.$datlich_taixe.gio_ket_thuc_kehoach || '23:59:59';
+			for (const r of incompleteOld) {
+				await updateById(TABLE_HISTORY, r.id, {
+					gio_ket_thuc_trong_ngay: autoEndTime,
+					is_auto_end: 1
+				});
+			}
+			app.$workHistory = await listHistoryByOrder(idDv);
+		}
+
+		async function uploadReviewMedia(reviewRole, fileList) {
+			const files = Array.from(fileList || []);
+			if (!files.length) return [];
+
+			const formData = new FormData();
+			formData.append('review_role', reviewRole);
+			files.forEach((file) => formData.append('media_files[]', file));
+
+			const response = await fetch(REVIEW_UPLOAD_API, {
+				method: 'POST',
+				body: formData
+			});
+			const result = await response.json();
+			if (!result?.success) {
+				throw new Error(result?.message || 'Upload ảnh/video thất bại');
+			}
+			return Array.isArray(result?.data?.paths) ? result.data.paths : [];
+		}
+
+		async function handleSaveCustomerReview() {
+			if (!canSubmitCustomerReview()) {
+				throw new Error('Đơn này không đủ điều kiện để khách hàng đánh giá');
+			}
+			const text = $('customerReview').value.trim();
+			const mediaInput = $('customerMediaInput');
+			const uploaded = await uploadReviewMedia('khachhang', mediaInput.files);
+			const media = uploaded.length ? uploaded : parseMedia(app.$datlich_taixe.media_danhgia_khachhang);
+			await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
+				danhgia_khachhang: text,
+				media_danhgia_khachhang: JSON.stringify(media),
+				thoigian_danhgia_khachhang: nowSql()
+			});
+			mediaInput.value = '';
+			await reloadOrder();
+		}
+
+		async function handleSaveStaffReview() {
+			if (toNum(app.$datlich_taixe?.id_taixe) !== toNum(app.$user?.id)) {
+				throw new Error('Chỉ tài xế đã nhận công việc mới được đánh giá');
+			}
+			if (!canSubmitDriverReview()) {
+				throw new Error('Đơn này không đủ điều kiện để tài xế đánh giá');
+			}
+			const text = $('staffReview').value.trim();
+			const mediaInput = $('staffReviewMediaInput');
+			const uploaded = await uploadReviewMedia('taixe', mediaInput.files);
+			const media = uploaded.length ? uploaded : parseMedia(app.$datlich_taixe.media_danhgia_taixe);
+			await updateById(TABLE_ORDER, app.$datlich_taixe.id, {
+				danhgia_taixe: text,
+				media_danhgia_taixe: JSON.stringify(media),
+				thoigian_danhgia_taixe: nowSql()
+			});
+			mediaInput.value = '';
+			await reloadOrder();
+		}
+
+		async function handleAction(action) {
+			try {
+				if (action === 'claim') await handleClaim();
+				if (action === 'cancel') await handleCancel();
+				if (action === 'hdrStart') await handleHdrStart();
+				if (action === 'hdrEnd') await handleHdrEnd();
+				if (action === 'start') await handleStart();
+				if (action === 'end') await handleEnd();
+				if (action === 'saveStaffLog') await handleSaveStaffLog();
+				if (action === 'saveCustomerReview') await handleSaveCustomerReview();
+				if (action === 'saveStaffReview') await handleSaveStaffReview();
+				if (action !== 'saveStaffLog') setState('Đã cập nhật thành công', 'info');
+			} catch (e) {
+				setState(e.message || 'Có lỗi xảy ra', 'error');
+			}
+		}
+
+		function setState(text, type = 'info') {
+			const box = $('stateMessage');
+			box.textContent = text;
+			box.className = `state show ${type}`;
+			if (app.stateTimer) clearTimeout(app.stateTimer);
+			app.stateTimer = setTimeout(() => {
+				box.classList.remove('show');
+			}, 2000);
+		}
+
+		async function init() {
+			try {
+				app.params = getUrlParams();
+				if (!app.params.mahd || !app.params.sodienthoai || !app.params.password) {
+					throw new Error('Bạn không thể truy cập trang này');
+				}
+
+				await loadAuthTables();
+				const auth = findAuthUser();
+				if (!auth) throw new Error('Bạn không thể truy cập trang này');
+				app.role = auth.role;
+				app.$user = auth.$user;
+
+				await loadOrderById();
+				await checkAutoEndPreviousWorkDay();
+
+				renderUI();
+				show($('mainGrid'), true);
+				const statusText = String(app.$datlich_taixe?.trangthai || '').toLowerCase();
+				const noDriver = toNum(app.$datlich_taixe?.id_taixe) <= 0;
+				const showOverdueForDriver = app.role === 'driver' && noDriver && (statusText.includes('quá hạn') || statusText.includes('qua han'));
+				setState(showOverdueForDriver ? 'Đơn hàng quá hạn' : 'Tải dữ liệu thành công', 'info');
+			} catch (e) {
+				show($('mainGrid'), false);
+				setState(e.message || 'Bạn không thể truy cập trang này', 'error');
+			}
+		}
+
+		function bindClick(id, action) {
+			const el = $(id);
+			if (!el) return;
+			el.addEventListener('click', () => handleAction(action));
+		}
+
+		bindClick('btnHdrClaim', 'claim');
+		bindClick('btnCancelService', 'cancel');
+		bindClick('btnStart', 'start');
+		bindClick('btnHdrStart', 'hdrStart');
+		bindClick('btnEnd', 'end');
+		bindClick('btnHdrEnd', 'hdrEnd');
+		bindClick('btnSaveStaffLog', 'saveStaffLog');
+		bindClick('btnSaveReview', 'saveCustomerReview');
+		bindClick('btnSaveStaffReview', 'saveStaffReview');
+		bindReviewPreview('customerMediaInput', 'customerReviewMediaGrid', 'media_danhgia_khachhang');
+		bindReviewPreview('staffReviewMediaInput', 'staffReviewMediaGrid', 'media_danhgia_taixe');
+
+		init();
+	</script>
+</body>
+
+</html>
