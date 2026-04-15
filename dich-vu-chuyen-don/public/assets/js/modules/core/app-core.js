@@ -1,3 +1,5 @@
+import { readStoredAccess } from "../store/auth-session-store.js";
+
 const currentPath = String(window.location.pathname || "").replace(/\\/g, "/");
 const currentPathLower = currentPath.toLowerCase();
 const inPublicDir = currentPathLower.includes("/public/");
@@ -77,24 +79,40 @@ function getCookieAuthCredentials() {
   };
 }
 
+function getStoredAuthCredentials() {
+  const storedAccess =
+    typeof readStoredAccess === "function" ? readStoredAccess() : {};
+  return {
+    username: String(storedAccess?.username || "").trim(),
+    password: String(storedAccess?.password || "").trim(),
+  };
+}
+
 function getOrderDetailAccessCredentials(credentials = {}) {
   const explicitUsername = String(credentials?.username || "").trim();
   const explicitPassword = String(credentials?.password || "").trim();
-  if (explicitUsername && explicitPassword) {
-    return {
-      username: explicitUsername,
-      password: explicitPassword,
-    };
-  }
-
   const urlCredentials = getUrlAuthCredentials();
-  if (urlCredentials.username && urlCredentials.password) {
-    return urlCredentials;
-  }
-
   const cookieCredentials = getCookieAuthCredentials();
-  if (cookieCredentials.username && cookieCredentials.password) {
-    return cookieCredentials;
+  const storedCredentials = getStoredAuthCredentials();
+
+  const resolvedUsername =
+    explicitUsername ||
+    urlCredentials.username ||
+    cookieCredentials.username ||
+    storedCredentials.username ||
+    "";
+  const resolvedPassword =
+    explicitPassword ||
+    urlCredentials.password ||
+    cookieCredentials.password ||
+    storedCredentials.password ||
+    "";
+
+  if (resolvedUsername && resolvedPassword) {
+    return {
+      username: resolvedUsername,
+      password: resolvedPassword,
+    };
   }
 
   return {
@@ -235,6 +253,26 @@ function getPricingVehicleEntries(serviceData) {
     return vehicleItems.map((item) => ({
       slug: String(item?.slug || "").trim(),
       ten_hien_thi: String(item?.ten || "").trim(),
+      gia_mo_cua: Number(item?.gia_mo_cua || 0),
+      pham_vi_mo_cua_km: Number(item?.pham_vi_mo_cua_km || 0),
+      bang_gia_km: Array.isArray(item?.bang_gia_km)
+        ? item.bang_gia_km
+            .map((band) => ({
+              tu_km: Number(band?.tu_km || 0),
+              den_km:
+                band?.den_km === null || band?.den_km === ""
+                  ? null
+                  : Number(band?.den_km || 0),
+              don_gia: Number(band?.don_gia || 0),
+            }))
+            .filter(
+              (band) =>
+                Number.isFinite(band.tu_km) &&
+                band.tu_km > 0 &&
+                Number.isFinite(band.don_gia) &&
+                band.don_gia > 0,
+            )
+        : [],
       gia_moi_km: Number(item?.gia_moi_km || 0),
       gia_moi_km_duong_dai: Number(item?.gia_moi_km_duong_dai || 0),
       phi_toi_thieu: Number(item?.phi_toi_thieu || 0),
@@ -311,7 +349,16 @@ function getPricingMultiplierEntries(serviceData) {
 }
 
 function getPricingStartingPrice(serviceData) {
-  const values = getPricingVehicleEntries(serviceData)
+  const entries = getPricingVehicleEntries(serviceData);
+  const openingValues = entries
+    .map((item) => Number(item?.gia_mo_cua || 0))
+    .filter((value) => Number.isFinite(value) && value > 0);
+
+  if (openingValues.length) {
+    return Math.min(...openingValues);
+  }
+
+  const values = entries
     .map((item) => Number(item?.gia_moi_km || 0))
     .filter((value) => Number.isFinite(value) && value > 0);
   return values.length ? Math.min(...values) : 0;

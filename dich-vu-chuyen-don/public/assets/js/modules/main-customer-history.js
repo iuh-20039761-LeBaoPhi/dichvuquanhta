@@ -31,12 +31,12 @@ const customerHistoryModule = (function (window, document) {
     return typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
   }
 
-  function getOrderDetailUrl(orderCode) {
+  function getOrderDetailUrl(orderIdentifier) {
     return typeof core.buildOrderDetailUrl === "function"
-      ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", orderCode)
+      ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", orderIdentifier)
       : getProjectUrl(
           `khach-hang/chi-tiet-hoa-don.html?madonhang=${encodeURIComponent(
-            orderCode || "",
+            orderIdentifier || "",
           )}`,
         );
   }
@@ -274,7 +274,7 @@ const customerHistoryModule = (function (window, document) {
                 ${
                   item.type === "dat-lich"
                     ? `<a class="customer-btn customer-btn-primary" href="${escapeHtml(
-                        getOrderDetailUrl(item.code || ""),
+                        getOrderDetailUrl(item.remote_id || item.code || ""),
                       )}">Xem chi tiết</a>`
                     : `<a class="customer-btn customer-btn-primary" href="${escapeHtml(
                         getProjectUrl("khach-hang/danh-sach-don-hang.html"),

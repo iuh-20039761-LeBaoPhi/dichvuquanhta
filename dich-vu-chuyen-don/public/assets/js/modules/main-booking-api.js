@@ -1,4 +1,4 @@
-import { getKrudInsertFn, getKrudUpdateFn } from "./api/krud-client.js";
+import { getKrudInsertFn } from "./api/krud-client.js";
 
 class FastGoBookingApiClient {
   constructor(options) {
@@ -27,10 +27,6 @@ class FastGoBookingApiClient {
 
   getInsertFn() {
     return getKrudInsertFn();
-  }
-
-  getUpdateFn() {
-    return getKrudUpdateFn();
   }
 
   extractRemoteId(result) {
@@ -95,26 +91,6 @@ class FastGoBookingApiClient {
       this.formatSystemRequestCode(remoteId, createdAt) || remoteId;
 
     nextPayload.ma_yeu_cau_noi_bo = systemRequestCode;
-
-    if (remoteId) {
-      const updateFn = this.getUpdateFn();
-      if (updateFn) {
-        try {
-          await Promise.resolve(
-            updateFn(this.bookingTableName, {
-              id: remoteId,
-              ma_yeu_cau_noi_bo: systemRequestCode,
-              updated_at: createdAt,
-            }),
-          );
-        } catch (error) {
-          console.warn(
-            "Không thể ghi ngược mã yêu cầu theo ID vào KRUD:",
-            error,
-          );
-        }
-      }
-    }
 
     return {
       payload: nextPayload,

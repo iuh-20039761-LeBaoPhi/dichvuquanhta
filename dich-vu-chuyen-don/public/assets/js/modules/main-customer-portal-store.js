@@ -4,6 +4,7 @@ import {
   getKrudUpdateFn,
 } from "./api/krud-client.js";
 import {
+  ensureBookingVehicleLabelMapLoaded,
   formatBookingScheduleLabel,
   getBookingScheduleTimeLabel,
   getBookingServiceLabel,
@@ -22,9 +23,11 @@ import {
 import {
   notifyAuthSessionChanged,
   clearStoredAuthSession,
+  readStoredAccess,
   readStoredIdentity,
   readStoredRole,
   safeParse,
+  saveStoredAccess,
   saveStoredIdentity,
   storageKeys,
   writeStoredRole,
@@ -322,6 +325,9 @@ const customerPortalStoreModule = (function (window) {
     can_xe_nang_dat_lich: "Cần xe nâng",
     can_xe_cau_dat_lich: "Cần xe cẩu",
     can_gia_co_hang_hoa: "Cần gia cố hàng hóa",
+    co_hang_de_vo_kho_bai: "Có hàng dễ vỡ",
+    co_hang_cong_kenh_kho_bai: "Có hàng cồng kềnh",
+    co_hang_gia_tri_cao_kho_bai: "Có hàng giá trị cao",
     can_kiem_ke_hang_hoa: "Kiểm kê trước và sau chuyển",
   };
 
@@ -402,6 +408,26 @@ const customerPortalStoreModule = (function (window) {
     return saveStoredIdentity(payload);
   }
 
+  function syncStoredAccessFromCookies() {
+    const username = normalizeText(readCookie("dvqt_u"));
+    const password = String(readCookie("dvqt_p") || "").trim();
+    if (!username || !password) return null;
+    return saveStoredAccess({ username, password });
+  }
+
+  function syncStoredAccessFromCurrentUrl() {
+    try {
+      const params = new URLSearchParams(window.location.search || "");
+      const username = normalizeText(params.get("username") || "");
+      const password = String(params.get("password") || "").trim();
+      if (!username || !password) return null;
+      return saveStoredAccess({ username, password });
+    } catch (error) {
+      console.error("Cannot sync auth access from current URL:", error);
+      return null;
+    }
+  }
+
   function syncIdentityFromProfile(profile) {
     if (!profile || typeof profile !== "object") {
       return readIdentity();
@@ -479,6 +505,9 @@ const customerPortalStoreModule = (function (window) {
   }
 
   async function hydrateAuthSessionFromDvqtCookie() {
+    syncStoredAccessFromCurrentUrl();
+    syncStoredAccessFromCookies();
+
     const identity = readIdentity();
     const hasLocalIdentity =
       normalizeText(identity?.id || "") ||
@@ -545,7 +574,9 @@ const customerPortalStoreModule = (function (window) {
   }
 
   async function bootstrapAuthSession() {
+    syncStoredAccessFromCurrentUrl();
     const cookiePhone = normalizePhone(readCookie("dvqt_u"));
+    syncStoredAccessFromCookies();
     if (!cookiePhone) return null;
 
     const identity = readIdentity();
@@ -636,6 +667,10 @@ const customerPortalStoreModule = (function (window) {
         }) || null;
 
       if (matchedRow) {
+        saveStoredAccess({
+          username: loginIdentifier,
+          password,
+        });
         return syncIdentityFromProfile(normalizeAuthProfileRow(matchedRow));
       }
 
@@ -931,7 +966,7 @@ const customerPortalStoreModule = (function (window) {
       row?.ten_dich_vu || row?.loai_dich_vu || "Chuyển dọn",
     );
     const vehicleLabel = getBookingVehicleLabel(
-      row?.ten_loai_xe || row?.loai_xe || "",
+      row?.loai_xe || row?.ten_loai_xe || "",
     );
     const contactName = normalizeText(row?.ho_ten || row?.contact_name || "");
     const contactPhone = normalizeText(row?.so_dien_thoai || row?.phone || "");
@@ -1058,7 +1093,7 @@ const customerPortalStoreModule = (function (window) {
         ),
       ),
       vehicle_label: normalizeText(
-        getBookingVehicleLabel(row?.ten_loai_xe || row?.loai_xe || ""),
+        getBookingVehicleLabel(row?.loai_xe || row?.ten_loai_xe || ""),
       ),
       distance_km: parseNumber(row?.khoang_cach_km || 0),
       access_conditions: splitPipeValues(row?.dieu_kien_tiep_can),
@@ -1107,6 +1142,7 @@ const customerPortalStoreModule = (function (window) {
   }
 
   async function fetchKrudBookingItems(identity) {
+    await ensureBookingVehicleLabelMapLoaded();
     const listFn = getKrudListFn();
     if (!listFn) return [];
 
@@ -1257,6 +1293,7 @@ const customerPortalStoreModule = (function (window) {
 
   async function fetchBookingInvoiceDetail(code) {
     const profile = await requireVerifiedProfile();
+    await ensureBookingVehicleLabelMapLoaded();
     const rawRow = await findKrudBookingRow(code, profile);
     const invoice = rawRow ? normalizeBookingInvoiceDetail(rawRow, null) : null;
 
@@ -1299,6 +1336,7 @@ const customerPortalStoreModule = (function (window) {
     }
 
     const updatedAt = new Date().toISOString();
+    await ensureBookingVehicleLabelMapLoaded();
 
     await updateBookingAsCancelled(rawRow, updatedAt);
     const patchedRow = {
@@ -1451,6 +1489,17 @@ const customerPortalStoreModule = (function (window) {
         updated_at: new Date().toISOString(),
       }),
     );
+
+    const storedAccess = readStoredAccess();
+    const nextUsername = normalizeText(
+      storedAccess.username || identity.sodienthoai || readCookie("dvqt_u") || "",
+    );
+    if (nextUsername) {
+      saveStoredAccess({
+        username: nextUsername,
+        password: newPassword,
+      });
+    }
 
     return { status: "success" };
   }

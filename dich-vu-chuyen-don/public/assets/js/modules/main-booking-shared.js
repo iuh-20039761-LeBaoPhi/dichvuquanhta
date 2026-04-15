@@ -1,4 +1,5 @@
 import { getKrudUpdateFn } from "./api/krud-client.js";
+import core from "./core/app-core.js";
 
 const bookingCrudTableName = "dich_vu_chuyen_don_dat_lich";
 const SERVICE_LABEL_MAP = {
@@ -21,16 +22,26 @@ const SCHEDULE_TIME_LABEL_MAP = {
   binh_thuong: "Ban ngày",
   cuoi_tuan: "Cuối tuần",
 };
-const VEHICLE_LABEL_MAP = {
-  xe_van_500kg: "Xe 4 bánh nhỏ ≤ 500kg",
-  xe_tai_1_5_tan: "Xe 4 bánh vừa ≤ 1200kg",
-  xe_tai_2_5_tan: "Xe tải ≤ 3500kg",
-  xe_tai_7_5_tan: "Xe tải lớn ≤ 7500kg",
+const DEFAULT_VEHICLE_LABEL_MAP = {
+  xe_may_cho_hang: "Xe máy chở hàng",
+  ba_gac_may: "Ba gác máy",
+  xe_van_500kg: "Xe tải 500kg",
+  xe_tai_750kg: "Xe tải 750kg",
+  xe_tai_1_tan: "Xe tải 1 tấn",
+  xe_tai_1_5_tan: "Xe tải 1.5 tấn",
+  xe_tai_2_5_tan: "Xe tải 2 tấn",
+  xe_tai_3_5_tan: "Xe tải 3.5 tấn",
+  xe_tai_5_tan: "Xe tải 5 tấn",
+  xe_tai_7_5_tan: "Xe tải 8 tấn",
+  xe_tai_15_tan: "Xe tải 15 tấn",
+  dau_keo_container: "Đầu kéo container",
 };
 const WEATHER_LABEL_MAP = {
   binh_thuong: "Bình thường",
   troi_mua: "Trời mưa",
 };
+let vehicleLabelMap = { ...DEFAULT_VEHICLE_LABEL_MAP };
+let bookingVehicleLabelMapPromise = null;
 
 function normalizeText(value) {
   return String(value || "")
@@ -57,7 +68,7 @@ function getBookingScheduleTimeLabel(value) {
 function getBookingVehicleLabel(value) {
   const rawValue = normalizeText(value);
   if (!rawValue) return "";
-  return VEHICLE_LABEL_MAP[toLookupKey(rawValue)] || rawValue;
+  return vehicleLabelMap[toLookupKey(rawValue)] || rawValue;
 }
 
 function getBookingWeatherLabel(value) {
@@ -169,6 +180,80 @@ function getRenderableBookingPricingRows(value, options = {}) {
     .map(({ index, ...item }) => item);
 }
 
+function buildBookingVehicleLabelMapFromPricingData(pricingData) {
+  const nextMap = { ...DEFAULT_VEHICLE_LABEL_MAP };
+  const services = Array.isArray(pricingData) ? pricingData : [];
+
+  services.forEach((serviceData) => {
+    const vehicleEntries =
+      typeof core.getPricingVehicleEntries === "function"
+        ? core.getPricingVehicleEntries(serviceData)
+        : [];
+
+    vehicleEntries.forEach((entry) => {
+      const slug = toLookupKey(entry?.slug || "");
+      const label = normalizeText(entry?.ten_hien_thi || entry?.ten || "");
+      if (!slug || !label) return;
+      nextMap[slug] = label;
+    });
+  });
+
+  return nextMap;
+}
+
+function setBookingVehicleLabelMap(nextMap) {
+  const mergedMap = { ...DEFAULT_VEHICLE_LABEL_MAP };
+
+  if (nextMap && typeof nextMap === "object") {
+    Object.entries(nextMap).forEach(([key, value]) => {
+      const normalizedKey = toLookupKey(key);
+      const normalizedValue = normalizeText(value);
+      if (!normalizedKey || !normalizedValue) return;
+      mergedMap[normalizedKey] = normalizedValue;
+    });
+  }
+
+  vehicleLabelMap = mergedMap;
+  return vehicleLabelMap;
+}
+
+async function ensureBookingVehicleLabelMapLoaded() {
+  if (bookingVehicleLabelMapPromise) {
+    return bookingVehicleLabelMapPromise;
+  }
+
+  if (typeof window === "undefined" || typeof window.fetch !== "function") {
+    return vehicleLabelMap;
+  }
+
+  bookingVehicleLabelMapPromise = fetch(
+    typeof core.toPublicUrl === "function"
+      ? core.toPublicUrl("assets/js/data/bang-gia-minh-bach.json")
+      : "assets/js/data/bang-gia-minh-bach.json",
+    {
+      method: "GET",
+      credentials: "same-origin",
+    },
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Cannot load vehicle labels: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((pricingData) =>
+      setBookingVehicleLabelMap(
+        buildBookingVehicleLabelMapFromPricingData(pricingData),
+      ),
+    )
+    .catch((error) => {
+      console.error("Cannot load booking vehicle label map:", error);
+      return vehicleLabelMap;
+    });
+
+  return bookingVehicleLabelMapPromise;
+}
+
 async function updateBookingRow(orderId, payload = {}, options = {}) {
   const rowId = normalizeText(orderId);
   if (!rowId) {
@@ -269,12 +354,15 @@ const bookingSharedModule = {
   buildBookingLifecyclePatch,
   formatBookingDateOnly,
   formatBookingScheduleLabel,
+  buildBookingVehicleLabelMapFromPricingData,
+  ensureBookingVehicleLabelMapLoaded,
   getRenderableBookingPricingRows,
   getBookingScheduleTimeLabel,
   getBookingServiceLabel,
   getBookingVehicleLabel,
   getBookingWeatherLabel,
   normalizeBookingPricingBreakdown,
+  setBookingVehicleLabelMap,
   updateBookingRow,
 };
 
@@ -285,6 +373,8 @@ if (typeof window !== "undefined") {
 export {
   bookingCrudTableName,
   buildBookingLifecyclePatch,
+  buildBookingVehicleLabelMapFromPricingData,
+  ensureBookingVehicleLabelMapLoaded,
   formatBookingDateOnly,
   formatBookingScheduleLabel,
   getRenderableBookingPricingRows,
@@ -293,6 +383,7 @@ export {
   getBookingVehicleLabel,
   getBookingWeatherLabel,
   normalizeBookingPricingBreakdown,
+  setBookingVehicleLabelMap,
   updateBookingRow,
 };
 export default bookingSharedModule;

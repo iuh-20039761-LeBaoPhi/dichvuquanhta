@@ -235,14 +235,36 @@ let bookingFormLogicPromise = null;
         return;
       }
 
-      const amount = Number(checkboxItem.don_gia || 0);
-      addChargeLine({
-        label: resolvedLabel,
-        detail: `Áp dụng khi bạn chọn hạng mục này: ${core.formatCurrencyVnd(checkboxItem.don_gia || 0)}`,
-        amount,
+      markBookingSelectedOption(optionSelections, {
         displaySlug: resolvedDisplaySlug,
+        amount: 0,
         quantity: 1,
-        note,
+        note:
+          note ||
+          "Hạng mục đã được ghi nhận để đội ngũ triển khai, không cộng vào giá tạm tính.",
+        state: "Đang chọn",
+      });
+    }
+
+    function markCheckboxSelection({
+      checkboxSlug,
+      active,
+      displaySlug,
+      note,
+    }) {
+      const checkboxItem = checkboxItemMap.get(checkboxSlug);
+      if (!checkboxItem || !active) return;
+
+      const resolvedDisplaySlug =
+        displaySlug || checkboxItem.nguon_hien_thi_slug || checkboxSlug;
+
+      markBookingSelectedOption(optionSelections, {
+        displaySlug: resolvedDisplaySlug,
+        amount: 0,
+        quantity: 1,
+        note:
+          note ||
+          "Hạng mục đã được ghi nhận để đội ngũ triển khai, không cộng vào giá tạm tính.",
         state: "Đang chọn",
       });
     }
@@ -310,16 +332,10 @@ let bookingFormLogicPromise = null;
     const specialCheckboxConfig =
       specialCheckboxConfigMap[normalizedService] || [];
     specialCheckboxConfig.forEach(({ selector, slug, display_slug }) => {
-      const specialItem = getBookingSpecialFixedItem(core, serviceData, slug);
-      if (!specialItem || !isBookingChecked(scope, selector)) return;
-      addChargeLine({
-        label: specialItem.ten || "Hạng mục đặc biệt",
-        detail: `Áp dụng theo checkbox đã chọn: ${core.formatCurrencyVnd(specialItem.don_gia || 0)}`,
-        amount: Number(specialItem.don_gia || 0),
+      markCheckboxSelection({
+        checkboxSlug: slug,
+        active: isBookingChecked(scope, selector),
         displaySlug: display_slug,
-        quantity: 1,
-        note: "Tính theo checkbox đặc biệt đã chọn.",
-        state: "Đang chọn",
       });
     });
 
@@ -471,7 +487,7 @@ let bookingFormLogicPromise = null;
       title: serviceData.ten_dich_vu || "Giá tạm tính",
       description:
         serviceData?.thong_tin_minh_bach?.tom_tat_tong_chi_phi ||
-        "Giá tạm tính đang bám theo số km di chuyển, loại xe, giảm giá đường dài và các phụ phí bạn đã chọn trong form.",
+        "Giá tạm tính đang bám theo quãng đường, loại xe và các hạng mục bạn đã chọn trong form.",
       optionCardsHtml,
       breakdownHtml,
       breakdownLines,

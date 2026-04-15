@@ -506,11 +506,11 @@
         <h4>Chi tiết chuyển nhà</h4>
         <div class="cum-truong-co-tieu-de">
           <div class="cum-truong-tieu-de">
-            <h5>Phụ phí tùy chọn</h5>
+            <h5>Hạng mục cần làm thêm</h5>
           </div>
           <p class="mo-ta-phu">
-            Nhân công đã nằm trong dịch vụ. Chỉ chọn các hạng mục phát sinh cần
-            cộng thêm vào báo giá.
+            Chọn các hạng mục cần làm thêm để hệ thống cập nhật giá và ghi nhận
+            đúng công việc.
           </p>
           <div
             class="cum-lua-chon cum-lua-chon-rong"
@@ -548,11 +548,11 @@
         <h4>Chi tiết chuyển văn phòng công ty</h4>
         <div class="cum-truong-co-tieu-de">
           <div class="cum-truong-tieu-de">
-            <h5>Phụ phí tùy chọn</h5>
+            <h5>Hạng mục cần làm thêm</h5>
           </div>
           <p class="mo-ta-phu">
-            Nhân công cơ bản đã nằm trong dịch vụ. Chỉ bật thêm các hạng mục
-            phát sinh cần cộng phí.
+            Chọn các hạng mục cần đóng gói, bảo vệ hoặc xử lý kỹ thuật để hệ
+            thống cập nhật giá và ghi nhận đúng nhu cầu triển khai.
           </p>
           <div
             class="cum-lua-chon cum-lua-chon-rong"
@@ -602,16 +602,17 @@
         <h4>Chi tiết chuyển kho bãi</h4>
         <div class="cum-truong-co-tieu-de">
           <div class="cum-truong-tieu-de">
-            <h5>Phụ phí tùy chọn</h5>
+            <h5>Nhu cầu xử lý hàng</h5>
           </div>
           <p class="mo-ta-phu">
-            Chỉ chọn các hạng mục hỗ trợ thật sự phát sinh để hệ thống cộng phụ
-            phí cố định.
+            Cước xe là phần chở hàng giữa hai điểm. Các mục dưới đây dùng để
+            ghi nhận nhu cầu pallet, nâng hạ, gia cố và đặc tính hàng tại hiện
+            trường.
           </p>
           <div class="cum-lua-chon" data-nhom-chip="chi_tiet_kho_bai_dat_lich">
             <label class="lua-chon-chip">
               <input type="checkbox" name="can_luan_chuyen_pallet" value="1" />
-              <span>Cần luân chuyển pallet</span>
+              <span>Có pallet / cần xử lý pallet</span>
             </label>
             <label class="lua-chon-chip">
               <input type="checkbox" name="can_xe_nang_dat_lich" value="1" />
@@ -624,6 +625,18 @@
             <label class="lua-chon-chip">
               <input type="checkbox" name="can_gia_co_hang_hoa" value="1" />
               <span>Cần gia cố hàng hóa</span>
+            </label>
+            <label class="lua-chon-chip">
+              <input type="checkbox" name="co_hang_de_vo_kho_bai" value="1" />
+              <span>Có hàng dễ vỡ</span>
+            </label>
+            <label class="lua-chon-chip">
+              <input type="checkbox" name="co_hang_cong_kenh_kho_bai" value="1" />
+              <span>Có hàng cồng kềnh</span>
+            </label>
+            <label class="lua-chon-chip">
+              <input type="checkbox" name="co_hang_gia_tri_cao_kho_bai" value="1" />
+              <span>Có hàng giá trị cao</span>
             </label>
             <label class="lua-chon-chip">
               <input type="checkbox" name="can_kiem_ke_hang_hoa" value="1" />
@@ -642,7 +655,7 @@
             class="khung-gia-tham-khao-dat-lich-mac-dinh"
             data-gia-tham-khao-dat-lich-mac-dinh
           >
-            Chọn dịch vụ và loại xe để xem giá.
+            Chọn dịch vụ, loại xe và các hạng mục cần làm để xem giá.
           </div>
 
           <div
@@ -943,7 +956,7 @@
           </div>
           <div class="danh-sach-luu-y-xac-nhan" data-luu-y-xac-nhan-dat-lich>
             <div class="muc-luu-y-xac-nhan muc-luu-y-xac-nhan--hop-nhat">
-              Giá tạm tính đang bám theo đúng thông tin bạn đã nhập trong biểu mẫu.
+              Giá tạm tính đang bám theo thông tin bạn đã nhập trong biểu mẫu.
             </div>
           </div>
         </section>

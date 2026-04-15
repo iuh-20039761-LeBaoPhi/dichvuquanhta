@@ -9,12 +9,12 @@ import core from "./core/app-core.js";
     {
       id: "cuoc-xe",
       ten: "Cước xe theo km",
-      mo_ta: "Mức phí cốt lõi của tất cả dịch vụ, tính trên quãng đường di chuyển và loại xe bạn chọn.",
+      mo_ta: "Mức phí cốt lõi của tất cả dịch vụ, đi từ giá mở cửa 5km đầu theo loại xe rồi cộng tiếp theo các dải km phát sinh.",
     },
     {
       id: "ho-tro",
-      ten: "Phí dịch vụ chọn thêm",
-      mo_ta: "Chỉ cộng dồn khi bạn tích chọn các hạng mục hỗ trợ ngoài như: khảo sát trước, đóng gói, tháo lắp, xe nâng...",
+      ten: "Hạng mục hỗ trợ theo yêu cầu",
+      mo_ta: "Các hạng mục như đóng gói, tháo lắp, pallet, xe nâng hoặc bảo vệ thiết bị được ghi nhận để điều phối triển khai, không tự cộng phí.",
     },
     {
       id: "thoi-diem",
@@ -33,6 +33,26 @@ import core from "./core/app-core.js";
 
   function formatCurrency(amount) {
     return core.formatCurrencyVnd(amount);
+  }
+
+  function getVehicleBand(vehicle, fromKm) {
+    return (
+      (Array.isArray(vehicle?.bang_gia_km) ? vehicle.bang_gia_km : []).find(
+        (band) => Number(band?.tu_km || 0) === fromKm,
+      ) || null
+    );
+  }
+
+  function formatVehicleOpening(vehicle) {
+    const openingFare = Number(vehicle?.gia_mo_cua || 0);
+    const openingKm = Number(vehicle?.pham_vi_mo_cua_km || 0);
+    if (!openingFare || !openingKm) return "Cần xác nhận";
+    return `${formatCurrency(openingFare)}/${openingKm}km đầu`;
+  }
+
+  function formatVehicleBand(vehicle, fromKm) {
+    const band = getVehicleBand(vehicle, fromKm);
+    return band?.don_gia ? `${formatCurrency(band.don_gia)}/km` : "Cần xác nhận";
   }
 
   function loadTransparentPricingData() {
@@ -54,8 +74,13 @@ import core from "./core/app-core.js";
   }
 
   function getStartingPrice(item) {
-    const value = core.getPricingStartingPrice(item);
-    return value > 0 ? `Từ ${formatCurrency(value)}/km` : "";
+    const vehicles = core.getPricingVehicleEntries(item);
+    const firstOpening = vehicles
+      .filter((entry) => Number(entry?.gia_mo_cua || 0) > 0)
+      .sort((left, right) => Number(left.gia_mo_cua || 0) - Number(right.gia_mo_cua || 0))[0];
+
+    if (!firstOpening) return "";
+    return `Từ ${formatVehicleOpening(firstOpening)}`;
   }
 
   function collectSurchargeItems(serviceData) {
@@ -64,11 +89,18 @@ import core from "./core/app-core.js";
         label: item.title,
         amount: item.value,
       })),
-      ...core.getPricingCheckboxItems(serviceData).map((item) => ({
-        label: item.ten,
-        amount: formatCurrency(item.don_gia),
-      })),
     ];
+  }
+
+  function getSharedSurveyItem(data) {
+    if (!Array.isArray(data)) return null;
+    for (const service of data) {
+      const match = core
+        .getPricingCheckboxItems(service)
+        .find((item) => String(item?.slug || "").trim() === "khao_sat_truoc");
+      if (match) return match;
+    }
+    return null;
   }
 
   function renderInlineList(items, fallback) {
@@ -93,29 +125,35 @@ import core from "./core/app-core.js";
         details = vehicles.map(v => `
           <div class="dong-gia-so-sanh">
             <span class="ten-phi">${core.escapeHtml(v.ten_hien_thi)}</span>
-            <span class="muc-tien"><strong>${core.escapeHtml(formatCurrency(v.gia_moi_km) || "Cần xác nhận")}</strong>/km</span>
+            <span class="muc-tien"><strong>${core.escapeHtml(formatVehicleOpening(v))}</strong></span>
           </div>
           <div class="dong-gia-so-sanh">
-            <span class="ten-phi">Đường dài >20km</span>
-            <span class="muc-tien"><strong>${core.escapeHtml(formatCurrency(v.gia_moi_km_duong_dai) || "Cần xác nhận")}</strong>/km</span>
+            <span class="ten-phi">Km 6-15</span>
+            <span class="muc-tien"><strong>${core.escapeHtml(formatVehicleBand(v, 6))}</strong></span>
           </div>
           <div class="dong-gia-so-sanh">
-            <span class="ten-phi">Phí tối thiểu</span>
-            <span class="muc-tien"><strong>${core.escapeHtml(formatCurrency(v.phi_toi_thieu) || "Cần xác nhận")}</strong></span>
+            <span class="ten-phi">Km 16-30</span>
+            <span class="muc-tien"><strong>${core.escapeHtml(formatVehicleBand(v, 16))}</strong></span>
+          </div>
+          <div class="dong-gia-so-sanh">
+            <span class="ten-phi">Km 31+</span>
+            <span class="muc-tien"><strong>${core.escapeHtml(formatVehicleBand(v, 31))}</strong></span>
           </div>
         `);
       }
 
       if (groupId === "ho-tro") {
         const checkboxItems = core.getPricingCheckboxItems(item);
-        details = checkboxItems.length
-          ? checkboxItems.map(entry => `
-              <div class="dong-gia-so-sanh">
-                <span class="ten-phi">${core.escapeHtml(entry.ten)}</span>
-                <span class="muc-tien"><strong>+${core.escapeHtml(formatCurrency(entry.don_gia) || "Cần xác nhận")}</strong></span>
-              </div>
-            `)
-          : ['<div class="dong-gia-so-sanh"><span class="mo-ta-phu">Không có phụ phí mở rộng</span></div>'];
+        const supportItems = checkboxItems.filter(
+          (entry) => String(entry?.slug || "").trim() !== "khao_sat_truoc",
+        );
+        details = supportItems.length
+          ? supportItems.map(entry => `
+                <div class="dong-gia-so-sanh">
+                  <span class="ten-phi">${core.escapeHtml(entry.ten)}</span>
+                </div>
+              `)
+          : ['<div class="dong-gia-so-sanh"><span class="mo-ta-phu">Không có hạng mục hỗ trợ mở rộng</span></div>'];
       }
 
       if (groupId === "thoi-diem") {
@@ -141,8 +179,8 @@ import core from "./core/app-core.js";
     }).join("");
 
     let commonNote = "";
-    if (groupId === "cuoc-xe") commonNote = "Tổng cước xe = max(Phí tối thiểu, Số km di chuyển x Giá mỗi km theo loại xe). Khi quãng đường vượt 20km, hệ thống tự giảm 10% đơn giá xe để giữ bảng giá đồng nhất.";
-    if (groupId === "ho-tro") commonNote = "Chỉ phát sinh khi khách hàng yêu cầu thêm các dịch vụ hỗ trợ ngoài cước di chuyển cơ bản. Khảo sát trước là một hạng mục tùy chọn, không bắt buộc.";
+    if (groupId === "cuoc-xe") commonNote = "Bảng xe công khai đang hiển thị theo giá mở cửa 5km đầu và đơn giá phát sinh ở các dải km 6-15, 16-30 và từ km 31 trở đi để bạn đối chiếu nhanh theo từng loại xe.";
+    if (groupId === "ho-tro") commonNote = "Khảo sát trước vẫn được giữ như một hạng mục riêng theo bảng giá. Các hạng mục hỗ trợ còn lại chỉ dùng để điều phối đội triển khai và tài xế biết việc cần làm thêm.";
     if (groupId === "thoi-diem") commonNote = "Hệ số và phụ phí thời điểm sẽ được linh động cộng dồn một lần vào tổng hóa đơn cuối cùng.";
 
     return `
@@ -180,7 +218,7 @@ import core from "./core/app-core.js";
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">So sánh nhanh</span>
           <h2>Điểm khác biệt của từng dịch vụ</h2>
-          <p>So sánh nhanh đơn giá theo km và các thế mạnh riêng của từng dịch vụ để lựa chọn chính xác phương án vận chuyển tối ưu cho nhu cầu của bạn.</p>
+          <p>So sánh nhanh mức mở cửa theo xe và các thế mạnh riêng của từng dịch vụ để chọn đúng nhóm phương tiện trước khi đi vào báo giá chi tiết.</p>
         </div>
         <div class="luoi-so-sanh-dich-vu">
           ${data
@@ -217,8 +255,8 @@ import core from "./core/app-core.js";
       <section class="phan-cach-hinh-thanh-gia" data-fee-tab-root>
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">Cách tính chung</span>
-          <h2>Cả ba nhóm dịch vụ đều tính theo km và phụ phí</h2>
-          <p>Giá tham khảo của cả 3 nhóm đều bám theo cùng một logic: cước xe theo km cộng với các phụ phí phát sinh theo nhu cầu và điều kiện thực tế.</p>
+          <h2>Cả ba nhóm dịch vụ đều bám theo giá mở cửa và dải km</h2>
+          <p>Giá tham khảo của cả 3 nhóm đều đi từ giá mở cửa 5km đầu theo từng loại xe, sau đó cộng tiếp theo các dải km phát sinh và những phụ phí đi kèm nếu có.</p>
         </div>
         <div class="khung-cong-thuc-tong-quat">
           <span class="nhan-cong-thuc-tong-quat">Nhóm thành phần giá</span>
@@ -274,12 +312,18 @@ import core from "./core/app-core.js";
   }
 
   function buildSurchargeSection(data) {
+    const surveyItem = getSharedSurveyItem(data);
     return `
       <section class="phan-phu-phi">
         <div class="dau-muc-trang">
           <span class="the-thong-tin-nhan">Phụ phí phát sinh</span>
           <h2>Những yếu tố ảnh hưởng trực tiếp đến chi phí</h2>
-          <p>Tùy thuộc vào thực tế thi công mà một số hạng mục hỗ trợ ngoài sẽ được áp dụng. Bạn có thể chủ động lựa chọn các dịch vụ đi kèm này để đảm bảo an toàn tuyệt đối cho tài sản (như bọc lót, đóng gói, tháo lắp).</p>
+          <p>Hiện tại các khoản còn thể hiện trực tiếp trên bảng giá là khảo sát trước, thời gian triển khai và thời tiết. Những hạng mục hỗ trợ khác chỉ dùng để điều phối đội ngũ thực hiện.</p>
+          ${
+            surveyItem
+              ? `<p><strong>Khảo sát trước:</strong> ${core.escapeHtml(formatCurrency(surveyItem.don_gia))}. Khoản này áp chung, không cần lặp lại theo từng dịch vụ.</p>`
+              : ""
+          }
         </div>
         <div class="luoi-phu-phi">
           ${data

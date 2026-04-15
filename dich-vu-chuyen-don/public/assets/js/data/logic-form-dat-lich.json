@@ -12,7 +12,7 @@
       {
         "selector": "input[name='can_thao_lap_noi_that']",
         "checkbox_slug": "thao_lap",
-        "display_slug": "ho_tro_thao_lap_ky_thuat"
+        "display_slug": "thao_lap"
       }
     ],
     "chuyen_van_phong": [
@@ -47,7 +47,7 @@
       {
         "selector": "input[name='can_luan_chuyen_pallet']",
         "checkbox_slug": "pallet",
-        "display_slug": "luan_chuyen_pallet"
+        "display_slug": "pallet"
       },
       {
         "selectors": [
@@ -55,12 +55,12 @@
           "input[name='can_xe_cau_dat_lich']"
         ],
         "checkbox_slug": "xe_nang_cau",
-        "display_slug": "thue_xe_nang_xe_cau"
+        "display_slug": "xe_nang_cau"
       },
       {
         "selector": "input[name='can_gia_co_hang_hoa']",
         "checkbox_slug": "gia_co",
-        "display_slug": "dong_goi_gia_co"
+        "display_slug": "gia_co"
       }
     ]
   },
@@ -69,17 +69,34 @@
       {
         "selector": "input[name='co_do_de_vo']",
         "slug": "de_vo",
-        "display_slug": "dong_goi_do_dac"
+        "display_slug": "de_vo"
       },
       {
         "selector": "input[name='co_do_cong_kenh']",
         "slug": "cong_kenh",
-        "display_slug": "thao_lap_noi_that"
+        "display_slug": "cong_kenh"
       },
       {
         "selector": "input[name='co_do_gia_tri_cao']",
         "slug": "gia_tri_cao",
-        "display_slug": "ho_tro_thao_lap_ky_thuat"
+        "display_slug": "gia_tri_cao"
+      }
+    ],
+    "chuyen_kho_bai": [
+      {
+        "selector": "input[name='co_hang_de_vo_kho_bai']",
+        "slug": "de_vo",
+        "display_slug": "de_vo"
+      },
+      {
+        "selector": "input[name='co_hang_cong_kenh_kho_bai']",
+        "slug": "cong_kenh",
+        "display_slug": "cong_kenh"
+      },
+      {
+        "selector": "input[name='co_hang_gia_tri_cao_kho_bai']",
+        "slug": "gia_tri_cao",
+        "display_slug": "gia_tri_cao"
       }
     ]
   },
@@ -128,13 +145,13 @@
     },
     "booking_service_detail": {
       "chuyen_nha": [
-        { "kind": "checkbox_labels", "selector": "input[name='can_thao_lap_noi_that'], input[name='can_dong_goi_do_dac'], input[name='co_do_gia_tri_cao'], input[name='co_do_de_vo'], input[name='co_do_cong_kenh']", "limit": 3 }
+        { "kind": "checkbox_labels", "selector": "input[name='can_thao_lap_noi_that'], input[name='can_dong_goi_do_dac'], input[name='co_do_gia_tri_cao'], input[name='co_do_de_vo'], input[name='co_do_cong_kenh']" }
       ],
       "chuyen_van_phong": [
-        { "kind": "checkbox_labels", "selector": "input[name='can_dong_goi_ho_so'], input[name='can_bao_mat_tai_lieu'], input[name='can_di_doi_server'], input[name='can_thao_lap_noi_that_van_phong'], input[name='co_thiet_bi_nang_van_phong'], input[name='can_thuc_hien_cuoi_tuan']", "limit": 3 }
+        { "kind": "checkbox_labels", "selector": "input[name='can_dong_goi_ho_so'], input[name='can_bao_mat_tai_lieu'], input[name='can_di_doi_server'], input[name='can_thao_lap_noi_that_van_phong'], input[name='co_thiet_bi_nang_van_phong'], input[name='can_thuc_hien_cuoi_tuan']" }
       ],
       "chuyen_kho_bai": [
-        { "kind": "checkbox_labels", "selector": "input[name='can_luan_chuyen_pallet'], input[name='can_xe_nang_dat_lich'], input[name='can_xe_cau_dat_lich'], input[name='can_gia_co_hang_hoa'], input[name='can_kiem_ke_hang_hoa']", "limit": 3 }
+        { "kind": "checkbox_labels", "selector": "input[name='can_luan_chuyen_pallet'], input[name='can_xe_nang_dat_lich'], input[name='can_xe_cau_dat_lich'], input[name='can_gia_co_hang_hoa'], input[name='co_hang_de_vo_kho_bai'], input[name='co_hang_cong_kenh_kho_bai'], input[name='co_hang_gia_tri_cao_kho_bai'], input[name='can_kiem_ke_hang_hoa']" }
       ]
     }
   }

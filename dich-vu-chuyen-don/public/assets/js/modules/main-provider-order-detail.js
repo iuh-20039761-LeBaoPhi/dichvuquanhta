@@ -2,6 +2,7 @@ import core from "./core/app-core.js";
 import store from "./main-customer-portal-store.js";
 import {
   buildBookingLifecyclePatch,
+  ensureBookingVehicleLabelMapLoaded,
   formatBookingDateOnly,
   formatBookingScheduleLabel,
   getRenderableBookingPricingRows,
@@ -521,7 +522,7 @@ const providerOrderDetailModule = (function (window, document) {
           row?.ten_thoi_tiet_du_kien || row?.thoi_tiet_du_kien || "",
         ),
         vehicle_label: getBookingVehicleLabel(
-          row?.ten_loai_xe || row?.loai_xe || "",
+          row?.loai_xe || row?.ten_loai_xe || "",
         ),
         distance_km: parseNumber(row?.khoang_cach_km || 0),
         estimated_amount: parseNumber(row?.tong_tam_tinh || 0),
@@ -546,6 +547,7 @@ const providerOrderDetailModule = (function (window, document) {
   }
 
   async function fetchBookingRowByCode(code, options = {}) {
+    await ensureBookingVehicleLabelMapLoaded();
     if (!options?.skipAutoSweep) {
       await store.autoCancelExpiredBookings?.({
         force: options?.forceAutoSweep === true,
@@ -976,9 +978,9 @@ const providerOrderDetailModule = (function (window, document) {
                       </article>
                       <article class="standalone-order-subcard">
                         <div class="standalone-order-subcard-head">
-                          <strong>Dịch vụ đi kèm</strong>
+                          <strong>Hạng mục đã chọn</strong>
                         </div>
-                        ${renderChipList(order.service_details, "Chưa có hạng mục phụ nào được chọn thêm.")}
+                        ${renderChipList(order.service_details, "Chưa có hạng mục nào được chọn thêm.")}
                       </article>
                     </div>
                   </article>
@@ -1108,6 +1110,16 @@ const providerOrderDetailModule = (function (window, document) {
       if (!row) {
         renderError("Không tìm thấy yêu cầu phù hợp trong bảng đặt lịch chuyển dọn.");
         return;
+      }
+
+      const resolvedOrderId = normalizeText(row?.id || row?.remote_id || "");
+      if (resolvedOrderId) {
+        core.syncOrderDetailUrl?.({
+          orderCode: resolvedOrderId,
+          path: window.location.pathname,
+          username: auth.username,
+          password: auth.password,
+        });
       }
 
       render(normalizeDetail(row));

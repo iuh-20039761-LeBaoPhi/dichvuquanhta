@@ -9,6 +9,30 @@ const orderManager = (function() {
     let currentStatus = '';
     let currentService = '';
 
+    function formatDateCode(value) {
+        const date = value ? new Date(value) : new Date();
+        if (Number.isNaN(date.getTime())) return '';
+        return [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, '0'),
+            String(date.getDate()).padStart(2, '0'),
+        ].join('');
+    }
+
+    function getOrderDisplayCode(order) {
+        const explicitCode = String(order?.ma_yeu_cau_noi_bo || '').trim();
+        if (explicitCode) return explicitCode;
+
+        const numericId = Number(order?.id || 0);
+        if (!Number.isFinite(numericId) || numericId <= 0) {
+            return String(order?.id || '').trim();
+        }
+
+        const dateCode = formatDateCode(order?.created_at);
+        if (!dateCode) return String(numericId);
+        return `CDL-${dateCode}-${String(Math.trunc(Math.abs(numericId))).padStart(7, '0')}`;
+    }
+
     // Khởi tạo
     async function init() {
         try {
@@ -62,8 +86,10 @@ const orderManager = (function() {
     // Lọc dữ liệu
     function applyFilters() {
         filteredOrders = allOrders.filter(order => {
+            const displayCode = getOrderDisplayCode(order);
             const matchesSearch = !currentSearch || 
-                (order.ma_yeu_cau_noi_bo || '').toLowerCase().includes(currentSearch.toLowerCase()) ||
+                displayCode.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                String(order.id || '').includes(currentSearch) ||
                 (order.hovaten || '').toLowerCase().includes(currentSearch.toLowerCase()) ||
                 (order.sodienthoai || '').includes(currentSearch);
             
@@ -126,7 +152,7 @@ const orderManager = (function() {
                 <td data-label="Mã đơn & Khách hàng">
                     <div style="font-weight: 800; color: var(--primary); font-size: 13px;">
                         <a href="order_detail.php?madonhang=${order.id}" style="color: inherit; text-decoration: underline;">
-                            ${order.ma_yeu_cau_noi_bo || 'ID: ' + order.id}
+                            ${getOrderDisplayCode(order) || 'ID: ' + order.id}
                         </a>
                     </div>
                     <div style="font-weight: 600; font-size: 15px;">${order.ho_ten || 'N/A'}</div>
@@ -244,11 +270,6 @@ const orderManager = (function() {
                 showToast('Cập nhật đơn hàng thành công');
             } else {
                 data.created_at = new Date().toISOString();
-                // Nếu mã trống, server hoặc logic render sẽ tự tạo sau, 
-                // ở đây ta có thể tự tạo demo nếu muốn:
-                if (!data.ma_yeu_cau_noi_bo) {
-                    data.ma_yeu_cau_noi_bo = 'CDL-' + Date.now().toString().slice(-6);
-                }
                 await api.insert('dich_vu_chuyen_don_dat_lich', data);
                 showToast('Thêm đơn hàng thành công');
             }

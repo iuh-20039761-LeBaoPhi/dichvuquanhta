@@ -49,12 +49,12 @@ const providerDashboardModule = (function (window, document) {
     return typeof core.toProjectUrl === "function" ? core.toProjectUrl(path) : path;
   }
 
-  function getOrderDetailUrl(orderCode) {
+  function getOrderDetailUrl(orderIdentifier) {
     return typeof core.buildOrderDetailUrl === "function"
-      ? core.buildOrderDetailUrl("nha-cung-cap/chi-tiet-don-hang.html", orderCode)
+      ? core.buildOrderDetailUrl("nha-cung-cap/chi-tiet-don-hang.html", orderIdentifier)
       : getProjectUrl(
           `nha-cung-cap/chi-tiet-don-hang.html?madonhang=${encodeURIComponent(
-            orderCode || "",
+            orderIdentifier || "",
           )}`,
         );
   }
@@ -127,6 +127,7 @@ const providerDashboardModule = (function (window, document) {
     const toAddress = normalizeText(row?.dia_chi_den || "");
 
     return {
+      id: normalizeText(row?.id || row?.remote_id || ""),
       code: store.resolveBookingRowCode?.(row) || normalizeText(row?.id || row?.remote_id || ""),
       serviceLabel: getBookingServiceLabel(
         row?.ten_dich_vu || row?.loai_dich_vu || "Chuyển dọn",
@@ -183,7 +184,7 @@ const providerDashboardModule = (function (window, document) {
   }
 
   async function renderProviderDashboard() {
-    const auth = core.getUrlAuthCredentials?.() || {
+    const auth = core.getOrderDetailAccessCredentials?.() || core.getUrlAuthCredentials?.() || {
       username: "",
       password: "",
     };
@@ -329,7 +330,7 @@ const providerDashboardModule = (function (window, document) {
                           </div>
                           <div class="customer-order-actions customer-order-actions-compact">
                             <a class="customer-btn customer-btn-primary customer-btn-sm" href="${escapeHtml(
-                              getOrderDetailUrl(request.code || ""),
+                              getOrderDetailUrl(request.id || request.code || ""),
                             )}">Xem chi tiết</a>
                           </div>
                         </article>

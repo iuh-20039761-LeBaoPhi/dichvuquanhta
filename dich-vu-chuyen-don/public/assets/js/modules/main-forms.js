@@ -2,10 +2,12 @@ import core from "./core/app-core.js";
 import authModule from "./main-auth.js";
 import bookingApi from "./main-booking-api.js";
 import {
+  buildBookingVehicleLabelMapFromPricingData,
   getBookingScheduleTimeLabel,
   getBookingServiceLabel,
   getBookingVehicleLabel as getSharedBookingVehicleLabel,
   getBookingWeatherLabel,
+  setBookingVehicleLabelMap,
 } from "./main-booking-shared.js";
 import customerPortalStore from "./main-customer-portal-store.js";
 import {
@@ -52,32 +54,46 @@ const partialPaths = {
     moving_warehouse: "moving_warehouse",
   };
 
-  const bookingVehicleOptions = {
+  const bookingVehicleFallbackOptions = {
     chuyen_nha: {
-      defaultValue: "xe_van_500kg",
+      defaultValue: "xe_may_cho_hang",
       options: [
-        { value: "xe_van_500kg", label: "Xe 4 bánh nhỏ ≤ 500kg" },
-        { value: "xe_tai_1_5_tan", label: "Xe 4 bánh vừa ≤ 1200kg" },
-        { value: "xe_tai_2_5_tan", label: "Xe tải ≤ 3500kg" },
+        { value: "xe_may_cho_hang", label: "Xe máy chở hàng" },
+        { value: "ba_gac_may", label: "Ba gác máy" },
+        { value: "xe_van_500kg", label: "Xe tải 500kg" },
+        { value: "xe_tai_750kg", label: "Xe tải 750kg" },
+        { value: "xe_tai_1_tan", label: "Xe tải 1 tấn" },
+        { value: "xe_tai_1_5_tan", label: "Xe tải 1.5 tấn" },
+        { value: "xe_tai_2_5_tan", label: "Xe tải 2 tấn" },
+        { value: "xe_tai_3_5_tan", label: "Xe tải 3.5 tấn" },
       ],
     },
     chuyen_van_phong: {
       defaultValue: "xe_van_500kg",
       options: [
-        { value: "xe_van_500kg", label: "Xe 4 bánh nhỏ ≤ 500kg" },
-        { value: "xe_tai_1_5_tan", label: "Xe 4 bánh vừa ≤ 1200kg" },
-        { value: "xe_tai_2_5_tan", label: "Xe tải ≤ 3500kg" },
+        { value: "xe_van_500kg", label: "Xe tải 500kg" },
+        { value: "xe_tai_750kg", label: "Xe tải 750kg" },
+        { value: "xe_tai_1_tan", label: "Xe tải 1 tấn" },
+        { value: "xe_tai_1_5_tan", label: "Xe tải 1.5 tấn" },
+        { value: "xe_tai_2_5_tan", label: "Xe tải 2 tấn" },
+        { value: "xe_tai_3_5_tan", label: "Xe tải 3.5 tấn" },
+        { value: "xe_tai_5_tan", label: "Xe tải 5 tấn" },
       ],
     },
     chuyen_kho_bai: {
       defaultValue: "xe_tai_1_5_tan",
       options: [
-        { value: "xe_tai_1_5_tan", label: "Xe 4 bánh vừa ≤ 1200kg" },
-        { value: "xe_tai_2_5_tan", label: "Xe tải ≤ 3500kg" },
-        { value: "xe_tai_7_5_tan", label: "Xe tải lớn ≤ 7500kg" },
+        { value: "xe_tai_1_5_tan", label: "Xe tải 1.5 tấn" },
+        { value: "xe_tai_2_5_tan", label: "Xe tải 2 tấn" },
+        { value: "xe_tai_3_5_tan", label: "Xe tải 3.5 tấn" },
+        { value: "xe_tai_5_tan", label: "Xe tải 5 tấn" },
+        { value: "xe_tai_7_5_tan", label: "Xe tải 8 tấn" },
+        { value: "xe_tai_15_tan", label: "Xe tải 15 tấn" },
+        { value: "dau_keo_container", label: "Đầu kéo container" },
       ],
     },
   };
+  let bookingVehicleOptions = { ...bookingVehicleFallbackOptions };
 
   let pricingReferencePromise = null;
   function escapeHtml(value) {
@@ -135,8 +151,18 @@ const partialPaths = {
           }
           return response.json();
         })
+        .then((pricingData) => {
+          bookingVehicleOptions = buildBookingVehicleOptionsFromPricingData(
+            pricingData,
+          );
+          setBookingVehicleLabelMap(
+            buildBookingVehicleLabelMapFromPricingData(pricingData),
+          );
+          return pricingData;
+        })
         .catch((error) => {
           console.error("Cannot load pricing reference:", error);
+          bookingVehicleOptions = { ...bookingVehicleFallbackOptions };
           return [];
         });
     }
@@ -196,6 +222,87 @@ const partialPaths = {
     return null;
   }
 
+  function prefillInputValue(input, value) {
+    if (!input) return;
+
+    const currentValue = String(input.value || "").trim();
+    const nextValue = String(value || "").trim();
+    if (currentValue || !nextValue) return;
+
+    input.value = nextValue;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  async function prefillBookingContactFields(scope, portalStore) {
+    if (!scope || !portalStore) return;
+
+    try {
+      await Promise.resolve(portalStore.bootstrapAuthSession?.());
+    } catch (error) {
+      console.warn("Cannot bootstrap auth session for booking prefill:", error);
+    }
+
+    const identity = portalStore.readIdentity?.() || {};
+    const fullNameInput = queryFirst(scope, [
+      "#ho-ten-dat-lich",
+      "[name='ho_ten']",
+    ]);
+    const phoneInput = queryFirst(scope, [
+      "#so-dien-thoai-dat-lich",
+      "[name='so_dien_thoai']",
+    ]);
+
+    prefillInputValue(fullNameInput, identity.hovaten);
+    prefillInputValue(phoneInput, identity.sodienthoai);
+  }
+
+  function cloneBookingVehicleConfig(config) {
+    if (!config || typeof config !== "object") return null;
+    return {
+      defaultValue: String(config.defaultValue || "").trim(),
+      options: Array.isArray(config.options)
+        ? config.options.map((item) => ({
+            value: String(item?.value || "").trim(),
+            label: String(item?.label || "").trim(),
+          }))
+        : [],
+    };
+  }
+
+  function buildBookingVehicleOptionsFromPricingData(pricingData) {
+    const nextOptions = {};
+    const services = Array.isArray(pricingData) ? pricingData : [];
+
+    services.forEach((serviceData) => {
+      const serviceId = normalizePricingDataServiceId(serviceData?.id);
+      const normalizedService = Object.entries(SERVICE_PRICING_ID_MAP).find(
+        ([, pricingId]) => pricingId === serviceId,
+      )?.[0];
+      const vehicleEntries =
+        typeof core.getPricingVehicleEntries === "function"
+          ? core.getPricingVehicleEntries(serviceData)
+          : [];
+
+      if (!normalizedService || !vehicleEntries.length) return;
+
+      nextOptions[normalizedService] = {
+        defaultValue: String(vehicleEntries[0]?.slug || "").trim(),
+        options: vehicleEntries
+          .map((entry) => ({
+            value: String(entry?.slug || "").trim(),
+            label: String(entry?.ten_hien_thi || "").trim(),
+          }))
+          .filter((entry) => entry.value && entry.label),
+      };
+    });
+
+    return {
+      ...bookingVehicleFallbackOptions,
+      ...nextOptions,
+    };
+  }
+
   function getCheckedLabelsFromSelectors(scope, selectors) {
     const selectorList = Array.isArray(selectors) ? selectors : [selectors];
     const labels = [];
@@ -246,19 +353,6 @@ const partialPaths = {
         scope.querySelector("[data-tong-gia-chot-dat-lich]")?.textContent || "",
       ).replace(/[^\d]/g, ""),
     );
-
-    const scalarValues = {};
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) continue;
-      const nextValue = String(value || "").trim();
-      if (!nextValue) continue;
-
-      if (Object.prototype.hasOwnProperty.call(scalarValues, key)) {
-        scalarValues[key] = `${scalarValues[key]} | ${nextValue}`;
-      } else {
-        scalarValues[key] = nextValue;
-      }
-    }
 
     const serviceValue = normalizeService(serviceSelect?.value || "");
     const scheduleTimeValue = String(
@@ -690,7 +784,7 @@ const partialPaths = {
     if (!select) return;
 
     const normalized = normalizeService(serviceValue);
-    const config = bookingVehicleOptions[normalized];
+    const config = getBookingVehicleConfig(normalized);
     const previousValue = String(select.value || "").trim();
 
     if (!config) {
@@ -715,7 +809,8 @@ const partialPaths = {
   }
 
   function getBookingVehicleConfig(serviceValue) {
-    return bookingVehicleOptions[normalizeService(serviceValue)] || null;
+    const normalized = normalizeService(serviceValue);
+    return cloneBookingVehicleConfig(bookingVehicleOptions[normalized]);
   }
 
   function resolveBookingVehicleEntry(scope, serviceValue, vehicleEntries) {
@@ -1008,6 +1103,15 @@ const partialPaths = {
     renderFormSummaries(scope);
     renderBookingPricing(scope);
     syncServiceContextLinks(normalized);
+    loadPricingReference().then(() => {
+      const activeService = normalizeService(
+        scope.querySelector("[data-truong-dich-vu]")?.value || "",
+      );
+      if (activeService !== normalized) return;
+      syncBookingVehicleOptions(scope, activeService);
+      renderFormSummaries(scope);
+      renderBookingPricing(scope);
+    });
 
     if (scope.__bookingMapState?.map) {
       const refreshMapLayout = function () {
@@ -1084,13 +1188,15 @@ const partialPaths = {
       bookingResult?.payload?.ma_yeu_cau_noi_bo ||
       bookingResult?.remoteId ||
       "CDL-00000000-0000000";
+    const orderDetailIdentifier =
+      String(bookingResult?.remoteId || "").trim() || requestCode;
     const statusMessage = String(options.statusMessage || "").trim();
     const isLoggedIn = !!(customerPortalStore?.getSavedRole?.() === "khach-hang");
     const historyUrl = getProjectUrl("khach-hang/danh-sach-don-hang.html");
     const secondaryActionHref = isLoggedIn
       ? (typeof core.buildOrderDetailUrl === "function"
-          ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", requestCode)
-          : `khach-hang/chi-tiet-hoa-don.html?madonhang=${encodeURIComponent(requestCode)}`)
+          ? core.buildOrderDetailUrl("khach-hang/chi-tiet-hoa-don.html", orderDetailIdentifier)
+          : `khach-hang/chi-tiet-hoa-don.html?madonhang=${encodeURIComponent(orderDetailIdentifier)}`)
       : core.getSharedLoginUrl({
           redirect: core.getCurrentRelativeUrl(),
         });
@@ -1253,6 +1359,7 @@ const partialPaths = {
     initServiceSelect(host);
     initFileInputs(host);
     initBookingFormUi(host);
+    await prefillBookingContactFields(host, customerPortalStore || null);
     initFormNotice(host, formType);
     host.dataset.fastgoFormHostInitState = "done";
   }

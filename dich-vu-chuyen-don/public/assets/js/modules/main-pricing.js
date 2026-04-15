@@ -9,13 +9,41 @@ import core from "./core/app-core.js";
     return core.formatCurrencyVnd(value);
   }
 
+  function getVehicleBandRate(vehicle, fromKm) {
+    return (
+      (Array.isArray(vehicle?.bang_gia_km) ? vehicle.bang_gia_km : []).find(
+        (band) => Number(band?.tu_km || 0) === fromKm,
+      ) || null
+    );
+  }
+
+  function formatVehicleBandValue(vehicle, fromKm) {
+    const band = getVehicleBandRate(vehicle, fromKm);
+    return band?.don_gia ? `${formatCurrency(band.don_gia)}/km` : "Cần xác nhận";
+  }
+
+  function formatVehicleOpeningValue(vehicle) {
+    const openingFare = Number(vehicle?.gia_mo_cua || 0);
+    const openingKm = Number(vehicle?.pham_vi_mo_cua_km || 0);
+    if (!openingFare || !openingKm) return "Cần xác nhận";
+    return `${formatCurrency(openingFare)}/${openingKm}km đầu`;
+  }
+
   function buildPricingFactorCards(serviceData) {
+    const surveyItem = core
+      .getPricingCheckboxItems(serviceData)
+      .find((item) => String(item?.slug || "").trim() === "khao_sat_truoc");
+
     return [
-      ...core.getPricingCheckboxItems(serviceData).map((item) => ({
-        title: item.ten,
-        value: formatCurrency(item.don_gia),
-        note: "Chỉ cộng khi bạn chọn hạng mục này.",
-      })),
+      ...(surveyItem
+        ? [
+            {
+              title: surveyItem.ten,
+              value: formatCurrency(surveyItem.don_gia),
+              note: "Áp dụng khi bạn yêu cầu khảo sát trước.",
+            },
+          ]
+        : []),
       ...core.getPricingMultiplierEntries(serviceData),
     ];
   }
@@ -55,38 +83,63 @@ import core from "./core/app-core.js";
   }
 
   function renderPricing(container, data) {
-    container.innerHTML = "";
-    core.getPricingDisplayItems(data).forEach((item) => {
-      const card = document.createElement("article");
-      card.className = "group flex flex-col bg-white rounded-twelve overflow-hidden border border-slate-200 moving-soft-shadow hover:-translate-y-1 transition-all duration-300";
-      
-      const iconPath = item.icon_svg || "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z";
-      const imageSrc = core.toPublicUrl(item.hinh_anh || "assets/images/chuyendon-tron-goi.png");
+    const vehicles = core.getPricingVehicleEntries(data);
+    const summaryItem = core
+      .getPricingDisplayItems(data)
+      .find((item) => String(item?.slug || "").trim() === "cuoc_xe");
 
-      card.innerHTML = `
-        <div class="relative h-56 w-full overflow-hidden">
-          <img alt="${item.ten}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${imageSrc}">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path d="${iconPath}" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
-            </svg>
-          </div>
-        </div>
-        <div class="p-6">
-          <h3 class="text-slate-900 text-xl font-bold mb-2">${item.ten}</h3>
-          <p class="text-slate-600 text-sm leading-relaxed">${item.ghi_chu}</p>
-          <div class="mt-4 pt-4 border-t border-slate-100">
-            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Giá tham khảo</p>
-            <p class="text-accent font-bold text-lg mt-1">
-              ${item.khoang_gia}
-              ${item.don_vi ? `<span class="text-sm font-medium text-slate-500">/ ${item.don_vi}</span>` : ""}
+    if (!vehicles.length) {
+      container.innerHTML =
+        '<div class="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">Chưa có dữ liệu bảng xe để hiển thị.</div>';
+      return;
+    }
+
+    container.innerHTML = `
+      <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+        <div class="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-slate-500">
+              Bảng xe tham khảo
+            </span>
+            <h3 class="mt-3 text-2xl font-bold text-slate-900">Giá mở cửa 5km đầu và dải km phát sinh</h3>
+            <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+              ${core.escapeHtml(summaryItem?.ghi_chu || "Bảng giá công khai hiển thị theo giá mở cửa 5km đầu và đơn giá phát sinh theo từng dải km để bạn đối chiếu nhanh trước khi lên phương án cụ thể.")}
             </p>
           </div>
+          <div class="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
+            Giá mở cửa đã gồm 5km đầu
+          </div>
         </div>
-      `;
-      container.appendChild(card);
-    });
+        <div class="overflow-x-auto">
+          <table class="min-w-full border-separate border-spacing-0 overflow-hidden rounded-2xl">
+            <thead>
+              <tr>
+                <th class="border-b border-slate-200 bg-slate-900 px-4 py-4 text-left text-sm font-semibold text-white">Loại xe</th>
+                <th class="border-b border-slate-200 bg-slate-900 px-4 py-4 text-left text-sm font-semibold text-white">Giá mở cửa (5km đầu)</th>
+                <th class="border-b border-slate-200 bg-slate-900 px-4 py-4 text-left text-sm font-semibold text-white">Km 6-15</th>
+                <th class="border-b border-slate-200 bg-slate-900 px-4 py-4 text-left text-sm font-semibold text-white">Km 16-30</th>
+                <th class="border-b border-slate-200 bg-slate-900 px-4 py-4 text-left text-sm font-semibold text-white">Km 31+</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${vehicles
+                .map(
+                  (vehicle, index) => `
+                    <tr class="${index % 2 === 0 ? "bg-slate-50" : "bg-white"}">
+                      <td class="border-b border-slate-200 px-4 py-4 text-sm font-semibold text-slate-900">${core.escapeHtml(vehicle.ten_hien_thi || "")}</td>
+                      <td class="border-b border-slate-200 px-4 py-4 text-sm text-slate-700">${core.escapeHtml(formatVehicleOpeningValue(vehicle))}</td>
+                      <td class="border-b border-slate-200 px-4 py-4 text-sm text-slate-700">${core.escapeHtml(formatVehicleBandValue(vehicle, 6))}</td>
+                      <td class="border-b border-slate-200 px-4 py-4 text-sm text-slate-700">${core.escapeHtml(formatVehicleBandValue(vehicle, 16))}</td>
+                      <td class="border-b border-slate-200 px-4 py-4 text-sm text-slate-700">${core.escapeHtml(formatVehicleBandValue(vehicle, 31))}</td>
+                    </tr>
+                  `,
+                )
+                .join("")}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    `;
   }
 
   function renderFormula(container, serviceData) {
@@ -99,13 +152,13 @@ import core from "./core/app-core.js";
       : [];
     const formulaSummary =
       transparentInfo.tom_tat_tong_chi_phi ||
-      "Tổng tiền = max(Phí tối thiểu, Số km di chuyển x Giá mỗi km theo loại xe x Hệ số đường dài) + Các phụ phí nếu có";
+      "Tổng tiền tham khảo = Giá mở cửa 5km đầu theo loại xe + cước phát sinh theo từng dải km + các phụ phí nếu có.";
     const factorCards = buildPricingFactorCards(serviceData);
     const pricingOverviewUrl = core.toProjectUrl("bang-gia-chuyen-don.html");
     const vehicleOptions = core.getPricingVehicleEntries(serviceData);
     const startingVehicle = vehicleOptions
-      .filter((item) => Number(item?.gia_moi_km || 0) > 0)
-      .sort((left, right) => Number(left.gia_moi_km || 0) - Number(right.gia_moi_km || 0))[0];
+      .filter((item) => Number(item?.gia_mo_cua || 0) > 0)
+      .sort((left, right) => Number(left.gia_mo_cua || 0) - Number(right.gia_mo_cua || 0))[0];
     const summaryParts = [
       ...basicParts.map((item) => ({ label: item, tone: "primary" })),
       ...extraParts.slice(0, 2).map((item) => ({ label: item, tone: "neutral" })),
@@ -122,7 +175,7 @@ import core from "./core/app-core.js";
               Tóm tắt cách tính giá
             </span>
             <h3 class="pricing-formula-summary__title">
-              Dịch vụ này được tính theo km, phí tối thiểu và phụ phí phát sinh
+              Dịch vụ này được báo theo giá mở cửa và dải km phát sinh
             </h3>
             <p class="pricing-formula-summary__description">
               ${formulaSummary}
@@ -130,12 +183,12 @@ import core from "./core/app-core.js";
             ${
               startingVehicle
                 ? `<div class="pricing-formula-summary__starting">
-                    <p class="pricing-formula-summary__label">Đơn giá xe thấp nhất</p>
+                    <p class="pricing-formula-summary__label">Giá mở cửa thấp nhất</p>
                     <div class="pricing-formula-summary__starting-row">
                       <p class="pricing-formula-summary__starting-name">${startingVehicle.ten_hien_thi}</p>
-                      <p class="pricing-formula-summary__starting-price">${formatCurrency(startingVehicle.gia_moi_km)}</p>
+                      <p class="pricing-formula-summary__starting-price">${formatVehicleOpeningValue(startingVehicle)}</p>
                     </div>
-                    <p class="pricing-formula-summary__starting-note">Cước xe được tính theo số km, tự giảm giá khi vượt 20km và luôn so với mức phí tối thiểu của loại xe đã chọn.</p>
+                    <p class="pricing-formula-summary__starting-note">Mỗi loại xe có giá mở cửa cho 5km đầu, sau đó cộng thêm theo từng dải km 6-15, 16-30 và từ km 31 trở đi.</p>
                   </div>`
                 : ""
             }
@@ -159,7 +212,7 @@ import core from "./core/app-core.js";
           <div class="pricing-formula-summary__aside">
             <p class="pricing-formula-summary__label">Bạn cần xem sâu hơn?</p>
             <p class="pricing-formula-summary__aside-copy">
-              Trang bảng giá chung giải thích cách tính theo km, các nhóm phụ phí và những tình huống thường làm chi phí thay đổi.
+              Trang bảng giá chung giải thích cách dịch vụ chuyển dọn đang chia xe theo giá mở cửa 5km đầu, dải km phát sinh và các phụ phí đi kèm.
             </p>
             <a
               class="pricing-formula-summary__cta"
@@ -170,7 +223,7 @@ import core from "./core/app-core.js";
             ${
               factorCards.length
                 ? `<div class="pricing-formula-summary__factors-block">
-                    <p class="pricing-formula-summary__label">Một vài yếu tố thường gặp</p>
+                    <p class="pricing-formula-summary__label">Các khoản còn cộng vào giá</p>
                     <ul class="pricing-formula-summary__factors">
                       ${factorCards.slice(0, 3).map((item) => `
                         <li class="pricing-formula-summary__factor">

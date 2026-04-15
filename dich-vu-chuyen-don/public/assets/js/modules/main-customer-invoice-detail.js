@@ -971,11 +971,11 @@ const customerInvoiceDetailModule = (function (window, document) {
                       </article>
                       <article class="standalone-order-subcard">
                         <div class="standalone-order-subcard-head">
-                          <strong>Dịch vụ đi kèm</strong>
+                          <strong>Hạng mục đã chọn</strong>
                         </div>
                         ${renderChipList(
                           invoice.service_details,
-                          "Chưa có hạng mục phụ nào được chọn thêm.",
+                          "Chưa có hạng mục nào được chọn thêm.",
                         )}
                       </article>
                     </div>
@@ -1146,6 +1146,20 @@ const customerInvoiceDetailModule = (function (window, document) {
 
     try {
       const result = await store.fetchBookingInvoiceDetail?.(orderCode);
+      const resolvedOrderId = String(
+        result?.invoice?.remote_id ||
+          result?.invoice?.raw_row?.id ||
+          result?.request?.remote_id ||
+          "",
+      ).trim();
+      if (resolvedOrderId) {
+        core.syncOrderDetailUrl?.({
+          orderCode: resolvedOrderId,
+          path: window.location.pathname,
+          username: auth.username,
+          password: auth.password,
+        });
+      }
       renderInvoice(result || null);
     } catch (error) {
       console.error("Cannot load booking invoice detail:", error);

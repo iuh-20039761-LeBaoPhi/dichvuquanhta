@@ -41,6 +41,86 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* Login */
+.login-shell {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+}
+
+.login-card {
+    width: min(480px, 100%);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.login-card__head {
+    padding: 32px 32px 20px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(194, 122, 77, 0.08), rgba(255,255,255,0));
+}
+
+.login-card__head h1 {
+    margin: 6px 0 0;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--slate);
+}
+
+.login-card__body {
+    padding: 24px 32px 32px;
+}
+
+.login-hint {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(194, 122, 77, 0.18);
+    background: rgba(194, 122, 77, 0.08);
+    color: var(--slate);
+    line-height: 1.65;
+    font-size: 14px;
+}
+
+.login-hint code {
+    background: rgba(30, 41, 59, 0.08);
+    border-radius: 8px;
+    padding: 2px 8px;
+    font-weight: 700;
+    color: var(--primary-deep);
+}
+
+.flash {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.flash-error {
+    background: rgba(239, 68, 68, 0.08);
+    color: #b91c1c;
+    border-color: rgba(239, 68, 68, 0.18);
+}
+
+.login-card label {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--slate-light);
+    margin-bottom: 8px;
+}
+
 /* Header & Glassmorphism Navigation */
 .admin-header {
     position: sticky;
@@ -253,7 +333,8 @@ tr:hover td { background: var(--primary-soft); }
 }
 
 /* Buttons */
-.btn {
+.btn,
+.button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -268,15 +349,18 @@ tr:hover td { background: var(--primary-soft); }
     gap: 8px;
 }
 
-.btn:active { transform: scale(0.96); }
+.btn:active,
+.button:active { transform: scale(0.96); }
 
-.btn-primary {
+.btn-primary,
+.button-primary {
     background: linear-gradient(135deg, var(--primary), var(--primary-deep));
     color: white;
     box-shadow: 0 4px 12px rgba(194, 122, 77, 0.3);
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.button-primary:hover {
     box-shadow: 0 6px 16px rgba(194, 122, 77, 0.4);
     filter: brightness(1.1);
 }
@@ -470,3 +554,119 @@ tr:hover td { background: var(--primary-soft); }
 .chip .close:hover { color: var(--danger); }
 
 .chip:hover { border-color: var(--primary); background: white; }
+
+/* Vehicle Icons & Pricing UI Enhancements */
+.vehicle-icon-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--primary-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: var(--primary);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: var(--transition);
+}
+
+tr:hover .vehicle-icon-circle {
+    background: white;
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 4px 8px rgba(194, 122, 77, 0.2);
+}
+
+#moving-pricing-last-updated-badge {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--primary-soft);
+}
+
+#moving-pricing-last-updated-badge::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+}
+
+.data-table tr td { transition: var(--transition); }
+.data-table tr:hover td { background: var(--slate-soft) !important; }
+
+/* Form Control Focus and States */
+.input:focus {
+    background: #fff;
+    transform: translateY(-1px);
+}
+
+/* Add/Delete Buttons */
+.btn-delete {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.08);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-delete:hover {
+    background: var(--danger);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete-small {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: var(--slate-soft);
+    color: var(--slate-light);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 10px;
+}
+
+.btn-delete-small:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-add-inline {
+    background: white;
+    border: 1px dashed var(--line);
+    color: var(--slate-light);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-add-inline:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-soft);
+    border-style: solid;
+}
+
+/* Action tooltips or text enhancement */
+[data-save-section] span { font-weight: 700; }
+[data-save-section]:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
