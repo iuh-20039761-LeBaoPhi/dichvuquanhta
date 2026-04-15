@@ -8,35 +8,90 @@
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
     <style>
-      .pagination { border-radius: 8px; overflow: hidden; }
-      .pagination .page-link { border: 1px solid #dee2e6; padding: 8px 14px; color: #0d6efd; font-size: 14px; transition: none; }
-      .pagination .page-item:first-child .page-link { background-color: #eef1f4; color: #333; border-right: 0; }
-      .pagination .page-item.active .page-link { background-color: #0d6efd; border-color: #0d6efd; color: #fff; }
-      .pagination .page-item:not(.active):not(:first-child) .page-link { border-left: 0; }
-      .pagination .page-item.disabled .page-link { color: #999; pointer-events: none; }
-      .form-control:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15); }
-      .img-preview-box { border: 1px dashed #ddd; border-radius: 8px; padding: 10px; background: #fafafa; }
+      .pagination {
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .pagination .page-link {
+        border: 1px solid #dee2e6;
+        padding: 8px 14px;
+        color: #0d6efd;
+        font-size: 14px;
+        transition: none;
+      }
+      .pagination .page-item:first-child .page-link {
+        background-color: #eef1f4;
+        color: #333;
+        border-right: 0;
+      }
+      .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: #fff;
+      }
+      .pagination .page-item:not(.active):not(:first-child) .page-link {
+        border-left: 0;
+      }
+      .pagination .page-item.disabled .page-link {
+        color: #999;
+        pointer-events: none;
+      }
+      .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+      }
+      .img-preview-box {
+        border: 1px dashed #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        background: #fafafa;
+      }
     </style>
   </head>
   <body data-role="admin" data-page="list">
     <div class="admin-shell">
-      <div id="asideMount" data-aside-src="partials/aside.html" data-logo-src="../public/asset/image/logo-giat-ui-nhanh.png" data-logout-href="dang-nhap-admin.html"></div>
+      <div
+        id="asideMount"
+        data-aside-src="partials/aside.html"
+        data-logo-src="../public/asset/image/logo-giat-ui-nhanh.png"
+        data-logout-href="../../public/admin-login.html"
+      ></div>
       <main class="content-shell">
         <header class="topbar">
           <div class="topbar-left">
-            <button class="btn btn-sm sidebar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"><i class="fas fa-bars"></i></button>
+            <button
+              class="btn btn-sm sidebar-toggler d-lg-none"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#sidebar"
+            >
+              <i class="fas fa-bars"></i>
+            </button>
             <h2>Quản lý dịch vụ</h2>
           </div>
           <div class="topbar-actions">
-            <div class="admin-chip"><span class="admin-avatar">A</span><span class="admin-email">admin@giatuinhanh.vn</span></div>
+            <div class="admin-chip">
+              <span class="admin-avatar">A</span
+              ><span class="admin-email">admin@giatuinhanh.vn</span>
+            </div>
           </div>
         </header>
 
         <section class="container-fluid py-3 py-lg-4">
           <div class="page-heading">
-            <nav aria-label="breadcrumb"><ol class="breadcrumb panel-breadcrumb"><li class="breadcrumb-item"><a href="index.html">Trang quản trị</a></li><li class="breadcrumb-item active">Dịch vụ</li></ol></nav>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb panel-breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="index.html">Trang quản trị</a>
+                </li>
+                <li class="breadcrumb-item active">Dịch vụ</li>
+              </ol>
+            </nav>
             <h1 class="page-title">Danh sách dịch vụ</h1>
-            <p class="page-subtitle">Quản lý nội dung, giá cả và quy trình thực hiện các dịch vụ giặt ủi.</p>
+            <p class="page-subtitle">
+              Quản lý nội dung, giá cả và quy trình thực hiện các dịch vụ giặt
+              ủi.
+            </p>
           </div>
 
           <article class="panel-card mt-3">
@@ -44,18 +99,35 @@
               <h3><i class="fas fa-concierge-bell"></i> Dịch vụ hiện có</h3>
               <div class="d-flex align-items-center gap-3">
                 <span class="record-count" id="itemCount">0 dịch vụ</span>
-                <button class="btn btn-sm btn-primary" onclick="openServiceModal()"><i class="fas fa-plus"></i> Thêm dịch vụ</button>
+                <button
+                  class="btn btn-sm btn-primary"
+                  onclick="openServiceModal()"
+                >
+                  <i class="fas fa-plus"></i> Thêm dịch vụ
+                </button>
               </div>
             </div>
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0">
-                <thead><tr><th>STT</th><th>Hình ảnh</th><th>Tên dịch vụ</th><th>Giá & Đơn vị</th><th class="text-end">Thao tác</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Hình ảnh</th>
+                    <th>Tên dịch vụ</th>
+                    <th>Giá & Đơn vị</th>
+                    <th class="text-end">Thao tác</th>
+                  </tr>
+                </thead>
                 <tbody id="serviceTableBody"></tbody>
               </table>
             </div>
-            <div class="panel-foot d-flex align-items-center justify-content-between p-3 border-top">
+            <div
+              class="panel-foot d-flex align-items-center justify-content-between p-3 border-top"
+            >
               <p class="mb-0 text-muted small" id="pageInfo">Đang tải...</p>
-              <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+              <nav>
+                <ul class="pagination pagination-sm mb-0" id="pagination"></ul>
+              </nav>
             </div>
           </article>
         </section>
@@ -67,54 +139,120 @@
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <form id="serviceForm" class="modal-content">
           <div class="modal-header border-0 pb-0">
-            <h5 class="modal-title fw-bold" id="modalTitle">Thêm dịch vụ mới</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <h5 class="modal-title fw-bold" id="modalTitle">
+              Thêm dịch vụ mới
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="row">
               <div class="col-md-7">
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Tên dịch vụ</label>
-                  <input type="text" name="tendichvu" class="form-control form-control-sm" required>
+                  <input
+                    type="text"
+                    name="tendichvu"
+                    class="form-control form-control-sm"
+                    required
+                  />
                 </div>
                 <div class="row">
                   <div class="col-md-6 mb-3">
-                    <label class="form-label small fw-bold">Giá dịch vụ (VNĐ)</label>
-                    <input type="number" name="giadichvu" class="form-control form-control-sm" required>
+                    <label class="form-label small fw-bold"
+                      >Giá dịch vụ (VNĐ)</label
+                    >
+                    <input
+                      type="number"
+                      name="giadichvu"
+                      class="form-control form-control-sm"
+                      required
+                    />
                   </div>
                   <div class="col-md-6 mb-3">
                     <label class="form-label small fw-bold">Đơn vị</label>
-                    <input type="text" name="donvi" class="form-control form-control-sm" placeholder="kg, cái..." required>
+                    <input
+                      type="text"
+                      name="donvi"
+                      class="form-control form-control-sm"
+                      placeholder="kg, cái..."
+                      required
+                    />
                   </div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Mô tả dịch vụ</label>
-                  <textarea name="mota" class="form-control form-control-sm" rows="4"></textarea>
+                  <textarea
+                    name="mota"
+                    class="form-control form-control-sm"
+                    rows="4"
+                  ></textarea>
                 </div>
               </div>
               <div class="col-md-5">
                 <div class="mb-3">
-                  <label class="form-label small fw-bold">Hình ảnh (.jpg duy nhất)</label>
-                  <input type="file" name="file" id="fileInput" class="form-control form-control-sm" accept=".jpg,.jpeg">
+                  <label class="form-label small fw-bold"
+                    >Hình ảnh (.jpg duy nhất)</label
+                  >
+                  <input
+                    type="file"
+                    name="file"
+                    id="fileInput"
+                    class="form-control form-control-sm"
+                    accept=".jpg,.jpeg"
+                  />
                   <div class="mt-3 img-preview-box text-center">
-                    <img id="imgPreview" src="#" alt="Bản xem trước" class="img-fluid d-none" style="max-height: 180px; border-radius: 8px;">
-                    <div id="noImg" class="py-4 text-muted small">Chưa chọn ảnh</div>
+                    <img
+                      id="imgPreview"
+                      src="#"
+                      alt="Bản xem trước"
+                      class="img-fluid d-none"
+                      style="max-height: 180px; border-radius: 8px"
+                    />
+                    <div id="noImg" class="py-4 text-muted small">
+                      Chưa chọn ảnh
+                    </div>
                   </div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Công việc</label>
-                  <input type="text" name="congviec" class="form-control form-control-sm" placeholder="Giặt, Sấy...">
+                  <input
+                    type="text"
+                    name="congviec"
+                    class="form-control form-control-sm"
+                    placeholder="Giặt, Sấy..."
+                  />
                 </div>
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Hóa chất</label>
-                  <input type="text" name="hoachat" class="form-control form-control-sm" placeholder="Nước xả...">
+                  <input
+                    type="text"
+                    name="hoachat"
+                    class="form-control form-control-sm"
+                    placeholder="Nước xả..."
+                  />
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer border-0 pt-0">
-            <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Hủy</button>
-            <button type="submit" class="btn btn-sm btn-primary px-4" id="btnSave">Lưu lại</button>
+            <button
+              type="button"
+              class="btn btn-sm btn-light"
+              data-bs-dismiss="modal"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              class="btn btn-sm btn-primary px-4"
+              id="btnSave"
+            >
+              Lưu lại
+            </button>
           </div>
         </form>
       </div>
@@ -126,65 +264,84 @@
     <script src="../public/asset/js/shared-order-utils.js"></script>
     <script>
       const limit = 5;
-      let currentPage = 1, currentData = [], editingId = null;
-      const modal = new bootstrap.Modal(document.getElementById('serviceModal'));
+      let currentPage = 1,
+        currentData = [],
+        editingId = null;
+      const modal = new bootstrap.Modal(
+        document.getElementById("serviceModal"),
+      );
 
       async function loadData(page = 1) {
         if (page < 1) return;
         currentPage = page;
         const tbody = document.getElementById("serviceTableBody");
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Đang tải...</td></tr>';
-        
+        tbody.innerHTML =
+          '<tr><td colspan="5" class="text-center py-4">Đang tải...</td></tr>';
+
         try {
-          const res = await window.krudList({ table: "dichvu_giatuinhanh", page, limit });
+          const res = await window.krudList({
+            table: "dichvu_giatuinhanh",
+            page,
+            limit,
+          });
           currentData = (res && res.data) || (Array.isArray(res) ? res : []);
           const total = (res && res.total) || currentData.length;
           const totalPages = Math.ceil(total / limit);
-          
+
           document.getElementById("itemCount").textContent = `${total} dịch vụ`;
-          document.getElementById("pageInfo").textContent = `Trang ${page}/${totalPages || 1}`;
-          
-          tbody.innerHTML = currentData.map((s, i) => `
+          document.getElementById("pageInfo").textContent =
+            `Trang ${page}/${totalPages || 1}`;
+
+          tbody.innerHTML = currentData
+            .map(
+              (s, i) => `
             <tr>
               <td>${(page - 1) * limit + i + 1}</td>
               <td><img src="../public/asset/image/${s.hinhanh}" style="width:60px;height:45px;object-fit:cover;border-radius:6px;border:1px solid #eee;"></td>
               <td><strong>${s.tendichvu}</strong><br><small class="text-muted text-truncate d-block" style="max-width:200px;">${s.mota}</small></td>
-              <td>${Number(s.giadichvu).toLocaleString('vi-VN')} đ / ${s.donvi}</td>
+              <td>${Number(s.giadichvu).toLocaleString("vi-VN")} đ / ${s.donvi}</td>
               <td class="text-end">
                 <button class="btn btn-sm btn-outline-primary me-1" onclick="openServiceModal(${s.id})"><i class="fas fa-edit"></i></button>
                 <button class="btn btn-sm btn-outline-danger" onclick="deleteService(${s.id})"><i class="fas fa-trash"></i></button>
               </td>
-            </tr>`).join("");
+            </tr>`,
+            )
+            .join("");
           renderPagination(totalPages);
-        } catch (err) { 
-          tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Lỗi tải dữ liệu.</td></tr>'; 
+        } catch (err) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" class="text-center py-4 text-danger">Lỗi tải dữ liệu.</td></tr>';
         }
       }
 
       function renderPagination(totalPages) {
         const pagin = document.getElementById("pagination");
         let html = `<li class="page-item ${currentPage === 1 ? "disabled" : ""}"><a class="page-link" href="#" onclick="loadData(${currentPage - 1});return false;">Trước</a></li>`;
-        for (let i = 1; i <= totalPages; i++) html += `<li class="page-item ${i === currentPage ? "active" : ""}"><a class="page-link" href="#" onclick="loadData(${i});return false;">${i}</a></li>`;
+        for (let i = 1; i <= totalPages; i++)
+          html += `<li class="page-item ${i === currentPage ? "active" : ""}"><a class="page-link" href="#" onclick="loadData(${i});return false;">${i}</a></li>`;
         html += `<li class="page-item ${currentPage === totalPages || totalPages === 0 ? "disabled" : ""}"><a class="page-link" href="#" onclick="loadData(${currentPage + 1});return false;">Sau</a></li>`;
         pagin.innerHTML = html;
       }
 
       function openServiceModal(id = null) {
         editingId = id;
-        const form = document.getElementById('serviceForm');
+        const form = document.getElementById("serviceForm");
         form.reset();
-        document.getElementById('noImg').classList.remove('d-none');
-        document.getElementById('imgPreview').classList.add('d-none');
-        document.getElementById('modalTitle').textContent = id ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ mới";
+        document.getElementById("noImg").classList.remove("d-none");
+        document.getElementById("imgPreview").classList.add("d-none");
+        document.getElementById("modalTitle").textContent = id
+          ? "Chỉnh sửa dịch vụ"
+          : "Thêm dịch vụ mới";
         if (id) {
-          const s = currentData.find(x => x.id == id);
+          const s = currentData.find((x) => x.id == id);
           if (s) {
             form.tendichvu.value = s.tendichvu;
             form.mota.value = s.mota;
             if (s.hinhanh) {
-              document.getElementById('imgPreview').src = `../public/asset/image/${s.hinhanh}`;
-              document.getElementById('imgPreview').classList.remove('d-none');
-              document.getElementById('noImg').classList.add('d-none');
+              document.getElementById("imgPreview").src =
+                `../public/asset/image/${s.hinhanh}`;
+              document.getElementById("imgPreview").classList.remove("d-none");
+              document.getElementById("noImg").classList.add("d-none");
             }
             form.giadichvu.value = s.giadichvu;
             form.donvi.value = s.donvi;
@@ -197,70 +354,100 @@
 
       async function deleteService(id) {
         if (confirm("Bạn có chắc chắn muốn xóa dịch vụ này?")) {
-          const res = await window.krud("delete", "dichvu_giatuinhanh", null, id);
+          const res = await window.krud(
+            "delete",
+            "dichvu_giatuinhanh",
+            null,
+            id,
+          );
           if (res && res.success !== false) loadData(currentPage);
         }
       }
 
-      document.getElementById('fileInput').addEventListener('change', e => {
+      document.getElementById("fileInput").addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (file) {
           const r = new FileReader();
-          r.onload = ev => {
-            document.getElementById('imgPreview').src = ev.target.result;
-            document.getElementById('imgPreview').classList.remove('d-none');
-            document.getElementById('noImg').classList.add('d-none');
+          r.onload = (ev) => {
+            document.getElementById("imgPreview").src = ev.target.result;
+            document.getElementById("imgPreview").classList.remove("d-none");
+            document.getElementById("noImg").classList.add("d-none");
           };
           r.readAsDataURL(file);
         }
       });
 
-      document.getElementById("serviceForm").addEventListener("submit", async e => {
-        e.preventDefault();
-        const btn = document.getElementById('btnSave');
-        const fd = new FormData(e.target);
-        
-        btn.disabled = true; 
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>...';
-        
-        try {
-          let hinhanh = editingId ? currentData.find(x => x.id == editingId).hinhanh : '';
-          
-          if (fd.get('file').name) {
-            const upRes = await fetch("../public/upload-service.php", { method: "POST", body: fd });
-            const upJson = await upRes.json();
-            if (!upJson.success) throw new Error(upJson.message);
-            hinhanh = upJson.filename;
-          } else if (!editingId) throw new Error("Vui lòng chọn ảnh!");
+      document
+        .getElementById("serviceForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById("btnSave");
+          const fd = new FormData(e.target);
 
-          const payload = { 
-            tendichvu: fd.get('tendichvu'), 
-            mota: fd.get('mota'),
-            hinhanh: hinhanh,
-            giadichvu: fd.get('giadichvu'),
-            donvi: fd.get('donvi'),
-            congviec: fd.get('congviec'),
-            hoachat: fd.get('hoachat')
-          };
-          
-          const res = await window.krud(editingId ? "update" : "insert", "dichvu_giatuinhanh", payload, editingId);
-          if (res && res.success !== false) { 
-            modal.hide(); 
-            loadData(currentPage); 
-          } else {
-            throw new Error("Lỗi lưu dữ liệu cơ sở dữ liệu");
+          btn.disabled = true;
+          btn.innerHTML =
+            '<span class="spinner-border spinner-border-sm"></span>...';
+
+          try {
+            let hinhanh = editingId
+              ? currentData.find((x) => x.id == editingId).hinhanh
+              : "";
+
+            if (fd.get("file").name) {
+              const upRes = await fetch("../public/upload-service.php", {
+                method: "POST",
+                body: fd,
+              });
+              const upJson = await upRes.json();
+              if (!upJson.success) throw new Error(upJson.message);
+              hinhanh = upJson.filename;
+            } else if (!editingId) throw new Error("Vui lòng chọn ảnh!");
+
+            const payload = {
+              tendichvu: fd.get("tendichvu"),
+              mota: fd.get("mota"),
+              hinhanh: hinhanh,
+              giadichvu: fd.get("giadichvu"),
+              donvi: fd.get("donvi"),
+              congviec: fd.get("congviec"),
+              hoachat: fd.get("hoachat"),
+            };
+
+            const res = await window.krud(
+              editingId ? "update" : "insert",
+              "dichvu_giatuinhanh",
+              payload,
+              editingId,
+            );
+            if (res && res.success !== false) {
+              modal.hide();
+              loadData(currentPage);
+            } else {
+              throw new Error("Lỗi lưu dữ liệu cơ sở dữ liệu");
+            }
+          } catch (err) {
+            alert(err.message);
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "Lưu lại";
           }
-        } catch (err) { 
-          alert(err.message); 
-        } finally { 
-          btn.disabled = false; 
-          btn.textContent = "Lưu lại"; 
-        }
-      });
+        });
 
       document.addEventListener("DOMContentLoaded", () => loadData(1));
     </script>
     <script src="../public/asset/js/plugin/webfont/webfont.min.js"></script>
-    <script>WebFont.load({ google: { families: ["Public Sans:300,400,500,600,700"] }, custom: { families: ["Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands"], urls: ["../public/asset/css/fonts.min.css"] } });</script>
+    <script>
+      WebFont.load({
+        google: { families: ["Public Sans:300,400,500,600,700"] },
+        custom: {
+          families: [
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+          ],
+          urls: ["../public/asset/css/fonts.min.css"],
+        },
+      });
+    </script>
   </body>
 </html>
