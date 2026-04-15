@@ -3,9 +3,52 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/admin_api_common.php';
 
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
 	session_start();
 }
+
+// Check login via cookie (no form)
+function get_cookie($name) {
+	return $_COOKIE[$name] ?? '';
+}
+
+$email = trim((string)get_cookie('admin_e'));
+$password = (string)get_cookie('admin_p');
+
+if ($email !== '' && $password !== '') {
+	$apiResult = admin_api_list_table('admin');
+	$admins = $apiResult['rows'] ?? [];
+	$apiError = (string)($apiResult['error'] ?? '');
+
+	if ($apiError === '') {
+		$account = null;
+		foreach ($admins as $row) {
+			$rowEmail = strtolower(trim((string)($row['email'] ?? '')));
+			$rowPass = (string)($row['matkhau'] ?? $row['password'] ?? '');
+			if ($rowEmail !== '' && $rowEmail === strtolower($email) && $rowPass === $password) {
+				$account = $row;
+				break;
+			}
+		}
+		if (is_array($account)) {
+			$_SESSION['admin_logged_in'] = true;
+			$_SESSION['admin_user'] = [
+				'id' => (int)($account['id'] ?? 0),
+				'name' => (string)($account['hovaten'] ?? $account['ten'] ?? 'Admin'),
+				'email' => (string)($account['email'] ?? $email),
+			];
+			header('Location: index.php');
+			exit;
+		}
+	}
+}
+
+// Nếu không hợp lệ, xóa session và chuyển về trang nhập lại
+$_SESSION['admin_logged_in'] = false;
+unset($_SESSION['admin_user']);
+header('Location: ../../public/admin-login.html');
+exit;
 
 if (!function_exists('admin_login_h')) {
 	function admin_login_h(string $value): string
@@ -80,54 +123,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		}
 	}
 }
-?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Dang nhap Admin</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-</head>
-<body style="background: radial-gradient(circle at top right, #f0fdf4 0%, #f8fafc 42%, #ffffff 100%);" class="d-flex align-items-center min-vh-100">
-	<main class="container">
-		<div class="row justify-content-center">
-			<div class="col-12 col-md-8 col-lg-5">
-				<div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="border: 1px solid #dcfce7 !important;">
-					<div class="card-body p-4 p-lg-5">
-						<div class="text-center mb-4">
-							<div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 80px; height: 80px; background: #f0fdf4; border: 1px solid #dcfce7;">
-								<img src="../assets/logong.png" alt="logo" style="width: 50px; height: 50px; object-fit: contain;">
-							</div>
-							<h1 class="h4 fw-bold mb-1" style="color: #14532d;">Đăng nhập Admin</h1>
-							<p class="text-secondary small">Hệ thống Chăm Sóc Người Già</p>
-						</div>
-
-						<?php if ($error !== ''): ?>
-							<div class="alert alert-danger py-2 small" style="background-color: #fef2f2; border-color: #fee2e2; color: #991b1b;"><?= admin_login_h($error) ?></div>
-						<?php endif; ?>
-
-						<form method="post">
-							<div class="mb-3">
-								<label class="form-label small fw-bold" style="color: #166534;">Email</label>
-								<input type="email" name="email" class="form-control rounded-3" style="border-color: #dcfce7; color: #14532d;" value="<?= admin_login_h($email) ?>" required>
-							</div>
-							<div class="mb-4">
-								<label class="form-label small fw-bold" style="color: #166534;">Mật khẩu</label>
-								<input type="password" name="password" class="form-control rounded-3" style="border-color: #dcfce7; color: #14532d;" required>
-							</div>
-							<button type="submit" class="btn w-100 py-2 fw-bold text-white rounded-3 shadow-sm" style="background: linear-gradient(90deg, #22c55e, #16a34a); border: none;">
-								<i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
-							</button>
-						</form>
-					</div>
-				</div>
-				<div class="text-center mt-4">
-					<p class="small" style="color: #71717a;">&copy; 2024 Chăm Sóc Người Già - Admin Panel</p>
-				</div>
-			</div>
-		</div>
-	</main>
-</body>
-</html>
+// ...existing code...
