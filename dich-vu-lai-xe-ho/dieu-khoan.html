@@ -79,256 +79,176 @@
       <script src="/ga.js"></script>
   </head>
 
-  <body>
+  <body data-nav-active="terms">
 
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
-    <div class="container">
-      <a href="../index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
-        <img src="assets/logo-he-thong.png" alt="Dịch vụ thuê tài xế lái xe hộ" style="width: 80px; height: 60px" />
-      </a>
-      <span class="fw-bold text-primary">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</span>
-      <a href="index.html" class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" style="color: #007bff">
-        <img src="assets/logo_main.png" alt="Dịch vụ thuê tài xế lái xe hộ" style="width: 80px; height: 60px" />
-      </a>
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <!-- Header sẽ được load tự động bởi shared-layout.js -->
+    <div id="site-header"></div>
 
-      <div class="collapse navbar-collapse justify-content-end" id="navMenu">
-        <ul class="navbar-nav align-items-center gap-3">
-          <li class="nav-item"><a href="index.html" class="nav-link fw-bold px-3">Trang Chủ</a></li>
-          <li class="nav-item"><a href="gioi-thieu.html" class="nav-link fw-bold px-3">Giới Thiệu</a></li>
-          <li class="nav-item"><a href="dich-vu.html" class="nav-link fw-bold px-3">Dịch Vụ</a></li>
-          <li class="nav-item"><a href="dieu-khoan.html" class="nav-link fw-bold px-3 active" style="color:#007bff;">Điều Khoản</a></li>
-          <li class="nav-item"><a href="cam-nang.html" class="nav-link fw-bold px-3">Cẩm Nang</a></li>
-          <li class="nav-item"><a href="lien-he.html" class="nav-link fw-bold px-3">Liên Hệ</a></li>
-        </ul>
+    <!-- Hero Section -->
+    <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #fff3e0 100%);">
+      <div class="container text-center py-lg-5">
+        <h1 class="display-4 fw-bold mb-3">Điều Khoản Sử Dụng Dịch Vụ</h1>
+        <h2 class="display-6 fw-bold mb-3" style="color: #e68a2e; font-size: 1.8rem;">Thuê Tài Xế Lái Xe Hộ</h2>
+        <p class="lead text-muted">
+          Áp dụng cho các dịch vụ thuê tài xế lái xe theo giờ, theo ngày, đường dài và tài xế riêng cá nhân
+        </p>
+        <div style="width: 80px; height: 3px; background: #007bff; margin: 0 auto;"></div>
+        <p class="mt-3 text-muted small">Cập nhật lần cuối: Tháng 03/2026</p>
       </div>
-    </div>
-  </nav>
+    </section>
 
-  <!-- Hero Section -->
-  <section class="py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #fff3e0 100%);">
-    <div class="container text-center py-lg-5">
-      <h1 class="display-4 fw-bold mb-3">Điều Khoản Sử Dụng Dịch Vụ</h1>
-      <h2 class="display-6 fw-bold mb-3" style="color: #e68a2e; font-size: 1.8rem;">Thuê Tài Xế Lái Xe Hộ</h2>
-      <p class="lead text-muted">
-        Áp dụng cho các dịch vụ thuê tài xế lái xe theo giờ, theo ngày, đường dài và tài xế riêng cá nhân
-      </p>
-      <div style="width: 80px; height: 3px; background: #007bff; margin: 0 auto;"></div>
-      <p class="mt-3 text-muted small">Cập nhật lần cuối: Tháng 03/2026</p>
-    </div>
-  </section>
+    <!-- Nội dung điều khoản -->
+    <section class="py-5">
+      <div class="container py-lg-4">
+        <div class="terms-section">
 
-  <!-- Nội dung điều khoản -->
-  <section class="py-5">
-    <div class="container py-lg-4">
-      <div class="terms-section">
+          <!-- 1. Phạm vi áp dụng -->
+          <h3><i class="fas fa-file-contract me-2" style="color: #007bff;"></i> 1. Phạm Vi Áp Dụng</h3>
+          <p>Điều khoản này áp dụng cho toàn bộ khách hàng sử dụng dịch vụ thuê tài xế lái xe hộ do chúng tôi cung cấp, bao gồm các hình thức: lái xe theo giờ, lái xe theo ngày, lái xe đường dài và tài xế riêng cá nhân. Khi đặt lịch hoặc ký hợp đồng, khách hàng được xem là đã đồng ý với các điều khoản dưới đây.</p>
 
-        <!-- 1. Phạm vi áp dụng -->
-        <h3><i class="fas fa-file-contract me-2" style="color: #007bff;"></i> 1. Phạm Vi Áp Dụng</h3>
-        <p>Điều khoản này áp dụng cho toàn bộ khách hàng sử dụng dịch vụ thuê tài xế lái xe hộ do chúng tôi cung cấp, bao gồm các hình thức: lái xe theo giờ, lái xe theo ngày, lái xe đường dài và tài xế riêng cá nhân. Khi đặt lịch hoặc ký hợp đồng, khách hàng được xem là đã đồng ý với các điều khoản dưới đây.</p>
-
-        <!-- 2. Quyền lợi của khách hàng -->
-        <h3><i class="fas fa-user-check me-2" style="color: #007bff;"></i> 2. Quyền Lợi Của Khách Hàng</h3>
-        <ul>
-          <li>Được cung cấp thông tin rõ ràng về tài xế, chi phí và thời gian phục vụ trước khi xác nhận đặt lịch.</li>
-          <li>Được bố trí tài xế có kinh nghiệm, bằng lái hợp lệ, am hiểu đường xá và tác phong chuyên nghiệp.</li>
-          <li>Được yêu cầu thay đổi tài xế nếu có lý do chính đáng (không phù hợp, thái độ không tốt).</li>
-          <li>Được bảo mật thông tin cá nhân và hành trình di chuyển.</li>
-          <li>Được phản ánh, góp ý hoặc khiếu nại nếu chất lượng dịch vụ không đạt yêu cầu.</li>
-        </ul>
-
-        <!-- 3. Trách nhiệm của khách hàng -->
-        <h3><i class="fas fa-user-tie me-2" style="color: #007bff;"></i> 3. Trách Nhiệm Của Khách Hàng</h3>
-        <ul>
-          <li>Cung cấp thông tin chính xác về điểm đón, điểm đến, thời gian và các yêu cầu đặc biệt (nếu có).</li>
-          <li>Thanh toán đúng hạn theo thỏa thuận (tiền mặt, chuyển khoản hoặc qua nền tảng).</li>
-          <li>Đảm bảo tài xế có thể tiếp cận điểm đón và điểm đến an toàn.</li>
-          <li>Không yêu cầu tài xế vi phạm luật giao thông hoặc thực hiện các hành vi trái pháp luật.</li>
-          <li>Chịu trách nhiệm về các chi phí phát sinh như: phí cầu đường, phí đỗ xe, phí sân bay (nếu có).</li>
-        </ul>
-
-        <!-- 4. Cơ chế hoạt động của nền tảng -->
-        <h3><i class="fas fa-laptop me-2" style="color: #007bff;"></i> 4. Cơ Chế Hoạt Động Của Nền Tảng</h3>
-        <p>Nền tảng đóng vai trò kết nối khách hàng với các tài xế và đơn vị cung cấp dịch vụ lái xe hộ. Chúng tôi hỗ trợ khách hàng trong việc:</p>
-        <ul>
-          <li>Tìm kiếm tài xế phù hợp với nhu cầu (theo giờ, theo ngày, đường dài).</li>
-          <li>Đặt lịch nhanh chóng qua website hoặc ứng dụng.</li>
-          <li>Quản lý đơn hàng và lịch sử sử dụng dịch vụ.</li>
-          <li>Thanh toán trực tuyến an toàn và hỗ trợ khách hàng 24/7.</li>
-        </ul>
-        <div class="highlight-text">
-          <i class="fas fa-info-circle me-2" style="color: #007bff;"></i>
-          <strong>Lưu ý:</strong> Nền tảng không trực tiếp thực hiện việc lái xe mà đóng vai trò trung gian kết nối giữa khách hàng và tài xế/đơn vị cung cấp dịch vụ.
-        </div>
-
-        <!-- 5. Phí dịch vụ và hoa hồng -->
-        <h3><i class="fas fa-coins me-2" style="color: #007bff;"></i> 5. Phí Dịch Vụ Và Hoa Hồng</h3>
-        <p>Tài xế/đơn vị cung cấp dịch vụ đồng ý trả <strong>10% phí hoa hồng</strong> trên tổng giá trị mỗi đơn hàng khi nhận khách thông qua nền tảng.</p>
-        <p>Khoản phí này sẽ được <strong>khấu trừ trực tiếp</strong> khi thanh toán. Số tiền còn lại sẽ được chuyển vào tài khoản của tài xế/đơn vị cung cấp trên hệ thống theo chu kỳ thanh toán quy định.</p>
-
-        <!-- 6. Thanh toán -->
-        <h3><i class="fas fa-credit-card me-2" style="color: #007bff;"></i> 6. Thanh Toán</h3>
-        <p>Khách hàng có thể thanh toán qua các phương thức được hỗ trợ: tiền mặt trực tiếp cho tài xế, chuyển khoản ngân hàng hoặc thanh toán qua nền tảng. Sau khi hoàn tất dịch vụ, hệ thống sẽ tiến hành đối soát đơn hàng.</p>
-        <ul>
-          <li>Khấu trừ phí hoa hồng theo quy định (nếu thanh toán qua nền tảng).</li>
-          <li>Chuyển phần còn lại cho tài xế/đơn vị cung cấp dịch vụ.</li>
-          <li>Thời gian thanh toán phụ thuộc vào chính sách của nền tảng (thường từ 3-7 ngày làm việc).</li>
-        </ul>
-
-        <!-- 7. Quy định về tài xế -->
-        <h3><i class="fas fa-id-card me-2" style="color: #007bff;"></i> 7. Quy Định Về Tài Xế</h3>
-        <ul>
-          <li>Tài xế phải có bằng lái xe phù hợp với loại xe, giấy tờ tùy thân rõ ràng, sức khỏe tốt.</li>
-          <li>Tuân thủ luật giao thông, lái xe an toàn, đúng giờ, thái độ phục vụ chuyên nghiệp.</li>
-          <li>Ăn mặc lịch sự, gọn gàng, có thẻ nhận diện khi làm việc (nếu được cấp).</li>
-          <li>Không sử dụng chất kích thích, rượu bia trước và trong khi lái xe.</li>
-          <li>Chịu trách nhiệm về các vi phạm giao thông do mình gây ra trong quá trình phục vụ.</li>
-        </ul>
-
-        <!-- 8. Hóa đơn và nghĩa vụ thuế -->
-        <h3><i class="fas fa-file-invoice-dollar me-2" style="color: #007bff;"></i> 8. Hóa Đơn Và Nghĩa Vụ Thuế</h3>
-        <p>Tài xế/đơn vị cung cấp dịch vụ có trách nhiệm thực hiện nghĩa vụ thuế theo quy định pháp luật.</p>
-        <ul>
-          <li>Kê khai và nộp thuế đối với thu nhập từ dịch vụ lái xe.</li>
-          <li>Cung cấp hóa đơn khi khách hàng yêu cầu (nếu có đăng ký kinh doanh).</li>
-          <li>Tuân thủ các quy định pháp luật về thuế thu nhập cá nhân.</li>
-        </ul>
-        <p>Nền tảng không chịu trách nhiệm thay cho tài xế/đơn vị cung cấp về nghĩa vụ thuế.</p>
-
-        <!-- 9. Trách nhiệm của các bên -->
-        <h3><i class="fas fa-balance-scale me-2" style="color: #007bff;"></i> 9. Trách Nhiệm Của Các Bên</h3>
-        
-        <p><strong>Khách hàng:</strong></p>
-        <ul>
-          <li>Cung cấp thông tin chính xác về điểm đón, điểm đến và thời gian.</li>
-          <li>Thanh toán đầy đủ chi phí dịch vụ.</li>
-          <li>Không yêu cầu tài xế thực hiện hành vi vi phạm pháp luật.</li>
-        </ul>
-
-        <p><strong>Tài xế/Đơn vị cung cấp dịch vụ:</strong></p>
-        <ul>
-          <li>Thực hiện công việc đúng cam kết, đúng giờ.</li>
-          <li>Đảm bảo an toàn cho hành khách và phương tiện.</li>
-          <li>Chịu trách nhiệm nếu gây thiệt hại do lỗi của mình (tai nạn, vi phạm giao thông).</li>
-        </ul>
-
-        <p><strong>Nền tảng:</strong></p>
-        <ul>
-          <li>Cung cấp hệ thống đặt dịch vụ ổn định, minh bạch.</li>
-          <li>Hỗ trợ xử lý khiếu nại và phản hồi từ khách hàng.</li>
-          <li>Đảm bảo thông tin về tài xế và giá cả được công khai rõ ràng.</li>
-        </ul>
-
-        <!-- 10. Trường hợp phát sinh -->
-        <h3><i class="fas fa-exclamation-triangle me-2" style="color: #007bff;"></i> 10. Trường Hợp Phát Sinh</h3>
-        <p>Trong trường hợp phát sinh sự cố như tai nạn, hư hỏng phương tiện, mất mát tài sản trên xe, các bên cần phối hợp xử lý và thông báo ngay cho nền tảng để được hỗ trợ giải quyết theo đúng quy định pháp luật.</p>
-        <p>Đối với các chuyến xe đường dài, tài xế có quyền yêu cầu nghỉ ngơi hợp lý để đảm bảo an toàn. Chi phí ăn nghỉ (nếu có) sẽ được thỏa thuận trước giữa khách hàng và tài xế.</p>
-
-        <!-- 11. Bảo mật thông tin -->
-        <h3><i class="fas fa-shield-alt me-2" style="color: #007bff;"></i> 11. Bảo Mật Thông Tin</h3>
-        <p>Chúng tôi cam kết bảo mật thông tin cá nhân và dữ liệu hành trình của khách hàng. Thông tin chỉ được sử dụng nhằm mục đích cung cấp dịch vụ và không chia sẻ với bên thứ ba khi chưa có sự đồng ý.</p>
-
-        <!-- 12. Thay đổi điều khoản -->
-        <h3><i class="fas fa-edit me-2" style="color: #007bff;"></i> 12. Thay Đổi Điều Khoản</h3>
-        <p>Nền tảng có quyền cập nhật điều khoản khi cần thiết để phù hợp với hoạt động và quy định pháp luật. Mọi thay đổi sẽ được thông báo trên website hoặc ứng dụng trước khi áp dụng ít nhất 7 ngày.</p>
-
-        <!-- 13. Hủy lịch và hoàn tiền -->
-        <h3><i class="fas fa-calendar-times me-2" style="color: #007bff;"></i> 13. Hủy Lịch Và Hoàn Tiền</h3>
-        <ul>
-          <li><strong>Hủy trước 2 giờ:</strong> Không tính phí hủy, hoàn tiền 100% (nếu đã thanh toán).</li>
-          <li><strong>Hủy trong vòng 2 giờ trước giờ khởi hành:</strong> Phí hủy 30% tổng giá trị đơn hàng.</li>
-          <li><strong>Hủy sau giờ khởi hành hoặc không thông báo:</strong> Phí hủy 100% giá trị đơn hàng.</li>
-          <li>Trường hợp tài xế không thể đến do lỗi từ phía đơn vị cung cấp: Khách hàng được hoàn tiền 100% hoặc bố trí tài xế thay thế.</li>
-        </ul>
-
-        <!-- 14. Giải quyết tranh chấp -->
-        <h3><i class="fas fa-gavel me-2" style="color: #007bff;"></i> 14. Giải Quyết Tranh Chấp</h3>
-        <p>Mọi tranh chấp phát sinh sẽ được giải quyết trên tinh thần thương lượng, hòa giải. Trường hợp không thể thương lượng, tranh chấp sẽ được đưa ra Tòa án nhân dân có thẩm quyền tại TP. Hồ Chí Minh để giải quyết theo pháp luật Việt Nam.</p>
-
-        <!-- 15. Liên hệ hỗ trợ -->
-        <h3><i class="fas fa-headset me-2" style="color: #007bff;"></i> 15. Liên Hệ Hỗ Trợ</h3>
-        <p>Mọi thắc mắc về điều khoản sử dụng, vui lòng liên hệ với chúng tôi qua:</p>
-        <ul>
-          <li><strong>Hotline:</strong> 0775 472 347</li>
-          <li><strong>Email:</strong> dichvuquanhta.vn@gmail.com</li>
-          <li><strong>Địa chỉ:</strong> Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</li>
-        </ul>
-        
-        <div class="highlight-text mt-4">
-          <i class="fas fa-car me-2" style="color: #e68a2e;"></i>
-          <strong>Cam kết của chúng tôi:</strong> Luôn đặt sự an toàn và hài lòng của khách hàng lên hàng đầu. Mọi phản hồi đều được tiếp nhận và xử lý nhanh chóng.
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-white pt-5 pb-3">
-    <div class="container">
-      <div class="row g-4 mb-4">
-        <div class="col-lg-4">
-          <h3 class="h4 fw-bold mb-3" style="color: #007bff">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</h3>
-          <p class="opacity-75">Hệ thống cung cấp dịch vụ tài xế lái xe hộ chuyên nghiệp hàng đầu tại Việt Nam. An toàn - Uy tín - Chất lượng.</p>
-          <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
-          <p class="opacity-75 small">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</p>
-          
-          <h4 class="h5 fw-bold mt-4 mb-3">Liên Hệ</h4>
-          <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
-          <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
-        </div>
-        <div class="col-lg-2">
-          <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
-          <ul class="list-unstyled">
-            <li class="mb-2"><a href="dich-vu.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
-            <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
-            <li class="mb-2"><a href="../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
-            <li class="mb-2"><a href="../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
-            <li class="mb-2"><a href="../cham-soc-vuon-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Vườn & Rẫy</a></li>
-            <li class="mb-2"><a href="../giat-ui-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giặt Ủi Cao Cấp</a></li>
-            <li class="mb-2"><a href="../tho-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Thợ Nhà & Sửa Chữa</a></li>
-            <li class="mb-2"><a href="../cham-soc-nguoi-gia/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Người Già</a></li>
-            <li class="mb-2"><a href="../cham-soc-nguoi-benh/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Bệnh Nhân</a></li>
-            <li class="mb-2"><a href="../giao-hang-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giao Hàng Nhanh</a></li>
+          <!-- 2. Quyền lợi của khách hàng -->
+          <h3><i class="fas fa-user-check me-2" style="color: #007bff;"></i> 2. Quyền Lợi Của Khách Hàng</h3>
+          <ul>
+            <li>Được cung cấp thông tin rõ ràng về tài xế, chi phí và thời gian phục vụ trước khi xác nhận đặt lịch.</li>
+            <li>Được bố trí tài xế có kinh nghiệm, bằng lái hợp lệ, am hiểu đường xá và tác phong chuyên nghiệp.</li>
+            <li>Được yêu cầu thay đổi tài xế nếu có lý do chính đáng (không phù hợp, thái độ không tốt).</li>
+            <li>Được bảo mật thông tin cá nhân và hành trình di chuyển.</li>
+            <li>Được phản ánh, góp ý hoặc khiếu nại nếu chất lượng dịch vụ không đạt yêu cầu.</li>
           </ul>
-        </div>
-        <div class="col-lg-3">
-          <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
-          <div class="d-flex gap-3">
-            <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-youtube"></i></a>
-            <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-tiktok"></i></a>
+
+          <!-- 3. Trách nhiệm của khách hàng -->
+          <h3><i class="fas fa-user-tie me-2" style="color: #007bff;"></i> 3. Trách Nhiệm Của Khách Hàng</h3>
+          <ul>
+            <li>Cung cấp thông tin chính xác về điểm đón, điểm đến, thời gian và các yêu cầu đặc biệt (nếu có).</li>
+            <li>Thanh toán đúng hạn theo thỏa thuận (tiền mặt, chuyển khoản hoặc qua nền tảng).</li>
+            <li>Đảm bảo tài xế có thể tiếp cận điểm đón và điểm đến an toàn.</li>
+            <li>Không yêu cầu tài xế vi phạm luật giao thông hoặc thực hiện các hành vi trái pháp luật.</li>
+            <li>Chịu trách nhiệm về các chi phí phát sinh như: phí cầu đường, phí đỗ xe, phí sân bay (nếu có).</li>
+          </ul>
+
+          <!-- 4. Cơ chế hoạt động của nền tảng -->
+          <h3><i class="fas fa-laptop me-2" style="color: #007bff;"></i> 4. Cơ Chế Hoạt Động Của Nền Tảng</h3>
+          <p>Nền tảng đóng vai trò kết nối khách hàng với các tài xế và đơn vị cung cấp dịch vụ lái xe hộ. Chúng tôi hỗ trợ khách hàng trong việc:</p>
+          <ul>
+            <li>Tìm kiếm tài xế phù hợp với nhu cầu (theo giờ, theo ngày, đường dài).</li>
+            <li>Đặt lịch nhanh chóng qua website hoặc ứng dụng.</li>
+            <li>Quản lý đơn hàng và lịch sử sử dụng dịch vụ.</li>
+            <li>Thanh toán trực tuyến an toàn và hỗ trợ khách hàng 24/7.</li>
+          </ul>
+          <div class="highlight-text">
+            <i class="fas fa-info-circle me-2" style="color: #007bff;"></i>
+            <strong>Lưu ý:</strong> Nền tảng không trực tiếp thực hiện việc lái xe mà đóng vai trò trung gian kết nối giữa khách hàng và tài xế/đơn vị cung cấp dịch vụ.
           </div>
-          <div class="mt-4">
-            <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
-            <div class="d-flex gap-2" style="max-width: 300px;">
-              <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2 flex-fill">
-                <i class="fab fa-apple me-2"></i>
-                <div class="text-start lh-1">
-                  <small class="d-block" style="font-size: 9px; opacity: 0.8;">Download on</small>
-                  <span class="fw-bold" style="font-size: 11px;">App Store</span>
-                </div>
-              </a>
-              <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2 flex-fill" style="background-color: #34a853; border-color: #34a853;">
-                <i class="fab fa-google-play me-2"></i>
-                <div class="text-start lh-1">
-                  <small class="d-block" style="font-size: 9px; opacity: 0.8;">Get it on</small>
-                  <span class="fw-bold" style="font-size: 11px;">Google Play</span>
-                </div>
-              </a>
-            </div>
+
+          <!-- 5. Phí dịch vụ và hoa hồng -->
+          <h3><i class="fas fa-coins me-2" style="color: #007bff;"></i> 5. Phí Dịch Vụ Và Hoa Hồng</h3>
+          <p>Tài xế/đơn vị cung cấp dịch vụ đồng ý trả <strong>10% phí hoa hồng</strong> trên tổng giá trị mỗi đơn hàng khi nhận khách thông qua nền tảng.</p>
+          <p>Khoản phí này sẽ được <strong>khấu trừ trực tiếp</strong> khi thanh toán. Số tiền còn lại sẽ được chuyển vào tài khoản của tài xế/đơn vị cung cấp trên hệ thống theo chu kỳ thanh toán quy định.</p>
+
+          <!-- 6. Thanh toán -->
+          <h3><i class="fas fa-credit-card me-2" style="color: #007bff;"></i> 6. Thanh Toán</h3>
+          <p>Khách hàng có thể thanh toán qua các phương thức được hỗ trợ: tiền mặt trực tiếp cho tài xế, chuyển khoản ngân hàng hoặc thanh toán qua nền tảng. Sau khi hoàn tất dịch vụ, hệ thống sẽ tiến hành đối soát đơn hàng.</p>
+          <ul>
+            <li>Khấu trừ phí hoa hồng theo quy định (nếu thanh toán qua nền tảng).</li>
+            <li>Chuyển phần còn lại cho tài xế/đơn vị cung cấp dịch vụ.</li>
+            <li>Thời gian thanh toán phụ thuộc vào chính sách của nền tảng (thường từ 3-7 ngày làm việc).</li>
+          </ul>
+
+          <!-- 7. Quy định về tài xế -->
+          <h3><i class="fas fa-id-card me-2" style="color: #007bff;"></i> 7. Quy Định Về Tài Xế</h3>
+          <ul>
+            <li>Tài xế phải có bằng lái xe phù hợp với loại xe, giấy tờ tùy thân rõ ràng, sức khỏe tốt.</li>
+            <li>Tuân thủ luật giao thông, lái xe an toàn, đúng giờ, thái độ phục vụ chuyên nghiệp.</li>
+            <li>Ăn mặc lịch sự, gọn gàng, có thẻ nhận diện khi làm việc (nếu được cấp).</li>
+            <li>Không sử dụng chất kích thích, rượu bia trước và trong khi lái xe.</li>
+            <li>Chịu trách nhiệm về các vi phạm giao thông do mình gây ra trong quá trình phục vụ.</li>
+          </ul>
+
+          <!-- 8. Hóa đơn và nghĩa vụ thuế -->
+          <h3><i class="fas fa-file-invoice-dollar me-2" style="color: #007bff;"></i> 8. Hóa Đơn Và Nghĩa Vụ Thuế</h3>
+          <p>Tài xế/đơn vị cung cấp dịch vụ có trách nhiệm thực hiện nghĩa vụ thuế theo quy định pháp luật.</p>
+          <ul>
+            <li>Kê khai và nộp thuế đối với thu nhập từ dịch vụ lái xe.</li>
+            <li>Cung cấp hóa đơn khi khách hàng yêu cầu (nếu có đăng ký kinh doanh).</li>
+            <li>Tuân thủ các quy định pháp luật về thuế thu nhập cá nhân.</li>
+          </ul>
+          <p>Nền tảng không chịu trách nhiệm thay cho tài xế/đơn vị cung cấp về nghĩa vụ thuế.</p>
+
+          <!-- 9. Trách nhiệm của các bên -->
+          <h3><i class="fas fa-balance-scale me-2" style="color: #007bff;"></i> 9. Trách Nhiệm Của Các Bên</h3>
+          
+          <p><strong>Khách hàng:</strong></p>
+          <ul>
+            <li>Cung cấp thông tin chính xác về điểm đón, điểm đến và thời gian.</li>
+            <li>Thanh toán đầy đủ chi phí dịch vụ.</li>
+            <li>Không yêu cầu tài xế thực hiện hành vi vi phạm pháp luật.</li>
+          </ul>
+
+          <p><strong>Tài xế/Đơn vị cung cấp dịch vụ:</strong></p>
+          <ul>
+            <li>Thực hiện công việc đúng cam kết, đúng giờ.</li>
+            <li>Đảm bảo an toàn cho hành khách và phương tiện.</li>
+            <li>Chịu trách nhiệm nếu gây thiệt hại do lỗi của mình (tai nạn, vi phạm giao thông).</li>
+          </ul>
+
+          <p><strong>Nền tảng:</strong></p>
+          <ul>
+            <li>Cung cấp hệ thống đặt dịch vụ ổn định, minh bạch.</li>
+            <li>Hỗ trợ xử lý khiếu nại và phản hồi từ khách hàng.</li>
+            <li>Đảm bảo thông tin về tài xế và giá cả được công khai rõ ràng.</li>
+          </ul>
+
+          <!-- 10. Trường hợp phát sinh -->
+          <h3><i class="fas fa-exclamation-triangle me-2" style="color: #007bff;"></i> 10. Trường Hợp Phát Sinh</h3>
+          <p>Trong trường hợp phát sinh sự cố như tai nạn, hư hỏng phương tiện, mất mát tài sản trên xe, các bên cần phối hợp xử lý và thông báo ngay cho nền tảng để được hỗ trợ giải quyết theo đúng quy định pháp luật.</p>
+          <p>Đối với các chuyến xe đường dài, tài xế có quyền yêu cầu nghỉ ngơi hợp lý để đảm bảo an toàn. Chi phí ăn nghỉ (nếu có) sẽ được thỏa thuận trước giữa khách hàng và tài xế.</p>
+
+          <!-- 11. Bảo mật thông tin -->
+          <h3><i class="fas fa-shield-alt me-2" style="color: #007bff;"></i> 11. Bảo Mật Thông Tin</h3>
+          <p>Chúng tôi cam kết bảo mật thông tin cá nhân và dữ liệu hành trình của khách hàng. Thông tin chỉ được sử dụng nhằm mục đích cung cấp dịch vụ và không chia sẻ với bên thứ ba khi chưa có sự đồng ý.</p>
+
+          <!-- 12. Thay đổi điều khoản -->
+          <h3><i class="fas fa-edit me-2" style="color: #007bff;"></i> 12. Thay Đổi Điều Khoản</h3>
+          <p>Nền tảng có quyền cập nhật điều khoản khi cần thiết để phù hợp với hoạt động và quy định pháp luật. Mọi thay đổi sẽ được thông báo trên website hoặc ứng dụng trước khi áp dụng ít nhất 7 ngày.</p>
+
+          <!-- 13. Hủy lịch và hoàn tiền -->
+          <h3><i class="fas fa-calendar-times me-2" style="color: #007bff;"></i> 13. Hủy Lịch Và Hoàn Tiền</h3>
+          <ul>
+            <li><strong>Hủy trước 2 giờ:</strong> Không tính phí hủy, hoàn tiền 100% (nếu đã thanh toán).</li>
+            <li><strong>Hủy trong vòng 2 giờ trước giờ khởi hành:</strong> Phí hủy 30% tổng giá trị đơn hàng.</li>
+            <li><strong>Hủy sau giờ khởi hành hoặc không thông báo:</strong> Phí hủy 100% giá trị đơn hàng.</li>
+            <li>Trường hợp tài xế không thể đến do lỗi từ phía đơn vị cung cấp: Khách hàng được hoàn tiền 100% hoặc bố trí tài xế thay thế.</li>
+          </ul>
+
+          <!-- 14. Giải quyết tranh chấp -->
+          <h3><i class="fas fa-gavel me-2" style="color: #007bff;"></i> 14. Giải Quyết Tranh Chấp</h3>
+          <p>Mọi tranh chấp phát sinh sẽ được giải quyết trên tinh thần thương lượng, hòa giải. Trường hợp không thể thương lượng, tranh chấp sẽ được đưa ra Tòa án nhân dân có thẩm quyền tại TP. Hồ Chí Minh để giải quyết theo pháp luật Việt Nam.</p>
+
+          <!-- 15. Liên hệ hỗ trợ -->
+          <h3><i class="fas fa-headset me-2" style="color: #007bff;"></i> 15. Liên Hệ Hỗ Trợ</h3>
+          <p>Mọi thắc mắc về điều khoản sử dụng, vui lòng liên hệ với chúng tôi qua:</p>
+          <ul>
+            <li><strong>Hotline:</strong> 0775 472 347</li>
+            <li><strong>Email:</strong> dichvuquanhta.vn@gmail.com</li>
+            <li><strong>Địa chỉ:</strong> Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</li>
+          </ul>
+          
+          <div class="highlight-text mt-4">
+            <i class="fas fa-car me-2" style="color: #e68a2e;"></i>
+            <strong>Cam kết của chúng tôi:</strong> Luôn đặt sự an toàn và hài lòng của khách hàng lên hàng đầu. Mọi phản hồi đều được tiếp nhận và xử lý nhanh chóng.
           </div>
+
         </div>
       </div>
-      <hr class="opacity-25" />
-      <p class="text-center small opacity-50">&copy; 2026 Dịch Vụ Thuê Tài Xế Lái Xe Hộ. Tất cả quyền được bảo lưu.</p>
-    </div>
-  </footer>
+    </section>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Footer sẽ được load tự động bởi shared-layout.js -->
+    <div id="site-footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- File JS của dự án -->
+    <script src="JS/shared-layout.js"></script>
+    <script src="JS/user-nav-menu.js"></script>
   </body>
 </html>

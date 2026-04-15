@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+
+<button onclick="handleLogin()">Đăng nhập</button>
+<br><br>
+
+<select id="service">
+  <option value="me_va_be">Mẹ và bé</option>
+  <option value="spa">Spa</option>
+</select>
+
+<br><br>
+
+<input type="file" id="fileInput" />
+<br><br>
+
+<button onclick="handleUpload()">Upload</button>
+
+<p id="result"></p>
+
+<!-- Google -->
+<script src="https://accounts.google.com/gsi/client"></script>
+
+<!-- FILE DÙNG CHUNG -->
+<script src="upload.js"></script>
+
+<script>
+function handleLogin() {
+  loginGoogle();
+}
+
+async function handleUpload() {
+  const file = document.getElementById("fileInput").files[0];
+  const service = document.getElementById("service").value;
+
+  const result = await uploadToDrive(file, service);
+
+  document.getElementById("result").innerHTML =
+    "Upload xong: <a href='" + result.viewLink + "' target='_blank'>Xem</a>";
+}
+</script>
+
+</body>
+</html>
