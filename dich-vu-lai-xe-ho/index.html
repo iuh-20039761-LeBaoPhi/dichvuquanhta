@@ -49,81 +49,56 @@
     }
     </style>
     <script src="/ga.js"></script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
+    <script type="application/ld+json">
     {
-      "@type": "LocalBusiness",
-      "@id": "https://dichvuquanhta.vn/#business",
-      "name": "Dịch Vụ Quanh Ta",
-      "url": "https://dichvuquanhta.vn",
-      "telephone": "0775472347"
-    },
-    {
-      "@type": "Service",
-      "name": "Thuê tài xế lái xe hộ",
-      "url": "https://dichvuquanhta.vn/thue-tai-xe/",
-      "description": "Dịch vụ thuê tài xế lái xe hộ chuyên nghiệp theo giờ, theo ngày, đường dài tại TP.HCM và các tỉnh thành. Tài xế có kinh nghiệm, an toàn, đúng giờ.",
-      "areaServed": {
-        "@type": "Place",
-        "name": "TP.HCM và các tỉnh lân cận"
-      },
-      "provider": {
-        "@id": "https://dichvuquanhta.vn/#business"
-      }
-    },
-    {
-      "@type": "BreadcrumbList",
-      "itemListElement": [
+      "@context": "https://schema.org",
+      "@graph": [
         {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Trang chủ",
-          "item": "https://dichvuquanhta.vn"
+          "@type": "LocalBusiness",
+          "@id": "https://dichvuquanhta.vn/#business",
+          "name": "Dịch Vụ Quanh Ta",
+          "url": "https://dichvuquanhta.vn",
+          "telephone": "0775472347"
         },
         {
-          "@type": "ListItem",
-          "position": 2,
+          "@type": "Service",
           "name": "Thuê tài xế lái xe hộ",
-          "item": "https://dichvuquanhta.vn/thue-tai-xe/"
+          "url": "https://dichvuquanhta.vn/thue-tai-xe/",
+          "description": "Dịch vụ thuê tài xế lái xe hộ chuyên nghiệp theo giờ, theo ngày, đường dài tại TP.HCM và các tỉnh thành. Tài xế có kinh nghiệm, an toàn, đúng giờ.",
+          "areaServed": {
+            "@type": "Place",
+            "name": "TP.HCM và các tỉnh lân cận"
+          },
+          "provider": {
+            "@id": "https://dichvuquanhta.vn/#business"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Trang chủ",
+              "item": "https://dichvuquanhta.vn"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Thuê tài xế lái xe hộ",
+              "item": "https://dichvuquanhta.vn/thue-tai-xe/"
+            }
+          ]
         }
       ]
     }
-  ]
-}
-</script>
-
+    </script>
   </head>
-  <body>
+  <body data-nav-active="home">
+
     <div style="font-family: 'Quicksand', sans-serif">
-      <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
-        <div class="container">
-          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../index.html" style="color: #007bff">
-            <img style="width: 80px; height: 60px" src="assets/logo-he-thong.png" alt="Dịch Vụ Thuê Tài Xế" />
-          </a>
-          <span class="fw-bold text-primary">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</span>
-          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #007bff">
-            <img style="width: 80px; height: 60px" src="assets/logo_main.png" alt="Dịch Vụ Thuê Tài Xế" />
-          </a>
-          <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse" data-bs-target="#navMenu">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse justify-content-end" id="navMenu">
-            <ul class="navbar-nav align-items-center gap-3">
-              <li class="nav-item">
-                <a class="nav-link fw-bold px-3 active" href="index.html" style="color: #007bff; font-size: larger">Trang Chủ</a>
-              </li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="gioi-thieu.html">Giới Thiệu</a></li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="dich-vu.html">Dịch Vụ</a></li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="dieu-khoan.html">Điều Khoản</a></li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="cam-nang.html">Cẩm Nang</a></li>
-              <li class="nav-item"><a class="nav-link fw-bold px-3" href="lien-he.html">Liên Hệ</a></li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+      <!-- Header sẽ được load tự động bởi shared-layout.js -->
+      <div id="site-header"></div>
 
       <!-- Hero Section -->
       <section class="hero-section py-5" style="background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #fff3e0 100%);">
@@ -293,70 +268,8 @@
         </div>
       </section>
 
-      <!-- Footer -->
-      <footer class="bg-dark text-white pt-5 pb-3">
-        <div class="container">
-          <div class="row g-4 mb-4">
-            <div class="col-lg-4">
-              <h3 class="h4 fw-bold mb-3" style="color: #007bff">Dịch Vụ Thuê Tài Xế Lái Xe Hộ</h3>
-              <p class="opacity-75">Hệ thống cung cấp dịch vụ tài xế lái xe hộ chuyên nghiệp hàng đầu tại Việt Nam. An toàn - Uy tín - Chất lượng.</p>
-              <p class="opacity-75">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI <br>MST: 0315609853</p>
-              <p class="opacity-75 small">Địa chỉ: Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, TP. Hồ Chí Minh</p>
-              <h4 class="h5 fw-bold mt-4 mb-3">Liên Hệ</h4>
-              <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 0775472347</p>
-              <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> dichvuquanhta.vn@gmail.com</p>
-            </div>
-            <div class="col-lg-2">
-              <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
-              <ul class="list-unstyled">
-                <li class="mb-2"><a href="gioi-thieu.html" class="text-white text-decoration-none opacity-75">Giới Thiệu</a></li>
-                <li class="mb-2"><a href="dich-vu.html" class="text-white text-decoration-none opacity-75">Dịch Vụ</a></li>
-                <li class="mb-2"><a href="lien-he.html" class="text-white text-decoration-none opacity-75">Liên Hệ</a></li>
-                <li class="mb-2"><a href="../dich-vu-don-ve-sinh/" class="text-white text-decoration-none opacity-75" target="_blank">Lau Dọn Vệ Sinh</a></li>
-                <li class="mb-2"><a href="../cham-soc-me-va-be/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Mẹ & Bé</a></li>
-                <li class="mb-2"><a href="../cham-soc-vuon-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Vườn & Rẫy</a></li>
-                <li class="mb-2"><a href="../giat-ui-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giặt Ủi Cao Cấp</a></li>
-                <li class="mb-2"><a href="../tho-nha/" class="text-white text-decoration-none opacity-75" target="_blank">Thợ Nhà & Sửa Chữa</a></li>
-                <li class="mb-2"><a href="../cham-soc-nguoi-gia/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Người Già</a></li>
-                <li class="mb-2"><a href="../cham-soc-nguoi-benh/" class="text-white text-decoration-none opacity-75" target="_blank">Chăm Sóc Bệnh Nhân</a></li>
-                <li class="mb-2"><a href="../giao-hang-nhanh/" class="text-white text-decoration-none opacity-75" target="_blank">Giao Hàng Nhanh</a></li>
-              </ul>
-            </div>
-            <div class="col-lg-3">
-              <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
-              <div class="d-flex gap-2">
-                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-youtube"></i></a>
-                <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-tiktok"></i></a>
-              </div>
-              <div class="mt-4">
-                <h5 class="h6 fw-bold mb-3">Tải Ứng Dụng</h5>
-                <div class="d-flex gap-2 flex-wrap">
-                  <a href="#" class="btn btn-primary btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px;">
-                    <i class="fab fa-apple me-2"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 8px;">Download on</small>
-                      <span class="fw-bold" style="font-size: 11px;">App Store</span>
-                    </div>
-                  </a>
-                  <a href="#" class="btn btn-warning btn-sm d-flex align-items-center px-3 py-2" style="min-width: 130px; background-color: #34a853; border-color: #34a853;">
-                    <i class="fab fa-google-play me-2"></i>
-                    <div class="text-start lh-1">
-                      <small class="d-block" style="font-size: 8px;">Get it on</small>
-                      <span class="fw-bold" style="font-size: 11px;">Google Play</span>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr class="opacity-25" />
-          <p class="text-center small opacity-50 mb-0">
-            &copy; 2026 Dịch Vụ Thuê Tài Xế Lái Xe Hộ. Bảo lưu mọi quyền.
-          </p>
-        </div>
-      </footer>
+      <!-- Footer sẽ được load tự động bởi shared-layout.js -->
+      <div id="site-footer"></div>
 
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
       <script>
@@ -454,6 +367,10 @@
 
         document.addEventListener("DOMContentLoaded", loadHomeServices);
       </script>
+      
+      <!-- File JS của dự án -->
+      <script src="JS/shared-layout.js"></script>
+      <script src="JS/user-nav-menu.js"></script>
     </div>
   </body>
 </html>
