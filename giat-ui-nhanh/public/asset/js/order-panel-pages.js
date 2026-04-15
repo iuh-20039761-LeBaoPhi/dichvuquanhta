@@ -2049,18 +2049,28 @@
           config = {
             text: "Hủy đơn",
             loadingText: "Đang hủy...",
-            className: "btn-outline-danger",
+            className: "btn-danger",
             // hint: "Bạn có thể hủy đơn nếu hệ thống chưa cập nhật ngày nhận đồ.",
             handler: function () {
               if (window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
-                setActionButtonLoading(actionBtn, true, config.text, config.loadingText);
+                setActionButtonLoading(
+                  actionBtn,
+                  true,
+                  config.text,
+                  config.loadingText,
+                );
                 handleCancelOrder(order.id)
                   .then(function () {
                     start();
                   })
                   .catch(function (err) {
                     window.alert(err.message || "Lỗi hủy đơn.");
-                    setActionButtonLoading(actionBtn, false, config.text, config.loadingText);
+                    setActionButtonLoading(
+                      actionBtn,
+                      false,
+                      config.text,
+                      config.loadingText,
+                    );
                   });
               }
             },
@@ -2074,14 +2084,24 @@
             className: "btn-primary",
             // hint: "Nhận đơn hàng này để bắt đầu quy trình phục vụ.",
             handler: function () {
-              setActionButtonLoading(actionBtn, true, config.text, config.loadingText);
+              setActionButtonLoading(
+                actionBtn,
+                true,
+                config.text,
+                config.loadingText,
+              );
               handleAcceptOrder(order.id)
                 .then(function () {
                   start();
                 })
                 .catch(function (err) {
                   window.alert(err.message || "Lỗi nhận đơn.");
-                  setActionButtonLoading(actionBtn, false, config.text, config.loadingText);
+                  setActionButtonLoading(
+                    actionBtn,
+                    false,
+                    config.text,
+                    config.loadingText,
+                  );
                 });
             },
           };
@@ -2092,14 +2112,24 @@
             className: "btn-info text-white",
             // hint: "Xác nhận đã bắt đầu thực hiện các công đoạn giặt ủi.",
             handler: function () {
-              setActionButtonLoading(actionBtn, true, config.text, config.loadingText);
+              setActionButtonLoading(
+                actionBtn,
+                true,
+                config.text,
+                config.loadingText,
+              );
               handleStartOrder(order.id)
                 .then(function () {
                   start();
                 })
                 .catch(function (err) {
                   window.alert(err.message || "Lỗi cập nhật.");
-                  setActionButtonLoading(actionBtn, false, config.text, config.loadingText);
+                  setActionButtonLoading(
+                    actionBtn,
+                    false,
+                    config.text,
+                    config.loadingText,
+                  );
                 });
             },
           };
@@ -2111,14 +2141,24 @@
             // hint: "Yêu cầu thanh toán và bàn giao đồ sạch cho khách hàng.",
             handler: function () {
               if (window.confirm("Xác nhận hoàn thành đơn hàng này?")) {
-                setActionButtonLoading(actionBtn, true, config.text, config.loadingText);
+                setActionButtonLoading(
+                  actionBtn,
+                  true,
+                  config.text,
+                  config.loadingText,
+                );
                 handleCompleteOrder(order.id)
                   .then(function () {
                     start();
                   })
                   .catch(function (err) {
                     window.alert(err.message || "Lỗi cập nhật.");
-                    setActionButtonLoading(actionBtn, false, config.text, config.loadingText);
+                    setActionButtonLoading(
+                      actionBtn,
+                      false,
+                      config.text,
+                      config.loadingText,
+                    );
                   });
               }
             },
@@ -2132,8 +2172,9 @@
           delete actionBtn.dataset.originalText;
         }
         actionBtn.textContent = config.text;
-        actionBtn.className = "btn btn-sm fw-bold shadow-sm " + config.className;
-        
+        actionBtn.className =
+          "btn btn-sm fw-bold shadow-sm " + config.className;
+
         if (actionHint) {
           actionHint.textContent = config.hint || "";
           actionHint.classList.toggle("d-none", !config.hint);
@@ -2143,12 +2184,12 @@
         var newBtn = actionBtn.cloneNode(true);
         actionBtn.parentNode.replaceChild(newBtn, actionBtn);
         actionBtn = newBtn; // Update reference for closure
-        
-        newBtn.addEventListener("click", function(e) {
+
+        newBtn.addEventListener("click", function (e) {
           e.preventDefault();
           config.handler();
         });
-        
+
         actionBar.classList.remove("d-none");
         actionBar.classList.add("d-flex");
       } else {

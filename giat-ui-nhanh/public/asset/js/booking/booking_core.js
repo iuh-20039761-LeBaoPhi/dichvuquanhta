@@ -78,11 +78,13 @@
     }
 
     let services = [];
+    let providerLocations = [];
     let providerLocation = null;
     let latestDistanceKm = null;
     let latestDistanceSource = null;
     let transportCalcToken = 0;
     let addressCalcTimer = null;
+    let transportOptions = [];
 
     function ensureShippingDistanceNoteElement() {
       if (!shippingSurchargeInput) return null;
@@ -138,6 +140,138 @@
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c;
+    }
+
+    function hasServiceId(rawServiceIds, targetServiceId) {
+      const target = String(targetServiceId || "").trim();
+      if (!target) return false;
+
+      return String(rawServiceIds || "")
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean)
+        .includes(target);
+    }
+
+    function parseListField(value) {
+      if (Array.isArray(value)) {
+        return value
+          .map((item) => String(item || "").trim())
+          .filter(Boolean);
+      }
+
+      const raw = String(value || "").trim();
+      if (!raw) return [];
+
+      if (raw.startsWith("[") && raw.endsWith("]")) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            return parsed
+              .map((item) => String(item || "").trim())
+              .filter(Boolean);
+          }
+        } catch (_error) {}
+      }
+
+      return raw
+        .split(/[,;\n|]/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    function normalizeServiceUnit(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase();
+    }
+
+    function normalizeServiceRow(row) {
+      return {
+        id: String(row?.id || "").trim(),
+        service_name: String(row?.tendichvu || "").trim(),
+        price: Number(row?.giadichvu || 0),
+        price_unit: normalizeServiceUnit(row?.donvi),
+        work_items: parseListField(row?.congviec),
+        support_chemicals: parseListField(row?.hoachat),
+      };
+    }
+
+    function normalizeTransportRow(row) {
+      return {
+        name: String(row?.tenphuongthuc || "").trim(),
+        price: Math.max(0, Number(row?.giaphuongthuc || 0)),
+      };
+    }
+
+    async function listTableRows(tableName, limit = 3000) {
+      if (window.DVQTKrud && typeof window.DVQTKrud.listTable === "function") {
+        return window.DVQTKrud.listTable(tableName, { limit });
+      }
+
+      if (typeof window.krudList === "function") {
+        const result = await window.krudList({
+          table: tableName,
+          limit,
+        });
+        return result?.data || (Array.isArray(result) ? result : []);
+      }
+
+      throw new Error("Khong co API de doc du lieu");
+    }
+
+    async function loadServiceCatalog() {
+      const rows = await listTableRows("dichvu_giatuinhanh", 3000);
+      services = (Array.isArray(rows) ? rows : [])
+        .map(normalizeServiceRow)
+        .filter((service) => service.id && service.service_name)
+        .sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+    }
+
+    async function loadTransportOptions() {
+      const rows = await listTableRows("phuongthucgiaonhan", 3000);
+      transportOptions = (Array.isArray(rows) ? rows : [])
+        .map(normalizeTransportRow)
+        .filter((item) => item.name);
+    }
+
+    async function listNguoidungRows() {
+      return listTableRows("nguoidung", 3000);
+    }
+
+    async function loadProviderLocations() {
+      const rows = await listNguoidungRows();
+
+      providerLocations = (Array.isArray(rows) ? rows : [])
+        .filter((row) => hasServiceId(row?.id_dichvu, "11"))
+        .map((row) => ({
+          lat: Number(row?.maplat),
+          lng: Number(row?.maplng),
+        }))
+        .filter(
+          (location) =>
+            isValidCoordinate(location.lat) &&
+            isValidCoordinate(location.lng) &&
+            location.lat !== 0 &&
+            location.lng !== 0,
+        );
+    }
+
+    function findNearestProviderLocation(customerCoords) {
+      if (!providerLocations.length) return null;
+
+      let nearest = null;
+      let nearestKm = Number.POSITIVE_INFINITY;
+
+      providerLocations.forEach((provider) => {
+        const km = haversineDistanceKm(provider, customerCoords);
+        if (km < nearestKm) {
+          nearestKm = km;
+          nearest = provider;
+        }
+      });
+
+      return nearest;
     }
 
     function getCachedCustomerCoords() {
@@ -215,16 +349,18 @@
       const token = ++transportCalcToken;
 
       try {
+        const customerCoords =
+          getCachedCustomerCoords() || (await geocodeAddress(addressText));
+
+        providerLocation = findNearestProviderLocation(customerCoords);
         if (
           !providerLocation ||
           !isValidCoordinate(providerLocation.lat) ||
           !isValidCoordinate(providerLocation.lng)
         ) {
-          throw new Error("Thiếu tọa độ nhà cung cấp");
+          throw new Error("Khong tim thay nha cung cap co id_dichvu = 11");
         }
 
-        const customerCoords =
-          getCachedCustomerCoords() || (await geocodeAddress(addressText));
         let distanceKm;
 
         try {
@@ -380,29 +516,12 @@
       });
     }
 
-    fetch("public/services.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const servicesData = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.services)
-            ? data.services
-            : [];
-
-        if (data && !Array.isArray(data)) {
-          providerLocation = {
-            lat: Number(data?.provider?.lat),
-            lng: Number(data?.provider?.lng),
-            address: data?.provider?.address || "",
-          };
-        }
-
-        services = servicesData.filter((s) => s.price_unit !== "combo");
-
+    const servicesPromise = loadServiceCatalog()
+      .then(() => {
         services.forEach((service) => {
           const option = document.createElement("option");
 
-          option.value = service.id;
+          option.value = String(service.id);
           option.textContent = service.service_name;
           option.dataset.unit = service.price_unit;
 
@@ -414,9 +533,28 @@
             state.pendingQuickServiceId = null;
           }
         }
-
-        recalculateRoadDistance(true);
+      })
+      .catch((error) => {
+        console.error(error);
+        services = [];
       });
+
+    const transportPromise = loadTransportOptions().catch((error) => {
+      console.error(error);
+      transportOptions = [];
+    });
+
+    const providerPromise = loadProviderLocations().catch((error) => {
+      console.error(error);
+      providerLocations = [];
+      providerLocation = null;
+    });
+
+    Promise.all([servicesPromise, transportPromise, providerPromise]).finally(
+      () => {
+        recalculateRoadDistance(true);
+      },
+    );
 
     if (bookingModalEl && !bookingModalEl.dataset.quickServiceSyncLoaded) {
       bookingModalEl.dataset.quickServiceSyncLoaded = "true";
@@ -434,7 +572,7 @@
     }
 
     serviceSelect.addEventListener("change", function () {
-      const serviceId = Number(this.value);
+      const serviceId = String(this.value || "").trim();
 
       if (!serviceId) {
         transportOptionSelect.innerHTML =
@@ -461,10 +599,10 @@
       transportOptionSelect.innerHTML =
         '<option value="">Chọn hình thức nhận / giao</option>';
 
-      const service = services.find((s) => s.id === serviceId);
+      const service = services.find((s) => String(s.id) === serviceId);
       if (!service) return;
 
-      (service.transport_options || []).forEach((transportOption) => {
+      (transportOptions || []).forEach((transportOption) => {
         const option = document.createElement("option");
         option.value = transportOption.name;
         option.textContent = transportOption.name;
@@ -497,7 +635,8 @@
 
       kgBox.style.display = "none";
 
-      if (unit === "kg") kgBox.style.display = "block";
+      if (String(unit || "").toLowerCase() === "kg")
+        kgBox.style.display = "block";
 
       if (quantityInput) {
         quantityInput.value = String(kgInput.value || 1);
@@ -652,3 +791,4 @@
   app.core = app.core || {};
   app.core.initBookingModal = initBookingModal;
 })(window);
+
