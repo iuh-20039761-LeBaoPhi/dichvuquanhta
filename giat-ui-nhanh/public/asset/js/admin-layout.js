@@ -9,11 +9,43 @@
     logoutNode.addEventListener("click", function (event) {
       event.preventDefault();
       if (typeof window.adminLogout === "function") {
-        window.adminLogout();
+        try {
+          window.adminLogout(config);
+        } catch (e) {
+          window.adminLogout();
+        }
       } else {
-        window.location.href = config.logoutHref || "../../public/admin-login.html";
+        window.location.href =
+          config.logoutHref || "../../public/admin-login.html";
       }
     });
+  }
+
+  // Default logout handler for customers/suppliers: remove dvqt cookies
+  if (typeof window.adminLogout !== "function") {
+    window.adminLogout = function (config) {
+      function del(name) {
+        var path = "/";
+        var expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        var host = location.hostname;
+        var variants = ["", "domain=" + host, "domain=." + host];
+        variants.forEach(function (domainAttr) {
+          var domainPart = domainAttr ? "; " + domainAttr : "";
+          document.cookie =
+            name + "=; " + expires + "; path=" + path + domainPart + ";";
+          document.cookie =
+            name + "=; Max-Age=0; path=" + path + domainPart + ";";
+        });
+      }
+      del("dvqt_u");
+      del("dvqt_p");
+      var href =
+        (config && config.logoutHref) ||
+        (document.querySelector("[data-logout]") &&
+          document.querySelector("[data-logout]").getAttribute("href")) ||
+        "../../public/admin-login.html";
+      window.location.href = href;
+    };
   }
 
   function applyAsideConfig(aside, config) {

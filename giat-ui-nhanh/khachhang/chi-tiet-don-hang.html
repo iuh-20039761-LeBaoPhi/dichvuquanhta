@@ -15,7 +15,6 @@
         data-aside-src="partials/aside.html"
         data-logo-src="../public/asset/image/logo-giat-ui-nhanh.png"
         data-logout-href="../index.html"
-        data-logout-api="../public/logout.php"
       ></div>
 
       <main class="content-shell">
@@ -100,7 +99,9 @@
 
                 <div class="hero-header-center">
                   <span class="hero-total-label">TỔNG TIỀN</span>
-                  <div class="hero-total-amount" id="heroTotalAmount">0 VND</div>
+                  <div class="hero-total-amount" id="heroTotalAmount">
+                    0 VND
+                  </div>
                 </div>
 
                 <div class="hero-header-right">
@@ -109,11 +110,14 @@
                       type="button"
                       class="btn btn-sm btn-light fw-bold shadow-sm"
                       id="detailActionBtn"
-                      style="border-radius: 8px; padding: 8px 16px;"
+                      style="border-radius: 8px; padding: 8px 16px"
                     >
                       Cập nhật trạng thái
                     </button>
-                    <p class="standalone-action-meta mb-0 d-none" id="detailActionHint"></p>
+                    <p
+                      class="standalone-action-meta mb-0 d-none"
+                      id="detailActionHint"
+                    ></p>
                   </div>
 
                   <div class="hero-progress-ring" id="heroProgressRing">
@@ -213,20 +217,20 @@
 
                   <div class="status-dates-grid mt-3 pt-3 border-top">
                     <div class="status-line mb-2">
-                        <span>Ngày đặt lịch:</span>
-                        <b id="heroBookingDate">---</b>
+                      <span>Ngày đặt lịch:</span>
+                      <b id="heroBookingDate">---</b>
                     </div>
                     <div class="status-line mb-2">
-                        <span>Ngày nhận:</span>
-                        <b id="heroReceivedDate">---</b>
+                      <span>Ngày nhận:</span>
+                      <b id="heroReceivedDate">---</b>
                     </div>
                     <div class="status-line mb-2">
-                        <span>Ngày bắt đầu:</span>
-                        <b id="heroStartedDate">---</b>
+                      <span>Ngày bắt đầu:</span>
+                      <b id="heroStartedDate">---</b>
                     </div>
                     <div class="status-line mb-0">
-                        <span>Ngày hoàn thành:</span>
-                        <b id="heroCompletedDate">---</b>
+                      <span>Ngày hoàn thành:</span>
+                      <b id="heroCompletedDate">---</b>
                     </div>
                   </div>
                 </div>
@@ -315,7 +319,9 @@
                   <article class="review-card">
                     <div class="review-card-head">
                       <h4>Đánh giá khách hàng</h4>
-                      <span class="panel-chip warn" id="reviewCustomerChip">Chưa có</span>
+                      <span class="panel-chip warn" id="reviewCustomerChip"
+                        >Chưa có</span
+                      >
                     </div>
                     <div class="review-card-body">
                       <p class="review-label">Nội dung đánh giá</p>
@@ -328,7 +334,10 @@
                       <div class="review-file" id="reviewCustomerFile">
                         Chưa có tệp
                       </div>
-                      <div class="review-editor d-none" id="reviewCustomerEditor">
+                      <div
+                        class="review-editor d-none"
+                        id="reviewCustomerEditor"
+                      >
                         <textarea
                           class="form-control form-control-sm"
                           id="reviewCustomerInput"
@@ -350,7 +359,9 @@
                           >
                             Gửi đánh giá
                           </button>
-                          <span class="review-editor-note" id="reviewCustomerHint"
+                          <span
+                            class="review-editor-note"
+                            id="reviewCustomerHint"
                             >Chi gui 1 lan. Toi da 30MB moi tep.</span
                           >
                         </div>
@@ -361,7 +372,9 @@
                   <article class="review-card">
                     <div class="review-card-head">
                       <h4>Đánh giá nhà cung cấp</h4>
-                      <span class="panel-chip warn" id="reviewProviderChip">Chưa có</span>
+                      <span class="panel-chip warn" id="reviewProviderChip"
+                        >Chưa có</span
+                      >
                     </div>
                     <div class="review-card-body">
                       <p class="review-label">Nội dung đánh giá</p>
@@ -374,7 +387,10 @@
                       <div class="review-file" id="reviewProviderFile">
                         Chưa có tệp
                       </div>
-                      <div class="review-editor d-none" id="reviewProviderEditor">
+                      <div
+                        class="review-editor d-none"
+                        id="reviewProviderEditor"
+                      >
                         <textarea
                           class="form-control form-control-sm"
                           id="reviewProviderInput"
@@ -396,7 +412,9 @@
                           >
                             Gửi đánh giá
                           </button>
-                          <span class="review-editor-note" id="reviewProviderHint"
+                          <span
+                            class="review-editor-note"
+                            id="reviewProviderHint"
                             >Chi gui 1 lan. Toi da 30MB moi tep.</span
                           >
                         </div>
