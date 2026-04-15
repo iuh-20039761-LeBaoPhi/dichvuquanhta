@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const ecoConfig = {
         '1': { icon: 'fa-baby', color: '#db2777', bg: '#fdf2f8', link: '../cham-soc-me-va-be/admin_mevabe/', desc: 'Quản lý dịch vụ hỗ trợ phụ sản và trẻ sơ sinh' },
         '2': { icon: 'fa-hospital-user', color: '#0d9488', bg: '#f0fdfa', link: '../cham-soc-nguoi-benh/admin_nguoibenh', desc: 'Dịch vụ hỗ trợ y tế, chăm sóc tại nhà viện' },
-        '3': { icon: 'fa-wheelchair', color: '#ea580c', bg: '#fff7ed', link: '../cham-soc-nguoi-benh/admin_nguoigia', desc: 'Cung cấp chuyên viên chăm lo người cao tuổi' },
+        '3': { icon: 'fa-wheelchair', color: '#ea580c', bg: '#fff7ed', link: '../cham-soc-nguoi-gia/admin_nguoigia', desc: 'Cung cấp chuyên viên chăm lo người cao tuổi' },
         '4': { icon: 'fa-leaf', color: '#65a30d', bg: '#f7fee7', link: '#', desc: 'Cắt cỏ, dọn dẹp và chăm sóc cây cảnh' },
         '5': { icon: 'fa-broom', color: '#0284c7', bg: '#e0f2fe', link: '../dich-vu-don-ve-sinh/admin_donvesinh/', desc: 'Giúp việc nhà và vệ sinh công nghiệp' },
         '6': { icon: 'fa-id-card', color: '#4b5563', bg: '#f3f4f6', link: '#', desc: 'Dịch vụ tìm tài xế lái xe an toàn' },
