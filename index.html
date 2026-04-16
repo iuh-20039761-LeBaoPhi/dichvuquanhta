@@ -319,6 +319,13 @@
                   >
                 </li>
                 <li>
+                  <a
+                    class="dropdown-item"
+                    href="dich-vu-lai-xe-ho/index.html"
+                    >Lái Xe Hộ</a
+                  >
+                </li>
+                <li>
                   <a class="dropdown-item" href="sua-xe-luu-dong/dich-vu.html"
                     >Sửa Xe Lưu Động</a
                   >
@@ -766,11 +773,11 @@
                   class="d-flex align-items-center justify-content-between gap-2 mb-2"
                 >
                   <h3 class="h5 card-title text-primary mb-0">Giặt Ủi Nhanh</h3>
-                  <a
+                  <!-- <a
                     class="btn btn-primary btn-sm rounded-pill px-3 py-1"
                     onclick="loadPage('giat-ui-nhanh/dat-dich-vu.html', this)"
                     >Đặt lịch</a
-                  >
+                  > -->
                 </div>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Công nghệ giặt là tiên tiến, xử lý vết bẩn hiệu quả, giao nhận
@@ -829,7 +836,7 @@
                   <h3 class="h5 card-title mb-0" style="color: #0a2a66">
                     Giao Hàng Nhanh
                   </h3>
-                  <a
+                  <!-- <a
                     class="btn btn-primary btn-sm rounded-pill px-3 py-1"
                     style="
                       background: linear-gradient(90deg, #0a2a66, #ff7a00);
@@ -843,7 +850,7 @@
                       )
                     "
                     >Đặt lịch</a
-                  >
+                  > -->
                 </div>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Dịch vụ giao nhận hàng hóa siêu tốc, đảm bảo an toàn, uy tín
@@ -906,7 +913,7 @@
                   <h3 class="h5 card-title mb-0" style="color: #1b4332">
                     Dịch Vụ Chuyển Dọn
                   </h3>
-                  <a
+                  <!-- <a
                     class="btn btn-primary btn-sm rounded-pill px-3 py-1"
                     style="
                       background-color: #1b4332;
@@ -915,7 +922,7 @@
                     "
                     onclick="loadPage('dich-vu-chuyen-don/dat-lich.html', this)"
                     >Đặt lịch</a
-                  >
+                  > -->
                 </div>
                 <p class="text-muted small mb-4 flex-grow-1">
                   Dịch vụ chuyển nhà, văn phòng, kho bãi chuyên nghiệp. Hỗ trợ
@@ -1001,6 +1008,51 @@
             </div>
           </div>
 
+          <div class="col-md-6 col-lg-4">
+            <div class="service-card">
+              <div class="card-img-wrapper">
+                <div class="card-overlay"></div>
+                <img src="public/asset/image/dich-vu-lai-xe-ho.jpg" alt="Dịch Vụ Lái Xe Hộ" />
+                <div class="icon-box text-info">
+                  <i data-lucide="car"></i>
+                </div>
+              </div>
+              <div
+                class="card-body"
+                style="
+                  background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 50%, #fff3e0 100%);
+                "
+              >
+                <h3 class="h5 card-title">Lái Xe Hộ</h3>
+                <p class="text-muted small mb-4 flex-grow-1">
+                  Dịch vụ lái xe hộ – an tâm mọi hành trình, phục vụ mọi lúc bạn cần.
+                </p>
+                <div
+                  class="d-flex align-items-center gap-3 flex-wrap justify-content-between"
+                >
+                  <a
+                    href="dich-vu-lai-xe-ho/index.html"
+                    class="text-decoration-none fw-bold d-flex align-items-center gap-2 text-info"
+                  >
+                    Xem Chi Tiết
+                    <i data-lucide="arrow-right" style="width: 16px"></i>
+                  </a>
+                  <a
+                    href="dich-vu-lai-xe-ho/cam-nang.html"
+                    class="text-decoration-none fw-semibold d-flex align-items-center gap-2 text-info"
+                  >
+                    Cẩm Nang
+                    <i data-lucide="book-open" style="width: 16px"></i>
+                  </a>
+                </div>
+              </div>
+              <div
+                class="card-bottom-border"
+                style="background: linear-gradient(90deg, #0ea5e9, #06b6d4)"
+              ></div>
+            </div>
+          </div>
+
           <!-- Mobile Car Repair Service -->
           <div class="col-md-6 col-lg-4">
             <div class="service-card">
@@ -1024,11 +1076,11 @@
                   <h3 class="h5 card-title text-warning mb-0">
                     Sửa Xe Lưu Động
                   </h3>
-                  <a
+                  <!-- <a
                     class="btn btn-warning btn-sm rounded-pill px-3 py-1"
                     onclick="loadPage('sua-xe-luu-dong/dat-dich-vu.html', this)"
                     >Đặt lịch</a
-                  >
+                  > -->
                 </div>
                 <p class="text-light small mb-4 flex-grow-1">
                   Sửa chữa, vá lốp - thay lốp xe tại chỗ đảm bảo tiết kiệm thời
@@ -1380,6 +1432,7 @@
                     <option>Chăm Sóc Bệnh Nhân</option>
                     <option>Giao Hàng Nhanh</option>
                     <option>Thuê Xe</option>
+                    <option>Lái Xe Hộ</option>
                     <option>Sửa Xe Lưu Động</option>
                   </select>
                 </div>
@@ -1518,6 +1571,9 @@
               </li>
               <li>
                 <a href="thue-xe/views/pages/public/dich-vu.html">Thuê Xe</a>
+              </li>
+              <li>
+                <a href="dich-vu-lai-xe-ho/index.html">Lái Xe Hộ</a>
               </li>
               <li>
                 <a href="sua-xe-luu-dong/dich-vu.html">Sửa xe lưu động</a>
