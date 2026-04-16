@@ -62,7 +62,7 @@
             return { label: 'Mới', class: 'bg-secondary', code: 'new' };
         };
 
-        window.updateOrderStatus = async function (id, action) {
+        window.updateOrderStatus = async function (id, action, carId) {
             let field = '';
             let confirmMsg = '';
             const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -81,7 +81,7 @@
                 showCancelButton: true
             });
 
-                if (res.isConfirmed) {
+            if (res.isConfirmed) {
                 try {
                     const session = window._dvqt_session_cache || await DVQTApp.checkSession();
                     if(!session) { Swal.fire('Lỗi', 'Phiên làm việc hết hạn', 'error'); return; }
@@ -89,7 +89,6 @@
                     const payload = {};
                     payload[field] = now;
 
-                    // Lấy dữ liệu trực tiếp từ session đã đăng nhập để đảm bảo chính chủ
                     if (action === 'accept' && session) {
                         payload.id_ncc = session.id;
                         payload.tenncc = session.hovaten || session.ho_ten || session.name || '';
@@ -98,8 +97,25 @@
                         payload.emailncc = session.email || '';
                     }
 
+                    // 1. Cập nhật trạng thái đơn hàng
                     await DVQTKrud.updateRow(TABLE_ORDERS, id, payload);
-                    Swal.fire('Thành công', 'Đã cập nhật trạng thái đơn hàng.', 'success');
+
+                    // 2. Cập nhật trạng thái XE (Nếu có carId)
+                    if (carId && Number(carId) > 0) {
+                        if (action === 'accept') {
+                            // Khi nhận đơn -> Chuyển xe sang trạng thái "Rented" (để ẩn khỏi danh sách thuê mới)
+                            await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'rented' });
+                        } else if (action === 'complete') {
+                            // Khi hoàn thành/trả xe -> Trả về "Available"
+                            await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'available' });
+                        } else if (action === 'cancel') {
+                            // Nếu hủy đơn khi đang ở trạng thái đã nhận -> Trả về "Available"
+                            // (Cần kiểm tra xem xe có đang thực sự bận do đơn này không, ở đây tạm thời trả về available nếu hủy)
+                            await DVQTKrud.updateRow(TABLE_CARS, carId, { trangthai: 'available' });
+                        }
+                    }
+
+                    Swal.fire('Thành công', 'Đã cập nhật trạng thái đơn hàng và xe.', 'success');
                     loadProviderOrders();
                 } catch (e) {
                     Swal.fire('Lỗi', 'Không thể cập nhật: ' + e.message, 'error');
@@ -157,8 +173,8 @@
                         <td><span class="badge bg-warning bg-opacity-10 text-dark">Chờ xác nhận</span></td>
                         <td class="pe-4 text-end">
                             <button class="btn btn-sm btn-light me-1" onclick="viewOrderDetailP(${o.id})" title="Chi tiết"><i class="fas fa-eye text-primary"></i></button>
-                            <button class="btn btn-sm btn-primary px-3 rounded-pill me-1" onclick="updateOrderStatus(${o.id}, 'accept')">Nhận đơn</button>
-                            <button class="btn btn-sm btn-outline-danger px-3 rounded-pill" onclick="updateOrderStatus(${o.id}, 'cancel')">Hủy</button>
+                            <button class="btn btn-sm btn-primary px-3 rounded-pill me-1" onclick="updateOrderStatus(${o.id}, 'accept', ${o.id_xe || 0})">Nhận đơn</button>
+                            <button class="btn btn-sm btn-outline-danger px-3 rounded-pill" onclick="updateOrderStatus(${o.id}, 'cancel', ${o.id_xe || 0})">Hủy</button>
                         </td>
                     </tr>`;
                     }).join('');
@@ -192,9 +208,9 @@
                         // Thêm nút thao tác tùy theo trạng thái ngay tại bảng history
                         let actionsHtml = '';
                         if (st.code === 'accepted') {
-                            actionsHtml = `<button class="btn btn-sm btn-success px-3 rounded-pill ms-2" onclick="updateOrderStatus(${o.id}, 'start')">Giao xe</button>`;
+                            actionsHtml = `<button class="btn btn-sm btn-success px-3 rounded-pill ms-2" onclick="updateOrderStatus(${o.id}, 'start', ${o.id_xe || 0})">Giao xe</button>`;
                         } else if (st.code === 'doing') {
-                            actionsHtml = `<button class="btn btn-sm btn-info text-white px-3 rounded-pill ms-2" onclick="updateOrderStatus(${o.id}, 'complete')">Nhận xe trả</button>`;
+                            actionsHtml = `<button class="btn btn-sm btn-info text-white px-3 rounded-pill ms-2" onclick="updateOrderStatus(${o.id}, 'complete', ${o.id_xe || 0})">Nhận xe trả</button>`;
                         }
 
                         return `<tr>

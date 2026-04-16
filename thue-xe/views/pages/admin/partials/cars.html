@@ -66,8 +66,9 @@
             const st = String(c.trangthai || '').toLowerCase();
             let badge = '<span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded-pill">Chưa xác định</span>';
             if(st === 'pending') badge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Chờ duyệt</span>';
-            else if(['available', 'active', 'approved', 'hot_dong', '1'].includes(st)) badge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Đã duyệt (Hiện)</span>';
-            else if(st === 'hidden') badge = '<span class="badge bg-dark text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang ẩn</span>';
+            else if(['available', 'active', 'approved', 'hot_dong', '1'].includes(st)) badge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Sẵn sàng (Hiện)</span>';
+            else if(st === 'maintenance' || st === 'hidden') badge = '<span class="badge bg-dark text-dark bg-opacity-10 px-2 py-1 rounded-pill">Tạm dừng</span>';
+            else if(st === 'rented') badge = '<span class="badge bg-info text-info bg-opacity-10 px-2 py-1 rounded-pill">Đang thuê</span>';
             else if(st === 'rejected') badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Bị từ chối</span>';
 
             return `<tr>
