@@ -166,6 +166,9 @@
     }
 
     function renderSummary() {
+      const yeucaugapCheckbox = document.getElementById("yeucaugap");
+      const isGhep = yeucaugapCheckbox ? yeucaugapCheckbox.checked : false;
+
       const summary = {
         confirmName: document.getElementById("hotenkhachhang")?.value,
         confirmPhone: document.getElementById("sodienthoaikhachhang")?.value,
@@ -174,6 +177,7 @@
         confirmBrand: selectedBrandText(),
         confirmItem: selectedItemText(),
         confirmDatetime: datetimeInput?.value,
+        confirmUrgent: isGhep ? "Có (trong 1h)" : "Không",
         confirmAddress: addressInput?.value,
 
         confirmSurvey: surveyInput?.value,
@@ -186,10 +190,22 @@
         const el = document.getElementById(id);
         if (el) el.textContent = normalizeValue(value);
       });
+
+      const confirmUrgentEl = document.getElementById("confirmUrgent");
+      if (confirmUrgentEl) {
+          if (isGhep) {
+              confirmUrgentEl.classList.add("text-danger", "fw-bold");
+          } else {
+              confirmUrgentEl.classList.remove("text-danger");
+          }
+      }
     }
 
     function collectBookingData() {
       const transportFee = moneyOnlyText(transportInput?.value);
+      const yeucaugapCheckbox = document.getElementById("yeucaugap");
+      const isGhep = yeucaugapCheckbox ? yeucaugapCheckbox.checked : false;
+
       const payload = {
         name: document.getElementById("hotenkhachhang")?.value || "",
         phone: document.getElementById("sodienthoaikhachhang")?.value || "",
@@ -201,6 +217,7 @@
         address: addressInput?.value || "",
         lat_kh: (addressInput?.dataset.lat || "").trim(),
         lng_kh: (addressInput?.dataset.lng || "").trim(),
+        yeucaugap: isGhep ? "Có" : "Không",
 
         survey_fee: surveyInput?.value || "",
         transport_fee: transportFee,
@@ -255,6 +272,7 @@
         lat_kh: data.lat_kh || "",
         lng_kh: data.lng_kh || "",
         ghichu: data.message || "",
+        yeucaugap: data.yeucaugap || "Không",
         trangthaithanhtoan: "Unpaid",
       };
 
@@ -279,6 +297,7 @@
         "Địa chỉ": formData.address || "",
         lat_kh: formData.lat_kh || "",
         lng_kh: formData.lng_kh || "",
+        "Yêu cầu gấp": formData.yeucaugap || "Không",
         "Dịch vụ": formData.service_name || "",
         "Loại xe": formData.vehicle_type || "",
         "Hãng xe": formData.brand || "",

@@ -130,26 +130,44 @@
    * @param {number} distanceKm Khoảng cách tính được (km).
    * @returns {Object} Kết quả tính toán giá.
    */
-  function calculatePricing(order, distanceKm) {
-    var surchargeFee = toNumber(order.phikhaosat);
-    var perKmIncrease = 5000;
-    var minFee = 40000;
-    var maxFee = 60000;
-    var thresholdKm = 5;
-
-    var billableKm = Math.max(0, Math.ceil(distanceKm));
+  async function calculatePricing(order, distanceKm) {
+    var surchargeFee = toNumber(order.phikhaosat || (order.raw && order.raw.phikhaosat));
+    
+    var feeResult = await window.krudList({ table: "phidichuyen" });
+    var feeRows = extractRows(feeResult);
+    
     var transportFee = 0;
+    if (distanceKm >= 3) {
+      var dateVal = order.ngaydat || (order.raw && order.raw.ngaydat) || (order.raw && order.raw.created_date) || new Date().toISOString();
+      var checkDate = new Date(dateVal);
+      var hour = checkDate.getHours();
+      var isUrgent = order.yeucaugap === "Có" || (order.raw && order.raw.yeucaugap === "Có");
+      
+      var targetLoaiphi;
+      if (isUrgent) {
+          targetLoaiphi = "Gấp";
+      } else if (hour >= 6 && hour < 18) {
+          targetLoaiphi = "Thưởng";
+      } else {
+          targetLoaiphi = "Buổi tối";
+      }
 
-    if (distanceKm < thresholdKm) {
-      transportFee = minFee + billableKm * perKmIncrease;
-    } else {
-      transportFee = maxFee + billableKm * perKmIncrease;
+      var rate = 0;
+      for (var i = 0; i < feeRows.length; i++) {
+         if (feeRows[i].loaiphi === targetLoaiphi) {
+            rate = toNumber(feeRows[i].sotien);
+            break;
+         }
+      }
+
+      var billableKm = distanceKm - 3;
+      transportFee = billableKm * rate;
     }
 
     return {
       distanceKm: distanceKm,
-      transportFee: transportFee,
-      totalAmount: surchargeFee + transportFee,
+      transportFee: Math.round(transportFee),
+      totalAmount: surchargeFee + Math.round(transportFee),
     };
   }
 
@@ -1405,6 +1423,18 @@
       setText("detailVehicleModel", order.vehicleInfo.model);
     }
     setText("detailNote", order.note || "Không có ghi chú.");
+    
+    var yeucauValue = (order.raw && order.raw.yeucaugap) || "Không";
+    setText("detailUrgent", yeucauValue === "Có" ? "Có (trong 1h)" : "Không");
+    var urgentEl = document.getElementById("detailUrgent");
+    if(urgentEl) {
+        if(yeucauValue === "Có") {
+            urgentEl.classList.add("text-danger", "fw-bold");
+        } else {
+            urgentEl.classList.remove("text-danger");
+        }
+    }
+    
     var heroDateRangeNode = document.getElementById("heroDateRange");
     if (heroDateRangeNode) {
       heroDateRangeNode.textContent = "";
@@ -1923,7 +1953,7 @@
               customerLng,
             );
 
-            var pricing = calculatePricing(orderRaw, distanceKm);
+            var pricing = await calculatePricing(orderRaw, distanceKm);
 
             var payload = {
               idnhacungcap: provider.id || "",
@@ -1970,7 +2000,8 @@
             return {
               ngayhoanthanh: new Date().toISOString(),
               phikhaosat: 0, // Miễn phí khảo sát khi hoàn thành sửa chữa
-              tongtien: transportFee, // Tổng tiền = 0 (phí khảo sát) + phí di chuyển
+              tiendichuyen: 0,
+              // tongtien: transportFee, // Tổng tiền = 0 (phí khảo sát) + phí di chuyển
             };
           });
         });

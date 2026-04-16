@@ -1090,7 +1090,8 @@
       return sh.updateOrder(BOOKING_TABLE, orderId, {
         ngayhoanthanh: new Date().toISOString(),
         phikhaosat: 0,
-        tongtien: transportFee,
+        tiendichuyen: 0,
+        // tongtien: transportFee,
       });
     }
     return Promise.reject(
@@ -1851,6 +1852,17 @@
     setText("detailDiscount", formatCurrency(order.discount));
     setText("detailTotal", formatCurrency(order.tongtienthucte || order.total || total));
     setText("detailNote", order.note || "Không có ghi chú.");
+    
+    var yeucauValue = (order.raw && order.raw.yeucaugap) || "Không";
+    setText("detailUrgent", yeucauValue === "Có" ? "Có (trong 1h)" : "Không");
+    var urgentEl = document.getElementById("detailUrgent");
+    if(urgentEl) {
+        if(yeucauValue === "Có") {
+            urgentEl.classList.add("text-danger", "fw-bold");
+        } else {
+            urgentEl.classList.remove("text-danger");
+        }
+    }
     if (order.vehicleInfo) {
       setText("detailVehicleType", order.vehicleInfo.type);
       setText("detailVehicleBrand", order.vehicleInfo.brand);

@@ -864,37 +864,45 @@
                     />
                   </div>
                   <div class="col-md-12">
-                    <label class="form-label"
-                      ><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ
-                      <span class="text-danger">*</span></label
-                    >
-                    <div class="input-group">
+                    <label class="form-label">
+                      Địa chỉ <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group mb-2">
+                      <span class="input-group-text bg-info bg-opacity-10 text-info border-end-0">
+                        <i class="fas fa-map-marker-alt"></i>
+                      </span>
                       <input
                         id="diachi"
                         name="diachi"
                         type="text"
-                        class="form-control"
+                        class="form-control border-start-0"
                         placeholder="Nhập địa chỉ của bạn"
                         required
+                        style="padding-left: 0;"
                       />
                     </div>
-                    <div class="d-flex gap-2 flex-wrap mt-2">
+                    <div class="d-flex gap-2 flex-wrap mb-2">
                       <button
-                        class="btn btn-outline-secondary"
-                        type="button"
-                        id="nutvitricuatoi"
-                        name="nutvitricuatoi"
-                      >
-                        <i class="fas fa-location-arrow"></i> Vị trí của tôi
-                      </button>
-                      <button
-                        class="btn btn-outline-info"
+                        class="btn btn-info text-white flex-grow-1"
                         type="button"
                         id="nutmobando"
                         name="nutmobando"
                       >
-                        <i class="fas fa-map-marked-alt"></i> Mở bản đồ
+                        <i class="fas fa-map-marker-alt me-1"></i> Chọn trên bản đồ
                       </button>
+                      <button
+                        class="btn flex-grow-1 text-white"
+                        style="background-color: #8b5cf6; border-color: #8b5cf6;"
+                        type="button"
+                        id="nutvitricuatoi"
+                        name="nutvitricuatoi"
+                      >
+                        <i class="fas fa-location-arrow me-1"></i> Vị trí hiện tại
+                      </button>
+                    </div>
+                    <div class="d-flex gap-2" id="toaDoHienThi" style="display: none !important;">
+                        <span class="badge text-secondary px-2 py-1 fs-6 fw-normal" style="background-color: #f4f5f9;" id="latDisplay">Lat: -</span>
+                        <span class="badge text-secondary px-2 py-1 fs-6 fw-normal" style="background-color: #f4f5f9;" id="lngDisplay">Lng: -</span>
                     </div>
                   </div>
 
@@ -975,10 +983,16 @@
                     ></textarea>
                   </div>
                   <div class="col-md-12">
-                    <label class="form-label"
-                      ><i class="fas fa-clock me-2"></i>Thời gian mong muốn
-                      <span class="text-danger">*</span></label
-                    >
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label mb-0"
+                          ><i class="fas fa-clock me-2"></i>Thời gian mong muốn
+                          <span class="text-danger">*</span></label
+                        >
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="yeucaugap" name="yeucaugap">
+                            <label class="form-check-label text-danger fw-bold" for="yeucaugap">Yêu cầu Gấp (trong 1h)</label>
+                        </div>
+                    </div>
                     <input type="datetime-local" class="form-control" id="thoigianmongmuon" name="thoigianmongmuon" />
                   </div>
                   <div class="col-md-12 d-none" id="estimateSummaryBlock">
@@ -1188,6 +1202,10 @@
                 <div class="confirm-row">
                   <span class="confirm-label">Thời gian đặt</span>
                   <span class="confirm-value" id="confirmDatetime">-</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-label">Yêu cầu gấp</span>
+                  <span class="confirm-value" id="confirmUrgent">-</span>
                 </div>
                 <div class="confirm-row">
                   <span class="confirm-label">Mô tả vấn đề</span>

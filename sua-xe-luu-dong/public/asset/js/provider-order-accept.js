@@ -137,28 +137,44 @@
     return rows[0];
   }
 
-  function calculatePricing(order, distanceKm) {
+  async function calculatePricing(order, distanceKm) {
     var surveyFee = toNumber(order.phikhaosat);
 
-    // Formula from sua-xe-luu-dong
-    var perKmIncrease = 5000;
-    var minFee = 40000;
-    var maxFee = 60000;
-    var thresholdKm = 5;
+    var feeResult = await window.krudList({ table: "phidichuyen" });
+    var feeRows = extractKrudRows(feeResult);
 
-    var billableKm = Math.max(0, Math.ceil(distanceKm));
     var transportFee = 0;
+    if (distanceKm >= 3) {
+      var dateVal = order.ngaydat || order.created_date || new Date().toISOString();
+      var checkDate = new Date(dateVal);
+      var hour = checkDate.getHours();
+      var isUrgent = order.yeucaugap === "Có";
+      
+      var targetLoaiphi;
+      if (isUrgent) {
+          targetLoaiphi = "Gấp";
+      } else if (hour >= 6 && hour < 18) {
+          targetLoaiphi = "Thưởng";
+      } else {
+          targetLoaiphi = "Buổi tối";
+      }
 
-    if (distanceKm < thresholdKm) {
-      transportFee = minFee + billableKm * perKmIncrease;
-    } else {
-      transportFee = maxFee + billableKm * perKmIncrease;
+      var rate = 0;
+      for (var i = 0; i < feeRows.length; i++) {
+         if (feeRows[i].loaiphi === targetLoaiphi) {
+            rate = toNumber(feeRows[i].sotien);
+            break;
+         }
+      }
+
+      var billableKm = distanceKm - 3;
+      transportFee = billableKm * rate;
     }
 
     return {
       distanceKm: distanceKm,
-      transportFee: transportFee,
-      totalAmount: surveyFee + transportFee,
+      transportFee: Math.round(transportFee),
+      totalAmount: surveyFee + Math.round(transportFee),
     };
   }
 
@@ -233,7 +249,7 @@
       customerLng,
     );
 
-    var pricing = calculatePricing(order, distanceKm);
+    var pricing = await calculatePricing(order, distanceKm);
     await updateBookingAfterAccept(orderId, supplier, pricing);
 
     return {

@@ -138,6 +138,15 @@
       addr.dataset.lat = lat;
       addr.dataset.lng = lng;
 
+      const latDisplay = document.getElementById("latDisplay");
+      const lngDisplay = document.getElementById("lngDisplay");
+      const toaDoHienThi = document.getElementById("toaDoHienThi");
+      if(latDisplay && lngDisplay && toaDoHienThi) {
+        latDisplay.innerText = `Lat: ${lat.toFixed(6)}`;
+        lngDisplay.innerText = `Lng: ${lng.toFixed(6)}`;
+        toaDoHienThi.style.setProperty('display', 'flex', 'important');
+      }
+
       addr.placeholder = "Đang tải địa chỉ...";
       addr.value = "";
 

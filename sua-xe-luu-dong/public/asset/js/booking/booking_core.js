@@ -25,6 +25,8 @@
     );
     const customBrandInput = document.getElementById("hangxekhac");
 
+    const yeucaugapInput = document.getElementById("yeucaugap");
+
     const datetimeInput = document.querySelector(
       '#formdatdichvu input[type="datetime-local"]',
     );
@@ -45,11 +47,9 @@
     );
 
     let servicesData = [];
+    let transportFeesData = [];
     let providerLocation = null;
     let providerLocations = [];
-    let transportPerKm = 5;
-    let transportMinFee = 40000;
-    let transportMaxFee = 60000;
     let latestDistanceKm = null;
     let transportFeeValue = 0;
     let transportCalcToken = 0;
@@ -154,30 +154,32 @@
     function ensureOtherModelOption() {
       if (!itemSelect) return;
 
-      const hasOtherOption = Array.from(itemSelect.options).some(
+      let otherOption = Array.from(itemSelect.options).find(
         (option) => String(option.value) === "__other__",
       );
 
-      if (hasOtherOption) return;
-
-      const otherOption = document.createElement("option");
-      otherOption.value = "__other__";
-      otherOption.textContent = "Khác (nhập mẫu xe)";
+      if (!otherOption) {
+        otherOption = document.createElement("option");
+        otherOption.value = "__other__";
+        otherOption.textContent = "Khác (nhập mẫu xe)";
+      }
+      
       itemSelect.appendChild(otherOption);
     }
 
     function ensureOtherBrandOption() {
       if (!brandSelect) return;
 
-      const hasOtherOption = Array.from(brandSelect.options).some(
+      let otherOption = Array.from(brandSelect.options).find(
         (option) => String(option.value) === "__other__",
       );
 
-      if (hasOtherOption) return;
-
-      const otherOption = document.createElement("option");
-      otherOption.value = "__other__";
-      otherOption.textContent = "Khác (nhập hãng xe)";
+      if (!otherOption) {
+        otherOption = document.createElement("option");
+        otherOption.value = "__other__";
+        otherOption.textContent = "Khác (nhập hãng xe)";
+      }
+      
       brandSelect.appendChild(otherOption);
     }
 
@@ -185,16 +187,21 @@
 
 
 
-    function getDistanceThresholdKm() {
-      return Number(transportPerKm || 0);
-    }
+    function getTransportPricePerKm(distanceKm) {
+      if (distanceKm < 3) return 0;
 
-    function getTransportMinFee() {
-      return Number(transportMinFee || 0);
-    }
+      const isGap = yeucaugapInput?.checked;
+      const hour = datetimeInput?.value ? new Date(datetimeInput.value).getHours() : new Date().getHours();
+      const isNight = hour >= 18 || hour < 6;
 
-    function getTransportMaxFee() {
-      return Number(transportMaxFee || 0);
+      let loaiphi = "Thường";
+      if (isGap) loaiphi = "Gấp";
+      else if (isNight) loaiphi = "Buổi tối";
+
+      const feeEntry = transportFeesData.find(f => f.loaiphi === loaiphi);
+      const sotien = Number(feeEntry?.sotien || 0);
+      
+      return (distanceKm - 3) * sotien;
     }
 
     function formatCurrency(value) {
@@ -205,23 +212,9 @@
       return `${formatCurrency(value)}đ`;
     }
 
-    function calculateTransportFeeByThreshold(distanceKm) {
-      const thresholdKm = getDistanceThresholdKm();
-      const minFee = getTransportMinFee();
-      const maxFee = getTransportMaxFee();
-      const perKmIncrease = 5000;
-      const billableKm = Math.max(0, Math.ceil(Number(distanceKm || 0)));
-
-      if (!Number.isFinite(distanceKm)) {
-        return minFee;
-      }
-
-      if (thresholdKm > 0 && distanceKm < thresholdKm) {
-        return minFee + billableKm * perKmIncrease;
-      }
-
-      const baseFee = maxFee > 0 ? maxFee : minFee;
-      return baseFee + billableKm * perKmIncrease;
+    function calculateTransportFee(distanceKm) {
+      if (!Number.isFinite(distanceKm)) return 0;
+      return Math.round(getTransportPricePerKm(distanceKm));
     }
 
     function updateTotalPrice() {
@@ -284,19 +277,26 @@
         return;
       }
 
-      const rendered = `${formatCurrency(value)}${suffix ? ` (${suffix})` : ""}`;
-      transportInput.value = rendered;
-
-      if (estimateTransportFee) {
-        let suffixText = "";
-        if (suffix) {
-          suffixText = /km$/i.test(suffix.trim())
-            ? ` (~${suffix.trim()})`
-            : ` (${suffix.trim()})`;
+      if (value === 0 && latestDistanceKm != null && latestDistanceKm <= 3) {
+        transportInput.value = "Miễn phí (từ 3km trở xuống)";
+        if (estimateTransportFee) {
+          estimateTransportFee.textContent = "Miễn phí (từ 3km trở xuống)";
         }
+      } else {
+        const rendered = `${formatCurrency(value)}${suffix ? ` (${suffix})` : ""}`;
+        transportInput.value = rendered;
 
-        estimateTransportFee.textContent =
-          value > 0 ? `${formatCurrencyVND(value)}${suffixText}` : "-";
+        if (estimateTransportFee) {
+          let suffixText = "";
+          if (suffix) {
+            suffixText = /km$/i.test(suffix.trim())
+              ? ` (~${suffix.trim()})`
+              : ` (${suffix.trim()})`;
+          }
+
+          estimateTransportFee.textContent =
+            value > 0 ? `${formatCurrencyVND(value)}${suffixText}` : "-";
+        }
       }
     }
 
@@ -407,6 +407,13 @@
         }))
         .filter((row) => row.id && row.name);
 
+      const feeRows = await listTableRows("phidichuyen", 100);
+      transportFeesData = (Array.isArray(feeRows) ? feeRows : [])
+        .map(row => ({
+          loaiphi: String(row?.loaiphi || "").trim(),
+          sotien: Number(row?.sotien || 0)
+        }));
+
       vehicleTypesData = buildVehicleTypesData(loaixeRows, dongxeRows);
     }
 
@@ -510,8 +517,6 @@
     async function recalculateTransportFee(force = false) {
       const addressText = (addressInput?.value || "").trim();
 
-      const minFee = getTransportMinFee();
-
       if (!addressText) {
         latestDistanceKm = null;
         transportFeeValue = 0;
@@ -519,6 +524,10 @@
           displayText: "Nhập địa chỉ để tính giá",
         });
         updateTotalPrice();
+        if (addressInput) {
+          delete addressInput.dataset.lat;
+          delete addressInput.dataset.lng;
+        }
         return;
       }
 
@@ -527,6 +536,21 @@
 
       try {
         const customerCoords = await geocodeAddress(addressText);
+        
+        if (addressInput) {
+          addressInput.dataset.lat = customerCoords.lat;
+          addressInput.dataset.lng = customerCoords.lng;
+        }
+
+        const latDisplay = document.getElementById("latDisplay");
+        const lngDisplay = document.getElementById("lngDisplay");
+        const toaDoHienThi = document.getElementById("toaDoHienThi");
+        if(latDisplay && lngDisplay && toaDoHienThi) {
+          latDisplay.innerText = `Lat: ${customerCoords.lat.toFixed(6)}`;
+          lngDisplay.innerText = `Lng: ${customerCoords.lng.toFixed(6)}`;
+          toaDoHienThi.style.setProperty('display', 'flex', 'important');
+        }
+
         providerLocation = findNearestProviderLocation(customerCoords);
 
         if (
@@ -552,7 +576,7 @@
         }
 
         latestDistanceKm = distanceKm;
-        const calculated = calculateTransportFeeByThreshold(distanceKm);
+        const calculated = calculateTransportFee(distanceKm);
         transportFeeValue = calculated;
         setTransportFeeDisplay(calculated, {
           suffix: distanceSuffix,
@@ -563,8 +587,8 @@
         }
 
         latestDistanceKm = null;
-        transportFeeValue = minFee;
-        setTransportFeeDisplay(minFee, { suffix: "ước tính" });
+        transportFeeValue = 0;
+        setTransportFeeDisplay(0, { suffix: "lỗi tính" });
         console.error(error);
       } finally {
         if (token === transportCalcToken || force) {
@@ -747,6 +771,23 @@
       addressInput.addEventListener("change", function () {
         scheduleRecalculateTransportFee(150);
       });
+    }
+
+    if (yeucaugapInput) {
+      yeucaugapInput.addEventListener("change", function() {
+        if (yeucaugapInput.checked) {
+          // If urgent, disable datetime input and set to now? 
+          // Actually user just said "ignore time factor"
+        }
+        updateTotalPrice();
+        recalculateTransportFee();
+      });
+    }
+
+    if (datetimeInput) {
+        datetimeInput.addEventListener("change", function() {
+            recalculateTransportFee();
+        });
     }
 
     function resetSelect(select, placeholder) {
