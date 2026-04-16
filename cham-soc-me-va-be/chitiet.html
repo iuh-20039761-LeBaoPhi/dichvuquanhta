@@ -5,31 +5,13 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Chi tiết hóa đơn mẹ và bé</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+		rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<script src="https://api.dvqt.vn/js/krud.js"></script>
-	<style>
-		/* Ẩn topbar và điều chỉnh layout khi được nhúng vào trong shell header-shared (SPA) */
-		.nv-admin-shell .topbar {
-			display: none !important;
-		}
-
-		.nv-admin-shell .page {
-			padding: 0;
-			min-height: auto;
-			display: block;
-		}
-
-		.nv-admin-shell .modal-card {
-			width: 100%;
-			border-radius: 0;
-			box-shadow: none;
-			border: 0;
-			transform: none !important;
-			animation: none !important;
-			opacity: 1 !important;
-		}
-	</style>
 	<style>
 		:root {
 			--bg: #f4f7fb;
@@ -58,7 +40,7 @@
 			margin: 0;
 			padding: 0;
 			min-height: 100%;
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+			font-family: "Be Vietnam Pro", sans-serif;
 			color: var(--text);
 			background:
 				radial-gradient(circle at 20% -10%, #e3f0ff 0, transparent 42%),
@@ -137,7 +119,7 @@
 		.topbar-title {
 			margin: 0;
 			font-size: clamp(1.05rem, 1.5vw, 1.5rem);
-			font-weight: 700;
+			font-weight: 800;
 			letter-spacing: .2px;
 			text-align: center;
 			white-space: nowrap;
@@ -227,7 +209,7 @@
 		.panel-title {
 			margin: 0;
 			font-size: 16px;
-			font-weight: 700;
+			font-weight: 800;
 			color: #15314f;
 		}
 
@@ -235,7 +217,7 @@
 			padding: 5px 10px;
 			border-radius: 999px;
 			font-size: 11px;
-			font-weight: 700;
+			font-weight: 800;
 			letter-spacing: .2px;
 			background: #e8f3ff;
 			color: #0d4d96;
@@ -324,7 +306,7 @@
 		.invoice-order-title {
 			margin: 0;
 			font-size: clamp(1.1rem, 2vw, 1.7rem);
-			font-weight: 700;
+			font-weight: 800;
 		}
 
 		.invoice-status-badge {
@@ -333,7 +315,7 @@
 			padding: 5px 10px;
 			border-radius: 999px;
 			font-size: 11px;
-			font-weight: 700;
+			font-weight: 800;
 			background: rgba(255, 255, 255, 0.25);
 			border: 1px solid rgba(255, 255, 255, 0.35);
 			color: #020202;
@@ -429,7 +411,7 @@
 			align-items: center;
 			justify-content: center;
 			font-size: 11px;
-			font-weight: 700;
+			font-weight: 800;
 			background: rgba(255, 255, 255, 0.576);
 			color: #060606;
 			flex: 0 0 27px;
@@ -452,7 +434,7 @@
 		.invoice-item-content h4 {
 			margin: 0;
 			font-size: clamp(1.05rem, 1.6vw, 1.9rem);
-			font-weight: 700;
+			font-weight: 800;
 			line-height: 1.15;
 			word-break: break-word;
 		}
@@ -506,7 +488,7 @@
 		.jobs-title {
 			margin: 0;
 			font-size: 27px;
-			font-weight: 700;
+			font-weight: 800;
 			color: #213d57;
 		}
 
@@ -516,7 +498,7 @@
 			padding: 6px 10px;
 			border-radius: 999px;
 			font-size: 11px;
-			font-weight: 700;
+			font-weight: 800;
 			color: #138259;
 			background: #def8ea;
 			border: 1px solid #c0ead3;
@@ -564,67 +546,15 @@
 			gap: 8px;
 		}
 
-		.invoice-media-grid {
-			display: grid;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 8px;
-			margin: 4px;
-		}
-
-		.invoice-extra-item,
-		.invoice-media-item {
+		.invoice-extra-item {
 			border: 1px solid #c8d7ea;
 			background: #dfe9f7;
 			border-radius: 8px;
 			padding: 8px 10px;
-			min-height: 72px;
 		}
 
 		.invoice-extra-item.full-width {
 			grid-column: 1 / -1;
-		}
-
-		.invoice-media-row {
-			display: flex;
-			flex-direction: row;
-			gap: 8px;
-			margin-top: 8px;
-		}
-
-		.invoice-media-item {
-			border: 1px solid #c8d7ea;
-			background: #dfe9f7;
-			border-radius: 8px;
-			padding: 8px 10px;
-			display: flex;
-			flex-direction: column;
-			gap: 6px;
-			overflow: hidden;
-		}
-
-		.invoice-media-item .field-label {
-			color: #3f5f7d;
-			font-size: 10px;
-			margin: 0;
-			font-weight: 600;
-		}
-
-		.invoice-media-item img,
-		.invoice-media-item video {
-			width: 100%;
-			flex: 1;
-			object-fit: cover;
-			border-radius: 5px;
-			background: rgba(0, 0, 0, 0.04);
-			display: block;
-		}
-
-		.invoice-media-item .media-empty-label {
-			color: #8d9fb3;
-			font-size: 11px;
-			text-align: center;
-			padding: 8px 0;
-			flex: 1;
 		}
 
 		.invoice-extra .field-label {
@@ -668,7 +598,7 @@
 			background: #22a06b;
 			color: #fff;
 			font-size: 12px;
-			font-weight: 700;
+			font-weight: 800;
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
@@ -696,7 +626,7 @@
 		.profile-title {
 			margin: 0;
 			font-size: 18px;
-			font-weight: 700;
+			font-weight: 800;
 			color: #213d57;
 		}
 
@@ -704,7 +634,7 @@
 			border-radius: 999px;
 			padding: 5px 10px;
 			font-size: 11px;
-			font-weight: 700;
+			font-weight: 800;
 		}
 
 		.profile-body {
@@ -732,7 +662,7 @@
 		.profile-name {
 			margin: 0;
 			font-size: 22px;
-			font-weight: 700;
+			font-weight: 800;
 			line-height: 1.25;
 			color: #1d3650;
 		}
@@ -787,7 +717,7 @@
 			color: #4d92df;
 			font-size: 11px;
 			line-height: 1;
-			font-weight: 700;
+			font-weight: 800;
 			flex: 0 0 18px;
 			margin-top: 1px;
 		}
@@ -870,7 +800,7 @@
 		.review-title {
 			margin: 0;
 			font-size: 14px;
-			font-weight: 700;
+			font-weight: 800;
 			color: #15314f;
 		}
 
@@ -1049,15 +979,9 @@
 			background: linear-gradient(180deg, #ffffff 0%, #faf5fa 100%);
 		}
 
-		.invoice-extra-item,
-		.invoice-media-item {
+		.invoice-extra-item {
 			border-color: #e665a9;
 			background: #ffeef7;
-		}
-
-		.invoice-extra-item .field-label,
-		.invoice-media-item .field-label {
-			color: #8c2f63;
 		}
 
 		#panelJobs {
@@ -1222,12 +1146,9 @@
 
 			.grid,
 			.info-grid,
+			.invoice-extra-grid,
 			.review-split,
 			.review-media-grid {
-				grid-template-columns: 1fr;
-			}
-
-			.invoice-extra-grid {
 				grid-template-columns: 1fr;
 			}
 
@@ -1378,12 +1299,12 @@
 	<main class="page">
 		<section class="modal-card">
 			<header class="topbar">
-				<a class="topbar-logo" href="../index.html" aria-label="Trang chủ">
-					<img src="../assets/logo.png" alt="Logo dịch vụ" />
+				<a class="topbar-logo" href="#" aria-label="Trang chủ">
+					<img src="assets/logo.png" alt="Logo dịch vụ" />
 				</a>
 				<h1 class="topbar-title">Chi tiết hóa đơn mẹ và bé</h1>
-				<a class="topbar-logo" href="danh-sach-hoa-don.php" aria-label="Trang dịch vụ mẹ và bé">
-					<img src="../assets/logomvb1.png" alt="Logo mẹ và bé" />
+				<a class="topbar-logo" href="#" aria-label="Trang dịch vụ mẹ và bé">
+					<img src="assets/logomvb1.png" alt="Logo mẹ và bé" />
 				</a>
 			</header>
 
@@ -1405,12 +1326,12 @@
 								</div>
 								<div class="actions d-flex flex-wrap align-items-center"
 									style="gap:8px; margin-left: auto;">
-									<button id="btnCancelService" class="btn btn-danger btn-sm hidden" type="button">Hủy
-										dịch vụ</button>
-									<button id="btnHdrClaim" class="btn btn-primary btn-sm hidden" type="button">Nhận
-										việc</button>
-									<button id="btnHdrStart" class="btn btn-success btn-sm hidden" type="button">Bắt đầu
-										dịch vụ</button>
+									<button id="btnCancelService" class="btn btn-danger btn-sm hidden" type="button">
+										Hủy dịch vụ</button>
+									<button id="btnHdrClaim" class="btn btn-primary btn-sm hidden" type="button">
+										Nhận việc</button>
+									<button id="btnHdrStart" class="btn btn-success btn-sm hidden" type="button">
+										Bắt đầu dịch vụ</button>
 									<button id="btnHdrEnd" class="btn btn-warning btn-sm hidden" style="color:#fff;"
 										type="button">Hoàn thành dịch vụ</button>
 								</div>
@@ -1472,22 +1393,6 @@
 								<p id="invoiceNote" class="field-value">---</p>
 							</div>
 						</div>
-						<div class="invoice-media-grid">
-							<div class="invoice-media-item" id="invoiceMediaImage">
-								<p class="field-label">Ảnh</p>
-								<span class="media-empty-label" id="invoiceMediaImageEmpty">Chưa có ảnh</span>
-								<iframe id="invoiceMediaImageEl"
-									style="display:none;width:100%;flex:1;min-height:90px;border:0;border-radius:5px;"
-									allowfullscreen></iframe>
-							</div>
-							<div class="invoice-media-item" id="invoiceMediaVideo">
-								<p class="field-label">Video</p>
-								<span class="media-empty-label" id="invoiceMediaVideoEmpty">Chưa có video</span>
-								<iframe id="invoiceMediaVideoEl"
-									style="display:none;width:100%;flex:1;min-height:90px;border:0;border-radius:5px;"
-									allowfullscreen></iframe>
-							</div>
-						</div>
 					</article>
 
 					<article class="panel" id="panelTime"
@@ -1513,7 +1418,7 @@
 						<div
 							style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;margin-bottom:8px;">
 							<div
-								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:700;">
+								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:800;">
 								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày bắt đầu dự
 									kiến</span>
 								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày kết thúc dự
@@ -1531,7 +1436,7 @@
 						</div>
 
 						<div class="d-flex align-items-center flex-wrap" style="gap:8px;">
-							<span style="font-size:12px;font-weight:700;color:#000000;">Trạng thái:</span>
+							<span style="font-size:12px;font-weight:800;color:#000000;">Trạng thái:</span>
 							<span id="badgeTimeState" class="badge">---</span>
 							<span id="timeCurrentState" class="hidden">---</span>
 
@@ -1549,7 +1454,7 @@
 
 						<div style="border:1px solid #efd3e9;border-radius:8px;overflow:hidden;background:#fff7fe;">
 							<div
-								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:700;">
+								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#e779c1;color:#000000;font-size:12px;font-weight:800;">
 								<span style="padding:7px 10px;">Thời gian dự kiến</span>
 								<span style="padding:7px 10px;">Thời gian thực tế</span>
 							</div>
@@ -1558,22 +1463,22 @@
 									<div class="d-flex justify-content-between align-items-center"
 										style="gap:8px;padding:7px 10px;font-size:12px;"><span
 											style="color:#000000;font-weight:700;">Bắt đầu</span><span
-											id="timeStartPlan" style="color:#1f3853;font-weight:700;">---</span></div>
+											id="timeStartPlan" style="color:#1f3853;font-weight:800;">---</span></div>
 									<div class="d-flex justify-content-between align-items-center"
 										style="gap:8px;padding:7px 10px;border-top:1px solid #e3ecf7;font-size:12px;">
 										<span style="color:#000000;font-weight:700;">Kết thúc</span><span
-											id="timeEndPlan" style="color:#1f3853;font-weight:700;">---</span>
+											id="timeEndPlan" style="color:#1f3853;font-weight:800;">---</span>
 									</div>
 								</div>
 								<div>
 									<div class="d-flex justify-content-between align-items-center"
 										style="gap:8px;padding:7px 10px;font-size:12px;"><span
 											style="color:#000000;font-weight:700;">Bắt đầu</span><span
-											id="timeStartReal" style="color:#1f3853;font-weight:700;">---</span></div>
+											id="timeStartReal" style="color:#1f3853;font-weight:800;">---</span></div>
 									<div class="d-flex justify-content-between align-items-center"
 										style="gap:8px;padding:7px 10px;border-top:1px solid #e3ecf7;font-size:12px;">
 										<span style="color:#000000;font-weight:700;">Kết thúc</span><span
-											id="timeEndReal" style="color:#1f3853;font-weight:700;">---</span>
+											id="timeEndReal" style="color:#1f3853;font-weight:800;">---</span>
 									</div>
 								</div>
 							</div>
@@ -1588,7 +1493,7 @@
 						</div>
 
 						<div id="workHistoryTable" style="margin-top:4px;">
-							<span style="font-size:12px;font-weight:700;color:#000000;">Lịch sử làm việc</span>
+							<span style="font-size:12px;font-weight:800;color:#000000;">Lịch sử làm việc</span>
 							<div id="workHistoryContent" style="overflow-x:auto;margin-top:4px;" class="hidden">
 								<table style="width:100%;border-collapse:collapse;font-size:12px;">
 									<thead>
@@ -1609,6 +1514,7 @@
 
 						<div class="actions d-flex flex-wrap align-items-center mt-auto" style="gap:8px;">
 							<span id="badgeProgress" class="badge" style="display:none;">0%</span>
+
 						</div>
 					</article>
 					<article class="panel" id="panelCustomer">
@@ -1617,16 +1523,12 @@
 							<span class="profile-status badge success">Khách hàng</span>
 						</div>
 						<div class="profile-body">
-							<img id="customerAvatar" class="profile-avatar" src="../assets/logomvb.png"
-								alt="Khách hàng">
+							<img id="customerAvatar" class="profile-avatar" src="assets/logomvb.png" alt="Khách hàng">
 							<div class="profile-main">
 								<h3 id="customerCardName" class="profile-name">---</h3>
-								<p class="profile-row"><i class="fa fa-envelope me-2"></i><span
-										id="customerCardEmail">---</span></p>
-								<p class="profile-row"><i class="fa fa-phone me-2"></i><span
-										id="customerCardPhone">---</span></p>
-								<p class="profile-row"><i class="fa fa-map-marker me-2"></i><span
-										id="customerCardAddress">---</span></p>
+								<p class="profile-contact contact-email"><span id="customerCardEmail">---</span></p>
+								<p id="customerCardPhone" class="profile-row fa fa-phone">---</p>
+								<p id="customerCardAddress" class="profile-row fa fa-map-marker">---</p>
 							</div>
 						</div>
 
@@ -1638,16 +1540,13 @@
 							<span id="badgeStaff" class="profile-status badge warning">Chưa nhận</span>
 						</div>
 						<div class="profile-body">
-							<img id="staffAvatar" class="profile-avatar" src="../assets/logomvb.png" alt="Nhà Cung Cấp">
+							<img id="staffAvatar" class="profile-avatar" src="assets/logomvb.png" alt="Nhà Cung Cấp">
 							<div class="profile-main">
 								<h3 id="staffCardName" class="profile-name">---</h3>
 								<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
-								<p class="profile-row"><i class="fa fa-envelope me-2"></i><span
-										id="staffCardEmail">---</span></p>
-								<p class="profile-row"><i class="fa fa-phone me-2"></i><span
-										id="staffCardPhone">---</span></p>
-								<p class="profile-row"><i class="fa fa-map-marker me-2"></i><span
-										id="staffCardAddress">---</span></p>
+								<p id="staffCardEmail" class="profile-row contact-email">---</p>
+								<p id="staffCardPhone" class="profile-row fa fa-phone">---</p>
+								<p id="staffCardAddress" class="profile-row fa fa-map-marker">---</p>
 							</div>
 						</div>
 						<div class="profile-foot">
@@ -1763,7 +1662,7 @@
 				const el = $(id);
 				if (el) el.textContent = value || '---';
 			};
-			const setAvatar = (id, src, fallback = '../assets/logomvb.png') => {
+			const setAvatar = (id, src, fallback = 'assets/logomvb.png') => {
 				const el = $(id);
 				if (!el) return;
 				el.onerror = () => {
@@ -2113,12 +2012,12 @@
 					grid.appendChild(div);
 					return;
 				}
-				items.forEach((id) => {
-					const iframe = document.createElement('iframe');
-					iframe.src = 'https://drive.google.com/file/d/' + id + '/preview';
-					iframe.style.cssText = 'width:100%;height:200px;border:0;border-radius:6px;display:block;margin-bottom:6px;';
-					iframe.allowFullscreen = true;
-					grid.appendChild(iframe);
+				items.forEach((src) => {
+					const isVideo = /(^data:video)|(\.(mp4|webm|ogg|mov)(\?.*)?$)/i.test(String(src || ''));
+					const el = document.createElement(isVideo ? 'video' : 'img');
+					el.src = src;
+					if (isVideo) el.controls = true;
+					grid.appendChild(el);
 				});
 			}
 
@@ -2251,28 +2150,6 @@
 				setText('invoiceRequest', $datlich_mevabe.yeu_cau_khac || '---');
 				setText('invoiceNote', $datlich_mevabe.ghi_chu || '---');
 				renderJobList($datlich_mevabe.cong_viec || '');
-
-				// --- Hiển thị ảnh & video từ Drive fileId (theo ok.html) ---
-				function renderDriveFrame(rawId, frameId, emptyId) {
-					const frame = $(frameId);
-					const emptyEl = $(emptyId);
-					if (!frame || !emptyEl) return;
-
-					const id = (rawId || '').trim();
-					if (!id) {
-						emptyEl.style.display = '';
-						frame.style.display = 'none';
-						return;
-					}
-
-					const url = 'https://drive.google.com/file/d/' + id + '/preview';
-					frame.src = url;
-					emptyEl.style.display = 'none';
-					frame.style.display = 'block';
-				}
-
-				renderDriveFrame($datlich_mevabe.anh_id || '', 'invoiceMediaImageEl', 'invoiceMediaImageEmpty');
-				renderDriveFrame($datlich_mevabe.video_id || '', 'invoiceMediaVideoEl', 'invoiceMediaVideoEmpty');
 
 				setText('customerCardName', $datlich_mevabe.tenkhachhang || '---');
 				setText('customerCardPhone', $datlich_mevabe.sdtkhachhang || '---');
@@ -2569,7 +2446,6 @@
 				const idDv = app.$datlich_mevabe.id;
 				const history = await listHistoryByOrder(idDv);
 				app.$workHistory = history;
-
 				// Chỉ NCC mới thực hiện tự động kết thúc ngày làm việc nếu quên
 				if (app.role !== 'staff') return;
 				const todayStr = (() => {
@@ -2604,16 +2480,20 @@
 			async function uploadReviewMedia(reviewRole, fileList) {
 				const files = Array.from(fileList || []);
 				if (!files.length) return [];
-				const ids = [];
-				for (const file of files) {
-					const fd = new FormData();
-					fd.append('file', file, file.name);
-					const res = await fetch('upload.php', { method: 'POST', body: fd });
-					const json = await res.json();
-					if (!json?.success) throw new Error(json?.message || 'Upload ảnh/video thất bại');
-					ids.push(json.fileId);
+
+				const formData = new FormData();
+				formData.append('review_role', reviewRole);
+				files.forEach((file) => formData.append('media_files[]', file));
+
+				const response = await fetch(REVIEW_UPLOAD_API, {
+					method: 'POST',
+					body: formData
+				});
+				const result = await response.json();
+				if (!result?.success) {
+					throw new Error(result?.message || 'Upload ảnh/video thất bại');
 				}
-				return ids;
+				return Array.isArray(result?.data?.paths) ? result.data.paths : [];
 			}
 
 			async function handleSaveCustomerReview() {
