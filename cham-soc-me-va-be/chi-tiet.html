@@ -561,18 +561,65 @@
 		.invoice-extra-grid {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
+			grid-auto-rows: 1fr;
+			align-items: stretch;
 			gap: 8px;
 		}
 
-		.invoice-extra-item {
+		.invoice-extra-item,
+		.invoice-media-item {
 			border: 1px solid #c8d7ea;
 			background: #dfe9f7;
 			border-radius: 8px;
 			padding: 8px 10px;
+			min-height: 72px;
 		}
 
 		.invoice-extra-item.full-width {
 			grid-column: 1 / -1;
+		}
+
+		.invoice-media-row {
+			display: flex;
+			flex-direction: row;
+			gap: 8px;
+			margin-top: 8px;
+		}
+
+		.invoice-media-item {
+			border: 1px solid #c8d7ea;
+			background: #dfe9f7;
+			border-radius: 8px;
+			padding: 8px 10px;
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			overflow: hidden;
+		}
+
+		.invoice-media-item .field-label {
+			color: #3f5f7d;
+			font-size: 10px;
+			margin: 0;
+			font-weight: 600;
+		}
+
+		.invoice-media-item img,
+		.invoice-media-item video {
+			width: 100%;
+			flex: 1;
+			object-fit: cover;
+			border-radius: 5px;
+			background: rgba(0,0,0,0.04);
+			display: block;
+		}
+
+		.invoice-media-item .media-empty-label {
+			color: #8d9fb3;
+			font-size: 11px;
+			text-align: center;
+			padding: 8px 0;
+			flex: 1;
 		}
 
 		.invoice-extra .field-label {
@@ -997,9 +1044,15 @@
 			background: linear-gradient(180deg, #ffffff 0%, #faf5fa 100%);
 		}
 
-		.invoice-extra-item {
+		.invoice-extra-item,
+		.invoice-media-item {
 			border-color: #e665a9;
 			background: #ffeef7;
+		}
+
+		.invoice-extra-item .field-label,
+		.invoice-media-item .field-label {
+			color: #8c2f63;
 		}
 
 		#panelJobs {
@@ -1164,9 +1217,12 @@
 
 			.grid,
 			.info-grid,
-			.invoice-extra-grid,
 			.review-split,
 			.review-media-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.invoice-extra-grid {
 				grid-template-columns: 1fr;
 			}
 
@@ -1409,6 +1465,16 @@
 							<div class="invoice-extra-item">
 								<p class="field-label">Ghi chú</p>
 								<p id="invoiceNote" class="field-value">---</p>
+							</div>
+							<div class="invoice-media-item" id="invoiceMediaImage">
+								<p class="field-label">Ảnh</p>
+								<span class="media-empty-label" id="invoiceMediaImageEmpty">Chưa có ảnh</span>
+								<img id="invoiceMediaImageEl" src="" alt="Ảnh đính kèm" style="display:none;" />
+							</div>
+							<div class="invoice-media-item" id="invoiceMediaVideo">
+								<p class="field-label">Video</p>
+								<span class="media-empty-label" id="invoiceMediaVideoEmpty">Chưa có video</span>
+								<video id="invoiceMediaVideoEl" src="" controls style="display:none;"></video>
 							</div>
 						</div>
 					</article>
@@ -2174,6 +2240,62 @@
 				setText('invoiceRequest', $datlich_mevabe.yeu_cau_khac || '---');
 				setText('invoiceNote', $datlich_mevabe.ghi_chu || '---');
 				renderJobList($datlich_mevabe.cong_viec || '');
+
+				// --- Hiển thị ảnh từ anh_id (chỉ fileId, theo ok.html) ---
+				(function renderInvoiceImage(rawId) {
+					const imgEl   = $('invoiceMediaImageEl');
+					const emptyEl = $('invoiceMediaImageEmpty');
+					if (!imgEl || !emptyEl) return;
+
+					const id = (rawId || '').trim();
+					if (!id) {
+						emptyEl.style.display = '';
+						imgEl.style.display = 'none';
+						return;
+					}
+
+					const url = 'https://lh3.googleusercontent.com/d/' + id;
+
+					imgEl.onload = function () {
+						emptyEl.style.display = 'none';
+						imgEl.style.display = 'block';
+					};
+					imgEl.onerror = function () {
+						emptyEl.textContent = '⚠ Không tải được ảnh';
+						emptyEl.style.display = '';
+						imgEl.style.display = 'none';
+					};
+					imgEl.src = url;
+				})($datlich_mevabe.anh_id || '');
+
+				// --- Hiển thị video từ video_id ---
+				(function renderInvoiceVideo(rawId) {
+					const videoBox = $('invoiceMediaVideo');
+					const emptyEl  = $('invoiceMediaVideoEmpty');
+					const id = (rawId || '').trim();
+					if (!id) { emptyEl && (emptyEl.style.display = ''); return; }
+
+					// Trích fileId từ link Drive nếu cần
+					function extractDriveId(input) {
+						if (!input.includes('http')) return input;
+						if (input.includes('id='))  return input.split('id=')[1].split('&')[0];
+						if (input.includes('/d/'))  return input.split('/d/')[1].split('/')[0];
+						return input;
+					}
+
+					const fileId = extractDriveId(id);
+					const iframeSrc = `https://drive.google.com/file/d/${fileId}/preview`;
+
+					// Tạo iframe embed Google Drive
+					const iframe = document.createElement('iframe');
+					iframe.src = iframeSrc;
+					iframe.style.cssText = 'width:100%;flex:1;min-height:80px;border:0;border-radius:5px;display:block;';
+					iframe.allow = 'autoplay';
+					iframe.allowFullscreen = true;
+
+					if (emptyEl) emptyEl.style.display = 'none';
+					if (videoBox) videoBox.appendChild(iframe);
+				})($datlich_mevabe.video_id || '');
 
 				setText('customerCardName', $datlich_mevabe.tenkhachhang || '---');
 				setText('customerCardPhone', $datlich_mevabe.sdtkhachhang || '---');
