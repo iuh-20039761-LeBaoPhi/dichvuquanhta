@@ -564,16 +564,71 @@
 			gap: 8px;
 		}
 
-		.invoice-extra-item {
+
+		.invoice-media-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+			margin: 4px;
+		}
+
+		.invoice-extra-item,
+		.invoice-media-item {
 			border: 1px solid #c8d7ea;
 			background: #dfe9f7;
 			border-radius: 8px;
 			padding: 8px 10px;
+			min-height: 72px;
 		}
 
 		.invoice-extra-item.full-width {
 			grid-column: 1 / -1;
 		}
+
+		.invoice-media-row {
+			display: flex;
+			flex-direction: row;
+			gap: 8px;
+			margin-top: 8px;
+		}
+
+		.invoice-media-item {
+			border: 1px solid #c8d7ea;
+			background: #dfe9f7;
+			border-radius: 8px;
+			padding: 8px 10px;
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			overflow: hidden;
+		}
+
+		.invoice-media-item .field-label {
+			color: #3f5f7d;
+			font-size: 10px;
+			margin: 0;
+			font-weight: 600;
+		}
+
+		.invoice-media-item img,
+		.invoice-media-item video {
+			width: 100%;
+			flex: 1;
+			object-fit: cover;
+			border-radius: 5px;
+			background: rgba(0, 0, 0, 0.04);
+			display: block;
+		}
+
+		.invoice-media-item .media-empty-label {
+			color: #8d9fb3;
+			font-size: 11px;
+			text-align: center;
+			padding: 8px 0;
+			flex: 1;
+		}
+
+
 
 		.invoice-extra .field-label {
 			color: #3f5f7d;
@@ -997,9 +1052,15 @@
 			background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
 		}
 
-		.invoice-extra-item {
+		.invoice-extra-item,
+		.invoice-media-item {
 			border-color: #0f80f2;
 			background: #f8fbff;
+		}
+
+		.invoice-extra-item .field-label,
+		.invoice-media-item .field-label {
+			color: #0f80f2;
 		}
 
 		#panelJobs {
@@ -1164,9 +1225,12 @@
 
 			.grid,
 			.info-grid,
-			.invoice-extra-grid,
 			.review-split,
 			.review-media-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.invoice-extra-grid {
 				grid-template-columns: 1fr;
 			}
 
@@ -1409,6 +1473,22 @@
 							<div class="invoice-extra-item">
 								<p class="field-label">Ghi chú</p>
 								<p id="invoiceNote" class="field-value">---</p>
+							</div>
+						</div>
+						<div class="invoice-media-grid">
+							<div class="invoice-media-item" id="invoiceMediaImage">
+								<p class="field-label">Ảnh</p>
+								<span class="media-empty-label" id="invoiceMediaImageEmpty">Chưa có ảnh</span>
+								<iframe id="invoiceMediaImageEl"
+									style="display:none;width:100%;flex:1;min-height:90px;border:0;border-radius:5px;"
+									allowfullscreen></iframe>
+							</div>
+							<div class="invoice-media-item" id="invoiceMediaVideo">
+								<p class="field-label">Video</p>
+								<span class="media-empty-label" id="invoiceMediaVideoEmpty">Chưa có video</span>
+								<iframe id="invoiceMediaVideoEl"
+									style="display:none;width:100%;flex:1;min-height:90px;border:0;border-radius:5px;"
+									allowfullscreen></iframe>
 							</div>
 						</div>
 					</article>
@@ -2037,12 +2117,12 @@
 					grid.appendChild(div);
 					return;
 				}
-				items.forEach((src) => {
-					const isVideo = /(^data:video)|(\.(mp4|webm|ogg|mov)(\?.*)?$)/i.test(String(src || ''));
-					const el = document.createElement(isVideo ? 'video' : 'img');
-					el.src = src;
-					if (isVideo) el.controls = true;
-					grid.appendChild(el);
+				items.forEach((id) => {
+					const iframe = document.createElement('iframe');
+					iframe.src = 'https://drive.google.com/file/d/' + id + '/preview';
+					iframe.style.cssText = 'width:100%;height:200px;border:0;border-radius:6px;display:block;margin-bottom:6px;';
+					iframe.allowFullscreen = true;
+					grid.appendChild(iframe);
 				});
 			}
 
@@ -2175,6 +2255,28 @@
 				setText('invoiceRequest', $datlich_nguoibenh.yeu_cau_khac || '---');
 				setText('invoiceNote', $datlich_nguoibenh.ghi_chu || '---');
 				renderJobList($datlich_nguoibenh.cong_viec || '');
+
+				// --- Hiển thị ảnh & video từ Drive fileId (theo ok.html) ---
+				function renderDriveFrame(rawId, frameId, emptyId) {
+					const frame = $(frameId);
+					const emptyEl = $(emptyId);
+					if (!frame || !emptyEl) return;
+
+					const id = (rawId || '').trim();
+					if (!id) {
+						emptyEl.style.display = '';
+						frame.style.display = 'none';
+						return;
+					}
+
+					const url = 'https://drive.google.com/file/d/' + id + '/preview';
+					frame.src = url;
+					emptyEl.style.display = 'none';
+					frame.style.display = 'block';
+				}
+
+				renderDriveFrame($datlich_nguoibenh.anh_id || '', 'invoiceMediaImageEl', 'invoiceMediaImageEmpty');
+				renderDriveFrame($datlich_nguoibenh.video_id || '', 'invoiceMediaVideoEl', 'invoiceMediaVideoEmpty');
 
 				setText('customerCardName', $datlich_nguoibenh.tenkhachhang || '---');
 				setText('customerCardPhone', $datlich_nguoibenh.sdtkhachhang || '---');
@@ -2506,20 +2608,16 @@
 			async function uploadReviewMedia(reviewRole, fileList) {
 				const files = Array.from(fileList || []);
 				if (!files.length) return [];
-
-				const formData = new FormData();
-				formData.append('review_role', reviewRole);
-				files.forEach((file) => formData.append('media_files[]', file));
-
-				const response = await fetch(REVIEW_UPLOAD_API, {
-					method: 'POST',
-					body: formData
-				});
-				const result = await response.json();
-				if (!result?.success) {
-					throw new Error(result?.message || 'Upload ảnh/video thất bại');
+				const ids = [];
+				for (const file of files) {
+					const fd = new FormData();
+					fd.append('file', file, file.name);
+					const res = await fetch('upload.php', { method: 'POST', body: fd });
+					const json = await res.json();
+					if (!json?.success) throw new Error(json?.message || 'Upload ảnh/video thất bại');
+					ids.push(json.fileId);
 				}
-				return Array.isArray(result?.data?.paths) ? result.data.paths : [];
+				return ids;
 			}
 
 			async function handleSaveCustomerReview() {
