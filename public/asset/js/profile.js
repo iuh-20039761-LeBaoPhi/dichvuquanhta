@@ -166,11 +166,21 @@
             this.disabled = true;
             this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang xử lý...';
 
-            const selectedIds = Array.from(document.querySelectorAll('.service-card.selected'))
-                .map(el => el.dataset.id);
+            // Lấy tất cả các item có class 'selected' nằm trong #serviceGrid
+            const grid = document.getElementById('serviceGrid');
+            const selectedItems = grid ? grid.querySelectorAll('.service-item.selected') : [];
+            
+            const selectedIds = Array.from(selectedItems)
+                .map(el => el.getAttribute('data-id'))
+                .filter(id => id); // Loại bỏ các giá trị null/undefined nếu có
+            
+            // Nếu không chọn dịch vụ nào, mặc định là '0' (Khách hàng)
+            const idDichvuStr = selectedIds.length > 0 
+                ? selectedIds.sort((a,b) => Number(a) - Number(b)).join(',') 
+                : '0';
             
             const payload = {
-                id_dichvu: selectedIds.join(',')
+                id_dichvu: idDichvuStr
             };
 
             const res = await krud.updateRow('nguoidung', currentUser.id, payload);
