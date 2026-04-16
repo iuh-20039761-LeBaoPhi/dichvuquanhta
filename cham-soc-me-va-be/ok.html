@@ -1,126 +1,96 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<meta charset="UTF-8">
-<title>Test hiển thị ảnh Google Drive</title>
+    <meta charset="UTF-8">
+    <title>Test ảnh Google Drive</title>
 
-<style>
-    body {
-        font-family: Arial;
-        background: #f5f5f5;
-        text-align: center;
-        padding-top: 50px;
-    }
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f5f5f5;
+            padding-top: 50px;
+        }
 
-    .box {
-        background: white;
-        width: 400px;
-        margin: auto;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
+        .box {
+            background: white;
+            width: 420px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
 
-    input {
-        width: 90%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-    }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
 
-    button {
-        padding: 10px 20px;
-        border: none;
-        background: #ff4da6;
-        color: white;
-        border-radius: 8px;
-        cursor: pointer;
-    }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: #ff4da6;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-    button:hover {
-        background: #e60073;
-    }
+        iframe {
+            margin-top: 20px;
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            border: none;
+        }
 
-    img {
-        margin-top: 20px;
-        max-width: 100%;
-        border-radius: 10px;
-        display: none;
-    }
-
-    .error {
-        color: red;
-        margin-top: 10px;
-    }
-</style>
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="box">
-    <h2>Test hiển thị ảnh Drive</h2>
+    <div class="box">
+        <h2>Hiển thị ảnh từ Google Drive</h2>
 
-    <input type="text" id="link" placeholder="Dán link hoặc fileId">
+        <input type="text" id="fileId" placeholder="Nhập fileId">
 
-    <br>
-    <button onclick="loadImage()">Hiển thị</button>
+        <br>
+        <button onclick="loadImage()">Hiển thị</button>
 
-    <div class="error" id="error"></div>
+        <div class="error" id="error"></div>
 
-    <img id="img">
-</div>
+        <iframe id="frame" style="display:none;"></iframe>
+    </div>
 
-<script>
-function convertLink(input) {
-    input = input.trim();
+    <script>
+        function loadImage() {
+            const id = document.getElementById("fileId").value.trim();
+            const frame = document.getElementById("frame");
+            const error = document.getElementById("error");
 
-    // Nếu là fileId
-    if (!input.includes("http")) {
-        return "https://lh3.googleusercontent.com/d/" + input;
-    }
+            error.innerHTML = "";
+            frame.style.display = "none";
 
-    // Nếu là link dạng id=
-    if (input.includes("id=")) {
-        let id = input.split("id=")[1].split("&")[0];
-        return "https://lh3.googleusercontent.com/d/" + id;
-    }
+            if (!id) {
+                error.innerHTML = "❌ Vui lòng nhập fileId";
+                return;
+            }
 
-    // Nếu là link dạng /d/
-    if (input.includes("/d/")) {
-        let id = input.split("/d/")[1].split("/")[0];
-        return "https://lh3.googleusercontent.com/d/" + id;
-    }
+            // 👉 link preview ổn định nhất
+            const url = "https://drive.google.com/file/d/" + id + "/preview";
 
-    return input;
-}
-
-function loadImage() {
-    const input = document.getElementById("link").value;
-    const img = document.getElementById("img");
-    const error = document.getElementById("error");
-
-    error.innerHTML = "";
-    img.style.display = "none";
-
-    if (!input) {
-        error.innerHTML = "❌ Vui lòng nhập link hoặc fileId";
-        return;
-    }
-
-    const finalLink = convertLink(input);
-
-    img.onload = function() {
-        img.style.display = "block";
-    };
-
-    img.onerror = function() {
-        error.innerHTML = "❌ Không load được ảnh (kiểm tra lại link hoặc quyền public)";
-    };
-
-    img.src = finalLink;
-}
-</script>
+            frame.src = url;
+            frame.style.display = "block";
+        }
+    </script>
 
 </body>
+
 </html>
