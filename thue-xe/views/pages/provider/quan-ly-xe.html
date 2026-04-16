@@ -274,11 +274,17 @@ function fmtPrice(n) {
 
 function getStatusMeta(status) {
     const st = String(status || '').toLowerCase();
-    if (['available', 'active', 'approved', 'hot_dong', '1'].includes(st)) {
-        return { label: 'Đang cho thuê', badgeClass: 'badge-available', actionLabel: 'Tạm dừng', nextStatus: 'maintenance' };
+    // Trạng thái Sẵn sàng (Available)
+    if (['available', 'active', 'approved', 'hot_dong', '1', ''].includes(st)) {
+        return { label: 'Sẵn sàng', badgeClass: 'badge-available', actionLabel: 'Tạm dừng', nextStatus: 'maintenance' };
     }
+    // Trạng thái Bảo trì/Tạm dừng (Maintenance)
     if (st === 'maintenance') {
-        return { label: 'Tạm dừng', badgeClass: 'badge-maintenance', actionLabel: 'Mở lại', nextStatus: 'available' };
+        return { label: 'Tạm dừng (Bảo trì)', badgeClass: 'badge-maintenance', actionLabel: 'Mở lại', nextStatus: 'available' };
+    }
+    // Trạng thái Đang có khách thuê (Rented)
+    if (st === 'rented') {
+        return { label: 'Đang có khách thuê', badgeClass: 'badge-rented', actionLabel: 'Mở lại', nextStatus: 'available' };
     }
     return { label: status || 'Không xác định', badgeClass: 'badge-rented', actionLabel: 'Không hỗ trợ', nextStatus: '' };
 }
