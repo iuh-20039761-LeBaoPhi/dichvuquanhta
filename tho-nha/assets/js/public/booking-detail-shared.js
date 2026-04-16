@@ -305,33 +305,40 @@ async function _bdPrefillFromExpressUser(user) {
  * @param {string} orderCode   - Mã đơn hàng (VD: TN-20260401-A1B2)
  */
 function _bdSendToSheet(pendingData, orderCode) {
-    if (!_BD_GSHEET_URL) return;
+    if (typeof window.saveToGoogleSheet !== 'function') {
+        console.warn('driveUtil.js chưa được nạp, bỏ qua gửi Sheet.');
+        return;
+    }
     const now = new Date();
     const created_at = now.toLocaleString('vi-VN', { hour12: false });
     const surveyAmt = (_bdCurSurvey && _bdCurSurvey.required) ? (_bdCurSurvey.amount || 0) : 0;
     const travelAmt = _bdTravelAmt || 0;
     const basePrice = _bdCurPrice  || 0;
+    
+    // Tìm nhãn thời gian
+    const thoigianEl = document.getElementById('thoigianphucvu');
+    const thoigianLabel = thoigianEl ? thoigianEl.options[thoigianEl.selectedIndex].text : 'Thường';
+
     const payload = {
-        order_code:       orderCode || '',
-        name:             pendingData.name            || '',
-        phone:            pendingData.phone           || '',
-        service:          pendingData.service_id      || '',
-        address:          pendingData.address         || '',
-        note:             pendingData.note            || '',
-        selected_brand:   pendingData.selected_brand  || '',
-        estimated_price:  basePrice,
-        travel_fee:       travelAmt,
-        inspection_fee:   surveyAmt,
-        total_price:      basePrice + travelAmt,
-        status:           'new',
-        created_at,
+        sheet_type:       "Thợ nhà",
+        "Mã đơn":         orderCode || '',
+        "Họ tên":         pendingData.name            || '',
+        "Số điện thoại":  pendingData.phone           || '',
+        "Dịch vụ":        pendingData.service_id      || '',
+        "Thương hiệu":    pendingData.selected_brand  || '',
+        "Địa chỉ":        pendingData.address         || '',
+        "Yêu cầu TG":     thoigianLabel,
+        "Giá dịch vụ":    basePrice,
+        "Phí di chuyển":  travelAmt,
+        "Phí khảo sát":   surveyAmt,
+        "Tổng tiền":      basePrice + travelAmt,
+        "Ghi chú":        pendingData.note            || '',
+        "Ngày đặt":       created_at,
     };
-    fetch(_BD_GSHEET_URL, {
-        method:  'POST',
-        mode:    'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body:    JSON.stringify(payload),
-    }).catch(() => {}); // bỏ qua lỗi, không ảnh hưởng UX
+
+    window.saveToGoogleSheet(payload).catch(err => {
+        console.error('Lỗi khi lưu Google Sheet (Thợ Nhà):', err);
+    });
 }
 
 // ===================================================================
@@ -887,8 +894,12 @@ function _bdRememberCustomerProfile(pendingData) {
 async function _bdInsertBookingWithKrud(pendingData) {
     const row = _bdBuildKrudBookingRecord(pendingData);
     const result = await DVQTApp.createOrder(row, 'datlich_thonha');
-    const newId = (result && (result.data?.id || result.id)) || 0;
-    return { orderCode: String(newId).padStart(7, '0'), result };
+    const rawId = (result && (result.data?.id || result.id)) || 0;
+    return { 
+        rawId: rawId,
+        orderCode: String(rawId).padStart(7, '0'), 
+        result 
+    };
 }
 
 /**
@@ -900,7 +911,7 @@ async function _bdSubmitApi(pendingData, submitBtn, onSuccess) {
 
     try {
         const inserted = await _bdInsertBookingWithKrud(pendingData);
-        _bdSendToSheet(pendingData, inserted.orderCode);
+        _bdSendToSheet(pendingData, inserted.rawId);
         onSuccess(inserted.orderCode || null);
     } catch (err) {
         alert('❌ ' + (err?.message || 'Lỗi đặt lịch. Thử lại sau!'));

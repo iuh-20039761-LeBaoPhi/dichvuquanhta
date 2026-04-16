@@ -253,6 +253,7 @@
     <script src="../public/asset/js/dvqt-krud.js?v=1.7"></script>
     <script src="../public/asset/js/dvqt-app.js?v=1.7"></script>
     <script src="../public/asset/js/dvqt-booking-helper.js?v=1.0"></script>
+    <script src="../public/asset/js/driveUtil.js?v=1.0"></script>
   </head>
 <body>
 <script src="assets/js/static-data.js"></script>
@@ -1330,6 +1331,27 @@ document.addEventListener('DOMContentLoaded', loadHeader);
             confirmBtn.disabled = true;
             confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
             
+            function buildCarBookingSheetPayload(formData, orderCode) {
+                return {
+                    sheet_type: "Thuê xe",
+                    "Mã đơn": orderCode || "",
+                    "Tên khách": formData.customer_name || "",
+                    "Số điện thoại": formData.customer_phone || "",
+                    "Email": formData.customer_email || "",
+                    "Địa chỉ": formData.customer_address || "",
+                    "Tên xe": formData.car_name || "",
+                    "Ngày nhận": formData.pickup_date + " " + formData.pickup_time,
+                    "Ngày trả": formData.return_date + " " + formData.return_time,
+                    "Số ngày thuê": formData._days || 0,
+                    "Giá thuê/ngày": Number(formData.price_per_day || 0),
+                    "Phí dịch vụ": Number(formData.addon_total || 0),
+                    "Tổng tiền": Number(formData._totalPrice || 0),
+                    "Dịch vụ kèm": formData.addon_services ? formData.addon_services.join(", ") : "",
+                    "Ghi chú": formData.notes || "",
+                    "Ngày đặt": new Date().toLocaleString('vi-VN')
+                };
+            }
+            
             try {
                 const { _days: days, _totalPrice: totalPrice, ...bookingData } = _standalonePending;
                 
@@ -1381,7 +1403,14 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                 const result = await DVQTKrud.insertRow('datlich_thuexe', payload);
                 
                 if (result) {
-                    const orderCode = String(result.id || (result.data && result.data.id)).padStart(7, '0');
+                    const rawId = result.id || (result.data && result.data.id) || "N/A";
+                    const orderCodePadded = String(rawId).padStart(7, '0');
+                    
+                    // 4. Lưu vào Google Sheet (fire-and-forget)
+                    if (window.saveToGoogleSheet) {
+                        const sheetPayload = buildCarBookingSheetPayload(_standalonePending, rawId);
+                        window.saveToGoogleSheet(sheetPayload).catch(e => console.error("Gửi Sheet thất bại:", e));
+                    }
                     
                     document.getElementById('txBookingConfirm').style.display = 'none';
                     document.getElementById('bookingFormFull').style.display  = '';
@@ -1391,9 +1420,9 @@ document.addEventListener('DOMContentLoaded', loadHeader);
                     // 4. Thông báo thành công chuyên nghiệp (Dùng Helper)
                     if (window.DVQTBookingHelper) {
                         const redirectUrl = 'views/pages/customer/trang-ca-nhan.html';
-                        await window.DVQTBookingHelper.showSuccessAlert(accountResult || {isNew:false}, bookingData.customer_phone, orderCode, redirectUrl);
+                        await window.DVQTBookingHelper.showSuccessAlert(accountResult || {isNew:false}, bookingData.customer_phone, orderCodePadded, redirectUrl);
                     } else {
-                        Swal.fire('Thành công!', `Đơn hàng #${orderCode} đã được nhận.`, 'success')
+                        Swal.fire('Thành công!', `Đơn hàng #${orderCodePadded} đã được nhận.`, 'success')
                             .then(() => window.location.href = 'views/pages/customer/trang-ca-nhan.html');
                     }
 

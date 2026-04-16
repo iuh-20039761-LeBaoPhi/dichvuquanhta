@@ -66,11 +66,44 @@
         if (_galleryMode === 'video') {
             imgEl.style.display = 'none';
             thumbsWrap.classList.add('is-hidden');
-            videoEl.style.display = 'block';
-            const sep = _galleryVideoUrl.includes('?') ? '&' : '?';
-            videoEl.src = `${_galleryVideoUrl}${sep}autoplay=1&rel=0`;
+            
+            // Phân biệt Video Local và Video YouTube/nhúng
+            const isLocal = !(_galleryVideoUrl.startsWith('http') || _galleryVideoUrl.startsWith('//'));
+            
+            if (isLocal) {
+                // Video local: Dùng thẻ <video> (cần tạo nếu chưa có hoặc dùng chung)
+                // Trong code này ta tạm dùng iframe cho đơn giản nhưng sửa src, 
+                // thực tế nên đổi hẳn sang <video> để có control tốt hơn.
+                // Ở đây tôi sẽ cập nhật hàm build để hỗ trợ cả 2.
+                const videoContainer = videoEl.parentElement;
+                videoEl.style.display = 'none';
+                
+                let localPlayer = document.getElementById('galleryLocalVideo');
+                if (!localPlayer) {
+                    localPlayer = document.createElement('video');
+                    localPlayer.id = 'galleryLocalVideo';
+                    localPlayer.className = 'gallery-main-video';
+                    localPlayer.controls = true;
+                    localPlayer.autoplay = true;
+                    videoContainer.appendChild(localPlayer);
+                }
+                localPlayer.style.display = 'block';
+                localPlayer.src = _galleryVideoUrl;
+            } else {
+                const localPlayer = document.getElementById('galleryLocalVideo');
+                if (localPlayer) localPlayer.style.display = 'none';
+
+                videoEl.style.display = 'block';
+                const sep = _galleryVideoUrl.includes('?') ? '&' : '?';
+                videoEl.src = `${_galleryVideoUrl}${sep}autoplay=1&rel=0`;
+            }
             document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
         } else {
+            const localPlayer = document.getElementById('galleryLocalVideo');
+            if (localPlayer) {
+                 localPlayer.style.display = 'none';
+                 localPlayer.src = '';
+            }
             videoEl.style.display = 'none';
             videoEl.src = '';
             imgEl.style.display = 'block';
@@ -253,7 +286,16 @@
             </div>
         `;
 
-        _galleryVideoUrl = car.videourl || '';
+        if (car.videourl) {
+            if (car.videourl.startsWith('http') || car.videourl.startsWith('//')) {
+                _galleryVideoUrl = car.videourl;
+            } else {
+                // Video cục bộ lưu trong assets/video/cars/
+                _galleryVideoUrl = 'assets/video/cars/' + car.videourl;
+            }
+        } else {
+            _galleryVideoUrl = '';
+        }
         window._currentCarData = car; // Store for booking confirmation
         setGalleryMode('image');
     }
@@ -488,6 +530,27 @@
                 this.disabled = true;
                 this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
                 
+                const buildSheetData = (formData, orderCode) => {
+                    return {
+                        sheet_type: "Thuê xe",
+                        "Mã đơn": orderCode || "",
+                        "Tên khách": formData.customer_name || "",
+                        "Số điện thoại": formData.customer_phone || "",
+                        "Email": formData.customer_email || "",
+                        "Địa chỉ": formData.customer_address || "",
+                        "Tên xe": formData.car_name || "",
+                        "Ngày nhận": formData.pickup_date + " " + formData.pickup_time,
+                        "Ngày trả": formData.return_date + " " + formData.return_time,
+                        "Số ngày thuê": formData.days || 0,
+                        "Giá thuê/ngày": Number(formData.price_per_day || 0),
+                        "Phí dịch vụ": Number(formData.addon_total || 0),
+                        "Tổng tiền": Number(formData.total_cost || 0),
+                        "Dịch vụ kèm": formData.addon_names ? formData.addon_names.join(", ") : "",
+                        "Ghi chú": formData.notes || "",
+                        "Ngày đặt": new Date().toLocaleString('vi-VN')
+                    };
+                };
+
                 const custName = form.customer_name.value.trim();
                 const custPhone = form.customer_phone.value.trim();
                 
@@ -535,13 +598,36 @@
                         created_at: nowStr
                     };
                     const res = await DVQTKrud.insertRow('datlich_thuexe', payload);
-                    const orderCode = res ? String(res.id).padStart(7, '0') : null;
+                    const rawId = res ? (res.id || (res.data && res.data.id)) : null;
+                    const orderCodePadded = rawId ? String(rawId).padStart(7, '0') : "N/A";
+
+                    // Gửi lên Google Sheet (fire-and-forget)
+                    if (window.saveToGoogleSheet) {
+                        const sheetData = buildSheetData({
+                            customer_name: custName,
+                            customer_phone: custPhone,
+                            customer_email: form.customer_email.value,
+                            car_name: car.tenxe,
+                            pickup_date: pickupDateVal,
+                            pickup_time: document.getElementById('pickupTime')?.value || '08:00',
+                            return_date: returnDateVal,
+                            return_time: document.getElementById('returnTime')?.value || '08:00',
+                            customer_address: form.customer_address.value,
+                            notes: form.notes.value,
+                            days: days,
+                            price_per_day: pricePerDay,
+                            addon_total: addonTotal,
+                            total_cost: totalCost,
+                            addon_names: addonNames
+                        }, rawId);
+                        window.saveToGoogleSheet(sheetData).catch(e => console.error('Gửi Sheet thất bại:', e));
+                    }
 
                     // BƯỚC 3: Xử lý kết quả
                     if (window.DVQTBookingHelper) {
                         const helper = window.DVQTBookingHelper;
                         const redirectUrl = 'views/pages/customer/trang-ca-nhan.html';
-                        await helper.showSuccessAlert(accountResult || {isNew:false}, custPhone, orderCode, redirectUrl);
+                        await helper.showSuccessAlert(accountResult || {isNew:false}, custPhone, orderCodePadded, redirectUrl);
                     } else {
                         // Fallback cũ
                         if (accountResult && accountResult.isNew) {
@@ -549,7 +635,7 @@
                             await Swal.fire({
                                 title: '<span style="color:#0ea5e9">Đặt xe thành công!</span>',
                                 html: `<div style="text-align:left; line-height:1.8;">
-                                    <p><i class="fas fa-check-circle text-success me-1"></i> Mã đơn: <strong>#${orderCode || 'Đang xử lý'}</strong></p>
+                                    <p><i class="fas fa-check-circle text-success me-1"></i> Mã đơn: <strong>#${orderCodePadded}</strong></p>
                                     <p><i class="fas fa-user-plus text-primary me-1"></i> Tài khoản đã được tạo tự động:</p>
                                     <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; margin:8px 0;">
                                         <p style="margin:4px 0;"><strong>SĐT:</strong> ${custPhone}</p>
@@ -562,7 +648,7 @@
                             });
                             window.location.href = 'views/pages/customer/trang-ca-nhan.html';
                         } else {
-                            Swal.fire('Thành công!', `Đơn hàng #${orderCode} đã được tiếp nhận.`, 'success')
+                            Swal.fire('Thành công!', `Đơn hàng #${orderCodePadded} đã được tiếp nhận.`, 'success')
                                 .then(() => window.location.href = 'views/pages/customer/trang-ca-nhan.html');
                         }
                     }

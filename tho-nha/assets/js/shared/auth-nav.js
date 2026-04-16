@@ -75,6 +75,18 @@
         }
 
         function applyGuestUi() {
+            const ROOT = (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) 
+                ? window.DVQTApp.ROOT_URL 
+                : (window.location.pathname.indexOf('/tho-nha/') !== -1 
+                    ? window.location.pathname.substring(0, window.location.pathname.indexOf('/tho-nha/')) 
+                    : (window.location.pathname.split('/')[1] && !window.location.pathname.split('/')[1].includes('.') && window.location.pathname.split('/')[1] !== 'index.php' ? '/' + window.location.pathname.split('/')[1] : ''));
+
+            const loginHrefs = [document.getElementById('auth-login-link'), document.getElementById('mobile-auth-login-link')];
+            const regHrefs   = [document.getElementById('auth-register-link'), document.getElementById('mobile-auth-register-link')];
+
+            loginHrefs.forEach(el => { if(el) el.href = ROOT + '/public/dang-nhap.html?service=thonha'; });
+            regHrefs.forEach(el => { if(el) el.href = ROOT + '/public/dang-ky.html?service=thonha'; });
+
             if (guestEl) guestEl.style.display = '';
             if (userEl) userEl.style.display = 'none';
             if (mobileGuest) mobileGuest.style.display = '';
@@ -116,8 +128,13 @@
                         }
 
                         // 2. Chuyển hướng ngay lập tức về trang đăng nhập chung
-                        const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : window.location.pathname.split('/tho-nha/')[0];
-                        window.location.href = root + '/public/dang-nhap.html?service=thonha';
+                        const ROOT = (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) 
+                            ? window.DVQTApp.ROOT_URL 
+                            : (window.location.pathname.indexOf('/tho-nha/') !== -1 
+                                ? window.location.pathname.substring(0, window.location.pathname.indexOf('/tho-nha/')) 
+                                : (window.location.pathname.split('/')[1] && !window.location.pathname.split('/')[1].includes('.') && window.location.pathname.split('/')[1] !== 'index.php' ? '/' + window.location.pathname.split('/')[1] : ''));
+                        
+                        window.location.href = ROOT + '/public/dang-nhap.html?service=thonha';
                     }
                 });
             };

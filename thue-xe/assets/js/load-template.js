@@ -21,19 +21,15 @@ async function loadHeader() {
 
     // Tự động nạp DVQT Core nếu chưa có
     const ROOT_DETECTOR = () => {
-        // Nếu DVQTApp đã nạp và có ROOT_URL, dùng nó luôn
         if (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) return window.DVQTApp.ROOT_URL;
-
         const path = window.location.pathname;
         const lowerPath = path.toLowerCase();
-        
-        // Theo dõi chuỗi /thue-xe/ để cắt root
         const idx = lowerPath.indexOf('/thue-xe/');
         if (idx !== -1) return path.substring(0, idx);
-        
-        // Nếu không tìm thấy thue-xe, lấy segment đầu tiên làm root (dùng cho XAMPP)
         const parts = path.split('/');
-        return parts[1] && !parts[1].includes('.') ? '/' + parts[1] : '';
+        // Nếu là XAMPP (có tên thư mục ở segment 1)
+        if (parts[1] && !parts[1].includes('.') && parts[1] !== 'index.php') return '/' + parts[1];
+        return '';
     };
     const BASE = ROOT_DETECTOR();
     
@@ -115,15 +111,7 @@ function initAuthNav() {
     const userEl    = document.getElementById('auth-user');
 
     // Helper: Tìm Base URL của hệ thống (Ví dụ: /Test)
-    const getRoot = () => {
-        if (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) return window.DVQTApp.ROOT_URL;
-        // Tự detect nếu chưa nạp DVQTApp
-        const path = window.location.pathname;
-        const idx = path.indexOf('/thue-xe/');
-        if (idx !== -1) return path.substring(0, idx);
-        return '/Test';
-    };
-    const ROOT = getRoot();
+    const ROOT = (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) ? window.DVQTApp.ROOT_URL : BASE;
 
     // 1. Cập nhật các link dành cho khách (Guest)
     const loginLink = document.getElementById('auth-login-link');

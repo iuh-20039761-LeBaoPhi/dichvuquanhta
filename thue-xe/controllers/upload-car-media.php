@@ -5,9 +5,9 @@
  */
 header('Content-Type: application/json');
 
-// Cấu hình thư mục (Tính từ gốc website)
-$imgDir = '../../images/cars/';
-$videoDir = '../../video-cards/';
+// Cấu hình thư mục (Đường dẫn tương đối từ file controller này)
+$imgDir = '../assets/images/cars/';
+$videoDir = '../assets/video/cars/';
 
 // Tạo thư mục nếu chưa có
 if (!is_dir($imgDir)) mkdir($imgDir, 0777, true);
