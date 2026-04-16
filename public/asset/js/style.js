@@ -11,7 +11,7 @@ window.addEventListener("scroll", () => {
   }
 });
 
-document.querySelectorAll(".service-card").forEach((card) => {
+document.querySelectorAll(".service-item").forEach((card) => {
   card.addEventListener("mouseenter", () => {});
 });
 
