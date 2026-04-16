@@ -21,6 +21,7 @@
     let pendingStandaloneAction = null;
     let shouldReturnToBookingAfterConfirmHidden = false;
 
+    // Dọn dẹp các thành phần modal khi chạy ở chế độ standalone
     function cleanupStandaloneModalArtifacts() {
       if (isEmbeddedMode) return;
 
@@ -33,6 +34,7 @@
       document.body.style.removeProperty("padding-right");
     }
 
+    // Hiển thị bước đặt lịch
     function showBookingStep() {
       if (isEmbeddedMode) {
         bootstrap.Modal.getOrCreateInstance(bookingModalEl).show();
@@ -44,6 +46,7 @@
       bookingModalEl.setAttribute("aria-hidden", "false");
     }
 
+    // Ẩn bước đặt lịch
     function hideBookingStep() {
       if (isEmbeddedMode) {
         bootstrap.Modal.getOrCreateInstance(bookingModalEl).hide();
@@ -54,17 +57,19 @@
       bookingModalEl.setAttribute("aria-hidden", "true");
     }
 
+    // Chuẩn hóa giá trị hiển thị
     function normalizeValue(value) {
       if (value == null) return "-";
       const text = String(value).trim();
       return text || "-";
     }
 
+    // Định dạng thời gian đặt lịch để xem trước
     function formatBookingTimeForPreview(rawValue) {
       const text = String(rawValue || "").trim();
       if (!text) return "";
 
-      // Input datetime-local returns yyyy-mm-ddTHH:MM; display it in vi-VN.
+      // Input datetime-local trả về yyyy-mm-ddTHH:MM; hiển thị theo định dạng vi-VN.
       if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(text)) {
         const date = new Date(text);
         if (Number.isFinite(date.getTime())) {
@@ -80,6 +85,7 @@
       return text;
     }
 
+    // Xóa nội dung truyền thông xác nhận
     function clearConfirmMedia() {
       confirmMediaUrls.forEach((url) => URL.revokeObjectURL(url));
       confirmMediaUrls.length = 0;
@@ -92,6 +98,7 @@
       }
     }
 
+    // Tạo thành phần hiển thị truyền thông xác nhận
     function createConfirmMediaItem(fileName, previewNode) {
       const item = document.createElement("div");
       item.className = "confirm-media-item";
@@ -106,6 +113,7 @@
       return item;
     }
 
+    // Hiển thị danh sách file xác nhận
     function renderConfirmFileList(container, files, type) {
       if (!container) return;
 
@@ -139,12 +147,14 @@
       });
     }
 
+    // Hiển thị tất cả truyền thông xác nhận
     function renderConfirmMedia() {
       clearConfirmMedia();
       renderConfirmFileList(confirmImages, imageInput?.files, "image");
       renderConfirmFileList(confirmVideos, videoInput?.files, "video");
     }
 
+    // Thu thập dữ liệu đặt lịch từ form
     function collectBookingData() {
       const formData = new FormData(form);
       const data = Object.fromEntries(formData.entries());
@@ -239,6 +249,7 @@
       };
     }
 
+    // Hiển thị dữ liệu lên modal xác nhận
     function renderConfirmModal(preview) {
       const fields = {
         confirmName: preview.name,
@@ -266,16 +277,17 @@
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (typeof utils.fillBookingTimeNow === "function") {
-        // Only auto-fill when user left the field empty.
+        // Chỉ tự động điền khi người dùng để trống.
         utils.fillBookingTimeNow(false);
       }
 
       const isLoggedIn = await isUserLoggedInForBooking();
-      if (!isLoggedIn && !hasStandaloneAuthorizedAccess()) {
-        hideBookingStep();
-        window.location.href = "dang-nhap.html";
-        return;
-      }
+      // Bỏ qua chặn đăng nhập để hỗ trợ Auto-Registration (Book First, Register Later)
+      // if (!isLoggedIn && !hasStandaloneAuthorizedAccess()) {
+      //   hideBookingStep();
+      //   window.location.href = "dang-nhap.html";
+      //   return;
+      // }
 
       const { preview } = collectBookingData();
       renderConfirmModal(preview);
@@ -285,6 +297,7 @@
       bootstrap.Modal.getOrCreateInstance(confirmModalEl).show();
     });
 
+    // Ẩn modal xác nhận và chờ quay lại bước trước hoặc hoàn tất
     function hideConfirmAndQueueReturn(action) {
       shouldReturnToBookingAfterConfirmHidden = action === "show-booking";
       pendingStandaloneAction = isEmbeddedMode ? null : action;
@@ -295,6 +308,7 @@
       hideConfirmAndQueueReturn("show-booking");
     }
 
+    // Kiểm tra người dùng đã đăng nhập chưa
     async function isUserLoggedInForBooking() {
       const params = new URLSearchParams(window.location.search || "");
       const urlU = params.get("sodienthoai");
@@ -351,6 +365,7 @@
       }
     }
 
+    // Kiểm tra quyền truy cập chế độ standalone
     function hasStandaloneAuthorizedAccess() {
       if (!document.body.classList.contains("booking-standalone")) {
         return false;
@@ -364,6 +379,7 @@
       return true;
     }
 
+    // Chuyển đổi định dạng tiền tệ sang số
     function normalizeMoneyToNumber(value) {
       if (typeof value === "number" && Number.isFinite(value)) {
         return Math.round(value);
@@ -379,6 +395,7 @@
       return sign * Number(digits);
     }
 
+    // Xây dựng dữ liệu gửi lên Google Sheet
     function buildBookingSheetPayload(formData) {
       return {
         sheet_type: "Giặt ủi nhanh",
@@ -404,6 +421,7 @@
       };
     }
 
+    // Lưu dữ liệu vào Google Sheet
     function saveToGoogleSheet(data) {
       if (typeof window.saveToGoogleSheet !== "function") {
         return Promise.reject(new Error("driveUtil.js chưa được nạp."));
@@ -428,11 +446,12 @@
       );
     }
 
+    // Lưu dữ liệu vào CSDL qua KRUD API
     function saveToKrudApi(data) {
       if (!config.BOOKING_KRUD_TABLE) {
         return Promise.reject(new Error("Thiếu cấu hình BOOKING_KRUD_TABLE."));
       }
-      console.log("Saving to KRUD API with data:", data, "and config:", config);
+      console.log("Đang lưu vào KRUD API với dữ liệu:", data);
       const dbPayload = {
         hovaten: data.name || "",
         sodienthoai: data.phone || "",
@@ -452,7 +471,7 @@
         ghichu: data.message || "",
         trangthaithanhtoan: "Unpaid",
       };
-      console.log("Constructed KRUD payload:", dbPayload);
+      
       return Promise.resolve(
         krud("insert", config.BOOKING_KRUD_TABLE, dbPayload),
       ).then((res) => {
@@ -467,6 +486,7 @@
       });
     }
 
+    // Xử lý khi nhấn nút xác nhận cuối cùng
     async function handleConfirmSubmit() {
       const originalText = confirmBtn.textContent;
 
@@ -475,6 +495,11 @@
 
       try {
         const { data } = collectBookingData();
+
+        // Tự động tìm hoặc tạo tài khoản nếu khách chưa đăng nhập
+        if (window.BookingAuthHelper) {
+           await window.BookingAuthHelper.ensureAccount(data.name, data.phone);
+        }
 
         await Promise.all([saveToGoogleSheet(data), saveToKrudApi(data)]);
 

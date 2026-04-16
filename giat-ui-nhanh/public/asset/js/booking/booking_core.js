@@ -62,6 +62,7 @@
     let transportFee = 0;
     shipInput.value = transportFee.toLocaleString("vi-VN");
 
+    // Hiển thị phụ phí giao hàng
     function setShippingSurchargeDisplay(value) {
       const rawValue = Math.max(0, Math.round(Number(value) || 0));
       if (!shippingSurchargeInput) return;
@@ -86,6 +87,7 @@
     let addressCalcTimer = null;
     let transportOptions = [];
 
+    // Đảm bảo phần ghi chú khoảng cách giao hàng tồn tại
     function ensureShippingDistanceNoteElement() {
       if (!shippingSurchargeInput) return null;
 
@@ -103,6 +105,7 @@
 
     const shippingDistanceNoteEl = ensureShippingDistanceNoteElement();
 
+    // Cập nhật hiển thị khoảng cách giao hàng
     function setShippingDistanceDisplay(distanceKm, source = null) {
       if (!shippingDistanceNoteEl) return;
 
@@ -119,10 +122,12 @@
       shippingDistanceNoteEl.textContent = `Quãng đường: ${distanceKm.toFixed(1)} km${suffix}`;
     }
 
+    // Kiểm tra tọa độ hợp lệ
     function isValidCoordinate(value) {
       return typeof value === "number" && Number.isFinite(value);
     }
 
+    // Tính khoảng cách theo công thức Haversine (đường chim bay)
     function haversineDistanceKm(from, to) {
       const R = 6371;
       const toRad = (deg) => (Number(deg) * Math.PI) / 180;
@@ -142,6 +147,7 @@
       return R * c;
     }
 
+    // Kiểm tra xem ID dịch vụ có tồn tại trong chuỗi không
     function hasServiceId(rawServiceIds, targetServiceId) {
       const target = String(targetServiceId || "").trim();
       if (!target) return false;
@@ -153,6 +159,7 @@
         .includes(target);
     }
 
+    // Phân tích trường dữ liệu danh sách
     function parseListField(value) {
       if (Array.isArray(value)) {
         return value
@@ -180,23 +187,26 @@
         .filter(Boolean);
     }
 
+    // Chuẩn hóa đơn vị dịch vụ
     function normalizeServiceUnit(value) {
       return String(value || "")
         .trim()
         .toLowerCase();
     }
 
+    // Chuẩn hóa hàng dữ liệu dịch vụ
     function normalizeServiceRow(row) {
       return {
         id: String(row?.id || "").trim(),
         service_name: String(row?.tendichvu || "").trim(),
-        price: Number(row?.giadichvu || 0),
+        price: Number(row?.giadichvu || 0) || 0,
         price_unit: normalizeServiceUnit(row?.donvi),
         work_items: parseListField(row?.congviec),
         support_chemicals: parseListField(row?.hoachat),
       };
     }
 
+    // Chuẩn hóa hàng dữ liệu vận chuyển
     function normalizeTransportRow(row) {
       return {
         name: String(row?.tenphuongthuc || "").trim(),
@@ -204,6 +214,7 @@
       };
     }
 
+    // Lấy danh sách hàng từ bảng CSDL
     async function listTableRows(tableName, limit = 3000) {
       if (window.DVQTKrud && typeof window.DVQTKrud.listTable === "function") {
         return window.DVQTKrud.listTable(tableName, { limit });
@@ -217,9 +228,10 @@
         return result?.data || (Array.isArray(result) ? result : []);
       }
 
-      throw new Error("Khong co API de doc du lieu");
+      throw new Error("Không có API để đọc dữ liệu");
     }
 
+    // Tải danh mục dịch vụ
     async function loadServiceCatalog() {
       const rows = await listTableRows("dichvu_giatuinhanh", 3000);
       services = (Array.isArray(rows) ? rows : [])
@@ -228,6 +240,7 @@
         .sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
     }
 
+    // Tải các tùy chọn vận chuyển
     async function loadTransportOptions() {
       const rows = await listTableRows("phuongthucgiaonhan", 3000);
       transportOptions = (Array.isArray(rows) ? rows : [])
@@ -235,10 +248,12 @@
         .filter((item) => item.name);
     }
 
+    // Lấy danh sách người dùng
     async function listNguoidungRows() {
       return listTableRows("nguoidung", 3000);
     }
 
+    // Tải vị trí các nhà cung cấp
     async function loadProviderLocations() {
       const rows = await listNguoidungRows();
 
@@ -257,6 +272,7 @@
         );
     }
 
+    // Tìm vị trí nhà cung cấp gần nhất
     function findNearestProviderLocation(customerCoords) {
       if (!providerLocations.length) return null;
 
@@ -274,6 +290,7 @@
       return nearest;
     }
 
+    // Lấy tọa độ khách hàng đã lưu trong cache (dataset)
     function getCachedCustomerCoords() {
       if (!addressInput) return null;
 
@@ -295,6 +312,7 @@
       return { lat, lng };
     }
 
+    // Tra cứu tọa độ từ địa chỉ (Geocoding)
     async function geocodeAddress(address) {
       const endpoint = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=vn&q=${encodeURIComponent(address)}`;
       const res = await fetch(endpoint, {
@@ -302,7 +320,7 @@
       });
 
       if (!res.ok) {
-        throw new Error("Không thể geocode địa chỉ khách hàng");
+        throw new Error("Không thể tra cứu tọa độ từ địa chỉ");
       }
 
       const data = await res.json();
@@ -318,24 +336,26 @@
       };
     }
 
+    // Lấy khoảng cách đường bộ thực tế từ OSRM
     async function getRoadDistanceKm(from, to) {
       const endpoint = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=false&alternatives=false&steps=false`;
       const res = await fetch(endpoint);
 
       if (!res.ok) {
-        throw new Error("Không thể lấy quãng đường thực tế");
+        throw new Error("Không thể lấy quãng đường bộ thực tế");
       }
 
       const data = await res.json();
       const route = data?.routes?.[0];
 
       if (!route || typeof route.distance !== "number") {
-        throw new Error("Không có dữ liệu tuyến đường");
+        throw new Error("Không có dữ liệu tuyến đường bộ");
       }
 
       return route.distance / 1000;
     }
 
+    // Tính toán lại khoảng cách
     async function recalculateRoadDistance(force = false) {
       const addressText = (addressInput?.value || "").trim();
 
@@ -352,13 +372,31 @@
         const customerCoords =
           getCachedCustomerCoords() || (await geocodeAddress(addressText));
 
+        if (addressInput && customerCoords && !getCachedCustomerCoords()) {
+          addressInput.dataset.lat = customerCoords.lat;
+          addressInput.dataset.lng = customerCoords.lng;
+          addressInput.dataset.coordAddress = addressText;
+
+          const toaDoBadges = document.getElementById("toaDoHienThi");
+          if (toaDoBadges) {
+            toaDoBadges.innerHTML = `
+              <span class="badge bg-info text-dark me-2 border border-info rounded-pill px-3 py-2 shadow-sm">
+                <i class="fas fa-location-arrow me-1"></i> Lat: <strong>${customerCoords.lat.toFixed(6)}</strong>
+              </span>
+              <span class="badge bg-success text-white border border-success rounded-pill px-3 py-2 shadow-sm">
+                <i class="fas fa-map-marker-alt me-1"></i> Lng: <strong>${customerCoords.lng.toFixed(6)}</strong>
+              </span>
+            `;
+          }
+        }
+
         providerLocation = findNearestProviderLocation(customerCoords);
         if (
           !providerLocation ||
           !isValidCoordinate(providerLocation.lat) ||
           !isValidCoordinate(providerLocation.lng)
         ) {
-          throw new Error("Khong tim thay nha cung cap co id_dichvu = 11");
+          throw new Error("Không tìm thấy nhà cung cấp (dịch vụ 11)");
         }
 
         let distanceKm;
@@ -386,7 +424,7 @@
 
         latestDistanceKm = null;
         latestDistanceSource = null;
-        console.error(error);
+        console.error("Lỗi tính khoảng cách:", error);
       } finally {
         if (token === transportCalcToken || force) {
           calculate();
@@ -394,6 +432,7 @@
       }
     }
 
+    // Lên lịch tính toán lại khoảng cách (Debounce)
     function scheduleRecalculateRoadDistance(delay = 700) {
       if (addressCalcTimer) {
         clearTimeout(addressCalcTimer);
@@ -404,6 +443,7 @@
       }, delay);
     }
 
+    // Ẩn/Hiện nhóm tùy chọn dịch vụ
     function toggleServiceOptionGroups(visible) {
       if (workItemsGroup) {
         workItemsGroup.style.display = visible ? "block" : "none";
@@ -415,6 +455,7 @@
 
     toggleServiceOptionGroups(false);
 
+    // Hiển thị danh sách checkbox (Công việc/Hóa chất)
     function renderCheckboxList(container, items, name) {
       if (!container) return;
 
@@ -463,6 +504,7 @@
       container.innerHTML = html;
     }
 
+    // Áp dụng chọn nhanh dịch vụ
     function applyQuickServiceSelection(serviceId) {
       if (!serviceId || !serviceSelect) return false;
 
@@ -478,6 +520,7 @@
       return true;
     }
 
+    // Gắn sự kiện đặt lịch nhanh
     if (document.body.dataset.quickBookingBound !== "true") {
       document.body.dataset.quickBookingBound = "true";
 
@@ -501,6 +544,7 @@
       });
     }
 
+    // Gắn sự kiện tự động điền thời gian
     if (document.body.dataset.bookingTimeAutoFillBound !== "true") {
       document.body.dataset.bookingTimeAutoFillBound = "true";
 
@@ -516,6 +560,7 @@
       });
     }
 
+    // Tải dữ liệu ban đầu
     const servicesPromise = loadServiceCatalog()
       .then(() => {
         services.forEach((service) => {
@@ -535,17 +580,17 @@
         }
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Lỗi tải danh mục:", error);
         services = [];
       });
 
     const transportPromise = loadTransportOptions().catch((error) => {
-      console.error(error);
+      console.error("Lỗi tải hình thức vận chuyển:", error);
       transportOptions = [];
     });
 
     const providerPromise = loadProviderLocations().catch((error) => {
-      console.error(error);
+      console.error("Lỗi tải vị trí đơn vị:", error);
       providerLocations = [];
       providerLocation = null;
     });
@@ -556,6 +601,7 @@
       },
     );
 
+    // Xử lý khi modal hiển thị
     if (bookingModalEl && !bookingModalEl.dataset.quickServiceSyncLoaded) {
       bookingModalEl.dataset.quickServiceSyncLoaded = "true";
       bookingModalEl.addEventListener("shown.bs.modal", function () {
@@ -571,6 +617,7 @@
       });
     }
 
+    // Sự kiện Thay đổi dịch vụ
     serviceSelect.addEventListener("change", function () {
       const serviceId = String(this.value || "").trim();
 
@@ -582,7 +629,6 @@
         toggleServiceOptionGroups(false);
 
         kgInput.value = "";
-
         kgBox.style.display = "block";
 
         priceInput.value = "";
@@ -630,9 +676,7 @@
       toggleServiceOptionGroups(true);
 
       const unit = service.price_unit;
-
       kgInput.value = 1;
-
       kgBox.style.display = "none";
 
       if (String(unit || "").toLowerCase() === "kg")
@@ -645,6 +689,7 @@
       calculate();
     });
 
+    // Sự kiện Thay đổi hình thức vận chuyển
     transportOptionSelect.addEventListener("change", function () {
       const option = this.options[this.selectedIndex];
 
@@ -658,10 +703,10 @@
       }
 
       transportFee = Number(option.dataset.price || 0);
-
       calculate();
     });
 
+    // Hàm tính toán tổng tiền và các loại phí
     function calculate() {
       const service = services.find(
         (s) => String(s.id) === serviceSelect.value,
@@ -669,7 +714,6 @@
       if (!service) return;
 
       const price = Number(service.price || 0);
-
       let quantity = 1;
 
       if (kgBox.style.display === "block") quantity = Number(kgInput.value);
@@ -726,6 +770,7 @@
 
     kgInput.addEventListener("input", calculate);
 
+    // Ràng buộc Thay đổi các hạng mục công việc
     if (workItemsList && !workItemsList.dataset.priceSyncBound) {
       workItemsList.dataset.priceSyncBound = "true";
       workItemsList.addEventListener("change", function (event) {
@@ -741,6 +786,7 @@
       });
     }
 
+    // Ràng buộc Thay đổi các loại hóa chất
     if (chemicalsList && !chemicalsList.dataset.lockMandatoryBound) {
       chemicalsList.dataset.lockMandatoryBound = "true";
       chemicalsList.addEventListener("change", function (event) {
@@ -755,6 +801,7 @@
       });
     }
 
+    // Sự kiện Thay đổi ô nhập Địa chỉ
     if (addressInput) {
       addressInput.addEventListener("input", function () {
         if (addressInput.dataset.coordAddress !== (addressInput.value || "")) {
@@ -772,6 +819,7 @@
       });
     }
 
+    // Khởi tạo các module con
     if (app.media && typeof app.media.initMediaUpload === "function") {
       app.media.initMediaUpload();
     }
@@ -791,4 +839,3 @@
   app.core = app.core || {};
   app.core.initBookingModal = initBookingModal;
 })(window);
-

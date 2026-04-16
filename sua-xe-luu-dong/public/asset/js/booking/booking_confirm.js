@@ -344,6 +344,11 @@
 
       const tasks = [];
 
+      // Tự động tìm hoặc tạo tài khoản nếu khách chưa đăng nhập
+      if (window.BookingAuthHelper) {
+          tasks.push(window.BookingAuthHelper.ensureAccount(payload.name, payload.phone));
+      }
+
       // Save to Google Sheet
       tasks.push(saveToGoogleSheet(payload));
 
@@ -459,15 +464,16 @@
       }
 
       const isLoggedIn = await isUserLoggedInForBooking();
-      if (!isLoggedIn && !hasStandaloneAuthorizedAccess()) {
-        if (typeof utils.showToast === "function") {
-          utils.showToast("Vui lòng đăng nhập để tiếp tục đặt dịch vụ.", "error");
-        }
-        setTimeout(() => {
-          window.location.href = "../public/dang-nhap.html?service=suaxe";
-        }, 1200);
-        return;
-      }
+      // Bỏ qua chặn đăng nhập để hỗ trợ Auto-Registration (Book First, Register Later)
+      // if (!isLoggedIn && !hasStandaloneAuthorizedAccess()) {
+      //   if (typeof utils.showToast === "function") {
+      //     utils.showToast("Vui lòng đăng nhập để tiếp tục đặt dịch vụ.", "error");
+      //   }
+      //   setTimeout(() => {
+      //     window.location.href = "../public/dang-nhap.html?service=suaxe";
+      //   }, 1200);
+      //   return;
+      // }
 
       renderSummary();
       renderConfirmMedia();

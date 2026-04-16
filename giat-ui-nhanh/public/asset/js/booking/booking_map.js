@@ -161,6 +161,18 @@
             marker.bindPopup(`<small>${addr.value}</small>`).openPopup();
           }
 
+          const toaDoBadges = document.getElementById("toaDoHienThi");
+          if (toaDoBadges) {
+            toaDoBadges.innerHTML = `
+              <span class="badge bg-info text-dark me-2 border border-info rounded-pill px-3 py-2 shadow-sm">
+                <i class="fas fa-location-arrow me-1"></i> Lat: <strong>${Number(lat).toFixed(6)}</strong>
+              </span>
+              <span class="badge bg-success text-white border border-success rounded-pill px-3 py-2 shadow-sm">
+                <i class="fas fa-map-marker-alt me-1"></i> Lng: <strong>${Number(lng).toFixed(6)}</strong>
+              </span>
+            `;
+          }
+
           addr.dispatchEvent(new Event("input", { bubbles: true }));
           addr.dispatchEvent(new Event("change", { bubbles: true }));
         })
@@ -170,6 +182,19 @@
           addr.dataset.lat = String(lat);
           addr.dataset.lng = String(lng);
           addr.dataset.coordAddress = addr.value;
+
+          const toaDoBadges = document.getElementById("toaDoHienThi");
+          if (toaDoBadges) {
+             toaDoBadges.innerHTML = `
+              <span class="badge bg-info text-dark me-2 border border-info rounded-pill px-3 py-2 shadow-sm">
+                <i class="fas fa-location-arrow me-1"></i> Lat: <strong>${Number(lat).toFixed(6)}</strong>
+              </span>
+              <span class="badge bg-success text-white border border-success rounded-pill px-3 py-2 shadow-sm">
+                <i class="fas fa-map-marker-alt me-1"></i> Lng: <strong>${Number(lng).toFixed(6)}</strong>
+              </span>
+            `;
+          }
+
           addr.dispatchEvent(new Event("input", { bubbles: true }));
           addr.dispatchEvent(new Event("change", { bubbles: true }));
         });

@@ -5,6 +5,7 @@
     "booking_modal.js",
     "booking_map.js",
     "booking_media.js",
+    "booking_auth_helper.js",
     "booking_confirm.js",
     "booking_core.js",
     "booking_bootstrap.js",

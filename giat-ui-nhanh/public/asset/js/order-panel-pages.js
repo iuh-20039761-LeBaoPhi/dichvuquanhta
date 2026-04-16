@@ -963,7 +963,7 @@
     }
 
     return Promise.resolve(
-      shared.fetchOrdersByPhone(BOOKING_TABLE, user && user.user_tel, 10, {
+      shared.fetchOrdersByPhone(BOOKING_TABLE, user && user.user_tel, 500, {
         userTable: USER_TABLE,
         customerTable: USER_TABLE,
         providerTable: USER_TABLE,
@@ -1187,9 +1187,9 @@
 
   function handleCompleteOrder(orderId) {
     var sh = getShared();
-    if (typeof sh.completeProviderOrder === "function") {
-      return sh.completeProviderOrder(orderId, BOOKING_TABLE);
-    }
+    // if (typeof sh.completeProviderOrder === "function") {
+    //   return sh.completeProviderOrder(orderId, BOOKING_TABLE);
+    // }
     if (typeof sh.updateOrder === "function") {
       return sh.updateOrder(BOOKING_TABLE, orderId, {
         ngayhoanthanh: new Date().toISOString(),
@@ -1201,9 +1201,9 @@
 
   function handleStartOrder(orderId) {
     var sh = getShared();
-    if (typeof sh.startProviderOrder === "function") {
-      return sh.startProviderOrder(orderId, BOOKING_TABLE);
-    }
+    // if (typeof sh.startProviderOrder === "function") {
+    //   return sh.startProviderOrder(orderId, BOOKING_TABLE);
+    // }
     if (typeof sh.updateOrder === "function") {
       return sh.updateOrder(BOOKING_TABLE, orderId, {
         ngaybatdau: new Date().toISOString(),
@@ -1214,9 +1214,9 @@
 
   function handleCancelOrder(orderId) {
     var sh = getShared();
-    if (typeof sh.updateOrder !== "function") {
-      return Promise.reject(new Error("Chưa sẵn sàng chức năng hủy đơn."));
-    }
+    // if (typeof sh.updateOrder !== "function") {
+    //   return Promise.reject(new Error("Chưa sẵn sàng chức năng hủy đơn."));
+    // }
     return sh.updateOrder(BOOKING_TABLE, orderId, {
       ngayhuy: new Date().toISOString(),
     });
