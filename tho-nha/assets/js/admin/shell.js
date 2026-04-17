@@ -3,7 +3,6 @@
 // Global shared variables
 window.allOrders = [];
 window.allCategories = [];
-window.allProviders = [];
 
 // Check login via Central SSO
 async function checkAdminLogin() {
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==================== NAVIGATION ====================
 
 function setupNavigation() {
-    const links = ['dashboard', 'orders', 'services', 'providers'];
+    const links = ['dashboard', 'orders', 'services'];
     links.forEach(page => {
         const el = document.getElementById(page + 'Link');
         if (el) {
@@ -88,7 +87,7 @@ function loadPage(page) {
     currentPage = page;
     
     // Reset flags
-    ['dashboard', 'orders', 'services', 'providers'].forEach(p => {
+    ['dashboard', 'orders', 'services'].forEach(p => {
         window[p + 'Initialized'] = false;
     });
 
@@ -99,8 +98,7 @@ function loadPage(page) {
     const titles = {
         dashboard: 'Tổng Quan',
         orders: 'Quản Lý Đơn Hàng',
-        services: 'Quản Lý Dịch Vụ',
-        providers: 'Quản Lý Nhà Cung Cấp'
+        services: 'Quản Lý Dịch Vụ'
     };
     const titleEl = document.getElementById('pageTitleDisplay');
     if (titleEl) titleEl.textContent = titles[page] || 'Admin';
@@ -108,15 +106,13 @@ function loadPage(page) {
     const scriptFiles = {
         dashboard: 'dashboard.js',
         orders: 'orders.js',
-        services: 'services.js',
-        providers: 'providers.js'
+        services: 'services.js'
     };
 
     const htmlFiles = {
         dashboard: 'tong-quan.html',
         orders: 'don-hang.html',
-        services: 'dich-vu.html',
-        providers: 'nha-cung-cap.html'
+        services: 'dich-vu.html'
     };
 
     Promise.all([
@@ -228,27 +224,3 @@ async function loadAllServices() {
         return [];
     }
 }
-
-function normalizeProviderStatus(value) {
-    const s = String(value || '').trim().toLowerCase();
-    if (['pending', 'cho_duyet', 'waiting'].includes(s)) return 'pending';
-    if (['active', 'hoat_dong'].includes(s)) return 'active';
-    return s;
-}
-
-function updateProviderBadge() {
-    const krudHelper = window.DVQTKrud;
-    if (!krudHelper) return;
-
-    krudHelper.listTable('nguoidung')
-        .then((rows) => {
-            const blocked = rows.filter(item => (item.trangthai || item.status) === 'blocked').length;
-            const badge = document.getElementById('providerBadge');
-            if (!badge) return;
-            badge.textContent = blocked;
-            blocked > 0 ? badge.classList.remove('hide') : badge.classList.add('hide');
-        })
-        .catch(() => {});
-}
-
-document.addEventListener('DOMContentLoaded', () => { setTimeout(updateProviderBadge, 1000); });

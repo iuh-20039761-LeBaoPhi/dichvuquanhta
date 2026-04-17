@@ -605,6 +605,8 @@
         maplng: null,
       },
       raw: row || null,
+      anh_id: (row && row.anh_id) || "",
+      video_id: (row && row.video_id) || "",
       items: [
         {
           name: (row && row.dichvu) || "Dịch vụ",
@@ -2055,31 +2057,37 @@
       grid.className = "review-media-grid";
 
       list.forEach(function (item, index) {
-        var url = resolveReviewMediaUrl(item);
-        if (!url) return;
-        var isVideo = /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/.test(
-          url.toLowerCase(),
-        );
+        var isGoogleDrive = item && !item.includes("/") && !item.includes(".");
+        var url = isGoogleDrive ? "" : resolveReviewMediaUrl(item);
+        
+        var lower = url.toLowerCase();
+        var isVideo = !isGoogleDrive && /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/.test(lower);
 
         var link = document.createElement("a");
         link.className = "review-media-item";
-        link.href = url;
+        link.href = isGoogleDrive ? "https://drive.google.com/file/d/" + item + "/view" : url;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
         link.title = "Mở tệp " + (index + 1);
 
         var preview;
-        if (isVideo) {
+        if (isGoogleDrive) {
+          preview = document.createElement("div");
+          preview.className = "ratio ratio-1x1 border rounded overflow-hidden bg-light";
+          preview.innerHTML = '<iframe src="https://drive.google.com/file/d/' + item + '/preview" allow="autoplay" style="border:0; width:100%; height:100%;"></iframe>';
+        } else if (isVideo) {
           preview = document.createElement("video");
           preview.controls = true;
+          preview.className = "review-media-preview";
           preview.preload = "metadata";
+          preview.src = url;
         } else {
           preview = document.createElement("img");
           preview.alt = "Tệp đánh giá " + (index + 1);
+          preview.className = "review-media-preview";
           preview.loading = "lazy";
+          preview.src = url;
         }
-        preview.className = "review-media-preview";
-        preview.src = url;
         link.appendChild(preview);
         grid.appendChild(link);
       });
@@ -2175,30 +2183,30 @@
       var list = Array.isArray(files) ? files : [];
       if (!list.length) return Promise.resolve([]);
 
-      var formData = new FormData();
-      list.forEach(function (file) {
-        formData.append("files[]", file);
+      var uploadPromises = list.map(function (file) {
+        var formData = new FormData();
+        formData.append("upload", "1");
+        formData.append("file", file);
+        formData.append("name", "REVIEW_" + Date.now() + "_" + file.name);
+
+        return fetch("../upload.php", {
+          method: "POST",
+          body: formData,
+        })
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            return (data && data.fileId) || null;
+          })
+          .catch(function (err) {
+            console.error("Upload review file error:", err);
+            return null;
+          });
       });
 
-      return fetch(REVIEW_UPLOAD_ENDPOINT, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-      }).then(function (response) {
-        return response
-          .json()
-          .catch(function () {
-            return null;
-          })
-          .then(function (result) {
-            if (!response.ok || !result || result.success !== true) {
-              throw new Error(
-                (result && result.message) ||
-                  "Không thể tải lên ảnh/video đánh giá.",
-              );
-            }
-            return dedupeMedia(result.files || []);
-          });
+      return Promise.all(uploadPromises).then(function (fileIds) {
+        return fileIds.filter(Boolean);
       });
     }
 
@@ -2242,7 +2250,7 @@
           var payload = {};
           payload[current.columns.text] = content;
           payload[current.columns.date] = submittedAt;
-          payload[current.columns.media] = JSON.stringify(nextFiles);
+          payload[current.columns.media] = nextFiles.join(",");
 
           return shared
             .updateOrder(BOOKING_TABLE, order.id, payload)
@@ -2316,6 +2324,69 @@
       "provider",
     );
     setText("providerStateChip", providerStateText);
+
+    renderSourceMedia(order);
+
+    function renderSourceMedia(order) {
+      var raw = order.raw || {};
+      var anhIds = splitListText(raw.anh_id);
+      var videoIds = splitListText(raw.video_id);
+
+      var imgMount = document.getElementById("detailMediaImages");
+      var videoMount = document.getElementById("detailMediaVideos");
+      var container = document.getElementById("detailMediaSection");
+
+      if (!imgMount && !videoMount) return;
+
+      var hasMedia = anhIds.length > 0 || videoIds.length > 0;
+      if (container) {
+        container.classList.toggle("d-none", !hasMedia);
+      }
+
+      if (imgMount) {
+        imgMount.innerHTML = "";
+        if (anhIds.length === 0) {
+          imgMount.innerHTML =
+            '<p class="text-muted small">Không có ảnh hiện trường</p>';
+        } else {
+          var grid = document.createElement("div");
+          grid.className = "row g-2";
+          anhIds.forEach(function (id) {
+            var col = document.createElement("div");
+            col.className = "col-6 col-md-4";
+            col.innerHTML =
+              '<div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm bg-light">' +
+              '<iframe src="https://drive.google.com/file/d/' +
+              id +
+              '/preview" allow="autoplay" style="border:0"></iframe>' +
+              "</div>";
+            grid.appendChild(col);
+          });
+          imgMount.appendChild(grid);
+        }
+      }
+
+      if (videoMount) {
+        videoMount.innerHTML = "";
+        if (videoIds.length === 0) {
+          videoMount.innerHTML =
+            '<p class="text-muted small">Không có video hiện trường</p>';
+        } else {
+          videoIds.forEach(function (id) {
+            var wrapper = document.createElement("div");
+            wrapper.className =
+              "mb-2 border rounded overflow-hidden shadow-sm bg-light";
+            wrapper.innerHTML =
+              '<div class="ratio ratio-16x9">' +
+              '<iframe src="https://drive.google.com/file/d/' +
+              id +
+              '/preview" allow="autoplay" style="border:0"></iframe>' +
+              "</div>";
+            videoMount.appendChild(wrapper);
+          });
+        }
+      }
+    }
 
     (function initActionButtons() {
       var actionBar = document.getElementById("detailActionBar");

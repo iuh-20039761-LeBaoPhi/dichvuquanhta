@@ -822,6 +822,8 @@
         avatar: hasAssignedProvider ? pickFirstValue([row.avatar_ncc]) : "",
       },
       raw: row,
+      anh_id: row.anh_id || "",
+      video_id: row.video_id || "",
       items: [
         {
           name: row.dichvu || "Dịch vụ",
@@ -1240,30 +1242,37 @@
     grid.className = "review-media-grid";
 
     list.forEach(function (item, index) {
-      var url = resolveReviewMediaUrl(item);
-      if (!url) return;
+      var isGoogleDrive = item && !item.includes("/") && !item.includes(".");
+      var url = isGoogleDrive ? "" : resolveReviewMediaUrl(item);
+      
       var lower = url.toLowerCase();
-      var isVideo = /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/.test(lower);
+      var isVideo = !isGoogleDrive && /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/.test(lower);
 
       var link = document.createElement("a");
       link.className = "review-media-item";
-      link.href = url;
+      link.href = isGoogleDrive ? "https://drive.google.com/file/d/" + item + "/view" : url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       link.title = "Mở tệp " + (index + 1);
 
       var preview;
-      if (isVideo) {
+      if (isGoogleDrive) {
+        preview = document.createElement("div");
+        preview.className = "ratio ratio-1x1 border rounded overflow-hidden bg-light";
+        preview.innerHTML = '<iframe src="https://drive.google.com/file/d/' + item + '/preview" allow="autoplay" style="border:0; width:100%; height:100%;"></iframe>';
+      } else if (isVideo) {
         preview = document.createElement("video");
         preview.controls = true;
+        preview.className = "review-media-preview";
         preview.preload = "metadata";
+        preview.src = url;
       } else {
         preview = document.createElement("img");
         preview.alt = "Tệp đánh giá " + (index + 1);
+        preview.className = "review-media-preview";
         preview.loading = "lazy";
+        preview.src = url;
       }
-      preview.className = "review-media-preview";
-      preview.src = url;
       link.appendChild(preview);
       grid.appendChild(link);
     });
@@ -1534,6 +1543,71 @@
       
       paymentPanel.classList.toggle("d-none", !(isCompleted && isUnpaid && isCustomer));
     }
+
+    renderSourceMedia(order);
+  }
+
+  /**
+   * Hiển thị ảnh và video hiện trường từ Google Drive.
+   * @param {Object} order
+   */
+  function renderSourceMedia(order) {
+    var raw = order.raw || {};
+    var anhIds = splitListText(raw.anh_id);
+    var videoIds = splitListText(raw.video_id);
+
+    var imgMount = document.getElementById("detailMediaImages");
+    var videoMount = document.getElementById("detailMediaVideos");
+    var container = document.getElementById("detailMediaSection");
+
+    if (!imgMount && !videoMount) return;
+
+    var hasMedia = anhIds.length > 0 || videoIds.length > 0;
+    if (container) {
+      container.classList.toggle("d-none", !hasMedia);
+    }
+
+    if (imgMount) {
+      imgMount.innerHTML = "";
+      if (anhIds.length === 0) {
+        imgMount.innerHTML = '<p class="text-muted small">Không có ảnh hiện trường</p>';
+      } else {
+        var grid = document.createElement("div");
+        grid.className = "row g-2";
+        anhIds.forEach(function (id) {
+          var col = document.createElement("div");
+          col.className = "col-6 col-md-4";
+          col.innerHTML =
+            '<div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm bg-light">' +
+            '<iframe src="https://drive.google.com/file/d/' +
+            id +
+            '/preview" allow="autoplay" style="border:0"></iframe>' +
+            "</div>";
+          grid.appendChild(col);
+        });
+        imgMount.appendChild(grid);
+      }
+    }
+
+    if (videoMount) {
+      videoMount.innerHTML = "";
+      if (videoIds.length === 0) {
+        videoMount.innerHTML =
+          '<p class="text-muted small">Không có video hiện trường</p>';
+      } else {
+        videoIds.forEach(function (id) {
+          var wrapper = document.createElement("div");
+          wrapper.className = "mb-2 border rounded overflow-hidden shadow-sm bg-light";
+          wrapper.innerHTML =
+            '<div class="ratio ratio-16x9">' +
+            '<iframe src="https://drive.google.com/file/d/' +
+            id +
+            '/preview" allow="autoplay" style="border:0"></iframe>' +
+            "</div>";
+          videoMount.appendChild(wrapper);
+        });
+      }
+    }
   }
 
   // function showActionAlert(message, type) {
@@ -1596,26 +1670,31 @@
     var list = Array.isArray(files) ? files : [];
     if (!list.length) return [];
 
-    var formData = new FormData();
-    list.forEach(function (file) {
-      formData.append("files[]", file);
-    });
+    var fileIds = [];
+    for (var i = 0; i < list.length; i++) {
+      var file = list[i];
+      var formData = new FormData();
+      formData.append("upload", "1");
+      formData.append("file", file);
+      formData.append("name", "REVIEW_" + Date.now() + "_" + file.name);
 
-    var response = await fetch(REVIEW_UPLOAD_ENDPOINT, {
-      method: "POST",
-      credentials: "same-origin",
-      body: formData,
-    });
-    var result = await response.json().catch(function () {
-      return null;
-    });
-
-    if (!response.ok || !result || result.success !== true) {
-      throw new Error(
-        (result && result.message) || "Không thể tải lên ảnh/video đánh giá.",
-      );
+      try {
+        var res = await fetch("upload.php", {
+          method: "POST",
+          body: formData,
+        });
+        var data = await res.json();
+        if (data && data.fileId) {
+          fileIds.push(data.fileId);
+        } else {
+          console.error("Upload review file failed:", data);
+        }
+      } catch (err) {
+        console.error("Upload review file error:", err);
+      }
     }
-    return dedupeMedia(result.files || []);
+
+    return fileIds;
   }
 
   /**
@@ -1716,7 +1795,7 @@
 
       payload[currentReview.columns.text] = content;
       payload[currentReview.columns.date] = new Date().toISOString();
-      payload[currentReview.columns.media] = JSON.stringify(nextFiles);
+      payload[currentReview.columns.media] = nextFiles.join(",");
 
       await updateOrderRow(state.orderRaw.id, payload);
       await loadAndRenderOrder();

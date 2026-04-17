@@ -1,7 +1,7 @@
 <!-- Dashboard Partial -->
 <div class="row g-4 mb-4">
     <!-- Stat Cards -->
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
             <div class="d-flex align-items-center gap-3">
                 <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3"><i class="fas fa-car fa-lg"></i></div>
@@ -9,7 +9,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
             <div class="d-flex align-items-center gap-3">
                 <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3"><i class="fas fa-clock fa-lg"></i></div>
@@ -17,7 +17,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
             <div class="d-flex align-items-center gap-3">
                 <div class="p-3 bg-success bg-opacity-10 text-success rounded-3"><i class="fas fa-check-double fa-lg"></i></div>
@@ -25,18 +25,10 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
-            <div class="d-flex align-items-center gap-3">
-                <div class="p-3 bg-info bg-opacity-10 text-info rounded-3"><i class="fas fa-users fa-lg"></i></div>
-                <div><div class="h4 fw-800 mb-0" id="stat-users">0</div><div class="text-muted small fw-600">Tổng thành viên</div></div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <div class="row g-4">
-    <div class="col-md-8">
+    <div class="col-md-12">
         <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
             <div class="card-header bg-white py-4 border-0">
                 <h6 class="fw-800 mb-0">Hoạt động gần đây</h6>
@@ -61,18 +53,6 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
-            <div class="card-header bg-white py-4 border-0">
-                <h6 class="fw-800 mb-0">Nhà cung cấp mới nhất</h6>
-            </div>
-            <div class="card-body p-0">
-                <div id="recentProvidersList" class="px-4 pb-4">
-                    <div class="text-center py-4 text-muted small">Đang nạp danh sách...</div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -81,21 +61,19 @@
     
     async function initDashboard() {
         try {
-            // Nạp dữ liệu đồng thời
-            const [orders, cars, users] = await Promise.all([
+            // Nạp dữ liệu đồng thời (Bỏ nạp users)
+            const [orders, cars] = await Promise.all([
                 DVQTKrud.listTable('datlich_thuexe', { limit: 1000 }),
-                DVQTKrud.listTable('xethue', { limit: 1000 }),
-                DVQTKrud.listTable('nguoidung', { limit: 1000 })
+                DVQTKrud.listTable('xethue', { limit: 1000 })
             ]);
 
             // Cập nhật thống kê
             document.getElementById('stat-cars').textContent = cars.length;
             document.getElementById('stat-pending').textContent = orders.filter(o => !o.ngaynhan && !o.ngayhuy).length;
             document.getElementById('stat-success').textContent = orders.filter(o => o.ngayhoanthanhthucte).length;
-            document.getElementById('stat-users').textContent = users.length;
 
-            // Render Đơn hàng gần đây (5 đơn)
-            const recentOrders = orders.reverse().slice(0, 5);
+            // Render Đơn hàng gần đây (7 đơn thay vì 5 vì màn hình rộng hơn)
+            const recentOrders = orders.reverse().slice(0, 7);
             document.getElementById('recentOrdersBody').innerHTML = recentOrders.map(o => {
                 let badge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Chờ duyệt</span>';
                 if(o.ngayhuy) badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy</span>';
@@ -109,20 +87,6 @@
                     <td class="pe-4 text-end fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</td>
                 </tr>`;
             }).join('') || '<tr><td colspan="5" class="text-center py-4">Chưa có đơn hàng nào.</td></tr>';
-
-            // Render Nhà cung cấp (Lọc theo id_dichvu=thuexe hoặc logic role)
-            const providers = (users || []).filter(u => u.trangthai === 'provider').slice(0, 5);
-            document.getElementById('recentProvidersList').innerHTML = providers.map(p => `
-                <div class="d-flex align-items-center gap-3 mt-3">
-                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px;">
-                        ${(p.hovaten || 'P').charAt(0)}
-                    </div>
-                    <div>
-                        <div class="fw-bold small">${p.hovaten}</div>
-                        <div class="text-muted" style="font-size:11px;">${p.sodienthoai}</div>
-                    </div>
-                </div>
-            `).join('') || '<div class="text-center py-4 text-muted small">Chưa có đối tác mới.</div>';
 
         } catch (e) { console.error('Dashboard Load Error:', e); }
     }

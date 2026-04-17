@@ -3,7 +3,7 @@
 
   var ORDER_TABLE = "datlich_giatuinhanh";
   var USER_TABLE = "nguoidung";
-  var REVIEW_UPLOAD_ENDPOINT = "public/upload-review-media.php";
+  var REVIEW_UPLOAD_ENDPOINT = "upload.php";
   var REVIEW_FIELD_MAP = {
     customer: {
       text: ["danhgia_khachhang"],
@@ -879,6 +879,8 @@
       serviceFee: serviceFee,
       transportFee: transportFee,
       surchargeFee: surchargeFee,
+      anh_id: row.anh_id || "",
+      video_id: row.video_id || "",
       paymentStatus: row.trangthaithanhtoan || "Unpaid",
       customer: {
         id: toNumber(
@@ -1385,6 +1387,17 @@
     grid.className = "review-media-grid";
 
     list.forEach(function (item, index) {
+      const isDriveId = item && !item.includes("/") && !item.includes(".") && !item.includes(":");
+      
+      if (isDriveId) {
+        const url = "https://drive.google.com/file/d/" + item + "/preview";
+        const wrapper = document.createElement("div");
+        wrapper.className = "ratio ratio-16x9 mb-2 border rounded overflow-hidden shadow-sm";
+        wrapper.innerHTML = `<iframe src="${url}" allow="autoplay" style="border:none;"></iframe>`;
+        grid.appendChild(wrapper);
+        return;
+      }
+
       var url = resolveReviewMediaUrl(item);
       if (!url) return;
       var lower = url.toLowerCase();
@@ -1647,6 +1660,8 @@
       initialsOf(order.provider && order.provider.name, "NCC"),
       "provider",
     );
+
+    renderSourceMedia(order);
   }
 
   // function showActionAlert(message, type) {
@@ -1709,26 +1724,29 @@
     var list = Array.isArray(files) ? files : [];
     if (!list.length) return [];
 
-    var formData = new FormData();
-    list.forEach(function (file) {
-      formData.append("files[]", file);
-    });
+    const uploadSingle = async (file) => {
+      const formData = new FormData();
+      formData.append("upload", "1");
+      formData.append("file", file);
+      formData.append("name", `REVIEW_${Date.now()}_${file.name}`);
 
-    var response = await fetch(REVIEW_UPLOAD_ENDPOINT, {
-      method: "POST",
-      credentials: "same-origin",
-      body: formData,
-    });
-    var result = await response.json().catch(function () {
-      return null;
-    });
+      const res = await fetch("upload.php", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await res.json().catch(() => null);
+      if (result && result.fileId) {
+        return result.fileId;
+      }
+      throw new Error(`Upload ${file.name} thất bại.`);
+    };
 
-    if (!response.ok || !result || result.success !== true) {
-      throw new Error(
-        (result && result.message) || "Không thể tải lên ảnh/video đánh giá.",
-      );
+    const results = [];
+    for (const file of list) {
+      const fid = await uploadSingle(file);
+      results.push(fid);
     }
-    return dedupeMedia(result.files || []);
+    return results;
   }
 
   /**
@@ -1829,7 +1847,7 @@
 
       payload[currentReview.columns.text] = content;
       payload[currentReview.columns.date] = new Date().toISOString();
-      payload[currentReview.columns.media] = JSON.stringify(nextFiles);
+      payload[currentReview.columns.media] = nextFiles.join(",");
 
       await updateOrderRow(state.orderRaw.id, payload);
       await loadAndRenderOrder();
@@ -2251,4 +2269,56 @@
   }
 
   document.addEventListener("DOMContentLoaded", bootstrap);
+
+  /**
+   * Hiển thị các phương tiện (ảnh/video) được upload ban đầu tại hiện trường.
+   * @param {Object} order Đối tượng đơn hàng đã ánh xạ.
+   */
+  function renderSourceMedia(order) {
+    const section = document.getElementById("detailMediaSection");
+    const containerImages = document.getElementById("detailMediaImages");
+    const containerVideos = document.getElementById("detailMediaVideos");
+    if (!section || !containerImages || !containerVideos) return;
+
+    const anhIds = splitListText(order.anh_id);
+    const videoIds = splitListText(order.video_id);
+
+    containerImages.innerHTML = "";
+    containerVideos.innerHTML = "";
+
+    if (anhIds.length === 0 && videoIds.length === 0) {
+      section.classList.add("d-none");
+      return;
+    }
+
+    section.classList.remove("d-none");
+
+    if (anhIds.length > 0) {
+      containerImages.className = "row g-2";
+      anhIds.forEach((id) => {
+        const url = "https://drive.google.com/file/d/" + id + "/preview";
+        const col = document.createElement("div");
+        col.className = "col-4";
+        col.innerHTML = `
+          <div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm">
+            <iframe src="${url}" allow="autoplay" style="border:none;"></iframe>
+          </div>`;
+        containerImages.appendChild(col);
+      });
+    } else {
+      containerImages.innerHTML = '<p class="text-muted small italic">Không có hình ảnh hiện trường.</p>';
+    }
+
+    if (videoIds.length > 0) {
+      videoIds.forEach((id) => {
+        const url = "https://drive.google.com/file/d/" + id + "/preview";
+        const wrapper = document.createElement("div");
+        wrapper.className = "ratio ratio-16x9 mb-2 border rounded overflow-hidden shadow-sm";
+        wrapper.innerHTML = `<iframe src="${url}" allow="autoplay" style="border:none;"></iframe>`;
+        containerVideos.appendChild(wrapper);
+      });
+    } else {
+      containerVideos.innerHTML = '<p class="text-muted small italic">Không có video hiện trường.</p>';
+    }
+  }
 })(window, document);

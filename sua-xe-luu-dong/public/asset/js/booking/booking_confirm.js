@@ -224,6 +224,8 @@
         ship: transportFee,
         total: totalInput?.value || "",
         message: noteInput?.value || "",
+        anh_id: "",
+        video_id: "",
       };
 
       return payload;
@@ -274,6 +276,8 @@
         ghichu: data.message || "",
         yeucaugap: data.yeucaugap || "Không",
         trangthaithanhtoan: "Unpaid",
+        anh_id: data.anh_id || "",
+        video_id: data.video_id || "",
       };
 
       return Promise.resolve(
@@ -308,6 +312,8 @@
         "Tổng tiền": normalizeMoneyToNumber(formData.total),
         "Ghi chú": formData.message || "",
         "Trạng thái thanh toán": "Unpaid",
+        "Ảnh ID": formData.anh_id || "",
+        "Video ID": formData.video_id || "",
       };
     }
 
@@ -335,54 +341,95 @@
       );
     }
 
-    function handleConfirmSubmit() {
-      const payload = collectBookingData();
+    async function handleConfirmSubmit() {
       const originalText = confirmBtn.textContent;
 
       confirmBtn.disabled = true;
-      confirmBtn.textContent = "Đang gửi...";
+      confirmBtn.textContent = "Đang chuẩn bị...";
 
-      const tasks = [];
+      try {
+        // --- BƯỚC 1: UPLOAD ẢNH & VIDEO LÊN GOOGLE DRIVE ---
+        const uploadOne = async (file) => {
+          const fd = new FormData();
+          fd.append("file", file);
+          fd.append("name", file.name);
+          try {
+            const resp = await fetch("upload.php", {
+              method: "POST",
+              body: fd,
+            });
+            const res = await resp.json();
+            return res.success ? res.fileId : null;
+          } catch (e) {
+            console.error("Lỗi upload file:", file.name, e);
+            return null;
+          }
+        };
 
-      // Tự động tìm hoặc tạo tài khoản nếu khách chưa đăng nhập
-      if (window.BookingAuthHelper) {
-          tasks.push(window.BookingAuthHelper.ensureAccount(payload.name, payload.phone));
+        const imageFiles = imageInput?.files ? Array.from(imageInput.files) : [];
+        const videoFiles = videoInput?.files ? Array.from(videoInput.files) : [];
+
+        if (imageFiles.length > 0 || videoFiles.length > 0) {
+          confirmBtn.textContent = "Đang tải ảnh/video...";
+        }
+
+        const [imageIds, videoIds] = await Promise.all([
+          Promise.all(imageFiles.map(uploadOne)),
+          Promise.all(videoFiles.map(uploadOne)),
+        ]);
+
+        const payload = collectBookingData();
+        payload.anh_id = imageIds.filter((id) => id).join(",");
+        payload.video_id = videoIds.filter((id) => id).join(",");
+
+        // --- BƯỚC 2: TIẾP TỤC CÁC TÁC VỤ LƯU DỮ LIỆU ---
+        confirmBtn.textContent = "Đang gửi...";
+
+        const tasks = [];
+
+        // Tự động tìm hoặc tạo tài khoản nếu khách chưa đăng nhập
+        const isAlreadyLoggedIn = form.dataset.isLoggedIn === "true";
+        if (!isAlreadyLoggedIn && window.BookingAuthHelper) {
+          console.log("[BookingFlow] Khách chưa đăng nhập, đang kiểm tra/tạo tài khoản...");
+          tasks.push(
+            window.BookingAuthHelper.ensureAccount(payload.name, payload.phone),
+          );
+        } else if (isAlreadyLoggedIn) {
+          console.log("[BookingFlow] Khách đã đăng nhập, bỏ qua bước tạo tài khoản.");
+        }
+
+        // Save to Google Sheet
+        tasks.push(saveToGoogleSheet(payload));
+
+        // Save to KRUD API
+        tasks.push(saveToKrudApi(payload));
+
+        await Promise.all(tasks);
+
+        bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
+        hideBookingStep();
+
+        utils.showToast?.(
+          "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.",
+          "success",
+        );
+
+        form.reset();
+        clearConfirmMedia();
+
+        setTimeout(function () {
+          window.location.href = "khachhang/danh-sach-don-hang.html";
+        }, 1200);
+      } catch (err) {
+        console.error("Lỗi gửi dữ liệu sửa xe:", err);
+        utils.showToast?.(
+          err.message || "Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.",
+          "error",
+        );
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = originalText;
       }
-
-      // Save to Google Sheet
-      tasks.push(saveToGoogleSheet(payload));
-
-      // Save to KRUD API
-      tasks.push(saveToKrudApi(payload));
-
-      Promise.all(tasks)
-        .then(() => {
-          bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
-          hideBookingStep();
-
-          utils.showToast?.(
-            "Đặt dịch vụ thành công! Chúng tôi sẽ liên hệ sớm.",
-            "success",
-          );
-
-          form.reset();
-          clearConfirmMedia();
-
-          setTimeout(function () {
-            window.location.href = "khachhang/danh-sach-don-hang.html";
-          }, 1200);
-        })
-        .catch((err) => {
-          console.error("Lỗi gửi dữ liệu sửa xe:", err);
-          utils.showToast?.(
-            err.message || "Không thể lưu dữ liệu đặt lịch. Vui lòng thử lại.",
-            "error",
-          );
-        })
-        .finally(() => {
-          confirmBtn.disabled = false;
-          confirmBtn.textContent = originalText;
-        });
     }
 
     function backToBookingModal() {
@@ -464,6 +511,7 @@
       }
 
       const isLoggedIn = await isUserLoggedInForBooking();
+      form.dataset.isLoggedIn = isLoggedIn ? "true" : "false";
       // Bỏ qua chặn đăng nhập để hỗ trợ Auto-Registration (Book First, Register Later)
       // if (!isLoggedIn && !hasStandaloneAuthorizedAccess()) {
       //   if (typeof utils.showToast === "function") {

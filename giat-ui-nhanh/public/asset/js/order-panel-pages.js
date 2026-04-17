@@ -12,7 +12,7 @@
     return window.SharedOrderUtils || {};
   };
   var shared = getShared();
-  var REVIEW_UPLOAD_ENDPOINT = "../public/upload-review-media.php";
+  var REVIEW_UPLOAD_ENDPOINT = "../upload.php";
   var REVIEW_FIELD_MAP = {
     customer: {
       text: ["danhgia_khachhang"],
@@ -739,6 +739,8 @@
       receivedAt: (row && row.ngaynhan) || "",
       startedAt: (row && row.ngaybatdau) || "",
       completedAt: (row && row.ngayhoanthanh) || "",
+      anh_id: (row && row.anh_id) || "",
+      video_id: (row && row.video_id) || "",
       timeline: buildTimelineFromDbRow(row, status, createdAt),
     };
   }
@@ -2329,6 +2331,17 @@
       grid.className = "review-media-grid";
 
       list.forEach(function (item, index) {
+        const isDriveId = item && !item.includes("/") && !item.includes(".") && !item.includes(":");
+        
+        if (isDriveId) {
+          const url = "https://drive.google.com/file/d/" + item + "/preview";
+          const wrapper = document.createElement("div");
+          wrapper.className = "ratio ratio-16x9 mb-2 border rounded overflow-hidden shadow-sm";
+          wrapper.innerHTML = `<iframe src="${url}" allow="autoplay" style="border:none;"></iframe>`;
+          grid.appendChild(wrapper);
+          return;
+        }
+
         var url = resolveReviewMediaUrl(item);
         if (!url) return;
         var isVideo = /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/.test(
@@ -2449,31 +2462,33 @@
       var list = Array.isArray(files) ? files : [];
       if (!list.length) return Promise.resolve([]);
 
-      var formData = new FormData();
-      list.forEach(function (file) {
-        formData.append("files[]", file);
-      });
+      const uploadSingle = function(file) {
+        const formData = new FormData();
+        formData.append("upload", "1");
+        formData.append("file", file);
+        formData.append("name", "REVIEW_" + Date.now() + "_" + file.name);
 
-      return fetch(REVIEW_UPLOAD_ENDPOINT, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-      }).then(function (response) {
-        return response
-          .json()
-          .catch(function () {
-            return null;
-          })
-          .then(function (result) {
-            if (!response.ok || !result || result.success !== true) {
-              throw new Error(
-                (result && result.message) ||
-                  "Không thể tải lên ảnh/video đánh giá.",
-              );
-            }
-            return dedupeMedia(result.files || []);
+        return fetch("../upload.php", {
+          method: "POST",
+          body: formData
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(result) {
+          if (result && result.fileId) return result.fileId;
+          throw new Error("Upload " + file.name + " thất bại.");
+        });
+      };
+
+      let chain = Promise.resolve([]);
+      list.forEach(function(file) {
+        chain = chain.then(function(acc) {
+          return uploadSingle(file).then(function(fid) {
+            acc.push(fid);
+            return acc;
           });
+        });
       });
+      return chain;
     }
 
     function submitReview(actor) {
@@ -2516,7 +2531,7 @@
           var payload = {};
           payload[current.columns.text] = content;
           payload[current.columns.date] = submittedAt;
-          payload[current.columns.media] = JSON.stringify(nextFiles);
+          payload[current.columns.media] = nextFiles.join(",");
 
           return shared
             .updateOrder(BOOKING_TABLE, order.id, payload)
@@ -2588,6 +2603,7 @@
 
     renderItems(order);
     renderTimeline(order);
+    renderSourceMedia(order);
   }
 
   async function init() {
@@ -2665,6 +2681,57 @@
             ? ADMIN_LOGIN_PAGE
             : CUSTOMER_LOGIN_PAGE;
     });
+  }
+
+  function renderSourceMedia(order) {
+    const section = document.getElementById("detailMediaSection");
+    const containerImages = document.getElementById("detailMediaImages");
+    const containerVideos = document.getElementById("detailMediaVideos");
+    if (!section || !containerImages || !containerVideos) return;
+
+    const anhIds = splitListText(order.anh_id);
+    const videoIds = splitListText(order.video_id);
+
+    containerImages.innerHTML = "";
+    containerVideos.innerHTML = "";
+
+    if (anhIds.length === 0 && videoIds.length === 0) {
+      section.classList.add("d-none");
+      return;
+    }
+
+    section.classList.remove("d-none");
+
+    if (anhIds.length > 0) {
+      containerImages.className = "row g-2";
+      anhIds.forEach(function (id) {
+        const url = "https://drive.google.com/file/d/" + id + "/preview";
+        const col = document.createElement("div");
+        col.className = "col-4";
+        col.innerHTML =
+          '<div class="ratio ratio-1x1 border rounded overflow-hidden shadow-sm">' +
+          '<iframe src="' +
+          url +
+          '" allow="autoplay" style="border:none;"></iframe>' +
+          "</div>";
+        containerImages.appendChild(col);
+      });
+    } else {
+      containerImages.innerHTML =
+        '<p class="text-muted small italic">Không có hình ảnh hiện trường.</p>';
+    }
+
+    if (videoIds.length > 0) {
+      videoIds.forEach((id) => {
+        const url = "https://drive.google.com/file/d/" + id + "/preview";
+        const wrapper = document.createElement("div");
+        wrapper.className = "ratio ratio-16x9 mb-2 border rounded overflow-hidden shadow-sm";
+        wrapper.innerHTML = `<iframe src="${url}" allow="autoplay" style="border:none;"></iframe>`;
+        containerVideos.appendChild(wrapper);
+      });
+    } else {
+      containerVideos.innerHTML = '<p class="text-muted small italic">Không có video.</p>';
+    }
   }
 
   if (document.readyState === "loading") {

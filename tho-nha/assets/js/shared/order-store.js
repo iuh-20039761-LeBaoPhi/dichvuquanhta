@@ -268,9 +268,13 @@
      */
     function getProviderProfile() {
         const s = window._dvqt_session_cache || window._thonha_session_cache;
-        if (s && (s.role === 'provider' || s.role === 'admin')) {
+        const serviceIds = String(s && s.id_dichvu || '0').split(',');
+        const isThoNha = serviceIds.includes('9') || (s && s.role === 'admin');
+
+        if (s && (isThoNha || s.role === 'provider')) {
             return {
                 id: s.id || ('provider-' + toDigits(s.phone)),
+                role: isThoNha ? 'provider' : s.role,
                 name: s.name || 'Nhà cung cấp',
                 phone: s.phone || '',
                 company: (s.extra && s.extra.company) || s.company || '',

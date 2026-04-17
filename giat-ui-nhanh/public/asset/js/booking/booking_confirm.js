@@ -227,6 +227,8 @@
       const bookingTimeDisplay = formatBookingTimeForPreview(rawBookingTime);
       data.ngaydat = rawBookingTime;
       data.booking_time = rawBookingTime;
+      data.anh_id = String(data.anh_id || "").trim();
+      data.video_id = String(data.video_id || "").trim();
 
       return {
         data,
@@ -282,6 +284,8 @@
       }
 
       const isLoggedIn = await isUserLoggedInForBooking();
+      form.dataset.isLoggedIn = isLoggedIn ? "true" : "false";
+
       // Bỏ qua chặn đăng nhập để hỗ trợ Auto-Registration (Book First, Register Later)
       // if (!isLoggedIn && !hasStandaloneAuthorizedAccess()) {
       //   hideBookingStep();
@@ -418,6 +422,8 @@
         "Ngày đặt": formData.booking_time || "",
         "Ghi chú": formData.message || "",
         "Trạng thái thanh toán": "Unpaid",
+        anh_id: formData.anh_id || "",
+        video_id: formData.video_id || "",
       };
     }
 
@@ -470,6 +476,8 @@
         lng_kh: data.lng_kh || "",
         ghichu: data.message || "",
         trangthaithanhtoan: "Unpaid",
+        anh_id: data.anh_id || "",
+        video_id: data.video_id || "",
       };
       
       return Promise.resolve(
@@ -497,9 +505,50 @@
         const { data } = collectBookingData();
 
         // Tự động tìm hoặc tạo tài khoản nếu khách chưa đăng nhập
-        if (window.BookingAuthHelper) {
-           await window.BookingAuthHelper.ensureAccount(data.name, data.phone);
+        const isAlreadyLoggedIn = form.dataset.isLoggedIn === "true";
+        if (!isAlreadyLoggedIn && window.BookingAuthHelper) {
+          console.log("[BookingFlow] Khách chưa đăng nhập, đang kiểm tra/tạo tài khoản...");
+          await window.BookingAuthHelper.ensureAccount(data.name, data.phone);
+        } else {
+          console.log("[BookingFlow] Khách đã đăng nhập, bỏ qua bước tạo tài khoản.");
         }
+
+        // ================= XỬ LÝ UPLOAD MEDIA LÊN GG DRIVE =================
+        const imageFiles = imageInput?.files ? Array.from(imageInput.files) : [];
+        const videoFiles = videoInput?.files ? Array.from(videoInput.files) : [];
+
+        const uploadFileNode = async (file, prefix) => {
+          const formData = new FormData();
+          formData.append("upload", "1");
+          formData.append("file", file);
+          formData.append("name", `${prefix}_${Date.now()}_${file.name}`);
+
+          const res = await fetch("upload.php", {
+            method: "POST",
+            body: formData,
+          });
+          const result = await res.json();
+          if (result && result.fileId) {
+            return result.fileId;
+          }
+          throw new Error(`Upload ${file.name} thất bại.`);
+        };
+
+        const uploadedAnhIds = [];
+        for (const file of imageFiles) {
+          const fid = await uploadFileNode(file, "IMAGE");
+          uploadedAnhIds.push(fid);
+        }
+
+        const uploadedVideoIds = [];
+        for (const file of videoFiles) {
+          const fid = await uploadFileNode(file, "VIDEO");
+          uploadedVideoIds.push(fid);
+        }
+
+        data.anh_id = uploadedAnhIds.join(",");
+        data.video_id = uploadedVideoIds.join(",");
+        // ===================================================================
 
         await Promise.all([saveToGoogleSheet(data), saveToKrudApi(data)]);
 

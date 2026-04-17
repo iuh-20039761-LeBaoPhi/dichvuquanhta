@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Thuê Xe</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../../assets/images/thue-xe-logo-header-navigation.jpg">
     <!-- Modern Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -78,7 +80,7 @@
         .logo-box img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
         }
 
         .brand-name {
@@ -324,13 +326,7 @@
                 <i class="fas fa-receipt"></i><span>Toàn bộ đơn thuê</span>
             </a>
 
-            <div class="nav-label mt-4">Người dùng</div>
-            <a href="#" class="nav-link" data-page="users">
-                <i class="fas fa-users"></i><span>Thành viên hệ thống</span>
-            </a>
-            <a href="#" class="nav-link" data-page="providers">
-                <i class="fas fa-user-tie"></i><span>Nhà cung cấp</span>
-            </a>
+
         </nav>
 
         <div class="logout-area">
@@ -392,7 +388,7 @@
                 // Verify with backend
                 const adminListData = await DVQTKrud.listTable('admin', { limit: 100 });
                 const isValidAdmin = adminListData.find(x => x.email === adminE && x.matkhau === adminP);
-                
+
                 if (!isValidAdmin) {
                     document.cookie = "admin_e=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     document.cookie = "admin_p=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -445,11 +441,10 @@
             };
 
             // Global Bindings
-            window.editUserAdmin = (id) => { if(window.ThueXeAdmin) window.ThueXeAdmin.editUserAdmin(id); };
-            window.editNccAdmin = (id) => { if(window.ThueXeAdmin) window.ThueXeAdmin.editNccAdmin(id); };
-            window.approveCarAdmin = (id) => { if(window.ThueXeAdmin) window.ThueXeAdmin.approveCarAdmin(id); };
-            window.rejectCarAdmin = (id) => { if(window.ThueXeAdmin) window.ThueXeAdmin.rejectCarAdmin(id); };
-            window.cancelOrderAdmin = (id) => { if(window.ThueXeAdmin) window.ThueXeAdmin.cancelOrderAdmin(id); };
+
+            window.approveCarAdmin = (id) => { if (window.ThueXeAdmin) window.ThueXeAdmin.approveCarAdmin(id); };
+            window.rejectCarAdmin = (id) => { if (window.ThueXeAdmin) window.ThueXeAdmin.rejectCarAdmin(id); };
+            window.cancelOrderAdmin = (id) => { if (window.ThueXeAdmin) window.ThueXeAdmin.cancelOrderAdmin(id); };
 
             document.getElementById('shellLogoutBtn').onclick = async function (e) {
                 e.preventDefault();
