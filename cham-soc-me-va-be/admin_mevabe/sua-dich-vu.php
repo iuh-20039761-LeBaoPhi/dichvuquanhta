@@ -89,7 +89,8 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 
 <?php if ($error !== '' || !is_array($row)): ?>
 	<div class="alert alert-warning border-0 shadow-sm" style="border-radius: 4px;">
-		<?= admin_h($error !== '' ? $error : 'Không tìm thấy dịch vụ.') ?></div>
+		<?= admin_h($error !== '' ? $error : 'Không tìm thấy dịch vụ.') ?>
+	</div>
 <?php else: ?>
 	<?php
 	$pricingRows = is_array($row['pricing'] ?? null) ? $row['pricing'] : [];
@@ -119,14 +120,19 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 									<?php
 									$image = trim((string) ($row['image'] ?? ''));
 									?>
-									
+
 									<?php if ($image !== ''): ?>
-										<iframe id="driveFrame" src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview" class="w-100 h-100 position-absolute" style="top:0; left:0; border:none;" scrolling="no"></iframe>
+										<iframe id="driveFrame"
+											src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview"
+											class="w-100 h-100 position-absolute" style="top:0; left:0; border:none;"
+											scrolling="no"></iframe>
 									<?php endif; ?>
-									
-									<img id="imagePreview" src="" class="img-fluid w-100 h-100 d-none position-absolute" style="object-fit: cover; top:0; left:0; z-index:10;" alt="Preview">
-									
-									<div id="noImageText" class="text-secondary text-center p-2 <?= $image !== '' ? 'd-none' : '' ?>">
+
+									<img id="imagePreview" src="" class="img-fluid w-100 h-100 d-none position-absolute"
+										style="object-fit: cover; top:0; left:0; z-index:10;" alt="Preview">
+
+									<div id="noImageText"
+										class="text-secondary text-center p-2 <?= $image !== '' ? 'd-none' : '' ?>">
 										<i class="bi bi-image fs-2 opacity-25 d-block"></i>
 										<span class="small d-block mt-1">Xem trước ảnh</span>
 									</div>
@@ -201,20 +207,23 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 										class="row g-2 pricing-row align-items-center bg-light bg-opacity-25 p-1 rounded-1 border border-light mx-0 mb-1">
 										<div class="col-md-3">
 											<input type="text" class="form-control form-control-sm border-0 bg-white"
-												name="pricing_label[]" value="<?= admin_h((string) ($pricing['label'] ?? '')) ?>"
-												placeholder="Tên gói" required>
+												name="pricing_label[]"
+												value="<?= admin_h((string) ($pricing['label'] ?? '')) ?>" placeholder="Tên gói"
+												required>
 										</div>
 										<div class="col-md-3">
 											<input type="number"
 												class="form-control form-control-sm border-0 bg-white fw-bold text-primary"
-												name="pricing_value[]" value="<?= admin_h((string) ($pricing['value'] ?? '')) ?>"
+												name="pricing_value[]"
+												value="<?= admin_h((string) ($pricing['value'] ?? '')) ?>"
 												placeholder="Giá tiền" min="0" step="1000" required>
 										</div>
 										<div class="col-md-2">
 											<input type="number"
 												class="form-control form-control-sm border-0 bg-white text-center"
-												name="pricing_hours[]" value="<?= admin_h((string) ($pricing['hours'] ?? '')) ?>"
-												placeholder="0" min="0.1" step="0.1" required>
+												name="pricing_hours[]"
+												value="<?= admin_h((string) ($pricing['hours'] ?? '')) ?>" placeholder="0"
+												min="0.1" step="0.1" required>
 										</div>
 										<div class="col-md-3">
 											<input type="text" class="form-control form-control-sm border-0 bg-white"

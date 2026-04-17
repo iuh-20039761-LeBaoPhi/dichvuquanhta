@@ -94,9 +94,12 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                             $image = trim((string) ($row['image'] ?? ''));
                             ?>
                             <?php if ($image !== ''): ?>
-                                <iframe src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview" class="rounded border w-100" style="aspect-ratio: 1/1; border:none;" scrolling="no" loading="lazy"></iframe>
+                                <iframe src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview"
+                                    class="rounded border w-100" style="aspect-ratio: 1/1; border:none;" scrolling="no"
+                                    loading="lazy"></iframe>
                             <?php else: ?>
-                                <div class="d-flex align-items-center justify-content-center bg-light text-secondary rounded border w-100" style="aspect-ratio: 1/1;">
+                                <div class="d-flex align-items-center justify-content-center bg-light text-secondary rounded border w-100"
+                                    style="aspect-ratio: 1/1;">
                                     <i class="bi bi-image fs-1 opacity-25"></i>
                                 </div>
                             <?php endif; ?>
@@ -191,7 +194,8 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                                         <tr>
                                             <td class="ps-3 fw-bold"><?= admin_h((string) $pkg['name']) ?></td>
                                             <td class="text-center text-primary fw-bold">
-                                                <?= number_format((float) $pkg['price']) ?>đ</td>
+                                                <?= number_format((float) $pkg['price']) ?>đ
+                                            </td>
                                             <td class="text-center"><?= (int) $pkg['staff'] ?> người</td>
                                             <td class="text-center"><?= (float) $pkg['hours'] ?> giờ</td>
                                         </tr>

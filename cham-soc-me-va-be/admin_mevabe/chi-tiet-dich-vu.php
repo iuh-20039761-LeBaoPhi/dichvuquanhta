@@ -128,8 +128,8 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 						<div class="col-md-4">
 							<div class="service-image-container rounded-3 overflow-hidden shadow-sm border">
 								<?php if ($image !== ''): ?>
-									<iframe src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview" class="w-100"
-										style="aspect-ratio: 1/1; border:none;" scrolling="no" loading="lazy"></iframe>
+									<img src="https://drive.google.com/uc?export=view&id=<?= urlencode($image) ?>" class="w-100"
+										style="aspect-ratio: 1/1; border:none; object-fit:cover;" loading="lazy">
 								<?php else: ?>
 									<div class="d-flex align-items-center justify-content-center bg-light text-secondary"
 										style="height: 180px;">
