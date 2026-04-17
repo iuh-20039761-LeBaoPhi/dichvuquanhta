@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../public/asset/js/sweetalert-utils.js"></script>
     <style>
       .pagination {
         border-radius: 8px;
@@ -121,7 +123,7 @@
 
     <!-- Modal Phí tham khảo -->
     <div class="modal fade" id="feeModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
         <form id="feeForm" class="modal-content">
           <div class="modal-header border-0 pb-0">
             <h5 class="modal-title fw-bold" id="modalTitle">
@@ -222,6 +224,7 @@
         } catch (err) {
           tbody.innerHTML =
             '<tr><td colspan="4" class="text-center py-4 text-danger">Lỗi tải dữ liệu. Bảng "loaixe" có thể chưa tồn tại.</td></tr>';
+          showError("Không thể tải danh sách phí khảo sát.");
         }
       }
 
@@ -251,11 +254,20 @@
         modal.show();
       }
 
-      async function deleteFee(id) {
-        if (confirm("Bạn có chắc chắn muốn xóa cấu hình này?")) {
-          const res = await window.krud("delete", "loaixe", null, id);
-          if (res && res.success !== false) loadData(currentPage);
-        }
+      function deleteFee(id) {
+        showConfirm("Bạn có chắc chắn muốn thực hiện hành động 'Xóa cấu hình phí'?", async function () {
+          try {
+            const res = await window.krud("delete", "loaixe", null, id);
+            if (res && res.success !== false) {
+              showSuccess("Đã xóa cấu hình phí thành công!");
+              loadData(currentPage);
+            } else {
+              throw new Error(res.message || "Lỗi xóa dữ liệu.");
+            }
+          } catch (err) {
+            showError(err.message);
+          }
+        });
       }
 
       document
@@ -283,12 +295,13 @@
             );
             if (res && res.success !== false) {
               modal.hide();
+              showSuccess(editingId ? "Cập nhật phí thành công!" : "Thêm cấu hình phí thành công!");
               loadData(currentPage);
             } else {
               throw new Error("Lỗi lưu dữ liệu cơ sở dữ liệu");
             }
           } catch (err) {
-            alert(err.message);
+            showError(err.message);
           } finally {
             btn.disabled = false;
             btn.textContent = "Lưu lại";

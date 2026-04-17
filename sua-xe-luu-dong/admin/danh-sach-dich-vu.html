@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../public/asset/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../public/asset/css/admin-dashboard.css" />
     <link rel="stylesheet" href="../public/asset/css/order-panel.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../public/asset/js/sweetalert-utils.js"></script>
     <style>
       .pagination {
         border-radius: 8px;
@@ -131,7 +133,7 @@
 
     <!-- Modal Dịch vụ -->
     <div class="modal fade" id="serviceModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
         <form id="serviceForm" class="modal-content">
           <div class="modal-header border-0 pb-0">
             <h5 class="modal-title fw-bold" id="modalTitle">
@@ -261,6 +263,7 @@
         } catch (err) {
           tbody.innerHTML =
             '<tr><td colspan="5" class="text-center py-4 text-danger">Lỗi tải dữ liệu.</td></tr>';
+          showError("Không thể tải danh sách dịch vụ.");
         }
       }
 
@@ -296,11 +299,20 @@
         modal.show();
       }
 
-      async function deleteService(id) {
-        if (confirm("Bạn có chắc chắn muốn xóa dịch vụ này?")) {
-          const res = await window.krud("delete", "dichvu_suaxe", null, id);
-          if (res && res.success !== false) loadData(currentPage);
-        }
+      function deleteService(id) {
+        showConfirm("Bạn có chắc chắn muốn thực hiện hành động 'Xóa dịch vụ'?", async function () {
+          try {
+            const res = await window.krud("delete", "dichvu_suaxe", null, id);
+            if (res && res.success !== false) {
+              showSuccess("Đã xóa dịch vụ thành công!");
+              loadData(currentPage);
+            } else {
+              throw new Error(res.message || "Lỗi xóa dữ liệu.");
+            }
+          } catch (err) {
+            showError(err.message);
+          }
+        });
       }
 
       document
@@ -353,10 +365,11 @@
             );
             if (res && res.success !== false) {
               modal.hide();
+              showSuccess(editingId ? "Cập nhật dịch vụ thành công!" : "Thêm dịch vụ thành công!");
               loadData(currentPage);
             } else throw new Error("Lỗi lưu DB");
           } catch (err) {
-            alert(err.message);
+            showError(err.message);
           } finally {
             btn.disabled = false;
             btn.textContent = "Lưu lại";
