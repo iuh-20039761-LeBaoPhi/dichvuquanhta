@@ -71,6 +71,19 @@
         form.email.value = currentUser.email || '';
         form.diachi.value = currentUser.diachi || '';
 
+        // Show existing images
+        if (currentUser.link_avatar) document.getElementById('avatarImage').src = currentUser.link_avatar;
+        if (currentUser.link_cccd_truoc) {
+            const p = document.getElementById('previewTruoc');
+            p.src = currentUser.link_cccd_truoc;
+            p.style.display = 'block';
+        }
+        if (currentUser.link_cccd_sau) {
+            const p = document.getElementById('previewSau');
+            p.src = currentUser.link_cccd_sau;
+            p.style.display = 'block';
+        }
+
         // Fill coordinates
         if (currentUser.maplat && currentUser.maplng) {
             document.getElementById('reg_lat').value = currentUser.maplat;
@@ -113,7 +126,29 @@
         }
     };
 
+    function setupImagePreview(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        if (!input || !preview) return;
+
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+    }
+
     function setupEvents() {
+        // Setup Image Previews
+        setupImagePreview('avatarUpload', 'avatarImage');
+        setupImagePreview('cccdTruoc', 'previewTruoc');
+        setupImagePreview('cccdSau', 'previewSau');
         // Save Personal Info
         document.getElementById('formInfo').onsubmit = async (e) => {
             e.preventDefault();

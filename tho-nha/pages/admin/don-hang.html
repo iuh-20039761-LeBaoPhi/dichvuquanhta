@@ -7,15 +7,21 @@
                 <div class="col-md-3">
                     <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm theo mã đơn, SĐT...">
                 </div>
-                <div class="col-md-2">
-                    <select class="form-select" id="statusFilter">
-                        <option value="">Tất cả trạng thái</option>
-                        <option value="new">Chờ xác nhận</option>
-                        <option value="confirmed">Đã xác nhận</option>
-                        <option value="doing">Đang thực hiện</option>
-                        <option value="done">Hoàn thành</option>
-                        <option value="cancel">Đã hủy</option>
-                    </select>
+                <div class="col-md-3">
+                    <div class="dropdown filter-dropdown-wrapper">
+                        <button class="btn btn-select dropdown-toggle" type="button" data-bs-toggle="dropdown" id="statusFilterBtn">
+                            Tất cả trạng thái
+                        </button>
+                        <ul class="dropdown-menu custom-dropdown-menu" id="statusFilterMenu">
+                            <li><a class="dropdown-item active" href="#" data-value="">Tất cả trạng thái</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="new">Chờ xác nhận</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="confirmed">Đã xác nhận</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="doing">Đang thực hiện</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="done">Hoàn thành</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="cancel">Đã hủy</a></li>
+                        </ul>
+                        <input type="hidden" id="statusFilter" value="">
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-gradient w-100" id="filterBtn">
@@ -37,12 +43,11 @@
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
-                        <tr>
+                        <tr style="white-space: nowrap;">
                             <th>Mã đơn</th>
-                            <th>Khách hàng</th>
-                            <th>SĐT</th>
+                            <th>KH</th>
                             <th>Dịch vụ</th>
-                            <th>Nhà cung cấp</th>
+                            <th>NCC</th>
                             <th>Giá</th>
                             <th>Trạng thái</th>
                             <th>Ngày đặt</th>
@@ -51,11 +56,17 @@
                     </thead>
                     <tbody id="ordersTableBody">
                         <tr>
-                            <td colspan="9" class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu...</td>
+                            <td colspan="8" class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
+            <!-- Mobile View List -->
+            <div id="adminMobileList" class="mobile-list-container d-lg-none"></div>
+
+            <!-- Pagination -->
+            <div id="paginationContainer" class="d-flex justify-content-center mt-4 pb-4"></div>
         </div>
     </div>
 

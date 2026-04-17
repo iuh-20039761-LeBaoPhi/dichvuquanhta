@@ -1,8 +1,8 @@
 <!-- Stat Cards Row 1 -->
 <div class="row g-3 mb-4">
     <div class="col-lg-3 col-md-6">
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+        <div class="stat-card stat-card--blue">
+            <div class="stat-icon blue"><i class="fas fa-shopping-cart"></i></div>
             <div class="stat-body">
                 <div class="stat-value" id="dashTotalOrders">0</div>
                 <div class="stat-label">Tổng đơn hàng</div>
@@ -10,8 +10,8 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="stat-card">
-            <div class="stat-icon stat-icon--orange"><i class="fas fa-hourglass-half"></i></div>
+        <div class="stat-card stat-card--amber">
+            <div class="stat-icon amber"><i class="fas fa-hourglass-half"></i></div>
             <div class="stat-body">
                 <div class="stat-value" id="dashPendingOrders">0</div>
                 <div class="stat-label">Chờ xác nhận</div>
@@ -19,8 +19,8 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="stat-card">
-            <div class="stat-icon stat-icon--success"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-card stat-card--green">
+            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
             <div class="stat-body">
                 <div class="stat-value" id="dashCompleteOrders">0</div>
                 <div class="stat-label">Đã hoàn thành</div>
@@ -28,8 +28,8 @@
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
-        <div class="stat-card">
-            <div class="stat-icon stat-icon--purple"><i class="fas fa-wrench"></i></div>
+        <div class="stat-card stat-card--violet">
+            <div class="stat-icon violet"><i class="fas fa-wrench"></i></div>
             <div class="stat-body">
                 <div class="stat-value" id="dashTotalServices">0</div>
                 <div class="stat-label">Tổng dịch vụ</div>
@@ -40,40 +40,51 @@
 
 <!-- Recent Orders + Status Stats -->
 <div class="row g-3">
-    <div class="col-lg-8">
-        <div class="table-container">
-            <div class="table-container-header">
-                <h5 class="section-title"><i class="fas fa-clock"></i> Đơn hàng gần đây</h5>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Mã đơn</th>
-                            <th>Khách hàng</th>
-                            <th>Dịch vụ</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày đặt</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recentOrdersTable">
-                        <tr>
-                            <td colspan="5" class="text-center py-4">
-                                <div class="spinner-border spinner-border-sm text-success me-2"></div>
-                                Đang tải...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <div class="col-12">
+        <div id="dashboardListSection">
+            <div class="table-container">
+                <div class="table-container-header">
+                    <h5 class="section-title"><i class="fas fa-clock"></i> Đơn hàng gần đây</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr style="white-space: nowrap;">
+                                <th>Mã đơn</th>
+                                <th>KH</th>
+                                <th>Dịch vụ</th>
+                                <th>NCC</th>
+                                <th>Giá</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày đặt</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentOrdersTable">
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="spinner-border spinner-border-sm text-success me-2"></div>
+                                    Đang tải...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Mobile View List -->
+                <div id="recentOrdersMobileList" class="mobile-list-container d-lg-none"></div>
             </div>
         </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="table-container h-100">
-            <div class="table-container-header">
-                <h5 class="section-title"><i class="fas fa-chart-pie"></i> Thống kê trạng thái</h5>
+
+        <!-- Order Detail Section (Hidden by Default) -->
+        <div id="dashboardDetailSection" hidden>
+            <div class="mb-4 d-flex justify-content-between align-items-center">
+                <button class="back-btn btn btn-outline-secondary px-3 py-2 fw-bold" data-action="back-to-list-dash" style="border-radius:12px; border: 2px solid #e2e8f0; color: #4b5563; background: #fff;">
+                    <i class="fas fa-arrow-left me-2"></i> Quay lại bảng tin
+                </button>
+                <div class="text-muted small">Chi tiết đơn hàng gần đây #Dashboard</div>
             </div>
-            <div class="p-4" id="statusStatsChart"></div>
+            <div id="dashDetailContent"></div>
         </div>
     </div>
 </div>

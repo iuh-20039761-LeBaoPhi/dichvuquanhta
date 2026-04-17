@@ -16,68 +16,62 @@ function updateDashboardStats(orders) {
     set('dashDoingOrders',   orders.filter(o => o.status === 'doing' || o.status === 'confirmed').length);
     set('dashCompleteOrders',orders.filter(o => o.status === 'done').length);
 
-    displayRecentOrders(orders.slice(0, 6));
-    displayStatusStatsChart(orders);
+    displayRecentOrders(orders.slice(0, 10)); // Tăng lên 10 đơn cho Dashboard
     loadDashboardStats();
+    setupDashboardActions();
+}
+
+function setupDashboardActions() {
+    // Action delegation for View Detail
+    document.addEventListener('click', e => {
+        const viewBtn = e.target.closest('[data-action="view-detail"]');
+        if (viewBtn) {
+            const id = viewBtn.dataset.id;
+            showDashboardDetail(id);
+        }
+
+        const backBtn = e.target.closest('[data-action="back-to-list-dash"]');
+        if (backBtn) {
+            document.getElementById('dashboardDetailSection').hidden = true;
+            document.getElementById('dashboardListSection').hidden = false;
+        }
+    });
+}
+
+function showDashboardDetail(orderId) {
+    const listSec = document.getElementById('dashboardListSection');
+    const detailSec = document.getElementById('dashboardDetailSection');
+    const content = document.getElementById('dashDetailContent');
+    
+    if (!listSec || !detailSec || !content) return;
+
+    const order = (window.allOrders || []).find(o => String(o.id) === String(orderId));
+    if (!order) return;
+
+    listSec.hidden = true;
+    detailSec.hidden = false;
+    content.innerHTML = '<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+
+    if (window.ThoNhaOrderUI) {
+        window.ThoNhaOrderUI.renderDetails(order, content);
+    }
 }
 
 function displayRecentOrders(orders) {
     const tbody = document.getElementById('recentOrdersTable');
-    if (!tbody) return;
+    const mobileContainer = document.getElementById('recentOrdersMobileList');
+    if (!tbody && !mobileContainer) return;
 
-    if (!orders.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Không có đơn hàng nào</td></tr>';
-        return;
+    const ui = window.ThoNhaOrderUI;
+    if (ui) {
+        ui.renderList(orders, 'admin', {
+            body: tbody,
+            mobile: mobileContainer
+        });
     }
-
-    const viewUtils = window.ThoNhaOrderViewUtils;
-
-    tbody.innerHTML = orders.map(order => `
-        <tr>
-            <td><strong style="color:var(--admin-primary)">${order.orderCode}</strong></td>
-            <td>${order.customer && order.customer.name ? order.customer.name : 'Khách hàng'}</td>
-            <td><span class="text-muted">${(order.service || '').split(',')[0] || '—'}</span></td>
-            <td>${getStatusBadge(order.status)}</td>
-            <td>${viewUtils ? viewUtils.formatDateTime(order.createdAt).split(' ')[0] : (order.createdAt || '').split('T')[0]}</td>
-        </tr>
-    `).join('');
 }
 
-function displayStatusStatsChart(orders) {
-    const container = document.getElementById('statusStatsChart');
-    if (!container) return;
 
-    const stats = {
-        new:       orders.filter(o => o.status === 'new').length,
-        confirmed: orders.filter(o => o.status === 'confirmed').length,
-        doing:     orders.filter(o => o.status === 'doing').length,
-        done:      orders.filter(o => o.status === 'done').length,
-        cancel:    orders.filter(o => o.status === 'cancel').length
-    };
-    const total = orders.length || 1;
-
-    const rows = [
-        { label: 'Chờ xác nhận',   cls: 'status-new',       val: stats.new },
-        { label: 'Đã xác nhận',    cls: 'status-confirmed',  val: stats.confirmed },
-        { label: 'Đang thực hiện', cls: 'status-doing',      val: stats.doing },
-        { label: 'Hoàn thành',     cls: 'status-done',       val: stats.done },
-        { label: 'Đã hủy',         cls: 'status-cancel',     val: stats.cancel }
-    ];
-
-    container.innerHTML = rows.map(r => `
-        <div class="mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="status-badge ${r.cls}">${r.label}</span>
-                <span class="fw-bold text-muted">${r.val}</span>
-            </div>
-            <div class="progress" style="height:6px; border-radius:4px;">
-                <div class="progress-bar" role="progressbar"
-                     style="width:${Math.round(r.val/total*100)}%; background:var(--admin-gradient);"
-                     aria-valuenow="${r.val}" aria-valuemin="0" aria-valuemax="${total}"></div>
-            </div>
-        </div>
-    `).join('');
-}
 
 function loadDashboardStats() {
     if (allCategories.length > 0) {

@@ -231,12 +231,12 @@
             id: String(rawId),
             orderCode: orderCode,
             customer: {
-                name: raw.tenkhachhang || raw.ten_kh || raw.customer_name || 'Khách hàng',
-                phone: raw.sdtkhachhang || raw.sdt_kh || raw.customer_phone || '',
-                address: raw.diachikhachhang || raw.dia_chi_kh || raw.customer_address || '',
-                email: raw.emailkhachhang || raw.email_kh || ''
+                name: raw.tenkhachhang || raw.ten_kh || raw.customer_name || raw.hovaten || raw.name || 'Khách hàng',
+                phone: raw.sdtkhachhang || raw.sdt_kh || raw.customer_phone || raw.sodienthoai || raw.phone || '',
+                address: raw.diachikhachhang || raw.dia_chi_kh || raw.customer_address || raw.diachi || raw.address || '',
+                email: raw.emailkhachhang || raw.email_kh || raw.email || ''
             },
-            address: raw.diachikhachhang || raw.dia_chi_kh || raw.address || '',
+            address: raw.diachikhachhang || raw.dia_chi_kh || raw.customer_address || raw.diachi || raw.address || '',
             service: serviceName,
             note: raw.ghichu || raw.ghi_chu || raw.note || '',
             status: status,
@@ -282,9 +282,9 @@
     function buildStatusBadge(status) {
         switch (status) {
             case 'new':       return '<span class="invoice-status-chip status-new">Mới</span>';
-            case 'confirmed': return '<span class="invoice-status-chip status-doing"><i class="fa-solid fa-check-circle me-1"></i>Đã nhận</span>';
+            case 'confirmed': return '<span class="invoice-status-chip status-confirmed"><i class="fa-solid fa-check-circle me-1"></i>Đã nhận</span>';
             case 'doing':     return '<span class="invoice-status-chip status-doing"><i class="fa-solid fa-spinner fa-spin me-1"></i>Đang làm</span>';
-            case 'done':      return '<span class="invoice-status-chip status-done"><i class="fa-solid fa-check-double me-1"></i>Hoàn thành</span>';
+            case 'done':      return '<span class="invoice-status-chip status-done">Hoàn thành</span>';
             case 'cancel':    return '<span class="invoice-status-chip status-canceled">Đã hủy</span>';
             default:          return '<span class="invoice-status-chip status-canceled">' + escapeHtml(status) + '</span>';
         }

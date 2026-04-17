@@ -58,1006 +58,1657 @@ $supplierAssigned =
 admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 ?>
 
+<?php
+if (!function_exists('listHistoryByOrder')) {
+    function listHistoryByOrder($idDv) {
+        $history = [
+            'success' => false,
+            'data' => []
+        ];
+        if (function_exists('krud')) {
+            $res = krud('list', 'lich_su_lam_viec_donvesinh', ['p' => 1, 'limit' => 1000]);
+            if (!empty($res['data'])) $history['data'] = $res['data'];
+            else if (!empty($res['rows'])) $history['data'] = $res['rows'];
+            else if (!empty($res['items'])) $history['data'] = $res['items'];
+            else if (is_array($res)) $history['data'] = $res;
+        }
+        $filtered = [];
+        foreach ($history['data'] as $r) {
+            if ((string)($r['id_dv'] ?? '') === (string)$idDv) {
+                $filtered[] = $r;
+            }
+        }
+        usort($filtered, function($a, $b) {
+            return strtotime($b['ngay_lam']) - strtotime($a['ngay_lam']);
+        });
+        return $filtered;
+    }
+}
+?>
+
 <style>
-	.admin-main,
-	.admin-main > main {
-		background: #f3f7fb !important;
-	}
 
-	.od-head {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 10px;
-		margin-bottom: 10px;
-	}
-
-	.od-title {
-		margin: 0;
-		font-size: 1.45rem;
-		font-weight: 800;
-		color: #0e2e4f;
-	}
-
-	.od-head-actions {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.od-chip {
-		display: inline-flex;
-		align-items: center;
-		padding: 5px 10px;
-		border-radius: 999px;
-		font-size: 11px;
-		font-weight: 700;
-		background: #e4f8ec;
-		color: #178157;
-		border: 1px solid #c6ecd6;
-	}
-
-	.od-back-btn {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.32rem 0.8rem;
-		border-radius: 999px;
-		background: linear-gradient(135deg, #2f8fe8, #1f6ec9);
-		color: #fff;
-		border: 1px solid #65a9ec;
-		font-weight: 600;
-		font-size: 0.8rem;
-		text-decoration: none;
-	}
-
-	.od-back-btn:hover {
-		background: linear-gradient(135deg, #1e79d6, #165fb2);
-		color: #fff;
-	}
-
-	.od-alert {
-		border-radius: 9px;
-		background: #e9f2fb;
-		border: 1px solid #d3e5f7;
-		color: #2f587d;
-		padding: 10px 12px;
-		font-weight: 700;
-		margin-bottom: 10px;
-	}
-
-	.od-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 10px;
-	}
-
-	.od-card {
-		background: #fff;
-		border: 1px solid #d6e3f0;
-		border-radius: 11px;
-		box-shadow: 0 4px 14px rgba(14, 32, 58, 0.05);
-		overflow: hidden;
-	}
-
-	.od-card.wide {
-		grid-column: 1 / -1;
-	}
-
-	.od-hero {
-		padding: 14px 14px 16px;
-		border-radius: 16px;
-		background: linear-gradient(96deg, #2862c3 0%, #1f8dcb 52%, #1fa696 100%);
-		box-shadow: 0 16px 34px rgba(19, 75, 148, 0.24);
-		color: #fff;
-	}
-
-	.od-hero-top {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 18px;
-		margin-bottom: 12px;
-	}
-
-	.od-order-id {
-		margin: 0;
-		font-size: 2rem;
-		font-weight: 800;
-		line-height: 1.02;
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		flex-wrap: wrap;
-	}
-
-	.od-status-pill {
-		display: inline-flex;
-		align-items: center;
-		padding: 5px 12px;
-		border-radius: 999px;
-		font-size: 12px;
-		font-weight: 800;
-		line-height: 1;
-		background: rgba(121, 98, 184, 0.55);
-		border: 1px solid rgba(255, 255, 255, 0.52);
-	}
-
-	.od-service {
-		margin: 2px 0 0;
-		font-size: 1.45rem;
-		font-weight: 700;
-		line-height: 1.14;
-	}
-
-	.od-tools {
-		display: flex;
-		gap: 6px;
-		flex-wrap: wrap;
-	}
-
-	.od-tool {
-		display: inline-flex;
-		align-items: center;
-		padding: 4px 9px;
-		font-size: 10px;
-		font-weight: 700;
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.16);
-		border: 1px solid rgba(255, 255, 255, 0.3);
-	}
-
-	.od-progress-ring {
-		--p: 0;
-		width: 102px;
-		height: 102px;
-		padding: 6px;
-		border-radius: 50%;
-		background: conic-gradient(#b7f5d7 calc(var(--p) * 1%), rgba(176, 241, 235, 0.42) 0);
-		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
-	}
-
-	.od-progress-core {
-		width: 100%;
-		height: 100%;
-		border-radius: 50%;
-		display: grid;
-		place-content: center;
-		text-align: center;
-		background: rgba(27, 96, 145, 0.65);
-	}
-
-	.od-progress-core strong {
-		font-size: 2rem;
-		line-height: 1;
-	}
-
-	.od-progress-core small {
-		font-size: 0.78rem;
-		font-weight: 700;
-		line-height: 1.2;
-	}
-
-	.od-hero-grid {
-		margin-top: 8px;
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 12px;
-	}
-
-	.od-box {
-		border-radius: 12px;
-		padding: 12px 14px;
-		border: 1px solid rgba(167, 225, 255, 0.34);
-		background: rgba(17, 93, 147, 0.24);
-	}
-
-	.od-box-head {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin-bottom: 2px;
-	}
-
-	.od-box-icon {
-		width: 30px;
-		height: 30px;
-		border-radius: 50%;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 14px;
-		color: #fff;
-		background: rgba(255, 255, 255, 0.12);
-		border: 1px solid rgba(255, 255, 255, 0.52);
-	}
-
-	.od-box-label {
-		margin: 0;
-		font-size: 0.95rem;
-		font-weight: 700;
-		opacity: 0.95;
-	}
-
-	.od-box-value {
-		margin: 2px 0 0;
-		font-size: 1.6rem;
-		font-weight: 800;
-		line-height: 1.16;
-		word-break: break-word;
-	}
-
-	.od-box-value--price {
-		font-size: 2rem;
-		line-height: 1.06;
-	}
-
-	.od-box-value--time {
-		font-size: 1.75rem;
-		line-height: 1.06;
-	}
-
-	.od-box-value--address {
-		font-size: 1.35rem;
-		line-height: 1.35;
-		font-weight: 700;
-		white-space: normal;
-		overflow-wrap: anywhere;
-		word-break: break-word;
-	}
-
-	.od-box-sub {
-		margin: 2px 0 0;
-		font-size: 0.98rem;
-		font-weight: 600;
-	}
-
-	.od-panel-head,
-	.od-profile-head {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 8px;
-		padding: 11px 12px;
-		border-bottom: 1px solid #e2ebf5;
-		background: #f8fbff;
-	}
-
-	.od-panel-title,
-	.od-profile-title {
-		margin: 0;
-		font-size: 1.05rem;
-		font-weight: 800;
-		color: #1f3b57;
-	}
-
-	.od-job-count {
-		display: inline-flex;
-		align-items: center;
-		padding: 4px 9px;
-		border-radius: 999px;
-		font-size: 10px;
-		font-weight: 800;
-		color: #138157;
-		background: #ddf8ea;
-		border: 1px solid #c4edd5;
-	}
-
-	.od-jobs-body {
-		padding: 12px;
-		background: #ecf8f2;
-	}
-
-	.od-jobs-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: grid;
-		gap: 8px;
-		counter-reset: od-job;
-	}
-
-	.od-jobs-list li {
-		counter-increment: od-job;
-		display: flex;
-		align-items: flex-start;
-		gap: 8px;
-		padding: 10px;
-		border-radius: 9px;
-		background: rgba(255, 255, 255, 0.4);
-		border: 1px solid #cce7d8;
-		font-weight: 600;
-		font-size: 13px;
-		line-height: 1.4;
-		color: #2b4a65;
-	}
-
-	.od-jobs-list li::before {
-		content: counter(od-job);
-		width: 22px;
-		height: 22px;
-		border-radius: 50%;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 12px;
-		font-weight: 800;
-		background: #16a46d;
-		color: #fff;
-		flex: 0 0 22px;
-		margin-top: 1px;
-	}
-
-	.od-jobs-foot {
-		padding: 10px;
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 7px;
-		border-top: 1px solid #e2ebf5;
-		background: #fff;
-	}
-
-	.od-mini {
-		border: 1px solid #c8d8ea;
-		background: #dfe9f7;
-		border-radius: 8px;
-		padding: 7px 9px;
-	}
-
-	.od-mini p {
-		margin: 0;
-	}
-
-	.od-mini .k {
-		font-size: 10px;
-		font-weight: 700;
-		color: #46627d;
-	}
-
-	.od-mini .v {
-		font-size: 13px;
-		font-weight: 700;
-		color: #1e3a58;
-	}
-
-	.od-progress-body {
-		padding: 12px;
-	}
-
-	.od-progress-top {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 8px;
-		font-size: 12px;
-		font-weight: 700;
-		color: #3c5772;
-	}
-
-	.od-progress-track {
-		height: 10px;
-		border-radius: 999px;
-		background: #dce9f6;
-		overflow: hidden;
-		margin-top: 6px;
-	}
-
-	.od-progress-fill {
-		height: 100%;
-		width: 0;
-		background: linear-gradient(90deg, #16a56d, #2dcf92);
-	}
-
-	.od-progress-note {
-		margin: 8px 0 10px;
-		font-size: 12px;
-		font-weight: 600;
-		color: #5c738a;
-	}
-
-	.od-timeline {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: grid;
-		gap: 8px;
-	}
-
-	.od-timeline li {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 8px;
-		padding-left: 20px;
-		position: relative;
-		font-size: 13px;
-		font-weight: 700;
-		color: #2a445e;
-	}
-
-	.od-timeline li::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 7px;
-		width: 10px;
-		height: 10px;
-		border-radius: 50%;
-		border: 2px solid #c9d9ea;
-		background: #fff;
-	}
-
-	.od-timeline li.done::before,
-	.od-timeline li.active::before {
-		border-color: #16a56d;
-		background: #16a56d;
-	}
-
-	.od-timeline li span {
-		font-size: 12px;
-		font-weight: 600;
-		color: #667f98;
-	}
-
-	.od-next {
-		margin-top: 10px;
-		padding: 10px;
-		border-radius: 8px;
-		border: 1px solid #d6e4f2;
-		background: #eef5ff;
-		font-size: 12px;
-		font-weight: 700;
-		color: #385573;
-	}
-
-	.od-profile-body {
-		padding: 12px;
-		display: grid;
-		grid-template-columns: 72px 1fr;
-		gap: 12px;
-	}
-
-	.od-avatar {
-		width: 72px;
-		height: 72px;
-		border-radius: 50%;
-		object-fit: cover;
-		border: 3px solid #deebf9;
-		background: #d6e4f4;
-	}
-
-	.od-name {
-		margin: 0;
-		font-size: 1.45rem;
-		font-weight: 800;
-		line-height: 1.2;
-		color: #223e59;
-	}
-
-	.od-rating {
-		margin: 4px 0 6px;
-		font-size: 13px;
-		font-weight: 700;
-		color: #566d83;
-	}
-
-	.od-rating i {
-		color: #f2b019;
-		margin-right: 4px;
-	}
-
-	.od-info-row {
-		margin: 0;
-		font-size: 13px;
-		font-weight: 700;
-		color: #2b4964;
-		display: flex;
-		align-items: center;
-		gap: 7px;
-	}
-
-	.od-info-row i {
-		color: #60a5fa;
-	}
-
-	.od-profile-foot {
-		padding: 0 12px 12px;
-	}
-
-	.od-exp {
-		display: inline-flex;
-		align-items: center;
-		padding: 7px 10px;
-		border-radius: 8px;
-		font-size: 12px;
-		font-weight: 700;
-		background: #eef2f6;
-		color: #52667c;
-	}
-
-	.od-review-body {
-		padding: 11px 12px;
-		display: grid;
-		gap: 8px;
-	}
-
-	.od-review-box {
-		border: 1px solid #d8e5f3;
-		border-radius: 8px;
-		padding: 8px;
-		background: #f8fbff;
-	}
-
-	.od-review-label {
-		margin: 0 0 3px;
-		font-size: 10px;
-		font-weight: 700;
-		color: #57708a;
-	}
-
-	.od-review-value {
-		margin: 0;
-		font-size: 12px;
-		font-weight: 700;
-		color: #2d4b67;
-		white-space: pre-line;
-		word-break: break-word;
-	}
-
-	@media (max-width: 1199px) {
-		.od-grid,
-		.od-hero-grid,
-		.od-jobs-foot {
-			grid-template-columns: 1fr;
+		:root {
+			--bg: #f4f7fb;
+			--surface: #ffffff;
+			--surface-soft: #f8fbff;
+			--text: #1b2a3a;
+			--muted: #6a7a8a;
+			--primary: #0f80f2;
+			--success: #19a56f;
+			--warning: #ed9f1a;
+			--danger: #d14242;
+			--border: #e5edf5;
+			--shadow: 0 20px 45px rgba(20, 50, 80, 0.12);
+			--radius-xl: 22px;
+			--radius-lg: 16px;
+			--radius-md: 12px;
+			--anim: 260ms cubic-bezier(.2, .7, .2, 1);
 		}
 
-		.od-profile-body,
-		.od-hero-top {
-			grid-template-columns: 1fr;
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			min-height: 100%;
+			font-family: "Be Vietnam Pro", sans-serif;
+			color: var(--text);
+			background:
+				radial-gradient(circle at 20% -10%, #e3f0ff 0, transparent 42%),
+				radial-gradient(circle at 95% 120%, #e5fff4 0, transparent 38%),
+				var(--bg);
+		}
+
+		.page {
+			min-height: 100vh;
+			display: grid;
+			place-items: center;
+			padding: 24px;
+		}
+
+		.modal-card {
+			width: min(1240px, 100%);
+			border-radius: var(--radius-xl);
+			background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+			box-shadow: var(--shadow);
+			border: 1px solid rgba(16, 66, 113, 0.08);
+			overflow: visible;
+			transform: translateY(8px);
+			opacity: 0;
+			animation: showCard 520ms var(--anim) forwards;
+		}
+
+		@keyframes showCard {
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		.topbar {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr) auto;
+			gap: 14px;
+			align-items: center;
+			padding: 20px 24px;
+			background: linear-gradient(100deg, #1170d8, #25b58b);
+			color: #fff;
+			position: sticky;
+			top: 0;
+			z-index: 50;
+			box-shadow: 0 10px 24px rgba(8, 48, 82, 0.25);
+		}
+
+		.topbar-logo {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 98px;
+			height: 66px;
+			padding: 6px;
+			border-radius: 14px;
+			border: 1px solid rgba(255, 255, 255, 0.34);
+			background: rgba(255, 255, 255, 0.14);
+			box-shadow: 0 10px 22px rgba(9, 48, 88, 0.2);
+			backdrop-filter: blur(4px);
+			transition: transform var(--anim), background var(--anim), border-color var(--anim);
+		}
+
+		.topbar-logo:hover {
+			transform: translateY(-2px);
+			background: rgba(255, 255, 255, 0.22);
+			border-color: rgba(255, 255, 255, 0.5);
+		}
+
+		.topbar-logo img {
+			width: 74px;
+			height: 50px;
+			object-fit: contain;
+			filter: drop-shadow(0 4px 8px rgba(5, 39, 72, 0.35));
+		}
+
+		.topbar-title {
+			margin: 0;
+			font-size: clamp(1.05rem, 1.5vw, 1.5rem);
+			font-weight: 800;
+			letter-spacing: .2px;
+			text-align: center;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.topbar-meta {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.chip {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 7px 12px;
+			border-radius: 999px;
+			border: 1px solid rgba(255, 255, 255, 0.35);
+			font-size: 12px;
+			font-weight: 700;
+			background: rgba(255, 255, 255, 0.15);
+			color: #fff;
+			backdrop-filter: blur(4px);
+		}
+
+		.content {
+			padding: 18px;
+		}
+
+		.state {
+			border-radius: var(--radius-md);
+			padding: 14px 16px;
+			margin: 0 0 16px;
+			font-weight: 600;
+			border: 1px solid;
+			display: none;
+		}
+
+		.state.show {
+			display: block;
+		}
+
+		.state.info {
+			background: #edf6ff;
+			border-color: #c5e0ff;
+			color: #0f4b91;
+		}
+
+		.state.error {
+			background: #fff3f3;
+			border-color: #ffcaca;
+			color: #9a2525;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 14px;
+		}
+
+		.panel {
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			background: var(--surface);
+			box-shadow: 0 7px 20px rgba(14, 45, 80, 0.06);
+			padding: 14px;
+			min-height: 205px;
+			display: flex;
 			flex-direction: column;
+			gap: 12px;
+		}
+
+		.panel-wide {
+			grid-column: 1 / -1;
+		}
+
+		.panel-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+		}
+
+		.panel-title {
+			margin: 0;
+			font-size: 16px;
+			font-weight: 800;
+			color: #15314f;
+		}
+
+		.badge {
+			padding: 5px 10px;
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 800;
+			letter-spacing: .2px;
+			background: #e8f3ff;
+			color: #0d4d96;
+			white-space: nowrap;
+		}
+
+
+		.info-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px 12px;
+		}
+
+		.field {
+			border: 1px dashed #d9e6f3;
+			border-radius: 10px;
+			padding: 8px 10px;
+			background: var(--surface-soft);
+		}
+
+		.field-label {
+			font-size: 11px;
+			font-weight: 700;
+			color: var(--muted);
+			margin: 0 0 4px;
+			text-transform: uppercase;
+			letter-spacing: .5px;
+		}
+
+		.field-value {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 600;
+			word-break: break-word;
+		}
+
+		#panelInvoice {
+			padding: 0;
+			min-height: auto;
+			border: 0;
+			box-shadow: none;
+			background: transparent;
+		}
+
+		.invoice-hero {
+			border-radius: 16px 16px 16px 16px;
+			padding: 16px;
+			color: #000000;
+		}
+
+		.invoice-main {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 14px;
+			margin-bottom: 14px;
+		}
+
+		.invoice-headline {
+			display: grid;
+			gap: 10px;
+			flex: 1;
+		}
+
+		.invoice-title-line {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			flex-wrap: wrap;
+		}
+
+		.invoice-order-title {
+			margin: 0;
+			font-size: clamp(1.1rem, 2vw, 1.7rem);
+			font-weight: 800;
+		}
+
+		.invoice-status-badge {
+			display: inline-flex;
+			align-items: center;
+			padding: 5px 10px;
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 800;
+			background: rgba(255, 255, 255, 0.25);
+			border: 1px solid rgba(255, 255, 255, 0.35);
+			color: #020202;
+		}
+
+		.invoice-status-badge.success {
+			background: rgb(27, 192, 131);
+		}
+
+		.invoice-status-badge.warning {
+			background: rgba(217, 228, 16, 0.996);
+		}
+
+		.invoice-status-badge.danger {
+			background: rgb(209, 66, 66);
+		}
+
+		.invoice-subtitle {
+			margin: 0;
+			font-size: 19px;
+			font-weight: 600;
+			opacity: .95;
+		}
+
+
+
+		.invoice-chip-btn {
+			display: inline-flex;
+			align-items: center;
+			padding: 7px 11px;
+			border-radius: 999px;
+			font-size: 12px;
+			font-weight: 700;
+			background: rgba(255, 255, 255, 0.12);
+			border: 1px solid rgba(255, 255, 255, 0.28);
+		}
+
+		.invoice-progress-ring {
+			--p: 0;
+			width: 122px;
+			height: 122px;
+			border-radius: 50%;
+			background: conic-gradient(#b4f3d2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.25) 0);
+			padding: 7px;
+			flex: 0 0 auto;
+		}
+
+		.invoice-progress-core {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			background: rgba(17, 72, 124, 0.44);
+			display: grid;
+			place-content: center;
+			text-align: center;
+			backdrop-filter: blur(4px);
+		}
+
+		.invoice-progress-core strong {
+			font-size: 34px;
+			line-height: 1;
+		}
+
+		.invoice-progress-core small {
+			font-size: 12px;
+			font-weight: 700;
+			opacity: .9;
+		}
+
+		.invoice-summary {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.invoice-item {
+			display: flex;
+			gap: 9px;
 			align-items: flex-start;
+			border: 1px solid rgba(214, 237, 255, 0.25);
+			background: rgba(27, 74, 130, 0.2);
+			border-radius: 12px;
+			padding: 10px 12px;
+			min-height: 96px;
 		}
 
-		.od-order-id {
-			font-size: 1.7rem;
+		.invoice-item-icon {
+			width: 27px;
+			height: 27px;
+			border-radius: 999px;
+			border: 1px solid rgba(91, 4, 4, 0.4);
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 11px;
+			font-weight: 800;
+			background: rgba(255, 255, 255, 0.576);
+			color: #060606;
+			flex: 0 0 27px;
+			margin-top: 2px;
 		}
 
-		.od-service {
-			font-size: 1.2rem;
+		.invoice-item-content {
+			display: grid;
+			gap: 2px;
+			min-width: 0;
 		}
 
-		.od-progress-ring {
-			width: 94px;
-			height: 94px;
+		.invoice-item-content p {
+			margin: 0;
+			font-size: 11px;
+			font-weight: 600;
+			opacity: .85;
 		}
 
-		.od-progress-core strong {
-			font-size: 1.65rem;
+		.invoice-item-content h4 {
+			margin: 0;
+			font-size: clamp(1.05rem, 1.6vw, 1.9rem);
+			font-weight: 800;
+			line-height: 1.15;
+			word-break: break-word;
 		}
 
-		.od-progress-core small {
-			font-size: 0.72rem;
+		.invoice-item-content span {
+			font-size: 11px;
+			font-weight: 600;
+			opacity: .9;
 		}
 
-		.od-box-value--price,
-		.od-box-value--time {
-			font-size: 1.45rem;
+		#invoicePrice {
+			font-size: clamp(1.45rem, 2vw, 2.25rem);
+			line-height: 1.08;
 		}
 
-		.od-box-value--address {
-			font-size: 1.1rem;
+		#invoiceTimeRange {
+			font-size: clamp(1.2rem, 1.5vw, 1.75rem);
+		}
+
+		#invoiceDate {
+			display: inline-block;
+			margin-top: 2px;
+		}
+
+		.invoice-item.address #invoiceAddress {
+			font-size: clamp(0.9rem, 1.05vw, 1.1rem);
 			line-height: 1.35;
+			display: block;
+			white-space: normal;
+			overflow: visible;
+			word-break: break-word;
 		}
 
-		.od-box-sub {
-			font-size: 0.92rem;
+		#panelJobs {
+			padding: 0;
+			overflow: hidden;
+			gap: 0;
+			border-color: #d7e7dc;
 		}
-	}
+
+		.jobs-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			padding: 12px 14px;
+			background: #f4f7fa;
+			border-bottom: 1px solid #deebf2;
+		}
+
+		.jobs-title {
+			margin: 0;
+			font-size: 27px;
+			font-weight: 800;
+			color: #213d57;
+		}
+
+		.job-count {
+			display: inline-flex;
+			align-items: center;
+			padding: 6px 10px;
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 800;
+			color: #138259;
+			background: #def8ea;
+			border: 1px solid #c0ead3;
+			white-space: nowrap;
+		}
+
+		.jobs-body {
+			padding: 12px;
+			background: #ecf8f1;
+		}
+
+		#panelJobs #invoiceJob {
+			background: transparent;
+			padding: 0;
+			margin: 0;
+			gap: 10px;
+		}
+
+		#panelJobs #invoiceJob li {
+			background: rgba(255, 255, 255, 0.35);
+			border: 1px solid #cfe9d9;
+			border-radius: 10px;
+			padding: 10px;
+		}
+
+		.jobs-meta {
+			padding: 10px;
+			border-top: 1px solid #deebf2;
+			background: #fff;
+		}
+
+		.invoice-extra {
+			border: 1px solid #c8d7ea;
+			border-top: 0;
+			border-radius: 0 0 14px 14px;
+			background: #fff;
+			padding: 12px;
+			display: grid;
+			gap: 10px;
+		}
+
+		.invoice-extra-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+		}
+
+		.invoice-media-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+			margin: 4px;
+		}
+
+		.invoice-extra-item,
+		.invoice-media-item {
+			border: 1px solid #c8d7ea;
+			background: #dfe9f7;
+			border-radius: 8px;
+			padding: 8px 10px;
+			min-height: 72px;
+		}
+
+		.invoice-extra-item.full-width {
+			grid-column: 1 / -1;
+		}
+
+		.invoice-media-row {
+			display: flex;
+			flex-direction: row;
+			gap: 8px;
+			margin-top: 8px;
+		}
+
+		.invoice-media-item {
+			border: 1px solid #c8d7ea;
+			background: #dfe9f7;
+			border-radius: 8px;
+			padding: 8px 10px;
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			overflow: hidden;
+		}
+
+		.invoice-media-item .field-label {
+			color: #3f5f7d;
+			font-size: 10px;
+			margin: 0;
+			font-weight: 600;
+		}
+
+		.invoice-media-item img,
+		.invoice-media-item video {
+			width: 100%;
+			flex: 1;
+			object-fit: cover;
+			border-radius: 5px;
+			background: rgba(0, 0, 0, 0.04);
+			display: block;
+		}
+
+		.invoice-media-item .media-empty-label {
+			color: #8d9fb3;
+			font-size: 11px;
+			text-align: center;
+			padding: 8px 0;
+			flex: 1;
+		}
+
+
+		.invoice-extra .field-label {
+			color: #3f5f7d;
+			font-size: 10px;
+		}
+
+		.invoice-extra .field-value {
+			font-size: 13px;
+			font-weight: 700;
+			color: #1f3853;
+		}
+
+		#invoiceJob {
+			list-style: none;
+			margin: 0;
+			padding: 8px;
+			border-radius: 10px;
+			background: #d8f0de;
+			display: grid;
+			gap: 8px;
+			counter-reset: job-item;
+		}
+
+		#invoiceJob li {
+			counter-increment: job-item;
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			font-size: 13px;
+			font-weight: 600;
+			line-height: 1.45;
+			color: #1f3853;
+		}
+
+		#invoiceJob li::before {
+			content: counter(job-item);
+			flex: 0 0 22px;
+			height: 22px;
+			border-radius: 999px;
+			background: #22a06b;
+			color: #fff;
+			font-size: 12px;
+			font-weight: 800;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: 1px;
+		}
+
+		#panelCustomer,
+		#panelStaff {
+			padding: 0;
+			overflow: hidden;
+			gap: 0;
+			border-color: #dce8f1;
+		}
+
+		.profile-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 10px;
+			padding: 12px 14px;
+			border-bottom: 1px solid #e1edf6;
+			background: #f7fbff;
+		}
+
+		.profile-title {
+			margin: 0;
+			font-size: 18px;
+			font-weight: 800;
+			color: #213d57;
+		}
+
+		.profile-status {
+			border-radius: 999px;
+			padding: 5px 10px;
+			font-size: 11px;
+			font-weight: 800;
+		}
+
+		.profile-body {
+			padding: 14px;
+			display: grid;
+			grid-template-columns: 88px 1fr;
+			gap: 14px;
+			align-items: start;
+		}
+
+		.profile-avatar {
+			width: 88px;
+			height: 88px;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 3px solid #e2f1ff;
+			background: #d9e7f7;
+		}
+
+		.profile-main {
+			display: grid;
+			gap: 7px;
+		}
+
+		.profile-name {
+			margin: 0;
+			font-size: 22px;
+			font-weight: 800;
+			line-height: 1.25;
+			color: #1d3650;
+		}
+
+		.profile-rate {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 700;
+			color: #4d6175;
+		}
+
+		.profile-contact {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 700;
+			color: #2f4961;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			word-break: break-word;
+		}
+
+		.profile-contact span {
+			word-break: break-word;
+		}
+
+		.profile-rate .star {
+			color: #f2b019;
+			margin-right: 4px;
+		}
+
+		.profile-row {
+			margin: 0;
+			font-size: 15px;
+			font-weight: 700;
+			color: #2f4961;
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			word-break: break-word;
+		}
+
+		.profile-row::before,
+		.profile-contact::before {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 18px;
+			height: 18px;
+			border-radius: 999px;
+			background: #eaf4ff;
+			color: #4d92df;
+			font-size: 11px;
+			line-height: 1;
+			font-weight: 800;
+			flex: 0 0 18px;
+			margin-top: 1px;
+		}
+
+		.contact-email::before {
+			content: '✉';
+		}
+
+		.contact-phone::before {
+			content: '✆';
+		}
+
+		.contact-address::before {
+			content: '⌂';
+		}
+
+		.profile-foot {
+			padding: 0 14px 14px;
+		}
+
+		.profile-pill {
+			display: inline-flex;
+			align-items: center;
+			padding: 8px 12px;
+			border-radius: 10px;
+			background: #eef2f6;
+			font-size: 13px;
+			font-weight: 700;
+			color: #50657a;
+		}
+
+		.progress-inner {
+			height: 100%;
+			width: 0;
+			transition: width 420ms ease, background 300ms ease;
+			background: linear-gradient(90deg, #19a56f, #26c385);
+		}
+
+		.progress-inner.warn {
+			background: linear-gradient(90deg, #f0ba2c, #e28c17);
+		}
+
+		.progress-inner.danger {
+			background: linear-gradient(90deg, #df6a3e, #d14242);
+		}
+
+		#panelTime #badgeTimeState:not(.success):not(.warning):not(.danger) {
+			background: #dcebff;
+			color: #3b5ca4;
+		}
+
+		.hint {
+			margin: 0;
+			color: #4b6076;
+			font-size: 13px;
+		}
+
+		.review-split {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.review-box {
+			border: 1px solid #d6e4f2;
+			border-radius: 12px;
+			padding: 10px;
+			background: #f7fbff;
+			display: grid;
+			gap: 10px;
+		}
+
+		.review-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.review-title {
+			margin: 0;
+			font-size: 14px;
+			font-weight: 800;
+			color: #15314f;
+		}
+
+		.review-display {
+			display: grid;
+			gap: 6px;
+			padding: 8px;
+			border-radius: 10px;
+			border: 1px dashed #c9dced;
+			background: #fff;
+		}
+
+		.review-text,
+		.review-time {
+			margin: 0;
+			font-size: 13px;
+			font-weight: 600;
+			color: #1f3853;
+			word-break: break-word;
+		}
+
+		.review-media-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 8px;
+		}
+
+		.review-media-grid img,
+		.review-media-grid video {
+			width: 100%;
+			height: 120px;
+			object-fit: cover;
+			border-radius: 10px;
+			border: 1px solid #dbe7f2;
+			background: #f4f8fc;
+		}
+
+		.media-empty {
+			grid-column: 1 / -1;
+			font-size: 12px;
+			font-weight: 700;
+			color: #5f7590;
+			background: #edf4fc;
+			border: 1px solid #d7e5f3;
+			padding: 8px 10px;
+			border-radius: 8px;
+		}
+
+		.hidden {
+			display: none !important;
+		}
+
+		:root {
+			--bg: #f6f9ff;
+			--surface: #ffffff;
+			--surface-soft: #f1fbff;
+			--text: #030303;
+			--muted: #5f6d8b;
+			--primary: #5a7ae4;
+			--success: #4a6bd9;
+			--warning: #8aa2f0;
+			--danger: #3b50c9;
+			--border: #f0d4e3;
+			--shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
+			--accent-peach: #b9efff;
+			--accent-lavender: #d8dcff;
+			--accent-mint: #cff5e8;
+			--accent-rose: #a7b3f7;
+		}
+
+		html,
+		body {
+			background:
+				radial-gradient(circle at 20% -10%, #dce7ff 0, transparent 42%),
+				radial-gradient(circle at 95% 120%, #e8f5ff 0, transparent 38%),
+				radial-gradient(circle at 85% 15%, rgb(248, 248, 248) 0, transparent 35%),
+				radial-gradient(circle at 8% 88%, rgb(255, 255, 255) 0, transparent 30%),
+				var(--bg);
+		}
+
+		.modal-card {
+			background: linear-gradient(180deg, #ffffff 0%, #f8faff 62%, #f3faff 100%);
+			border: 1px solid rgba(200, 88, 143, 0.2);
+			box-shadow: 0 24px 48px rgba(196, 83, 138, 0.18), 0 6px 20px rgba(138, 170, 209, 0.12);
+		}
+
+		.topbar {
+			background: linear-gradient(102deg, #69a0f3 0%, #86b0ef 58%, #a9cbff 100%) !important;
+			box-shadow: 0 10px 24px rgba(169, 63, 114, 0.3);
+		}
+
+		.topbar-logo {
+			border-color: rgba(255, 255, 255, 0.42);
+			background: rgba(255, 255, 255, 0.2);
+			box-shadow: 0 10px 22px rgba(166, 58, 110, 0.24);
+		}
+
+		.topbar-logo:hover {
+			background: rgba(255, 255, 255, 0.3);
+			border-color: rgba(255, 255, 255, 0.56);
+		}
+
+		.chip {
+			background: rgba(255, 255, 255, 0.24);
+			border-color: rgba(255, 255, 255, 0.45);
+		}
+
+		.panel {
+			border-color: #f1d5e4;
+			box-shadow: 0 12px 26px rgba(226, 113, 168, 0.12), 0 2px 8px rgba(191, 200, 219, 0.1);
+		}
+
+		.panel-title,
+		.jobs-title,
+		.profile-title,
+		.review-title {
+			color: #000000;
+		}
+
+		.badge {
+			background: #e6eeff;
+			color: #3f69a8;
+			border: 1px solid #000000;
+		}
+
+
+		.invoice-hero {
+			background: linear-gradient(118deg, #9bc0f9 0%, #c7e7f9 48%, #dbe4f9 72%, #d4e2ff 100%);
+		}
+
+		.invoice-progress-ring {
+			background: conic-gradient(from -90deg, #5eb4f2 calc(var(--p) * 1%), rgba(255, 255, 255, 0.34) 0);
+			border: 2px solid rgb(0, 0, 0);
+			box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 22px rgba(122, 34, 82, 0.28);
+		}
+
+		.invoice-progress-core {
+			background:
+				radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0) 44%),
+				linear-gradient(150deg, rgba(179, 202, 245, 0.94) 0%, rgba(138, 171, 241, 0.93) 100%);
+			border: 2px solid rgb(0, 0, 0);
+			box-shadow: inset 0 8px 14px rgba(255, 255, 255, 0.12);
+			color: #ffffff;
+		}
+
+		.invoice-progress-core strong {
+			color: #383cb0;
+			/* text-shadow: 0 2px 8px rgba(168, 39, 99, 0.979); */
+		}
+
+		.invoice-progress-core small {
+			color: #f3f9ff;
+		}
+
+		.invoice-item {
+			border-color: rgba(227, 234, 255, 0.6);
+			background: rgba(19, 95, 195, 0.22);
+		}
+
+		.invoice-extra {
+			border-color: #d5dcf1;
+			background: linear-gradient(180deg, #ffffff 0%, #f5f6fa 100%);
+		}
+
+		.invoice-extra-item,
+		.invoice-media-item {
+			border-color: #6587e6;
+			background: #eef5ff;
+		}
+
+		.invoice-extra-item .field-label,
+		.invoice-media-item .field-label {
+			color: #3d83ec;
+		}
+
+		#panelJobs {
+			border-color: #3d83ec;
+		}
+
+		.jobs-header {
+			background: linear-gradient(135deg, #7cb1ee 0%, #e9f3ff 65%, #d8e8ff 100%);
+			border-bottom-color: #f2d7e5;
+		}
+
+		.jobs-body {
+			background: linear-gradient(180deg, #fcfcfc 0%, #f4f8ff 70%, #eef4ff 100%);
+		}
+
+		#panelJobs #invoiceJob li {
+			background: rgb(255, 255, 255);
+			border-color: #1149c2;
+		}
+
+		.jobs-meta {
+			border-top-color: #ffffff;
+			background: #ffffff;
+		}
+
+		#invoiceJob {
+			background: linear-gradient(145deg, #fafafa 0%, #b4d0f1 100%);
+		}
+
+		#invoiceJob li {
+			color: #2f546d;
+		}
+
+		#invoiceJob li::before {
+			background: #4f92de;
+		}
+
+		#panelCustomer,
+		#panelStaff {
+			border-color: #5b81c7;
+		}
+
+		.profile-head {
+			border-bottom-color: #dbe5f2;
+			background: linear-gradient(135deg, #96afe4 0%, #f1f6ff 55%, #b3c8f0 100%);
+		}
+
+		.profile-avatar {
+			border-color: #d6e4f6;
+			background: #eaf2fd;
+		}
+
+		.profile-name,
+		.profile-contact,
+		.profile-row {
+			color: #000000;
+		}
+
+		.profile-row::before,
+		.profile-contact::before {
+			background: #e7f1ff;
+			color: #4f7dd2;
+		}
+
+		.profile-pill {
+			background: linear-gradient(135deg, #f0f8ff 0%, #eef2ff 65%, #eaf0f8 100%);
+			color: #445e8e;
+			border: 1px solid #d0d3f0;
+		}
+
+		#panelTime {
+			background: linear-gradient(180deg, #9fb8e6 0%, #d9e2f0 58%, #d9e5fa 100%) !important;
+			border-color: #5e87d4 !important;
+		}
+
+		.progress-inner {
+			background: linear-gradient(90deg, #aacaf5 0%, #6fa8ea 55%, #77d2e2 100%);
+			box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2), 0 3px 8px rgba(53, 92, 165, 0.26);
+		}
+
+		.progress-inner.warn {
+			background: linear-gradient(90deg, #6a93ec, #a9caf4, #b1c6ff);
+		}
+
+		.progress-inner.danger {
+			background: linear-gradient(90deg, #3f81cc, #679fe0);
+		}
+
+		#progressText {
+			color: #000000;
+			font-weight: 900;
+			letter-spacing: 0.2px;
+		}
+
+		#progressHint {
+			color: #3f5d7f;
+			font-weight: 700;
+		}
+
+		#panelTime #badgeTimeState:not(.success):not(.warning):not(.danger) {
+			background: #87a4ca;
+			color: #000000;
+		}
+
+		.hint,
+		.review-text,
+		.review-time {
+			color: #475c7c;
+		}
+
+		.review-box {
+			border-color: #d1dfef;
+			background: linear-gradient(180deg, #f7fbff 0%, #f7fbff 68%, #f1f8ff 100%);
+		}
+
+		.review-display {
+			border-color: #d4e1f1;
+			background: #fff;
+		}
+
+		.media-empty {
+			background: linear-gradient(135deg, #f0f6ff 0%, #ecf3fb 100%);
+			border-color: #d4e0f2;
+			color: #4d638d;
+		}
+
+		.btn.btn-primary,
+		.btn.btn-success,
+		.btn.btn-warning,
+		.btn.btn-danger {
+			border: 0;
+			box-shadow: 0 8px 18px rgba(193, 71, 130, 0.2);
+		}
+
+		.btn.btn-primary {
+			border: 1px solid rgb(15, 15, 15);
+			color: #000000 !important;
+		}
+
+		.btn.btn-success {
+			border: 1px solid rgb(14, 14, 14);
+			color: #000000 !important;
+		}
+
+		.btn.btn-warning {
+			border: 1px solid red;
+			color: #000000 !important;
+		}
+
+		.btn.btn-danger {
+			background: linear-gradient(135deg, #3b79c9, #74a6e7) !important;
+		}
+
+		.btn.btn-primary:hover,
+		.btn.btn-success:hover,
+		.btn.btn-warning:hover,
+		.btn.btn-danger:hover {
+			filter: brightness(0.96);
+		}
+
+		@media (max-width: 1060px) {
+
+			.grid,
+			.info-grid,
+			.review-split,
+			.review-media-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.invoice-extra-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.invoice-summary {
+				grid-template-columns: 1fr;
+				gap: 6px;
+			}
+
+			.invoice-item {
+				width: 100%;
+				min-height: auto;
+				padding: 8px 12px;
+			}
+
+			.profile-body {
+				grid-template-columns: 1fr 80px;
+				align-items: center;
+				gap: 12px;
+			}
+
+			.profile-avatar {
+				grid-column: 2;
+				grid-row: 1;
+				width: 72px;
+				height: 72px;
+			}
+
+			.profile-main {
+				grid-column: 1;
+				grid-row: 1;
+				text-align: left;
+			}
+
+			.invoice-main {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.invoice-main .actions {
+				margin: auto !important;
+				justify-content: center;
+				width: 100%;
+				order: 0;
+			}
+
+			.invoice-progress-ring {
+				width: 105px;
+				height: 105px;
+				order: 1;
+			}
+
+			.invoice-item-content h4 {
+				font-size: 18px;
+			}
+
+			.panel {
+				min-height: auto;
+			}
+		}
+
+		@media (max-width: 640px) {
+			.page {
+				padding: 10px;
+			}
+
+			.content {
+				padding: 10px;
+			}
+
+			.topbar {
+				grid-template-columns: auto minmax(0, 1fr) auto;
+				gap: 8px;
+				padding: 12px 10px;
+			}
+
+			.topbar-title {
+				font-size: 0.92rem;
+			}
+
+			.topbar-logo {
+				width: 72px;
+				height: 48px;
+				padding: 4px;
+			}
+
+			.topbar-logo img {
+				width: 54px;
+				height: 36px;
+			}
+
+			#invoiceProgressRing {
+				margin-inline: auto;
+				width: 140px !important;
+				height: 140px !important;
+			}
+
+			.invoice-progress-ring {
+				width: 140px !important;
+				height: 140px !important;
+			}
+		}
+
+		@media (min-width: 768px) and (max-width: 1024px) {
+			.invoice-main {
+				display: grid !important;
+				grid-template-columns: 1fr auto 1fr !important;
+				align-items: center !important;
+				text-align: left !important;
+				gap: 20px !important;
+			}
+
+			.invoice-headline {
+				width: auto !important;
+			}
+
+			.invoice-title-line {
+				justify-content: flex-start !important;
+			}
+
+			.invoice-main .actions {
+				margin: 0 !important;
+				justify-content: center !important;
+				width: auto !important;
+			}
+
+			#invoiceProgressRing {
+				justify-self: end;
+				margin: 0 !important;
+				width: 120px !important;
+				height: 120px !important;
+				border-radius: 50% !important;
+				aspect-ratio: 1 / 1 !important;
+			}
+
+			.invoice-summary {
+				grid-template-columns: repeat(2, 1fr) !important;
+				gap: 15px !important;
+			}
+
+			.invoice-item.address {
+				grid-column: span 2 !important;
+			}
+		}
+	
 </style>
 
-<style>
-	:root {
-		--rose-50: #fff5fb;
-		--rose-100: #ffe8f3;
-		--rose-200: #ffd4e8;
-		--rose-300: #f6bad7;
-		--rose-400: #ea93bd;
-		--rose-500: #d46da0;
-		--rose-600: #bd4f87;
-		--rose-700: #8f2f61;
-		--accent-peach-100: #fff0e6;
-		--accent-peach-200: #f5d6c2;
-		--rose-shadow: rgba(151, 61, 107, 0.2);
-	}
+<div class="page" style="margin-top:-20px;min-height:auto;">
+<section class="modal-card">
+			<header class="topbar">
+				<a class="topbar-logo" href="#" aria-label="Trang chủ">
+					<img src="../assets/logo-he-thong.png" alt="Logo dịch vụ" />
+				</a>
+				<h1 class="topbar-title">ĐH Dọn Vệ Sinh</h1>
+				<a class="topbar-logo" href="#" aria-label="Trang dịch vụ dọn vệ sinh">
+					<img src="../assets/logo_main.png" alt="Logo dọn vệ sinh" />
+				</a>
+			</header>
 
-	.admin-main,
-	.admin-main > main {
-		background: linear-gradient(140deg, #fff1f9 0%, #ffe7f2 52%, #fff6fb 100%) !important;
-	}
+			<div class="content">
+				
 
-	.od-title,
-	.od-panel-title,
-	.od-profile-title {
-		color: var(--rose-700) !important;
-	}
+				<section id="mainGrid" class="grid">
+					<article class="panel panel-wide" id="panelInvoice">
+						<div class="invoice-hero">
+							<div class="invoice-main">
+								<div class="invoice-headline">
+									<div>
+										<div class="invoice-title-line">
+											<h2 class="invoice-order-title">Đơn #<span id="invoiceId"><?= admin_h(str_pad((string)($row["id"] ?? ""), 7, "0", STR_PAD_LEFT)) ?></span></h2>
+											<span id="badgeInvoiceStatus" class="invoice-status-badge <?= strpos($statusRaw, 'hoan thanh') !== false ? 'success' : (strpos($statusRaw, 'huy') !== false || strpos($statusRaw, 'qua han') !== false ? 'danger' : (strpos($statusRaw, 'dang') !== false ? 'warning' : '')) ?>"><?= admin_h($statusText) ?></span>
+										</div>
+										<p id="invoiceService" class="invoice-subtitle">---</p>
+										<div class="invoice-title-line" style="margin-top: 5px; gap: 8px;">
+											<span id="invoiceLoaiNoiDon" class="invoice-status-badge"
+												style="background: rgba(255, 255, 255, 0.45); color: #000; border: 1px solid rgba(0,0,0,0.1);"><?= admin_h(trim((string)($row['loai_noi_don'] ?? '')) !== '' ? (string)$row['loai_noi_don'] : '---') ?></span>
+											<span id="invoiceGoiDichVu" class="invoice-status-badge"
+												style="background: rgba(255, 255, 255, 0.45); color: #000; border: 1px solid rgba(0,0,0,0.1);"><?= admin_h(trim((string)($row['goi_dich_vu'] ?? '')) !== '' ? (string)$row['goi_dich_vu'] : '---') ?></span>
+										</div>
+									</div>
+								</div>
+								
+								<div id="invoiceProgressRing" class="invoice-progress-ring" style="--p:0;">
+									<div class="invoice-progress-core">
+										<strong id="invoiceProgressHero"><?= admin_h($progressText) ?>%</strong>
+										<small>Hoàn thành</small>
+									</div>
+								</div>
+							</div>
 
-	.od-chip,
-	.od-job-count {
-		background: #ffeaf4 !important;
-		color: var(--rose-700) !important;
-		border-color: var(--rose-300) !important;
-	}
+							<div class="invoice-summary">
+								<div class="invoice-item">
+									<span class="invoice-item-icon"><i class="fa fa-usd" aria-hidden="true"></i></span>
+									<div class="invoice-item-content">
+										<p>Tổng tiền</p>
+										<h4 id="invoicePrice"><?= admin_h(trim((string)($row['tong_tien'] ?? '')) !== '' ? (string)$row['tong_tien'] : '0') ?></h4>
+									</div>
+								</div>
+								<div class="invoice-item">
+									<span class="invoice-item-icon"><i class="fa fa-clock-o"
+											aria-hidden="true"></i></span>
+									<div class="invoice-item-content">
+										<p>Thời gian</p>
+										<h4 id="invoiceTimeRange"><?= admin_h((trim((string)($row["gio_bat_dau_kehoach"] ?? "")) !== "" ? (string)$row["gio_bat_dau_kehoach"] : "--:--:--") . " - " . (trim((string)($row["gio_ket_thuc_kehoach"] ?? "")) !== "" ? (string)$row["gio_ket_thuc_kehoach"] : "--:--:--")) ?></h4>
+										<span id="invoiceDate"><?= admin_h((trim((string)($row["ngay_bat_dau_kehoach"] ?? "")) !== "" ? (string)$row["ngay_bat_dau_kehoach"] : "---") . (trim((string)($row["ngay_ket_thuc_kehoach"] ?? "")) !== "" ? (" -> " . (string)$row["ngay_ket_thuc_kehoach"]) : "")) ?></span>
+									</div>
+								</div>
+								<div class="invoice-item address">
+									<span class="invoice-item-icon"><i class="fa fa-map-marker"
+											aria-hidden="true"></i></span>
+									<div class="invoice-item-content">
+										<p>Địa chỉ</p>
+										<h4 id="invoiceAddress"><?= admin_h(trim((string)($row['diachikhachhang'] ?? '')) !== '' ? (string)$row['diachikhachhang'] : 'N/A') ?></h4>
+									</div>
+								</div>
+							</div>
+						</div>
 
-	.od-back-btn {
-		background: linear-gradient(135deg, #ef7eb4, #cb5c93) !important;
-		border-color: #f2a7cb !important;
-		box-shadow: 0 8px 20px rgba(208, 92, 145, 0.3) !important;
-	}
+					</article>
 
-	.od-back-btn:hover {
-		background: linear-gradient(135deg, #e96ca8, #bb4c86) !important;
-	}
+					<article class="panel" id="panelJobs">
+						<div class="jobs-header">
+							<h2 class="jobs-title">Công việc cần thực hiện</h2>
+						</div>
+						<div class="jobs-body">
+							<ol id="invoiceJob" class="field-value"><?php foreach ($jobItems as $item): ?><li><?= admin_h($item) ?></li><?php endforeach; ?></ol>
+						</div>
+						<div class="jobs-meta invoice-extra-grid">
+							<div class="invoice-extra-item">
+								<p class="field-label">Yêu cầu</p>
+								<p id="invoiceRequest" class="field-value"><?= admin_h(trim((string)($row['yeu_cau_khac'] ?? '')) !== '' ? (string)$row['yeu_cau_khac'] : '---') ?></p>
+							</div>
+							<div class="invoice-extra-item">
+								<p class="field-label">Ghi chú</p>
+								<p id="invoiceNote" class="field-value"><?= admin_h(trim((string)($row['ghi_chu'] ?? '')) !== '' ? (string)$row['ghi_chu'] : '---') ?></p>
+							</div>
+						</div>
+						<div class="invoice-media-grid">
+							<div class="invoice-media-item" id="invoiceMediaImage">
+								<p class="field-label">Ảnh</p>
+								<span class="media-empty-label" id="invoiceMediaImageEmpty" style="<?= trim((string)($row["anh_id"] ?? "")) !== "" ? "display:none;" : "" ?>">Chưa có ảnh</span>
+								<iframe id="invoiceMediaImageEl" style="<?= trim((string)($row["anh_id"] ?? "")) !== "" ? "display:block;" : "display:none;" ?>width:100%;flex:1;min-height:90px;border:0;border-radius:5px;" src="<?= trim((string)($row["anh_id"] ?? "")) !== "" ? "https://drive.google.com/file/d/" . admin_h((string)$row["anh_id"]) . "/preview" : "" ?>" allowfullscreen></iframe>
+							</div>
+							<div class="invoice-media-item" id="invoiceMediaVideo">
+								<p class="field-label">Video</p>
+								<span class="media-empty-label" id="invoiceMediaVideoEmpty" style="<?= trim((string)($row["video_id"] ?? "")) !== "" ? "display:none;" : "" ?>">Chưa có video</span>
+								<iframe id="invoiceMediaVideoEl" style="<?= trim((string)($row["video_id"] ?? "")) !== "" ? "display:block;" : "display:none;" ?>width:100%;flex:1;min-height:90px;border:0;border-radius:5px;" src="<?= trim((string)($row["video_id"] ?? "")) !== "" ? "https://drive.google.com/file/d/" . admin_h((string)$row["video_id"]) . "/preview" : "" ?>" allowfullscreen></iframe>
+							</div>
+						</div>
+					</article>
 
-	.od-alert {
-		background: #fff0f8 !important;
-		border-color: var(--rose-300) !important;
-		color: var(--rose-700) !important;
-		box-shadow: 0 8px 20px rgba(141, 47, 97, 0.08) !important;
-	}
+					<article class="panel" id="panelTime"
+						style="background:linear-gradient(180deg,#5e88af 0%,#fdf2fd 100%);border-color:#5089d3;">
+						<div class="panel-head" style="margin-bottom:2px;">
+							<h2 class="panel-title" style="font-size:15px;">Trạng thái, thời gian và tiến độ</h2>
+						</div>
 
-	.od-card {
-		border-color: var(--rose-300) !important;
-		border-radius: 14px !important;
-		box-shadow: 0 12px 28px var(--rose-shadow) !important;
-	}
+						<div style="display:grid;gap:6px;">
+							<div class="d-flex justify-content-between align-items-center fw-bold"
+								style="gap:10px;font-size:12px;color:#000000;">
+								<span>Tiến độ thực hiện</span>
+								<span id="progressText"><?= admin_h($progressText) ?>%</span>
+							</div>
+							<div
+								style="width:100%;height:21px;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#dce6f8 0%,#ffffff 100%);border:1px solid #0e2f75;box-shadow:inset 0 1px 2px rgb(255, 255, 255);">
+								<div id="progressBar" class="progress-inner" style="width:<?= admin_h($progressText) ?>%;"></div>
+							</div>
+							<p id="progressHint" class="hint" style="font-size:12px;margin-top:-2px;">Dữ liệu tiến độ sẽ
+								được cập nhật theo thời gian.</p>
+						</div>
 
-	.od-hero {
-		background: linear-gradient(98deg, #cc4a86 0%, #e96aa5 48%, #f39a92 100%) !important;
-		border: 1px solid rgba(255, 220, 239, 0.8) !important;
-		box-shadow: 0 18px 38px rgba(157, 57, 109, 0.34) !important;
-	}
+						<div
+							style="border:1px solid #d3ddef;border-radius:8px;overflow:hidden;background:#f7faff;margin-bottom:8px;">
+							<div
+								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#79a9e7;color:#000000;font-size:12px;font-weight:800;">
+								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày bắt đầu dự
+									kiến</span>
+								<span style="padding:7px 10px;border-right:1px solid rgba(0,0,0,0.05);">Ngày kết thúc dự
+									kiến</span>
+								<span style="padding:7px 10px;">Số ngày</span>
+							</div>
+							<div
+								style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));font-size:12px;font-weight:700;">
+								<span id="dateStartPlan"
+									style="padding:7px 10px;border-right:1px solid #d3daef;color:#1f3853;"><?= admin_h(trim((string)($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['ngay_bat_dau_kehoach'] : '---') ?></span>
+								<span id="dateEndPlan"
+									style="padding:7px 10px;border-right:1px solid #d3daef;color:#1f3853;"><?= admin_h(trim((string)($row['ngay_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['ngay_ket_thuc_kehoach'] : '---') ?></span>
+								<span id="invoicePlanDays" style="padding:7px 10px;color:#1f3853;"><?= ((trim((string)($row["ngay_bat_dau_kehoach"] ?? "")) && trim((string)($row["ngay_ket_thuc_kehoach"] ?? ""))) ? round((strtotime((string)$row["ngay_ket_thuc_kehoach"]) - strtotime((string)$row["ngay_bat_dau_kehoach"]))/86400) + 1 : 1) ?> ngày</span>
+							</div>
+						</div>
 
-	.od-status-pill,
-	.od-tool {
-		background: rgba(255, 239, 248, 0.24) !important;
-		border-color: rgba(255, 242, 250, 0.62) !important;
-	}
+						<div class="d-flex align-items-center flex-wrap" style="gap:8px;">
+							<span style="font-size:12px;font-weight:800;color:#000000;">Trạng thái:</span>
+							<span id="badgeTimeState" class="badge <?= strpos($statusRaw, 'hoan thanh') !== false ? 'success' : (strpos($statusRaw, 'huy') !== false || strpos($statusRaw, 'qua han') !== false ? 'danger' : (strpos($statusRaw, 'dang') !== false ? 'warning' : '')) ?>"><?= admin_h($statusText) ?></span>
+							<span id="timeCurrentState" class="hidden">---</span>
 
-	.od-progress-ring {
-		background: conic-gradient(#ffd4e8 calc(var(--p) * 1%), rgba(255, 233, 244, 0.36) 0) !important;
-	}
+							
+						</div>
 
-	.od-progress-core {
-		background: rgba(141, 47, 97, 0.6) !important;
-	}
+						<div style="border:1px solid #d3daef;border-radius:8px;overflow:hidden;background:#f7faff;">
+							<div
+								style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#799ce7;color:#000000;font-size:12px;font-weight:800;">
+								<span style="padding:7px 10px;">Thời gian dự kiến</span>
+								<span style="padding:7px 10px;">Thời gian thực tế</span>
+							</div>
+							<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));">
+								<div style="border-right:1px solid #dbe6f3;">
+									<div class="d-flex justify-content-between align-items-center"
+										style="gap:8px;padding:7px 10px;font-size:12px;"><span
+											style="color:#000000;font-weight:700;">Bắt đầu</span><span
+											id="timeStartPlan" style="color:#1f3853;font-weight:800;"><?= admin_h(trim((string)($row['gio_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['gio_bat_dau_kehoach'] : '---') ?></span></div>
+									<div class="d-flex justify-content-between align-items-center"
+										style="gap:8px;padding:7px 10px;border-top:1px solid #e3ecf7;font-size:12px;">
+										<span style="color:#000000;font-weight:700;">Kết thúc</span><span
+											id="timeEndPlan" style="color:#1f3853;font-weight:800;"><?= admin_h(trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : '---') ?></span>
+									</div>
+								</div>
+								<div>
+									<div class="d-flex justify-content-between align-items-center"
+										style="gap:8px;padding:7px 10px;font-size:12px;"><span
+											style="color:#000000;font-weight:700;">Bắt đầu</span><span
+											id="timeStartReal" style="color:#1f3853;font-weight:800;"><?= admin_h(trim((string)($row['thoigian_batdau_thucte'] ?? '')) !== '' ? (string)$row['thoigian_batdau_thucte'] : '---') ?></span></div>
+									<div class="d-flex justify-content-between align-items-center"
+										style="gap:8px;padding:7px 10px;border-top:1px solid #e3ecf7;font-size:12px;">
+										<span style="color:#000000;font-weight:700;">Kết thúc</span><span
+											id="timeEndReal" style="color:#1f3853;font-weight:800;"><?= admin_h(trim((string)($row['thoigian_ketthuc_thucte'] ?? '')) !== '' ? (string)$row['thoigian_ketthuc_thucte'] : '---') ?></span>
+									</div>
+								</div>
+							</div>
+						</div>
 
-	.od-box {
-		border-color: rgba(255, 220, 239, 0.7) !important;
-		background: rgba(154, 61, 108, 0.28) !important;
-	}
 
-	.od-box-icon {
-		background: rgba(255, 245, 251, 0.24) !important;
-		border-color: rgba(255, 241, 249, 0.62) !important;
-	}
 
-	.od-panel-head,
-	.od-profile-head {
-		border-bottom-color: var(--rose-300) !important;
-		background: linear-gradient(135deg, var(--rose-100), #ffedf7) !important;
-	}
+						
 
-	.od-jobs-body {
-		background: linear-gradient(180deg, #fff7fc 0%, #ffeef7 100%) !important;
-	}
+						<div id="workHistoryTable" style="margin-top:4px;">
+							<span style="font-size:12px;font-weight:800;color:#000000;">Lịch sử làm việc</span>
+							<div id="workHistoryContent" style="overflow-x:auto;margin-top:4px; <?= empty($historyRows) ? 'display:none;' : '' ?>">
+								<table style="width:100%;border-collapse:collapse;font-size:12px;">
+									<thead>
+										<tr style="background:#79a0e7;color:#000;">
+											<th style="padding:6px 8px;text-align:left;">Ngày thứ</th>
+											<th style="padding:6px 8px;text-align:left;">Ngày làm</th>
+											<th style="padding:6px 8px;text-align:left;">Bắt đầu</th>
+											<th style="padding:6px 8px;text-align:left;">Kết thúc</th>
+											<th style="padding:6px 8px;text-align:left;">Ghi chú</th>
+										</tr>
+									</thead>
+									
+        <tbody id="workHistoryBody">
+        <?php
+        $historyRows = listHistoryByOrder($id);
+        if ($historyRows):
+            foreach ($historyRows as $idx => $r):
+                $isAutoEnd = ($r["is_auto_end"] ?? 0) == 1 || (trim((string)($row["gio_ket_thuc_kehoach"] ?? "")) === trim((string)($r["gio_ket_thuc_trong_ngay"] ?? "")));
+                $endCell = trim((string)($r["gio_ket_thuc_trong_ngay"] ?? "")) ? admin_h($r["gio_ket_thuc_trong_ngay"]) . ($isAutoEnd ? " <i class=\"fa fa-info-circle text-warning\" title=\"NCC quên nhấn Kết Thúc\" style=\"color:#f0ba2c;\"></i>" : "") : "<span style=\"color:#b0597a;\">Chưa kết thúc</span>";
+        ?>
+        <tr style="border-bottom:1px solid #f0d4e3;">
+            <td style="padding:5px 8px;font-weight:800;color:#c21178;">Ngày <?= (count($historyRows) - $idx) ?></td>
+            <td style="padding:5px 8px;"><?= admin_h(trim((string)($r["ngay_lam"] ?? "")) ? date("d/m/Y", strtotime((string)$r["ngay_lam"])) : "---") ?></td>
+            <td style="padding:5px 8px;"><?= admin_h($r["gio_bat_dau_trong_ngay"] ?? "---") ?></td>
+            <td style="padding:5px 8px;"><?= $endCell ?></td>
+            <td style="padding:5px 8px;"><?= admin_h($r["ghichu_cv_ngay"] ?? "") ?></td>
+        </tr>
+        <?php endforeach; endif; ?>
+        </tbody>
+								</table>
+							</div>
+							<p id="workHistoryEmpty" style="font-size:12px;color:#000000;margin:0; <?= empty($historyRows) ? '' : 'display:none;' ?>">Chưa có lịch sử làm việc.</p>
+						</div>
 
-	.od-jobs-list li {
-		background: rgba(255, 255, 255, 0.72) !important;
-		border-color: #f4c5de !important;
-		color: #6f3456 !important;
-	}
+						
+					</article>
+					<article class="panel" id="panelCustomer">
+						<div class="profile-head">
+							<h2 class="profile-title">Khách hàng</h2>
+							<span class="profile-status badge success">Khách hàng</span>
+						</div>
+						<div class="profile-body">
+							<img id="customerAvatar" class="profile-avatar" src="../<?= admin_h(trim((string)($row['avatar_khachhang'] ?? '')) !== '' ? (string)$row['avatar_khachhang'] : 'assets/logo_main.png') ?>" onerror="this.src='../assets/logo_main.png'" alt="Khách hàng">
+							<div class="profile-main">
+								<h3 id="customerCardName" class="profile-name"><?= admin_h(trim((string)($row['tenkhachhang'] ?? '')) !== '' ? (string)$row['tenkhachhang'] : 'N/A') ?></h3>
+								<p class="profile-contact contact-email"><span id="customerCardEmail"><?= admin_h(trim((string)($row['emailkhachhang'] ?? '')) !== '' ? (string)$row['emailkhachhang'] : 'N/A') ?></span></p>
+								<p id="customerCardPhone" class="profile-row fa fa-phone"><?= admin_h(trim((string)($row['sdtkhachhang'] ?? '')) !== '' ? (string)$row['sdtkhachhang'] : 'N/A') ?></p>
+								<p id="customerCardAddress" class="profile-row fa fa-map-marker"><?= admin_h(trim((string)($row['diachikhachhang'] ?? '')) !== '' ? (string)$row['diachikhachhang'] : 'N/A') ?></p>
+							</div>
+						</div>
 
-	.od-jobs-list li::before {
-		background: var(--rose-600) !important;
-	}
+					</article>
 
-	.od-jobs-foot {
-		border-top-color: var(--rose-300) !important;
-		background: #fff9fd !important;
-	}
+					<article class="panel" id="panelStaff">
+						<div class="profile-head">
+							<h2 class="profile-title">Nhà Cung Cấp phụ trách</h2>
+							<span id="badgeStaff" class="profile-status badge <?= $supplierAssigned ? 'success' : 'warning' ?>"><?= $supplierAssigned ? 'Đã nhận' : 'Chưa nhận' ?></span>
+						</div>
+						<div class="profile-body">
+							<img id="staffAvatar" class="profile-avatar" src="../<?= admin_h(trim((string)($row['avatar_ncc'] ?? '')) !== '' ? (string)$row['avatar_ncc'] : 'assets/logo_main.png') ?>" onerror="this.src='../assets/logo_main.png'" alt="Nhà Cung Cấp">
+							<div class="profile-main">
+								<h3 id="staffCardName" class="profile-name"><?= admin_h(trim((string)($row["tenncc"] ?? "")) !== "" ? (string)$row["tenncc"] : (trim((string)($row["hotenncc"] ?? "")) !== "" ? (string)$row["hotenncc"] : "N/A")) ?></h3>
+								<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
+								<p id="staffCardEmail" class="profile-row contact-email"><?= admin_h(trim((string)($row['emailncc'] ?? '')) !== '' ? (string)$row['emailncc'] : 'N/A') ?></p>
+								<p id="staffCardPhone" class="profile-row fa fa-phone"><?= admin_h(trim((string)($row["sdtncc"] ?? "")) !== "" ? (string)$row["sdtncc"] : (trim((string)($row["sodienthoaincc"] ?? "")) !== "" ? (string)$row["sodienthoaincc"] : "N/A")) ?></p>
+								<p id="staffCardAddress" class="profile-row fa fa-map-marker"><?= admin_h(trim((string)($row['diachincc'] ?? '')) !== '' ? (string)$row['diachincc'] : 'N/A') ?></p>
+							</div>
+						</div>
+						<div class="profile-foot">
+							<span id="staffReceiveTime" class="profile-pill">Nhận việc: <?= admin_h(trim((string)($row['ngaynhan'] ?? '')) !== '' ? (string)$row['ngaynhan'] : 'N/A') ?></span>
+						</div>
+					</article>
 
-	.od-mini {
-		border-color: #f3c4dd !important;
-		background: linear-gradient(135deg, #ffe9f4, #fff2f9) !important;
-		box-shadow: 0 4px 12px rgba(160, 65, 113, 0.08) !important;
-	}
+					<article class="panel panel-wide" id="panelMedia">
+						<div class="panel-head">
+							<h2 class="panel-title">Ảnh và đánh giá</h2>
+							<span class="badge">Minh chứng</span>
+						</div>
 
-	.od-mini .k {
-		color: #95537a !important;
-	}
+						<div class="review-split">
+							<section class="review-box">
+								<div class="review-head">
+									<h3 class="review-title">Đánh giá khách hàng</h3>
+									<span id="badgeCustomerReview" class="badge <?= trim((string)($row['danhgia_khachhang'] ?? '')) !== '' ? 'success' : 'warning' ?>"><?= trim((string)($row['danhgia_khachhang'] ?? '')) !== '' ? 'Đã gửi' : 'Chưa có' ?></span>
+								</div>
 
-	.od-mini .v {
-		color: #722f56 !important;
-	}
+								<div class="review-display">
+									<p class="field-label">Nội dung đánh giá</p>
+									<p id="customerReviewText" class="review-text"><?= admin_h(trim((string)($row['danhgia_khachhang'] ?? '')) !== '' ? (string)$row['danhgia_khachhang'] : 'Chưa có đánh giá') ?></p>
+									<p class="field-label">Thời gian gửi</p>
+									<p id="customerReviewTime" class="review-time"><?= admin_h(trim((string)($row['thoigian_danhgia_khachhang'] ?? '')) !== '' ? (string)$row['thoigian_danhgia_khachhang'] : '---') ?></p>
+									<p class="field-label">Ảnh/video đánh giá</p>
+									
+        <div id="customerReviewMediaGrid" class="review-media-grid">
+        <?php
+        $mediaKhInfo = trim((string)($row['media_danhgia_khachhang'] ?? ''));
+        $mediaKh = json_decode($mediaKhInfo, true) ?? [];
+        if (!$mediaKh && $mediaKhInfo) {
+            $mediaKh = preg_split('/[,;\s]+/', $mediaKhInfo, -1, PREG_SPLIT_NO_EMPTY);
+        }
+        if (!$mediaKh) {
+            echo '<div class="media-empty">Chưa có tệp</div>';
+        } else {
+            foreach ($mediaKh as $m_id):
+                $m_id = trim((string)$m_id);
+                if ($m_id):
+        ?>
+            <iframe src="https://drive.google.com/file/d/<?= admin_h($m_id) ?>/preview" style="width:100%;height:200px;border:0;border-radius:6px;display:block;margin-bottom:6px;" allowfullscreen></iframe>
+        <?php endif; endforeach; } ?>
+        </div>
+    
+								</div>
 
-	.od-progress-top {
-		color: #864a6f !important;
-	}
-
-	.od-progress-track {
-		background: #fde4f1 !important;
-		border: 1px solid #f5c2dc !important;
-	}
-
-	.od-progress-fill {
-		background: linear-gradient(90deg, #d25f98, #f4938e) !important;
-	}
-
-	.od-progress-note {
-		color: #8a5b77 !important;
-	}
-
-	.od-timeline li {
-		color: #6f3558 !important;
-	}
-
-	.od-timeline li::before {
-		border-color: #ebb1cf !important;
-	}
-
-	.od-timeline li.done::before,
-	.od-timeline li.active::before {
-		border-color: var(--rose-600) !important;
-		background: var(--rose-600) !important;
-	}
-
-	.od-timeline li span {
-		color: #99617f !important;
-	}
-
-	.od-next {
-		border-color: #f4bfdc !important;
-		background: linear-gradient(135deg, #fff2fa 0%, #ffe9f5 100%) !important;
-		color: #7f3f66 !important;
-	}
-
-	.od-avatar {
-		border-color: #f7c8df !important;
-		background: #fdebf5 !important;
-		box-shadow: 0 8px 16px rgba(171, 76, 122, 0.18) !important;
-	}
-
-	.od-name {
-		color: #7a345b !important;
-	}
-
-	.od-rating {
-		color: #8c5a78 !important;
-	}
-
-	.od-info-row {
-		color: #784062 !important;
-	}
-
-	.od-info-row i {
-		color: #d770a5 !important;
-	}
-
-	.od-exp {
-		background: #ffeaf4 !important;
-		color: #8d4c72 !important;
-		border: 1px solid #f3c0db !important;
-	}
-
-	.od-review-box {
-		border-color: #f2c3dd !important;
-		background: linear-gradient(180deg, #fff8fc, #fff0f8) !important;
-		box-shadow: 0 5px 14px rgba(160, 63, 111, 0.08) !important;
-	}
-
-	.od-review-label {
-		color: #9b5c80 !important;
-	}
-
-	.od-review-value {
-		color: #74385b !important;
-	}
-
-	/* Override inline badge colors without changing layout */
-	.od-grid > article:nth-of-type(4) .od-profile-head .od-job-count {
-		background: #ffe9f3 !important;
-		color: #943764 !important;
-		border-color: #f5c2dd !important;
-	}
-
-	.od-grid > article:nth-of-type(5) .od-profile-head .od-job-count {
-		background: #ffe6f2 !important;
-		color: #943664 !important;
-		border-color: #f3bed9 !important;
-	}
-
-	.od-grid > article:nth-of-type(6) .od-profile-head .od-job-count,
-	.od-grid > article:nth-of-type(7) .od-profile-head .od-job-count {
-		background: #f7eeff !important;
-		color: #6d4ca1 !important;
-		border-color: #ddd0f7 !important;
-	}
-</style>
-
-<div class="od-head">
-	<!-- <h2 class="od-title">Chi tiết hóa đơn mẹ và bé</h2> -->
-	<div class="od-head-actions">
-		<!-- <span class="od-chip">Vai trò: Admin</span> -->
-		<a href="index.php" class="od-back-btn"><i class="bi bi-arrow-left-circle me-1"></i>Quay lại</a>
-	</div>
+								
+							</section>
 </div>
-
-<?php if ($error !== '' || !is_array($row)): ?>
-	<div class="alert alert-warning"><?= admin_h($error !== '' ? $error : 'Không tìm thấy hóa đơn.') ?></div>
-<?php else: ?>
-
-	<section class="od-grid">
-		<article class="od-card od-hero wide">
-			<div class="od-hero-top">
-				<div>
-					<h3 class="od-order-id">
-						Đơn #<?= admin_h(str_pad((string)($row['id'] ?? ''), 7, '0', STR_PAD_LEFT)) ?>
-						<span class="od-status-pill"><?= admin_h($statusText !== '' ? $statusText : 'N/A') ?></span>
-					</h3>
-					<p class="od-service"><?= admin_h(trim((string)($row['dich_vu'] ?? '')) !== '' ? (string)$row['dich_vu'] : 'N/A') ?></p>
-				</div>
-				<div class="od-progress-ring" style="--p:<?= admin_h($progressText) ?>;">
-					<div class="od-progress-core">
-						<strong><?= admin_h($progressText) ?>%</strong>
-						<small>Hoàn thành</small>
-					</div>
-				</div>
-			</div>
-			<div class="od-hero-grid">
-				<div class="od-box">
-					<div class="od-box-head">
-						<span class="od-box-icon"><i class="bi bi-currency-dollar"></i></span>
-						<p class="od-box-label">Tổng tiền</p>
-					</div>
-					<p class="od-box-value od-box-value--price"><?= admin_h(trim((string)($row['tong_tien'] ?? '')) !== '' ? (string)$row['tong_tien'] : '0') ?></p>
-				</div>
-				<div class="od-box">
-					<div class="od-box-head">
-						<span class="od-box-icon"><i class="bi bi-clock"></i></span>
-						<p class="od-box-label">Thời gian</p>
-					</div>
-					<p class="od-box-value od-box-value--time"><?= admin_h((trim((string)($row['gio_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['gio_bat_dau_kehoach'] : '--:--:--') . ' - ' . (trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : '--:--:--')) ?></p>
-					<p class="od-box-sub"><?= admin_h((trim((string)($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['ngay_bat_dau_kehoach'] : '---') . (trim((string)($row['ngay_ket_thuc_kehoach'] ?? '')) !== '' ? (' -> ' . (string)$row['ngay_ket_thuc_kehoach']) : '')) ?></p>
-				</div>
-				<div class="od-box">
-					<div class="od-box-head">
-						<span class="od-box-icon"><i class="bi bi-geo-alt"></i></span>
-						<p class="od-box-label">Địa chỉ</p>
-					</div>
-					<p class="od-box-value od-box-value--address"><?= admin_h(trim((string)($row['diachikhachhang'] ?? '')) !== '' ? (string)$row['diachikhachhang'] : 'N/A') ?></p>
-				</div>
-			</div>
-		</article>
-
-		<article class="od-card">
-			<div class="od-panel-head">
-				<h4 class="od-panel-title">Công việc cần thực hiện</h4>
-			</div>
-			<div class="od-jobs-body">
-				<ol class="od-jobs-list">
-					<?php foreach ($jobItems as $item): ?>
-						<li><?= admin_h($item) ?></li>
-					<?php endforeach; ?>
-				</ol>
-			</div>
-			<div class="od-jobs-foot">
-				<div class="od-mini">
-					<p class="k">Gói dịch vụ</p>
-					<p class="v"><?= admin_h(trim((string)($row['goi_dich_vu'] ?? '')) !== '' ? (string)$row['goi_dich_vu'] : 'N/A') ?></p>
-				</div>
-				<div class="od-mini">
-					<p class="k">Yêu cầu</p>
-					<p class="v"><?= admin_h(trim((string)($row['yeu_cau_khac'] ?? '')) !== '' ? (string)$row['yeu_cau_khac'] : 'Khong co') ?></p>
-				</div>
-				<div class="od-mini" style="grid-column:1/-1;">
-					<p class="k">Ghi chú</p>
-					<p class="v"><?= admin_h(trim((string)($row['ghi_chu'] ?? '')) !== '' ? (string)$row['ghi_chu'] : 'Khong co') ?></p>
-				</div>
-			</div>
-		</article>
-
-		<article class="od-card">
-			<div class="od-panel-head">
-				<h4 class="od-panel-title">Tiến độ thực hiện</h4>
-				<span class="od-job-count">Cập nhật: <?= admin_h(trim((string)($row['thoigian_ketthuc_thucte'] ?? '')) !== '' ? (string)$row['thoigian_ketthuc_thucte'] : (trim((string)($row['thoigian_batdau_thucte'] ?? '')) !== '' ? (string)$row['thoigian_batdau_thucte'] : (trim((string)($row['ngaydat'] ?? '')) !== '' ? (string)$row['ngaydat'] : 'N/A'))) ?></span>
-			</div>
-			<div class="od-progress-body">
-				<div class="od-progress-top">
-					<span>Tiến độ cộng dồn</span>
-					<span><?= admin_h($progressText) ?>%</span>
-				</div>
-				<div class="od-progress-track"><div class="od-progress-fill" style="width:<?= admin_h($progressText) ?>%;"></div></div>
-				<p class="od-progress-note">Tiến độ theo từng ngày, mỗi ngày là 1 ca <?= admin_h((trim((string)($row['gio_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['gio_bat_dau_kehoach'] : '--:--:--') . ' - ' . (trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : '--:--:--')) ?>. Khoảng ngày kế hoạch: <?= admin_h((trim((string)($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['ngay_bat_dau_kehoach'] : '---') . (trim((string)($row['ngay_ket_thuc_kehoach'] ?? '')) !== '' ? (' -> ' . (string)$row['ngay_ket_thuc_kehoach']) : '')) ?>.</p>
-				<ul class="od-timeline">
-					<li class="<?= $hasStart ? 'done' : 'pending' ?>">Bắt đầu ca <span><?= admin_h(trim((string)($row['thoigian_batdau_thucte'] ?? '')) !== '' ? (string)$row['thoigian_batdau_thucte'] : ((trim((string)($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['ngay_bat_dau_kehoach'] : 'N/A') . ' ' . (trim((string)($row['gio_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['gio_bat_dau_kehoach'] : '--:--:--'))) ?></span></li>
-					<li class="<?= $isRunning ? 'active' : ($hasEnd ? 'done' : 'pending') ?>">Đang thực hiện <span><?= admin_h((trim((string)($row['gio_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['gio_bat_dau_kehoach'] : '--:--:--') . ' - ' . (trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : '--:--:--')) ?></span></li>
-					<li class="<?= $hasEnd ? 'done' : 'pending' ?>">Chuẩn bị kết thúc <span><?= admin_h(trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : 'N/A') ?></span></li>
-					<li class="<?= $isDone ? 'done' : 'pending' ?>">Hoàn thành <span><?= admin_h(trim((string)($row['thoigian_ketthuc_thucte'] ?? '')) !== '' ? (string)$row['thoigian_ketthuc_thucte'] : ((trim((string)($row['ngay_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['ngay_ket_thuc_kehoach'] : 'N/A') . ' ' . (trim((string)($row['gio_ket_thuc_kehoach'] ?? '')) !== '' ? (string)$row['gio_ket_thuc_kehoach'] : '--:--:--'))) ?></span></li>
-				</ul>
-				<div class="od-next">Ca tiếp theo<br>Khoảng ngày: <?= admin_h((trim((string)($row['ngay_bat_dau_kehoach'] ?? '')) !== '' ? (string)$row['ngay_bat_dau_kehoach'] : '---') . (trim((string)($row['ngay_ket_thuc_kehoach'] ?? '')) !== '' ? (' -> ' . (string)$row['ngay_ket_thuc_kehoach']) : '')) ?></div>
-			</div>
-		</article>
-
-		<article class="od-card">
-			<div class="od-profile-head">
-				<h4 class="od-profile-title">Khách hàng</h4>
-				<span class="od-job-count" style="background:#e8f7ff;color:#1c6aa8;border-color:#d0eafb;">Khách hàng</span>
-			</div>
-			<div class="od-profile-body">
-				<img class="od-avatar" src="../<?= admin_h(trim((string)($row['avatar_khachhang'] ?? '')) !== '' ? (string)$row['avatar_khachhang'] : 'assets/logomvb.png') ?>" alt="Khách hàng">
-				<div>
-					<p class="od-name"><?= admin_h(trim((string)($row['tenkhachhang'] ?? '')) !== '' ? (string)$row['tenkhachhang'] : 'N/A') ?></p>
-					<p class="od-info-row"><i class="bi bi-envelope"></i><?= admin_h(trim((string)($row['emailkhachhang'] ?? '')) !== '' ? (string)$row['emailkhachhang'] : 'N/A') ?></p>
-					<p class="od-info-row"><i class="bi bi-telephone"></i><?= admin_h(trim((string)($row['sdtkhachhang'] ?? '')) !== '' ? (string)$row['sdtkhachhang'] : 'N/A') ?></p>
-					<p class="od-info-row"><i class="bi bi-geo-alt"></i><?= admin_h(trim((string)($row['diachikhachhang'] ?? '')) !== '' ? (string)$row['diachikhachhang'] : 'N/A') ?></p>
-				</div>
-			</div>
-			<div class="od-profile-foot"><span class="od-exp">Ngày tạo: <?= admin_h(trim((string)($row['ngaydat'] ?? '')) !== '' ? (string)$row['ngaydat'] : (trim((string)($row['created_date'] ?? '')) !== '' ? (string)$row['created_date'] : 'N/A')) ?></span></div>
-		</article>
-
-		<article class="od-card">
-			<div class="od-profile-head">
-				<h4 class="od-profile-title">Nhà Cung Cấp phụ trách</h4>
-				<span class="od-job-count" style="<?= $supplierAssigned ? 'background:#def8ea;color:#138259;border-color:#c4edd5;' : 'background:#fff4df;color:#996316;border-color:#f0ddb4;' ?>"><?= $supplierAssigned ? 'Đã nhận' : 'Chưa nhận' ?></span>
-			</div>
-			<div class="od-profile-body">
-				<img class="od-avatar" src="../<?= admin_h(trim((string)($row['avatar_ncc'] ?? '')) !== '' ? (string)$row['avatar_ncc'] : 'assets/logomvb.png') ?>" alt="Nhà Cung Cấp">
-				<div>
-					<p class="od-name"><?= admin_h(trim((string)($row['tenncc'] ?? '')) !== '' ? (string)$row['tenncc'] : (trim((string)($row['hotenncc'] ?? '')) !== '' ? (string)$row['hotenncc'] : (trim((string)($row['nhacungcapnhan'] ?? '')) !== '' ? (string)$row['nhacungcapnhan'] : 'Chua phan cong'))) ?></p>
-					<p class="od-info-row"><i class="bi bi-envelope"></i><?= admin_h(trim((string)($row['emailncc'] ?? '')) !== '' ? (string)$row['emailncc'] : 'N/A') ?></p>
-					<p class="od-info-row"><i class="bi bi-telephone"></i><?= admin_h(trim((string)($row['sdtncc'] ?? '')) !== '' ? (string)$row['sdtncc'] : (trim((string)($row['sodienthoaincc'] ?? '')) !== '' ? (string)$row['sodienthoaincc'] : 'N/A')) ?></p>
-					<p class="od-info-row"><i class="bi bi-geo-alt"></i><?= admin_h(trim((string)($row['diachincc'] ?? '')) !== '' ? (string)$row['diachincc'] : 'N/A') ?></p>
-				</div>
-			</div>
-			<div class="od-profile-foot d-flex flex-wrap" style="gap:8px;">
-				<span class="od-exp">Nhận việc: <?= admin_h(trim((string)($row['ngaynhan'] ?? '')) !== '' ? (string)$row['ngaynhan'] : '---') ?></span>
-				<span class="od-exp">Kinh nghiệm: <?= admin_h(trim((string)($row['kinh_nghiem_ncc'] ?? '')) !== '' ? (string)$row['kinh_nghiem_ncc'] : (trim((string)($row['kinhnghiemncc'] ?? '')) !== '' ? (string)$row['kinhnghiemncc'] : 'Khong co')) ?></span>
-			</div>
-		</article>
-
-		<article class="od-card">
-			<div class="od-profile-head">
-				<h4 class="od-profile-title">Đánh giá khách hàng</h4>
-				<span class="od-job-count" style="background:#fff4df;color:#996316;border-color:#f0ddb4;"><?= trim((string)($row['danhgia_khachhang'] ?? '')) !== '' ? 'Đã có' : 'Chưa có' ?></span>
-			</div>
-			<div class="od-review-body">
-				<div class="od-review-box">
-					<p class="od-review-label">Nội dung đánh giá</p>
-					<p class="od-review-value"><?= admin_h(trim((string)($row['danhgia_khachhang'] ?? '')) !== '' ? (string)$row['danhgia_khachhang'] : 'Chua co danh gia') ?></p>
-				</div>
-				<div class="od-review-box">
-					<p class="od-review-label">Thời gian gửi</p>
-					<p class="od-review-value"><?= admin_h(trim((string)($row['thoigian_danhgia_khachhang'] ?? '')) !== '' ? (string)$row['thoigian_danhgia_khachhang'] : '---') ?></p>
-				</div>
-			</div>
-		</article>
-
-		<article class="od-card">
-			<div class="od-profile-head">
-				<h4 class="od-profile-title">Đánh giá nhà cung cấp</h4>
-				<span class="od-job-count" style="background:#fff4df;color:#996316;border-color:#f0ddb4;"><?= trim((string)($row['danhgia_nhanvien'] ?? '')) !== '' ? 'Đã có' : 'Chưa có' ?></span>
-			</div>
-			<div class="od-review-body">
-				<div class="od-review-box">
-					<p class="od-review-label">Nội dung đánh giá</p>
-					<p class="od-review-value"><?= admin_h(trim((string)($row['danhgia_nhanvien'] ?? '')) !== '' ? (string)$row['danhgia_nhanvien'] : 'Chua co danh gia') ?></p>
-				</div>
-				<div class="od-review-box">
-					<p class="od-review-label">Thời gian gửi</p>
-					<p class="od-review-value"><?= admin_h(trim((string)($row['thoigian_danhgia_nhanvien'] ?? '')) !== '' ? (string)$row['thoigian_danhgia_nhanvien'] : '---') ?></p>
-				</div>
-			</div>
-		</article>
-	</section>
-<?php endif; ?>
 
 <?php admin_render_layout_end(); ?>

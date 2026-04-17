@@ -69,24 +69,26 @@
 }
 
 .invoice-status-chip {
-    padding: 8px 18px;
-    border-radius: 50px;
-    font-size: 0.75rem;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 0.72rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    background: #ffffff;
-    color: #475569;
+    letter-spacing: 0.05em;
     display: inline-flex;
     align-items: center;
-    border: 2px solid #e2e8f0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    gap: 6px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    border: 1px solid transparent;
 }
 
-.invoice-status-chip.status-new { background: #065f46 !important; color: #ffffff !important; border-color: #064e3b !important; }
-.invoice-status-chip.status-doing { background: #1d4ed8 !important; color: #ffffff !important; border-color: #1e40af !important; }
-.invoice-status-chip.status-done { background: #15803d !important; color: #ffffff !important; border-color: #166534 !important; }
-.invoice-status-chip.status-canceled { background: #b91c1c !important; color: #ffffff !important; border-color: #991b1b !important; }
+.invoice-status-chip.status-new { background: rgba(16, 185, 129, 0.1) !important; color: #059669 !important; border-color: rgba(16, 185, 129, 0.2) !important; }
+.invoice-status-chip.status-confirmed { background: rgba(59, 130, 246, 0.1) !important; color: #1d4ed8 !important; border-color: rgba(59, 130, 246, 0.2) !important; }
+.invoice-status-chip.status-doing { background: rgba(139, 92, 246, 0.1) !important; color: #7c3aed !important; border-color: rgba(139, 92, 246, 0.2) !important; }
+.invoice-status-chip.status-done { background: rgba(22, 163, 74, 0.1) !important; color: #16a34a !important; border-color: rgba(22, 163, 74, 0.2) !important; }
+.invoice-status-chip.status-canceled { background: rgba(220, 38, 38, 0.1) !important; color: #dc2626 !important; border-color: rgba(220, 38, 38, 0.2) !important; }
+.invoice-status-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
 .invoice-service {
     display: none; /* Ẩn theo yêu cầu user */

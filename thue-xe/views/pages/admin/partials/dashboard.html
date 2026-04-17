@@ -1,27 +1,30 @@
 <!-- Dashboard Partial -->
 <div class="row g-4 mb-4">
-    <!-- Stat Cards -->
+    <!-- Stat Cards Premium -->
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
-            <div class="d-flex align-items-center gap-3">
-                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3"><i class="fas fa-car fa-lg"></i></div>
-                <div><div class="h4 fw-800 mb-0" id="stat-cars">0</div><div class="text-muted small fw-600">Tổng số xe</div></div>
+        <div class="stat-card stat-card--blue">
+            <div class="stat-icon-wrap bg-gradient-blue"><i class="fas fa-car"></i></div>
+            <div>
+                <div class="h3 fw-800 mb-0" id="stat-cars">0</div>
+                <div class="text-muted small fw-700 uppercase">Tổng số xe</div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
-            <div class="d-flex align-items-center gap-3">
-                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3"><i class="fas fa-clock fa-lg"></i></div>
-                <div><div class="h4 fw-800 mb-0" id="stat-pending">0</div><div class="text-muted small fw-600">Đơn chờ duyệt</div></div>
+        <div class="stat-card stat-card--amber">
+            <div class="stat-icon-wrap bg-gradient-amber"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="h3 fw-800 mb-0" id="stat-pending">0</div>
+                <div class="text-muted small fw-700 uppercase">Đơn chờ duyệt</div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
-            <div class="d-flex align-items-center gap-3">
-                <div class="p-3 bg-success bg-opacity-10 text-success rounded-3"><i class="fas fa-check-double fa-lg"></i></div>
-                <div><div class="h4 fw-800 mb-0" id="stat-success">0</div><div class="text-muted small fw-600">Chuyến thành công</div></div>
+        <div class="stat-card stat-card--green">
+            <div class="stat-icon-wrap bg-gradient-green"><i class="fas fa-check-double"></i></div>
+            <div>
+                <div class="h3 fw-800 mb-0" id="stat-success">0</div>
+                <div class="text-muted small fw-700 uppercase">Chuyến thành công</div>
             </div>
         </div>
     </div>
@@ -29,26 +32,30 @@
 
 <div class="row g-4">
     <div class="col-md-12">
-        <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
-            <div class="card-header bg-white py-4 border-0">
-                <h6 class="fw-800 mb-0">Hoạt động gần đây</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead class="bg-light text-muted small uppercase">
-                            <tr>
-                                <th class="ps-4">Mã đơn</th>
-                                <th>Khách hàng</th>
-                                <th>Phương tiện</th>
-                                <th>Trạng thái</th>
-                                <th class="pe-4 text-end">Chi phí</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentOrdersBody">
-                            <tr><td colspan="5" class="text-center py-5">Đang tải dữ liệu...</td></tr>
-                        </tbody>
-                    </table>
+        <div class="table-container">
+            <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+                <div class="card-header bg-white py-4 border-0">
+                    <h6 class="fw-800 mb-0">Hoạt động gần đây</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light text-muted small uppercase">
+                                <tr>
+                                    <th class="ps-4">Mã đơn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Phương tiện</th>
+                                    <th>Trạng thái</th>
+                                    <th class="pe-4 text-end">Chi phí</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentOrdersBody">
+                                <tr><td colspan="5" class="text-center py-5">Đang tải dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Mobile List -->
+                    <div id="recentOrdersMobileList" class="mobile-list-container d-lg-none p-3"></div>
                 </div>
             </div>
         </div>
@@ -61,32 +68,57 @@
     
     async function initDashboard() {
         try {
-            // Nạp dữ liệu đồng thời (Bỏ nạp users)
             const [orders, cars] = await Promise.all([
                 DVQTKrud.listTable('datlich_thuexe', { limit: 1000 }),
                 DVQTKrud.listTable('xethue', { limit: 1000 })
             ]);
 
-            // Cập nhật thống kê
             document.getElementById('stat-cars').textContent = cars.length;
             document.getElementById('stat-pending').textContent = orders.filter(o => !o.ngaynhan && !o.ngayhuy).length;
             document.getElementById('stat-success').textContent = orders.filter(o => o.ngayhoanthanhthucte).length;
 
-            // Render Đơn hàng gần đây (7 đơn thay vì 5 vì màn hình rộng hơn)
             const recentOrders = orders.reverse().slice(0, 7);
+            
+            // Render Table
             document.getElementById('recentOrdersBody').innerHTML = recentOrders.map(o => {
                 let badge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Chờ duyệt</span>';
                 if(o.ngayhuy) badge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy</span>';
                 else if(o.ngayhoanthanhthucte) badge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Hoàn thành</span>';
                 
                 return `<tr>
-                    <td class="ps-4 fw-bold">${String(o.id).padStart(7, '0')}</td>
+                    <td class="ps-4 fw-bold text-primary">${String(o.id).padStart(7, '0')}</td>
                     <td>${o.tenkhachhang || '---'}</td>
                     <td><div class="small fw-600">${o.ten_xe}</div></td>
                     <td>${badge}</td>
-                    <td class="pe-4 text-end fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</td>
+                    <td class="pe-4 text-end fw-bold text-dark">${Number(o.tong_tien).toLocaleString()}đ</td>
                 </tr>`;
             }).join('') || '<tr><td colspan="5" class="text-center py-4">Chưa có đơn hàng nào.</td></tr>';
+
+            // Render Mobile List
+            const mobileList = document.getElementById('recentOrdersMobileList');
+            if(mobileList) {
+                mobileList.innerHTML = recentOrders.map(o => {
+                    let statusTxt = 'Chờ duyệt';
+                    let statusCls = 'bg-warning';
+                    if(o.ngayhuy) { statusTxt = 'Đã hủy'; statusCls = 'bg-danger'; }
+                    else if(o.ngayhoanthanhthucte) { statusTxt = 'Thành công'; statusCls = 'bg-success'; }
+
+                    return `
+                        <div class="mobile-card shadow-sm">
+                            <div class="mobile-card-head">
+                                <span class="mobile-code text-primary">#${String(o.id).padStart(7, '0')}</span>
+                                <h4 class="mobile-title">${o.ten_xe}</h4>
+                                <span class="badge ${statusCls}">${statusTxt}</span>
+                            </div>
+                            <div class="mobile-body">
+                                <div class="mobile-row"><span>Khách hàng</span><strong>${o.tenkhachhang || '---'}</strong></div>
+                                <div class="mobile-row"><span>Nhà cung cấp</span><strong>${o.ten_ncc || 'Chưa nhận'}</strong></div>
+                                <div class="mobile-row text-primary"><span>Tổng tiền</span><strong>${Number(o.tong_tien).toLocaleString()}đ</strong></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('') || '<div class="text-center text-muted py-3">Trống</div>';
+            }
 
         } catch (e) { console.error('Dashboard Load Error:', e); }
     }

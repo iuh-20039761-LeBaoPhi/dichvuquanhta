@@ -79,6 +79,15 @@
                     <div class="content-card">
                         <div class="card-title"><i class="fas fa-id-card text-primary"></i> Thông tin cá nhân</div>
                         <form id="formInfo">
+                            <!-- Avatar Upload Section -->
+                            <div class="avatar-edit">
+                                <input type='file' id="avatarUpload" name="avatar" accept=".png, .jpg, .jpeg" style="display:none;" />
+                                <label for="avatarUpload"><i class="fas fa-camera"></i></label>
+                                <div class="avatar-preview">
+                                    <img id="avatarImage" src="asset/image/default-avatar.png" alt="Avatar">
+                                </div>
+                            </div>
+
                             <div class="row g-4">
                                 <div class="col-md-12">
                                     <label class="form-label">Họ và tên</label>
@@ -112,6 +121,27 @@
                                     <input type="hidden" name="maplat" id="reg_lat">
                                     <input type="hidden" name="maplng" id="reg_lng">
                                 </div>
+
+                                <!-- CCCD Upload Section -->
+                                <div class="col-md-12 mt-4">
+                                    <label class="form-label">Xác minh danh tính (CCCD/CMND)</label>
+                                    <div class="cccd-upload-group">
+                                        <div class="cccd-box" onclick="document.getElementById('cccdTruoc').click()">
+                                            <input type="file" id="cccdTruoc" name="cccd_truoc" accept="image/*" style="display:none">
+                                            <img id="previewTruoc" class="cccd-preview">
+                                            <i class="fas fa-id-card"></i>
+                                            <span>Mặt trước CCCD</span>
+                                        </div>
+                                        <div class="cccd-box" onclick="document.getElementById('cccdSau').click()">
+                                            <input type="file" id="cccdSau" name="cccd_sau" accept="image/*" style="display:none">
+                                            <img id="previewSau" class="cccd-preview">
+                                            <i class="fas fa-id-card"></i>
+                                            <span>Mặt sau CCCD</span>
+                                        </div>
+                                    </div>
+                                    <p class="small text-muted mt-2"><i class="fas fa-info-circle me-1"></i> Hình ảnh phải rõ nét, không bị lóa hoặc mất góc.</p>
+                                </div>
+
                                 <div class="col-12 mt-4">
                                     <button type="submit" class="btn btn-save" id="btnSaveInfo">Cập nhật hồ sơ</button>
                                 </div>

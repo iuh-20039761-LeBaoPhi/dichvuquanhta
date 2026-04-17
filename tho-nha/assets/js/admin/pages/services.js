@@ -118,6 +118,34 @@
                 </td>
             </tr>`;
         }).join('');
+
+        // Mobile Cards
+        const mob = document.getElementById('categoryMobileList');
+        if (mob) {
+            mob.innerHTML = allCategories.map(c => {
+                const statusCls = c.trang_thai === 'active' ? 'bg-success' : 'bg-secondary';
+                const statusTxt = c.trang_thai === 'active' ? 'Hiển thị' : 'Ẩn';
+                return `
+                    <div class="mobile-card">
+                        <div class="mobile-card-head">
+                            <i class="fas ${c.icon || 'fa-folder'} text-primary fs-4 me-3"></i>
+                            <div style="flex:1">
+                                <h4 class="mobile-title">${c.ten_danhmuc}</h4>
+                                <p class="mobile-code">ID: #${c.id} - Thứ tự: ${c.thu_tu || 0}</p>
+                            </div>
+                            <span class="badge ${statusCls}">${statusTxt}</span>
+                        </div>
+                        <div class="mobile-body">
+                             <p class="small text-muted mb-0">${c.mo_ta || 'Không có mô tả'}</p>
+                        </div>
+                        <div class="mobile-actions">
+                            <button class="btn btn-sm btn-light border me-2" onclick="editCategory(${c.id})"><i class="fas fa-edit me-1"></i>Sửa</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteRow('${CAT_TABLE}', ${c.id})"><i class="fas fa-trash me-1"></i>Xóa</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
     }
 
     function renderServices() {
@@ -161,6 +189,37 @@
                 </td>
             </tr>`;
         }).join('');
+
+        // Mobile Cards
+        const svcMob = document.getElementById('serviceMobileList');
+        if (svcMob) {
+            svcMob.innerHTML = pageItems.map(s => {
+                const cat = allCategories.find(c => String(c.id) === String(s.id_danhmuc));
+                const statusCls = s.trang_thai === 'active' ? 'bg-success' : 'bg-secondary';
+                const statusTxt = s.trang_thai === 'active' ? 'Đang bật' : 'Đang tắt';
+                return `
+                    <div class="mobile-card">
+                        <div class="mobile-card-head">
+                            <img src="${s.anh_dai_dien || '../../assets/images/placeholder.jpg'}" class="rounded me-3" style="width:50px;height:50px;object-fit:cover;">
+                            <div style="flex:1">
+                                <h4 class="mobile-title">${s.ten_dichvu}</h4>
+                                <p class="mobile-code">${cat ? cat.ten_danhmuc : 'N/A'}</p>
+                            </div>
+                            <span class="badge ${statusCls}">${statusTxt}</span>
+                        </div>
+                        <div class="mobile-body">
+                            <div class="mobile-row"><span>Giá tiền</span><strong>${Number(s.gia_co_ban || 0).toLocaleString()} VNĐ</strong></div>
+                            <div class="mobile-row"><span>Đơn vị</span><strong>${s.don_vi_tinh || 'Lần'}</strong></div>
+                            <div class="mobile-row"><span>Thời gian</span><strong>${s.thoi_gian_uoc_tinh || '30-60p'}</strong></div>
+                        </div>
+                        <div class="mobile-actions">
+                            <button class="btn btn-sm btn-light border me-2" onclick="editService(${s.id})"><i class="fas fa-pen me-1"></i>Sửa</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteRow('${SVC_TABLE}', ${s.id})"><i class="fas fa-trash me-1"></i>Xóa</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
         if (info) info.textContent = `Hiển thị ${start + 1} - ${Math.min(end, totalItems)} trên ${totalItems} dịch vụ`;
         

@@ -24,7 +24,6 @@ const ThoNhaOrderUI = (() => {
                 <tr>
                     ${orderCode}
                     <td>${utils.escapeHtml(order.customer.name)}</td>
-                    <td>${utils.escapeHtml(order.customer.phone)}</td>
                     <td><div class="cell-service-text small fw-bold" title="${utils.escapeHtml(order.service)}">${utils.escapeHtml(order.service)}</div></td>
                     <td><div class="small text-muted">${providerName}</div></td>
                     <td><span class="text-danger fw-bold small">${utils.formatCurrencyVn(order.total_price)}</span></td>
@@ -73,19 +72,28 @@ const ThoNhaOrderUI = (() => {
      * Vẽ thẻ di động (Mobile Card) chuẩn 
      */
     function buildCardHtml(order, role) {
-        const title = role === 'provider' ? order.customer.name : order.service;
-        const subTitle = order.orderCode;
+        const title = (role === 'provider' || role === 'admin') ? (order.customer.name || 'Khách hàng') : order.service;
         const statusBadge = utils.buildStatusBadge(order.status);
 
         let rows = '';
-        if (role === 'provider') {
-            rows += `<div class="mobile-row"><span><i class="fa-solid fa-user me-1"></i>SĐT khách</span><strong>${order.customer.phone}</strong></div>`;
-            rows += `<div class="mobile-row"><span><i class="fa-solid fa-wrench me-1"></i>Dịch vụ</span><strong>${order.service}</strong></div>`;
+        if (role === 'admin') {
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-phone"></i>SĐT</span><strong>${order.customer.phone || '---'}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-calendar-day"></i>Ngày đặt</span><strong>${utils.formatDate(order.createdAt)}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-clock"></i>Thời gian</span><strong>${utils.formatTime(order.createdAt)}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-wrench"></i>Dịch vụ</span><strong class="text-truncate" style="max-width:160px;">${order.service}</strong></div>`;
+            const providerDisplay = order.provider.id ? (order.provider.name) : '<span class="text-warning">Chờ nhận</span>';
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-user-tie"></i>NCC</span><strong>${providerDisplay}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-money-bill"></i>Giá tiền</span><strong class="text-danger">${utils.formatCurrencyVn(order.total_price)}</strong></div>`;
+        } else if (role === 'provider') {
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-user"></i>Khách hàng</span><strong>${order.customer.name}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-phone"></i>SĐT khách</span><strong>${order.customer.phone}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-calendar-day"></i>Ngày đặt</span><strong>${utils.formatDate(order.createdAt)}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-wrench"></i>Dịch vụ</span><strong>${order.service}</strong></div>`;
         } else {
-            rows += `<div class="mobile-row"><span><i class="fa-solid fa-calendar-day me-1"></i>Ngày đặt</span><strong>${utils.formatDate(order.createdAt)}</strong></div>`;
-            rows += `<div class="mobile-row"><span><i class="fa-solid fa-clock me-1"></i>Thời gian</span><strong>${utils.formatTime(order.createdAt)}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-calendar-day"></i>Ngày đặt</span><strong>${utils.formatDate(order.createdAt)}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-clock"></i>Thời gian</span><strong>${utils.formatTime(order.createdAt)}</strong></div>`;
             const providerDisplay = order.provider.id ? (order.provider.company || order.provider.name) : '<span class="text-warning">Chờ nhận</span>';
-            rows += `<div class="mobile-row"><span><i class="fa-solid fa-user-tie me-1"></i>Nhà cung cấp</span><strong>${providerDisplay}</strong></div>`;
+            rows += `<div class="mobile-row"><span><i class="fa-solid fa-user-tie"></i>Nhà cung cấp</span><strong>${providerDisplay}</strong></div>`;
         }
 
         return `
@@ -97,7 +105,9 @@ const ThoNhaOrderUI = (() => {
                     </div>
                     <div>${statusBadge}</div>
                 </div>
-                ${rows}
+                <div class="mobile-body">
+                    ${rows}
+                </div>
                 <div class="mobile-actions">
                     <button class="btn-view-modern" data-action="view-detail" data-id="${order.id}">
                         <i class="fa-regular fa-eye me-2"></i>Xem chi tiết

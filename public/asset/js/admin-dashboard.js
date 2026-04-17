@@ -59,10 +59,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Cập nhật tiêu đề trang
             pageTitle.textContent = this.textContent.trim();
 
-            // Đóng sidebar trên mobile nếu đang mở
+            // Đóng sidebar trên mobile/tablet nếu đang mở
             const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth <= 768) {
+            const overlay = document.getElementById('sidebarOverlay');
+            if (window.innerWidth <= 991) {
                 sidebar.classList.remove('show');
+                if (overlay) overlay.classList.remove('active');
             }
 
             // Gọi hàm tải dữ liệu tương ứng
@@ -74,22 +76,25 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     });
 
-    // Toggle Sidebar Mobile
+    // Toggle Sidebar Mobile/Tablet
     const btnToggleSidebar = document.getElementById('btnToggleSidebar');
     const btnCloseSidebar = document.getElementById('btnCloseSidebar');
     const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    if (btnToggleSidebar && sidebar) {
-        btnToggleSidebar.addEventListener('click', () => {
-            sidebar.classList.add('show');
-        });
+    function openSidebar() {
+        if (sidebar) sidebar.classList.add('show');
+        if (sidebarOverlay) sidebarOverlay.classList.add('active');
     }
 
-    if (btnCloseSidebar && sidebar) {
-        btnCloseSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('show');
-        });
+    function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('show');
+        if (sidebarOverlay) sidebarOverlay.classList.remove('active');
     }
+
+    if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', openSidebar);
+    if (btnCloseSidebar) btnCloseSidebar.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
     // Đăng xuất
     const btnLogout = document.getElementById('btnLogout');
@@ -139,7 +144,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     });
 
-    document.getElementById('serviceTableBody').addEventListener('click', async (e) => {
+    // Event delegation cho bảng Dịch vụ (Desktop + Mobile)
+    function handleServiceClick(e) {
         const editBtn = e.target.closest('.handle-edit-service');
         const delBtn = e.target.closest('.handle-delete-service');
 
@@ -153,15 +159,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         if (delBtn) {
             if (confirm('Bạn có chắc chắn muốn xóa dịch vụ này? Hành động này không thể hoàn tác!')) {
-                try {
-                    await DVQTKrud.deleteRow('dichvucungcap', delBtn.dataset.id);
-                    loadServices();
-                } catch (err) {
-                    alert('Lỗi xóa: ' + err.message);
-                }
+                (async () => {
+                    try {
+                        await DVQTKrud.deleteRow('dichvucungcap', delBtn.dataset.id);
+                        loadServices();
+                    } catch (err) {
+                        alert('Lỗi xóa: ' + err.message);
+                    }
+                })();
             }
         }
-    });
+    }
+    document.getElementById('serviceTableBody').addEventListener('click', handleServiceClick);
+    const svcMobileEl = document.getElementById('serviceMobileCards');
+    if (svcMobileEl) svcMobileEl.addEventListener('click', handleServiceClick);
 
     // =========================================================================
     // CẤU HÌNH GIAO DIỆN & ĐƯỜNG LINK (HỆ SINH THÁI DỊCH VỤ)
@@ -209,6 +220,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                     </td>
                 </tr>
             `).join('');
+
+            // Xây dựng Mobile Cards cho Dịch vụ
+            const svcMobile = document.getElementById('serviceMobileCards');
+            if (svcMobile) {
+                svcMobile.innerHTML = data.map(item => `
+                    <div class="mobile-data-card">
+                        <div class="card-top">
+                            <span class="card-id">#${item.id}</span>
+                            <span class="card-name">${item.dichvu || 'N/A'}</span>
+                        </div>
+                        <div class="card-desc">${item.mota || 'Chưa có mô tả'}</div>
+                        <div class="card-actions">
+                            <button class="btn btn-sm btn-outline-primary handle-edit-service" data-id="${item.id}" data-name="${item.dichvu || ''}" data-desc="${item.mota || ''}"><i class="fas fa-edit me-1"></i>Sửa</button>
+                            <button class="btn btn-sm btn-outline-danger handle-delete-service" data-id="${item.id}"><i class="fas fa-trash me-1"></i>Xóa</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
 
             // Tự động Cập nhật lưới Grid Hệ Sinh Thái
             if (cardsContainer) {
@@ -265,7 +294,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     });
 
-    document.getElementById('feeTableBody').addEventListener('click', async (e) => {
+    // Event delegation cho bảng Phí (Desktop + Mobile)
+    function handleFeeClick(e) {
         const editBtn = e.target.closest('.handle-edit-fee');
         const delBtn = e.target.closest('.handle-delete-fee');
 
@@ -279,15 +309,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         if (delBtn) {
             if (confirm('Bạn có chắc chắn muốn xóa phí này?')) {
-                try {
-                    await DVQTKrud.deleteRow('phidichuyen', delBtn.dataset.id);
-                    loadFees();
-                } catch (err) {
-                    alert('Lỗi xóa: ' + err.message);
-                }
+                (async () => {
+                    try {
+                        await DVQTKrud.deleteRow('phidichuyen', delBtn.dataset.id);
+                        loadFees();
+                    } catch (err) {
+                        alert('Lỗi xóa: ' + err.message);
+                    }
+                })();
             }
         }
-    });
+    }
+    document.getElementById('feeTableBody').addEventListener('click', handleFeeClick);
+    const feeMobileEl = document.getElementById('feeMobileCards');
+    if (feeMobileEl) feeMobileEl.addEventListener('click', handleFeeClick);
 
     async function loadFees() {
         const tbody = document.getElementById('feeTableBody');
@@ -310,6 +345,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                     </td>
                 </tr>
             `).join('');
+
+            // Xây dựng Mobile Cards cho Phí
+            const feeMobile = document.getElementById('feeMobileCards');
+            if (feeMobile) {
+                feeMobile.innerHTML = data.map(item => `
+                    <div class="mobile-data-card">
+                        <div class="card-top">
+                            <span class="card-id">#${item.id}</span>
+                            <span class="card-name">${item.loaiphi || 'N/A'}</span>
+                        </div>
+                        <div class="card-desc" style="font-size: 1.1rem; font-weight: 700; color: #16a34a;">${parseInt(item.sotien || 0).toLocaleString()} VNĐ</div>
+                        <div class="card-actions">
+                            <button class="btn btn-sm btn-outline-primary handle-edit-fee" data-id="${item.id}" data-type="${item.loaiphi || ''}" data-amount="${item.sotien || ''}"><i class="fas fa-edit me-1"></i>Sửa</button>
+                            <button class="btn btn-sm btn-outline-danger handle-delete-fee" data-id="${item.id}"><i class="fas fa-trash me-1"></i>Xóa</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
         } catch (e) {
             tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Lỗi tải dữ liệu</td></tr>';
         }

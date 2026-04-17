@@ -175,13 +175,8 @@ async function loadAllOrders() {
     if (!krudHelper || !viewUtils) return [];
 
     try {
-        // Sử dụng Siêu Module Milestone để lấy đơn hàng
-        let rawRows = [];
-        if (orderService) {
-            rawRows = await orderService.getOrders('admin');
-        } else {
-            rawRows = await krudHelper.listTable('datlich_thonha');
-        }
+        // Lấy tất cả dữ liệu (hạn mức 1000) để phục vụ phân trang ở phía Client
+        const rawRows = await krudHelper.listTable('datlich_thonha', { limit: 1000 });
         
         const providerIdSet = {};
         rawRows.forEach(row => {

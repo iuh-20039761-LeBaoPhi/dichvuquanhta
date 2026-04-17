@@ -13,7 +13,10 @@ if (!$phone || !$password) {
 
 // 3. Gọi API lấy danh sách người dùng (POST)
 $url = 'https://api.dvqt.vn/list/';
-$payload = json_encode(['table' => 'nguoidung'], JSON_UNESCAPED_UNICODE);
+$payload = json_encode([
+    'table' => 'nguoidung',
+    'limit' => 100000
+], JSON_UNESCAPED_UNICODE);
 
 $opts = [
     'http' => [

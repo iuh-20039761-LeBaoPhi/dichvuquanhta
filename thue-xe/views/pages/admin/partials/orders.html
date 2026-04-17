@@ -1,57 +1,65 @@
 <!-- Admin Order Management Partial -->
 <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px; overflow: hidden;">
-    <div class="card-header bg-white py-4 border-0">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="card-header bg-white py-3 border-0">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
             <div>
-                <h5 class="fw-800 mb-0">Quản lý Toàn bộ Đơn hàng</h5>
-                <p class="text-muted small mb-0">Theo dõi toàn diện mọi giao dịch trong hệ thống Thuê Xe</p>
+                <h6 class="fw-800 mb-0">Quản lý Đơn hàng</h6>
+                <p class="text-muted small mb-0" style="font-size: 0.75rem;">Theo dõi mọi giao dịch hệ thống</p>
             </div>
-            <div class="d-flex gap-2">
-                <div class="input-group" style="width: 300px;">
-                    <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
-                    <input type="text" class="form-control bg-light border-0" placeholder="Mã đơn / Tên khách..." id="orderSearchInput" onkeyup="filterOrders()">
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <div class="input-group search-box-wrap" style="min-width: 240px;">
+                    <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted small"></i></span>
+                    <input type="text" class="form-control bg-light border-0 small" placeholder="Mã đơn / Tên khách..." id="orderSearchInput" onkeyup="filterOrders()" style="font-size: 0.85rem;">
                 </div>
-                <button class="btn btn-primary rounded-pill px-3 fw-600" onclick="loadAllOrders()"><i class="fas fa-sync-alt me-2"></i>Tải lại</button>
+                <button class="btn btn-primary rounded-pill px-4 fw-600 shadow-sm" onclick="loadAllOrders()" style="white-space: nowrap; font-size: 0.85rem;">
+                    <i class="fas fa-sync-alt me-2"></i>Tải lại
+                </button>
             </div>
         </div>
 
-        <!-- Order Status Tabs -->
-        <ul class="nav nav-pills nav-fill bg-light p-1" style="border-radius: 12px; font-size: 0.85rem;">
-            <li class="nav-item">
-                <a class="nav-link active fw-bold" href="#" id="tabAll" onclick="switchOrderTab('all')">Tất cả <span class="badge bg-secondary ms-1" id="countAll">0</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fw-bold" href="#" id="tabNew" onclick="switchOrderTab('new')">Chưa nhận <span class="badge bg-warning text-dark ms-1" id="countNew">0</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fw-bold" href="#" id="tabDoing" onclick="switchOrderTab('doing')">Đang thuê <span class="badge bg-primary ms-1" id="countDoing">0</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fw-bold" href="#" id="tabDone" onclick="switchOrderTab('done')">Hoàn thành <span class="badge bg-success ms-1" id="countDone">0</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fw-bold" href="#" id="tabCancel" onclick="switchOrderTab('cancel')">Đã hủy <span class="badge bg-danger ms-1" id="countCancel">0</span></a>
-            </li>
-        </ul>
+        <!-- Order Status Tabs - Responsive Layout -->
+        <div class="status-tabs-wrapper mt-2 px-2">
+            <ul class="nav nav-pills nav-fill bg-light p-1 flex-column flex-md-row gap-1 w-100" style="border-radius: 12px; font-size: 0.82rem; overflow: hidden;">
+                <li class="nav-item">
+                    <a class="nav-link active fw-bold" href="#" id="tabAll" onclick="switchOrderTab('all')">Tất cả <span class="badge bg-secondary ms-1" id="countAll">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabNew" onclick="switchOrderTab('new')">Chưa nhận <span class="badge bg-warning text-dark ms-1" id="countNew">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabDoing" onclick="switchOrderTab('doing')">Đang thuê <span class="badge bg-primary ms-1" id="countDoing">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabDone" onclick="switchOrderTab('done')">Hoàn thành <span class="badge bg-success ms-1" id="countDone">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="#" id="tabCancel" onclick="switchOrderTab('cancel')">Đã hủy <span class="badge bg-danger ms-1" id="countCancel">0</span></a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table align-middle mb-0" id="adminOrderTable">
-                <thead class="bg-light text-muted small uppercase">
-                    <tr>
-                        <th class="ps-4">Mã đơn / Ngày đặt</th>
-                        <th>Thông tin Khách hàng</th>
-                        <th>Phương tiện / Nhà CC</th>
-                        <th>Trạng thái hiện tại</th>
-                        <th>Tổng chi phí</th>
-                        <th class="pe-4 text-end">Chi tiết</th>
-                    </tr>
-                </thead>
-                <tbody id="adminOrderBody">
-                    <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
-                </tbody>
-            </table>
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0" id="adminOrderTable">
+                    <thead class="bg-light text-muted small uppercase">
+                        <tr>
+                            <th class="ps-4">Mã đơn / Ngày đặt</th>
+                            <th>KH / Liên hệ</th>
+                            <th>Phương tiện / NCC</th>
+                            <th>Trạng thái</th>
+                            <th>Tổng phí</th>
+                            <th class="pe-4 text-end">Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminOrderBody">
+                        <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Mobile List Container -->
+            <div id="adminOrderMobileList" class="mobile-list-container d-lg-none p-3"></div>
         </div>
     </div>
 </div>
@@ -99,6 +107,15 @@
 
     function renderOrders(orders) {
         const tbody = document.getElementById('adminOrderBody');
+        const mob = document.getElementById('adminOrderMobileList');
+
+        if(!orders.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Không có đơn hàng nào khớp.</td></tr>';
+            if(mob) mob.innerHTML = '<div class="text-center text-muted p-4">Trống</div>';
+            return;
+        }
+
+        // 1. Table Render
         tbody.innerHTML = orders.map(o => {
             let statusBadge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang xác nhận</span>';
             if(o.ngayhuy) statusBadge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy bỏ</span>';
@@ -108,7 +125,7 @@
 
             return `<tr>
                 <td class="ps-4">
-                    <div class="fw-bold text-dark">${String(o.id).padStart(7, '0')}</div>
+                    <div class="fw-bold text-dark">#${String(o.id).padStart(7, '0')}</div>
                     <div class="text-muted small" style="font-size:11px;">${o.ngaydat || '---'}</div>
                 </td>
                 <td>
@@ -120,12 +137,40 @@
                     <div class="text-muted small" style="font-size:11px;">NCC: ${o.tenncc || 'Chưa nhận'}</div>
                 </td>
                 <td>${statusBadge}</td>
-                <td><div class="fw-bold text-primary">${ThueXeAdmin.formatCurrency(o.tong_tien)}</div></td>
+                <td><div class="fw-bold text-primary">${Number(o.tong_tien).toLocaleString()}đ</div></td>
                 <td class="pe-4 text-end">
-                    <button class="btn btn-sm btn-light text-primary py-1 px-3 rounded-pill" onclick="viewOrderAdmin(${o.id})">Hóa đơn</button>
+                    <button class="btn btn-sm btn-light text-primary py-1 px-3 rounded-pill" onclick="alert('Xem hóa đơn: ' + ${o.id})">Hóa đơn</button>
                 </td>
             </tr>`;
         }).join('');
+
+        // 2. Mobile Render
+        if(mob) {
+            mob.innerHTML = orders.map(o => {
+                let statusTxt = 'Chờ xử lý'; let statusCls = 'bg-warning';
+                if(o.ngayhuy) { statusTxt = 'Đã hủy'; statusCls = 'bg-danger'; }
+                else if(o.ngayhoanthanhthucte) { statusTxt = 'Thành công'; statusCls = 'bg-success'; }
+                else if(o.ngaybatdauthucte) { statusTxt = 'Đang thuê'; statusCls = 'bg-primary'; }
+                
+                return `
+                    <div class="mobile-card shadow-sm">
+                        <div class="mobile-card-head">
+                            <span class="mobile-code text-primary">#${String(o.id).padStart(7, '0')}</span>
+                            <h4 class="mobile-title">${o.ten_xe}</h4>
+                            <span class="badge ${statusCls}">${statusTxt}</span>
+                        </div>
+                        <div class="mobile-body">
+                            <div class="mobile-row"><span>Khách hàng</span><strong>${o.tenkhachhang || '---'}</strong></div>
+                            <div class="mobile-row"><span>Nhà cung cấp</span><strong>${o.ten_ncc || 'Chưa nhận'}</strong></div>
+                            <div class="mobile-row text-primary"><span>Tổng phí</span><strong>${Number(o.tong_tien).toLocaleString()}đ</strong></div>
+                        </div>
+                        <div class="mobile-actions">
+                            <button class="btn btn-sm btn-light border w-100 fw-bold" onclick="alert('Xem đơn: ' + ${o.id})">Chi tiết</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
     }
 
     window.filterOrders = function() {

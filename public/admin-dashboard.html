@@ -15,12 +15,15 @@
 
 <body class="dvqt-admin">
     <div class="admin-layout">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <!-- Sidebar -->
         <aside class="admin-sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img src="asset/image/logo-dich-vu-quanh-ta.png" alt="Logo" class="sidebar-logo">
                 <h3 class="sidebar-brand">DVQT Admin</h3>
-                <button class="btn-close-sidebar d-md-none" id="btnCloseSidebar"><i class="fas fa-times"></i></button>
+                <button class="btn-close-sidebar d-lg-none" id="btnCloseSidebar"><i class="fas fa-times"></i></button>
             </div>
             <nav class="sidebar-nav">
                 <ul class="nav-list">
@@ -54,7 +57,7 @@
             <!-- Topbar -->
             <header class="admin-topbar">
                 <div class="d-flex align-items-center gap-3">
-                    <button class="btn-toggle-sidebar d-md-none" id="btnToggleSidebar">
+                    <button class="btn-toggle-sidebar" id="btnToggleSidebar">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="topbar-title">
@@ -119,6 +122,8 @@
                                 </tbody>
                             </table>
                         </div>
+                        <!-- Mobile Cards cho Dịch vụ -->
+                        <div class="mobile-cards-container" id="serviceMobileCards"></div>
                     </div>
                 </section>
 
@@ -154,6 +159,8 @@
                                 </tbody>
                             </table>
                         </div>
+                        <!-- Mobile Cards cho Phí -->
+                        <div class="mobile-cards-container" id="feeMobileCards"></div>
                     </div>
                 </section>
 
