@@ -58,33 +58,7 @@ $supplierAssigned =
 admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 ?>
 
-<?php
-if (!function_exists('listHistoryByOrder')) {
-    function listHistoryByOrder($idDv) {
-        $history = [
-            'success' => false,
-            'data' => []
-        ];
-        if (function_exists('krud')) {
-            $res = krud('list', 'lich_su_lam_viec_donvesinh', ['p' => 1, 'limit' => 1000]);
-            if (!empty($res['data'])) $history['data'] = $res['data'];
-            else if (!empty($res['rows'])) $history['data'] = $res['rows'];
-            else if (!empty($res['items'])) $history['data'] = $res['items'];
-            else if (is_array($res)) $history['data'] = $res;
-        }
-        $filtered = [];
-        foreach ($history['data'] as $r) {
-            if ((string)($r['id_dv'] ?? '') === (string)$idDv) {
-                $filtered[] = $r;
-            }
-        }
-        usort($filtered, function($a, $b) {
-            return strtotime($b['ngay_lam']) - strtotime($a['ngay_lam']);
-        });
-        return $filtered;
-    }
-}
-?>
+
 
 <style>
 
@@ -1588,12 +1562,14 @@ if (!function_exists('listHistoryByOrder')) {
 							</div>
 						</div>
 
-
-
-						
-
 						<div id="workHistoryTable" style="margin-top:4px;">
 							<span style="font-size:12px;font-weight:800;color:#000000;">Lịch sử làm việc</span>
+        <?php 
+        $historyResult = get_work_history_by_datlich_id($id);
+        $historyRows = $historyResult['rows'] ?? []; 
+        // Sắp xếp giảm dần theo ID hoặc ngày để hiển thị mới nhất lên đầu
+        usort($historyRows, fn($a, $b) => (int)($b['id'] ?? 0) <=> (int)($a['id'] ?? 0));
+        ?>
 							<div id="workHistoryContent" style="overflow-x:auto;margin-top:4px; <?= empty($historyRows) ? 'display:none;' : '' ?>">
 								<table style="width:100%;border-collapse:collapse;font-size:12px;">
 									<thead>
@@ -1608,7 +1584,6 @@ if (!function_exists('listHistoryByOrder')) {
 									
         <tbody id="workHistoryBody">
         <?php
-        $historyRows = listHistoryByOrder($id);
         if ($historyRows):
             foreach ($historyRows as $idx => $r):
                 $isAutoEnd = ($r["is_auto_end"] ?? 0) == 1 || (trim((string)($row["gio_ket_thuc_kehoach"] ?? "")) === trim((string)($r["gio_ket_thuc_trong_ngay"] ?? "")));
