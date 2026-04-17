@@ -105,8 +105,7 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
                         <div class="col-md-7 d-flex flex-column">
                             <div class="mb-2">
                                 <label class="form-label">Tên dịch vụ</label>
-                                <input type="text" class="form-control fw-bold text-success" name="name"
-                                    placeholder="VD: Tắm bé sơ sinh" required>
+                                <input type="text" class="form-control fw-bold text-success" name="name" required>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label">Mô tả ảnh (SEO)</label>
@@ -133,8 +132,7 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
                 </div>
                 <div class="card-body p-3 d-flex flex-column h-100">
                     <label class="form-label">Công việc bao gồm (Mỗi dòng 1 mục):</label>
-                    <textarea class="form-control flex-grow-1" name="includes_text"
-                        placeholder="VD: Tắm bé&#10;Vệ sinh rốn&#10;Massage cho bé" required
+                    <textarea class="form-control flex-grow-1" name="includes_text" required
                         style="font-size: 0.95rem; border-left: 3px solid var(--admin-success) !important; min-height: 250px;"></textarea>
                     <div class="form-text small mt-1">Xuống dòng để tạo mục mới.</div>
                 </div>
