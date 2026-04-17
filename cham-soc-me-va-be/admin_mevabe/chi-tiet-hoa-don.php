@@ -85,7 +85,7 @@ if ($statusKey === 'cancelled') {
     $badgeClass = 'success';
 }
 
-admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
+admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 ?>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -795,7 +795,7 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
         <a class="topbar-logo" href="index.php" aria-label="Quay lại">
             <img src="../assets/logo.png" alt="Logo" />
         </a>
-        <h1 class="topbar-title">Chi tiết hóa đơn mẹ và bé</h1>
+        <h1 class="topbar-title">Chi tiết đơn hàng mẹ và bé</h1>
         <a class="topbar-logo" href="#" aria-label="Logo Mẹ và Bé">
             <img src="../assets/logomvb1.png" alt="Logo" />
         </a>
@@ -803,7 +803,7 @@ admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
 
     <div class="content">
         <?php if ($error !== '' || !is_array($row)): ?>
-            <div class="alert alert-warning"><?= admin_h($error !== '' ? $error : 'Không tìm thấy hóa đơn.') ?></div>
+            <div class="alert alert-warning"><?= admin_h($error !== '' ? $error : 'Không tìm thấy đơn hàng.') ?></div>
         <?php else: ?>
             <section id="mainGrid" class="grid">
                 <article class="panel panel-wide" id="panelInvoice">

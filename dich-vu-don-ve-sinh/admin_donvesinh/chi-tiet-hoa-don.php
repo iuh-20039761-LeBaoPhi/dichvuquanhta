@@ -55,7 +55,7 @@ $supplierAssigned =
 	|| trim((string)($row['hotenncc'] ?? '')) !== ''
 	|| trim((string)($row['nhacungcapnhan'] ?? '')) !== '';
 
-admin_render_layout_start('Chi Tiết Hóa Đơn', 'orders', $admin);
+admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 ?>
 
 <?php

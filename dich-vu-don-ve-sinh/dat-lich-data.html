@@ -1940,7 +1940,7 @@
           });
           QUICK_ATTACHMENTS.images = [];
           QUICK_ATTACHMENTS.videos = [];
-          
+
           window._pendingPhotoFiles = [];
           window._pendingVideoFiles = [];
           window._uploadedPhotoIds = [];
@@ -2404,20 +2404,20 @@
             var videoId = window._uploadedVideoIds ? window._uploadedVideoIds.join(',') : '';
 
             if (window._pendingPhotoFiles && window._pendingPhotoFiles.length) {
-                saveBtn.html('Đang upload ảnh...');
-                var photoIds = await uploadFilesToDrive(window._pendingPhotoFiles);
-                if (photoIds.length) anhId = (anhId ? anhId + ',' : '') + photoIds.join(',');
-                window._uploadedPhotoIds = (window._uploadedPhotoIds || []).concat(photoIds);
-                window._pendingPhotoFiles = [];
+              saveBtn.html('Đang upload ảnh...');
+              var photoIds = await uploadFilesToDrive(window._pendingPhotoFiles);
+              if (photoIds.length) anhId = (anhId ? anhId + ',' : '') + photoIds.join(',');
+              window._uploadedPhotoIds = (window._uploadedPhotoIds || []).concat(photoIds);
+              window._pendingPhotoFiles = [];
             }
             if (window._pendingVideoFiles && window._pendingVideoFiles.length) {
-                saveBtn.html('Đang upload video...');
-                var videoIds = await uploadFilesToDrive(window._pendingVideoFiles);
-                if (videoIds.length) videoId = (videoId ? videoId + ',' : '') + videoIds.join(',');
-                window._uploadedVideoIds = (window._uploadedVideoIds || []).concat(videoIds);
-                window._pendingVideoFiles = [];
+              saveBtn.html('Đang upload video...');
+              var videoIds = await uploadFilesToDrive(window._pendingVideoFiles);
+              if (videoIds.length) videoId = (videoId ? videoId + ',' : '') + videoIds.join(',');
+              window._uploadedVideoIds = (window._uploadedVideoIds || []).concat(videoIds);
+              window._pendingVideoFiles = [];
             }
-            
+
             data.anh_id = anhId;
             data.video_id = videoId;
             saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...');
@@ -2693,19 +2693,19 @@
         window._uploadedVideoIds = [];
 
         async function uploadFilesToDrive(files) {
-            var ids = [];
-            for (var i = 0; i < files.length; i++) {
-                var fd = new FormData();
-                fd.append('file', files[i]);
-                fd.append('name', 'booking_' + Date.now() + '_' + files[i].name);
-                try {
-                    var res = await fetch('upload.php', { method: 'POST', body: fd });
-                    var data = await res.json();
-                    if (data.success && data.fileId) ids.push(data.fileId);
-                    else console.warn('Upload lỗi:', data.message);
-                } catch (e) { console.warn('Upload exception:', e); }
-            }
-            return ids;
+          var ids = [];
+          for (var i = 0; i < files.length; i++) {
+            var fd = new FormData();
+            fd.append('file', files[i]);
+            fd.append('name', 'booking_' + Date.now() + '_' + files[i].name);
+            try {
+              var res = await fetch('upload.php', { method: 'POST', body: fd });
+              var data = await res.json();
+              if (data.success && data.fileId) ids.push(data.fileId);
+              else console.warn('Upload lỗi:', data.message);
+            } catch (e) { console.warn('Upload exception:', e); }
+          }
+          return ids;
         }
 
         $('#quickPhotoInput').on('change', async function () {
@@ -2713,7 +2713,7 @@
           if (!files.length) return;
           appendQuickFiles(files, 'image');
           this.value = '';
-          
+
           files.forEach(function (f) { window._pendingPhotoFiles.push(f); });
           $('#uploadStatusMsg').text('Đang upload ' + files.length + ' ảnh lên Drive...');
           var ids = await uploadFilesToDrive(files);
@@ -2727,7 +2727,7 @@
           if (!files.length) return;
           appendQuickFiles(files, 'video');
           this.value = '';
-          
+
           files.forEach(function (f) { window._pendingVideoFiles.push(f); });
           $('#uploadStatusMsg').text('Đang upload ' + files.length + ' video lên Drive...');
           var ids = await uploadFilesToDrive(files);
@@ -2880,7 +2880,7 @@
             console.error('Session sync error:', e);
           });
 
-          // 4. Chuyển hướng ngay lập tức tới trang danh sách hóa đơn
+          // 4. Chuyển hướng ngay lập tức tới trang danh sách đơn hàng
           window.top.location.href = "nhan_vien/danh-sach-hoa-don.php";
 
         } catch (error) {

@@ -143,7 +143,7 @@ $summaryReceived = count(array_filter($rows, static fn(array $i): bool => trim((
 $summaryTotal = count($rows);
 ?>
 <?php
-$pageTitle = "Danh sách hóa đơn";
+$pageTitle = "Danh sách đơn hàng";
 include 'layout-header.php';
 ?>
 <style>
@@ -430,7 +430,7 @@ include 'layout-header.php';
             <?php else: ?>
                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-3">
                     <div>
-                        <h1 class="h4 fw-semibold mb-1">Danh sách hóa đơn</h1>
+                        <h1 class="h4 fw-semibold mb-1">Danh sách đơn hàng</h1>
                     </div>
                     <div class="text-secondary small">Tổng hiển thị: <b><?= (int) $totalFiltered ?></b> /
                         <?= (int) $summaryTotal ?> hoa don

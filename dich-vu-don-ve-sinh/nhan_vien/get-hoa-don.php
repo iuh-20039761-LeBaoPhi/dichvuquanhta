@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../session_user.php';
 
 /**
- * Hàm kiểm tra và lấy danh sách hóa đơn dựa theo session người dùng
+ * Hàm kiểm tra và lấy danh sách đơn hàng dựa theo session người dùng
  */
 function get_filtered_invoices() {
     $user = $_SESSION['user'] ?? null;
@@ -39,7 +39,7 @@ function get_filtered_invoices() {
     foreach ($allData as $item) {
         $isMatch = false;
         if ($id_dichvu === 1) {
-            // Nhà cung cấp: lấy hóa đơn trạng thái null OR khớp số điện thoại NCC
+            // Nhà cung cấp: lấy đơn hàng trạng thái null OR khớp số điện thoại NCC
             $trangthai = $item['trangthai'] ?? null;
             $phoneNCC = preg_replace('/\D/', '', $item['sodienthoaincc'] ?? '');
             if ($trangthai === null || $trangthai === '' || $phoneNCC === $userPhone) {

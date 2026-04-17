@@ -399,7 +399,7 @@ include 'layout-header.php';
                                 </a>
                                 <a class="btn btn-outline-secondary btn-soft" href="danh-sach-hoa-don.php"
                                     onclick="event.preventDefault(); navigateTo('danh-sach-hoa-don.php');">
-                                    <i class="bi bi-receipt me-1"></i> Danh sách hóa đơn
+                                    <i class="bi bi-receipt me-1"></i> Danh sách đơn hàng
                                 </a>
                             </div>
                         </div>

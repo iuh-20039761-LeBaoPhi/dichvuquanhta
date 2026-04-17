@@ -317,7 +317,7 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
                 <a href="danh-sach-hoa-don.php"
                     class="list-group-item <?php echo $current_page == 'danh-sach-hoa-don.php' ? 'active' : ''; ?>"
                     data-page="danh-sach-hoa-don.php">
-                    <i class="bi bi-receipt"></i> <span>Danh sách hóa đơn</span>
+                    <i class="bi bi-receipt"></i> <span>Danh sách đơn hàng</span>
                 </a>
 
                 <a href="../logout.html" class="list-group-item text-warning">

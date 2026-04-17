@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Chi tiết hóa đơn chăm sóc người bệnh</title>
+	<title>Chi tiết đơn hàng chăm sóc người bệnh</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
@@ -1365,7 +1365,7 @@
 				<a class="topbar-logo" href="#" aria-label="Trang chủ">
 					<img src="assets/logo-he-thong.png" alt="Logo dịch vụ" />
 				</a>
-				<h1 class="topbar-title">Chi tiết hóa đơn người bệnh</h1>
+				<h1 class="topbar-title">Chi tiết đơn hàng người bệnh</h1>
 				<a class="topbar-logo" href="#" aria-label="Trang dịch vụ người bệnh">
 					<img src="assets/logo-cham-soc-benh-nhan.png" alt="Chăm sóc người bệnh" />
 				</a>
@@ -1836,7 +1836,7 @@
 			async function listTableRows(tableName) {
 				const result = typeof krudList === 'function'
 					? await krudList({ table: tableName, limit: 100000 })
-                : await krud('list', tableName, { p: 1, limit: 100000 });
+					: await krud('list', tableName, { p: 1, limit: 100000 });
 
 				if (Array.isArray(result)) return result;
 				if (Array.isArray(result?.data)) return result.data;
@@ -1901,7 +1901,7 @@
 				const isProvider = idDichvuList.includes('2');
 				const role = isProvider ? 'staff' : 'customer';
 
-				// Bổ sung: Nếu là khách hàng, phải khớp SĐT trong hóa đơn
+				// Bổ sung: Nếu là khách hàng, phải khớp SĐT trong đơn hàng
 				if (role === 'customer' && app.$datlich_nguoibenh) {
 					const customerPhone = String(app.$datlich_nguoibenh.sdtkhachhang || '').trim();
 					if (customerPhone !== sodienthoai.trim()) {
@@ -1950,7 +1950,7 @@
 			async function loadOrderById() {
 				const $datlich_nguoibenh_rows = await listTableRows(TABLE_ORDER);
 				const $datlich_nguoibenh = $datlich_nguoibenh_rows.find((row) => String(row.id) === String(app.params.mahd));
-				if (!$datlich_nguoibenh) throw new Error('Không tìm thấy hóa đơn');
+				if (!$datlich_nguoibenh) throw new Error('Không tìm thấy đơn hàng');
 
 				app.$datlich_nguoibenh = await applyAutoOrderStatusRules($datlich_nguoibenh);
 			}

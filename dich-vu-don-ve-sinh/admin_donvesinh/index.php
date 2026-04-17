@@ -272,7 +272,7 @@ admin_render_layout_start('Quản Lý Đơn Hàng', 'orders', $admin);
 					<tbody>
 						<?php if (!$paginatedRows): ?>
 							<tr>
-								<td colspan="7" class="text-center py-4 text-secondary">Không có hóa đơn phù hợp.</td>
+								<td colspan="7" class="text-center py-4 text-secondary">Không có đơn hàng phù hợp.</td>
 							</tr>
 						<?php else: ?>
 							<?php foreach ($paginatedRows as $row): ?>
@@ -309,7 +309,7 @@ admin_render_layout_start('Quản Lý Đơn Hàng', 'orders', $admin);
 
 			<div class="order-list-mobile d-lg-none mt-2">
 				<?php if (!$paginatedRows): ?>
-					<div class="text-center py-4 text-secondary">Không có hóa đơn phù hợp.</div>
+					<div class="text-center py-4 text-secondary">Không có đơn hàng phù hợp.</div>
 				<?php else: ?>
 					<?php foreach ($paginatedRows as $row): ?>
 						<?php $meta = hoadon_status_meta((string) ($row['trangthai'] ?? '')); ?>
@@ -347,7 +347,7 @@ admin_render_layout_start('Quản Lý Đơn Hàng', 'orders', $admin);
 						<?= (int) $totalFiltered ?> đơn hàng
 					</div>
 					<?php if ($totalPages > 1): ?>
-						<nav aria-label="Phân trang hóa đơn">
+						<nav aria-label="Phân trang đơn hàng">
 							<ul class="pagination pagination-sm mb-0">
 								<li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
 									<a class="page-link" href="<?= admin_h($buildPageUrl(max(1, $page - 1))) ?>">Trước</a>
