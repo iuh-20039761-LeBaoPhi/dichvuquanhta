@@ -507,10 +507,23 @@
         // Tự động tìm hoặc tạo tài khoản nếu khách chưa đăng nhập
         const isAlreadyLoggedIn = form.dataset.isLoggedIn === "true";
         if (!isAlreadyLoggedIn && window.BookingAuthHelper) {
-          console.log("[BookingFlow] Khách chưa đăng nhập, đang kiểm tra/tạo tài khoản...");
-          await window.BookingAuthHelper.ensureAccount(data.name, data.phone);
+          console.log(
+            "[BookingFlow] Khách chưa đăng nhập, đang kiểm tra/tạo tài khoản...",
+          );
+          const accountRes = await window.BookingAuthHelper.ensureAccount(
+            data.name,
+            data.phone,
+          );
+
+          if (accountRes && accountRes.isNew === false) {
+            throw new Error(
+              "Số điện thoại này đã tồn tại trong hệ thống. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác để đặt lịch.",
+            );
+          }
         } else {
-          console.log("[BookingFlow] Khách đã đăng nhập, bỏ qua bước tạo tài khoản.");
+          console.log(
+            "[BookingFlow] Khách đã đăng nhập, bỏ qua bước tạo tài khoản.",
+          );
         }
 
         // ================= XỬ LÝ UPLOAD MEDIA LÊN GG DRIVE =================
@@ -587,7 +600,8 @@
           return;
         }
 
-        const failMessage = "Không thể gửi dữ liệu. Vui lòng thử lại.";
+        const failMessage =
+          err.message || "Không thể gửi dữ liệu. Vui lòng thử lại.";
         console.error(failMessage);
         if (typeof utils.showToast === "function") {
           utils.showToast(failMessage, "error");

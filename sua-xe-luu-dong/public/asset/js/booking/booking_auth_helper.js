@@ -56,9 +56,6 @@ window.BookingAuthHelper = (function() {
 
         if (user) {
             console.log('[BookingAuth] Tài khoản đã tồn tại cho:', normalizedPhone);
-            // Lưu vào cookie nếu chưa có
-            setCookie('dvqt_u', normalizedPhone);
-            setCookie('dvqt_p', user.matkhau || normalizedPhone); 
             return { isNew: false, userId: user.id };
         }
 

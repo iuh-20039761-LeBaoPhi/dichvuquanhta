@@ -348,7 +348,31 @@
       confirmBtn.textContent = "Đang chuẩn bị...";
 
       try {
-        // --- BƯỚC 1: UPLOAD ẢNH & VIDEO LÊN GOOGLE DRIVE ---
+        const payload = collectBookingData();
+
+        // --- BƯỚC 1: Tự động tìm hoặc tạo tài khoản nếu khách chưa đăng nhập ---
+        const isAlreadyLoggedIn = form.dataset.isLoggedIn === "true";
+        if (!isAlreadyLoggedIn && window.BookingAuthHelper) {
+          console.log(
+            "[BookingFlow] Khách chưa đăng nhập, đang kiểm tra/tạo tài khoản...",
+          );
+          const accountRes = await window.BookingAuthHelper.ensureAccount(
+            payload.name,
+            payload.phone,
+          );
+
+          if (accountRes && accountRes.isNew === false) {
+            throw new Error(
+              "Số điện thoại này đã tồn tại trong hệ thống. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác để đặt lịch.",
+            );
+          }
+        } else if (isAlreadyLoggedIn) {
+          console.log(
+            "[BookingFlow] Khách đã đăng nhập, bỏ qua bước tạo tài khoản.",
+          );
+        }
+
+        // --- BƯỚC 2: UPLOAD ẢNH & VIDEO LÊN GOOGLE DRIVE ---
         const uploadOne = async (file) => {
           const fd = new FormData();
           fd.append("file", file);
@@ -378,33 +402,14 @@
           Promise.all(videoFiles.map(uploadOne)),
         ]);
 
-        const payload = collectBookingData();
         payload.anh_id = imageIds.filter((id) => id).join(",");
         payload.video_id = videoIds.filter((id) => id).join(",");
 
-        // --- BƯỚC 2: TIẾP TỤC CÁC TÁC VỤ LƯU DỮ LIỆU ---
-        confirmBtn.textContent = "Đang gửi...";
+        // --- BƯỚC 3: LƯU DỮ LIỆU ---
+        confirmBtn.textContent = "Đang lưu...";
 
-        const tasks = [];
-
-        // Tự động tìm hoặc tạo tài khoản nếu khách chưa đăng nhập
-        const isAlreadyLoggedIn = form.dataset.isLoggedIn === "true";
-        if (!isAlreadyLoggedIn && window.BookingAuthHelper) {
-          console.log("[BookingFlow] Khách chưa đăng nhập, đang kiểm tra/tạo tài khoản...");
-          tasks.push(
-            window.BookingAuthHelper.ensureAccount(payload.name, payload.phone),
-          );
-        } else if (isAlreadyLoggedIn) {
-          console.log("[BookingFlow] Khách đã đăng nhập, bỏ qua bước tạo tài khoản.");
-        }
-
-        // Save to Google Sheet
-        tasks.push(saveToGoogleSheet(payload));
-
-        // Save to KRUD API
-        tasks.push(saveToKrudApi(payload));
-
-        await Promise.all(tasks);
+        const dataTasks = [saveToGoogleSheet(payload), saveToKrudApi(payload)];
+        await Promise.all(dataTasks);
 
         bootstrap.Modal.getOrCreateInstance(confirmModalEl).hide();
         hideBookingStep();
