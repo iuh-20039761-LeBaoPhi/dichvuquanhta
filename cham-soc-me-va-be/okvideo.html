@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive Media Player Pro</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+        }
+
+        .container {
+            background: #fff;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #3498db;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .media-viewer {
+            margin-top: 25px;
+            background: #000;
+            border-radius: 10px;
+            min-height: 200px;
+            display: none;
+            /* Ẩn khi chưa có ID */
+            overflow: hidden;
+            position: relative;
+        }
+
+        video,
+        img {
+            width: 100%;
+            display: block;
+            border-radius: 10px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 350px;
+            border: none;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .loading {
+            color: #7f8c8d;
+            margin-top: 10px;
+            font-style: italic;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Drive Media Player</h2>
+        <input type="text" id="fileInput" placeholder="Nhập File ID hoặc Link Google Drive">
+        <button onclick="processMedia()">Xem Media</button>
+
+        <div id="loading" class="loading">Đang tải dữ liệu...</div>
+        <div id="error" class="error-msg"></div>
+
+        <div id="viewer" class="media-viewer">
+            <video id="vPlayer" controls style="display:none;"></video>
+            <img id="iPreview" style="display:none;">
+            <iframe id="gFrame" style="display:none;" allow="autoplay"></iframe>
+        </div>
+
+        <p style="font-size: 12px; color: #95a5a6; margin-top: 20px;">
+            * Đảm bảo file đã được chỉnh <b>"Bất kỳ ai có đường liên kết"</b>
+        </p>
+    </div>
+
+    <script>
+        function processMedia() {
+            const input = document.getElementById('fileInput').value.trim();
+            const vPlayer = document.getElementById('vPlayer');
+            const iPreview = document.getElementById('iPreview');
+            const gFrame = document.getElementById('gFrame');
+            const viewer = document.getElementById('viewer');
+            const error = document.getElementById('error');
+            const loading = document.getElementById('loading');
+
+            // Reset UI
+            error.style.display = "none";
+            vPlayer.style.display = "none";
+            iPreview.style.display = "none";
+            gFrame.style.display = "none";
+            viewer.style.display = "none";
+            vPlayer.src = "";
+            iPreview.src = "";
+            gFrame.src = "";
+
+            if (!input) {
+                error.innerText = "❌ Vui lòng nhập ID file!";
+                error.style.display = "block";
+                return;
+            }
+
+            // Tách ID từ link nếu người dùng dán nguyên link
+            let fileId = input;
+            const match = input.match(/[-\w]{25,}/);
+            if (match) fileId = match[0];
+
+            loading.style.display = "block";
+
+            // Tạo các loại URL khác nhau
+            const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+
+            // KIỂM TRA ĐỊNH DẠNG (Mẹo: dùng fetch để check loại file)
+            fetch(directUrl, { method: 'HEAD' })
+                .then(response => {
+                    loading.style.display = "none";
+                    viewer.style.display = "block";
+                    const contentType = response.headers.get('Content-Type');
+
+                    if (contentType && contentType.includes('video')) {
+                        // Nếu là Video: Dùng thẻ video HTML5 (Nhanh, không lỗi CSP)
+                        vPlayer.src = directUrl;
+                        vPlayer.style.display = "block";
+                    } else if (contentType && contentType.includes('image')) {
+                        // Nếu là Ảnh: Dùng thẻ img
+                        iPreview.src = directUrl;
+                        iPreview.style.display = "block";
+                    } else {
+                        // Nếu là loại khác hoặc file quá lớn (>100MB): Dùng Iframe dự phòng
+                        gFrame.src = previewUrl;
+                        gFrame.style.display = "block";
+                    }
+                })
+                .catch(err => {
+                    // Trường hợp lỗi hoặc chặn CORS (thường gặp khi file chưa share public)
+                    loading.style.display = "none";
+                    viewer.style.display = "block";
+                    console.log("CORS/Large file - Switch to Iframe Preview");
+                    gFrame.src = previewUrl;
+                    gFrame.style.display = "block";
+                });
+        }
+    </script>
+
+</body>
+
+</html>

@@ -3,16 +3,20 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
-$scriptUrl = "https://script.google.com/macros/s/AKfycbxThLPP2mI062gddeEyAAy3XYzUMJ-CIzMP3dMFWQ7v31t5H10ZESvx_i-ZKzWO5A_pog/exec";
+// Tăng giới hạn bộ nhớ và thời gian thực thi để upload video mượt hơn
+ini_set('memory_limit', '2048M');
+ini_set('max_execution_time', '0');
+
+$scriptUrl = "https://script.google.com/macros/s/AKfycbwmkiNswnlcic0R0YMvoDOrUdo9hl2rIdAMrHwL7lU8sNmKKGnkyJZoz6lg5CBypS2u1A/exec";
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['file'])) {
     echo json_encode(['success' => false, 'message' => 'Yêu cầu không hợp lệ']);
     exit;
 }
 
-$file    = $_FILES['file'];
-$name    = isset($_POST['name']) ? trim($_POST['name']) : $file['name'];
-$mime    = $file['type'];
+$file = $_FILES['file'];
+$name = isset($_POST['name']) ? trim($_POST['name']) : $file['name'];
+$mime = $file['type'];
 $tmpPath = $file['tmp_name'];
 
 if ($file['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($tmpPath)) {
@@ -35,10 +39,10 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+curl_setopt($ch, CURLOPT_TIMEOUT, 0); // Không giới hạn thời gian cho CURL
 
 $response = curl_exec($ch);
-$curlErr  = curl_error($ch);
+$curlErr = curl_error($ch);
 curl_close($ch);
 
 if ($response === false) {
