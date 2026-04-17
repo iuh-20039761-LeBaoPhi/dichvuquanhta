@@ -204,19 +204,29 @@
       }
     ],
     "pricing": {
-      "type": "package",
-      "packages": [
+      "type": "per_m2",
+      "base_price": 13000,
+      "min_price": 1000000,
+      "levels": {
+        "nhẹ": 0.8,
+        "tiêu chuẩn": 1,
+        "sâu": 1.25
+      },
+      "estimated": [
         {
-          "name": "Căn 1 Phòng ngủ",
-          "price": 250000,
-          "staff": 1,
-          "hours": 2
+          "area": 80,
+          "staff": 3,
+          "hours": 4
         },
         {
-          "name": "Căn 2-3 Phòng ngủ",
-          "price": 450000,
-          "staff": 2,
-          "hours": 4
+          "area": 500,
+          "staff": 5,
+          "hours": 6
+        },
+        {
+          "area": 1000,
+          "staff": 10,
+          "hours": 10
         }
       ]
     }

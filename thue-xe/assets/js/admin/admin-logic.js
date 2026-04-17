@@ -8,7 +8,7 @@ window.ThueXeAdmin = (function () {
     const TABLES = {
         CARS: 'xethue',
         ORDERS: 'datlich_thuexe',
-        USERS: 'nguoidung'
+
     };
 
     return {
@@ -49,28 +49,7 @@ window.ThueXeAdmin = (function () {
             }
         },
 
-        // 3. NGHIỆP VỤ QUẢN LÝ NGƯỜI DÙNG
-        toggleUserStatus: async function (id, isBanned) {
-            const nextStatus = isBanned ? 'active' : 'banned';
-            return this.updateStatus(TABLES.USERS, id, nextStatus, 'Đã cập nhật trạng thái tài khoản.');
-        },
 
-        // 4. HÀM ĐIỀU HƯỚNG / CHI TIẾT
-        editUserAdmin: function(id) {
-            Swal.fire({
-                title: 'Chi tiết thành viên',
-                text: 'Hệ thống quản lý chi tiết thành viên mã #' + id + ' đang được cập nhật.',
-                icon: 'info'
-            });
-        },
-
-        editNccAdmin: function(id) {
-            Swal.fire({
-                title: 'Chi tiết đối tác',
-                text: 'Mã hồ sơ NCC: #' + id + '. Tính năng chỉnh sửa chuyên sâu đang được phát triển.',
-                icon: 'info'
-            });
-        },
 
         // 5. HÀM CẬP NHẬT CHUNG
         updateStatus: async function (table, id, status, successMsg, extraData = {}) {

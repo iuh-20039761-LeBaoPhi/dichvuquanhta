@@ -57,13 +57,15 @@ body {
     overflow-x: hidden;
     background-color: var(--color-bg);
     color: var(--color-text);
+    padding-top: 80px;
 }
 
 /* Header Gradient */
 .header-gradient {
-    background: #FFFFFF;
+    background: #FFFFFF !important;
     box-shadow: 0 2px 12px rgba(30,64,175,0.12);
     border-bottom: 2px solid #DBEAFE;
+    z-index: 9999 !important;
 }
 
 .navbar-brand {
@@ -72,8 +74,10 @@ body {
 }
 
 .nav-link {
-    font-weight: 500;
-    margin: 0 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0 5px;
+    padding: 8px 12px;
     transition: all 0.3s ease;
     position: relative;
     color: var(--color-text) !important;
@@ -100,13 +104,12 @@ body {
 }
 
 .header-gradient .thuexe-navbar {
-    padding: 0.6rem 0;
+    padding: 10px 0;
 }
 
 .header-gradient .thuexe-nav-list {
     align-items: center;
-    justify-content: center;
-    margin-right: auto;
+    justify-content: flex-end;
 }
 
 .header-gradient .thuexe-nav-list .nav-link {

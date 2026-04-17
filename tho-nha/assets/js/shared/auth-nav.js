@@ -156,8 +156,12 @@
             if (nameEl) nameEl.textContent = name;
             if (avatarEl) avatarEl.textContent = initial;
 
+            // Xác định vai trò nhà cung cấp dựa trên mã dịch vụ 9 (Thợ Nhà)
+            const serviceIds = String(authData.id_dichvu || '0').split(',');
+            const currentRole = serviceIds.includes('9') ? 'provider' : role;
+
             const dashLink = document.getElementById('auth-dashboard-link');
-            bindDashboard(dashLink, role);
+            bindDashboard(dashLink, currentRole);
 
             const logoutLink = document.getElementById('auth-logout-link');
             bindLogout(logoutLink);
@@ -174,7 +178,7 @@
             if (mobileNameEl) mobileNameEl.textContent = name;
 
             const mobileDashLink = document.getElementById('mobile-auth-dashboard-link');
-            bindDashboard(mobileDashLink, role);
+            bindDashboard(mobileDashLink, currentRole);
 
             const mobileLogout = document.getElementById('mobile-auth-logout-link');
             bindLogout(mobileLogout);
@@ -188,6 +192,7 @@
                         role: data.role || 'customer',
                         name: data.name || 'User',
                         phone: data.phone || '',
+                        id_dichvu: data.id_dichvu || '0',
                         address: (data.meta && data.meta.address) ? data.meta.address : ''
                     });
                 } else {

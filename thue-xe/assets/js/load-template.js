@@ -146,24 +146,18 @@ function initAuthNav() {
 
             const dashLink = document.getElementById('auth-dashboard-link');
             if (dashLink) {
-                const dashUrl = dashMap[data.role] || dashMap.customer;
-                dashLink.onclick = async function(e) {
-                    if (data.role === 'provider') {
-                        e.preventDefault();
-                        try {
-                            const hasAccess = await window.DVQTApp.checkAccess('nhacungcap_thuexe', data.phone || '');
-                            if (hasAccess) {
-                                window.location.href = dashUrl;
-                            } else {
-                                alert("Tài khoản của bạn chưa đăng ký làm nhà cung cấp của dịch vụ này!");
-                            }
-                        } catch (err) {
-                            window.location.href = dashUrl;
-                        }
-                    } else {
-                        dashLink.href = dashUrl;
+                // Logic thông minh: Xác định vai trò THỰC TẾ đối với mảng Thuê Xe
+                let effectiveRole = data.role || 'customer';
+                
+                if (effectiveRole === 'provider') {
+                    const serviceIds = String(data.id_dichvu || '0').split(',');
+                    // Chỉ cho vào trang NCC Thuê Xe nếu có ID dịch vụ là 10
+                    if (!serviceIds.includes('10')) {
+                        effectiveRole = 'customer';
                     }
-                };
+                }
+                
+                dashLink.href = dashMap[effectiveRole] || dashMap.customer;
             }
 
             const logoutLink = document.getElementById('auth-logout-link');

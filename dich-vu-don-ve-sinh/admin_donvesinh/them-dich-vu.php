@@ -169,12 +169,20 @@ admin_render_layout_start('Thêm Dịch Vụ', 'services', $admin);
                                 </div>
                             </div>
                         </div>
-                        <label class="form-label small d-flex justify-content-between">
+                        <label class="form-label small d-flex justify-content-between mb-1">
                             Dự toán thực hiện (Estimated)
                             <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none"
                                 onclick="addEstimatedRow()">+ Thêm dự toán</button>
                         </label>
-                        <div id="estimated_rows" class="bg-light p-2 rounded"></div>
+                        <div class="bg-light p-2 rounded">
+                            <div class="row g-1 mb-2 text-secondary small fw-bold px-1">
+                                <div class="col">Mét Vuông</div>
+                                <div class="col">Số Nhân Viên</div>
+                                <div class="col">Số Giờ Làm</div>
+                                <div class="col-auto" style="width: 25px;"></div>
+                            </div>
+                            <div id="estimated_rows"></div>
+                        </div>
                     </div>
 
                     <!-- Giao diện cho package -->

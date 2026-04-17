@@ -62,9 +62,11 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <h2 class="h4 mb-0 fw-bold">Chi tiết dịch vụ #<?= (int) $id ?></h2>
     <div class="d-inline-flex gap-2">
-        <a href="quan-ly-dich-vu.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Quay lại</a>
+        <a href="quan-ly-dich-vu.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Quay
+            lại</a>
         <?php if (is_array($row)): ?>
-            <a href="sua-dich-vu.php?id=<?= urlencode((string) $id) ?>" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square me-1"></i>Sửa</a>
+            <a href="sua-dich-vu.php?id=<?= urlencode((string) $id) ?>" class="btn btn-warning btn-sm"><i
+                    class="bi bi-pencil-square me-1"></i>Sửa</a>
         <?php endif; ?>
     </div>
 </div>
@@ -90,12 +92,17 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                         <div class="col-md-4">
                             <?php
                             $image = trim((string) ($row['image'] ?? ''));
-                            $imageSrc = $image;
-                            if ($imageSrc !== '' && !preg_match('/^https?:\/\//i', $imageSrc)) {
-                                $imageSrc = '../' . ltrim($imageSrc, '/');
-                            }
                             ?>
-                            <img src="<?= $imageSrc !== '' ? admin_h($imageSrc) : '' ?>" class="img-fluid rounded border w-100" style="aspect-ratio: 1/1; object-fit: cover;">
+                            <?php if ($image !== ''): ?>
+                                <iframe src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview"
+                                    class="rounded border w-100" style="aspect-ratio: 1/1; border:none;" scrolling="no"
+                                    loading="lazy"></iframe>
+                            <?php else: ?>
+                                <div class="d-flex align-items-center justify-content-center bg-light text-secondary rounded border w-100"
+                                    style="aspect-ratio: 1/1;">
+                                    <i class="bi bi-image fs-1 opacity-25"></i>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="col-md-8">
                             <h4 class="fw-bold text-success mb-1"><?= admin_h((string) ($row['name'] ?? '')) ?></h4>
@@ -103,7 +110,8 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                             <div class="mb-3">
                                 <label class="form-label d-block text-secondary small">Loại hình áp dụng:</label>
                                 <?php foreach (($row['loai'] ?? []) as $l): ?>
-                                    <span class="badge bg-light text-primary border me-1 px-3 py-2"><?= admin_h((string) $l) ?></span>
+                                    <span
+                                        class="badge bg-light text-primary border me-1 px-3 py-2"><?= admin_h((string) $l) ?></span>
                                 <?php endforeach; ?>
                             </div>
                             <div class="p-3 bg-light rounded border-start border-4 border-primary">
@@ -117,20 +125,23 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <div class="section-title">Bảng giá chuyên sâu (<?= $pType === 'per_m2' ? 'Tính theo Diện tích' : 'Tính theo Gói' ?>)</div>
+                    <div class="section-title">Bảng giá chuyên sâu
+                        (<?= $pType === 'per_m2' ? 'Tính theo Diện tích' : 'Tính theo Gói' ?>)</div>
 
                     <?php if ($pType === 'per_m2'): ?>
                         <div class="row g-2 mb-4">
                             <div class="col-6 col-md-3">
                                 <div class="p-2 border rounded bg-light text-center">
                                     <small class="text-muted d-block">Giá cơ bản</small>
-                                    <span class="fw-bold text-primary"><?= number_format((float) ($pricing['base_price'] ?? 0)) ?>đ</span>
+                                    <span
+                                        class="fw-bold text-primary"><?= number_format((float) ($pricing['base_price'] ?? 0)) ?>đ</span>
                                 </div>
                             </div>
                             <div class="col-6 col-md-3">
                                 <div class="p-2 border rounded bg-light text-center">
                                     <small class="text-muted d-block">Giá tối thiểu</small>
-                                    <span class="fw-bold text-danger"><?= number_format((float) ($pricing['min_price'] ?? 0)) ?>đ</span>
+                                    <span
+                                        class="fw-bold text-danger"><?= number_format((float) ($pricing['min_price'] ?? 0)) ?>đ</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -182,7 +193,9 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
                                     <?php foreach (($pricing['packages'] ?? []) as $pkg): ?>
                                         <tr>
                                             <td class="ps-3 fw-bold"><?= admin_h((string) $pkg['name']) ?></td>
-                                            <td class="text-center text-primary fw-bold"><?= number_format((float) $pkg['price']) ?>đ</td>
+                                            <td class="text-center text-primary fw-bold">
+                                                <?= number_format((float) $pkg['price']) ?>đ
+                                            </td>
                                             <td class="text-center"><?= (int) $pkg['staff'] ?> người</td>
                                             <td class="text-center"><?= (float) $pkg['hours'] ?> giờ</td>
                                         </tr>

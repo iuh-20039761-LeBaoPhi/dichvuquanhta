@@ -1,17 +1,38 @@
 <!-- Admin Order Management Partial -->
 <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px; overflow: hidden;">
-    <div class="card-header bg-white py-4 border-0 d-flex justify-content-between align-items-center">
-        <div>
-            <h5 class="fw-800 mb-0">Quản lý Toàn bộ Đơn hàng</h5>
-            <p class="text-muted small mb-0">Theo dõi toàn diện mọi giao dịch trong hệ thống Thuê Xe</p>
-        </div>
-        <div class="d-flex gap-2">
-            <div class="input-group">
-                <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" class="form-control bg-light border-0" placeholder="Mã đơn / Tên khách..." id="orderSearchInput" onkeyup="filterOrders()">
+    <div class="card-header bg-white py-4 border-0">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="fw-800 mb-0">Quản lý Toàn bộ Đơn hàng</h5>
+                <p class="text-muted small mb-0">Theo dõi toàn diện mọi giao dịch trong hệ thống Thuê Xe</p>
             </div>
-            <button class="btn btn-primary rounded-pill px-3 fw-600" onclick="loadAllOrders()"><i class="fas fa-sync-alt me-2"></i>Tải lại</button>
+            <div class="d-flex gap-2">
+                <div class="input-group" style="width: 300px;">
+                    <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" class="form-control bg-light border-0" placeholder="Mã đơn / Tên khách..." id="orderSearchInput" onkeyup="filterOrders()">
+                </div>
+                <button class="btn btn-primary rounded-pill px-3 fw-600" onclick="loadAllOrders()"><i class="fas fa-sync-alt me-2"></i>Tải lại</button>
+            </div>
         </div>
+
+        <!-- Order Status Tabs -->
+        <ul class="nav nav-pills nav-fill bg-light p-1" style="border-radius: 12px; font-size: 0.85rem;">
+            <li class="nav-item">
+                <a class="nav-link active fw-bold" href="#" id="tabAll" onclick="switchOrderTab('all')">Tất cả <span class="badge bg-secondary ms-1" id="countAll">0</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold" href="#" id="tabNew" onclick="switchOrderTab('new')">Chưa nhận <span class="badge bg-warning text-dark ms-1" id="countNew">0</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold" href="#" id="tabDoing" onclick="switchOrderTab('doing')">Đang thuê <span class="badge bg-primary ms-1" id="countDoing">0</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold" href="#" id="tabDone" onclick="switchOrderTab('done')">Hoàn thành <span class="badge bg-success ms-1" id="countDone">0</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold" href="#" id="tabCancel" onclick="switchOrderTab('cancel')">Đã hủy <span class="badge bg-danger ms-1" id="countCancel">0</span></a>
+            </li>
+        </ul>
     </div>
 
     <div class="card-body p-0">
@@ -40,25 +61,45 @@
     'use strict';
     const TABLE = 'datlich_thuexe';
     let allOrders = [];
+    let currentTab = 'all';
+
+    window.switchOrderTab = function(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.card-header .nav-link').forEach(el => el.classList.remove('active'));
+        const tabMap = { 'all': 'tabAll', 'new': 'tabNew', 'doing': 'tabDoing', 'done': 'tabDone', 'cancel': 'tabCancel' };
+        if(tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
+        filterOrders();
+    };
 
     window.loadAllOrders = async function() {
         const tbody = document.getElementById('adminOrderBody');
         tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
         
         try {
-            allOrders = await DVQTKrud.listTable(TABLE, { limit: 1000 });
-            if(!allOrders || !allOrders.length) {
+            const rows = await DVQTKrud.listTable(TABLE, { limit: 1000 });
+            allOrders = (rows || []).sort((a, b) => b.id - a.id); // Sắp xếp mới nhất lên đầu
+            
+            if(!allOrders.length) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5">Chưa có dữ liệu đơn hàng.</td></tr>';
+                updateTabCounts();
                 return;
             }
 
-            renderOrders(allOrders);
+            filterOrders();
         } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi: ${e.message}</td></tr>`; }
     };
 
+    function updateTabCounts() {
+        document.getElementById('countAll').textContent = allOrders.length;
+        document.getElementById('countNew').textContent = allOrders.filter(o => !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte).length;
+        document.getElementById('countDoing').textContent = allOrders.filter(o => o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy).length;
+        document.getElementById('countDone').textContent = allOrders.filter(o => !!o.ngayhoanthanhthucte).length;
+        document.getElementById('countCancel').textContent = allOrders.filter(o => !!o.ngayhuy).length;
+    }
+
     function renderOrders(orders) {
         const tbody = document.getElementById('adminOrderBody');
-        tbody.innerHTML = orders.reverse().map(o => {
+        tbody.innerHTML = orders.map(o => {
             let statusBadge = '<span class="badge bg-warning text-dark bg-opacity-10 px-2 py-1 rounded-pill">Đang xác nhận</span>';
             if(o.ngayhuy) statusBadge = '<span class="badge bg-danger text-danger bg-opacity-10 px-2 py-1 rounded-pill">Đã hủy bỏ</span>';
             else if(o.ngayhoanthanhthucte) statusBadge = '<span class="badge bg-success text-success bg-opacity-10 px-2 py-1 rounded-pill">Hoàn thành</span>';
@@ -82,7 +123,6 @@
                 <td><div class="fw-bold text-primary">${ThueXeAdmin.formatCurrency(o.tong_tien)}</div></td>
                 <td class="pe-4 text-end">
                     <button class="btn btn-sm btn-light text-primary py-1 px-3 rounded-pill" onclick="viewOrderAdmin(${o.id})">Hóa đơn</button>
-                    <!-- Chức năng can thiệp đơn hàng (Hủy) đã bị vô hiệu hóa theo nguyên tắc quản trị -->
                 </td>
             </tr>`;
         }).join('');
@@ -90,16 +130,35 @@
 
     window.filterOrders = function() {
         const q = document.getElementById('orderSearchInput').value.toLowerCase().trim();
-        const filtered = allOrders.filter(o => {
-            const paddedId = String(o.id).padStart(7, '0');
-            const fullCode = 'tx' + paddedId;
-            return paddedId.includes(q) || 
-                   fullCode.includes(q) ||
-                   String(o.id).includes(q) || 
-                   (o.tenkhachhang && o.tenkhachhang.toLowerCase().includes(q)) ||
-                   (o.ten_xe && o.ten_xe.toLowerCase().includes(q));
-        });
+        
+        let filtered = allOrders;
+
+        // 1. Phân loại theo Tab
+        if (currentTab !== 'all') {
+            filtered = filtered.filter(o => {
+                if (currentTab === 'new') return !o.ngaynhan && !o.ngayhuy && !o.ngayhoanthanhthucte;
+                if (currentTab === 'doing') return o.ngaybatdauthucte && !o.ngayhoanthanhthucte && !o.ngayhuy;
+                if (currentTab === 'done') return !!o.ngayhoanthanhthucte;
+                if (currentTab === 'cancel') return !!o.ngayhuy;
+                return true;
+            });
+        }
+
+        // 2. Tìm kiếm từ khóa
+        if (q) {
+            filtered = filtered.filter(o => {
+                const paddedId = String(o.id).padStart(7, '0');
+                const fullCode = 'tx' + paddedId;
+                return paddedId.includes(q) || 
+                       fullCode.includes(q) ||
+                       String(o.id).includes(q) || 
+                       (o.tenkhachhang && o.tenkhachhang.toLowerCase().includes(q)) ||
+                       (o.ten_xe && o.ten_xe.toLowerCase().includes(q));
+            });
+        }
+
         renderOrders(filtered);
+        updateTabCounts();
     }
 
     window.viewOrderAdmin = function(id) {

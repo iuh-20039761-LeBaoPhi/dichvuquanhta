@@ -112,7 +112,7 @@
             if (stored !== password) throw new Error('Mật khẩu không chính xác');
 
             const idDichvu = String(user.id_dichvu || '0');
-            const role = (idDichvu === '0' || idDichvu === '') ? 'customer' : 'provider';
+            const role = 'customer'; // Mặc định là khách hàng, các module sẽ tự kiểm tra id_dichvu để xác định NCC
 
             const profile = {
                 id: user.id,

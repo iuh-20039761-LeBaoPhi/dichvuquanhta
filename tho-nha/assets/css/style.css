@@ -153,6 +153,7 @@ body {
     box-shadow: 0 1px 0 rgba(0,0,0,0.07);
     transition: var(--transition);
     padding: 10px 0;
+    z-index: 9999 !important;
 }
 
 .navbar.scrolled {
@@ -182,8 +183,8 @@ body {
 }
 
 .brand-text {
-    font-size: 1.45rem;
-    font-weight: 800;
+    font-size: 1.2rem;
+    font-weight: 700;
     background: var(--gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -191,10 +192,10 @@ body {
 }
 
 .nav-link {
-    font-weight: 500;
-    font-size: 0.93rem;
+    font-weight: 600;
+    font-size: 0.95rem;
     color: var(--text-medium) !important;
-    padding: 8px 14px !important;
+    padding: 8px 12px !important;
     border-radius: var(--radius-sm);
     transition: var(--transition);
 }

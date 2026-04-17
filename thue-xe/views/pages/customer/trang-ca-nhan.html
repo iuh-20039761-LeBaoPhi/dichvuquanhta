@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang cá nhân | Thuê Xe</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../../assets/images/thue-xe-logo-header-navigation.jpg">
     <!-- Modern Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -22,79 +26,301 @@
             --radius-lg: 16px;
         }
 
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            font-size: 14px;
+            overflow-x: hidden;
+        }
 
         /* Sidebar */
-        .sidebar { width: 260px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease, width 0.3s ease; }
-        .sidebar-header { padding: 32px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .brand-box { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
-        .logo-box { width: 40px; height: 40px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
-        .logo-box img { width: 100%; height: 100%; object-fit: cover; }
-        .brand-name { font-weight: 800; font-size: 1.3rem; }
-
-        .nav-group { padding: 20px 0; flex: 1; }
-        .nav-label { padding: 0 24px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
-        .nav-link { 
-            display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: #94a3b8; text-decoration: none; 
-            transition: 0.2s; margin: 2px 16px; border-radius: 10px;
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            transition: transform 0.3s ease, width 0.3s ease;
         }
-        .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.05); }
-        .nav-link.active { background: var(--primary); color: #fff; font-weight: 600; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
-        .nav-link i { font-size: 1.1rem; width: 20px; text-align: center; }
+
+        .sidebar-header {
+            padding: 32px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-box {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-name {
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+
+        .nav-group {
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .nav-label {
+            padding: 0 24px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.2s;
+            margin: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
 
         /* Main */
-        .main-wrapper { flex: 1; margin-left: 260px; min-width: 0; display: flex; flex-direction: column; }
-        .top-bar { 
-            height: 70px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); 
-            display: flex; align-items: center; justify-content: space-between; padding: 0 32px; 
-            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 900;
+        .main-wrapper {
+            flex: 1;
+            margin-left: 260px;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
         }
-        .user-pill { display: flex; align-items: center; gap: 10px; padding: 6px 16px; background: #fff; border: 1px solid var(--border); border-radius: 50px; }
-        .user-avatar { width: 32px; height: 32px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
-        
-        .content-area { padding: 32px; flex: 1; }
+
+        .top-bar {
+            height: 70px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 16px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .content-area {
+            padding: 32px;
+            flex: 1;
+        }
 
         /* Hamburger button - hidden on desktop */
-        .btn-hamburger { display: none; background: none; border: none; font-size: 1.4rem; color: var(--text-main); cursor: pointer; padding: 4px 8px; }
+        .btn-hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 4px 8px;
+        }
 
         /* Mobile overlay */
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; transition: opacity 0.3s; }
-        .sidebar-overlay.active { display: block; opacity: 1; }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
 
         /* === TABLET: Sidebar thu gọn icon-only === */
         @media (max-width: 1100px) {
-            .sidebar { width: 72px; }
-            .sidebar .brand-name, .sidebar .nav-label, .sidebar .nav-link span { display: none; }
-            .sidebar .nav-link { justify-content: center; margin: 4px 8px; padding: 12px 0; }
-            .sidebar .brand-box { justify-content: center; }
-            .sidebar-header { padding: 24px 12px; }
-            .main-wrapper { margin-left: 72px; }
-            .content-area { padding: 24px; }
+            .sidebar {
+                width: 72px;
+            }
+
+            .sidebar.mobile-open .brand-name, 
+            .sidebar.mobile-open .brand-tag, 
+            .sidebar.mobile-open .nav-label { display: block; }
+            .sidebar.mobile-open .nav-link span { display: inline-block; }
+
+            .sidebar .brand-name,
+            .sidebar .nav-label,
+            .sidebar .nav-link span {
+                display: none;
+            }
+
+            .sidebar .nav-link {
+                justify-content: flex-start;
+                margin: 2px 8px;
+                padding: 12px 16px;
+            }
+            .sidebar .brand-box {
+                justify-content: flex-start;
+            }
+
+            .sidebar-header {
+                padding: 24px 12px;
+            }
+
+            .main-wrapper {
+                margin-left: 72px;
+            }
+
+            .content-area {
+                padding: 24px;
+            }
         }
 
         /* === MOBILE: Sidebar ẩn hoàn toàn, có hamburger === */
         @media (max-width: 768px) {
-            .sidebar { width: 280px; transform: translateX(-100%); }
-            .sidebar.mobile-open { transform: translateX(0); }
-            .sidebar .brand-name, .sidebar .nav-label, .sidebar .nav-link span { display: inline; }
-            .sidebar .nav-link { justify-content: flex-start; margin: 2px 16px; padding: 12px 24px; }
-            .sidebar .brand-box { justify-content: flex-start; }
-            .sidebar-header { padding: 32px 24px; }
-            .main-wrapper { margin-left: 0; }
-            .top-bar { padding: 0 16px; height: 60px; }
-            .content-area { padding: 16px; }
-            .btn-hamburger { display: block; }
-            .user-pill span { display: none; }
+            .sidebar {
+                width: 280px;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .sidebar .brand-name,
+            .sidebar .nav-label {
+                display: block;
+            }
+            .sidebar .nav-link span {
+                display: inline-block;
+            }
+
+            .sidebar .nav-link {
+                justify-content: flex-start;
+                margin: 2px 16px;
+                padding: 12px 24px;
+            }
+
+            .sidebar .brand-box {
+                justify-content: flex-start;
+            }
+
+            .sidebar-header {
+                padding: 32px 24px;
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+
+            .top-bar {
+                padding: 0 16px;
+                height: 60px;
+            }
+
+            .content-area {
+                padding: 16px;
+            }
+
+            .btn-hamburger {
+                display: block;
+            }
+
+            .user-pill span {
+                display: none;
+            }
         }
 
         /* === SMALL MOBILE === */
         @media (max-width: 480px) {
-            .content-area { padding: 12px; }
-            .top-bar h5 { font-size: 0.95rem; }
+            .content-area {
+                padding: 12px;
+            }
+
+            .top-bar h5 {
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Mobile overlay -->
@@ -114,7 +340,7 @@
             <a href="#" class="nav-link active" data-page="dashboard">
                 <i class="fas fa-history"></i><span>Lịch sử đặt xe</span>
             </a>
-            <a href="#" class="nav-link" data-page="tai-khoan">
+            <a href="../../../../public/trang-ca-nhan.html" class="nav-link">
                 <i class="fas fa-user-circle"></i><span>Hồ sơ cá nhân</span>
             </a>
             <hr class="mx-3 opacity-10">
@@ -139,7 +365,7 @@
             </div>
         </header>
         <div class="content-area" id="pageContent">
-             <!-- Dynamic content -->
+            <!-- Dynamic content -->
         </div>
     </main>
 
@@ -158,4 +384,5 @@
         });
     </script>
 </body>
+
 </html>

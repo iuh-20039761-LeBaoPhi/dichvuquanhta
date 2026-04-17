@@ -26,9 +26,14 @@
             return;
         }
 
-        if (requiredRole && session.role !== requiredRole) {
-            // Nếu sai vai trò, tự động điều chuyển về đúng trang cá nhân
-            const target = session.role === 'provider' ? 'provider/trang-ca-nhan.html' : 'customer/trang-ca-nhan.html';
+        // Xác định vai trò THỰC TẾ đối với mảng Thuê Xe (Effective Role)
+        const serviceIds = String(session.id_dichvu || '0').split(',');
+        const isCarProvider = serviceIds.includes('10') || session.role === 'admin';
+        const effectiveRole = isCarProvider ? 'provider' : 'customer';
+
+        // Nếu trang hiện tại không khớp với vai trò thực tế, tiến hành điều chuyển
+        if (requiredRole && effectiveRole !== requiredRole) {
+            const target = effectiveRole === 'provider' ? 'provider/trang-ca-nhan.html' : 'customer/trang-ca-nhan.html';
             window.location.href = ROOT + '/thue-xe/views/pages/' + target;
             return;
         }

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đối tác Thuê Xe | Quản lý kinh doanh</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../../assets/images/thue-xe-logo-header-navigation.jpg">
     <!-- Modern Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,19 +36,19 @@
         .sidebar-header { padding: 32px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .brand-box { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
         .logo-box { width: 42px; height: 42px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .logo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-box img { width: 100%; height: 100%; object-fit: contain; }
         .brand-name { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.5px; line-height: 1; }
         .brand-tag { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
         .nav-group { padding: 20px 0; flex: 1; }
         .nav-label { padding: 0 24px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
         .nav-link { 
-            display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: #94a3b8; text-decoration: none; 
-            transition: 0.2s; margin: 2px 16px; border-radius: 10px;
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #94a3b8; text-decoration: none; 
+            transition: 0.2s; margin: 2px 8px; border-radius: 10px;
         }
         .nav-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
         .nav-link.active { background: var(--primary); color: #fff; font-weight: 600; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
-        .nav-link i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .nav-link i { font-size: 1.1rem; width: 24px; text-align: center; }
 
         .logout-area { padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
         .logout-btn { 
@@ -81,14 +83,18 @@
         @media (max-width: 1100px) {
             .sidebar { width: 80px; }
             .sidebar .brand-name, .sidebar .brand-tag, .sidebar .nav-link span, .sidebar .nav-label { display: none; }
-            .sidebar .nav-link { justify-content: center; margin: 4px 10px; padding: 12px 0; }
-            .sidebar .brand-box { justify-content: center; }
+            .sidebar .nav-link { justify-content: flex-start; margin: 2px 8px; padding: 12px 16px; }
+            .sidebar .brand-box { justify-content: flex-start; }
             .main-wrapper { margin-left: 80px; }
         }
 
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); width: 280px; }
             .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar.mobile-open .brand-name, 
+            .sidebar.mobile-open .brand-tag, 
+            .sidebar.mobile-open .nav-link span, 
+            .sidebar.mobile-open .nav-label { display: inline-block; }
             .main-wrapper { margin-left: 0; }
             .top-bar { padding: 0 20px; }
             .content-area { padding: 20px; }
@@ -141,9 +147,9 @@
             </a>
 
             <div class="nav-label" style="margin-top:24px;">Hệ thống</div>
-            <a href="#" class="nav-link" data-page="tai-khoan">
+            <a href="../../../../public/trang-ca-nhan.html" class="nav-link">
                 <i class="fa-solid fa-user-circle"></i>
-                <span>Thông tin đối tác</span>
+                <span>Thông tin tài khoản</span>
             </a>
             <a href="../../../index.html" class="nav-link">
                 <i class="fa-solid fa-house"></i>

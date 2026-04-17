@@ -19,13 +19,13 @@ const ThoNhaOrderUI = (() => {
         if (role === 'admin') {
             const orderCode = `<td class="mono"><strong>${order.orderCode}</strong></td>`;
             const providerName = order.provider.id ? utils.escapeHtml(order.provider.name) : '<em class="text-muted">Chưa nhận</em>';
-            const actionBtn = `<td class="detail-cell">${utils.buildDetailActionButton(order.id)} <button class="btn btn-sm btn-outline-success ms-1" onclick="updateOrderStatus(${order.id})"><i class="fas fa-edit"></i></button></td>`;
+            const actionBtn = `<td class="detail-cell"><button class="btn btn-sm btn-outline-primary" data-action="view-detail" data-id="${order.id}" title="Xem chi tiết"><i class="fas fa-eye"></i></button></td>`;
             return `
                 <tr>
                     ${orderCode}
                     <td>${utils.escapeHtml(order.customer.name)}</td>
                     <td>${utils.escapeHtml(order.customer.phone)}</td>
-                    <td><div class="small fw-bold">${utils.escapeHtml(order.service)}</div></td>
+                    <td><div class="cell-service-text small fw-bold" title="${utils.escapeHtml(order.service)}">${utils.escapeHtml(order.service)}</div></td>
                     <td><div class="small text-muted">${providerName}</div></td>
                     <td><span class="text-danger fw-bold small">${utils.formatCurrencyVn(order.total_price)}</span></td>
                     ${statusBadge}
@@ -39,7 +39,7 @@ const ThoNhaOrderUI = (() => {
         if (role === 'provider') {
             const orderCode = `<td class="mono"><strong>${order.orderCode}</strong></td>`;
             const info = `<td><strong>${utils.escapeHtml(order.customer.name)}</strong><span class="sub-note">${utils.escapeHtml(order.customer.phone)}</span></td>`;
-            const service = `<td><strong>${utils.escapeHtml(order.service)}</strong></td>`;
+            const service = `<td><div class="cell-service-text fw-bold" title="${utils.escapeHtml(order.service)}">${utils.escapeHtml(order.service)}</div></td>`;
             const time = `<td>${utils.formatDateTime(order.createdAt)}</td>`;
             const actionBtn = `<td class="detail-cell">${utils.buildDetailActionButton(order.id)}</td>`;
             return `<tr>${orderCode}${info}${service}${time}${statusBadge}${actionBtn}</tr>`;
