@@ -112,17 +112,18 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label">Hình ảnh</label>
-                                <div class="border rounded bg-light d-flex align-items-center justify-content-center mb-2"
+                                <div class="border rounded bg-light d-flex align-items-center justify-content-center mb-2 position-relative"
                                     style="aspect-ratio: 1/1; overflow: hidden;">
                                     <?php
                                     $image = trim((string) ($row['image'] ?? ''));
-                                    $imageSrc = $image;
-                                    if ($imageSrc !== '' && !preg_match('/^https?:\/\//i', $imageSrc)) {
-                                        $imageSrc = '../' . ltrim($imageSrc, '/');
-                                    }
                                     ?>
-                                    <img id="imagePreview" src="<?= $imageSrc !== '' ? admin_h($imageSrc) : '' ?>" class="img-fluid <?= $imageSrc === '' ? 'd-none' : '' ?>" style="object-fit: cover;">
-                                    <i id="noImageText" class="bi bi-image text-muted fs-1 <?= $imageSrc !== '' ? 'd-none' : '' ?>"></i>
+                                    
+                                    <?php if ($image !== ''): ?>
+                                        <iframe id="driveFrame" src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview" class="w-100 h-100 position-absolute" style="top:0; left:0; border:none;" scrolling="no"></iframe>
+                                    <?php endif; ?>
+                                    
+                                    <img id="imagePreview" src="" class="img-fluid w-100 h-100 d-none position-absolute" style="object-fit: cover; top:0; left:0; z-index:10;" alt="Preview">
+                                    <i id="noImageText" class="bi bi-image text-muted fs-1 <?= $image !== '' ? 'd-none' : '' ?>"></i>
                                 </div>
                                 <input type="file" name="image_file" id="imageInput" class="form-control form-control-sm" accept="image/*">
                             </div>
@@ -339,6 +340,8 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
                     document.getElementById('imagePreview').src = e.target.result;
                     document.getElementById('imagePreview').classList.remove('d-none');
                     document.getElementById('noImageText').classList.add('d-none');
+                    const driveFrame = document.getElementById('driveFrame');
+                    if (driveFrame) driveFrame.classList.add('d-none');
                 };
                 reader.readAsDataURL(file);
             }

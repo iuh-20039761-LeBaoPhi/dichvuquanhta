@@ -224,7 +224,7 @@ table td {
 									<td class="fw-semibold text-primary">#<?= (int)($row['id'] ?? 0) ?></td>
 									<td>
 										<?php if (!empty($row['image'])): ?>
-											<img src="../<?= admin_h($row['image']) ?>" alt="<?= admin_h($row['alt'] ?? $row['name'] ?? '') ?>" style="width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid #eee;" loading="lazy">
+											<iframe src="https://drive.google.com/file/d/<?= urlencode($row['image']) ?>/preview" style="width:48px;height:48px;border:none;border-radius:8px;pointer-events:none;" scrolling="no" loading="lazy"></iframe>
 										<?php else: ?>
 											<span class="text-secondary small">(Không có ảnh)</span>
 										<?php endif; ?>
@@ -262,7 +262,7 @@ table td {
 					<?php foreach ($filtered as $row): ?>
 						<div class="service-item-mobile shadow-sm" onclick="location.href='chi-tiet-dich-vu.php?id=<?= urlencode((string)($row['id'] ?? '')) ?>'">
 							<?php if (!empty($row['image'])): ?>
-								<img src="../<?= admin_h($row['image']) ?>" alt="<?= admin_h($row['name'] ?? '') ?>" class="service-img-mobile">
+								<iframe src="https://drive.google.com/file/d/<?= urlencode($row['image']) ?>/preview" class="service-img-mobile" style="border:none;pointer-events:none;" scrolling="no" loading="lazy"></iframe>
 							<?php else: ?>
 								<div class="service-img-mobile d-flex align-items-center justify-content-center bg-light text-secondary">
 									<i class="bi bi-image" style="font-size: 1.5rem;"></i>

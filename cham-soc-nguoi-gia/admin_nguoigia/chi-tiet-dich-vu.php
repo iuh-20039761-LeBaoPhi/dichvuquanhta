@@ -34,7 +34,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 	.card {
 		transition: transform 0.2s ease, box-shadow 0.2s ease;
 		border: 1px solid #dcfce7 !important;
-        border-radius: 14px !important;
+		border-radius: 14px !important;
 	}
 
 	.card:hover {
@@ -50,7 +50,7 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 	.service-image-container {
 		background: #ffffff;
 		position: relative;
-        border: 1px solid #dcfce7 !important;
+		border: 1px solid #dcfce7 !important;
 	}
 
 	.service-image-container img {
@@ -68,8 +68,8 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 	.custom-table thead th {
 		border-top: none;
 		letter-spacing: 0.5px;
-        background-color: #f0fdf4 !important;
-        color: #14532d !important;
+		background-color: #f0fdf4 !important;
+		color: #14532d !important;
 	}
 
 	.custom-table tbody tr {
@@ -110,10 +110,6 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 <?php else: ?>
 	<?php
 	$image = trim((string) ($row['image'] ?? ''));
-	$imageSrc = $image;
-	if ($imageSrc !== '' && !preg_match('/^https?:\/\//i', $imageSrc)) {
-		$imageSrc = '../' . ltrim($imageSrc, '/');
-	}
 	?>
 	<div class="row compact-row">
 		<!-- Box 1: Thông tin cơ bản & Ảnh -->
@@ -131,10 +127,9 @@ admin_render_layout_start('Chi Tiết Dịch Vụ', 'services', $admin);
 					<div class="row g-3 mb-3">
 						<div class="col-md-4">
 							<div class="service-image-container rounded-3 overflow-hidden shadow-sm border">
-								<?php if ($imageSrc !== ''): ?>
-									<img src="<?= admin_h($imageSrc) ?>" class="img-fluid w-100"
-										style="object-fit: cover; aspect-ratio: 1/1;"
-										alt="<?= admin_h((string) ($row['alt'] ?? 'Dịch vụ')) ?>">
+								<?php if ($image !== ''): ?>
+									<iframe src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview" class="w-100"
+										style="aspect-ratio: 1/1; border:none;" scrolling="no" loading="lazy"></iframe>
 								<?php else: ?>
 									<div class="d-flex align-items-center justify-content-center bg-light text-secondary"
 										style="height: 180px;">

@@ -114,20 +114,19 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 							<!-- Phân bổ giống chi tiết -->
 							<div class="col-md-5 d-flex flex-column">
 								<label class="form-label">Hình ảnh dịch vụ</label>
-								<div class="service-image-container rounded-2 overflow-hidden border mb-2 bg-light d-flex align-items-center justify-content-center flex-grow-1"
+								<div class="service-image-container rounded-2 overflow-hidden border mb-2 bg-light d-flex align-items-center justify-content-center flex-grow-1 position-relative"
 									style="aspect-ratio: 1/1; min-height: 200px;">
 									<?php
 									$image = trim((string) ($row['image'] ?? ''));
-									$imageSrc = $image;
-									if ($imageSrc !== '' && !preg_match('/^https?:\/\//i', $imageSrc)) {
-										$imageSrc = '../' . ltrim($imageSrc, '/');
-									}
 									?>
-									<img id="imagePreview" src="<?= $imageSrc !== '' ? admin_h($imageSrc) : '' ?>"
-										class="img-fluid w-100 h-100 <?= $imageSrc === '' ? 'd-none' : '' ?>"
-										style="object-fit: cover;" alt="Preview">
-									<div id="noImageText"
-										class="text-secondary text-center p-2 <?= $imageSrc !== '' ? 'd-none' : '' ?>">
+									
+									<?php if ($image !== ''): ?>
+										<iframe id="driveFrame" src="https://drive.google.com/file/d/<?= urlencode($image) ?>/preview" class="w-100 h-100 position-absolute" style="top:0; left:0; border:none;" scrolling="no"></iframe>
+									<?php endif; ?>
+									
+									<img id="imagePreview" src="" class="img-fluid w-100 h-100 d-none position-absolute" style="object-fit: cover; top:0; left:0; z-index:10;" alt="Preview">
+									
+									<div id="noImageText" class="text-secondary text-center p-2 <?= $image !== '' ? 'd-none' : '' ?>">
 										<i class="bi bi-image fs-2 opacity-25 d-block"></i>
 										<span class="small d-block mt-1">Xem trước ảnh</span>
 									</div>
@@ -260,6 +259,8 @@ admin_render_layout_start('Sửa Dịch Vụ', 'services', $admin);
 						imagePreview.src = e.target.result;
 						imagePreview.classList.remove('d-none');
 						noImageText.classList.add('d-none');
+						var driveFrame = document.getElementById('driveFrame');
+						if (driveFrame) driveFrame.classList.add('d-none');
 					}
 					reader.readAsDataURL(file);
 				}
