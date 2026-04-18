@@ -258,8 +258,17 @@ $requestedId = trim((string) ($_GET['id'] ?? ''));
                 grid-template-columns: 1fr;
             }
 
+            .detail-hero-head {
+                align-items: flex-start;
+            }
+
             .detail-hero h1 {
                 font-size: 28px;
+            }
+
+            .detail-card,
+            .detail-hero {
+                padding: 18px;
             }
         }
     </style>

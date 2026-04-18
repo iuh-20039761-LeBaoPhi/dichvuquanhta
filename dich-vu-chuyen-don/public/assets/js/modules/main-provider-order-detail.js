@@ -67,6 +67,111 @@ const providerOrderDetailModule = (function (window, document) {
       .filter(Boolean);
   }
 
+  function joinPipeValues(values) {
+    return (Array.isArray(values) ? values : [])
+      .map((item) => normalizeText(item))
+      .filter(Boolean)
+      .join(" | ");
+  }
+
+  function mergeAttachmentValues(existingValues, nextValues) {
+    const merged = [];
+    const seen = new Set();
+
+    [...(Array.isArray(existingValues) ? existingValues : []), ...(Array.isArray(nextValues) ? nextValues : [])]
+      .map((item) => normalizeText(item))
+      .filter(Boolean)
+      .forEach((item) => {
+        if (seen.has(item)) return;
+        seen.add(item);
+        merged.push(item);
+      });
+
+    return merged;
+  }
+
+  function resolveAttachmentUrls(value) {
+    const normalized = normalizeText(value);
+    if (!normalized) {
+      return {
+        fileId: "",
+        url: "",
+        viewUrl: "",
+        thumbnailUrl: "",
+      };
+    }
+
+    if (typeof core.getDriveResolvedUrls === "function") {
+      const resolved = core.getDriveResolvedUrls(normalized);
+      return {
+        fileId: normalizeText(resolved?.fileId || ""),
+        url: normalizeText(resolved?.downloadUrl || resolved?.url || normalized),
+        viewUrl: normalizeText(resolved?.viewUrl || resolved?.url || normalized),
+        thumbnailUrl: normalizeText(
+          resolved?.thumbnailUrl || resolved?.url || normalized,
+        ),
+      };
+    }
+
+    return {
+      fileId: "",
+      url: normalized,
+      viewUrl: normalized,
+      thumbnailUrl: normalized,
+    };
+  }
+
+  function getAttachmentHref(value) {
+    const resolved = resolveAttachmentUrls(value);
+    return resolved.viewUrl || resolved.url;
+  }
+
+  function getAttachmentPreviewUrl(value, type) {
+    const resolved = resolveAttachmentUrls(value);
+    if (!resolved.url) return "";
+    if (type === "image") {
+      return resolved.thumbnailUrl || resolved.url;
+    }
+    return resolved.url;
+  }
+
+  function getAttachmentFileName(value) {
+    const normalized = normalizeText(value);
+    if (!normalized) return "";
+
+    const driveFileId =
+      typeof core.getDriveFileIdFromUrl === "function"
+        ? core.getDriveFileIdFromUrl(normalized)
+        : "";
+    if (driveFileId) {
+      return `Google Drive • ${driveFileId}`;
+    }
+
+    const sanitized = normalized.split("?")[0].split("#")[0];
+    const segments = sanitized.split(/[\\/]/).filter(Boolean);
+    return segments[segments.length - 1] || normalized;
+  }
+
+  function bindFileSummary(input, output, emptyText) {
+    if (!input || !output) return;
+
+    const refresh = () => {
+      const files = Array.from(input.files || []);
+      output.textContent = files.length
+        ? `Đã chọn: ${files.map((file) => file.name).join(", ")}`
+        : emptyText;
+    };
+
+    input.addEventListener("change", refresh);
+    refresh();
+  }
+
+  function collectFiles(...inputs) {
+    return inputs.flatMap((input) =>
+      Array.from(input?.files || []).filter((file) => file instanceof File),
+    );
+  }
+
   function parseNumber(value) {
     if (value == null || value === "") return 0;
     const normalized = String(value).replace(",", ".").replace(/[^\d.-]/g, "");
@@ -375,39 +480,64 @@ const providerOrderDetailModule = (function (window, document) {
     return rows.join("");
   }
 
-  function renderAttachmentGallery(detail) {
-    const order = detail?.order || {};
+  function renderAttachmentGallery(imageItems, videoItems, options = {}) {
+    const imageLabelPrefix = options?.imageLabelPrefix || "Ảnh hiện trường";
+    const videoLabelPrefix = options?.videoLabelPrefix || "Video hiện trường";
+    const emptyMessage =
+      options?.emptyMessage ||
+      "Chưa có tài liệu hiện trường nào được gửi kèm cho đơn hàng này.";
     const mediaItems = [
-      ...(Array.isArray(order.image_attachments) ? order.image_attachments : []).map((item, index) => ({
+      ...(Array.isArray(imageItems) ? imageItems : []).map((item, index) => ({
         type: "image",
-        label: `Ảnh mặt bằng ${index + 1}`,
+        label: `${imageLabelPrefix} ${index + 1}`,
         value: item,
       })),
-      ...(Array.isArray(order.video_attachments) ? order.video_attachments : []).map((item, index) => ({
+      ...(Array.isArray(videoItems) ? videoItems : []).map((item, index) => ({
         type: "video",
-        label: `Video mặt bằng ${index + 1}`,
+        label: `${videoLabelPrefix} ${index + 1}`,
         value: item,
       })),
     ].filter((item) => normalizeText(item.value));
 
     if (!mediaItems.length) {
-      return '<div class="standalone-order-note-panel"><p>Chưa có tài liệu hiện trường nào được gửi kèm cho đơn hàng này.</p></div>';
+      return `<div class="standalone-order-note-panel"><p>${escapeHtml(
+        emptyMessage,
+      )}</p></div>`;
     }
 
     return `
       <div class="standalone-order-media-grid">
         ${mediaItems
-          .map(
-            (item) => `
-              <div class="standalone-order-media-item">
-                <div class="standalone-order-item-icon">
-                  <i class="${escapeHtml(item.type === "video" ? "fa-solid fa-video" : "fa-solid fa-image")}"></i>
-                </div>
+          .map((item) => {
+            const attachmentValue = normalizeText(item.value);
+            const attachmentHref = getAttachmentHref(attachmentValue);
+            const previewUrl = getAttachmentPreviewUrl(
+              attachmentValue,
+              item.type,
+            );
+            const attachmentName =
+              getAttachmentFileName(attachmentValue) || attachmentValue;
+            const mediaPreview =
+              item.type === "image" && previewUrl
+                ? `<img src="${escapeHtml(previewUrl)}" alt="${escapeHtml(item.label)}" />`
+                : item.type === "video" && previewUrl
+                  ? `<video src="${escapeHtml(previewUrl)}" controls preload="metadata"></video>`
+                  : `<div class="standalone-order-item-icon">
+                      <i class="${escapeHtml(item.type === "video" ? "fa-solid fa-video" : "fa-solid fa-image")}"></i>
+                    </div>`;
+
+            return `
+              <a class="standalone-order-media-item" href="${escapeHtml(
+                attachmentHref || "#",
+              )}" target="_blank" rel="noreferrer">
+                ${mediaPreview}
                 <strong>${escapeHtml(item.label)}</strong>
-                <span>${escapeHtml(item.value)}</span>
-              </div>
-            `,
-          )
+                <span title="${escapeHtml(attachmentValue)}">${escapeHtml(
+                  attachmentName,
+                )}</span>
+              </a>
+            `;
+          })
           .join("")}
       </div>
     `;
@@ -521,8 +651,28 @@ const providerOrderDetailModule = (function (window, document) {
         summary: normalizeText(row?.ghi_chu || ""),
         access_conditions: splitPipeValues(row?.dieu_kien_tiep_can),
         service_details: splitPipeValues(row?.chi_tiet_dich_vu),
+        booking_image_attachments: splitPipeValues(row?.anh_dinh_kem),
+        booking_video_attachments: splitPipeValues(row?.video_dinh_kem),
         image_attachments: splitPipeValues(row?.anh_dinh_kem),
         video_attachments: splitPipeValues(row?.video_dinh_kem),
+        customer_feedback_image_attachments: splitPipeValues(
+          row?.customer_feedback_anh_dinh_kem ||
+            row?.customer_feedback_image_attachments,
+        ),
+        customer_feedback_video_attachments: splitPipeValues(
+          row?.customer_feedback_video_dinh_kem ||
+            row?.customer_feedback_video_attachments,
+        ),
+        provider_report_image_attachments: splitPipeValues(
+          row?.provider_report_anh_dinh_kem ||
+            row?.provider_note_anh_dinh_kem ||
+            row?.provider_report_image_attachments,
+        ),
+        provider_report_video_attachments: splitPipeValues(
+          row?.provider_report_video_dinh_kem ||
+            row?.provider_note_video_dinh_kem ||
+            row?.provider_report_video_attachments,
+        ),
         provider_note: normalizeText(row?.provider_note || ""),
         customer_feedback: normalizeText(row?.customer_feedback || ""),
         customer_rating: parseNumber(row?.customer_rating || 0),
@@ -618,9 +768,10 @@ const providerOrderDetailModule = (function (window, document) {
     );
   }
 
-  async function saveProviderNote(detail, note) {
+  async function saveProviderNote(detail, note, payload = {}) {
     await updateBookingAction(detail, "note", {
       provider_note: normalizeText(note || ""),
+      ...payload,
     });
   }
 
@@ -690,6 +841,16 @@ const providerOrderDetailModule = (function (window, document) {
     const safeRating = Number.isFinite(rating)
       ? Math.min(5, Math.max(0, Math.round(rating)))
       : 0;
+    const feedbackImageAttachments = Array.isArray(
+      detail?.order?.customer_feedback_image_attachments,
+    )
+      ? detail.order.customer_feedback_image_attachments
+      : [];
+    const feedbackVideoAttachments = Array.isArray(
+      detail?.order?.customer_feedback_video_attachments,
+    )
+      ? detail.order.customer_feedback_video_attachments
+      : [];
 
     return `
       <section class="standalone-order-block">
@@ -723,6 +884,16 @@ const providerOrderDetailModule = (function (window, document) {
             <p class="standalone-order-note-text">${escapeHtml(
               feedback || "Chưa có phản hồi từ khách hàng cho đơn hàng này.",
             )}</p>
+            ${renderAttachmentGallery(
+              feedbackImageAttachments,
+              feedbackVideoAttachments,
+              {
+                imageLabelPrefix: "Ảnh phản hồi",
+                videoLabelPrefix: "Video phản hồi",
+                emptyMessage:
+                  "Chưa có ảnh hoặc video phản hồi từ khách hàng.",
+              },
+            )}
           </article>
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
@@ -740,10 +911,19 @@ const providerOrderDetailModule = (function (window, document) {
 
   function renderProviderNoteBlock(detail) {
     const note = normalizeText(detail?.order?.provider_note || "");
+    const providerReportImageAttachments = Array.isArray(
+      detail?.order?.provider_report_image_attachments,
+    )
+      ? detail.order.provider_report_image_attachments
+      : [];
+    const providerReportVideoAttachments = Array.isArray(
+      detail?.order?.provider_report_video_attachments,
+    )
+      ? detail.order.provider_report_video_attachments
+      : [];
     const milestones = getMilestones(detail);
     const canEditNote =
-      !!(milestones.acceptedAt || milestones.startedAt) &&
-      !milestones.completedAt &&
+      !!(milestones.acceptedAt || milestones.startedAt || milestones.completedAt) &&
       !milestones.cancelledAt;
     const helperText = canEditNote
       ? "Cập nhật tiến độ, hiện trạng, kết quả xử lý hoặc chú thích cần khách hàng theo dõi."
@@ -768,6 +948,16 @@ const providerOrderDetailModule = (function (window, document) {
             <p class="standalone-order-note-text">${escapeHtml(
               note || "Nhà cung cấp chưa cập nhật ghi chú xử lý cho đơn hàng này.",
             )}</p>
+            ${renderAttachmentGallery(
+              providerReportImageAttachments,
+              providerReportVideoAttachments,
+              {
+                imageLabelPrefix: "Ảnh báo cáo",
+                videoLabelPrefix: "Video báo cáo",
+                emptyMessage:
+                  "Chưa có ảnh hoặc video báo cáo từ nhà cung cấp.",
+              },
+            )}
           </article>
           <article class="standalone-order-subcard">
             <div class="standalone-order-subcard-head">
@@ -784,6 +974,22 @@ const providerOrderDetailModule = (function (window, document) {
                       <span>Nội dung báo cáo</span>
                       <textarea name="provider_note" rows="5" placeholder="${escapeHtml(helperText)}">${escapeHtml(note)}</textarea>
                     </label>
+                    <div class="standalone-order-upload-grid">
+                      <label class="standalone-order-upload-zone standalone-order-upload-zone-image">
+                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
+                        <strong>Gửi ảnh báo cáo</strong>
+                        <span class="standalone-order-upload-copy">Ảnh báo cáo sẽ được lưu riêng trong phần media báo cáo nhà cung cấp.</span>
+                        <input type="file" name="provider_note_image" accept="image/*" multiple hidden />
+                        <span class="standalone-order-upload-meta" data-provider-image-summary>Chưa chọn ảnh báo cáo.</span>
+                      </label>
+                      <label class="standalone-order-upload-zone standalone-order-upload-zone-video">
+                        <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
+                        <strong>Gửi video báo cáo</strong>
+                        <span class="standalone-order-upload-copy">Video báo cáo sẽ được lưu riêng trong phần media báo cáo nhà cung cấp.</span>
+                        <input type="file" name="provider_note_video" accept="video/*" multiple hidden />
+                        <span class="standalone-order-upload-meta" data-provider-video-summary>Chưa chọn video báo cáo.</span>
+                      </label>
+                    </div>
                     <div class="standalone-order-inline-actions">
                       <button class="customer-btn customer-btn-primary" type="submit">Lưu báo cáo</button>
                     </div>
@@ -998,15 +1204,24 @@ const providerOrderDetailModule = (function (window, document) {
                   </div>
                   ${renderTimeline(detail)}
                 </article>
-                <article class="standalone-order-media-card">
+                <article class="standalone-order-media-card" id="provider-order-attachments">
                   <div class="standalone-order-panel-head">
                     <div>
-                      <strong>Tài liệu hiện trường</strong>
-                      <p>Ảnh và video khách hàng đã gửi kèm.</p>
+                      <strong>Ảnh/video khách đính kèm khi đặt đơn</strong>
+                      <p>Media được gửi từ form đặt lịch ban đầu của đơn hàng.</p>
                     </div>
                     <span class="standalone-order-chip">Tệp đính kèm</span>
                   </div>
-                  ${renderAttachmentGallery(detail)}
+                  ${renderAttachmentGallery(
+                    order.booking_image_attachments,
+                    order.booking_video_attachments,
+                    {
+                      imageLabelPrefix: "Ảnh đặt đơn",
+                      videoLabelPrefix: "Video đặt đơn",
+                      emptyMessage:
+                        "Chưa có ảnh hoặc video nào được đính kèm khi tạo đơn.",
+                    },
+                  )}
                 </article>
               </div>
             </section>
@@ -1041,18 +1256,79 @@ const providerOrderDetailModule = (function (window, document) {
       event.preventDefault();
 
       try {
-        const formData = new FormData(event.currentTarget);
-        await saveProviderNote(detail, formData.get("provider_note") || "");
+        const form = event.currentTarget;
+        const submitButton =
+          form.querySelector('button[type="submit"]') || null;
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Đang lưu...";
+        }
+
+        const formData = new FormData(form);
+        const imageFiles = collectFiles(
+          form.querySelector('input[name="provider_note_image"]'),
+        );
+        const videoFiles = collectFiles(
+          form.querySelector('input[name="provider_note_video"]'),
+        );
+        const uploadedImageLinks = imageFiles.length
+          ? (await core.uploadFilesToDrive(imageFiles)).map((item) =>
+              normalizeText(item?.url || item?.download_url || ""),
+            )
+          : [];
+        const uploadedVideoLinks = videoFiles.length
+          ? (await core.uploadFilesToDrive(videoFiles)).map((item) =>
+              normalizeText(item?.url || item?.download_url || ""),
+            )
+          : [];
+        const mergedImageAttachments = mergeAttachmentValues(
+          detail?.order?.provider_report_image_attachments,
+          uploadedImageLinks,
+        );
+        const mergedVideoAttachments = mergeAttachmentValues(
+          detail?.order?.provider_report_video_attachments,
+          uploadedVideoLinks,
+        );
+
+        await saveProviderNote(detail, formData.get("provider_note") || "", {
+          provider_report_anh_dinh_kem: joinPipeValues(mergedImageAttachments),
+          provider_report_video_dinh_kem: joinPipeValues(
+            mergedVideoAttachments,
+          ),
+        });
         const nextRow = await fetchBookingRowByCode(order.code || "");
         if (!nextRow) {
           throw new Error("Không thể tải lại đơn hàng sau khi lưu ghi chú.");
         }
         render(normalizeDetail(nextRow));
+        core.notify("Đã lưu báo cáo nhà cung cấp.", "success");
       } catch (error) {
         console.error("Cannot save provider note:", error);
         core.notify(error?.message || "Không thể lưu ghi chú nhà cung cấp lúc này.", "error");
+      } finally {
+        const form = event.currentTarget;
+        const submitButton =
+          form.querySelector('button[type="submit"]') || null;
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Lưu báo cáo";
+        }
       }
     });
+
+    const providerNoteForm = root.querySelector("[data-provider-note-form]");
+    if (providerNoteForm) {
+      bindFileSummary(
+        providerNoteForm.querySelector('input[name="provider_note_image"]'),
+        providerNoteForm.querySelector("[data-provider-image-summary]"),
+        "Chưa chọn ảnh báo cáo.",
+      );
+      bindFileSummary(
+        providerNoteForm.querySelector('input[name="provider_note_video"]'),
+        providerNoteForm.querySelector("[data-provider-video-summary]"),
+        "Chưa chọn video báo cáo.",
+      );
+    }
   }
 
   (async function bootstrapProviderOrderDetail() {

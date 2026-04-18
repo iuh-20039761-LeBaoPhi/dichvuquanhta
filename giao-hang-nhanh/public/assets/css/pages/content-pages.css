@@ -567,12 +567,14 @@ body.guide-page {
   color: #334155;
   font-family: "Poppins", sans-serif;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 body.guide-page .guide-container {
-  max-width: 1000px;
-  margin: 120px auto 60px;
-  padding: 0 20px;
+  max-width: 1320px;
+  margin: 40px auto 60px;
+  padding: 0 24px;
+  box-sizing: border-box;
 }
 
 body.guide-page .hero-section {
@@ -588,29 +590,48 @@ body.guide-page .hero-section {
 
 body.guide-page .hero-section h1 {
   margin-bottom: 15px;
-  color: #0a2a66;
+  color: #173b78;
   font-size: clamp(2rem, 4vw, 36px);
-  font-weight: 800;
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+}
+
+body.guide-page .hero-section p {
+  max-width: 720px;
+  margin: 0 auto;
+  color: #5a6b81;
+  font-size: 15px;
+  font-weight: 400;
 }
 
 body.guide-page .step-nav {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 15px;
+  flex-wrap: nowrap;
+  gap: 12px;
   margin-top: 25px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+body.guide-page .step-nav::-webkit-scrollbar {
+  display: none;
 }
 
 body.guide-page .step-nav-item {
   border-radius: 50px;
   background: #fff;
-  padding: 10px 20px;
+  padding: 10px 18px;
   color: #0a2a66;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 body.guide-page .step-nav-item:hover {
@@ -619,14 +640,35 @@ body.guide-page .step-nav-item:hover {
   color: #fff;
 }
 
+body.guide-page .step-nav-item.is-active {
+  background: #0a2a66;
+  color: #fff;
+  box-shadow: 0 12px 24px -12px rgba(10, 42, 102, 0.72);
+}
+
+body.guide-page .guide-compact-note {
+  margin-top: 18px;
+  color: #475569;
+  font-size: 14px;
+}
+
 body.guide-page .guide-card {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.85);
-  margin-bottom: 40px;
+  background: rgba(255, 255, 255, 0.92);
+  margin-bottom: 28px;
   padding: 40px;
   backdrop-filter: blur(12px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+  box-sizing: border-box;
+}
+
+body.guide-page .guide-panel {
+  display: none;
+}
+
+body.guide-page .guide-panel.is-active {
+  display: block;
 }
 
 body.guide-page .section-header {
@@ -650,9 +692,9 @@ body.guide-page .section-number {
 }
 
 body.guide-page .section-title {
-  color: #0a2a66;
+  color: #173b78;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 body.guide-page .logic-grid {
@@ -660,6 +702,10 @@ body.guide-page .logic-grid {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   margin-top: 25px;
+}
+
+body.guide-page .logic-grid:has(> :nth-child(4):last-child) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 body.guide-page .logic-item {
@@ -686,7 +732,14 @@ body.guide-page .logic-item i {
 body.guide-page .logic-item h4 {
   margin-bottom: 10px;
   color: #1e293b;
-  font-weight: 700;
+  font-weight: 600;
+}
+
+body.guide-page .logic-item p,
+body.guide-page .guide-card p,
+body.guide-page .feature-list li {
+  color: #475569;
+  font-weight: 400;
 }
 
 body.guide-page .feature-list {
@@ -1025,38 +1078,82 @@ body.pricing-page .pricing-clarity-card p {
   }
 
   body.guide-page .guide-container {
-    margin-top: 96px;
+    margin-top: 28px;
     margin-bottom: 48px;
+    padding: 0 8px;
   }
 
   body.guide-page .hero-section {
-    padding: 30px 20px;
+    margin-bottom: 18px;
+    padding: 18px 14px;
+    border-radius: 18px;
   }
 
   body.guide-page .guide-card {
-    padding: 25px;
+    margin-bottom: 18px;
+    padding: 18px 14px;
+    border-radius: 16px;
   }
 
   body.guide-page .step-nav {
-    gap: 12px;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 10px;
+    overflow-x: auto;
+    margin-top: 20px;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  body.guide-page .step-nav::-webkit-scrollbar {
+    display: none;
   }
 
   body.guide-page .step-nav-item {
-    width: 100%;
+    width: auto;
+    min-width: max-content;
+    padding: 9px 12px;
     text-align: center;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    font-size: 13px;
+  }
+
+  body.guide-page .guide-compact-note {
+    text-align: left;
+    font-size: 13px;
+    margin-top: 14px;
   }
 
   body.guide-page .section-header {
     align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
   }
 
   body.guide-page .section-title {
-    font-size: 22px;
+    font-size: 19px;
   }
 
   body.guide-page .pro-tip {
     flex-direction: column;
     align-items: flex-start;
+    gap: 14px;
+    padding: 16px 14px;
+  }
+
+  body.guide-page .logic-grid,
+  body.guide-page .service-badge-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  body.guide-page .logic-grid:has(> :nth-child(4):last-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.guide-page .logic-item {
+    padding: 15px 14px;
   }
 
   body.pricing-page .pricing-card-grid--examples {
@@ -1128,21 +1225,66 @@ body.pricing-page .pricing-clarity-card p {
   }
 
   body.guide-page .guide-container {
-    margin-top: 88px;
-    padding: 0 16px;
+    margin-top: 20px;
+    margin-bottom: 28px;
+    padding: 0 4px;
   }
 
   body.guide-page .hero-section,
   body.guide-page .guide-card {
-    padding: 20px 16px;
+    padding: 14px 12px;
+    border-radius: 14px;
   }
 
   body.guide-page .logic-grid,
   body.guide-page .service-badge-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  body.guide-page .logic-grid:has(> :nth-child(4):last-child) {
+    grid-template-columns: 1fr;
   }
 
   body.guide-page .logic-item {
-    padding: 20px;
+    padding: 14px 12px;
+  }
+
+  body.guide-page .step-nav {
+    gap: 8px;
+    margin-top: 14px;
+    padding-bottom: 4px;
+  }
+
+  body.guide-page .step-nav-item {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  body.guide-page .hero-section h1 {
+    margin-bottom: 10px;
+    font-size: 1.42rem;
+    line-height: 1.32;
+  }
+
+  body.guide-page .hero-section p {
+    font-size: 14px;
+  }
+
+  body.guide-page .section-number {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  body.guide-page .section-title {
+    font-size: 17px;
+  }
+
+  body.guide-page .guide-compact-note,
+  body.guide-page .logic-item p,
+  body.guide-page .guide-card p,
+  body.guide-page .feature-list li {
+    font-size: 14px;
   }
 }

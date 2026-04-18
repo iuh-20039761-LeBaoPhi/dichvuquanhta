@@ -684,10 +684,105 @@
     throw new Error("Hệ thống dữ liệu (requestLocalData) chưa được khởi tạo.");
   }
 
+  function getDriveUploadProxyUrl() {
+    const override = String(window.GHN_DRIVE_UPLOAD_PROXY_URL || "").trim();
+    if (override) return override;
+    return new URL(
+      "upload_to_drive.php",
+      `${window.location.origin}${publicBasePath}`,
+    ).toString();
+  }
+
+  function getDriveFileUrls(fileId) {
+    const normalizedId = normalizeText(fileId || "");
+    if (!normalizedId) {
+      return {
+        url: "",
+        downloadUrl: "",
+        viewUrl: "",
+        thumbnailUrl: "",
+      };
+    }
+
+    const encodedId = encodeURIComponent(normalizedId);
+    return {
+      url: `https://drive.google.com/uc?export=download&id=${encodedId}`,
+      downloadUrl: `https://drive.google.com/uc?export=download&id=${encodedId}`,
+      viewUrl: `https://drive.google.com/file/d/${encodedId}/view`,
+      thumbnailUrl: `https://drive.google.com/thumbnail?id=${encodedId}&sz=w2000`,
+    };
+  }
+
+  function getFileExtension(fileName, mimeType = "") {
+    const normalizedName = String(fileName || "").trim();
+    if (normalizedName.includes(".")) {
+      return normalizedName.split(".").pop().toLowerCase();
+    }
+
+    const normalizedMime = String(mimeType || "").toLowerCase();
+    if (normalizedMime.startsWith("image/")) {
+      return normalizedMime.replace("image/", "") || "jpg";
+    }
+    if (normalizedMime.startsWith("video/")) {
+      return normalizedMime.replace("video/", "") || "mp4";
+    }
+    return "";
+  }
+
+  async function uploadFileToDrive(fileObj, options = {}) {
+    if (!(fileObj instanceof File)) {
+      throw new Error("Không có file hợp lệ để tải lên Drive.");
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileObj, fileObj.name || "media");
+    formData.append("name", options.name || fileObj.name || "media");
+
+    const response = await fetch(getDriveUploadProxyUrl(), {
+      method: "POST",
+      body: formData,
+    });
+    const payload = await response.json().catch(() => null);
+
+    if (!response.ok || !payload?.success) {
+      throw new Error(
+        payload?.message || "Không thể tải file lên Google Drive.",
+      );
+    }
+
+    const fileId = normalizeText(payload.fileId || "");
+    const urls = getDriveFileUrls(fileId);
+
+    return {
+      id: fileId,
+      fileId,
+      name: normalizeText(payload.name || fileObj.name || "Tệp đính kèm"),
+      extension: getFileExtension(payload.name || fileObj.name, payload.type || fileObj.type),
+      url: urls.url,
+      download_url: urls.downloadUrl,
+      view_url: urls.viewUrl,
+      thumbnail_url: urls.thumbnailUrl,
+      type: normalizeText(payload.type || fileObj.type || ""),
+      created_at: new Date().toISOString(),
+    };
+  }
+
+  async function uploadFilesToDrive(files, options = {}) {
+    const list = Array.from(files || []).filter((file) => file instanceof File);
+    if (!list.length) return [];
+
+    const uploads = [];
+    for (const file of list) {
+      uploads.push(await uploadFileToDrive(file, options));
+    }
+    return uploads;
+  }
+
   window.GiaoHangNhanhCore = {
     inPublicDir,
     apiBasePath,
     projectBasePath,
+    parentBasePath,
     publicBasePath,
     resolveDomesticArea,
     mapServiceLevelByArea,
@@ -725,7 +820,11 @@
     createStatusBadge,
     renderLoading,
     renderError,
-    apiRequest
+    apiRequest,
+    getDriveUploadProxyUrl,
+    getDriveFileUrls,
+    uploadFileToDrive,
+    uploadFilesToDrive,
   };
 
   window.getShippingFeeDetails = getShippingFeeDetails;

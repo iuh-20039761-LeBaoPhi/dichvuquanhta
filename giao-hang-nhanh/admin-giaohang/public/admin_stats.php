@@ -106,6 +106,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
         .stats-panel-body {
             padding: 20px 22px 24px;
+            overflow-x: auto;
         }
 
         .stats-chart-wrap {
@@ -161,6 +162,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             color: #64748b;
         }
 
+        @media (max-width: 1200px) {
+            .stats-kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
         @media (max-width: 1100px) {
             .stats-page-grid {
                 grid-template-columns: 1fr;
@@ -171,6 +178,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
             .stats-kpi-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
+
+            .stats-panel-head {
+                align-items: flex-start;
+                flex-direction: column;
+            }
         }
 
         @media (max-width: 640px) {
@@ -180,6 +192,16 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
             .stats-hero h3 {
                 font-size: 26px;
+            }
+
+            .stats-hero,
+            .stats-panel-body {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .stats-top-users {
+                min-width: 520px;
             }
         }
     </style>

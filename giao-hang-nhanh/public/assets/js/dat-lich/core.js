@@ -150,11 +150,11 @@ function getBookingCrudInsertFn() {
 
 function getBookingCrudUpdateFn() {
   if (typeof window.crud === "function") {
-    return (tableName, data) => window.crud("update", tableName, data);
+    return (tableName, data, id) => window.crud("update", tableName, data, id);
   }
 
   if (typeof window.krud === "function") {
-    return (tableName, data) => window.krud("update", tableName, data);
+    return (tableName, data, id) => window.krud("update", tableName, data, id);
   }
 
   return null;
@@ -391,6 +391,7 @@ function buildCrudBookingInsertPayload(payload) {
   const tongSoKienHang = tinh_tong_so_kien_hang(danhSachMatHang);
   const tongCanNangKg = tinh_tong_can_nang_hang(danhSachMatHang);
   const tomTatMatHang = tao_tom_tat_mat_hang(danhSachMatHang);
+  const attachments = Array.isArray(payload.attachments) ? payload.attachments : [];
 
   return {
     ma_don_hang_noi_bo: "",
@@ -445,6 +446,8 @@ function buildCrudBookingInsertPayload(payload) {
     customer_username: session?.username || "",
     mat_hang_json: JSON.stringify(danhSachMatHang),
     chi_tiet_gia_cuoc_json: JSON.stringify(payload.chi_tiet_gia_cuoc || {}),
+    attachments_json: JSON.stringify(attachments),
+    attachments: JSON.stringify(attachments),
   };
 }
 
@@ -473,17 +476,70 @@ async function syncCrudOrderCode(recordId, orderCode, createdAt = new Date()) {
   }
 
   try {
-    await updateFn("giaohangnhanh_dat_lich", {
-      id: normalizedId,
-      ma_don_hang_noi_bo: normalizedCode,
-      ma_don_hang: normalizedCode,
-      order_code: normalizedCode,
-      updated_at:
-        createdAt instanceof Date ? createdAt.toISOString() : String(createdAt || "").trim(),
-    });
+    await updateFn(
+      "giaohangnhanh_dat_lich",
+      {
+        id: normalizedId,
+        ma_don_hang_noi_bo: normalizedCode,
+        ma_don_hang: normalizedCode,
+        order_code: normalizedCode,
+        updated_at:
+          createdAt instanceof Date
+            ? createdAt.toISOString()
+            : String(createdAt || "").trim(),
+      },
+      normalizedId,
+    );
     return true;
   } catch (error) {
     console.warn("Không thể ghi ngược mã đơn GHN vào bản ghi KRUD:", error);
+    return false;
+  }
+}
+
+async function syncCrudBookingAttachments(
+  recordId,
+  attachments = [],
+  updatedAt = new Date().toISOString(),
+) {
+  const updateFn = getBookingCrudUpdateFn();
+  const normalizedId = String(recordId || "").trim();
+  if (!updateFn || !normalizedId) {
+    return false;
+  }
+
+  const safeAttachments = (Array.isArray(attachments) ? attachments : [])
+    .filter((item) => item && typeof item === "object")
+    .map((item) => ({
+      id: String(item.id || item.fileId || "").trim(),
+      name: String(item.name || "Tệp đính kèm").trim(),
+      extension: String(item.extension || "").trim(),
+      url: String(item.url || item.download_url || item.view_url || "").trim(),
+      download_url: String(item.download_url || "").trim(),
+      view_url: String(item.view_url || "").trim(),
+      thumbnail_url: String(item.thumbnail_url || "").trim(),
+      type: String(item.type || "").trim(),
+      created_at: String(item.created_at || "").trim(),
+    }))
+    .filter((item) => item.url);
+
+  try {
+    await updateFn(
+      "giaohangnhanh_dat_lich",
+      {
+        id: normalizedId,
+        attachments_json: JSON.stringify(safeAttachments),
+        attachments: JSON.stringify(safeAttachments),
+        updated_at:
+          updatedAt instanceof Date
+            ? updatedAt.toISOString()
+            : String(updatedAt || "").trim() || new Date().toISOString(),
+      },
+      normalizedId,
+    );
+    return true;
+  } catch (error) {
+    console.warn("Không thể ghi media booking vào KRUD:", error);
     return false;
   }
 }

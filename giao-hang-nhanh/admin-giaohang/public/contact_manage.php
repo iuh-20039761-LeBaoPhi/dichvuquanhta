@@ -41,8 +41,36 @@ if (!in_array($filterStatus, ['all', '0', '1', '2'], true)) {
         .contact-empty { text-align:center; padding:60px; }
         .contact-empty i { font-size:48px; color:#cbd5e1; margin-bottom:15px; display:block; }
         .contact-empty p { color:#64748b; }
+        @media (max-width: 992px) {
+            .filter-nav {
+                width: 100%;
+            }
+        }
         @media (max-width: 768px) {
             .contact-card-form .grid-responsive { grid-template-columns:1fr; }
+            .filter-nav {
+                gap: 8px;
+            }
+            .filter-btn {
+                flex: 1 1 calc(50% - 8px);
+                text-align: center;
+            }
+            .contact-empty {
+                padding: 32px 18px;
+            }
+        }
+        @media (max-width: 576px) {
+            .contact-meta-list {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .filter-btn {
+                flex-basis: 100%;
+            }
+            .message-card,
+            .contact-card-form {
+                padding: 16px;
+            }
         }
     </style>
     <script src="https://api.dvqt.vn/js/krud.js"></script>

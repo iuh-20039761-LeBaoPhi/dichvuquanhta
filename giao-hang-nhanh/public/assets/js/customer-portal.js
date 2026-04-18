@@ -28,7 +28,6 @@
     fast: 60,
     standard: 120,
   };
-
   function getLoginRedirect() {
     return typeof core.getPortalLoginRedirect === "function"
       ? core.getPortalLoginRedirect("customer")
@@ -528,42 +527,22 @@
       .filter((item) => item && item.url);
   }
 
-  function getOrderMediaUploadUrl() {
-    return new URL(
-      "../../admin-giaohang/api/order_media_upload.php",
-      window.location.href,
-    ).toString();
-  }
-
   async function uploadOrderMedia(orderRef, files, mediaType) {
     const list = Array.from(files || []).filter(Boolean);
     if (!list.length) return [];
 
     const normalizedOrderRef = normalizeText(orderRef || "");
     if (!normalizedOrderRef) {
-      throw new Error("Không tìm thấy mã đơn để tải media lên máy chủ.");
+      throw new Error("Không tìm thấy mã đơn để tải media lên Google Drive.");
     }
 
-    const formData = new FormData();
-    formData.append("order_code", normalizedOrderRef);
-    formData.append("media_type", normalizeText(mediaType || "feedback"));
-    list.forEach((file) => {
-      formData.append("media_files[]", file, file.name || "media");
-    });
-
-    const response = await fetch(getOrderMediaUploadUrl(), {
-      method: "POST",
-      body: formData,
-    });
-    const payload = await response.json().catch(() => null);
-
-    if (!response.ok || !payload?.success) {
-      throw new Error(
-        payload?.message || "Không thể tải media phản hồi lên máy chủ.",
-      );
+    if (typeof core.uploadFilesToDrive !== "function") {
+      throw new Error("Không tìm thấy helper upload Google Drive.");
     }
 
-    return normalizeMediaItems(payload.items || []);
+    return normalizeMediaItems(
+      await core.uploadFilesToDrive(list),
+    );
   }
   const escapeHtml =
     typeof core.escapeHtml === "function"
@@ -2056,7 +2035,7 @@
     return `<div class="customer-file-grid">${items
       .map(
         (item) => `
-      <a class="customer-file-card" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">
+      <a class="customer-file-card" href="${escapeHtml(item.view_url || item.url)}" target="_blank" rel="noreferrer">
         <span>${escapeHtml(item.name)}</span>
         <small>${escapeHtml(item.extension || "tệp")}</small>
       </a>`,
@@ -2177,13 +2156,16 @@
     return `<div class="customer-review-media-grid">${items
       .map((item) => {
         const extension = String(item.extension || "").toLowerCase();
-        const url = escapeHtml(item.url || "#");
+        const targetUrl = escapeHtml(item.view_url || item.url || "#");
+        const previewUrl = escapeHtml(
+          item.thumbnail_url || item.view_url || item.url || "#",
+        );
         const name = escapeHtml(item.name || "Tệp đính kèm");
 
         if (isImageExtension(extension)) {
           return `
-            <a class="customer-review-media-card" href="${url}" target="_blank" rel="noreferrer">
-              <img class="customer-review-media-thumb" src="${url}" alt="${name}" />
+            <a class="customer-review-media-card" href="${targetUrl}" target="_blank" rel="noreferrer">
+              <img class="customer-review-media-thumb" src="${previewUrl}" alt="${name}" />
               <div class="customer-review-media-meta">
                 <strong>${name}</strong>
                 <span>Ảnh đính kèm</span>
@@ -2193,8 +2175,8 @@
 
         if (isVideoExtension(extension)) {
           return `
-            <a class="customer-review-media-card" href="${url}" target="_blank" rel="noreferrer">
-              <video class="customer-review-media-thumb" src="${url}" preload="metadata" controls></video>
+            <a class="customer-review-media-card" href="${targetUrl}" target="_blank" rel="noreferrer">
+              <video class="customer-review-media-thumb" src="${previewUrl}" preload="metadata" controls></video>
               <div class="customer-review-media-meta">
                 <strong>${name}</strong>
                 <span>Video đính kèm</span>
@@ -2203,7 +2185,7 @@
         }
 
         return `
-          <a class="customer-review-media-card" href="${url}" target="_blank" rel="noreferrer">
+          <a class="customer-review-media-card" href="${targetUrl}" target="_blank" rel="noreferrer">
             <div class="customer-review-media-file">
               <i class="fas fa-file-lines"></i>
             </div>
@@ -2263,12 +2245,16 @@
           <h3><i class="fas fa-boxes-stacked"></i> Hàng hóa và đóng gói</h3>
           ${renderOrderItemCards(items)}
           <div class="rv-row"><span class="rv-label">Giá trị thu hộ (COD)</span><span class="rv-val">${order.cod_amount ? formatCurrency(order.cod_amount) : "Không có"}</span></div>
-          <div class="rv-row"><span class="rv-label">Ghi chú vận chuyển</span><span class="rv-val">${formatMultilineText(order.clean_note || "Không có")}</span></div>
         </section>
 
         <section class="customer-review-block customer-review-block--wide">
-          <h3><i class="fas fa-photo-film"></i> Media đính kèm</h3>
+          <h3><i class="fas fa-photo-film"></i> Ảnh/video khách đính kèm khi đặt đơn</h3>
           ${renderAttachmentPreview(attachments)}
+        </section>
+
+        <section class="customer-review-block customer-review-block--wide">
+          <h3><i class="fas fa-note-sticky"></i> Ghi chú vận chuyển</h3>
+          <div class="rv-row"><span class="rv-label">Ghi chú</span><span class="rv-val">${formatMultilineText(order.clean_note || "Không có")}</span></div>
         </section>
 
         <section class="customer-review-block">
@@ -2735,7 +2721,7 @@
               <h4 class="customer-subheading">Báo cáo quá trình làm việc</h4>
               ${renderAttachmentPreview(provider.shipper_reports)}
               <h4 class="customer-subheading">Media phản hồi đã gửi</h4>
-              ${renderFiles(provider.feedback_media)}
+              ${renderAttachmentPreview(provider.feedback_media)}
             </article>
           </div>
 

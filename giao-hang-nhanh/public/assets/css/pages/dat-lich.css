@@ -977,6 +977,10 @@ textarea.form-control {
   margin-bottom: 16px;
 }
 
+.review-total-summary {
+  margin: 14px 0 22px;
+}
+
 .review-section h4 {
   font-size: 14px;
   font-weight: 700;
@@ -1018,14 +1022,35 @@ textarea.form-control {
 }
 
 .rv-total-row {
-  background: #0a2a66;
-  color: #fff;
-  border-radius: 8px;
-  padding: 14px 18px;
+  background: linear-gradient(135deg, #fff8df 0%, #fff1b8 100%);
+  color: #173528;
+  border-radius: 16px;
+  padding: 16px 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
   font-size: 16px;
+  border: 1px solid #f0d37a;
+  box-shadow: 0 10px 22px rgba(172, 121, 0, 0.08);
+}
+
+.rv-total-row > span:first-child {
+  font-weight: 700;
+  color: #6e5310;
+}
+
+.rv-total-row > span:last-child {
+  font-weight: 800;
+  color: #173528;
+  text-align: right;
+}
+
+.review-total-note {
+  margin: 8px 4px 0;
+  color: #6e5310;
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .review-upload-empty {
@@ -1290,8 +1315,15 @@ textarea.form-control {
     text-align: right;
   }
   .rv-total-row {
-    padding: 12px 14px;
+    padding: 14px;
     font-size: 15px;
+    align-items: flex-start;
+  }
+  .rv-total-row > span:last-child {
+    font-size: 20px !important;
+  }
+  .review-total-summary {
+    margin-bottom: 18px;
   }
   .review-upload-grid {
     grid-template-columns: 1fr;

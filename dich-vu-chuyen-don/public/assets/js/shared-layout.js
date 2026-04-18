@@ -24,6 +24,7 @@
   const servicePageKeyByFile = {
     "dich-vu-chuyen-don.html": "services",
     "bang-gia-chuyen-don.html": "pricing",
+    "huong-dan-su-dung-dich-vu-chuyen-don.html": "guide",
     "chuyen-nha.html": "services",
     "chuyen-kho-bai.html": "services",
     "chuyen-van-phong.html": "services",
@@ -141,6 +142,7 @@
       about: `${projectBase}index.html#hero`,
       services: servicesLink,
       pricing: `${projectBase}bang-gia-chuyen-don.html`,
+      guide: `${projectBase}huong-dan-su-dung-dich-vu-chuyen-don.html`,
       contact: `${projectBase}index.html#contact`,
       survey: `${projectBase}dat-lich.html`,
       booking: `${projectBase}dat-lich.html`,

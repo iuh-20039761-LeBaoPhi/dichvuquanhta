@@ -531,7 +531,32 @@ function xem_truoc_tai_len(type) {
 }
 
 // ========== SUBMIT ==========
-function buildBookingSheetPayload(payload, orderCode) {
+function buildMediaSheetLinks(items = []) {
+  return (Array.isArray(items) ? items : [])
+    .map((item) =>
+      String(
+        item?.view_url || item?.viewUrl || item?.download_url || item?.url || "",
+      ).trim(),
+    )
+    .filter(Boolean)
+    .join(" | ");
+}
+
+async function uploadBookingMedia(orderCode) {
+  const uploadFn = window.GiaoHangNhanhCore?.uploadFilesToDrive;
+  const files = getSelectedUploadFiles()
+    .map((entry) => entry.file)
+    .filter(Boolean);
+
+  if (!files.length) return [];
+  if (typeof uploadFn !== "function") {
+    throw new Error("Thiếu helper upload Google Drive cho Giao Hàng Nhanh.");
+  }
+
+  return uploadFn(files);
+}
+
+function buildBookingSheetPayload(payload, orderCode, attachments = []) {
   const itemsSummary = Array.isArray(payload.mat_hang)
     ? payload.mat_hang
         .map((item, index) => {
@@ -568,6 +593,8 @@ function buildBookingSheetPayload(payload, orderCode) {
     "Người trả cước": payload.nguoi_tra_cuoc || "",
     "Danh sách hàng": itemsSummary,
     "Chi tiết giá cước": JSON.stringify(payload.chi_tiet_gia_cuoc || {}),
+    "Số media đính kèm": Array.isArray(attachments) ? attachments.length : 0,
+    "Link media đính kèm": buildMediaSheetLinks(attachments),
     "Ghi chú": payload.ghi_chu_tai_xe || "",
   };
 }
@@ -599,8 +626,8 @@ function saveBookingSheetPayload(sheetPayload) {
   );
 }
 
-function saveBookingToGoogleSheet(payload, orderCode) {
-  const sheetPayload = buildBookingSheetPayload(payload, orderCode);
+function saveBookingToGoogleSheet(payload, orderCode, attachments = []) {
+  const sheetPayload = buildBookingSheetPayload(payload, orderCode, attachments);
   return saveBookingSheetPayload(sheetPayload);
 }
 
@@ -660,10 +687,31 @@ async function gui_don_hang() {
         orderMeta.created_at || new Date().toISOString(),
       );
     }
+    let uploadedAttachments = [];
+    let mediaWarning = "";
+
+    try {
+      uploadedAttachments = await uploadBookingMedia(finalOrderCode);
+      if (uploadedAttachments.length && orderMeta.id) {
+        await syncCrudBookingAttachments(
+          orderMeta.id,
+          uploadedAttachments,
+          orderMeta.created_at || new Date().toISOString(),
+        );
+      }
+    } catch (uploadError) {
+      console.warn("Không thể tải media booking lên Google Drive:", uploadError);
+      mediaWarning =
+        " Media đính kèm chưa được tải lên Google Drive; bạn có thể bổ sung lại sau trong chi tiết đơn hàng.";
+    }
     let googleSheetWarning = "";
 
     try {
-      await saveBookingToGoogleSheet(payload, finalOrderCode);
+      await saveBookingToGoogleSheet(
+        payload,
+        finalOrderCode,
+        uploadedAttachments,
+      );
     } catch (sheetError) {
       console.warn("Không thể đồng bộ Google Sheet từ frontend:", sheetError);
       googleSheetWarning =
@@ -672,7 +720,10 @@ async function gui_don_hang() {
 
     renderSubmitSuccessState(
       finalOrderCode || "GHN-00000000-0000000",
-      buildBookingSubmitSuccessMessage(accountSetup, googleSheetWarning),
+      buildBookingSubmitSuccessMessage(
+        accountSetup,
+        `${mediaWarning}${googleSheetWarning}`,
+      ),
     );
   } catch (error) {
     console.error(error);

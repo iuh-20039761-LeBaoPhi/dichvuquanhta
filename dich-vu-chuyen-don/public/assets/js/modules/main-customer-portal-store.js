@@ -239,6 +239,13 @@ const customerPortalStoreModule = (function (window) {
       .filter(Boolean);
   }
 
+  function joinPipeValues(values) {
+    return (Array.isArray(values) ? values : [])
+      .map((item) => normalizeText(item))
+      .filter(Boolean)
+      .join(" | ");
+  }
+
   function parseJsonObject(value) {
     const parsed = safeParse(value, {});
     return parsed && typeof parsed === "object" && !Array.isArray(parsed)
@@ -1308,8 +1315,28 @@ const customerPortalStoreModule = (function (window) {
       note: normalizeText(row?.ghi_chu || request?.note || ""),
       meta: normalizeText(request?.meta || ""),
       pricing_breakdown: pricingBreakdown,
+      booking_image_attachments: splitPipeValues(row?.anh_dinh_kem),
+      booking_video_attachments: splitPipeValues(row?.video_dinh_kem),
       image_attachments: splitPipeValues(row?.anh_dinh_kem),
       video_attachments: splitPipeValues(row?.video_dinh_kem),
+      customer_feedback_image_attachments: splitPipeValues(
+        row?.customer_feedback_anh_dinh_kem ||
+          row?.customer_feedback_image_attachments,
+      ),
+      customer_feedback_video_attachments: splitPipeValues(
+        row?.customer_feedback_video_dinh_kem ||
+          row?.customer_feedback_video_attachments,
+      ),
+      provider_report_image_attachments: splitPipeValues(
+        row?.provider_report_anh_dinh_kem ||
+          row?.provider_note_anh_dinh_kem ||
+          row?.provider_report_image_attachments,
+      ),
+      provider_report_video_attachments: splitPipeValues(
+        row?.provider_report_video_dinh_kem ||
+          row?.provider_note_video_dinh_kem ||
+          row?.provider_report_video_attachments,
+      ),
       provider_note: normalizeText(row?.provider_note || ""),
       provider_name: normalizeText(
         row?.provider_owner_name ||
@@ -1631,6 +1658,22 @@ const customerPortalStoreModule = (function (window) {
     const customerRating = Number.isFinite(rawRating)
       ? Math.min(5, Math.max(0, Math.round(rawRating)))
       : 0;
+    const nextFeedbackImageAttachments = Array.isArray(
+      payload?.customer_feedback_image_attachments,
+    )
+      ? payload.customer_feedback_image_attachments
+      : splitPipeValues(
+          rawRow?.customer_feedback_anh_dinh_kem ||
+            rawRow?.customer_feedback_image_attachments,
+        );
+    const nextFeedbackVideoAttachments = Array.isArray(
+      payload?.customer_feedback_video_attachments,
+    )
+      ? payload.customer_feedback_video_attachments
+      : splitPipeValues(
+          rawRow?.customer_feedback_video_dinh_kem ||
+            rawRow?.customer_feedback_video_attachments,
+        );
 
     await updateBookingRow(
       rawRow.id,
@@ -1638,6 +1681,12 @@ const customerPortalStoreModule = (function (window) {
         id: rawRow.id,
         customer_feedback: normalizeText(payload?.customer_feedback || ""),
         customer_rating: customerRating,
+        customer_feedback_anh_dinh_kem: joinPipeValues(
+          nextFeedbackImageAttachments,
+        ),
+        customer_feedback_video_dinh_kem: joinPipeValues(
+          nextFeedbackVideoAttachments,
+        ),
         updated_at: new Date().toISOString(),
       },
       {

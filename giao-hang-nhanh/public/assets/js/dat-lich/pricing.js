@@ -344,6 +344,11 @@ function cap_nhat_hien_thi_tam_tinh_buoc_1(dichVu = null) {
   const amountNode = document.getElementById("gia_tri_tam_tinh_theo_km");
   const wrapNode = document.getElementById("thong_tin_tam_tinh_theo_km");
   if (!amountNode || !wrapNode) return;
+  if (!khoang_cach_km || khoang_cach_km <= 0) {
+    amountNode.textContent = "";
+    wrapNode.style.display = "none";
+    return;
+  }
 
   const activeService = dichVu || lay_dich_vu_tam_tinh_buoc_1() || selectedService;
   const distanceFee = lay_tong_gia_van_chuyen(activeService?.breakdown || activeService);
@@ -374,6 +379,10 @@ function renderServiceCards(options = {}) {
     return;
   }
   if (khoang_cach_km <= 0) {
+    selectedService = null;
+    btn5.disabled = true;
+    updateStorageNote();
+    cap_nhat_hien_thi_tam_tinh_buoc_1(null);
     container.innerHTML = `<div style="color:#ef4444;">Chưa có khoảng cách. Vui lòng chọn địa chỉ ở Bước 1.</div>`;
     return;
   }

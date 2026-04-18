@@ -630,6 +630,10 @@
             record.vehicle_type ||
             session?.vehicle_type ||
             "",
+          attachments: parseJsonSafe(
+            record.attachments_json || record.attachments || [],
+            [],
+          ),
           shipper_reports: parseJsonSafe(
             record.shipper_reports_json || record.shipper_reports || [],
             [],
@@ -1366,7 +1370,7 @@
                       <strong class="customer-order-price">${formatCurrency(order.shipping_fee || 0)}</strong>
                     </div>
                     <div class="customer-order-actions customer-order-actions-compact">
-                      <a class="customer-btn customer-btn-primary customer-btn-sm" href="${buildOrderDetailUrl(order)}">Xử lý ngay</a>
+                      <a class="customer-btn customer-btn-primary customer-btn-sm" href="${buildOrderDetailUrl(order)}">Xem chi tiết</a>
                     </div>
                   </div>
                 </div>

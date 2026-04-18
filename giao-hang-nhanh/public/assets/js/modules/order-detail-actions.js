@@ -22,12 +22,28 @@
       const refresh = () => {
         const files = input.files ? Array.from(input.files) : [];
         host.textContent = files.length
-          ? `Da chon: ${files.map((file) => file.name).join(", ")}`
+          ? `Đã chọn: ${files.map((file) => file.name).join(", ")}`
           : emptyMessage;
       };
 
       input.addEventListener("change", refresh);
       refresh();
+    }
+
+    function setSubmitPending(form, pendingLabel, isPending) {
+      const submitButton =
+        form?.querySelector('button[type="submit"]') || null;
+      if (!submitButton) return;
+
+      if (!submitButton.dataset.defaultLabel) {
+        submitButton.dataset.defaultLabel = submitButton.textContent || "";
+      }
+
+      submitButton.disabled = Boolean(isPending);
+      submitButton.setAttribute("aria-busy", isPending ? "true" : "false");
+      submitButton.textContent = isPending
+        ? pendingLabel
+        : submitButton.dataset.defaultLabel;
     }
 
     function collectFiles(...inputs) {
@@ -44,11 +60,14 @@
       const videoInput = form.querySelector('input[name="feedback_media_video"]');
       const imageSummary = root.querySelector("#standalone-feedback-image-files");
       const videoSummary = root.querySelector("#standalone-feedback-video-files");
-      bindFileSummary(imageInput, imageSummary, "Chua chon anh phan hoi.");
-      bindFileSummary(videoInput, videoSummary, "Chua chon video phan hoi.");
+      bindFileSummary(imageInput, imageSummary, "Chưa chọn ảnh phản hồi.");
+      bindFileSummary(videoInput, videoSummary, "Chưa chọn video phản hồi.");
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        if (form.dataset.isSubmitting === "true") return;
+        form.dataset.isSubmitting = "true";
+        setSubmitPending(form, "Đang lưu...", true);
 
         try {
           const formData = new FormData(form);
@@ -58,11 +77,17 @@
           const nextDetail = normalizeDetail(getCurrentDetail());
           const orderRef =
             nextDetail.order?.order_code || nextDetail.order?.id || "";
-          const nextFeedbackMedia = files.length
+          const existingFeedbackMedia = Array.isArray(
+            nextDetail.provider?.feedback_media,
+          )
+            ? nextDetail.provider.feedback_media
+            : [];
+          const uploadedFeedbackMedia = files.length
             ? await uploadOrderMedia(orderRef, files, "feedback")
-            : Array.isArray(nextDetail.provider?.feedback_media)
-              ? nextDetail.provider.feedback_media
-              : [];
+            : [];
+          const nextFeedbackMedia = uploadedFeedbackMedia.length
+            ? [...existingFeedbackMedia, ...uploadedFeedbackMedia]
+            : existingFeedbackMedia;
 
           nextDetail.order.rating = rating;
           nextDetail.order.feedback = feedback;
@@ -72,14 +97,17 @@
           };
 
           setCurrentDetail(await persistDetail(nextDetail));
-          showToast("Da luu phan hoi khach hang.", "success");
+          showToast("Đã lưu phản hồi khách hàng.", "success");
           rerender(getCurrentDetail(), getCurrentViewer(), getCurrentSession());
         } catch (error) {
           console.error("Cannot save feedback:", error);
           showToast(
-            error?.message || "Khong the luu phan hoi khach hang luc nay.",
+            error?.message || "Không thể lưu phản hồi khách hàng lúc này.",
             "error",
           );
+        } finally {
+          form.dataset.isSubmitting = "false";
+          setSubmitPending(form, "Đang lưu...", false);
         }
       });
     }
@@ -92,11 +120,14 @@
       const videoInput = form.querySelector('input[name="shipper_media_video"]');
       const imageSummary = root.querySelector("#standalone-shipper-image-files");
       const videoSummary = root.querySelector("#standalone-shipper-video-files");
-      bindFileSummary(imageInput, imageSummary, "Chua chon anh bao cao.");
-      bindFileSummary(videoInput, videoSummary, "Chua chon video bao cao.");
+      bindFileSummary(imageInput, imageSummary, "Chưa chọn ảnh báo cáo.");
+      bindFileSummary(videoInput, videoSummary, "Chưa chọn video báo cáo.");
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        if (form.dataset.isSubmitting === "true") return;
+        form.dataset.isSubmitting = "true";
+        setSubmitPending(form, "Đang lưu...", true);
 
         try {
           const formData = new FormData(form);
@@ -126,14 +157,17 @@
           };
 
           setCurrentDetail(await persistDetail(nextDetail));
-          showToast("Da luu ghi chu nha cung cap.", "success");
+          showToast("Đã lưu ghi chú nhà cung cấp.", "success");
           rerender(getCurrentDetail(), getCurrentViewer(), getCurrentSession());
         } catch (error) {
           console.error("Cannot save shipper note:", error);
           showToast(
-            error?.message || "Khong the luu ghi chu nha cung cap luc nay.",
+            error?.message || "Không thể lưu ghi chú nhà cung cấp lúc này.",
             "error",
           );
+        } finally {
+          form.dataset.isSubmitting = "false";
+          setSubmitPending(form, "Đang lưu...", false);
         }
       });
     }

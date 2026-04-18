@@ -137,11 +137,12 @@ function validateProviderBookingAction(rawRow, action, options = {}) {
     if (ownership.hasOwner && !ownership.matchesOwner) {
       throw new Error("Yêu cầu này đang do nhà cung cấp khác phụ trách.");
     }
-    if (!normalizeText(rawRow?.accepted_at || "") && !normalizeText(rawRow?.started_at || "")) {
+    if (
+      !normalizeText(rawRow?.accepted_at || "") &&
+      !normalizeText(rawRow?.started_at || "") &&
+      !normalizeText(rawRow?.completed_at || "")
+    ) {
       throw new Error("Cần nhận đơn trước khi cập nhật báo cáo.");
-    }
-    if (isConfirmedBookingStatus(status) || normalizeText(rawRow?.completed_at || "")) {
-      throw new Error("Yêu cầu này đã hoàn thành, không thể cập nhật thêm báo cáo.");
     }
     return;
   }

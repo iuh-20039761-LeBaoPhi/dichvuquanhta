@@ -199,6 +199,10 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
                 grid-template-columns: 1fr;
             }
 
+            .orders-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
             .orders-filter-card {
                 position: static;
             }
@@ -217,6 +221,24 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 
             .orders-hero h3 {
                 font-size: 26px;
+            }
+
+            .orders-card-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .orders-toolbar-badge {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .orders-pagination {
+                justify-content: stretch;
+            }
+
+            .orders-page-btn {
+                flex: 1 1 calc(50% - 10px);
             }
         }
     </style>

@@ -218,9 +218,15 @@ function revokePreviewUrl(preview) {
   }
 
 const formMediaModule = {
+  collectFileItemsFromInputs,
   initFileInputs,
   renderBookingMediaReview,
 };
 
-export { initFileInputs, renderBookingMediaReview, formMediaModule };
+export {
+  collectFileItemsFromInputs,
+  initFileInputs,
+  renderBookingMediaReview,
+  formMediaModule,
+};
 export default formMediaModule;

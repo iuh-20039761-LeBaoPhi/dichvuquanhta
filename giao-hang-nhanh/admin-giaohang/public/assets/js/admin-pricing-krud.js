@@ -33,10 +33,12 @@
       "ghn_khung_gio_dich_vu",
       "ghn_dieu_kien_giao",
     ],
-    add_service_time: ["ghn_cau_hinh_phi_dich_vu", "ghn_khung_gio_dich_vu"],
-    delete_service_time: ["ghn_cau_hinh_phi_dich_vu", "ghn_khung_gio_dich_vu"],
-    add_weather: ["ghn_cau_hinh_phi_dich_vu", "ghn_dieu_kien_giao"],
-    delete_weather: ["ghn_cau_hinh_phi_dich_vu", "ghn_dieu_kien_giao"],
+    add_service_time: ["ghn_khung_gio_dich_vu"],
+    save_service_time_row: ["ghn_khung_gio_dich_vu"],
+    delete_service_time: ["ghn_khung_gio_dich_vu"],
+    add_weather: ["ghn_dieu_kien_giao"],
+    save_weather_row: ["ghn_dieu_kien_giao"],
+    delete_weather: ["ghn_dieu_kien_giao"],
     save_cod_insurance: ["ghn_cau_hinh_tai_chinh"],
     save_vehicles: ["ghn_phuong_tien"],
     add_vehicle: ["ghn_phuong_tien"],
@@ -46,6 +48,26 @@
     add_goods_fee: ["ghn_loai_hang"],
     delete_goods_fee: ["ghn_loai_hang"],
     save_goods_fee_row: ["ghn_loai_hang"],
+  };
+  const ACTION_SECTION_IDS = {
+    save_services: "section-vung",
+    save_instant_service: "section-instant",
+    save_service_fees: "section-service-fee",
+    add_service_time: "section-service-fee",
+    save_service_time_row: "section-service-fee",
+    delete_service_time: "section-service-fee",
+    add_weather: "section-service-fee",
+    save_weather_row: "section-service-fee",
+    delete_weather: "section-service-fee",
+    save_cod_insurance: "section-cod",
+    save_vehicles: "section-vehicle",
+    add_vehicle: "section-vehicle",
+    delete_vehicle: "section-vehicle",
+    save_vehicle_row: "section-vehicle",
+    save_goods_fees: "section-goods",
+    add_goods_fee: "section-goods",
+    delete_goods_fee: "section-goods",
+    save_goods_fee_row: "section-goods",
   };
   const TABLE_KEY_FIELDS = {
     ghn_vung_giao_hang: ["region_key"],
@@ -67,6 +89,8 @@
   let activeVersionId = Number(config.activeVersionId || 0);
   let progressTimer = 0;
   let pendingProgressMessage = "";
+  let progressContainer = null;
+  let progressToast = null;
 
   function getInsertFn() {
     if (typeof window.crud === "function") {
@@ -170,8 +194,597 @@
     return Number(toNumber(value, 0).toFixed(precision));
   }
 
+  function sanitizePriceKey(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\-_]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  function formatMoneyPreview(value) {
+    return `${new Intl.NumberFormat("vi-VN").format(Math.round(toNumber(value, 0)))}đ`;
+  }
+
+  function formatPercent(value) {
+    return `${(toNumber(value, 0) * 100).toFixed(2)}%`;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function clonePricingData(pricingData) {
+    return JSON.parse(JSON.stringify(pricingData || {}));
+  }
+
+  function stripKrudMeta(pricingData) {
+    const cloned = clonePricingData(pricingData);
+    if (cloned && typeof cloned === "object") {
+      delete cloned._krud_meta;
+    }
+    return cloned;
+  }
+
+  function isValidTimeText(value) {
+    return /^\d{2}:\d{2}$/.test(String(value || "").trim());
+  }
+
+  function ensureKrudMeta(pricingData) {
+    if (!pricingData || typeof pricingData !== "object") return {};
+    if (!pricingData._krud_meta || typeof pricingData._krud_meta !== "object") {
+      pricingData._krud_meta = {};
+    }
+    return pricingData._krud_meta;
+  }
+
+  function applyDirectFormUpdate(action, formData, basePricingData) {
+    const pricingData = clonePricingData(basePricingData);
+    const domestic = pricingData?.BAOGIACHITIET?.noidia || {};
+    const serviceFeeConfig = domestic?.phidichvu?.giaongaylaptuc || {};
+
+    if (action === "save_services") {
+      const serviceKey = extractBracketKey(formData, "services");
+      const serviceConfig = domestic?.dichvu?.[serviceKey];
+      if (!serviceKey || !serviceConfig) {
+        throw new Error("Không tìm thấy gói dịch vụ cần cập nhật.");
+      }
+
+      const nextLabel = String(formData.get(`services[${serviceKey}][ten]`) || serviceConfig.ten || "").trim();
+      if (!nextLabel) {
+        throw new Error("Tên hiển thị của gói dịch vụ không được để trống.");
+      }
+
+      serviceConfig.ten = nextLabel;
+      serviceConfig.coban = {
+        ...(serviceConfig.coban || {}),
+        cungquan: Math.round(toNumber(formData.get(`services[${serviceKey}][cungquan]`), serviceConfig?.coban?.cungquan || 0)),
+        khacquan: Math.round(toNumber(formData.get(`services[${serviceKey}][khacquan]`), serviceConfig?.coban?.khacquan || 0)),
+        lientinh: Math.round(toNumber(formData.get(`services[${serviceKey}][lientinh]`), serviceConfig?.coban?.lientinh || 0)),
+      };
+      delete serviceConfig.heso_dichvu;
+      return pricingData;
+    }
+
+    if (action === "save_instant_service") {
+      const serviceConfig = domestic?.dichvu?.laptuc || {};
+      const distanceConfig = domestic?.cauhinh_khoangcach || {};
+      const nextLabel = String(formData.get("instant_service[ten]") || serviceConfig.ten || "Giao ngay").trim();
+      const nearPrice = Math.round(toNumber(formData.get("instant_distance[gia_xe_may_gan]"), distanceConfig.gia_xe_may_gan || 6500));
+      const farThreshold = Number(toNumber(formData.get("instant_distance[nguong_xe_may_xa]"), distanceConfig.nguong_xe_may_xa || 20).toFixed(1));
+      const farPrice = Math.round(toNumber(formData.get("instant_distance[gia_xe_may_xa]"), distanceConfig.gia_xe_may_xa || 5000));
+
+      if (!nextLabel) {
+        throw new Error("Tên hiển thị của Giao ngay không được để trống.");
+      }
+      if (nearPrice <= 0 || farPrice <= 0) {
+        throw new Error("Đơn giá xe máy phải lớn hơn 0.");
+      }
+      if (farThreshold <= 0) {
+        throw new Error("Ngưỡng bắt đầu giá đường dài phải lớn hơn 0.");
+      }
+      if (farPrice > nearPrice) {
+        throw new Error("Đơn giá sau ngưỡng xa không nên lớn hơn đơn giá gần.");
+      }
+
+      serviceConfig.ten = nextLabel;
+      delete serviceConfig.heso_dichvu;
+      distanceConfig.gia_xe_may_gan = nearPrice;
+      distanceConfig.nguong_xe_may_xa = farThreshold;
+      distanceConfig.gia_xe_may_xa = farPrice;
+      return pricingData;
+    }
+
+    if (action === "save_service_time_row") {
+      const originalKey = sanitizePriceKey(formData.get("original_time_key"));
+      const timeRows = serviceFeeConfig?.thoigian || {};
+      const timeConfig = timeRows[originalKey];
+      if (!originalKey || !timeConfig) {
+        throw new Error("Không tìm thấy khung giờ cần cập nhật.");
+      }
+
+      const nextKey = sanitizePriceKey(formData.get("time_row[key]") || originalKey);
+      const nextLabel = String(formData.get("time_row[ten]") || timeConfig.ten || nextKey).trim();
+      const start = String(formData.get("time_row[batdau]") || timeConfig.batdau || "00:00").trim();
+      const end = String(formData.get("time_row[ketthuc]") || timeConfig.ketthuc || "23:59").trim();
+      const fixedFee = Math.round(toNumber(formData.get("time_row[phicodinh]"), timeConfig.phicodinh || 0));
+      const factor = Number(toNumber(formData.get("time_row[heso]"), timeConfig.heso || 1).toFixed(3));
+
+      if (!nextKey || !nextLabel) {
+        throw new Error("Mã và tên khung giờ không được để trống.");
+      }
+      if (nextKey !== originalKey) {
+        throw new Error("Đổi mã khung giờ cần đi qua luồng refresh đầy đủ.");
+      }
+      if (!isValidTimeText(start) || !isValidTimeText(end)) {
+        throw new Error("Giờ bắt đầu và kết thúc không hợp lệ.");
+      }
+      if (factor < 1) {
+        throw new Error("Hệ số phải từ 1 trở lên.");
+      }
+
+      timeRows[originalKey] = {
+        ...timeConfig,
+        ten: nextLabel,
+        batdau: start,
+        ketthuc: end,
+        phicodinh: fixedFee,
+        heso: factor,
+      };
+      return pricingData;
+    }
+
+    if (action === "save_weather_row") {
+      const originalKey = sanitizePriceKey(formData.get("original_weather_key"));
+      const weatherRows = serviceFeeConfig?.thoitiet || {};
+      const weatherConfig = weatherRows[originalKey];
+      if (!originalKey || !weatherConfig) {
+        throw new Error("Không tìm thấy điều kiện giao cần cập nhật.");
+      }
+
+      const nextKey = sanitizePriceKey(formData.get("weather_row[key]") || originalKey);
+      const nextLabel = String(formData.get("weather_row[ten]") || weatherConfig.ten || nextKey).trim();
+      const fixedFee = Math.round(toNumber(formData.get("weather_row[phicodinh]"), weatherConfig.phicodinh || 0));
+      const factor = Number(toNumber(formData.get("weather_row[heso]"), weatherConfig.heso || 1).toFixed(3));
+
+      if (!nextKey || !nextLabel) {
+        throw new Error("Mã và tên điều kiện không được để trống.");
+      }
+      if (nextKey !== originalKey) {
+        throw new Error("Đổi mã điều kiện cần đi qua luồng refresh đầy đủ.");
+      }
+      if (factor < 1) {
+        throw new Error("Hệ số phải từ 1 trở lên.");
+      }
+
+      weatherRows[originalKey] = {
+        ...weatherConfig,
+        ten: nextLabel,
+        phicodinh: fixedFee,
+        heso: factor,
+      };
+      return pricingData;
+    }
+
+    if (action === "save_cod_insurance") {
+      const feeConfig = pricingData?.BANGGIA?.phuthu || {};
+      const codRate = Number(toNumber(formData.get("cod_insurance[cod_kieu]"), feeConfig?.thuho?.kieu || 0).toFixed(4));
+      const insuranceRate = Number(toNumber(formData.get("cod_insurance[insurance_kieu]"), feeConfig?.baohiem?.kieu || 0).toFixed(4));
+
+      if (codRate < 0 || codRate > 1 || insuranceRate < 0 || insuranceRate > 1) {
+        throw new Error("Tỷ lệ COD và bảo hiểm phải nằm trong khoảng từ 0 đến 1.");
+      }
+
+      feeConfig.thuho = {
+        ...(feeConfig.thuho || {}),
+        nguong: Math.round(toNumber(formData.get("cod_insurance[cod_nguong]"), feeConfig?.thuho?.nguong || 0)),
+        kieu: codRate,
+        toithieu: Math.round(toNumber(formData.get("cod_insurance[cod_toithieu]"), feeConfig?.thuho?.toithieu || 0)),
+      };
+      feeConfig.baohiem = {
+        ...(feeConfig.baohiem || {}),
+        nguong: Math.round(toNumber(formData.get("cod_insurance[insurance_nguong]"), feeConfig?.baohiem?.nguong || 0)),
+        kieu: insuranceRate,
+        toithieu: Math.round(toNumber(formData.get("cod_insurance[insurance_toithieu]"), feeConfig?.baohiem?.toithieu || 0)),
+      };
+      pricingData.BANGGIA.phuthu = feeConfig;
+      return pricingData;
+    }
+
+    if (action === "save_vehicle_row") {
+      const originalKey = String(formData.get("original_vehicle_key") || "").trim();
+      const vehicles = pricingData?.phuong_tien || [];
+      const vehicle = vehicles.find((item) => String(item?.key || "") === originalKey);
+      if (!originalKey || !vehicle) {
+        throw new Error("Không tìm thấy phương tiện cần cập nhật.");
+      }
+
+      const nextKey = String(formData.get("vehicle_row[key]") || originalKey).trim();
+      const nextLabel = String(formData.get("vehicle_row[label]") || vehicle.label || nextKey).trim();
+      const weight = Number(toNumber(formData.get("vehicle_row[trong_luong_toi_da]"), vehicle.trong_luong_toi_da || 0).toFixed(2));
+      const basePrice = Math.round(toNumber(formData.get("vehicle_row[gia_co_ban]"), vehicle.gia_co_ban || 0));
+      const factor = Number(toNumber(formData.get("vehicle_row[he_so_xe]"), vehicle.he_so_xe || 1).toFixed(2));
+      const minFee = Math.round(toNumber(formData.get("vehicle_row[phi_toi_thieu]"), vehicle.phi_toi_thieu || 0));
+      const description = String(formData.get("vehicle_row[description]") || vehicle.description || "").trim();
+
+      if (!nextKey) {
+        throw new Error("Mã phương tiện không được để trống.");
+      }
+      if (!nextLabel) {
+        throw new Error("Tên hiển thị phương tiện không được để trống.");
+      }
+      if (nextKey !== originalKey) {
+        throw new Error("Đổi mã phương tiện cần đi qua luồng refresh đầy đủ.");
+      }
+      if (factor < 1) {
+        throw new Error("Hệ số xe phải từ 1 trở lên.");
+      }
+      if (basePrice <= 0 || minFee < 0 || weight <= 0) {
+        throw new Error("Giá cơ bản, phí tối thiểu và tải trọng tối đa của phương tiện phải hợp lệ.");
+      }
+
+      Object.assign(vehicle, {
+        key: nextKey,
+        label: nextLabel,
+        he_so_xe: factor,
+        gia_co_ban: basePrice,
+        phi_toi_thieu: minFee,
+        trong_luong_toi_da: weight,
+        description,
+      });
+      return pricingData;
+    }
+
+    if (action === "save_goods_fee_row") {
+      const originalKey = sanitizePriceKey(formData.get("original_goods_key"));
+      const goodsFees = domestic?.philoaihang || {};
+      const goodsLabels = domestic?.tenloaihang || {};
+      const goodsDescriptions = domestic?.motaloaihang || {};
+      const goodsMultipliers = domestic?.hesoloaihang || {};
+      if (!originalKey || !(originalKey in goodsFees)) {
+        throw new Error("Không tìm thấy loại hàng cần cập nhật.");
+      }
+
+      const nextKey = sanitizePriceKey(formData.get("goods_row[key]") || originalKey);
+      const nextLabel = String(formData.get("goods_row[label]") || goodsLabels[originalKey] || nextKey).trim();
+      const nextFee = Math.round(toNumber(formData.get("goods_row[fee]"), goodsFees[originalKey] || 0));
+      const nextFactor = Number(toNumber(formData.get("goods_row[he_so]"), goodsMultipliers[originalKey] || 1).toFixed(3));
+      const nextDescription = String(formData.get("goods_row[description]") || goodsDescriptions[originalKey] || "").trim();
+
+      if (!nextKey) {
+        throw new Error("Mã loại hàng không được để trống.");
+      }
+      if (!nextLabel) {
+        throw new Error("Tên hiển thị của loại hàng không được để trống.");
+      }
+      if (nextKey !== originalKey) {
+        throw new Error("Đổi mã loại hàng cần đi qua luồng refresh đầy đủ.");
+      }
+      if (nextFactor < 1) {
+        throw new Error("Hệ số loại hàng phải từ 1 trở lên.");
+      }
+
+      goodsFees[originalKey] = nextFee;
+      goodsLabels[originalKey] = nextLabel;
+      goodsDescriptions[originalKey] = nextDescription;
+      goodsMultipliers[originalKey] = nextFactor;
+      return pricingData;
+    }
+
+    throw new Error("Action này chưa hỗ trợ bypass ajax_preview.");
+  }
+
+  function timeTextToMinutes(value) {
+    const normalized = String(value || "").trim();
+    const match = normalized.match(/^(\d{2}):(\d{2})$/);
+    if (!match) return Number.MAX_SAFE_INTEGER;
+    return Number(match[1]) * 60 + Number(match[2]);
+  }
+
   function serializePricingData(value) {
     return JSON.stringify(value ?? null);
+  }
+
+  function extractBracketKey(formData, prefix) {
+    for (const [name] of formData.entries()) {
+      if (name.startsWith(`${prefix}[`)) {
+        const matched = name.match(/\[([^\]]+)\]/);
+        if (matched) return matched[1];
+      }
+    }
+    return "";
+  }
+
+  function findPricingRow(rowType, rowKey = "") {
+    const selector = rowKey
+      ? `[data-pricing-row="${rowType}"][data-row-key="${rowKey}"]`
+      : `[data-pricing-row="${rowType}"]`;
+    return document.querySelector(selector);
+  }
+
+  function getVehicleIconClass(key) {
+    const normalized = String(key || "").toLowerCase();
+    if (normalized.includes("motorcycle") || normalized.includes("xe_may")) {
+      return "fa-motorcycle";
+    }
+    if (normalized.includes("truck") || normalized.includes("xe_tai")) {
+      return "fa-truck";
+    }
+    if (normalized.includes("van") || normalized.includes("xe_ban_tai")) {
+      return "fa-truck-front";
+    }
+    if (normalized.includes("three_wheeler") || normalized.includes("ba_banh")) {
+      return "fa-motorcycle";
+    }
+    return "fa-truck-pickup";
+  }
+
+  function canPatchDomDirectly(action, formData) {
+    if (
+      action === "save_services" ||
+      action === "save_instant_service" ||
+      action === "save_cod_insurance"
+    ) {
+      return true;
+    }
+
+    if (action === "save_weather_row") {
+      const originalKey = sanitizePriceKey(formData.get("original_weather_key"));
+      const nextKey = sanitizePriceKey(formData.get("weather_row[key]") || originalKey);
+      return originalKey !== "" && originalKey === nextKey;
+    }
+
+    if (action === "save_goods_fee_row") {
+      const originalKey = sanitizePriceKey(formData.get("original_goods_key"));
+      const nextKey = sanitizePriceKey(formData.get("goods_row[key]") || originalKey);
+      return originalKey !== "" && originalKey === nextKey;
+    }
+
+    if (action === "save_vehicle_row") {
+      const originalKey = String(formData.get("original_vehicle_key") || "").trim();
+      const nextKey = String(formData.get("vehicle_row[key]") || originalKey).trim();
+      return originalKey !== "" && originalKey === nextKey;
+    }
+
+    if (action === "save_service_time_row") {
+      const originalKey = sanitizePriceKey(formData.get("original_time_key"));
+      const nextKey = sanitizePriceKey(formData.get("time_row[key]") || originalKey);
+      if (!originalKey || originalKey !== nextKey) return false;
+
+      const currentTime =
+        currentPricingSnapshot?.BAOGIACHITIET?.noidia?.phidichvu?.giaongaylaptuc?.thoigian?.[
+          originalKey
+        ] || null;
+      if (!currentTime) return false;
+
+      return (
+        String(formData.get("time_row[batdau]") || currentTime.batdau || "") ===
+          String(currentTime.batdau || "") &&
+        String(formData.get("time_row[ketthuc]") || currentTime.ketthuc || "") ===
+          String(currentTime.ketthuc || "")
+      );
+    }
+
+    return false;
+  }
+
+  function patchServiceRow(pricingData, serviceKey) {
+    const row = findPricingRow("service", serviceKey);
+    const service =
+      pricingData?.BAOGIACHITIET?.noidia?.dichvu?.[serviceKey] || null;
+    if (!row || !service) return false;
+
+    row.children[1].textContent = String(service.ten || serviceKey);
+    row.children[2].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      service?.coban?.cungquan || 0,
+    );
+    row.children[3].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      service?.coban?.khacquan || 0,
+    );
+    row.children[4].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      service?.coban?.lientinh || 0,
+    );
+    return true;
+  }
+
+  function patchInstantRow(pricingData) {
+    const row = findPricingRow("instant");
+    const domestic = pricingData?.BAOGIACHITIET?.noidia || {};
+    const service = domestic?.dichvu?.laptuc || {};
+    const distance = domestic?.cauhinh_khoangcach || {};
+    if (!row) return false;
+
+    row.children[0].textContent = String(service.ten || "Giao ngay");
+    row.children[1].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      distance.gia_xe_may_gan || 0,
+    );
+    row.children[2].textContent = `${distance.nguong_xe_may_xa || 0} km`;
+    row.children[3].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      distance.gia_xe_may_xa || 0,
+    );
+    return true;
+  }
+
+  function patchServiceTimeRow(pricingData, timeKey) {
+    const row = findPricingRow("service-time", timeKey);
+    const timeConfig =
+      pricingData?.BAOGIACHITIET?.noidia?.phidichvu?.giaongaylaptuc?.thoigian?.[timeKey] || null;
+    if (!row || !timeConfig) return false;
+
+    row.children[0].textContent = String(timeConfig.ten || timeKey);
+    row.children[1].textContent = String(timeConfig.batdau || "");
+    row.children[2].textContent = String(timeConfig.ketthuc || "");
+    row.children[3].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      timeConfig.phicodinh || 0,
+    );
+    row.children[4].textContent = String(timeConfig.heso ?? 1);
+    return true;
+  }
+
+  function patchWeatherRow(pricingData, weatherKey) {
+    const row = findPricingRow("weather", weatherKey);
+    const weatherConfig =
+      pricingData?.BAOGIACHITIET?.noidia?.phidichvu?.giaongaylaptuc?.thoitiet?.[weatherKey] ||
+      null;
+    if (!row || !weatherConfig) return false;
+
+    row.children[0].textContent = String(weatherConfig.ten || weatherKey);
+    row.children[1].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      weatherConfig.phicodinh || 0,
+    );
+    row.children[2].textContent = String(weatherConfig.heso ?? 1);
+    return true;
+  }
+
+  function patchCodRows(pricingData) {
+    const feeConfig = pricingData?.BANGGIA?.phuthu || {};
+    const codRow = findPricingRow("cod", "thuho");
+    const insuranceRow = findPricingRow("cod", "baohiem");
+    if (!codRow || !insuranceRow) return false;
+
+    codRow.children[1].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      feeConfig?.thuho?.nguong || 0,
+    );
+    codRow.children[2].textContent = formatPercent(feeConfig?.thuho?.kieu || 0);
+    codRow.children[3].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      feeConfig?.thuho?.toithieu || 0,
+    );
+
+    insuranceRow.children[1].querySelector(".pricing-value").textContent =
+      formatMoneyPreview(feeConfig?.baohiem?.nguong || 0);
+    insuranceRow.children[2].textContent = formatPercent(feeConfig?.baohiem?.kieu || 0);
+    insuranceRow.children[3].querySelector(".pricing-value").textContent =
+      formatMoneyPreview(feeConfig?.baohiem?.toithieu || 0);
+    return true;
+  }
+
+  function patchVehicleRow(pricingData, vehicleKey) {
+    const row = findPricingRow("vehicle", vehicleKey);
+    const vehicle = (pricingData?.phuong_tien || []).find((item) => item?.key === vehicleKey);
+    if (!row || !vehicle) return false;
+
+    const perKm = Math.round(toNumber(vehicle.gia_co_ban, 0) * toNumber(vehicle.he_so_xe, 1));
+    const icon = row.querySelector(".vehicle-icon i");
+    if (icon) {
+      icon.className = `fa-solid ${getVehicleIconClass(vehicleKey)}`;
+    }
+    const labelNode = row.querySelector('[data-cell="label"]');
+    const keyNode = row.querySelector('[data-cell="key"]');
+    const weightNode = row.querySelector('[data-cell="weight"]');
+    const basePriceNode = row.querySelector('[data-cell="base-price"]');
+    const factorNode = row.querySelector('[data-cell="factor"]');
+    const perKmNode = row.querySelector('[data-cell="per-km"]');
+    const minFeeNode = row.querySelector('[data-cell="min-fee"]');
+
+    if (labelNode) labelNode.textContent = String(vehicle.label || vehicleKey);
+    if (keyNode) keyNode.textContent = String(vehicleKey);
+    if (weightNode) weightNode.textContent = String(vehicle.trong_luong_toi_da ?? 0);
+    if (basePriceNode) basePriceNode.textContent = formatMoneyPreview(vehicle.gia_co_ban || 0);
+    if (factorNode) factorNode.textContent = `x ${vehicle.he_so_xe ?? 1}`;
+    if (perKmNode) perKmNode.textContent = formatMoneyPreview(perKm);
+    if (minFeeNode) minFeeNode.textContent = formatMoneyPreview(vehicle.phi_toi_thieu || 0);
+    return true;
+  }
+
+  function patchGoodsRow(pricingData, goodsKey) {
+    const row = findPricingRow("goods", goodsKey);
+    const domestic = pricingData?.BAOGIACHITIET?.noidia || {};
+    if (!row || !(goodsKey in (domestic?.philoaihang || {}))) return false;
+
+    row.children[0].querySelector("strong").textContent = String(goodsKey);
+    row.children[1].textContent = String(domestic?.tenloaihang?.[goodsKey] || goodsKey);
+    row.children[2].querySelector(".pricing-value").textContent = formatMoneyPreview(
+      domestic?.philoaihang?.[goodsKey] || 0,
+    );
+    row.children[3].textContent = String(domestic?.hesoloaihang?.[goodsKey] ?? 1);
+    row.children[4].textContent = String(
+      domestic?.motaloaihang?.[goodsKey] || "Chưa có mô tả",
+    );
+    return true;
+  }
+
+  function patchDomAfterSave(action, formData, pricingData) {
+    if (action === "save_services") {
+      const serviceKey = extractBracketKey(formData, "services");
+      return serviceKey ? patchServiceRow(pricingData, serviceKey) : false;
+    }
+    if (action === "save_instant_service") {
+      return patchInstantRow(pricingData);
+    }
+    if (action === "save_cod_insurance") {
+      return patchCodRows(pricingData);
+    }
+    if (action === "save_service_time_row") {
+      const timeKey = sanitizePriceKey(formData.get("original_time_key"));
+      return timeKey ? patchServiceTimeRow(pricingData, timeKey) : false;
+    }
+    if (action === "save_weather_row") {
+      const weatherKey = sanitizePriceKey(formData.get("original_weather_key"));
+      return weatherKey ? patchWeatherRow(pricingData, weatherKey) : false;
+    }
+    if (action === "save_vehicle_row") {
+      const vehicleKey = String(formData.get("original_vehicle_key") || "").trim();
+      return vehicleKey ? patchVehicleRow(pricingData, vehicleKey) : false;
+    }
+    if (action === "save_goods_fee_row") {
+      const goodsKey = sanitizePriceKey(formData.get("original_goods_key"));
+      return goodsKey ? patchGoodsRow(pricingData, goodsKey) : false;
+    }
+    return false;
+  }
+
+  function canPersistRowLevel(action, formData) {
+    if (activeVersionId <= 0) return false;
+
+    if (action === "save_services") {
+      return Boolean(extractBracketKey(formData, "services"));
+    }
+
+    if (action === "save_instant_service" || action === "save_cod_insurance") {
+      return true;
+    }
+
+    if (action === "save_service_time_row") {
+      const originalKey = sanitizePriceKey(formData.get("original_time_key"));
+      const nextKey = sanitizePriceKey(formData.get("time_row[key]") || originalKey);
+      const currentTime =
+        currentPricingSnapshot?.BAOGIACHITIET?.noidia?.phidichvu?.giaongaylaptuc?.thoigian?.[
+          originalKey
+        ] || null;
+      if (!currentTime || !originalKey || originalKey !== nextKey) return false;
+
+      return (
+        String(formData.get("time_row[batdau]") || currentTime.batdau || "") ===
+          String(currentTime.batdau || "") &&
+        String(formData.get("time_row[ketthuc]") || currentTime.ketthuc || "") ===
+          String(currentTime.ketthuc || "")
+      );
+    }
+
+    if (action === "save_weather_row") {
+      const originalKey = sanitizePriceKey(formData.get("original_weather_key"));
+      const nextKey = sanitizePriceKey(formData.get("weather_row[key]") || originalKey);
+      return Boolean(originalKey) && originalKey === nextKey;
+    }
+
+    if (action === "save_vehicle_row") {
+      const originalKey = String(formData.get("original_vehicle_key") || "").trim();
+      const nextKey = String(formData.get("vehicle_row[key]") || originalKey).trim();
+      return Boolean(originalKey) && originalKey === nextKey;
+    }
+
+    if (action === "save_goods_fee_row") {
+      const originalKey = sanitizePriceKey(formData.get("original_goods_key"));
+      const nextKey = sanitizePriceKey(formData.get("goods_row[key]") || originalKey);
+      return Boolean(originalKey) && originalKey === nextKey;
+    }
+
+    return false;
   }
 
   function showAlert(type, message) {
@@ -184,8 +797,49 @@
   }
 
   function showProgress(message) {
-    // Với hệ thống mới, ta có thể dùng notify với type info để hiện progress
-    showAlert("info", message);
+    if (!progressContainer) {
+      progressContainer = document.querySelector(".core-toast-container");
+      if (!progressContainer) {
+        progressContainer = document.createElement("div");
+        progressContainer.className = "core-toast-container";
+        document.body.appendChild(progressContainer);
+      }
+    }
+
+    if (!progressToast) {
+      progressToast = document.createElement("div");
+      progressToast.className = "core-toast info";
+      progressToast.innerHTML = `
+        <div class="core-toast-icon"><i class="fa-solid fa-circle-info"></i></div>
+        <div class="core-toast-message"></div>
+      `;
+      progressContainer.appendChild(progressToast);
+      window.setTimeout(() => {
+        progressToast?.classList.add("show");
+      }, 10);
+    }
+
+    const messageNode = progressToast.querySelector(".core-toast-message");
+    if (messageNode) {
+      messageNode.textContent = message;
+    }
+  }
+
+  function hideProgress() {
+    if (!progressToast) return;
+    progressToast.classList.remove("show");
+    const toastToRemove = progressToast;
+    progressToast = null;
+    window.setTimeout(() => {
+      toastToRemove.remove();
+      if (
+        progressContainer &&
+        !progressContainer.querySelector(".core-toast")
+      ) {
+        progressContainer.remove();
+        progressContainer = null;
+      }
+    }, 300);
   }
 
   function clearPendingFormState(form) {
@@ -323,7 +977,7 @@
     return payload.pricingData;
   }
 
-  async function refreshPricingShell(preferredSectionId = "") {
+  async function refreshPricingSection(action, preferredSectionId = "") {
     const response = await fetch(`${config.pageUrl}?_ts=${Date.now()}`, {
       credentials: "same-origin",
       headers: {
@@ -339,15 +993,34 @@
     const parsed = new DOMParser().parseFromString(html, "text/html");
     const nextShell = getPricingShell(parsed);
     const currentShell = getPricingShell(document);
+    const nextSectionId = ACTION_SECTION_IDS[action] || preferredSectionId || getActiveSectionId(document);
 
     if (!nextShell || !currentShell) {
       throw new Error("Không tìm thấy khối pricing-shell để cập nhật giao diện.");
     }
 
-    document.body.classList.remove("pricing-modal-open");
-    currentShell.replaceWith(nextShell);
     activeVersionId = Number(nextShell.dataset.activeVersionId || activeVersionId || 0);
-    initPricingUi(document, preferredSectionId || getActiveSectionId(parsed));
+
+    const currentSection = currentShell.querySelector(`#${nextSectionId}`);
+    const nextSection = nextShell.querySelector(`#${nextSectionId}`);
+    if (!currentSection || !nextSection) {
+      throw new Error(`Không tìm thấy section ${nextSectionId} để cập nhật.`);
+    }
+
+    const currentModalGroup = currentShell.querySelector(
+      `[data-pricing-modal-group="${nextSectionId}"]`,
+    );
+    const nextModalGroup = nextShell.querySelector(
+      `[data-pricing-modal-group="${nextSectionId}"]`,
+    );
+
+    closeAllModals(document);
+    currentSection.replaceWith(nextSection);
+    if (currentModalGroup && nextModalGroup) {
+      currentModalGroup.replaceWith(nextModalGroup);
+    }
+
+    initPricingUi(document, preferredSectionId || nextSectionId);
     bindPricingForms(document);
   }
 
@@ -384,6 +1057,321 @@
     const deleteFn = getDeleteFn();
     if (!deleteFn) throw new Error("Không tìm thấy krud.js hoặc hàm delete KRUD.");
     return deleteFn(table, id);
+  }
+
+  function buildVersionWhere(versionId, extraWhere = []) {
+    return [
+      { field: "pricing_version_id", operator: "=", value: versionId },
+      ...extraWhere,
+    ];
+  }
+
+  async function findVersionRow(table, versionId, extraWhere = []) {
+    const rows = await listTable(table, buildVersionWhere(versionId, extraWhere), { id: "asc" }, 20);
+    return rows[0] || null;
+  }
+
+  async function upsertVersionRow(table, versionId, extraWhere, data) {
+    const payload = { pricing_version_id: versionId, ...data };
+    const existing = await findVersionRow(table, versionId, extraWhere);
+    if (existing?.id) {
+      await updateTable(table, Number(existing.id), payload);
+      return Number(existing.id);
+    }
+
+    const inserted = await insertTable(table, payload);
+    return Number(inserted.id || 0);
+  }
+
+  function getKrudMeta(pricingData) {
+    return pricingData?._krud_meta || {};
+  }
+
+  async function updateOrInsertVersionRowById(
+    table,
+    versionId,
+    recordId,
+    extraWhere,
+    data,
+  ) {
+    const payload = { pricing_version_id: versionId, ...data };
+    if (Number(recordId) > 0) {
+      await updateTable(table, Number(recordId), payload);
+      return Number(recordId);
+    }
+
+    return upsertVersionRow(table, versionId, extraWhere, data);
+  }
+
+  async function exportPricingDataFile(pricingData) {
+    const exportPayload = stripKrudMeta(pricingData);
+    await fetch(config.exportUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ pricingData: exportPayload }),
+    }).then(async (response) => {
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.message || `HTTP ${response.status}`);
+      }
+      if (!payload.verified) {
+        throw new Error("pricing-data.json chưa được xác minh sau khi export.");
+      }
+    });
+  }
+
+  async function persistPricingRowLevel(pricingData, action, formData, versionId) {
+    const domestic = pricingData?.BAOGIACHITIET?.noidia || {};
+    const serviceFeeConfig = domestic?.phidichvu?.giaongaylaptuc || {};
+    const krudMeta = getKrudMeta(pricingData);
+
+    if (action === "save_services") {
+      const serviceKey = extractBracketKey(formData, "services");
+      const serviceConfig = domestic?.dichvu?.[serviceKey];
+      if (!serviceKey || !serviceConfig) return false;
+
+      showProgress("Đang cập nhật gói dịch vụ lên KRUD...");
+      krudMeta.service_ids = krudMeta.service_ids || {};
+      krudMeta.service_price_ids = krudMeta.service_price_ids || {};
+      krudMeta.service_ids[serviceKey] = await updateOrInsertVersionRowById(
+        "ghn_goi_dich_vu",
+        versionId,
+        krudMeta?.service_ids?.[serviceKey] || 0,
+        [{ field: "service_key", operator: "=", value: serviceKey }],
+        {
+          service_key: serviceKey,
+          service_label: String(serviceConfig?.ten || serviceKey),
+          applies_service_fee: serviceConfig?.ap_dung_phi_dich_vu ? 1 : 0,
+          sort_order: SERVICE_ORDER[serviceKey] || 999,
+        },
+      );
+
+      await Promise.all(
+        Object.entries(REGION_ORDER).map(async ([regionKey]) => {
+          const baseKey = REGION_BASE_KEY[regionKey] || regionKey;
+          const rowId = await updateOrInsertVersionRowById(
+            "ghn_gia_goi_theo_vung",
+            versionId,
+            krudMeta?.service_price_ids?.[serviceKey]?.[regionKey] || 0,
+            [
+              { field: "service_key", operator: "=", value: serviceKey },
+              { field: "region_key", operator: "=", value: regionKey },
+            ],
+            {
+              service_key: serviceKey,
+              region_key: regionKey,
+              base_price: Math.round(toNumber(serviceConfig?.coban?.[baseKey], 0)),
+              next_step_price: Math.round(toNumber(serviceConfig?.buoctiep, 0)),
+              eta_text: String(serviceConfig?.thoigian?.[regionKey] || ""),
+            },
+          );
+          krudMeta.service_price_ids[serviceKey] = krudMeta.service_price_ids[serviceKey] || {};
+          krudMeta.service_price_ids[serviceKey][regionKey] = rowId;
+        }),
+      );
+
+      return true;
+    }
+
+    if (action === "save_instant_service") {
+      const serviceConfig = domestic?.dichvu?.laptuc || {};
+      const distanceConfig = domestic?.cauhinh_khoangcach || {};
+
+      showProgress("Đang cập nhật Giao ngay lên KRUD...");
+      krudMeta.service_ids = krudMeta.service_ids || {};
+      await Promise.all([
+        updateOrInsertVersionRowById(
+          "ghn_goi_dich_vu",
+          versionId,
+          krudMeta?.service_ids?.laptuc || 0,
+          [{ field: "service_key", operator: "=", value: "laptuc" }],
+          {
+            service_key: "laptuc",
+            service_label: String(serviceConfig?.ten || "Giao ngay"),
+            applies_service_fee: serviceConfig?.ap_dung_phi_dich_vu ? 1 : 0,
+            sort_order: SERVICE_ORDER.laptuc || 40,
+          },
+        ),
+        updateOrInsertVersionRowById(
+          "ghn_cau_hinh_khoang_cach",
+          versionId,
+          krudMeta?.distance_config_id || 0,
+          [{ field: "config_key", operator: "=", value: "default" }],
+          {
+            config_key: "default",
+            motorbike_near_price: Math.round(toNumber(distanceConfig?.gia_xe_may_gan, 0)),
+            motorbike_far_threshold: formatDecimal(
+              distanceConfig?.nguong_xe_may_xa ?? 0,
+              2,
+            ),
+            motorbike_far_price: Math.round(toNumber(distanceConfig?.gia_xe_may_xa, 0)),
+            free_weight: formatDecimal(distanceConfig?.can_mien_phi ?? 0, 2),
+            volume_divisor: Math.round(toNumber(distanceConfig?.he_so_the_tich, 6000)),
+            vat_included: distanceConfig?.da_gom_vat ? 1 : 0,
+          },
+        ),
+      ]).then(([serviceId, distanceId]) => {
+        krudMeta.service_ids.laptuc = serviceId;
+        krudMeta.distance_config_id = distanceId;
+      });
+
+      return true;
+    }
+
+    if (action === "save_service_time_row") {
+      const slotKey = sanitizePriceKey(formData.get("original_time_key"));
+      const slotConfig = serviceFeeConfig?.thoigian?.[slotKey];
+      if (!slotKey || !slotConfig) return false;
+
+      showProgress("Đang cập nhật khung giờ lên KRUD...");
+      krudMeta.time_ids = krudMeta.time_ids || {};
+      krudMeta.time_ids[slotKey] = await updateOrInsertVersionRowById(
+        "ghn_khung_gio_dich_vu",
+        versionId,
+        krudMeta?.time_ids?.[slotKey] || 0,
+        [{ field: "slot_key", operator: "=", value: slotKey }],
+        {
+          slot_key: slotKey,
+          slot_label: String(slotConfig?.ten || slotKey),
+          start_time: String(slotConfig?.batdau || "00:00"),
+          end_time: String(slotConfig?.ketthuc || "23:59"),
+          fixed_fee: Math.round(toNumber(slotConfig?.phicodinh, 0)),
+          multiplier: formatDecimal(slotConfig?.heso ?? 1, 3),
+          sort_order:
+            Object.keys(serviceFeeConfig?.thoigian || {}).indexOf(slotKey) >= 0
+              ? (Object.keys(serviceFeeConfig?.thoigian || {}).indexOf(slotKey) + 1) * 10
+              : 999,
+        },
+      );
+
+      return true;
+    }
+
+    if (action === "save_weather_row") {
+      const conditionKey = sanitizePriceKey(formData.get("original_weather_key"));
+      const weatherConfig = serviceFeeConfig?.thoitiet?.[conditionKey];
+      if (!conditionKey || !weatherConfig) return false;
+
+      showProgress("Đang cập nhật điều kiện giao lên KRUD...");
+      krudMeta.condition_ids = krudMeta.condition_ids || {};
+      krudMeta.condition_ids[conditionKey] = await updateOrInsertVersionRowById(
+        "ghn_dieu_kien_giao",
+        versionId,
+        krudMeta?.condition_ids?.[conditionKey] || 0,
+        [{ field: "condition_key", operator: "=", value: conditionKey }],
+        {
+          condition_key: conditionKey,
+          condition_label: String(weatherConfig?.ten || conditionKey),
+          fixed_fee: Math.round(toNumber(weatherConfig?.phicodinh, 0)),
+          multiplier: formatDecimal(weatherConfig?.heso ?? 1, 3),
+          sort_order:
+            Object.keys(serviceFeeConfig?.thoitiet || {}).indexOf(conditionKey) >= 0
+              ? (Object.keys(serviceFeeConfig?.thoitiet || {}).indexOf(conditionKey) + 1) * 10
+              : 999,
+        },
+      );
+
+      return true;
+    }
+
+    if (action === "save_cod_insurance") {
+      const feeConfig = pricingData?.BANGGIA?.phuthu || {};
+
+      showProgress("Đang cập nhật COD và bảo hiểm lên KRUD...");
+      krudMeta.financial_ids = krudMeta.financial_ids || {};
+      await Promise.all(
+        ["thuho", "baohiem"].map((financeKey) =>
+          updateOrInsertVersionRowById(
+            "ghn_cau_hinh_tai_chinh",
+            versionId,
+            krudMeta?.financial_ids?.[financeKey] || 0,
+            [{ field: "finance_key", operator: "=", value: financeKey }],
+            {
+              finance_key: financeKey,
+              free_threshold: Math.round(toNumber(feeConfig?.[financeKey]?.nguong, 0)),
+              rate_value: Number(toNumber(feeConfig?.[financeKey]?.kieu, 0).toFixed(4)),
+              minimum_fee: Math.round(toNumber(feeConfig?.[financeKey]?.toithieu, 0)),
+            },
+          ),
+        ).then((rowId) => {
+          krudMeta.financial_ids[financeKey] = rowId;
+        }),
+      );
+
+      return true;
+    }
+
+    if (action === "save_vehicle_row") {
+      const vehicleKey = String(formData.get("original_vehicle_key") || "").trim();
+      const vehicle = (pricingData?.phuong_tien || []).find((item) => item?.key === vehicleKey);
+      if (!vehicleKey || !vehicle) return false;
+
+      showProgress("Đang cập nhật phương tiện lên KRUD...");
+      krudMeta.vehicle_ids = krudMeta.vehicle_ids || {};
+      krudMeta.vehicle_ids[vehicleKey] = await updateOrInsertVersionRowById(
+        "ghn_phuong_tien",
+        versionId,
+        krudMeta?.vehicle_ids?.[vehicleKey] || 0,
+        [{ field: "vehicle_key", operator: "=", value: vehicleKey }],
+        {
+          vehicle_key: vehicleKey,
+          vehicle_label: String(vehicle?.label || vehicleKey),
+          vehicle_factor: formatDecimal(vehicle?.he_so_xe ?? 1, 3),
+          base_price: Math.round(toNumber(vehicle?.gia_co_ban, 0)),
+          minimum_fee: Math.round(toNumber(vehicle?.phi_toi_thieu, 0)),
+          max_weight: formatDecimal(vehicle?.trong_luong_toi_da ?? 0, 2),
+          description_text: String(vehicle?.description || ""),
+          sort_order:
+            (pricingData?.phuong_tien || []).findIndex((item) => item?.key === vehicleKey) >= 0
+              ? ((pricingData?.phuong_tien || []).findIndex((item) => item?.key === vehicleKey) +
+                  1) *
+                10
+              : 999,
+        },
+      );
+
+      return true;
+    }
+
+    if (action === "save_goods_fee_row") {
+      const goodsKey = sanitizePriceKey(formData.get("original_goods_key"));
+      if (!goodsKey || !(goodsKey in (domestic?.philoaihang || {}))) return false;
+
+      const goodsKeys = Array.from(
+        new Set([
+          ...Object.keys(domestic?.philoaihang || {}),
+          ...Object.keys(domestic?.tenloaihang || {}),
+          ...Object.keys(domestic?.motaloaihang || {}),
+          ...Object.keys(domestic?.hesoloaihang || {}),
+        ]),
+      );
+
+      showProgress("Đang cập nhật loại hàng lên KRUD...");
+      krudMeta.goods_ids = krudMeta.goods_ids || {};
+      krudMeta.goods_ids[goodsKey] = await updateOrInsertVersionRowById(
+        "ghn_loai_hang",
+        versionId,
+        krudMeta?.goods_ids?.[goodsKey] || 0,
+        [{ field: "item_type_key", operator: "=", value: goodsKey }],
+        {
+          item_type_key: goodsKey,
+          item_type_label: String(domestic?.tenloaihang?.[goodsKey] || goodsKey),
+          fee_amount: Math.round(toNumber(domestic?.philoaihang?.[goodsKey], 0)),
+          multiplier: formatDecimal(domestic?.hesoloaihang?.[goodsKey] ?? 1, 3),
+          description_text: String(domestic?.motaloaihang?.[goodsKey] || ""),
+          sort_order:
+            goodsKeys.indexOf(goodsKey) >= 0 ? (goodsKeys.indexOf(goodsKey) + 1) * 10 : 999,
+        },
+      );
+
+      return true;
+    }
+
+    return false;
   }
 
   async function getActiveVersionInfo() {
@@ -531,7 +1519,17 @@
       note_text: String(serviceFeeConfig.ghichu || ""),
     });
 
-    Object.entries(serviceFeeConfig.thoigian || {}).forEach(([slotKey, slotConfig], index) => {
+    Object.entries(serviceFeeConfig.thoigian || {})
+      .sort(([, leftConfig], [, rightConfig]) => {
+        const startDiff =
+          timeTextToMinutes(leftConfig?.batdau) - timeTextToMinutes(rightConfig?.batdau);
+        if (startDiff !== 0) return startDiff;
+
+        return (
+          timeTextToMinutes(leftConfig?.ketthuc) - timeTextToMinutes(rightConfig?.ketthuc)
+        );
+      })
+      .forEach(([slotKey, slotConfig], index) => {
       rows.ghn_khung_gio_dich_vu.push({
         pricing_version_id: versionId,
         slot_key: slotKey,
@@ -542,7 +1540,7 @@
         multiplier: formatDecimal(slotConfig?.heso ?? 1, 3),
         sort_order: (index + 1) * 10,
       });
-    });
+      });
 
     Object.entries(serviceFeeConfig.thoitiet || {}).forEach(
       ([conditionKey, conditionConfig], index) => {
@@ -714,9 +1712,20 @@
     await runWithConcurrency(insertTasks, 4);
   }
 
-  async function persistPricingViaKrud(pricingData, action) {
-    const current = activeVersionId > 0 ? { metaId: 0, versionId: activeVersionId } : await getActiveVersionInfo();
+  async function persistPricingViaKrud(pricingData, action, formData) {
+    const current =
+      activeVersionId > 0 ? { metaId: 0, versionId: activeVersionId } : await getActiveVersionInfo();
     const versionId = current.versionId > 0 ? current.versionId : await createPricingVersion();
+
+    if (canPersistRowLevel(action, formData)) {
+      const persisted = await persistPricingRowLevel(pricingData, action, formData, versionId);
+      if (persisted) {
+        showProgress("Đang export pricing-data.json...");
+        await exportPricingDataFile(pricingData);
+        return versionId;
+      }
+    }
+
     const rows = buildPersistenceRows(pricingData, versionId);
     const targetTables =
       current.versionId > 0 && PARTIAL_ACTION_TABLES[action]
@@ -725,23 +1734,7 @@
     const tables = targetTables
       .map((table) => [table, rows[table] || []])
       .filter(([, tableRows]) => Array.isArray(tableRows));
-    const currentTotals = await Promise.all(
-      tables.map(async ([table]) => {
-        const listed = await listTable(
-          table,
-          [{ field: "pricing_version_id", operator: "=", value: versionId }],
-          { id: "asc" },
-          500,
-        );
-        return listed.length;
-      }),
-    );
-    const totalRows =
-      current.versionId > 0
-        ? tables.reduce((sum, [, tableRows], index) => {
-            return sum + Math.max(tableRows.length, currentTotals[index] || 0);
-          }, 0)
-        : tables.reduce((sum, [, tableRows]) => sum + tableRows.length, 0);
+    const totalRows = tables.reduce((sum, [, tableRows]) => sum + tableRows.length, 0);
     let doneRows = 0;
     const updateProgress = () => {
       const nextDone = Math.min(doneRows, totalRows);
@@ -770,23 +1763,7 @@
     updateProgress();
 
     showProgress("Đang export pricing-data.json...");
-    await fetch(config.exportUrl, {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ pricingData }),
-    }).then(async (response) => {
-      const payload = await response.json();
-      if (!response.ok || !payload.success) {
-        throw new Error(payload.message || `HTTP ${response.status}`);
-      }
-      if (!payload.verified) {
-        throw new Error("pricing-data.json chưa được xác minh sau khi export.");
-      }
-    });
+    await exportPricingDataFile(pricingData);
 
     if (current.versionId <= 0) {
       showProgress("Đang kích hoạt phiên bản bảng giá mới...");
@@ -837,19 +1814,29 @@
       if (!action) {
         throw new Error("Thiếu action của biểu mẫu bảng giá.");
       }
-      const pricingData = await previewPricingUpdate(formData);
+      const pricingData = canPersistRowLevel(action, formData)
+        ? applyDirectFormUpdate(action, formData, currentPricingSnapshot)
+        : await previewPricingUpdate(formData);
       if (serializePricingData(pricingData) === serializePricingData(currentPricingSnapshot)) {
         throw new Error("Không phát hiện thay đổi nào để lưu.");
       }
       const activeSectionId = getActiveSectionId(document);
-      const versionId = await persistPricingViaKrud(pricingData, action);
+      const versionId = await persistPricingViaKrud(pricingData, action, formData);
+      const patchedDirectly = canPatchDomDirectly(action, formData) &&
+        patchDomAfterSave(action, formData, pricingData);
       currentPricingSnapshot = pricingData;
       showProgress("Đang cập nhật giao diện bảng giá...");
-      await refreshPricingShell(activeSectionId);
+      if (patchedDirectly) {
+        closeAllModals(document);
+        initPricingUi(document, activeSectionId);
+      } else {
+        await refreshPricingSection(action, activeSectionId);
+      }
       if (progressTimer) {
         window.clearTimeout(progressTimer);
         progressTimer = 0;
       }
+      hideProgress();
       clearPendingFormState(form);
       showAlert(
         "success",
@@ -860,6 +1847,7 @@
         window.clearTimeout(progressTimer);
         progressTimer = 0;
       }
+      hideProgress();
       showAlert("error", error instanceof Error ? error.message : "Không lưu được bảng giá.");
       toggleSubmitting(form, false);
       clearPendingFormState(form);

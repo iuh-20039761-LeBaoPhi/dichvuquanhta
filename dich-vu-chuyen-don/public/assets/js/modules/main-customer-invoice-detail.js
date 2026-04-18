@@ -371,14 +371,58 @@ const customerInvoiceDetailModule = (function (window, document) {
     const normalized = normalizeText(value);
     if (!normalized) return "";
 
+    const driveFileId =
+      typeof core.getDriveFileIdFromUrl === "function"
+        ? core.getDriveFileIdFromUrl(normalized)
+        : "";
+    if (driveFileId) {
+      return `Google Drive • ${driveFileId}`;
+    }
+
     const sanitized = normalized.split("?")[0].split("#")[0];
     const segments = sanitized.split(/[\\/]/).filter(Boolean);
     return segments[segments.length - 1] || normalized;
   }
 
+  function resolveAttachmentUrls(value) {
+    const normalized = normalizeText(value);
+    if (!normalized) {
+      return {
+        fileId: "",
+        url: "",
+        viewUrl: "",
+        thumbnailUrl: "",
+      };
+    }
+
+    if (typeof core.getDriveResolvedUrls === "function") {
+      const resolved = core.getDriveResolvedUrls(normalized);
+      return {
+        fileId: normalizeText(resolved?.fileId || ""),
+        url: normalizeText(resolved?.downloadUrl || resolved?.url || normalized),
+        viewUrl: normalizeText(resolved?.viewUrl || resolved?.url || normalized),
+        thumbnailUrl: normalizeText(
+          resolved?.thumbnailUrl || resolved?.url || normalized,
+        ),
+      };
+    }
+
+    return {
+      fileId: "",
+      url: normalized,
+      viewUrl: normalized,
+      thumbnailUrl: normalized,
+    };
+  }
+
   function getAttachmentHref(value) {
     const normalized = normalizeText(value);
     if (!normalized) return "";
+
+    const resolved = resolveAttachmentUrls(normalized);
+    if (resolved.viewUrl) {
+      return resolved.viewUrl;
+    }
 
     if (/^(https?:)?\/\//i.test(normalized)) {
       return normalized;
@@ -393,6 +437,53 @@ const customerInvoiceDetailModule = (function (window, document) {
     }
 
     return "";
+  }
+
+  function getAttachmentPreviewUrl(value, type) {
+    const resolved = resolveAttachmentUrls(value);
+    if (!resolved.url) return "";
+
+    if (type === "image") {
+      return resolved.thumbnailUrl || resolved.url;
+    }
+
+    return resolved.url;
+  }
+
+  function bindFileSummary(input, output, emptyText) {
+    if (!input || !output) return;
+
+    const refresh = () => {
+      const files = Array.from(input.files || []);
+      output.textContent = files.length
+        ? `Đã chọn: ${files.map((file) => file.name).join(", ")}`
+        : emptyText;
+    };
+
+    input.addEventListener("change", refresh);
+    refresh();
+  }
+
+  function collectFiles(...inputs) {
+    return inputs.flatMap((input) =>
+      Array.from(input?.files || []).filter((file) => file instanceof File),
+    );
+  }
+
+  function mergeAttachmentValues(existingValues, nextValues) {
+    const merged = [];
+    const seen = new Set();
+
+    [...(Array.isArray(existingValues) ? existingValues : []), ...(Array.isArray(nextValues) ? nextValues : [])]
+      .map((item) => normalizeText(item))
+      .filter(Boolean)
+      .forEach((item) => {
+        if (seen.has(item)) return;
+        seen.add(item);
+        merged.push(item);
+      });
+
+    return merged;
   }
 
   async function copyText(value) {
@@ -443,26 +534,33 @@ const customerInvoiceDetailModule = (function (window, document) {
     }, 2600);
   }
 
-  function renderAttachmentGallery(invoice) {
+  function renderAttachmentGallery(imageItems, videoItems, options = {}) {
+    const imageLabelPrefix = options?.imageLabelPrefix || "Ảnh hiện trường";
+    const videoLabelPrefix = options?.videoLabelPrefix || "Video hiện trường";
+    const emptyMessage =
+      options?.emptyMessage ||
+      "Chưa có tài liệu hiện trường nào được gửi kèm cho yêu cầu này.";
     const mediaItems = [
-      ...((Array.isArray(invoice?.image_attachments) ? invoice.image_attachments : [])
+      ...((Array.isArray(imageItems) ? imageItems : [])
         .filter(Boolean)
         .map((item, index) => ({
           type: "image",
-          label: `Ảnh mặt bằng ${index + 1}`,
+          label: `${imageLabelPrefix} ${index + 1}`,
           value: item,
         }))),
-      ...((Array.isArray(invoice?.video_attachments) ? invoice.video_attachments : [])
+      ...((Array.isArray(videoItems) ? videoItems : [])
         .filter(Boolean)
         .map((item, index) => ({
           type: "video",
-          label: `Video mặt bằng ${index + 1}`,
+          label: `${videoLabelPrefix} ${index + 1}`,
           value: item,
         }))),
     ];
 
     if (!mediaItems.length) {
-      return '<div class="standalone-order-note-panel"><p>Chưa có tài liệu hiện trường nào được gửi kèm cho yêu cầu này.</p></div>';
+      return `<div class="standalone-order-note-panel"><p>${escapeHtml(
+        emptyMessage,
+      )}</p></div>`;
     }
 
     return `
@@ -474,16 +572,26 @@ const customerInvoiceDetailModule = (function (window, document) {
               const attachmentName =
                 getAttachmentFileName(attachmentValue) || attachmentValue;
               const attachmentHref = getAttachmentHref(attachmentValue);
+              const previewUrl = getAttachmentPreviewUrl(
+                attachmentValue,
+                item.type,
+              );
+              const mediaPreview =
+                item.type === "image" && previewUrl
+                  ? `<img src="${escapeHtml(previewUrl)}" alt="${escapeHtml(item.label)}" />`
+                  : item.type === "video" && previewUrl
+                    ? `<video src="${escapeHtml(previewUrl)}" controls preload="metadata"></video>`
+                    : `<div class="standalone-order-item-icon">
+                        <i class="${escapeHtml(
+                          item.type === "video"
+                            ? "fa-solid fa-video"
+                            : "fa-solid fa-image",
+                        )}"></i>
+                      </div>`;
 
               return `
               <div class="standalone-order-media-item">
-                <div class="standalone-order-item-icon">
-                  <i class="${escapeHtml(
-                    item.type === "video"
-                      ? "fa-solid fa-video"
-                      : "fa-solid fa-image",
-                  )}"></i>
-                </div>
+                ${mediaPreview}
                 <strong>${escapeHtml(item.label)}</strong>
                 <span class="standalone-order-media-value" title="${escapeHtml(
                   attachmentValue,
@@ -520,12 +628,12 @@ const customerInvoiceDetailModule = (function (window, document) {
       : "Không cần khảo sát trước";
   }
 
-  function getAttachmentCount(invoice) {
-    const imageCount = Array.isArray(invoice?.image_attachments)
-      ? invoice.image_attachments.filter(Boolean).length
+  function getAttachmentCount(imageItems, videoItems) {
+    const imageCount = Array.isArray(imageItems)
+      ? imageItems.filter(Boolean).length
       : 0;
-    const videoCount = Array.isArray(invoice?.video_attachments)
-      ? invoice.video_attachments.filter(Boolean).length
+    const videoCount = Array.isArray(videoItems)
+      ? videoItems.filter(Boolean).length
       : 0;
     return imageCount + videoCount;
   }
@@ -695,6 +803,16 @@ const customerInvoiceDetailModule = (function (window, document) {
 
   function renderProviderReportBlock(invoice) {
     const providerNote = normalizeText(invoice?.provider_note || "");
+    const providerReportImageAttachments = Array.isArray(
+      invoice?.provider_report_image_attachments,
+    )
+      ? invoice.provider_report_image_attachments
+      : [];
+    const providerReportVideoAttachments = Array.isArray(
+      invoice?.provider_report_video_attachments,
+    )
+      ? invoice.provider_report_video_attachments
+      : [];
 
     return `
       <details class="standalone-order-fold">
@@ -714,11 +832,16 @@ const customerInvoiceDetailModule = (function (window, document) {
               providerNote ||
                 "Đơn vị thực hiện chưa gửi báo cáo mới cho đơn hàng này.",
             )}</p>
-            ${
-              getAttachmentCount(invoice)
-                ? '<div class="standalone-order-inline-actions"><a class="customer-btn customer-btn-ghost customer-btn-sm" href="#customer-invoice-attachments">Xem tài liệu hiện trường</a></div>'
-                : ""
-            }
+            ${renderAttachmentGallery(
+              providerReportImageAttachments,
+              providerReportVideoAttachments,
+              {
+                imageLabelPrefix: "Ảnh báo cáo",
+                videoLabelPrefix: "Video báo cáo",
+                emptyMessage:
+                  "Chưa có ảnh hoặc video báo cáo từ nhà cung cấp.",
+              },
+            )}
           </article>
         </section>
       </details>
@@ -756,6 +879,16 @@ const customerInvoiceDetailModule = (function (window, document) {
       ? Math.min(5, Math.max(0, Math.round(rating)))
       : 0;
     const canSubmit = getStatusMeta(invoice).key === "completed";
+    const feedbackImageAttachments = Array.isArray(
+      invoice?.customer_feedback_image_attachments,
+    )
+      ? invoice.customer_feedback_image_attachments
+      : [];
+    const feedbackVideoAttachments = Array.isArray(
+      invoice?.customer_feedback_video_attachments,
+    )
+      ? invoice.customer_feedback_video_attachments
+      : [];
 
     return `
       <details class="standalone-order-fold">
@@ -781,6 +914,16 @@ const customerInvoiceDetailModule = (function (window, document) {
                 feedback ||
                   "Bạn có thể để lại đánh giá chất lượng phục vụ hoặc báo cáo thêm vấn đề phát sinh tại đây.",
               )}</p>
+              ${renderAttachmentGallery(
+                feedbackImageAttachments,
+                feedbackVideoAttachments,
+                {
+                  imageLabelPrefix: "Ảnh phản hồi",
+                  videoLabelPrefix: "Video phản hồi",
+                  emptyMessage:
+                    "Chưa có ảnh hoặc video phản hồi từ khách hàng.",
+                },
+              )}
             </article>
             <article class="standalone-order-subcard">
               <div class="standalone-order-subcard-head">
@@ -801,6 +944,22 @@ const customerInvoiceDetailModule = (function (window, document) {
                         <span>Đánh giá hoặc báo cáo thêm</span>
                         <textarea name="customer_feedback" rows="5" placeholder="Chia sẻ trải nghiệm, góp ý hoặc báo cáo phát sinh của đơn hàng này.">${escapeHtml(feedback)}</textarea>
                       </label>
+                      <div class="standalone-order-upload-grid">
+                        <label class="standalone-order-upload-zone standalone-order-upload-zone-image">
+                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-camera"></i></span>
+                          <strong>Gửi ảnh hiện trường</strong>
+                          <span class="standalone-order-upload-copy">Ảnh đánh giá sẽ được lưu riêng trong phần media phản hồi khách hàng.</span>
+                          <input type="file" name="customer_feedback_image" accept="image/*" multiple hidden />
+                          <span class="standalone-order-upload-meta" data-feedback-image-summary>Chưa chọn ảnh đánh giá.</span>
+                        </label>
+                        <label class="standalone-order-upload-zone standalone-order-upload-zone-video">
+                          <span class="standalone-order-upload-icon"><i class="fa-solid fa-video"></i></span>
+                          <strong>Gửi video hiện trường</strong>
+                          <span class="standalone-order-upload-copy">Video đánh giá sẽ được lưu riêng trong phần media phản hồi khách hàng.</span>
+                          <input type="file" name="customer_feedback_video" accept="video/*" multiple hidden />
+                          <span class="standalone-order-upload-meta" data-feedback-video-summary>Chưa chọn video đánh giá.</span>
+                        </label>
+                      </div>
                       <div class="standalone-order-inline-actions">
                         <button class="customer-btn customer-btn-primary" type="submit">Lưu đánh giá</button>
                       </div>
@@ -1085,12 +1244,21 @@ const customerInvoiceDetailModule = (function (window, document) {
                 <article class="standalone-order-media-card" id="customer-invoice-attachments">
                   <div class="standalone-order-panel-head">
                     <div>
-                      <strong>Tài liệu hiện trường</strong>
-                      <p>Ảnh và video bạn đã gửi kèm khi tạo đơn.</p>
+                      <strong>Ảnh/video khách đính kèm khi đặt đơn</strong>
+                      <p>Media được gửi từ form đặt lịch ban đầu của đơn hàng.</p>
                     </div>
                     <span class="standalone-order-chip">Tệp đính kèm</span>
                   </div>
-                  ${renderAttachmentGallery(invoice)}
+                  ${renderAttachmentGallery(
+                    invoice?.booking_image_attachments,
+                    invoice?.booking_video_attachments,
+                    {
+                      imageLabelPrefix: "Ảnh đặt đơn",
+                      videoLabelPrefix: "Video đặt đơn",
+                      emptyMessage:
+                        "Chưa có ảnh hoặc video nào được đính kèm khi tạo đơn.",
+                    },
+                  )}
                 </article>
               </div>
             </section>
@@ -1132,19 +1300,78 @@ const customerInvoiceDetailModule = (function (window, document) {
         event.preventDefault();
 
         try {
-          const formData = new FormData(event.currentTarget);
+          const form = event.currentTarget;
+          const submitButton =
+            form.querySelector('button[type="submit"]') || null;
+          const defaultLabel =
+            String(submitButton?.textContent || "").trim() || "Lưu đánh giá";
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Đang lưu...";
+          }
+
+          const formData = new FormData(form);
+          const imageFiles = collectFiles(
+            form.querySelector('input[name="customer_feedback_image"]'),
+          );
+          const videoFiles = collectFiles(
+            form.querySelector('input[name="customer_feedback_video"]'),
+          );
+          const uploadedImageLinks = imageFiles.length
+            ? (await core.uploadFilesToDrive(imageFiles)).map((item) =>
+                normalizeText(item?.url || item?.download_url || ""),
+              )
+            : [];
+          const uploadedVideoLinks = videoFiles.length
+            ? (await core.uploadFilesToDrive(videoFiles)).map((item) =>
+                normalizeText(item?.url || item?.download_url || ""),
+              )
+            : [];
+          const mergedImageAttachments = mergeAttachmentValues(
+            invoice?.customer_feedback_image_attachments,
+            uploadedImageLinks,
+          );
+          const mergedVideoAttachments = mergeAttachmentValues(
+            invoice?.customer_feedback_video_attachments,
+            uploadedVideoLinks,
+          );
           const result = await store.saveBookingFeedback?.({
             id: invoice.remote_id || "",
             code: invoice.code || "",
           }, {
             customer_rating: formData.get("customer_rating") || 0,
             customer_feedback: formData.get("customer_feedback") || "",
+            customer_feedback_image_attachments: mergedImageAttachments,
+            customer_feedback_video_attachments: mergedVideoAttachments,
           });
           renderInvoice(result || null);
+          core.notify("Đã lưu đánh giá khách hàng.", "success");
         } catch (error) {
           core.notify(error?.message || "Không thể lưu đánh giá ở thời điểm hiện tại.", "error");
+        } finally {
+          const form = event.currentTarget;
+          const submitButton =
+            form.querySelector('button[type="submit"]') || null;
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Lưu đánh giá";
+          }
         }
       });
+
+    const feedbackForm = root.querySelector("[data-customer-feedback-form]");
+    if (feedbackForm) {
+      bindFileSummary(
+        feedbackForm.querySelector('input[name="customer_feedback_image"]'),
+        feedbackForm.querySelector("[data-feedback-image-summary]"),
+        "Chưa chọn ảnh đánh giá.",
+      );
+      bindFileSummary(
+        feedbackForm.querySelector('input[name="customer_feedback_video"]'),
+        feedbackForm.querySelector("[data-feedback-video-summary]"),
+        "Chưa chọn video đánh giá.",
+      );
+    }
 
     root.querySelectorAll("[data-rating-input]").forEach((ratingRoot) => {
       const hiddenInput = ratingRoot.querySelector('input[name="customer_rating"]');

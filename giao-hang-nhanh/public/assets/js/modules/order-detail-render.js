@@ -454,67 +454,6 @@
         .join("")}</div>`;
     }
 
-    function getMediaItems(detail) {
-      const order = detail.order || {};
-      const items = [];
-
-      if (normalizeText(order.pod_image)) {
-        const url = normalizeText(order.pod_image);
-        items.push({
-          url,
-          name: "Bằng chứng giao hàng",
-          extension: url.split(".").pop() || "jpg",
-        });
-      }
-
-      return items;
-    }
-
-    function renderMedia(detail) {
-      const items = getMediaItems(detail);
-      if (!items.length) {
-        return '<div class="standalone-order-muted">Chưa có ảnh POD cho đơn hàng này.</div>';
-      }
-
-      return `<div class="standalone-order-media-grid">${items
-        .map((item) => {
-          const url = escapeHtml(item.url);
-          const name = escapeHtml(item.name);
-          const extension = String(item.extension || "").toLowerCase();
-
-          if (isImageExtension(extension)) {
-            return `
-            <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-              <img src="${url}" alt="${name}" />
-              <strong>${name}</strong>
-              <span>Ảnh đính kèm</span>
-            </a>
-          `;
-          }
-
-          if (isVideoExtension(extension)) {
-            return `
-            <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-              <video src="${url}" controls preload="metadata"></video>
-              <strong>${name}</strong>
-              <span>Video đính kèm</span>
-            </a>
-          `;
-          }
-
-          return `
-          <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-            <div class="standalone-order-item-icon">
-              <i class="fa-solid fa-file-lines"></i>
-            </div>
-            <strong>${name}</strong>
-            <span>Tệp đính kèm</span>
-          </a>
-        `;
-        })
-        .join("")}</div>`;
-    }
-
     function renderAttachmentGallery(items, emptyMessage) {
       const mediaItems = Array.isArray(items) ? items : [];
       if (!mediaItems.length) {
@@ -524,15 +463,26 @@
       return `<div class="standalone-order-media-grid">${mediaItems
         .map((item) => {
           const extension = String(item.extension || "").toLowerCase();
-          const rawUrl = normalizeText(item.url || "");
-          const url = escapeHtml(rawUrl || "#");
+          const rawTargetUrl = normalizeText(
+            item.view_url || item.viewUrl || item.url || item.download_url || "",
+          );
+          const rawPreviewUrl = normalizeText(
+            item.thumbnail_url ||
+              item.thumbnailUrl ||
+              item.view_url ||
+              item.viewUrl ||
+              item.url ||
+              "",
+          );
+          const url = escapeHtml(rawTargetUrl || "#");
+          const previewUrl = escapeHtml(rawPreviewUrl || rawTargetUrl || "#");
           const name = escapeHtml(item.name || "Tệp đính kèm");
-          const canPreview = hasPreviewableUrl(rawUrl);
+          const canPreview = hasPreviewableUrl(rawPreviewUrl || rawTargetUrl);
 
           if (isImageExtension(extension) && canPreview) {
             return `
             <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-              <img src="${url}" alt="${name}" />
+              <img src="${previewUrl}" alt="${name}" />
               <strong>${name}</strong>
               <span>Ảnh đính kèm</span>
             </a>
@@ -542,7 +492,7 @@
           if (isVideoExtension(extension) && canPreview) {
             return `
             <a class="standalone-order-media-item" href="${url}" target="_blank" rel="noreferrer">
-              <video src="${url}" controls preload="metadata"></video>
+              <video src="${previewUrl}" controls preload="metadata"></video>
               <strong>${name}</strong>
               <span>Video đính kèm</span>
             </a>
@@ -1014,6 +964,25 @@
                     <div class="standalone-order-contact-card-head">
                       <div class="standalone-order-contact-card-title">
                         <span class="standalone-order-contact-card-icon standalone-order-contact-card-icon-note">
+                          <i class="fa-solid fa-photo-film"></i>
+                        </span>
+                        <div>
+                          <strong>Ảnh/video khách đính kèm khi đặt đơn</strong>
+                        </div>
+                      </div>
+                      <span class="standalone-order-chip">Đính kèm</span>
+                    </div>
+                    <div class="standalone-order-note-panel standalone-order-contact-note-panel">
+                      ${renderAttachmentGallery(
+                        provider.attachments,
+                        "Chưa có ảnh hoặc video khách đính kèm khi đặt đơn.",
+                      )}
+                    </div>
+                  </article>
+                  <article class="standalone-order-contact-note-card">
+                    <div class="standalone-order-contact-card-head">
+                      <div class="standalone-order-contact-card-title">
+                        <span class="standalone-order-contact-card-icon standalone-order-contact-card-icon-note">
                           <i class="fa-solid fa-note-sticky"></i>
                         </span>
                         <div>
@@ -1102,16 +1071,6 @@
                     ${buildTimeline(detail)}
                   </article>
 
-                  <article class="standalone-order-media-card">
-                    <div class="standalone-order-panel-head">
-                      <div>
-                        <strong>Media bằng chứng giao hàng</strong>
-                        <p>Ảnh xác nhận giao hàng của đơn.</p>
-                      </div>
-                      <span class="standalone-order-chip">POD</span>
-                    </div>
-                    ${renderMedia(detail)}
-                  </article>
                 </div>
               </div>
             </section>

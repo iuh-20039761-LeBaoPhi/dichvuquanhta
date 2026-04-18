@@ -50,7 +50,6 @@ function initMap() {
       className: "map-marker-tooltip map-marker-tooltip--pickup",
     });
   markerDelivery = L.marker([10.75, 106.65], { draggable: true, icon: iconRed })
-    .addTo(map)
     .bindPopup("🏁 Điểm giao hàng")
     .bindTooltip("<div>Giao hàng</div>", {
       permanent: true,
@@ -61,14 +60,24 @@ function initMap() {
 
   markerPickup.on("dragend", () => {
     reverseGeocode(markerPickup.getLatLng(), "dia_chi_lay_hang");
-    recalculateDistance();
   });
   markerDelivery.on("dragend", () => {
     reverseGeocode(markerDelivery.getLatLng(), "dia_chi_giao_hang");
-    recalculateDistance();
   });
+  map.on("click", handleDeliveryMapClick);
 
+  setAddressResolvedState("dia_chi_lay_hang", false);
+  setAddressResolvedState("dia_chi_giao_hang", false);
   recalculateDistance();
+}
+
+function handleDeliveryMapClick(event) {
+  if (!event?.latlng) return;
+
+  setAddressResolvedState("dia_chi_giao_hang", false);
+  showDeliveryMarker([event.latlng.lat, event.latlng.lng]);
+  adjustMapBounds();
+  reverseGeocode(event.latlng, "dia_chi_giao_hang");
 }
 
 function initGeolocationButton() {
@@ -148,11 +157,69 @@ function shouldAutoResolvePickupLocation() {
   return !String(pickupInput?.value || "").trim();
 }
 
-function adjustMapBounds() {
-  if (markerPickup && markerDelivery && map) {
-    const group = new L.featureGroup([markerPickup, markerDelivery]);
-    map.fitBounds(group.getBounds(), { padding: [50, 50], maxZoom: 15 });
+function setAddressResolvedState(inputId, isResolved) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.dataset.mapResolved = isResolved ? "true" : "false";
+}
+
+function isAddressResolved(inputId) {
+  const input = document.getElementById(inputId);
+  return input?.dataset?.mapResolved === "true";
+}
+
+function isDeliveryMarkerVisible() {
+  return !!(markerDelivery && map && map.hasLayer(markerDelivery));
+}
+
+function showDeliveryMarker(latlng = null) {
+  if (!markerDelivery) return null;
+  if (Array.isArray(latlng) && latlng.length === 2) {
+    markerDelivery.setLatLng(latlng);
   }
+  if (map && !map.hasLayer(markerDelivery)) {
+    markerDelivery.addTo(map);
+  }
+  return markerDelivery;
+}
+
+function hideDeliveryMarker() {
+  if (markerDelivery && map && map.hasLayer(markerDelivery)) {
+    map.removeLayer(markerDelivery);
+  }
+}
+
+function canCalculateDistance() {
+  return !!(
+    map &&
+    markerPickup &&
+    markerDelivery &&
+    map.hasLayer(markerPickup) &&
+    isDeliveryMarkerVisible() &&
+    isAddressResolved("dia_chi_lay_hang") &&
+    isAddressResolved("dia_chi_giao_hang")
+  );
+}
+
+function adjustMapBounds() {
+  if (!map) return;
+
+  const visibleMarkers = [];
+  if (markerPickup && map.hasLayer(markerPickup)) {
+    visibleMarkers.push(markerPickup);
+  }
+  if (isDeliveryMarkerVisible()) {
+    visibleMarkers.push(markerDelivery);
+  }
+
+  if (!visibleMarkers.length) return;
+  if (visibleMarkers.length === 1) {
+    map.panTo(visibleMarkers[0].getLatLng());
+    return;
+  }
+
+  const group = new L.featureGroup(visibleMarkers);
+  map.fitBounds(group.getBounds(), { padding: [50, 50], maxZoom: 15 });
 }
 
 function refreshDistanceDependentUi(options = {}) {
@@ -166,6 +233,14 @@ function refreshDistanceDependentUi(options = {}) {
 }
 
 async function recalculateDistance() {
+  if (!canCalculateDistance()) {
+    recalculateDistanceRequestToken += 1;
+    khoang_cach_km = 0;
+    selectedService = null;
+    refreshDistanceDependentUi({ skipWeatherFetch: true });
+    return;
+  }
+
   const requestToken = ++recalculateDistanceRequestToken;
   const a = markerPickup.getLatLng();
   const b = markerDelivery.getLatLng();
@@ -199,9 +274,16 @@ async function recalculateDistance() {
 function showDistance() {
   const badge = document.getElementById("thong_tin_khoang_cach");
   const distanceValue = document.getElementById("gia_tri_khoang_cach_km");
-  if (distanceValue) {
-    distanceValue.textContent = khoang_cach_km.toFixed(2);
+  if (!badge || !distanceValue) return;
+
+  if (!canCalculateDistance() || !khoang_cach_km || khoang_cach_km <= 0) {
+    distanceValue.textContent = "0";
+    badge.style.display = "none";
+    cap_nhat_hien_thi_tam_tinh_buoc_1(null);
+    return;
   }
+
+  distanceValue.textContent = khoang_cach_km.toFixed(2);
   badge.style.display = "inline-flex";
   cap_nhat_hien_thi_tam_tinh_buoc_1();
 }
@@ -215,6 +297,11 @@ function initAddressSearch(inputId, sugId, markerType) {
   input.addEventListener("input", () => {
     clearTimeout(timer);
     const q = input.value.trim();
+    setAddressResolvedState(inputId, false);
+    if (markerType === "delivery") {
+      hideDeliveryMarker();
+    }
+    recalculateDistance();
     if (q.length < 3) {
       sugBox.style.display = "none";
       return;
@@ -246,11 +333,16 @@ function fetchNominatim(query, sugBox, markerType) {
         div.addEventListener("click", () => {
           const inputId =
             markerType === "pickup" ? "dia_chi_lay_hang" : "dia_chi_giao_hang";
+          const lat = parseFloat(item.lat);
+          const lng = parseFloat(item.lon);
           document.getElementById(inputId).value = item.display_name;
+          setAddressResolvedState(inputId, true);
           sugBox.style.display = "none";
-          if (markerType === "pickup")
-            markerPickup.setLatLng([item.lat, item.lon]);
-          else markerDelivery.setLatLng([item.lat, item.lon]);
+          if (markerType === "pickup") {
+            markerPickup.setLatLng([lat, lng]);
+          } else {
+            showDeliveryMarker([lat, lng]);
+          }
           adjustMapBounds();
           recalculateDistance();
         });
@@ -261,13 +353,24 @@ function fetchNominatim(query, sugBox, markerType) {
 }
 
 function reverseGeocode(latlng, inputId) {
-  fetch(
+  setAddressResolvedState(inputId, true);
+  if (inputId === "dia_chi_giao_hang") {
+    showDeliveryMarker([latlng.lat, latlng.lng]);
+  }
+
+  return fetch(
     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`,
   )
     .then((r) => r.json())
     .then((d) => {
       if (d.display_name)
         document.getElementById(inputId).value = d.display_name;
+    })
+    .catch((error) => {
+      console.warn("Không thể reverse geocode địa chỉ:", error);
+    })
+    .finally(() => {
+      recalculateDistance();
     });
 }
 
@@ -388,9 +491,16 @@ async function applyStoredDraftMarkers(payload) {
 
   if (hasPickupPoint) {
     markerPickup.setLatLng([pickupLat, pickupLng]);
+    setAddressResolvedState("dia_chi_lay_hang", true);
+  } else {
+    setAddressResolvedState("dia_chi_lay_hang", false);
   }
   if (hasDeliveryPoint) {
-    markerDelivery.setLatLng([deliveryLat, deliveryLng]);
+    showDeliveryMarker([deliveryLat, deliveryLng]);
+    setAddressResolvedState("dia_chi_giao_hang", true);
+  } else {
+    hideDeliveryMarker();
+    setAddressResolvedState("dia_chi_giao_hang", false);
   }
 
   if (hasPickupPoint && hasDeliveryPoint) {
@@ -535,9 +645,16 @@ async function applyReorderAddresses(data) {
 
   if (pickupPoint) {
     markerPickup.setLatLng([pickupPoint.lat, pickupPoint.lng]);
+    setAddressResolvedState("dia_chi_lay_hang", true);
+  } else {
+    setAddressResolvedState("dia_chi_lay_hang", false);
   }
   if (deliveryPoint) {
-    markerDelivery.setLatLng([deliveryPoint.lat, deliveryPoint.lng]);
+    showDeliveryMarker([deliveryPoint.lat, deliveryPoint.lng]);
+    setAddressResolvedState("dia_chi_giao_hang", true);
+  } else {
+    hideDeliveryMarker();
+    setAddressResolvedState("dia_chi_giao_hang", false);
   }
 
   if (pickupPoint && deliveryPoint) {

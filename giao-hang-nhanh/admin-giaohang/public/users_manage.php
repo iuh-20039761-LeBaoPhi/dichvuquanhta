@@ -277,6 +277,10 @@ $legacyUserFormNotice = isset($_GET['legacy_user_form']);
                 grid-template-columns: 1fr;
             }
 
+            .users-stat-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
             .users-filter-card {
                 position: static;
             }
@@ -295,6 +299,31 @@ $legacyUserFormNotice = isset($_GET['legacy_user_form']);
 
             .users-hero h3 {
                 font-size: 26px;
+            }
+
+            .users-card-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .users-toolbar-badge {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .users-pagination {
+                justify-content: stretch;
+            }
+
+            .users-page-btn {
+                flex: 1 1 calc(50% - 10px);
+            }
+
+            .users-toast {
+                left: 14px;
+                right: 14px;
+                min-width: 0;
+                max-width: none;
             }
         }
     </style>

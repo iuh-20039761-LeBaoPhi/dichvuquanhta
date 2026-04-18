@@ -58,7 +58,7 @@ Entry HTML:
 
 - `index.html`
 - `dich-vu-giao-hang.html`
-- `huong-dan-dat-hang.html`
+- `huong-dan-su-dung-dich-vu-giao-hang-nhanh.html`
 - `tra-cuu-gia.html`
 - `tra-don-hang.html`
 

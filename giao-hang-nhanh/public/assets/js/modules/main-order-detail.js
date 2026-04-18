@@ -28,7 +28,6 @@
     mainLogo: `${projectBase}public/assets/images/logo-dich-vu-quanh-ta.png`,
     brandLogo: `${projectBase}public/assets/images/favicon.png`,
   };
-
   let currentDetail = null;
   let currentViewer = "public";
   let currentSession = null;
@@ -177,6 +176,81 @@
     core && typeof core.showToast === "function"
       ? (message, type = "info") => core.showToast(message, type)
       : (message) => window.alert(message);
+
+  function openCancelOrderDialog(orderCode) {
+    return new Promise((resolve) => {
+      const overlay = document.createElement("div");
+      overlay.style.cssText = [
+        "position:fixed",
+        "inset:0",
+        "background:rgba(15,23,42,.52)",
+        "display:flex",
+        "align-items:center",
+        "justify-content:center",
+        "padding:20px",
+        "z-index:9999",
+      ].join(";");
+
+      const card = document.createElement("div");
+      card.style.cssText = [
+        "width:min(100%,560px)",
+        "background:#fff",
+        "border-radius:24px",
+        "box-shadow:0 32px 80px rgba(15,23,42,.24)",
+        "padding:24px",
+        "display:flex",
+        "flex-direction:column",
+        "gap:16px",
+      ].join(";");
+      card.innerHTML = `
+        <div>
+          <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#f97316;">Xác nhận hủy đơn</p>
+          <h2 style="margin:0 0 8px;font-size:28px;line-height:1.2;color:#0f172a;">Hủy đơn ${escapeHtml(orderCode || "")}</h2>
+          <p style="margin:0;color:#64748b;">Đơn sau khi hủy sẽ không thể tiếp tục xử lý. Vui lòng xác nhận lại trước khi lưu thay đổi.</p>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:8px;">
+          <span style="font-weight:600;color:#0f172a;">Lý do hủy đơn</span>
+          <textarea rows="4" placeholder="Nhập lý do hủy nếu cần..." style="width:100%;border:1px solid #cbd5e1;border-radius:16px;padding:14px 16px;font:inherit;resize:vertical;min-height:112px;">Khách hàng chủ động hủy đơn.</textarea>
+        </label>
+        <div style="display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;">
+          <button type="button" data-action="cancel" class="customer-btn customer-btn-ghost">Quay lại</button>
+          <button type="button" data-action="confirm" class="customer-btn customer-btn-danger">Xác nhận hủy</button>
+        </div>
+      `;
+
+      const textarea = card.querySelector("textarea");
+      const cleanup = (value) => {
+        overlay.remove();
+        resolve(value);
+      };
+
+      card.querySelector('[data-action="cancel"]')?.addEventListener("click", () => {
+        cleanup(null);
+      });
+      card.querySelector('[data-action="confirm"]')?.addEventListener("click", () => {
+        cleanup(String(textarea?.value || "").trim());
+      });
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          cleanup(null);
+        }
+      });
+      window.addEventListener(
+        "keydown",
+        function handleEscape(event) {
+          if (event.key !== "Escape") return;
+          window.removeEventListener("keydown", handleEscape);
+          cleanup(null);
+        },
+        { once: true },
+      );
+
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+      textarea?.focus();
+      textarea?.setSelectionRange(textarea.value.length, textarea.value.length);
+    });
+  }
 
   function getRoot() {
     return document.getElementById("standalone-order-detail-root");
@@ -498,6 +572,9 @@
     const shipperReports = Array.isArray(provider.shipper_reports)
       ? provider.shipper_reports
       : [];
+    const attachments = Array.isArray(provider.attachments)
+      ? provider.attachments
+      : [];
 
     order.id = normalizeText(order.id || detail?.krud_id || "");
     order.krud_id = normalizeText(
@@ -610,6 +687,7 @@
       order,
       provider: {
         ...provider,
+        attachments,
         feedback_media: feedbackMedia,
         shipper_reports: shipperReports,
       },
@@ -1163,6 +1241,10 @@
         vehicle_type: record.shipper_vehicle || record.vehicle_type || "",
         shipper_vehicle: record.shipper_vehicle || record.vehicle_type || "",
         bien_so: record.bien_so || "",
+        attachments: parseJsonSafe(
+          record.attachments_json || record.attachments || [],
+          [],
+        ),
         shipper_reports: parseJsonSafe(
           record.shipper_reports_json || record.shipper_reports || [],
           [],
@@ -1234,9 +1316,15 @@
     const access = getUrlAccessParams();
     let targetUrl = null;
     if (viewer === "customer") {
-      targetUrl = new URL("public/khach-hang/chi-tiet-don-hang.html", window.location.href);
+      targetUrl = new URL(
+        `${projectBase}public/khach-hang/chi-tiet-don-hang.html`,
+        window.location.origin,
+      );
     } else if (viewer === "shipper") {
-      targetUrl = new URL("public/nha-cung-cap/chi-tiet-don-hang.html", window.location.href);
+      targetUrl = new URL(
+        `${projectBase}public/nha-cung-cap/chi-tiet-don-hang.html`,
+        window.location.origin,
+      );
     } else {
       targetUrl = new URL("chi-tiet-don-hang.html", window.location.href);
     }
@@ -1286,9 +1374,15 @@
     const access = getUrlAccessParams();
     let targetUrl = null;
     if (viewer === "customer") {
-      targetUrl = new URL("public/khach-hang/lich-su-don-hang.html", window.location.href);
+      targetUrl = new URL(
+        `${projectBase}public/khach-hang/lich-su-don-hang.html`,
+        window.location.origin,
+      );
     } else if (viewer === "shipper") {
-      targetUrl = new URL("public/nha-cung-cap/don-hang.html", window.location.href);
+      targetUrl = new URL(
+        `${projectBase}public/nha-cung-cap/don-hang.html`,
+        window.location.origin,
+      );
     } else {
       targetUrl = new URL("tra-don-hang.html", window.location.href);
     }
@@ -1366,46 +1460,27 @@
     return parts.length > 1 ? parts.pop().toLowerCase() : "";
   }
 
-  function getOrderMediaUploadUrl() {
-    return new URL(
-      "admin-giaohang/api/order_media_upload.php",
-      window.location.href,
-    ).toString();
-  }
-
   async function uploadOrderMedia(orderRef, files, mediaType) {
     const list = Array.from(files || []).filter(Boolean);
     if (!list.length) return [];
 
     const normalizedOrderRef = normalizeText(orderRef || "");
     if (!normalizedOrderRef) {
-      throw new Error("Không tìm thấy mã đơn để tải media lên máy chủ.");
+      throw new Error("Không tìm thấy mã đơn để tải media lên Google Drive.");
     }
 
-    const formData = new FormData();
-    formData.append("order_code", normalizedOrderRef);
-    formData.append("media_type", normalizeText(mediaType || "general"));
-    list.forEach((file) => {
-      formData.append("media_files[]", file, file.name || "media");
-    });
-
-    const response = await fetch(getOrderMediaUploadUrl(), {
-      method: "POST",
-      body: formData,
-    });
-    const payload = await response.json().catch(() => null);
-
-    if (!response.ok || !payload?.success) {
-      throw new Error(
-        payload?.message || "Không thể tải media lên máy chủ lúc này.",
-      );
+    if (typeof core.uploadFilesToDrive !== "function") {
+      throw new Error("Không tìm thấy helper upload Google Drive.");
     }
 
-    return (Array.isArray(payload.items) ? payload.items : []).map((item) => ({
-      id: normalizeText(item.id || ""),
+    return (await core.uploadFilesToDrive(list)).map((item) => ({
+      id: normalizeText(item.id || item.fileId || ""),
       name: normalizeText(item.name || "Tệp đính kèm"),
       extension: getMediaExtension(item),
-      url: normalizeText(item.url || ""),
+      url: normalizeText(item.url || item.download_url || ""),
+      view_url: normalizeText(item.view_url || ""),
+      download_url: normalizeText(item.download_url || ""),
+      thumbnail_url: normalizeText(item.thumbnail_url || ""),
       created_at: normalizeText(item.created_at || new Date().toISOString()),
     }));
   }
@@ -1598,6 +1673,9 @@
             rawUrl.startsWith("blob:") || rawUrl.startsWith("data:")
               ? ""
               : rawUrl,
+          download_url: normalizeText(item.download_url || ""),
+          view_url: normalizeText(item.view_url || ""),
+          thumbnail_url: normalizeText(item.thumbnail_url || ""),
           created_at: normalizeText(item.created_at || ""),
         };
       });
@@ -1608,6 +1686,9 @@
     const order = normalized.order || {};
     const provider = buildShipperSnapshot(normalized);
     const status = deriveStatusKey(order);
+    const attachments = sanitizeMediaItemsForPersist(
+      normalized.provider?.attachments,
+    );
     const feedbackMedia = sanitizeMediaItemsForPersist(
       normalized.provider?.feedback_media,
     );
@@ -1648,6 +1729,8 @@
       rating: order.rating || "",
       phan_hoi: order.feedback || "",
       feedback: order.feedback || "",
+      attachments: JSON.stringify(attachments),
+      attachments_json: JSON.stringify(attachments),
       feedback_media_json: JSON.stringify(feedbackMedia),
       shipper_reports_json: JSON.stringify(shipperReports),
       ncc_id: provider.shipper_id || provider.provider_id || "",
@@ -1715,6 +1798,11 @@
             ...refreshed,
             provider: {
               ...(refreshed.provider || {}),
+              attachments:
+                Array.isArray(normalized.provider?.attachments) &&
+                normalized.provider.attachments.length
+                  ? normalized.provider.attachments
+                  : refreshed.provider?.attachments,
               feedback_media:
                 Array.isArray(normalized.provider?.feedback_media) &&
                 normalized.provider.feedback_media.length
@@ -1756,9 +1844,8 @@
         nextOrder.status_label || getStatusLabel(nextOrder);
 
       if (action === "cancel") {
-        const reason = window.prompt(
-          `Nhập lý do hủy đơn ${nextOrder.order_code || ""}:`,
-          "Khách hàng chủ động hủy đơn.",
+        const reason = await openCancelOrderDialog(
+          nextOrder.order_code || nextOrder.id || "",
         );
         if (reason === null) return;
         nextOrder.ngayhuy = now;
@@ -1781,7 +1868,6 @@
       }
 
       if (action === "accept") {
-        if (!window.confirm("Xác nhận nhận đơn này?")) return;
         nextOrder.thoidiemnhandon = nextOrder.thoidiemnhandon || now;
         nextOrder.ngaynhan = nextOrder.ngaynhan || now;
         nextOrder.status = "pending";
@@ -1805,7 +1891,6 @@
       }
 
       if (action === "start") {
-        if (!window.confirm("Xác nhận bắt đầu thực hiện đơn này?")) return;
         nextOrder.ngaybatdauthucte = nextOrder.ngaybatdauthucte || now;
         nextOrder.status = "shipping";
         nextOrder.status_label = "Đang giao";
@@ -1828,7 +1913,6 @@
       }
 
       if (action === "complete") {
-        if (!window.confirm("Xác nhận hoàn thành đơn này?")) return;
         nextOrder.ngayhoanthanhthucte = nextOrder.ngayhoanthanhthucte || now;
         nextOrder.status = "completed";
         nextOrder.status_label = "Hoàn thành";

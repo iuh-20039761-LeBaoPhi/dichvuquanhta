@@ -66,7 +66,7 @@
       contact: `${projectBase}index.html#contact`,
       booking: `${projectBase}dat-lich-giao-hang-nhanh.html`,
       tracking: `${projectBase}tra-don-hang.html`,
-      guide: `${projectBase}huong-dan-dat-hang.html`,
+      guide: `${projectBase}huong-dan-su-dung-dich-vu-giao-hang-nhanh.html`,
       login: buildSharedAuthUrl("dang-nhap.html"),
       register: buildSharedAuthUrl("dang-ky.html"),
       "shipping-policy": `${projectBase}chinh-sach-van-chuyen.html`,
@@ -382,7 +382,9 @@
   }
 
   function resolveActiveLinkKey() {
-    if (currentPage === "huong-dan-dat-hang.html") return "guide";
+    if (currentPage === "huong-dan-su-dung-dich-vu-giao-hang-nhanh.html") {
+      return "guide";
+    }
     if (currentPage === "tra-cuu-gia.html") return "pricing";
     if (currentPage === "tra-don-hang.html") return "tracking";
     if (currentPage === "dat-lich-giao-hang-nhanh.html") return "booking";

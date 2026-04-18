@@ -37,6 +37,73 @@ function toPublicUrl(path) {
   return joinUrl(publicBase, path);
 }
 
+function getDriveUploadProxyUrl() {
+  const override = String(
+    window.DICH_VU_CHUYEN_DON_DRIVE_UPLOAD_PROXY_URL || "",
+  ).trim();
+  if (override) return override;
+  return new URL(
+    toProjectUrl("public/upload_to_drive.php"),
+    window.location.origin,
+  ).toString();
+}
+
+function getDriveFileIdFromUrl(value) {
+  const normalizedValue = String(value || "").trim();
+  if (!normalizedValue) return "";
+
+  const idParamMatch = normalizedValue.match(/[?&]id=([^&#]+)/i);
+  if (idParamMatch?.[1]) {
+    return decodeURIComponent(idParamMatch[1]);
+  }
+
+  const filePathMatch = normalizedValue.match(/\/file\/d\/([^/?#]+)/i);
+  if (filePathMatch?.[1]) {
+    return decodeURIComponent(filePathMatch[1]);
+  }
+
+  return "";
+}
+
+function getDriveFileUrls(fileId) {
+  const normalizedId = String(fileId || "").trim();
+  if (!normalizedId) {
+    return {
+      url: "",
+      downloadUrl: "",
+      viewUrl: "",
+      thumbnailUrl: "",
+    };
+  }
+
+  const encodedId = encodeURIComponent(normalizedId);
+  return {
+    url: `https://drive.google.com/uc?export=download&id=${encodedId}`,
+    downloadUrl: `https://drive.google.com/uc?export=download&id=${encodedId}`,
+    viewUrl: `https://drive.google.com/file/d/${encodedId}/view`,
+    thumbnailUrl: `https://drive.google.com/thumbnail?id=${encodedId}&sz=w2000`,
+  };
+}
+
+function getDriveResolvedUrls(value) {
+  const normalizedValue = String(value || "").trim();
+  const fileId = getDriveFileIdFromUrl(normalizedValue);
+  if (!fileId) {
+    return {
+      fileId: "",
+      url: normalizedValue,
+      downloadUrl: normalizedValue,
+      viewUrl: normalizedValue,
+      thumbnailUrl: normalizedValue,
+    };
+  }
+
+  return {
+    fileId,
+    ...getDriveFileUrls(fileId),
+  };
+}
+
 function toAssetsUrl(path) {
   if (!path) return path;
   if (/^(?:[a-z]+:)?\/\//i.test(path) || String(path).startsWith("/")) return path;
@@ -239,6 +306,78 @@ function formatCurrencyVnd(value) {
   }).format(amount);
 }
 
+function getFileExtension(fileName, mimeType = "") {
+  const normalizedName = String(fileName || "").trim();
+  if (normalizedName.includes(".")) {
+    return normalizedName.split(".").pop().toLowerCase();
+  }
+
+  const normalizedMime = String(mimeType || "").toLowerCase();
+  if (normalizedMime.startsWith("image/")) {
+    return normalizedMime.replace("image/", "") || "jpg";
+  }
+  if (normalizedMime.startsWith("video/")) {
+    return normalizedMime.replace("video/", "") || "mp4";
+  }
+  return "";
+}
+
+async function uploadFileToDrive(fileObj, options = {}) {
+  if (!(fileObj instanceof File)) {
+    throw new Error("Không có file hợp lệ để tải lên Google Drive.");
+  }
+
+  const formData = new FormData();
+  formData.append("file", fileObj, fileObj.name || "media");
+  formData.append("name", options.name || fileObj.name || "media");
+
+  const response = await fetch(getDriveUploadProxyUrl(), {
+    method: "POST",
+    body: formData,
+  });
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok || !payload?.success) {
+    throw new Error(payload?.message || "Không thể tải file lên Google Drive.");
+  }
+
+  const fileId = String(payload.fileId || "").trim();
+  const urls = getDriveFileUrls(fileId);
+
+  return {
+    id: fileId,
+    fileId,
+    name: String(payload.name || fileObj.name || "Tệp đính kèm").trim(),
+    extension: getFileExtension(
+      payload.name || fileObj.name,
+      payload.type || fileObj.type,
+    ),
+    url: urls.url,
+    download_url: urls.downloadUrl,
+    view_url: urls.viewUrl,
+    thumbnail_url: urls.thumbnailUrl,
+    type: String(payload.type || fileObj.type || "").trim(),
+    created_at: new Date().toISOString(),
+  };
+}
+
+async function uploadFilesToDrive(files, options = {}) {
+  const list = Array.from(files || []).filter((file) => file instanceof File);
+  if (!list.length) return [];
+
+  const uploadedItems = [];
+  for (const file of list) {
+    uploadedItems.push(
+      await uploadFileToDrive(file, {
+        ...options,
+        name: file.name,
+      }),
+    );
+  }
+
+  return uploadedItems;
+}
+
 function getPricingStandardStructure(serviceData) {
   return serviceData && typeof serviceData === "object"
     ? serviceData.bang_gia || null
@@ -416,6 +555,12 @@ const core = {
   toPublicUrl,
   toParentPublicUrl,
   toAssetsUrl,
+  getDriveUploadProxyUrl,
+  getDriveFileIdFromUrl,
+  getDriveFileUrls,
+  getDriveResolvedUrls,
+  uploadFileToDrive,
+  uploadFilesToDrive,
   getCurrentRelativeUrl,
   getCurrentSearchParams,
   getOrderIdentifierFromUrl,
@@ -557,4 +702,10 @@ export {
   toProjectUrl,
   toPublicUrl,
   toParentPublicUrl,
+  getDriveUploadProxyUrl,
+  getDriveFileIdFromUrl,
+  getDriveFileUrls,
+  getDriveResolvedUrls,
+  uploadFileToDrive,
+  uploadFilesToDrive,
 };

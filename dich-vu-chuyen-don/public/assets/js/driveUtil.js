@@ -1,19 +1,31 @@
-const SHEET_API_URL =
-  window.DICH_VU_CHUYEN_DON_SHEET_API_URL ||
-  "https://script.google.com/macros/s/AKfycbxnkPNuiUNP_ayPThPDzKGKlnj72BY_yHntDUfKP0C5ZVvk0EGHRqcDiYpXgys0P8IxPQ/exec";
-
 function toSafeSheetString(value) {
   return (value == null ? "" : String(value)).trim();
 }
 
+function resolveSheetProxyUrl() {
+  const override = toSafeSheetString(window.DICH_VU_CHUYEN_DON_SHEET_API_URL);
+  if (override) return override;
+
+  const path = String(window.location.pathname || "").replace(/\\/g, "/");
+  const marker = "/dich-vu-chuyen-don/";
+  const markerIndex = path.toLowerCase().lastIndexOf(marker);
+  const projectBasePath =
+    markerIndex !== -1 ? path.slice(0, markerIndex + marker.length) : "/";
+
+  return new URL(
+    "public/save_to_google_sheet.php",
+    `${window.location.origin}${projectBasePath}`,
+  ).toString();
+}
+
 async function postToAppsScript(data, contentType) {
-  if (!toSafeSheetString(SHEET_API_URL)) {
+  const sheetApiUrl = resolveSheetProxyUrl();
+  if (!toSafeSheetString(sheetApiUrl)) {
     throw new Error("Chưa cấu hình SHEET_API_URL cho Dịch vụ Chuyển Dọn.");
   }
 
-  const response = await fetch(SHEET_API_URL, {
+  const response = await fetch(sheetApiUrl, {
     method: "POST",
-    mode: "cors",
     headers: {
       "Content-Type": contentType,
     },

@@ -138,9 +138,21 @@ function pricing_service_build_config_from_version(int $versionId): array
     $regions = pricing_service_rows_by_key($regionRows['rows'], 'region_key');
     $services = pricing_service_rows_by_key($serviceRows['rows'], 'service_key');
     $citiesByKey = pricing_service_rows_by_key($cityRows['rows'], 'city_key');
+    $krudMeta = [
+        'service_ids' => [],
+        'service_price_ids' => [],
+        'goods_ids' => [],
+        'time_ids' => [],
+        'condition_ids' => [],
+        'service_fee_config_id' => 0,
+        'vehicle_ids' => [],
+        'distance_config_id' => 0,
+        'financial_ids' => [],
+    ];
 
     $serviceBlock = [];
     foreach ($services as $serviceKey => $serviceRow) {
+        $krudMeta['service_ids'][$serviceKey] = (int) ($serviceRow['id'] ?? 0);
         $serviceBlock[$serviceKey] = [
             'ten' => (string) ($serviceRow['service_label'] ?? $serviceKey),
             'thoigian' => [],
@@ -165,6 +177,7 @@ function pricing_service_build_config_from_version(int $versionId): array
         $serviceBlock[$serviceKey]['coban'][$baseKey] = (int) ($row['base_price'] ?? 0);
         $serviceBlock[$serviceKey]['thoigian'][$regionKey] = (string) ($row['eta_text'] ?? '');
         $serviceBlock[$serviceKey]['buoctiep'] = (int) ($row['next_step_price'] ?? 0);
+        $krudMeta['service_price_ids'][$serviceKey][$regionKey] = (int) ($row['id'] ?? 0);
     }
 
     $goodsFees = [];
@@ -176,6 +189,7 @@ function pricing_service_build_config_from_version(int $versionId): array
         if ($key === '') {
             continue;
         }
+        $krudMeta['goods_ids'][$key] = (int) ($row['id'] ?? 0);
         $goodsFees[$key] = (int) ($row['fee_amount'] ?? 0);
         $goodsLabels[$key] = (string) ($row['item_type_label'] ?? $key);
         $goodsDescriptions[$key] = (string) ($row['description_text'] ?? '');
@@ -188,6 +202,7 @@ function pricing_service_build_config_from_version(int $versionId): array
         if ($key === '') {
             continue;
         }
+        $krudMeta['time_ids'][$key] = (int) ($row['id'] ?? 0);
         $timeBlock[$key] = [
             'ten' => (string) ($row['slot_label'] ?? $key),
             'batdau' => (string) ($row['start_time'] ?? '00:00'),
@@ -203,6 +218,7 @@ function pricing_service_build_config_from_version(int $versionId): array
         if ($key === '') {
             continue;
         }
+        $krudMeta['condition_ids'][$key] = (int) ($row['id'] ?? 0);
         $conditionBlock[$key] = [
             'ten' => (string) ($row['condition_label'] ?? $key),
             'phicodinh' => (int) ($row['fixed_fee'] ?? 0),
@@ -213,6 +229,7 @@ function pricing_service_build_config_from_version(int $versionId): array
     $serviceFeeNote = '';
     if (!empty($serviceFeeRows['rows'][0]['note_text'])) {
         $serviceFeeNote = (string) $serviceFeeRows['rows'][0]['note_text'];
+        $krudMeta['service_fee_config_id'] = (int) ($serviceFeeRows['rows'][0]['id'] ?? 0);
     }
 
     $distanceConfig = [
@@ -225,6 +242,7 @@ function pricing_service_build_config_from_version(int $versionId): array
     ];
     if (!empty($distanceRows['rows'][0])) {
         $row = $distanceRows['rows'][0];
+        $krudMeta['distance_config_id'] = (int) ($row['id'] ?? 0);
         $distanceConfig = [
             'gia_xe_may_gan' => (int) ($row['motorbike_near_price'] ?? 0),
             'nguong_xe_may_xa' => (float) ($row['motorbike_far_threshold'] ?? 0),
@@ -244,6 +262,7 @@ function pricing_service_build_config_from_version(int $versionId): array
         if ($key === '' || !isset($financialBlock[$key])) {
             continue;
         }
+        $krudMeta['financial_ids'][$key] = (int) ($row['id'] ?? 0);
         $financialBlock[$key] = [
             'nguong' => (int) ($row['free_threshold'] ?? 0),
             'kieu' => (float) ($row['rate_value'] ?? 0),
@@ -352,6 +371,15 @@ function pricing_service_build_config_from_version(int $versionId): array
                     'description' => (string) ($row['description_text'] ?? ''),
                 ];
             }, $vehicleRows['rows']),
+            '_krud_meta' => array_merge($krudMeta, [
+                'vehicle_ids' => array_reduce($vehicleRows['rows'], static function (array $carry, array $row): array {
+                    $key = (string) ($row['vehicle_key'] ?? '');
+                    if ($key !== '') {
+                        $carry[$key] = (int) ($row['id'] ?? 0);
+                    }
+                    return $carry;
+                }, []),
+            ]),
             'vi_du_tinh_phi' => $chunks['vi_du_tinh_phi'] ?? '',
             'noi_dung_bang_gia' => $chunks['noi_dung_bang_gia'] ?? [],
             'vi_du_hoan_chinh' => $chunks['vi_du_hoan_chinh'] ?? [],

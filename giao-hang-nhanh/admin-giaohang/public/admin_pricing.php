@@ -55,6 +55,50 @@ function to_float_number($value, $precision = 2)
     return round((float) str_replace(',', '', (string) $value), $precision);
 }
 
+function time_text_to_minutes($value)
+{
+    $value = trim((string) $value);
+    if (!preg_match('/^(\d{2}):(\d{2})$/', $value, $matches)) {
+        return PHP_INT_MAX;
+    }
+
+    return ((int) $matches[1] * 60) + (int) $matches[2];
+}
+
+function sort_service_time_rows(array $rows): array
+{
+    $sortable = [];
+    $index = 0;
+
+    foreach ($rows as $key => $row) {
+        $sortable[] = [
+            'key' => $key,
+            'row' => $row,
+            'start' => time_text_to_minutes($row['batdau'] ?? ''),
+            'end' => time_text_to_minutes($row['ketthuc'] ?? ''),
+            'index' => $index++,
+        ];
+    }
+
+    usort($sortable, static function (array $left, array $right): int {
+        if ($left['start'] !== $right['start']) {
+            return $left['start'] <=> $right['start'];
+        }
+        if ($left['end'] !== $right['end']) {
+            return $left['end'] <=> $right['end'];
+        }
+
+        return $left['index'] <=> $right['index'];
+    });
+
+    $sorted = [];
+    foreach ($sortable as $item) {
+        $sorted[$item['key']] = $item['row'];
+    }
+
+    return $sorted;
+}
+
 function normalize_vehicle_configs($configs)
 {
     $normalized = [];
@@ -129,6 +173,7 @@ function build_admin_pricing_state(array $pricingData)
     $goodsMultipliers = $domestic['hesoloaihang'] ?? [];
     $distanceConfig = $domestic['cauhinh_khoangcach'] ?? [];
     $serviceFeeConfig = (($domestic['phidichvu'] ?? [])['giaongaylaptuc'] ?? []);
+    $serviceFeeConfig['thoigian'] = sort_service_time_rows((array) ($serviceFeeConfig['thoigian'] ?? []));
     $codInsuranceConfig = $pricingData['BANGGIA']['phuthu'] ?? [];
     $vehicleConfigs = normalize_vehicle_configs($pricingData['phuong_tien'] ?? []);
     $xeMayConfig = find_vehicle_config($vehicleConfigs, 'xe_may') ?? [];
@@ -159,6 +204,22 @@ function action_result($ok, $message, array $pricingData = [], $saveError = '')
         'pricingData' => $pricingData,
         'saveError' => $saveError,
     ];
+}
+
+function replace_assoc_key_preserve_order(array $rows, string $originalKey, string $nextKey, $nextValue): array
+{
+    $rebuilt = [];
+
+    foreach ($rows as $key => $value) {
+        if ((string) $key === $originalKey) {
+            $rebuilt[$nextKey] = $nextValue;
+            continue;
+        }
+
+        $rebuilt[$key] = $value;
+    }
+
+    return $rebuilt;
 }
 
 function handle_save_services_action(array $pricingData, array $submittedServices, array $scheduledServiceMeta)
@@ -553,14 +614,13 @@ function handle_save_service_time_row_action(array $pricingData, array $submitte
         return action_result(false, 'Hệ số phải từ 1 trở lên.');
     }
 
-    unset($currentTime[$originalKey]);
-    $currentTime[$nextKey] = [
+    $currentTime = replace_assoc_key_preserve_order($currentTime, $originalKey, $nextKey, [
         'ten' => $nextLabel,
         'batdau' => $start,
         'ketthuc' => $end,
         'phicodinh' => $fixed,
         'heso' => $heSo,
-    ];
+    ]);
 
     $currentServiceFeeConfig['thoigian'] = $currentTime;
     $domestic['phidichvu']['giaongaylaptuc'] = $currentServiceFeeConfig;
@@ -595,12 +655,11 @@ function handle_save_weather_row_action(array $pricingData, array $submittedRow,
         return action_result(false, 'Hệ số phải từ 1 trở lên.');
     }
 
-    unset($currentWeather[$originalKey]);
-    $currentWeather[$nextKey] = [
+    $currentWeather = replace_assoc_key_preserve_order($currentWeather, $originalKey, $nextKey, [
         'ten' => $nextLabel,
         'phicodinh' => $fixed,
         'heso' => $heSo,
-    ];
+    ]);
 
     $currentServiceFeeConfig['thoitiet'] = $currentWeather;
     $domestic['phidichvu']['giaongaylaptuc'] = $currentServiceFeeConfig;
@@ -845,11 +904,10 @@ function handle_save_goods_fee_row_action(array $pricingData, array $submittedRo
     $nextFee = to_int_price($submittedRow['fee'] ?? $goodsFees[$originalKey]);
     $nextDescription = trim((string) ($submittedRow['description'] ?? ($goodsDescriptions[$originalKey] ?? '')));
 
-    unset($goodsFees[$originalKey], $goodsLabels[$originalKey], $goodsDescriptions[$originalKey], $goodsMultipliers[$originalKey]);
-    $goodsFees[$nextKey] = $nextFee;
-    $goodsLabels[$nextKey] = $nextLabel;
-    $goodsDescriptions[$nextKey] = $nextDescription;
-    $goodsMultipliers[$nextKey] = $nextHeSo;
+    $goodsFees = replace_assoc_key_preserve_order($goodsFees, $originalKey, $nextKey, $nextFee);
+    $goodsLabels = replace_assoc_key_preserve_order($goodsLabels, $originalKey, $nextKey, $nextLabel);
+    $goodsDescriptions = replace_assoc_key_preserve_order($goodsDescriptions, $originalKey, $nextKey, $nextDescription);
+    $goodsMultipliers = replace_assoc_key_preserve_order($goodsMultipliers, $originalKey, $nextKey, $nextHeSo);
 
     $domestic['philoaihang'] = $goodsFees;
     $domestic['tenloaihang'] = $goodsLabels;
@@ -970,20 +1028,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
         </div>
 
         <div class="pricing-shell" data-active-version-id="<?php echo htmlspecialchars((string) $pricingActiveVersionId, ENT_QUOTES, 'UTF-8'); ?>">
-            <div class="pricing-brief">
-                <p class="pricing-note">
-                    Bảng giá được nạp từ
-                    <?php echo $pricingStorageSource === 'krud' ? '<strong>KRUD versioned storage</strong>' : '<code>public/data/pricing-data.json</code>'; ?>
-                    và luôn export lại về <code>public/data/pricing-data.json</code> cho UI ngoài đọc. Ba gói chính dùng
-                    giá cố định theo vùng, còn <strong>Giao ngay</strong> lấy đơn giá theo km và cấu hình phương tiện.
-                </p>
-                <?php if ($pricingActiveVersionId > 0): ?>
-                    <p class="pricing-note" style="margin-top:8px;">
-                        Phiên bản active hiện tại:
-                        <strong>#<?php echo htmlspecialchars((string) $pricingActiveVersionId, ENT_QUOTES, 'UTF-8'); ?></strong>
-                    </p>
-                <?php endif; ?>
-            </div>
             <div class="pricing-content">
                 <div class="pricing-tabs">
                     <div class="pricing-tabs__label">Mục chỉnh giá</div>
@@ -1029,7 +1073,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                                         <?php foreach ($scheduledServiceMeta as $serviceKey => $serviceLabel): ?>
                                             <?php $config = $serviceConfigs[$serviceKey] ?? []; ?>
                                             <?php $base = $config['coban'] ?? []; ?>
-                                            <tr>
+                                            <tr data-pricing-row="service" data-row-key="<?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?>">
                                                 <td><strong><?php echo htmlspecialchars($serviceKey, ENT_QUOTES, 'UTF-8'); ?></strong>
                                                 </td>
                                                 <td><?php echo htmlspecialchars((string) ($config['ten'] ?? $serviceLabel), ENT_QUOTES, 'UTF-8'); ?>
@@ -1074,7 +1118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                             <div class="pricing-table-wrap">
                                 <table class="pricing-table pricing-summary-table">
                                     <thead>
-                                        <tr>
+                                        <tr data-pricing-row="instant">
                                             <th>Tên hiển thị</th>
                                             <th>Đơn giá gần</th>
                                             <th>Ngưỡng xa</th>
@@ -1083,7 +1127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        <tr data-pricing-row="cod" data-row-key="thuho">
                                             <td><?php echo htmlspecialchars((string) ($instantConfig['ten'] ?? $serviceMeta[$instantServiceKey]), ENT_QUOTES, 'UTF-8'); ?>
                                             </td>
                                             <td><span
@@ -1220,7 +1264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                             <div class="pricing-table-wrap">
                                 <table class="pricing-table pricing-summary-table">
                                     <thead>
-                                        <tr>
+                                        <tr data-pricing-row="cod" data-row-key="baohiem">
                                             <th>Loại</th>
                                             <th>Ngưỡng miễn phí</th>
                                             <th>Tỷ lệ</th>
@@ -1229,7 +1273,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                                <tr data-pricing-row="service-time" data-row-key="<?php echo htmlspecialchars($timeKey, ENT_QUOTES, 'UTF-8'); ?>">
                                             <td>COD</td>
                                             <td><span
                                                     class="pricing-value"><?php echo htmlspecialchars(format_money_preview(($codInsuranceConfig['thuho']['nguong'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span>
@@ -1242,7 +1286,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                                             <td><button type="button" class="pricing-action-btn"
                                                     data-open-modal="modal-cod-row">Chi tiết</button></td>
                                         </tr>
-                                        <tr>
+                                                <tr data-pricing-row="weather" data-row-key="<?php echo htmlspecialchars($weatherKey, ENT_QUOTES, 'UTF-8'); ?>">
                                             <td>Bảo hiểm</td>
                                             <td><span
                                                     class="pricing-value"><?php echo htmlspecialchars(format_money_preview(($codInsuranceConfig['baohiem']['nguong'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span>
@@ -1294,27 +1338,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                                                 $vKey = $vehicle['key'] ?? '';
                                                 $donGiaKm = round((float) ($vehicle['gia_co_ban'] ?? 0) * (float) ($vehicle['he_so_xe'] ?? 1)); 
                                             ?>
-                                            <tr>
+                                            <tr data-pricing-row="vehicle" data-row-key="<?php echo htmlspecialchars((string) $vKey, ENT_QUOTES, 'UTF-8'); ?>">
                                                 <td>
                                                     <div class="vehicle-info">
                                                         <div class="vehicle-icon">
                                                             <i class="fa-solid <?php echo get_vehicle_icon($vKey); ?>"></i>
                                                         </div>
                                                         <div class="vehicle-detail">
-                                                            <span class="vehicle-name"><?php echo htmlspecialchars((string) ($vehicle['label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span>
-                                                            <span class="pricing-tag"><?php echo htmlspecialchars((string) $vKey, ENT_QUOTES, 'UTF-8'); ?></span>
+                                                            <span class="vehicle-name" data-cell="label"><?php echo htmlspecialchars((string) ($vehicle['label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span>
+                                                            <span class="pricing-tag" data-cell="key"><?php echo htmlspecialchars((string) $vKey, ENT_QUOTES, 'UTF-8'); ?></span>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-right"><strong><?php echo htmlspecialchars((string) ($vehicle['trong_luong_toi_da'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></strong> <small class="text-muted">kg</small></td>
+                                                <td class="text-right"><strong data-cell="weight"><?php echo htmlspecialchars((string) ($vehicle['trong_luong_toi_da'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></strong> <small class="text-muted">kg</small></td>
                                                 <td class="text-center">
                                                     <div style="display:flex; flex-direction:column; gap:2px;">
-                                                        <span class="text-muted-sm"><?php echo htmlspecialchars(format_money_preview($vehicle['gia_co_ban'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span>
-                                                        <span class="text-muted-sm">x <?php echo htmlspecialchars((string) ($vehicle['he_so_xe'] ?? 1), ENT_QUOTES, 'UTF-8'); ?></span>
+                                                        <span class="text-muted-sm" data-cell="base-price"><?php echo htmlspecialchars(format_money_preview($vehicle['gia_co_ban'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span>
+                                                        <span class="text-muted-sm" data-cell="factor">x <?php echo htmlspecialchars((string) ($vehicle['he_so_xe'] ?? 1), ENT_QUOTES, 'UTF-8'); ?></span>
                                                     </div>
                                                 </td>
-                                                <td class="text-right"><span class="pricing-value" style="font-weight:700; color:#0a2a66;"><?php echo htmlspecialchars(format_money_preview($donGiaKm), ENT_QUOTES, 'UTF-8'); ?></span></td>
-                                                <td class="text-right"><span class="pricing-value"><?php echo htmlspecialchars(format_money_preview($vehicle['phi_toi_thieu'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                                <td class="text-right"><span class="pricing-value" data-cell="per-km" style="font-weight:700; color:#0a2a66;"><?php echo htmlspecialchars(format_money_preview($donGiaKm), ENT_QUOTES, 'UTF-8'); ?></span></td>
+                                                <td class="text-right"><span class="pricing-value" data-cell="min-fee"><?php echo htmlspecialchars(format_money_preview($vehicle['phi_toi_thieu'] ?? 0), ENT_QUOTES, 'UTF-8'); ?></span></td>
                                                 <td class="text-center"><button type="button" class="pricing-action-btn"
                                                         data-open-modal="modal-edit-vehicle-<?php echo htmlspecialchars((string) ($vKey ?: $vehicleIndex), ENT_QUOTES, 'UTF-8'); ?>"><i class="fa-solid fa-pen"></i> Sửa</button></td>
                                             </tr>
@@ -1357,7 +1401,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                                     </thead>
                                     <tbody>
                                         <?php foreach ($goodsFees as $goodsKey => $goodsFee): ?>
-                                            <tr>
+                                            <tr data-pricing-row="goods" data-row-key="<?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?>">
                                                 <td><strong><?php echo htmlspecialchars((string) $goodsKey, ENT_QUOTES, 'UTF-8'); ?></strong>
                                                 </td>
                                                 <td><?php echo htmlspecialchars((string) ($goodsLabels[$goodsKey] ?? $goodsKey), ENT_QUOTES, 'UTF-8'); ?>
@@ -1381,6 +1425,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                     </section>
                 </div>
 
+                <div data-pricing-modal-group="section-vung">
                 <!-- Modals sửa từng gói dịch vụ chính -->
                 <?php foreach ($scheduledServiceMeta as $serviceKey => $serviceLabel): ?>
                     <?php 
@@ -1430,8 +1475,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                         </div>
                     </div>
                 <?php endforeach; ?>
+                </div>
 
 
+                <div data-pricing-modal-group="section-instant">
                 <!-- Modal Sửa Giao ngay (Refactored) -->
                 <div class="pricing-modal" data-modal="modal-edit-instant" hidden>
                     <div class="pricing-modal__backdrop" data-close-modal></div>
@@ -1475,7 +1522,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                         </div>
                     </div>
                 </div>
+                </div>
 
+                <div data-pricing-modal-group="section-service-fee">
                 <!-- Modal Thêm Khung giờ -->
                 <div class="pricing-modal" data-modal="modal-add-service-time" hidden>
                     <div class="pricing-modal__backdrop" data-close-modal></div>
@@ -1669,7 +1718,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                         </div>
                     </div>
                 <?php endforeach; ?>
+                </div>
 
+                <div data-pricing-modal-group="section-cod">
                 <!-- Modal Sửa COD & Bảo hiểm (Refactored) -->
                 <div class="pricing-modal" data-modal="modal-edit-cod" hidden>
                     <div class="pricing-modal__backdrop" data-close-modal></div>
@@ -1727,7 +1778,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                         </div>
                     </div>
                 </div>
+                </div>
 
+                <div data-pricing-modal-group="section-vehicle">
                 <!-- Modal Thêm phương tiện mới -->
                 <div class="pricing-modal" data-modal="modal-add-vehicle" hidden>
                     <div class="pricing-modal__backdrop" data-close-modal></div>
@@ -1849,8 +1902,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                         </div>
                     </div>
                 <?php endforeach; ?>
+                </div>
 
 
+                <div data-pricing-modal-group="section-goods">
                 <!-- Modal Thêm loại phụ phí mới -->
                 <div class="pricing-modal" data-modal="modal-add-goods" hidden>
                     <div class="pricing-modal__backdrop" data-close-modal></div>
@@ -1953,6 +2008,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errorMsg) {
                         </div>
                     </div>
                 <?php endforeach; ?>
+                </div>
 
     </main>
 

@@ -319,23 +319,87 @@ const partialPaths = {
     return labels;
   }
 
-  function getFileNames(scope, selector) {
+  function getSelectedMediaFiles(scope, selector) {
+    if (typeof formMediaModule?.collectFileItemsFromInputs === "function") {
+      return formMediaModule
+        .collectFileItemsFromInputs(scope, selector)
+        .map((item) => item?.file)
+        .filter((file) => file instanceof File);
+    }
+
     return Array.from(scope.querySelectorAll(selector)).flatMap((input) =>
-      Array.from(input.files || [])
-        .map((file) => file.name)
-        .filter(Boolean),
+      Array.from(input.files || []).filter((file) => file instanceof File),
     );
   }
 
-  function getBookingPayload(scope, portalStore) {
+  async function uploadSelectedBookingMedia(scope) {
+    const warnings = [];
+    const imageFiles = getSelectedMediaFiles(scope, "#tep-anh-dat-lich");
+    const videoFiles = getSelectedMediaFiles(scope, "#tep-video-dat-lich");
+
+    if (!imageFiles.length && !videoFiles.length) {
+      return {
+        imageLinks: [],
+        videoLinks: [],
+        warnings,
+      };
+    }
+
+    if (typeof core.uploadFilesToDrive !== "function") {
+      throw new Error("Không tìm thấy helper upload Google Drive.");
+    }
+
+    const imageLinks = [];
+    const videoLinks = [];
+
+    if (imageFiles.length) {
+      try {
+        const uploadedImages = await core.uploadFilesToDrive(imageFiles);
+        imageLinks.push(
+          ...uploadedImages
+            .map((item) => String(item?.url || item?.download_url || "").trim())
+            .filter(Boolean),
+        );
+      } catch (error) {
+        console.error("Không thể tải ảnh đặt lịch chuyển dọn lên Drive:", error);
+        warnings.push("Ảnh đính kèm chưa được tải lên Google Drive.");
+      }
+    }
+
+    if (videoFiles.length) {
+      try {
+        const uploadedVideos = await core.uploadFilesToDrive(videoFiles);
+        videoLinks.push(
+          ...uploadedVideos
+            .map((item) => String(item?.url || item?.download_url || "").trim())
+            .filter(Boolean),
+        );
+      } catch (error) {
+        console.error("Không thể tải video đặt lịch chuyển dọn lên Drive:", error);
+        warnings.push("Video đính kèm chưa được tải lên Google Drive.");
+      }
+    }
+
+    return {
+      imageLinks,
+      videoLinks,
+      warnings,
+    };
+  }
+
+  function getBookingPayload(scope, portalStore, mediaLinks = {}) {
     const identity = portalStore?.readIdentity?.() || {};
     const form = scope.querySelector("form[data-loai-bieu-mau='dat-lich']");
     const formData = form ? new FormData(form) : new FormData();
     const serviceSelect = scope.querySelector("#loai-dich-vu-dat-lich");
     const vehicleSelect = scope.querySelector("#loai-xe-dat-lich");
     const weatherInput = scope.querySelector("#thoi-tiet-du-kien-dat-lich-gui");
-    const imageFiles = getFileNames(scope, "#tep-anh-dat-lich");
-    const videoFiles = getFileNames(scope, "#tep-video-dat-lich");
+    const imageLinks = Array.isArray(mediaLinks?.imageLinks)
+      ? mediaLinks.imageLinks.filter(Boolean)
+      : [];
+    const videoLinks = Array.isArray(mediaLinks?.videoLinks)
+      ? mediaLinks.videoLinks.filter(Boolean)
+      : [];
     const accessConditions = getCheckedLabels(
       scope,
       "[data-nhom-chip='dieu_kien_dat_lich'] input[type='checkbox']",
@@ -406,8 +470,8 @@ const partialPaths = {
       )
         .replace(",", ".")
         .trim(),
-      anh_dinh_kem: imageFiles.join(" | "),
-      video_dinh_kem: videoFiles.join(" | "),
+      anh_dinh_kem: imageLinks.join(" | "),
+      video_dinh_kem: videoLinks.join(" | "),
       customer_email: String(identity.email || "").trim(),
     };
   }
@@ -536,16 +600,26 @@ const partialPaths = {
       );
     }
 
-    const payload = getBookingPayload(scope, portalStore);
+    const mediaUploadResult = await uploadSelectedBookingMedia(scope);
+    const payload = getBookingPayload(scope, portalStore, mediaUploadResult);
     const bookingResult = await bookingApi.createBooking(payload);
     return {
       ...bookingResult,
       accountSetup,
+      mediaUploadWarnings: mediaUploadResult.warnings,
     };
   }
 
-  function buildBookingSuccessMessage(accountSetup, sheetSyncNote) {
+  function buildBookingSuccessMessage(
+    accountSetup,
+    sheetSyncNote,
+    mediaUploadWarnings = [],
+  ) {
     let message = `Yêu cầu đặt lịch đã được lưu thành công.${sheetSyncNote}`;
+
+    if (Array.isArray(mediaUploadWarnings) && mediaUploadWarnings.length) {
+      message += ` ${mediaUploadWarnings.join(" ")}`;
+    }
 
     if (accountSetup?.status === "created") {
       message += " Tài khoản khách hàng đã được tạo tự động cho yêu cầu này.";
@@ -1322,6 +1396,7 @@ const partialPaths = {
             statusMessage: buildBookingSuccessMessage(
               bookingResult.accountSetup,
               sheetSyncNote,
+              bookingResult.mediaUploadWarnings,
             ),
           });
         } catch (error) {

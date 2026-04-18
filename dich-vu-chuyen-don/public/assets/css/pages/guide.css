@@ -1,0 +1,481 @@
+body.guide-page {
+  background:
+    radial-gradient(circle at top left, rgba(255, 183, 3, 0.12), transparent 24%),
+    linear-gradient(180deg, #f6fbf8 0%, #eef6f1 100%);
+  color: #2f3e46;
+  overflow-x: hidden;
+}
+
+body.guide-page .guide-container {
+  max-width: 1320px;
+  margin: 40px auto 60px;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+body.guide-page .hero-section,
+body.guide-page .guide-card {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(12px);
+  box-sizing: border-box;
+}
+
+body.guide-page .hero-section {
+  border-radius: 28px;
+  margin-bottom: 22px;
+  padding: 38px 42px;
+  text-align: center;
+}
+
+body.guide-page .hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-radius: 999px;
+  background: rgba(45, 106, 79, 0.1);
+  color: #1b4332;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+body.guide-page .hero-section h1 {
+  margin: 0 0 14px;
+  color: #1b4332;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+body.guide-page .hero-section p {
+  max-width: 860px;
+  margin: 0 auto;
+  color: #556b63;
+  font-size: 16px;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+body.guide-page .step-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 12px;
+  margin-top: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+body.guide-page .step-nav::-webkit-scrollbar {
+  display: none;
+}
+
+body.guide-page .step-nav-item,
+body.guide-page .service-guide-pill {
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1b4332;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+body.guide-page .step-nav-item {
+  padding: 11px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+body.guide-page .step-nav-item:hover,
+body.guide-page .service-guide-pill:hover {
+  transform: translateY(-2px);
+}
+
+body.guide-page .step-nav-item.is-active,
+body.guide-page .service-guide-pill.is-active {
+  background: #1b4332;
+  color: #ffffff;
+  box-shadow: 0 16px 30px rgba(27, 67, 50, 0.22);
+}
+
+body.guide-page .guide-card {
+  border-radius: 24px;
+  margin-bottom: 24px;
+  padding: 34px;
+}
+
+body.guide-page .guide-panel {
+  display: none;
+}
+
+body.guide-page .guide-panel.is-active {
+  display: block;
+}
+
+body.guide-page .section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+body.guide-page .section-number {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1b4332;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+
+body.guide-page .section-title {
+  margin: 0;
+  color: #1f3b2d;
+  font-size: 30px;
+  line-height: 1.25;
+  font-weight: 650;
+}
+
+body.guide-page .guide-card > p,
+body.guide-page .logic-item p,
+body.guide-page .service-guide-detail p,
+body.guide-page .guide-note p,
+body.guide-page .guide-check-list li,
+body.guide-page .feature-list li {
+  color: #556b63;
+  font-weight: 400;
+  line-height: 1.75;
+}
+
+body.guide-page .logic-grid,
+body.guide-page .guide-check-grid,
+body.guide-page .guide-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+
+body.guide-page .logic-grid:has(> :nth-child(4):last-child),
+body.guide-page .guide-check-grid:has(> :nth-child(4):last-child) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.guide-page .logic-item,
+body.guide-page .guide-check-card,
+body.guide-page .guide-status-card {
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 22px 20px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+}
+
+body.guide-page .logic-item {
+  border-left: 4px solid #2d6a4f;
+}
+
+body.guide-page .logic-item i,
+body.guide-page .guide-status-card i {
+  margin-bottom: 14px;
+  color: #2d6a4f;
+  font-size: 24px;
+}
+
+body.guide-page .logic-item h4,
+body.guide-page .guide-check-card h4,
+body.guide-page .guide-status-card h4,
+body.guide-page .service-guide-detail h3 {
+  margin: 0 0 10px;
+  color: #1f3b2d;
+  font-weight: 600;
+}
+
+body.guide-page .guide-highlight,
+body.guide-page .guide-note {
+  margin-top: 22px;
+  border-radius: 20px;
+  padding: 20px 22px;
+}
+
+body.guide-page .guide-highlight {
+  border: 1px solid rgba(255, 183, 3, 0.35);
+  background: linear-gradient(135deg, rgba(255, 183, 3, 0.12), rgba(255, 255, 255, 0.88));
+}
+
+body.guide-page .guide-note {
+  border: 1px solid rgba(45, 106, 79, 0.16);
+  background: rgba(45, 106, 79, 0.06);
+}
+
+body.guide-page .guide-highlight strong,
+body.guide-page .guide-note strong {
+  color: #1b4332;
+}
+
+body.guide-page .feature-list,
+body.guide-page .guide-check-list {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+}
+
+body.guide-page .feature-list li,
+body.guide-page .guide-check-list li {
+  position: relative;
+  margin-bottom: 10px;
+  padding-left: 28px;
+}
+
+body.guide-page .feature-list li::before,
+body.guide-page .guide-check-list li::before {
+  content: "\f058";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  top: 2px;
+  color: #40916c;
+}
+
+body.guide-page .service-guide-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+body.guide-page .service-guide-pill {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+body.guide-page .service-guide-detail {
+  display: none;
+  margin-top: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 251, 248, 0.96) 100%);
+  padding: 24px;
+}
+
+body.guide-page .service-guide-detail.is-active {
+  display: block;
+}
+
+body.guide-page .service-guide-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+body.guide-page .service-guide-meta-item {
+  border-radius: 16px;
+  background: #f7fbf8;
+  border: 1px solid rgba(45, 106, 79, 0.12);
+  padding: 16px 18px;
+}
+
+body.guide-page .service-guide-meta-item span {
+  display: block;
+  margin-bottom: 6px;
+  color: #5f7b70;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+body.guide-page .service-guide-meta-item strong {
+  color: #1f3b2d;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+body.guide-page .guide-status-card {
+  text-align: left;
+}
+
+body.guide-page .guide-status-card small {
+  display: block;
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+body.guide-page .guide-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+body.guide-page .guide-flow span {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: #f0f7f3;
+  border: 1px solid rgba(45, 106, 79, 0.12);
+  color: #1b4332;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+body.guide-page .guide-flow span::after {
+  content: "→";
+  margin-left: 10px;
+  color: #94a3b8;
+}
+
+body.guide-page .guide-flow span:last-child::after {
+  content: "";
+  margin: 0;
+}
+
+body.guide-page .guide-inline-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+body.guide-page .guide-inline-links a {
+  color: #1b4332;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+body.guide-page .guide-inline-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1024px) {
+  body.guide-page .guide-container {
+    padding: 0 16px;
+  }
+
+  body.guide-page .hero-section {
+    padding: 30px 24px;
+  }
+
+  body.guide-page .guide-card {
+    padding: 26px 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  body.guide-page .guide-container {
+    margin-top: 28px;
+    margin-bottom: 40px;
+    padding: 0 10px;
+  }
+
+  body.guide-page .hero-section,
+  body.guide-page .guide-card {
+    border-radius: 18px;
+    padding: 18px 14px;
+  }
+
+  body.guide-page .hero-section {
+    margin-bottom: 18px;
+  }
+
+  body.guide-page .step-nav {
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 18px;
+    padding-bottom: 4px;
+  }
+
+  body.guide-page .step-nav-item,
+  body.guide-page .service-guide-pill {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  body.guide-page .section-number {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    font-size: 22px;
+  }
+
+  body.guide-page .section-title {
+    font-size: 24px;
+  }
+
+  body.guide-page .logic-grid,
+  body.guide-page .guide-check-grid,
+  body.guide-page .guide-status-grid,
+  body.guide-page .service-guide-meta {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  body.guide-page .logic-grid:has(> :nth-child(4):last-child),
+  body.guide-page .guide-check-grid:has(> :nth-child(4):last-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.guide-page .logic-item,
+  body.guide-page .guide-check-card,
+  body.guide-page .guide-status-card,
+  body.guide-page .service-guide-detail {
+    padding: 16px 14px;
+  }
+
+  body.guide-page .guide-flow {
+    gap: 8px;
+  }
+
+  body.guide-page .guide-flow span {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  body.guide-page .guide-container {
+    margin-top: 20px;
+    margin-bottom: 28px;
+    padding: 0 4px;
+  }
+
+  body.guide-page .hero-section h1 {
+    font-size: 1.7rem;
+  }
+
+  body.guide-page .hero-section p {
+    font-size: 14px;
+  }
+
+  body.guide-page .section-header {
+    gap: 10px;
+  }
+
+  body.guide-page .section-title {
+    font-size: 22px;
+  }
+}
