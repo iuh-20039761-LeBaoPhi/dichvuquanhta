@@ -1137,7 +1137,6 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
                     </div>
                     <div class="profile-foot">
                         <span class="profile-pill">Nhận việc: <?= admin_h($row['ngaynhan'] ?? '---') ?></span>
-                        <span class="profile-pill">Kinh nghiệm: <?= admin_h($row['kinh_nghiem_ncc'] ?? 'Khong co') ?></span>
                     </div>
                 </article>
 
