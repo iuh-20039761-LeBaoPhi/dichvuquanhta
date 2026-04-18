@@ -1456,6 +1456,22 @@
 								<p id="invoiceNote" class="field-value">---</p>
 							</div>
 						</div>
+						<div class="invoice-media-grid">
+							<div class="invoice-media-item" id="invoiceMediaImage">
+								<p class="field-label">Ảnh</p>
+								<span class="media-empty-label" id="invoiceMediaImageEmpty">Chưa có ảnh</span>
+								<iframe id="invoiceMediaImageEl"
+									style="display:none;width:100%;flex:1;min-height:90px;border:0;border-radius:5px;"
+									allowfullscreen></iframe>
+							</div>
+							<div class="invoice-media-item" id="invoiceMediaVideo">
+								<p class="field-label">Video</p>
+								<span class="media-empty-label" id="invoiceMediaVideoEmpty">Chưa có video</span>
+								<iframe id="invoiceMediaVideoEl"
+									style="display:none;width:100%;flex:1;min-height:90px;border:0;border-radius:5px;"
+									allowfullscreen></iframe>
+							</div>
+						</div>
 					</article>
 
 					<article class="panel" id="panelTime"
@@ -1585,8 +1601,10 @@
 							<span class="profile-status badge success">Khách hàng</span>
 						</div>
 						<div class="profile-body">
-							<img id="customerAvatar" class="profile-avatar" src="assets/logo-cham-soc-benh-nhan.png"
+							<img id="customerAvatarImg" class="profile-avatar" src="assets/logo-cham-soc-benh-nhan.png"
 								alt="Khách hàng">
+							<iframe id="customerAvatar" class="profile-avatar" src="" frameborder="0"
+								style="display:none;"></iframe>
 							<div class="profile-main">
 								<h3 id="customerCardName" class="profile-name">---</h3>
 								<p class="profile-contact contact-email"><span id="customerCardEmail">---</span></p>
@@ -1603,8 +1621,10 @@
 							<span id="badgeStaff" class="profile-status badge warning">Chưa nhận</span>
 						</div>
 						<div class="profile-body">
-							<img id="staffAvatar" class="profile-avatar" src="assets/logo-cham-soc-benh-nhan.png"
+							<img id="staffAvatarImg" class="profile-avatar" src="assets/logo-cham-soc-benh-nhan.png"
 								alt="Nhà Cung Cấp">
+							<iframe id="staffAvatar" class="profile-avatar" src="" frameborder="0"
+								style="display:none;"></iframe>
 							<div class="profile-main">
 								<h3 id="staffCardName" class="profile-name">---</h3>
 								<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
@@ -2242,14 +2262,28 @@
 				setText('customerCardPhone', $datlich_nguoibenh.sdtkhachhang || '---');
 				setText('customerCardEmail', $datlich_nguoibenh.emailkhachhang || '---');
 				setText('customerCardAddress', $datlich_nguoibenh.diachikhachhang || '---');
-				setAvatar('customerAvatar', $datlich_nguoibenh.anh_dai_dien || app.$user?.anh_dai_dien || app.$user?.avatar || '');
+				const updateAvatarIframe = (id, fileId) => {
+					const el = $(id);
+					const img = $(id + 'Img');
+					if (!el || !img) return;
+					if (fileId) {
+						el.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+						el.style.display = 'block';
+						img.style.display = 'none';
+					} else {
+						el.src = '';
+						el.style.display = 'none';
+						img.style.display = 'block';
+					}
+				};
+				updateAvatarIframe('customerAvatar', $datlich_nguoibenh.avatar_khachhang);
 
 				setText('staffCardName', $datlich_nguoibenh.tenncc || '---');
 				setText('staffCardEmail', $datlich_nguoibenh.emailncc || '---');
 				setText('staffCardPhone', $datlich_nguoibenh.sdtncc || '---');
 				setText('staffCardAddress', $datlich_nguoibenh.diachincc || '---');
 				setText('staffReceiveTime', `Nhận việc: ${formatDateTimeDisplay($datlich_nguoibenh.ngaynhan)}`);
-				setAvatar('staffAvatar', $nhacungcap_nguoibenh.anh_dai_dien || $nhacungcap_nguoibenh.avatar || '');
+				updateAvatarIframe('staffAvatar', $datlich_nguoibenh.avatar_ncc);
 
 				const status = $datlich_nguoibenh.trangthai || '---';
 				const invoiceStatusEl = $('badgeInvoiceStatus');
@@ -2344,7 +2378,16 @@
 					body.appendChild(tr);
 				});
 			}
-
+			async function updateCustomerAvatarIfNeeded() {
+				const order = app.$datlich_nguoibenh;
+				const user = app.$user;
+				if (app.role === 'customer' && order && user && String(app.params.sodienthoai) === String(order.sdtkhachhang)) {
+					if (user.link_avatar && user.link_avatar !== order.avatar_khachhang) {
+						await updateById(TABLE_ORDER, order.id, { avatar_khachhang: user.link_avatar });
+						order.avatar_khachhang = user.link_avatar;
+					}
+				}
+			}
 			async function reloadOrder() {
 				await loadOrderById();
 				renderUI();
@@ -2373,9 +2416,7 @@
 					sdtncc: app.$user.sodienthoai || '',
 					emailncc: app.$user.email || '',
 					diachincc: app.$user.diachi || '',
-					hotenncc: app.$user.hovaten || '',
-					sodienthoaincc: app.$user.sodienthoai || '',
-					avatar_ncc: app.$user.anh_dai_dien || ''
+					avatar_ncc: app.$user.link_avatar || ''
 				});
 				await reloadOrder();
 			}
@@ -2411,7 +2452,6 @@
 				const cancelAt = nowSql();
 				await updateById(TABLE_ORDER, app.$datlich_nguoibenh.id, {
 					trangthai: 'đã hủy',
-					thoigian_huy: cancelAt,
 					ngayhuy: cancelAt
 				});
 				await reloadOrder();
@@ -2657,7 +2697,7 @@
 					if (!auth) throw new Error('Bạn không thể truy cập trang này');
 					app.role = auth.role;
 					app.$user = auth.$user;
-
+					await updateCustomerAvatarIfNeeded();
 					// Kiểm tra và auto-end nếu NCC quên nhấn btnEnd từ ngày trước
 					await checkAutoEndPreviousWorkDay();
 

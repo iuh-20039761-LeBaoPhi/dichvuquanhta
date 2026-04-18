@@ -25,8 +25,7 @@
         <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="contact" href="lien-he.html">Liên Hệ</a>
         </li>
         <li class="nav-item ms-lg-3" id="loginNavItem">
-          <a id="btnLoginCheck"
-            href="../public/dang-nhap.html?service=nguoibenh"
+          <a id="btnLoginCheck" href="../public/dang-nhap.html?service=nguoibenh"
             class="btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #007bff" onmouseover="
               this.style.backgroundColor = '#d84374';
               this.style.transform = 'scale(1.05)';
@@ -40,8 +39,10 @@
             <button
               class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
               type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <img id="navAvatar" src="assets/logo-cham-soc-benh-nhan.png" alt="avatar" width="32" height="32"
+              <img id="navAvatarImg" src="assets/logo-cham-soc-benh-nhan.png" alt="avatar" width="32" height="32"
                 class="rounded-circle border" />
+              <iframe id="navAvatar" src="" frameborder="0" width="32" height="32" class="rounded-circle border"
+                style="display:none;"></iframe>
               <span id="navUserName" class="fw-semibold small">Tài khoản</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0 text-center">

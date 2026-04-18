@@ -1607,7 +1607,9 @@
 							<span class="profile-status badge success">Khách hàng</span>
 						</div>
 						<div class="profile-body">
-							<img id="customerAvatar" class="profile-avatar" src="assets/logong.png" alt="Khách hàng">
+							<img id="customerAvatarImg" class="profile-avatar" src="assets/logong.png" alt="Khách hàng">
+							<iframe id="customerAvatar" class="profile-avatar" src="" frameborder="0"
+								style="display:none;"></iframe>
 							<div class="profile-main">
 								<h3 id="customerCardName" class="profile-name">---</h3>
 								<p class="profile-contact contact-email"><span id="customerCardEmail">---</span></p>
@@ -1624,7 +1626,9 @@
 							<span id="badgeStaff" class="profile-status badge warning">Chưa nhận</span>
 						</div>
 						<div class="profile-body">
-							<img id="staffAvatar" class="profile-avatar" src="assets/logong.png" alt="Nhà Cung Cấp">
+							<img id="staffAvatarImg" class="profile-avatar" src="assets/logong.png" alt="Nhà Cung Cấp">
+							<iframe id="staffAvatar" class="profile-avatar" src="" frameborder="0"
+								style="display:none;"></iframe>
 							<div class="profile-main">
 								<h3 id="staffCardName" class="profile-name">---</h3>
 								<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
@@ -2262,14 +2266,28 @@
 				setText('customerCardPhone', $datlich_nguoigia.sdtkhachhang || '---');
 				setText('customerCardEmail', $datlich_nguoigia.emailkhachhang || '---');
 				setText('customerCardAddress', $datlich_nguoigia.diachikhachhang || '---');
-				setAvatar('customerAvatar', $datlich_nguoigia.anh_dai_dien || app.$user?.anh_dai_dien || app.$user?.avatar || '');
+				const updateAvatarIframe = (id, fileId) => {
+					const el = $(id);
+					const img = $(id + 'Img');
+					if (!el || !img) return;
+					if (fileId) {
+						el.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+						el.style.display = 'block';
+						img.style.display = 'none';
+					} else {
+						el.src = '';
+						el.style.display = 'none';
+						img.style.display = 'block';
+					}
+				};
+				updateAvatarIframe('customerAvatar', $datlich_nguoigia.avatar_khachhang);
 
 				setText('staffCardName', $datlich_nguoigia.tenncc || '---');
 				setText('staffCardEmail', $datlich_nguoigia.emailncc || '---');
 				setText('staffCardPhone', $datlich_nguoigia.sdtncc || '---');
 				setText('staffCardAddress', $datlich_nguoigia.diachincc || '---');
 				setText('staffReceiveTime', `Nhận việc: ${formatDateTimeDisplay($datlich_nguoigia.ngaynhan)}`);
-				setAvatar('staffAvatar', $nhacungcap_nguoigia.anh_dai_dien || $nhacungcap_nguoigia.avatar || '');
+				updateAvatarIframe('staffAvatar', $datlich_nguoigia.avatar_ncc);
 
 				const status = $datlich_nguoigia.trangthai || '---';
 				const invoiceStatusEl = $('badgeInvoiceStatus');
@@ -2364,7 +2382,16 @@
 					body.appendChild(tr);
 				});
 			}
-
+			async function updateCustomerAvatarIfNeeded() {
+				const order = app.$datlich_nguoigia;
+				const user = app.$user;
+				if (app.role === 'customer' && order && user && String(app.params.sodienthoai) === String(order.sdtkhachhang)) {
+					if (user.link_avatar && user.link_avatar !== order.avatar_khachhang) {
+						await updateById(TABLE_ORDER, order.id, { avatar_khachhang: user.link_avatar });
+						order.avatar_khachhang = user.link_avatar;
+					}
+				}
+			}
 			async function reloadOrder() {
 				await loadOrderById();
 				renderUI();
@@ -2393,9 +2420,7 @@
 					sdtncc: app.$user.sodienthoai || '',
 					emailncc: app.$user.email || '',
 					diachincc: app.$user.diachi || '',
-					hotenncc: app.$user.hovaten || '',
-					sodienthoaincc: app.$user.sodienthoai || '',
-					avatar_ncc: app.$user.anh_dai_dien || ''
+					avatar_ncc: app.$user.link_avatar || ''
 				});
 				await reloadOrder();
 			}
@@ -2431,7 +2456,6 @@
 				const cancelAt = nowSql();
 				await updateById(TABLE_ORDER, app.$datlich_nguoigia.id, {
 					trangthai: 'đã hủy',
-					thoigian_huy: cancelAt,
 					ngayhuy: cancelAt
 				});
 				await reloadOrder();
@@ -2677,7 +2701,7 @@
 					if (!auth) throw new Error('Bạn không thể truy cập trang này');
 					app.role = auth.role;
 					app.$user = auth.$user;
-
+					await updateCustomerAvatarIfNeeded();
 					// Kiểm tra và auto-end nếu NCC quên nhấn btnEnd từ ngày trước
 					await checkAutoEndPreviousWorkDay();
 

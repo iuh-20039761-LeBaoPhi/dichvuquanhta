@@ -15,13 +15,10 @@ if (!isset($_SESSION['user'])) {
     ob_end_clean();
 }
 
-$userName = $_SESSION['user']['hovaten'] ?? 'Nhân viên';
-$userAvatar = $_SESSION['user']['avatartenfile'] ?? 'logomvb.png';
-if (strpos($userAvatar, 'assets/') === false && $userAvatar !== 'logomvb.png') {
-    $userAvatar = '../assets/' . $userAvatar;
-} else if ($userAvatar === 'logomvb.png') {
-    $userAvatar = '../assets/logomvb.png';
-}
+$userName = $_SESSION['user']['hovaten'];
+$userFileId = $_SESSION['user']['avatartenfile'] ?? '';
+$isDriveAvatar = !empty($userFileId);
+$userAvatarPath = '../assets/logomvb.png';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
@@ -414,7 +411,11 @@ $pageTitle = $pageTitle ?? 'MamaCore - Staff Panel';
                 <div class="dropdown">
                     <button class="btn border-0 d-flex align-items-center gap-2" data-bs-toggle="dropdown">
                         <span class="fw-semibold d-none d-sm-inline"><?php echo htmlspecialchars($userName); ?></span>
-                        <img class="nv-admin-avatar" src="<?php echo htmlspecialchars($userAvatar); ?>" alt="avatar">
+                        <?php if ($isDriveAvatar): ?>
+                            <iframe class="nv-admin-avatar" src="https://drive.google.com/file/d/<?php echo htmlspecialchars($userFileId); ?>/preview" frameborder="0"></iframe>
+                        <?php else: ?>
+                            <img class="nv-admin-avatar" src="<?php echo htmlspecialchars($userAvatarPath); ?>" alt="avatar">
+                        <?php endif; ?>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="border-radius: 15px;">
                         <li><a class="dropdown-item py-2 px-3" href="#"><i class="bi bi-gear me-2"></i>Cài đặt</a></li>

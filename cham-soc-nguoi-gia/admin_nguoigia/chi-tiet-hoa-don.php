@@ -184,7 +184,55 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 		background: rgba(255, 255, 255, 0.3);
 		border-color: rgba(255, 255, 255, 0.56);
 	}
+	.profile-avatar {
+        display: block;
+        margin: 0;
+        border: 0;
+    }
+    .invoice-media-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin: 4px;
+    }
 
+    .invoice-media-item {
+        border: 1px solid #65e67aff;
+        background: #eefff0ff;
+        border-radius: 8px;
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow: hidden;
+        min-height: 72px;
+    }
+
+    .invoice-media-item .field-label {
+        color: #18be2eff;
+        font-size: 10px;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .invoice-media-item img,
+    .invoice-media-item video,
+    .invoice-media-item iframe {
+        width: 100%;
+        flex: 1;
+        object-fit: cover;
+        border-radius: 5px;
+        background: rgba(0, 0, 0, 0.04);
+        display: block;
+    }
+
+    .invoice-media-item .media-empty-label {
+        color: #18be34ff;
+        font-size: 11px;
+        text-align: center;
+        padding: 8px 0;
+        flex: 1;
+    }
 	.topbar-logo img {
 		width: 74px;
 		height: 50px;
@@ -762,6 +810,7 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 		.grid,
 		.info-grid,
 		.invoice-extra-grid,
+		.invoice-media-grid,
 		.review-split {
 			grid-template-columns: 1fr;
 		}
@@ -890,6 +939,22 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 							<p class="field-value"><?= admin_h($row['ghi_chu'] ?? 'Không có') ?></p>
 						</div>
 					</div>
+					<div class="invoice-media-grid">
+                        <div class="invoice-media-item" id="invoiceMediaImage">
+                            <p class="field-label">Ảnh</p>
+                            <span class="media-empty-label" id="invoiceMediaImageEmpty">Chưa có ảnh</span>
+                            <iframe id="invoiceMediaImageEl"
+                                style="display:none;width:100%;flex:1;min-height:90px;border:0;border-radius:5px;"
+                                allowfullscreen></iframe>
+                        </div>
+                        <div class="invoice-media-item" id="invoiceMediaVideo">
+                            <p class="field-label">Video</p>
+                            <span class="media-empty-label" id="invoiceMediaVideoEmpty">Chưa có video</span>
+                            <iframe id="invoiceMediaVideoEl"
+                                style="display:none;width:100%;flex:1;min-height:90px;border:0;border-radius:5px;"
+                                allowfullscreen></iframe>
+                        </div>
+                    </div>
 				</article>
 
 				<article class="panel" id="panelTime">
@@ -1031,10 +1096,12 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 						<h2 class="profile-title">Khách hàng</h2>
 						<span class="badge success">Khách hàng</span>
 					</div>
-					<div class="profile-body">
-						<img class="profile-avatar"
-							src="../<?= admin_h($row['avatar_khachhang'] ?? 'assets/logo-cham-soc-benh-nhan.png') ?>"
-							alt="Customer">
+					<div class="profile-body" style="display: flex; align-items: center; gap: 15px;">
+                        <div style="position:relative; width:88px; height:88px; flex-shrink:0;">
+                            <span id="avatarCustomerEmpty" style="display:none; position:absolute; inset:0; display:grid; place-items:center; font-size:10px; background:#f0f0f0; border-radius:50%;">---</span>
+                            <iframe id="avatarCustomerEl" class="profile-avatar" style="display:none; position:absolute; width:100%; height:100%; border:0; border-radius:50%;" allowfullscreen></iframe>
+                            <img id="avatarCustomerImg" class="profile-avatar" src="../<?= admin_h($row['avatar_khachhang'] ?? 'assets/logomvb.png') ?>" alt="Customer" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                        </div>
 						<div class="profile-main">
 							<h3 class="profile-name"><?= admin_h($row['tenkhachhang'] ?? '---') ?></h3>
 							<p class="profile-contact contact-email">
@@ -1058,9 +1125,12 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 						<span
 							class="badge warning"><?= (int) ($row['id_nhacungcap'] ?? 0) > 0 ? 'Đã nhận' : 'Chưa nhận' ?></span>
 					</div>
-					<div class="profile-body">
-						<img class="profile-avatar"
-							src="../<?= admin_h($row['avatar_ncc'] ?? 'assets/logo-cham-soc-benh-nhan.png') ?>" alt="Staff">
+					<div class="profile-body" style="display: flex; align-items: center; gap: 15px;">
+                        <div style="position:relative; width:88px; height:88px; flex-shrink:0;">
+                            <span id="avatarStaffEmpty" style="display:none; position:absolute; inset:0; display:grid; place-items:center; font-size:10px; background:#f0f0f0; border-radius:50%;">---</span>
+                            <iframe id="avatarStaffEl" class="profile-avatar" style="display:none; position:absolute; width:100%; height:100%; border:0; border-radius:50%;" allowfullscreen></iframe>
+                            <img id="avatarStaffImg" class="profile-avatar" src="../<?= admin_h($row['avatar_ncc'] ?? 'assets/logomvb.png') ?>" alt="Staff" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                        </div>
 						<div class="profile-main">
 							<h3 class="profile-name"><?= admin_h($row['tenncc'] ?? '---') ?></h3>
 							<p class="profile-contact contact-email"><span><?= admin_h($row['emailncc'] ?? '---') ?></span>
@@ -1072,7 +1142,6 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 					</div>
 					<div class="profile-foot">
 						<span class="profile-pill">Nhận việc: <?= admin_h($row['ngaynhan'] ?? '---') ?></span>
-						<span class="profile-pill">Kinh nghiệm: <?= admin_h($row['kinh_nghiem_ncc'] ?? 'Khong co') ?></span>
 					</div>
 				</article>
 
@@ -1091,6 +1160,11 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 								<p class="review-text"><?= admin_h($row['danhgia_khachhang'] ?? 'Chưa có đánh giá') ?></p>
 								<p class="field-label">Thời gian</p>
 								<p class="review-time"><?= admin_h($row['thoigian_danhgia_khachhang'] ?? '---') ?></p>
+								<p class="field-label">Minh chứng</p>
+                                <div class="invoice-media-item" style="border:0;padding:0;min-height:auto;background:transparent;">
+                                    <span class="media-empty-label" id="reviewCustomerMediaEmpty" style="font-size:10px; text-align:left; padding:0;">Chưa có minh chứng</span>
+                                    <iframe id="reviewCustomerMediaEl" style="display:none;width:100%;min-height:120px;border:0;border-radius:8px;" allowfullscreen></iframe>
+                                </div>
 							</div>
 						</section>
 						<section class="review-box">
@@ -1102,6 +1176,11 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 								<p class="review-text"><?= admin_h($row['danhgia_nhanvien'] ?? 'Chưa có đánh giá') ?></p>
 								<p class="field-label">Thời gian</p>
 								<p class="review-time"><?= admin_h($row['thoigian_danhgia_nhanvien'] ?? '---') ?></p>
+								<p class="field-label">Minh chứng</p>
+                                <div class="invoice-media-item" style="border:0;padding:0;min-height:auto;background:transparent;">
+                                    <span class="media-empty-label" id="reviewStaffMediaEmpty" style="font-size:10px; text-align:left; padding:0;">Chưa có minh chứng</span>
+                                    <iframe id="reviewStaffMediaEl" style="display:none;width:100%;min-height:120px;border:0;border-radius:8px;" allowfullscreen></iframe>
+                                </div>
 							</div>
 						</section>
 					</div>
@@ -1110,5 +1189,40 @@ admin_render_layout_start('Chi Tiết đơn hàng', 'orders', $admin);
 		<?php endif; ?>
 	</div>
 </div>
+<script>
+    (function () {
+        const $ = id => document.getElementById(id);
+        const row = <?= json_encode($row) ?>;
 
+        function renderDriveFrame(rawId, frameId, emptyId, imgId) {
+            const frame = $(frameId);
+            const emptyEl = $(emptyId);
+            const imgEl = $(imgId);
+            if (!frame || !emptyEl) return;
+
+            const id = String(rawId || '').trim().replace(/[\[\]" ]/g, '').split(',')[0];
+            if (!id || id.length < 10) { 
+                emptyEl.style.display = (imgEl ? 'none' : 'block');
+                frame.style.display = 'none';
+                if (imgEl) imgEl.style.display = 'block';
+                return;
+            }
+
+            const url = 'https://drive.google.com/file/d/' + id + '/preview';
+            frame.src = url;
+            emptyEl.style.display = 'none';
+            frame.style.display = 'block';
+            if (imgEl) imgEl.style.display = 'none';
+        }
+
+        if (row) {
+            renderDriveFrame(row.anh_id, 'invoiceMediaImageEl', 'invoiceMediaImageEmpty');
+            renderDriveFrame(row.video_id, 'invoiceMediaVideoEl', 'invoiceMediaVideoEmpty');
+            renderDriveFrame(row.avatar_khachhang, 'avatarCustomerEl', 'avatarCustomerEmpty', 'avatarCustomerImg');
+            renderDriveFrame(row.avatar_ncc, 'avatarStaffEl', 'avatarStaffEmpty', 'avatarStaffImg');
+            renderDriveFrame(row.media_danhgia_khachhang, 'reviewCustomerMediaEl', 'reviewCustomerMediaEmpty');
+            renderDriveFrame(row.media_danhgia_nhanvien, 'reviewStaffMediaEl', 'reviewStaffMediaEmpty');
+        }
+    })();
+</script>
 <?php admin_render_layout_end(); ?>

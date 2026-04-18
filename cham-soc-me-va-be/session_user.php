@@ -62,7 +62,7 @@ $_SESSION['user'] = [
     'email'          => $found['email'] ?? '',
     'diachi'         => $found['diachi'] ?? '',
     'matkhau'        => $found['matkhau'] ?? '',
-    'avatartenfile'  => $found['avatartenfile'] ?? '',
+    'avatartenfile'  => $found['link_avatar'] ?? '',
     'id_dichvu'      => $found['id_dichvu'] ?? '',
     'trangthai'      => $found['trangthai'] ?? 'active'
 ];
