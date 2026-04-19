@@ -1362,6 +1362,96 @@
 				grid-column: span 2 !important;
 			}
 		}
+
+		/* Custom Dialog Styles */
+		#appDialogOverlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.5);
+			display: none;
+			align-items: center;
+			justify-content: center;
+			z-index: 10000;
+			backdrop-filter: blur(4px);
+			padding: 20px;
+		}
+
+		#appDialogBox {
+			background: white;
+			border-radius: 12px;
+			padding: 24px;
+			max-width: 400px;
+			width: 100%;
+			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+			animation: dialogShow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+		}
+
+		@keyframes dialogShow {
+			from {
+				opacity: 0;
+				transform: scale(0.9) translateY(20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: scale(1) translateY(0);
+			}
+		}
+
+		#appDialogTitle {
+			font-size: 18px;
+			font-weight: 800;
+			margin-bottom: 12px;
+			color: #17c211;
+		}
+
+		#appDialogMessage {
+			font-size: 14px;
+			margin-bottom: 24px;
+			color: #4a5568;
+			line-height: 1.6;
+			font-weight: 500;
+		}
+
+		.appDialogButtons {
+			display: flex;
+			justify-content: flex-end;
+			gap: 12px;
+		}
+
+		.appDialogBtn {
+			padding: 10px 20px;
+			border-radius: 8px;
+			border: none;
+			font-weight: 700;
+			cursor: pointer;
+			transition: all 0.2s;
+			font-size: 13px;
+		}
+
+		.appDialogBtnPrimary {
+			background: linear-gradient(135deg, #79e788, #11c23d);
+			color: white;
+			box-shadow: 0 4px 12px rgba(194, 17, 120, 0.2);
+		}
+
+		.appDialogBtnPrimary:hover {
+			filter: brightness(1.05);
+			transform: translateY(-1px);
+		}
+
+		.appDialogBtnSecondary {
+			background: #f7fafc;
+			color: #4a5568;
+			border: 1px solid #e2e8f0;
+		}
+
+		.appDialogBtnSecondary:hover {
+			background: #edf2f7;
+		}
 	</style>
 </head>
 
@@ -1714,7 +1804,16 @@
 			</div>
 		</section>
 	</main>
-
+	<div id="appDialogOverlay">
+		<div id="appDialogBox">
+			<div id="appDialogTitle">Thông báo</div>
+			<div id="appDialogMessage"></div>
+			<div class="appDialogButtons">
+				<button id="appDialogBtnCancel" class="appDialogBtn appDialogBtnSecondary">Hủy</button>
+				<button id="appDialogBtnOk" class="appDialogBtn appDialogBtnPrimary">Đồng ý</button>
+			</div>
+		</div>
+	</div>
 
 	<script>
 		(() => {
@@ -1735,6 +1834,47 @@
 			};
 
 			const $ = (id) => document.getElementById(id);
+
+			// Hệ thống Dialog tùy chỉnh
+			const jsDialog = {
+				show(message, type = 'alert', customTitle = 'Thông báo') {
+					const overlay = $('appDialogOverlay');
+					const msg = $('appDialogMessage');
+					const btnOk = $('appDialogBtnOk');
+					const btnCancel = $('appDialogBtnCancel');
+					const title = $('appDialogTitle');
+
+					if (!overlay || !msg || !btnOk || !btnCancel || !title) {
+						// Fallback nếu DOM chưa sẵn sàng hoặc bị thiếu
+						if (type === 'confirm') return Promise.resolve(window.confirm(message));
+						window.alert(message);
+						return Promise.resolve(true);
+					}
+
+					return new Promise((resolve) => {
+						msg.textContent = message;
+						title.textContent = customTitle;
+						overlay.style.display = 'flex';
+						btnCancel.style.display = type === 'confirm' ? 'block' : 'none';
+
+						const close = (result) => {
+							overlay.style.display = 'none';
+							btnOk.onclick = null;
+							btnCancel.onclick = null;
+							resolve(result);
+						};
+
+						btnOk.onclick = () => close(true);
+						btnCancel.onclick = () => close(false);
+					});
+				},
+				alert(msg) { return this.show(msg, 'alert'); },
+				confirm(msg) { return this.show(msg, 'confirm', 'Xác nhận'); }
+			};
+
+			// Override window.alert để dùng cho các lời gọi trong HTML (onclick)
+			window.alert = (msg) => jsDialog.alert(msg);
+			window.confirm = (msg) => jsDialog.confirm(msg);
 			const toNum = (v) => Number(v || 0);
 			const now = () => new Date();
 			const nowSql = () => {
@@ -2367,7 +2507,7 @@
 				rows.forEach(r => {
 					const isAutoEnd = r.isAuto || (endPlanTime && r.end === endPlanTime);
 					const endCell = r.end
-						? `${r.end} ${isAutoEnd ? '<i class="fa fa-info-circle text-warning" title="NCC quên nhấn Kết Thúc" style="cursor:pointer;color:#f0ba2c;" onclick="alert(\'NCC quên nhấn Kết Thúc\')"></i>' : ''}`
+						? `${r.end} ${isAutoEnd ? '<i class="fa fa-info-circle text-warning" title="NCC quên nhấn Kết Thúc" style="cursor:pointer;color:#f0ba2c;" onclick="jsDialog.alert(\'NCC quên nhấn Kết Thúc\')"></i>' : ''}`
 						: '<span style="color:#b0597a;">Chưa kết thúc</span>';
 
 					const tr = document.createElement('tr');
@@ -2474,7 +2614,7 @@
 
 			// handleHdrEnd: kết thúc tổng thể dịch vụ, chuyển trạng thái "hoàn thành"
 			async function handleHdrEnd() {
-				if (!confirm('Bạn có chắc chắn muốn hoàn thành dịch vụ?')) return;
+				if (!await jsDialog.confirm('Bạn có chắc chắn muốn hoàn thành dịch vụ?')) return;
 				await updateById(TABLE_ORDER, app.$datlich_nguoigia.id, {
 					trangthai: 'hoàn thành',
 					thoigian_ketthuc_thucte: nowSql(),
@@ -2514,7 +2654,7 @@
 
 			// handleEnd: kết thúc ngày làm - update vào đúng dòng của btnStart
 			async function handleEnd() {
-				if (!confirm('Bạn có chắc chắn muốn kết thúc ngày hôm nay?')) return;
+				if (!await jsDialog.confirm('Bạn có chắc chắn muốn kết thúc ngày hôm nay?')) return;
 				const curTime = nowTimeSql();
 
 				// Tìm id record cần update
