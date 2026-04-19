@@ -860,8 +860,8 @@ include 'layout-header.php';
 		word-break: break-word;
 	}
 
-	.profile-row::before,
-	.profile-contact::before {
+	.profile-row i,
+	.profile-contact i {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -877,17 +877,7 @@ include 'layout-header.php';
 		margin-top: 1px;
 	}
 
-	.contact-email::before {
-		content: '✉';
-	}
-
-	.contact-phone::before {
-		content: '✆';
-	}
-
-	.contact-address::before {
-		content: '⌂';
-	}
+/* Removed redundant unicode icon rules as we use Font Awesome in HTML */
 
 	.profile-foot {
 		padding: 0 14px 14px;
@@ -1206,8 +1196,8 @@ include 'layout-header.php';
 		color: #000000;
 	}
 
-	.profile-row::before,
-	.profile-contact::before {
+	.profile-row i,
+	.profile-contact i {
 		background: #e7f1ff;
 		color: #4f7dd2;
 	}
@@ -1707,9 +1697,9 @@ include 'layout-header.php';
 							style="display:none;"></iframe>
 						<div class="profile-main">
 							<h3 id="customerCardName" class="profile-name">---</h3>
-							<p class="profile-contact fa fa-envelope"><span id="customerCardEmail">---</span></p>
-							<p id="customerCardPhone" class="profile-row fa fa-phone">---</p>
-							<p id="customerCardAddress" class="profile-row fa fa-map-marker">---</p>
+							<p class="profile-contact"><i class="fa fa-envelope"></i> <span id="customerCardEmail">---</span></p>
+							<p class="profile-row"><i class="fa fa-phone"></i> <span id="customerCardPhone">---</span></p>
+							<p class="profile-row"><i class="fa fa-map-marker"></i> <span id="customerCardAddress">---</span></p>
 						</div>
 					</div>
 
@@ -1727,9 +1717,9 @@ include 'layout-header.php';
 						<div class="profile-main">
 							<h3 id="staffCardName" class="profile-name">---</h3>
 							<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
-							<p id="staffCardEmail" class="profile-row fa fa-envelope">---</p>
-							<p id="staffCardPhone" class="profile-row fa fa-phone">---</p>
-							<p id="staffCardAddress" class="profile-row fa fa-map-marker">---</p>
+							<p class="profile-row"><i class="fa fa-envelope"></i> <span id="staffCardEmail">---</span></p>
+							<p class="profile-row"><i class="fa fa-phone"></i> <span id="staffCardPhone">---</span></p>
+							<p class="profile-row"><i class="fa fa-map-marker"></i> <span id="staffCardAddress">---</span></p>
 						</div>
 					</div>
 					<div class="profile-foot">
@@ -2096,6 +2086,7 @@ include 'layout-header.php';
 			const needComplete = hasStaff
 				&& !!endPlanAt
 				&& now().getTime() > endPlanAt.getTime()
+				&& status.includes('đang')
 				&& !isCanceled
 				&& !isOverdue
 				&& !isCompleted;

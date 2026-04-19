@@ -130,15 +130,15 @@
     return date.toLocaleDateString("vi-VN");
   }
 
-  function formatTime(value) {
-    if (!value) return "--:--";
-    var date = new Date(value);
-    if (!Number.isFinite(date.getTime())) return "--:--";
-    return date.toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
+  // function formatTime(value) {
+  //   if (!value) return "--:--";
+  //   var date = new Date(value);
+  //   if (!Number.isFinite(date.getTime())) return "--:--";
+  //   return date.toLocaleTimeString("vi-VN", {
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //   });
+  // }
 
   function addDays(value, days) {
     var date = new Date(value);
@@ -423,11 +423,9 @@
 
     return {
       id: row.id || row.user_id || row.makhachhang || "",
-      user_name: row.user_name || row.hovaten || row.ten || "",
-      user_tel: normalizePhone(
-        row.user_tel || row.sodienthoai || row.phone || phoneFallback,
-      ),
-      user_email: row.user_email || row.email || "",
+      user_name: row.hovaten || row.user_name || row.ten || "",
+      user_tel: normalizePhone(row.sodienthoai || row.user_tel || row.phone || phoneFallback),
+      user_email: row.email || row.user_email || "",
       id_dichvu: String(row.id_dichvu || "").trim(),
       account_type: containsServiceId(row.id_dichvu, PROVIDER_SERVICE_ID)
         ? "provider"
@@ -459,8 +457,8 @@
 
   function findUserByCredentials(phone, password) {
     var normalizedPhone = normalizePhone(phone);
-    var phoneFields = ["sodienthoai", "user_tel", "phone", "sdt"];
-    var passwordFields = ["matkhau", "password", "user_password", "mat_khau"];
+    var phoneFields = ["sodienthoai", "user_tel", "phone"];
+    var passwordFields = ["matkhau", "password"];
 
     function tryPair(indexPhone, indexPassword) {
       if (indexPhone >= phoneFields.length) {
@@ -588,7 +586,7 @@
         id: 0,
         name: (row && row.hovaten) || "Khách hàng",
         phone: (row && row.sodienthoai) || "",
-        email: "",
+        email: (row && (row.email || row.user_email)) || "",
         address: (row && row.diachi) || "",
         avatar: "",
         maplat: row && row.lat_kh,
@@ -646,7 +644,7 @@
     if (shared && typeof shared.getSessionUser === "function") {
       return shared.getSessionUser().then(function (row) {
         if (!row) return null;
-        return mapAuthenticatedUser(row, row.sodienthoai);
+        return mapAuthenticatedUser(row, row.sodienthoai || row.user_tel || row.phone);
       });
     }
 
@@ -697,15 +695,7 @@
     var emailNode = document.querySelector(".admin-chip .admin-email");
     var avatarNode = document.querySelector(".admin-chip .admin-avatar");
     var displayName =
-      String(
-        user.user_name ||
-          user.hovaten ||
-          user.hoten ||
-          user.name ||
-          user.full_name ||
-          user.display_name ||
-          "",
-      ).trim() ||
+      String(user.user_name || "").trim() ||
       String(user.user_email || "").trim() ||
       String(user.user_tel || "").trim() ||
       "Khách hàng";
@@ -722,16 +712,7 @@
     var emailNode = document.querySelector(".admin-chip .admin-email");
     var avatarNode = document.querySelector(".admin-chip .admin-avatar");
     var displayName =
-      String(
-        user.user_name ||
-          user.hovaten ||
-          user.hoten ||
-          user.tennhacungcap ||
-          user.name ||
-          user.full_name ||
-          user.display_name ||
-          "",
-      ).trim() ||
+      String(user.user_name || "").trim() ||
       String(user.user_email || "").trim() ||
       String(user.user_tel || "").trim() ||
       "Nhà cung cấp";
@@ -761,7 +742,7 @@
 
   function resolveProviderId(user) {
     var row = user || {};
-    var candidates = [row.id, row.idnhacungcap, row.provider_id, row.user_id];
+    var candidates = [row.id, row.idnhacungcap, row.user_id, row.provider_id];
     for (var i = 0; i < candidates.length; i += 1) {
       var providerId = toNumber(candidates[i]);
       if (providerId > 0) return providerId;
@@ -1840,6 +1821,23 @@
     setText("detailCustomerName", order.customer.name);
     setText("detailCustomerPhone", order.customer.phone);
     setText("detailCustomerEmail", order.customer.email);
+    // Fetch missing email from nguoidung if not present in order data
+    if (!order.customer.email && order.customer.phone && typeof window.krudList === "function") {
+      window.krudList({
+        table: USER_TABLE,
+        where: [{ field: "sodienthoai", operator: "=", value: order.customer.phone }],
+        limit: 1
+      }).then(function(res) {
+        var rows = extractRows(res);
+        if (rows.length) {
+          var email = rows[0].email || rows[0].user_email || "";
+          if (email) {
+            order.customer.email = email;
+            setText("detailCustomerEmail", email);
+          }
+        }
+      }).catch(function(){});
+    }
     setText("detailCustomerAddress", order.customer.address);
 
     setText("detailProviderName", order.provider.name);
@@ -2483,7 +2481,7 @@
           configs.push({
             text: "Khảo sát xong",
             loadingText: "Đang cập nhật...",
-            className: "btn-info",
+            className: "btn-info text-white",
             handler: function (btn) {
               showConfirm("Bạn có chắc chắn muốn thực hiện hành động 'Khảo sát xong'?", function () {
                 setActionButtonLoading(btn, true, "Khảo sát xong", "Đang cập nhật...");

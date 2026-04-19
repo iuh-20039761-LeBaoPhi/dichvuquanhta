@@ -772,8 +772,8 @@ include 'layout-header.php';
 		word-break: break-word;
 	}
 
-	.profile-row::before,
-	.profile-contact::before {
+	.profile-row i,
+	.profile-contact i {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -789,21 +789,6 @@ include 'layout-header.php';
 		margin-top: 1px;
 	}
 
-	.contact-email::before {
-		content: '✉';
-	}
-
-	.contact-phone::before {
-		content: '✆';
-	}
-
-	.contact-address::before {
-		content: '⌂';
-	}
-
-	.profile-foot {
-		padding: 0 14px 14px;
-	}
 
 	.profile-pill {
 		display: inline-flex;
@@ -1113,8 +1098,8 @@ include 'layout-header.php';
 		color: #1b2a3a;
 	}
 
-	.profile-row::before,
-	.profile-contact::before {
+	.profile-row i,
+	.profile-contact i {
 		background: #e3f0ff;
 		color: #0f80f2;
 	}
@@ -1699,11 +1684,11 @@ include 'layout-header.php';
 							style="display:none;"></iframe>
 						<div class="profile-main">
 							<h3 id="customerCardName" class="profile-name">---</h3>
-							<p class="profile-row"><i class="fa fa-envelope me-2"></i><span
-									id="customerCardEmail">---</span></p>
-							<p class="profile-row"><i class="fa fa-phone me-2"></i><span
+							<p class="profile-contact"><i class="fa fa-envelope"></i> <span
+										id="customerCardEmail">---</span></p>
+							<p class="profile-row"><i class="fa fa-phone"></i> <span
 									id="customerCardPhone">---</span></p>
-							<p class="profile-row"><i class="fa fa-map-marker me-2"></i><span
+							<p class="profile-row"><i class="fa fa-map-marker"></i> <span
 									id="customerCardAddress">---</span></p>
 						</div>
 					</div>
@@ -1722,12 +1707,11 @@ include 'layout-header.php';
 							style="display:none;"></iframe>
 						<div class="profile-main">
 							<h3 id="staffCardName" class="profile-name">---</h3>
-							<!-- <p class="profile-rate"><span class="star">★</span><span id="staffRatingText">Chưa có đánh giá</span></p> -->
-							<p class="profile-row"><i class="fa fa-envelope me-2"></i><span
-									id="staffCardEmail">---</span></p>
-							<p class="profile-row"><i class="fa fa-phone me-2"></i><span id="staffCardPhone">---</span>
+							<p class="profile-row"><i class="fa fa-envelope"></i> <span
+										id="staffCardEmail">---</span></p>
+							<p class="profile-row"><i class="fa fa-phone"></i> <span id="staffCardPhone">---</span>
 							</p>
-							<p class="profile-row"><i class="fa fa-map-marker me-2"></i><span
+							<p class="profile-row"><i class="fa fa-map-marker"></i> <span
 									id="staffCardAddress">---</span></p>
 						</div>
 					</div>

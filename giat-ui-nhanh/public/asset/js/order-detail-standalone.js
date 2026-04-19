@@ -602,7 +602,7 @@
    */
   async function queryUserByCredentials(table, phone, password) {
     var phoneFields = ["sodienthoai", "user_tel", "phone"];
-    var passwordFields = ["matkhau", "password", "user_password"];
+    var passwordFields = ["matkhau", "password"];
     var normalized = normalizePhone(phone);
 
     for (var i = 0; i < phoneFields.length; i += 1) {
@@ -655,9 +655,7 @@
     return {
       role: isProvider ? "provider" : "customer",
       user: user,
-      phone: normalizePhone(
-        user.sodienthoai || user.user_tel || user.phone || phone,
-      ),
+      phone: normalizePhone(user.sodienthoai || user.user_tel || user.phone || phone),
     };
   }
 
@@ -2091,7 +2089,7 @@
         });
         group.appendChild(receiveBtn);
       } else if (canStart) {
-        var startBtn = makeButton("Bắt đầu", "btn btn-info");
+        var startBtn = makeButton("Bắt đầu", "btn btn-info text-white");
         startBtn.addEventListener("click", function () {
           runProviderAction(startBtn, "Đang bắt đầu...", function () {
             return {

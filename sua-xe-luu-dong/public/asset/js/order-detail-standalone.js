@@ -3,7 +3,6 @@
 
   var ORDER_TABLE = "datlich_suaxe";
   var USER_TABLE = "nguoidung";
-  var REVIEW_UPLOAD_ENDPOINT = "public/upload-review-media.php";
   var REVIEW_FIELD_MAP = {
     customer: {
       text: ["danhgia_khachhang"],
@@ -138,7 +137,7 @@
     
     var transportFee = 0;
     if (distanceKm >= 3) {
-      var dateVal = order.ngaydat || (order.raw && order.raw.ngaydat) || (order.raw && order.raw.created_date) || new Date().toISOString();
+      var dateVal = order.ngaydat || (order.raw && order.raw.ngaydat) || new Date().toISOString();
       var checkDate = new Date(dateVal);
       var hour = checkDate.getHours();
       var isUrgent = order.yeucaugap === "Có" || (order.raw && order.raw.yeucaugap === "Có");
@@ -215,16 +214,6 @@
   }
 
   /**
-   * Định dạng số thành chuỗi tiền tệ tiếng Việt.
-   * @param {number|string} value Giá trị số.
-   * @returns {string} Chuỗi tiền tệ.
-   */
-  function formatCurrency(value) {
-    var num = toNumber(value);
-    return num.toLocaleString("vi-VN") + " đ";
-  }
-
-  /**
    * Định dạng số thành chuỗi tiền tệ tiếng Việt có hậu tố VND.
    * @param {number|string} value Giá trị số.
    * @returns {string} Chuỗi tiền tệ.
@@ -250,18 +239,6 @@
       hour: "2-digit",
       minute: "2-digit",
     });
-  }
-
-  /**
-   * Định dạng ngày theo kiểu Việt Nam.
-   * @param {string|Date} value Giá trị ngày tháng.
-   * @returns {string} Chuỗi ngày định dạng.
-   */
-  function formatDateOnly(value) {
-    if (!value) return "---";
-    var date = new Date(value);
-    if (!Number.isFinite(date.getTime())) return "---";
-    return date.toLocaleDateString("vi-VN");
   }
 
   /**
@@ -470,11 +447,11 @@
   }
 
   /**
-   * Hiển thị nội dung lỗi khi không truy cập được đơn hàng.
+   * Hiển thị nội dung lỗi khi không truy cập được đơn hàng (Lỗi trang).
    * @param {string} title Tiêu đề lỗi.
    * @param {string} message Mô tả lỗi.
    */
-  function showError(title, message) {
+  function showPageError(title, message) {
     var foundNode = document.getElementById("detailStateFound");
     var missingNode = document.getElementById("detailStateNotFound");
     var actionNode = document.getElementById("detailActionBar");
@@ -567,7 +544,7 @@
    */
   async function queryUserByCredentials(table, phone, password) {
     var phoneFields = ["sodienthoai", "user_tel", "phone"];
-    var passwordFields = ["matkhau", "password", "user_password"];
+    var passwordFields = ["matkhau", "password"];
     var normalized = normalizePhone(phone);
 
     for (var i = 0; i < phoneFields.length; i += 1) {
@@ -604,10 +581,6 @@
    * @returns {Promise<Object|null>}
    */
   async function authenticateAccess(phone, password) {
-    if (typeof USER_TABLE === "undefined") {
-      var USER_TABLE = "nguoidung";
-    }
-    
     var user = await queryUserByCredentials(USER_TABLE, phone, password);
     if (!user) return null;
 
@@ -676,8 +649,6 @@
       { field: "id", value: providerId },
       { field: "sodienthoai", value: providerPhone },
       { field: "user_tel", value: providerPhone },
-      { field: "phone", value: providerPhone },
-      { field: "sdt", value: providerPhone },
       { field: "email", value: providerEmail },
       { field: "user_email", value: providerEmail },
     ]);
@@ -718,23 +689,17 @@
         row.sodienthoai || customer.sodienthoai || customer.user_tel || "";
       row.email = row.email || customer.email || customer.user_email || "";
       row.diachi = row.diachi || customer.diachi || "";
-      row.avatar_kh = pickFirstValue([
-        customer.avatar,
-        customer.avatartenfile,
-      ]);
+      row.avatar_kh = customer.link_avatar || customer.avatar || "";
     }
 
     if (provider) {
       row.nhacungcap = provider;
       row.idnhacungcap = row.idnhacungcap || provider.id || "";
-      row.tennhacungcap = row.tennhacungcap || provider.hovaten || "";
-      row.sdt_ncc = row.sdt_ncc || provider.sodienthoai || "";
-      row.email_ncc = row.email_ncc || provider.email || "";
+      row.tennhacungcap = row.tennhacungcap || provider.hovaten || provider.user_name || "";
+      row.sdt_ncc = row.sdt_ncc || provider.sodienthoai || provider.user_tel || "";
+      row.email_ncc = row.email_ncc || provider.email || provider.user_email || "";
       row.diachi_ncc = row.diachi_ncc || provider.diachi || "";
-      row.avatar_ncc = pickFirstValue([
-        provider.avatar,
-        provider.avatartenfile,
-      ]);
+      row.avatar_ncc = provider.link_avatar || provider.avatar || "";
     }
 
     return row;
@@ -806,12 +771,9 @@
         id: 0,
         name: row.hovaten || "Khách hàng",
         phone: row.sodienthoai || "",
-        email: "",
+        email: row.email || "",
         address: row.diachi || "",
-        avatar: pickFirstValue([
-          row.avatar_kh,
-          row.avatartenfile,
-        ]),
+        avatar: row.avatar_kh || "",
       },
       provider: {
         id: hasAssignedProvider ? toNumber(row.idnhacungcap) : 0,
@@ -968,26 +930,16 @@
    */
   function resolveProviderIdentity(auth) {
     var user = (auth && auth.user) || {};
-    var providerId = normalizeId(
-      user.id || user.idnhacungcap || user.provider_id || user.manhacungcap,
-    );
+    var providerId = normalizeId(user.id || user.idnhacungcap || user.user_id);
 
     return {
       id: providerId,
-      name: pickFirstValue([
-        user.hovaten,
-        user.user_name,
-        user.hoten,
-        user.tennhacungcap,
-        user.name,
-      ]),
-      phone: normalizePhone(
-        user.sodienthoai || user.user_tel || user.phone || user.sdt,
-      ),
+      name: user.hovaten || user.user_name || user.hoten || "",
+      phone: normalizePhone(user.sodienthoai || user.user_tel || user.phone || ""),
       email: String(user.email || user.user_email || "").trim(),
-      address: String(user.diachi || user.address || "").trim(),
-      lat: user.maplat || user.lat || user.user_lat,
-      lng: user.maplng || user.lng || user.user_lng,
+      address: String(user.diachi || "").trim(),
+      lat: user.maplat || user.lat || "",
+      lng: user.maplng || user.lng || "",
     };
   }
 
@@ -1001,13 +953,6 @@
     if (!auth || !order) return false;
 
     var loginPhone = normalizePhone(auth.phone);
-    var loginId = normalizeId(
-      auth.user &&
-        (auth.user.id ||
-          auth.user.idnhacungcap ||
-          auth.user.provider_id ||
-          auth.user.manhacungcap),
-    );
 
     if (auth.role === "customer") {
       var customerPhones = [
@@ -1016,17 +961,11 @@
       ].map(normalizePhone);
       var orderCustomerName = normalizePersonName(
         (order.customer && order.customer.name) ||
-          (order.raw && order.raw.hovaten) ||
-          (order.raw && order.raw.tenkhachhang) ||
+          (order.raw && (order.raw.hovaten || order.raw.tenkhachhang)) ||
           "",
       );
       var loginCustomerName = normalizePersonName(
-        (auth.user &&
-          (auth.user.hovaten ||
-            auth.user.user_name ||
-            auth.user.hoten ||
-            auth.user.name)) ||
-          "",
+        (auth.user && (auth.user.hovaten || auth.user.user_name || auth.user.hoten)) || "",
       );
 
       var phoneMatched = customerPhones.indexOf(loginPhone) !== -1;
@@ -1380,11 +1319,6 @@
 
     var meta = statusMeta(order.status);
     var progressValue = statusProgress(order.status);
-    var subtotal = 0;
-    var total =
-      toNumber(order.totalAmount) > 0
-        ? toNumber(order.totalAmount)
-        : toNumber(order.extraFee);
 
     var hasReceivedDate = hasDateValue(order && order.receivedAt);
     var hasStartedDate = hasDateValue(order && order.startedAt);
@@ -1392,7 +1326,7 @@
     var isCanceled = hasDateValue(
       order &&
         order.raw &&
-        (order.raw.ngayhuy || order.raw.ngay_huy || order.raw.canceled_at),
+        (order.raw.ngayhuy),
     );
     var providerStateText = "Chưa nhận";
     if (isCanceled) {
@@ -1952,32 +1886,34 @@
         return el;
       }
 
-      async function runProviderAction(buttonEl, loadingText, payloadFactory) {
-        if (state.isSubmitting) return;
-        state.isSubmitting = true;
-        hideActionAlert();
+      async function runProviderAction(buttonEl, loadingText, confirmMsg, successMsg, payloadFactory) {
+        showConfirm(confirmMsg, async function () {
+            if (state.isSubmitting) return;
+            state.isSubmitting = true;
+            hideActionAlert();
 
-        var originalText = buttonEl.textContent;
-        buttonEl.disabled = true;
-        buttonEl.textContent = loadingText;
+            var originalText = buttonEl.textContent;
+            buttonEl.disabled = true;
+            buttonEl.textContent = loadingText;
 
-        try {
-          if (!state.orderRaw || !state.orderRaw.id) {
-            throw new Error("Không xác định được mã hóa đơn để cập nhật.");
-          }
+            try {
+              if (!state.orderRaw || !state.orderRaw.id) {
+                throw new Error("Không xác định được mã hóa đơn để cập nhật.");
+              }
 
-          await updateOrderRow(state.orderRaw.id, payloadFactory());
-          await loadAndRenderOrder();
-        } catch (error) {
-          showActionAlert(
-            (error && error.message) ||
-              "Không thể cập nhật trạng thái hóa đơn.",
-            "alert-danger",
-          );
-        } finally {
-          state.isSubmitting = false;
-          buttonEl.textContent = originalText;
-        }
+              await updateOrderRow(state.orderRaw.id, payloadFactory());
+              await loadAndRenderOrder();
+              if (successMsg) {
+                showSuccess(successMsg);
+              }
+            } catch (error) {
+              showError((error && error.message) || "Không thể cập nhật trạng thái hóa đơn.");
+            } finally {
+              state.isSubmitting = false;
+              buttonEl.textContent = originalText;
+              buttonEl.disabled = false;
+            }
+        });
       }
 
       if (canReceive) {
@@ -2059,38 +1995,52 @@
       } else if (canStart) {
         var startBtn = makeButton("Bắt đầu", "btn btn-primary");
         startBtn.addEventListener("click", function () {
-          runProviderAction(startBtn, "Đang bắt đầu...", function () {
-            return {
-              ngaybatdau: new Date().toISOString(),
-            };
-          });
+          runProviderAction(
+            startBtn, 
+            "Đang bắt đầu...", 
+            "Bạn có chắc chắn muốn bắt đầu thực hiện công việc này?",
+            "Đã bắt đầu thực hiện!",
+            function () {
+              return {
+                ngaybatdau: new Date().toISOString(),
+              };
+            }
+          );
         });
         group.appendChild(startBtn);
       } else if (canComplete) {
         // Nút Hoàn thành (Sửa xe thành công)
         var completeBtn = makeButton("Hoàn thành", "btn btn-success");
         completeBtn.addEventListener("click", function () {
-          runProviderAction(completeBtn, "Đang hoàn thành...", function () {
-            var transportFee = toNumber(order.transportFee);
-            return {
-              ngayhoanthanh: new Date().toISOString(),
-              phikhaosat: 0, // Miễn phí khảo sát khi hoàn thành sửa chữa
-              tiendichuyen: 0,
-              // tongtien: transportFee, // Tổng tiền = 0 (phí khảo sát) + phí di chuyển
-            };
-          });
+          runProviderAction(
+            completeBtn, 
+            "Đang hoàn thành...", 
+            "Bạn xác nhận đã hoàn thành sửa chữa xe cho khách hàng?",
+            "Đơn hàng đã được đánh dấu hoàn thành!",
+            function () {
+                var transportFee = toNumber(order.transportFee);
+                return {
+                  ngayhoanthanh: new Date().toISOString(),
+                  phikhaosat: 0, // Miễn phí khảo sát khi hoàn thành sửa chữa
+                  tiendichuyen: 0,
+                  // tongtien: transportFee, // Tổng tiền = 0 (phí khảo sát) + phí di chuyển
+                };
+            }
+          );
         });
         group.appendChild(completeBtn);
 
         // Nút Hoàn thành khảo sát
         var surveyCompleteBtn = makeButton(
           "Khảo sát xong",
-          "btn btn-info",
+          "btn btn-info text-white",
         );
         surveyCompleteBtn.addEventListener("click", function () {
           runProviderAction(
             surveyCompleteBtn,
             "Đang cập nhật...",
+            "Xác nhận đã hoàn thành khảo sát xe?",
+            "Cập nhật kết quả khảo sát thành công!",
             function () {
               var transportFee = toNumber(order.transportFee);
               var surveyFee = toNumber(order.surchargeFee);
@@ -2185,7 +2135,7 @@
 
     var raw = await loadOrderBymadh(params.madh);
     if (!raw) {
-      showError(
+      showPageError(
         "Không tìm thấy hóa đơn",
         "Mã hóa đơn không tồn tại hoặc không đúng định dạng.",
       );
@@ -2197,7 +2147,7 @@
     var mapped = mapOrderView(merged);
 
     if (!canAccessOrder(auth, mapped)) {
-      showError(
+      showPageError(
         "Không có quyền truy cập",
         "Bạn không có quyền xem hóa đơn này",
       );
@@ -2268,7 +2218,7 @@
   async function bootstrap() {
     try {
       if (typeof window.krudList !== "function") {
-        showError(
+        showPageError(
           "Thiếu thư viện",
           "Không tải được API dữ liệu. Vui lòng tải lại trang.",
         );
@@ -2279,7 +2229,7 @@
       state.params = params;
 
       if (!params.madh || !params.phone || !params.password) {
-        showError(
+        showPageError(
           "Thiếu tham số truy cập",
           "URL bắt buộc có madh, sodienthoai và password.",
         );
@@ -2288,7 +2238,7 @@
 
       var auth = await authenticateAccess(params.phone, params.password);
       if (!auth) {
-        showError(
+        showPageError(
           "Xác thực thất bại",
           "Số điện thoại hoặc mật khẩu không chính xác.",
         );
@@ -2300,7 +2250,7 @@
       initReviewEditors();
       await loadAndRenderOrder();
     } catch (error) {
-      showError(
+      showPageError(
         "Lỗi hệ thống",
         (error && error.message) || "Không thể tải dữ liệu hóa đơn.",
       );

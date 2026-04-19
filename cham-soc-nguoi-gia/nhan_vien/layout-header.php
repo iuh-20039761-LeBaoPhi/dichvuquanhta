@@ -308,7 +308,7 @@ $pageTitle = $pageTitle ?? '';
                     data-page="danh-sach-hoa-don.php">
                     <i class="bi bi-receipt"></i> <span>Danh sách đơn hàng</span>
                 </a>
-                <a href="../logout.html" class="list-group-item text-warning">
+                <a href="../logout.php" class="list-group-item text-warning">
                     <i class="bi bi-box-arrow-right"></i> <span>Đăng xuất</span>
                 </a>
             </nav>
@@ -331,7 +331,7 @@ $pageTitle = $pageTitle ?? '';
                         <?php endif; ?>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="border-radius: 15px;">
-                        <li><a class="dropdown-item text-danger py-2 px-3" href="../logout.html"><i
+                        <li><a class="dropdown-item text-danger py-2 px-3" href="../logout.php"><i
                                     class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
                     </ul>
                 </div>

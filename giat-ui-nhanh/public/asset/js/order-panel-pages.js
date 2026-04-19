@@ -456,11 +456,11 @@
 
     return {
       id: row.id || row.user_id || row.makhachhang || "",
-      user_name: row.user_name || row.hovaten || row.ten || "",
+      user_name: row.hovaten || row.user_name || row.ten || "",
       user_tel: normalizePhone(
-        row.user_tel || row.sodienthoai || row.phone || phoneFallback,
+        row.sodienthoai || row.user_tel || row.phone || phoneFallback,
       ),
-      user_email: row.user_email || row.email || "",
+      user_email: row.email || row.user_email || "",
       id_dichvu: String(row.id_dichvu || "").trim(),
       account_type: containsServiceId(row.id_dichvu, PROVIDER_SERVICE_ID)
         ? "provider"
@@ -492,8 +492,8 @@
 
   function findUserByCredentials(phone, password) {
     var normalizedPhone = normalizePhone(phone);
-    var phoneFields = ["sodienthoai", "user_tel", "phone", "sdt"];
-    var passwordFields = ["matkhau", "password", "user_password", "mat_khau"];
+    var phoneFields = ["sodienthoai", "user_tel", "phone"];
+    var passwordFields = ["matkhau", "password"];
 
     function tryPair(indexPhone, indexPassword) {
       if (indexPhone >= phoneFields.length) {
@@ -578,8 +578,7 @@
   }
 
   function mapDbOrderToPanelOrder(row) {
-    var createdAt =
-      (row && (row.ngaydat || row.created_date)) || new Date().toISOString();
+    var createdAt = (row && (row.ngaydat || row.created_date)) || new Date().toISOString();
     var updatedAt =
       (row &&
         (row.ngayhoanthanh ||
@@ -749,7 +748,7 @@
     if (shared && typeof shared.getSessionUser === "function") {
       return shared.getSessionUser().then(function (row) {
         if (!row) return null;
-        return mapAuthenticatedUser(row, row.sodienthoai);
+        return mapAuthenticatedUser(row, row.sodienthoai || row.user_tel || row.phone);
       });
     }
 
@@ -1952,6 +1951,22 @@
     setText("detailCustomerName", order.customer.name);
     setText("detailCustomerPhone", order.customer.phone);
     setText("detailCustomerEmail", order.customer.email);
+    if (!order.customer.email && order.customer.phone && typeof window.krudList === "function") {
+      window.krudList({
+        table: USER_TABLE,
+        where: [{ field: "sodienthoai", operator: "=", value: order.customer.phone }],
+        limit: 1
+      }).then(function(res) {
+        var rows = extractRows(res);
+        if (rows.length) {
+          var email = rows[0].email || rows[0].user_email || "";
+          if (email) {
+            order.customer.email = email;
+            setText("detailCustomerEmail", email);
+          }
+        }
+      }).catch(function(){});
+    }
     setText("detailCustomerAddress", order.customer.address);
 
     setText("detailProviderName", order.provider.name);
@@ -2551,7 +2566,7 @@
             });
         })
         .catch(function (error) {
-          window.alert((error && error.message) || "Khong the gui danh gia.");
+          showError((error && error.message) || "Không thể gửi đánh giá.");
         })
         .finally(function () {
           setReviewSubmitting(actor, false);

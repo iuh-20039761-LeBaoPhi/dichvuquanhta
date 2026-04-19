@@ -302,13 +302,13 @@
   gap: 20px;
   position: relative;
   z-index: 1;
-  /* margin-bottom: 24px; */
+  margin-bottom: 10px;
 }
 
 .hero-header-left {
   display: flex;
-  /* flex-direction: column; */
-  gap: 10px;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .invoice-code {
@@ -960,6 +960,10 @@ select:focus-visible {
   gap: 10px;
 }
 
+#detailActionBar button{
+  min-width: 152px;
+}
+
 /* ============================================================ 
    RESPONSIVE DESIGN SYSTEM
    Standard Breakpoints:
@@ -970,44 +974,118 @@ select:focus-visible {
 
 /* --- TABLET: 740px to 1023px --- */
 @media only screen and (min-width: 740px) and (max-width: 1023px) {
-  .filter-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .invoice-hero {
+    padding: 30px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   }
 
-  .detail-grid,
-  .detail-fields {
-    grid-template-columns: 1fr;
+  .invoice-hero-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 20px 30px;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: start;
+    text-align: left;
+  }
+
+  .hero-header-left {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    gap: 15px;
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .hero-header-center {
+    grid-column: 1;
+    grid-row: 2;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    padding: 12px 20px;
+    border-radius: 12px;
+    width: fit-content;
+    min-width: 260px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0;
+  }
+
+  .hero-header-right {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: flex;
+    /* flex-direction: column; */
+    /* align-items: flex-end; */
+    justify-content: flex-end;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .hero-total-label {
+    margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-total-amount {
+    margin: 0;
+    font-size: 1.6rem;
+    text-shadow: none;
+  }
+
+  .hero-progress-ring {
+    width: 115px;
+    height: 115px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  #detailActionBtn {
+    width: 100%;
+    max-width: 220px;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    /* background: #fff;
+    color: #1e40af; */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .invoice-hero-bottom {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+
+  .hero-card {
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .hero-card:nth-child(3) {
+    grid-column: auto;
+  }
+
+  .hero-card-value {
+    font-size: 0.88rem;
+    line-height: 1.4;
   }
 
   .invoice-main-grid,
   .identity-grid,
-  .review-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .invoice-hero-top {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 30px;
-  }
-
-  .hero-header-left, 
-  .hero-header-right {
-    justify-content: center;
-  }
-
-  .hero-header-right{
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .invoice-hero-bottom {
+  .review-grid,
+  .detail-grid,
+  .detail-fields {
     grid-template-columns: repeat(2, 1fr);
+    /* gap: 20px; */
   }
 
-  .hero-card:last-child {
-    grid-column: span 2;
+  .invoice-panel-body, .identity-body {
+    padding: 15px;
   }
 }
 
@@ -1064,10 +1142,13 @@ select:focus-visible {
 
   .hero-header-right {
     justify-content: center;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 15px;
   }
-
+  #detailActionBar {
+    justify-content: center;
+    margin-right: 0px !important;
+  }
   .hero-progress-ring {
     width: 90px;
     height: 90px;
