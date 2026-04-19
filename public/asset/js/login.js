@@ -54,16 +54,16 @@ async function login() {
         const urlParams = new URLSearchParams(window.location.search);
         const redirectUrl = urlParams.get('redirect');
         const service = urlParams.get('service');
-        const ROOT_DETECTOR = () => {
+        const getRoot = () => {
             if (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) return window.DVQTApp.ROOT_URL;
             const path = window.location.pathname;
-            const idx = path.indexOf('/public/');
+            const idx = path.toLowerCase().indexOf('/public/');
             if (idx !== -1) return path.substring(0, idx);
             const parts = path.split('/');
             if (parts[1] && !parts[1].includes('.') && parts[1] !== 'index.php') return '/' + parts[1];
             return '';
         };
-        const root = ROOT_DETECTOR();
+        const root = getRoot();
         let target = root + '/index.html';
 
         if (redirectUrl) {
@@ -108,16 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const redirectUrl = urlParams.get('redirect');
             const service = urlParams.get('service');
-            const ROOT_DETECTOR = () => {
-                if (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) return window.DVQTApp.ROOT_URL;
-                const path = window.location.pathname;
-                const idx = path.indexOf('/public/');
-                if (idx !== -1) return path.substring(0, idx);
-                const parts = path.split('/');
-                if (parts[1] && !parts[1].includes('.') && parts[1] !== 'index.php') return '/' + parts[1];
-                return '';
-            };
-            const root = ROOT_DETECTOR();
+            const root = getRoot();
             let target = root + '/index.html';
             if (redirectUrl) {
                 target = decodeURIComponent(redirectUrl);

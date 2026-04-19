@@ -264,9 +264,10 @@
          */
         getDriveUrl: (fileId) => {
             if (!fileId) return '';
-            if (fileId.startsWith('http')) return fileId;
-            // Định dạng link hiển thị ảnh trực tiếp tối ưu nhất của Google
-            return `https://lh3.googleusercontent.com/d/${fileId}`;
+            const id = String(fileId).trim();
+            if (id.startsWith('http')) return id;
+            // Định dạng đồng bộ với server PHP và hỗ trợ tốt cho đa tài khoản
+            return `https://lh3.googleusercontent.com/u/0/d/${id}`;
         },
 
         ROOT_URL: ROOT_URL,

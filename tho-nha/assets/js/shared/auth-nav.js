@@ -67,6 +67,17 @@
         const mobileGuest = document.getElementById('mobile-auth-guest');
         const mobileUser = document.getElementById('mobile-auth-user');
 
+        const getRoot = () => {
+            if (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) return window.DVQTApp.ROOT_URL;
+            const path = window.location.pathname;
+            const lowerPath = path.toLowerCase();
+            const idx = lowerPath.indexOf('/tho-nha/');
+            if (idx !== -1) return path.substring(0, idx);
+            const parts = path.split('/');
+            if (parts[1] && !parts[1].includes('.') && parts[1] !== 'index.php') return '/' + parts[1];
+            return '';
+        };
+
         var paths = buildPathMaps(getBasePrefix());
 
         function setLoadingOff() {
@@ -75,11 +86,7 @@
         }
 
         function applyGuestUi() {
-            const ROOT = (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) 
-                ? window.DVQTApp.ROOT_URL 
-                : (window.location.pathname.indexOf('/tho-nha/') !== -1 
-                    ? window.location.pathname.substring(0, window.location.pathname.indexOf('/tho-nha/')) 
-                    : (window.location.pathname.split('/')[1] && !window.location.pathname.split('/')[1].includes('.') && window.location.pathname.split('/')[1] !== 'index.php' ? '/' + window.location.pathname.split('/')[1] : ''));
+            const ROOT = getRoot();
 
             const loginHrefs = [document.getElementById('auth-login-link'), document.getElementById('mobile-auth-login-link')];
             const regHrefs   = [document.getElementById('auth-register-link'), document.getElementById('mobile-auth-register-link')];
@@ -128,11 +135,7 @@
                         }
 
                         // 2. Chuyển hướng ngay lập tức về trang đăng nhập chung
-                        const ROOT = (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) 
-                            ? window.DVQTApp.ROOT_URL 
-                            : (window.location.pathname.indexOf('/tho-nha/') !== -1 
-                                ? window.location.pathname.substring(0, window.location.pathname.indexOf('/tho-nha/')) 
-                                : (window.location.pathname.split('/')[1] && !window.location.pathname.split('/')[1].includes('.') && window.location.pathname.split('/')[1] !== 'index.php' ? '/' + window.location.pathname.split('/')[1] : ''));
+                        const ROOT = getRoot();
                         
                         window.location.href = ROOT + '/public/dang-nhap.html?service=thonha';
                     }
@@ -154,7 +157,50 @@
             const nameEl = document.getElementById('auth-name');
             const avatarEl = document.getElementById('auth-avatar');
             if (nameEl) nameEl.textContent = name;
-            if (avatarEl) avatarEl.textContent = initial;
+            
+            if (avatarEl) {
+                // Kiểm tra nhiều trường có thể chứa ảnh để đảm bảo lấy được dữ liệu
+                const avatarLink = authData.link_avatar || authData.avatar || authData.avatartenfile || '';
+                
+                if (avatarLink) {
+                    if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
+                        // Nếu là link trực tiếp hoặc path
+                        const finalUrl = avatarLink.startsWith('http') ? avatarLink : (getRoot() + '/public/uploads/users/' + avatarLink);
+                        avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    } else {
+                        // Nếu là ID Drive - Kỹ thuật Zoom & Crop 300%
+                        avatarEl.innerHTML = `
+                            <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                                <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                        frameborder="0" scrolling="no"
+                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                            </div>`;
+                    }
+                } else {
+                    avatarEl.textContent = initial;
+                }
+            }
+
+            // Đồng bộ cho Mobile Avatar nếu có
+            const mobileAvatarInner = document.getElementById('mobile-auth-avatar-inner');
+            if (mobileAvatarInner) {
+                const avatarLink = authData.link_avatar || authData.avatar || authData.avatartenfile || '';
+                if (avatarLink) {
+                    if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
+                        const finalUrl = avatarLink.startsWith('http') ? avatarLink : (getRoot() + '/public/uploads/users/' + avatarLink);
+                        mobileAvatarInner.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    } else {
+                        mobileAvatarInner.innerHTML = `
+                             <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                                <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                        frameborder="0" scrolling="no"
+                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                            </div>`;
+                    }
+                } else {
+                    mobileAvatarInner.textContent = initial;
+                }
+            }
 
             // Xác định vai trò nhà cung cấp dựa trên mã dịch vụ 9 (Thợ Nhà)
             const serviceIds = String(authData.id_dichvu || '0').split(',');
@@ -167,14 +213,12 @@
             bindLogout(logoutLink);
 
             if (avatarMobile) {
-                avatarMobile.textContent = initial;
                 avatarMobile.style.display = '';
             }
 
             if (mobileUser) mobileUser.style.display = '';
-            const mobileAvatarInner = document.getElementById('mobile-auth-avatar-inner');
+            
             const mobileNameEl = document.getElementById('mobile-auth-name');
-            if (mobileAvatarInner) mobileAvatarInner.textContent = initial;
             if (mobileNameEl) mobileNameEl.textContent = name;
 
             const mobileDashLink = document.getElementById('mobile-auth-dashboard-link');
@@ -188,13 +232,8 @@
             window.DVQTApp.checkSession().then(function (data) {
                 setLoadingOff();
                 if (data && data.logged_in) {
-                    applyLoggedInUi({
-                        role: data.role || 'customer',
-                        name: data.name || 'User',
-                        phone: data.phone || '',
-                        id_dichvu: data.id_dichvu || '0',
-                        address: (data.meta && data.meta.address) ? data.meta.address : ''
-                    });
+                    // Truyền toàn bộ data (bao gồm link_avatar, avatar, avatartenfile) vào UI
+                    applyLoggedInUi(data);
                 } else {
                     applyGuestUi();
                 }

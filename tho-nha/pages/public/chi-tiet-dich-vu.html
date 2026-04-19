@@ -120,13 +120,7 @@
     <!-- Page Hero -->
     <section class="page-hero">
         <div class="container">
-            <nav aria-label="breadcrumb" class="mb-2">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="../../index.html"><i class="fas fa-home me-1"></i>Trang chủ</a></li>
-                    <li class="breadcrumb-item"><a href="../../index.html#services">Dịch vụ</a></li>
-                    <li class="breadcrumb-item active" id="breadcrumbTitle">Chi tiết dịch vụ</li>
-                </ol>
-            </nav>
+
             <div class="row align-items-center">
                 <div class="col-lg-8">
                     <span class="section-label" style="background:rgba(255,255,255,0.2); color:white;">
@@ -359,7 +353,9 @@
             if (!svc) return;
             const fmt = n => Number(n).toLocaleString('vi-VN');
             
-            document.getElementById('breadcrumbTitle').textContent = svc.name;
+            if (document.getElementById('breadcrumbTitle')) {
+                document.getElementById('breadcrumbTitle').textContent = svc.name;
+            }
             document.getElementById('heroTitle').textContent       = svc.name;
             document.getElementById('heroDesc').textContent        = svc.desc;
             
@@ -388,7 +384,11 @@
                                 <div class="sic-total-price" data-base="${item.price}">${fmt(item.price)}đ</div>
                                 ${buildFeeBreakdown(0, 0, svc.travelFee, null, item.price)}
                             </div>
-                            <button class="btn btn-gradient btn-sm booking-btn" data-service-name="${item.name}" data-service-price="${item.price}">
+                            <button class="btn btn-gradient btn-sm booking-btn" 
+                                data-cat-id="${svc.id}"
+                                data-service-id="${item.id}"
+                                data-service-name="${item.name}" 
+                                data-service-price="${item.price}">
                                 <i class="fas fa-calendar-check me-1"></i> Đặt lịch
                             </button>
                         </div>
@@ -486,5 +486,7 @@
     <script src="../../assets/js/shared/auth-nav.js"></script>
     <script src="../../assets/js/public/booking-panel.js"></script>
     <script src="../../assets/js/public/booking-detail-shared.js"></script>
+    <script src="../../assets/js/public/booking-detail-modal.js"></script>
+    <script src="../../assets/js/public/booking-detail-standalone.js"></script>
 </body>
 </html>

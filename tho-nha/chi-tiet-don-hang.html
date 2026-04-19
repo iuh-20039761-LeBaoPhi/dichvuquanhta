@@ -334,7 +334,17 @@
                 providers.forEach(p => { if (p.id) providerIdMap[p.id] = true; });
 
                 const providerMap = ThoNhaOrderViewUtils.buildProviderMapByIds(providers, providerIdMap);
-                const orderMapped = ThoNhaOrderViewUtils.mapApiOrderBase(rawOrder, 0, { providerMapById: providerMap, includeRaw: true });
+                const orderMapped = ThoNhaOrderViewUtils.mapApiOrderBase(rawOrder, 0, { includeRaw: true });
+
+                // Inject Provider Avatar (from dictionary)
+                if (orderMapped.provider && orderMapped.provider.id && providerMap[orderMapped.provider.id]) {
+                    orderMapped.provider.avatar = providerMap[orderMapped.provider.id].avatar;
+                }
+                
+                // Inject Viewer's Avatar if they are the Customer
+                if (identifiedRole === 'customer' && session) {
+                    orderMapped.customer.avatar = session.link_avatar || session.avatar || session.avatartenfile || '';
+                }
 
                 ThoNhaOrderDetailRenderer.render(orderMapped, identifiedRole, detailContainer);
                 document.getElementById('accessRole').textContent = identifiedRole.toUpperCase();

@@ -20,17 +20,28 @@ const ThoNhaOrderDetailRenderer = (() => {
         const formatDateWithChua = (dt) => dt ? utils.formatDateTime(dt) : 'Chưa';
 
         // 1. Binder Map: Tự động điền dữ liệu theo ID
+        const hasActual = order.actualCost > 0;
+        
+        // Cập nhật nhãn tiêu đề nếu đã báo giá
+        if (hasActual) {
+            const labelService = container.querySelector('span[id="heroServiceFee"]')?.previousElementSibling || container.querySelector('.meta-label:nth-of-type(1)');
+            if (labelService) labelService.textContent = 'Giá thợ báo:';
+            
+            const labelSurcharge = container.querySelector('span[id="heroSurchargeFee"]')?.previousElementSibling;
+            if (labelSurcharge) labelSurcharge.textContent = 'Được trợ giá/giảm:';
+        }
+
         const bindings = {
             heroOrderCode: '#' + order.orderCode,
             heroServiceName: order.service,
             heroBookingDate: utils.formatDateTime(order.dates.ordered),
-            heroServiceFee: utils.formatCurrencyVn(order.estimated_price),
+            heroServiceFee: hasActual ? utils.formatCurrencyVn(order.actualCost) : utils.formatCurrencyVn(order.estimated_price),
             heroTransportFee: utils.formatCurrencyVn(order._raw.phidichuyen || 0),
-            heroSurchargeFee: utils.formatCurrencyVn(order._raw.phuphi || 0), // Bổ sung phuphi nếu có
-            heroPaymentStatus: order.actualCost > 0 ? 'Đã báo giá' : 'Chưa báo giá',
-            heroPaymentSub: order.actualCost > 0 ? 'Chờ thanh toán' : 'Cập nhật theo thực tế',
-            heroTotalAmount: utils.formatCurrencyVn(order.total_price || (order.estimated_price + (order._raw.phidichuyen || 0) + (order._raw.phuphi || 0))),
-            heroTotalAmountHeader: utils.formatCurrencyVn(order.total_price || (order.estimated_price + (order._raw.phidichuyen || 0) + (order._raw.phuphi || 0))),
+            heroSurchargeFee: hasActual ? ('- ' + utils.formatCurrencyVn(order.subsidyAmount)) : utils.formatCurrencyVn(order._raw.phuphi || 0),
+            heroPaymentStatus: hasActual ? 'Đã báo giá' : 'Chưa báo giá',
+            heroPaymentSub: hasActual ? 'Chờ thanh toán' : 'Cập nhật theo thực tế',
+            heroTotalAmount: hasActual ? utils.formatCurrencyVn(order.customerPays) : utils.formatCurrencyVn(order.total_price || (order.estimated_price + (order._raw.phidichuyen || 0))),
+            heroTotalAmountHeader: hasActual ? utils.formatCurrencyVn(order.customerPays) : utils.formatCurrencyVn(order.total_price || (order.estimated_price + (order._raw.phidichuyen || 0))),
             heroAddress: order.address,
             detailCreatedAt: utils.formatDateTime(order.dates.ordered),
             detailExecutionStart: formatDateWithChua(order.dates.accepted),
@@ -74,6 +85,50 @@ const ThoNhaOrderDetailRenderer = (() => {
         const fillEl = container.querySelector('.progress-fill');
         if (fillEl) fillEl.style.width = progressStr;
 
+        // --- Render Avatars ---
+        const getRootUrl = () => (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : window.location.pathname.split('/tho-nha/')[0];
+        const session = window._dvqt_session_cache;
+
+        let custAvatar = order.customer && order.customer.avatar;
+        if (!custAvatar && role === 'customer' && session) custAvatar = session.link_avatar || session.avatar || session.avatartenfile || '';
+
+        const custAvatarEl = container.querySelector('#customerAvatarBadge');
+        if (custAvatarEl && custAvatar) {
+            if (custAvatar.startsWith('http') || custAvatar.includes('/')) {
+                const url = custAvatar.startsWith('http') ? custAvatar : (getRootUrl() + '/public/uploads/users/' + custAvatar);
+                custAvatarEl.innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            } else {
+                custAvatarEl.innerHTML = `
+                    <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                        <iframe src="https://drive.google.com/file/d/${custAvatar}/preview" 
+                                frameborder="0" scrolling="no"
+                                style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                    </div>`;
+            }
+            custAvatarEl.style.padding = '0'; 
+            custAvatarEl.style.overflow = 'hidden';
+        }
+
+        let provAvatar = order.provider && order.provider.avatar;
+        if (!provAvatar && role === 'provider' && session) provAvatar = session.link_avatar || session.avatar || session.avatartenfile || '';
+
+        const provAvatarEl = container.querySelector('#providerAvatarBadge');
+        if (provAvatarEl && provAvatar) {
+            if (provAvatar.startsWith('http') || provAvatar.includes('/')) {
+                const url = provAvatar.startsWith('http') ? provAvatar : (getRootUrl() + '/public/uploads/users/' + provAvatar);
+                provAvatarEl.innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            } else {
+                provAvatarEl.innerHTML = `
+                    <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                        <iframe src="https://drive.google.com/file/d/${provAvatar}/preview" 
+                                frameborder="0" scrolling="no"
+                                style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                    </div>`;
+            }
+            provAvatarEl.style.padding = '0';
+            provAvatarEl.style.overflow = 'hidden';
+        }
+
         // 3. Render sub-sections
         renderTasks(container, order);
         renderReviews(container, order, role);
@@ -91,8 +146,14 @@ const ThoNhaOrderDetailRenderer = (() => {
             if (raw.danhgiakhachhang) {
                 custTextEl.innerHTML = `<div>${raw.danhgiakhachhang}</div>`;
                 if (raw.hinhanhminhchung_kh) {
-                    const driveUrl = DVQTApp.getDriveUrl(raw.hinhanhminhchung_kh);
-                    custTextEl.innerHTML += `<div class="mt-2"><img src="${driveUrl}" style="max-width:100%; max-height: 400px; border-radius:8px; border:1px solid #eee; object-fit: contain;"></div>`;
+                    custTextEl.innerHTML += `
+                        <div class="mt-2" style="position:relative; width:100%; height:200px; border-radius:12px; overflow:hidden; border:1px solid #eee;">
+                            <iframe src="https://drive.google.com/file/d/${raw.hinhanhminhchung_kh}/preview" 
+                                    frameborder="0" scrolling="no"
+                                    style="width: 100%; height: 100%; pointer-events: none;"></iframe>
+                            <a href="https://drive.google.com/file/d/${raw.hinhanhminhchung_kh}/view" target="_blank" 
+                               style="position: absolute; inset: 0; z-index: 10;"></a>
+                        </div>`;
                 }
                 if (custHeadEl) {
                     const chip = custHeadEl.querySelector('.panel-chip');
@@ -102,8 +163,10 @@ const ThoNhaOrderDetailRenderer = (() => {
                 custTextEl.innerHTML = `
                     <textarea class="form-control mb-2" id="inputCustFeedback" placeholder="Nhập cảm nhận của bạn về dịch vụ..." rows="3"></textarea>
                     <div class="d-flex gap-2">
-                        <input type="file" id="fileCustEvidence" class="form-control form-control-sm" accept="image/*">
-                        <button class="btn btn-primary btn-sm" data-action="submit-customer-feedback" data-id="${order.id}">Gửi</button>
+                        <div style="flex:1;">
+                            <input type="file" id="fileCustEvidence" class="form-control form-control-sm" accept="image/*">
+                        </div>
+                        <button class="btn btn-primary btn-sm px-3" data-action="submit-customer-feedback" data-id="${order.id}">Gửi đánh giá</button>
                     </div>
                 `;
             } else {
@@ -118,8 +181,14 @@ const ThoNhaOrderDetailRenderer = (() => {
             if (raw.danhgiancc) {
                 nccTextEl.innerHTML = `<div>${raw.danhgiancc}</div>`;
                 if (raw.hinhanhminhchung_ncc) {
-                    const driveUrl = DVQTApp.getDriveUrl(raw.hinhanhminhchung_ncc);
-                    nccTextEl.innerHTML += `<div class="mt-2"><img src="${driveUrl}" style="max-width:100%; max-height: 400px; border-radius:8px; border:1px solid #eee; object-fit: contain;"></div>`;
+                    nccTextEl.innerHTML += `
+                        <div class="mt-2" style="position:relative; width:100%; height:200px; border-radius:12px; overflow:hidden; border:1px solid #eee;">
+                            <iframe src="https://drive.google.com/file/d/${raw.hinhanhminhchung_ncc}/preview" 
+                                    frameborder="0" scrolling="no"
+                                    style="width: 100%; height: 100%; pointer-events: none;"></iframe>
+                            <a href="https://drive.google.com/file/d/${raw.hinhanhminhchung_ncc}/view" target="_blank" 
+                               style="position: absolute; inset: 0; z-index: 10;"></a>
+                        </div>`;
                 }
                 if (nccHeadEl) {
                     const chip = nccHeadEl.querySelector('.panel-chip');
@@ -129,8 +198,10 @@ const ThoNhaOrderDetailRenderer = (() => {
                 nccTextEl.innerHTML = `
                     <textarea class="form-control mb-2" id="inputProviderFeedback" placeholder="Mô tả công việc đã hoàn thành hoặc sự cố..." rows="3"></textarea>
                     <div class="d-flex gap-2">
-                        <input type="file" id="fileProviderEvidence" class="form-control form-control-sm" accept="image/*">
-                        <button class="btn btn-primary btn-sm" data-action="submit-provider-feedback" data-id="${order.id}">Báo cáo</button>
+                        <div style="flex:1;">
+                            <input type="file" id="fileProviderEvidence" class="form-control form-control-sm" accept="image/*">
+                        </div>
+                        <button class="btn btn-primary btn-sm px-3" data-action="submit-provider-feedback" data-id="${order.id}">Gửi báo cáo</button>
                     </div>
                 `;
             } else {
@@ -147,7 +218,7 @@ const ThoNhaOrderDetailRenderer = (() => {
         const mediaField = raw.link_hinhanh_khachhang || '';
         if (!mediaField) return;
 
-        const ids = mediaField.split(',').filter(Boolean);
+        const ids = mediaField.split(',').map(s => s.trim()).filter(Boolean);
         if (ids.length === 0) return;
 
         // Mục tiêu: Chèn vào ngay trong cột Ghi chú khách hàng
@@ -166,11 +237,14 @@ const ThoNhaOrderDetailRenderer = (() => {
         const mediaGrid = container.querySelector('#detailBookingMediaGrid');
         if (mediaGrid) {
             mediaGrid.innerHTML = ids.map(id => {
-                const url = DVQTApp.getDriveUrl(id);
                 return `
-                    <a href="${url}" target="_blank" class="booking-media-item-mini">
-                        <img src="${url}" loading="lazy">
-                    </a>
+                    <div class="booking-media-item-mini">
+                        <iframe src="https://drive.google.com/file/d/${id}/preview" 
+                                frameborder="0" scrolling="no"
+                                style="width: 100%; height: 100%; border-radius: 8px; pointer-events: none;"></iframe>
+                        <a href="https://drive.google.com/file/d/${id}/view" target="_blank" 
+                           style="position: absolute; inset: 0; z-index: 10;"></a>
+                    </div>
                 `;
             }).join('');
         }

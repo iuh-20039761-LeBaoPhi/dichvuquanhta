@@ -139,7 +139,8 @@
             name: raw.hovaten || raw.name || 'Người dùng',
             phone: raw.sodienthoai || raw.phone || '',
             categories: raw.id_dichvu || '',
-            role: (raw.id_dichvu && raw.id_dichvu !== '0') ? 'provider' : 'customer'
+            role: (raw.id_dichvu && raw.id_dichvu !== '0') ? 'provider' : 'customer',
+            avatar: raw.link_avatar || raw.avatar || raw.avatartenfile || ''
         };
     }
 
@@ -282,8 +283,8 @@
     function buildStatusBadge(status) {
         switch (status) {
             case 'new':       return '<span class="invoice-status-chip status-new">Mới</span>';
-            case 'confirmed': return '<span class="invoice-status-chip status-confirmed"><i class="fa-solid fa-check-circle me-1"></i>Đã nhận</span>';
-            case 'doing':     return '<span class="invoice-status-chip status-doing"><i class="fa-solid fa-spinner fa-spin me-1"></i>Đang làm</span>';
+            case 'confirmed': return '<span class="invoice-status-chip status-confirmed">Đã nhận</span>';
+            case 'doing':     return '<span class="invoice-status-chip status-doing">Đang làm</span>';
             case 'done':      return '<span class="invoice-status-chip status-done">Hoàn thành</span>';
             case 'cancel':    return '<span class="invoice-status-chip status-canceled">Đã hủy</span>';
             default:          return '<span class="invoice-status-chip status-canceled">' + escapeHtml(status) + '</span>';

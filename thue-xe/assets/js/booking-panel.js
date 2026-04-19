@@ -20,9 +20,9 @@
         '#txBpLoading span{font-size:.88rem;color:#64748b}',
         '#txBpModal .modal-content{border-radius:16px!important;overflow:hidden}',
         '@media(max-width:575.98px){',
-        '#txBpModal .modal-dialog{margin:10px 5px!important;max-width:calc(100vw - 10px)!important;width:calc(100vw - 10px)!important;max-height:88dvh!important}',
-        '#txBpModal .modal-content{max-height:88dvh!important;border-radius:16px!important}',
-        '#txBpModal .modal-body{max-height:calc(88dvh - 60px)!important;overflow-y:auto!important}',
+        '#txBpModal .modal-dialog{margin:0!important;max-width:100vw!important;width:100vw!important;height:100dvh!important;max-height:100dvh!important}',
+        '#txBpModal .modal-content{height:100dvh!important;max-height:100dvh!important;border-radius:0!important}',
+        '#txBpModal .modal-body{max-height:calc(100dvh - 60px)!important;overflow-y:auto!important}',
         '}',
         '@media(min-width:576px){#txBpModal .modal-dialog{max-width:min(780px,94vw)}}'
     ].join('');
@@ -38,7 +38,7 @@
         var wrapper = document.createElement('div');
         wrapper.innerHTML = [
             '<div class="modal fade" id="txBpModal" tabindex="-1" aria-hidden="true">',
-            '  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">',
+            '  <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-centered modal-dialog-scrollable">',
             '    <div class="modal-content booking-modal-content">',
             '      <div class="modal-header booking-modal-header" style="padding:10px 14px;">',
             '        <div class="tx-bk-spacer"></div>',

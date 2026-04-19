@@ -8,12 +8,19 @@
     let _currentSession = null;
     // Tự động nhận diện ROOT từ URL hiện tại nếu không có DVQTApp.ROOT_URL
     const _getAutoRoot = () => {
+        if (window.DVQTApp && window.DVQTApp.ROOT_URL !== undefined) return window.DVQTApp.ROOT_URL;
         const path = window.location.pathname;
+        const lowerPath = path.toLowerCase();
+        // Nếu đang ở trong module thue-xe, lấy phần trước đó
+        const idx = lowerPath.indexOf('/thue-xe/');
+        if (idx !== -1) return path.substring(0, idx);
+        
         const parts = path.split('/');
-        // Giả định ROOT là phần tử thứ 1 (ví dụ /Test/thue-xe/... thì parts[1] là Test)
-        return parts[1] ? '/' + parts[1] : '';
+        // Nếu là XAMPP (có tên thư mục ở segment 1, không phải file)
+        if (parts[1] && !parts[1].includes('.') && parts[1] !== 'index.php' && parts[1] !== 'thue-xe') return '/' + parts[1];
+        return '';
     };
-    const ROOT = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : _getAutoRoot();
+    const ROOT = _getAutoRoot();
 
     /**
      * Xác thực phiên đăng nhập (Route Guard).
@@ -135,13 +142,28 @@
             if (el) el.value = fields[id] || '';
         }
 
-        // Avatar
+        // Avatar (Tab Tài khoản)
+        const avatarLink = profile.link_avatar;
         const avatarPrev = document.getElementById('acc-prev-avatar');
-        if (avatarPrev && profile.avatartenfile) {
-            avatarPrev.src = ROOT + '/public/uploads/users/' + profile.avatartenfile;
-            avatarPrev.style.display = 'block';
-            const ph = document.getElementById('acc-ph-avatar');
-            if (ph) ph.style.display = 'none';
+        const ph = document.getElementById('acc-ph-avatar');
+
+        if (avatarPrev && avatarLink) {
+            if (avatarLink.startsWith('http')) {
+                avatarPrev.src = avatarLink;
+                avatarPrev.style.display = 'block';
+                if (ph) ph.style.display = 'none';
+            } else {
+                // Render Drive Iframe for Account Tab
+                const parent = avatarPrev.parentElement;
+                if (parent) {
+                    parent.innerHTML = `
+                        <div style="width:120px; height:120px; position:relative; overflow:hidden; border-radius:12px; border:2px solid #e2e8f0;">
+                            <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                    frameborder="0" scrolling="no"
+                                    style="width: 200%; height: 200%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                        </div>`;
+                }
+            }
         }
 
         // Handle Logout
@@ -211,7 +233,23 @@
             const nameEl = document.getElementById('adminUsernameDisplay');
             if (nameEl) nameEl.textContent = displayName;
             const avatarEl = document.getElementById('userAvatar');
-            if (avatarEl) avatarEl.textContent = (displayName || 'U').charAt(0).toUpperCase();
+            if (avatarEl) {
+                const avatarLink = session.link_avatar || '';
+                if (avatarLink) {
+                    if (avatarLink.startsWith('http')) {
+                        avatarEl.innerHTML = `<img src="${avatarLink}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    } else {
+                        avatarEl.innerHTML = `
+                            <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                                <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                        frameborder="0" scrolling="no"
+                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                            </div>`;
+                    }
+                } else {
+                    avatarEl.textContent = (displayName || 'U').charAt(0).toUpperCase();
+                }
+            }
 
             // Display name on profile page header
             const profileNameEl = document.getElementById('displayProfileName');

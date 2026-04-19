@@ -31,6 +31,7 @@
     document.addEventListener('DOMContentLoaded', async function () {
         // Đợi xác thực xong mới thực hiện các bước khác
         await verifySession();
+        renderTopBar();
 
         const navBtns = document.querySelectorAll('#sidebarNav .nav-link[data-page]');
         const contentArea = document.getElementById('pageContent');
@@ -103,6 +104,36 @@
             }
         }
 
+        function renderTopBar() {
+            const profile = _currentSession;
+            if (!profile) return;
+
+            const nameEl = document.getElementById('adminUsernameDisplay');
+            if (nameEl) nameEl.textContent = profile.name || profile.hovaten || 'Đối tác';
+
+            const avatarEl = document.getElementById('userAvatar');
+            if (avatarEl) {
+                const avatarLink = profile.link_avatar || profile.avatar || profile.avatartenfile || '';
+                if (avatarLink) {
+                   if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
+                        const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : window.location.pathname.split('/tho-nha/')[0];
+                        const finalUrl = avatarLink.startsWith('http') ? avatarLink : (root + '/public/uploads/users/' + avatarLink);
+                        avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    } else {
+                        // Kỹ thuật Drive Iframe
+                        avatarEl.innerHTML = `
+                            <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                                <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                        frameborder="0" scrolling="no"
+                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                            </div>`;
+                    }
+                } else {
+                    avatarEl.textContent = (profile.name || 'D').charAt(0).toUpperCase();
+                }
+            }
+        }
+
         // ── BIẾN TOÀN CỤC CHO MAP PICKER (PROVIDER PROFILE) ──
         let nccLat = null;
         let nccLng = null;
@@ -149,6 +180,8 @@
                     prev.onerror = function () { this.src = '../../assets/images/placeholder-image.png'; };
                 }
             });
+
+            renderTopBar();
 
             // --- KÍCH HOẠT CHỌN ẢNH (Vì script trong partial không tự chạy) ---
             document.querySelectorAll('.profile-upload-zone').forEach(zone => {

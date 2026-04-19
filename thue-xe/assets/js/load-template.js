@@ -131,7 +131,26 @@ function initAuthNav() {
             const nameEl   = document.getElementById('auth-name');
             const avatarEl = document.getElementById('auth-avatar');
             if (nameEl)   nameEl.textContent  = data.name;
-            if (avatarEl) avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
+            
+            if (avatarEl) {
+                const avatarLink = data.link_avatar || data.avatar || data.avatartenfile || '';
+                if (avatarLink) {
+                    if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
+                        const finalUrl = avatarLink.startsWith('http') ? avatarLink : (ROOT + '/public/uploads/users/' + avatarLink);
+                        avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    } else {
+                        // Kỹ thuật Zoom & Crop 300% cho Drive ID
+                        avatarEl.innerHTML = `
+                             <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                                <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                        frameborder="0" scrolling="no"
+                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                            </div>`;
+                    }
+                } else {
+                    avatarEl.textContent = (data.name || 'U').charAt(0).toUpperCase();
+                }
+            }
 
             // 2. Cấu hình Dashboard cục bộ của module Thuê xe
             const dashMap = {
@@ -349,7 +368,8 @@ function injectBackBar() {
         if (!m) m = window.location.pathname.match(/\/([^/.]+)\.html$/);
         page = m ? m[1] : 'home';
     }
-    if (!page || page === 'home' || page === 'index') return;
+    const BLOG_DETAIL_PAGES = ['blog-detail', 'chi-tiet-cam-nang', 'chi-tiet-bai-viet'];
+    if (!BLOG_DETAIL_PAGES.includes(page)) return;
 
     const PAGE_LABELS = {
         search:            'Tìm xe',

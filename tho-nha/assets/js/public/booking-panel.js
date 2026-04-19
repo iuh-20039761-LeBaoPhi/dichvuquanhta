@@ -38,16 +38,16 @@
         /* Bo góc modal content */
         '#bpModal .modal-content{border-radius:18px!important;overflow:hidden}',
 
-        /* Mobile: modal nhỏ gọn, không fullscreen */
+        /* Mobile: modal full-screen */
         '@media(max-width:575.98px){',
         '#bpModal .modal-dialog{',
-        'margin:16px auto!important;',
-        'max-width:92vw!important;width:92vw!important;',
-        'max-height:82dvh!important}',
+        'margin:0!important;',
+        'max-width:100vw!important;width:100vw!important;',
+        'height:100dvh!important;max-height:100dvh!important}',
         '#bpModal .modal-content{',
-        'max-height:82dvh!important;border-radius:18px!important}',
+        'height:100dvh!important;max-height:100dvh!important;border-radius:0!important}',
         '#bpModal .modal-body{',
-        'max-height:calc(82dvh - 58px)!important;overflow-y:auto!important}',
+        'max-height:calc(100dvh - 58px)!important;overflow-y:auto!important}',
         '}',
 
         /* Confirm screen service price alignment */
@@ -73,7 +73,7 @@
         var wrapper = document.createElement('div');
         wrapper.innerHTML = [
             '<div class="modal fade" id="bpModal" tabindex="-1" aria-labelledby="bpModalTitle" aria-hidden="true">',
-            '  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">',
+            '  <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-centered modal-dialog-scrollable">',
             '    <div class="modal-content">',
             '      <div class="modal-header bk-modal-header">',
             '        <div class="bk-header-spacer"></div>',
@@ -317,6 +317,30 @@
             }
 
             doFetch(function (services) {
+                // 0) Khớp ID (Nếu có - chính xác nhất)
+                if (_prefillMeta && _prefillMeta.catId) {
+                    mainSel.value = _prefillMeta.catId;
+                    mainSel.dispatchEvent(new Event('change'));
+
+                    if (_prefillMeta.serviceId) {
+                        setTimeout(function () {
+                            var subBtns = document.getElementById('subServiceBtns');
+                            if (!subBtns) return;
+                            var btns = subBtns.querySelectorAll('.sub-service-btn');
+                            for (var k = 0; k < btns.length; k++) {
+                                if (btns[k].getAttribute('data-id') === String(_prefillMeta.serviceId)) {
+                                    btns[k].click();
+                                    break;
+                                }
+                            }
+                            applyMetaOverrides();
+                        }, 80);
+                        return;
+                    }
+                    setTimeout(applyMetaOverrides, 80);
+                    return;
+                }
+
                 var nameLower = name.toLowerCase();
 
                 // 1) Khớp tên CATEGORY (case-insensitive) → chọn category, không chọn sub
@@ -434,9 +458,16 @@
         const urlPhone = params.get('sdt');
         const urlName = params.get('ten') || params.get('ho_ten');
 
-        // Ưu tiên 2: Lấy từ Cookie/Session (Chế độ đã đăng nhập)
+        // Ưu tiên 2: Lấy từ Session (Chế độ đã đăng nhập)
         const userPhone = (typeof DVQTApp !== 'undefined' && DVQTApp.getCookie) ? DVQTApp.getCookie('dvqt_u') : null;
-        const userData = (typeof DVQTApp !== 'undefined') ? DVQTApp.getProfile() : null;
+        
+        // Kiểm tra hàm getProfile, nếu không có thì thử lấy dữ liệu từ localStorage (nếu có)
+        let userData = null;
+        if (typeof DVQTApp !== 'undefined' && typeof DVQTApp.getProfile === 'function') {
+            userData = DVQTApp.getProfile();
+        } else if (window.localStorage.getItem('dvqt_user')) {
+             try { userData = JSON.parse(window.localStorage.getItem('dvqt_user')); } catch(e){}
+        }
 
         const nameInput = document.getElementById('hoten');
         const phoneInput = document.getElementById('sodienthoai');

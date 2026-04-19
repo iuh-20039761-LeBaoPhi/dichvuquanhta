@@ -1731,7 +1731,25 @@
 
               if (nameEl) nameEl.textContent = name;
               if (nameMb) nameMb.textContent = name;
-              if (avatEl) avatEl.textContent = initial;
+              
+              if (avatEl) {
+                const avatarLink = data.link_avatar;
+                if (avatarLink) {
+                  if (avatarLink.startsWith('http')) {
+                    avatEl.innerHTML = `<img src="${avatarLink}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                  } else {
+                    // Cùng kỹ thuật Zoom & Crop để giấu thanh công cụ Google Drive
+                    avatEl.innerHTML = `
+                      <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                        <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                frameborder="0" scrolling="no"
+                                style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                      </div>`;
+                  }
+                } else {
+                  avatEl.textContent = initial;
+                }
+              }
 
               // Xử lý đăng xuất
               const logoutLink = document.getElementById('auth-logout-link');

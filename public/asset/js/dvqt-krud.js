@@ -112,9 +112,31 @@ window.DVQTKrud = (function () {
                 phikhaosat: 'int',
                 tongtien: 'int',
                 ngaydat: 'datetime',
-                link_hinhanh_khachhang: 'text', // Lưu ID Drive ảnh khách gửi lúc đặt
-                hinhanhminhchung_kh: 'text',    // Lưu ID Drive ảnh khách đánh giá
-                hinhanhminhchung_ncc: 'text'    // Lưu ID Drive ảnh thợ báo cáo
+                link_hinhanh_khachhang: 'text', // ID Drive ảnh lúc đặt đơn
+                
+                // Thông tin NCC nhận đơn
+                id_nhacungcap: 'int',
+                tenncc: 'text',
+                sdtncc: 'text',
+                diachincc: 'text',
+                ngaynhan: 'datetime',
+
+                // Quá trình thực hiện
+                ngaybatdauthucte: 'datetime',
+                ngaythuchienthucte: 'datetime',
+                ngayhoanthanhthucte: 'datetime',
+                ngayhuy: 'datetime',
+
+                // Tài chính thực tế
+                chiphithucte: 'int',
+                sotientrogia: 'int',
+                khachthanhtoan: 'int',
+
+                // Đánh giá & Phản hồi
+                danhgiakhachhang: 'text',       // Nội dung text khách đánh giá
+                hinhanhminhchung_kh: 'text',    // ID Drive ảnh khách gửi
+                danhgiancc: 'text',             // Nội dung text thợ báo cáo
+                hinhanhminhchung_ncc: 'text'    // ID Drive ảnh thợ gửi
             };
             return window.DVQTKrud.ensureTable('datlich_thonha', fields);
         },

@@ -54,6 +54,7 @@
     document.addEventListener('DOMContentLoaded', async function () {
         // Chờ xác thực xong mới cho phép load trang con
         await verifySession();
+        renderTopBar();
 
         const navBtns = document.querySelectorAll('#sidebarNav .nav-link[data-page]');
         const contentArea = document.getElementById('pageContent');
@@ -129,6 +130,36 @@
             }
         }
 
+        function renderTopBar() {
+            const profile = _currentSession;
+            if (!profile) return;
+
+            const nameEl = document.getElementById('accNameHead');
+            if (nameEl) nameEl.textContent = profile.name || profile.hovaten || 'Khách hàng';
+
+            const avatarEl = document.getElementById('accAvatarHead');
+            if (avatarEl) {
+                const avatarLink = profile.link_avatar || profile.avatar || profile.avatartenfile || '';
+                if (avatarLink) {
+                   if (avatarLink.startsWith('http') || avatarLink.includes('/')) {
+                        const root = (window.DVQTApp && window.DVQTApp.ROOT_URL) ? window.DVQTApp.ROOT_URL : window.location.pathname.split('/tho-nha/')[0];
+                        const finalUrl = avatarLink.startsWith('http') ? avatarLink : (root + '/public/uploads/users/' + avatarLink);
+                        avatarEl.innerHTML = `<img src="${finalUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    } else {
+                        // Kỹ thuật Drive Iframe
+                        avatarEl.innerHTML = `
+                            <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                                <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                        frameborder="0" scrolling="no"
+                                        style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                            </div>`;
+                    }
+                } else {
+                    avatarEl.textContent = (profile.name || 'K').charAt(0).toUpperCase();
+                }
+            }
+        }
+
         /**
          * Đổ dữ liệu tài khoản từ Store vào các thành phần HTML của trang Tài khoản.
          */
@@ -138,15 +169,12 @@
                 const n = document.getElementById('accName');
                 const p = document.getElementById('accPhone');
                 const a = document.getElementById('accAddress');
-                const headAv = document.getElementById('accAvatarHead');
 
-                if (n) n.textContent = profile.name || 'Khách hàng';
-                if (p) p.textContent = profile.phone || 'Chưa cập nhật';
+                if (n) n.textContent = profile.name || profile.hovaten || 'Khách hàng';
+                if (p) p.textContent = profile.phone || profile.sodienthoai || 'Chưa cập nhật';
                 if (a) a.textContent = profile.address || (profile.profile ? profile.profile.address : 'Chưa cập nhật');
                 
-                if (headAv && profile.name) {
-                    headAv.textContent = profile.name.charAt(0).toUpperCase();
-                }
+                renderTopBar();
             }
         }
 

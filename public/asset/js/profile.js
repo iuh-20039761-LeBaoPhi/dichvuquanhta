@@ -60,10 +60,26 @@
         const topAvatar = document.getElementById('topAvatar');
         const avatarLink = currentUser.link_avatar;
         if (avatarLink) {
-            const avatarUrl = app.getDriveUrl(avatarLink);
-            topAvatar.innerHTML = `<img src="${avatarUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            if (avatarLink.startsWith('http')) {
+                topAvatar.innerHTML = `<img src="${avatarLink}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            } else {
+                // Trường hợp ID Drive: Dùng iframe preview để vượt qua chính sách localhost
+                // Tăng scale và ẩn overflow để giấu các thanh công cụ của Drive preview
+                topAvatar.innerHTML = `
+                    <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:50%;">
+                        <iframe src="https://drive.google.com/file/d/${avatarLink}/preview" 
+                                frameborder="0" scrolling="no"
+                                style="width: 300%; height: 300%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                    </div>`;
+            }
         } else {
             topAvatar.textContent = initial;
+            topAvatar.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+            topAvatar.style.color = '#fff';
+            topAvatar.style.display = 'flex';
+            topAvatar.style.alignItems = 'center';
+            topAvatar.style.justifyContent = 'center';
+            topAvatar.style.fontWeight = 'bold';
         }
 
         // Sidebar if any
@@ -84,26 +100,41 @@
         const cccdTruocLink = currentUser.link_cccd_truoc;
         const cccdSauLink = currentUser.link_cccd_sau;
 
+        const renderDriveOrImg = (containerId, imgId, fileId) => {
+            const container = document.getElementById(containerId);
+            const imgEl = document.getElementById(imgId);
+            if (!container || !imgEl) return;
+
+            if (fileId && !fileId.startsWith('http')) {
+                // Sử dụng phương pháp iframe preview phóng đại để giấu thanh công cụ
+                container.innerHTML = `
+                    <div style="width:100%; height:100%; position:relative; overflow:hidden; border-radius:inherit;">
+                        <iframe src="https://drive.google.com/file/d/${fileId}/preview" 
+                                frameborder="0" scrolling="no"
+                                style="width: 180%; height: 180%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></iframe>
+                        <a href="https://drive.google.com/file/d/${fileId}/view" target="_blank" class="cccd-overlay-link" style="display:block;"></a>
+                    </div>
+                `;
+            } else if (fileId && fileId.startsWith('http')) {
+                imgEl.src = fileId;
+                imgEl.style.display = 'block';
+                container.innerHTML = '';
+                container.appendChild(imgEl);
+            }
+        };
+
         if (avatarLink) {
-             const url = app.getDriveUrl(avatarLink);
-             console.log('[Profile] Avatar URL:', url); // Bạn có thể nhấn vào link này ở Console để kiểm tra
-             document.getElementById('avatarImage').src = url;
+             renderDriveOrImg('avatarPreviewContainer', 'avatarImage', avatarLink);
         }
         
         if (cccdTruocLink) {
-            const url = app.getDriveUrl(cccdTruocLink);
-            console.log('[Profile] CCCD Front URL:', url);
-            const p = document.getElementById('previewTruoc');
-            p.src = url;
-            p.style.display = 'block';
+            renderDriveOrImg('previewTruocContainer', 'previewTruoc', cccdTruocLink);
+            document.getElementById('previewTruocContainer').style.display = 'block';
         }
 
         if (cccdSauLink) {
-            const url = app.getDriveUrl(cccdSauLink);
-            console.log('[Profile] CCCD Back URL:', url);
-            const p = document.getElementById('previewSau');
-            p.src = url;
-            p.style.display = 'block';
+            renderDriveOrImg('previewSauContainer', 'previewSau', cccdSauLink);
+            document.getElementById('previewSauContainer').style.display = 'block';
         }
 
         // Fill coordinates

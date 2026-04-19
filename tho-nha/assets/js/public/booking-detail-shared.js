@@ -1191,6 +1191,7 @@ function _bdBuildSubBtns(container, hiddenEl, items, catData, countEl, priceEl) 
         btn.type = 'button';
         btn.className = 'sub-service-btn' + (isSurvey ? ' sub-service-btn--survey' : '');
         btn.dataset.itemName = item.name;
+        if (item.id) btn.dataset.id = item.id;
 
         if (isSurvey) {
             btn.innerHTML = `${item.name} <small style="opacity:0.75;font-size:0.78em;">(phí di chuyển + khảo sát)</small>`;

@@ -38,7 +38,7 @@
         .sidebar { width: 260px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; flex-shrink: 0; position: fixed; height: 100vh; z-index: 1000; box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
         .sidebar-header { padding: 40px 24px; display: flex; align-items: center; gap: 14px; }
         .logo-box { width: 44px; height: 44px; background: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
-        .logo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-box img { width: 100%; height: 100%; object-fit: contain; }
         .brand-name { font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; }
         .brand-tag { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; }
 
@@ -260,7 +260,7 @@
             </div>
             <div class="user-pill">
                 <div class="user-avatar" id="accAvatarHead">K</div>
-                <div class="user-role">Khách hàng</div>
+                <div class="user-role" id="accNameHead">Khách hàng</div>
             </div>
         </header>
 
