@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng dẫn sử dụng - Dịch vụ Mẹ và Bé</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --pink-primary: #ff8fab;
+            --pink-light: #ffe5ec;
+            --pink-dark: #fb6f92;
+            --bg-gradient: linear-gradient(135deg, #fff5f7 0%, #ffffff 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px; /* Space for sticky header */
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-gradient);
+            color: #4a4a4a;
+        }
+
+        /* Hero Header */
+        .hero-section {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), 
+                        url('https://www.transparenttextures.com/patterns/cubes.png'),
+                        linear-gradient(45deg, var(--pink-light), #ffffff);
+            padding: 15px 0;
+            border-bottom: 3px solid var(--pink-light);
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .hero-title {
+            color: var(--pink-dark);
+            font-weight: 700;
+            font-size: 1.8rem; /* Slightly smaller for sticky version */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 0;
+        }
+
+        .hero-section p {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-menu {
+            position: sticky;
+            top: 100px; /* Offset to avoid header overlap */
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(255, 143, 171, 0.15);
+            border: 1px solid var(--pink-light);
+        }
+
+        .sidebar-menu .nav-link {
+            color: #666;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-menu .nav-link i {
+            width: 30px;
+            color: var(--pink-primary);
+        }
+
+        .sidebar-menu .nav-link:hover, 
+        .sidebar-menu .nav-link.active {
+            background-color: var(--pink-primary);
+            color: white !important;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu .nav-link:hover i,
+        .sidebar-menu .nav-link.active i {
+            color: white;
+        }
+
+        /* Content Area */
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+            border-left: 5px solid var(--pink-primary);
+        }
+
+        .section-header {
+            color: var(--pink-dark);
+            margin-bottom: 25px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--pink-primary);
+            border-radius: 2px;
+        }
+
+        /* Placeholder Content */
+        .placeholder-box {
+            background: #fdfdfd;
+            border: 2px dashed var(--pink-light);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            color: #bbb;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--pink-light);
+            padding: 30px 0;
+            margin-top: 50px;
+            text-align: center;
+            border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+        }
+
+        .text-pink {
+            color: var(--pink-dark) !important;
+        }
+
+        .bg-pink {
+            background-color: var(--pink-primary) !important;
+            color: white;
+        }
+
+        /* Accordion Style */
+        .section-content {
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .content-card.active {
+            border-left: 5px solid var(--pink-dark);
+            box-shadow: 0 10px 30px rgba(255, 143, 171, 0.1);
+        }
+
+        .content-card.active .section-content {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header[role="button"] {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header[role="button"]::after {
+            content: '\f078';
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            font-size: 1rem;
+            color: var(--pink-primary);
+            transition: transform 0.3s ease;
+        }
+
+        .content-card.active .section-header::after {
+            transform: rotate(180deg);
+            color: var(--pink-dark);
+        }
+
+        /* Gallery/Carousel Style */
+        .interface-img {
+            width: 100%;
+            height: 450px;
+            object-fit: contain;
+            background: #f0f0f0;
+            border-radius: 12px;
+        }
+
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+            filter: invert(1);
+        }
+
+        .carousel-indicators [data-bs-target] {
+            background-color: var(--pink-dark);
+        }
+
+        @media (max-width: 991.98px) {
+            .interface-img {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .interface-img {
+                height: 200px;
+            }
+        }
+
+        /* Guide Accordion Styles */
+        .guide-large-header, .guide-small-header {
+            cursor: pointer;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .guide-large-header {
+            background-color: var(--pink-light);
+            color: var(--pink-dark);
+        }
+
+        .guide-small-header {
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .guide-large-header:hover, .guide-small-header:hover {
+            filter: brightness(0.95);
+        }
+
+        .guide-large-header[aria-expanded="true"] {
+            background-color: var(--pink-primary);
+            color: white;
+        }
+
+        .guide-small-header[aria-expanded="true"] {
+            border-color: var(--pink-primary);
+            color: var(--pink-dark);
+            background-color: #fff;
+        }
+
+        .guide-large-header::after, .guide-small-header::after {
+            content: '\f107';
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+
+        .guide-large-header[aria-expanded="true"]::after, .guide-small-header[aria-expanded="true"]::after {
+            transform: rotate(180deg);
+        }
+
+        .inner-carousel-img {
+            height: 350px;
+            object-fit: contain;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .img-caption {
+            text-align: center;
+            padding: 12px;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            color: #666;
+            background: #fdfdfd;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .inner-carousel-img {
+                height: 200px;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .content-card {
+                padding: 15px 3px !important;
+            }
+            .section-header {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (min-width: 992px) {
+            #sidebarMenu {
+                position: sticky;
+                top: 100px;
+                z-index: 900;
+                height: fit-content;
+            }
+            .offcanvas-body {
+                overflow: visible !important;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar-menu {
+                position: relative;
+                top: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            
+            .offcanvas-body .sidebar-menu {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="hero-section">
+        <div class="container-fluid d-flex align-items-center justify-content-between" style="padding-left: 3px; padding-right: 3px;">
+            <!-- Left Spacer to balance the right menu icon on mobile -->
+            <div class="d-lg-none" style="width: 32px"></div>
+            
+            <div class="text-center flex-grow-1">
+                <h1 class="hero-title">Hướng dẫn</h1>
+                <p class="text-muted d-none d-md-block mb-0">Dịch vụ Chăm sóc Mẹ và Bé chuyên nghiệp</p>
+            </div>
+
+            <!-- Mobile Menu Toggle (Moved to Right) -->
+            <button class="btn d-lg-none text-pink p-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                <i class="fas fa-bars fs-3"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container-fluid my-4" style="padding-left: 3px; padding-right: 3px;">
+        <div class="row g-2">
+            <!-- Navigation Sidebar -->
+            <div class="col-lg-3">
+                <div class="offcanvas-lg offcanvas-end" id="sidebarMenu" tabindex="-1">
+                    <div class="offcanvas-header bg-pink text-white">
+                        <h5 class="offcanvas-title fw-bold">Danh mục hướng dẫn</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <nav class="sidebar-menu shadow-sm">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#gioi-thieu">
+                                <i class="fas fa-info-circle"></i> 1. Giới thiệu
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#giao-dien">
+                                <i class="fas fa-desktop"></i> 2. Giao diện
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#huong-dan">
+                                <i class="fas fa-book-open"></i> 3. Hướng dẫn chi tiết
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#lien-he">
+                                <i class="fas fa-envelope"></i> 4. Liên hệ
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+            <!-- Content Area -->
+            <div class="col-lg-9 col-12">
+                
+                <!-- 1. Giới thiệu -->
+                <section id="gioi-thieu" class="content-card active">
+                    <h2 class="section-header" role="button">1. Giới thiệu</h2>
+                    <div class="section-content">
+                        <div class="overview-content">
+                        <p class="lead mb-4">Hệ thống <strong>Chăm sóc Mẹ và Bé tại nhà</strong> được thiết kế nhằm mang lại sự tiện lợi và chuyên nghiệp trong việc chăm sóc sức khỏe toàn diện cho mẹ và bé sau sinh.</p>
+                        
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <h5 class="fw-bold text-pink"><i class="fas fa-bullseye me-2"></i>Mục đích</h5>
+                                <p>Cung cấp giải pháp đặt lịch chăm sóc tại nhà, giúp nâng cao chất lượng sống và hồi phục sức khỏe tối ưu cho mẹ và bé.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="fw-bold text-pink"><i class="fas fa-users me-2"></i>Đối tượng</h5>
+                                <p>Các bà mẹ sau sinh, gia đình có trẻ nhỏ hoặc người thân có nhu cầu đặt dịch vụ chăm sóc chuyên nghiệp.</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-pink"><i class="fas fa-star me-2"></i>Chức năng chính</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Đăng ký & Đăng nhập tài khoản</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Đặt lịch dịch vụ trực tuyến</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Xem bảng giá & Chi tiết dịch vụ</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Quản lý lịch sử & Hóa đơn</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Gửi phản hồi & Liên hệ</li>
+                                        <li><i class="fas fa-check-circle text-success me-2"></i>Quản trị hệ thống toàn diện</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-pink"><i class="fas fa-user-cog me-2"></i>Thao tác người dùng</h5>
+                            <div class="p-3 bg-light rounded-3">
+                                <span class="badge bg-pink m-1">Đăng ký/Đăng nhập</span>
+                                <span class="badge bg-pink m-1">Đặt lịch</span>
+                                <span class="badge bg-pink m-1">Chỉnh sửa Profile</span>
+                                <span class="badge bg-pink m-1">Tra cứu hóa đơn</span>
+                                <span class="badge bg-pink m-1">Tìm kiếm dịch vụ</span>
+                                <span class="badge bg-pink m-1">Gửi phản hồi</span>
+                            </div>
+                        </div>
+
+                        <div class="workflow-box p-3 border-start border-4 border-pink bg-light">
+                            <h5 class="fw-bold text-pink small text-uppercase">Quy trình hệ thống</h5>
+                            <p class="small mb-0 italic">Người dùng <strong>Đăng nhập</strong> &rarr; Chọn <strong>Dịch vụ</strong> &rarr; <strong>Đặt lịch</strong> &rarr; Hệ thống <strong>Xác nhận</strong> & Thông báo nhân viên &rarr; Theo dõi <strong>Lịch sử & Hóa đơn</strong>.</p>
+                        </div>
+
+                        <hr class="my-4 opacity-25">
+
+                        <div class="admin-overview">
+                            <h5 class="fw-bold text-pink mb-3"><i class="fas fa-user-shield me-2"></i>Quản trị hệ thống (Admin)</h5>
+                            <p class="small text-muted mb-4">Mô-đun <code>admin_mevabe</code> là trung tâm điều hành giúp quản trị viên kiểm soát toàn bộ hoạt động, đảm bảo dịch vụ vận hành trơn tru và hỗ trợ khách hàng kịp thời.</p>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-concierge-bell text-pink me-2"></i>Quản lý dịch vụ</h6>
+                                        <p class="small mb-0 text-secondary">Thêm, sửa, xóa và cập nhật bảng giá, mô tả dịch vụ mẹ và bé.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-file-invoice-dollar text-pink me-2"></i>Quản lý đơn hàng</h6>
+                                        <p class="small mb-0 text-secondary">Xác nhận lịch hẹn, cập nhật trạng thái và tra soát hóa đơn chi tiết.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-id-card-alt text-pink me-2"></i>Quản lý nhân viên</h6>
+                                        <p class="small mb-0 text-secondary">Quản lý hồ sơ nhân sự và phân công lịch thực hiện dịch vụ cho khách.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded shadow-sm h-100 bg-white border-start-0 border-top-0 border-end-0 border-bottom-3 border-pink">
+                                        <h6 class="fw-bold small mb-2"><i class="fas fa-user-graduate text-pink me-2"></i>Quản lý khách hàng</h6>
+                                        <p class="small mb-0 text-secondary">Theo dõi hành trình khách hàng và xử lý nhanh các phản hồi/yêu cầu.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Giao diện -->
+                <section id="giao-dien" class="content-card">
+                    <h2 class="section-header" role="button">2. Giao diện</h2>
+                    <div class="section-content">
+                        <!-- 2.1 Khách hàng & Nhà cung cấp -->
+                        <div class="mb-5">
+                            <h5 class="fw-bold text-pink mb-3"><i class="fas fa-users me-2"></i>2.1 Khách hàng & Nhà cung cấp</h5>
+                            <div id="carouselUser" class="carousel slide shadow rounded-4 overflow-hidden" data-bs-ride="carousel">
+                                <div class="carousel-indicators">
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="0" class="active"></button>
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="1"></button>
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="2"></button>
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="3"></button>
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="4"></button>
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="5"></button>
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="6"></button>
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="7"></button>
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="8"></button>
+                                    <button type="button" data-bs-target="#carouselUser" data-bs-slide-to="9"></button>
+                                </div>
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active"><img src="https://picsum.photos/id/20/800/600" class="interface-img" alt="UI 1"><p class="img-caption">Mô tả giao diện Dashboard khách hàng chuyên nghiệp</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/21/800/600" class="interface-img" alt="UI 2"><p class="img-caption">Trang danh sách dịch vụ với bộ lọc thông minh</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/22/800/600" class="interface-img" alt="UI 3"><p class="img-caption">Form đăng ký dịch vụ đơn giản và nhanh chóng</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/23/800/600" class="interface-img" alt="UI 4"><p class="img-caption">Giao diện thông tin chi tiết gói chăm sóc bé</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/24/800/600" class="interface-img" alt="UI 5"><p class="img-caption">Trang quản lý hồ sơ cá nhân và ví điện tử</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/25/800/600" class="interface-img" alt="UI 6"><p class="img-caption">Lịch sử đặt chỗ và trạng thái lịch hẹn thực tế</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/26/800/600" class="interface-img" alt="UI 7"><p class="img-caption">Bản đồ theo dõi vị trí nhân viên chăm sóc</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/27/800/600" class="interface-img" alt="UI 8"><p class="img-caption">Giao diện chat trực tiếp với tư vấn viên</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/28/800/600" class="interface-img" alt="UI 9"><p class="img-caption">Cổng thanh toán đa dạng (Momo, VNPay, Card)</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/29/800/600" class="interface-img" alt="UI 10"><p class="img-caption">Phần đánh giá dịch vụ và phản hồi khách hàng</p></div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselUser" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselUser" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2.2 Admin -->
+                        <div>
+                            <h5 class="fw-bold text-pink mb-3"><i class="fas fa-user-shield me-2"></i>2.2 Quản trị viên (Admin)</h5>
+                            <div id="carouselAdmin" class="carousel slide shadow rounded-4 overflow-hidden" data-bs-ride="carousel">
+                                <div class="carousel-indicators">
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="0" class="active"></button>
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="1"></button>
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="2"></button>
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="3"></button>
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="4"></button>
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="5"></button>
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="6"></button>
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="7"></button>
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="8"></button>
+                                    <button type="button" data-bs-target="#carouselAdmin" data-bs-slide-to="9"></button>
+                                </div>
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active"><img src="https://picsum.photos/id/30/800/600" class="interface-img" alt="Admin UI 1"><p class="img-caption">Trang tổng quan doanh thu và biểu đồ tăng trưởng</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/31/800/600" class="interface-img" alt="Admin UI 2"><p class="img-caption">Quản lý danh mục dịch vụ Mẹ và Bé toàn diện</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/32/800/600" class="interface-img" alt="Admin UI 3"><p class="img-caption">Duyệt và phân bổ đơn hàng cho nhân viên</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/33/800/600" class="interface-img" alt="Admin UI 4"><p class="img-caption">Hệ thống quản lý hồ sơ nhân sự và lịch làm việc</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/34/800/600" class="interface-img" alt="Admin UI 5"><p class="img-caption">Báo cáo hóa đơn và đối soát tài chính định kỳ</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/35/800/600" class="interface-img" alt="Admin UI 6"><p class="img-caption">Quản lý kho vật tư và thiết bị chăm sóc</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/36/800/600" class="interface-img" alt="Admin UI 7"><p class="img-caption">Cấu hình hệ thống và phân quyền truy cập</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/37/800/600" class="interface-img" alt="Admin UI 8"><p class="img-caption">Hệ thống gửi thông báo và Email Marketing</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/38/800/600" class="interface-img" alt="Admin UI 9"><p class="img-caption">Tra cứu lịch sử hoạt động và Log hệ thống</p></div>
+                                    <div class="carousel-item"><img src="https://picsum.photos/id/39/800/600" class="interface-img" alt="Admin UI 10"><p class="img-caption">Phòng Chat hỗ trợ kỹ thuật và Ticket khách hàng</p></div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselAdmin" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselAdmin" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Hướng dẫn chi tiết -->
+                <section id="huong-dan" class="content-card">
+                    <h2 class="section-header" role="button">3. Hướng dẫn chi tiết</h2>
+                    <div class="section-content">
+                        
+                        <!-- Accordion Mục Lớn -->
+                        <div class="accordion" id="guideAccordionMain">
+                            
+                            <!-- 1. KHÁCH HÀNG -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header" data-bs-toggle="collapse" data-bs-target="#guideCustomer" aria-expanded="true">
+                                    <span><i class="fas fa-user-heart me-2"></i>I. KHÁCH HÀNG</span>
+                                </div>
+                                <div id="guideCustomer" class="collapse show" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subCustomer">
+                                        <!-- 1.1 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#cust1" aria-expanded="true">
+                                                1.1 Hướng dẫn đặt lịch và hủy đơn
+                                            </div>
+                                            <div id="cust1" class="collapse show" data-bs-parent="#subCustomer">
+                                                <div class="p-2 border rounded-3 bg-white mb-3">
+                                                    <div id="slideCust1" class="carousel slide" data-bs-ride="carousel">
+                                                        <div class="carousel-inner">
+                                                            <div class="carousel-item active"><img src="https://picsum.photos/id/101/600/400" class="inner-carousel-img w-100" alt="Step 1"><p class="img-caption">Bước 1: Truy cập trang chủ và chọn mục 'Dịch vụ'</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/102/600/400" class="inner-carousel-img w-100" alt="Step 2"><p class="img-caption">Bước 2: Lựa chọn gói chăm sóc phù hợp và nhấn 'Đặt lịch'</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/103/600/400" class="inner-carousel-img w-100" alt="Step 3"><p class="img-caption">Bước 3: Điền thông tin địa chỉ, thời gian và yêu cầu kèm theo</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/104/600/400" class="inner-carousel-img w-100" alt="Step 4"><p class="img-caption">Bước 4: Kiểm tra lại thông báo tóm tắt và nhấn 'Xác nhận'</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/105/600/400" class="inner-carousel-img w-100" alt="Step 5"><p class="img-caption">Bước 5: Theo dõi trạng thái đơn hàng trong trang cá nhân</p></div>
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#slideCust1" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#slideCust1" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 1.2 -->
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust2">
+                                                1.2 Hướng dẫn liên hệ tư vấn
+                                            </div>
+                                            <div id="cust2" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-2 border rounded-3 bg-white mb-3">
+                                                    <div id="slideCust2" class="carousel slide" data-bs-ride="carousel">
+                                                        <div class="carousel-inner">
+                                                            <div class="carousel-item active"><img src="https://picsum.photos/id/111/600/400" class="inner-carousel-img w-100" alt="Step 1"><p class="img-caption">Bước 1: Nhấn vào biểu tượng hỗ trợ trực tuyến</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/112/600/400" class="inner-carousel-img w-100" alt="Step 2"><p class="img-caption">Bước 2: Chọn hình thức liên hệ (Chat/Gọi điện)</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/113/600/400" class="inner-carousel-img w-100" alt="Step 3"><p class="img-caption">Bước 3: Nêu rõ yêu cầu cần tư vấn chăm sóc</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/114/600/400" class="inner-carousel-img w-100" alt="Step 4"><p class="img-caption">Bước 4: Nhận phản hồi nhanh từ chuyên gia</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/115/600/400" class="inner-carousel-img w-100" alt="Step 5"><p class="img-caption">Bước 5: Lưu lại lịch sử tư vấn để tra cứu sau</p></div>
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#slideCust2" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#slideCust2" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 1.3 -->
+                                        <div class="accordion-item border-0">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#cust3">
+                                                1.3 Hướng dẫn theo dõi đơn & Đánh giá
+                                            </div>
+                                            <div id="cust3" class="collapse" data-bs-parent="#subCustomer">
+                                                <div class="p-2 border rounded-3 bg-white">
+                                                    <div id="slideCust3" class="carousel slide" data-bs-ride="carousel">
+                                                        <div class="carousel-inner">
+                                                            <div class="carousel-item active"><img src="https://picsum.photos/id/121/600/400" class="inner-carousel-img w-100" alt="Step 1"><p class="img-caption">Bước 1: Vào mục 'Đơn hàng của tôi'</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/122/600/400" class="inner-carousel-img w-100" alt="Step 2"><p class="img-caption">Bước 2: Xem trạng thái xử lý thực tế của đơn hàng</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/123/600/400" class="inner-carousel-img w-100" alt="Step 3"><p class="img-caption">Bước 3: Sau khi hoàn tất, nhấn 'Đánh giá dịch vụ'</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/124/600/400" class="inner-carousel-img w-100" alt="Step 4"><p class="img-caption">Bước 4: Chọn số sao và để lại nhận xét chi tiết</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/125/600/400" class="inner-carousel-img w-100" alt="Step 5"><p class="img-caption">Bước 5: Nhấn 'Gửi' để hoàn tất quy trình</p></div>
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#slideCust3" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#slideCust3" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. NHÀ CUNG CẤP -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse" data-bs-target="#guideProvider">
+                                    <span><i class="fas fa-hand-holding-heart me-2"></i>II. NHÀ CUNG CẤP</span>
+                                </div>
+                                <div id="guideProvider" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subProvider">
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#prov1">
+                                                2.1 Hướng dẫn nhận việc & Bắt đầu công việc
+                                            </div>
+                                            <div id="prov1" class="collapse" data-bs-parent="#subProvider">
+                                                <div class="p-2 border rounded-3 bg-white mb-3 gallery-box">
+                                                    <div id="slideProv1" class="carousel slide" data-bs-ride="carousel">
+                                                        <div class="carousel-inner">
+                                                            <div class="carousel-item active"><img src="https://picsum.photos/id/131/600/400" class="inner-carousel-img w-100" alt="Step 1"><p class="img-caption">Bước 1: Nhận thông báo công việc mới qua ứng dụng</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/132/600/400" class="inner-carousel-img w-100" alt="Step 2"><p class="img-caption">Bước 2: Xem chi tiết yêu cầu và nhấn 'Chấp nhận'</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/133/600/400" class="inner-carousel-img w-100" alt="Step 3"><p class="img-caption">Bước 3: Đến địa chỉ khách hàng theo đúng lịch hẹn</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/134/600/400" class="inner-carousel-img w-100" alt="Step 4"><p class="img-caption">Bước 4: Nhấn 'Bắt đầu' trên App để ghi lại thời gian</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/135/600/400" class="inner-carousel-img w-100" alt="Step 5"><p class="img-caption">Bước 5: Thực hiện quy trình chăm sóc chuyên nghiệp</p></div>
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#slideProv1" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#slideProv1" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="accordion-item border-0">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#prov2">
+                                                2.2 Hướng dẫn theo dõi lịch làm việc & Đánh giá
+                                            </div>
+                                            <div id="prov2" class="collapse" data-bs-parent="#subProvider">
+                                                <div class="p-2 border rounded-3 bg-white">
+                                                    <div id="slideProv2" class="carousel slide" data-bs-ride="carousel">
+                                                        <div class="carousel-inner">
+                                                            <div class="carousel-item active"><img src="https://picsum.photos/id/141/600/400" class="inner-carousel-img w-100" alt="Step 1"><p class="img-caption">Bước 1: Quản lý lịch làm việc tuần/tháng trong Menu</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/142/600/400" class="inner-carousel-img w-100" alt="Step 2"><p class="img-caption">Bước 2: Xem tổng số giờ làm và thu nhập dự kiến</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/143/600/400" class="inner-carousel-img w-100" alt="Step 3"><p class="img-caption">Bước 3: Đối soát đánh giá từ khách hàng sau mỗi ca</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/144/600/400" class="inner-carousel-img w-100" alt="Step 4"><p class="img-caption">Bước 4: Cập nhật thông tin kỹ năng định kỳ</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/145/600/400" class="inner-carousel-img w-100" alt="Step 5"><p class="img-caption">Bước 5: Báo cáo công việc hoàn thành cho quản lý</p></div>
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#slideProv2" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#slideProv2" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. ADMIN -->
+                            <div class="accordion-item border-0 mb-3">
+                                <div class="guide-large-header collapsed" data-bs-toggle="collapse" data-bs-target="#guideAdmin">
+                                    <span><i class="fas fa-user-shield me-2"></i>III. ADMIN</span>
+                                </div>
+                                <div id="guideAdmin" class="collapse" data-bs-parent="#guideAccordionMain">
+                                    <div class="accordion px-3 pb-3" id="subAdmin">
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header" data-bs-toggle="collapse" data-bs-target="#adm1">
+                                                3.1 Hướng dẫn xem đơn hàng
+                                            </div>
+                                            <div id="adm1" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-2 border rounded-3 bg-white mb-3">
+                                                    <div id="slideAdm1" class="carousel slide" data-bs-ride="carousel">
+                                                        <div class="carousel-inner">
+                                                            <div class="carousel-item active"><img src="https://picsum.photos/id/151/600/400" class="inner-carousel-img w-100" alt="Step 1"><p class="img-caption">Admin Bước 1: Vào mục Quản lý đơn hàng</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/152/600/400" class="inner-carousel-img w-100" alt="Step 2"><p class="img-caption">Admin Bước 2: Sử dụng bộ lọc để tìm đơn hàng cần xử lý</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/153/600/400" class="inner-carousel-img w-100" alt="Step 3"><p class="img-caption">Admin Bước 3: Xem chi tiết khách hàng và nhân viên thực hiện</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/154/600/400" class="inner-carousel-img w-100" alt="Step 4"><p class="img-caption">Admin Bước 4: Kiểm tra lịch sử giao dịch và thanh toán</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/155/600/400" class="inner-carousel-img w-100" alt="Step 5"><p class="img-caption">Admin Bước 5: Phê duyệt hoặc hủy đơn nếu có sự cố</p></div>
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#slideAdm1" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#slideAdm1" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="accordion-item border-0 mb-2">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#adm2">
+                                                3.2 Hướng dẫn thêm dịch vụ
+                                            </div>
+                                            <div id="adm2" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-2 border rounded-3 bg-white mb-3">
+                                                    <div id="slideAdm2" class="carousel slide" data-bs-ride="carousel">
+                                                        <div class="carousel-inner">
+                                                            <div class="carousel-item active"><img src="https://picsum.photos/id/161/600/400" class="inner-carousel-img w-100" alt="Step 1"><p class="img-caption">Admin Bước 1: Nhấn 'Thêm dịch vụ mới'</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/162/600/400" class="inner-carousel-img w-100" alt="Step 2"><p class="img-caption">Admin Bước 2: Nhập tên dịch vụ và chọn danh mục phù hợp</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/163/600/400" class="inner-carousel-img w-100" alt="Step 3"><p class="img-caption">Admin Bước 3: Thiết lập bảng giá theo giờ hoặc theo gói</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/164/600/400" class="inner-carousel-img w-100" alt="Step 4"><p class="img-caption">Admin Bước 4: Tải lên hình ảnh đại diện dịch vụ</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/165/600/400" class="inner-carousel-img w-100" alt="Step 5"><p class="img-caption">Admin Bước 5: Nhấn 'Lưu' để hiển thị dịch vụ lên Web</p></div>
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#slideAdm2" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#slideAdm2" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="accordion-item border-0">
+                                            <div class="guide-small-header collapsed" data-bs-toggle="collapse" data-bs-target="#adm3">
+                                                3.3 Hướng dẫn sửa dịch vụ
+                                            </div>
+                                            <div id="adm3" class="collapse" data-bs-parent="#subAdmin">
+                                                <div class="p-2 border rounded-3 bg-white">
+                                                    <div id="slideAdm3" class="carousel slide" data-bs-ride="carousel">
+                                                        <div class="carousel-inner">
+                                                            <div class="carousel-item active"><img src="https://picsum.photos/id/171/600/400" class="inner-carousel-img w-100" alt="Step 1"><p class="img-caption">Admin Bước 1: Chọn dịch vụ cần chỉnh sửa</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/172/600/400" class="inner-carousel-img w-100" alt="Step 2"><p class="img-caption">Admin Bước 2: Chỉnh sửa thông tin hoặc giá cả</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/173/600/400" class="inner-carousel-img w-100" alt="Step 3"><p class="img-caption">Admin Bước 3: Thay đổi hình ảnh minh họa nếu cần</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/174/600/400" class="inner-carousel-img w-100" alt="Step 4"><p class="img-caption">Admin Bước 4: Kiểm tra lại các thay đổi</p></div>
+                                                            <div class="carousel-item"><img src="https://picsum.photos/id/175/600/400" class="inner-carousel-img w-100" alt="Step 5"><p class="img-caption">Admin Bước 5: Cập nhật hệ thống</p></div>
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#slideAdm3" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#slideAdm3" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Liên hệ -->
+                <section id="lien-he" class="content-card">
+                    <h2 class="section-header" role="button">4. Liên hệ</h2>
+                    <div class="section-content">
+                        <div class="p-4 bg-white rounded-4 shadow-sm border border-light">
+                            <h4 class="fw-bold text-pink mb-3">CÔNG TY TNHH DỊCH VỤ QUANH TA KERI</h4>
+                            <p class="mb-2"><strong>MST:</strong> 0315609853</p>
+                            <p class="mb-4 lh-lg">
+                                <i class="fas fa-map-marker-alt text-pink me-2"></i><strong>Địa chỉ:</strong> 
+                                Tòa Nhà Sbi, Lô 6b, Đường Số 3, Công Viên Phần Mềm Quang Trung, Phường Tân Chánh Hiệp, Quận 12, Thành Phố Hồ Chí Minh, Việt Nam
+                            </p>
+                            
+                            <hr class="my-4 opacity-25">
+                            
+                            <h5 class="fw-bold mb-3"><i class="fas fa-headset text-pink me-2"></i>Thông tin liên lạc</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 rounded-3 bg-light border border-light">
+                                        <i class="fas fa-phone-alt fa-2x text-pink me-3"></i>
+                                        <div>
+                                            <div class="small text-muted">Điện thoại</div>
+                                            <a href="tel:0775472347" class="fw-bold text-dark text-decoration-none">0775472347</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 rounded-3 bg-light border border-light">
+                                        <i class="fas fa-envelope fa-2x text-pink me-3"></i>
+                                        <div>
+                                            <div class="small text-muted">Email</div>
+                                            <a href="mailto:dichvuquanhta.vn@gmail.com" class="fw-bold text-dark text-decoration-none">dichvuquanhta.vn@gmail.com</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container-fluid" style="padding-left: 3px; padding-right: 3px;">
+            <p class="mb-0 text-muted">&copy; 2024 Dịch vụ Mẹ và Bé - Thiết kế bởi Antigravity</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.content-card');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            function activateSection(id) {
+                const targetId = id.startsWith('#') ? id : `#${id}`;
+                
+                sections.forEach(s => s.classList.remove('active'));
+                navLinks.forEach(l => l.classList.remove('active'));
+
+                const targetSection = document.querySelector(targetId);
+                const targetLink = document.querySelector(`.nav-link[href="${targetId}"]`);
+
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    // Scroll to section smoothly
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 110,
+                        behavior: 'smooth'
+                    });
+                }
+                if (targetLink) targetLink.classList.add('active');
+
+                // Close offcanvas on mobile after selection
+                const offcanvasElement = document.getElementById('sidebarMenu');
+                const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
+                if (window.innerWidth < 992) {
+                    bsOffcanvas.hide();
+                }
+            }
+
+            // Click on Sidebar
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = link.getAttribute('href');
+                    activateSection(id);
+                });
+            });
+
+            // Click on Section Header
+            document.querySelectorAll('.section-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const id = header.parentElement.id;
+                    activateSection(id);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
