@@ -2066,6 +2066,7 @@
 				const needComplete = hasStaff
 					&& !!endPlanAt
 					&& now().getTime() > endPlanAt.getTime()
+					&& status.includes('đang') // Chỉ tự động hoàn thành nếu đã bắt đầu thực hiện
 					&& !isCanceled
 					&& !isOverdue
 					&& !isCompleted;

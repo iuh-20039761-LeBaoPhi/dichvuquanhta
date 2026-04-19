@@ -2096,6 +2096,7 @@ include 'layout-header.php';
 			const needComplete = hasStaff
 				&& !!endPlanAt
 				&& now().getTime() > endPlanAt.getTime()
+				&& status.includes('đang')
 				&& !isCanceled
 				&& !isOverdue
 				&& !isCompleted;
