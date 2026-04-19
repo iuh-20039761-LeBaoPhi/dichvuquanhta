@@ -197,12 +197,24 @@ body.order-standalone-page {
 }
 
 /* ============================================================ 
-   RESPONSIVE DESIGN SYSTEM
-   Standard Breakpoints:
+   RESPONSIVE DESIGN SYSTEM (STANDARDIZED)
    Mobile: width < 740px
    Tablet: 740px <= width < 1024px
-   PC: width >= 1024px
+   PC: width >= 1024px 
    ============================================================ */
+
+/* --- PC: 1024px and above --- */
+@media only screen and (min-width: 1024px) {
+  .standalone-header:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  }
+  .invoice-panel:hover,
+  .identity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  }
+}
 
 /* --- TABLET: 740px to 1023px --- */
 @media only screen and (min-width: 740px) and (max-width: 1023px) {

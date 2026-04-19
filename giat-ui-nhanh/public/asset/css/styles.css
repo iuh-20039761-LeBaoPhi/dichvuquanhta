@@ -1251,26 +1251,288 @@ footer {
   display: none;
 }
 
-@media (max-width: 768px) {
-  .auth-user-dropdown {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    width: min(280px, calc(100vw - 32px));
+/* ============================================================
+   RESPONSIVE DESIGN SYSTEM
+   Mobile:  width < 740px     → @media (max-width: 739px)
+   Tablet:  740px – 1023px    → @media (min-width: 740px) and (max-width: 1023px)
+   PC:      width ≥ 1024px    → @media (min-width: 1024px)
+   ============================================================ */
+
+/* --- PC: 1024px and above --- */
+@media only screen and (min-width: 1024px) {
+  .hero-content {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hero-image {
+    display: block;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transition: transform 0.5s ease;
+  }
+
+  .hero-image:hover {
+    transform: scale(1.05);
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+  }
+
+  .pricing-detail-flex .pricing-detail-image {
+    width: 70%;
+  }
+
+  .pricing-detail-flex .pricing-detail-table {
+    width: 30%;
   }
 }
-/* Responsive */
-@media (max-width: 768px) {
-  .btn.info {
-    width: auto;
-  }
+
+/* --- TABLET: 740px to 1023px --- */
+@media only screen and (min-width: 740px) and (max-width: 1023px) {
+  /* Navbar: ẩn menu ngang, hiện hamburger (giống mobile) */
   .menu-toggle {
     display: flex;
     color: white;
   }
+
   .navbar.scrolled .menu-toggle {
     color: #3346e6;
   }
+
+  .nav-menu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition:
+      max-height 0.4s ease,
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .nav-menu.active {
+    min-height: 400px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nav-menu li {
+    width: 100%;
+    text-align: center;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .nav-menu li:last-child {
+    border-bottom: none;
+  }
+
+  .nav-link {
+    color: #3346e6;
+    font-size: 16px;
+  }
+
+  .nav-link.login-btn {
+    color: #fff;
+  }
+
+  .nav-container {
+    height: 70px;
+    padding: 0 20px;
+  }
+
+  .nav-container .logo img {
+    width: 65px;
+    height: 48px;
+  }
+
+  /* Hero Tablet: 2 cột đẹp, text trái - ảnh phải */
+  .hero {
+    min-height: auto;
+    padding: 90px 0 50px;
+    text-align: left;
+  }
+
+  .hero-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    padding: 30px 0 0;
+    align-items: center;
+  }
+
+  .hero h1 {
+    font-size: 2.4rem;
+    line-height: 1.25;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+    max-width: 100%;
+    margin: 0 0 24px;
+  }
+
+  .quick-info {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .cta-buttons {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .hero-image {
+    display: block;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hero-wave {
+    display: none;
+  }
+
+  /* Sections */
+  section {
+    padding: 60px 0;
+  }
+
+  .container {
+    padding: 0 30px;
+  }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+
+  .section-header h2 {
+    font-size: 2.2rem;
+  }
+
+  .section-header p {
+    font-size: 1.05rem;
+  }
+
+  /* Grids: 2 cột trên Tablet */
+  .services-grid,
+  .process-grid,
+  .pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .contact-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
+  /* Service card gọn hơn */
+  .service-card,
+  .process-step,
+  .pricing-card {
+    padding: 28px;
+  }
+
+  /* Pricing detail */
+  .pricing-detail-flex {
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+
+  .pricing-detail-flex .pricing-detail-image,
+  .pricing-detail-flex .pricing-detail-table {
+    width: 100%;
+  }
+
+  .pricing-detail-flex .pricing-detail-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  /* About */
+  .about-content .about-flex {
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+
+  .about-content .about-flex .text-content,
+  .about-content .about-flex .text-image {
+    width: 100%;
+  }
+
+  .about-flex .text-image img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  .about-content .about-flex .text-content h3 {
+    font-size: 1.8rem;
+  }
+
+  /* Commitment */
+  .commitment {
+    padding: 50px 30px;
+  }
+
+  /* Footer */
+  .footer-about {
+    grid-column: span 1;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+
+  footer {
+    padding: 50px 0 24px;
+  }
+}
+
+/* --- MOBILE: Under 740px --- */
+@media only screen and (max-width: 739px) {
+  /* Navbar mobile */
+  .btn.info {
+    width: auto;
+  }
+
+  .menu-toggle {
+    display: flex;
+    color: white;
+  }
+
+  .navbar.scrolled .menu-toggle {
+    color: #3346e6;
+  }
+
   .nav-menu {
     position: fixed;
     top: 80px;
@@ -1283,12 +1545,10 @@ footer {
     gap: 0;
     padding: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-
     max-height: 0;
     overflow: hidden;
     opacity: 0;
     transform: translateY(-10px);
-
     transition:
       max-height 0.4s ease,
       opacity 0.3s ease,
@@ -1315,25 +1575,54 @@ footer {
   .nav-link {
     color: #3346e6;
   }
+
   .nav-link.login-btn {
     color: #fff;
   }
+
   .nav-link:hover {
     color: #fbbf24;
   }
 
+  .nav-container .logo img {
+    width: 60px;
+    height: 40px;
+  }
+
+  .nav-container .logo span {
+    font-size: 1.3rem;
+  }
+
+  /* Hero mobile */
+  .hero {
+    min-height: 210px;
+    padding: 84px 0 36px;
+  }
+
   .hero h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
+  }
+
+  .hero .hero-text h1 {
+    font-size: 1.45rem;
+    line-height: 1.35;
+  }
+
+  .hero .hero-text h1 span {
+    font-size: 1.5rem;
   }
 
   .hero p {
     font-size: 1rem;
   }
+
   .hero-wave {
     left: 21px;
     width: 90%;
     bottom: -38px;
   }
+
+  /* Sections mobile */
   .section-header h2 {
     font-size: 1.7rem;
   }
@@ -1348,10 +1637,7 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .footer-about {
-    grid-column: span 1;
-  }
-
+  /* CTA & Buttons */
   .cta-buttons {
     flex-direction: column;
   }
@@ -1360,6 +1646,8 @@ footer {
     width: 100%;
     justify-content: center;
   }
+
+  /* Hero image */
   .hero-image {
     display: block;
     border-radius: 30px;
@@ -1367,53 +1655,89 @@ footer {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     transition: transform 0.5s ease;
   }
+
   .hero-image img {
     width: 100%;
     height: 300px;
     object-fit: cover;
   }
+
+  /* About */
   .about-content .about-flex {
     flex-wrap: wrap;
   }
+
   .about-content .about-flex .text-content,
   .about-content .about-flex .text-image {
     width: 100%;
   }
+
   .about-flex .text-image img {
     width: 100%;
     height: 300px;
     object-fit: cover;
   }
+
+  .about-content .about-flex .text-content h3 {
+    font-size: 1.5rem;
+  }
+
+  .about-content .about-flex .text-content p {
+    font-size: 1rem;
+  }
+
+  /* Pricing */
   .pricing-detail-flex {
     flex-wrap: wrap-reverse;
     gap: 50px;
     align-items: center;
   }
+
   .pricing-detail-flex .pricing-detail-image,
   .pricing-detail-flex .pricing-detail-table {
     width: 100%;
   }
+
   .pricing-detail-flex .pricing-detail-image img {
     width: 100%;
     height: auto;
     object-fit: cover;
   }
+
+  .pricing-detail-table h3 {
+    text-align: center;
+  }
+
+  .pricing-card h3 {
+    font-size: 1.5rem;
+  }
+
+  .price-amount {
+    font-size: 1.3rem;
+  }
+
+  /* Contact */
   .modal-body .contact-form {
     padding: 0px;
   }
+
   #contact .contact-form {
     padding: 40px 20px;
   }
+
   #pricing .modal-header h4 {
     font-size: 1rem;
     font-weight: 700;
   }
+
   .contact-info h3 {
     font-size: 1.2rem;
   }
+
   .contact-item h4 {
     font-size: 1rem;
   }
+
   .contact-form h3 {
     font-size: 1.2rem;
   }
@@ -1423,82 +1747,34 @@ footer {
   .form-group textarea {
     padding: 10px 16px;
   }
-  .about-content .about-flex .text-content h3 {
-    font-size: 1.5rem;
+
+  /* Footer */
+  .footer-about {
+    grid-column: span 1;
   }
-  .about-content .about-flex .text-content p {
-    font-size: 1rem;
-  }
-  .commitment h3 {
-    font-size: 1.5rem;
-  }
-  .commitment p {
-    font-size: 1rem;
-  }
-  .pricing-detail-table h3 {
-    text-align: center;
-  }
-  .pricing-card h3 {
-    font-size: 1.5rem;
-  }
-  .price-amount {
-    font-size: 1.3rem;
-  }
-  .nav-container .logo img {
-    width: 60px;
-    height: 40px;
-  }
-  .nav-container .logo span {
-    font-size: 1.3rem;
-  }
+
   .footer-about h3 {
     font-size: 1.5rem;
   }
-  .hero {
-    min-height: 210px;
-    padding: 84px 0 36px;
-  }
 
-  .hero .hero-text h1 {
-    font-size: 1.45rem;
-    line-height: 1.35;
-  }
-
-  .hero .hero-text h1 span {
+  /* Commitment */
+  .commitment h3 {
     font-size: 1.5rem;
   }
+
+  .commitment p {
+    font-size: 1rem;
+  }
+
+  /* Auth dropdown */
+  .auth-user-dropdown {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(280px, calc(100vw - 32px));
+  }
 }
 
-@media (min-width: 1024px) {
-  .hero-content {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .hero-image {
-    display: block;
-    border-radius: 30px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    transition: transform 0.5s ease;
-  }
-
-  .hero-image:hover {
-    transform: scale(1.05);
-  }
-
-  .hero-image img {
-    width: 100%;
-    height: 600px;
-    object-fit: cover;
-  }
-  .pricing-detail-flex .pricing-detail-image {
-    width: 70%;
-  }
-
-  .pricing-detail-flex .pricing-detail-table {
-    width: 30%;
-  }
-}
 
 /* Confirmation Modal Premium Styles */
 .custom-confirm-body {

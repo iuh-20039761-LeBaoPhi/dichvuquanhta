@@ -1,11 +1,62 @@
-/* RESET */
-/* NEWS SECTION */
-.news-section {
-  /* padding: 100px 80px; */
-  max-width: 1300px;
-  margin: auto;
+/* ============================================================
+   NEWS.CSS — Giặt Ủi Nhanh
+   Dùng cho: cam-nang.html, noi-dung-cam-nang.html
+   Responsive Chuẩn:
+     Mobile:  width < 740px
+     Tablet:  740px – 1023px
+     PC:      width >= 1024px
+   ============================================================ */
+
+/* ============================================================
+   BASE: HERO (ghi đè cho trang tin tức)
+   ============================================================ */
+.hero {
+  min-height: 0 !important;
+  padding: 100px 0 40px !important;
 }
 
+.hero-content {
+  display: block !important;
+}
+
+.hero-text {
+  text-align: center !important;
+}
+
+.hero h1 span {
+  font-size: 20px;
+}
+
+.hero h1 span a {
+  text-decoration: none;
+  color: #fff;
+  transition: ease-in-out 0.3s;
+}
+
+.hero h1 span a:hover {
+  background: linear-gradient(to right, #fbbf24, #f97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================================
+   BASE: CAM NANG SECTION (cam-nang.html)
+   ============================================================ */
+.news-section {
+  max-width: 1300px;
+  margin: auto;
+  padding: 60px 20px;
+}
+
+.news-title {
+  text-align: center;
+  font-size: 38px;
+  color: #1565c0;
+  margin-bottom: 60px;
+}
+
+/* Blog layout: sidebar + main */
 .blog-container {
   display: flex;
   gap: 40px;
@@ -49,14 +100,18 @@
   font-weight: 500;
   transition: all 0.3s;
   display: block;
-  padding: 8px 0;
+  padding: 8px 15px;
   border-radius: 5px;
-  padding-left: 15px;
 }
 
-.category-list a:hover {
+.category-list a:hover,
+.category-list li.active a {
   color: #1565c0;
   background: #e3f2fd;
+}
+
+.category-list li.active a {
+  font-weight: bold;
 }
 
 .latest-posts {
@@ -93,7 +148,7 @@
 
 .post-info h4 {
   font-size: 14px;
-  margin: 0 0 5px 0;
+  margin: 0 0 5px;
   color: #1565c0;
   line-height: 1.3;
 }
@@ -105,54 +160,46 @@
 
 .main-content {
   flex: 1;
+  min-width: 0;
 }
 
-.news-title {
-  text-align: center;
-  font-size: 38px;
-  color: #1565c0;
-  margin-bottom: 60px;
-}
-
-/* GRID */
+/* News grid & cards */
 .news-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
-  justify-content: center;
-}
-.news-card {
-  flex: 0 0 calc(50% - 20px);
-  max-width: calc(50% - 20px);
+  gap: 30px;
+  justify-content: flex-start;
 }
 
-/* CARD */
 .news-card {
+  flex: 0 0 calc(50% - 15px);
+  max-width: calc(50% - 15px);
   background: white;
-  border-radius: 0;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-  transition: 0.4s;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: 0.3s ease;
 }
 
 .news-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
 }
 
 .news-card img {
   width: 100%;
-  height: 220px;
+  height: 200px;
   object-fit: cover;
 }
 
 .news-content {
-  padding: 25px;
+  padding: 20px;
 }
 
 .news-content h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
+  margin-bottom: 8px;
+  font-size: 17px;
+  line-height: 1.4;
 }
 
 .news-content h3 a {
@@ -165,112 +212,35 @@
 }
 
 .news-date {
-  font-size: 14px;
+  font-size: 13px;
   color: #888;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .read-more {
   display: inline-block;
-  margin-top: 10px;
+  margin-top: 8px;
   font-weight: 600;
   color: #1565c0;
   text-decoration: none;
-}
-.hero {
-  min-height: 0 !important;
-}
-.hero-text {
-  text-align: center !important;
-}
-.hero h1 span {
-  font-size: 24px;
-}
-.hero h1 span a {
-  text-decoration: none;
-  color: #fff;
-  transition: ease-in-out 0.3s;
-}
-.hero h1 span a:hover {
-  background: linear-gradient(to right, #fbbf24, #f97316);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero-content {
-  display: block !important;
+  font-size: 14px;
 }
 
-/* Table of contents and article styles */
-.article-section {
-  padding: 60px 20px;
-}
-.toc {
-  /* position: sticky; */
-  /* top: 100px; */
-  background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
-.toc h3 {
-  margin-top: 0;
-  font-size: 18px;
-  color: #fff;
-}
-.toc ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.toc li {
-  margin-bottom: 8px;
-}
-.toc a {
-  color: #fff;
-  text-decoration: none;
-}
-.toc a:hover {
-  background: linear-gradient(to right, #fbbf24, #f97316);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-decoration: underline;
-}
-html {
-  scroll-behavior: smooth;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-}
-table th,
-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
-}
-table th {
-  background-color: #f2f2f2;
+/* Pagination */
+#pagination {
+  margin-top: 40px;
 }
 
-/* Responsive table */
-@media (max-width: 768px) {
-  .article-content table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-  .hero .hero-text h1 {
-    font-size: 1.45rem;
-    line-height: 1.35;
-  }
-  .hero .hero-text h1 span {
-    font-size: 0.82rem;
-  }
+#pagination .btn {
+  margin: 0 5px;
 }
-/* Pagination Styles */
+
+#pagination .btn.active {
+  background-color: #1565c0;
+  border-color: #1565c0;
+  color: white;
+}
+
 .pagination .page-link {
   border-radius: 8px;
   margin: 0 3px;
@@ -291,99 +261,71 @@ table th {
   color: #1565c0;
 }
 
-.category-list li.active a {
-  font-weight: bold;
-  background: #e3f2fd;
-  color: #1565c0;
-} /* Responsive */
-
-@media (max-width: 768px) {
-  .blog-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    position: static;
-    order: 2;
-  }
-
-  .main-content {
-    order: 1;
-  }
-
-  .news-section {
-    padding: 50px 20px;
-  }
-
-  .news-grid {
-    gap: 20px;
-  }
-
-  .news-card {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-} /* RESPONSIVE */
-@media (max-width: 1000px) {
-  .news-grid {
-    justify-content: center;
-  }
-  .news-card {
-    flex: 0 0 48%;
-    max-width: 48%;
-  }
+/* ============================================================
+   BASE: ARTICLE PAGE (noi-dung-cam-nang.html)
+   ============================================================ */
+.article-section {
+  padding: 60px 0;
 }
 
-@media (max-width: 600px) {
-  .news-grid {
-    justify-content: center;
-  }
-  .news-card {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-  .news-section {
-    padding: 20px 10px 20px 10px;
-  }
-  .hero-content {
-    padding: 0px !important;
-    padding-top: 80px !important;
-  }
-  .hero h1 {
-    font-size: 1.5rem !important;
-  }
+/* TOC (table of contents) */
+.toc {
+  background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-/* Pagination */
-#pagination {
-  margin-top: 40px;
+.toc h3 {
+  margin-top: 0;
+  font-size: 17px;
+  color: #fff;
+  margin-bottom: 12px;
 }
 
-#pagination .btn {
-  margin: 0 5px;
+.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-#pagination .btn.active {
-  background-color: #1565c0;
-  border-color: #1565c0;
-  color: white;
+.toc li {
+  margin-bottom: 8px;
 }
 
-/* Related Articles */
+.toc a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.5;
+  display: block;
+}
+
+.toc a:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+/* Sidebar blog (article page aside) */
+.sidebar-blog {
+  position: relative;
+  z-index: 1;
+}
+
+/* Related articles */
 .related-sidebar {
   background: #f8f9fa;
   padding: 20px;
   border-radius: 10px;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .related-sidebar h3 {
   color: #1565c0;
-  margin-bottom: 20px;
-  font-size: 20px;
+  margin-bottom: 16px;
+  font-size: 18px;
 }
 
-/* Related articles as ul li list */
 .related-sidebar .news-grid {
   display: block;
   gap: 0;
@@ -396,11 +338,11 @@ table th {
 }
 
 .related-item {
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   background: #fafafa;
-  transition: background 0.3s;
+  transition: background 0.2s;
 }
 
 .related-item:hover {
@@ -410,17 +352,17 @@ table th {
 .related-item a {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   padding: 10px;
   text-decoration: none;
   color: inherit;
 }
 
 .related-item img {
-  width: 80px;
-  height: 60px;
+  width: 72px;
+  height: 54px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
   flex-shrink: 0;
 }
 
@@ -432,27 +374,96 @@ table th {
 }
 
 .related-title {
-  font-size: 16px;
-  line-height: 1.3;
-  margin-bottom: 5px;
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 4px;
   color: #333;
   font-weight: 500;
 }
 
 .related-date {
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
   margin: 0;
 }
 
-/* Sticky aside on desktop */
-@media (min-width: 768px) {
-  aside {
-    position: sticky;
-    top: 100px;
-    height: fit-content;
-    z-index: 10;
-  }
+/* Article content body */
+.article-content {
+  min-width: 0;
+  word-break: break-word;
+}
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.article-content h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1565c0;
+  margin: 32px 0 14px;
+  padding-top: 4px;
+}
+
+.article-content h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0d47a1;
+  margin: 22px 0 10px;
+}
+
+.article-content p {
+  font-size: 1rem;
+  line-height: 1.85;
+  color: #374151;
+  margin-bottom: 16px;
+}
+
+.article-content ul,
+.article-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.article-content li {
+  line-height: 1.8;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.article-content blockquote {
+  border-left: 4px solid #3b82f6;
+  background: #eff6ff;
+  padding: 14px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 24px 0;
+  color: #1e3a8a;
+  font-style: italic;
+}
+
+/* Tables */
+html {
+  scroll-behavior: smooth;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+table th {
+  background-color: #f2f2f2;
 }
 
 /* Tag buttons */
@@ -460,7 +471,7 @@ table th {
   display: inline-block;
   background: #1565c0;
   color: white;
-  padding: 4px 8px;
+  padding: 4px 10px;
   margin: 2px 4px 2px 0;
   border-radius: 4px;
   text-decoration: none;
@@ -472,4 +483,220 @@ table th {
 .tag-button:hover {
   background: #0d47a1;
   color: white;
+}
+
+/* ============================================================
+   RESPONSIVE — PC (>= 1024px)
+   ============================================================ */
+@media only screen and (min-width: 1024px) {
+  /* Sticky sidebar on article page */
+  .sidebar-blog {
+    position: sticky;
+    top: 90px;
+    height: fit-content;
+    align-self: flex-start;
+  }
+
+  /* Sticky sidebar on listing page */
+  aside {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — TABLET (740px – 1023px)
+   ============================================================ */
+@media only screen and (min-width: 740px) and (max-width: 1023px) {
+  /* Hero */
+  .hero .hero-text h1 {
+    font-size: 1.6rem;
+    line-height: 1.3;
+  }
+
+  .hero h1 span {
+    font-size: 15px;
+  }
+
+  /* Cam nang listing page */
+  .news-section {
+    padding: 40px 16px;
+  }
+
+  .blog-container {
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .sidebar {
+    flex: 0 0 220px;
+    padding: 20px;
+    position: static;
+  }
+
+  .sidebar-widget {
+    margin-bottom: 20px;
+  }
+
+  .news-grid {
+    gap: 16px;
+    justify-content: flex-start;
+  }
+
+  .news-card {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Article page: stack sidebar below content */
+  .article-section {
+    padding: 40px 0;
+  }
+
+  .article-section .row {
+    flex-direction: column;
+  }
+
+  .article-section .col-md-3,
+  .article-section .col-md-9 {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+
+  .sidebar-blog {
+    position: static;
+    order: 2;
+    width: 100%;
+    margin-top: 32px;
+  }
+
+  .article-content {
+    order: 1;
+    width: 100%;
+  }
+
+  /* Scrollable table */
+  .article-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE (< 740px)
+   ============================================================ */
+@media only screen and (max-width: 739px) {
+  /* Hero */
+  .hero {
+    padding: 84px 0 30px !important;
+  }
+
+  .hero h1 {
+    font-size: 1.4rem !important;
+  }
+
+  .hero .hero-text h1 {
+    font-size: 1.3rem;
+    line-height: 1.35;
+  }
+
+  .hero .hero-text h1 span {
+    font-size: 0.8rem;
+  }
+
+  .hero-content {
+    padding: 0 !important;
+    padding-top: 20px !important;
+  }
+
+  /* Cam nang listing page */
+  .news-section {
+    padding: 24px 12px;
+  }
+
+  .news-title {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+
+  .blog-container {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .sidebar {
+    position: static;
+    order: 2;
+    flex: unset;
+    width: 100%;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .main-content {
+    order: 1;
+    width: 100%;
+  }
+
+  .news-grid {
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .news-card {
+    flex: 0 0 100%;
+    max-width: 100%;
+    border-radius: 10px;
+  }
+
+  .news-card img {
+    height: 180px;
+  }
+
+  /* Article page */
+  .article-section {
+    padding: 16px 0;
+  }
+
+  .article-section .col-md-3,
+  .article-section .col-md-9 {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+
+  .sidebar-blog {
+    position: static;
+    order: 2;
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .article-content {
+    order: 1;
+    width: 100%;
+  }
+
+  .article-content h2 {
+    font-size: 1.25rem;
+  }
+
+  .article-content h3 {
+    font-size: 1.05rem;
+  }
+
+  .article-content p {
+    font-size: 0.97rem;
+  }
+
+  /* Scrollable table */
+  .article-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }
