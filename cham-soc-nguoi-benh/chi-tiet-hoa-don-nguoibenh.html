@@ -2765,17 +2765,31 @@
 				if (!canSubmitCustomerReview()) {
 					throw new Error('Đơn này không đủ điều kiện để khách hàng đánh giá');
 				}
-				const text = $('customerReview').value.trim();
-				const mediaInput = $('customerMediaInput');
-				const uploaded = await uploadReviewMedia('khachhang', mediaInput.files);
-				const media = uploaded.length ? uploaded : parseMedia(app.$datlich_nguoibenh.media_danhgia_khachhang);
-				await updateById(TABLE_ORDER, app.$datlich_nguoibenh.id, {
-					danhgia_khachhang: text,
-					media_danhgia_khachhang: JSON.stringify(media),
-					thoigian_danhgia_khachhang: nowSql()
-				});
-				mediaInput.value = '';
-				await reloadOrder();
+				const btn = $('btnSaveReview');
+				const oldHtml = btn ? btn.innerHTML : '';
+				if (btn) {
+					btn.disabled = true;
+					btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang tải đánh giá...';
+				}
+
+				try {
+					const text = $('customerReview').value.trim();
+					const mediaInput = $('customerMediaInput');
+					const uploaded = await uploadReviewMedia('khachhang', mediaInput.files);
+					const media = uploaded.length ? uploaded : parseMedia(app.$datlich_nguoibenh.media_danhgia_khachhang);
+					await updateById(TABLE_ORDER, app.$datlich_nguoibenh.id, {
+						danhgia_khachhang: text,
+						media_danhgia_khachhang: JSON.stringify(media),
+						thoigian_danhgia_khachhang: nowSql()
+					});
+					mediaInput.value = '';
+					await reloadOrder();
+				} finally {
+					if (btn) {
+						btn.disabled = false;
+						btn.innerHTML = oldHtml;
+					}
+				}
 			}
 
 			async function handleSaveStaffReview() {
@@ -2785,17 +2799,31 @@
 				if (!canSubmitStaffReview()) {
 					throw new Error('Đơn này không đủ điều kiện để nhân viên đánh giá');
 				}
-				const text = $('staffReview').value.trim();
-				const mediaInput = $('staffReviewMediaInput');
-				const uploaded = await uploadReviewMedia('nhacungcap', mediaInput.files);
-				const media = uploaded.length ? uploaded : parseMedia(app.$datlich_nguoibenh.media_danhgia_nhanvien);
-				await updateById(TABLE_ORDER, app.$datlich_nguoibenh.id, {
-					danhgia_nhanvien: text,
-					media_danhgia_nhanvien: JSON.stringify(media),
-					thoigian_danhgia_nhanvien: nowSql()
-				});
-				mediaInput.value = '';
-				await reloadOrder();
+				const btn = $('btnSaveStaffReview');
+				const oldHtml = btn ? btn.innerHTML : '';
+				if (btn) {
+					btn.disabled = true;
+					btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang tải đánh giá...';
+				}
+
+				try {
+					const text = $('staffReview').value.trim();
+					const mediaInput = $('staffReviewMediaInput');
+					const uploaded = await uploadReviewMedia('nhacungcap', mediaInput.files);
+					const media = uploaded.length ? uploaded : parseMedia(app.$datlich_nguoibenh.media_danhgia_nhanvien);
+					await updateById(TABLE_ORDER, app.$datlich_nguoibenh.id, {
+						danhgia_nhanvien: text,
+						media_danhgia_nhanvien: JSON.stringify(media),
+						thoigian_danhgia_nhanvien: nowSql()
+					});
+					mediaInput.value = '';
+					await reloadOrder();
+				} finally {
+					if (btn) {
+						btn.disabled = false;
+						btn.innerHTML = oldHtml;
+					}
+				}
 			}
 
 			async function handleAction(action) {
