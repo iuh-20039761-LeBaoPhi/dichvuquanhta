@@ -584,7 +584,7 @@ include 'layout-header.php';
                                             <td><span class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span></td>
                                             <td>
                                                 <div class="action-group">
-                                                    <a href="chi-tiet-hoa-don-nguoigia.html?mahd=<?= urlencode((string) $itemId) ?>&sodienthoai=<?= urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) ?>&password=<?= urlencode((string) ($_SESSION['user']['matkhau'] ?? '')) ?>"
+                                                    <a href="chi-tiet-hoa-don-nguoigia.php?mahd=<?= urlencode((string) $itemId) ?>&sodienthoai=<?= urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) ?>&password=<?= urlencode((string) ($_SESSION['user']['matkhau'] ?? '')) ?>"
                                                         onclick="if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }"
                                                         class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
                                                 </div>
@@ -610,7 +610,7 @@ include 'layout-header.php';
                                 $statusValue = trim((string) ($item['trangthai'] ?? ''));
                                 if ($statusValue === '') { $statusValue = 'đang chờ'; }
                                 $price = number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND';
-                                $detailUrl = "chi-tiet-hoa-don-nguoigia.html?mahd=" . urlencode((string) $itemId) . "&sodienthoai=" . urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) . "&password=" . urlencode((string) ($_SESSION['user']['matkhau'] ?? ''));
+                                $detailUrl = "chi-tiet-hoa-don-nguoigia.php?mahd=" . urlencode((string) $itemId) . "&sodienthoai=" . urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) . "&password=" . urlencode((string) ($_SESSION['user']['matkhau'] ?? ''));
                                 ?>
                                 <a href="<?= $detailUrl ?>" class="invoice-card"
                                     onclick="if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }">

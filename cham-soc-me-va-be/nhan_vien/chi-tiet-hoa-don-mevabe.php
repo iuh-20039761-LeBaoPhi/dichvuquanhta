@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Chi tiết đơn hàng mẹ và bé</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<script src="https://api.dvqt.vn/js/krud.js"></script>
+<?php
+$pageTitle = "Chi tiết đơn hàng mẹ và bé";
+include 'layout-header.php';
+?>
 	<style>
 		/* Ẩn topbar và điều chỉnh layout khi được nhúng vào trong shell header-shared (SPA) */
 		.nv-admin-shell .topbar {
@@ -1462,20 +1456,8 @@
 			background: #edf2f7;
 		}
 	</style>
-</head>
-
-<body>
 	<main class="page">
 		<section class="modal-card">
-			<header class="topbar">
-				<a class="topbar-logo" href="../index.html" aria-label="Trang chủ">
-					<img src="../assets/logo.png" alt="Logo dịch vụ" />
-				</a>
-				<h1 class="topbar-title">Chi tiết đơn hàng mẹ và bé</h1>
-				<a class="topbar-logo" href="danh-sach-hoa-don.php" aria-label="Trang dịch vụ mẹ và bé">
-					<img src="../assets/logomvb1.png" alt="Logo mẹ và bé" />
-				</a>
-			</header>
 
 			<div class="content">
 				<div id="stateMessage" class="state info">Đang tải dữ liệu...</div>
@@ -2923,6 +2905,4 @@
 			init();
 		})();
 	</script>
-</body>
-
-</html>
+<?php include 'layout-footer.php'; ?>
