@@ -357,7 +357,59 @@
         margin: 0;
       }
 
-      @media (max-width: 768px) {
+      /* =============================================
+         TABLET: 740px – 1023px
+         ============================================= */
+      @media only screen and (min-width: 740px) and (max-width: 1023px) {
+        .booking-standalone .hero .hero-text h1 {
+          font-size: 2.4rem;
+          line-height: 1.3;
+        }
+
+        .booking-standalone .hero .hero-text h1 span {
+          font-size: 18px;
+        }
+
+        .booking-standalone .hero {
+          min-height: 200px;
+          padding: 90px 0 40px;
+        }
+
+        #bookingModal .modal-dialog,
+        #bookingConfirmModal .modal-dialog {
+          max-width: 560px;
+        }
+
+        .booking-section {
+          padding: 20px 0;
+        }
+
+        .booking-section .booking-shell {
+          max-width: 600px;
+          padding: 5px 0;
+        }
+      }
+
+      /* =============================================
+         MOBILE: < 740px
+         ============================================= */
+      @media only screen and (max-width: 739px) {
+        /* Hero */
+        .booking-standalone .hero .hero-text h1 {
+          font-size: 1.45rem;
+          line-height: 1.35;
+        }
+
+        .booking-standalone .hero .hero-text h1 span {
+          font-size: 0.82rem;
+        }
+
+        .booking-standalone .hero {
+          min-height: 180px;
+          padding: 84px 0 32px;
+        }
+
+        /* Modal dialogs */
         #bookingModal .modal-dialog,
         #bookingConfirmModal .modal-dialog {
           margin: 0;
@@ -426,31 +478,25 @@
         }
 
         .booking-section {
-          padding: 28px 12px 44px;
+          padding: 0;
         }
 
         .booking-section .booking-shell {
           max-width: 100%;
-          padding: 5px 0px;
+          padding: 5px 0;
         }
 
-        .booking-standalone .hero .hero-text h1 {
-          font-size: 1.45rem;
-          line-height: 1.35;
-        }
-        .booking-standalone .hero .hero-text h1 span {
-          font-size: 0.82rem;
-        }
         .booking-standalone .booking-section {
           padding: 0;
         }
-        #bookingModal .modal-footer{
+
+        #bookingModal .modal-footer {
           margin-top: -11px;
         }
-        .booking-standalone #bookingModal .modal-footer{
-          margin-top: 0px;
-        }
 
+        .booking-standalone #bookingModal .modal-footer {
+          margin-top: 0;
+        }
       }
     </style>
   </head>

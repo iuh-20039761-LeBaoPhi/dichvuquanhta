@@ -488,7 +488,10 @@
         box-shadow: 0 6px 15px rgba(37, 99, 235, 0.35);
       }
 
-      @media (min-width: 768px) and (max-width: 1024px) {
+      /* =============================================
+         TABLET: 740px – 1023px
+         ============================================= */
+      @media only screen and (min-width: 740px) and (max-width: 1023px) {
         #bookingModal .modal-dialog,
         #bookingConfirmModal .modal-dialog {
           max-width: 90%;
@@ -527,7 +530,7 @@
         .total-row .confirm-value {
           font-size: 1.5rem;
         }
-        
+
         #bookingModal .col-md-4 {
           width: 33.333333%;
         }
@@ -537,7 +540,10 @@
         }
       }
 
-      @media (max-width: 767px) {
+      /* =============================================
+         MOBILE: < 740px
+         ============================================= */
+      @media only screen and (max-width: 739px) {
         #bookingModal .modal-dialog,
         #bookingConfirmModal .modal-dialog {
           margin: 0;

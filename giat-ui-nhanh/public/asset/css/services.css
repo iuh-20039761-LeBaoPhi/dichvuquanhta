@@ -103,19 +103,75 @@
   width: auto;
 }
 
-@media (max-width: 768px) {
+/* =============================================
+   TABLET: 740px – 1023px
+   ============================================= */
+@media only screen and (min-width: 740px) and (max-width: 1023px) {
+  .laundry-services-new {
+    padding: 60px 0;
+  }
+
+  .laundry-services-new .svc-media {
+    flex: 0 0 min(280px, 40%);
+    min-height: 320px;
+    min-width: unset;
+  }
+
+  .laundry-services-new .svc-card {
+    gap: 20px;
+  }
+
+  .laundry-services-new .svc-body {
+    padding: 10px 8px;
+  }
+}
+
+/* =============================================
+   MOBILE: < 740px
+   ============================================= */
+@media only screen and (max-width: 739px) {
+  .laundry-services-new {
+    padding: 48px 0;
+  }
+
+  .laundry-services-new .svc-heading {
+    margin-bottom: 28px;
+  }
+
+  .laundry-services-new .svc-list {
+    gap: 18px;
+  }
+
   .laundry-services-new .svc-card,
   .laundry-services-new .svc-card.is-reverse {
     flex-direction: column;
+    gap: 0;
+    padding: 12px;
   }
 
   .laundry-services-new .svc-media {
     flex: none;
-    min-height: 220px;
-    min-width: 320px;
+    min-height: 200px;
+    min-width: unset;
+    width: 100%;
+    border-radius: 14px;
   }
 
   .laundry-services-new .svc-body {
-    padding: 6px 4px 8px;
+    padding: 14px 6px 8px;
+  }
+
+  .laundry-services-new .svc-title {
+    font-size: 1.25rem;
+  }
+
+  .laundry-services-new .svc-action {
+    width: 100%;
+    text-align: center;
+  }
+
+  .laundry-services-new .svc-action .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
