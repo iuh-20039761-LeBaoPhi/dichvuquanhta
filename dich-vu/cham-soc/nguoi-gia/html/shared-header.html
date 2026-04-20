@@ -1,12 +1,11 @@
-<!doctype html>
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../index.html" style="color: #f06292">
-      <img style="width: 80px; height: 60px" src="assets/logo.png" alt="cham-soc-me-va-be" />
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="../index.html" style="color: #2e7d32">
+      <img style="width: 80px; height: 60px" src="assets/logo.png" alt="cham-soc-nguoi-gia" />
     </a>
-    <span style="color: #f10956; font-weight: bold;">Chăm Sóc Mẹ và Bé</span>
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #f06292">
-      <img style="width: 80px; height: 60px" src="assets/logomvb.png" alt="cham-soc-me-va-be" />
+    <span style="color: #2e7d32; font-weight: 800;">Chăm Sóc Người Cao Tuổi</span>
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #2e7d32">
+      <img style="width: 80px; height: 60px" src="assets/logong.png" alt="cham-soc-nguoi-gia" />
     </a>
     <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse"
       data-bs-target="#navMenu">
@@ -18,19 +17,20 @@
         <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="home" href="index.html">Trang Chủ</a></li>
         <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="about" href="gioi-thieu.html">Giới Thiệu</a>
         </li>
-        <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="services"
-            href="dich-vu-cham-soc-me-be.html">Dịch Vụ</a></li>
+        <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="services" href="dich-vu.html">Dịch Vụ</a>
+        </li>
+        <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="terms" href="dieu-khoan.html">Điều Khoản</a>
+        </li>
         <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="blog" href="cam-nang.html">Cẩm Nang</a></li>
         <li class="nav-item"><a class="nav-link fw-bold px-3" data-nav-key="contact" href="lien-he.html">Liên Hệ</a>
         </li>
-
         <li class="nav-item ms-lg-3" id="loginNavItem">
-          <a id="btnLoginCheck" href="../public/dang-nhap.html?service=mevabe"
-            class="btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #f06292" onmouseover="
+          <a id="btnLoginCheck" href="../../../public/dang-nhap.html?service=nguoigia"
+            class="btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #2e7d32" onmouseover="
               this.style.backgroundColor = '#d84374';
               this.style.transform = 'scale(1.05)';
             " onmouseout="
-              this.style.backgroundColor = '#F06292';
+              this.style.backgroundColor = '#2e7d32';
               this.style.transform = 'scale(1)';
             ">Đăng Nhập</a>
         </li>
@@ -39,14 +39,14 @@
             <button
               class="btn btn-light border rounded-pill px-2 py-1 shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
               type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <img id="navAvatarImg" src="assets/logomvb.png" alt="avatar" width="32" height="32"
+              <img id="navAvatarImg" src="assets/logong.png" alt="avatar" width="32" height="32"
                 class="rounded-circle border" />
               <iframe id="navAvatar" src="" frameborder="0" width="32" height="32" class="rounded-circle border"
                 style="display:none;"></iframe>
               <span id="navUserName" class="fw-semibold small">Tài khoản</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0 text-center">
-              <li><a class="dropdown-item text-center" id="navInvoiceLink" href="nhan_vien/danh-sach-hoa-don.php">Danh
+              <li><a class="dropdown-item text-center" id="navInvoiceLink" href="don-hang/danh-sach-hoa-don.php">Danh
                   sách hóa đơn</a></li>
               <li>
                 <hr class="dropdown-divider">
