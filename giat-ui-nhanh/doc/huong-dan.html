@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng Dẫn Sử Dụng - Giặt Ủi Nhanh</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --border: #e2e8f0;
+            --glass: rgba(255, 255, 255, 0.8);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Global Styles --- */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        /* --- Header & Hero --- */
+        .hero-section {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            padding: 100px 0 60px;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: var(--light);
+            transform: skewY(-2deg);
+        }
+
+        .hero-section h1 {
+            color: white;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 20px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        /* --- Sidebar Navigation --- */
+        .guide-sidebar {
+            position: sticky;
+            top: 100px;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .nav-guide .nav-link {
+            color: var(--gray);
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-guide .nav-link i {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-guide .nav-link:hover {
+            background: rgba(59, 130, 246, 0.05);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-guide .nav-link.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* --- Content Sections --- */
+        .section-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+        }
+
+        /* --- Image Preview Section --- */
+        .preview-grid {
+            margin-top: 30px;
+            background: #f1f5f9;
+            padding: 30px;
+            border-radius: 20px;
+        }
+
+        .preview-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .device-frames {
+            display: grid;
+            gap: 20px;
+        }
+
+        .frame-placeholder {
+            background: #e2e8f0;
+            border: 2px dashed #cbd5e1;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #94a3b8;
+            transition: var(--transition);
+        }
+
+        .frame-placeholder:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .frame-placeholder i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* --- 3-tier Responsive Layout for Frames --- */
+        /* PC: 1024px and above */
+        @media only screen and (min-width: 1024px) {
+            .device-frames {
+                grid-template-columns: 2fr 1.2fr 0.8fr;
+            }
+            .frame-pc { height: 350px; }
+            .frame-tablet { height: 350px; }
+            .frame-mobile { height: 350px; }
+        }
+
+        /* TABLET: 740px to 1023px */
+        @media only screen and (min-width: 740px) and (max-width: 1023px) {
+            .device-frames {
+                grid-template-columns: 1fr 1fr;
+            }
+            .frame-pc { grid-column: span 2; height: 300px; }
+            .frame-tablet { height: 300px; }
+            .frame-mobile { height: 300px; }
+        }
+
+        /* MOBILE: Under 740px */
+        @media only screen and (max-width: 739px) {
+            .device-frames {
+                grid-template-columns: 1fr;
+            }
+            .frame-placeholder { height: 250px; }
+            .section-card { padding: 25px; }
+            .hero-section { padding: 80px 0 40px; }
+        }
+
+        /* --- Workflow Steps --- */
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 30px;
+        }
+
+        .step-list li::before {
+            content: '';
+            position: absolute;
+            left: 17px;
+            top: 35px;
+            bottom: -20px;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .step-list li:last-child::before {
+            display: none;
+        }
+
+        .step-badge {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            z-index: 1;
+        }
+
+        .step-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .step-desc {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: var(--dark);
+            color: #94a3b8;
+            padding: 60px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#guide-nav" data-bs-offset="120">
+
+    <!-- Hero Section -->
+    <header class="hero-section">
+        <div class="container">
+            <span class="badge bg-primary px-3 py-2 mb-3 rounded-pill">DOCUMENTATION v2.0</span>
+            <h1>Hướng Dẫn Sử Dụng</h1>
+            <p class="lead opacity-75">Tài liệu chi tiết về quy trình vận hành hệ thống Giặt Ủi Nhanh</p>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="guide-sidebar" id="guide-nav">
+                    <h5 class="mb-4 px-2">Mục Lục</h5>
+                    <nav class="nav nav-guide flex-column">
+                        <a class="nav-link active" href="#account">
+                            <i class="fas fa-user-circle"></i> Đăng Ký & Đăng Nhập
+                        </a>
+                        <a class="nav-link" href="#booking">
+                            <i class="fas fa-calendar-plus"></i> Quy Trình Đặt Lịch
+                        </a>
+                        <a class="nav-link" href="#customer">
+                            <i class="fas fa-user-tag"></i> Cho Khách Hàng
+                        </a>
+                        <a class="nav-link" href="#provider">
+                            <i class="fas fa-store"></i> Cho Nhà Cung Cấp
+                        </a>
+                        <a class="nav-link" href="#admin">
+                            <i class="fas fa-user-shield"></i> Cho Quản Trị Viên
+                        </a>
+                        <a class="nav-link" href="#database">
+                            <i class="fas fa-database"></i> Cấu Trúc Database
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                
+                <!-- Section: Đăng Ký & Đăng Nhập -->
+                <section id="account" class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-sign-in-alt"></i> Đăng Ký & Đăng Nhập
+                    </h2>
+                    <p class="mb-4">Hệ thống sử dụng cơ chế xác thực thông minh qua số điện thoại để tối ưu trải nghiệm người dùng.</p>
+                    
+                    <ul class="step-list">
+                        <li>
+                            <span class="step-badge">1</span>
+                            <span class="step-title">Kiểm tra tài khoản</span>
+                            <p class="step-desc">Truy cập trang đăng nhập hoặc khi đặt lịch, hệ thống sẽ tự động kiểm tra số điện thoại của bạn.</p>
+                        </li>
+                        <li>
+                            <span class="step-badge">2</span>
+                            <span class="step-title">Tự động tạo tài khoản</span>
+                            <p class="step-desc">Nếu là khách hàng mới, hệ thống sẽ tự động tạo tài khoản dựa trên thông tin đặt lịch đầu tiên.</p>
+                        </li>
+                        <li>
+                            <span class="step-badge">3</span>
+                            <span class="step-title">Lưu phiên đăng nhập</span>
+                            <p class="step-desc">Sử dụng Cookies bảo mật để duy trì trạng thái đăng nhập, giúp bạn không cần nhập lại thông tin nhiều lần.</p>
+                        </li>
+                    </ul>
+
+                    <div class="preview-grid">
+                        <span class="preview-label">Giao diện Đăng Nhập / Đăng Ký</span>
+                        <div class="device-frames">
+                            <div class="frame-placeholder frame-pc">
+                                <i class="fas fa-desktop"></i>
+                                <span>Desktop View (PC)</span>
+                            </div>
+                            <div class="frame-placeholder frame-tablet">
+                                <i class="fas fa-tablet-alt"></i>
+                                <span>Tablet View</span>
+                            </div>
+                            <div class="frame-placeholder frame-mobile">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Mobile View</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Đặt Lịch -->
+                <section id="booking" class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check"></i> Quy Trình Đặt Lịch
+                    </h2>
+                    <p class="mb-4">Quy trình 3 bước đơn giản để yêu cầu dịch vụ giặt ủi tận nơi.</p>
+                    
+                    <ul class="step-list">
+                        <li>
+                            <span class="step-badge">1</span>
+                            <span class="step-title">Chọn dịch vụ & Vị trí</span>
+                            <p class="step-desc">Chọn loại dịch vụ bạn cần (giặt sấy, giặt hấp...). Sử dụng bản đồ tích hợp để xác định địa chỉ chính xác.</p>
+                        </li>
+                        <li>
+                            <span class="step-badge">2</span>
+                            <span class="step-title">Cung cấp chi tiết & Media</span>
+                            <p class="step-desc">Nhập khối lượng dự kiến, chọn thời gian giao nhận. Bạn có thể chụp ảnh hoặc quay video tình trạng đồ cần giặt ngay trên form.</p>
+                        </li>
+                        <li>
+                            <span class="step-badge">3</span>
+                            <span class="step-title">Xác nhận & Thanh toán</span>
+                            <p class="step-desc">Kiểm tra lại tổng tiền (bao gồm phí dịch chuyển và phụ phí). Xác nhận đặt lịch và theo dõi trạng thái đơn hàng.</p>
+                        </li>
+                    </ul>
+
+                    <div class="preview-grid">
+                        <span class="preview-label">Giao diện Form Đặt Lịch</span>
+                        <div class="device-frames">
+                            <div class="frame-placeholder frame-pc">
+                                <i class="fas fa-desktop"></i>
+                                <span>Desktop View (PC)</span>
+                            </div>
+                            <div class="frame-placeholder frame-tablet">
+                                <i class="fas fa-tablet-alt"></i>
+                                <span>Tablet View</span>
+                            </div>
+                            <div class="frame-placeholder frame-mobile">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Mobile View</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Khách Hàng -->
+                <section id="customer" class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-user"></i> Quản Lý Cho Khách Hàng
+                    </h2>
+                    <p class="mb-4">Theo dõi và quản lý mọi đơn hàng của bạn chỉ với một chạm.</p>
+                    
+                    <ul class="step-list">
+                        <li>
+                            <span class="step-badge">1</span>
+                            <span class="step-title">Danh sách đơn hàng</span>
+                            <p class="step-desc">Xem lược sử tất cả các đơn hàng đã đặt. Lọc theo trạng thái: Mới, Đang xử lý, Hoàn thành.</p>
+                        </li>
+                        <li>
+                            <span class="step-badge">2</span>
+                            <span class="step-title">Chi tiết đơn hàng</span>
+                            <p class="step-desc">Xem hình ảnh/video đã gửi, thông tin nhân viên tiếp nhận, và lộ trình di chuyển của đơn hàng.</p>
+                        </li>
+                    </ul>
+
+                    <div class="preview-grid">
+                        <span class="preview-label">Giao diện Dashboard Khách Hàng</span>
+                        <div class="device-frames">
+                            <div class="frame-placeholder frame-pc">
+                                <i class="fas fa-desktop"></i>
+                                <span>Desktop View (PC)</span>
+                            </div>
+                            <div class="frame-placeholder frame-tablet">
+                                <i class="fas fa-tablet-alt"></i>
+                                <span>Tablet View</span>
+                            </div>
+                            <div class="frame-placeholder frame-mobile">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Mobile View</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Nhà Cung Cấp -->
+                <section id="provider" class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-store-alt"></i> Quản Lý Cho Nhà Cung Cấp
+                    </h2>
+                    <p class="mb-4">Công cụ quản lý hiệu quả cho các cửa hàng đối tác.</p>
+                    
+                    <ul class="step-list">
+                        <li>
+                            <span class="step-badge">1</span>
+                            <span class="step-title">Tiếp nhận đơn hàng</span>
+                            <p class="step-desc">Nhận thông báo khi có đơn hàng mới trong khu vực. Xem chi tiết yêu cầu, ảnh/video và địa chỉ khách hàng.</p>
+                        </li>
+                        <li>
+                            <span class="step-badge">2</span>
+                            <span class="step-title">Cập nhật trạng thái</span>
+                            <p class="step-desc">Chuyển trạng thái đơn hàng sang: Đã nhận, Đang giặt, Đang giao, Hoàn thành. Hệ thống tự động gửi thông báo cho khách.</p>
+                        </li>
+                    </ul>
+
+                    <div class="preview-grid">
+                        <span class="preview-label">Giao diện Dashboard Nhà Cung Cấp</span>
+                        <div class="device-frames">
+                            <div class="frame-placeholder frame-pc">
+                                <i class="fas fa-desktop"></i>
+                                <span>Desktop View (PC)</span>
+                            </div>
+                            <div class="frame-placeholder frame-tablet">
+                                <i class="fas fa-tablet-alt"></i>
+                                <span>Tablet View</span>
+                            </div>
+                            <div class="frame-placeholder frame-mobile">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Mobile View</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Admin -->
+                <section id="admin" class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-shield-alt"></i> Quản Lý Cho Admin
+                    </h2>
+                    <p class="mb-4">Hệ điều hành trung tâm giám sát mọi hoạt động của website.</p>
+                    
+                    <ul class="step-list">
+                        <li>
+                            <span class="step-badge">1</span>
+                            <span class="step-title">Quản lý dịch vụ & Giá</span>
+                            <p class="step-desc">Thêm/Sửa/Xóa các gói dịch vụ. Cài đặt đơn giá, phụ phí và cấu hình hệ thống.</p>
+                        </li>
+                        <li>
+                            <span class="step-badge">2</span>
+                            <span class="step-title">Thống kê & Báo cáo</span>
+                            <p class="step-desc">Theo dõi doanh thu, số lượng đơn hàng theo thời gian thực qua bảng điều khiển thông minh.</p>
+                        </li>
+                    </ul>
+
+                    <div class="preview-grid">
+                        <span class="preview-label">Giao diện Admin Dashboard</span>
+                        <div class="device-frames">
+                            <div class="frame-placeholder frame-pc">
+                                <i class="fas fa-desktop"></i>
+                                <span>Desktop View (PC)</span>
+                            </div>
+                            <div class="frame-placeholder frame-tablet">
+                                <i class="fas fa-tablet-alt"></i>
+                                <span>Tablet View</span>
+                            </div>
+                            <div class="frame-placeholder frame-mobile">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Mobile View</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Database -->
+                <section id="database" class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-database"></i> Cấu Trúc Database
+                    </h2>
+                    <p class="mb-4">Thông tin kỹ thuật về các bảng dữ liệu chính trong hệ thống.</p>
+                    
+                    <div class="accordion" id="dbAccordion">
+                        <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button bg-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#dbUsers">
+                                    <i class="fas fa-users me-2 text-primary"></i> Bảng Users (Người dùng)
+                                </button>
+                            </h2>
+                            <div id="dbUsers" class="accordion-collapse collapse show" data-bs-parent="#dbAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between"><span>id (PK)</span> <span class="text-muted small">int(11) - ID tự tăng</span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><span>user_name</span> <span class="text-muted small">varchar(150) - Họ tên</span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><span>user_tel</span> <span class="text-muted small">varchar(15) - SĐT (Khóa truy vấn chính)</span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><span>role</span> <span class="text-muted small">enum('khachhang', 'nhacungcap', 'admin')</span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><span>user_password</span> <span class="text-muted small">varchar(255) - Mã hóa mật khẩu</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-white fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#dbOrders">
+                                    <i class="fas fa-shopping-cart me-2 text-primary"></i> Bảng Orders (Đơn hàng)
+                                </button>
+                            </h2>
+                            <div id="dbOrders" class="accordion-collapse collapse" data-bs-parent="#dbAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between"><span>id (PK)</span> <span class="text-muted small">int(11) - Mã đơn hàng</span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><span>customer_id (FK)</span> <span class="text-muted small">Liên kết bảng Users</span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><span>total_price</span> <span class="text-muted small">double - Tổng tiền thanh toán</span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><span>order_status</span> <span class="text-muted small">Pending, Processing, Completed...</span></li>
+                                        <li class="list-group-item d-flex justify-content-between"><span>lat, lng</span> <span class="text-muted small">Toạ độ vị trí khách hàng</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <h4 class="text-white mb-3">Giặt Ủi Nhanh</h4>
+            <p>© 2026 Hệ Thống Quản Lý Dịch Vụ - All Rights Reserved</p>
+            <div class="mt-4">
+                <a href="#" class="btn btn-outline-light btn-sm mx-1">Privacy Policy</a>
+                <a href="#" class="btn btn-outline-light btn-sm mx-1">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
