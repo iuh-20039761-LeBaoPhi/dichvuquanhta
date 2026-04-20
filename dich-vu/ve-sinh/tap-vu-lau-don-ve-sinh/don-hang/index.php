@@ -136,7 +136,7 @@ $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targ
     'status' => $statusFilter,
     'service' => $serviceFilter,
     'sort' => $sortFilter,
-], 'page', 'danh-sach-hoa-don.php');
+], 'page', 'index.php');
 
 $summaryPending = count(array_filter($rows, static fn(array $i): bool => trim((string) ($i['trangthai'] ?? '')) === '' || trim((string) ($i['trangthai'] ?? '')) === 'chờ duyệt'));
 $summaryReceived = count(array_filter($rows, static fn(array $i): bool => trim((string) ($i['trangthai'] ?? '')) === 'hoàn thành' || trim((string) ($i['trangthai'] ?? '')) === 'đã nhận' || trim((string) ($i['trangthai'] ?? '')) === 'đang thực hiện'));
@@ -180,7 +180,7 @@ include 'layout-header.php';
 
     .stat-value {
         font-size: 1.4rem;
-        font-weight: 700;
+        font-weight: 600;
         line-height: 1;
         margin-top: 4px;
     }
@@ -211,7 +211,7 @@ include 'layout-header.php';
         background: #f1f5f9;
         color: #334155;
         white-space: nowrap;
-        font-weight: 700;
+        font-weight: 600;
         padding: 12px 14px;
         border-bottom: 1px solid #e2e8f0;
     }
@@ -224,7 +224,7 @@ include 'layout-header.php';
     .id-badge {
         min-width: 48px;
         text-align: center;
-        font-weight: 700;
+        font-weight: 600;
         border-radius: 999px;
     }
 
@@ -259,7 +259,7 @@ include 'layout-header.php';
 
     @media (max-width: 991.98px) {
         .table-wrap { border: none !important; box-shadow: none !important; background: transparent !important; }
-        .page-wrap { padding: 3px; }
+        .page-wrap { padding: 1px; }
         .panel-soft { margin: 1px; border-radius: 12px; }
         .card-body { padding: 8px 1px !important; }
         .stat-card { padding: 8px 6px; }
@@ -274,109 +274,109 @@ include 'layout-header.php';
 <style>
     /* Theme color overrides */
     body {
-        background: linear-gradient(180deg, #fff6fb 0%, #ffeff8 48%, #fff9fc 100%);
-        color: #6a3f59;
+        background: linear-gradient(180deg, #f0f7ff 0%, #e1efff 48%, #f8fbff 100%);
+        color: #1e293b;
     }
 
     .panel-soft {
-        border: 1px solid #f2c6de;
+        border: 1px solid #dbeafe;
         border-radius: 16px;
-        box-shadow: 0 14px 34px rgba(151, 61, 107, 0.16);
-        background: #fff9fd;
+        box-shadow: 0 14px 34px rgba(30, 64, 175, 0.12);
+        background: #f8fbff;
     }
 
     .stat-card {
-        border-color: #f1c6dc;
-        background: linear-gradient(180deg, #fff9fd, #fff2f9);
-        box-shadow: 0 8px 20px rgba(151, 61, 107, 0.09);
+        border-color: #dbeafe;
+        background: linear-gradient(180deg, #f8fbff, #f0f7ff);
+        box-shadow: 0 8px 20px rgba(30, 64, 175, 0.06);
     }
 
     .filter-box {
-        border-color: #f1c7dd;
+        border-color: #dbeafe;
         border-radius: 14px;
-        background: linear-gradient(180deg, #fff8fc, #fff2f9);
-        box-shadow: 0 8px 18px rgba(155, 65, 112, 0.08);
+        background: linear-gradient(180deg, #f8fbff, #f0f7ff);
+        box-shadow: 0 8px 18px rgba(30, 64, 175, 0.05);
     }
 
     .table-wrap {
-        border-color: #f1c4dc;
+        border-color: #dbeafe;
         border-radius: 14px;
         background: #fff;
-        box-shadow: 0 10px 22px rgba(151, 61, 107, 0.1);
+        box-shadow: 0 10px 22px rgba(30, 64, 175, 0.08);
     }
 
-    .jobs-table { --bs-table-hover-bg: #fff1f8; }
+    .jobs-table { --bs-table-hover-bg: #f0f7ff; }
 
     .jobs-table thead th {
-        background: linear-gradient(135deg, #ffe8f3 0%, #ffeff8 100%);
-        color: #8a3260;
-        border-bottom-color: #f3cbe0;
+        background: linear-gradient(135deg, #e1efff 0%, #f0f7ff 100%);
+        color: #1e40af;
+        border-bottom-color: #dbeafe;
     }
 
-    .jobs-table tbody td { border-color: #f7dae9; }
+    .jobs-table tbody td { border-color: #eef2ff; }
 
     .id-badge {
-        background: #ffeaf5 !important;
-        border-color: #f2bed9 !important;
-        color: #8f2f61 !important;
+        background: #eff6ff !important;
+        border-color: #dbeafe !important;
+        color: #1e40af !important;
     }
 
     .summary-note, .empty-row, .text-secondary, .form-label.small.text-secondary {
-        color: #925b7c !important;
+        color: #64748b !important;
     }
 
     .badge.rounded-pill.text-bg-warning,
     .badge.rounded-pill.text-bg-info,
     .badge.rounded-pill.text-bg-success,
     .badge.rounded-pill.text-bg-secondary {
-        border: 1px solid #f1bfd9;
-        background: #fff1f8 !important;
-        color: #8d325f !important;
+        border: 1px solid #dbeafe;
+        background: #eff6ff !important;
+        color: #1e40af !important;
     }
 
     .btn-primary {
-        border-color: #ef9fc7;
-        background: linear-gradient(135deg, #ea73ad, #cd5a92);
-        box-shadow: 0 8px 18px rgba(205, 90, 146, 0.24);
+        border-color: #3b82f6;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        box-shadow: 0 8px 18px rgba(29, 78, 216, 0.24);
     }
 
     .btn-primary:hover, .btn-primary:focus {
-        border-color: #e58ab8;
-        background: linear-gradient(135deg, #de63a1, #bf4d86);
+        border-color: #2563eb;
+        background: linear-gradient(135deg, #2563eb, #1e40af);
     }
 
     .btn-outline-secondary {
-        color: #8c3160;
-        border-color: #ebb3d1;
-        background: #fff7fb;
+        color: #1e40af;
+        border-color: #dbeafe;
+        background: #f8fbff;
     }
 
     .btn-outline-secondary:hover, .btn-outline-secondary:focus {
         color: #fff;
-        border-color: #ca5a90;
-        background: #ca5a90;
+        border-color: #1e40af;
+        background: #1e40af;
     }
 
     .form-control, .form-select, .input-group-text {
-        border-color: #f0c5db;
-        background: #fffbfd;
-        color: #744360;
+        border-color: #dbeafe;
+        background: #f8fbff;
+        color: #1e293b;
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: #e18bb8;
-        box-shadow: 0 0 0 0.2rem rgba(225, 139, 184, 0.2);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2);
     }
 
     .pagination .page-link {
-        color: #8c3462;
-        border-color: #f1c5dc;
-        background: #fff9fc;
+        color: #1e40af;
+        border-color: #dbeafe;
+        background: #f8fbff;
     }
 
     .pagination .page-item.active .page-link {
-        border-color: #ce5e95;
-        background: #ce5e95;
+        border-color: #1d4ed8;
+        background: #1d4ed8;
         color: #fff;
     }
 
@@ -388,16 +388,16 @@ include 'layout-header.php';
     }
 
     .alert-warning {
-        color: #7b2f53;
-        background: #fff1f8;
-        border-color: #efbdd7;
-        box-shadow: 0 8px 16px rgba(123, 47, 83, 0.08);
+        color: #1e40af;
+        background: #eff6ff;
+        border-color: #dbeafe;
+        box-shadow: 0 8px 16px rgba(30, 64, 175, 0.08);
     }
 
     /* Mobile Card Styles */
     .invoice-card {
         background: #ffffffff;
-        border: 1px solid #020202ff;
+        border: 1px solid #eef2ff;
         margin-bottom: 2px;
         border-radius: 5px;
         padding: 10px;
@@ -407,10 +407,10 @@ include 'layout-header.php';
         transition: background 0.2s;
     }
 
-    .invoice-card:active { background: #fff0f7; }
-    .invoice-card .inv-id { color: #c52274ff; font-weight: 700; font-size: 0.95rem; }
+    .invoice-card:active { background: #f0f7ff; }
+    .invoice-card .inv-id { color: #2563eb; font-weight: 600; font-size: 0.95rem; }
     .invoice-card .inv-date { color: #94a3b8; font-size: 0.75rem; }
-    .invoice-card .inv-name { font-weight: 700; font-size: 1rem; color: #1e293b; margin-top: 4px; }
+    .invoice-card .inv-name { font-weight: 600; font-size: 1rem; color: #1e293b; margin-top: 4px; }
     .invoice-card .inv-status { background: #1e293b; color: #fff; font-size: 0.7rem; padding: 4px 10px; border-radius: 999px; font-weight: 600; }
     .invoice-card .inv-service { color: #64748b; font-size: 0.85rem; margin-top: 2px; }
     .invoice-card .inv-price { color: #3b82f6; font-weight: 700; font-size: 1.1rem; text-align: right; margin-top: 4px; }
@@ -423,14 +423,14 @@ include 'layout-header.php';
         </div>
     <?php endif; ?>
 
-    <section class="card panel-soft mb-3" >
+    <section class="card panel-soft mb-3">
         <div class="card-body p-3 p-lg-4">
             <?php if (!$isEmployeeApproved): ?>
                 <div class="alert alert-warning mb-0">Tài khoản của bạn đang chờ duyệt</div>
             <?php else: ?>
                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-3">
                     <div>
-                        <h1 class="h4 fw-bold mb-1">Danh sách đơn hàng</h1>
+                        <h1 class="h4 fw-semibold mb-1">Danh sách đơn hàng</h1>
                     </div>
                     <div class="text-secondary small">Tổng hiển thị: <b><?= (int) $totalFiltered ?></b> /
                         <?= (int) $summaryTotal ?> hoa don
@@ -525,8 +525,8 @@ include 'layout-header.php';
                         <div class="col-6 col-md-3 col-lg-2 d-flex gap-2">
                             <button class="btn btn-primary flex-fill" type="submit"><i
                                     class="bi bi-funnel me-1"></i>Loc</button>
-                            <a class="btn btn-outline-secondary" href="danh-sach-hoa-don.php"
-                               onclick="event.preventDefault(); navigateTo('danh-sach-hoa-don.php');"><i
+                            <a class="btn btn-outline-secondary" href="index.php"
+                               onclick="event.preventDefault(); navigateTo('index.php');"><i
                                     class="bi bi-arrow-counterclockwise"></i></a>
                         </div>
                     </div>
@@ -584,7 +584,7 @@ include 'layout-header.php';
                                             <td><span class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span></td>
                                             <td>
                                                 <div class="action-group">
-                                                    <a href="chi-tiet-hoa-don-mevabe.php?mahd=<?= urlencode((string) $itemId) ?>&sodienthoai=<?= urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) ?>&password=<?= urlencode((string) ($_SESSION['user']['matkhau'] ?? '')) ?>"
+                                                    <a href="chi-tiet-hoa-don-donvesinh.php?mahd=<?= urlencode((string) $itemId) ?>&sodienthoai=<?= urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) ?>&password=<?= urlencode((string) ($_SESSION['user']['matkhau'] ?? '')) ?>"
                                                         onclick="if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }"
                                                         class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
                                                 </div>
@@ -610,7 +610,7 @@ include 'layout-header.php';
                                 $statusValue = trim((string) ($item['trangthai'] ?? ''));
                                 if ($statusValue === '') { $statusValue = 'đang chờ'; }
                                 $price = number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND';
-                                $detailUrl = "chi-tiet-hoa-don-mevabe.php?mahd=" . urlencode((string) $itemId) . "&sodienthoai=" . urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) . "&password=" . urlencode((string) ($_SESSION['user']['matkhau'] ?? ''));
+                                $detailUrl = "chi-tiet-hoa-don-donvesinh.php?mahd=" . urlencode((string) $itemId) . "&sodienthoai=" . urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) . "&password=" . urlencode((string) ($_SESSION['user']['matkhau'] ?? ''));
                                 ?>
                                 <a href="<?= $detailUrl ?>" class="invoice-card"
                                     onclick="if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }">

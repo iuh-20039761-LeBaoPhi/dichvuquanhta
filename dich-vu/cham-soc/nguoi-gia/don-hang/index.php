@@ -136,7 +136,7 @@ $buildPageUrl = static fn(int $targetPage): string => pagination_build_url($targ
     'status' => $statusFilter,
     'service' => $serviceFilter,
     'sort' => $sortFilter,
-], 'page', 'danh-sach-hoa-don.php');
+], 'page', 'index.php');
 
 $summaryPending = count(array_filter($rows, static fn(array $i): bool => trim((string) ($i['trangthai'] ?? '')) === '' || trim((string) ($i['trangthai'] ?? '')) === 'chờ duyệt'));
 $summaryReceived = count(array_filter($rows, static fn(array $i): bool => trim((string) ($i['trangthai'] ?? '')) === 'hoàn thành' || trim((string) ($i['trangthai'] ?? '')) === 'đã nhận' || trim((string) ($i['trangthai'] ?? '')) === 'đang thực hiện'));
@@ -180,7 +180,7 @@ include 'layout-header.php';
 
     .stat-value {
         font-size: 1.4rem;
-        font-weight: 600;
+        font-weight: 700;
         line-height: 1;
         margin-top: 4px;
     }
@@ -211,7 +211,7 @@ include 'layout-header.php';
         background: #f1f5f9;
         color: #334155;
         white-space: nowrap;
-        font-weight: 600;
+        font-weight: 700;
         padding: 12px 14px;
         border-bottom: 1px solid #e2e8f0;
     }
@@ -224,7 +224,7 @@ include 'layout-header.php';
     .id-badge {
         min-width: 48px;
         text-align: center;
-        font-weight: 600;
+        font-weight: 700;
         border-radius: 999px;
     }
 
@@ -274,130 +274,130 @@ include 'layout-header.php';
 <style>
     /* Theme color overrides */
     body {
-        background: linear-gradient(180deg, #f0f7ff 0%, #e1efff 48%, #f8fbff 100%);
-        color: #1e293b;
+        background: linear-gradient(180deg, #f1f8f1 0%, #e8f5e9 48%, #f1f8f1 100%);
+        color: #2e7d32;
     }
 
     .panel-soft {
-        border: 1px solid #dbeafe;
+        border: 1px solid #c8e6c9;
         border-radius: 16px;
-        box-shadow: 0 14px 34px rgba(30, 64, 175, 0.12);
-        background: #f8fbff;
+        box-shadow: 0 14px 34px rgba(46, 125, 50, 0.16);
+        background: #f1f8f1;
     }
 
     .stat-card {
-        border-color: #dbeafe;
-        background: linear-gradient(180deg, #f8fbff, #f0f7ff);
-        box-shadow: 0 8px 20px rgba(30, 64, 175, 0.06);
+        border-color: #c8e6c9;
+        background: linear-gradient(180deg, #f1f8f1, #e8f5e9);
+        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.09);
     }
 
     .filter-box {
-        border-color: #dbeafe;
+        border-color: #c8e6c9;
         border-radius: 14px;
-        background: linear-gradient(180deg, #f8fbff, #f0f7ff);
-        box-shadow: 0 8px 18px rgba(30, 64, 175, 0.05);
+        background: linear-gradient(180deg, #f1f8f1, #e8f5e9);
+        box-shadow: 0 8px 18px rgba(46, 125, 50, 0.08);
     }
 
     .table-wrap {
-        border-color: #dbeafe;
+        border-color: #c8e6c9;
         border-radius: 14px;
         background: #fff;
-        box-shadow: 0 10px 22px rgba(30, 64, 175, 0.08);
+        box-shadow: 0 10px 22px rgba(46, 125, 50, 0.1);
     }
 
-    .jobs-table { --bs-table-hover-bg: #f0f7ff; }
+    .jobs-table { --bs-table-hover-bg: #e8f5e9; }
 
     .jobs-table thead th {
-        background: linear-gradient(135deg, #e1efff 0%, #f0f7ff 100%);
-        color: #1e40af;
-        border-bottom-color: #dbeafe;
+        background: linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%);
+        color: #1b5e20;
+        border-bottom-color: #c8e6c9;
     }
 
-    .jobs-table tbody td { border-color: #eef2ff; }
+    .jobs-table tbody td { border-color: #e0e0e0; }
 
     .id-badge {
-        background: #eff6ff !important;
-        border-color: #dbeafe !important;
-        color: #1e40af !important;
+        background: #e8f5e9 !important;
+        border-color: #c8e6c9 !important;
+        color: #2e7d32 !important;
     }
 
     .summary-note, .empty-row, .text-secondary, .form-label.small.text-secondary {
-        color: #64748b !important;
+        color: #388e3c !important;
     }
 
     .badge.rounded-pill.text-bg-warning,
     .badge.rounded-pill.text-bg-info,
     .badge.rounded-pill.text-bg-success,
     .badge.rounded-pill.text-bg-secondary {
-        border: 1px solid #dbeafe;
-        background: #eff6ff !important;
-        color: #1e40af !important;
+        border: 1px solid #c8e6c9;
+        background: #e8f5e9 !important;
+        color: #1b5e20 !important;
     }
 
     .btn-primary {
-        border-color: #3b82f6;
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        box-shadow: 0 8px 18px rgba(29, 78, 216, 0.24);
+        border-color: #81c784;
+        background: linear-gradient(135deg, #66bb6a, #2e7d32);
+        box-shadow: 0 8px 18px rgba(46, 125, 50, 0.24);
     }
 
     .btn-primary:hover, .btn-primary:focus {
-        border-color: #2563eb;
-        background: linear-gradient(135deg, #2563eb, #1e40af);
+        border-color: #4caf50;
+        background: linear-gradient(135deg, #4caf50, #1b5e20);
     }
 
     .btn-outline-secondary {
-        color: #1e40af;
-        border-color: #dbeafe;
-        background: #f8fbff;
+        color: #2e7d32;
+        border-color: #c8e6c9;
+        background: #f1f8f1;
     }
 
     .btn-outline-secondary:hover, .btn-outline-secondary:focus {
         color: #fff;
-        border-color: #1e40af;
-        background: #1e40af;
+        border-color: #388e3c;
+        background: #388e3c;
     }
 
     .form-control, .form-select, .input-group-text {
-        border-color: #dbeafe;
-        background: #f8fbff;
-        color: #1e293b;
+        border-color: #c8e6c9;
+        background: #f1f8f1;
+        color: #1b5e20;
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2);
+        border-color: #4caf50;
+        box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.2);
     }
 
     .pagination .page-link {
-        color: #1e40af;
-        border-color: #dbeafe;
-        background: #f8fbff;
+        color: #2e7d32;
+        border-color: #c8e6c9;
+        background: #f1f8f1;
     }
 
     .pagination .page-item.active .page-link {
-        border-color: #1d4ed8;
-        background: #1d4ed8;
+        border-color: #2e7d32;
+        background: #2e7d32;
         color: #fff;
     }
 
     .alert-success {
-        color: #1f6148;
-        background: #e9f8f1;
-        border-color: #9dd9be;
-        box-shadow: 0 8px 16px rgba(31, 97, 72, 0.08);
+        color: #1b5e20;
+        background: #e8f5e9;
+        border-color: #81c784;
+        box-shadow: 0 8px 16px rgba(27, 94, 32, 0.08);
     }
 
     .alert-warning {
-        color: #1e40af;
-        background: #eff6ff;
-        border-color: #dbeafe;
-        box-shadow: 0 8px 16px rgba(30, 64, 175, 0.08);
+        color: #1b5e20;
+        background: #e8f5e9;
+        border-color: #c8e6c9;
+        box-shadow: 0 8px 16px rgba(46, 125, 50, 0.08);
     }
 
     /* Mobile Card Styles */
     .invoice-card {
         background: #ffffffff;
-        border: 1px solid #eef2ff;
+        border: 1px solid #c8e6c9;
         margin-bottom: 2px;
         border-radius: 5px;
         padding: 10px;
@@ -407,13 +407,13 @@ include 'layout-header.php';
         transition: background 0.2s;
     }
 
-    .invoice-card:active { background: #f0f7ff; }
-    .invoice-card .inv-id { color: #2563eb; font-weight: 600; font-size: 0.95rem; }
+    .invoice-card:active { background: #e8f5e9; }
+    .invoice-card .inv-id { color: #2e7d32; font-weight: 700; font-size: 0.95rem; }
     .invoice-card .inv-date { color: #94a3b8; font-size: 0.75rem; }
-    .invoice-card .inv-name { font-weight: 600; font-size: 1rem; color: #1e293b; margin-top: 4px; }
-    .invoice-card .inv-status { background: #1e293b; color: #fff; font-size: 0.7rem; padding: 4px 10px; border-radius: 999px; font-weight: 600; }
+    .invoice-card .inv-name { font-weight: 700; font-size: 1rem; color: #1e293b; margin-top: 4px; }
+    .invoice-card .inv-status { background: #2e7d32; color: #fff; font-size: 0.7rem; padding: 4px 10px; border-radius: 999px; font-weight: 600; }
     .invoice-card .inv-service { color: #64748b; font-size: 0.85rem; margin-top: 2px; }
-    .invoice-card .inv-price { color: #3b82f6; font-weight: 700; font-size: 1.1rem; text-align: right; margin-top: 4px; }
+    .invoice-card .inv-price { color: #388e3c; font-weight: 700; font-size: 1.1rem; text-align: right; margin-top: 4px; }
 </style>
 
 <div class="page-wrap">
@@ -430,7 +430,7 @@ include 'layout-header.php';
             <?php else: ?>
                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-3">
                     <div>
-                        <h1 class="h4 fw-semibold mb-1">Danh sách đơn hàng</h1>
+                        <h1 class="h4 fw-bold mb-1">Danh sách đơn hàng</h1>
                     </div>
                     <div class="text-secondary small">Tổng hiển thị: <b><?= (int) $totalFiltered ?></b> /
                         <?= (int) $summaryTotal ?> hoa don
@@ -525,8 +525,8 @@ include 'layout-header.php';
                         <div class="col-6 col-md-3 col-lg-2 d-flex gap-2">
                             <button class="btn btn-primary flex-fill" type="submit"><i
                                     class="bi bi-funnel me-1"></i>Loc</button>
-                            <a class="btn btn-outline-secondary" href="danh-sach-hoa-don.php"
-                               onclick="event.preventDefault(); navigateTo('danh-sach-hoa-don.php');"><i
+                            <a class="btn btn-outline-secondary" href="index.php"
+                               onclick="event.preventDefault(); navigateTo('index.php');"><i
                                     class="bi bi-arrow-counterclockwise"></i></a>
                         </div>
                     </div>
@@ -584,7 +584,7 @@ include 'layout-header.php';
                                             <td><span class="badge rounded-pill <?= htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusValue, ENT_QUOTES, 'UTF-8') ?></span></td>
                                             <td>
                                                 <div class="action-group">
-                                                    <a href="chi-tiet-hoa-don-donvesinh.php?mahd=<?= urlencode((string) $itemId) ?>&sodienthoai=<?= urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) ?>&password=<?= urlencode((string) ($_SESSION['user']['matkhau'] ?? '')) ?>"
+                                                    <a href="chi-tiet-hoa-don-nguoigia.php?mahd=<?= urlencode((string) $itemId) ?>&sodienthoai=<?= urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) ?>&password=<?= urlencode((string) ($_SESSION['user']['matkhau'] ?? '')) ?>"
                                                         onclick="if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }"
                                                         class="btn btn-primary btn-action"><i class="bi bi-eye"></i>Chi tiet</a>
                                                 </div>
@@ -610,7 +610,7 @@ include 'layout-header.php';
                                 $statusValue = trim((string) ($item['trangthai'] ?? ''));
                                 if ($statusValue === '') { $statusValue = 'đang chờ'; }
                                 $price = number_format((float) ($item['tong_tien'] ?? 0), 0, ',', '.') . ' VND';
-                                $detailUrl = "chi-tiet-hoa-don-donvesinh.php?mahd=" . urlencode((string) $itemId) . "&sodienthoai=" . urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) . "&password=" . urlencode((string) ($_SESSION['user']['matkhau'] ?? ''));
+                                $detailUrl = "chi-tiet-hoa-don-nguoigia.php?mahd=" . urlencode((string) $itemId) . "&sodienthoai=" . urlencode((string) ($_SESSION['user']['sodienthoai'] ?? '')) . "&password=" . urlencode((string) ($_SESSION['user']['matkhau'] ?? ''));
                                 ?>
                                 <a href="<?= $detailUrl ?>" class="invoice-card"
                                     onclick="if(typeof navigateTo === 'function') { navigateTo(this.getAttribute('href')); return false; }">

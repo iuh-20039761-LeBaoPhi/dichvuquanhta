@@ -303,9 +303,8 @@ $pageTitle = $pageTitle ?? '';
                 <a href="../index.html" class="list-group-item">
                     <i class="bi bi-house"></i> <span>Trang chủ</span>
                 </a>
-                <a href="danh-sach-hoa-don.php"
-                    class="list-group-item <?php echo $current_page == 'danh-sach-hoa-don.php' ? 'active' : ''; ?>"
-                    data-page="danh-sach-hoa-don.php">
+                <a href="index.php" class="list-group-item <?php echo $current_page == 'index.php' ? 'active' : ''; ?>"
+                    data-page="index.php">
                     <i class="bi bi-receipt"></i> <span>Danh sách đơn hàng</span>
                 </a>
                 <a href="../logout.php" class="list-group-item text-warning">
